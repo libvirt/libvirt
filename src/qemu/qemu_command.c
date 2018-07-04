@@ -4935,6 +4935,12 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
     return -1;
 }
 
+
+enum {
+    QEMU_BUILD_CHARDEV_TCP_NOWAIT = (1 << 0),
+    QEMU_BUILD_CHARDEV_FILE_LOGD  = (1 << 1),
+};
+
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static char *
@@ -4946,8 +4952,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                        const virDomainChrSourceDef *dev,
                        const char *alias,
                        virQEMUCapsPtr qemuCaps,
-                       bool nowait,
-                       bool chardevStdioLogd)
+                       unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
@@ -4986,7 +4991,8 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                            _("append not supported in this QEMU binary"));
             goto cleanup;
         }
-        if (qemuBuildChrChardevFileStr(chardevStdioLogd ? logManager : NULL,
+        if (qemuBuildChrChardevFileStr(flags & QEMU_BUILD_CHARDEV_FILE_LOGD ?
+                                       logManager : NULL,
                                        cmd, def, &buf,
                                        "path", dev->data.file.path,
                                        "append", dev->data.file.append) < 0)
@@ -5032,8 +5038,11 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                           dev->data.tcp.service,
                           telnet ? ",telnet" : "");
 
-        if (dev->data.tcp.listen)
-            virBufferAdd(&buf, nowait ? ",server,nowait" : ",server", -1);
+        if (dev->data.tcp.listen) {
+            virBufferAddLit(&buf, ",server");
+            if (flags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
+                virBufferAddLit(&buf, ",nowait");
+        }
 
         qemuBuildChrChardevReconnectStr(&buf, &dev->data.tcp.reconnect);
 
@@ -5091,8 +5100,11 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
             virBufferAsprintf(&buf, "socket,id=%s,path=", charAlias);
             virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
         }
-        if (dev->data.nix.listen)
-            virBufferAdd(&buf, nowait ? ",server,nowait" : ",server", -1);
+        if (dev->data.nix.listen) {
+            virBufferAddLit(&buf, ",server");
+            if (flags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
+                virBufferAddLit(&buf, ",nowait");
+        }
 
         qemuBuildChrChardevReconnectStr(&buf, &dev->data.nix.reconnect);
         break;
@@ -5426,6 +5438,9 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
                             qemuDomainObjPrivatePtr priv)
 {
     char *chrdev;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (priv->chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     if (!priv->monConfig)
         return 0;
@@ -5433,8 +5448,7 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
     if (!(chrdev = qemuBuildChrChardevStr(logManager, secManager,
                                           cmd, cfg, def,
                                           priv->monConfig, "monitor",
-                                          priv->qemuCaps, true,
-                                          priv->chardevStdioLogd)))
+                                          priv->qemuCaps, cdevflags)))
         return -1;
     virCommandAddArg(cmd, "-chardev");
     virCommandAddArg(cmd, chrdev);
@@ -5559,6 +5573,9 @@ qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
                              char **chr,
                              bool chardevStdioLogd)
 {
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
     *chr = NULL;
 
     switch ((virDomainRNGBackend) rng->backend) {
@@ -5571,8 +5588,8 @@ qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
         if (!(*chr = qemuBuildChrChardevStr(logManager, secManager,
                                             cmd, cfg, def,
                                             rng->source.chardev,
-                                            rng->info.alias, qemuCaps, true,
-                                            chardevStdioLogd)))
+                                            rng->info.alias, qemuCaps,
+                                            cdevflags)))
             return -1;
     }
 
@@ -8215,8 +8232,7 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
         if (!(chardev = qemuBuildChrChardevStr(logManager, secManager,
                                                cmd, cfg, def,
                                                net->data.vhostuser,
-                                               net->info.alias, qemuCaps, false,
-                                               false)))
+                                               net->info.alias, qemuCaps, 0)))
             goto cleanup;
         break;
 
@@ -8696,6 +8712,9 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *database;
     const char *contAlias = NULL;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     if (!def->nsmartcards)
         return 0;
@@ -8761,8 +8780,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
                                               cmd, cfg, def,
                                               smartcard->data.passthru,
                                               smartcard->info.alias,
-                                              qemuCaps, true,
-                                              chardevStdioLogd))) {
+                                              qemuCaps, cdevflags))) {
             virBufferFreeAndReset(&opt);
             return -1;
         }
@@ -8930,6 +8948,9 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *devstr = NULL;
     int rc;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     if (shmem->size) {
         /*
@@ -8993,8 +9014,8 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
         devstr = qemuBuildChrChardevStr(logManager, secManager,
                                         cmd, cfg, def,
                                         &shmem->server.chr,
-                                        shmem->info.alias, qemuCaps, true,
-                                        chardevStdioLogd);
+                                        shmem->info.alias, qemuCaps,
+                                        cdevflags);
         if (!devstr)
             return -1;
 
@@ -9087,6 +9108,9 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
 {
     size_t i;
     bool havespice = false;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     if (def->nserials) {
         for (i = 0; i < def->ngraphics && !havespice; i++) {
@@ -9106,8 +9130,7 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
                                               cmd, cfg, def,
                                               serial->source,
                                               serial->info.alias,
-                                              qemuCaps, true,
-                                              chardevStdioLogd)))
+                                              qemuCaps, cdevflags)))
             return -1;
         virCommandAddArg(cmd, "-chardev");
         virCommandAddArg(cmd, devstr);
@@ -9148,6 +9171,9 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
                               bool chardevStdioLogd)
 {
     size_t i;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     for (i = 0; i < def->nparallels; i++) {
         virDomainChrDefPtr parallel = def->parallels[i];
@@ -9157,8 +9183,7 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
                                               cmd, cfg, def,
                                               parallel->source,
                                               parallel->info.alias,
-                                              qemuCaps, true,
-                                              chardevStdioLogd)))
+                                              qemuCaps, cdevflags)))
             return -1;
         virCommandAddArg(cmd, "-chardev");
         virCommandAddArg(cmd, devstr);
@@ -9183,6 +9208,9 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                              bool chardevStdioLogd)
 {
     size_t i;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
@@ -9194,8 +9222,7 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                                                   cmd, cfg, def,
                                                   channel->source,
                                                   channel->info.alias,
-                                                  qemuCaps, true,
-                                                  chardevStdioLogd)))
+                                                  qemuCaps, cdevflags)))
                 return -1;
             virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
@@ -9212,8 +9239,7 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                                                   cmd, cfg, def,
                                                   channel->source,
                                                   channel->info.alias,
-                                                  qemuCaps, true,
-                                                  chardevStdioLogd)))
+                                                  qemuCaps, cdevflags)))
                 return -1;
             virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
@@ -9239,6 +9265,9 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                             bool chardevStdioLogd)
 {
     size_t i;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     /* Explicit console devices */
     for (i = 0; i < def->nconsoles; i++) {
@@ -9257,8 +9286,7 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                                                   cmd, cfg, def,
                                                   console->source,
                                                   console->info.alias,
-                                                  qemuCaps, true,
-                                                  chardevStdioLogd)))
+                                                  qemuCaps, cdevflags)))
                 return -1;
             virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
@@ -9279,8 +9307,7 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                                                   cmd, cfg, def,
                                                   console->source,
                                                   console->info.alias,
-                                                  qemuCaps, true,
-                                                  chardevStdioLogd)))
+                                                  qemuCaps, cdevflags)))
                 return -1;
             virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
@@ -9295,8 +9322,7 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                                                   cmd, cfg, def,
                                                   console->source,
                                                   console->info.alias,
-                                                  qemuCaps, true,
-                                                  chardevStdioLogd)))
+                                                  qemuCaps, cdevflags)))
                 return -1;
             virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
@@ -9419,6 +9445,9 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
                              bool chardevStdioLogd)
 {
     size_t i;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    if (chardevStdioLogd)
+        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     for (i = 0; i < def->nredirdevs; i++) {
         virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
@@ -9428,8 +9457,7 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
                                               cmd, cfg, def,
                                               redirdev->source,
                                               redirdev->info.alias,
-                                              qemuCaps, true,
-                                              chardevStdioLogd))) {
+                                              qemuCaps, cdevflags))) {
             return -1;
         }
 
