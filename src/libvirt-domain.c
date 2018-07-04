@@ -8365,7 +8365,9 @@ virDomainUpdateDeviceFlags(virDomainPtr domain,
  * asynchronous - it returns immediately after sending the detach
  * request to the hypervisor. It's caller's responsibility to
  * wait for VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED event to signal
- * actual device removal.
+ * actual device removal or for
+ * VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED to signal rejected
+ * device removal.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
