@@ -94,6 +94,25 @@ static void testIscsiadmCb(const char *const*args,
                args[8] && STREQ(args[8], "nonpersistent") &&
                args[9] == NULL) {
         ignore_value(VIR_STRDUP(*output, iscsiadmSendtargetsOutput));
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "node") &&
+               args[3] && STREQ(args[3], "--portal") &&
+               args[4] && STREQ(args[4], "10.20.30.40:3260,1") &&
+               args[5] && STREQ(args[5], "--targetname") &&
+               args[6] && STREQ(args[6], "iqn.2004-06.example:example1:iscsi.test") &&
+               args[7] && STREQ(args[7], "--login") &&
+               args[8] == NULL) {
+        /* Mocking real environment output is not needed for now.
+         * Example output from real environment:
+         *
+         * Logging in to [iface: default, \
+         *                target: iqn.2004-06.example:example1:iscsi.test, \
+         *                portal: 10.20.30.40:3260,1] (multiple)
+         * Login to [iface: default, \
+         *           target: iqn.2004-06.example:example1:iscsi.test, \
+         *           portal: 10.20.30.40:3260,1] successful.
+         */
     } else {
         *status = -1;
     }
@@ -175,6 +194,32 @@ testISCSIScanTargets(const void *data)
     return ret;
 }
 
+
+struct testConnectionInfoLogin {
+    const char *portal;
+    const char *initiatoriqn;
+    const char *target;
+};
+
+
+static int
+testISCSIConnectionLogin(const void *data)
+{
+    const struct testConnectionInfoLogin *info = data;
+    int ret = -1;
+
+    virCommandSetDryRun(NULL, testIscsiadmCb, NULL);
+
+    if (virISCSIConnectionLogin(info->portal, info->initiatoriqn, info->target) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virCommandSetDryRun(NULL, NULL, NULL);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -212,6 +257,16 @@ mymain(void)
     };
     if (virTestRun("ISCSI scan targets", testISCSIScanTargets, &infoTargets) < 0)
         rv = -1;
+
+# define DO_LOGIN_TEST(portal, iqn, target) \
+    do { \
+        struct testConnectionInfoLogin info = {portal, iqn, target }; \
+        if (virTestRun("ISCSI login " portal, \
+                       testISCSIConnectionLogin, &info) < 0) \
+        rv = -1; \
+    } while (0)
+
+    DO_LOGIN_TEST("10.20.30.40:3260,1", NULL, "iqn.2004-06.example:example1:iscsi.test");
 
     if (rv < 0)
         return EXIT_FAILURE;
