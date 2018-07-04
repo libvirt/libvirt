@@ -1341,7 +1341,7 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (secProps &&
+    if (secProps && *secProps &&
         qemuMonitorAddObject(priv->mon, secProps, &secAlias) < 0)
         goto error;
 
