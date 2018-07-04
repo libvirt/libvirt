@@ -38,6 +38,10 @@
 <zhlcindy@linux.vnet.ibm.com> <zhlcindy@gmail.com>
 <serge.hallyn@canonical.com> <serue@us.ibm.com>
 <pritesh.kothari@sun.com> <Pritesh.Kothari@Sun.COM>
+<cbosdonnat@suse.com> <cedric.bosdonnat@free.fr>
+<mnestratov@virtuozzo.com> <mnestratov@parallels.com>
+<nshirokovskiy@virtuozzo.com> <nshirokovskiy@parallels.com>
+<jyang@redhat.com> <osier@yunify.com>
 
 # Name consolidation:
 # Preferred author spelling <preferred email>
@@ -58,9 +62,13 @@ Philipp Hahn <hahn@univention.de>
 Pritesh Kothari <pritesh.kothari@sun.com>
 Wang Yufei (James) <james.wangyufei@huawei.com>
 Deepak C Shetty <dpkshetty@gmail.com>
+Dave Allan <dallan@redhat.com>
+Richard W.M. Jones <rjones@redhat.com>
 
 # Non-trivial consolidation:
 # see git documentation for information about the format
 Daniel P. Berrangé <berrange@redhat.com>
 Daniel P. Berrangé <berrange@redhat.com> <dan@berrange.com>
+Michal Prívozník <mprivozn@redhat.com>
+Michal Prívozník <mprivozn@redhat.com> <miso.privoznik@gmail.com>
 Marco Bozzolan <bozzolan@gmail.com> <redshift@gmx.com>
