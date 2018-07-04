@@ -1266,7 +1266,7 @@ mymain(void)
     DO_TEST("misc-no-reboot", NONE);
     DO_TEST("misc-uuid", NONE);
     DO_TEST_PARSE_ERROR("vhost_queues-invalid", NONE);
-    DO_TEST("net-vhostuser", NONE);
+    DO_TEST("net-vhostuser", QEMU_CAPS_CHARDEV_FD_PASS);
     DO_TEST("net-vhostuser-multiq",
             QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     DO_TEST_FAILURE("net-vhostuser-multiq", NONE);
