@@ -6414,7 +6414,9 @@ qemuDomainObjReleaseAsyncJob(virDomainObjPtr obj)
 static bool
 qemuDomainNestedJobAllowed(qemuDomainObjPrivatePtr priv, qemuDomainJob job)
 {
-    return !priv->job.asyncJob || (priv->job.mask & JOB_MASK(job)) != 0;
+    return !priv->job.asyncJob ||
+           job == QEMU_JOB_NONE ||
+           (priv->job.mask & JOB_MASK(job)) != 0;
 }
 
 bool
