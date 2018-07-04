@@ -446,6 +446,14 @@ int virPidFileAcquirePath(const char *path,
 
     snprintf(pidstr, sizeof(pidstr), "%lld", (long long) pid);
 
+    if (ftruncate(fd, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to truncate pid file '%s'"),
+                             path);
+        VIR_FORCE_CLOSE(fd);
+        return -1;
+    }
+
     if (safewrite(fd, pidstr, strlen(pidstr)) < 0) {
         virReportSystemError(errno,
                              _("Failed to write to pid file '%s'"),
