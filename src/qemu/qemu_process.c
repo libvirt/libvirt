@@ -7207,7 +7207,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
             if (graphics->data.vnc.autoport) {
                 virPortAllocatorRelease(graphics->data.vnc.port);
             } else if (graphics->data.vnc.portReserved) {
-                virPortAllocatorRelease(graphics->data.spice.port);
+                virPortAllocatorRelease(graphics->data.vnc.port);
                 graphics->data.vnc.portReserved = false;
             }
             if (graphics->data.vnc.websocketGenerated) {
