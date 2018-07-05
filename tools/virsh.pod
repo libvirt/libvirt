@@ -3197,7 +3197,7 @@ Note that older versions of virsh used I<--config> as an alias for
 I<--persistent>.
 
 =item B<detach-device-alias> I<domain> I<alias>
-[[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
+[[[I<--live>] [I<--config>] | [I<--current>]]]]
 
 Detach a device with given I<alias> from the I<domain>.
 
