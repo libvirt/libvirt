@@ -626,6 +626,13 @@ if test "$with_linux" = "yes"; then
 fi
 
 dnl
+dnl check for xfs dev headers required by xfs ioctl
+dnl
+if test "$with_linux" = "yes"; then
+    AC_CHECK_HEADERS([xfs/xfs.h])
+fi
+
+dnl
 dnl check for DEVLINK_CMD_ESWITCH_GET
 dnl
 dnl Assume DEVLINK_ESWITCH_MODE_SWITCHDEV is also
