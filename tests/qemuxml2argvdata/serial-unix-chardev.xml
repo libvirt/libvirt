@@ -25,6 +25,10 @@
       <source mode='connect' path='/tmp/serial.sock'/>
       <target port='0'/>
     </serial>
+    <serial type='unix'>
+      <source mode='bind' path='/tmp/serial-server.sock'/>
+      <target port='1'/>
+    </serial>
     <console type='unix'>
       <source mode='connect' path='/tmp/serial.sock'/>
       <target port='0'/>

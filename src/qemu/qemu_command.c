@@ -5083,7 +5083,8 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if ((flags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
+        if (dev->data.nix.listen &&
+            (flags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
             if (qemuSecuritySetSocketLabel(secManager, (virDomainDefPtr)def) < 0)
                 goto cleanup;
