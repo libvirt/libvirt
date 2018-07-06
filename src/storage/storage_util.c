@@ -48,6 +48,12 @@
 
 #if HAVE_LINUX_BTRFS_H
 # include <linux/btrfs.h>
+# define REFLINK_IOC_CLONE BTRFS_IOC_CLONE
+#elif HAVE_XFS_XFS_H
+# include <xfs/xfs.h>
+# define REFLINK_IOC_CLONE XFS_IOC_CLONE
+#elif defined(FICLONE)
+# define REFLINK_IOC_CLONE FICLONE
 #endif
 
 #include "datatypes.h"
@@ -80,21 +86,22 @@ VIR_LOG_INIT("storage.storage_util");
  * Perform the O(1) btrfs clone operation, if possible.
  * Upon success, return 0.  Otherwise, return -1 and set errno.
  */
-#if HAVE_LINUX_BTRFS_H
+#ifdef REFLINK_IOC_CLONE
 static inline int
-btrfsCloneFile(int dest_fd, int src_fd)
+reflinkCloneFile(int dest_fd, int src_fd)
 {
-    return ioctl(dest_fd, BTRFS_IOC_CLONE, src_fd);
+    return ioctl(dest_fd, REFLINK_IOC_CLONE, src_fd);
 }
 #else
 static inline int
-btrfsCloneFile(int dest_fd ATTRIBUTE_UNUSED,
-               int src_fd ATTRIBUTE_UNUSED)
+reflinkCloneFile(int dest_fd ATTRIBUTE_UNUSED,
+                 int src_fd ATTRIBUTE_UNUSED)
 {
     errno = ENOTSUP;
     return -1;
 }
 #endif
+
 
 static int ATTRIBUTE_NONNULL(2)
 virStorageBackendCopyToFD(virStorageVolDefPtr vol,
@@ -142,7 +149,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     }
 
     if (reflink_copy) {
-        if (btrfsCloneFile(fd, inputfd) < 0) {
+        if (reflinkCloneFile(fd, inputfd) < 0) {
             ret = -errno;
             virReportSystemError(errno,
                                  _("failed to clone files from '%s'"),
