@@ -4644,8 +4644,8 @@ static char *
 qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                                 virQEMUCapsPtr qemuCaps)
 {
+    char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-
     char *netsource = NULL;
     virJSONValuePtr srcprops = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
@@ -4672,13 +4672,13 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
-    return virBufferContentAndReset(&buf);
+    ret = virBufferContentAndReset(&buf);
 
  cleanup:
     VIR_FREE(netsource);
     virJSONValueFree(srcprops);
     virBufferFreeAndReset(&buf);
-    return NULL;
+    return ret;
 }
 
 char *
