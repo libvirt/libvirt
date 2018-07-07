@@ -80,7 +80,7 @@ check-access:
 cov: clean-cov
 	$(MKDIR_P) $(top_builddir)/coverage
 	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp \
-	  -d $(top_builddir)/src  -d $(top_builddir)/daemon \
+	  -d $(top_builddir)/src \
 	  -d $(top_builddir)/tests
 	$(LCOV) -r $(top_builddir)/coverage/libvirt.info.tmp \
 	  -o $(top_builddir)/coverage/libvirt.info

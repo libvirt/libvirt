@@ -5,12 +5,12 @@
 
 if test "$VERBOSE" = yes; then
   set -x
-  $abs_top_builddir/daemon/libvirtd --version
+  $abs_top_builddir/src/libvirtd --version
 fi
 
 fail=0
 
-$abs_top_builddir/daemon/libvirtd --config=no-such-conf --timeout=5 2> log
+$abs_top_builddir/src/libvirtd --config=no-such-conf --timeout=5 2> log
 RET=$?
 
 test "$RET" != "0" && exit 0 || exit 1

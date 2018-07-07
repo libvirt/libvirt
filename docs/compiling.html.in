@@ -125,7 +125,7 @@ $ make
     <pre>
 $ su -
 # service libvirtd stop  (or systemctl stop libvirtd.service)
-# /home/to/your/checkout/daemon/libvirtd
+# /home/to/your/checkout/src/libvirtd
     </pre>
 
     <p>

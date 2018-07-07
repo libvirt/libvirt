@@ -52,7 +52,7 @@ provider libvirt {
 	probe rpc_client_msg_rx(void *client, int len, int prog, int vers, int proc, int type, int status, int serial);
 
 
-	# file: daemon/libvirtd.c
+	# file: src/remote/remote_daemon.c
 	# prefix: rpc
 	probe rpc_server_client_auth_allow(void *client, int authtype, const char *identity);
 	probe rpc_server_client_auth_deny(void *client, int authtype, const char *identity);
