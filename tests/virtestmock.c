@@ -27,6 +27,10 @@
 #include <execinfo.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
+#ifdef HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
 
 #include "internal.h"
 #include "configmake.h"
@@ -61,6 +65,7 @@ static int (*real_lstat)(const char *path, struct stat *sb);
 static int (*real_lstat64)(const char *path, void *sb);
 static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
 static int (*real___lxstat64)(int ver, const char *path, void *sb);
+static int (*real_connect)(int fd, const struct sockaddr *addr, socklen_t addrlen);
 
 static const char *progname;
 const char *output;
@@ -79,6 +84,7 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT_ALT(stat64, __xstat64);
     VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
     VIR_MOCK_REAL_INIT_ALT(lstat64, __lxstat64);
+    VIR_MOCK_REAL_INIT(connect);
 }
 
 static void
@@ -321,3 +327,19 @@ __lxstat64(int ver, const char *path, struct stat64 *sb)
     return real___lxstat64(ver, path, sb);
 }
 #endif
+
+
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+{
+    init_syms();
+
+#ifdef HAVE_SYS_UN_H
+    if (addrlen == sizeof(struct sockaddr_un)) {
+        struct sockaddr_un *tmp = (struct sockaddr_un *) addr;
+        if (tmp->sun_family == AF_UNIX)
+            checkPath(tmp->sun_path);
+    }
+#endif
+
+    return real_connect(sockfd, addr, addrlen);
+}
