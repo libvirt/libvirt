@@ -102,6 +102,9 @@ typedef virDomainBlkiotune *virDomainBlkiotunePtr;
 typedef struct _virDomainBlockIoTuneInfo virDomainBlockIoTuneInfo;
 typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 
+typedef struct _virDomainCheckpointDef virDomainCheckpointDef;
+typedef virDomainCheckpointDef *virDomainCheckpointDefPtr;
+
 typedef struct _virDomainChrDef virDomainChrDef;
 typedef virDomainChrDef *virDomainChrDefPtr;
 

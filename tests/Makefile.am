@@ -276,7 +276,7 @@ endif WITH_LIBXL
 
 if WITH_QEMU
 test_programs += qemuxml2argvtest qemuxml2xmltest \
-	qemudomainsnapshotxml2xmltest \
+	qemudomaincheckpointxml2xmltest qemudomainsnapshotxml2xmltest \
 	qemumonitorjsontest qemuhotplugtest \
 	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
 	qemumemlocktest \
@@ -647,6 +647,11 @@ qemublocktest_LDADD = \
 	$(qemu_LDADDS) \
 	$(NULL)
 
+qemudomaincheckpointxml2xmltest_SOURCES = \
+	qemudomaincheckpointxml2xmltest.c testutilsqemu.c testutilsqemu.h \
+	testutils.c testutils.h
+qemudomaincheckpointxml2xmltest_LDADD = $(qemu_LDADDS)
+
 qemudomainsnapshotxml2xmltest_SOURCES = \
 	qemudomainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
@@ -682,7 +687,7 @@ qemufirmwaretest_LDADD = $(qemu_LDADDS)
 
 else ! WITH_QEMU
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c \
-	qemudomainsnapshotxml2xmltest.c \
+	qemudomaincheckpointxml2xmltest.c qemudomainsnapshotxml2xmltest.c \
 	testutilsqemu.c testutilsqemu.h \
 	testutilsqemuschema.c testutilsqemuschema.h \
 	qemumonitorjsontest.c qemuhotplugtest.c \

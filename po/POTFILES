@@ -15,6 +15,7 @@ src/bhyve/bhyve_monitor.c
 src/bhyve/bhyve_parse_command.c
 src/bhyve/bhyve_process.c
 src/conf/capabilities.c
+src/conf/checkpoint_conf.c
 src/conf/cpu_conf.c
 src/conf/device_conf.c
 src/conf/domain_addr.c

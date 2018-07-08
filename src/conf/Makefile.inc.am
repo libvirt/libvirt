@@ -14,6 +14,8 @@ NETDEV_CONF_SOURCES = \
 DOMAIN_CONF_SOURCES = \
 	conf/capabilities.c \
 	conf/capabilities.h \
+	conf/checkpoint_conf.c \
+	conf/checkpoint_conf.h \
 	conf/domain_addr.c \
 	conf/domain_addr.h \
 	conf/domain_capabilities.c \
