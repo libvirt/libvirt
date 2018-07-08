@@ -88,7 +88,8 @@ static void init_syms(void)
 }
 
 static void
-printFile(const char *file)
+printFile(const char *file,
+          const char *func)
 {
     FILE *fp;
     const char *testname = getenv("VIR_TEST_MOCK_TESTNAME");
@@ -116,9 +117,9 @@ printFile(const char *file)
     }
 
     /* Now append the following line into the output file:
-     * $file: $progname $testname */
+     * $file: $progname: $func: $testname */
 
-    fprintf(fp, "%s: %s", file, progname);
+    fprintf(fp, "%s: %s: %s", file, func, progname);
     if (testname)
         fprintf(fp, ": %s", testname);
 
@@ -128,8 +129,12 @@ printFile(const char *file)
     fclose(fp);
 }
 
+#define CHECK_PATH(path) \
+    checkPath(path, __FUNCTION__)
+
 static void
-checkPath(const char *path)
+checkPath(const char *path,
+          const char *func)
 {
     char *fullPath = NULL;
     char *relPath = NULL;
@@ -160,7 +165,7 @@ checkPath(const char *path)
 
     if (!STRPREFIX(path, abs_topsrcdir) &&
         !STRPREFIX(path, abs_topbuilddir)) {
-        printFile(path);
+        printFile(path, func);
     }
 
     VIR_FREE(crippledPath);
@@ -180,7 +185,7 @@ int open(const char *path, int flags, ...)
 
     init_syms();
 
-    checkPath(path);
+    CHECK_PATH(path);
 
     if (flags & O_CREAT) {
         va_list ap;
@@ -199,7 +204,7 @@ FILE *fopen(const char *path, const char *mode)
 {
     init_syms();
 
-    checkPath(path);
+    CHECK_PATH(path);
 
     return real_fopen(path, mode);
 }
@@ -209,7 +214,7 @@ int access(const char *path, int mode)
 {
     init_syms();
 
-    checkPath(path);
+    CHECK_PATH(path);
 
     return real_access(path, mode);
 }
@@ -239,7 +244,7 @@ int stat(const char *path, struct stat *sb)
 {
     init_syms();
 
-    checkPath(path);
+    checkPath(path, "stat");
 
     return real_stat(path, sb);
 }
@@ -250,7 +255,7 @@ int stat64(const char *path, struct stat64 *sb)
 {
     init_syms();
 
-    checkPath(path);
+    checkPath(path, "stat");
 
     return real_stat64(path, sb);
 }
@@ -262,7 +267,7 @@ __xstat(int ver, const char *path, struct stat *sb)
 {
     init_syms();
 
-    checkPath(path);
+    checkPath(path, "stat");
 
     return real___xstat(ver, path, sb);
 }
@@ -274,7 +279,7 @@ __xstat64(int ver, const char *path, struct stat64 *sb)
 {
     init_syms();
 
-    checkPath(path);
+    checkPath(path, "stat");
 
     return real___xstat64(ver, path, sb);
 }
@@ -286,7 +291,7 @@ lstat(const char *path, struct stat *sb)
 {
     init_syms();
 
-    checkPath(path);
+    checkPath(path, "lstat");
 
     return real_lstat(path, sb);
 }
@@ -298,7 +303,7 @@ lstat64(const char *path, struct stat64 *sb)
 {
     init_syms();
 
-    checkPath(path);
+    checkPath(path, "lstat");
 
     return real_lstat64(path, sb);
 }
@@ -310,7 +315,7 @@ __lxstat(int ver, const char *path, struct stat *sb)
 {
     init_syms();
 
-    checkPath(path);
+    checkPath(path, "lstat");
 
     return real___lxstat(ver, path, sb);
 }
@@ -322,7 +327,7 @@ __lxstat64(int ver, const char *path, struct stat64 *sb)
 {
     init_syms();
 
-    checkPath(path);
+    checkPath(path, "lstat");
 
     return real___lxstat64(ver, path, sb);
 }
@@ -337,7 +342,7 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
     if (addrlen == sizeof(struct sockaddr_un)) {
         struct sockaddr_un *tmp = (struct sockaddr_un *) addr;
         if (tmp->sun_family == AF_UNIX)
-            checkPath(tmp->sun_path);
+            CHECK_PATH(tmp->sun_path);
     }
 #endif
 
