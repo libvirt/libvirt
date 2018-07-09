@@ -27,18 +27,21 @@ use warnings;
 my $access_file = "test_file_access.txt";
 my $whitelist_file = "file_access_whitelist.txt";
 
+my @known_actions = ("open", "fopen", "access", "stat", "lstat", "connect");
+
 my @files;
 my @whitelist;
 
 open FILE, "<", $access_file or die "Unable to open $access_file: $!";
 while (<FILE>) {
     chomp;
-    if (/^(\S*):\s*(\S*)(\s*:\s*(.*))?$/) {
+    if (/^(\S*):\s*(\S*):\s*(\S*)(\s*:\s*(.*))?$/) {
         my %rec;
         ${rec}{path} = $1;
-        ${rec}{progname} = $2;
-        if (defined $4) {
-            ${rec}{testname} = $4;
+        ${rec}{action} = $2;
+        ${rec}{progname} = $3;
+        if (defined $5) {
+            ${rec}{testname} = $5;
         }
         push (@files, \%rec);
     } else {
@@ -52,7 +55,21 @@ while (<FILE>) {
     chomp;
     if (/^\s*#.*$/) {
         # comment
+    } elsif (/^(\S*):\s*(\S*)(:\s*(\S*)(\s*:\s*(.*))?)?$/ and
+            grep /^$2$/, @known_actions) {
+        # $path: $action: $progname: $testname
+        my %rec;
+        ${rec}{path} = $1;
+        ${rec}{action} = $3;
+        if (defined $4) {
+            ${rec}{progname} = $4;
+        }
+        if (defined $6) {
+            ${rec}{testname} = $6;
+        }
+        push (@whitelist, \%rec);
     } elsif (/^(\S*)(:\s*(\S*)(\s*:\s*(.*))?)?$/) {
+        # $path: $progname: $testname
         my %rec;
         ${rec}{path} = $1;
         if (defined $3) {
@@ -79,6 +96,11 @@ for my $file (@files) {
             next;
         }
 
+        if (defined %${rule}{action} and
+            not %${file}{action} =~ m/^$rule->{action}$/) {
+            next;
+        }
+
         if (defined %${rule}{progname} and
             not %${file}{progname} =~ m/^$rule->{progname}$/) {
             next;
@@ -95,7 +117,7 @@ for my $file (@files) {
 
     if (not $match) {
         $error = 1;
-        print "$file->{path}: $file->{progname}";
+        print "$file->{path}: $file->{action}: $file->{progname}";
         print ": $file->{testname}" if defined %${file}{testname};
         print "\n";
     }
