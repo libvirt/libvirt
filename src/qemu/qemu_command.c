@@ -2138,10 +2138,10 @@ qemuBuildDriveDevStr(const virDomainDef *def,
 
 
 static int
-qemuBulildFloppyCommandLineOptions(virCommandPtr cmd,
-                                   const virDomainDef *def,
-                                   virDomainDiskDefPtr disk,
-                                   unsigned int bootindex)
+qemuBuildFloppyCommandLineOptions(virCommandPtr cmd,
+                                  const virDomainDef *def,
+                                  virDomainDiskDefPtr disk,
+                                  unsigned int bootindex)
 
 {
     virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
@@ -2252,8 +2252,8 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
 
     if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-            if (qemuBulildFloppyCommandLineOptions(cmd, def, disk,
-                                                   bootindex) < 0)
+            if (qemuBuildFloppyCommandLineOptions(cmd, def, disk,
+                                                  bootindex) < 0)
                 return -1;
         } else {
             virCommandAddArg(cmd, "-device");
