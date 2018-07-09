@@ -24,6 +24,11 @@
     }
   ],
   "user": "testuser-rbd",
+  "auth-client-required": [
+    "cephx",
+    "none"
+  ],
+  "key-secret": "node-a-s-secalias",
   "node-name": "node-a-s",
   "read-only": false,
   "discard": "unmap"

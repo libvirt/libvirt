@@ -906,13 +906,33 @@ qemuBlockStorageSourceGetRBDProps(virStorageSourcePtr src)
     virJSONValuePtr servers = NULL;
     virJSONValuePtr ret = NULL;
     const char *username = NULL;
+    virJSONValuePtr authmodes = NULL;
+    virJSONValuePtr mode = NULL;
+    const char *keysecret = NULL;
 
     if (src->nhosts > 0 &&
         !(servers = qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(src)))
         return NULL;
 
-    if (src->auth)
+    if (src->auth) {
         username = srcPriv->secinfo->s.aes.username;
+        keysecret = srcPriv->secinfo->s.aes.alias;
+        /* the auth modes are modelled after our old command line generator */
+        if (!(authmodes = virJSONValueNewArray()))
+            goto cleanup;
+
+        if (!(mode = virJSONValueNewString("cephx")) ||
+            virJSONValueArrayAppend(authmodes, mode) < 0)
+            goto cleanup;
+
+        mode = NULL;
+
+        if (!(mode = virJSONValueNewString("none")) ||
+            virJSONValueArrayAppend(authmodes, mode) < 0)
+            goto cleanup;
+
+        mode = NULL;
+    }
 
     if (virJSONValueObjectCreate(&ret,
                                  "s:driver", "rbd",
@@ -922,10 +942,14 @@ qemuBlockStorageSourceGetRBDProps(virStorageSourcePtr src)
                                  "S:conf", src->configFile,
                                  "A:server", &servers,
                                  "S:user", username,
+                                 "A:auth-client-required", &authmodes,
+                                 "S:key-secret", keysecret,
                                  NULL) < 0)
         goto cleanup;
 
  cleanup:
+    virJSONValueFree(authmodes);
+    virJSONValueFree(mode);
     virJSONValueFree(servers);
     return ret;
 }
