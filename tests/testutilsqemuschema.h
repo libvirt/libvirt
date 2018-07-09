@@ -26,5 +26,8 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
                        virHashTablePtr schema,
                        virBufferPtr debug);
 
+virJSONValuePtr
+testQEMUSchemaGetLatest(void);
+
 virHashTablePtr
 testQEMUSchemaLoad(void);

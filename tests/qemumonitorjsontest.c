@@ -2860,7 +2860,8 @@ mymain(void)
     virQEMUDriver driver;
     testQemuMonitorJSONSimpleFuncData simpleFunc;
     struct testQAPISchemaData qapiData;
-    char *metaschema = NULL;
+    virJSONValuePtr metaschema = NULL;
+    char *metaschemastr = NULL;
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with JSON support, skipping this test\n", stderr);
@@ -3062,20 +3063,22 @@ mymain(void)
     DO_TEST_QAPI_SCHEMA("alternate 2", "blockdev-add/arg-type", false,
                         "{\"driver\":\"qcow2\",\"file\": 1234}");
 
-    if (!(metaschema = virTestLoadFilePath("qemuqapischema.json", NULL))) {
-        VIR_TEST_VERBOSE("failed to load qapi schema\n");
+    if (!(metaschema = testQEMUSchemaGetLatest()) ||
+        !(metaschemastr = virJSONValueToString(metaschema, false))) {
+        VIR_TEST_VERBOSE("failed to load latest qapi schema\n");
         ret = -1;
         goto cleanup;
     }
 
     DO_TEST_QAPI_SCHEMA("schema-meta", "query-qmp-schema/ret-type", true,
-                        metaschema);
+                        metaschemastr);
 
 
 #undef DO_TEST_QAPI_SCHEMA
 
  cleanup:
-    VIR_FREE(metaschema);
+    VIR_FREE(metaschemastr);
+    virJSONValueFree(metaschema);
     virHashFree(qapiData.schema);
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;

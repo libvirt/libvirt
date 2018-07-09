@@ -17,6 +17,7 @@
  */
 #include <config.h>
 #include "testutils.h"
+#include "testutilsqemu.h"
 #include "testutilsqemuschema.h"
 #include "qemu/qemu_qapi.h"
 
@@ -516,13 +517,71 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
 }
 
 
+/**
+ * testQEMUSchemaGetLatest:
+ *
+ * Returns the schema data as the qemu monitor would reply from the latest
+ * replies file used for qemucapabilitiestest for the x86_64 architecture.
+ */
+virJSONValuePtr
+testQEMUSchemaGetLatest(void)
+{
+    char *capsLatestFile = NULL;
+    char *capsLatest = NULL;
+    char *schemaReply;
+    char *end;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr schema = NULL;
+
+    if (!(capsLatestFile = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
+                                                        "x86_64", "replies"))) {
+        VIR_TEST_VERBOSE("failed to find latest caps replies\n");
+        return NULL;
+    }
+
+    VIR_TEST_DEBUG("replies file: '%s'", capsLatestFile);
+
+    if (virTestLoadFile(capsLatestFile, &capsLatest) < 0)
+        goto cleanup;
+
+    if (!(schemaReply = strstr(capsLatest, "\"execute\": \"query-qmp-schema\"")) ||
+        !(schemaReply = strstr(schemaReply, "\n\n")) ||
+        !(end = strstr(schemaReply + 2, "\n\n"))) {
+        VIR_TEST_VERBOSE("failed to find reply to 'query-qmp-schema' in '%s'\n",
+                         capsLatestFile);
+        goto cleanup;
+    }
+
+    schemaReply += 2;
+    *end = '\0';
+
+    if (!(reply = virJSONValueFromString(schemaReply))) {
+        VIR_TEST_VERBOSE("failed to parse 'query-qmp-schema' reply from '%s'\n",
+                         capsLatestFile);
+        goto cleanup;
+    }
+
+    if (!(schema = virJSONValueObjectStealArray(reply, "return"))) {
+        VIR_TEST_VERBOSE("missing qapi schema data in reply in '%s'\n",
+                         capsLatestFile);
+        goto cleanup;
+    }
+
+ cleanup:
+    VIR_FREE(capsLatestFile);
+    VIR_FREE(capsLatest);
+    virJSONValueFree(reply);
+    return schema;
+}
+
+
 virHashTablePtr
 testQEMUSchemaLoad(void)
 {
-    virJSONValuePtr schemajson;
+    virJSONValuePtr schema;
 
-    if (!(schemajson = virTestLoadFileJSON("qemuqapischema.json", NULL)))
+    if (!(schema = testQEMUSchemaGetLatest()))
         return NULL;
 
-    return virQEMUQAPISchemaConvert(schemajson);
+    return virQEMUQAPISchemaConvert(schema);
 }
