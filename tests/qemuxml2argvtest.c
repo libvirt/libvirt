@@ -1035,9 +1035,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-drive-shared-qcow", NONE);
     DO_TEST("disk-drive-shared-locking",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DISK_SHARE_RW);
-    DO_TEST("disk-drive-error-policy-stop", NONE);
-    DO_TEST("disk-drive-error-policy-enospace", NONE);
-    DO_TEST("disk-drive-error-policy-wreport-rignore", NONE);
+    DO_TEST("disk-drive-error-policy", NONE);
     DO_TEST("disk-drive-cache-v2-wt", NONE);
     DO_TEST("disk-drive-cache-v2-wb", NONE);
     DO_TEST("disk-drive-cache-v2-none", NONE);

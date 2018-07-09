@@ -356,9 +356,7 @@ mymain(void)
     DO_TEST("disk-virtio-drive-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
     DO_TEST("disk-drive-boot-disk", NONE);
     DO_TEST("disk-drive-boot-cdrom", NONE);
-    DO_TEST("disk-drive-error-policy-stop", NONE);
-    DO_TEST("disk-drive-error-policy-enospace", NONE);
-    DO_TEST("disk-drive-error-policy-wreport-rignore", NONE);
+    DO_TEST("disk-drive-error-policy", NONE);
     DO_TEST("disk-drive-fmt-qcow", NONE);
     DO_TEST("disk-drive-copy-on-read", NONE);
     DO_TEST("disk-drive-cache-v2-wt", NONE);
