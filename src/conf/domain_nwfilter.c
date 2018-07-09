@@ -133,6 +133,9 @@ virDomainConfNWFilterTeardownImpl(virConnectPtr conn,
 {
     virNWFilterBindingPtr binding;
 
+    if (!net->ifname)
+        return;
+
     binding = virNWFilterBindingLookupByPortDev(conn, net->ifname);
     if (!binding)
         return;
