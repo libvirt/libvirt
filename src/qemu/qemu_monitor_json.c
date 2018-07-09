@@ -1624,6 +1624,9 @@ qemuMonitorJSONExtractCPUS390Info(virJSONValuePtr jsoncpu,
  *    ...},
  *    {...}
  *  ]
+ *
+ *  Note that since QEMU 2.13.0 the "arch" output member of the
+ *  "query-cpus-fast" command is replaced by "target".
  */
 static int
 qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
@@ -1659,7 +1662,8 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
          * The return data of query-cpus-fast has different field names
          */
         if (fast) {
-            arch = virJSONValueObjectGetString(entry, "arch");
+            if (!(arch = virJSONValueObjectGetString(entry, "target")))
+                arch = virJSONValueObjectGetString(entry, "arch");
             ignore_value(virJSONValueObjectGetNumberInt(entry, "cpu-index", &cpuid));
             ignore_value(virJSONValueObjectGetNumberInt(entry, "thread-id", &thread));
             qom_path = virJSONValueObjectGetString(entry, "qom-path");
