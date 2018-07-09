@@ -44,6 +44,16 @@
           support should be available to the guest.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Enable VNC console for mediated devices
+        </summary>
+        <description>
+          Host devices now support a new atribute 'display' which can be used
+          to turn on frame buffer rendering on a vgpu mediated device instead of
+          on an emulated GPU, like QXL.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
