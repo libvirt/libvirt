@@ -544,6 +544,7 @@ Network filter configuration files for cleaning guest traffic
 %package daemon-driver-network
 Summary: Network driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: dnsmasq >= 2.41
 Requires: radvd
 Requires: iptables
@@ -560,6 +561,7 @@ bridge capabilities.
 %package daemon-driver-nwfilter
 Summary: Nwfilter driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: iptables
 %if 0%{?rhel} && 0%{?rhel} < 7
 Requires: iptables-ipv6
@@ -575,6 +577,7 @@ iptables and ip6tables capabilities
 %package daemon-driver-nodedev
 Summary: Nodedev driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 # needed for device enumeration
 %if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: systemd >= 185
@@ -591,6 +594,7 @@ capabilities.
 %package daemon-driver-interface
 Summary: Interface driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 %if (0%{?fedora} || 0%{?rhel} >= 7)
 Requires: netcf-libs >= 0.2.2
 %endif
@@ -604,6 +608,7 @@ netcf library
 %package daemon-driver-secret
 Summary: Secret driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-secret
 The secret driver plugin for the libvirtd daemon, providing
@@ -612,6 +617,7 @@ an implementation of the secret key APIs.
 %package daemon-driver-storage-core
 Summary: Storage driver plugin including base backends for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: nfs-utils
 # For mkfs
 Requires: util-linux
@@ -628,6 +634,7 @@ iSCSI, and multipath storage.
 %package daemon-driver-storage-logical
 Summary: Storage driver plugin for lvm volumes
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: lvm2
 
 %description daemon-driver-storage-logical
@@ -638,6 +645,7 @@ volumes using lvm.
 %package daemon-driver-storage-disk
 Summary: Storage driver plugin for disk
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: parted
 Requires: device-mapper
 
@@ -649,6 +657,7 @@ volumes using the host disks.
 %package daemon-driver-storage-scsi
 Summary: Storage driver plugin for local scsi devices
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-storage-scsi
 The storage driver backend adding implementation of the storage APIs for scsi
@@ -658,6 +667,7 @@ host devices.
 %package daemon-driver-storage-iscsi
 Summary: Storage driver plugin for iscsi
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: iscsi-initiator-utils
 
 %description daemon-driver-storage-iscsi
@@ -668,6 +678,7 @@ volumes using the host iscsi stack.
 %package daemon-driver-storage-mpath
 Summary: Storage driver plugin for multipath volumes
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: device-mapper
 
 %description daemon-driver-storage-mpath
@@ -679,6 +690,7 @@ multipath storage using device mapper.
 %package daemon-driver-storage-gluster
 Summary: Storage driver plugin for gluster
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
     %if 0%{?fedora}
 Requires: glusterfs-client >= 2.0.1
     %endif
@@ -696,6 +708,7 @@ volumes using libgfapi.
 %package daemon-driver-storage-rbd
 Summary: Storage driver plugin for rbd
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-storage-rbd
 The storage driver backend adding implementation of the storage APIs for rbd
@@ -707,6 +720,7 @@ volumes using the ceph protocol.
 %package daemon-driver-storage-sheepdog
 Summary: Storage driver plugin for sheepdog
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Requires: sheepdog
 
 %description daemon-driver-storage-sheepdog
@@ -719,6 +733,7 @@ sheepdog volumes using.
 %package daemon-driver-storage-zfs
 Summary: Storage driver plugin for ZFS
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 # Support any conforming implementation of zfs
 Requires: /sbin/zfs
 Requires: /sbin/zpool
@@ -760,6 +775,7 @@ parted and more.
 %package daemon-driver-qemu
 Summary: QEMU driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 # There really is a hard cross-driver dependency here
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
@@ -784,6 +800,7 @@ QEMU
 %package daemon-driver-lxc
 Summary: LXC driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 # There really is a hard cross-driver dependency here
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
     %if 0%{?fedora} || 0%{?rhel} > 7
@@ -801,6 +818,7 @@ the Linux kernel
 %package daemon-driver-uml
 Summary: Uml driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-uml
 The UML driver plugin for the libvirtd daemon, providing
@@ -813,6 +831,7 @@ User Mode Linux
 %package daemon-driver-vbox
 Summary: VirtualBox driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-vbox
 The vbox driver plugin for the libvirtd daemon, providing
@@ -825,6 +844,7 @@ VirtualBox
 %package daemon-driver-libxl
 Summary: Libxl driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
 Obsoletes: libvirt-daemon-driver-xen < 4.3.0
 
 %description daemon-driver-libxl
