@@ -502,6 +502,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "sev-guest",
               "machine.pseries.cap-hpt-max-page-size",
               "machine.pseries.cap-htm",
+              "usb-storage.werror",
     );
 
 
@@ -1240,6 +1241,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBStorage[] = {
     { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
+    { "werror", QEMU_CAPS_USB_STORAGE_WERROR },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsKVMPit[] = {
