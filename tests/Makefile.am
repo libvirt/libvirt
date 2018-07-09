@@ -132,7 +132,6 @@ EXTRA_DIST = \
 	qemuxml2startupxmloutdata \
 	qemuxml2xmloutdata \
 	qemustatusxml2xmldata \
-	qemuqapischema.json \
 	qemumemlockdata \
 	secretxml2xmlin \
 	securityselinuxhelperdata \
