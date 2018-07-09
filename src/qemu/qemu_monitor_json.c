@@ -1581,27 +1581,6 @@ qemuMonitorJSONExtractCPUS390Info(virJSONValuePtr jsoncpu,
 
 
 /**
- * qemuMonitorJSONExtractCPUArchInfo:
- * @jsoncpu: pointer to a single JSON cpu entry
- * @cpu: pointer to a single cpu entry
- *
- * Extracts architecure specific virtual CPU data for a single
- * CPU from the QAPI response using an architecture specific
- * function.
- *
- */
-static void
-qemuMonitorJSONExtractCPUArchInfo(virJSONValuePtr jsoncpu,
-                                  struct qemuMonitorQueryCpusEntry *cpu)
-{
-    const char *arch = virJSONValueObjectGetString(jsoncpu, "arch");
-
-    if (STREQ_NULLABLE(arch, "s390"))
-        qemuMonitorJSONExtractCPUS390Info(jsoncpu, cpu);
-}
-
-
-/**
  * qemuMonitorJSONExtractCPUInfo:
  * @data: JSON response data
  * @entries: filled with detected cpu entries on success
@@ -1652,6 +1631,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
                               size_t *nentries,
                               bool fast)
 {
+    const char *arch = NULL;
     struct qemuMonitorQueryCpusEntry *cpus = NULL;
     int ret = -1;
     size_t i;
@@ -1679,10 +1659,12 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
          * The return data of query-cpus-fast has different field names
          */
         if (fast) {
+            arch = virJSONValueObjectGetString(entry, "arch");
             ignore_value(virJSONValueObjectGetNumberInt(entry, "cpu-index", &cpuid));
             ignore_value(virJSONValueObjectGetNumberInt(entry, "thread-id", &thread));
             qom_path = virJSONValueObjectGetString(entry, "qom-path");
         } else {
+            arch = virJSONValueObjectGetString(entry, "arch");
             ignore_value(virJSONValueObjectGetNumberInt(entry, "CPU", &cpuid));
             ignore_value(virJSONValueObjectGetNumberInt(entry, "thread_id", &thread));
             ignore_value(virJSONValueObjectGetBoolean(entry, "halted", &halted));
@@ -1696,7 +1678,8 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
             goto cleanup;
 
         /* process optional architecture-specific data */
-        qemuMonitorJSONExtractCPUArchInfo(entry, cpus + i);
+        if (STREQ_NULLABLE(arch, "s390"))
+            qemuMonitorJSONExtractCPUS390Info(entry, cpus + i);
     }
 
     VIR_STEAL_PTR(*entries, cpus);
