@@ -46,14 +46,14 @@
 # include <selinux/selinux.h>
 #endif
 
-#if HAVE_LINUX_BTRFS_H
+#ifdef FICLONE
+# define REFLINK_IOC_CLONE FICLONE
+#elif HAVE_LINUX_BTRFS_H
 # include <linux/btrfs.h>
 # define REFLINK_IOC_CLONE BTRFS_IOC_CLONE
 #elif HAVE_XFS_XFS_H
 # include <xfs/xfs.h>
 # define REFLINK_IOC_CLONE XFS_IOC_CLONE
-#elif defined(FICLONE)
-# define REFLINK_IOC_CLONE FICLONE
 #endif
 
 #include "datatypes.h"
