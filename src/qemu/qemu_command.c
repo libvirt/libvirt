@@ -1031,6 +1031,16 @@ qemuDiskConfigBlkdeviotuneHasMaxLength(virDomainDiskDefPtr disk)
 }
 
 
+bool
+qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDefPtr disk)
+{
+    return !!disk->blkdeviotune.group_name ||
+           qemuDiskConfigBlkdeviotuneHasBasic(disk) ||
+           qemuDiskConfigBlkdeviotuneHasMax(disk) ||
+           qemuDiskConfigBlkdeviotuneHasMaxLength(disk);
+}
+
+
 /**
  * qemuCheckDiskConfigBlkdeviotune:
  * @disk: disk configuration
