@@ -81,6 +81,8 @@ typedef virConnectDriver *virConnectDriverPtr;
 struct _virConnectDriver {
     /* Wether driver permits a server in the URI */
     bool localOnly;
+    /* Wether driver needs a server in the URI */
+    bool remoteOnly;
     /*
      * NULL terminated list of supported URI schemes.
      *  - Single element { NULL } list indicates no supported schemes
