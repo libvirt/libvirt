@@ -110,11 +110,11 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
                                           qemuBlockStorageSourceAttachDataPtr data,
                                           virQEMUCapsPtr qemuCaps);
 
-/* Current, best practice */
-char *qemuBuildDriveDevStr(const virDomainDef *def,
-                           virDomainDiskDefPtr disk,
-                           unsigned int bootindex,
-                           virQEMUCapsPtr qemuCaps);
+char
+*qemuBuildDiskDeviceStr(const virDomainDef *def,
+                        virDomainDiskDefPtr disk,
+                        unsigned int bootindex,
+                        virQEMUCapsPtr qemuCaps);
 
 /* Current, best practice */
 int qemuBuildControllerDevStr(const virDomainDef *domainDef,

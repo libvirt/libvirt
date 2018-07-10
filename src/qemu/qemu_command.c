@@ -1809,10 +1809,10 @@ qemuBuildDriveDevCacheStr(virDomainDiskDefPtr disk,
 
 
 char *
-qemuBuildDriveDevStr(const virDomainDef *def,
-                     virDomainDiskDefPtr disk,
-                     unsigned int bootindex,
-                     virQEMUCapsPtr qemuCaps)
+qemuBuildDiskDeviceStr(const virDomainDef *def,
+                       virDomainDiskDefPtr disk,
+                       unsigned int bootindex,
+                       virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
@@ -2283,8 +2283,8 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
         } else {
             virCommandAddArg(cmd, "-device");
 
-            if (!(optstr = qemuBuildDriveDevStr(def, disk, bootindex,
-                                                qemuCaps)))
+            if (!(optstr = qemuBuildDiskDeviceStr(def, disk, bootindex,
+                                                  qemuCaps)))
                 return -1;
             virCommandAddArg(cmd, optstr);
             VIR_FREE(optstr);
