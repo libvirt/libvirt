@@ -4650,6 +4650,13 @@ qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
         return -1;
     }
 
+    if (disk->src->readonly && disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("copy_on_read is not compatible with read-only disk '%s'"),
+                       disk->dst);
+        return -1;
+    }
+
     if (disk->geometry.cylinders > 0 &&
         disk->geometry.heads > 0 &&
         disk->geometry.sectors > 0) {
