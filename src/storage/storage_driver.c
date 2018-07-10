@@ -810,13 +810,14 @@ storagePoolDefineXML(virConnectPtr conn,
 
     if (!(obj = virStoragePoolObjAssignDef(driver->pools, newDef)))
         goto cleanup;
-    newDef = NULL;
+    newDef = virStoragePoolObjGetNewDef(obj);
     def = virStoragePoolObjGetDef(obj);
 
-    if (virStoragePoolObjSaveDef(driver, obj, def) < 0) {
+    if (virStoragePoolObjSaveDef(driver, obj, newDef ? newDef : def) < 0) {
         virStoragePoolObjRemove(driver->pools, obj);
         virObjectUnref(obj);
         obj = NULL;
+        newDef = NULL;
         goto cleanup;
     }
 
@@ -826,6 +827,7 @@ storagePoolDefineXML(virConnectPtr conn,
 
     VIR_INFO("Defining storage pool '%s'", def->name);
     pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
+    newDef = NULL;
 
  cleanup:
     virObjectEventStateQueue(driver->storageEventState, event);
