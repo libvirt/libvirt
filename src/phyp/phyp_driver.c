@@ -1141,12 +1141,6 @@ phypConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri->server == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing server name in phyp:// URI"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     if (VIR_ALLOC(phyp_driver) < 0)
         goto failure;
 
@@ -3760,6 +3754,7 @@ static virInterfaceDriver phypInterfaceDriver = {
 };
 
 static virConnectDriver phypConnectDriver = {
+    .remoteOnly = true,
     .uriSchemes = (const char *[]){ "phyp", NULL },
     .hypervisorDriver = &phypHypervisorDriver,
     .interfaceDriver = &phypInterfaceDriver,
