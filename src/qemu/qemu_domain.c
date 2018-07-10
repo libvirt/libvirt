@@ -4642,20 +4642,12 @@ qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
     const char *driverName = virDomainDiskGetDriver(disk);
     virStorageSourcePtr n;
 
-    if (disk->src->shared && !disk->src->readonly) {
-        if (disk->src->format <= VIR_STORAGE_FILE_AUTO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("shared access for disk '%s' requires use of "
-                             "explicitly specified disk format"), disk->dst);
-            return -1;
-        }
-
-        if (!qemuBlockStorageSourceSupportsConcurrentAccess(disk->src)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("shared access for disk '%s' requires use of "
-                             "supported storage format"), disk->dst);
-            return -1;
-        }
+    if (disk->src->shared && !disk->src->readonly &&
+        !qemuBlockStorageSourceSupportsConcurrentAccess(disk->src)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("shared access for disk '%s' requires use of "
+                         "supported storage format"), disk->dst);
+        return -1;
     }
 
     if (disk->geometry.cylinders > 0 &&
