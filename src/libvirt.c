@@ -1029,6 +1029,13 @@ virConnectOpenInternal(const char *name,
             VIR_DEBUG("Matching any URI scheme for '%s'", ret->uri ? ret->uri->scheme : "");
         }
 
+        /* before starting the new connection, check if the driver only works
+         * with a server, and so return an error if the server is missing */
+        if (virConnectDriverTab[i]->remoteOnly && ret->uri && !ret->uri->server) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s", _("URI is missing the server part"));
+            goto failed;
+        }
+
         ret->driver = virConnectDriverTab[i]->hypervisorDriver;
         ret->interfaceDriver = virConnectDriverTab[i]->interfaceDriver;
         ret->networkDriver = virConnectDriverTab[i]->networkDriver;
