@@ -6191,8 +6191,48 @@ virDomainDefMemtuneValidate(const virDomainDef *def)
     size_t i;
     ssize_t pos = virDomainNumaGetNodeCount(def->numa) - 1;
 
+    if (mem->nhugepages == 0)
+        return 0;
+
+    if (mem->allocation == VIR_DOMAIN_MEMORY_ALLOCATION_ONDEMAND) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("hugepages are not allowed with memory "
+                         "allocation ondemand"));
+        return -1;
+    }
+
+    if (mem->source == VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("hugepages are not allowed with anonymous "
+                         "memory source"));
+        return -1;
+    }
+
     for (i = 0; i < mem->nhugepages; i++) {
+        size_t j;
         ssize_t nextBit;
+
+        for (j = 0; j < i; j++) {
+            if (mem->hugepages[i].nodemask &&
+                mem->hugepages[j].nodemask &&
+                virBitmapOverlaps(mem->hugepages[i].nodemask,
+                                  mem->hugepages[j].nodemask)) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("nodeset attribute of hugepages "
+                                 "of sizes %llu and %llu intersect"),
+                               mem->hugepages[i].size,
+                               mem->hugepages[j].size);
+                return -1;
+            } else if (!mem->hugepages[i].nodemask &&
+                       !mem->hugepages[j].nodemask) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("two master hugepages detected: "
+                                 "%llu and %llu"),
+                               mem->hugepages[i].size,
+                               mem->hugepages[j].size);
+                return -1;
+            }
+        }
 
         if (!mem->hugepages[i].nodemask) {
             /* This is the master hugepage to use. Skip it as it has no
@@ -19466,19 +19506,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     if (virXPathNode("./memoryBacking/hugepages", ctxt)) {
         /* hugepages will be used */
-
-        if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_ONDEMAND) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("hugepages are not allowed with memory allocation ondemand"));
-            goto error;
-        }
-
-        if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("hugepages are not allowed with anonymous memory source"));
-            goto error;
-        }
-
         if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot extract hugepages nodes"));
@@ -19494,28 +19521,6 @@ virDomainDefParseXML(xmlDocPtr xml,
                                                &def->mem.hugepages[i]) < 0)
                     goto error;
                 def->mem.nhugepages++;
-
-                for (j = 0; j < i; j++) {
-                    if (def->mem.hugepages[i].nodemask &&
-                        def->mem.hugepages[j].nodemask &&
-                        virBitmapOverlaps(def->mem.hugepages[i].nodemask,
-                                          def->mem.hugepages[j].nodemask)) {
-                        virReportError(VIR_ERR_XML_DETAIL,
-                                       _("nodeset attribute of hugepages "
-                                         "of sizes %llu and %llu intersect"),
-                                       def->mem.hugepages[i].size,
-                                       def->mem.hugepages[j].size);
-                        goto error;
-                    } else if (!def->mem.hugepages[i].nodemask &&
-                               !def->mem.hugepages[j].nodemask) {
-                        virReportError(VIR_ERR_XML_DETAIL,
-                                       _("two master hugepages detected: "
-                                         "%llu and %llu"),
-                                       def->mem.hugepages[i].size,
-                                       def->mem.hugepages[j].size);
-                        goto error;
-                    }
-                }
             }
 
             VIR_FREE(nodes);
