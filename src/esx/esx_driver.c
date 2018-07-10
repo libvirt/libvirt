@@ -854,13 +854,6 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
                  conn->uri->path, conn->uri->scheme);
     }
 
-    /* Require server part */
-    if (!conn->uri->server) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("URI is missing the server part"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     /* Require auth */
     if (!auth || !auth->cb) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -5213,6 +5206,7 @@ static virHypervisorDriver esxHypervisorDriver = {
 
 
 static virConnectDriver esxConnectDriver = {
+    .remoteOnly = true,
     .uriSchemes = (const char *[]){ "vpx", "esx", "gsx", NULL },
     .hypervisorDriver = &esxHypervisorDriver,
     .interfaceDriver = &esxInterfaceDriver,
