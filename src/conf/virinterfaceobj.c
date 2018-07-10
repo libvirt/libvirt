@@ -242,6 +242,112 @@ virInterfaceObjListFindByName(virInterfaceObjListPtr interfaces,
 }
 
 
+#define MATCH(FLAG) (flags & (FLAG))
+static bool
+virInterfaceObjMatch(virInterfaceObjPtr obj,
+                     unsigned int flags)
+{
+    /* filter by active state */
+    if (MATCH(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE) &&
+        !((MATCH(VIR_CONNECT_LIST_INTERFACES_ACTIVE) &&
+           virInterfaceObjIsActive(obj)) ||
+          (MATCH(VIR_CONNECT_LIST_INTERFACES_INACTIVE) &&
+           !virInterfaceObjIsActive(obj))))
+        return false;
+
+    return true;
+}
+#undef MATCH
+
+
+struct virInterfaceObjListData {
+    virConnectPtr conn;
+    virInterfacePtr *ifaces;
+    virInterfaceObjListFilter filter;
+    unsigned int flags;
+    int nifaces;
+    bool error;
+};
+
+static int
+virInterfaceObjListPopulate(void *payload,
+                            const void *name ATTRIBUTE_UNUSED,
+                            void *opaque)
+{
+    struct virInterfaceObjListData *data = opaque;
+    virInterfaceObjPtr obj = payload;
+    virInterfacePtr iface = NULL;
+
+    if (data->error)
+        return 0;
+
+    virObjectLock(obj);
+
+    if (data->filter &&
+        !data->filter(data->conn, obj->def))
+        goto cleanup;
+
+    if (!virInterfaceObjMatch(obj, data->flags))
+        goto cleanup;
+
+    if (!data->ifaces) {
+        data->nifaces++;
+        goto cleanup;
+    }
+
+    if (!(iface = virGetInterface(data->conn, obj->def->name, obj->def->mac))) {
+        data->error = true;
+        goto cleanup;
+    }
+
+    data->ifaces[data->nifaces++] = iface;
+
+ cleanup:
+    virObjectUnlock(obj);
+    return 0;
+}
+
+
+int
+virInterfaceObjListExport(virConnectPtr conn,
+                          virInterfaceObjListPtr ifaceobjs,
+                          virInterfacePtr **ifaces,
+                          virInterfaceObjListFilter filter,
+                          unsigned int flags)
+{
+    int ret = -1;
+    struct virInterfaceObjListData data = {
+        .conn = conn, .ifaces = NULL, .filter = filter, .flags = flags,
+        .nifaces = 0, .error = false };
+
+    virObjectRWLockRead(ifaceobjs);
+    if (ifaces && VIR_ALLOC_N(data.ifaces,
+                              virHashSize(ifaceobjs->objsName) + 1) < 0)
+        goto cleanup;
+
+    virHashForEach(ifaceobjs->objsName, virInterfaceObjListPopulate, &data);
+
+    if (data.error)
+        goto cleanup;
+
+    if (data.ifaces) {
+        /* trim the array to the final size */
+        ignore_value(VIR_REALLOC_N(data.ifaces, data.nifaces + 1));
+        *ifaces = data.ifaces;
+        data.ifaces = NULL;
+    }
+
+    ret = data.nifaces;
+ cleanup:
+    virObjectRWUnlock(ifaceobjs);
+    while (data.ifaces && data.nifaces)
+        virObjectUnref(data.ifaces[--data.nifaces]);
+
+    VIR_FREE(data.ifaces);
+    return ret;
+}
+
+
 void
 virInterfaceObjListDispose(void *obj)
 {

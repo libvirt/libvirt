@@ -962,6 +962,7 @@ virInterfaceObjGetDef;
 virInterfaceObjIsActive;
 virInterfaceObjListAssignDef;
 virInterfaceObjListClone;
+virInterfaceObjListExport;
 virInterfaceObjListFindByMACString;
 virInterfaceObjListFindByName;
 virInterfaceObjListGetNames;

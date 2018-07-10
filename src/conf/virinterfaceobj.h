@@ -82,4 +82,11 @@ virInterfaceObjListGetNames(virInterfaceObjListPtr interfaces,
                             char **const names,
                             int maxnames);
 
+int
+virInterfaceObjListExport(virConnectPtr conn,
+                          virInterfaceObjListPtr ifaceobjs,
+                          virInterfacePtr **ifaces,
+                          virInterfaceObjListFilter filter,
+                          unsigned int flags);
+
 #endif /* __VIRINTERFACEOBJ_H__ */

@@ -3829,6 +3829,20 @@ testConnectListDefinedInterfaces(virConnectPtr conn,
 }
 
 
+static int
+testConnectListAllInterfaces(virConnectPtr conn,
+                             virInterfacePtr **ifaces,
+                             unsigned int flags)
+{
+    testDriverPtr privconn = conn->privateData;
+
+    virCheckFlags(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE, -1);
+
+    return virInterfaceObjListExport(conn, privconn->ifaces, ifaces,
+                                     NULL, flags);
+}
+
+
 static virInterfacePtr
 testInterfaceLookupByName(virConnectPtr conn,
                           const char *name)
@@ -6958,6 +6972,7 @@ static virInterfaceDriver testInterfaceDriver = {
     .connectListInterfaces = testConnectListInterfaces, /* 0.7.0 */
     .connectNumOfDefinedInterfaces = testConnectNumOfDefinedInterfaces, /* 0.7.0 */
     .connectListDefinedInterfaces = testConnectListDefinedInterfaces, /* 0.7.0 */
+    .connectListAllInterfaces = testConnectListAllInterfaces, /* 4.6.0 */
     .interfaceLookupByName = testInterfaceLookupByName, /* 0.7.0 */
     .interfaceLookupByMACString = testInterfaceLookupByMACString, /* 0.7.0 */
     .interfaceGetXMLDesc = testInterfaceGetXMLDesc, /* 0.7.0 */
