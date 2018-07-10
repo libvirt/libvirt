@@ -128,13 +128,6 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    /* Require server part */
-    if (conn->uri->server == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("URI is missing the server part"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     /* Require auth */
     if (auth == NULL || auth->cb == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1662,6 +1655,7 @@ hypervDebugHandler(const char *message, debug_level_e level,
 
 
 static virConnectDriver hypervConnectDriver = {
+    .remoteOnly = true,
     .uriSchemes = (const char *[]){ "hyperv", NULL },
     .hypervisorDriver = &hypervHypervisorDriver,
 };
