@@ -3831,17 +3831,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
 
-    if (qemuSecurityRestoreDiskLabel(driver, vm, disk) < 0)
-        VIR_WARN("Unable to restore security label on %s", src);
-
-    if (qemuTeardownDiskCgroup(vm, disk) < 0)
-        VIR_WARN("Failed to tear down cgroup for disk path %s", src);
-
-    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-        VIR_WARN("Unable to release lock on %s", src);
-
-    if (qemuDomainNamespaceTeardownDisk(vm, disk->src) < 0)
-        VIR_WARN("Unable to remove /dev entry for %s", src);
+    /* tear down disk security access */
+    qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true);
 
     dev.type = VIR_DOMAIN_DEVICE_DISK;
     dev.data.disk = disk;
