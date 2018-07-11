@@ -3758,7 +3758,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     virDomainDeviceDef dev;
     virObjectEventPtr event;
     size_t i;
-    const char *src = virDomainDiskGetSource(disk);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr;
     bool prManaged = priv->prDaemonRunning;
@@ -3829,7 +3828,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     if (prManaged && !prUsed)
         qemuProcessKillManagedPRDaemon(vm);
 
-    qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
+    qemuDomainReleaseDeviceAddress(vm, &disk->info, virDomainDiskGetSource(disk));
 
     /* tear down disk security access */
     qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true);
