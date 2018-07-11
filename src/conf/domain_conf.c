@@ -13050,7 +13050,8 @@ virDomainInputDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    if ((evdev = virXPathString("string(./source/@evdev)", ctxt)))
+    if ((evdev = virXPathString("string(./source/@evdev)", ctxt)) &&
+        (def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH))
         def->source.evdev = virFileSanitizePath(evdev);
     if (def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH && !def->source.evdev) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
