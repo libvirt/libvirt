@@ -7680,18 +7680,18 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown host device source address type '%s'"),
                            type);
-            goto error;
+            goto cleanup;
         }
     } else {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("missing source address type"));
-        goto error;
+        goto cleanup;
     }
 
     if (!(sourcenode = virXPathNode("./source", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing <source> element in hostdev device"));
-        goto error;
+        goto cleanup;
     }
 
     if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
@@ -7699,20 +7699,20 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting startupPolicy is only allowed for USB"
                          " devices"));
-        goto error;
+        goto cleanup;
     }
 
     if (sgio) {
         if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("sgio is only supported for scsi host device"));
-            goto error;
+            goto cleanup;
         }
 
         if ((scsisrc->sgio = virDomainDeviceSGIOTypeFromString(sgio)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown sgio mode '%s'"), sgio);
-            goto error;
+            goto cleanup;
         }
     }
 
@@ -7720,14 +7720,14 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("rawio is only supported for scsi host device"));
-            goto error;
+            goto cleanup;
         }
 
         if ((scsisrc->rawio = virTristateBoolTypeFromString(rawio)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown hostdev rawio setting '%s'"),
                            rawio);
-            goto error;
+            goto cleanup;
         }
     }
 
@@ -7736,28 +7736,28 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("'model' attribute in <hostdev> is only supported "
                              "when type='mdev'"));
-            goto error;
+            goto cleanup;
         }
     } else {
         if (!model) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing 'model' attribute in mediated device's "
                              "<hostdev> element"));
-            goto error;
+            goto cleanup;
         }
 
         if ((mdevsrc->model = virMediatedDeviceModelTypeFromString(model)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown hostdev model '%s'"),
                            model);
-            goto error;
+            goto cleanup;
         }
     }
 
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         if (virDomainHostdevSubsysPCIDefParseXML(sourcenode, def, flags) < 0)
-            goto error;
+            goto cleanup;
 
         backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT;
         if ((backendStr = virXPathString("string(./driver/@name)", ctxt)) &&
@@ -7766,7 +7766,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown PCI device <driver name='%s'/> "
                              "has been specified"), backendStr);
-            goto error;
+            goto cleanup;
         }
         pcisrc->backend = backend;
 
@@ -7774,32 +7774,32 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         if (virDomainHostdevSubsysUSBDefParseXML(sourcenode, def) < 0)
-            goto error;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         if (virDomainHostdevSubsysSCSIDefParseXML(sourcenode, scsisrc, ctxt) < 0)
-            goto error;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
         if (virDomainHostdevSubsysSCSIVHostDefParseXML(sourcenode, def) < 0)
-            goto error;
+            goto cleanup;
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
         if (virDomainHostdevSubsysMediatedDevDefParseXML(def, ctxt) < 0)
-            goto error;
+            goto cleanup;
         break;
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("address type='%s' not supported in hostdev interfaces"),
                        virDomainHostdevSubsysTypeToString(def->source.subsys.type));
-        goto error;
+        goto cleanup;
     }
 
     ret = 0;
- error:
+ cleanup:
     VIR_FREE(managed);
     VIR_FREE(sgio);
     VIR_FREE(rawio);
