@@ -350,6 +350,41 @@ qemuDomainDiskAttachManagedPR(virDomainObjPtr vm,
 }
 
 
+/**
+ * qemuHotplugRemoveManagedPR:
+ * @driver: QEMU driver object
+ * @vm: domain object
+ * @asyncJob: asynchronous job identifier
+ *
+ * Removes the managed PR object from @vm if the configuration does not require
+ * it any more.
+ */
+static int
+qemuHotplugRemoveManagedPR(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
+    virErrorPreserveLast(&orig_err);
+
+    if (!priv->prDaemonRunning ||
+        virDomainDefHasManagedPR(vm->def))
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+    ignore_value(qemuMonitorDelObject(priv->mon, qemuDomainGetManagedPRAlias()));
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    qemuProcessKillManagedPRDaemon(vm);
+    virErrorRestore(&orig_err);
+
+    return 0;
+}
+
+
 struct _qemuHotplugDiskSourceData {
     qemuBlockStorageSourceAttachDataPtr *backends;
     size_t nbackends;
@@ -3949,8 +3984,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     virObjectEventPtr event;
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    bool prManaged = priv->prDaemonRunning;
-    bool prUsed = false;
     int ret = -1;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
@@ -3966,15 +3999,9 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         }
     }
 
-    /* check if the last disk with managed PR was just removed */
-    prUsed = virDomainDefHasManagedPR(vm->def);
-
     qemuDomainObjEnterMonitor(driver, vm);
 
     qemuHotplugDiskSourceRemove(priv->mon, diskbackend);
-
-    if (prManaged && !prUsed)
-        ignore_value(qemuMonitorDelObject(priv->mon, qemuDomainGetManagedPRAlias()));
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
@@ -3983,9 +4010,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, disk->info.alias);
     virObjectEventStateQueue(driver->domainEventState, event);
-
-    if (prManaged && !prUsed)
-        qemuProcessKillManagedPRDaemon(vm);
 
     qemuDomainReleaseDeviceAddress(vm, &disk->info, virDomainDiskGetSource(disk));
 
@@ -3996,6 +4020,9 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     dev.data.disk = disk;
     ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
     virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
+
+    if (qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+        goto cleanup;
 
     ret = 0;
 
