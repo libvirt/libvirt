@@ -126,21 +126,21 @@ qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
  rollback_cgroup:
     if (qemuTeardownDiskCgroup(vm, disk) < 0)
         VIR_WARN("Unable to tear down cgroup access on %s",
-                 virDomainDiskGetSource(disk));
+                 NULLSTR(virDomainDiskGetSource(disk)));
  rollback_label:
     if (qemuSecurityRestoreDiskLabel(driver, vm, disk) < 0)
         VIR_WARN("Unable to restore security label on %s",
-                 virDomainDiskGetSource(disk));
+                 NULLSTR(virDomainDiskGetSource(disk)));
 
  rollback_namespace:
     if (qemuDomainNamespaceTeardownDisk(vm, disk->src) < 0)
         VIR_WARN("Unable to remove /dev entry for %s",
-                 virDomainDiskGetSource(disk));
+                 NULLSTR(virDomainDiskGetSource(disk)));
 
  rollback_lock:
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
         VIR_WARN("Unable to release lock on %s",
-                 virDomainDiskGetSource(disk));
+                 NULLSTR(virDomainDiskGetSource(disk)));
 
  cleanup:
     if (origsrc)
