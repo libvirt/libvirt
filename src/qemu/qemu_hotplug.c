@@ -350,6 +350,110 @@ qemuDomainDiskAttachManagedPR(virDomainObjPtr vm,
 }
 
 
+struct _qemuHotplugDiskSourceData {
+    qemuBlockStorageSourceAttachDataPtr *backends;
+    size_t nbackends;
+};
+typedef struct _qemuHotplugDiskSourceData qemuHotplugDiskSourceData;
+typedef qemuHotplugDiskSourceData *qemuHotplugDiskSourceDataPtr;
+
+
+static void
+qemuHotplugDiskSourceDataFree(qemuHotplugDiskSourceDataPtr data)
+{
+    size_t i;
+
+    if (!data)
+        return;
+
+    for (i = 0; i < data->nbackends; i++)
+        qemuBlockStorageSourceAttachDataFree(data->backends[i]);
+
+    VIR_FREE(data);
+}
+
+
+/**
+ * qemuHotplugDiskSourceAttachPrepare:
+ * @disk: disk to generate attachment data for
+ * @qemuCaps: capabilities of the qemu process
+ *
+ * Prepares and returns qemuHotplugDiskSourceData structure filled with all data
+ * which will fully attach the source backend of the disk to a given VM.
+ */
+static qemuHotplugDiskSourceDataPtr
+qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
+                                   virQEMUCapsPtr qemuCaps)
+{
+    qemuBlockStorageSourceAttachDataPtr backend;
+    qemuHotplugDiskSourceDataPtr data;
+    qemuHotplugDiskSourceDataPtr ret = NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    if (!(backend = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps, false)))
+        goto cleanup;
+
+    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, backend, qemuCaps) < 0)
+        goto cleanup;
+
+    if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, data);
+
+ cleanup:
+    qemuBlockStorageSourceAttachDataFree(backend);
+    qemuHotplugDiskSourceDataFree(data);
+    return ret;
+}
+
+
+/**
+ * qemuHotplugDiskSourceAttach:
+ * @mon: monitor object
+ * @data: disk backend data object describing what to remove
+ *
+ * Attach a disk source backend with all relevant pieces. Caller must enter the
+ * monitor context for @mon.
+ */
+static int
+qemuHotplugDiskSourceAttach(qemuMonitorPtr mon,
+                            qemuHotplugDiskSourceDataPtr data)
+{
+    size_t i;
+
+    for (i = data->nbackends; i > 0; i--) {
+        if (qemuBlockStorageSourceAttachApply(mon, data->backends[i - 1]) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuHotplugDiskSourceRemove:
+ * @mon: monitor object
+ * @data: disk backend data object describing what to remove
+ *
+ * Remove a disk source backend with all relevant pieces. This function
+ * preserves the error which was set prior to calling it. Caller must enter the
+ * monitor context for @mon.
+ */
+static void
+qemuHotplugDiskSourceRemove(qemuMonitorPtr mon,
+                            qemuHotplugDiskSourceDataPtr data)
+
+{
+    size_t i;
+
+    for (i = 0; i < data->nbackends; i++)
+        qemuBlockStorageSourceAttachRollback(mon, data->backends[i]);
+}
+
+
 /**
  * qemuDomainAttachDiskGeneric:
  *
@@ -362,7 +466,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuBlockStorageSourceAttachDataPtr data = NULL;
+    qemuHotplugDiskSourceDataPtr diskdata = NULL;
     virErrorPtr orig_err;
     char *devstr = NULL;
     char *managedPrmgrAlias = NULL;
@@ -381,11 +485,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (qemuDomainDiskAttachManagedPR(vm, disk, &managedPrmgrProps) < 0)
         goto error;
 
-    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, priv->qemuCaps,
-                                                          false)))
-        goto error;
-
-    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data, priv->qemuCaps) < 0)
+    if (!(diskdata = qemuHotplugDiskSourceAttachPrepare(disk, priv->qemuCaps)))
         goto error;
 
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, 0, priv->qemuCaps)))
@@ -400,7 +500,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         qemuMonitorAddObject(priv->mon, &managedPrmgrProps, &managedPrmgrAlias) < 0)
         goto exit_monitor;
 
-    if (qemuBlockStorageSourceAttachApply(priv->mon, data) < 0)
+    if (qemuHotplugDiskSourceAttach(priv->mon, diskdata) < 0)
         goto exit_monitor;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
@@ -417,7 +517,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuBlockStorageSourceAttachDataFree(data);
+    qemuHotplugDiskSourceDataFree(diskdata);
     virJSONValueFree(managedPrmgrProps);
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(managedPrmgrAlias);
@@ -426,7 +526,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     return ret;
 
  exit_monitor:
-    qemuBlockStorageSourceAttachRollback(priv->mon, data);
+    qemuHotplugDiskSourceRemove(priv->mon, diskdata);
 
     virErrorPreserveLast(&orig_err);
     if (managedPrmgrAlias)
