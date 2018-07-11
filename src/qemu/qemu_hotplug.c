@@ -374,6 +374,96 @@ qemuHotplugDiskSourceDataFree(qemuHotplugDiskSourceDataPtr data)
 
 
 /**
+ * qemuDomainRemoveDiskStorageSourcePrepareData:
+ * @src: disk source structure
+ * @driveAlias: Alias of the -drive backend, the pointer is always consumed
+ *
+ * Prepare qemuBlockStorageSourceAttachDataPtr for detaching a single source
+ * from a VM. If @driveAlias is NULL -blockdev is assumed.
+ */
+static qemuBlockStorageSourceAttachDataPtr
+qemuHotplugRemoveStorageSourcePrepareData(virStorageSourcePtr src,
+                                          char *driveAlias)
+
+{
+    qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    qemuBlockStorageSourceAttachDataPtr data;
+    qemuBlockStorageSourceAttachDataPtr ret = NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        goto cleanup;
+
+    if (driveAlias) {
+        VIR_STEAL_PTR(data->driveAlias, driveAlias);
+        data->driveAdded = true;
+    } else {
+        data->formatNodeName = src->nodeformat;
+        data->formatAttached = true;
+        data->storageNodeName = src->nodestorage;
+        data->storageAttached = true;
+    }
+
+    if (src->pr &&
+        !virStoragePRDefIsManaged(src->pr) &&
+        VIR_STRDUP(data->prmgrAlias, src->pr->mgralias) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(data->tlsAlias, src->tlsAlias) < 0)
+        goto cleanup;
+
+    if (srcpriv) {
+        if (srcpriv->secinfo &&
+            srcpriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES &&
+            VIR_STRDUP(data->authsecretAlias, srcpriv->secinfo->s.aes.alias) < 0)
+            goto cleanup;
+
+        if (srcpriv->encinfo &&
+            srcpriv->encinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES &&
+            VIR_STRDUP(data->encryptsecretAlias, srcpriv->encinfo->s.aes.alias) < 0)
+            goto cleanup;
+    }
+
+    VIR_STEAL_PTR(ret, data);
+
+ cleanup:
+    VIR_FREE(driveAlias);
+    qemuBlockStorageSourceAttachDataFree(data);
+    return ret;
+}
+
+
+static qemuHotplugDiskSourceDataPtr
+qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
+                                   virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+{
+    qemuBlockStorageSourceAttachDataPtr backend = NULL;
+    qemuHotplugDiskSourceDataPtr data = NULL;
+    qemuHotplugDiskSourceDataPtr ret = NULL;
+    char *drivealias = NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
+        goto cleanup;
+
+    if (!(backend = qemuHotplugRemoveStorageSourcePrepareData(disk->src,
+                                                              drivealias)))
+        goto cleanup;
+
+    if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, data);
+
+ cleanup:
+    qemuBlockStorageSourceAttachDataFree(backend);
+    qemuHotplugDiskSourceDataFree(data);
+    return ret;
+}
+
+
+/**
  * qemuHotplugDiskSourceAttachPrepare:
  * @disk: disk to generate attachment data for
  * @qemuCaps: capabilities of the qemu process
@@ -3854,35 +3944,20 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainDiskDefPtr disk)
 {
-    qemuDomainStorageSourcePrivatePtr diskPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
+    qemuHotplugDiskSourceDataPtr diskbackend = NULL;
     virDomainDeviceDef dev;
     virObjectEventPtr event;
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *drivestr;
     bool prManaged = priv->prDaemonRunning;
     bool prUsed = false;
-    const char *authAlias = NULL;
-    const char *encAlias = NULL;
     int ret = -1;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
 
-    /* build the actual drive id string as the disk->info.alias doesn't
-     * contain the QEMU_DRIVE_HOST_PREFIX that is passed to qemu */
-    if (!(drivestr = qemuAliasDiskDriveFromDisk(disk)))
+    if (!(diskbackend = qemuHotplugDiskSourceRemovePrepare(disk, priv->qemuCaps)))
         return -1;
-
-    if (diskPriv) {
-        if (diskPriv->secinfo &&
-            diskPriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-            authAlias = diskPriv->secinfo->s.aes.alias;
-
-        if (diskPriv->encinfo &&
-            diskPriv->encinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-            encAlias = diskPriv->encinfo->s.aes.alias;
-    }
 
     for (i = 0; i < vm->def->ndisks; i++) {
         if (vm->def->disks[i] == disk) {
@@ -3896,24 +3971,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    qemuMonitorDriveDel(priv->mon, drivestr);
-    VIR_FREE(drivestr);
-
-    /* If it fails, then so be it - it was a best shot */
-    if (authAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, authAlias));
-
-    /* If it fails, then so be it - it was a best shot */
-    if (encAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, encAlias));
-
-    /* If it fails, then so be it - it was a best shot */
-    if (disk->src->pr &&
-        !virStoragePRDefIsManaged(disk->src->pr))
-        ignore_value(qemuMonitorDelObject(priv->mon, disk->src->pr->mgralias));
-
-    if (disk->src->tlsAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, disk->src->tlsAlias));
+    qemuHotplugDiskSourceRemove(priv->mon, diskbackend);
 
     if (prManaged && !prUsed)
         ignore_value(qemuMonitorDelObject(priv->mon, qemuDomainGetManagedPRAlias()));
@@ -3942,6 +4000,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    qemuHotplugDiskSourceDataFree(diskbackend);
     virDomainDiskDefFree(disk);
     return ret;
 }
