@@ -709,7 +709,7 @@ virshSecretEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(ret, VIR_SECRET_EVENT_ID_LAST) < 0)
+    if (VIR_ALLOC_N(ret, VIR_SECRET_EVENT_ID_LAST + 1) < 0)
         goto error;
 
     for (i = 0; i < VIR_SECRET_EVENT_ID_LAST; i++) {
@@ -761,7 +761,7 @@ virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(ret, VIR_STORAGE_POOL_EVENT_ID_LAST) < 0)
+    if (VIR_ALLOC_N(ret, VIR_STORAGE_POOL_EVENT_ID_LAST + 1) < 0)
         goto error;
 
     for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++) {
@@ -787,7 +787,7 @@ virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(ret, VIR_NODE_DEVICE_EVENT_ID_LAST) < 0)
+    if (VIR_ALLOC_N(ret, VIR_NODE_DEVICE_EVENT_ID_LAST + 1) < 0)
         goto error;
 
     for (i = 0; i < VIR_NODE_DEVICE_EVENT_ID_LAST; i++) {
