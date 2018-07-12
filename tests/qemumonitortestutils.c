@@ -564,7 +564,8 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
     if (virAsprintf(&schemapath, "%s/arg-type", cmdname) < 0)
         goto cleanup;
 
-    if (virQEMUQAPISchemaPathGet(schemapath, test->qapischema, &schemaroot) < 0) {
+    if (virQEMUQAPISchemaPathGet(schemapath, test->qapischema, &schemaroot) < 0 ||
+        !schemaroot) {
         if (qemuMonitorReportError(test,
                                    "command '%s' not found in QAPI schema",
                                    cmdname) == 0)
