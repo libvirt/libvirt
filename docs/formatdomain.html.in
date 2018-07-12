@@ -4531,8 +4531,9 @@
           determines how the host's vfio driver will expose the device to the
           guest. Currently, <code>model='vfio-pci'</code> and
           <code>model='vfio-ccw'</code> (<span class="since">Since 4.4.0</span>)
-          is supported. Refer <a href="drvnodedev.html#MDEV">MDEV</a> to create
-          a mediated device on the host.
+          is supported. <a href="drvnodedev.html#MDEV">MDEV</a> section
+          provides more information about mediated devices as well as how to
+          create mediated devices on the host.
           <span class="since">Since 4.6.0 (QEMU 2.12)</span> an optional
           <code>display</code> attribute may be used to enable or disable
           support for an accelerated remote desktop backed by a mediated
