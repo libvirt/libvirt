@@ -262,6 +262,33 @@ static virStorageDriver fakeStorageDriver = {
     .storagePoolIsActive = fakeStoragePoolIsActive,
 };
 
+
+/* virNetDevOpenvswitchGetVhostuserIfname mocks a portdev name - handle that */
+static virNWFilterBindingPtr
+fakeNWFilterBindingLookupByPortDev(virConnectPtr conn,
+                                   const char *portdev)
+{
+    if (STREQ(portdev, "vhost-user0"))
+        return virGetNWFilterBinding(conn, "fake_vnet0", "fakeFilterName");
+
+    virReportError(VIR_ERR_NO_NWFILTER_BINDING,
+                   "no nwfilter binding for port dev '%s'", portdev);
+    return NULL;
+}
+
+
+static int
+fakeNWFilterBindingDelete(virNWFilterBindingPtr binding ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+static virNWFilterDriver fakeNWFilterDriver = {
+    .nwfilterBindingLookupByPortDev = fakeNWFilterBindingLookupByPortDev,
+    .nwfilterBindingDelete = fakeNWFilterBindingDelete,
+};
+
 typedef enum {
     FLAG_EXPECT_FAILURE     = 1 << 0,
     FLAG_EXPECT_PARSE_ERROR = 1 << 1,
@@ -470,7 +497,12 @@ testCompareXMLToArgv(const void *data)
 
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
+    conn->nwfilterDriver = &fakeNWFilterDriver;
 
+    virSetConnectInterface(conn);
+    virSetConnectNetwork(conn);
+    virSetConnectNWFilter(conn);
+    virSetConnectNodeDev(conn);
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
 
