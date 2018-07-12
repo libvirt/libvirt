@@ -8025,6 +8025,120 @@ qemuMonitorJSONBlockdevDel(qemuMonitorPtr mon,
     return ret;
 }
 
+
+int
+qemuMonitorJSONBlockdevTrayOpen(qemuMonitorPtr mon,
+                                const char *id,
+                                bool force)
+{
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    int ret = -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("blockdev-open-tray",
+                                           "s:id", id,
+                                           "b:force", force, NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONBlockdevTrayClose(qemuMonitorPtr mon,
+                                 const char *id)
+{
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    int ret = -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("blockdev-close-tray",
+                                           "s:id", id, NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONBlockdevMediumRemove(qemuMonitorPtr mon,
+                                    const char *id)
+{
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    int ret = -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("blockdev-remove-medium",
+                                           "s:id", id, NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONBlockdevMediumInsert(qemuMonitorPtr mon,
+                                    const char *id,
+                                    const char *nodename)
+{
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    int ret = -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("blockdev-insert-medium",
+                                           "s:id", id,
+                                           "s:node-name", nodename,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 /**
  * The function is used to retrieve the measurement of a SEV guest.
  * The measurement is signature of the memory contents that was encrypted

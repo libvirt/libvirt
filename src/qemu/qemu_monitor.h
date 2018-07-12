@@ -1155,6 +1155,20 @@ int qemuMonitorBlockdevAdd(qemuMonitorPtr mon,
 int qemuMonitorBlockdevDel(qemuMonitorPtr mon,
                            const char *nodename);
 
+int qemuMonitorBlockdevTrayOpen(qemuMonitorPtr mon,
+                                const char *id,
+                                bool force);
+
+int qemuMonitorBlockdevTrayClose(qemuMonitorPtr mon,
+                                 const char *id);
+
+int qemuMonitorBlockdevMediumRemove(qemuMonitorPtr mon,
+                                    const char *id);
+
+int qemuMonitorBlockdevMediumInsert(qemuMonitorPtr mon,
+                                    const char *id,
+                                    const char *nodename);
+
 char *
 qemuMonitorGetSEVMeasurement(qemuMonitorPtr mon);
 

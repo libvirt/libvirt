@@ -549,6 +549,24 @@ int qemuMonitorJSONBlockdevDel(qemuMonitorPtr mon,
                                const char *nodename)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONBlockdevTrayOpen(qemuMonitorPtr mon,
+                                    const char *id,
+                                    bool force)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorJSONBlockdevTrayClose(qemuMonitorPtr mon,
+                                     const char *id)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorJSONBlockdevMediumRemove(qemuMonitorPtr mon,
+                                        const char *id)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorJSONBlockdevMediumInsert(qemuMonitorPtr mon,
+                                        const char *id,
+                                        const char *nodename)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
 int qemuMonitorJSONGetPRManagerInfo(qemuMonitorPtr mon,
                                     virHashTablePtr info)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

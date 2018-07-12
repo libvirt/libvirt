@@ -1352,6 +1352,10 @@ GEN_TEST_FUNC(qemuMonitorJSONOpenGraphics, "spice", "spicefd", false)
 GEN_TEST_FUNC(qemuMonitorJSONNBDServerStart, "localhost", 12345, "test-alias")
 GEN_TEST_FUNC(qemuMonitorJSONNBDServerAdd, "vda", true)
 GEN_TEST_FUNC(qemuMonitorJSONDetachCharDev, "serial1")
+GEN_TEST_FUNC(qemuMonitorJSONBlockdevTrayOpen, "foodev", true)
+GEN_TEST_FUNC(qemuMonitorJSONBlockdevTrayClose, "foodev")
+GEN_TEST_FUNC(qemuMonitorJSONBlockdevMediumRemove, "foodev")
+GEN_TEST_FUNC(qemuMonitorJSONBlockdevMediumInsert, "foodev", "newnode")
 
 static bool
 testQemuMonitorJSONqemuMonitorJSONQueryCPUsEqual(struct qemuMonitorQueryCpusEntry *a,
@@ -2992,6 +2996,10 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONNBDServerStart);
     DO_TEST_GEN(qemuMonitorJSONNBDServerAdd);
     DO_TEST_GEN(qemuMonitorJSONDetachCharDev);
+    DO_TEST_GEN(qemuMonitorJSONBlockdevTrayOpen);
+    DO_TEST_GEN(qemuMonitorJSONBlockdevTrayClose);
+    DO_TEST_GEN(qemuMonitorJSONBlockdevMediumRemove);
+    DO_TEST_GEN(qemuMonitorJSONBlockdevMediumInsert);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetAllBlockStatsInfo);

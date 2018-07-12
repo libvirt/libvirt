@@ -4336,6 +4336,56 @@ qemuMonitorBlockdevDel(qemuMonitorPtr mon,
     return qemuMonitorJSONBlockdevDel(mon, nodename);
 }
 
+int
+qemuMonitorBlockdevTrayOpen(qemuMonitorPtr mon,
+                            const char *id,
+                            bool force)
+{
+    VIR_DEBUG("id=%s force=%d", id, force);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONBlockdevTrayOpen(mon, id, force);
+}
+
+
+int
+qemuMonitorBlockdevTrayClose(qemuMonitorPtr mon,
+                             const char *id)
+{
+    VIR_DEBUG("id=%s", id);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONBlockdevTrayClose(mon, id);
+}
+
+
+int
+qemuMonitorBlockdevMediumRemove(qemuMonitorPtr mon,
+                                const char *id)
+{
+    VIR_DEBUG("id=%s", id);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONBlockdevMediumRemove(mon, id);
+}
+
+
+int
+qemuMonitorBlockdevMediumInsert(qemuMonitorPtr mon,
+                                const char *id,
+                                const char *nodename)
+{
+    VIR_DEBUG("id=%s nodename=%s", id, nodename);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONBlockdevMediumInsert(mon, id, nodename);
+}
+
+
 char *
 qemuMonitorGetSEVMeasurement(qemuMonitorPtr mon)
 {
