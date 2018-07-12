@@ -1297,7 +1297,7 @@ testQemuMonitorJSON ## funcName(const void *opaque) \
 { \
     const testQemuMonitorJSONSimpleFuncData *data = opaque; \
     virDomainXMLOptionPtr xmlopt = data->xmlopt; \
-    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt); \
+    qemuMonitorTestPtr test = qemuMonitorTestNewSchema(xmlopt, data->schema); \
     const char *reply = data->reply; \
     int ret = -1; \
  \
@@ -2894,6 +2894,7 @@ mymain(void)
 
 #define DO_TEST_GEN(name, ...) \
     simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.xmlopt = driver.xmlopt, \
+                                                      .schema = qapiData.schema \
                                                      __VA_ARGS__ }; \
     if (virTestRun(# name, testQemuMonitorJSON ## name, &simpleFunc) < 0) \
         ret = -1
