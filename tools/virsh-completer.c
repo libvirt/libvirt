@@ -32,6 +32,7 @@
 #include "internal.h"
 #include "virutil.h"
 #include "viralloc.h"
+#include "virmacaddr.h"
 #include "virstring.h"
 #include "virxml.h"
 
@@ -774,6 +775,78 @@ virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
  error:
     virStringListFree(ret);
     return NULL;
+}
+
+
+char **
+virshDomainInterfaceStateCompleter(vshControl *ctl,
+                                   const vshCmd *cmd,
+                                   unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    const char *iface = NULL;
+    char **ret = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    virMacAddr macaddr;
+    char macstr[VIR_MAC_STRING_BUFLEN] = "";
+    int ninterfaces;
+    xmlNodePtr *interfaces = NULL;
+    char *xpath = NULL;
+    char *state = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (virshDomainGetXML(ctl, cmd, flags, &xml, &ctxt) < 0)
+        goto cleanup;
+
+    if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
+        goto cleanup;
+
+    /* normalize the mac addr */
+    if (virMacAddrParse(iface, &macaddr) == 0)
+        virMacAddrFormat(&macaddr, macstr);
+
+    if (virAsprintf(&xpath, "/domain/devices/interface[(mac/@address = '%s') or "
+                            "                          (target/@dev = '%s')]",
+                           macstr, iface) < 0)
+        goto cleanup;
+
+    if ((ninterfaces = virXPathNodeSet(xpath, ctxt, &interfaces)) < 0)
+        goto cleanup;
+
+    if (ninterfaces != 1)
+        goto cleanup;
+
+    ctxt->node = interfaces[0];
+
+    if (VIR_ALLOC_N(ret, 2) < 0)
+        goto error;
+
+    if ((state = virXPathString("string(./link/@state)", ctxt)) &&
+        STREQ(state, "down")) {
+        if (VIR_STRDUP(ret[0], "up") < 0)
+            goto error;
+    } else {
+        if (VIR_STRDUP(ret[0], "down") < 0)
+            goto error;
+    }
+
+ cleanup:
+    VIR_FREE(state);
+    VIR_FREE(xpath);
+    VIR_FREE(interfaces);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    return ret;
+
+ error:
+    virStringListFree(ret);
+    ret = NULL;
+    goto cleanup;
 }
 
 

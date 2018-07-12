@@ -3064,6 +3064,7 @@ static const vshCmdOptDef opts_domif_setlink[] = {
     {.name = "state",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainInterfaceStateCompleter,
      .help = N_("new state of the device")
     },
     {.name = "persistent",
