@@ -2879,7 +2879,6 @@ mymain(void)
         ret = -1;
         goto cleanup;
     }
-    simpleFunc.schema = qapiData.schema;
 
 #define DO_TEST(name) \
     if (virTestRun(# name, testQemuMonitorJSON ## name, driver.xmlopt) < 0) \
@@ -2887,7 +2886,9 @@ mymain(void)
 
 #define DO_TEST_SIMPLE(CMD, FNC, ...) \
     simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.cmd = CMD, .func = FNC, \
-                                       .xmlopt = driver.xmlopt, __VA_ARGS__ }; \
+                                       .xmlopt = driver.xmlopt, \
+                                       .schema = qapiData.schema, \
+                                       __VA_ARGS__ }; \
     if (virTestRun(# FNC, testQemuMonitorJSONSimpleFunc, &simpleFunc) < 0) \
         ret = -1
 
