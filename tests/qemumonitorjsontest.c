@@ -2838,7 +2838,7 @@ testQAPISchema(const void *opaque)
         ret = 0;
     }
 
-    if (virTestGetDebug() ||
+    if (virTestGetDebug() >= 3 ||
         (ret < 0 && virTestGetVerbose())) {
         char *debugstr = virBufferContentAndReset(&debug);
         fprintf(stderr, "\n%s\n", debugstr);
