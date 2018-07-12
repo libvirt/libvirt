@@ -56,6 +56,17 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Introduce a new video model of type 'none'
+        </summary>
+        <description>
+          Introduce a new video model type that disables the automatic addition
+          of a video device to domains with 'graphics' specified in their XML.
+          This can be useful with GPU mediated devices which can serve as the
+          only rendering devices within the guest.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
