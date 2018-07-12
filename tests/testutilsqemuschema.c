@@ -28,9 +28,9 @@ testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
                               virBufferPtr debug);
 
 static int
-testQEMUSchemaValidateArrayBuiltin(virJSONValuePtr obj,
-                                   virJSONValuePtr root,
-                                   virBufferPtr debug)
+testQEMUSchemaValidateBuiltin(virJSONValuePtr obj,
+                              virJSONValuePtr root,
+                              virBufferPtr debug)
 {
     const char *t = virJSONValueObjectGetString(root, "json-type");
     const char *s = NULL;
@@ -476,7 +476,7 @@ testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
     const char *t = virJSONValueObjectGetString(root, "meta-type");
 
     if (STREQ_NULLABLE(t, "builtin")) {
-        return testQEMUSchemaValidateArrayBuiltin(obj, root, debug);
+        return testQEMUSchemaValidateBuiltin(obj, root, debug);
     } else if (STREQ_NULLABLE(t, "object")) {
         return testQEMUSchemaValidateObject(obj, root, schema, debug);
     } else if (STREQ_NULLABLE(t, "enum")) {
