@@ -539,7 +539,7 @@ testQEMUSchemaGetLatest(void)
         return NULL;
     }
 
-    VIR_TEST_DEBUG("replies file: '%s'", capsLatestFile);
+    VIR_TEST_DEBUG("replies file: '%s'\n", capsLatestFile);
 
     if (virTestLoadFile(capsLatestFile, &capsLatest) < 0)
         goto cleanup;
