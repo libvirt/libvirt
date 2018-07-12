@@ -4828,7 +4828,7 @@ of the network filters directly.
 Associate a network port with a network filter. The network filter backend
 will immediately attempt to instantiate the filter rules on the port.
 
-=item B<nwfilter-binding-undefine> I<port-name>
+=item B<nwfilter-binding-delete> I<port-name>
 
 Disassociate a network port from a network filter. The network filter
 backend will immediately tear down the filter rules that exist on the
