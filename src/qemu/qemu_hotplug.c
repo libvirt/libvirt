@@ -310,29 +310,31 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
 
 
 /**
- * qemuDomainMaybeStartPRDaemon:
+ * qemuHotplugAttachManagedPR:
+ * @driver: QEMU driver object
  * @vm: domain object
- * @disk: disk to hotplug
- * @retProps: properties of the managed pr-manager-helper object which needs
- *            to be added to the running vm
+ * @src: new disk source to be attached to @vm
+ * @asyncJob: asynchronous job identifier
  *
  * Checks if it's needed to start qemu-pr-helper and add the corresponding
  * pr-manager-helper object.
  *
- * Returns: 0 on success, -1 on error. If @retProps is populated the
- * qemu-pr-helper daemon was started.
+ * Returns: 0 on success, -1 on error.
  */
 static int
-qemuDomainDiskAttachManagedPR(virDomainObjPtr vm,
-                              virDomainDiskDefPtr disk,
-                              virJSONValuePtr *retProps)
+qemuHotplugAttachManagedPR(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virStorageSourcePtr src,
+                           qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virJSONValuePtr props = NULL;
+    bool daemonStarted = false;
     int ret = -1;
+    int rc;
 
     if (priv->prDaemonRunning ||
-        !virStorageSourceChainHasManagedPR(disk->src))
+        !virStorageSourceChainHasManagedPR(src))
         return 0;
 
     if (!(props = qemuBuildPRManagedManagerInfoProps(priv)))
@@ -341,10 +343,21 @@ qemuDomainDiskAttachManagedPR(virDomainObjPtr vm,
     if (qemuProcessStartManagedPRDaemon(vm) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*retProps, props);
+    daemonStarted = true;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    rc = qemuMonitorAddObject(priv->mon, &props, NULL);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
+    if (ret < 0 && daemonStarted)
+        qemuProcessKillManagedPRDaemon(vm);
     virJSONValueFree(props);
     return ret;
 }
@@ -592,11 +605,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuHotplugDiskSourceDataPtr diskdata = NULL;
-    virErrorPtr orig_err;
     char *devstr = NULL;
-    char *managedPrmgrAlias = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virJSONValuePtr managedPrmgrProps = NULL;
 
     if (qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
@@ -605,9 +615,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         goto error;
 
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
-        goto error;
-
-    if (qemuDomainDiskAttachManagedPR(vm, disk, &managedPrmgrProps) < 0)
         goto error;
 
     if (!(diskdata = qemuHotplugDiskSourceAttachPrepare(disk, priv->qemuCaps)))
@@ -619,11 +626,10 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks + 1) < 0)
         goto error;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuHotplugAttachManagedPR(driver, vm, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
+        goto error;
 
-    if (managedPrmgrProps &&
-        qemuMonitorAddObject(priv->mon, &managedPrmgrProps, &managedPrmgrAlias) < 0)
-        goto exit_monitor;
+    qemuDomainObjEnterMonitor(driver, vm);
 
     if (qemuHotplugDiskSourceAttach(priv->mon, diskdata) < 0)
         goto exit_monitor;
@@ -643,9 +649,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
 
  cleanup:
     qemuHotplugDiskSourceDataFree(diskdata);
-    virJSONValueFree(managedPrmgrProps);
     qemuDomainSecretDiskDestroy(disk);
-    VIR_FREE(managedPrmgrAlias);
     VIR_FREE(devstr);
     virObjectUnref(cfg);
     return ret;
@@ -653,20 +657,15 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
  exit_monitor:
     qemuHotplugDiskSourceRemove(priv->mon, diskdata);
 
-    virErrorPreserveLast(&orig_err);
-    if (managedPrmgrAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, managedPrmgrAlias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -2;
-    virErrorRestore(&orig_err);
+    if (qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+        ret = -2;
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
  error:
     ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
-    if (priv->prDaemonRunning &&
-        !virDomainDefHasManagedPR(vm->def))
-        qemuProcessKillManagedPRDaemon(vm);
     goto cleanup;
 }
 
