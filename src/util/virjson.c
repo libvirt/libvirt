@@ -1786,7 +1786,7 @@ virJSONValueFromString(const char *jsonstring)
     size_t len = strlen(jsonstring);
 # ifndef WITH_YAJL2
     yajl_parser_config cfg = { 0, 1 }; /* Match yajl 2 default behavior */
-    virJSONValuePtr tmp;
+    VIR_AUTOPTR(virJSONValue) tmp = NULL;
 # endif
 
     VIR_DEBUG("string=%s", jsonstring);
@@ -1850,7 +1850,6 @@ virJSONValueFromString(const char *jsonstring)
                            jsonstring);
         else
             ret = virJSONValueArraySteal(tmp, 0);
-        virJSONValueFree(tmp);
 # endif
     }
 
@@ -2023,16 +2022,12 @@ char *
 virJSONStringReformat(const char *jsonstr,
                       bool pretty)
 {
-    virJSONValuePtr json;
-    char *ret;
+    VIR_AUTOPTR(virJSONValue) json = NULL;
 
     if (!(json = virJSONValueFromString(jsonstr)))
         return NULL;
 
-    ret = virJSONValueToString(json, pretty);
-
-    virJSONValueFree(json);
-    return ret;
+    return virJSONValueToString(json, pretty);
 }
 
 
@@ -2121,7 +2116,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
 virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
 {
-    virJSONValuePtr deflattened;
+    VIR_AUTOPTR(virJSONValue) deflattened = NULL;
     virJSONValuePtr ret = NULL;
 
     if (!(deflattened = virJSONValueNewObject()))
@@ -2130,12 +2125,9 @@ virJSONValueObjectDeflatten(virJSONValuePtr json)
     if (virJSONValueObjectForeachKeyValue(json,
                                           virJSONValueObjectDeflattenWorker,
                                           deflattened) < 0)
-        goto cleanup;
+        return NULL;
 
     VIR_STEAL_PTR(ret, deflattened);
-
- cleanup:
-    virJSONValueFree(deflattened);
 
     return ret;
 }
