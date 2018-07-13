@@ -24,7 +24,6 @@
 #include <config.h>
 
 #include "virjson.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virstring.h"
