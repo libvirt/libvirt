@@ -2287,6 +2287,49 @@ virStorageSourceCopy(const virStorageSource *src,
 
 
 /**
+ * virStorageSourceIsSameLocation:
+ *
+ * Returns true if the sources @a and @b point to the same storage location.
+ * This does not compare any other configuration option
+ */
+bool
+virStorageSourceIsSameLocation(virStorageSourcePtr a,
+                               virStorageSourcePtr b)
+{
+    size_t i;
+
+    /* there are multiple possibilities to define an empty source */
+    if (virStorageSourceIsEmpty(a) &&
+        virStorageSourceIsEmpty(b))
+        return true;
+
+    if (virStorageSourceGetActualType(a) != virStorageSourceGetActualType(b))
+        return false;
+
+    if (STRNEQ_NULLABLE(a->path, b->path) ||
+        STRNEQ_NULLABLE(a->volume, b->volume) ||
+        STRNEQ_NULLABLE(a->snapshot, b->snapshot))
+        return false;
+
+    if (a->type == VIR_STORAGE_TYPE_NETWORK) {
+        if (a->protocol != b->protocol ||
+            a->nhosts != b->nhosts)
+            return false;
+
+        for (i = 0; i < a->nhosts; i++) {
+            if (a->hosts[i].transport != b->hosts[i].transport ||
+                a->hosts[i].port != b->hosts[i].port ||
+                STRNEQ_NULLABLE(a->hosts[i].name, b->hosts[i].name) ||
+                STRNEQ_NULLABLE(a->hosts[i].socket, b->hosts[i].socket))
+                return false;
+        }
+    }
+
+    return true;
+}
+
+
+/**
  * virStorageSourceInitChainElement:
  * @newelem: New backing chain element disk source
  * @old: Existing top level disk source

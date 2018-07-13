@@ -436,6 +436,9 @@ virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
 virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
                                          bool backingChain)
     ATTRIBUTE_NONNULL(1);
+bool virStorageSourceIsSameLocation(virStorageSourcePtr a,
+                                    virStorageSourcePtr b)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virStorageSourceParseRBDColonString(const char *rbdstr,
                                         virStorageSourcePtr src)
