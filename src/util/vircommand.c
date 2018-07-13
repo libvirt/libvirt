@@ -44,7 +44,6 @@
 
 #define __VIR_COMMAND_PRIV_H_ALLOW__
 #include "vircommandpriv.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virutil.h"
 #include "virlog.h"

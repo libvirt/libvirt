@@ -24,6 +24,7 @@
 
 # include "internal.h"
 # include "virbuffer.h"
+# include "viralloc.h"
 
 typedef struct _virCommand virCommand;
 typedef virCommand *virCommandPtr;
@@ -218,5 +219,6 @@ int virCommandRunNul(virCommandPtr cmd,
                      virCommandRunNulFunc func,
                      void *data);
 
+VIR_DEFINE_AUTOPTR_FUNC(virCommand, virCommandFree)
 
 #endif /* __VIR_COMMAND_H__ */
