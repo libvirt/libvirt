@@ -595,6 +595,9 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, false) < 0)
         goto cleanup;
 
+    if (qemuHotplugAttachManagedPR(driver, vm, newsrc, QEMU_ASYNC_JOB_NONE) < 0)
+        goto cleanup;
+
     rc = qemuDomainChangeMediaLegacy(driver, vm, disk, newsrc, force);
 
     virDomainAuditDisk(vm, disk->src, newsrc, "update", rc >= 0);
@@ -610,6 +613,9 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
 
     virStorageSourceFree(disk->src);
     VIR_STEAL_PTR(disk->src, newsrc);
+
+    ignore_value(qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE));
+
     ret = 0;
 
  cleanup:
