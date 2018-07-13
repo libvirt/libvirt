@@ -380,6 +380,10 @@ qemuHotplugRemoveManagedPR(virQEMUDriverPtr driver,
 struct _qemuHotplugDiskSourceData {
     qemuBlockStorageSourceAttachDataPtr *backends;
     size_t nbackends;
+
+    /* disk copy-on-read object */
+    virJSONValuePtr corProps;
+    char *corAlias;
 };
 typedef struct _qemuHotplugDiskSourceData qemuHotplugDiskSourceData;
 typedef qemuHotplugDiskSourceData *qemuHotplugDiskSourceDataPtr;
@@ -392,6 +396,9 @@ qemuHotplugDiskSourceDataFree(qemuHotplugDiskSourceDataPtr data)
 
     if (!data)
         return;
+
+    virJSONValueFree(data->corProps);
+    VIR_FREE(data->corAlias);
 
     for (i = 0; i < data->nbackends; i++)
         qemuBlockStorageSourceAttachDataFree(data->backends[i]);
@@ -461,25 +468,40 @@ qemuHotplugRemoveStorageSourcePrepareData(virStorageSourcePtr src,
 
 static qemuHotplugDiskSourceDataPtr
 qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
-                                   virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+                                   virQEMUCapsPtr qemuCaps)
 {
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuBlockStorageSourceAttachDataPtr backend = NULL;
     qemuHotplugDiskSourceDataPtr data = NULL;
     qemuHotplugDiskSourceDataPtr ret = NULL;
     char *drivealias = NULL;
+    virStorageSourcePtr n;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
-        goto cleanup;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (VIR_STRDUP(data->corAlias, diskPriv->nodeCopyOnRead) < 0)
+            goto cleanup;
 
-    if (!(backend = qemuHotplugRemoveStorageSourcePrepareData(disk->src,
-                                                              drivealias)))
-        goto cleanup;
+        for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+            if (!(backend = qemuHotplugRemoveStorageSourcePrepareData(n, NULL)))
+                goto cleanup;
 
-    if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
-        goto cleanup;
+            if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
+                goto cleanup;
+        }
+    } else {
+        if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
+            goto cleanup;
+
+        if (!(backend = qemuHotplugRemoveStorageSourcePrepareData(disk->src,
+                                                                  drivealias)))
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
+            goto cleanup;
+    }
 
     VIR_STEAL_PTR(ret, data);
 
@@ -502,21 +524,39 @@ static qemuHotplugDiskSourceDataPtr
 qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
                                    virQEMUCapsPtr qemuCaps)
 {
-    qemuBlockStorageSourceAttachDataPtr backend;
+    qemuBlockStorageSourceAttachDataPtr backend = NULL;
     qemuHotplugDiskSourceDataPtr data;
     qemuHotplugDiskSourceDataPtr ret = NULL;
+    virStorageSourcePtr n;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(backend = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
-        goto cleanup;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
+            !(data->corProps = qemuBlockStorageGetCopyOnReadProps(disk)))
+            goto cleanup;
 
-    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, backend, qemuCaps) < 0)
-        goto cleanup;
+        for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+            if (!(backend = qemuBlockStorageSourceAttachPrepareBlockdev(n)))
+                goto cleanup;
 
-    if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
-        goto cleanup;
+            if (qemuBuildStorageSourceAttachPrepareCommon(n, backend, qemuCaps) < 0)
+                goto cleanup;
+
+            if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
+                goto cleanup;
+        }
+    } else {
+        if (!(backend = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
+            goto cleanup;
+
+        if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, backend, qemuCaps) < 0)
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
+            goto cleanup;
+    }
 
     VIR_STEAL_PTR(ret, data);
 
@@ -546,6 +586,10 @@ qemuHotplugDiskSourceAttach(qemuMonitorPtr mon,
             return -1;
     }
 
+    if (data->corProps &&
+        qemuMonitorAddObject(mon, &data->corProps, &data->corAlias) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -565,6 +609,9 @@ qemuHotplugDiskSourceRemove(qemuMonitorPtr mon,
 
 {
     size_t i;
+
+    if (data->corAlias)
+        ignore_value(qemuMonitorDelObject(mon, data->corAlias));
 
     for (i = 0; i < data->nbackends; i++)
         qemuBlockStorageSourceAttachRollback(mon, data->backends[i]);
