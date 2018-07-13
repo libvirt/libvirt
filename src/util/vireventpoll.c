@@ -618,7 +618,7 @@ static void virEventPollCleanupHandles(void)
  */
 int virEventPollRunOnce(void)
 {
-    struct pollfd *fds = NULL;
+    VIR_AUTOFREE(struct pollfd *) fds = NULL;
     int ret, timeout, nfds;
 
     virMutexLock(&eventLoop.lock);
@@ -645,7 +645,7 @@ int virEventPollRunOnce(void)
             goto retry;
         virReportSystemError(errno, "%s",
                              _("Unable to poll on file handles"));
-        goto error_unlocked;
+        return -1;
     }
     EVENT_DEBUG("Poll got %d event(s)", ret);
 
@@ -662,13 +662,10 @@ int virEventPollRunOnce(void)
 
     eventLoop.running = 0;
     virMutexUnlock(&eventLoop.lock);
-    VIR_FREE(fds);
     return 0;
 
  error:
     virMutexUnlock(&eventLoop.lock);
- error_unlocked:
-    VIR_FREE(fds);
     return -1;
 }
 
