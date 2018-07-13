@@ -1202,15 +1202,12 @@ char *
 virBitmapDataFormat(const void *data,
                     int len)
 {
-    virBitmapPtr map = NULL;
-    char *ret = NULL;
+    VIR_AUTOPTR(virBitmap) map = NULL;
 
     if (!(map = virBitmapNewData(data, len)))
         return NULL;
 
-    ret = virBitmapFormat(map);
-    virBitmapFree(map);
-    return ret;
+    return virBitmapFormat(map);
 }
 
 
