@@ -52,6 +52,10 @@ The schema for the XML format used to declare driver capabilities
 
 The schema for the XML format used by network traffic filters
 
+=item C<nwfilterbinding>
+
+The schema for XML format used by network filter bindings.
+
 =item C<secret>
 
 The schema for the XML format used by secrets descriptions
