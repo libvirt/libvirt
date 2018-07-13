@@ -3225,6 +3225,11 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
                        _("cannot modify network device boot index setting"));
         goto cleanup;
     }
+    if (olddev->info.romenabled != newdev->info.romenabled) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot modify network device rom enabled setting"));
+        goto cleanup;
+    }
     /* (end of device info checks) */
 
     if (STRNEQ_NULLABLE(olddev->filter, newdev->filter) ||
