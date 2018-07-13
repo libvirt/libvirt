@@ -496,65 +496,50 @@ virJSONValueNewNumber(const char *data)
 virJSONValuePtr
 virJSONValueNewNumberInt(int data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virAsprintf(&str, "%i", data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberUint(unsigned int data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virAsprintf(&str, "%u", data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberLong(long long data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virAsprintf(&str, "%lld", data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberUlong(unsigned long long data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virAsprintf(&str, "%llu", data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberDouble(double data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virDoubleToStr(&str, data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
@@ -1171,10 +1156,9 @@ int
 virJSONValueGetArrayAsBitmap(const virJSONValue *val,
                              virBitmapPtr *bitmap)
 {
-    int ret = -1;
     virJSONValuePtr elem;
     size_t i;
-    unsigned long long *elems = NULL;
+    VIR_AUTOFREE(unsigned long long *) elems = NULL;
     unsigned long long maxelem = 0;
 
     *bitmap = NULL;
@@ -1191,25 +1175,20 @@ virJSONValueGetArrayAsBitmap(const virJSONValue *val,
 
         if (elem->type != VIR_JSON_TYPE_NUMBER ||
             virStrToLong_ullp(elem->data.number, NULL, 10, &elems[i]) < 0)
-            goto cleanup;
+            return -1;
 
         if (elems[i] > maxelem)
             maxelem = elems[i];
     }
 
     if (!(*bitmap = virBitmapNewQuiet(maxelem + 1)))
-        goto cleanup;
+        return -1;
 
     /* second pass sets the correct bits in the map */
     for (i = 0; i < val->data.array.nvalues; i++)
         ignore_value(virBitmapSetBit(*bitmap, elems[i]));
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(elems);
-
-    return ret;
+    return 0;
 }
 
 
