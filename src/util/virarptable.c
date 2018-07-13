@@ -71,9 +71,8 @@ virArpTableGet(void)
 {
     int num = 0;
     int msglen;
-    void *nlData = NULL;
+    VIR_AUTOFREE(void *) nlData = NULL;
     virArpTablePtr table = NULL;
-    char *ipstr = NULL;
     struct nlmsghdr* nh;
     struct rtattr * tb[NDA_MAX+1];
 
@@ -108,7 +107,7 @@ virArpTableGet(void)
             continue;
 
         if (nh->nlmsg_type == NLMSG_DONE)
-            goto end_of_netlink_messages;
+            return table;
 
         VIR_WARNINGS_NO_CAST_ALIGN
         parse_rtattr(tb, NDA_MAX, NDA_RTA(r),
@@ -119,6 +118,7 @@ virArpTableGet(void)
             continue;
 
         if (tb[NDA_DST]) {
+            VIR_AUTOFREE(char *) ipstr = NULL;
             virSocketAddr virAddr;
             if (VIR_REALLOC_N(table->t, num + 1) < 0)
                 goto cleanup;
@@ -134,8 +134,6 @@ virArpTableGet(void)
 
             if (VIR_STRDUP(table->t[num].ipaddr, ipstr) < 0)
                 goto cleanup;
-
-            VIR_FREE(ipstr);
         }
 
         if (tb[NDA_LLADDR]) {
@@ -154,14 +152,8 @@ virArpTableGet(void)
         }
     }
 
- end_of_netlink_messages:
-    VIR_FREE(nlData);
-    return table;
-
  cleanup:
     virArpTableFree(table);
-    VIR_FREE(ipstr);
-    VIR_FREE(nlData);
     return NULL;
 }
 
