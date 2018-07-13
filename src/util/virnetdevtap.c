@@ -691,6 +691,12 @@ virNetDevTapInterfaceStats(const char *ifname,
     FILE *fp;
     char line[256], *colon;
 
+    if (!ifname) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Interface name not provided"));
+        return -1;
+    }
+
     fp = fopen("/proc/net/dev", "r");
     if (!fp) {
         virReportSystemError(errno, "%s",
@@ -767,6 +773,12 @@ virNetDevTapInterfaceStats(const char *ifname,
     struct ifaddrs *ifap, *ifa;
     struct if_data *ifd;
     int ret = -1;
+
+    if (!ifname) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Interface name not provided"));
+        return -1;
+    }
 
     if (getifaddrs(&ifap) < 0) {
         virReportSystemError(errno, "%s",
