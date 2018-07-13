@@ -822,12 +822,9 @@ virExec(virCommandPtr cmd)
 int
 virRun(const char *const*argv, int *status)
 {
-    int ret;
-    virCommandPtr cmd = virCommandNewArgs(argv);
+    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgs(argv);
 
-    ret = virCommandRun(cmd, status);
-    virCommandFree(cmd);
-    return ret;
+    return virCommandRun(cmd, status);
 }
 
 #else /* WIN32 */
@@ -2960,7 +2957,7 @@ virCommandRunRegex(virCommandPtr cmd,
     int totgroups = 0, ngroup = 0, maxvars = 0;
     char **groups;
     VIR_AUTOFREE(char *) outbuf = NULL;
-    char **lines = NULL;
+    VIR_AUTOPTR(virString) lines = NULL;
     int ret = -1;
 
     /* Compile all regular expressions */
@@ -3039,7 +3036,6 @@ virCommandRunRegex(virCommandPtr cmd,
 
     ret = 0;
  cleanup:
-    virStringListFree(lines);
     if (groups) {
         for (j = 0; j < totgroups; j++)
             VIR_FREE(groups[j]);
