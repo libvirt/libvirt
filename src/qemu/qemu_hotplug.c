@@ -192,7 +192,7 @@ qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
 
 
 /**
- * qemuDomainChangeEjectableMedia:
+ * qemuDomainChangeMediaLegacy:
  * @driver: qemu driver structure
  * @vm: domain definition
  * @disk: disk definition to change the source of
@@ -206,12 +206,12 @@ qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
  *
  * Returns 0 on success, -1 on error and reports libvirt error
  */
-int
-qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virDomainDiskDefPtr disk,
-                               virStorageSourcePtr newsrc,
-                               bool force)
+static int
+qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainDiskDefPtr disk,
+                            virStorageSourcePtr newsrc,
+                            bool force)
 {
     int ret = -1, rc;
     char *driveAlias = NULL;
@@ -231,19 +231,8 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (srcPriv)
         secinfo = srcPriv->secinfo;
 
-    if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Removable media not supported for %s device"),
-                       virDomainDiskDeviceTypeToString(disk->device));
-        goto cleanup;
-    }
-
-    if (qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, false) < 0)
-        goto cleanup;
-
     if (!(driveAlias = qemuAliasDiskDriveFromDisk(disk)))
-        goto error;
+        goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
@@ -255,16 +244,16 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
         rc = qemuHotplugWaitForTrayEject(driver, vm, disk, driveAlias);
         if (rc < 0)
-            goto error;
+            goto cleanup;
     } else  {
         /* otherwise report possible errors from the attempt to eject the media*/
         if (rc < 0)
-            goto error;
+            goto cleanup;
     }
 
     if (!virStorageSourceIsEmpty(newsrc)) {
         if (qemuGetDriveSourceString(newsrc, secinfo, &sourcestr) < 0)
-            goto error;
+            goto cleanup;
 
         if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR) {
             if (newsrc->format > 0) {
@@ -283,29 +272,15 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    virDomainAuditDisk(vm, disk->src, newsrc, "update", rc >= 0);
-
     if (rc < 0)
-        goto error;
+        goto cleanup;
 
-    /* remove the old source from shared device list */
-    ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
-    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
-
-    virStorageSourceFree(disk->src);
-    disk->src = newsrc;
-    newsrc = NULL;
     ret = 0;
 
  cleanup:
     VIR_FREE(driveAlias);
     VIR_FREE(sourcestr);
     return ret;
-
- error:
-    virDomainAuditDisk(vm, disk->src, newsrc, "update", false);
-    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, true));
-    goto cleanup;
 }
 
 
@@ -589,6 +564,56 @@ qemuHotplugDiskSourceRemove(qemuMonitorPtr mon,
 
     for (i = 0; i < data->nbackends; i++)
         qemuBlockStorageSourceAttachRollback(mon, data->backends[i]);
+}
+
+
+/**
+ * qemuDomainChangeEjectableMedia:
+ * @driver: qemu driver structure
+ * @vm: domain definition
+ * @disk: disk definition to change the source of
+ * @newsrc: new disk source to change to
+ * @force: force the change of media
+ *
+ * Change the media in an ejectable device to the one described by
+ * @newsrc. This function also removes the old source from the
+ * shared device table if appropriate. Note that newsrc is consumed
+ * on success and the old source is freed on success.
+ *
+ * Returns 0 on success, -1 on error and reports libvirt error
+ */
+int
+qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainDiskDefPtr disk,
+                               virStorageSourcePtr newsrc,
+                               bool force)
+{
+    int ret = -1;
+    int rc;
+
+    if (qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, false) < 0)
+        goto cleanup;
+
+    rc = qemuDomainChangeMediaLegacy(driver, vm, disk, newsrc, force);
+
+    virDomainAuditDisk(vm, disk->src, newsrc, "update", rc >= 0);
+
+    if (rc < 0) {
+        ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, true));
+        goto cleanup;
+    }
+
+    /* remove the old source from shared device list */
+    ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
+    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
+
+    virStorageSourceFree(disk->src);
+    VIR_STEAL_PTR(disk->src, newsrc);
+    ret = 0;
+
+ cleanup:
+    return ret;
 }
 
 
