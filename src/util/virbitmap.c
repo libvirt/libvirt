@@ -31,7 +31,6 @@
 #include <sys/types.h>
 
 #include "virbitmap.h"
-#include "viralloc.h"
 #include "virbuffer.h"
 #include "c-ctype.h"
 #include "count-one-bits.h"

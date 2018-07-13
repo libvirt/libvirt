@@ -25,6 +25,7 @@
 # define __BITMAP_H__
 
 # include "internal.h"
+# include "viralloc.h"
 
 # include <sys/types.h>
 
@@ -154,5 +155,7 @@ void virBitmapSubtract(virBitmapPtr a, virBitmapPtr b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void virBitmapShrink(virBitmapPtr map, size_t b);
+
+VIR_DEFINE_AUTOPTR_FUNC(virBitmap, virBitmapFree)
 
 #endif
