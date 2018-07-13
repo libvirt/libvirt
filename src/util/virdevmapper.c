@@ -87,8 +87,14 @@ virDevMapperGetTargetsImpl(const char *path,
         return ret;
     }
 
-    if (!(dmt = dm_task_create(DM_DEVICE_DEPS)))
+    if (!(dmt = dm_task_create(DM_DEVICE_DEPS))) {
+        if (errno == ENOENT || errno == ENODEV) {
+            /* It's okay. Kernel is probably built without
+             * devmapper support. */
+            ret = 0;
+        }
         return ret;
+    }
 
     if (!dm_task_set_name(dmt, path)) {
         if (errno == ENOENT) {
