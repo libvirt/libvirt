@@ -155,10 +155,8 @@ qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
 
 
 static int
-qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            virDomainDiskDefPtr disk,
-                            const char *driveAlias)
+qemuHotplugWaitForTrayEject(virDomainObjPtr vm,
+                            virDomainDiskDefPtr disk)
 {
     unsigned long long now;
     int rc;
@@ -174,18 +172,13 @@ qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
             /* the caller called qemuMonitorEjectMedia which usually reports an
              * error. Report the failure in an off-chance that it didn't. */
             if (virGetLastErrorCode() == VIR_ERR_OK) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("timed out waiting for disk tray status update"));
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("timed out waiting to open tray of '%s'"),
+                               disk->dst);
             }
             return -1;
         }
     }
-
-    /* re-issue ejection command to pop out the media */
-    qemuDomainObjEnterMonitor(driver, vm);
-    rc = qemuMonitorEjectMedia(qemuDomainGetMonitor(vm), driveAlias, false);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-        return -1;
 
     return 0;
 }
@@ -242,9 +235,16 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
     /* If the tray is present and tray change event is supported wait for it to open. */
     if (!force && diskPriv->tray &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
-        rc = qemuHotplugWaitForTrayEject(driver, vm, disk, driveAlias);
+        rc = qemuHotplugWaitForTrayEject(vm, disk);
         if (rc < 0)
             goto cleanup;
+
+        /* re-issue ejection command to pop out the media */
+        qemuDomainObjEnterMonitor(driver, vm);
+        rc = qemuMonitorEjectMedia(priv->mon, driveAlias, false);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+            goto cleanup;
+
     } else  {
         /* otherwise report possible errors from the attempt to eject the media*/
         if (rc < 0)
