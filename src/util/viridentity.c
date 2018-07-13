@@ -133,8 +133,8 @@ int virIdentitySetCurrent(virIdentityPtr ident)
  */
 virIdentityPtr virIdentityGetSystem(void)
 {
-    char *username = NULL;
-    char *groupname = NULL;
+    VIR_AUTOFREE(char *) username = NULL;
+    VIR_AUTOFREE(char *) groupname = NULL;
     unsigned long long startTime;
     virIdentityPtr ret = NULL;
 #if WITH_SELINUX
@@ -154,14 +154,14 @@ virIdentityPtr virIdentityGetSystem(void)
         goto error;
 
     if (!(username = virGetUserName(geteuid())))
-        goto cleanup;
+        return ret;
     if (virIdentitySetUNIXUserName(ret, username) < 0)
         goto error;
     if (virIdentitySetUNIXUserID(ret, getuid()) < 0)
         goto error;
 
     if (!(groupname = virGetGroupName(getegid())))
-        goto cleanup;
+        return ret;
     if (virIdentitySetUNIXGroupName(ret, groupname) < 0)
         goto error;
     if (virIdentitySetUNIXGroupID(ret, getgid()) < 0)
@@ -172,7 +172,7 @@ virIdentityPtr virIdentityGetSystem(void)
         if (getcon(&con) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to lookup SELinux process context"));
-            goto cleanup;
+            return ret;
         }
         if (virIdentitySetSELinuxContext(ret, con) < 0) {
             freecon(con);
@@ -182,15 +182,11 @@ virIdentityPtr virIdentityGetSystem(void)
     }
 #endif
 
- cleanup:
-    VIR_FREE(username);
-    VIR_FREE(groupname);
     return ret;
 
  error:
     virObjectUnref(ret);
-    ret = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -461,15 +457,14 @@ int virIdentitySetUNIXUserName(virIdentityPtr ident,
 int virIdentitySetUNIXUserID(virIdentityPtr ident,
                              uid_t uid)
 {
-    char *val;
-    int ret;
+    VIR_AUTOFREE(char *) val = NULL;
+
     if (virAsprintf(&val, "%d", (int)uid) < 0)
         return -1;
-    ret = virIdentitySetAttr(ident,
+
+    return virIdentitySetAttr(ident,
                              VIR_IDENTITY_ATTR_UNIX_USER_ID,
                              val);
-    VIR_FREE(val);
-    return ret;
 }
 
 
@@ -485,45 +480,42 @@ int virIdentitySetUNIXGroupName(virIdentityPtr ident,
 int virIdentitySetUNIXGroupID(virIdentityPtr ident,
                               gid_t gid)
 {
-    char *val;
-    int ret;
+    VIR_AUTOFREE(char *) val = NULL;
+
     if (virAsprintf(&val, "%d", (int)gid) < 0)
         return -1;
-    ret = virIdentitySetAttr(ident,
+
+    return virIdentitySetAttr(ident,
                              VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
                              val);
-    VIR_FREE(val);
-    return ret;
 }
 
 
 int virIdentitySetUNIXProcessID(virIdentityPtr ident,
                                 pid_t pid)
 {
-    char *val;
-    int ret;
+    VIR_AUTOFREE(char *) val = NULL;
+
     if (virAsprintf(&val, "%lld", (long long) pid) < 0)
         return -1;
-    ret = virIdentitySetAttr(ident,
+
+    return virIdentitySetAttr(ident,
                              VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
                              val);
-    VIR_FREE(val);
-    return ret;
 }
 
 
 int virIdentitySetUNIXProcessTime(virIdentityPtr ident,
                                   unsigned long long timestamp)
 {
-    char *val;
-    int ret;
+    VIR_AUTOFREE(char *) val = NULL;
+
     if (virAsprintf(&val, "%llu", timestamp) < 0)
         return -1;
-    ret = virIdentitySetAttr(ident,
+
+    return virIdentitySetAttr(ident,
                              VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
                              val);
-    VIR_FREE(val);
-    return ret;
 }
 
 
