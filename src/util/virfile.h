@@ -32,6 +32,7 @@
 # include "internal.h"
 # include "virbitmap.h"
 # include "virstoragefile.h"
+# include "viralloc.h"
 
 typedef enum {
     VIR_FILE_CLOSE_PRESERVE_ERRNO = 1 << 0,
@@ -366,5 +367,7 @@ int virFileWaitForExists(const char *path, size_t ms, size_t tries);
 int virFileInData(int fd,
                   int *inData,
                   long long *length);
+
+VIR_DEFINE_AUTOPTR_FUNC(virFileWrapperFd, virFileWrapperFdFree)
 
 #endif /* __VIR_FILE_H */

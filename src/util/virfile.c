@@ -67,7 +67,6 @@
 
 #include "configmake.h"
 #include "intprops.h"
-#include "viralloc.h"
 #include "vircommand.h"
 #include "virerror.h"
 #include "virfile.h"
