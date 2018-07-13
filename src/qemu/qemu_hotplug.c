@@ -3864,6 +3864,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     bool prUsed = false;
     const char *authAlias = NULL;
     const char *encAlias = NULL;
+    int ret = -1;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
@@ -3918,7 +3919,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         ignore_value(qemuMonitorDelObject(priv->mon, qemuDomainGetManagedPRAlias()));
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+        goto cleanup;
 
     virDomainAuditDisk(vm, disk->src, NULL, "detach", true);
 
@@ -3938,8 +3939,11 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
     virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
 
+    ret = 0;
+
+ cleanup:
     virDomainDiskDefFree(disk);
-    return 0;
+    return ret;
 }
 
 
