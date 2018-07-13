@@ -619,6 +619,94 @@ qemuHotplugDiskSourceRemove(qemuMonitorPtr mon,
 
 
 /**
+ * qemuDomainChangeMediaBlockdev:
+ * @driver: qemu driver structure
+ * @vm: domain definition
+ * @disk: disk definition to change the source of
+ * @newsrc: new disk source to change to
+ * @force: force the change of media
+ *
+ * Change the media in an ejectable device to the one described by
+ * @newsrc. This function also removes the old source from the
+ * shared device table if appropriate. Note that newsrc is consumed
+ * on success and the old source is freed on success.
+ *
+ * Returns 0 on success, -1 on error and reports libvirt error
+ */
+static int
+qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainDiskDefPtr disk,
+                              virStorageSourcePtr newsrc,
+                              bool force)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuHotplugDiskSourceDataPtr newbackend = NULL;
+    qemuHotplugDiskSourceDataPtr oldbackend = NULL;
+    virStorageSourcePtr oldsrc = disk->src;
+    char *nodename = NULL;
+    int rc;
+    int ret = -1;
+
+    if (!virStorageSourceIsEmpty(disk->src) &&
+        !(oldbackend = qemuHotplugDiskSourceRemovePrepare(disk, priv->qemuCaps)))
+        goto cleanup;
+
+    disk->src = newsrc;
+    if (!virStorageSourceIsEmpty(disk->src)) {
+        if (!(newbackend = qemuHotplugDiskSourceAttachPrepare(disk,
+                                                              priv->qemuCaps)))
+            goto cleanup;
+
+        if (qemuDomainDiskGetBackendAlias(disk, priv->qemuCaps, &nodename) < 0)
+            goto cleanup;
+    }
+
+    if (diskPriv->tray && disk->tray_status != VIR_DOMAIN_DISK_TRAY_OPEN) {
+        qemuDomainObjEnterMonitor(driver, vm);
+        rc = qemuMonitorBlockdevTrayOpen(priv->mon, diskPriv->qomName, force);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+            goto cleanup;
+
+        if (!force && qemuHotplugWaitForTrayEject(vm, disk) < 0)
+            goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorBlockdevMediumRemove(priv->mon, diskPriv->qomName);
+
+    if (rc == 0 && oldbackend)
+        qemuHotplugDiskSourceRemove(priv->mon, oldbackend);
+
+    if (newbackend && nodename) {
+        if (rc == 0)
+            rc = qemuHotplugDiskSourceAttach(priv->mon, newbackend);
+
+        if (rc == 0)
+            rc = qemuMonitorBlockdevMediumInsert(priv->mon, diskPriv->qomName,
+                                                 nodename);
+    }
+
+    if (rc == 0)
+        rc = qemuMonitorBlockdevTrayClose(priv->mon, diskPriv->qomName);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    qemuHotplugDiskSourceDataFree(newbackend);
+    qemuHotplugDiskSourceDataFree(oldbackend);
+    /* caller handles correct exchange of sources */
+    disk->src = oldsrc;
+    return ret;
+}
+
+
+/**
  * qemuDomainChangeEjectableMedia:
  * @driver: qemu driver structure
  * @vm: domain definition
@@ -640,6 +728,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                virStorageSourcePtr newsrc,
                                bool force)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     int rc;
 
@@ -649,7 +738,10 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (qemuHotplugAttachManagedPR(driver, vm, newsrc, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
 
-    rc = qemuDomainChangeMediaLegacy(driver, vm, disk, newsrc, force);
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
+        rc = qemuDomainChangeMediaBlockdev(driver, vm, disk, newsrc, force);
+    else
+        rc = qemuDomainChangeMediaLegacy(driver, vm, disk, newsrc, force);
 
     virDomainAuditDisk(vm, disk->src, newsrc, "update", rc >= 0);
 
