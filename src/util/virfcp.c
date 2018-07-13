@@ -40,16 +40,12 @@
 bool
 virFCIsCapableRport(const char *rport)
 {
-    bool ret = false;
-    char *path = NULL;
+    VIR_AUTOFREE(char *) path = NULL;
 
     if (virBuildPath(&path, SYSFS_FC_RPORT_PATH, rport) < 0)
         return false;
 
-    ret = virFileExists(path);
-    VIR_FREE(path);
-
-    return ret;
+    return virFileExists(path);
 }
 
 int
@@ -57,8 +53,8 @@ virFCReadRportValue(const char *rport,
                     const char *entry,
                     char **result)
 {
-    int ret = -1;
-    char *buf = NULL, *p = NULL;
+    VIR_AUTOFREE(char *) buf = NULL;
+    char *p = NULL;
 
     if (virFileReadValueString(&buf, "%s/%s/%s",
                                SYSFS_FC_RPORT_PATH, rport, entry) < 0) {
@@ -69,13 +65,9 @@ virFCReadRportValue(const char *rport,
         *p = '\0';
 
     if (VIR_STRDUP(*result, buf) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(buf);
-    return ret;
+    return 0;
 }
 
 #else
