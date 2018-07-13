@@ -793,6 +793,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     bool charDevPlugged = false;
     bool netdevPlugged = false;
     char *netdev_name;
+    virErrorPtr save_error = NULL;
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
@@ -1074,7 +1075,9 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             qemuDomainReleaseDeviceAddress(vm, &net->info, NULL);
 
         if (iface_connected) {
+            virErrorPreserveLast(&save_error);
             virDomainConfNWFilterTeardown(net);
+            virErrorRestore(&save_error);
 
             if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
                 ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
