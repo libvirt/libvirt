@@ -25,6 +25,9 @@
 # include <stdarg.h>
 
 # include "internal.h"
+# include "viralloc.h"
+
+typedef char *virString;
 
 char **virStringSplitCount(const char *string,
                            const char *delim,
@@ -308,5 +311,7 @@ void virStringTrimOptionalNewline(char *str);
 int virStringParsePort(const char *str,
                        unsigned int *port)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+VIR_DEFINE_AUTOPTR_FUNC(virString, virStringListFree)
 
 #endif /* __VIR_STRING_H__ */
