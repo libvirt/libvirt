@@ -105,10 +105,9 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
                         const char *credname,
                         const char **value)
 {
-    char *authgroup = NULL;
-    char *credgroup = NULL;
+    VIR_AUTOFREE(char *) authgroup = NULL;
+    VIR_AUTOFREE(char *) credgroup = NULL;
     const char *authcred;
-    int ret = -1;
 
     *value = NULL;
 
@@ -118,47 +117,38 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
         hostname = "localhost";
 
     if (virAsprintf(&authgroup, "auth-%s-%s", service, hostname) < 0)
-        goto cleanup;
+        return -1;
 
     if (!virKeyFileHasGroup(auth->keyfile, authgroup)) {
        VIR_FREE(authgroup);
        if (virAsprintf(&authgroup, "auth-%s-%s", service, "default") < 0)
-           goto cleanup;
+            return -1;
     }
 
-    if (!virKeyFileHasGroup(auth->keyfile, authgroup)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!virKeyFileHasGroup(auth->keyfile, authgroup))
+        return 0;
 
     if (!(authcred = virKeyFileGetValueString(auth->keyfile, authgroup, "credentials"))) {
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("Missing item 'credentials' in group '%s' in '%s'"),
                        authgroup, auth->path);
-        goto cleanup;
+        return -1;
     }
 
     if (virAsprintf(&credgroup, "credentials-%s", authcred) < 0)
-        goto cleanup;
+        return -1;
 
     if (!virKeyFileHasGroup(auth->keyfile, credgroup)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("Missing group 'credentials-%s' referenced from group '%s' in '%s'"),
                        authcred, authgroup, auth->path);
-        goto cleanup;
+        return -1;
     }
 
-    if (!virKeyFileHasValue(auth->keyfile, credgroup, credname)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!virKeyFileHasValue(auth->keyfile, credgroup, credname))
+        return 0;
 
     *value = virKeyFileGetValueString(auth->keyfile, credgroup, credname);
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(authgroup);
-    VIR_FREE(credgroup);
-    return ret;
+    return 0;
 }
