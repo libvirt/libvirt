@@ -888,20 +888,19 @@ int virFileNBDDeviceAssociate(const char *file,
 {
     VIR_AUTOFREE(char *) nbddev = NULL;
     VIR_AUTOFREE(char *) qemunbd = NULL;
-    virCommandPtr cmd = NULL;
-    int ret = -1;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
     const char *fmtstr = NULL;
 
     if (!virFileNBDLoadDriver())
-        goto cleanup;
+        return -1;
 
     if (!(nbddev = virFileNBDDeviceFindUnused()))
-        goto cleanup;
+        return -1;
 
     if (!(qemunbd = virFindFileInPath("qemu-nbd"))) {
         virReportSystemError(ENOENT, "%s",
                              _("Unable to find 'qemu-nbd' binary in $PATH"));
-        goto cleanup;
+        return -1;
     }
 
     if (fmt > 0)
@@ -926,17 +925,14 @@ int virFileNBDDeviceAssociate(const char *file,
     /* qemu-nbd will daemonize itself */
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Associated NBD device %s with file %s and format %s",
               nbddev, file, fmtstr);
     *dev = nbddev;
     nbddev = NULL;
-    ret = 0;
 
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 #else /* __linux__ */
