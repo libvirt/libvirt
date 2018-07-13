@@ -111,8 +111,7 @@ virAuthGetCredential(const char *servicename,
                      const char *path,
                      char **value)
 {
-    int ret = -1;
-    virAuthConfigPtr config = NULL;
+    VIR_AUTOPTR(virAuthConfig) config = NULL;
     const char *tmp;
 
     *value = NULL;
@@ -121,23 +120,19 @@ virAuthGetCredential(const char *servicename,
         return 0;
 
     if (!(config = virAuthConfigNew(path)))
-        goto cleanup;
+        return -1;
 
     if (virAuthConfigLookup(config,
                             servicename,
                             hostname,
                             credname,
                             &tmp) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(*value, tmp) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virAuthConfigFree(config);
-    return ret;
+    return 0;
 }
 
 
