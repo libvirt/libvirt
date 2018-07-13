@@ -2041,6 +2041,29 @@ virStorageSourceChainHasManagedPR(virStorageSourcePtr src)
 }
 
 
+static virStoragePRDefPtr
+virStoragePRDefCopy(virStoragePRDefPtr src)
+{
+    virStoragePRDefPtr copy = NULL;
+    virStoragePRDefPtr ret = NULL;
+
+    if (VIR_ALLOC(copy) < 0)
+        return NULL;
+
+    copy->managed = src->managed;
+
+    if (VIR_STRDUP(copy->path, src->path) < 0 ||
+        VIR_STRDUP(copy->mgralias, src->mgralias) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, copy);
+
+ cleanup:
+    virStoragePRDefFree(copy);
+    return ret;
+}
+
+
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
                                     const char *model)
@@ -2243,6 +2266,10 @@ virStorageSourceCopy(const virStorageSource *src,
 
     if (src->auth &&
         !(ret->auth = virStorageAuthDefCopy(src->auth)))
+        goto error;
+
+    if (src->pr &&
+        !(ret->pr = virStoragePRDefCopy(src->pr)))
         goto error;
 
     if (backingChain && src->backingStore) {
