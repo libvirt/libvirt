@@ -24,6 +24,7 @@
 # define __VIR_AUTHCONFIG_H__
 
 # include "internal.h"
+# include "viralloc.h"
 
 typedef struct _virAuthConfig virAuthConfig;
 typedef virAuthConfig *virAuthConfigPtr;
@@ -41,5 +42,7 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
                         const char *hostname,
                         const char *credname,
                         const char **value);
+
+VIR_DEFINE_AUTOPTR_FUNC(virAuthConfig, virAuthConfigFree)
 
 #endif /* __VIR_AUTHCONFIG_H__ */

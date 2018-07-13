@@ -25,7 +25,6 @@
 #include "virauthconfig.h"
 
 #include "virkeyfile.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "virstring.h"
