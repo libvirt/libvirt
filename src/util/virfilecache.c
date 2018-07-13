@@ -100,18 +100,17 @@ static char *
 virFileCacheGetFileName(virFileCachePtr cache,
                         const char *name)
 {
-    char *file = NULL;
-    char *namehash = NULL;
+    VIR_AUTOFREE(char *) namehash = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &namehash) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virFileMakePath(cache->dir) < 0) {
         virReportSystemError(errno,
                              _("Unable to create directory '%s'"),
                              cache->dir);
-        goto cleanup;
+        return NULL;
     }
 
     virBufferAsprintf(&buf, "%s/%s", cache->dir, namehash);
@@ -120,13 +119,9 @@ virFileCacheGetFileName(virFileCachePtr cache,
         virBufferAsprintf(&buf, ".%s", cache->suffix);
 
     if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
+        return NULL;
 
-    file = virBufferContentAndReset(&buf);
-
- cleanup:
-    VIR_FREE(namehash);
-    return file;
+    return virBufferContentAndReset(&buf);
 }
 
 
@@ -135,7 +130,7 @@ virFileCacheLoad(virFileCachePtr cache,
                  const char *name,
                  void **data)
 {
-    char *file = NULL;
+    VIR_AUTOFREE(char *) file = NULL;
     int ret = -1;
     void *loadData = NULL;
 
@@ -178,7 +173,6 @@ virFileCacheLoad(virFileCachePtr cache,
 
  cleanup:
     virObjectUnref(loadData);
-    VIR_FREE(file);
     return ret;
 }
 
@@ -188,20 +182,15 @@ virFileCacheSave(virFileCachePtr cache,
                  const char *name,
                  void *data)
 {
-    char *file = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) file = NULL;
 
     if (!(file = virFileCacheGetFileName(cache, name)))
-        return ret;
+        return -1;
 
     if (cache->handlers.saveFile(data, file, cache->priv) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(file);
-    return ret;
+    return 0;
 }
 
 
@@ -346,7 +335,7 @@ virFileCacheLookupByFunc(virFileCachePtr cache,
                          const void *iterData)
 {
     void *data = NULL;
-    char *name = NULL;
+    VIR_AUTOFREE(char *) name = NULL;
 
     virObjectLock(cache);
 
@@ -355,8 +344,6 @@ virFileCacheLookupByFunc(virFileCachePtr cache,
 
     virObjectRef(data);
     virObjectUnlock(cache);
-
-    VIR_FREE(name);
 
     return data;
 }
