@@ -129,6 +129,7 @@ qemuSetupImageCgroupInternal(virDomainObjPtr vm,
     }
 
     if (virStoragePRDefIsManaged(src->pr) &&
+        virFileExists(DEVICE_MAPPER_CONTROL_PATH) &&
         qemuSetupImagePathCgroup(vm, DEVICE_MAPPER_CONTROL_PATH, false) < 0)
         return -1;
 
@@ -163,27 +164,28 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
         return 0;
     }
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virStorageSourcePtr diskSrc = vm->def->disks[i]->src;
+    if (virFileExists(DEVICE_MAPPER_CONTROL_PATH)) {
+        for (i = 0; i < vm->def->ndisks; i++) {
+            virStorageSourcePtr diskSrc = vm->def->disks[i]->src;
 
-        if (src == diskSrc)
-            continue;
+            if (src == diskSrc)
+                continue;
 
-        if (virStoragePRDefIsManaged(diskSrc->pr))
-            break;
+            if (virStoragePRDefIsManaged(diskSrc->pr))
+                break;
+        }
+
+        if (i == vm->def->ndisks) {
+            VIR_DEBUG("Disabling device mapper control");
+            ret = virCgroupDenyDevicePath(priv->cgroup,
+                                          DEVICE_MAPPER_CONTROL_PATH, perms, true);
+            virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
+                                     DEVICE_MAPPER_CONTROL_PATH,
+                                     virCgroupGetDevicePermsString(perms), ret);
+            if (ret < 0)
+                return ret;
+        }
     }
-
-    if (i == vm->def->ndisks) {
-        VIR_DEBUG("Disabling device mapper control");
-        ret = virCgroupDenyDevicePath(priv->cgroup,
-                                      DEVICE_MAPPER_CONTROL_PATH, perms, true);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
-                                 DEVICE_MAPPER_CONTROL_PATH,
-                                 virCgroupGetDevicePermsString(perms), ret);
-        if (ret < 0)
-            return ret;
-    }
-
 
     VIR_DEBUG("Deny path %s", src->path);
 
