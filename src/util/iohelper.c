@@ -46,7 +46,7 @@
 static int
 runIO(const char *path, int fd, int oflags)
 {
-    void *base = NULL; /* Location to be freed */
+    VIR_AUTOFREE(void *) base = NULL; /* Location to be freed */
     char *buf = NULL; /* Aligned location within base */
     size_t buflen = 1024*1024;
     intptr_t alignMask = 64*1024 - 1;
@@ -174,8 +174,6 @@ runIO(const char *path, int fd, int oflags)
         virReportSystemError(errno, _("Unable to close %s"), path);
         ret = -1;
     }
-
-    VIR_FREE(base);
     return ret;
 }
 
