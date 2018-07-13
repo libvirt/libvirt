@@ -1057,6 +1057,17 @@ sc_prohibit_backslash_alignment:
 	halt='Do not attempt to right-align backslashes' \
 	  $(_sc_search_regexp)
 
+# Some syntax rules pertaining to the usage of cleanup macros
+# implementing GNU C's cleanup attribute
+
+# Rule to ensure that varibales declared using a cleanup macro are
+# always initialized.
+sc_require_attribute_cleanup_initialization:
+	@prohibit='VIR_AUTO(FREE|PTR)\(.+\) *[^=]+;' \
+	in_vc_files='\.[chx]$$' \
+	halt='variable declared with a cleanup macro must be initialized' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
