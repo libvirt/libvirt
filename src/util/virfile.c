@@ -4228,7 +4228,6 @@ int
 virFileReadValueString(char **value, const char *format, ...)
 {
     int ret;
-    VIR_AUTOFREE(char *) str = NULL;
     VIR_AUTOFREE(char *) path = NULL;
     va_list ap;
 
