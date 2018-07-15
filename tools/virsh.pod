@@ -3032,7 +3032,7 @@ expected.
 =item B<attach-disk> I<domain> I<source> I<target> [[[I<--live>] [I<--config>]
 | [I<--current>]] | [I<--persistent>]] [I<--targetbus bus>] [I<--driver
 driver>] [I<--subdriver subdriver>] [I<--iothread iothread>]
-[I<--cache cache>] [I<--io io>] [I<--type type>]
+[I<--cache cache>] [I<--io io>] [I<--type type>] [I<--alias alias>]
 [I<--mode mode>] [I<--sourcetype sourcetype>] [I<--serial serial>] [I<--wwn
 wwn>] [I<--rawio>] [I<--address address>] [I<--multifunction>] [I<--print-xml>]
 
@@ -3055,6 +3055,7 @@ disk formats.  I<type> can indicate I<lun>, I<cdrom> or I<floppy> as
 alternative to the disk default, although this use only replaces the media
 within the existing virtual cdrom or floppy device; consider using
 B<update-device> for this usage instead.
+I<alias> can set user supplied alias.
 I<mode> can specify the two specific mode I<readonly> or I<shareable>.
 I<sourcetype> can indicate the type of source (block|file)
 I<cache> can be one of "default", "none", "writethrough", "writeback",

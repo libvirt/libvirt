@@ -290,6 +290,10 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .help = N_("wwn of disk device")
     },
+    {.name = "alias",
+     .type = VSH_OT_STRING,
+     .help = N_("custom alias name of disk device")
+    },
     {.name = "rawio",
      .type = VSH_OT_BOOL,
      .help = N_("needs rawio capability")
@@ -574,7 +578,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
                 *subdriver = NULL, *type = NULL, *mode = NULL,
                 *iothread = NULL, *cache = NULL, *io = NULL,
                 *serial = NULL, *straddr = NULL, *wwn = NULL,
-                *targetbus = NULL;
+                *targetbus = NULL, *alias = NULL;
     struct DiskAddress diskAddr;
     bool isFile = false, functionReturn = false;
     int ret;
@@ -611,6 +615,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "wwn", &wwn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "address", &straddr) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "targetbus", &targetbus) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "alias", &alias) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "sourcetype", &stype) < 0)
         goto cleanup;
 
@@ -679,6 +684,9 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (serial)
         virBufferAsprintf(&buf, "<serial>%s</serial>\n", serial);
+
+    if (alias)
+        virBufferAsprintf(&buf, "<alias name='%s'/>", alias);
 
     if (wwn)
         virBufferAsprintf(&buf, "<wwn>%s</wwn>\n", wwn);
