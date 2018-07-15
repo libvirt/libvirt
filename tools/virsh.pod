@@ -3090,7 +3090,7 @@ Likewise, I<--shareable> is an alias for I<--mode shareable>.
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
 [I<--inbound average,peak,burst,floor>] [I<--outbound average,peak,burst>]
-[I<--managed>] [I<--print-xml>]
+[I<--alias alias>] [I<--managed>] [I<--print-xml>]
 
 Attach a new network interface to the domain.
 
@@ -3143,6 +3143,8 @@ I<bridge> type and only for Xen domains.
 
 B<--model> specifies the network device model to be presented to the
 domain.
+
+B<alias> can set user supplied alias.
 
 B<--inbound> and B<--outbound> control the bandwidth of the
 interface.  At least one from the I<average>, I<floor> pair must be

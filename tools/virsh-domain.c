@@ -837,6 +837,10 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .type = VSH_OT_STRING,
      .help = N_("model type")
     },
+    {.name = "alias",
+     .type = VSH_OT_STRING,
+     .help = N_("custom alias name of interface device")
+    },
     {.name = "inbound",
      .type = VSH_OT_STRING,
      .help = N_("control domain's incoming traffics")
@@ -910,7 +914,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     const char *mac = NULL, *target = NULL, *script = NULL,
                *type = NULL, *source = NULL, *model = NULL,
-               *inboundStr = NULL, *outboundStr = NULL;
+               *inboundStr = NULL, *outboundStr = NULL, *alias = NULL;
     virNetDevBandwidthRate inbound, outbound;
     virDomainNetType typ;
     int ret;
@@ -940,6 +944,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "script", &script) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "model", &model) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "alias", &alias) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "inbound", &inboundStr) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "outbound", &outboundStr) < 0)
         goto cleanup;
@@ -1036,6 +1041,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         virBufferAsprintf(&buf, "<script path='%s'/>\n", script);
     if (model != NULL)
         virBufferAsprintf(&buf, "<model type='%s'/>\n", model);
+
+    if (alias != NULL)
+        virBufferAsprintf(&buf, "<alias name='%s'/>\n", alias);
 
     if (inboundStr || outboundStr) {
         virBufferAddLit(&buf, "<bandwidth>\n");
