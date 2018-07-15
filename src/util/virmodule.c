@@ -142,14 +142,14 @@ virModuleLoad(const char *path,
 
 #else /* ! HAVE_DLFCN_H */
 int
-virModuleLoad(const char *path ATTRIBUTE_UNUSED,
+virModuleLoad(const char *path,
               const char *regfunc ATTRIBUTE_UNUSED,
               bool required)
 {
     VIR_DEBUG("dlopen not available on this platform");
     if (required) {
         virReportSystemError(ENOSYS,
-                             _("Failed to find module '%s': %s"), path);
+                             _("Failed to find module '%s'"), path);
         return -1;
     } else {
         /* Since we have no dlopen(), but definition we have no
