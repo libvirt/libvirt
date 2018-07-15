@@ -94,6 +94,6 @@ int virNetDevTapCreateInBridgePort(const char *brname,
 int virNetDevTapInterfaceStats(const char *ifname,
                                virDomainInterfaceStatsPtr stats,
                                bool swapped)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_NETDEV_TAP_H__ */
