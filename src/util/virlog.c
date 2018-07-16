@@ -284,8 +284,7 @@ virLogOnceInit(void)
      */
     r = gethostname(virLogHostname, sizeof(virLogHostname));
     if (r == -1) {
-        ignore_value(virStrcpy(virLogHostname,
-                               "(unknown)", sizeof(virLogHostname)));
+        ignore_value(virStrcpyStatic(virLogHostname, "(unknown)"));
     } else {
         NUL_TERMINATE(virLogHostname);
     }
@@ -1027,7 +1026,7 @@ virLogOutputToJournald(virLogSourcePtr source,
 
     memset(&sa, 0, sizeof(sa));
     sa.sun_family = AF_UNIX;
-    if (!virStrcpy(sa.sun_path, "/run/systemd/journal/socket", sizeof(sa.sun_path)))
+    if (!virStrcpyStatic(sa.sun_path, "/run/systemd/journal/socket"))
         return;
 
     memset(&mh, 0, sizeof(mh));

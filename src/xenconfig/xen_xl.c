@@ -475,15 +475,12 @@ xenParseXLVnuma(virConfPtr conf,
                 data++;
 
                 if (*data) {
-                    size_t len;
                     char vtoken[64];
 
                     if (STRPREFIX(str, "pnode")) {
                         unsigned int cellid;
 
-                        len = strlen(data);
-                        if (!virStrncpy(vtoken, data,
-                                        len, sizeof(vtoken))) {
+                        if (!virStrcpyStatic(vtoken, data)) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
                                            _("vnuma vnode %zu pnode '%s' too long for destination"),
                                            vnodeCnt, data);
@@ -499,9 +496,7 @@ xenParseXLVnuma(virConfPtr conf,
                         }
                         pnode = cellid;
                     } else if (STRPREFIX(str, "size")) {
-                        len = strlen(data);
-                        if (!virStrncpy(vtoken, data,
-                                        len, sizeof(vtoken))) {
+                        if (!virStrcpyStatic(vtoken, data)) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
                                            _("vnuma vnode %zu size '%s' too long for destination"),
                                            vnodeCnt, data);
@@ -514,9 +509,7 @@ xenParseXLVnuma(virConfPtr conf,
                         virDomainNumaSetNodeMemorySize(numa, vnodeCnt, (kbsize * 1024));
 
                     } else if (STRPREFIX(str, "vcpus")) {
-                        len = strlen(data);
-                        if (!virStrncpy(vtoken, data,
-                                        len, sizeof(vtoken))) {
+                        if (!virStrcpyStatic(vtoken, data)) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
                                            _("vnuma vnode %zu vcpus '%s' too long for destination"),
                                            vnodeCnt, data);
@@ -533,9 +526,7 @@ xenParseXLVnuma(virConfPtr conf,
                         size_t i, ndistances;
                         unsigned int value;
 
-                        len = strlen(data);
-                        if (!virStrncpy(vtoken, data,
-                                        len, sizeof(vtoken))) {
+                        if (!virStrcpyStatic(vtoken, data)) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
                                            _("vnuma vnode %zu vdistances '%s' too long for destination"),
                                            vnodeCnt, data);

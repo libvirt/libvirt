@@ -914,8 +914,7 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
 
     memset(&ifreq, 0, sizeof(ifreq));
 
-    if (virStrncpy(ifreq.ifr_name, ifname, strlen(ifname),
-                   sizeof(ifreq.ifr_name)) == NULL) {
+    if (virStrcpyStatic(ifreq.ifr_name, ifname) == NULL) {
         virReportSystemError(ERANGE,
                              _("invalid interface name %s"),
                              ifname);

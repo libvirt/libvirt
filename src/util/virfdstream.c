@@ -1183,7 +1183,7 @@ int virFDStreamConnectUNIX(virStreamPtr st,
             goto error;
         sa.sun_path[0] = '\0';
     } else {
-        if (virStrcpy(sa.sun_path, path, sizeof(sa.sun_path)) == NULL)
+        if (virStrcpyStatic(sa.sun_path, path) == NULL)
             goto error;
     }
 
