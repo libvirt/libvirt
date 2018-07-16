@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 50,
+      "micro": 90,
       "minor": 12,
       "major": 2
     },
-    "package": "v2.12.0-2284-gab3257c281"
+    "package": "v3.0.0-rc0-31-g633e824037"
   },
   "id": "libvirt-2"
 }
@@ -819,10 +819,6 @@
       "parent": "virtio-input-hid-pci"
     },
     {
-      "name": "xen-sysbus",
-      "parent": "bus"
-    },
-    {
       "name": "i440FX",
       "parent": "pci-device"
     },
@@ -853,10 +849,6 @@
     {
       "name": "chardev-pty",
       "parent": "chardev"
-    },
-    {
-      "name": "xen-apic",
-      "parent": "apic-common"
     },
     {
       "name": "SUNW,fdtwo",
@@ -919,6 +911,10 @@
       "parent": "x86_64-cpu"
     },
     {
+      "name": "PIIX3-xen",
+      "parent": "pci-piix3"
+    },
+    {
       "name": "virtio-input-host-pci",
       "parent": "virtio-input-pci"
     },
@@ -935,16 +931,16 @@
       "parent": "e1000-base"
     },
     {
-      "name": "PIIX3-xen",
-      "parent": "pci-piix3"
+      "name": "ICH9-LPC",
+      "parent": "pci-device"
     },
     {
       "name": "pc-i440fx-1.4-machine",
       "parent": "generic-pc-machine"
     },
     {
-      "name": "ICH9-LPC",
-      "parent": "pci-device"
+      "name": "ich9-usb-uhci6",
+      "parent": "pci-uhci-usb"
     },
     {
       "name": "sysbus-ahci",
@@ -955,16 +951,16 @@
       "parent": "pci-uhci-usb"
     },
     {
-      "name": "ich9-usb-uhci6",
-      "parent": "pci-uhci-usb"
-    },
-    {
       "name": "pc-q35-2.6-machine",
       "parent": "generic-pc-machine"
     },
     {
       "name": "usb-mtp",
       "parent": "usb-device"
+    },
+    {
+      "name": "ccid-card-emulated",
+      "parent": "ccid-card"
     },
     {
       "name": "ich9-usb-uhci5",
@@ -1119,10 +1115,6 @@
       "parent": "isa-device"
     },
     {
-      "name": "xen-backend",
-      "parent": "xen-sysdev"
-    },
-    {
       "name": "Haswell-noTSX-IBRS-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
@@ -1205,6 +1197,10 @@
     {
       "name": "isa-cirrus-vga",
       "parent": "isa-device"
+    },
+    {
+      "name": "qio-channel-rdma",
+      "parent": "qio-channel"
     },
     {
       "name": "vhost-vsock-device",
@@ -1323,12 +1319,12 @@
       "parent": "chardev"
     },
     {
-      "name": "chardev-pipe",
-      "parent": "chardev-fd"
-    },
-    {
       "name": "pc-q35-2.9-machine",
       "parent": "generic-pc-machine"
+    },
+    {
+      "name": "chardev-pipe",
+      "parent": "chardev-fd"
     },
     {
       "name": "pc-i440fx-1.7-machine",
@@ -1515,32 +1511,36 @@
       "parent": "pci-uhci-usb"
     },
     {
-      "name": "chardev-file",
-      "parent": "chardev-fd"
+      "name": "chardev-braille",
+      "parent": "chardev"
     },
     {
-      "name": "pc-q35-2.10-machine",
-      "parent": "generic-pc-machine"
+      "name": "chardev-file",
+      "parent": "chardev-fd"
     },
     {
       "name": "intel-iommu",
       "parent": "x86-iommu"
     },
     {
-      "name": "PCIE",
-      "parent": "PCI"
+      "name": "pc-q35-2.10-machine",
+      "parent": "generic-pc-machine"
     },
     {
       "name": "tpm-tis",
       "parent": "isa-device"
     },
     {
-      "name": "xen-sysdev",
-      "parent": "sys-bus-device"
+      "name": "PCIE",
+      "parent": "PCI"
     },
     {
       "name": "pcie-pci-bridge",
       "parent": "base-pci-bridge"
+    },
+    {
+      "name": "ccid-card-passthru",
+      "parent": "ccid-card"
     },
     {
       "name": "qio-dns-resolver",
@@ -1581,10 +1581,6 @@
     {
       "name": "ccid-bus",
       "parent": "bus"
-    },
-    {
-      "name": "xenpv-machine",
-      "parent": "machine"
     },
     {
       "name": "EPYC-IBPB-x86_64-cpu",
@@ -1923,10 +1919,6 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "xen-pci-passthrough",
-      "parent": "pci-device"
-    },
-    {
       "name": "cryptodev-backend",
       "parent": "object"
     },
@@ -2059,15 +2051,7 @@
       "parent": "virtio-pci"
     },
     {
-      "name": "piix3-ide",
-      "parent": "pci-ide"
-    },
-    {
       "name": "ES1370",
-      "parent": "pci-device"
-    },
-    {
-      "name": "xen-pvdevice",
       "parent": "pci-device"
     },
     {
@@ -2079,8 +2063,8 @@
       "parent": "pcie-port"
     },
     {
-      "name": "xenfv-machine",
-      "parent": "generic-pc-machine"
+      "name": "piix3-ide",
+      "parent": "pci-ide"
     },
     {
       "name": "pci-testdev",
@@ -2133,10 +2117,6 @@
     {
       "name": "pc-i440fx-2.6-machine",
       "parent": "generic-pc-machine"
-    },
-    {
-      "name": "xen-platform",
-      "parent": "pci-device"
     },
     {
       "name": "chardev-serial",
@@ -2229,10 +2209,6 @@
     {
       "name": "isa-applesmc",
       "parent": "isa-device"
-    },
-    {
-      "name": "xen-accel",
-      "parent": "accel"
     },
     {
       "name": "secret",
@@ -2385,6 +2361,10 @@
     {
       "name": "generic-sdhci",
       "parent": "sys-bus-device"
+    },
+    {
+      "name": "pvrdma",
+      "parent": "pci-device"
     },
     {
       "name": "isa-pit",
@@ -5201,11 +5181,6 @@
     },
     {
       "hotpluggable-cpus": true,
-      "name": "xenfv",
-      "cpu-max": 128
-    },
-    {
-      "hotpluggable-cpus": true,
       "name": "pc-i440fx-2.3",
       "cpu-max": 255
     },
@@ -5249,11 +5224,6 @@
       "name": "pc-q35-3.0",
       "cpu-max": 288,
       "alias": "q35"
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "xenpv",
-      "cpu-max": 1
     },
     {
       "hotpluggable-cpus": true,
@@ -5506,7 +5476,6 @@
       "name": "Westmere-IBRS",
       "typename": "Westmere-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5529,7 +5498,6 @@
         "avx512cd",
         "avx512bw",
         "avx512vl",
-        "spec-ctrl",
         "avx512f",
         "avx512f",
         "avx512f"
@@ -5558,7 +5526,6 @@
       "name": "Skylake-Client-IBRS",
       "typename": "Skylake-Client-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5575,7 +5542,6 @@
       "name": "SandyBridge-IBRS",
       "typename": "SandyBridge-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5651,7 +5617,6 @@
       "name": "Nehalem-IBRS",
       "typename": "Nehalem-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5686,7 +5651,6 @@
       "name": "IvyBridge-IBRS",
       "typename": "IvyBridge-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5703,7 +5667,6 @@
       "name": "Haswell-noTSX-IBRS",
       "typename": "Haswell-noTSX-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5720,7 +5683,6 @@
       "name": "Haswell-IBRS",
       "typename": "Haswell-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5776,7 +5738,6 @@
       "name": "Broadwell-noTSX-IBRS",
       "typename": "Broadwell-noTSX-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5793,7 +5754,6 @@
       "name": "Broadwell-IBRS",
       "typename": "Broadwell-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "spec-ctrl"
       ],
       "static": false,
       "migration-safe": true
@@ -5977,6 +5937,14 @@
     },
     {
       "parameters": [
+        {
+          "name": "rendernode",
+          "type": "string"
+        },
+        {
+          "name": "gl",
+          "type": "boolean"
+        },
         {
           "name": "head",
           "type": "number"
@@ -6902,6 +6870,36 @@
           "name": "file",
           "help": "file name",
           "type": "string"
+        },
+        {
+          "name": "serial",
+          "help": "disk serial number",
+          "type": "string"
+        },
+        {
+          "name": "addr",
+          "help": "pci address (virtio only)",
+          "type": "string"
+        },
+        {
+          "name": "trans",
+          "help": "chs translation (auto, lba, none)",
+          "type": "string"
+        },
+        {
+          "name": "secs",
+          "help": "number of sectors (ide disk geometry)",
+          "type": "number"
+        },
+        {
+          "name": "heads",
+          "help": "number of heads (ide disk geometry)",
+          "type": "number"
+        },
+        {
+          "name": "cyls",
+          "help": "number of cylinders (ide disk geometry)",
+          "type": "number"
         },
         {
           "name": "if",
@@ -18406,6 +18404,11 @@
           "name": "inactive-l2",
           "default": null,
           "type": "bool"
+        },
+        {
+          "name": "bitmap-directory",
+          "default": null,
+          "type": "bool"
         }
       ],
       "meta-type": "object"
@@ -19557,7 +19560,7 @@
         "osvw": false,
         "apic": true,
         "pmm": false,
-        "spec-ctrl": false,
+        "spec-ctrl": true,
         "tsc-adjust": true,
         "kvm-steal-time": true,
         "kvmclock": true,
@@ -19578,7 +19581,7 @@
         "vaes": false,
         "xsaves": true,
         "lm": true,
-        "umip": false,
+        "umip": true,
         "pse": true,
         "avx2": true,
         "sep": true,
@@ -19610,12 +19613,12 @@
         "rdseed": true,
         "avx512-4vnniw": false,
         "vme": true,
-        "vmx": false,
+        "vmx": true,
         "dtes64": false,
         "mtrr": true,
         "rdtscp": true,
         "pse36": true,
-        "kvm-pv-tlb-flush": false,
+        "kvm-pv-tlb-flush": true,
         "tbm": false,
         "wdt": false,
         "model-id": "Intel(R) Xeon(R) CPU E3-1245 v5 @ 3.50GHz",
@@ -19752,7 +19755,7 @@
         "osvw": false,
         "apic": true,
         "pmm": false,
-        "spec-ctrl": false,
+        "spec-ctrl": true,
         "tsc-adjust": true,
         "kvm-steal-time": true,
         "kvmclock": true,
@@ -19773,7 +19776,7 @@
         "vaes": false,
         "xsaves": true,
         "lm": true,
-        "umip": false,
+        "umip": true,
         "pse": true,
         "avx2": true,
         "sep": true,
@@ -19805,12 +19808,12 @@
         "rdseed": true,
         "avx512-4vnniw": false,
         "vme": true,
-        "vmx": false,
+        "vmx": true,
         "dtes64": false,
         "mtrr": true,
         "rdtscp": true,
         "pse36": true,
-        "kvm-pv-tlb-flush": false,
+        "kvm-pv-tlb-flush": true,
         "tbm": false,
         "wdt": false,
         "model-id": "Intel(R) Xeon(R) CPU E3-1245 v5 @ 3.50GHz",
@@ -19992,7 +19995,7 @@
         "pmu": false,
         "pmm": false,
         "apic": true,
-        "spec-ctrl": false,
+        "spec-ctrl": true,
         "min-xlevel2": 0,
         "tsc-adjust": true,
         "tsc_adjust": true,
@@ -20019,7 +20022,7 @@
         "xsaves": true,
         "tcg-cpuid": true,
         "lm": true,
-        "umip": false,
+        "umip": true,
         "pse": true,
         "avx2": true,
         "sep": true,
@@ -20065,13 +20068,13 @@
         "rdrand": true,
         "rdseed": true,
         "avx512-4vnniw": false,
-        "vmx": false,
+        "vmx": true,
         "vme": true,
         "dtes64": false,
         "mtrr": true,
         "rdtscp": true,
         "pse36": true,
-        "kvm-pv-tlb-flush": false,
+        "kvm-pv-tlb-flush": true,
         "tbm": false,
         "wdt": false,
         "pause_filter": false,
@@ -20221,7 +20224,7 @@
         "osvw": false,
         "apic": true,
         "pmm": false,
-        "spec-ctrl": false,
+        "spec-ctrl": true,
         "tsc-adjust": true,
         "kvm-steal-time": true,
         "kvmclock": true,
@@ -20242,7 +20245,7 @@
         "vaes": false,
         "xsaves": true,
         "lm": true,
-        "umip": false,
+        "umip": true,
         "pse": true,
         "avx2": true,
         "sep": true,
@@ -20274,12 +20277,12 @@
         "rdseed": true,
         "avx512-4vnniw": false,
         "vme": true,
-        "vmx": false,
+        "vmx": true,
         "dtes64": false,
         "mtrr": true,
         "rdtscp": true,
         "pse36": true,
-        "kvm-pv-tlb-flush": false,
+        "kvm-pv-tlb-flush": true,
         "tbm": false,
         "wdt": false,
         "model-id": "Intel(R) Xeon(R) CPU E3-1245 v5 @ 3.50GHz",
@@ -20416,7 +20419,7 @@
         "osvw": false,
         "apic": true,
         "pmm": false,
-        "spec-ctrl": false,
+        "spec-ctrl": true,
         "tsc-adjust": true,
         "kvm-steal-time": true,
         "kvmclock": true,
@@ -20437,7 +20440,7 @@
         "vaes": false,
         "xsaves": true,
         "lm": true,
-        "umip": false,
+        "umip": true,
         "pse": true,
         "avx2": true,
         "sep": true,
@@ -20469,12 +20472,12 @@
         "rdseed": true,
         "avx512-4vnniw": false,
         "vme": true,
-        "vmx": false,
+        "vmx": true,
         "dtes64": false,
         "mtrr": true,
         "rdtscp": true,
         "pse36": true,
-        "kvm-pv-tlb-flush": false,
+        "kvm-pv-tlb-flush": true,
         "tbm": false,
         "wdt": false,
         "model-id": "Intel(R) Xeon(R) CPU E3-1245 v5 @ 3.50GHz",
@@ -20656,7 +20659,7 @@
         "pmu": false,
         "pmm": false,
         "apic": true,
-        "spec-ctrl": false,
+        "spec-ctrl": true,
         "min-xlevel2": 0,
         "tsc-adjust": true,
         "tsc_adjust": true,
@@ -20683,7 +20686,7 @@
         "xsaves": true,
         "tcg-cpuid": true,
         "lm": true,
-        "umip": false,
+        "umip": true,
         "pse": true,
         "avx2": true,
         "sep": true,
@@ -20729,13 +20732,13 @@
         "rdrand": true,
         "rdseed": true,
         "avx512-4vnniw": false,
-        "vmx": false,
+        "vmx": true,
         "vme": true,
         "dtes64": false,
         "mtrr": true,
         "rdtscp": true,
         "pse36": true,
-        "kvm-pv-tlb-flush": false,
+        "kvm-pv-tlb-flush": true,
         "tbm": false,
         "wdt": false,
         "pause_filter": false,

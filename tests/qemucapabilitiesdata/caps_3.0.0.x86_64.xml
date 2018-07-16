@@ -8,6 +8,8 @@
   <flag name='spice'/>
   <flag name='boot-index'/>
   <flag name='hda-duplex'/>
+  <flag name='ccid-emulated'/>
+  <flag name='ccid-passthru'/>
   <flag name='virtio-tx-alg'/>
   <flag name='virtio-blk-pci.ioeventfd'/>
   <flag name='sga'/>
@@ -131,6 +133,7 @@
   <flag name='vserport-change-event'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
+  <flag name='spice-gl'/>
   <flag name='qxl.vram64_size_mb'/>
   <flag name='chardev-logfile'/>
   <flag name='debug-threads'/>
@@ -160,6 +163,7 @@
   <flag name='drive-iotune-group'/>
   <flag name='query-cpu-model-expansion'/>
   <flag name='virtio-net.host_mtu'/>
+  <flag name='spice-rendernode'/>
   <flag name='nvdimm'/>
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
@@ -210,10 +214,10 @@
   <flag name='mch.extended-tseg-mbytes'/>
   <flag name='sev-guest'/>
   <flag name='usb-storage.werror'/>
-  <version>2012050</version>
+  <version>2012090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>437827</microcodeVersion>
-  <package>v2.12.0-2284-gab3257c281</package>
+  <microcodeVersion>438109</microcodeVersion>
+  <package>v3.0.0-rc0-31-g633e824037</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='phys-bits' type='number' value='0'/>
@@ -379,7 +383,7 @@
     <property name='pmu' type='boolean' value='false'/>
     <property name='pmm' type='boolean' value='false'/>
     <property name='apic' type='boolean' value='true' migratable='yes'/>
-    <property name='spec-ctrl' type='boolean' value='false'/>
+    <property name='spec-ctrl' type='boolean' value='true' migratable='yes'/>
     <property name='min-xlevel2' type='number' value='0'/>
     <property name='tsc-adjust' type='boolean' value='true' migratable='yes'/>
     <property name='tsc_adjust' type='boolean' value='true' migratable='yes'/>
@@ -406,7 +410,7 @@
     <property name='xsaves' type='boolean' value='true' migratable='yes'/>
     <property name='tcg-cpuid' type='boolean' value='true' migratable='yes'/>
     <property name='lm' type='boolean' value='true' migratable='yes'/>
-    <property name='umip' type='boolean' value='false'/>
+    <property name='umip' type='boolean' value='true' migratable='yes'/>
     <property name='pse' type='boolean' value='true' migratable='yes'/>
     <property name='avx2' type='boolean' value='true' migratable='yes'/>
     <property name='sep' type='boolean' value='true' migratable='yes'/>
@@ -452,13 +456,13 @@
     <property name='rdrand' type='boolean' value='true' migratable='yes'/>
     <property name='rdseed' type='boolean' value='true' migratable='yes'/>
     <property name='avx512-4vnniw' type='boolean' value='false'/>
-    <property name='vmx' type='boolean' value='false'/>
+    <property name='vmx' type='boolean' value='true' migratable='yes'/>
     <property name='vme' type='boolean' value='true' migratable='yes'/>
     <property name='dtes64' type='boolean' value='false'/>
     <property name='mtrr' type='boolean' value='true' migratable='yes'/>
     <property name='rdtscp' type='boolean' value='true' migratable='yes'/>
     <property name='pse36' type='boolean' value='true' migratable='yes'/>
-    <property name='kvm-pv-tlb-flush' type='boolean' value='false'/>
+    <property name='kvm-pv-tlb-flush' type='boolean' value='true' migratable='yes'/>
     <property name='tbm' type='boolean' value='false'/>
     <property name='wdt' type='boolean' value='false'/>
     <property name='pause_filter' type='boolean' value='false'/>
@@ -747,9 +751,7 @@
     <blocker name='3dnowext'/>
     <blocker name='3dnow'/>
   </cpu>
-  <cpu type='kvm' name='Westmere-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Westmere-IBRS' usable='yes'/>
   <cpu type='kvm' name='Westmere' usable='yes'/>
   <cpu type='kvm' name='Skylake-Server-IBRS' usable='no'>
     <blocker name='avx512f'/>
@@ -758,7 +760,6 @@
     <blocker name='avx512cd'/>
     <blocker name='avx512bw'/>
     <blocker name='avx512vl'/>
-    <blocker name='spec-ctrl'/>
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
@@ -774,13 +775,9 @@
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
   </cpu>
-  <cpu type='kvm' name='Skylake-Client-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Skylake-Client-IBRS' usable='yes'/>
   <cpu type='kvm' name='Skylake-Client' usable='yes'/>
-  <cpu type='kvm' name='SandyBridge-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='SandyBridge-IBRS' usable='yes'/>
   <cpu type='kvm' name='SandyBridge' usable='yes'/>
   <cpu type='kvm' name='Penryn' usable='yes'/>
   <cpu type='kvm' name='Opteron_G5' usable='no'>
@@ -802,9 +799,7 @@
   </cpu>
   <cpu type='kvm' name='Opteron_G2' usable='yes'/>
   <cpu type='kvm' name='Opteron_G1' usable='yes'/>
-  <cpu type='kvm' name='Nehalem-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Nehalem-IBRS' usable='yes'/>
   <cpu type='kvm' name='Nehalem' usable='yes'/>
   <cpu type='kvm' name='KnightsMill' usable='no'>
     <blocker name='avx512f'/>
@@ -818,17 +813,11 @@
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
   </cpu>
-  <cpu type='kvm' name='IvyBridge-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='IvyBridge-IBRS' usable='yes'/>
   <cpu type='kvm' name='IvyBridge' usable='yes'/>
-  <cpu type='kvm' name='Haswell-noTSX-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Haswell-noTSX-IBRS' usable='yes'/>
   <cpu type='kvm' name='Haswell-noTSX' usable='yes'/>
-  <cpu type='kvm' name='Haswell-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Haswell-IBRS' usable='yes'/>
   <cpu type='kvm' name='Haswell' usable='yes'/>
   <cpu type='kvm' name='EPYC-IBPB' usable='no'>
     <blocker name='sha-ni'/>
@@ -850,13 +839,9 @@
     <blocker name='osvw'/>
   </cpu>
   <cpu type='kvm' name='Conroe' usable='yes'/>
-  <cpu type='kvm' name='Broadwell-noTSX-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Broadwell-noTSX-IBRS' usable='yes'/>
   <cpu type='kvm' name='Broadwell-noTSX' usable='yes'/>
-  <cpu type='kvm' name='Broadwell-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Broadwell-IBRS' usable='yes'/>
   <cpu type='kvm' name='Broadwell' usable='yes'/>
   <cpu type='kvm' name='486' usable='yes'/>
   <cpu type='tcg' name='max' usable='yes'/>
@@ -1180,7 +1165,6 @@
   <machine name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='xenfv' hotplugCpus='yes' maxCpus='128'/>
   <machine name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255'/>
@@ -1190,7 +1174,6 @@
   <machine name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288'/>
   <machine name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288'/>
   <machine name='pc-q35-3.0' alias='q35' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='xenpv' maxCpus='1'/>
   <machine name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288'/>
   <machine name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288'/>
