@@ -2876,7 +2876,6 @@ virStorageFileBackendRegister;
 
 
 # util/virstring.h
-virArgvToString;
 virAsprintfInternal;
 virSkipSpaces;
 virSkipSpacesAndBackslash;

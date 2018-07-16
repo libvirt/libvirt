@@ -65,8 +65,6 @@ char *virStringListGetFirstWithPrefix(char **strings,
                                       const char *prefix)
     ATTRIBUTE_NONNULL(2);
 
-char *virArgvToString(const char *const *argv);
-
 int virStrToLong_i(char const *s,
                    char **end_ptr,
                    int base,

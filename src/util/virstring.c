@@ -917,33 +917,6 @@ virStringIsEmpty(const char *str)
     return str[0] == '\0';
 }
 
-char *
-virArgvToString(const char *const *argv)
-{
-    int len;
-    size_t i;
-    char *ret, *p;
-
-    for (len = 1, i = 0; argv[i]; i++)
-        len += strlen(argv[i]) + 1;
-
-    if (VIR_ALLOC_N(ret, len) < 0)
-        return NULL;
-    p = ret;
-
-    for (i = 0; argv[i]; i++) {
-        if (i != 0)
-            *(p++) = ' ';
-
-        strcpy(p, argv[i]);
-        p += strlen(argv[i]);
-    }
-
-    *p = '\0';
-
-    return ret;
-}
-
 /**
  * virStrdup:
  * @dest: where to store duplicated string
