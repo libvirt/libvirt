@@ -598,42 +598,27 @@ virCgroupDetectPlacement(virCgroupPtr group,
 
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             const char *typestr = virCgroupControllerTypeToString(i);
-            int typelen = strlen(typestr);
-            char *tmp = controllers;
 
-            while (tmp) {
-                char *next = strchr(tmp, ',');
-                int len;
-                if (next) {
-                    len = next - tmp;
-                    next++;
-                } else {
-                    len = strlen(tmp);
-                }
-
+            if (virCgroupMountOptsMatchController(controllers, typestr) &&
+                group->controllers[i].mountPoint != NULL &&
+                group->controllers[i].placement == NULL) {
                 /*
                  * selfpath == "/" + path="" -> "/"
                  * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
                  * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
                  */
-                if (typelen == len && STREQLEN(typestr, tmp, len) &&
-                    group->controllers[i].mountPoint != NULL &&
-                    group->controllers[i].placement == NULL) {
-                    if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
-                        if (VIR_STRDUP(group->controllers[i].placement,
-                                       selfpath) < 0)
-                            goto cleanup;
-                    } else {
-                        if (virAsprintf(&group->controllers[i].placement,
-                                        "%s%s%s", selfpath,
-                                        (STREQ(selfpath, "/") ||
-                                         STREQ(path, "") ? "" : "/"),
-                                        path) < 0)
-                            goto cleanup;
-                    }
+                if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
+                    if (VIR_STRDUP(group->controllers[i].placement,
+                                   selfpath) < 0)
+                        goto cleanup;
+                } else {
+                    if (virAsprintf(&group->controllers[i].placement,
+                                    "%s%s%s", selfpath,
+                                    (STREQ(selfpath, "/") ||
+                                     STREQ(path, "") ? "" : "/"),
+                                    path) < 0)
+                        goto cleanup;
                 }
-
-                tmp = next;
             }
         }
     }
