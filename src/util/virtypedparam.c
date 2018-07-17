@@ -1501,8 +1501,8 @@ virTypedParamsSerialize(virTypedParameterPtr params,
     size_t j;
     int rv = -1;
     virTypedParameterRemotePtr params_val;
+    int params_len = nparams;
 
-    *remote_params_len = nparams;
     if (VIR_ALLOC_N(params_val, nparams) < 0)
         goto cleanup;
 
@@ -1515,7 +1515,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
         if (!param->type ||
             (!(flags & VIR_TYPED_PARAM_STRING_OKAY) &&
              param->type == VIR_TYPED_PARAM_STRING)) {
-            --*remote_params_len;
+            --params_len;
             continue;
         }
 
@@ -1556,6 +1556,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
     }
 
     *remote_params_val = params_val;
+    *remote_params_len = params_len;
     params_val = NULL;
     rv = 0;
 
