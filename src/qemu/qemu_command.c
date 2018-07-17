@@ -7917,13 +7917,27 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
         virBufferAddLit(&opt, ",password");
 
     if (cfg->vncTLS) {
-        virBufferAddLit(&opt, ",tls");
-        if (cfg->vncTLSx509verify) {
-            virBufferAddLit(&opt, ",x509verify=");
-            virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509)) {
+            const char *alias = "vnc-tls-creds0";
+            if (qemuBuildTLSx509CommandLine(cmd,
+                                            cfg->vncTLSx509certdir,
+                                            true,
+                                            cfg->vncTLSx509verify,
+                                            NULL,
+                                            alias,
+                                            qemuCaps) < 0)
+                goto error;
+
+            virBufferAsprintf(&opt, ",tls-creds=%s", alias);
         } else {
-            virBufferAddLit(&opt, ",x509=");
-            virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
+            virBufferAddLit(&opt, ",tls");
+            if (cfg->vncTLSx509verify) {
+                virBufferAddLit(&opt, ",x509verify=");
+                virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
+            } else {
+                virBufferAddLit(&opt, ",x509=");
+                virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
+            }
         }
     }
 
