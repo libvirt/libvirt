@@ -1467,6 +1467,7 @@ virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
         } else {
             virTypedParamsFree(*params, i);
             *params = NULL;
+            *nparams = 0;
         }
     }
     return rv;
