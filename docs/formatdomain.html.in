@@ -747,6 +747,8 @@
     &lt;shares&gt;2048&lt;/shares&gt;
     &lt;period&gt;1000000&lt;/period&gt;
     &lt;quota&gt;-1&lt;/quota&gt;
+    &lt;global_period&gt;1000000&lt;/global_period&gt;
+    &lt;global_quota&gt;-1&lt;/global_quota&gt;
     &lt;emulator_period&gt;1000000&lt;/emulator_period&gt;
     &lt;emulator_quota&gt;-1&lt;/emulator_quota&gt;
     &lt;iothread_period&gt;1000000&lt;/iothread_period&gt;
@@ -836,6 +838,26 @@
         speed.
         <span class="since">Only QEMU driver support since 0.9.4, LXC since
         0.9.10</span>
+      </dd>
+      <dt><code>global_period</code></dt>
+      <dd>
+        The optional <code>global_period</code> element specifies the
+        enforcement CFS scheduler interval (unit: microseconds) for the whole
+        domain in contrast with <code>period</code> which enforces the interval
+        per vCPU. The value should be in range 1000, 1000000]. A
+        <code>global_period</code> with value 0 means no value.
+        <span class="since">Only QEMU driver support since 1.3.3</span>
+      </dd>
+      <dt><code>global_quota</code></dt>
+      <dd>
+        The optional <code>global_quota</code> element specifies the maximum
+        allowed bandwidth (unit: microseconds) within a period for the whole
+        domain. A domain with <code>global_quota</code> as any negative
+        value indicates that the domain has infinite bandwidth, which means that
+        it is not bandwidth controlled. The value should be in range
+        [1000, 18446744073709551] or less than 0. A <code>global_quota</code>
+        with value 0 means no value.
+        <span class="since">Only QEMU driver support since 1.3.3</span>
       </dd>
 
       <dt><code>emulator_period</code></dt>
