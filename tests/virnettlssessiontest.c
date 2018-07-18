@@ -180,7 +180,7 @@ static int testTLSSessionInit(const void *opaque)
             if (rv == VIR_NET_TLS_HANDSHAKE_COMPLETE)
                 clientShake = true;
         }
-    } while (!clientShake && !serverShake);
+    } while (!clientShake || !serverShake);
 
 
     /* Finally make sure the server validation does what
