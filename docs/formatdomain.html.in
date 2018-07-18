@@ -631,45 +631,45 @@
       </dd>
       <dt><code>vcpus</code></dt>
       <dd>
-        The vcpus element allows to control state of individual vcpus.
+        The vcpus element allows to control state of individual vCPUs.
 
         The <code>id</code> attribute specifies the vCPU id as used by libvirt
-        in other places such as vcpu pinning, scheduler information and NUMA
-        assignment. Note that the vcpu ID as seen in the guest may differ from
-        libvirt ID in certain cases. Valid IDs are from 0 to the maximum vcpu
+        in other places such as vCPU pinning, scheduler information and NUMA
+        assignment. Note that the vCPU ID as seen in the guest may differ from
+        libvirt ID in certain cases. Valid IDs are from 0 to the maximum vCPU
         count as set by the <code>vcpu</code> element minus 1.
 
         The <code>enabled</code> attribute allows to control the state of the
-        vcpu. Valid values are <code>yes</code> and <code>no</code>.
+        vCPU. Valid values are <code>yes</code> and <code>no</code>.
 
-        <code>hotpluggable</code> controls whether given vcpu can be hotplugged
-        and hotunplugged in cases when the cpu is enabled at boot. Note that
-        all disabled vcpus must be hotpluggable. Valid values are
+        <code>hotpluggable</code> controls whether given vCPU can be hotplugged
+        and hotunplugged in cases when the CPU is enabled at boot. Note that
+        all disabled vCPUs must be hotpluggable. Valid values are
         <code>yes</code> and <code>no</code>.
 
-        <code>order</code> allows to specify the order to add the online vcpus.
-        For hypervisors/platforms that require to insert multiple vcpus at once
-        the order may be duplicated across all vcpus that need to be
-        enabled at once. Specifying order is not necessary, vcpus are then
+        <code>order</code> allows to specify the order to add the online vCPUs.
+        For hypervisors/platforms that require to insert multiple vCPUs at once
+        the order may be duplicated across all vCPUs that need to be
+        enabled at once. Specifying order is not necessary, vCPUs are then
         added in an arbitrary order. If order info is used, it must be used for
-        all online vcpus. Hypervisors may clear or update ordering information
+        all online vCPUs. Hypervisors may clear or update ordering information
         during certain operations to assure valid configuration.
 
-        Note that hypervisors may create hotpluggable vcpus differently from
-        boot vcpus thus special initialization may be necessary.
+        Note that hypervisors may create hotpluggable vCPUs differently from
+        boot vCPUs thus special initialization may be necessary.
 
-        Hypervisors may require that vcpus enabled on boot which are not
+        Hypervisors may require that vCPUs enabled on boot which are not
         hotpluggable are clustered at the beginning starting with ID 0. It may
-        be also required that vcpu 0 is always present and non-hotpluggable.
+        be also required that vCPU 0 is always present and non-hotpluggable.
 
-        Note that providing state for individual cpus may be necessary to enable
+        Note that providing state for individual CPUs may be necessary to enable
         support of addressable vCPU hotplug and this feature may not be
         supported by all hypervisors.
 
-        For QEMU the following conditions are required. Vcpu 0 needs to be
-        enabled and non-hotpluggable. On PPC64 along with it vcpus that are in
-        the same core need to be enabled as well. All non-hotpluggable cpus
-        present at boot need to be grouped after vcpu 0.
+        For QEMU the following conditions are required. vCPU 0 needs to be
+        enabled and non-hotpluggable. On PPC64 along with it vCPUs that are in
+        the same core need to be enabled as well. All non-hotpluggable CPUs
+        present at boot need to be grouped after vCPU 0.
         <span class="since">Since 2.2.0 (QEMU only)</span>
       </dd>
     </dl>
@@ -768,17 +768,17 @@
       <dt><code>cputune</code></dt>
       <dd>
          The optional <code>cputune</code> element provides details
-         regarding the cpu tunable parameters for the domain.
+         regarding the CPU tunable parameters for the domain.
          <span class="since">Since 0.9.0</span>
       </dd>
       <dt><code>vcpupin</code></dt>
       <dd>
         The optional <code>vcpupin</code> element specifies which of host's
-        physical CPUs the domain VCPU will be pinned to. If this is omitted,
+        physical CPUs the domain vCPU will be pinned to. If this is omitted,
         and attribute <code>cpuset</code> of element <code>vcpu</code> is
         not specified, the vCPU is pinned to all the physical CPUs by default.
         It contains two required attributes, the attribute <code>vcpu</code>
-        specifies vcpu id, and the attribute <code>cpuset</code> is same as
+        specifies vCPU id, and the attribute <code>cpuset</code> is same as
         attribute <code>cpuset</code> of element <code>vcpu</code>.
         (NB: Only qemu driver support)
         <span class="since">Since 0.9.0</span>
@@ -786,7 +786,7 @@
        <dt><code>emulatorpin</code></dt>
        <dd>
          The optional <code>emulatorpin</code> element specifies which of host
-         physical CPUs the "emulator", a subset of a domain not including vcpu
+         physical CPUs the "emulator", a subset of a domain not including vCPU
          or iothreads will be pinned to. If this is omitted, and attribute
          <code>cpuset</code> of element <code>vcpu</code> is not specified,
          "emulator" is pinned to all the physical CPUs by default. It contains
@@ -820,7 +820,7 @@
       <dt><code>period</code></dt>
       <dd>
         The optional <code>period</code> element specifies the enforcement
-        interval(unit: microseconds). Within <code>period</code>, each vcpu of
+        interval(unit: microseconds). Within <code>period</code>, each vCPU of
         the domain will not be allowed to consume more than <code>quota</code>
         worth of runtime. The value should be in range [1000, 1000000]. A period
         with value 0 means no value.
@@ -835,7 +835,7 @@
         vCPU threads, which means that it is not bandwidth controlled. The value
         should be in range [1000, 18446744073709551] or less than 0. A quota
         with value 0 means no value. You can use this feature to ensure that all
-        vcpus run at the same speed.
+        vCPUs run at the same speed.
         <span class="since">Only QEMU driver support since 0.9.4, LXC since
         0.9.10</span>
       </dd>
@@ -864,7 +864,7 @@
       <dd>
         The optional <code>emulator_period</code> element specifies the enforcement
         interval(unit: microseconds). Within <code>emulator_period</code>, emulator
-        threads(those excluding vcpus) of the domain will not be allowed to consume
+        threads(those excluding vCPUs) of the domain will not be allowed to consume
         more than <code>emulator_quota</code> worth of runtime. The value should be
         in range [1000, 1000000]. A period with value 0 means no value.
         <span class="since">Only QEMU driver support since 0.10.0</span>
@@ -873,9 +873,9 @@
       <dd>
         The optional <code>emulator_quota</code> element specifies the maximum
         allowed bandwidth(unit: microseconds) for domain's emulator threads(those
-        excluding vcpus). A domain with <code>emulator_quota</code> as any negative
+        excluding vCPUs). A domain with <code>emulator_quota</code> as any negative
         value indicates that the domain has infinite bandwidth for emulator threads
-        (those excluding vcpus), which means that it is not bandwidth controlled.
+        (those excluding vCPUs), which means that it is not bandwidth controlled.
         The value should be in range [1000, 18446744073709551] or less than 0. A
         quota with value 0 means no value.
         <span class="since">Only QEMU driver support since 0.10.0</span>
@@ -2131,13 +2131,13 @@
           QEMU, the user-configurable extended TSEG feature was unavailable up
           to and including <code>pc-q35-2.9</code>. Starting with
           <code>pc-q35-2.10</code> the feature is available, with default size
-          16 MiB.  That should suffice for up to roughly 272 VCPUs, 5 GiB guest
+          16 MiB.  That should suffice for up to roughly 272 vCPUs, 5 GiB guest
           RAM in total, no hotplug memory range, and 32 GiB of 64-bit PCI MMIO
-          aperture.  Or for 48 VCPUs, with 1TB of guest RAM, no hotplug DIMM
+          aperture.  Or for 48 vCPUs, with 1TB of guest RAM, no hotplug DIMM
           range, and 32GB of 64-bit PCI MMIO aperture. The values may also vary
           based on the loader the VM is using.
         </p><p>
-          Additional size might be needed for significantly higher VCPU counts
+          Additional size might be needed for significantly higher vCPU counts
           or increased address space (that can be memory, maxMemory, 64-bit PCI
           MMIO aperture size; roughly 8 MiB of TSEG per 1 TiB of address space)
           which can also be rounded up.
@@ -2147,7 +2147,7 @@
           documentation of the guest OS or loader (if there is any), or test
           this by trial-and-error changing the value until the VM boots
           successfully.  Yet another guiding value for users might be the fact
-          that 48 MiB should be enough for pretty large guests (240 VCPUs and
+          that 48 MiB should be enough for pretty large guests (240 vCPUs and
           4TB guest RAM), but it is on purpose not set as default as 48 MiB of
           unavailable RAM might be too much for small guests (e.g. with 512 MiB
           of RAM).
@@ -2425,7 +2425,7 @@
     </tr>
     <tr>
       <td><code>cpu_cycles</code></td>
-      <td>the count of cpu cycles (total/elapsed)</td>
+      <td>the count of CPU cycles (total/elapsed)</td>
       <td><code>perf.cpu_cycles</code></td>
     </tr>
     <tr>
@@ -2460,25 +2460,25 @@
     </tr>
     <tr>
       <td><code>stalled_cycles_frontend</code></td>
-      <td>the count of stalled cpu cycles in the frontend of the instruction
+      <td>the count of stalled CPU cycles in the frontend of the instruction
           processor pipeline by applications running on the platform</td>
       <td><code>perf.stalled_cycles_frontend</code></td>
     </tr>
     <tr>
       <td><code>stalled_cycles_backend</code></td>
-      <td>the count of stalled cpu cycles in the backend of the instruction
+      <td>the count of stalled CPU cycles in the backend of the instruction
           processor pipeline by applications running on the platform</td>
       <td><code>perf.stalled_cycles_backend</code></td>
     </tr>
     <tr>
       <td><code>ref_cpu_cycles</code></td>
-      <td>the count of total cpu cycles not affected by CPU frequency scaling
+      <td>the count of total CPU cycles not affected by CPU frequency scaling
          by applications running on the platform</td>
       <td><code>perf.ref_cpu_cycles</code></td>
     </tr>
     <tr>
       <td><code>cpu_clock</code></td>
-      <td>the count of cpu clock time, as measured by a monotonic
+      <td>the count of CPU clock time, as measured by a monotonic
           high-resolution per-CPU timer, by applications running on
           the platform</td>
       <td><code>perf.cpu_clock</code></td>
@@ -2505,7 +2505,7 @@
     </tr>
     <tr>
       <td><code>cpu_migrations</code></td>
-      <td>the count of cpu migrations, that is, where the process
+      <td>the count of CPU migrations, that is, where the process
           moved from one logical processor to another, by
           applications running on the platform</td>
       <td><code>perf.cpu_migrations</code></td>
@@ -5621,8 +5621,8 @@ qemu-kvm -net nic,model=? /dev/null
         The resulting difference, according to the qemu developer who
         added the option is: "bh makes tx more asynchronous and reduces
         latency, but potentially causes more processor bandwidth
-        contention since the cpu doing the tx isn't necessarily the
-        cpu where the guest generated the packets."<br/><br/>
+        contention since the CPU doing the tx isn't necessarily the
+        CPU where the guest generated the packets."<br/><br/>
 
         <b>In general you should leave this option alone, unless you
         are very certain you know what you are doing.</b>
