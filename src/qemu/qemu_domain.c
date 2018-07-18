@@ -8691,12 +8691,29 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
  */
 int
 qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
-                              virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
+                              virQEMUCapsPtr qemuCaps,
                               char **backendAlias)
 {
+    qemuDomainDiskPrivatePtr priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    const char *nodename = NULL;
     *backendAlias = NULL;
 
-    if (!(*backendAlias = qemuAliasDiskDriveFromDisk(disk)))
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (!(*backendAlias = qemuAliasDiskDriveFromDisk(disk)))
+            return -1;
+
+        return 0;
+    }
+
+    if (virStorageSourceIsEmpty(disk->src))
+        return 0;
+
+    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON)
+        nodename = priv->nodeCopyOnRead;
+    else
+        nodename = disk->src->nodeformat;
+
+    if (VIR_STRDUP(*backendAlias, nodename) < 0)
         return -1;
 
     return 0;
