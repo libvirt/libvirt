@@ -80,7 +80,6 @@
 
 # A few optional bits off by default, we enable later
 %define with_fuse          0%{!?_without_fuse:0}
-%define with_cgconfig      0%{!?_without_cgconfig:0}
 %define with_sanlock       0%{!?_without_sanlock:0}
 %define with_systemd       0%{!?_without_systemd:0}
 %define with_numad         0%{!?_without_numad:0}
@@ -214,11 +213,6 @@
     %ifnarch s390 s390x %{arm}
         %define with_numad    0%{!?_without_numad:1}
     %endif
-%endif
-
-# Pull in cgroups config system
-%if %{with_qemu} || %{with_lxc}
-    %define with_cgconfig 0%{!?_without_cgconfig:1}
 %endif
 
 # Force QEMU to run as non-root
@@ -495,9 +489,6 @@ Requires: avahi-libs
 Requires: polkit >= 0.112
 %else
 Requires: polkit >= 0.93
-%endif
-%if %{with_cgconfig}
-Requires: libcgroup
 %endif
 %ifarch %{ix86} x86_64 ia64
 # For virConnectGetSysinfo
@@ -1490,16 +1481,6 @@ if [ $1 -eq 1 ] ; then
 fi
     %endif
 %else
-    %if %{with_cgconfig}
-# Starting with Fedora 16/RHEL-7, systemd automounts all cgroups,
-# and cgconfig is no longer a necessary service.
-        %if 0%{?rhel} && 0%{?rhel} < 7
-if [ "$1" -eq "1" ]; then
-/sbin/chkconfig cgconfig on
-fi
-        %endif
-    %endif
-
 /sbin/chkconfig --add libvirtd
 /sbin/chkconfig --add virtlogd
 /sbin/chkconfig --add virtlockd
