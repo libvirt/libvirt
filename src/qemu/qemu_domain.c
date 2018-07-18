@@ -8705,40 +8705,6 @@ qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
 }
 
 
-bool
-qemuDomainDiskSourceDiffers(virDomainDiskDefPtr disk,
-                            virDomainDiskDefPtr origDisk)
-{
-    char *diskSrc = NULL, *origDiskSrc = NULL;
-    bool diskEmpty, origDiskEmpty;
-    bool ret = true;
-
-    diskEmpty = virStorageSourceIsEmpty(disk->src);
-    origDiskEmpty = virStorageSourceIsEmpty(origDisk->src);
-
-    if (diskEmpty && origDiskEmpty)
-        return false;
-
-    if (diskEmpty ^ origDiskEmpty)
-        return true;
-
-    /* This won't be a network storage, so no need to get the diskPriv
-     * in order to fetch the secret, thus NULL for param2 */
-    if (qemuGetDriveSourceString(disk->src, NULL, &diskSrc) < 0 ||
-        qemuGetDriveSourceString(origDisk->src, NULL, &origDiskSrc) < 0)
-        goto cleanup;
-
-    /* So far in qemu disk sources are considered different
-     * if either path to disk or its format changes. */
-    ret = virDomainDiskGetFormat(disk) != virDomainDiskGetFormat(origDisk) ||
-          STRNEQ_NULLABLE(diskSrc, origDiskSrc);
- cleanup:
-    VIR_FREE(diskSrc);
-    VIR_FREE(origDiskSrc);
-    return ret;
-}
-
-
 /*
  * Makes sure the @disk differs from @orig_disk only by the source
  * path and nothing else.  Fields that are being checked and the

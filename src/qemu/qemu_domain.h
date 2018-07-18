@@ -720,9 +720,6 @@ int qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                                  virDomainDiskDefPtr disk,
                                  bool report_broken);
 
-bool qemuDomainDiskSourceDiffers(virDomainDiskDefPtr disk,
-                                 virDomainDiskDefPtr origDisk);
-
 bool qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
                                    virDomainDiskDefPtr orig_disk);
 

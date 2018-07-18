@@ -7871,7 +7871,7 @@ qemuDomainChangeDiskLive(virDomainObjPtr vm,
     if (!qemuDomainDiskChangeSupported(disk, orig_disk))
         goto cleanup;
 
-    if (qemuDomainDiskSourceDiffers(disk, orig_disk)) {
+    if (!virStorageSourceIsSameLocation(disk->src, orig_disk->src)) {
         /* Disk source can be changed only for removable devices */
         if (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
             disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
