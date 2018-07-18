@@ -831,11 +831,11 @@
       <dd>
         The optional <code>quota</code> element specifies the maximum allowed
         bandwidth(unit: microseconds). A domain with <code>quota</code> as any
-        negative value indicates that the domain has infinite bandwidth, which
-        means that it is not bandwidth controlled. The value should be in range
-        [1000, 18446744073709551] or less than 0. A quota with value 0 means no
-        value. You can use this feature to ensure that all vcpus run at the same
-        speed.
+        negative value indicates that the domain has infinite bandwidth for
+        vCPU threads, which means that it is not bandwidth controlled. The value
+        should be in range [1000, 18446744073709551] or less than 0. A quota
+        with value 0 means no value. You can use this feature to ensure that all
+        vcpus run at the same speed.
         <span class="since">Only QEMU driver support since 0.9.4, LXC since
         0.9.10</span>
       </dd>
