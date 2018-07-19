@@ -1041,14 +1041,10 @@ mymain(void)
     DO_TEST("disk-network-nbd-ipv6", NONE);
     DO_TEST("disk-network-nbd-ipv6-export", NONE);
     DO_TEST("disk-network-nbd-unix", NONE);
-    DO_TEST("disk-network-iscsi", NONE);
-    DO_TEST("disk-network-iscsi-auth", NONE);
+    DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_BLOCK);
     DO_TEST_PARSE_ERROR("disk-network-iscsi-auth-secrettype-invalid", NONE);
     DO_TEST_PARSE_ERROR("disk-network-iscsi-auth-wrong-secrettype", NONE);
     DO_TEST_PARSE_ERROR("disk-network-source-auth-both", NONE);
-    DO_TEST("disk-network-iscsi-lun",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-network-gluster",
             QEMU_CAPS_GLUSTER_DEBUG_LEVEL);
     DO_TEST("disk-network-rbd", NONE);
