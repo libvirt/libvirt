@@ -1129,6 +1129,7 @@ mymain(void)
     DO_TEST("disk-copy_on_read",
             QEMU_CAPS_VIRTIO_TX_ALG,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
+    DO_TEST_CAPS_LATEST("disk-copy_on_read");
     DO_TEST("disk-discard",
             QEMU_CAPS_DRIVE_DISCARD);
     DO_TEST("disk-detect-zeroes",
