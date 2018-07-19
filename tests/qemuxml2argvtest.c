@@ -1016,65 +1016,65 @@ mymain(void)
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-order",
             QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("disk-virtio-drive-queues",
+    DO_TEST("disk-virtio-queues",
             QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
-    DO_TEST("disk-drive-boot-disk",
+    DO_TEST("disk-boot-disk",
             QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST("disk-drive-boot-cdrom",
+    DO_TEST("disk-boot-cdrom",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("floppy-drive-fat",
             QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST("disk-drive-readonly-disk", NONE);
-    DO_TEST("disk-drive-readonly-no-device", NONE);
-    DO_TEST("disk-drive-fmt-qcow",
+    DO_TEST("disk-readonly-disk", NONE);
+    DO_TEST("disk-readonly-no-device", NONE);
+    DO_TEST("disk-fmt-qcow",
             QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST_PARSE_ERROR("disk-drive-fmt-cow", QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST_PARSE_ERROR("disk-drive-fmt-dir", QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST_PARSE_ERROR("disk-drive-fmt-iso", QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST("disk-drive-shared", NONE);
-    DO_TEST_PARSE_ERROR("disk-drive-shared-qcow", NONE);
-    DO_TEST("disk-drive-shared-locking",
+    DO_TEST_PARSE_ERROR("disk-fmt-cow", QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST_PARSE_ERROR("disk-fmt-dir", QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST_PARSE_ERROR("disk-fmt-iso", QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST("disk-shared", NONE);
+    DO_TEST_PARSE_ERROR("disk-shared-qcow", NONE);
+    DO_TEST("disk-shared-locking",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DISK_SHARE_RW);
-    DO_TEST("disk-drive-error-policy", NONE);
-    DO_TEST_CAPS_LATEST("disk-drive-error-policy");
-    DO_TEST("disk-drive-cache-v2-wt", NONE);
-    DO_TEST("disk-drive-cache-v2-wb", NONE);
-    DO_TEST("disk-drive-cache-v2-none", NONE);
-    DO_TEST("disk-drive-cache-directsync", NONE);
-    DO_TEST("disk-drive-cache-unsafe", NONE);
-    DO_TEST_CAPS_VER("disk-drive-write-cache", "2.6.0");
-    DO_TEST_CAPS_VER("disk-drive-write-cache", "2.7.0");
-    DO_TEST_CAPS_LATEST("disk-drive-write-cache");
-    DO_TEST("disk-drive-network-nbd", NONE);
-    DO_TEST("disk-drive-network-nbd-export", NONE);
-    DO_TEST("disk-drive-network-nbd-ipv6", NONE);
-    DO_TEST("disk-drive-network-nbd-ipv6-export", NONE);
-    DO_TEST("disk-drive-network-nbd-unix", NONE);
-    DO_TEST("disk-drive-network-iscsi", NONE);
-    DO_TEST("disk-drive-network-iscsi-auth", NONE);
-    DO_TEST_PARSE_ERROR("disk-drive-network-iscsi-auth-secrettype-invalid", NONE);
-    DO_TEST_PARSE_ERROR("disk-drive-network-iscsi-auth-wrong-secrettype", NONE);
-    DO_TEST_PARSE_ERROR("disk-drive-network-source-auth-both", NONE);
-    DO_TEST("disk-drive-network-iscsi-lun",
+    DO_TEST("disk-error-policy", NONE);
+    DO_TEST_CAPS_LATEST("disk-error-policy");
+    DO_TEST("disk-cache-v2-wt", NONE);
+    DO_TEST("disk-cache-v2-wb", NONE);
+    DO_TEST("disk-cache-v2-none", NONE);
+    DO_TEST("disk-cache-directsync", NONE);
+    DO_TEST("disk-cache-unsafe", NONE);
+    DO_TEST_CAPS_VER("disk-write-cache", "2.6.0");
+    DO_TEST_CAPS_VER("disk-write-cache", "2.7.0");
+    DO_TEST_CAPS_LATEST("disk-write-cache");
+    DO_TEST("disk-network-nbd", NONE);
+    DO_TEST("disk-network-nbd-export", NONE);
+    DO_TEST("disk-network-nbd-ipv6", NONE);
+    DO_TEST("disk-network-nbd-ipv6-export", NONE);
+    DO_TEST("disk-network-nbd-unix", NONE);
+    DO_TEST("disk-network-iscsi", NONE);
+    DO_TEST("disk-network-iscsi-auth", NONE);
+    DO_TEST_PARSE_ERROR("disk-network-iscsi-auth-secrettype-invalid", NONE);
+    DO_TEST_PARSE_ERROR("disk-network-iscsi-auth-wrong-secrettype", NONE);
+    DO_TEST_PARSE_ERROR("disk-network-source-auth-both", NONE);
+    DO_TEST("disk-network-iscsi-lun",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_BLOCK);
-    DO_TEST("disk-drive-network-gluster",
+    DO_TEST("disk-network-gluster",
             QEMU_CAPS_GLUSTER_DEBUG_LEVEL);
-    DO_TEST("disk-drive-network-rbd", NONE);
-    DO_TEST("disk-drive-network-sheepdog", NONE);
-    DO_TEST("disk-drive-network-rbd-auth", NONE);
-    DO_TEST("disk-drive-network-source-auth", NONE);
-    DO_TEST("disk-drive-network-rbd-auth-AES",
+    DO_TEST("disk-network-rbd", NONE);
+    DO_TEST("disk-network-sheepdog", NONE);
+    DO_TEST("disk-network-rbd-auth", NONE);
+    DO_TEST("disk-network-source-auth", NONE);
+    DO_TEST("disk-network-rbd-auth-AES",
             QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("disk-drive-network-rbd-ipv6", NONE);
-    DO_TEST_FAILURE("disk-drive-network-rbd-no-colon", NONE);
-    DO_TEST("disk-drive-network-vxhs", QEMU_CAPS_VXHS);
+    DO_TEST("disk-network-rbd-ipv6", NONE);
+    DO_TEST_FAILURE("disk-network-rbd-no-colon", NONE);
+    DO_TEST("disk-network-vxhs", QEMU_CAPS_VXHS);
     driver.config->vxhsTLS = 1;
-    DO_TEST("disk-drive-network-tlsx509", QEMU_CAPS_VXHS,
+    DO_TEST("disk-network-tlsx509", QEMU_CAPS_VXHS,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509, QEMU_CAPS_NBD_TLS);
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
-    DO_TEST("disk-drive-no-boot",
+    DO_TEST("disk-no-boot",
             QEMU_CAPS_BOOTINDEX);
     DO_TEST_PARSE_ERROR("disk-device-lun-type-invalid",
                         QEMU_CAPS_VIRTIO_SCSI);
@@ -1129,16 +1129,16 @@ mymain(void)
     DO_TEST("disk-copy_on_read",
             QEMU_CAPS_VIRTIO_TX_ALG,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("disk-drive-discard",
+    DO_TEST("disk-discard",
             QEMU_CAPS_DRIVE_DISCARD);
-    DO_TEST("disk-drive-detect-zeroes",
+    DO_TEST("disk-detect-zeroes",
             QEMU_CAPS_DRIVE_DISCARD,
             QEMU_CAPS_DRIVE_DETECT_ZEROES);
     DO_TEST("disk-snapshot", NONE);
     DO_TEST_PARSE_ERROR("disk-same-targets",
                         QEMU_CAPS_SCSI_LSI,
                         QEMU_CAPS_DEVICE_USB_STORAGE);
-    DO_TEST_PARSE_ERROR("disk-drive-address-conflict",
+    DO_TEST_PARSE_ERROR("disk-address-conflict",
                         QEMU_CAPS_ICH9_AHCI);
     DO_TEST_PARSE_ERROR("disk-hostdev-scsi-address-conflict",
                         QEMU_CAPS_VIRTIO_SCSI,
@@ -1927,7 +1927,7 @@ mymain(void)
     DO_TEST("mach-virt-console-virtio", NONE);
     DO_TEST_PARSE_ERROR("mach-virt-serial-invalid-machine", NONE);
 
-    DO_TEST("disk-ide-drive-split",
+    DO_TEST("disk-ide-split",
             QEMU_CAPS_IDE_CD);
     DO_TEST("disk-ide-wwn",
             QEMU_CAPS_IDE_CD,
