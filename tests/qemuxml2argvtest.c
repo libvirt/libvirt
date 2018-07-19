@@ -1037,9 +1037,9 @@ mymain(void)
     DO_TEST("disk-cache-v2-none", NONE);
     DO_TEST("disk-cache-directsync", NONE);
     DO_TEST("disk-cache-unsafe", NONE);
-    DO_TEST_CAPS_VER("disk-write-cache", "2.6.0");
-    DO_TEST_CAPS_VER("disk-write-cache", "2.7.0");
-    DO_TEST_CAPS_LATEST("disk-write-cache");
+    DO_TEST_CAPS_VER("disk-cache", "2.6.0");
+    DO_TEST_CAPS_VER("disk-cache", "2.7.0");
+    DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST("disk-network-nbd", NONE);
     DO_TEST("disk-network-nbd-export", NONE);
     DO_TEST("disk-network-nbd-ipv6", NONE);
