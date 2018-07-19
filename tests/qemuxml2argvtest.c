@@ -1045,14 +1045,11 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-network-source-auth-both", NONE);
     DO_TEST("disk-network-gluster",
             QEMU_CAPS_GLUSTER_DEBUG_LEVEL);
-    DO_TEST("disk-network-rbd", NONE);
-    DO_TEST("disk-network-sheepdog", NONE);
-    DO_TEST("disk-network-rbd-auth", NONE);
-    DO_TEST("disk-network-source-auth", NONE);
-    DO_TEST("disk-network-rbd-auth-AES",
-            QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("disk-network-rbd-ipv6", NONE);
+    DO_TEST_CAPS_VER("disk-network-rbd", "2.5.0");
+    DO_TEST_CAPS_LATEST("disk-network-rbd");
     DO_TEST_FAILURE("disk-network-rbd-no-colon", NONE);
+    DO_TEST("disk-network-sheepdog", NONE);
+    DO_TEST("disk-network-source-auth", NONE);
     DO_TEST("disk-network-vxhs", QEMU_CAPS_VXHS);
     driver.config->vxhsTLS = 1;
     DO_TEST("disk-network-tlsx509", QEMU_CAPS_VXHS,
