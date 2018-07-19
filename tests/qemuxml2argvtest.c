@@ -1032,11 +1032,6 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DISK_SHARE_RW);
     DO_TEST("disk-error-policy", NONE);
     DO_TEST_CAPS_LATEST("disk-error-policy");
-    DO_TEST("disk-cache-v2-wt", NONE);
-    DO_TEST("disk-cache-v2-wb", NONE);
-    DO_TEST("disk-cache-v2-none", NONE);
-    DO_TEST("disk-cache-directsync", NONE);
-    DO_TEST("disk-cache-unsafe", NONE);
     DO_TEST("disk-cache", QEMU_CAPS_SCSI_LSI, QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST_CAPS_VER("disk-cache", "2.6.0");
     DO_TEST_CAPS_VER("disk-cache", "2.7.0");

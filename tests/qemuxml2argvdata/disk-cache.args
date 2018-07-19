@@ -26,6 +26,9 @@ server,nowait \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
 cache=writeback \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-1,\
+cache=unsafe \
+-device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-scsi0-0-0,\
 cache=none \
 -device scsi-disk,bus=scsi0.0,scsi-id=0,drive=drive-scsi0-0-0,id=scsi0-0-0 \

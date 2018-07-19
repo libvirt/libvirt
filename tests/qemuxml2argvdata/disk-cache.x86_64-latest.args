@@ -29,6 +29,10 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 cache=writeback \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1,\
 write-cache=on \
+-drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-1,\
+cache=unsafe \
+-device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,\
+write-cache=on \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-scsi0-0-0,\
 cache=none \
 -device scsi-hd,bus=scsi0.0,scsi-id=0,drive=drive-scsi0-0-0,id=scsi0-0-0,\
