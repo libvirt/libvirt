@@ -997,6 +997,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
     DO_TEST("disk-floppy", NONE);
+    DO_TEST_CAPS_LATEST("disk-floppy");
     DO_TEST_FAILURE("disk-floppy-pseries",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("disk-floppy-tray", NONE);
@@ -1019,6 +1020,7 @@ mymain(void)
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("floppy-drive-fat",
             QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST_CAPS_LATEST("floppy-drive-fat");
     DO_TEST("disk-readonly-disk", NONE);
     DO_TEST("disk-fmt-qcow",
             QEMU_CAPS_DRIVE_BOOT);
