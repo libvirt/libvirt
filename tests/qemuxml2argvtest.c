@@ -998,11 +998,9 @@ mymain(void)
     DO_TEST("disk-cdrom-empty", NONE);
     DO_TEST("disk-cdrom-tray",
             QEMU_CAPS_VIRTIO_TX_ALG);
-    DO_TEST("disk-cdrom-tray-no-device-cap", NONE);
     DO_TEST("disk-floppy", NONE);
     DO_TEST_FAILURE("disk-floppy-pseries",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
-    DO_TEST("disk-floppy-tray-no-device-cap", NONE);
     DO_TEST("disk-floppy-tray", NONE);
     DO_TEST("disk-virtio-s390",
             QEMU_CAPS_VIRTIO_S390);
@@ -1025,7 +1023,6 @@ mymain(void)
     DO_TEST("floppy-drive-fat",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-readonly-disk", NONE);
-    DO_TEST("disk-readonly-no-device", NONE);
     DO_TEST("disk-fmt-qcow",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST_PARSE_ERROR("disk-fmt-cow", QEMU_CAPS_DRIVE_BOOT);
