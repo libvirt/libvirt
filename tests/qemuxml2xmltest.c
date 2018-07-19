@@ -364,7 +364,6 @@ mymain(void)
     DO_TEST("disk-network-rbd", NONE);
     DO_TEST("disk-network-rbd-auth", NONE);
     DO_TEST("disk-network-rbd-ipv6", NONE);
-    DO_TEST("disk-network-rbd-ceph-env", NONE);
     DO_TEST("disk-network-source-auth", NONE);
     DO_TEST("disk-network-sheepdog", NONE);
     DO_TEST("disk-network-vxhs", NONE);
