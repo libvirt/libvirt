@@ -371,7 +371,7 @@ virshBuildPoolXML(vshControl *ctl,
             if (adapterParent)
                 virBufferAsprintf(&buf, " parent='%s'", adapterParent);
             else if (adapterParentWwnn && adapterParentWwpn)
-                virBufferAsprintf(&buf, " parent_wwnn='%s' parent_wwnn='%s'",
+                virBufferAsprintf(&buf, " parent_wwnn='%s' parent_wwpn='%s'",
                                   adapterParentWwnn, adapterParentWwpn);
             else if (adapterParentFabricWwn)
                 virBufferAsprintf(&buf, " parent_fabric_wwn='%s'",
