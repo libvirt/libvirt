@@ -1022,12 +1022,14 @@ mymain(void)
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
     DO_TEST("disk-readonly-disk", NONE);
+    DO_TEST_CAPS_LATEST("disk-readonly-disk");
     DO_TEST("disk-fmt-qcow",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST_PARSE_ERROR("disk-fmt-cow", QEMU_CAPS_DRIVE_BOOT);
     DO_TEST_PARSE_ERROR("disk-fmt-dir", QEMU_CAPS_DRIVE_BOOT);
     DO_TEST_PARSE_ERROR("disk-fmt-iso", QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-shared", NONE);
+    DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_PARSE_ERROR("disk-shared-qcow", NONE);
     DO_TEST("disk-shared-locking",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DISK_SHARE_RW);
