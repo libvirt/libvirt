@@ -1130,6 +1130,7 @@ mymain(void)
     DO_TEST("disk-detect-zeroes",
             QEMU_CAPS_DRIVE_DISCARD,
             QEMU_CAPS_DRIVE_DETECT_ZEROES);
+    DO_TEST_CAPS_LATEST("disk-detect-zeroes");
     DO_TEST("disk-snapshot", NONE);
     DO_TEST_PARSE_ERROR("disk-same-targets",
                         QEMU_CAPS_SCSI_LSI,
