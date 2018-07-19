@@ -989,10 +989,13 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("nosharepages", QEMU_CAPS_MEM_MERGE);
     DO_TEST("disk-cdrom", NONE);
+    DO_TEST_CAPS_LATEST("disk-cdrom");
     DO_TEST("disk-iscsi", NONE);
     DO_TEST("disk-cdrom-network", QEMU_CAPS_KVM);
+    DO_TEST_CAPS_LATEST("disk-cdrom-network");
     DO_TEST("disk-cdrom-tray",
             QEMU_CAPS_VIRTIO_TX_ALG);
+    DO_TEST_CAPS_LATEST("disk-cdrom-tray");
     DO_TEST("disk-floppy", NONE);
     DO_TEST_FAILURE("disk-floppy-pseries",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
