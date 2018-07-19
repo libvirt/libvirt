@@ -362,6 +362,7 @@ mymain(void)
     DO_TEST("disk-cache-v2-none", NONE);
     DO_TEST("disk-cache-directsync", NONE);
     DO_TEST("disk-cache-unsafe", NONE);
+    DO_TEST("disk-cache", QEMU_CAPS_SCSI_LSI);
     DO_TEST("disk-network-nbd", NONE);
     DO_TEST("disk-network-nbd-export", NONE);
     DO_TEST("disk-network-nbd-ipv6", NONE);
