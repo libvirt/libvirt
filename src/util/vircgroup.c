@@ -1128,35 +1128,6 @@ virCgroupNew(pid_t pid,
 }
 
 
-/**
- * virCgroupAddTaskController:
- *
- * @group: The cgroup to add a task to
- * @pid: The pid of the task to add
- * @controller: The cgroup controller to be operated on
- *
- * Returns: 0 on success or -1 on error
- */
-static int
-virCgroupAddTaskController(virCgroupPtr group, pid_t pid, int controller)
-{
-    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Controller %d out of range"), controller);
-        return -1;
-    }
-
-    if (!group->controllers[controller].mountPoint) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Controller '%s' not mounted"),
-                       virCgroupControllerTypeToString(controller));
-        return -1;
-    }
-
-    return virCgroupSetValueI64(group, controller, "tasks", pid);
-}
-
-
 static int
 virCgroupAddTaskInternal(virCgroupPtr group, pid_t pid, bool withSystemd)
 {
@@ -1174,7 +1145,7 @@ virCgroupAddTaskInternal(virCgroupPtr group, pid_t pid, bool withSystemd)
         if (i == VIR_CGROUP_CONTROLLER_SYSTEMD && !withSystemd)
             continue;
 
-        if (virCgroupAddTaskController(group, pid, i) < 0)
+        if (virCgroupSetValueI64(group, i, "tasks", pid) < 0)
             goto cleanup;
     }
 
