@@ -990,11 +990,7 @@ mymain(void)
     DO_TEST("nosharepages", QEMU_CAPS_MEM_MERGE);
     DO_TEST("disk-cdrom", NONE);
     DO_TEST("disk-iscsi", NONE);
-    DO_TEST("disk-cdrom-network-http", QEMU_CAPS_KVM);
-    DO_TEST("disk-cdrom-network-https", QEMU_CAPS_KVM);
-    DO_TEST("disk-cdrom-network-ftp", QEMU_CAPS_KVM);
-    DO_TEST("disk-cdrom-network-ftps", QEMU_CAPS_KVM);
-    DO_TEST("disk-cdrom-network-tftp", QEMU_CAPS_KVM);
+    DO_TEST("disk-cdrom-network", QEMU_CAPS_KVM);
     DO_TEST("disk-cdrom-empty", NONE);
     DO_TEST("disk-cdrom-tray",
             QEMU_CAPS_VIRTIO_TX_ALG);
