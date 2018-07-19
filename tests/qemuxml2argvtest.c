@@ -1053,6 +1053,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-rbd");
     DO_TEST_FAILURE("disk-network-rbd-no-colon", NONE);
     DO_TEST("disk-network-sheepdog", NONE);
+    DO_TEST_CAPS_LATEST("disk-network-sheepdog");
     DO_TEST("disk-network-source-auth", NONE);
     DO_TEST("disk-network-vxhs", QEMU_CAPS_VXHS);
     driver.config->vxhsTLS = 1;
