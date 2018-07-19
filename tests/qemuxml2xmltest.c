@@ -359,10 +359,6 @@ mymain(void)
     DO_TEST("disk-fmt-qcow", NONE);
     DO_TEST("disk-cache", QEMU_CAPS_SCSI_LSI);
     DO_TEST("disk-network-nbd", NONE);
-    DO_TEST("disk-network-nbd-export", NONE);
-    DO_TEST("disk-network-nbd-ipv6", NONE);
-    DO_TEST("disk-network-nbd-ipv6-export", NONE);
-    DO_TEST("disk-network-nbd-unix", NONE);
     DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-network-gluster", NONE);
     DO_TEST("disk-network-rbd", NONE);

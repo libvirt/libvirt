@@ -1037,10 +1037,6 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-cache", "2.7.0");
     DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST("disk-network-nbd", NONE);
-    DO_TEST("disk-network-nbd-export", NONE);
-    DO_TEST("disk-network-nbd-ipv6", NONE);
-    DO_TEST("disk-network-nbd-ipv6-export", NONE);
-    DO_TEST("disk-network-nbd-unix", NONE);
     DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_BLOCK);
     DO_TEST_CAPS_LATEST("disk-network-iscsi");
     DO_TEST_PARSE_ERROR("disk-network-iscsi-auth-secrettype-invalid", NONE);

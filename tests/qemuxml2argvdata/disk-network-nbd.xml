@@ -14,18 +14,40 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-i686</emulator>
-    <disk type='block' device='disk'>
-      <driver name='qemu' type='raw'/>
-      <source dev='/dev/HostVG/QEMUGuest1'/>
-      <target dev='hda' bus='ide'/>
-      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
-    </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
       <source protocol='nbd'>
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vda' bus='virtio'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='nbd' name='bar'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <target dev='vdb' bus='virtio'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='nbd'>
+        <host name='::1' port='6000'/>
+      </source>
+      <target dev='vdc' bus='virtio'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='nbd' name='bar'>
+        <host name='::1' port='6000'/>
+      </source>
+      <target dev='vdd' bus='virtio'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='nbd' name='bar'>
+        <host transport='unix' socket='/var/run/nbdsock'/>
+      </source>
+      <target dev='vde' bus='virtio'/>
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
