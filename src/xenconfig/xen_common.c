@@ -410,7 +410,7 @@ xenParsePCI(char *entry)
         return NULL;
     if (!(nextkey = strchr(key, ':')))
         return NULL;
-    if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) == NULL) {
+    if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Domain %s too big for destination"), key);
         return NULL;
@@ -419,7 +419,7 @@ xenParsePCI(char *entry)
     key = nextkey + 1;
     if (!(nextkey = strchr(key, ':')))
         return NULL;
-    if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) == NULL) {
+    if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Bus %s too big for destination"), key);
         return NULL;
@@ -428,7 +428,7 @@ xenParsePCI(char *entry)
     key = nextkey + 1;
     if (!(nextkey = strchr(key, '.')))
         return NULL;
-    if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) == NULL) {
+    if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Slot %s too big for destination"), key);
         return NULL;
@@ -437,7 +437,7 @@ xenParsePCI(char *entry)
     key = nextkey + 1;
     if (strlen(key) != 1)
         return NULL;
-    if (virStrncpy(func, key, 1, sizeof(func)) == NULL) {
+    if (virStrncpy(func, key, 1, sizeof(func)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Function %s too big for destination"), key);
         return NULL;
@@ -669,7 +669,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
             char vfb[MAX_VFB];
             char *key = vfb;
 
-            if (virStrcpyStatic(vfb, list->list->str) == NULL) {
+            if (virStrcpyStatic(vfb, list->list->str) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("VFB %s too big for destination"),
                                list->list->str);
@@ -880,7 +880,7 @@ xenParseVif(char *entry, const char *vif_typename)
 
         if (STRPREFIX(key, "mac=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
-            if (virStrncpy(mac, data, len, sizeof(mac)) == NULL) {
+            if (virStrncpy(mac, data, len, sizeof(mac)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("MAC address %s too big for destination"),
                                data);
@@ -888,7 +888,7 @@ xenParseVif(char *entry, const char *vif_typename)
             }
         } else if (STRPREFIX(key, "bridge=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
-            if (virStrncpy(bridge, data, len, sizeof(bridge)) == NULL) {
+            if (virStrncpy(bridge, data, len, sizeof(bridge)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Bridge %s too big for destination"),
                                data);
@@ -901,7 +901,7 @@ xenParseVif(char *entry, const char *vif_typename)
                 return NULL;
         } else if (STRPREFIX(key, "model=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
-            if (virStrncpy(model, data, len, sizeof(model)) == NULL) {
+            if (virStrncpy(model, data, len, sizeof(model)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Model %s too big for destination"),
                                data);
@@ -909,7 +909,7 @@ xenParseVif(char *entry, const char *vif_typename)
             }
         } else if (STRPREFIX(key, "type=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
-            if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
+            if (virStrncpy(type, data, len, sizeof(type)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Type %s too big for destination"),
                                data);
@@ -917,7 +917,7 @@ xenParseVif(char *entry, const char *vif_typename)
             }
         } else if (STRPREFIX(key, "vifname=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
-            if (virStrncpy(vifname, data, len, sizeof(vifname)) == NULL) {
+            if (virStrncpy(vifname, data, len, sizeof(vifname)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Vifname %s too big for destination"),
                                data);
@@ -925,14 +925,14 @@ xenParseVif(char *entry, const char *vif_typename)
             }
         } else if (STRPREFIX(key, "ip=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
-            if (virStrncpy(ip, data, len, sizeof(ip)) == NULL) {
+            if (virStrncpy(ip, data, len, sizeof(ip)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("IP %s too big for destination"), data);
                 return NULL;
             }
         } else if (STRPREFIX(key, "rate=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
-            if (virStrncpy(rate, data, len, sizeof(rate)) == NULL) {
+            if (virStrncpy(rate, data, len, sizeof(rate)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("rate %s too big for destination"), data);
                 return NULL;

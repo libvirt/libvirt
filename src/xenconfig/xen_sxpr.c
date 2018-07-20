@@ -740,7 +740,7 @@ xenParseSxprSound(virDomainDefPtr def,
                 len = (offset2 - offset);
             else
                 len = strlen(offset);
-            if (virStrncpy(model, offset, len, sizeof(model)) == NULL) {
+            if (virStrncpy(model, offset, len, sizeof(model)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Sound model %s too big for destination"),
                                offset);

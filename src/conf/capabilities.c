@@ -1262,7 +1262,7 @@ virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
 
     memset(nodeinfo, 0, sizeof(*nodeinfo));
 
-    if (virStrcpyStatic(nodeinfo->model, virArchToString(hostarch)) == NULL)
+    if (virStrcpyStatic(nodeinfo->model, virArchToString(hostarch)) < 0)
         return -1;
 
     if (virHostMemGetInfo(&memorybytes, NULL) < 0)

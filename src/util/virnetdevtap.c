@@ -270,7 +270,7 @@ int virNetDevTapCreate(char **ifname,
             ifr.ifr_flags |= IFF_VNET_HDR;
 # endif
 
-        if (virStrcpyStatic(ifr.ifr_name, *ifname) == NULL) {
+        if (virStrcpyStatic(ifr.ifr_name, *ifname) < 0) {
             virReportSystemError(ERANGE,
                                  _("Network interface name '%s' is too long"),
                                  *ifname);
@@ -336,7 +336,7 @@ int virNetDevTapDelete(const char *ifname,
     memset(&try, 0, sizeof(struct ifreq));
     try.ifr_flags = IFF_TAP|IFF_NO_PI;
 
-    if (virStrcpyStatic(try.ifr_name, ifname) == NULL) {
+    if (virStrcpyStatic(try.ifr_name, ifname) < 0) {
         virReportSystemError(ERANGE,
                              _("Network interface name '%s' is too long"),
                              ifname);

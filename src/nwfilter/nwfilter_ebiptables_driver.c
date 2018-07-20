@@ -168,7 +168,7 @@ printVar(virNWFilterVarCombIterPtr vars,
             return -1;
         }
 
-        if (!virStrcpy(buf, val, bufsize)) {
+        if (virStrcpy(buf, val, bufsize) < 0) {
             const char *varName;
 
             varName = virNWFilterVarAccessGetVarName(item->varAccess);
@@ -282,7 +282,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     break;
 
     case DATATYPE_IPSETNAME:
-        if (virStrcpy(buf, item->u.ipset.setname, bufsize) == NULL) {
+        if (virStrcpy(buf, item->u.ipset.setname, bufsize) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer to small for ipset name"));
             return -1;
@@ -311,7 +311,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
 
         flags = virBufferContentAndReset(&vb);
 
-        if (virStrcpy(buf, flags, bufsize) == NULL) {
+        if (virStrcpy(buf, flags, bufsize) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer too small for IPSETFLAGS type"));
             VIR_FREE(flags);

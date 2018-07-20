@@ -850,7 +850,7 @@ static int umlMonitorAddress(const struct uml_driver *driver,
 
     memset(addr, 0, sizeof(*addr));
     addr->sun_family = AF_UNIX;
-    if (virStrcpyStatic(addr->sun_path, sockname) == NULL) {
+    if (virStrcpyStatic(addr->sun_path, sockname) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unix path %s too long for destination"), sockname);
         retval = -1;
@@ -951,7 +951,7 @@ static int umlMonitorCommand(const struct uml_driver *driver,
                              cmd, req.length);
         return -1;
     }
-    if (virStrcpyStatic(req.data, cmd) == NULL) {
+    if (virStrcpyStatic(req.data, cmd) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Command %s too long for destination"), cmd);
         return -1;

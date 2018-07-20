@@ -1608,7 +1608,7 @@ remoteNodeGetCPUStats(virConnectPtr conn,
 
     /* Deserialise the result. */
     for (i = 0; i < *nparams; ++i) {
-        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) == NULL) {
+        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Stats %s too big for destination"),
                            ret.params.params_val[i].field);
@@ -1672,7 +1672,7 @@ remoteNodeGetMemoryStats(virConnectPtr conn,
 
     /* Deserialise the result. */
     for (i = 0; i < *nparams; ++i) {
-        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) == NULL) {
+        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Stats %s too big for destination"),
                            ret.params.params_val[i].field);

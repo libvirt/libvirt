@@ -1179,11 +1179,11 @@ int virFDStreamConnectUNIX(virStreamPtr st,
     memset(&sa, 0, sizeof(sa));
     sa.sun_family = AF_UNIX;
     if (abstract) {
-        if (virStrcpy(sa.sun_path+1, path, sizeof(sa.sun_path)-1) == NULL)
+        if (virStrcpy(sa.sun_path+1, path, sizeof(sa.sun_path)-1) < 0)
             goto error;
         sa.sun_path[0] = '\0';
     } else {
-        if (virStrcpyStatic(sa.sun_path, path) == NULL)
+        if (virStrcpyStatic(sa.sun_path, path) < 0)
             goto error;
     }
 

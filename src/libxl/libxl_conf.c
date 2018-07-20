@@ -2365,7 +2365,7 @@ libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
         goto cleanup;
     }
 
-    if (virStrcpyStatic(info->model, virArchToString(hostarch)) == NULL) {
+    if (virStrcpyStatic(info->model, virArchToString(hostarch)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("machine type %s too big for destination"),
                        virArchToString(hostarch));

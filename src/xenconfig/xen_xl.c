@@ -480,7 +480,7 @@ xenParseXLVnuma(virConfPtr conf,
                     if (STRPREFIX(str, "pnode")) {
                         unsigned int cellid;
 
-                        if (!virStrcpyStatic(vtoken, data)) {
+                        if (virStrcpyStatic(vtoken, data) < 0) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
                                            _("vnuma vnode %zu pnode '%s' too long for destination"),
                                            vnodeCnt, data);
@@ -496,7 +496,7 @@ xenParseXLVnuma(virConfPtr conf,
                         }
                         pnode = cellid;
                     } else if (STRPREFIX(str, "size")) {
-                        if (!virStrcpyStatic(vtoken, data)) {
+                        if (virStrcpyStatic(vtoken, data) < 0) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
                                            _("vnuma vnode %zu size '%s' too long for destination"),
                                            vnodeCnt, data);
@@ -509,7 +509,7 @@ xenParseXLVnuma(virConfPtr conf,
                         virDomainNumaSetNodeMemorySize(numa, vnodeCnt, (kbsize * 1024));
 
                     } else if (STRPREFIX(str, "vcpus")) {
-                        if (!virStrcpyStatic(vtoken, data)) {
+                        if (virStrcpyStatic(vtoken, data) < 0) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
                                            _("vnuma vnode %zu vcpus '%s' too long for destination"),
                                            vnodeCnt, data);
@@ -526,7 +526,7 @@ xenParseXLVnuma(virConfPtr conf,
                         size_t i, ndistances;
                         unsigned int value;
 
-                        if (!virStrcpyStatic(vtoken, data)) {
+                        if (virStrcpyStatic(vtoken, data) < 0) {
                             virReportError(VIR_ERR_INTERNAL_ERROR,
                                            _("vnuma vnode %zu vdistances '%s' too long for destination"),
                                            vnodeCnt, data);
@@ -900,7 +900,7 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
 
                 if (STRPREFIX(key, "type=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
+                    if (virStrncpy(type, data, len, sizeof(type)) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("type %s invalid"),
                                        data);
@@ -908,7 +908,7 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
                     }
                 } else if (STRPREFIX(key, "version=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(version, data, len, sizeof(version)) == NULL) {
+                    if (virStrncpy(version, data, len, sizeof(version)) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("version %s invalid"),
                                        data);
@@ -918,7 +918,7 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
                         goto skipusbctrl;
                 } else if (STRPREFIX(key, "ports=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(ports, data, len, sizeof(ports)) == NULL) {
+                    if (virStrncpy(ports, data, len, sizeof(ports)) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("version %s invalid"),
                                        data);
@@ -1002,7 +1002,7 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
 
                 if (STRPREFIX(key, "hostbus=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(bus, data, len, sizeof(bus)) == NULL) {
+                    if (virStrncpy(bus, data, len, sizeof(bus)) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("bus %s too big for destination"),
                                        data);
@@ -1010,7 +1010,7 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
                     }
                 } else if (STRPREFIX(key, "hostaddr=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(device, data, len, sizeof(device)) == NULL) {
+                    if (virStrncpy(device, data, len, sizeof(device)) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("device %s too big for destination"),
                                        data);
@@ -1078,7 +1078,7 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
 
                 if (STRPREFIX(key, "connection=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
+                    if (virStrncpy(type, data, len, sizeof(type)) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("connection %s too big"), data);
                         goto skipchannel;

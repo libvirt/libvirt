@@ -159,7 +159,7 @@ xenParseXMDisk(char *entry, int hvm)
         goto error;
 
     if (virStrncpy(disk->dst, head, offset - head,
-                   (offset - head) + 1) == NULL) {
+                   (offset - head) + 1) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Dest file %s too big for destination"), head);
         goto error;

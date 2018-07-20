@@ -1491,7 +1491,7 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
         return -1;
     }
 
-    if (!virStrcpyStatic(value, dateTime->value)) {
+    if (virStrcpyStatic(value, dateTime->value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("xsd:dateTime value '%s' too long for destination"),
                        dateTime->value);

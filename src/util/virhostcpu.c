@@ -166,7 +166,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
     for (i = 0; cpu_map[i].field != NULL; i++) {
         virNodeCPUStatsPtr param = &params[i];
 
-        if (virStrcpyStatic(param->field, cpu_map[i].field) == NULL) {
+        if (virStrcpyStatic(param->field, cpu_map[i].field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Field '%s' too long for destination"),
                            cpu_map[i].field);
@@ -933,7 +933,7 @@ virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                       const char *name,
                       unsigned long long value)
 {
-    if (virStrcpyStatic(param->field, name) == NULL) {
+    if (virStrcpyStatic(param->field, name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("kernel cpu time field is too long"
                                " for the destination"));

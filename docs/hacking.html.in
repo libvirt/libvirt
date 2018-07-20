@@ -1134,7 +1134,7 @@
       respectively.  The last argument is the number of bytes
       available in the destination string; if a copy of the source
       string (including a \0) will not fit into the destination, no
-      bytes are copied and the routine returns NULL.  Otherwise, n
+      bytes are copied and the routine returns &lt;0.  Otherwise, n
       bytes from the source are copied into the destination and a
       trailing \0 is appended.
     </p>

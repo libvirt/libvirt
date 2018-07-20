@@ -459,7 +459,7 @@ int virNetSocketNewListenUNIX(const char *path,
     }
 
     addr.data.un.sun_family = AF_UNIX;
-    if (virStrcpyStatic(addr.data.un.sun_path, path) == NULL) {
+    if (virStrcpyStatic(addr.data.un.sun_path, path) < 0) {
         virReportSystemError(ENAMETOOLONG,
                              _("Path %s too long for unix socket"), path);
         goto error;
@@ -690,7 +690,7 @@ int virNetSocketNewConnectUNIX(const char *path,
     }
 
     remoteAddr.data.un.sun_family = AF_UNIX;
-    if (virStrcpyStatic(remoteAddr.data.un.sun_path, path) == NULL) {
+    if (virStrcpyStatic(remoteAddr.data.un.sun_path, path) < 0) {
         virReportSystemError(ENOMEM, _("Path %s too long for unix socket"), path);
         goto cleanup;
     }

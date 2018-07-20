@@ -138,7 +138,7 @@ static int virNetDevSetupControlFull(const char *ifname,
     if (ifr && ifname) {
         memset(ifr, 0, sizeof(*ifr));
 
-        if (virStrcpyStatic(ifr->ifr_name, ifname) == NULL) {
+        if (virStrcpyStatic(ifr->ifr_name, ifname) < 0) {
             virReportSystemError(ERANGE,
                                  _("Network interface name '%s' is too long"),
                                  ifname);
@@ -593,7 +593,7 @@ int virNetDevSetName(const char* ifname, const char *newifname)
         return -1;
 
 # ifdef HAVE_STRUCT_IFREQ_IFR_NEWNAME
-    if (virStrcpyStatic(ifr.ifr_newname, newifname) == NULL) {
+    if (virStrcpyStatic(ifr.ifr_newname, newifname) < 0) {
         virReportSystemError(ERANGE,
                              _("Network interface name '%s' is too long"),
                              newifname);
@@ -914,7 +914,7 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
 
     memset(&ifreq, 0, sizeof(ifreq));
 
-    if (virStrcpyStatic(ifreq.ifr_name, ifname) == NULL) {
+    if (virStrcpyStatic(ifreq.ifr_name, ifname) < 0) {
         virReportSystemError(ERANGE,
                              _("invalid interface name %s"),
                              ifname);
@@ -1015,7 +1015,7 @@ int virNetDevGetVLanID(const char *ifname, int *vlanid)
         return -1;
     }
 
-    if (virStrcpyStatic(vlanargs.device1, ifname) == NULL) {
+    if (virStrcpyStatic(vlanargs.device1, ifname) < 0) {
         virReportSystemError(ERANGE,
                              _("invalid interface name %s"),
                              ifname);
@@ -2763,7 +2763,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                 mcast->idx = num;
                 break;
             case VIR_MCAST_TYPE_NAME_TOKEN:
-                if (virStrcpy(mcast->name, token, VIR_MCAST_NAME_LEN) == NULL) {
+                if (virStrcpy(mcast->name, token, VIR_MCAST_NAME_LEN) < 0) {
                     virReportSystemError(EINVAL,
                                          _("Failed to parse network device name from '%s'"),
                                          buf);

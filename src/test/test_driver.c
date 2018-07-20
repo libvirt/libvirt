@@ -690,7 +690,7 @@ static char *testBuildFilename(const char *relativeTo,
         int totalLen = baseLen + strlen(filename) + 1;
         if (VIR_ALLOC_N(absFile, totalLen) < 0)
             return NULL;
-        if (virStrncpy(absFile, relativeTo, baseLen, totalLen) == NULL) {
+        if (virStrncpy(absFile, relativeTo, baseLen, totalLen) < 0) {
             VIR_FREE(absFile);
             return NULL;
         }
@@ -804,7 +804,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
 
     str = virXPathString("string(/node/cpu/model[1])", ctxt);
     if (str != NULL) {
-        if (virStrcpyStatic(nodeInfo->model, str) == NULL) {
+        if (virStrcpyStatic(nodeInfo->model, str) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Model %s too big for destination"), str);
             VIR_FREE(str);

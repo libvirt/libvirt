@@ -185,7 +185,7 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
     if (VIR_ALLOC_N(buffer, size + 1) < 0)
         return 0;
 
-    if (!virStrncpy(buffer, info, size, size + 1)) {
+    if (virStrncpy(buffer, info, size, size + 1) < 0) {
         VIR_FREE(buffer);
         return 0;
     }

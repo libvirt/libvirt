@@ -1026,7 +1026,7 @@ virLogOutputToJournald(virLogSourcePtr source,
 
     memset(&sa, 0, sizeof(sa));
     sa.sun_family = AF_UNIX;
-    if (!virStrcpyStatic(sa.sun_path, "/run/systemd/journal/socket"))
+    if (virStrcpyStatic(sa.sun_path, "/run/systemd/journal/socket") < 0)
         return;
 
     memset(&mh, 0, sizeof(mh));

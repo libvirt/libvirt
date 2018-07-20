@@ -134,7 +134,7 @@ virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
     }
 
     if (virtPortProfileID &&
-        !virStrcpyStatic(virtPort->profileID, virtPortProfileID)) {
+        virStrcpyStatic(virtPort->profileID, virtPortProfileID) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("profileid parameter too long"));
         goto error;

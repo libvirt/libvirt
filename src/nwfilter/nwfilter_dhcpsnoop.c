@@ -595,7 +595,7 @@ virNWFilterSnoopReqNew(const char *ifkey)
 
     req->threadStatus = THREAD_STATUS_NONE;
 
-    if (virStrcpyStatic(req->ifkey, ifkey) == NULL ||
+    if (virStrcpyStatic(req->ifkey, ifkey) < 0||
         virMutexInitRecursive(&req->lock) < 0)
         goto err_free_req;
 

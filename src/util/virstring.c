@@ -774,25 +774,23 @@ virAsprintfInternal(bool report,
  * A safe version of strncpy.  The last parameter is the number of bytes
  * available in the destination string, *not* the number of bytes you want
  * to copy.  If the destination is not large enough to hold all n of the
- * src string bytes plus a \0, NULL is returned and no data is copied.
+ * src string bytes plus a \0, <0 is returned and no data is copied.
  * If the destination is large enough to hold the n bytes plus \0, then the
- * string is copied and a pointer to the destination string is returned.
+ * string is copied and 0 is returned.
  */
-char *
+int
 virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
 {
-    char *ret;
-
     if (n > (destbytes - 1))
-        return NULL;
+        return -1;
 
-    ret = strncpy(dest, src, n);
+    strncpy(dest, src, n);
     /* strncpy NULL terminates iff the last character is \0.  Therefore
      * force the last byte to be \0
      */
     dest[n] = '\0';
 
-    return ret;
+    return 0;
 }
 
 /**
@@ -801,11 +799,11 @@ virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
  * A safe version of strcpy.  The last parameter is the number of bytes
  * available in the destination string, *not* the number of bytes you want
  * to copy.  If the destination is not large enough to hold all n of the
- * src string bytes plus a \0, NULL is returned and no data is copied.
+ * src string bytes plus a \0, <0 is returned and no data is copied.
  * If the destination is large enough to hold the source plus \0, then the
- * string is copied and a pointer to the destination string is returned.
+ * string is copied and 0 is returned.
  */
-char *
+int
 virStrcpy(char *dest, const char *src, size_t destbytes)
 {
     return virStrncpy(dest, src, strlen(src), destbytes);

@@ -424,7 +424,7 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
     virConnectCredential retr_passphrase;
     int cred_type;
     char *actual_prompt = NULL;
-    char *p;
+    int p;
 
     /* request user's key password */
     if (!sess->cred || !sess->cred->cb) {
@@ -459,7 +459,7 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
     p = virStrncpy(buf, retr_passphrase.result,
                    retr_passphrase.resultlen, len);
     VIR_DISPOSE_STRING(retr_passphrase.result);
-    if (!p) {
+    if (p < 0) {
         virReportError(VIR_ERR_LIBSSH, "%s",
                        _("passphrase is too long for the buffer"));
         goto error;

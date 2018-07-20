@@ -1334,8 +1334,8 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
         || caps->host.secModels[0].model == NULL)
         goto cleanup;
 
-    if (!virStrcpy(secmodel->model, caps->host.secModels[0].model,
-                   VIR_SECURITY_MODEL_BUFLEN)) {
+    if (virStrcpy(secmodel->model, caps->host.secModels[0].model,
+                  VIR_SECURITY_MODEL_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security model string exceeds max %d bytes"),
                        VIR_SECURITY_MODEL_BUFLEN - 1);
@@ -1343,8 +1343,8 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!virStrcpy(secmodel->doi, caps->host.secModels[0].doi,
-                   VIR_SECURITY_DOI_BUFLEN)) {
+    if (virStrcpy(secmodel->doi, caps->host.secModels[0].doi,
+                  VIR_SECURITY_DOI_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security DOI string exceeds max %d bytes"),
                        VIR_SECURITY_DOI_BUFLEN-1);

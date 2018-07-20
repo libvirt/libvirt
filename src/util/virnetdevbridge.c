@@ -93,7 +93,7 @@ static int virNetDevBridgeCmd(const char *brname,
         return -1;
     }
 
-    if (virStrcpyStatic(ifd.ifd_name, brname) == NULL) {
+    if (virStrcpyStatic(ifd.ifd_name, brname) < 0) {
        virReportSystemError(ERANGE,
                             _("Network interface name '%s' is too long"),
                             brname);
@@ -686,7 +686,7 @@ int virNetDevBridgeAddPort(const char *brname,
     struct ifbreq req;
 
     memset(&req, 0, sizeof(req));
-    if (virStrcpyStatic(req.ifbr_ifsname, ifname) == NULL) {
+    if (virStrcpyStatic(req.ifbr_ifsname, ifname) < 0) {
         virReportSystemError(ERANGE,
                              _("Network interface name '%s' is too long"),
                              ifname);
@@ -756,7 +756,7 @@ int virNetDevBridgeRemovePort(const char *brname,
     struct ifbreq req;
 
     memset(&req, 0, sizeof(req));
-    if (virStrcpyStatic(req.ifbr_ifsname, ifname) == NULL) {
+    if (virStrcpyStatic(req.ifbr_ifsname, ifname) < 0) {
         virReportSystemError(ERANGE,
                              _("Network interface name '%s' is too long"),
                              ifname);

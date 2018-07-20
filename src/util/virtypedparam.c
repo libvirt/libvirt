@@ -86,7 +86,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
         if (VIR_RESIZE_N(keys, nkeysalloc, nkeys, 1) < 0)
             goto cleanup;
 
-        if (virStrcpyStatic(keys[nkeys].field, name) == NULL) {
+        if (virStrcpyStatic(keys[nkeys].field, name) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Field name '%s' too long"), name);
             goto cleanup;
@@ -222,7 +222,7 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
 
     va_start(ap, type);
 
-    if (virStrcpyStatic(param->field, name) == NULL) {
+    if (virStrcpyStatic(param->field, name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
                        name);
         goto cleanup;
@@ -279,7 +279,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param, const char *name,
         goto cleanup;
     }
 
-    if (virStrcpyStatic(param->field, name) == NULL) {
+    if (virStrcpyStatic(param->field, name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
                        name);
         goto cleanup;
@@ -1413,7 +1413,7 @@ virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
         virTypedParameterRemotePtr remote_param = remote_params + i;
 
         if (virStrcpyStatic(param->field,
-                            remote_param->field) == NULL) {
+                            remote_param->field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("parameter %s too big for destination"),
                            remote_param->field);

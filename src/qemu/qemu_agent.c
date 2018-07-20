@@ -207,7 +207,7 @@ qemuAgentOpenUnix(const char *monitor)
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    if (virStrcpyStatic(addr.sun_path, monitor) == NULL) {
+    if (virStrcpyStatic(addr.sun_path, monitor) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Agent path %s too big for destination"), monitor);
         goto error;

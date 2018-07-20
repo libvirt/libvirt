@@ -966,7 +966,7 @@ ipsetValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED,
 {
     const char *errmsg = NULL;
 
-    if (virStrcpyStatic(item->u.ipset.setname, val->c) == NULL) {
+    if (virStrcpyStatic(item->u.ipset.setname, val->c) < 0) {
         errmsg = _("ipset name is too long");
         goto arg_err_exit;
     }

@@ -430,9 +430,9 @@ xenapiNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     if (xen_host_cpu_get_all(session, &host_cpu_set)) {
         host_cpu = host_cpu_set->contents[0];
         xen_host_cpu_get_modelname(session, &modelname, host_cpu);
-        if (!virStrncpy(info->model, modelname,
-                        MIN(strlen(modelname), LIBVIRT_MODELNAME_LEN - 1),
-                        LIBVIRT_MODELNAME_LEN)) {
+        if (virStrncpy(info->model, modelname,
+                       MIN(strlen(modelname), LIBVIRT_MODELNAME_LEN - 1),
+                       LIBVIRT_MODELNAME_LEN) < 0) {
             virReportOOMError();
             xen_host_cpu_set_free(host_cpu_set);
             VIR_FREE(modelname);

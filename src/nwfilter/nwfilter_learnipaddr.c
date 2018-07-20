@@ -170,7 +170,7 @@ virNWFilterLockIface(const char *ifname)
             goto err_exit;
         }
 
-        if (virStrcpyStatic(ifaceLock->ifname, ifname) == NULL) {
+        if (virStrcpyStatic(ifaceLock->ifname, ifname) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("interface name %s does not fit into "
                              "buffer "),

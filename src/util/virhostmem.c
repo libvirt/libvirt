@@ -104,7 +104,7 @@ virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
         }
 
         param = &params[j++];
-        if (virStrcpyStatic(param->field, sysctl_map[i].field) == NULL) {
+        if (virStrcpyStatic(param->field, sysctl_map[i].field) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Field '%s' too long for destination"),
                            sysctl_map[i].field);
@@ -122,7 +122,7 @@ virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
                                  "vfs.bufspace");
             return -1;
         }
-        if (virStrcpyStatic(param->field, VIR_NODE_MEMORY_STATS_BUFFERS) == NULL) {
+        if (virStrcpyStatic(param->field, VIR_NODE_MEMORY_STATS_BUFFERS) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Field '%s' too long for destination"),
                            VIR_NODE_MEMORY_STATS_BUFFERS);
@@ -224,7 +224,7 @@ virHostMemGetStatsLinux(FILE *meminfo,
             if (STREQ(meminfo_hdr, convp->meminfo_hdr)) {
                 virNodeMemoryStatsPtr param = &params[k++];
 
-                if (virStrcpyStatic(param->field, convp->field) == NULL) {
+                if (virStrcpyStatic(param->field, convp->field) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Field kernel memory too long for destination"));
                     goto cleanup;

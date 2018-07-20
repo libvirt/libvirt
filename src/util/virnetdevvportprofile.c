@@ -389,7 +389,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfilePtr orig,
                            orig->profileID, mods->profileID);
             return -1;
         }
-        if (virStrcpyStatic(orig->profileID, mods->profileID) == NULL) {
+        if (virStrcpyStatic(orig->profileID, mods->profileID) < 0) {
             /* this should never happen - it indicates mods->profileID
              * isn't properly null terminated. */
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -885,8 +885,8 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
             break;
 
         if (tb[IFLA_IFNAME]) {
-            if (!virStrcpy(parent_ifname, (char*)RTA_DATA(tb[IFLA_IFNAME]),
-                           IFNAMSIZ)) {
+            if (virStrcpy(parent_ifname, (char*)RTA_DATA(tb[IFLA_IFNAME]),
+                          IFNAMSIZ) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("buffer for root interface name is too small"));
                 rc = -1;

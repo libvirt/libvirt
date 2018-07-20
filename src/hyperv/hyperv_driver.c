@@ -307,7 +307,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     }
 
     /* Fill struct */
-    if (virStrcpyStatic(info->model, processorList->data.common->Name) == NULL) {
+    if (virStrcpyStatic(info->model, processorList->data.common->Name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU model %s too long for destination"),
                        processorList->data.common->Name);

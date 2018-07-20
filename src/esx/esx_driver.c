@@ -914,8 +914,8 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
                     goto cleanup;
                 }
 
-                if (!virStrcpyStatic(vCenterIPAddress,
-                                     potentialVCenterIPAddress)) {
+                if (virStrcpyStatic(vCenterIPAddress,
+                                    potentialVCenterIPAddress) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("vCenter IP address %s too big for destination"),
                                    potentialVCenterIPAddress);
@@ -1317,7 +1317,7 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
                 ++ptr;
             }
 
-            if (!virStrcpyStatic(nodeinfo->model, dynamicProperty->val->string)) {
+            if (virStrcpyStatic(nodeinfo->model, dynamicProperty->val->string) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("CPU Model %s too long for destination"),
                                dynamicProperty->val->string);
