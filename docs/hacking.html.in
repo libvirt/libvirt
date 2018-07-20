@@ -1121,22 +1121,22 @@
     <p>
       Do not use the strncpy function.  According to the man page, it
       does <b>not</b> guarantee a NULL-terminated buffer, which makes
-      it extremely dangerous to use.  Instead, use one of the
-      functionally equivalent functions:
+      it extremely dangerous to use.  Instead, use one of the replacement
+      functions provided by libvirt:
     </p>
 
 <pre>
   virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
 </pre>
     <p>
-      The first three arguments have the same meaning as for strncpy;
-      namely the destination, source, and number of bytes to copy,
-      respectively.  The last argument is the number of bytes
-      available in the destination string; if a copy of the source
-      string (including a \0) will not fit into the destination, no
-      bytes are copied and the routine returns &lt;0.  Otherwise, n
-      bytes from the source are copied into the destination and a
-      trailing \0 is appended.
+      The first two arguments have the same meaning as for strncpy,
+      namely the destination and source of the copy operation.  Unlike
+      strncpy, the function will always copy exactly the number of bytes
+      requested and make sure the destination is NULL-terminated, as the
+      source is required to be; sanity checks are performed to ensure the
+      size of the destination, as specified by the last argument, is
+      sufficient for the operation to succeed.  On success, 0 is returned;
+      on failure, a value &lt;0 is returned instead.
     </p>
 
 <pre>
@@ -1144,10 +1144,8 @@
 </pre>
     <p>
       Use this variant if you know you want to copy the entire src
-      string into dest.  Note that this is a macro, so arguments could
-      be evaluated more than once.  This is equivalent to
-      virStrncpy(dest, src, strlen(src), destbytes)
-      </p>
+      string into dest.
+    </p>
 
 <pre>
   virStrcpyStatic(char *dest, const char *src)
@@ -1157,8 +1155,7 @@
       string into dest <b>and</b> you know that your destination string is
       a static string (i.e. that sizeof(dest) returns something
       meaningful).  Note that this is a macro, so arguments could be
-      evaluated more than once.  This is equivalent to
-      virStrncpy(dest, src, strlen(src), sizeof(dest)).
+      evaluated more than once.
     </p>
 
 <pre>

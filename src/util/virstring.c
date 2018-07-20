@@ -769,44 +769,66 @@ virAsprintfInternal(bool report,
 }
 
 /**
- * virStrncpy
+ * virStrncpy:
  *
- * A safe version of strncpy.  The last parameter is the number of bytes
- * available in the destination string, *not* the number of bytes you want
- * to copy.  If the destination is not large enough to hold all n of the
- * src string bytes plus a \0, <0 is returned and no data is copied.
- * If the destination is large enough to hold the n bytes plus \0, then the
- * string is copied and 0 is returned.
+ * @dest: destination buffer
+ * @src: source buffer
+ * @n: number of bytes to copy
+ * @destbytes: number of bytes the destination can accomodate
+ *
+ * Copies the first @n bytes of @src to @dest.
+ *
+ * @src must be NULL-terminated; if successful, @dest is guaranteed to
+ * be NULL-terminated as well.
+ *
+ * @n must be a reasonable value, that is, it must not exceed either
+ * the length of @src or the size of @dest. For the latter constraint,
+ * the fact that @dest needs to accomodate a NULL byte in addition to
+ * the bytes copied from @src must be taken into account.
+ *
+ * If you want to copy *all* of @src to @dest, use virStrcpy() or
+ * virStrcpyStatic() instead.
+ *
+ * Returns: 0 on success, <0 on failure.
  */
 int
 virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
 {
-    if (n > (destbytes - 1))
+    size_t src_len = strlen(src);
+
+    /* As a special case, -1 means "copy the entire string".
+     *
+     * This is to avoid calling strlen() twice, once in the virStrcpy()
+     * wrapper and once here for bound checking purposes. */
+    if (n == -1)
+        n = src_len;
+
+    if (n <= 0 || n > src_len || n > (destbytes - 1))
         return -1;
 
-    strncpy(dest, src, n);
-    /* strncpy NULL terminates iff the last character is \0.  Therefore
-     * force the last byte to be \0
-     */
+    memcpy(dest, src, n);
     dest[n] = '\0';
 
     return 0;
 }
 
 /**
- * virStrcpy
+ * virStrcpy:
  *
- * A safe version of strcpy.  The last parameter is the number of bytes
- * available in the destination string, *not* the number of bytes you want
- * to copy.  If the destination is not large enough to hold all n of the
- * src string bytes plus a \0, <0 is returned and no data is copied.
- * If the destination is large enough to hold the source plus \0, then the
- * string is copied and 0 is returned.
+ * @dest: destination buffer
+ * @src: source buffer
+ * @destbytes: number of bytes the destination can accomodate
+ *
+ * Copies @src to @dest.
+ *
+ * See virStrncpy() for more information.
+ *
+ * Returns: 0 on success, <0 on failure.
  */
 int
 virStrcpy(char *dest, const char *src, size_t destbytes)
 {
-    return virStrncpy(dest, src, strlen(src), destbytes);
+    return virStrncpy(dest, src, -1, destbytes);
 }
 
 /**
