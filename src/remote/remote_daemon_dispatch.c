@@ -2309,9 +2309,7 @@ remoteDispatchDomainGetSecurityLabelList(virNetServerPtr server ATTRIBUTE_UNUSED
     for (i = 0; i < len; i++) {
         size_t label_len = strlen(seclabels[i].label) + 1;
         remote_domain_get_security_label_ret *cur = &ret->labels.labels_val[i];
-        if (VIR_ALLOC_N(cur->label.label_val, label_len) < 0)
-            goto cleanup;
-        if (virStrcpy(cur->label.label_val, seclabels[i].label, label_len) == NULL) {
+        if (VIR_STRDUP(cur->label.label_val, seclabels[i].label) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to copy security label"));
             goto cleanup;
