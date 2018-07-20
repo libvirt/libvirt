@@ -2763,8 +2763,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                 mcast->idx = num;
                 break;
             case VIR_MCAST_TYPE_NAME_TOKEN:
-                if (virStrncpy(mcast->name, token, strlen(token),
-                    VIR_MCAST_NAME_LEN) == NULL) {
+                if (virStrcpy(mcast->name, token, VIR_MCAST_NAME_LEN) == NULL) {
                     virReportSystemError(EINVAL,
                                          _("Failed to parse network device name from '%s'"),
                                          buf);
