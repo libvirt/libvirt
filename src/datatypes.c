@@ -893,6 +893,7 @@ virNWFilterBindingDispose(void *obj)
     VIR_DEBUG("release binding %p %s", binding, binding->portdev);
 
     VIR_FREE(binding->portdev);
+    VIR_FREE(binding->filtername);
     virObjectUnref(binding->conn);
 }
 
