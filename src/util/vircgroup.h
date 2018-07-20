@@ -177,6 +177,13 @@ int virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group,
                                     unsigned long long *wbps);
 
 int virCgroupSetMemory(virCgroupPtr group, unsigned long long kb);
+int virCgroupGetMemoryStat(virCgroupPtr group,
+                           unsigned long long *cache,
+                           unsigned long long *activeAnon,
+                           unsigned long long *inactiveAnon,
+                           unsigned long long *activeFile,
+                           unsigned long long *inactiveFile,
+                           unsigned long long *unevictable);
 int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb);
 
 int virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb);

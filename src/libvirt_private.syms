@@ -1532,6 +1532,7 @@ virCgroupGetDomainTotalCpuStats;
 virCgroupGetFreezerState;
 virCgroupGetMemoryHardLimit;
 virCgroupGetMemorySoftLimit;
+virCgroupGetMemoryStat;
 virCgroupGetMemoryUsage;
 virCgroupGetMemSwapHardLimit;
 virCgroupGetMemSwapUsage;
