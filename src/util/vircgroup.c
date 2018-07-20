@@ -3312,7 +3312,7 @@ virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
 }
 
 
-int
+static int
 virCgroupRemoveRecursively(char *grppath)
 {
     DIR *grpdir;
@@ -4524,15 +4524,6 @@ virCgroupSetCpuCfsQuota(virCgroupPtr group ATTRIBUTE_UNUSED,
                         long long cfs_quota ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupRemoveRecursively(char *grppath ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
     return -1;
 }

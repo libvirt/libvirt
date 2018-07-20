@@ -1550,7 +1550,6 @@ virCgroupNewSelf;
 virCgroupNewThread;
 virCgroupPathOfController;
 virCgroupRemove;
-virCgroupRemoveRecursively;
 virCgroupSetBlkioDeviceReadBps;
 virCgroupSetBlkioDeviceReadIops;
 virCgroupSetBlkioDeviceWeight;

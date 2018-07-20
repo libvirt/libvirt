@@ -273,7 +273,6 @@ int virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate);
 int virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus);
 int virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus);
 
-int virCgroupRemoveRecursively(char *grppath);
 int virCgroupRemove(virCgroupPtr group);
 
 int virCgroupKillRecursive(virCgroupPtr group, int signum);
