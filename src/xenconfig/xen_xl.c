@@ -899,7 +899,7 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
                 data++;
 
                 if (STRPREFIX(key, "type=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(type) - 1;
+                    int len = nextkey ? (nextkey - data) : strlen(data);
                     if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("type %s invalid"),
@@ -907,7 +907,7 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
                         goto skipusbctrl;
                     }
                 } else if (STRPREFIX(key, "version=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(version) - 1;
+                    int len = nextkey ? (nextkey - data) : strlen(data);
                     if (virStrncpy(version, data, len, sizeof(version)) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("version %s invalid"),
@@ -917,7 +917,7 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
                     if (virStrToLong_i(version, NULL, 16, &usbctrl_version) < 0)
                         goto skipusbctrl;
                 } else if (STRPREFIX(key, "ports=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(ports) - 1;
+                    int len = nextkey ? (nextkey - data) : strlen(data);
                     if (virStrncpy(ports, data, len, sizeof(ports)) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("version %s invalid"),
@@ -1001,7 +1001,7 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
                 data++;
 
                 if (STRPREFIX(key, "hostbus=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(bus) - 1;
+                    int len = nextkey ? (nextkey - data) : strlen(data);
                     if (virStrncpy(bus, data, len, sizeof(bus)) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("bus %s too big for destination"),
@@ -1009,7 +1009,7 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
                         goto skipusb;
                     }
                 } else if (STRPREFIX(key, "hostaddr=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(device) - 1;
+                    int len = nextkey ? (nextkey - data) : strlen(data);
                     if (virStrncpy(device, data, len, sizeof(device)) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("device %s too big for destination"),
@@ -1077,7 +1077,7 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
                 data++;
 
                 if (STRPREFIX(key, "connection=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(type) - 1;
+                    int len = nextkey ? (nextkey - data) : strlen(data);
                     if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("connection %s too big"), data);
