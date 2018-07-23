@@ -235,8 +235,9 @@ virQEMUBuildObjectCommandlineFromJSONInternal(virBufferPtr buf,
                                               virJSONValuePtr props)
 {
     if (!type || !alias) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing 'type' or 'alias' field of QOM 'object'"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing 'type'(%s) or 'alias'(%s) field of QOM 'object'"),
+                       NULLSTR(type), NULLSTR(alias));
         return -1;
     }
 
