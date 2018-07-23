@@ -67,6 +67,15 @@
           only rendering devices within the guest.
         </description>
       </change>
+      <change>
+        <summary>
+          virsh: Add --alias to attach-disk and attach-interface commands
+        </summary>
+        <description>
+          Add option --alias to set customized device alias name when
+          using attach-disk or attach-interface commands.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
