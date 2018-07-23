@@ -354,22 +354,26 @@ qemuHotplugRemoveManagedPR(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
-    virErrorPreserveLast(&orig_err);
+    int ret = -1;
 
     if (!priv->prDaemonRunning ||
         virDomainDefHasManagedPR(vm->def))
         return 0;
 
+    virErrorPreserveLast(&orig_err);
+
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
+        goto cleanup;
     ignore_value(qemuMonitorDelObject(priv->mon, qemuDomainGetManagedPRAlias()));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+        goto cleanup;
 
     qemuProcessKillManagedPRDaemon(vm);
-    virErrorRestore(&orig_err);
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virErrorRestore(&orig_err);
+    return ret;
 }
 
 
