@@ -25,6 +25,7 @@
 # define __VIR_FIREWALL_H__
 
 # include "internal.h"
+# include "viralloc.h"
 
 typedef struct _virFirewall virFirewall;
 typedef virFirewall *virFirewallPtr;
@@ -115,5 +116,7 @@ void virFirewallStartRollback(virFirewallPtr firewall,
 int virFirewallApply(virFirewallPtr firewall);
 
 void virFirewallSetLockOverride(bool avoid);
+
+VIR_DEFINE_AUTOPTR_FUNC(virFirewall, virFirewallFree)
 
 #endif /* __VIR_FIREWALL_H__ */

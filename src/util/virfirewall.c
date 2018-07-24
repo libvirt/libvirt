@@ -27,7 +27,6 @@
 
 #include <stdarg.h>
 
-#include "viralloc.h"
 #include "virfirewallpriv.h"
 #include "virerror.h"
 #include "virutil.h"
