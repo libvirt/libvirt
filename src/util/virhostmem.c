@@ -263,7 +263,7 @@ virHostMemGetStats(int cellNum ATTRIBUTE_UNUSED,
 #ifdef __linux__
     {
         int ret;
-        char *meminfo_path = NULL;
+        VIR_AUTOFREE(char *) meminfo_path = NULL;
         FILE *meminfo;
         int max_node;
 
@@ -299,12 +299,10 @@ virHostMemGetStats(int cellNum ATTRIBUTE_UNUSED,
         if (!meminfo) {
             virReportSystemError(errno,
                                  _("cannot open %s"), meminfo_path);
-            VIR_FREE(meminfo_path);
             return -1;
         }
         ret = virHostMemGetStatsLinux(meminfo, cellNum, params, nparams);
         VIR_FORCE_FCLOSE(meminfo);
-        VIR_FREE(meminfo_path);
 
         return ret;
     }
@@ -322,45 +320,36 @@ virHostMemGetStats(int cellNum ATTRIBUTE_UNUSED,
 static int
 virHostMemSetParameterValue(virTypedParameterPtr param)
 {
-    char *path = NULL;
-    char *strval = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) path = NULL;
+    VIR_AUTOFREE(char *) strval = NULL;
     int rc = -1;
 
     char *field = strchr(param->field, '_');
     sa_assert(field);
     field++;
     if (virAsprintf(&path, "%s/%s",
-                    SYSFS_MEMORY_SHARED_PATH, field) < 0) {
-        ret = -2;
-        goto cleanup;
-    }
+                    SYSFS_MEMORY_SHARED_PATH, field) < 0)
+        return -2;
 
-    if (virAsprintf(&strval, "%u", param->value.ui) == -1) {
-        ret = -2;
-        goto cleanup;
-    }
+    if (virAsprintf(&strval, "%u", param->value.ui) == -1)
+        return -2;
 
     if ((rc = virFileWriteStr(path, strval, 0)) < 0) {
         virReportSystemError(-rc, _("failed to set %s"), param->field);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(path);
-    VIR_FREE(strval);
-    return ret;
+    return 0;
 }
 
 static bool
 virHostMemParametersAreAllSupported(virTypedParameterPtr params,
                                     int nparams)
 {
-    char *path = NULL;
     size_t i;
 
     for (i = 0; i < nparams; i++) {
+        VIR_AUTOFREE(char *) path = NULL;
         virTypedParameterPtr param = &params[i];
 
         char *field = strchr(param->field, '_');
@@ -374,11 +363,8 @@ virHostMemParametersAreAllSupported(virTypedParameterPtr params,
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("Parameter '%s' is not supported by "
                              "this kernel"), param->field);
-            VIR_FREE(path);
             return false;
         }
-
-        VIR_FREE(path);
     }
 
     return true;
@@ -430,23 +416,20 @@ static int
 virHostMemGetParameterValue(const char *field,
                             void *value)
 {
-    char *path = NULL;
-    char *buf = NULL;
+    VIR_AUTOFREE(char *) path = NULL;
+    VIR_AUTOFREE(char *) buf = NULL;
     char *tmp = NULL;
-    int ret = -1;
     int rc = -1;
 
     if (virAsprintf(&path, "%s/%s",
                     SYSFS_MEMORY_SHARED_PATH, field) < 0)
-        goto cleanup;
+        return -1;
 
-    if (!virFileExists(path)) {
-        ret = -2;
-        goto cleanup;
-    }
+    if (!virFileExists(path))
+        return -2;
 
     if (virFileReadAll(path, 1024, &buf) < 0)
-        goto cleanup;
+        return -1;
 
     if ((tmp = strchr(buf, '\n')))
         *tmp = '\0';
@@ -465,14 +448,10 @@ virHostMemGetParameterValue(const char *field,
     if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to parse %s"), field);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(path);
-    VIR_FREE(buf);
-    return ret;
+    return 0;
 }
 #endif
 
