@@ -115,7 +115,7 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
 {
     DIR *dir = NULL;
     struct dirent *entry;
-    char *path = NULL;
+    VIR_AUTOFREE(char *) path = NULL;
     char *sg = NULL;
     unsigned int adapter_id;
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
@@ -139,7 +139,6 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
 
  cleanup:
     VIR_DIR_CLOSE(dir);
-    VIR_FREE(path);
     return sg;
 }
 
@@ -155,7 +154,7 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
 {
     DIR *dir = NULL;
     struct dirent *entry;
-    char *path = NULL;
+    VIR_AUTOFREE(char *) path = NULL;
     char *name = NULL;
     unsigned int adapter_id;
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
@@ -178,7 +177,6 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
 
  cleanup:
     VIR_DIR_CLOSE(dir);
-    VIR_FREE(path);
     return name;
 }
 
@@ -192,11 +190,11 @@ virSCSIDeviceNew(const char *sysfs_prefix,
                  bool shareable)
 {
     virSCSIDevicePtr dev, ret = NULL;
-    char *sg = NULL;
-    char *vendor_path = NULL;
-    char *model_path = NULL;
-    char *vendor = NULL;
-    char *model = NULL;
+    VIR_AUTOFREE(char *) sg = NULL;
+    VIR_AUTOFREE(char *) vendor_path = NULL;
+    VIR_AUTOFREE(char *) model_path = NULL;
+    VIR_AUTOFREE(char *) vendor = NULL;
+    VIR_AUTOFREE(char *) model = NULL;
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
 
     if (VIR_ALLOC(dev) < 0)
@@ -247,11 +245,6 @@ virSCSIDeviceNew(const char *sysfs_prefix,
 
     ret = dev;
  cleanup:
-    VIR_FREE(sg);
-    VIR_FREE(vendor);
-    VIR_FREE(model);
-    VIR_FREE(vendor_path);
-    VIR_FREE(model_path);
     if (!ret)
         virSCSIDeviceFree(dev);
     return ret;
