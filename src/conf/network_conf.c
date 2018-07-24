@@ -1874,7 +1874,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     /* Validate some items in the main NetworkDef that need to align
      * with the chosen forward mode.
      */
-    switch (def->forward.type) {
+    switch ((virNetworkForwardType) def->forward.type) {
     case VIR_NETWORK_FORWARD_NONE:
         break;
 
@@ -1955,21 +1955,40 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
         }
         break;
+
+    case VIR_NETWORK_FORWARD_LAST:
+    default:
+        virReportEnumRangeError(virNetworkForwardType, def->forward.type);
+        goto error;
     }
 
     VIR_FREE(stp);
 
-    if (def->mtu &&
-        (def->forward.type != VIR_NETWORK_FORWARD_NONE &&
-         def->forward.type != VIR_NETWORK_FORWARD_NAT &&
-         def->forward.type != VIR_NETWORK_FORWARD_ROUTE &&
-         def->forward.type != VIR_NETWORK_FORWARD_OPEN)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("mtu size only allowed in open, route, nat, "
-                         "and isolated mode, not in %s (network '%s')"),
-                       virNetworkForwardTypeToString(def->forward.type),
-                       def->name);
-        goto error;
+    if (def->mtu) {
+        switch ((virNetworkForwardType) def->forward.type) {
+        case VIR_NETWORK_FORWARD_NONE:
+        case VIR_NETWORK_FORWARD_NAT:
+        case VIR_NETWORK_FORWARD_ROUTE:
+        case VIR_NETWORK_FORWARD_OPEN:
+            break;
+
+        case VIR_NETWORK_FORWARD_BRIDGE:
+        case VIR_NETWORK_FORWARD_PRIVATE:
+        case VIR_NETWORK_FORWARD_VEPA:
+        case VIR_NETWORK_FORWARD_PASSTHROUGH:
+        case VIR_NETWORK_FORWARD_HOSTDEV:
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("mtu size only allowed in open, route, nat, "
+                             "and isolated mode, not in %s (network '%s')"),
+                           virNetworkForwardTypeToString(def->forward.type),
+                           def->name);
+            goto error;
+
+        case VIR_NETWORK_FORWARD_LAST:
+        default:
+            virReportEnumRangeError(virNetworkForwardType, def->forward.type);
+            goto error;
+        }
     }
 
     /* Extract custom metadata */
@@ -2349,6 +2368,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     size_t i;
     bool shortforward;
+    bool hasbridge = false;
 
     virBufferAddLit(buf, "<network");
     if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0))
@@ -2469,22 +2489,33 @@ virNetworkDefFormatBuf(virBufferPtr buf,
             virBufferAddLit(buf, "</forward>\n");
     }
 
+    switch ((virNetworkForwardType) def->forward.type) {
+    case VIR_NETWORK_FORWARD_NONE:
+    case VIR_NETWORK_FORWARD_NAT:
+    case VIR_NETWORK_FORWARD_ROUTE:
+    case VIR_NETWORK_FORWARD_OPEN:
+        hasbridge = true;
+        break;
 
-    if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
-        def->forward.type == VIR_NETWORK_FORWARD_NAT ||
-        def->forward.type == VIR_NETWORK_FORWARD_ROUTE ||
-        def->forward.type == VIR_NETWORK_FORWARD_OPEN ||
-        def->bridge || def->macTableManager) {
+    case VIR_NETWORK_FORWARD_BRIDGE:
+    case VIR_NETWORK_FORWARD_PRIVATE:
+    case VIR_NETWORK_FORWARD_VEPA:
+    case VIR_NETWORK_FORWARD_PASSTHROUGH:
+    case VIR_NETWORK_FORWARD_HOSTDEV:
+        break;
 
+    case VIR_NETWORK_FORWARD_LAST:
+    default:
+        virReportEnumRangeError(virNetworkForwardType, def->forward.type);
+        goto error;
+    }
+
+    if (hasbridge || def->bridge || def->macTableManager) {
         virBufferAddLit(buf, "<bridge");
         virBufferEscapeString(buf, " name='%s'", def->bridge);
-        if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
-            def->forward.type == VIR_NETWORK_FORWARD_NAT ||
-            def->forward.type == VIR_NETWORK_FORWARD_ROUTE ||
-            def->forward.type == VIR_NETWORK_FORWARD_OPEN) {
+        if (hasbridge)
             virBufferAsprintf(buf, " stp='%s' delay='%ld'",
                               def->stp ? "on" : "off", def->delay);
-        }
         if (def->macTableManager) {
             virBufferAsprintf(buf, " macTableManager='%s'",
                              virNetworkBridgeMACTableManagerTypeToString(def->macTableManager));

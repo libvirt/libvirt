@@ -4545,7 +4545,7 @@ qemuProcessGetNetworkAddress(const char *netname,
     if (!netdef)
         goto cleanup;
 
-    switch (netdef->forward.type) {
+    switch ((virNetworkForwardType) netdef->forward.type) {
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
@@ -4582,6 +4582,14 @@ qemuProcessGetNetworkAddress(const char *netname,
             goto cleanup;
         }
         break;
+
+    case VIR_NETWORK_FORWARD_HOSTDEV:
+        break;
+
+    case VIR_NETWORK_FORWARD_LAST:
+    default:
+        virReportEnumRangeError(virNetworkForwardType, netdef->forward.type);
+        goto cleanup;
     }
 
     if (dev_name) {

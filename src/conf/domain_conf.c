@@ -29975,40 +29975,49 @@ virDomainNetResolveActualType(virDomainNetDefPtr iface)
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
 
-    if ((def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
-        (def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
-        (def->forward.type == VIR_NETWORK_FORWARD_ROUTE) ||
-        (def->forward.type == VIR_NETWORK_FORWARD_OPEN)) {
+    switch ((virNetworkForwardType) def->forward.type) {
+    case VIR_NETWORK_FORWARD_NONE:
+    case VIR_NETWORK_FORWARD_NAT:
+    case VIR_NETWORK_FORWARD_ROUTE:
+    case VIR_NETWORK_FORWARD_OPEN:
         /* for these forward types, the actual net type really *is*
          * NETWORK; we just keep the info from the portgroup in
          * iface->data.network.actual
          */
         ret = VIR_DOMAIN_NET_TYPE_NETWORK;
+        break;
 
-    } else if ((def->forward.type == VIR_NETWORK_FORWARD_BRIDGE) &&
-               def->bridge) {
-
-        /* <forward type='bridge'/> <bridge name='xxx'/>
-         * is VIR_DOMAIN_NET_TYPE_BRIDGE
-         */
-
-        ret = VIR_DOMAIN_NET_TYPE_BRIDGE;
-
-    } else if (def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
-
+    case VIR_NETWORK_FORWARD_HOSTDEV:
         ret = VIR_DOMAIN_NET_TYPE_HOSTDEV;
+        break;
 
-    } else if ((def->forward.type == VIR_NETWORK_FORWARD_BRIDGE) ||
-               (def->forward.type == VIR_NETWORK_FORWARD_PRIVATE) ||
-               (def->forward.type == VIR_NETWORK_FORWARD_VEPA) ||
-               (def->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
+    case VIR_NETWORK_FORWARD_BRIDGE:
+        if (def->bridge) {
+            /* <forward type='bridge'/> <bridge name='xxx'/>
+             * is VIR_DOMAIN_NET_TYPE_BRIDGE
+             */
+            ret = VIR_DOMAIN_NET_TYPE_BRIDGE;
+            break;
+        }
 
+        /* intentionally fall through to the direct case for
+         * VIR_NETWORK_FORWARD_BRIDGE with no bridge device defined
+         */
+        ATTRIBUTE_FALLTHROUGH;
+
+    case VIR_NETWORK_FORWARD_PRIVATE:
+    case VIR_NETWORK_FORWARD_VEPA:
+    case VIR_NETWORK_FORWARD_PASSTHROUGH:
         /* <forward type='bridge|private|vepa|passthrough'> are all
          * VIR_DOMAIN_NET_TYPE_DIRECT.
          */
-
         ret = VIR_DOMAIN_NET_TYPE_DIRECT;
+        break;
 
+    case VIR_NETWORK_FORWARD_LAST:
+    default:
+        virReportEnumRangeError(virNetworkForwardType, def->forward.type);
+        goto cleanup;
     }
 
  cleanup:
