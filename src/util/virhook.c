@@ -122,8 +122,7 @@ static int virHooksFound = -1;
 static int
 virHookCheck(int no, const char *driver)
 {
-    char *path;
-    int ret;
+    VIR_AUTOFREE(char *) path = NULL;
 
     if (driver == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -139,18 +138,17 @@ virHookCheck(int no, const char *driver)
     }
 
     if (!virFileExists(path)) {
-        ret = 0;
         VIR_DEBUG("No hook script %s", path);
-    } else if (!virFileIsExecutable(path)) {
-        ret = 0;
-        VIR_WARN("Non-executable hook script %s", path);
-    } else {
-        ret = 1;
-        VIR_DEBUG("Found hook script %s", path);
+        return 0;
     }
 
-    VIR_FREE(path);
-    return ret;
+    if (!virFileIsExecutable(path)) {
+        VIR_WARN("Non-executable hook script %s", path);
+        return 0;
+    }
+
+    VIR_DEBUG("Found hook script %s", path);
+    return 1;
 }
 
 /*
@@ -233,7 +231,7 @@ virHookCall(int driver,
             char **output)
 {
     int ret;
-    char *path;
+    VIR_AUTOFREE(char *) path = NULL;
     virCommandPtr cmd;
     const char *drvstr;
     const char *opstr;
@@ -317,8 +315,6 @@ virHookCall(int driver,
     }
 
     virCommandFree(cmd);
-
-    VIR_FREE(path);
 
     return ret;
 }
