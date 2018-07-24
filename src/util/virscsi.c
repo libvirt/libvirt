@@ -37,7 +37,6 @@
 
 #include "virlog.h"
 #include "virscsi.h"
-#include "viralloc.h"
 #include "virfile.h"
 #include "virutil.h"
 #include "virstring.h"
@@ -54,7 +53,8 @@ struct _virUsedByInfo {
     char *drvname; /* which driver */
     char *domname; /* which domain */
 };
-typedef struct _virUsedByInfo *virUsedByInfoPtr;
+typedef struct _virUsedByInfo virUsedByInfo;
+typedef virUsedByInfo *virUsedByInfoPtr;
 
 struct _virSCSIDevice {
     unsigned int adapter;
@@ -264,6 +264,7 @@ virSCSIDeviceUsedByInfoFree(virUsedByInfoPtr used_by)
     VIR_FREE(used_by->domname);
     VIR_FREE(used_by);
 }
+VIR_DEFINE_AUTOPTR_FUNC(virUsedByInfo, virSCSIDeviceUsedByInfoFree)
 
 void
 virSCSIDeviceFree(virSCSIDevicePtr dev)
