@@ -694,7 +694,7 @@ virBufferEscapeN(virBufferPtr buf,
     char *out;
     const char *cur;
     virBufferEscapePair escapeItem;
-    virBufferEscapePairPtr escapeList = NULL;
+    VIR_AUTOPTR(virBufferEscapePair) escapeList = NULL;
     size_t nescapeList = 0;
     va_list ap;
 
@@ -752,7 +752,6 @@ virBufferEscapeN(virBufferPtr buf,
 
  cleanup:
     va_end(ap);
-    VIR_FREE(escapeList);
 }
 
 
