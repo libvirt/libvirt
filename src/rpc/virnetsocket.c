@@ -382,7 +382,7 @@ int virNetSocketNewListenTCP(const char *nodename,
 #endif
 
         if (bind(fd, runp->ai_addr, runp->ai_addrlen) < 0) {
-            if (errno != EADDRINUSE) {
+            if (errno != EADDRINUSE && errno != EADDRNOTAVAIL) {
                 virReportSystemError(errno, "%s", _("Unable to bind to port"));
                 goto error;
             }
