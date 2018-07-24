@@ -186,17 +186,14 @@ virHostdevManagerNew(void)
             goto error;
         }
     } else {
-        char *rundir = NULL;
+        VIR_AUTOFREE(char *) rundir = NULL;
         mode_t old_umask;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto error;
 
-        if (virAsprintf(&hostdevMgr->stateDir, "%s/hostdevmgr", rundir) < 0) {
-            VIR_FREE(rundir);
+        if (virAsprintf(&hostdevMgr->stateDir, "%s/hostdevmgr", rundir) < 0)
             goto error;
-        }
-        VIR_FREE(rundir);
 
         old_umask = umask(077);
 
@@ -289,17 +286,12 @@ virHostdevPCISysfsPath(virDomainHostdevDefPtr hostdev,
 static int
 virHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
 {
-    char *sysfs_path = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) sysfs_path = NULL;
 
     if (virHostdevPCISysfsPath(hostdev, &sysfs_path) < 0)
-        return ret;
+        return -1;
 
-    ret = virPCIIsVirtualFunction(sysfs_path);
-
-    VIR_FREE(sysfs_path);
-
-    return ret;
+    return virPCIIsVirtualFunction(sysfs_path);
 }
 
 
@@ -309,17 +301,15 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev,
                     char **linkdev,
                     int *vf)
 {
-    int ret = -1;
-    char *sysfs_path = NULL;
+    VIR_AUTOFREE(char *) sysfs_path = NULL;
 
     if (virHostdevPCISysfsPath(hostdev, &sysfs_path) < 0)
-        return ret;
+        return -1;
 
     if (virPCIIsVirtualFunction(sysfs_path) == 1) {
         if (virPCIGetVirtualFunctionInfo(sysfs_path, pfNetDevIdx,
-                                         linkdev, vf) < 0) {
-            goto cleanup;
-        }
+                                         linkdev, vf) < 0)
+            return -1;
     } else {
         /* In practice this should never happen, since we currently
          * only support assigning SRIOV VFs via <interface
@@ -327,24 +317,19 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev,
          * end up calling this function.
          */
         if (virPCIGetNetName(sysfs_path, 0, NULL, linkdev) < 0)
-            goto cleanup;
+            return -1;
 
         if (!linkdev) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("The device at %s has no network device name"),
                              sysfs_path);
-            goto cleanup;
+            return -1;
         }
 
         *vf = -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(sysfs_path);
-
-    return ret;
+    return 0;
 }
 
 
@@ -443,8 +428,7 @@ static int
 virHostdevSaveNetConfig(virDomainHostdevDefPtr hostdev,
                         const char *stateDir)
 {
-    int ret = -1;
-    char *linkdev = NULL;
+    VIR_AUTOFREE(char *) linkdev = NULL;
     int vf = -1;
 
     if (!virHostdevIsPCINetDevice(hostdev) ||
@@ -455,19 +439,16 @@ virHostdevSaveNetConfig(virDomainHostdevDefPtr hostdev,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Interface type hostdev is currently supported on"
                          " SR-IOV Virtual Functions only"));
-        goto cleanup;
+        return -1;
     }
 
     if (virHostdevNetDevice(hostdev, -1, &linkdev, &vf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNetDevSaveNetConfig(linkdev, vf, stateDir, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(linkdev);
-    return ret;
+    return 0;
 }
 
 
@@ -486,10 +467,9 @@ static int
 virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
                        const unsigned char *uuid)
 {
-    char *linkdev = NULL;
+    VIR_AUTOFREE(char *) linkdev = NULL;
     virNetDevVlanPtr vlan;
     virNetDevVPortProfilePtr virtPort;
-    int ret = -1;
     int vf = -1;
     bool port_profile_associate = true;
 
@@ -497,7 +477,7 @@ virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
         return 0;
 
     if (virHostdevNetDevice(hostdev, -1, &linkdev, &vf) < 0)
-        goto cleanup;
+        return -1;
 
     vlan = virDomainNetGetActualVlan(hostdev->parent.data.net);
     virtPort = virDomainNetGetActualVirtPortProfile(hostdev->parent.data.net);
@@ -507,24 +487,19 @@ virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
                            _("direct setting of the vlan tag is not allowed "
                              "for hostdev devices using %s mode"),
                            virNetDevVPortTypeToString(virtPort->virtPortType));
-            goto cleanup;
+            return -1;
         }
         if (virHostdevNetConfigVirtPortProfile(linkdev, vf, virtPort,
                                                &hostdev->parent.data.net->mac,
-                                               uuid, port_profile_associate) < 0) {
-            goto cleanup;
-        }
+                                               uuid, port_profile_associate) < 0)
+            return -1;
     } else {
         if (virNetDevSetNetConfig(linkdev, vf, &hostdev->parent.data.net->mac,
-                                  vlan, NULL, true) < 0) {
-            goto cleanup;
-        }
+                                  vlan, NULL, true) < 0)
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(linkdev);
-    return ret;
+    return 0;
 }
 
 
@@ -540,13 +515,13 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
                            const char *stateDir,
                            const char *oldStateDir)
 {
-    char *linkdev = NULL;
+    VIR_AUTOFREE(char *) linkdev = NULL;
+    VIR_AUTOFREE(virMacAddrPtr) MAC = NULL;
+    VIR_AUTOFREE(virMacAddrPtr) adminMAC = NULL;
     virNetDevVPortProfilePtr virtPort;
     int ret = -1;
     int vf = -1;
     bool port_profile_associate = false;
-    virMacAddrPtr MAC = NULL;
-    virMacAddrPtr adminMAC = NULL;
     virNetDevVlanPtr vlan = NULL;
 
 
@@ -656,9 +631,6 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
     }
 
  cleanup:
-    VIR_FREE(linkdev);
-    VIR_FREE(MAC);
-    VIR_FREE(adminMAC);
     virNetDevVlanFree(vlan);
 
     return ret;
@@ -763,8 +735,8 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
                                    mgr->inactivePCIHostdevs) < 0)
                 goto reattachdevs;
         } else {
-            char *driverPath;
-            char *driverName;
+            VIR_AUTOFREE(char *) driverPath = NULL;
+            VIR_AUTOFREE(char *) driverName = NULL;
             int stub;
 
             /* Unmanaged devices should already have been marked as
@@ -789,9 +761,6 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
                 goto reattachdevs;
 
             stub = virPCIStubDriverTypeFromString(driverName);
-
-            VIR_FREE(driverPath);
-            VIR_FREE(driverName);
 
             if (stub > VIR_PCI_STUB_DRIVER_NONE &&
                 stub < VIR_PCI_STUB_DRIVER_LAST) {
