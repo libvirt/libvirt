@@ -19121,43 +19121,45 @@ virDomainDefParseCaps(virDomainDefPtr def,
                       unsigned int flags)
 {
     int ret = -1;
-    int virtType;
-    char *tmp = NULL;
+    char *virttype = NULL;
+    char *arch = NULL;
+    char *ostype = NULL;
+    virCapsDomainDataPtr capsdata = NULL;
 
-    /* Find out what type of virtualization to use */
-    if (!(tmp = virXMLPropString(ctxt->node, "type"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing domain type attribute"));
-        goto error;
-    }
-
-    if ((virtType = virDomainVirtTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid domain type %s"), tmp);
-        goto error;
-    }
-    def->virtType = virtType;
-    VIR_FREE(tmp);
+    virttype = virXPathString("string(./@type)", ctxt);
+    ostype = virXPathString("string(./os/type[1])", ctxt);
+    arch = virXPathString("string(./os/type[1]/@arch)", ctxt);
 
     def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
     def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
+    def->os.machine = virXPathString("string(./os/type[1]/@machine)", ctxt);
+    def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
 
-    tmp = virXPathString("string(./os/type[1])", ctxt);
-    if (!tmp) {
+    if (!virttype) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing domain type attribute"));
+        goto cleanup;
+    }
+    if ((def->virtType = virDomainVirtTypeFromString(virttype)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid domain type %s"), virttype);
+        goto cleanup;
+    }
+
+    if (!ostype) {
         if (def->os.bootloader) {
             def->os.type = VIR_DOMAIN_OSTYPE_XEN;
         } else {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("an os <type> must be specified"));
-            goto error;
+            goto cleanup;
         }
     } else {
-        if ((def->os.type = virDomainOSTypeFromString(tmp)) < 0) {
+        if ((def->os.type = virDomainOSTypeFromString(ostype)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown OS type '%s'"), tmp);
-            goto error;
+                           _("unknown OS type '%s'"), ostype);
+            goto cleanup;
         }
-        VIR_FREE(tmp);
     }
 
     /*
@@ -19170,17 +19172,11 @@ virDomainDefParseCaps(virDomainDefPtr def,
         def->os.type = VIR_DOMAIN_OSTYPE_XEN;
     }
 
-    tmp = virXPathString("string(./os/type[1]/@arch)", ctxt);
-    if (tmp && !(def->os.arch = virArchFromString(tmp))) {
+    if (arch && !(def->os.arch = virArchFromString(arch))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown architecture %s"),
-                       tmp);
-        goto error;
+                       _("Unknown architecture %s"), arch);
+        goto cleanup;
     }
-    VIR_FREE(tmp);
-
-    def->os.machine = virXPathString("string(./os/type[1]/@machine)", ctxt);
-    def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
 
     if ((!def->os.arch || !def->os.machine) &&
         !(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
@@ -19191,26 +19187,28 @@ virDomainDefParseCaps(virDomainDefPtr def,
          * in numerous minor ways. */
         bool use_virttype = ((def->os.arch == VIR_ARCH_NONE) ||
             !def->os.machine);
-        virCapsDomainDataPtr capsdata = NULL;
 
-        if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
-                def->os.arch, use_virttype ? def->virtType : VIR_DOMAIN_VIRT_NONE,
+        if (!(capsdata = virCapabilitiesDomainDataLookup(caps,
+                def->os.type,
+                def->os.arch,
+                use_virttype ? def->virtType : VIR_DOMAIN_VIRT_NONE,
                 NULL, NULL)))
-            goto error;
+            goto cleanup;
 
         if (!def->os.arch)
             def->os.arch = capsdata->arch;
         if ((!def->os.machine &&
              VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0)) {
-            VIR_FREE(capsdata);
-            goto error;
+            goto cleanup;
         }
-        VIR_FREE(capsdata);
     }
 
     ret = 0;
- error:
-    VIR_FREE(tmp);
+ cleanup:
+    VIR_FREE(virttype);
+    VIR_FREE(ostype);
+    VIR_FREE(arch);
+    VIR_FREE(capsdata);
     return ret;
 }
 
