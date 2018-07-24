@@ -39,7 +39,6 @@
 
 #include "dirname.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "vircommand.h"
 #include "virerror.h"
 #include "virfile.h"
@@ -3287,4 +3286,10 @@ virPCIEDeviceInfoFree(virPCIEDeviceInfoPtr dev)
     VIR_FREE(dev->link_cap);
     VIR_FREE(dev->link_sta);
     VIR_FREE(dev);
+}
+
+void
+virPCIDeviceAddressFree(virPCIDeviceAddressPtr address)
+{
+    VIR_FREE(address);
 }

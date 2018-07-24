@@ -28,6 +28,7 @@
 # include "virmdev.h"
 # include "virobject.h"
 # include "virutil.h"
+# include "viralloc.h"
 
 typedef struct _virPCIDevice virPCIDevice;
 typedef virPCIDevice *virPCIDevicePtr;
@@ -252,5 +253,11 @@ void virPCIEDeviceInfoFree(virPCIEDeviceInfoPtr dev);
 
 ssize_t virPCIGetMdevTypes(const char *sysfspath,
                            virMediatedDeviceType ***types);
+
+void virPCIDeviceAddressFree(virPCIDeviceAddressPtr address);
+
+VIR_DEFINE_AUTOPTR_FUNC(virPCIDevice, virPCIDeviceFree)
+VIR_DEFINE_AUTOPTR_FUNC(virPCIDeviceAddress, virPCIDeviceAddressFree)
+VIR_DEFINE_AUTOPTR_FUNC(virPCIEDeviceInfo, virPCIEDeviceInfoFree)
 
 #endif /* __VIR_PCI_H__ */
