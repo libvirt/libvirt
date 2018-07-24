@@ -63,7 +63,7 @@ export PKG_CONFIG_PATH
 export LIBVIRT_DRIVER_DIR="$b/src/.libs"
 export LIBVIRT_LOCK_MANAGER_PLUGIN_DIR="$b/src/.libs"
 export VIRTLOCKD_PATH="$b/src"
-export LIBVIRTD_PATH="$b/daemon"
+export LIBVIRTD_PATH="$b/src"
 
 # This is a cheap way to find some use-after-free and uninitialized
 # read problems when using glibc.
