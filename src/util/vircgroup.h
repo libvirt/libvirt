@@ -27,9 +27,11 @@
 
 # include "virutil.h"
 # include "virbitmap.h"
+# include "viralloc.h"
 
-struct virCgroup;
-typedef struct virCgroup *virCgroupPtr;
+struct _virCgroup;
+typedef struct _virCgroup virCgroup;
+typedef virCgroup *virCgroupPtr;
 
 enum {
     VIR_CGROUP_CONTROLLER_CPU,
@@ -297,4 +299,7 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
 int virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller);
 
 bool virCgroupControllerAvailable(int controller);
+
+VIR_DEFINE_AUTOPTR_FUNC(virCgroup, virCgroupFree)
+
 #endif /* __VIR_CGROUP_H__ */
