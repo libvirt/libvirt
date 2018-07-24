@@ -109,8 +109,7 @@ void
 virSCSIVHostDeviceListDel(virSCSIVHostDeviceListPtr list,
                           virSCSIVHostDevicePtr dev)
 {
-    virSCSIVHostDevicePtr tmp = virSCSIVHostDeviceListSteal(list, dev);
-    virSCSIVHostDeviceFree(tmp);
+    VIR_AUTOPTR(virSCSIVHostDevice) tmp = virSCSIVHostDeviceListSteal(list, dev);
 }
 
 
@@ -253,7 +252,8 @@ virSCSIVHostDeviceGetPath(virSCSIVHostDevicePtr dev)
 virSCSIVHostDevicePtr
 virSCSIVHostDeviceNew(const char *name)
 {
-    virSCSIVHostDevicePtr dev;
+    VIR_AUTOPTR(virSCSIVHostDevice) dev = NULL;
+    virSCSIVHostDevicePtr ret = NULL;
 
     if (VIR_ALLOC(dev) < 0)
         return NULL;
@@ -262,22 +262,18 @@ virSCSIVHostDeviceNew(const char *name)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->name buffer overflow: %s"),
                        name);
-        goto error;
+        return NULL;
     }
 
     if (virAsprintf(&dev->path, "%s/%s",
                     SYSFS_VHOST_SCSI_DEVICES, name) < 0)
-        goto error;
+        return NULL;
 
     VIR_DEBUG("%s: initialized", dev->name);
 
- cleanup:
-    return dev;
+    VIR_STEAL_PTR(ret, dev);
 
- error:
-    virSCSIVHostDeviceFree(dev);
-    dev = NULL;
-    goto cleanup;
+    return ret;
 }
 
 
