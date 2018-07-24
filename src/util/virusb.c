@@ -35,7 +35,6 @@
 
 #include "virusb.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "virutil.h"
 #include "virerror.h"
 #include "virfile.h"
