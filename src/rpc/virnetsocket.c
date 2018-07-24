@@ -310,8 +310,8 @@ int virNetSocketNewListenTCP(const char *nodename,
     struct addrinfo hints;
     int fd = -1;
     size_t i;
-    bool addrInUse = false;
-    bool familyNotSupported = false;
+    int socketErrno = 0;
+    int bindErrno = 0;
     virSocketAddr tmp_addr;
 
     *retsocks = NULL;
@@ -351,7 +351,7 @@ int virNetSocketNewListenTCP(const char *nodename,
         if ((fd = socket(runp->ai_family, runp->ai_socktype,
                          runp->ai_protocol)) < 0) {
             if (errno == EAFNOSUPPORT) {
-                familyNotSupported = true;
+                socketErrno = errno;
                 runp = runp->ai_next;
                 continue;
             }
@@ -386,7 +386,7 @@ int virNetSocketNewListenTCP(const char *nodename,
                 virReportSystemError(errno, "%s", _("Unable to bind to port"));
                 goto error;
             }
-            addrInUse = true;
+            bindErrno = errno;
             VIR_FORCE_CLOSE(fd);
             runp = runp->ai_next;
             continue;
@@ -409,14 +409,13 @@ int virNetSocketNewListenTCP(const char *nodename,
         fd = -1;
     }
 
-    if (nsocks == 0 && familyNotSupported) {
-        virReportSystemError(EAFNOSUPPORT, "%s", _("Unable to bind to port"));
-        goto error;
-    }
-
-    if (nsocks == 0 &&
-        addrInUse) {
-        virReportSystemError(EADDRINUSE, "%s", _("Unable to bind to port"));
+    if (nsocks == 0) {
+        if (bindErrno)
+            virReportSystemError(bindErrno, "%s", _("Unable to bind to port"));
+        else if (socketErrno)
+            virReportSystemError(socketErrno, "%s", _("Unable to create socket"));
+        else
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("No addresses to bind to"));
         goto error;
     }
 
