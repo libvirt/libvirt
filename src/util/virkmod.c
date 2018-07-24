@@ -28,8 +28,7 @@
 static int
 doModprobe(const char *opts, const char *module, char **outbuf, char **errbuf)
 {
-    int ret = -1;
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     cmd = virCommandNew(MODPROBE);
     if (opts)
@@ -42,32 +41,23 @@ doModprobe(const char *opts, const char *module, char **outbuf, char **errbuf)
         virCommandSetErrorBuffer(cmd, errbuf);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 static int
 doRmmod(const char *module, char **errbuf)
 {
-    int ret = -1;
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(RMMOD, module, NULL);
     virCommandSetErrorBuffer(cmd, errbuf);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 /**
