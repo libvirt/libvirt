@@ -181,7 +181,7 @@ virUSBDeviceSearch(unsigned int vendor,
         if (!usb)
             goto cleanup;
 
-        if (virUSBDeviceListAdd(list, usb) < 0) {
+        if (virUSBDeviceListAdd(list, &usb) < 0) {
             virUSBDeviceFree(usb);
             goto cleanup;
         }
@@ -463,15 +463,15 @@ virUSBDeviceListDispose(void *obj)
 
 int
 virUSBDeviceListAdd(virUSBDeviceListPtr list,
-                    virUSBDevicePtr dev)
+                    virUSBDevicePtr *dev)
 {
-    if (virUSBDeviceListFind(list, dev)) {
+    if (virUSBDeviceListFind(list, *dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Device %s is already in use"),
-                       dev->name);
+                       (*dev)->name);
         return -1;
     }
-    return VIR_APPEND_ELEMENT(list->devs, list->count, dev);
+    return VIR_APPEND_ELEMENT(list->devs, list->count, *dev);
 }
 
 virUSBDevicePtr

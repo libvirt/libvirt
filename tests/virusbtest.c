@@ -173,7 +173,7 @@ testUSBList(const void *opaque ATTRIBUTE_UNUSED)
         dev = virUSBDeviceListGet(devlist, 0);
         dev = virUSBDeviceListSteal(devlist, dev);
 
-        if (virUSBDeviceListAdd(list, dev) < 0)
+        if (virUSBDeviceListAdd(list, &dev) < 0)
             goto cleanup;
         dev = NULL;
     }
@@ -196,7 +196,7 @@ testUSBList(const void *opaque ATTRIBUTE_UNUSED)
         dev = virUSBDeviceListGet(devlist, 0);
         dev = virUSBDeviceListSteal(devlist, dev);
 
-        if (virUSBDeviceListAdd(list, dev) < 0)
+        if (virUSBDeviceListAdd(list, &dev) < 0)
             goto cleanup;
         dev = NULL;
     }

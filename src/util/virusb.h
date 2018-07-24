@@ -88,7 +88,7 @@ int virUSBDeviceFileIterate(virUSBDevicePtr dev,
 
 virUSBDeviceListPtr virUSBDeviceListNew(void);
 int virUSBDeviceListAdd(virUSBDeviceListPtr list,
-                        virUSBDevicePtr dev);
+                        virUSBDevicePtr *dev);
 virUSBDevicePtr virUSBDeviceListGet(virUSBDeviceListPtr list,
                                     int idx);
 size_t virUSBDeviceListCount(virUSBDeviceListPtr list);

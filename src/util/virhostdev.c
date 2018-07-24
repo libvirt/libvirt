@@ -1236,7 +1236,7 @@ virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
 
         virUSBDeviceSetUsedBy(usb, drv_name, dom_name);
 
-        if (virUSBDeviceListAdd(mgr->activeUSBHostdevs, usb) < 0) {
+        if (virUSBDeviceListAdd(mgr->activeUSBHostdevs, &usb) < 0) {
             virUSBDeviceFree(usb);
             goto cleanup;
         }
@@ -1406,7 +1406,7 @@ virHostdevMarkUSBDevices(virHostdevManagerPtr mgr,
          * from the virUSBDeviceList that passed in on success,
          * perform rollback on failure.
          */
-        if (virUSBDeviceListAdd(mgr->activeUSBHostdevs, usb) < 0)
+        if (virUSBDeviceListAdd(mgr->activeUSBHostdevs, &usb) < 0)
             goto error;
     }
 
@@ -1555,7 +1555,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr mgr,
         if (virHostdevFindUSBDevice(hostdev, required, &usb) < 0)
             goto cleanup;
 
-        if (usb && virUSBDeviceListAdd(list, usb) < 0) {
+        if (usb && virUSBDeviceListAdd(list, &usb) < 0) {
             virUSBDeviceFree(usb);
             goto cleanup;
         }
