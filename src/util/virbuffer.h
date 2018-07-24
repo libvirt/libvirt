@@ -23,9 +23,11 @@
 #ifndef __VIR_BUFFER_H__
 # define __VIR_BUFFER_H__
 
-# include "internal.h"
-
 # include <stdarg.h>
+
+# include "internal.h"
+# include "viralloc.h"
+
 
 /**
  * virBuffer:
@@ -118,5 +120,7 @@ int virBufferGetIndent(const virBuffer *buf, bool dynamic);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);
 void virBufferAddStr(virBufferPtr buf, const char *str);
+
+VIR_DEFINE_AUTOPTR_FUNC(virBuffer, virBufferFreeAndReset)
 
 #endif /* __VIR_BUFFER_H__ */

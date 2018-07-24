@@ -31,10 +31,10 @@
 #define __VIR_BUFFER_C__
 
 #include "virbuffer.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 /* If adding more fields, ensure to edit buf.h to match
    the number of fields */
@@ -656,6 +656,19 @@ struct _virBufferEscapePair {
     char *toescape;
 };
 
+static void
+virBufferEscapePairFree(virBufferEscapePairPtr pair)
+{
+    if (!pair)
+        return;
+
+    VIR_FREE(pair->toescape);
+    VIR_FREE(pair);
+}
+
+VIR_DEFINE_AUTOPTR_FUNC(virBufferEscapePair, virBufferEscapePairFree)
+
+
 /**
  * virBufferEscapeN:
  * @buf: the buffer to append to
@@ -696,7 +709,7 @@ virBufferEscapeN(virBufferPtr buf,
     va_start(ap, str);
 
     while ((escapeItem.escape = va_arg(ap, int))) {
-        if (!(escapeItem.toescape = va_arg(ap, char *))) {
+        if (VIR_STRDUP(escapeItem.toescape, va_arg(ap, char *)) < 0) {
             virBufferSetError(buf, errno);
             goto cleanup;
         }
