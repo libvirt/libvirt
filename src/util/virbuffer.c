@@ -648,11 +648,13 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
 }
 
 
+typedef struct _virBufferEscapePair virBufferEscapePair;
+typedef virBufferEscapePair *virBufferEscapePairPtr;
+
 struct _virBufferEscapePair {
     char escape;
     char *toescape;
 };
-
 
 /**
  * virBufferEscapeN:
@@ -678,8 +680,8 @@ virBufferEscapeN(virBufferPtr buf,
     char *escaped = NULL;
     char *out;
     const char *cur;
-    struct _virBufferEscapePair escapeItem;
-    struct _virBufferEscapePair *escapeList = NULL;
+    virBufferEscapePair escapeItem;
+    virBufferEscapePairPtr escapeList = NULL;
     size_t nescapeList = 0;
     va_list ap;
 
