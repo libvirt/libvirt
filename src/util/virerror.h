@@ -23,6 +23,7 @@
 # define __VIRT_ERROR_H_
 
 # include "internal.h"
+# include "viralloc.h"
 
 # define VIR_ERROR_MAX_LENGTH 1024
 
@@ -204,5 +205,7 @@ bool virLastErrorIsSystemErrno(int errnum);
 
 void virErrorPreserveLast(virErrorPtr *saveerr);
 void virErrorRestore(virErrorPtr *savederr);
+
+VIR_DEFINE_AUTOPTR_FUNC(virError, virFreeError)
 
 #endif

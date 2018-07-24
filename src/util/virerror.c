@@ -30,7 +30,6 @@
 #include "virerror.h"
 #include "datatypes.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "virthread.h"
 #include "virutil.h"
 #include "virstring.h"
