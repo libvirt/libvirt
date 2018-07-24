@@ -2777,7 +2777,7 @@ mymain(void)
      * will avoid the error. Still, we expect qemu driver to complain about
      * missing machine error, and not crash */
     DO_TEST_PARSE_FLAGS_ERROR("missing-machine",
-                              VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS,
+                              VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE,
                               NONE);
 
     DO_TEST("name-escape",

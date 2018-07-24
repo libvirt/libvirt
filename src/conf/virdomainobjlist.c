@@ -492,7 +492,6 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
         goto error;
     if (!(def = virDomainDefParseFile(configFile, caps, xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
                                       VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL)))
         goto error;
@@ -544,7 +543,6 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
                                       VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL)))
         goto error;

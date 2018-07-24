@@ -273,8 +273,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         if ((tmp = virXPathString("string(./domain/@type)", ctxt))) {
             int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                               VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
-            if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL)
-                domainflags |= VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS;
             xmlNodePtr domainNode = virXPathNode("./domain", ctxt);
 
             VIR_FREE(tmp);
