@@ -72,24 +72,23 @@ static int
 virMediatedDeviceGetSysfsDeviceAPI(virMediatedDevicePtr dev,
                                    char **device_api)
 {
-    int ret = -1;
-    char *buf = NULL;
-    char *file = NULL;
+    VIR_AUTOFREE(char *) buf = NULL;
+    VIR_AUTOFREE(char *) file = NULL;
     char *tmp = NULL;
 
     if (virAsprintf(&file, "%s/mdev_type/device_api", dev->path) < 0)
-        goto cleanup;
+        return -1;
 
     /* TODO - make this a generic method to access sysfs files for various
      * kinds of devices
      */
     if (!virFileExists(file)) {
         virReportSystemError(errno, _("failed to read '%s'"), file);
-        goto cleanup;
+        return -1;
     }
 
     if (virFileReadAll(file, 1024, &buf) < 0)
-        goto cleanup;
+        return -1;
 
     if ((tmp = strchr(buf, '\n')))
         *tmp = '\0';
@@ -97,11 +96,7 @@ virMediatedDeviceGetSysfsDeviceAPI(virMediatedDevicePtr dev,
     *device_api = buf;
     buf = NULL;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(file);
-    VIR_FREE(buf);
-    return ret;
+    return 0;
 }
 
 
@@ -109,8 +104,7 @@ static int
 virMediatedDeviceCheckModel(virMediatedDevicePtr dev,
                             virMediatedDeviceModelType model)
 {
-    int ret = -1;
-    char *dev_api = NULL;
+    VIR_AUTOFREE(char *) dev_api = NULL;
     int actual_model;
 
     if (virMediatedDeviceGetSysfsDeviceAPI(dev, &dev_api) < 0)
@@ -123,7 +117,7 @@ virMediatedDeviceCheckModel(virMediatedDevicePtr dev,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("device API '%s' not supported yet"),
                        dev_api);
-        goto cleanup;
+        return -1;
     }
 
     if (actual_model != model) {
@@ -132,13 +126,10 @@ virMediatedDeviceCheckModel(virMediatedDevicePtr dev,
                          "device only supports '%s'"),
                        virMediatedDeviceModelTypeToString(model),
                        dev->path, dev_api);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(dev_api);
-    return ret;
+    return 0;
 }
 
 
@@ -147,7 +138,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 {
     virMediatedDevicePtr ret = NULL;
     virMediatedDevicePtr dev = NULL;
-    char *sysfspath = NULL;
+    VIR_AUTOFREE(char *) sysfspath = NULL;
 
     if (!(sysfspath = virMediatedDeviceGetSysfsPath(uuidstr)))
         goto cleanup;
@@ -173,7 +164,6 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
     VIR_STEAL_PTR(ret, dev);
 
  cleanup:
-    VIR_FREE(sysfspath);
     virMediatedDeviceFree(dev);
     return ret;
 }
@@ -218,34 +208,30 @@ virMediatedDeviceGetPath(virMediatedDevicePtr dev)
 char *
 virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
 {
-    char *result_path = NULL;
-    char *iommu_path = NULL;
+    VIR_AUTOFREE(char *) result_path = NULL;
+    VIR_AUTOFREE(char *) iommu_path = NULL;
+    VIR_AUTOFREE(char *) dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
     char *vfio_path = NULL;
-    char *dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
 
     if (!dev_path)
         return NULL;
 
     if (virAsprintf(&iommu_path, "%s/iommu_group", dev_path) < 0)
-        goto cleanup;
+        return NULL;
 
     if (!virFileExists(iommu_path)) {
         virReportSystemError(errno, _("failed to access '%s'"), iommu_path);
-        goto cleanup;
+        return NULL;
     }
 
     if (virFileResolveLink(iommu_path, &result_path) < 0) {
         virReportSystemError(errno, _("failed to resolve '%s'"), iommu_path);
-        goto cleanup;
+        return NULL;
     }
 
     if (virAsprintf(&vfio_path, "/dev/vfio/%s", last_component(result_path)) < 0)
-        goto cleanup;
+        return NULL;
 
- cleanup:
-    VIR_FREE(result_path);
-    VIR_FREE(iommu_path);
-    VIR_FREE(dev_path);
     return vfio_path;
 }
 
@@ -253,7 +239,7 @@ virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
 int
 virMediatedDeviceGetIOMMUGroupNum(const char *uuidstr)
 {
-    char *vfio_path = NULL;
+    VIR_AUTOFREE(char *) vfio_path = NULL;
     char *group_num_str = NULL;
     unsigned int group_num = -1;
 
@@ -263,7 +249,6 @@ virMediatedDeviceGetIOMMUGroupNum(const char *uuidstr)
     group_num_str = last_component(vfio_path);
     ignore_value(virStrToLong_ui(group_num_str, NULL, 10, &group_num));
 
-    VIR_FREE(vfio_path);
     return group_num;
 }
 
