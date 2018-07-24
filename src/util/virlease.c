@@ -55,7 +55,7 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
                             const char *ip_to_delete,
                             char **server_duid)
 {
-    char *lease_entries = NULL;
+    VIR_AUTOFREE(char *) lease_entries = NULL;
     virJSONValuePtr leases_array = NULL;
     long long expirytime;
     int custom_lease_file_len = 0;
@@ -146,7 +146,6 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
 
  cleanup:
     virJSONValueFree(leases_array);
-    VIR_FREE(lease_entries);
     return ret;
 }
 
@@ -235,7 +234,7 @@ virLeaseNew(virJSONValuePtr *lease_ret,
     virJSONValuePtr lease_new = NULL;
     const char *exptime_tmp = virGetEnvAllowSUID("DNSMASQ_LEASE_EXPIRES");
     long long expirytime = 0;
-    char *exptime = NULL;
+    VIR_AUTOFREE(char *) exptime = NULL;
     int ret = -1;
 
     /* In case hostname is still unknown, use the last known one */
@@ -291,7 +290,6 @@ virLeaseNew(virJSONValuePtr *lease_ret,
     *lease_ret = lease_new;
     lease_new = NULL;
  cleanup:
-    VIR_FREE(exptime);
     virJSONValueFree(lease_new);
     return ret;
 }
