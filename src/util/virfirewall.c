@@ -511,7 +511,7 @@ void virFirewallRuleAddArgFormat(virFirewallPtr firewall,
                                  virFirewallRulePtr rule,
                                  const char *fmt, ...)
 {
-    char *arg;
+    VIR_AUTOFREE(char *) arg = NULL;
     va_list list;
 
     VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule);
@@ -525,13 +525,11 @@ void virFirewallRuleAddArgFormat(virFirewallPtr firewall,
 
     va_end(list);
 
-    VIR_FREE(arg);
     return;
 
  no_memory:
     firewall->err = ENOMEM;
     va_end(list);
-    VIR_FREE(arg);
 }
 
 
@@ -678,7 +676,7 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
     virCommandPtr cmd = NULL;
     int status;
     int ret = -1;
-    char *error = NULL;
+    VIR_AUTOFREE(char *) error = NULL;
 
     if (!bin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -702,11 +700,10 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
         if (ignoreErrors) {
             VIR_DEBUG("Ignoring error running command");
         } else {
-            char *args = virCommandToString(cmd);
+            VIR_AUTOFREE(char *) args = virCommandToString(cmd);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to apply firewall rules %s: %s"),
                            NULLSTR(args), NULLSTR(error));
-            VIR_FREE(args);
             VIR_FREE(*output);
             goto cleanup;
         }
@@ -714,7 +711,6 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
 
     ret = 0;
  cleanup:
-    VIR_FREE(error);
     virCommandFree(cmd);
     return ret;
 }
@@ -807,12 +803,11 @@ virFirewallApplyRule(virFirewallPtr firewall,
                      virFirewallRulePtr rule,
                      bool ignoreErrors)
 {
-    char *output = NULL;
+    VIR_AUTOFREE(char *) output = NULL;
+    VIR_AUTOFREE(char *) str = virFirewallRuleToString(rule);
     char **lines = NULL;
     int ret = -1;
-    char *str = virFirewallRuleToString(rule);
     VIR_INFO("Applying rule '%s'", NULLSTR(str));
-    VIR_FREE(str);
 
     if (rule->ignoreErrors)
         ignoreErrors = rule->ignoreErrors;
@@ -857,7 +852,6 @@ virFirewallApplyRule(virFirewallPtr firewall,
     ret = 0;
  cleanup:
     virStringListFree(lines);
-    VIR_FREE(output);
     return ret;
 }
 
