@@ -5078,7 +5078,7 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
 
  cleanup:
     virBitmapFree(tmpmap);
-    virCgroupFree(&cgroup_vcpu);
+    virCgroupFree(cgroup_vcpu);
     VIR_FREE(str);
     virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
@@ -5315,8 +5315,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (cgroup_emulator)
-        virCgroupFree(&cgroup_emulator);
+    virCgroupFree(cgroup_emulator);
     virObjectEventStateQueue(driver->domainEventState, event);
     VIR_FREE(str);
     virBitmapFree(pcpumap);
@@ -5797,8 +5796,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (cgroup_iothread)
-        virCgroupFree(&cgroup_iothread);
+    virCgroupFree(cgroup_iothread);
     virObjectEventStateQueue(driver->domainEventState, event);
     VIR_FREE(str);
     virBitmapFree(pcpumap);
@@ -9852,7 +9850,7 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
                            false, &cgroup_temp) < 0 ||
         virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
         goto cleanup;
-    virCgroupFree(&cgroup_temp);
+    virCgroupFree(cgroup_temp);
 
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
@@ -9864,7 +9862,7 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
                                false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
             goto cleanup;
-        virCgroupFree(&cgroup_temp);
+        virCgroupFree(cgroup_temp);
     }
 
     for (i = 0; i < vm->def->niothreadids; i++) {
@@ -9873,13 +9871,13 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
                                false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
             goto cleanup;
-        virCgroupFree(&cgroup_temp);
+        virCgroupFree(cgroup_temp);
     }
 
     ret = 0;
  cleanup:
     VIR_FREE(nodeset_str);
-    virCgroupFree(&cgroup_temp);
+    virCgroupFree(cgroup_temp);
 
     return ret;
 }
@@ -10301,13 +10299,13 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
         if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
             goto cleanup;
 
-        virCgroupFree(&cgroup_vcpu);
+        virCgroupFree(cgroup_vcpu);
     }
 
     return 0;
 
  cleanup:
-    virCgroupFree(&cgroup_vcpu);
+    virCgroupFree(cgroup_vcpu);
     return -1;
 }
 
@@ -10328,11 +10326,11 @@ qemuSetEmulatorBandwidthLive(virCgroupPtr cgroup,
     if (qemuSetupCgroupVcpuBW(cgroup_emulator, period, quota) < 0)
         goto cleanup;
 
-    virCgroupFree(&cgroup_emulator);
+    virCgroupFree(cgroup_emulator);
     return 0;
 
  cleanup:
-    virCgroupFree(&cgroup_emulator);
+    virCgroupFree(cgroup_emulator);
     return -1;
 }
 
@@ -10359,13 +10357,13 @@ qemuSetIOThreadsBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
         if (qemuSetupCgroupVcpuBW(cgroup_iothread, period, quota) < 0)
             goto cleanup;
 
-        virCgroupFree(&cgroup_iothread);
+        virCgroupFree(cgroup_iothread);
     }
 
     return 0;
 
  cleanup:
-    virCgroupFree(&cgroup_iothread);
+    virCgroupFree(cgroup_iothread);
     return -1;
 }
 
@@ -10751,7 +10749,7 @@ qemuGetVcpusBWLive(virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
-    virCgroupFree(&cgroup_vcpu);
+    virCgroupFree(cgroup_vcpu);
     return ret;
 }
 
@@ -10774,7 +10772,7 @@ qemuGetEmulatorBandwidthLive(virCgroupPtr cgroup,
     ret = 0;
 
  cleanup:
-    virCgroupFree(&cgroup_emulator);
+    virCgroupFree(cgroup_emulator);
     return ret;
 }
 
@@ -10810,7 +10808,7 @@ qemuGetIOThreadsBWLive(virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
-    virCgroupFree(&cgroup_iothread);
+    virCgroupFree(cgroup_iothread);
     return ret;
 }
 

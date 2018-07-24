@@ -309,12 +309,12 @@ int virDomainLxcEnterCGroup(virDomainPtr domain,
     if (virCgroupAddTask(cgroup, getpid()) < 0)
         goto error;
 
-    virCgroupFree(&cgroup);
+    virCgroupFree(cgroup);
 
     return 0;
 
  error:
     virDispatchError(NULL);
-    virCgroupFree(&cgroup);
+    virCgroupFree(cgroup);
     return -1;
 }
