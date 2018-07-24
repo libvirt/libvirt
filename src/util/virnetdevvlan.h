@@ -23,6 +23,8 @@
 
 # include <virutil.h>
 
+# include "viralloc.h"
+
 typedef enum {
     VIR_NATIVE_VLAN_MODE_DEFAULT = 0,
     VIR_NATIVE_VLAN_MODE_TAGGED,
@@ -47,5 +49,7 @@ void virNetDevVlanClear(virNetDevVlanPtr vlan);
 void virNetDevVlanFree(virNetDevVlanPtr vlan);
 int virNetDevVlanEqual(const virNetDevVlan *a, const virNetDevVlan *b);
 int virNetDevVlanCopy(virNetDevVlanPtr dst, const virNetDevVlan *src);
+
+VIR_DEFINE_AUTOPTR_FUNC(virNetDevVlan, virNetDevVlanFree)
 
 #endif /* __VIR_NETDEV_VLAN_H__ */
