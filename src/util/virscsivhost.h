@@ -27,6 +27,7 @@
 # include "internal.h"
 # include "virobject.h"
 # include "virutil.h"
+# include "viralloc.h"
 
 typedef struct _virSCSIVHostDevice virSCSIVHostDevice;
 typedef virSCSIVHostDevice *virSCSIVHostDevicePtr;
@@ -62,5 +63,7 @@ void virSCSIVHostDeviceGetUsedBy(virSCSIVHostDevicePtr dev,
                                  const char **dom_name);
 void virSCSIVHostDeviceFree(virSCSIVHostDevicePtr dev);
 int virSCSIVHostOpenVhostSCSI(int *vhostfd) ATTRIBUTE_NOINLINE;
+
+VIR_DEFINE_AUTOPTR_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree)
 
 #endif /* __VIR_SCSIHOST_H__ */

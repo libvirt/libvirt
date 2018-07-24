@@ -26,7 +26,6 @@
 
 #include "virscsivhost.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virstring.h"
