@@ -26,7 +26,6 @@
 
 #include "virerror.h"
 #include "virhash.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virhashcode.h"
 #include "virrandom.h"
