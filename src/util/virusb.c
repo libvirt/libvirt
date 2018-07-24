@@ -90,29 +90,25 @@ VIR_ONCE_GLOBAL_INIT(virUSB)
 static int virUSBSysReadFile(const char *f_name, const char *d_name,
                              int base, unsigned int *value)
 {
-    int ret = -1, tmp;
-    char *buf = NULL;
-    char *filename = NULL;
+    int tmp;
+    VIR_AUTOFREE(char *) buf = NULL;
+    VIR_AUTOFREE(char *) filename = NULL;
     char *ignore = NULL;
 
     tmp = virAsprintf(&filename, USB_SYSFS "/devices/%s/%s", d_name, f_name);
     if (tmp < 0)
-        goto cleanup;
+        return -1;
 
     if (virFileReadAll(filename, 1024, &buf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStrToLong_ui(buf, &ignore, base, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse usb file %s"), filename);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(filename);
-    VIR_FREE(buf);
-    return ret;
+    return 0;
 }
 
 static virUSBDeviceListPtr
