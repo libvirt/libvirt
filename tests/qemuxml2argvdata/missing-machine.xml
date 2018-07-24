@@ -6,7 +6,7 @@
   <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu placement='static' cpuset='1'>1</vcpu>
   <os>
-    <type arch='i686'>hvm</type>
+    <type arch='alpha'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>

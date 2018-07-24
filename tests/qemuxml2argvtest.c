@@ -2773,6 +2773,9 @@ mymain(void)
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_NEC_USB_XHCI);
 
+    /* VM XML has invalid arch/ostype/virttype combo, but the SKIP flag
+     * will avoid the error. Still, we expect qemu driver to complain about
+     * missing machine error, and not crash */
     DO_TEST_PARSE_FLAGS_ERROR("missing-machine",
                               VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS,
                               NONE);

@@ -19178,18 +19178,19 @@ virDomainDefParseCaps(virDomainDefPtr def,
         goto cleanup;
     }
 
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
-        if (!(capsdata = virCapabilitiesDomainDataLookup(caps,
-                def->os.type, def->os.arch, def->virtType,
-                NULL, NULL)))
+    if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
+                                                     def->os.arch,
+                                                     def->virtType,
+                                                     NULL, NULL))) {
+        if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS))
             goto cleanup;
-
+        virResetLastError();
+    } else {
         if (!def->os.arch)
             def->os.arch = capsdata->arch;
         if ((!def->os.machine &&
-             VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0)) {
+             VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0))
             goto cleanup;
-        }
     }
 
     ret = 0;
