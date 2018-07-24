@@ -155,13 +155,12 @@ virKModUnload(const char *module)
 bool
 virKModIsBlacklisted(const char *module)
 {
-    bool retval = false;
     size_t i;
-    char *drvblklst = NULL;
-    char *outbuf = NULL;
+    VIR_AUTOFREE(char *) drvblklst = NULL;
+    VIR_AUTOFREE(char *) outbuf = NULL;
 
     if (virAsprintfQuiet(&drvblklst, "blacklist %s\n", module) < 0)
-        goto cleanup;
+        return false;
 
     /* modprobe will convert all '-' into '_', so we need to as well */
     for (i = 0; i < drvblklst[i]; i++)
@@ -169,13 +168,10 @@ virKModIsBlacklisted(const char *module)
             drvblklst[i] = '_';
 
     if (doModprobe("-c", NULL, &outbuf, NULL) < 0)
-        goto cleanup;
+        return false;
 
     if (strstr(outbuf, drvblklst))
-        retval = true;
+        return true;
 
- cleanup:
-    VIR_FREE(drvblklst);
-    VIR_FREE(outbuf);
-    return retval;
+    return false;
 }
