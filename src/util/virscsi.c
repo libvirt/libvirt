@@ -189,7 +189,8 @@ virSCSIDeviceNew(const char *sysfs_prefix,
                  bool readonly,
                  bool shareable)
 {
-    virSCSIDevicePtr dev, ret = NULL;
+    VIR_AUTOPTR(virSCSIDevice) dev = NULL;
+    virSCSIDevicePtr ret = NULL;
     VIR_AUTOFREE(char *) sg = NULL;
     VIR_AUTOFREE(char *) vendor_path = NULL;
     VIR_AUTOFREE(char *) model_path = NULL;
@@ -207,46 +208,43 @@ virSCSIDeviceNew(const char *sysfs_prefix,
     dev->shareable = shareable;
 
     if (!(sg = virSCSIDeviceGetSgName(prefix, adapter, bus, target, unit)))
-        goto cleanup;
+        return NULL;
 
     if (virSCSIDeviceGetAdapterId(adapter, &dev->adapter) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virAsprintf(&dev->name, "%d:%u:%u:%llu", dev->adapter,
                     dev->bus, dev->target, dev->unit) < 0 ||
         virAsprintf(&dev->sg_path, "%s/%s",
                     sysfs_prefix ? sysfs_prefix : "/dev", sg) < 0)
-        goto cleanup;
+        return NULL;
 
     if (!virFileExists(dev->sg_path)) {
         virReportSystemError(errno,
                              _("SCSI device '%s': could not access %s"),
                              dev->name, dev->sg_path);
-        goto cleanup;
+        return NULL;
     }
 
     if (virAsprintf(&vendor_path,
                     "%s/%s/vendor", prefix, dev->name) < 0 ||
         virAsprintf(&model_path,
                     "%s/%s/model", prefix, dev->name) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virFileReadAll(vendor_path, 1024, &vendor) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virFileReadAll(model_path, 1024, &model) < 0)
-        goto cleanup;
+        return NULL;
 
     virTrimSpaces(vendor, NULL);
     virTrimSpaces(model, NULL);
 
     if (virAsprintf(&dev->id, "%s:%s", vendor, model) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = dev;
- cleanup:
-    if (!ret)
-        virSCSIDeviceFree(dev);
+    VIR_STEAL_PTR(ret, dev);
     return ret;
 }
 
@@ -281,21 +279,18 @@ virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev,
                        const char *drvname,
                        const char *domname)
 {
-    virUsedByInfoPtr copy;
+    VIR_AUTOPTR(virUsedByInfo) copy = NULL;
+
     if (VIR_ALLOC(copy) < 0)
         return -1;
     if (VIR_STRDUP(copy->drvname, drvname) < 0 ||
         VIR_STRDUP(copy->domname, domname) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_APPEND_ELEMENT(dev->used_by, dev->n_used_by, copy) < 0)
-        goto cleanup;
+        return -1;
 
     return 0;
-
- cleanup:
-    virSCSIDeviceUsedByInfoFree(copy);
-    return -1;
 }
 
 bool
@@ -442,7 +437,6 @@ virSCSIDeviceListDel(virSCSIDeviceListPtr list,
                      const char *drvname,
                      const char *domname)
 {
-    virSCSIDevicePtr tmp = NULL;
     size_t i;
 
     for (i = 0; i < dev->n_used_by; i++) {
@@ -452,8 +446,8 @@ virSCSIDeviceListDel(virSCSIDeviceListPtr list,
                 virSCSIDeviceUsedByInfoFree(dev->used_by[i]);
                 VIR_DELETE_ELEMENT(dev->used_by, i, dev->n_used_by);
             } else {
+                VIR_AUTOPTR(virSCSIDevice) tmp = NULL;
                 tmp = virSCSIDeviceListSteal(list, dev);
-                virSCSIDeviceFree(tmp);
             }
             break;
         }
