@@ -19114,46 +19114,15 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
 }
 
 
-static virDomainDefPtr
-virDomainDefParseXML(xmlDocPtr xml,
-                     xmlNodePtr root,
-                     xmlXPathContextPtr ctxt,
-                     virCapsPtr caps,
-                     virDomainXMLOptionPtr xmlopt,
-                     unsigned int flags)
+static int
+virDomainDefParseCaps(virDomainDefPtr def,
+                      xmlXPathContextPtr ctxt,
+                      virCapsPtr caps,
+                      unsigned int flags)
 {
-    xmlNodePtr *nodes = NULL, node = NULL;
+    int ret = -1;
+    int virtType;
     char *tmp = NULL;
-    size_t i, j;
-    int n, virtType, gic_version;
-    long id = -1;
-    virDomainDefPtr def;
-    bool uuid_generated = false;
-    bool usb_none = false;
-    bool usb_other = false;
-    bool usb_master = false;
-    char *netprefix = NULL;
-
-    if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA) {
-        char *schema = virFileFindResource("domain.rng",
-                                           abs_topsrcdir "/docs/schemas",
-                                           PKGDATADIR "/schemas");
-        if (!schema)
-            return NULL;
-        if (virXMLValidateAgainstSchema(schema, xml) < 0) {
-            VIR_FREE(schema);
-            return NULL;
-        }
-        VIR_FREE(schema);
-    }
-
-    if (!(def = virDomainDefNew()))
-        return NULL;
-
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-        if (virXPathLong("string(./@id)", ctxt, &id) < 0)
-            id = -1;
-    def->id = (int)id;
 
     /* Find out what type of virtualization to use */
     if (!(tmp = virXMLPropString(ctxt->node, "type"))) {
@@ -19238,6 +19207,57 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
         VIR_FREE(capsdata);
     }
+
+    ret = 0;
+ error:
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
+static virDomainDefPtr
+virDomainDefParseXML(xmlDocPtr xml,
+                     xmlNodePtr root,
+                     xmlXPathContextPtr ctxt,
+                     virCapsPtr caps,
+                     virDomainXMLOptionPtr xmlopt,
+                     unsigned int flags)
+{
+    xmlNodePtr *nodes = NULL, node = NULL;
+    char *tmp = NULL;
+    size_t i, j;
+    int n, gic_version;
+    long id = -1;
+    virDomainDefPtr def;
+    bool uuid_generated = false;
+    bool usb_none = false;
+    bool usb_other = false;
+    bool usb_master = false;
+    char *netprefix = NULL;
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA) {
+        char *schema = virFileFindResource("domain.rng",
+                                           abs_topsrcdir "/docs/schemas",
+                                           PKGDATADIR "/schemas");
+        if (!schema)
+            return NULL;
+        if (virXMLValidateAgainstSchema(schema, xml) < 0) {
+            VIR_FREE(schema);
+            return NULL;
+        }
+        VIR_FREE(schema);
+    }
+
+    if (!(def = virDomainDefNew()))
+        return NULL;
+
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+        if (virXPathLong("string(./@id)", ctxt, &id) < 0)
+            id = -1;
+    def->id = (int)id;
+
+    if (virDomainDefParseCaps(def, ctxt, caps, flags) < 0)
+        goto error;
 
     /* Extract domain name */
     if (!(def->name = virXPathString("string(./name[1])", ctxt))) {
