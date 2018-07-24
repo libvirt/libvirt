@@ -123,8 +123,9 @@ virUSBDeviceSearch(unsigned int vendor,
     bool found = false;
     char *ignore = NULL;
     struct dirent *de;
-    virUSBDeviceListPtr list = NULL, ret = NULL;
-    virUSBDevicePtr usb;
+    virUSBDeviceListPtr list = NULL;
+    virUSBDeviceListPtr ret = NULL;
+    VIR_AUTOPTR(virUSBDevice) usb = NULL;
     int direrr;
 
     if (!(list = virUSBDeviceListNew()))
@@ -173,13 +174,12 @@ virUSBDeviceSearch(unsigned int vendor,
         }
 
         usb = virUSBDeviceNew(found_bus, found_devno, vroot);
+
         if (!usb)
             goto cleanup;
 
-        if (virUSBDeviceListAdd(list, &usb) < 0) {
-            virUSBDeviceFree(usb);
+        if (virUSBDeviceListAdd(list, &usb) < 0)
             goto cleanup;
-        }
 
         if (found)
             break;
@@ -508,8 +508,7 @@ void
 virUSBDeviceListDel(virUSBDeviceListPtr list,
                     virUSBDevicePtr dev)
 {
-    virUSBDevicePtr ret = virUSBDeviceListSteal(list, dev);
-    virUSBDeviceFree(ret);
+    VIR_AUTOPTR(virUSBDevice) ret = virUSBDeviceListSteal(list, dev);
 }
 
 virUSBDevicePtr
