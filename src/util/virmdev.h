@@ -22,6 +22,7 @@
 # include "internal.h"
 # include "virobject.h"
 # include "virutil.h"
+# include "viralloc.h"
 
 typedef enum {
     VIR_MDEV_MODEL_TYPE_VFIO_PCI = 0,
@@ -134,5 +135,8 @@ virMediatedDeviceTypeFree(virMediatedDeviceTypePtr type);
 int
 virMediatedDeviceTypeReadAttrs(const char *sysfspath,
                                virMediatedDeviceTypePtr *type);
+
+VIR_DEFINE_AUTOPTR_FUNC(virMediatedDevice, virMediatedDeviceFree)
+VIR_DEFINE_AUTOPTR_FUNC(virMediatedDeviceType, virMediatedDeviceTypeFree)
 
 #endif /* __VIR_MDEV_H__ */
