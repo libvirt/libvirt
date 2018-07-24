@@ -137,20 +137,20 @@ virMediatedDevicePtr
 virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 {
     virMediatedDevicePtr ret = NULL;
-    virMediatedDevicePtr dev = NULL;
+    VIR_AUTOPTR(virMediatedDevice) dev = NULL;
     VIR_AUTOFREE(char *) sysfspath = NULL;
 
     if (!(sysfspath = virMediatedDeviceGetSysfsPath(uuidstr)))
-        goto cleanup;
+        return NULL;
 
     if (!virFileExists(sysfspath)) {
         virReportError(VIR_ERR_DEVICE_MISSING,
                        _("mediated device '%s' not found"), uuidstr);
-        goto cleanup;
+        return NULL;
     }
 
     if (VIR_ALLOC(dev) < 0)
-        goto cleanup;
+        return NULL;
 
     VIR_STEAL_PTR(dev->path, sysfspath);
 
@@ -158,13 +158,11 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
      * supported mediated device's API.
      */
     if (virMediatedDeviceCheckModel(dev, model))
-        goto cleanup;
+        return NULL;
 
     dev->model = model;
     VIR_STEAL_PTR(ret, dev);
 
- cleanup:
-    virMediatedDeviceFree(dev);
     return ret;
 }
 
@@ -372,8 +370,7 @@ void
 virMediatedDeviceListDel(virMediatedDeviceListPtr list,
                          virMediatedDevicePtr dev)
 {
-    virMediatedDevicePtr ret = virMediatedDeviceListSteal(list, dev);
-    virMediatedDeviceFree(ret);
+    VIR_AUTOPTR(virMediatedDevice) ret = virMediatedDeviceListSteal(list, dev);
 }
 
 
@@ -494,23 +491,22 @@ int
 virMediatedDeviceTypeReadAttrs(const char *sysfspath,
                                virMediatedDeviceTypePtr *type)
 {
-    int ret = -1;
-    virMediatedDeviceTypePtr tmp = NULL;
+    VIR_AUTOPTR(virMediatedDeviceType) tmp = NULL;
 
 #define MDEV_GET_SYSFS_ATTR(attr, dst, cb, optional) \
     do { \
         int rc; \
         if ((rc = cb(dst, "%s/%s", sysfspath, attr)) < 0) { \
             if (rc != -2 || !optional) \
-                goto cleanup; \
+                return -1; \
         } \
     } while (0)
 
     if (VIR_ALLOC(tmp) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(tmp->id, last_component(sysfspath)) < 0)
-        goto cleanup;
+        return -1;
 
     /* @name sysfs attribute is optional, so getting ENOENT is fine */
     MDEV_GET_SYSFS_ATTR("name", &tmp->name, virFileReadValueString, true);
@@ -522,8 +518,6 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
 #undef MDEV_GET_SYSFS_ATTR
 
     VIR_STEAL_PTR(*type, tmp);
-    ret = 0;
- cleanup:
-    virMediatedDeviceTypeFree(tmp);
-    return ret;
+
+    return 0;
 }
