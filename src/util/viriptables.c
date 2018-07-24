@@ -215,7 +215,7 @@ static char *iptablesFormatNetwork(virSocketAddr *netaddr,
                                    unsigned int prefix)
 {
     virSocketAddr network;
-    char *netstr;
+    VIR_AUTOFREE(char *) netstr = NULL;
     char *ret;
 
     if (!(VIR_SOCKET_ADDR_IS_FAMILY(netaddr, AF_INET) ||
@@ -238,7 +238,6 @@ static char *iptablesFormatNetwork(virSocketAddr *netaddr,
 
     ignore_value(virAsprintf(&ret, "%s/%d", netstr, prefix));
 
-    VIR_FREE(netstr);
     return ret;
 }
 
@@ -254,7 +253,7 @@ iptablesForwardAllowOut(virFirewallPtr fw,
                         const char *physdev,
                         int action)
 {
-    char *networkstr;
+    VIR_AUTOFREE(char *) networkstr = NULL;
     virFirewallLayer layer = VIR_SOCKET_ADDR_FAMILY(netaddr) == AF_INET ?
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
 
@@ -279,7 +278,6 @@ iptablesForwardAllowOut(virFirewallPtr fw,
                            "--jump", "ACCEPT",
                            NULL);
 
-    VIR_FREE(networkstr);
     return 0;
 }
 
@@ -343,7 +341,7 @@ iptablesForwardAllowRelatedIn(virFirewallPtr fw,
 {
     virFirewallLayer layer = VIR_SOCKET_ADDR_FAMILY(netaddr) == AF_INET ?
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
-    char *networkstr;
+    VIR_AUTOFREE(char *) networkstr = NULL;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
@@ -370,7 +368,6 @@ iptablesForwardAllowRelatedIn(virFirewallPtr fw,
                            "--jump", "ACCEPT",
                            NULL);
 
-    VIR_FREE(networkstr);
     return 0;
 }
 
@@ -432,7 +429,7 @@ iptablesForwardAllowIn(virFirewallPtr fw,
 {
     virFirewallLayer layer = VIR_SOCKET_ADDR_FAMILY(netaddr) == AF_INET ?
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
-    char *networkstr;
+    VIR_AUTOFREE(char *) networkstr = NULL;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
@@ -454,7 +451,6 @@ iptablesForwardAllowIn(virFirewallPtr fw,
                            "--out-interface", iface,
                            "--jump", "ACCEPT",
                            NULL);
-    VIR_FREE(networkstr);
     return 0;
 }
 
@@ -661,12 +657,11 @@ iptablesForwardMasquerade(virFirewallPtr fw,
                           const char *protocol,
                           int action)
 {
-    int ret = -1;
-    char *networkstr = NULL;
-    char *addrStartStr = NULL;
-    char *addrEndStr = NULL;
-    char *portRangeStr = NULL;
-    char *natRangeStr = NULL;
+    VIR_AUTOFREE(char *) networkstr = NULL;
+    VIR_AUTOFREE(char *) addrStartStr = NULL;
+    VIR_AUTOFREE(char *) addrEndStr = NULL;
+    VIR_AUTOFREE(char *) portRangeStr = NULL;
+    VIR_AUTOFREE(char *) natRangeStr = NULL;
     virFirewallRulePtr rule;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
@@ -677,15 +672,15 @@ iptablesForwardMasquerade(virFirewallPtr fw,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Attempted to NAT '%s'. NAT is only supported for IPv4."),
                        networkstr);
-        goto cleanup;
+        return -1;
     }
 
     if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->start, AF_INET)) {
         if (!(addrStartStr = virSocketAddrFormat(&addr->start)))
-            goto cleanup;
+            return -1;
         if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->end, AF_INET)) {
             if (!(addrEndStr = virSocketAddrFormat(&addr->end)))
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -718,7 +713,7 @@ iptablesForwardMasquerade(virFirewallPtr fw,
         if (port->start < port->end && port->end < 65536) {
             if (virAsprintf(&portRangeStr, ":%u-%u",
                             port->start, port->end) < 0)
-                goto cleanup;
+                return -1;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid port range '%u-%u'."),
@@ -739,7 +734,7 @@ iptablesForwardMasquerade(virFirewallPtr fw,
         }
 
         if (r < 0)
-            goto cleanup;
+            return -1;
 
         virFirewallRuleAddArgList(fw, rule,
                                   "--jump", "SNAT",
@@ -753,14 +748,7 @@ iptablesForwardMasquerade(virFirewallPtr fw,
                                       "--to-ports", &portRangeStr[1], NULL);
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(networkstr);
-    VIR_FREE(addrStartStr);
-    VIR_FREE(addrEndStr);
-    VIR_FREE(portRangeStr);
-    VIR_FREE(natRangeStr);
-    return ret;
+    return 0;
 }
 
 /**
@@ -827,8 +815,7 @@ iptablesForwardDontMasquerade(virFirewallPtr fw,
                               const char *destaddr,
                               int action)
 {
-    int ret = -1;
-    char *networkstr = NULL;
+    VIR_AUTOFREE(char *) networkstr = NULL;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
@@ -838,7 +825,7 @@ iptablesForwardDontMasquerade(virFirewallPtr fw,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Attempted to NAT '%s'. NAT is only supported for IPv4."),
                        networkstr);
-        goto cleanup;
+        return -1;
     }
 
     if (physdev && physdev[0])
@@ -859,10 +846,7 @@ iptablesForwardDontMasquerade(virFirewallPtr fw,
                            "--jump", "RETURN",
                            NULL);
 
-    ret = 0;
- cleanup:
-    VIR_FREE(networkstr);
-    return ret;
+    return 0;
 }
 
 /**
