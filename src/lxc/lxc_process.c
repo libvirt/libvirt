@@ -931,7 +931,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
         filterstr = virLogGetFilters();
         if (!filterstr) {
             virReportOOMError();
-            goto cleanup;
+            goto error;
         }
 
         virCommandAddEnvPair(cmd, "LIBVIRT_LOG_FILTERS", filterstr);
@@ -943,7 +943,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
             outputstr = virLogGetOutputs();
             if (!outputstr) {
                 virReportOOMError();
-                goto cleanup;
+                goto error;
             }
 
             virCommandAddEnvPair(cmd, "LIBVIRT_LOG_OUTPUTS", outputstr);
@@ -973,7 +973,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
             char *tmp = NULL;
             if (virAsprintf(&tmp, "--share-%s",
                             nsInfoLocal[i]) < 0)
-                goto cleanup;
+                goto error;
             virCommandAddArg(cmd, tmp);
             virCommandAddArgFormat(cmd, "%d", nsInheritFDs[i]);
             virCommandPassFD(cmd, nsInheritFDs[i], 0);
@@ -999,11 +999,13 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
      * write the live domain status XML with the PID */
     virCommandRequireHandshake(cmd);
 
-    return cmd;
  cleanup:
-    virCommandFree(cmd);
     virObjectUnref(cfg);
-    return NULL;
+    return cmd;
+ error:
+    virCommandFree(cmd);
+    cmd = NULL;
+    goto cleanup;
 }
 
 
