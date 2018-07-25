@@ -86,6 +86,10 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
     if (driver && virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
 
+    /* Add huge pages info */
+    if (virCapabilitiesInitPages(caps) < 0)
+        VIR_WARN("Failed to get pages info");
+
     if (virGetHostUUID(caps->host.host_uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot get the host uuid"));
