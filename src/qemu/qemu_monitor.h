@@ -940,7 +940,8 @@ int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
                                   bool supportMaxLengthOptions);
 
 int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
-                                  const char *device,
+                                  const char *drivealias,
+                                  const char *qdevid,
                                   virDomainBlockIoTuneInfoPtr reply);
 
 int qemuMonitorSystemWakeup(qemuMonitorPtr mon);

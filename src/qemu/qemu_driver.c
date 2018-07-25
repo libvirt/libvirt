@@ -18601,7 +18601,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         if (!(device = qemuAliasDiskDriveFromDisk(disk)))
             goto endjob;
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorGetBlockIoThrottle(priv->mon, device, &reply);
+        ret = qemuMonitorGetBlockIoThrottle(priv->mon, device, NULL, &reply);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto endjob;
         if (ret < 0)

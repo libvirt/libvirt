@@ -4818,7 +4818,8 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
     }
 static int
 qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr io_throttle,
-                                   const char *device,
+                                   const char *drivealias,
+                                   const char *qdevid,
                                    virDomainBlockIoTuneInfoPtr reply)
 {
     int ret = -1;
@@ -4828,7 +4829,8 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr io_throttle,
     for (i = 0; i < virJSONValueArraySize(io_throttle); i++) {
         virJSONValuePtr temp_dev = virJSONValueArrayGet(io_throttle, i);
         virJSONValuePtr inserted;
-        const char *current_dev;
+        const char *current_drive;
+        const char *current_qdev;
 
         if (!temp_dev || virJSONValueGetType(temp_dev) != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4837,14 +4839,18 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr io_throttle,
             goto cleanup;
         }
 
-        if (!(current_dev = virJSONValueObjectGetString(temp_dev, "device"))) {
+        current_qdev = virJSONValueObjectGetString(temp_dev, "qdev");
+        current_drive = virJSONValueObjectGetString(temp_dev, "device");
+
+        if (!current_drive && !current_qdev) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("block_io_throttle device entry "
                              "was not in expected format"));
             goto cleanup;
         }
 
-        if (STRNEQ(current_dev, device))
+        if ((drivealias && STRNEQ(current_drive, drivealias)) ||
+            (qdevid && STRNEQ(current_qdev, qdevid)))
             continue;
 
         found = true;
@@ -4885,7 +4891,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr io_throttle,
     if (!found) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot find throttling info for device '%s'"),
-                       device);
+                       drivealias ? drivealias : qdevid);
         goto cleanup;
     }
     ret = 0;
@@ -4996,7 +5002,8 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
 }
 
 int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
-                                      const char *device,
+                                      const char *drivealias,
+                                      const char *qdevid,
                                       virDomainBlockIoTuneInfoPtr reply)
 {
     int ret = -1;
@@ -5005,7 +5012,7 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
     if (!(devices = qemuMonitorJSONQueryBlock(mon)))
         return -1;
 
-    ret = qemuMonitorJSONBlockIoThrottleInfo(devices, device, reply);
+    ret = qemuMonitorJSONBlockIoThrottleInfo(devices, drivealias, qdevid, reply);
     virJSONValueFree(devices);
     return ret;
 }
