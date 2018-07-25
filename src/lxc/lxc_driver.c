@@ -1550,18 +1550,7 @@ static int lxcStateInitialize(bool privileged,
                               void *opaque ATTRIBUTE_UNUSED)
 {
     virCapsPtr caps = NULL;
-    const char *ld;
     virLXCDriverConfigPtr cfg = NULL;
-
-    /* Valgrind gets very annoyed when we clone containers, so
-     * disable LXC when under valgrind
-     * XXX remove this when valgrind is fixed
-     */
-    ld = virGetEnvBlockSUID("LD_PRELOAD");
-    if (ld && strstr(ld, "vgpreload")) {
-        VIR_INFO("Running under valgrind, disabling driver");
-        return 0;
-    }
 
     /* Check that the user is root, silently disable if not */
     if (!privileged) {
