@@ -1559,6 +1559,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virCommandFree(cmd);
     for (i = 0; i < nveths; i++)
         VIR_FREE(veths[i]);
+    VIR_FREE(veths);
     for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FREE(ttyFDs);
