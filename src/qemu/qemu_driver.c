@@ -20241,20 +20241,34 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
                                   bool visitBacking,
                                   virQEMUDriverPtr driver,
                                   virQEMUDriverConfigPtr cfg,
-                                  virDomainObjPtr dom)
+                                  virDomainObjPtr dom,
+                                  bool blockdev)
 
 {
     char *alias = NULL;
     virStorageSourcePtr n;
+    const char *frontendalias;
+    const char *backendalias;
+    const char *backendstoragealias;
     int ret = -1;
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        /* alias may be NULL if the VM is not running */
-        if (disk->info.alias &&
-            !(alias = qemuDomainStorageAlias(disk->info.alias, n->id)))
-            goto cleanup;
+        if (blockdev) {
+            frontendalias = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
+            backendalias = n->nodeformat;
+            backendstoragealias = n->nodestorage;
+        } else {
+            /* alias may be NULL if the VM is not running */
+            if (disk->info.alias &&
+                !(alias = qemuDomainStorageAlias(disk->info.alias, n->id)))
+                goto cleanup;
 
-        qemuDomainGetStatsOneBlockRefreshNamed(n, alias, stats, nodestats);
+            qemuDomainGetStatsOneBlockRefreshNamed(n, alias, stats, nodestats);
+
+            frontendalias = alias;
+            backendalias = alias;
+            backendstoragealias = alias;
+        }
 
         if (qemuDomainGetStatsBlockExportHeader(disk, n, *recordnr,
                                                 records, nrecords) < 0)
@@ -20262,17 +20276,17 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
 
         /* The following stats make sense only for the frontend device */
         if (n == disk->src) {
-            if (qemuDomainGetStatsBlockExportFrontend(alias, stats, *recordnr,
+            if (qemuDomainGetStatsBlockExportFrontend(frontendalias, stats, *recordnr,
                                                       records, nrecords) < 0)
                 goto cleanup;
         }
 
         if (qemuDomainGetStatsOneBlock(driver, cfg, dom, records, nrecords,
-                                       alias, n, *recordnr,
+                                       backendalias, n, *recordnr,
                                        stats) < 0)
             goto cleanup;
 
-        if (qemuDomainGetStatsBlockExportBackendStorage(alias,
+        if (qemuDomainGetStatsBlockExportBackendStorage(backendstoragealias,
                                                         stats, *recordnr,
                                                         records, nrecords) < 0)
             goto cleanup;
@@ -20307,19 +20321,25 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     virJSONValuePtr nodedata = NULL;
     qemuDomainObjPrivatePtr priv = dom->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     bool fetchnodedata = virQEMUCapsGet(priv->qemuCaps,
-                                        QEMU_CAPS_QUERY_NAMED_BLOCK_NODES);
+                                        QEMU_CAPS_QUERY_NAMED_BLOCK_NODES) && !blockdev;
     int count_index = -1;
     size_t visited = 0;
     bool visitBacking = !!(privflags & QEMU_DOMAIN_STATS_BACKING);
 
     if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
         qemuDomainObjEnterMonitor(driver, dom);
-        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats,
-                                             visitBacking);
-        if (rc >= 0)
-            ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
-                                                             visitBacking));
+
+        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats, visitBacking);
+
+        if (rc >= 0) {
+            if (blockdev)
+                rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
+            else
+                ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
+                                                                 visitBacking));
+        }
 
         if (fetchnodedata)
             nodedata = qemuMonitorQueryNamedBlockNodes(priv->mon);
@@ -20345,7 +20365,8 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     for (i = 0; i < dom->def->ndisks; i++) {
         if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats, nodestats,
                                               record, maxparams, &visited,
-                                              visitBacking, driver, cfg, dom) < 0)
+                                              visitBacking, driver, cfg, dom,
+                                              blockdev) < 0)
             goto cleanup;
     }
 
