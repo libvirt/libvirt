@@ -18200,7 +18200,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo info;
-    char *device = NULL;
+    char *drivealias = NULL;
+    const char *qdevid = NULL;
     int ret = -1;
     size_t i;
     virDomainDiskDefPtr conf_disk = NULL;
@@ -18425,8 +18426,12 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
-        if (!(device = qemuAliasDiskDriveFromDisk(disk)))
-            goto endjob;
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            qdevid = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
+        } else {
+            if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
+                goto endjob;
+        }
 
         if (qemuDomainSetBlockIoTuneDefaults(&info, &disk->blkdeviotune,
                                              set_fields) < 0)
@@ -18472,7 +18477,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
           * via the JSON error code from the block_set_io_throttle call */
 
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorSetBlockIoThrottle(priv->mon, device, NULL,
+        ret = qemuMonitorSetBlockIoThrottle(priv->mon, drivealias, qdevid,
                                             &info, supportMaxOptions,
                                             set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME,
                                             supportMaxLengthOptions);
@@ -18522,7 +18527,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
  cleanup:
     VIR_FREE(info.group_name);
-    VIR_FREE(device);
+    VIR_FREE(drivealias);
     virDomainObjEndAPI(&vm);
     if (eventNparams)
         virTypedParamsFree(eventParams, eventNparams);
@@ -18544,7 +18549,8 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo reply = {0};
-    char *device = NULL;
+    char *drivealias = NULL;
+    const char *qdevid = NULL;
     int ret = -1;
     int maxparams;
 
@@ -18598,10 +18604,14 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
-        if (!(device = qemuAliasDiskDriveFromDisk(disk)))
-            goto endjob;
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            qdevid = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
+        } else {
+            if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
+                goto endjob;
+        }
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorGetBlockIoThrottle(priv->mon, device, NULL, &reply);
+        ret = qemuMonitorGetBlockIoThrottle(priv->mon, drivealias, qdevid, &reply);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto endjob;
         if (ret < 0)
@@ -18676,7 +18686,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
 
  cleanup:
     VIR_FREE(reply.group_name);
-    VIR_FREE(device);
+    VIR_FREE(drivealias);
     virDomainObjEndAPI(&vm);
     return ret;
 }
