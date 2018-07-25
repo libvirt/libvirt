@@ -205,7 +205,7 @@ static char *lxcConnectGetCapabilities(virConnectPtr conn) {
     if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
         return NULL;
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+    if (!(caps = virLXCDriverGetCapabilities(driver, true)))
         return NULL;
 
     xml = virCapabilitiesFormatXML(caps);
