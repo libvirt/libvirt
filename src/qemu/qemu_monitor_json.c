@@ -4817,20 +4817,13 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
         goto cleanup; \
     }
 static int
-qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
+qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr io_throttle,
                                    const char *device,
                                    virDomainBlockIoTuneInfoPtr reply)
 {
-    virJSONValuePtr io_throttle;
     int ret = -1;
     size_t i;
     bool found = false;
-
-    if (!(io_throttle = virJSONValueObjectGetArray(result, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _(" block_io_throttle reply was missing device list"));
-        goto cleanup;
-    }
 
     for (i = 0; i < virJSONValueArraySize(io_throttle); i++) {
         virJSONValuePtr temp_dev = virJSONValueArrayGet(io_throttle, i);
@@ -5001,33 +4994,13 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
                                       virDomainBlockIoTuneInfoPtr reply)
 {
     int ret = -1;
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr result = NULL;
+    virJSONValuePtr devices = NULL;
 
-    cmd = qemuMonitorJSONMakeCommand("query-block", NULL);
-    if (!cmd)
+    if (!(devices = qemuMonitorJSONQueryBlock(mon)))
         return -1;
 
-    if (qemuMonitorJSONCommand(mon, cmd, &result) < 0)
-        goto cleanup;
-
-    if (virJSONValueObjectHasKey(result, "error")) {
-        if (qemuMonitorJSONHasError(result, "DeviceNotActive"))
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("No active operation on device: %s"), device);
-        else if (qemuMonitorJSONHasError(result, "NotSupported"))
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Operation is not supported for device: %s"), device);
-        else
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unexpected error"));
-        goto cleanup;
-    }
-
-    ret = qemuMonitorJSONBlockIoThrottleInfo(result, device, reply);
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(result);
+    ret = qemuMonitorJSONBlockIoThrottleInfo(devices, device, reply);
+    virJSONValueFree(devices);
     return ret;
 }
 
