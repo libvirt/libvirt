@@ -3444,17 +3444,19 @@ qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
 
 int
 qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
-                              const char *device,
+                              const char *drivealias,
+                              const char *qomid,
                               virDomainBlockIoTuneInfoPtr info,
                               bool supportMaxOptions,
                               bool supportGroupNameOption,
                               bool supportMaxLengthOptions)
 {
-    VIR_DEBUG("device=%p, info=%p", device, info);
+    VIR_DEBUG("drivealias=%s, qomid=%s, info=%p",
+              NULLSTR(drivealias), NULLSTR(qomid), info);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONSetBlockIoThrottle(mon, device, info,
+    return qemuMonitorJSONSetBlockIoThrottle(mon, drivealias, qomid, info,
                                              supportMaxOptions,
                                              supportGroupNameOption,
                                              supportMaxLengthOptions);

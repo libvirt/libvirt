@@ -327,7 +327,8 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
                                 bool skipauth);
 
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
-                                      const char *device,
+                                      const char *drivealias,
+                                      const char *qomid,
                                       virDomainBlockIoTuneInfoPtr info,
                                       bool supportMaxOptions,
                                       bool supportGroupNameOption,

@@ -18472,7 +18472,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
           * via the JSON error code from the block_set_io_throttle call */
 
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorSetBlockIoThrottle(priv->mon, device,
+        ret = qemuMonitorSetBlockIoThrottle(priv->mon, device, NULL,
                                             &info, supportMaxOptions,
                                             set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME,
                                             supportMaxLengthOptions);

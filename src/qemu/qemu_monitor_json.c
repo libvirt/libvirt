@@ -4897,7 +4897,8 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr io_throttle,
 #undef GET_THROTTLE_STATS_OPTIONAL
 
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
-                                      const char *device,
+                                      const char *drivealias,
+                                      const char *qomid,
                                       virDomainBlockIoTuneInfoPtr info,
                                       bool supportMaxOptions,
                                       bool supportGroupNameOption,
@@ -4907,12 +4908,17 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr result = NULL;
     virJSONValuePtr args = NULL;
+    const char *errdev = drivealias;
+
+    if (!errdev)
+        errdev = qomid;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle", NULL)))
         return -1;
 
     if (virJSONValueObjectCreate(&args,
-                                 "s:device", device,
+                                 "S:device", drivealias,
+                                 "S:id", qomid,
                                  "U:bps", info->total_bytes_sec,
                                  "U:bps_rd", info->read_bytes_sec,
                                  "U:bps_wr", info->write_bytes_sec,
@@ -4967,10 +4973,10 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
     if (virJSONValueObjectHasKey(result, "error")) {
         if (qemuMonitorJSONHasError(result, "DeviceNotActive")) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("No active operation on device: %s"), device);
+                           _("No active operation on device: %s"), errdev);
         } else if (qemuMonitorJSONHasError(result, "NotSupported")) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Operation is not supported for device: %s"), device);
+                           _("Operation is not supported for device: %s"), errdev);
         } else {
             virJSONValuePtr error = virJSONValueObjectGet(result, "error");
             virReportError(VIR_ERR_INTERNAL_ERROR,
