@@ -146,8 +146,10 @@ virStorageBackendIQNFound(const char *initiatoriqn,
 
     line = outbuf;
     while (line && *line) {
+        char *current = line;
         char *newline;
-        int num;
+        char *next;
+        size_t i;
 
         if (!(newline = strchr(line, '\n')))
             break;
@@ -156,14 +158,28 @@ virStorageBackendIQNFound(const char *initiatoriqn,
 
         VIR_FREE(iface);
         VIR_FREE(iqn);
-        num = sscanf(line, "%ms %*[^,],%*[^,],%*[^,],%*[^,],%ms", &iface, &iqn);
 
-        if (num != 2) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("malformed output of %s: %s"),
-                           ISCSIADM, line);
+        /* Find the first space, copy everything up to that point into
+         * iface and move past it to continue processing */
+        if (!(next = strchr(current, ' ')))
+            goto error;
+
+        if (VIR_STRNDUP(iface, current, (next - current)) < 0)
             goto cleanup;
+
+        current = next + 1;
+
+        /* There are five comma separated fields after iface and we only
+         * care about the last one, so we need to skip four commas and
+         * copy whatever's left into iqn */
+        for (i = 0; i < 4; i++) {
+            if (!(next = strchr(current, ',')))
+                goto error;
+            current = next + 1;
         }
+
+        if (VIR_STRDUP(iqn, current) < 0)
+            goto cleanup;
 
         if (STREQ(iqn, initiatoriqn)) {
             VIR_STEAL_PTR(*ifacename, iface);
@@ -186,6 +202,12 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     VIR_FREE(outbuf);
     virCommandFree(cmd);
     return ret;
+
+ error:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("malformed output of %s: %s"),
+                   ISCSIADM, line);
+    goto cleanup;
 }
 
 
