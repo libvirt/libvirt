@@ -30304,37 +30304,65 @@ virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
 }
 
 int
-virDomainNetAllocateActualDevice(virDomainDefPtr dom,
+virDomainNetAllocateActualDevice(virConnectPtr conn,
+                                 virDomainDefPtr dom,
                                  virDomainNetDefPtr iface)
 {
+    virNetworkPtr net = NULL;
+    int ret = -1;
+
     if (!netAllocate) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("Virtual networking driver is not available"));
         return -1;
     }
 
-    return netAllocate(dom, iface);
+    if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
+        return -1;
+
+    ret = netAllocate(net, dom, iface);
+
+    virObjectUnref(net);
+    return ret;
 }
 
 void
-virDomainNetNotifyActualDevice(virDomainDefPtr dom,
+virDomainNetNotifyActualDevice(virConnectPtr conn,
+                               virDomainDefPtr dom,
                                virDomainNetDefPtr iface)
 {
+    virNetworkPtr net = NULL;
+
     if (!netNotify)
         return;
 
-    netNotify(dom, iface);
+    if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
+        return;
+
+    netNotify(net, dom, iface);
+
+    virObjectUnref(net);
 }
 
 
 int
-virDomainNetReleaseActualDevice(virDomainDefPtr dom,
+virDomainNetReleaseActualDevice(virConnectPtr conn,
+                                virDomainDefPtr dom,
                                 virDomainNetDefPtr iface)
 {
+    virNetworkPtr net = NULL;
+    int ret;
+
     if (!netRelease)
         return 0;
 
-    return netRelease(dom, iface);
+    if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
+        return -1;
+
+    ret = netRelease(net, dom, iface);
+
+    virObjectUnref(net);
+    return ret;
 }
 
 bool

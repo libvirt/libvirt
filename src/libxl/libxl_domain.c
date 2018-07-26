@@ -35,6 +35,7 @@
 #include "virtime.h"
 #include "locking/domain_lock.h"
 #include "xen_common.h"
+#include "driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -845,6 +846,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     char *file;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
+    virConnectPtr conn = NULL;
 
 #ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
@@ -904,8 +906,12 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
 
             /* cleanup actual device */
             virDomainNetRemoveHostdev(vm->def, net);
-            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK)
-                virDomainNetReleaseActualDevice(vm->def, net);
+            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+                if (conn || (conn = virGetConnectNetwork()))
+                    virDomainNetReleaseActualDevice(conn, vm->def, net);
+                else
+                    VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
+            }
         }
     }
 
@@ -928,6 +934,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
 
     virDomainObjRemoveTransientDef(vm);
     virObjectUnref(cfg);
+    virObjectUnref(conn);
 }
 
 /*
@@ -1053,6 +1060,8 @@ static int
 libxlNetworkPrepareDevices(virDomainDefPtr def)
 {
     size_t i;
+    virConnectPtr conn = NULL;
+    int ret = -1;
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
@@ -1062,9 +1071,12 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
-        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-            virDomainNetAllocateActualDevice(def, net) < 0)
-            return -1;
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            if (!conn && !(conn = virGetConnectNetwork()))
+                goto cleanup;
+            if (virDomainNetAllocateActualDevice(conn, def, net) < 0)
+                goto cleanup;
+        }
 
         actualType = virDomainNetGetActualType(net);
         if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
@@ -1084,10 +1096,14 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
                 pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
 
             if (virDomainHostdevInsert(def, hostdev) < 0)
-                return -1;
+                goto cleanup;
         }
     }
-    return 0;
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(conn);
+    return ret;
 }
 
 static void

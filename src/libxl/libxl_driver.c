@@ -3379,6 +3379,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     libxl_device_nic nic;
     int ret = -1;
     char mac[VIR_MAC_STRING_BUFLEN];
+    virConnectPtr conn = NULL;
 
     libxl_device_nic_init(&nic);
 
@@ -3390,9 +3391,12 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
      * network's pool of devices, or resolve bridge device name
      * to the one defined in the network definition.
      */
-    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        virDomainNetAllocateActualDevice(vm->def, net) < 0)
-        goto cleanup;
+    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        if (!(conn = virGetConnectNetwork()))
+            goto cleanup;
+        if (virDomainNetAllocateActualDevice(conn, vm->def, net) < 0)
+            goto cleanup;
+    }
 
     actualType = virDomainNetGetActualType(net);
 
@@ -3441,9 +3445,10 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
         vm->def->nets[vm->def->nnets++] = net;
     } else {
         virDomainNetRemoveHostdev(vm->def, net);
-        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK)
-            virDomainNetReleaseActualDevice(vm->def, net);
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn)
+            virDomainNetReleaseActualDevice(conn, vm->def, net);
     }
+    virObjectUnref(conn);
     virObjectUnref(cfg);
     return ret;
 }
@@ -3865,8 +3870,15 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
  cleanup:
     libxl_device_nic_dispose(&nic);
     if (!ret) {
-        if (detach->type == VIR_DOMAIN_NET_TYPE_NETWORK)
-            virDomainNetReleaseActualDevice(vm->def, detach);
+        if (detach->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            virConnectPtr conn = virGetConnectNetwork();
+            if (conn) {
+                virDomainNetReleaseActualDevice(conn, vm->def, detach);
+                virObjectUnref(conn);
+            } else {
+                VIR_WARN("Unable to release network device '%s'", NULLSTR(detach->ifname));
+            }
+        }
         virDomainNetRemove(vm->def, detachidx);
     }
     virObjectUnref(cfg);

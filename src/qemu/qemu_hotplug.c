@@ -1376,6 +1376,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     bool charDevPlugged = false;
     bool netdevPlugged = false;
     char *netdev_name;
+    virConnectPtr conn = NULL;
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
@@ -1385,9 +1386,12 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
      * network's pool of devices, or resolve bridge device name
      * to the one defined in the network definition.
      */
-    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        virDomainNetAllocateActualDevice(vm->def, net) < 0)
-        goto cleanup;
+    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        if (!(conn = virGetConnectNetwork()))
+            goto cleanup;
+        if (virDomainNetAllocateActualDevice(conn, vm->def, net) < 0)
+            goto cleanup;
+    }
 
     actualType = virDomainNetGetActualType(net);
 
@@ -1690,8 +1694,12 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
 
         virDomainNetRemoveHostdev(vm->def, net);
 
-        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK)
-            virDomainNetReleaseActualDevice(vm->def, net);
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            if (conn)
+                virDomainNetReleaseActualDevice(conn, vm->def, net);
+            else
+                VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
+        }
     }
 
     VIR_FREE(nicstr);
@@ -1711,6 +1719,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     VIR_FREE(vhostfd);
     VIR_FREE(vhostfdName);
     VIR_FREE(charDevAlias);
+    virObjectUnref(conn);
     virDomainCCWAddressSetFree(ccwaddrs);
 
     return ret;
@@ -3740,6 +3749,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     bool needVlanUpdate = false;
     int ret = -1;
     int changeidx = -1;
+    virConnectPtr conn = NULL;
 
     if ((changeidx = virDomainNetFindIdx(vm->def, newdev)) < 0)
         goto cleanup;
@@ -3915,9 +3925,11 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     /* allocate new actual device to compare to old - we will need to
      * free it if we fail for any reason
      */
-    if (newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        virDomainNetAllocateActualDevice(vm->def, newdev) < 0) {
-        goto cleanup;
+    if (newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        if (!(conn = virGetConnectNetwork()))
+            goto cleanup;
+        if (virDomainNetAllocateActualDevice(conn, vm->def, newdev) < 0)
+            goto cleanup;
     }
 
     newType = virDomainNetGetActualType(newdev);
@@ -4128,8 +4140,12 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
 
         /* this function doesn't work with HOSTDEV networks yet, thus
          * no need to change the pointer in the hostdev structure */
-        if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK)
-            virDomainNetReleaseActualDevice(vm->def, olddev);
+        if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            if (conn || (conn = virGetConnectNetwork()))
+                virDomainNetReleaseActualDevice(conn, vm->def, olddev);
+            else
+                VIR_WARN("Unable to release network device '%s'", NULLSTR(olddev->ifname));
+        }
         virDomainNetDefFree(olddev);
         /* move newdev into the nets list, and NULL it out from the
          * virDomainDeviceDef that we were given so that the caller
@@ -4160,8 +4176,9 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
      * that the changes were minor enough that we didn't need to
      * replace the entire device object.
      */
-    if (newdev && newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK)
-        virDomainNetReleaseActualDevice(vm->def, newdev);
+    if (newdev && newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn)
+        virDomainNetReleaseActualDevice(conn, vm->def, newdev);
+    virObjectUnref(conn);
 
     return ret;
 }
@@ -4753,8 +4770,15 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     virDomainHostdevDefFree(hostdev);
 
     if (net) {
-        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK)
-            virDomainNetReleaseActualDevice(vm->def, net);
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            virConnectPtr conn = virGetConnectNetwork();
+            if (conn) {
+                virDomainNetReleaseActualDevice(conn, vm->def, net);
+                virObjectUnref(conn);
+            } else {
+                VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
+            }
+        }
         virDomainNetDefFree(net);
     }
 
@@ -4856,8 +4880,15 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 
     qemuDomainNetDeviceVportRemove(net);
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK)
-        virDomainNetReleaseActualDevice(vm->def, net);
+    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        virConnectPtr conn = virGetConnectNetwork();
+        if (conn) {
+            virDomainNetReleaseActualDevice(conn, vm->def, net);
+            virObjectUnref(conn);
+        } else {
+            VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
+        }
+    }
     virDomainNetDefFree(net);
     ret = 0;
 

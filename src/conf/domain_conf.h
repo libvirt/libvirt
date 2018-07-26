@@ -3502,15 +3502,18 @@ virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
                                    virDomainLifecycleAction action);
 
 typedef int
-(*virDomainNetAllocateActualDeviceImpl)(virDomainDefPtr dom,
+(*virDomainNetAllocateActualDeviceImpl)(virNetworkPtr net,
+                                        virDomainDefPtr dom,
                                         virDomainNetDefPtr iface);
 
 typedef void
-(*virDomainNetNotifyActualDeviceImpl)(virDomainDefPtr dom,
+(*virDomainNetNotifyActualDeviceImpl)(virNetworkPtr net,
+                                      virDomainDefPtr dom,
                                       virDomainNetDefPtr iface);
 
 typedef int
-(*virDomainNetReleaseActualDeviceImpl)(virDomainDefPtr dom,
+(*virDomainNetReleaseActualDeviceImpl)(virNetworkPtr net,
+                                       virDomainDefPtr dom,
                                        virDomainNetDefPtr iface);
 
 typedef bool
@@ -3530,17 +3533,20 @@ virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
                           virDomainNetBandwidthUpdateImpl bandwidthUpdate);
 
 int
-virDomainNetAllocateActualDevice(virDomainDefPtr dom,
+virDomainNetAllocateActualDevice(virConnectPtr conn,
+                                 virDomainDefPtr dom,
                                  virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void
-virDomainNetNotifyActualDevice(virDomainDefPtr dom,
+virDomainNetNotifyActualDevice(virConnectPtr conn,
+                               virDomainDefPtr dom,
                                virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int
-virDomainNetReleaseActualDevice(virDomainDefPtr dom,
+virDomainNetReleaseActualDevice(virConnectPtr conn,
+                                virDomainDefPtr dom,
                                 virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
