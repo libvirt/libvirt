@@ -44,8 +44,8 @@ char *virStringListJoin(const char **strings,
                         const char *delim)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-char **virStringListAdd(const char **strings,
-                        const char *item);
+int virStringListAdd(char ***strings,
+                     const char *item);
 void virStringListRemove(char ***strings,
                          const char *item);
 
