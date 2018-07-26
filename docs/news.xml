@@ -76,6 +76,16 @@
           using attach-disk or attach-interface commands.
         </description>
       </change>
+      <change>
+        <summary>
+          virsh: Support usb and sata address to attach-disk
+        </summary>
+        <description>
+          Usb or sata address could be used when attach-disk with --address.
+          For example, use usb address as usb:&lt;bus&gt;.&lt;port&gt;, use
+          sata address as &lt;controller&gt;.&lt;bus&gt;.&lt;unit&gt;.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
