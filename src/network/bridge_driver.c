@@ -4235,13 +4235,20 @@ networkGetDHCPLeases(virNetworkPtr net,
     custom_lease_file = networkDnsmasqLeaseFileNameCustom(driver, def->bridge);
 
     /* Read entire contents */
-    if ((custom_lease_file_len = virFileReadAll(custom_lease_file,
-                                                VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX,
-                                                &lease_entries)) < 0) {
-        /* Even though src/network/leaseshelper.c guarantees the existence of
-         * leases file (even if no leases are present), and the control reaches
-         * here, instead of reporting error, return 0 leases */
-        rv = 0;
+    if ((custom_lease_file_len = virFileReadAllQuiet(custom_lease_file,
+                                                     VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX,
+                                                     &lease_entries)) < 0) {
+        /* Not all networks are guaranteed to have leases file.
+         * Only those which run dnsmasq. Therefore, if we failed
+         * to read the leases file, don't report error. Return 0
+         * leases instead. */
+        if (errno == ENOENT) {
+            rv = 0;
+        } else {
+            virReportSystemError(errno,
+                                 _("Unable to read leases file: %s"),
+                                 custom_lease_file);
+        }
         goto error;
     }
 
