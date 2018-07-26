@@ -7163,7 +7163,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     virCommandAddArg(cmd, "-machine");
     virBufferAdd(&buf, def->os.machine, -1);
 
-    switch (def->virtType) {
+    switch ((virDomainVirtType)def->virtType) {
     case VIR_DOMAIN_VIRT_QEMU:
         virBufferAddLit(&buf, ",accel=tcg");
         break;

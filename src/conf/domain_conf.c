@@ -15075,7 +15075,7 @@ virDomainVideoDefaultRAM(const virDomainDef *def,
 int
 virDomainVideoDefaultType(const virDomainDef *def)
 {
-    switch (def->virtType) {
+    switch ((virDomainVirtType)def->virtType) {
     case VIR_DOMAIN_VIRT_TEST:
     case VIR_DOMAIN_VIRT_XEN:
         if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||

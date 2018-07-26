@@ -7191,6 +7191,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps = NULL;
     bool active = false;
+    virDomainVirtType virtType;
 
     VIR_DEBUG("Beginning VM attach process");
 
@@ -7342,8 +7343,9 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto exit_monitor;
     if (qemuMonitorGetStatus(priv->mon, &running, &reason) < 0)
         goto exit_monitor;
-    if (qemuMonitorGetVirtType(priv->mon, &vm->def->virtType) < 0)
+    if (qemuMonitorGetVirtType(priv->mon, &virtType) < 0)
         goto exit_monitor;
+    vm->def->virtType = virtType;
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto error;
 

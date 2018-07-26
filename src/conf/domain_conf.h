@@ -2386,7 +2386,7 @@ struct _virDomainVirtioOptions {
 typedef struct _virDomainDef virDomainDef;
 typedef virDomainDef *virDomainDefPtr;
 struct _virDomainDef {
-    virDomainVirtType virtType;
+    int virtType; /* enum virDomainVirtType */
     int id;
     unsigned char uuid[VIR_UUID_BUFLEN];
 
