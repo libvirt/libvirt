@@ -4713,11 +4713,9 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET) {
-        net = hostdev->parent.data.net;
-
+    if (hostdev->parentnet) {
         for (i = 0; i < vm->def->nnets; i++) {
-            if (vm->def->nets[i] == net) {
+            if (vm->def->nets[i] == hostdev->parentnet) {
                 virDomainNetRemove(vm->def, i);
                 break;
             }

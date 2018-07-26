@@ -331,7 +331,13 @@ struct _virDomainHostdevCaps {
 
 /* basic device for direct passthrough */
 struct _virDomainHostdevDef {
-    virDomainDeviceDef parent; /* higher level Def containing this */
+    /* If 'parentnet' is non-NULL it means this host dev was
+     * not originally present in the XML. It was copied from
+     * a network interface for convenience when handling
+     * hostdevs internally. This hostdev should never be
+     * visible to the user except as part of the interface
+     */
+    virDomainNetDefPtr parentnet;
 
     int mode; /* enum virDomainHostdevMode */
     int startupPolicy; /* enum virDomainStartupPolicy */

@@ -2848,10 +2848,10 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
      * such resource is the virDomainDeviceInfo.
      */
 
-    /* If there is a parent device object, it will handle freeing
+    /* If there is a parentnet device object, it will handle freeing
      * def->info.
      */
-    if (def->parent.type == VIR_DOMAIN_DEVICE_NONE)
+    if (!def->parentnet)
         virDomainDeviceInfoFree(def->info);
 
     switch (def->mode) {
@@ -2919,10 +2919,10 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
     /* free all subordinate objects */
     virDomainHostdevDefClear(def);
 
-    /* If there is a parent device object, it will handle freeing
+    /* If there is a parentnet device object, it will handle freeing
      * the memory.
      */
-    if (def->parent.type == VIR_DOMAIN_DEVICE_NONE)
+    if (!def->parentnet)
         VIR_FREE(def);
 }
 
@@ -5490,7 +5490,7 @@ virDomainDefCollectBootOrder(virDomainDefPtr def ATTRIBUTE_UNUSED,
         return 0;
 
     if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
-        dev->data.hostdev->parent.type != VIR_DOMAIN_DEVICE_NONE) {
+        dev->data.hostdev->parentnet) {
         /* This hostdev is a child of a higher level device
          * (e.g. interface), and thus already being counted on the
          * list for the other device type.
@@ -6340,7 +6340,7 @@ virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
         return 0;
 
     if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
-        dev->data.hostdev->parent.type == VIR_DOMAIN_DEVICE_NET) {
+        dev->data.hostdev->parentnet) {
         /* This hostdev is a copy of some previous interface.
          * Aliases are duplicated. */
         return 0;
@@ -11156,8 +11156,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     } else if (actual->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         virDomainHostdevDefPtr hostdev = &actual->data.hostdev.def;
 
-        hostdev->parent.type = VIR_DOMAIN_DEVICE_NET;
-        hostdev->parent.data.net = parent;
+        hostdev->parentnet = parent;
         hostdev->info = &parent->info;
         /* The helper function expects type to already be found and
          * passed in as a string, since it is in a different place in
@@ -11809,8 +11808,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         hostdev = &def->data.hostdev.def;
-        hostdev->parent.type = VIR_DOMAIN_DEVICE_NET;
-        hostdev->parent.data.net = def;
+        hostdev->parentnet = def;
         hostdev->info = &def->info;
         /* The helper function expects type to already be found and
          * passed in as a string, since it is in a different place in
@@ -28509,11 +28507,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     for (n = 0; n < def->nhostdevs; n++) {
-        /* If parent.type != NONE, this is just a pointer to the
+        /* If parentnet != NONE, this is just a pointer to the
          * hostdev in a higher-level device (e.g. virDomainNetDef),
          * and will have already been formatted there.
          */
-        if (def->hostdevs[n]->parent.type == VIR_DOMAIN_DEVICE_NONE &&
+        if (!def->hostdevs[n]->parentnet &&
             virDomainHostdevDefFormat(buf, def->hostdevs[n], flags) < 0) {
             goto error;
         }

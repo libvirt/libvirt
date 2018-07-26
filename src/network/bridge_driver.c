@@ -4509,8 +4509,7 @@ networkAllocateActualDevice(virNetworkPtr net,
                            netdef->name);
             goto error;
         }
-        iface->data.network.actual->data.hostdev.def.parent.type = VIR_DOMAIN_DEVICE_NET;
-        iface->data.network.actual->data.hostdev.def.parent.data.net = iface;
+        iface->data.network.actual->data.hostdev.def.parentnet = iface;
         iface->data.network.actual->data.hostdev.def.info = &iface->info;
         iface->data.network.actual->data.hostdev.def.mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         iface->data.network.actual->data.hostdev.def.managed = netdef->forward.managed ? 1 : 0;

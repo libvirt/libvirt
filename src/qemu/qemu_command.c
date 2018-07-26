@@ -5739,8 +5739,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
             /* bootNet will be non-0 if boot order was set and no other
              * net devices were encountered
              */
-            if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
-                bootIndex == 0) {
+            if (hostdev->parentnet && bootIndex == 0) {
                 bootIndex = *bootHostdevNet;
                 *bootHostdevNet = 0;
             }
