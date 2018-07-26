@@ -68,6 +68,21 @@ virDomainAuditGetRdev(const char *path ATTRIBUTE_UNUSED)
 #endif
 
 
+static const char *
+virDomainAuditGetVirtType(virDomainDefPtr def)
+{
+    const char *virt;
+
+    if (!(virt = virDomainVirtTypeToString(def->virtType))) {
+        VIR_WARN("Unexpected virt type %d while encoding audit message",
+                 def->virtType);
+        virt = "?";
+    }
+
+    return virt;
+}
+
+
 static void
 virDomainAuditGenericDev(virDomainObjPtr vm,
                          const char *type,
@@ -82,7 +97,7 @@ virDomainAuditGenericDev(virDomainObjPtr vm,
     char *vmname = NULL;
     char *oldsrc = NULL;
     char *newsrc = NULL;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     /* if both new and old source aren't provided don't log anything */
     if (!newsrcpath && !oldsrcpath)
@@ -98,12 +113,6 @@ virDomainAuditGenericDev(virDomainObjPtr vm,
 
     if (!(vmname = virAuditEncode("vm", vm->def->name)))
         goto no_memory;
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message",
-                 vm->def->virtType);
-        virt = "?";
-    }
 
     if (!(newsrc = virAuditEncode(newdev, VIR_AUDIT_STR(newsrcpath))))
         goto no_memory;
@@ -312,7 +321,7 @@ virDomainAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
     char *vmname;
     char *dev_name = NULL;
     char *rdev;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vmDef);
 
     virUUIDFormat(vmDef->uuid, uuidstr);
     virMacAddrFormat(&netDef->mac, macstr);
@@ -322,11 +331,6 @@ virDomainAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
         !(dev_name = virAuditEncode("path", device))) {
         VIR_WARN("OOM while encoding audit message");
         goto cleanup;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vmDef->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vmDef->virtType);
-        virt = "?";
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
@@ -356,7 +360,8 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     char *vmname;
     char *address = NULL;
     char *device = NULL;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
+
     virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
@@ -367,11 +372,6 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN("OOM while encoding audit message");
         return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
     }
 
     switch ((virDomainHostdevMode) hostdev->mode) {
@@ -509,17 +509,12 @@ virDomainAuditRedirdev(virDomainObjPtr vm, virDomainRedirdevDefPtr redirdev,
     char *vmname;
     char *address = NULL;
     char *device = NULL;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN("OOM while encoding audit message");
         return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
     }
 
     switch (redirdev->bus) {
@@ -571,17 +566,12 @@ virDomainAuditTPM(virDomainObjPtr vm, virDomainTPMDefPtr tpm,
     char *vmname;
     char *path = NULL;
     char *device = NULL;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN("OOM while encoding audit message");
         return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
     }
 
     switch (tpm->type) {
@@ -639,17 +629,12 @@ virDomainAuditCgroup(virDomainObjPtr vm, virCgroupPtr cgroup,
     char *vmname;
     char *controller = NULL;
     char *detail;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN("OOM while encoding audit message");
         return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
     }
 
     ignore_value(virCgroupPathOfController(cgroup,
@@ -757,17 +742,12 @@ virDomainAuditResource(virDomainObjPtr vm, const char *resource,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN("OOM while encoding audit message");
         return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
@@ -809,18 +789,13 @@ virDomainAuditLifecycle(virDomainObjPtr vm, const char *op,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
 
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN("OOM while encoding audit message");
         return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, success,
@@ -909,18 +884,13 @@ virDomainAuditInit(virDomainObjPtr vm,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
-    const char *virt;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
 
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN("OOM while encoding audit message");
         return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, true,
@@ -942,18 +912,13 @@ virDomainAuditSecurityLabel(virDomainObjPtr vm, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
-    const char *virt;
     size_t i;
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
         VIR_WARN("OOM while encoding audit message");
         return;
-    }
-
-    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
-        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
-        virt = "?";
     }
 
     for (i = 0; i < vm->def->nseclabels; i++) {
@@ -976,7 +941,7 @@ virDomainAuditShmem(virDomainObjPtr vm,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname = virAuditEncode("vm", vm->def->name);
     const char *srcpath = virDomainChrSourceDefGetPath(&def->server.chr);
-    const char *virt = virDomainVirtTypeToString(vm->def->virtType);
+    const char *virt = virDomainAuditGetVirtType(vm->def);
     char *shmpath = NULL;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
@@ -1018,7 +983,7 @@ virDomainAuditInput(virDomainObjPtr vm,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
-    const char *virt = virDomainVirtTypeToString(vm->def->virtType);
+    const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
 
