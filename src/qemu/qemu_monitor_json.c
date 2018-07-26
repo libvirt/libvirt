@@ -2492,14 +2492,15 @@ qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValuePtr image,
         goto cleanup;
 
     if (backingChain &&
-        (backing = virJSONValueObjectGetObject(image, "backing-image"))) {
-        ret = qemuMonitorJSONBlockStatsUpdateCapacityOne(backing,
-                                                         dev_name,
-                                                         depth + 1,
-                                                         stats,
-                                                         true);
-    }
+        (backing = virJSONValueObjectGetObject(image, "backing-image")) &&
+        qemuMonitorJSONBlockStatsUpdateCapacityOne(backing,
+                                                   dev_name,
+                                                   depth + 1,
+                                                   stats,
+                                                   true) < 0)
+        goto cleanup;
 
+    ret = 0;
  cleanup:
     VIR_FREE(entry_name);
     return ret;
