@@ -11623,12 +11623,14 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                    sizeof(*newBandwidth->out));
         }
 
-        if (!virDomainNetBandwidthChangeAllowed(net, newBandwidth))
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+            !virDomainNetBandwidthChangeAllowed(net, newBandwidth))
             goto endjob;
 
         if (virNetDevBandwidthSet(net->ifname, newBandwidth, false,
                                   !virDomainNetTypeSharesHostView(net)) < 0 ||
-            virDomainNetBandwidthUpdate(net, newBandwidth) < 0) {
+            (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+             virDomainNetBandwidthUpdate(net, newBandwidth) < 0)) {
             ignore_value(virNetDevBandwidthSet(net->ifname,
                                                net->bandwidth,
                                                false,

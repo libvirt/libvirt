@@ -4391,8 +4391,11 @@ networkAllocateActualDevice(virDomainDefPtr dom,
     size_t i;
     int ret = -1;
 
-    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        goto validate;
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Expected an interface for a virtual network"));
+        goto error;
+    }
 
     virDomainActualNetDefFree(iface->data.network.actual);
     iface->data.network.actual = NULL;
@@ -4711,7 +4714,6 @@ networkAllocateActualDevice(virDomainDefPtr dom,
     if (virNetDevVPortProfileCheckComplete(virtport, true) < 0)
         goto error;
 
- validate:
     /* make sure that everything now specified for the device is
      * actually supported on this type of network. NB: network,
      * netdev, and iface->data.network.actual may all be NULL.
@@ -4730,19 +4732,11 @@ networkAllocateActualDevice(virDomainDefPtr dom,
               (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
                virtport && virtport->virtPortType
                == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))) {
-            if (netdef) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("an interface connecting to network '%s' "
-                                 "is requesting a vlan tag, but that is not "
-                                 "supported for this type of network"),
-                               netdef->name);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("an interface of type '%s' "
-                                 "is requesting a vlan tag, but that is not "
-                                 "supported for this type of connection"),
-                               virDomainNetTypeToString(iface->type));
-            }
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("an interface connecting to network '%s' "
+                             "is requesting a vlan tag, but that is not "
+                             "supported for this type of network"),
+                           netdef->name);
             goto error;
         }
     }
@@ -4758,22 +4752,20 @@ networkAllocateActualDevice(virDomainDefPtr dom,
         }
     }
 
-    if (netdef) {
-        netdef->connections++;
+    netdef->connections++;
+    if (dev)
+        dev->connections++;
+    /* finally we can call the 'plugged' hook script if any */
+    if (networkRunHook(obj, dom, iface,
+                       VIR_HOOK_NETWORK_OP_IFACE_PLUGGED,
+                       VIR_HOOK_SUBOP_BEGIN) < 0) {
+        /* adjust for failure */
+        netdef->connections--;
         if (dev)
-            dev->connections++;
-        /* finally we can call the 'plugged' hook script if any */
-        if (networkRunHook(obj, dom, iface,
-                           VIR_HOOK_NETWORK_OP_IFACE_PLUGGED,
-                           VIR_HOOK_SUBOP_BEGIN) < 0) {
-            /* adjust for failure */
-            netdef->connections--;
-            if (dev)
-                dev->connections--;
-            goto error;
-        }
-        networkLogAllocation(netdef, actualType, dev, iface, true);
+            dev->connections--;
+        goto error;
     }
+    networkLogAllocation(netdef, actualType, dev, iface, true);
 
     ret = 0;
 
@@ -4814,8 +4806,11 @@ networkNotifyActualDevice(virDomainDefPtr dom,
     size_t i;
     char *master = NULL;
 
-    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        return;
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Expected an interface for a virtual network"));
+        goto error;
+    }
 
     obj = virNetworkObjFindByName(driver->networks, iface->data.network.name);
     if (!obj) {
@@ -5047,8 +5042,11 @@ networkReleaseActualDevice(virDomainDefPtr dom,
     size_t i;
     int ret = -1;
 
-    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        return 0;
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Expected an interface for a virtual network"));
+        goto error;
+    }
 
     obj = virNetworkObjFindByName(driver->networks, iface->data.network.name);
     if (!obj) {
@@ -5538,6 +5536,12 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
     unsigned long long new_rate = 0;
     int plug_ret;
     int ret = -1;
+
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Expected an interface for a virtual network"));
+        return -1;
+    }
 
     if (!networkBandwidthGenericChecks(iface, newBandwidth))
         return 0;

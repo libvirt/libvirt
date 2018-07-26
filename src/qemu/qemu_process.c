@@ -3288,7 +3288,8 @@ qemuProcessNotifyNets(virDomainDefPtr def)
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT)
            ignore_value(virNetDevMacVLanReserveName(net->ifname, false));
 
-        virDomainNetNotifyActualDevice(def, net);
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK)
+            virDomainNetNotifyActualDevice(def, net);
     }
 }
 
@@ -5474,7 +5475,8 @@ qemuProcessNetworkPrepareDevices(virDomainDefPtr def)
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
-        if (virDomainNetAllocateActualDevice(def, net) < 0)
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+            virDomainNetAllocateActualDevice(def, net) < 0)
             goto cleanup;
 
         actualType = virDomainNetGetActualType(net);
@@ -7321,7 +7323,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
         /* kick the device out of the hostdev list too */
         virDomainNetRemoveHostdev(def, net);
-        virDomainNetReleaseActualDevice(vm->def, net);
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK)
+            virDomainNetReleaseActualDevice(vm->def, net);
     }
 
  retry:

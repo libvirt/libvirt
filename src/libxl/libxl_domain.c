@@ -904,7 +904,8 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
 
             /* cleanup actual device */
             virDomainNetRemoveHostdev(vm->def, net);
-            virDomainNetReleaseActualDevice(vm->def, net);
+            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK)
+                virDomainNetReleaseActualDevice(vm->def, net);
         }
     }
 
@@ -1061,7 +1062,8 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
-        if (virDomainNetAllocateActualDevice(def, net) < 0)
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+            virDomainNetAllocateActualDevice(def, net) < 0)
             return -1;
 
         actualType = virDomainNetGetActualType(net);
