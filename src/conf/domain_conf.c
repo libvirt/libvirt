@@ -5723,6 +5723,29 @@ virDomainVsockDefValidate(const virDomainVsockDef *vsock)
     return 0;
 }
 
+static int
+virDomainInputDefValidate(const virDomainInputDef *input)
+{
+    switch ((virDomainInputType) input->type) {
+        case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+        case VIR_DOMAIN_INPUT_TYPE_TABLET:
+        case VIR_DOMAIN_INPUT_TYPE_KBD:
+        case VIR_DOMAIN_INPUT_TYPE_LAST:
+            if (input->source.evdev) {
+                 virReportError(VIR_ERR_XML_ERROR, "%s",
+                                _("setting source evdev path only supported for "
+                                  "passthrough input devices"));
+                 return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+            break;
+    }
+
+    return 0;
+}
+
 
 static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
@@ -5762,9 +5785,11 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_VSOCK:
         return virDomainVsockDefValidate(dev->data.vsock);
 
+    case VIR_DOMAIN_DEVICE_INPUT:
+        return virDomainInputDefValidate(dev->data.input);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
