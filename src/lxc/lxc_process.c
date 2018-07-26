@@ -1181,7 +1181,7 @@ int virLXCProcessStart(virConnectPtr conn,
     size_t i;
     char *logfile = NULL;
     int logfd = -1;
-    char **veths = NULL;
+    VIR_AUTOPTR(virString) veths = NULL;
     int handshakefds[2] = { -1, -1 };
     off_t pos = -1;
     char ebuf[1024];
@@ -1555,7 +1555,6 @@ int virLXCProcessStart(virConnectPtr conn,
         virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
     }
     virCommandFree(cmd);
-    virStringListFree(veths);
     for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FREE(ttyFDs);
