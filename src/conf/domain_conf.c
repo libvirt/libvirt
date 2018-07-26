@@ -5687,7 +5687,7 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         if (def->videos[i]->type == VIR_DOMAIN_VIDEO_TYPE_NONE &&
             def->nvideos > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("a '%s' video type must be the only video device "
+                           _("a 'none' video type must be the only video device "
                              "defined for the domain"));
             return -1;
         }
