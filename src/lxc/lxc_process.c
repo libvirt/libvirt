@@ -544,7 +544,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         net = def->nets[i];
 
         if (virLXCProcessValidateInterface(net) < 0)
-            return -1;
+            goto cleanup;
 
         if (virDomainNetAllocateActualDevice(def, net) < 0)
             goto cleanup;
@@ -612,7 +612,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         /* Make sure all net definitions will have a name in the container */
         if (!net->ifname_guest) {
             if (virAsprintf(&net->ifname_guest, "eth%zu", niface) < 0)
-                return -1;
+                goto cleanup;
             niface++;
         }
     }
