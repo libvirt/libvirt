@@ -508,7 +508,7 @@ void
 virUSBDeviceListDel(virUSBDeviceListPtr list,
                     virUSBDevicePtr dev)
 {
-    VIR_AUTOPTR(virUSBDevice) ret = virUSBDeviceListSteal(list, dev);
+    virUSBDeviceFree(virUSBDeviceListSteal(list, dev));
 }
 
 virUSBDevicePtr

@@ -370,7 +370,7 @@ void
 virMediatedDeviceListDel(virMediatedDeviceListPtr list,
                          virMediatedDevicePtr dev)
 {
-    VIR_AUTOPTR(virMediatedDevice) ret = virMediatedDeviceListSteal(list, dev);
+    virMediatedDeviceFree(virMediatedDeviceListSteal(list, dev));
 }
 
 
