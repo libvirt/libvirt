@@ -2003,7 +2003,7 @@ void
 virPCIDeviceListDel(virPCIDeviceListPtr list,
                     virPCIDevicePtr dev)
 {
-    VIR_AUTOPTR(virPCIDevice) ret = virPCIDeviceListSteal(list, dev);
+    virPCIDeviceFree(virPCIDeviceListSteal(list, dev));
 }
 
 int
