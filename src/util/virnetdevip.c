@@ -27,7 +27,6 @@
 #include "virnetlink.h"
 #include "virfile.h"
 #include "virerror.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"
