@@ -25,6 +25,7 @@
 # define __VIR_MACADDR_H__
 
 # include "internal.h"
+# include "viralloc.h"
 
 # define VIR_MAC_BUFLEN 6
 # define VIR_MAC_HEXLEN (VIR_MAC_BUFLEN * 2)
@@ -64,5 +65,7 @@ int virMacAddrParseHex(const char* str,
 bool virMacAddrIsUnicast(const virMacAddr *addr);
 bool virMacAddrIsMulticast(const virMacAddr *addr);
 bool virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN]);
+void virMacAddrFree(virMacAddrPtr addr);
+
 
 #endif /* __VIR_MACADDR_H__ */

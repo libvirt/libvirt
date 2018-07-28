@@ -252,3 +252,9 @@ virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN])
 {
     return memcmp(virMacAddrBroadcastAddrRaw, s, sizeof(*s)) == 0;
 }
+
+void
+virMacAddrFree(virMacAddrPtr addr)
+{
+    VIR_FREE(addr);
+}
