@@ -252,14 +252,14 @@ int
 virNumaGetNodeCPUs(int node,
                    virBitmapPtr *cpus)
 {
-    unsigned long *mask = NULL;
-    unsigned long *allonesmask = NULL;
     virBitmapPtr cpumap = NULL;
     int ncpus = 0;
     int max_n_cpus = virNumaGetMaxCPUs();
     int mask_n_bytes = max_n_cpus / 8;
     size_t i;
     int ret = -1;
+    VIR_AUTOFREE(unsigned long *) mask = NULL;
+    VIR_AUTOFREE(unsigned long *) allonesmask = NULL;
 
     *cpus = NULL;
 
@@ -300,8 +300,6 @@ virNumaGetNodeCPUs(int node,
     ret = ncpus;
 
  cleanup:
-    VIR_FREE(mask);
-    VIR_FREE(allonesmask);
     virBitmapFree(cpumap);
 
     return ret;
@@ -566,25 +564,24 @@ virNumaGetHugePageInfo(int node,
                        unsigned long long *page_avail,
                        unsigned long long *page_free)
 {
-    int ret = -1;
-    char *path = NULL;
-    char *buf = NULL;
     char *end;
+    VIR_AUTOFREE(char *) path = NULL;
+    VIR_AUTOFREE(char *) buf = NULL;
 
     if (page_avail) {
         if (virNumaGetHugePageInfoPath(&path, node,
                                        page_size, "nr_hugepages") < 0)
-            goto cleanup;
+            return -1;
 
         if (virFileReadAll(path, 1024, &buf) < 0)
-            goto cleanup;
+            return -1;
 
         if (virStrToLong_ull(buf, &end, 10, page_avail) < 0 ||
             *end != '\n') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to parse: %s"),
                            buf);
-            goto cleanup;
+            return -1;
         }
         VIR_FREE(buf);
         VIR_FREE(path);
@@ -593,25 +590,21 @@ virNumaGetHugePageInfo(int node,
     if (page_free) {
         if (virNumaGetHugePageInfoPath(&path, node,
                                        page_size, "free_hugepages") < 0)
-            goto cleanup;
+            return -1;
 
         if (virFileReadAll(path, 1024, &buf) < 0)
-            goto cleanup;
+            return -1;
 
         if (virStrToLong_ull(buf, &end, 10, page_free) < 0 ||
             *end != '\n') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to parse: %s"),
                            buf);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(buf);
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 
 /**
@@ -714,18 +707,18 @@ virNumaGetPages(int node,
                 size_t *npages)
 {
     int ret = -1;
-    char *path = NULL;
     DIR *dir = NULL;
     int direrr = 0;
     struct dirent *entry;
-    unsigned int *tmp_size = NULL;
-    unsigned long long *tmp_avail = NULL;
-    unsigned long long *tmp_free = NULL;
     unsigned int ntmp = 0;
     size_t i;
     bool exchange;
     long system_page_size;
     unsigned long long huge_page_sum = 0;
+    VIR_AUTOFREE(char *) path = NULL;
+    VIR_AUTOFREE(unsigned int *) tmp_size = NULL;
+    VIR_AUTOFREE(unsigned long long *) tmp_avail = NULL;
+    VIR_AUTOFREE(unsigned long long *) tmp_free = NULL;
 
     /* sysconf() returns page size in bytes,
      * but we are storing the page size in kibibytes. */
@@ -828,11 +821,7 @@ virNumaGetPages(int node,
     *npages = ntmp;
     ret = 0;
  cleanup:
-    VIR_FREE(tmp_free);
-    VIR_FREE(tmp_avail);
-    VIR_FREE(tmp_size);
     VIR_DIR_CLOSE(dir);
-    VIR_FREE(path);
     return ret;
 }
 
@@ -843,47 +832,45 @@ virNumaSetPagePoolSize(int node,
                        unsigned long long page_count,
                        bool add)
 {
-    int ret = -1;
-    char *nr_path = NULL, *nr_buf =  NULL;
     char *end;
     unsigned long long nr_count;
+    VIR_AUTOFREE(char *) nr_path = NULL;
+    VIR_AUTOFREE(char *) nr_buf =  NULL;
 
     if (page_size == virGetSystemPageSizeKB()) {
         /* Special case as kernel handles system pages
          * differently to huge pages. */
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("system pages pool can't be modified"));
-        goto cleanup;
+        return -1;
     }
 
     if (virNumaGetHugePageInfoPath(&nr_path, node, page_size, "nr_hugepages") < 0)
-        goto cleanup;
+        return -1;
 
     /* Firstly check, if there's anything for us to do */
     if (virFileReadAll(nr_path, 1024, &nr_buf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStrToLong_ull(nr_buf, &end, 10, &nr_count) < 0 ||
         *end != '\n') {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("invalid number '%s' in '%s'"),
                        nr_buf, nr_path);
-        goto cleanup;
+        return -1;
     }
 
     if (add) {
         if (!page_count) {
             VIR_DEBUG("Nothing left to do: add = true page_count = 0");
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
         page_count += nr_count;
     } else {
         if (nr_count == page_count) {
             VIR_DEBUG("Nothing left to do: nr_count = page_count = %llu",
                       page_count);
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
     }
 
@@ -896,40 +883,36 @@ virNumaSetPagePoolSize(int node,
      */
     VIR_FREE(nr_buf);
     if (virAsprintf(&nr_buf, "%llu", page_count) < 0)
-        goto cleanup;
+        return -1;
 
     if (virFileWriteStr(nr_path, nr_buf, 0) < 0) {
         virReportSystemError(errno,
                              _("Unable to write to: %s"), nr_path);
-        goto cleanup;
+        return -1;
     }
 
     /* And now do the check. */
 
     VIR_FREE(nr_buf);
     if (virFileReadAll(nr_path, 1024, &nr_buf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStrToLong_ull(nr_buf, &end, 10, &nr_count) < 0 ||
         *end != '\n') {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("invalid number '%s' in '%s'"),
                        nr_buf, nr_path);
-        goto cleanup;
+        return -1;
     }
 
     if (nr_count != page_count) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Unable to allocate %llu pages. Allocated only %llu"),
                        page_count, nr_count);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(nr_buf);
-    VIR_FREE(nr_path);
-    return ret;
+    return 0;
 }
 
 
