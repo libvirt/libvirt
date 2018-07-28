@@ -26,7 +26,6 @@
 #include "virsocketaddr.h"
 #include "virerror.h"
 #include "virstring.h"
-#include "viralloc.h"
 #include "virbuffer.h"
 
 #include <netdb.h>

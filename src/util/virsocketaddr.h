@@ -24,13 +24,14 @@
 #ifndef __VIR_SOCKETADDR_H__
 # define __VIR_SOCKETADDR_H__
 
-# include "internal.h"
-
 # include <netinet/in.h>
 # include <sys/socket.h>
 # ifdef HAVE_SYS_UN_H
 #  include <sys/un.h>
 # endif
+
+# include "internal.h"
+# include "viralloc.h"
 
 /* On architectures which lack these limits, define them (ie. Cygwin).
  * Note that the libvirt code should be robust enough to handle the
@@ -163,5 +164,7 @@ int virSocketAddrPTRDomain(const virSocketAddr *addr,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
 void virSocketAddrFree(virSocketAddrPtr addr);
+
+VIR_DEFINE_AUTOPTR_FUNC(virSocketAddr, virSocketAddrFree)
 
 #endif /* __VIR_SOCKETADDR_H__ */
