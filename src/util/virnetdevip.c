@@ -171,11 +171,11 @@ virNetDevIPAddrAdd(const char *ifname,
     virSocketAddr *broadcast = NULL;
     int ret = -1;
     struct nl_msg *nlmsg = NULL;
-    struct nlmsghdr *resp = NULL;
     unsigned int recvbuflen;
-    char *ipStr = NULL;
-    char *peerStr = NULL;
-    char *bcastStr = NULL;
+    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+    VIR_AUTOFREE(char *) ipStr = NULL;
+    VIR_AUTOFREE(char *) peerStr = NULL;
+    VIR_AUTOFREE(char *) bcastStr = NULL;
 
     ipStr = virSocketAddrFormat(addr);
     if (peer && VIR_SOCKET_ADDR_VALID(peer))
@@ -225,11 +225,7 @@ virNetDevIPAddrAdd(const char *ifname,
 
     ret = 0;
  cleanup:
-    VIR_FREE(ipStr);
-    VIR_FREE(peerStr);
-    VIR_FREE(bcastStr);
     nlmsg_free(nlmsg);
-    VIR_FREE(resp);
     VIR_FREE(broadcast);
     return ret;
 }
@@ -252,8 +248,8 @@ virNetDevIPAddrDel(const char *ifname,
 {
     int ret = -1;
     struct nl_msg *nlmsg = NULL;
-    struct nlmsghdr *resp = NULL;
     unsigned int recvbuflen;
+    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
 
     if (!(nlmsg = virNetDevCreateNetlinkAddressMessage(RTM_DELADDR, ifname,
                                                        addr, prefix,
@@ -273,7 +269,6 @@ virNetDevIPAddrDel(const char *ifname,
     ret = 0;
  cleanup:
     nlmsg_free(nlmsg);
-    VIR_FREE(resp);
     return ret;
 }
 
@@ -309,8 +304,8 @@ virNetDevIPRouteAdd(const char *ifname,
     int errCode;
     virSocketAddr defaultAddr;
     virSocketAddrPtr actualAddr;
-    char *toStr = NULL;
-    char *viaStr = NULL;
+    VIR_AUTOFREE(char *) toStr = NULL;
+    VIR_AUTOFREE(char *) viaStr = NULL;
 
     actualAddr = addr;
 
@@ -383,8 +378,6 @@ virNetDevIPRouteAdd(const char *ifname,
 
     ret = 0;
  cleanup:
-    VIR_FREE(toStr);
-    VIR_FREE(viaStr);
     nlmsg_free(nlmsg);
     return ret;
 
@@ -452,7 +445,6 @@ virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
 {
     struct nl_msg *nlmsg = NULL;
     struct ifaddrmsg ifa;
-    struct nlmsghdr *resp = NULL;
     unsigned int recvbuflen;
     int ret = -1;
     bool dad = true;
@@ -475,6 +467,8 @@ virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
 
     /* Periodically query netlink until DAD finishes on all known addresses. */
     while (dad && time(NULL) < max_time) {
+        VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+
         if (virNetlinkCommand(nlmsg, &resp, &recvbuflen, 0, 0,
                               NETLINK_ROUTE, 0) < 0)
             goto cleanup;
@@ -489,8 +483,6 @@ virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
         dad = virNetDevIPParseDadStatus(resp, recvbuflen, addrs, count);
         if (dad)
             usleep(1000 * 10);
-
-        VIR_FREE(resp);
     }
     /* Check timeout. */
     if (dad) {
@@ -502,7 +494,6 @@ virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
     }
 
  cleanup:
-    VIR_FREE(resp);
     nlmsg_free(nlmsg);
     return ret;
 }
@@ -510,22 +501,18 @@ virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
 static int
 virNetDevIPGetAcceptRA(const char *ifname)
 {
-    char *path = NULL;
-    char *buf = NULL;
+    VIR_AUTOFREE(char *) path = NULL;
+    VIR_AUTOFREE(char *) buf = NULL;
     char *suffix;
     int accept_ra = -1;
 
     if (virAsprintf(&path, "/proc/sys/net/ipv6/conf/%s/accept_ra",
                     ifname ? ifname : "all") < 0)
-        goto cleanup;
+        return -1;
 
     if ((virFileReadAll(path, 512, &buf) < 0) ||
         (virStrToLong_i(buf, &suffix, 10, &accept_ra) < 0))
-        goto cleanup;
-
- cleanup:
-    VIR_FREE(path);
-    VIR_FREE(buf);
+        return -1;
 
     return accept_ra;
 }
@@ -545,17 +532,16 @@ virNetDevIPCheckIPv6ForwardingCallback(const struct nlmsghdr *resp,
     struct rtmsg *rtmsg = NLMSG_DATA(resp);
     int accept_ra = -1;
     struct rtattr *rta;
-    char *ifname = NULL;
     struct virNetDevIPCheckIPv6ForwardingData *data = opaque;
-    int ret = 0;
     int len = RTM_PAYLOAD(resp);
     int oif = -1;
     size_t i;
     bool hasDevice;
+    VIR_AUTOFREE(char *) ifname = NULL;
 
     /* Ignore messages other than route ones */
     if (resp->nlmsg_type != RTM_NEWROUTE)
-        return ret;
+        return 0;
 
     /* Extract a device ID attribute */
     VIR_WARNINGS_NO_CAST_ALIGN
@@ -566,21 +552,20 @@ virNetDevIPCheckIPv6ForwardingCallback(const struct nlmsghdr *resp,
 
             /* Should never happen: netlink message would be broken */
             if (ifname) {
-                char *ifname2 = virNetDevGetName(oif);
+                VIR_AUTOFREE(char *) ifname2 = virNetDevGetName(oif);
                 VIR_WARN("Single route has unexpected 2nd interface "
                          "- '%s' and '%s'", ifname, ifname2);
-                VIR_FREE(ifname2);
                 break;
             }
 
             if (!(ifname = virNetDevGetName(oif)))
-                goto error;
+                return -1;
         }
     }
 
     /* No need to do anything else for non RA routes */
     if (rtmsg->rtm_protocol != RTPROT_RA)
-        goto cleanup;
+        return 0;
 
     data->hasRARoutes = true;
 
@@ -595,15 +580,9 @@ virNetDevIPCheckIPv6ForwardingCallback(const struct nlmsghdr *resp,
     }
     if (accept_ra != 2 && !hasDevice &&
         VIR_APPEND_ELEMENT(data->devices, data->ndevices, ifname) < 0)
-        goto error;
+        return -1;
 
- cleanup:
-    VIR_FREE(ifname);
-    return ret;
-
- error:
-    ret = -1;
-    goto cleanup;
+    return 0;
 }
 
 bool
@@ -687,9 +666,11 @@ virNetDevIPAddrAdd(const char *ifname,
                    unsigned int prefix)
 {
     virCommandPtr cmd = NULL;
-    char *addrstr = NULL, *bcaststr = NULL, *peerstr = NULL;
     virSocketAddr broadcast;
     int ret = -1;
+    VIR_AUTOFREE(char *) addrstr = NULL;
+    VIR_AUTOFREE(char *) bcaststr = NULL;
+    VIR_AUTOFREE(char *) peerstr = NULL;
 
     if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
@@ -733,9 +714,6 @@ virNetDevIPAddrAdd(const char *ifname,
 
     ret = 0;
  cleanup:
-    VIR_FREE(addrstr);
-    VIR_FREE(bcaststr);
-    VIR_FREE(peerstr);
     virCommandFree(cmd);
     return ret;
 }
@@ -747,8 +725,8 @@ virNetDevIPAddrDel(const char *ifname,
                    unsigned int prefix)
 {
     virCommandPtr cmd = NULL;
-    char *addrstr;
     int ret = -1;
+    VIR_AUTOFREE(char *) addrstr = NULL;
 
     if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
@@ -773,7 +751,6 @@ virNetDevIPAddrDel(const char *ifname,
 
     ret = 0;
  cleanup:
-    VIR_FREE(addrstr);
     virCommandFree(cmd);
     return ret;
 }
@@ -787,8 +764,9 @@ virNetDevIPRouteAdd(const char *ifname,
                     unsigned int metric)
 {
     virCommandPtr cmd = NULL;
-    char *addrstr = NULL, *gatewaystr = NULL;
     int ret = -1;
+    VIR_AUTOFREE(char *) addrstr = NULL;
+    VIR_AUTOFREE(char *) gatewaystr = NULL;
 
     if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
@@ -806,8 +784,6 @@ virNetDevIPRouteAdd(const char *ifname,
 
     ret = 0;
  cleanup:
-    VIR_FREE(addrstr);
-    VIR_FREE(gatewaystr);
     virCommandFree(cmd);
     return ret;
 }
@@ -1083,9 +1059,9 @@ int
 virNetDevIPInfoAddToDev(const char *ifname,
                         virNetDevIPInfo const *ipInfo)
 {
-    int ret = -1;
     size_t i;
     int prefix;
+    VIR_AUTOFREE(char *) ipStr = NULL;
 
     /* add all IP addresses */
     for (i = 0; i < ipInfo->nips; i++) {
@@ -1093,16 +1069,14 @@ virNetDevIPInfoAddToDev(const char *ifname,
 
         if ((prefix = virSocketAddrGetIPPrefix(&ip->address,
                                                NULL, ip->prefix)) < 0) {
-            char *ipStr = virSocketAddrFormat(&ip->address);
-
+            ipStr = virSocketAddrFormat(&ip->address);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to determine prefix for IP address '%s'"),
                            NULLSTR(ipStr));
-            VIR_FREE(ipStr);
-            goto cleanup;
+            return -1;
         }
         if (virNetDevIPAddrAdd(ifname, &ip->address, &ip->peer, prefix) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* add all routes */
@@ -1110,23 +1084,19 @@ virNetDevIPInfoAddToDev(const char *ifname,
         virNetDevIPRoutePtr route = ipInfo->routes[i];
 
         if ((prefix = virNetDevIPRouteGetPrefix(route)) < 0) {
-            char *ipStr = virSocketAddrFormat(&route->address);
-
+            ipStr = virSocketAddrFormat(&route->address);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to determine prefix for route with destination '%s'"),
                            NULLSTR(ipStr));
-            VIR_FREE(ipStr);
-            goto cleanup;
+            return -1;
         }
         if (virNetDevIPRouteAdd(ifname, &route->address, prefix,
                                 &route->gateway,
                                 virNetDevIPRouteGetMetric(route)) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 void
