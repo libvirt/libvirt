@@ -26,7 +26,6 @@
 #endif
 
 #include "virperf.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
@@ -61,7 +60,7 @@ struct virPerfEvent {
 };
 typedef struct virPerfEvent *virPerfEventPtr;
 
-struct virPerf {
+struct _virPerf {
     struct virPerfEvent events[VIR_PERF_EVENT_LAST];
 };
 

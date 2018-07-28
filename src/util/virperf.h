@@ -23,6 +23,7 @@
 # define __VIR_PERF_H__
 
 # include "virutil.h"
+# include "viralloc.h"
 
 /* Some Intel processor families introduced some RDT (Resource Director
  * Technology) features to monitor or control shared resource based on
@@ -62,8 +63,9 @@ typedef enum {
 
 VIR_ENUM_DECL(virPerfEvent);
 
-struct virPerf;
-typedef struct virPerf *virPerfPtr;
+struct _virPerf;
+typedef struct _virPerf virPerf;
+typedef virPerf *virPerfPtr;
 
 virPerfPtr virPerfNew(void);
 
@@ -82,5 +84,7 @@ bool virPerfEventIsEnabled(virPerfPtr perf,
 int virPerfReadEvent(virPerfPtr perf,
                      virPerfEventType type,
                      uint64_t *value);
+
+VIR_DEFINE_AUTOPTR_FUNC(virPerf, virPerfFree)
 
 #endif /* __VIR_PERF_H__ */
