@@ -29,7 +29,6 @@
 #include "virfile.h"
 #include "virerror.h"
 #include "vircommand.h"
-#include "viralloc.h"
 #include "virpci.h"
 #include "virlog.h"
 #include "virstring.h"
@@ -119,6 +118,14 @@ struct _virNetDevMcastEntry  {
         bool global;
         virMacAddr macaddr;
 };
+
+static void
+virNetDevMcastEntryFree(virNetDevMcastEntryPtr entry)
+{
+    VIR_FREE(entry);
+}
+
+VIR_DEFINE_AUTOPTR_FUNC(virNetDevMcastEntry, virNetDevMcastEntryFree)
 
 typedef struct _virNetDevMcastList virNetDevMcastList;
 typedef virNetDevMcastList *virNetDevMcastListPtr;

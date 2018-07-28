@@ -30,6 +30,7 @@
 # include "virmacaddr.h"
 # include "virpci.h"
 # include "virnetdevvlan.h"
+# include "viralloc.h"
 
 # ifdef HAVE_STRUCT_IFREQ
 typedef struct ifreq virIfreq;
@@ -313,4 +314,7 @@ int virNetDevSysfsFile(char **pf_sysfs_device_link,
 
 int virNetDevRunEthernetScript(const char *ifname, const char *script)
     ATTRIBUTE_NOINLINE;
+
+VIR_DEFINE_AUTOPTR_FUNC(virNetDevRxFilter, virNetDevRxFilterFree)
+
 #endif /* __VIR_NETDEV_H__ */
