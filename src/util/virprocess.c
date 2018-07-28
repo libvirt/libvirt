@@ -158,7 +158,7 @@ virProcessAbort(pid_t pid)
     int saved_errno;
     int ret;
     int status;
-    char *tmp = NULL;
+    VIR_AUTOFREE(char *) tmp = NULL;
 
     if (pid <= 0)
         return;
@@ -199,7 +199,6 @@ virProcessAbort(pid_t pid)
     VIR_DEBUG("failed to reap child %lld, abandoning it", (long long) pid);
 
  cleanup:
-    VIR_FREE(tmp);
     errno = saved_errno;
 }
 #else
@@ -238,6 +237,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
 {
     int ret;
     int status;
+    VIR_AUTOFREE(char *) st = NULL;
 
     if (pid <= 0) {
         if (pid != -1)
@@ -270,13 +270,10 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
     return 0;
 
  error:
-    {
-        char *st = virProcessTranslateStatus(status);
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Child process (%lld) unexpected %s"),
-                       (long long) pid, NULLSTR(st));
-        VIR_FREE(st);
-    }
+    st = virProcessTranslateStatus(status);
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Child process (%lld) unexpected %s"),
+                   (long long) pid, NULLSTR(st));
     return -1;
 }
 
@@ -603,10 +600,10 @@ virProcessGetAffinity(pid_t pid ATTRIBUTE_UNUSED)
 int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
 {
     int ret = -1;
-    char *taskPath = NULL;
     DIR *dir = NULL;
     int value;
     struct dirent *ent;
+    VIR_AUTOFREE(char *) taskPath = NULL;
 
     *npids = 0;
     *pids = NULL;
@@ -636,7 +633,6 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
 
  cleanup:
     VIR_DIR_CLOSE(dir);
-    VIR_FREE(taskPath);
     if (ret < 0)
         VIR_FREE(*pids);
     return ret;
@@ -648,7 +644,6 @@ int virProcessGetNamespaces(pid_t pid,
                             int **fdlist)
 {
     int ret = -1;
-    char *nsfile = NULL;
     size_t i = 0;
     const char *ns[] = { "user", "ipc", "uts", "net", "pid", "mnt" };
 
@@ -657,6 +652,7 @@ int virProcessGetNamespaces(pid_t pid,
 
     for (i = 0; i < ARRAY_CARDINALITY(ns); i++) {
         int fd;
+        VIR_AUTOFREE(char *) nsfile = NULL;
 
         if (virAsprintf(&nsfile, "/proc/%llu/ns/%s",
                         (long long) pid,
@@ -671,14 +667,11 @@ int virProcessGetNamespaces(pid_t pid,
 
             (*fdlist)[(*nfdlist)-1] = fd;
         }
-
-        VIR_FREE(nsfile);
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(nsfile);
     if (ret < 0) {
         for (i = 0; i < *nfdlist; i++)
             VIR_FORCE_CLOSE((*fdlist)[i]);
@@ -977,12 +970,12 @@ virProcessSetMaxCoreSize(pid_t pid ATTRIBUTE_UNUSED,
 int virProcessGetStartTime(pid_t pid,
                            unsigned long long *timestamp)
 {
-    char *filename = NULL;
-    char *buf = NULL;
     char *tmp;
     int ret = -1;
     int len;
     char **tokens = NULL;
+    VIR_AUTOFREE(char *) filename = NULL;
+    VIR_AUTOFREE(char *) buf = NULL;
 
     if (virAsprintf(&filename, "/proc/%llu/stat", (long long) pid) < 0)
         return -1;
@@ -1032,8 +1025,6 @@ int virProcessGetStartTime(pid_t pid,
 
  cleanup:
     virStringListFree(tokens);
-    VIR_FREE(filename);
-    VIR_FREE(buf);
     return ret;
 }
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
@@ -1080,9 +1071,9 @@ static int virProcessNamespaceHelper(int errfd,
                                      virProcessNamespaceCallback cb,
                                      void *opaque)
 {
-    char *path;
     int fd = -1;
     int ret = -1;
+    VIR_AUTOFREE(char *) path = NULL;
 
     if (virAsprintf(&path, "/proc/%lld/ns/mnt", (long long) pid) < 0)
         goto cleanup;
@@ -1109,7 +1100,6 @@ static int virProcessNamespaceHelper(int errfd,
             ignore_value(safewrite(errfd, err->message, len));
         }
     }
-    VIR_FREE(path);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -1145,8 +1135,8 @@ virProcessRunInMountNamespace(pid_t pid,
         VIR_FORCE_CLOSE(errfd[1]);
         _exit(ret < 0 ? EXIT_CANCELED : ret);
     } else {
-        char *buf = NULL;
         int status;
+        VIR_AUTOFREE(char *) buf = NULL;
 
         VIR_FORCE_CLOSE(errfd[1]);
         ignore_value(virFileReadHeaderFD(errfd[0], 1024, &buf));
@@ -1159,7 +1149,6 @@ virProcessRunInMountNamespace(pid_t pid,
                                NULLSTR(buf));
             }
         }
-        VIR_FREE(buf);
     }
 
  cleanup:
@@ -1226,8 +1215,8 @@ virProcessNamespaceAvailable(unsigned int ns)
     int flags = 0;
     int cpid;
     char *childStack;
-    char *stack;
     int stacksize = getpagesize() * 4;
+    VIR_AUTOFREE(char *)stack = NULL;
 
     if (ns & VIR_PROCESS_NAMESPACE_MNT)
         flags |= CLONE_NEWNS;
@@ -1251,7 +1240,7 @@ virProcessNamespaceAvailable(unsigned int ns)
     childStack = stack + stacksize;
 
     cpid = clone(virProcessDummyChild, childStack, flags, NULL);
-    VIR_FREE(stack);
+
     if (cpid < 0) {
         char ebuf[1024] ATTRIBUTE_UNUSED;
         VIR_DEBUG("clone call returned %s, container support is not enabled",
