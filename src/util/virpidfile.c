@@ -97,29 +97,18 @@ int virPidFileWrite(const char *dir,
                     const char *name,
                     pid_t pid)
 {
-    int rc;
-    char *pidfile = NULL;
+    VIR_AUTOFREE(char *) pidfile = NULL;
 
-    if (name == NULL || dir == NULL) {
-        rc = -EINVAL;
-        goto cleanup;
-    }
+    if (name == NULL || dir == NULL)
+        return -EINVAL;
 
-    if (virFileMakePath(dir) < 0) {
-        rc = -errno;
-        goto cleanup;
-    }
+    if (virFileMakePath(dir) < 0)
+        return -errno;
 
-    if (!(pidfile = virPidFileBuildPath(dir, name))) {
-        rc = -ENOMEM;
-        goto cleanup;
-    }
+    if (!(pidfile = virPidFileBuildPath(dir, name)))
+        return -ENOMEM;
 
-    rc = virPidFileWritePath(pidfile, pid);
-
- cleanup:
-    VIR_FREE(pidfile);
-    return rc;
+    return virPidFileWritePath(pidfile, pid);
 }
 
 
@@ -170,25 +159,17 @@ int virPidFileRead(const char *dir,
                    const char *name,
                    pid_t *pid)
 {
-    int rc;
-    char *pidfile = NULL;
+    VIR_AUTOFREE(char *) pidfile = NULL;
+
     *pid = 0;
 
-    if (name == NULL || dir == NULL) {
-        rc = -EINVAL;
-        goto cleanup;
-    }
+    if (name == NULL || dir == NULL)
+        return -EINVAL;
 
-    if (!(pidfile = virPidFileBuildPath(dir, name))) {
-        rc = -ENOMEM;
-        goto cleanup;
-    }
+    if (!(pidfile = virPidFileBuildPath(dir, name)))
+        return -ENOMEM;
 
-    rc = virPidFileReadPath(pidfile, pid);
-
- cleanup:
-    VIR_FREE(pidfile);
-    return rc;
+    return virPidFileReadPath(pidfile, pid);
 }
 
 
@@ -219,20 +200,20 @@ int virPidFileReadPathIfAlive(const char *path,
 {
     int ret;
     bool isLink;
-    char *procPath = NULL;
-    char *procLink = NULL;
     size_t procLinkLen;
-    char *resolvedBinPath = NULL;
-    char *resolvedProcLink = NULL;
     const char deletedText[] = " (deleted)";
     size_t deletedTextLen = strlen(deletedText);
     pid_t retPid;
+    VIR_AUTOFREE(char *) procPath = NULL;
+    VIR_AUTOFREE(char *) procLink = NULL;
+    VIR_AUTOFREE(char *) resolvedBinPath = NULL;
+    VIR_AUTOFREE(char *) resolvedProcLink = NULL;
 
     /* only set this at the very end on success */
     *pid = -1;
 
     if ((ret = virPidFileReadPath(path, &retPid)) < 0)
-        goto cleanup;
+        return ret;
 
 #ifndef WIN32
     /* Check that it's still alive.  Safe to skip this sanity check on
@@ -252,13 +233,12 @@ int virPidFileReadPathIfAlive(const char *path,
         goto cleanup;
     }
 
-    if (virAsprintf(&procPath, "/proc/%lld/exe", (long long)retPid) < 0) {
-        ret = -ENOMEM;
-        goto cleanup;
-    }
+    if (virAsprintf(&procPath, "/proc/%lld/exe", (long long)retPid) < 0)
+        return -ENOMEM;
 
     if ((ret = virFileIsLink(procPath)) < 0)
-        goto cleanup;
+        return ret;
+
     isLink = ret;
 
     if (isLink && virFileLinkPointsTo(procPath, binPath)) {
@@ -275,27 +255,21 @@ int virPidFileReadPathIfAlive(const char *path,
      * "$procpath (deleted)".  Read that link, remove the " (deleted)"
      * part, and see if it has the same canonicalized name as binpath.
      */
-    if (!(procLink = areadlink(procPath))) {
-        ret = -errno;
-        goto cleanup;
-    }
+    if (!(procLink = areadlink(procPath)))
+        return -errno;
+
     procLinkLen = strlen(procLink);
     if (procLinkLen > deletedTextLen)
         procLink[procLinkLen - deletedTextLen] = 0;
 
     if ((ret = virFileResolveAllLinks(binPath, &resolvedBinPath)) < 0)
-        goto cleanup;
+        return ret;
     if ((ret = virFileResolveAllLinks(procLink, &resolvedProcLink)) < 0)
-        goto cleanup;
+        return ret;
 
     ret = STREQ(resolvedBinPath, resolvedProcLink) ? 0 : -1;
 
  cleanup:
-    VIR_FREE(procPath);
-    VIR_FREE(procLink);
-    VIR_FREE(resolvedProcLink);
-    VIR_FREE(resolvedBinPath);
-
     /* return the originally set pid of -1 unless we proclaim success */
     if (ret == 0)
         *pid = retPid;
@@ -326,24 +300,15 @@ int virPidFileReadIfAlive(const char *dir,
                           pid_t *pid,
                           const char *binpath)
 {
-    int rc = 0;
-    char *pidfile = NULL;
+    VIR_AUTOFREE(char *) pidfile = NULL;
 
-    if (name == NULL || dir == NULL) {
-        rc = -EINVAL;
-        goto cleanup;
-    }
+    if (name == NULL || dir == NULL)
+        return -EINVAL;
 
-    if (!(pidfile = virPidFileBuildPath(dir, name))) {
-        rc = -ENOMEM;
-        goto cleanup;
-    }
+    if (!(pidfile = virPidFileBuildPath(dir, name)))
+        return -ENOMEM;
 
-    rc = virPidFileReadPathIfAlive(pidfile, pid, binpath);
-
- cleanup:
-    VIR_FREE(pidfile);
-    return rc;
+    return virPidFileReadPathIfAlive(pidfile, pid, binpath);
 }
 
 
@@ -361,24 +326,15 @@ int virPidFileDeletePath(const char *pidfile)
 int virPidFileDelete(const char *dir,
                      const char *name)
 {
-    int rc = 0;
-    char *pidfile = NULL;
+    VIR_AUTOFREE(char *) pidfile = NULL;
 
-    if (name == NULL || dir == NULL) {
-        rc = -EINVAL;
-        goto cleanup;
-    }
+    if (name == NULL || dir == NULL)
+        return -EINVAL;
 
-    if (!(pidfile = virPidFileBuildPath(dir, name))) {
-        rc = -ENOMEM;
-        goto cleanup;
-    }
+    if (!(pidfile = virPidFileBuildPath(dir, name)))
+        return -ENOMEM;
 
-    rc = virPidFileDeletePath(pidfile);
-
- cleanup:
-    VIR_FREE(pidfile);
-    return rc;
+    return virPidFileDeletePath(pidfile);
 }
 
 int virPidFileAcquirePath(const char *path,
@@ -470,24 +426,15 @@ int virPidFileAcquire(const char *dir,
                       bool waitForLock,
                       pid_t pid)
 {
-    int rc = 0;
-    char *pidfile = NULL;
+    VIR_AUTOFREE(char *) pidfile = NULL;
 
-    if (name == NULL || dir == NULL) {
-        rc = -EINVAL;
-        goto cleanup;
-    }
+    if (name == NULL || dir == NULL)
+        return -EINVAL;
 
-    if (!(pidfile = virPidFileBuildPath(dir, name))) {
-        rc = -ENOMEM;
-        goto cleanup;
-    }
+    if (!(pidfile = virPidFileBuildPath(dir, name)))
+        return -ENOMEM;
 
-    rc = virPidFileAcquirePath(pidfile, waitForLock, pid);
-
- cleanup:
-    VIR_FREE(pidfile);
-    return rc;
+    return virPidFileAcquirePath(pidfile, waitForLock, pid);
 }
 
 
@@ -518,24 +465,15 @@ int virPidFileRelease(const char *dir,
                       const char *name,
                       int fd)
 {
-    int rc = 0;
-    char *pidfile = NULL;
+    VIR_AUTOFREE(char *) pidfile = NULL;
 
-    if (name == NULL || dir == NULL) {
-        rc = -EINVAL;
-        goto cleanup;
-    }
+    if (name == NULL || dir == NULL)
+        return -EINVAL;
 
-    if (!(pidfile = virPidFileBuildPath(dir, name))) {
-        rc = -ENOMEM;
-        goto cleanup;
-    }
+    if (!(pidfile = virPidFileBuildPath(dir, name)))
+        return -ENOMEM;
 
-    rc = virPidFileReleasePath(pidfile, fd);
-
- cleanup:
-    VIR_FREE(pidfile);
-    return rc;
+    return virPidFileReleasePath(pidfile, fd);
 }
 
 
@@ -545,8 +483,7 @@ virPidFileConstructPath(bool privileged,
                         const char *progname,
                         char **pidfile)
 {
-    int ret = -1;
-    char *rundir = NULL;
+    VIR_AUTOFREE(char *) rundir = NULL;
 
     if (privileged) {
         /*
@@ -556,29 +493,26 @@ virPidFileConstructPath(bool privileged,
         if (!statedir) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("No statedir specified"));
-            goto cleanup;
+            return -1;
         }
         if (virAsprintf(pidfile, "%s/run/%s.pid", statedir, progname) < 0)
-            goto cleanup;
+            return -1;
     } else {
         if (!(rundir = virGetUserRuntimeDirectory()))
-            goto cleanup;
+            return -1;
 
         if (virFileMakePathWithMode(rundir, 0700) < 0) {
             virReportSystemError(errno,
                                  _("Cannot create user runtime directory '%s'"),
                                  rundir);
-            goto cleanup;
+            return -1;
         }
 
         if (virAsprintf(pidfile, "%s/%s.pid", rundir, progname) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(rundir);
-    return ret;
+    return 0;
 }
 
 
