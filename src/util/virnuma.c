@@ -57,7 +57,7 @@ char *
 virNumaGetAutoPlacementAdvice(unsigned short vcpus,
                               unsigned long long balloon)
 {
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
     char *output = NULL;
 
     cmd = virCommandNewArgList(NUMAD, "-w", NULL);
@@ -71,7 +71,6 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus,
                        _("Failed to query numad for the "
                          "advisory nodeset"));
 
-    virCommandFree(cmd);
     return output;
 }
 #else /* !HAVE_NUMAD */
@@ -252,41 +251,38 @@ int
 virNumaGetNodeCPUs(int node,
                    virBitmapPtr *cpus)
 {
-    virBitmapPtr cpumap = NULL;
     int ncpus = 0;
     int max_n_cpus = virNumaGetMaxCPUs();
     int mask_n_bytes = max_n_cpus / 8;
     size_t i;
-    int ret = -1;
     VIR_AUTOFREE(unsigned long *) mask = NULL;
     VIR_AUTOFREE(unsigned long *) allonesmask = NULL;
+    VIR_AUTOPTR(virBitmap) cpumap = NULL;
 
     *cpus = NULL;
 
     if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof(*mask)) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_ALLOC_N(allonesmask, mask_n_bytes / sizeof(*mask)) < 0)
-        goto cleanup;
+        return -1;
 
     memset(allonesmask, 0xff, mask_n_bytes);
 
     /* The first time this returns -1, ENOENT if node doesn't exist... */
     if (numa_node_to_cpus(node, mask, mask_n_bytes) < 0) {
         VIR_WARN("NUMA topology for cell %d is not available, ignoring", node);
-        ret = -2;
-        goto cleanup;
+        return -2;
     }
 
     /* second, third... times it returns an all-1's mask */
     if (memcmp(mask, allonesmask, mask_n_bytes) == 0) {
         VIR_DEBUG("NUMA topology for cell %d is invalid, ignoring", node);
-        ret = -2;
-        goto cleanup;
+        return -2;
     }
 
     if (!(cpumap = virBitmapNew(max_n_cpus)))
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < max_n_cpus; i++) {
         if (MASK_CPU_ISSET(mask, i)) {
@@ -295,14 +291,8 @@ virNumaGetNodeCPUs(int node,
         }
     }
 
-    *cpus = cpumap;
-    cpumap = NULL;
-    ret = ncpus;
-
- cleanup:
-    virBitmapFree(cpumap);
-
-    return ret;
+    VIR_STEAL_PTR(*cpus, cpumap);
+    return ncpus;
 }
 # undef MASK_CPU_ISSET
 # undef n_bits
