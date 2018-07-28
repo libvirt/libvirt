@@ -400,16 +400,15 @@ int virNetDevTapCreate(char **ifname,
     if (strstr(*ifname, "%d") != NULL) {
         size_t i;
         for (i = 0; i <= IF_MAXUNIT; i++) {
-            char *newname;
+            VIR_AUTOFREE(char *) newname = NULL;
+
             if (virAsprintf(&newname, *ifname, i) < 0)
                 goto cleanup;
 
             if (virNetDevExists(newname) == 0) {
-                newifname = newname;
+                VIR_STEAL_PTR(newifname, newname);
                 break;
             }
-
-            VIR_FREE(newname);
         }
         if (newifname) {
             VIR_FREE(*ifname);
@@ -423,7 +422,7 @@ int virNetDevTapCreate(char **ifname,
     }
 
     if (tapfd) {
-        char *dev_path = NULL;
+        VIR_AUTOFREE(char *) dev_path = NULL;
         if (virAsprintf(&dev_path, "/dev/%s", ifr.ifr_name) < 0)
             goto cleanup;
 
@@ -431,11 +430,8 @@ int virNetDevTapCreate(char **ifname,
             virReportSystemError(errno,
                                  _("Unable to open %s"),
                                  dev_path);
-            VIR_FREE(dev_path);
             goto cleanup;
         }
-
-        VIR_FREE(dev_path);
     }
 
     if (virNetDevSetName(ifr.ifr_name, *ifname) == -1)
