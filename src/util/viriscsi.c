@@ -88,8 +88,8 @@ virISCSIGetSession(const char *devpath,
         .session = NULL,
         .devpath = devpath,
     };
-    char *error = NULL;
     int exitstatus = 0;
+    VIR_AUTOFREE(char *) error = NULL;
 
     virCommandPtr cmd = virCommandNewArgList(ISCSIADM, "--mode",
                                              "session", NULL);
@@ -109,7 +109,6 @@ virISCSIGetSession(const char *devpath,
                        NULLSTR(error));
 
  cleanup:
-    VIR_FREE(error);
     virCommandFree(cmd);
     return cbdata.session;
 }
@@ -125,12 +124,12 @@ virStorageBackendIQNFound(const char *initiatoriqn,
                           char **ifacename)
 {
     int ret = IQN_ERROR;
-    char *outbuf = NULL;
     char *line = NULL;
-    char *iface = NULL;
-    char *iqn = NULL;
     virCommandPtr cmd = virCommandNewArgList(ISCSIADM,
                                              "--mode", "iface", NULL);
+    VIR_AUTOFREE(char *) outbuf = NULL;
+    VIR_AUTOFREE(char *) iface = NULL;
+    VIR_AUTOFREE(char *) iqn = NULL;
 
     *ifacename = NULL;
 
@@ -197,9 +196,6 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     if (ret == IQN_MISSING)
         VIR_DEBUG("Could not find interface with IQN '%s'", iqn);
 
-    VIR_FREE(iqn);
-    VIR_FREE(iface);
-    VIR_FREE(outbuf);
     virCommandFree(cmd);
     return ret;
 
@@ -216,8 +212,8 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
                                 char **ifacename)
 {
     int ret = -1, exitstatus = -1;
-    char *temp_ifacename;
     virCommandPtr cmd = NULL;
+    VIR_AUTOFREE(char *) temp_ifacename = NULL;
 
     if (virAsprintf(&temp_ifacename,
                     "libvirt-iface-%08llx",
@@ -277,7 +273,6 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
 
  cleanup:
     virCommandFree(cmd);
-    VIR_FREE(temp_ifacename);
     if (ret != 0)
         VIR_FREE(*ifacename);
     return ret;
@@ -299,7 +294,7 @@ virISCSIConnection(const char *portal,
         NULL
     };
     virCommandPtr cmd;
-    char *ifacename = NULL;
+    VIR_AUTOFREE(char *) ifacename = NULL;
 
     cmd = virCommandNewArgs(baseargv);
     virCommandAddArgSet(cmd, extraargv);
@@ -339,7 +334,6 @@ virISCSIConnection(const char *portal,
 
  cleanup:
     virCommandFree(cmd);
-    VIR_FREE(ifacename);
 
     return ret;
 }
@@ -390,15 +384,13 @@ virISCSIGetTargets(char **const groups,
                    void *data)
 {
     struct virISCSITargetList *list = data;
-    char *target;
+    VIR_AUTOFREE(char *) target = NULL;
 
     if (VIR_STRDUP(target, groups[1]) < 0)
         return -1;
 
-    if (VIR_APPEND_ELEMENT(list->targets, list->ntargets, target) < 0) {
-        VIR_FREE(target);
+    if (VIR_APPEND_ELEMENT(list->targets, list->ntargets, target) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -498,8 +490,7 @@ virISCSIScanTargets(const char *portal,
                     size_t *ntargets,
                     char ***targets)
 {
-    char *ifacename = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) ifacename = NULL;
 
     if (ntargets)
         *ntargets = 0;
@@ -522,10 +513,8 @@ virISCSIScanTargets(const char *portal,
         }
     }
 
-    ret = virISCSIScanTargetsInternal(portal, ifacename,
+    return virISCSIScanTargetsInternal(portal, ifacename,
                                       persist, ntargets, targets);
-    VIR_FREE(ifacename);
-    return ret;
 }
 
 
