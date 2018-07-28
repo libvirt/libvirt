@@ -85,29 +85,22 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
                                          virBufferPtr buf)
 {
     virJSONValuePtr member;
-    char *prefix = NULL;
     size_t i;
-    int ret = 0;
 
     for (i = 0; i < virJSONValueArraySize(array); i++) {
         member = virJSONValueArrayGet((virJSONValuePtr) array, i);
+        VIR_AUTOFREE(char *) prefix = NULL;
 
         if (virAsprintf(&prefix, "%s.%zu", key, i) < 0)
-            goto cleanup;
+            return 0;
 
         if (virQEMUBuildCommandLineJSONRecurse(prefix, member, buf,
                                                virQEMUBuildCommandLineJSONArrayNumbered,
                                                true) < 0)
-            goto cleanup;
-
-        VIR_FREE(prefix);
+            return 0;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(prefix);
-    return ret;
+    return 0;
 }
 
 
@@ -118,23 +111,19 @@ virQEMUBuildCommandLineJSONIterate(const char *key,
                                    void *opaque)
 {
     struct virQEMUCommandLineJSONIteratorData *data = opaque;
-    char *tmpkey = NULL;
-    int ret = -1;
 
     if (data->prefix) {
+        VIR_AUTOFREE(char *) tmpkey = NULL;
+
         if (virAsprintf(&tmpkey, "%s.%s", data->prefix, key) < 0)
             return -1;
 
-        ret = virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf,
+        return virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf,
                                                  data->arrayFunc, false);
-
-        VIR_FREE(tmpkey);
     } else {
-        ret = virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
+        return virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
                                                  data->arrayFunc, false);
     }
-
-    return ret;
 }
 
 
