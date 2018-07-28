@@ -162,4 +162,6 @@ int virSocketAddrPTRDomain(const virSocketAddr *addr,
                            char **ptr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
+void virSocketAddrFree(virSocketAddrPtr addr);
+
 #endif /* __VIR_SOCKETADDR_H__ */

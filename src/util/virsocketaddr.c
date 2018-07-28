@@ -1253,3 +1253,9 @@ virSocketAddrPTRDomain(const virSocketAddr *addr,
     ret = -2;
     goto cleanup;
 }
+
+void
+virSocketAddrFree(virSocketAddrPtr addr)
+{
+    VIR_FREE(addr);
+}
