@@ -149,10 +149,10 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     char macaddrstr[VIR_MAC_STRING_BUFLEN];
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
-    char *attachedmac_ex_id = NULL;
-    char *ifaceid_ex_id = NULL;
-    char *profile_ex_id = NULL;
-    char *vmid_ex_id = NULL;
+    VIR_AUTOFREE(char *) attachedmac_ex_id = NULL;
+    VIR_AUTOFREE(char *) ifaceid_ex_id = NULL;
+    VIR_AUTOFREE(char *) profile_ex_id = NULL;
+    VIR_AUTOFREE(char *) vmid_ex_id = NULL;
 
     virMacAddrFormat(macaddr, macaddrstr);
     virUUIDFormat(ovsport->interfaceID, ifuuidstr);
@@ -209,10 +209,6 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 
     ret = 0;
  cleanup:
-    VIR_FREE(attachedmac_ex_id);
-    VIR_FREE(ifaceid_ex_id);
-    VIR_FREE(vmid_ex_id);
-    VIR_FREE(profile_ex_id);
     virCommandFree(cmd);
     return ret;
 }
@@ -339,10 +335,10 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
                                    virDomainInterfaceStatsPtr stats)
 {
     virCommandPtr cmd = NULL;
-    char *output;
     char *tmp;
     bool gotStats = false;
     int ret = -1;
+    VIR_AUTOFREE(char *) output = NULL;
 
     /* Just ensure the interface exists in ovs */
     cmd = virCommandNew(OVSVSCTL);
@@ -399,7 +395,6 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
     ret = 0;
 
  cleanup:
-    VIR_FREE(output);
     virCommandFree(cmd);
     return ret;
 }
@@ -478,7 +473,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     size_t ntokens = 0;
     int status;
     int ret = -1;
-    char *ovs_timeout = NULL;
+    VIR_AUTOFREE(char *) ovs_timeout = NULL;
 
     /* Openvswitch vhostuser path are hardcoded to
      * /<runstatedir>/openvswitch/<ifname>
@@ -510,7 +505,6 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
  cleanup:
     virStringListFreeCount(tokens, ntokens);
     virCommandFree(cmd);
-    VIR_FREE(ovs_timeout);
     return ret;
 }
 
