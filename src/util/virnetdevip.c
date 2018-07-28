@@ -1129,3 +1129,9 @@ virNetDevIPInfoAddToDev(const char *ifname,
  cleanup:
     return ret;
 }
+
+void
+virNetDevIPAddrFree(virNetDevIPAddrPtr ip)
+{
+    VIR_FREE(ip);
+}

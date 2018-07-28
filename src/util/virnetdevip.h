@@ -84,6 +84,7 @@ int virNetDevIPAddrGet(const char *ifname, virSocketAddrPtr addr)
 int virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
     ATTRIBUTE_NONNULL(1);
 bool virNetDevIPCheckIPv6Forwarding(void);
+void virNetDevIPAddrFree(virNetDevIPAddrPtr ip);
 
 /* virNetDevIPRoute object */
 void virNetDevIPRouteFree(virNetDevIPRoutePtr def);
