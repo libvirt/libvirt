@@ -2362,16 +2362,13 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
 
 
 virJSONValuePtr
-qemuMonitorJSONQueryBlockstats(qemuMonitorPtr mon,
-                               bool nodenames)
+qemuMonitorJSONQueryBlockstats(qemuMonitorPtr mon)
 {
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr ret = NULL;
 
-    if (!(cmd = qemuMonitorJSONMakeCommand("query-blockstats",
-                                           "B:query-nodes", nodenames,
-                                           NULL)))
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-blockstats", NULL)))
         return NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
@@ -2400,7 +2397,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
     size_t i;
     virJSONValuePtr devices;
 
-    if (!(devices = qemuMonitorJSONQueryBlockstats(mon, false)))
+    if (!(devices = qemuMonitorJSONQueryBlockstats(mon)))
         return -1;
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {

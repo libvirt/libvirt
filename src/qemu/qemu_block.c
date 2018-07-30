@@ -358,7 +358,7 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
         return -1;
 
     data = qemuMonitorQueryNamedBlockNodes(qemuDomainGetMonitor(vm));
-    blockstats = qemuMonitorQueryBlockstats(qemuDomainGetMonitor(vm), false);
+    blockstats = qemuMonitorQueryBlockstats(qemuDomainGetMonitor(vm));
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || !data || !blockstats)
         goto cleanup;
