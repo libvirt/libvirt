@@ -836,21 +836,25 @@ virCgroupGetValueForBlkDev(virCgroupPtr group,
 {
     VIR_AUTOFREE(char *) prefix = NULL;
     VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOPTR(virString) lines = NULL;
+    char **lines = NULL;
+    int ret = -1;
 
     if (virCgroupGetValueStr(group, controller, key, &str) < 0)
-        return -1;
+        goto error;
 
     if (!(prefix = virCgroupGetBlockDevString(path)))
-        return -1;
+        goto error;
 
     if (!(lines = virStringSplit(str, "\n", -1)))
-        return -1;
+        goto error;
 
     if (VIR_STRDUP(*value, virStringListGetFirstWithPrefix(lines, prefix)) < 0)
-        return -1;
+        goto error;
 
-    return 0;
+    ret = 0;
+ error:
+    virStringListFree(lines);
+    return ret;
 }
 
 
@@ -1213,11 +1217,12 @@ virCgroupAddTaskController(virCgroupPtr group, pid_t pid, int controller)
 static int
 virCgroupSetPartitionSuffix(const char *path, char **res)
 {
-    VIR_AUTOPTR(virString) tokens = NULL;
+    char **tokens;
     size_t i;
+    int ret = -1;
 
     if (!(tokens = virStringSplit(path, "/", 0)))
-        return -1;
+        return ret;
 
     for (i = 0; tokens[i] != NULL; i++) {
         /* Whitelist the 3 top level fixed dirs
@@ -1236,18 +1241,22 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
             !strchr(tokens[i], '.')) {
             if (VIR_REALLOC_N(tokens[i],
                               strlen(tokens[i]) + strlen(".partition") + 1) < 0)
-                return -1;
+                goto cleanup;
             strcat(tokens[i], ".partition");
         }
 
         if (virCgroupPartitionEscape(&(tokens[i])) < 0)
-            return -1;
+            goto cleanup;
     }
 
     if (!(*res = virStringListJoin((const char **)tokens, "/")))
-        return -1;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    virStringListFree(tokens);
+    return ret;
 }
 
 
@@ -1268,10 +1277,10 @@ virCgroupNewPartition(const char *path,
                       int controllers,
                       virCgroupPtr *group)
 {
+    int ret = -1;
     VIR_AUTOFREE(char *) parentPath = NULL;
     VIR_AUTOFREE(char *) newPath = NULL;
-    VIR_AUTOPTR(virCgroup) parent = NULL;
-    VIR_AUTOPTR(virCgroup) tmpGroup = NULL;
+    virCgroupPtr parent = NULL;
     VIR_DEBUG("path=%s create=%d controllers=%x",
               path, create, controllers);
 
@@ -1283,31 +1292,35 @@ virCgroupNewPartition(const char *path,
     }
 
     if (virCgroupSetPartitionSuffix(path, &newPath) < 0)
-        return -1;
+        goto cleanup;
 
-    if (virCgroupNew(-1, newPath, NULL, controllers, &tmpGroup) < 0)
-        return -1;
+    if (virCgroupNew(-1, newPath, NULL, controllers, group) < 0)
+        goto cleanup;
 
     if (STRNEQ(newPath, "/")) {
         char *tmp;
         if (VIR_STRDUP(parentPath, newPath) < 0)
-            return -1;
+            goto cleanup;
 
         tmp = strrchr(parentPath, '/');
         tmp++;
         *tmp = '\0';
 
         if (virCgroupNew(-1, parentPath, NULL, controllers, &parent) < 0)
-            return -1;
+            goto cleanup;
 
-        if (virCgroupMakeGroup(parent, tmpGroup, create, VIR_CGROUP_NONE) < 0) {
-            virCgroupRemove(tmpGroup);
-            return -1;
+        if (virCgroupMakeGroup(parent, *group, create, VIR_CGROUP_NONE) < 0) {
+            virCgroupRemove(*group);
+            goto cleanup;
         }
     }
 
-    VIR_STEAL_PTR(*group, tmpGroup);
-    return 0;
+    ret = 0;
+ cleanup:
+    if (ret != 0)
+        virCgroupFree(*group);
+    virCgroupFree(parent);
+    return ret;
 }
 
 
@@ -1489,9 +1502,9 @@ virCgroupNewMachineSystemd(const char *name,
                            int controllers,
                            virCgroupPtr *group)
 {
+    int ret = -1;
     int rv;
-    VIR_AUTOPTR(virCgroup) init = NULL;
-    VIR_AUTOPTR(virCgroup) parent = NULL;
+    virCgroupPtr init, parent = NULL;
     VIR_AUTOFREE(char *) path = NULL;
     char *offset;
 
@@ -1518,10 +1531,12 @@ virCgroupNewMachineSystemd(const char *name,
 
     path = init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement;
     init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement = NULL;
+    virCgroupFree(init);
 
     if (!path || STREQ(path, "/") || path[0] != '/') {
         VIR_DEBUG("Systemd didn't setup its controller");
-        return -2;
+        ret = -2;
+        goto cleanup;
     }
 
     offset = path;
@@ -1531,7 +1546,7 @@ virCgroupNewMachineSystemd(const char *name,
                      NULL,
                      controllers,
                      &parent) < 0)
-        return -1;
+        goto cleanup;
 
 
     for (;;) {
@@ -1545,11 +1560,11 @@ virCgroupNewMachineSystemd(const char *name,
                          parent,
                          controllers,
                          &tmp) < 0)
-            return -1;
+            goto cleanup;
 
         if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_NONE) < 0) {
             virCgroupFree(tmp);
-            return -1;
+            goto cleanup;
         }
         if (t) {
             *t = '/';
@@ -1572,7 +1587,10 @@ virCgroupNewMachineSystemd(const char *name,
         }
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virCgroupFree(parent);
+    return ret;
 }
 
 
@@ -1593,7 +1611,8 @@ virCgroupNewMachineManual(const char *name,
                           int controllers,
                           virCgroupPtr *group)
 {
-    VIR_AUTOPTR(virCgroup) parent = NULL;
+    virCgroupPtr parent = NULL;
+    int ret = -1;
 
     VIR_DEBUG("Fallback to non-systemd setup");
     if (virCgroupNewPartition(partition,
@@ -1601,9 +1620,9 @@ virCgroupNewMachineManual(const char *name,
                               controllers,
                               &parent) < 0) {
         if (virCgroupNewIgnoreError())
-            return 0;
+            goto done;
 
-        return -1;
+        goto cleanup;
     }
 
     if (virCgroupNewDomainPartition(parent,
@@ -1611,7 +1630,7 @@ virCgroupNewMachineManual(const char *name,
                                     name,
                                     true,
                                     group) < 0)
-        return -1;
+        goto cleanup;
 
     if (virCgroupAddTask(*group, pidleader) < 0) {
         virErrorPtr saved = virSaveLastError();
@@ -1623,7 +1642,12 @@ virCgroupNewMachineManual(const char *name,
         }
     }
 
-    return 0;
+ done:
+    ret = 0;
+
+ cleanup:
+    virCgroupFree(parent);
+    return ret;
 }
 
 
@@ -2352,7 +2376,7 @@ static virOnceControl virCgroupMemoryOnce = VIR_ONCE_CONTROL_INITIALIZER;
 static void
 virCgroupMemoryOnceInit(void)
 {
-    VIR_AUTOPTR(virCgroup) group = NULL;
+    virCgroupPtr group;
     unsigned long long int mem_unlimited = 0ULL;
 
     if (virCgroupNew(-1, "/", NULL, -1, &group) < 0)
@@ -2366,6 +2390,7 @@ virCgroupMemoryOnceInit(void)
                                       "memory.limit_in_bytes",
                                       &mem_unlimited));
  cleanup:
+    virCgroupFree(group);
     virCgroupMemoryUnlimitedKB = mem_unlimited >> 10;
 }
 
@@ -2966,21 +2991,22 @@ virCgroupGetPercpuVcpuSum(virCgroupPtr group,
                           size_t nsum,
                           virBitmapPtr cpumap)
 {
+    int ret = -1;
     ssize_t i = -1;
+    virCgroupPtr group_vcpu = NULL;
 
     while ((i = virBitmapNextSetBit(guestvcpus, i)) >= 0) {
         VIR_AUTOFREE(char *) buf = NULL;
-        VIR_AUTOPTR(virCgroup) group_vcpu = NULL;
         char *pos;
         unsigned long long tmp;
         ssize_t j;
 
         if (virCgroupNewThread(group, VIR_CGROUP_THREAD_VCPU, i,
                                false, &group_vcpu) < 0)
-            return -1;
+            goto cleanup;
 
         if (virCgroupGetCpuacctPercpuUsage(group_vcpu, &buf) < 0)
-            return -1;
+            goto cleanup;
 
         pos = buf;
         for (j = virBitmapNextSetBit(cpumap, -1);
@@ -2989,13 +3015,18 @@ virCgroupGetPercpuVcpuSum(virCgroupPtr group,
             if (virStrToLong_ull(pos, &pos, 10, &tmp) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("cpuacct parse error"));
-                return -1;
+                goto cleanup;
             }
             sum_cpu_time[j] += tmp;
         }
+
+        virCgroupFree(group_vcpu);
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virCgroupFree(group_vcpu);
+    return ret;
 }
 
 
@@ -3027,6 +3058,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
                         unsigned int ncpus,
                         virBitmapPtr guestvcpus)
 {
+    int ret = -1;
     size_t i;
     int need_cpus, total_cpus;
     char *pos;
@@ -3035,7 +3067,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
-    VIR_AUTOPTR(virBitmap) cpumap = NULL;
+    virBitmapPtr cpumap = NULL;
 
     /* return the number of supported params */
     if (nparams == 0 && ncpus != 0) {
@@ -3052,19 +3084,21 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     total_cpus = virBitmapSize(cpumap);
 
     /* return total number of cpus */
-    if (ncpus == 0)
-        return total_cpus;
+    if (ncpus == 0) {
+        ret = total_cpus;
+        goto cleanup;
+    }
 
     if (start_cpu >= total_cpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("start_cpu %d larger than maximum of %d"),
                        start_cpu, total_cpus - 1);
-        return -1;
+        goto cleanup;
     }
 
     /* we get percpu cputime accounting info. */
     if (virCgroupGetCpuacctPercpuUsage(group, &buf))
-        return -1;
+        goto cleanup;
     pos = buf;
 
     /* return percpu cputime in index 0 */
@@ -3079,14 +3113,14 @@ virCgroupGetPercpuStats(virCgroupPtr group,
         } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cpuacct parse error"));
-            return -1;
+            goto cleanup;
         }
         if (i < start_cpu)
             continue;
         ent = &params[(i - start_cpu) * nparams + param_idx];
         if (virTypedParameterAssign(ent, VIR_DOMAIN_CPU_STATS_CPUTIME,
                                     VIR_TYPED_PARAM_ULLONG, cpu_time) < 0)
-            return -1;
+            goto cleanup;
     }
 
     /* return percpu vcputime in index 1 */
@@ -3094,10 +3128,10 @@ virCgroupGetPercpuStats(virCgroupPtr group,
 
     if (guestvcpus && param_idx < nparams) {
         if (VIR_ALLOC_N(sum_cpu_time, need_cpus) < 0)
-            return -1;
+            goto cleanup;
         if (virCgroupGetPercpuVcpuSum(group, guestvcpus, sum_cpu_time,
                                       need_cpus, cpumap) < 0)
-            return -1;
+            goto cleanup;
 
         for (i = start_cpu; i < need_cpus; i++) {
             if (virTypedParameterAssign(&params[(i - start_cpu) * nparams +
@@ -3105,13 +3139,17 @@ virCgroupGetPercpuStats(virCgroupPtr group,
                                         VIR_DOMAIN_CPU_STATS_VCPUTIME,
                                         VIR_TYPED_PARAM_ULLONG,
                                         sum_cpu_time[i]) < 0)
-                return -1;
+                goto cleanup;
         }
 
         param_idx++;
     }
 
-    return param_idx;
+    ret = param_idx;
+
+ cleanup:
+    virBitmapFree(cpumap);
+    return ret;
 }
 
 
@@ -3467,18 +3505,23 @@ int
 virCgroupKill(virCgroupPtr group, int signum)
 {
     VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);
+    int ret;
     /* The 'tasks' file in cgroups can contain duplicated
      * pids, so we use a hash to track which we've already
      * killed.
      */
-    VIR_AUTOPTR(virHashTable) pids = virHashCreateFull(100,
-                                                       NULL,
-                                                       virCgroupPidCode,
-                                                       virCgroupPidEqual,
-                                                       virCgroupPidCopy,
-                                                       NULL);
+    virHashTablePtr pids = virHashCreateFull(100,
+                                             NULL,
+                                             virCgroupPidCode,
+                                             virCgroupPidEqual,
+                                             virCgroupPidCopy,
+                                             NULL);
 
-    return virCgroupKillInternal(group, signum, pids);
+    ret = virCgroupKillInternal(group, signum, pids);
+
+    virHashFree(pids);
+
+    return ret;
 }
 
 
@@ -3493,6 +3536,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     bool killedAny = false;
     VIR_AUTOFREE(char *) keypath = NULL;
     DIR *dp = NULL;
+    virCgroupPtr subgroup = NULL;
     struct dirent *ent;
     int direrr;
     VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
@@ -3517,8 +3561,6 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     }
 
     while ((direrr = virDirRead(dp, &ent, keypath)) > 0) {
-        VIR_AUTOPTR(virCgroup) subgroup = NULL;
-
         if (ent->d_type != DT_DIR)
             continue;
 
@@ -3535,6 +3577,8 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
 
         if (dormdir)
             virCgroupRemove(subgroup);
+
+        virCgroupFree(subgroup);
     }
     if (direrr < 0)
         goto cleanup;
@@ -3543,6 +3587,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     ret = killedAny ? 1 : 0;
 
  cleanup:
+    virCgroupFree(subgroup);
     VIR_DIR_CLOSE(dp);
     return ret;
 }
@@ -3551,15 +3596,20 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
 int
 virCgroupKillRecursive(virCgroupPtr group, int signum)
 {
+    int ret;
     VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);
-    VIR_AUTOPTR(virHashTable) pids = virHashCreateFull(100,
-                                                       NULL,
-                                                       virCgroupPidCode,
-                                                       virCgroupPidEqual,
-                                                       virCgroupPidCopy,
-                                                       NULL);
+    virHashTablePtr pids = virHashCreateFull(100,
+                                             NULL,
+                                             virCgroupPidCode,
+                                             virCgroupPidEqual,
+                                             virCgroupPidCopy,
+                                             NULL);
 
-    return virCgroupKillRecursiveInternal(group, signum, pids, false);
+    ret = virCgroupKillRecursiveInternal(group, signum, pids, false);
+
+    virHashFree(pids);
+
+    return ret;
 }
 
 
@@ -3894,12 +3944,15 @@ virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller)
 bool
 virCgroupControllerAvailable(int controller)
 {
-    VIR_AUTOPTR(virCgroup) cgroup = NULL;
+    virCgroupPtr cgroup;
+    bool ret = false;
 
     if (virCgroupNewSelf(&cgroup) < 0)
-        return false;
+        return ret;
 
-    return virCgroupHasController(cgroup, controller);
+    ret = virCgroupHasController(cgroup, controller);
+    virCgroupFree(cgroup);
+    return ret;
 }
 
 #else /* !VIR_CGROUP_SUPPORTED */
@@ -4687,7 +4740,7 @@ virCgroupDelThread(virCgroupPtr cgroup,
                    virCgroupThreadName nameval,
                    int idx)
 {
-    VIR_AUTOPTR(virCgroup) new_cgroup = NULL;
+    virCgroupPtr new_cgroup = NULL;
 
     if (cgroup) {
         if (virCgroupNewThread(cgroup, nameval, idx, false, &new_cgroup) < 0)
@@ -4695,6 +4748,7 @@ virCgroupDelThread(virCgroupPtr cgroup,
 
         /* Remove the offlined cgroup */
         virCgroupRemove(new_cgroup);
+        virCgroupFree(new_cgroup);
     }
 
     return 0;
