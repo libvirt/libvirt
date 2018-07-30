@@ -19141,7 +19141,7 @@ virDomainCachetuneDefParseCache(xmlXPathContextPtr ctxt,
                                   ULLONG_MAX, true) < 0)
         goto cleanup;
 
-    if (virResctrlAllocSetSize(alloc, level, type, cache, size) < 0)
+    if (virResctrlAllocSetCacheSize(alloc, level, type, cache, size) < 0)
         goto cleanup;
 
     ret = 0;
@@ -27097,9 +27097,9 @@ virDomainCachetuneDefFormat(virBufferPtr buf,
     int ret = -1;
 
     virBufferSetChildIndent(&childrenBuf, buf);
-    virResctrlAllocForeachSize(cachetune->alloc,
-                               virDomainCachetuneDefFormatHelper,
-                               &childrenBuf);
+    virResctrlAllocForeachCache(cachetune->alloc,
+                                virDomainCachetuneDefFormatHelper,
+                                &childrenBuf);
 
 
     if (virBufferCheckError(&childrenBuf) < 0)

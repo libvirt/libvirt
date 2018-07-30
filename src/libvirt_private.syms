@@ -2647,14 +2647,14 @@ virCacheTypeToString;
 virResctrlAllocAddPID;
 virResctrlAllocCreate;
 virResctrlAllocDeterminePath;
-virResctrlAllocForeachSize;
+virResctrlAllocForeachCache;
 virResctrlAllocFormat;
 virResctrlAllocGetID;
 virResctrlAllocGetUnused;
 virResctrlAllocNew;
 virResctrlAllocRemove;
+virResctrlAllocSetCacheSize;
 virResctrlAllocSetID;
-virResctrlAllocSetSize;
 virResctrlInfoGetCache;
 virResctrlInfoNew;
 

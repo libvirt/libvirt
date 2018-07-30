@@ -67,11 +67,11 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
 typedef struct _virResctrlAlloc virResctrlAlloc;
 typedef virResctrlAlloc *virResctrlAllocPtr;
 
-typedef int virResctrlAllocForeachSizeCallback(unsigned int level,
-                                               virCacheType type,
-                                               unsigned int cache,
-                                               unsigned long long size,
-                                               void *opaque);
+typedef int virResctrlAllocForeachCacheCallback(unsigned int level,
+                                                virCacheType type,
+                                                unsigned int cache,
+                                                unsigned long long size,
+                                                void *opaque);
 
 virResctrlAllocPtr
 virResctrlAllocNew(void);
@@ -80,16 +80,16 @@ bool
 virResctrlAllocIsEmpty(virResctrlAllocPtr alloc);
 
 int
-virResctrlAllocSetSize(virResctrlAllocPtr alloc,
-                       unsigned int level,
-                       virCacheType type,
-                       unsigned int cache,
-                       unsigned long long size);
+virResctrlAllocSetCacheSize(virResctrlAllocPtr alloc,
+                            unsigned int level,
+                            virCacheType type,
+                            unsigned int cache,
+                            unsigned long long size);
 
 int
-virResctrlAllocForeachSize(virResctrlAllocPtr alloc,
-                           virResctrlAllocForeachSizeCallback cb,
-                           void *opaque);
+virResctrlAllocForeachCache(virResctrlAllocPtr alloc,
+                            virResctrlAllocForeachCacheCallback cb,
+                            void *opaque);
 
 int
 virResctrlAllocSetID(virResctrlAllocPtr alloc,

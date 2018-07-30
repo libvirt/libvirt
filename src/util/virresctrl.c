@@ -754,11 +754,11 @@ virResctrlAllocCheckCollision(virResctrlAllocPtr alloc,
 
 
 int
-virResctrlAllocSetSize(virResctrlAllocPtr alloc,
-                       unsigned int level,
-                       virCacheType type,
-                       unsigned int cache,
-                       unsigned long long size)
+virResctrlAllocSetCacheSize(virResctrlAllocPtr alloc,
+                            unsigned int level,
+                            virCacheType type,
+                            unsigned int cache,
+                            unsigned long long size)
 {
     if (virResctrlAllocCheckCollision(alloc, level, type, cache)) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -773,9 +773,9 @@ virResctrlAllocSetSize(virResctrlAllocPtr alloc,
 
 
 int
-virResctrlAllocForeachSize(virResctrlAllocPtr alloc,
-                           virResctrlAllocForeachSizeCallback cb,
-                           void *opaque)
+virResctrlAllocForeachCache(virResctrlAllocPtr alloc,
+                            virResctrlAllocForeachCacheCallback cb,
+                            void *opaque)
 {
     int ret = 0;
     unsigned int level = 0;
@@ -939,9 +939,9 @@ virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
 
 
 static int
-virResctrlAllocParseProcessLine(virResctrlInfoPtr resctrl,
-                                virResctrlAllocPtr alloc,
-                                char *line)
+virResctrlAllocParseCacheLine(virResctrlInfoPtr resctrl,
+                              virResctrlAllocPtr alloc,
+                              char *line)
 {
     char **caches = NULL;
     char *tmp = NULL;
@@ -1009,7 +1009,7 @@ virResctrlAllocParse(virResctrlInfoPtr resctrl,
 
     lines = virStringSplitCount(schemata, "\n", 0, &nlines);
     for (i = 0; i < nlines; i++) {
-        if (virResctrlAllocParseProcessLine(resctrl, alloc, lines[i]) < 0)
+        if (virResctrlAllocParseCacheLine(resctrl, alloc, lines[i]) < 0)
             goto cleanup;
     }
 
@@ -1401,8 +1401,8 @@ virResctrlAllocCopyMasks(virResctrlAllocPtr dst,
  * transforming `sizes` into `masks`.
  */
 static int
-virResctrlAllocMasksAssign(virResctrlInfoPtr resctrl,
-                           virResctrlAllocPtr alloc)
+virResctrlAllocAssign(virResctrlInfoPtr resctrl,
+                      virResctrlAllocPtr alloc)
 {
     int ret = -1;
     unsigned int level = 0;
@@ -1526,7 +1526,7 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
     if (lockfd < 0)
         goto cleanup;
 
-    if (virResctrlAllocMasksAssign(resctrl, alloc) < 0)
+    if (virResctrlAllocAssign(resctrl, alloc) < 0)
         goto cleanup;
 
     alloc_str = virResctrlAllocFormat(alloc);
