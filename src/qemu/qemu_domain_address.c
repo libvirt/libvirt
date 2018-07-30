@@ -1701,10 +1701,11 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
            goto cleanup;
     }
 
-    if (def->nvideos > 0) {
+    if (def->nvideos > 0 &&
+        def->videos[0]->type != VIR_DOMAIN_VIDEO_TYPE_NONE) {
         /* NB: unlike the pc machinetypes, on q35 machinetypes the
          * integrated devices are at slot 0x1f, so when qemu looks for
-         * the first free lot for the first VGA, it will always be at
+         * the first free slot for the first VGA, it will always be at
          * slot 1 (which was used up by the integrated PIIX3 devices
          * on pc machinetypes).
          */
