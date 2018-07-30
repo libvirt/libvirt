@@ -19079,6 +19079,38 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
 
 
 static int
+virDomainResctrlParseVcpus(virDomainDefPtr def,
+                           xmlNodePtr node,
+                           virBitmapPtr *vcpus)
+{
+    char *vcpus_str = NULL;
+    int ret = -1;
+
+    vcpus_str = virXMLPropString(node, "vcpus");
+    if (!vcpus_str) {
+        virReportError(VIR_ERR_XML_ERROR, _("Missing %s attribute 'vcpus'"),
+                       node->name);
+        goto cleanup;
+    }
+    if (virBitmapParse(vcpus_str, vcpus, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid %s attribute 'vcpus' value '%s'"),
+                       node->name, vcpus_str);
+        goto cleanup;
+    }
+
+    /* We need to limit the bitmap to number of vCPUs.  If there's nothing left,
+     * then we can just clean up and return 0 immediately */
+    virBitmapShrink(*vcpus, def->maxvcpus);
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(vcpus_str);
+    return ret;
+}
+
+
+static int
 virDomainCachetuneDefParseCache(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
                                 virResctrlAllocPtr alloc)
@@ -19178,22 +19210,8 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     if (VIR_ALLOC(tmp_resctrl) < 0)
         goto cleanup;
 
-    vcpus_str = virXMLPropString(node, "vcpus");
-    if (!vcpus_str) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing cachetune attribute 'vcpus'"));
+    if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
         goto cleanup;
-    }
-    if (virBitmapParse(vcpus_str, &vcpus, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid cachetune attribute 'vcpus' value '%s'"),
-                       vcpus_str);
-        goto cleanup;
-    }
-
-    /* We need to limit the bitmap to number of vCPUs.  If there's nothing left,
-     * then we can just clean up and return 0 immediately */
-    virBitmapShrink(vcpus, def->maxvcpus);
 
     if (virBitmapIsAllClear(vcpus)) {
         ret = 0;
