@@ -51,6 +51,9 @@
       <optional>
         <ref name='cache'/>
       </optional>
+      <optional>
+        <ref name='memory_bandwidth'/>
+      </optional>
       <zeroOrMore>
         <ref name='secmodel'/>
       </zeroOrMore>
@@ -324,6 +327,36 @@
         <value>data</value>
       </choice>
     </attribute>
+  </define>
+
+  <define name='memory_bandwidth'>
+    <element name='memory_bandwidth'>
+      <oneOrMore>
+        <element name='node'>
+          <attribute name='id'>
+            <ref name='unsignedInt'/>
+          </attribute>
+          <attribute name='cpus'>
+            <ref name='cpuset'/>
+          </attribute>
+          <zeroOrMore>
+            <element name='control'>
+              <attribute name='granularity'>
+                <ref name='unsignedInt'/>
+              </attribute>
+            <optional>
+              <attribute name='min'>
+                <ref name='unsignedInt'/>
+            </attribute>
+            </optional>
+              <attribute name='maxAllocs'>
+                <ref name='unsignedInt'/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </element>
+      </oneOrMore>
+    </element>
   </define>
 
   <define name='guestcaps'>

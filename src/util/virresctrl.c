@@ -630,6 +630,26 @@ virResctrlInfoIsEmpty(virResctrlInfoPtr resctrl)
 
 
 int
+virResctrlInfoGetMemoryBandwidth(virResctrlInfoPtr resctrl,
+                                 unsigned int level,
+                                 virResctrlInfoMemBWPerNodePtr control)
+{
+    virResctrlInfoMemBWPtr membw_info = resctrl->membw_info;
+
+    if (!membw_info)
+        return 0;
+
+    if (membw_info->last_level_cache != level)
+        return 0;
+
+    control->granularity = membw_info->bandwidth_granularity;
+    control->min = membw_info->min_bandwidth;
+    control->max_allocation = membw_info->max_allocation;
+    return 1;
+}
+
+
+int
 virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
                        unsigned int level,
                        unsigned long long size,

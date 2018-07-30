@@ -151,6 +151,14 @@ struct _virCapsHostCacheBank {
     virResctrlInfoPerCachePtr *controls;
 };
 
+typedef struct _virCapsHostMemBWNode virCapsHostMemBWNode;
+typedef virCapsHostMemBWNode *virCapsHostMemBWNodePtr;
+struct _virCapsHostMemBWNode {
+    unsigned int id;
+    virBitmapPtr cpus;  /* All CPUs that belong to this node*/
+    virResctrlInfoMemBWPerNode control;
+};
+
 typedef struct _virCapsHost virCapsHost;
 typedef virCapsHost *virCapsHostPtr;
 struct _virCapsHost {
@@ -174,6 +182,9 @@ struct _virCapsHost {
 
     size_t ncaches;
     virCapsHostCacheBankPtr *caches;
+
+    size_t nnodes;
+    virCapsHostMemBWNodePtr *nodes;
 
     size_t nsecModels;
     virCapsHostSecModelPtr secModels;

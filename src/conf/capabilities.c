@@ -198,6 +198,16 @@ virCapabilitiesFreeNUMAInfo(virCapsPtr caps)
 }
 
 static void
+virCapsHostMemBWNodeFree(virCapsHostMemBWNodePtr ptr)
+{
+    if (!ptr)
+        return;
+
+    virBitmapFree(ptr->cpus);
+    VIR_FREE(ptr);
+}
+
+static void
 virCapabilitiesClearSecModel(virCapsHostSecModelPtr secmodel)
 {
     size_t i;
@@ -238,6 +248,10 @@ virCapsDispose(void *object)
     for (i = 0; i < caps->host.ncaches; i++)
         virCapsHostCacheBankFree(caps->host.caches[i]);
     VIR_FREE(caps->host.caches);
+
+    for (i = 0; i < caps->host.nnodes; i++)
+        virCapsHostMemBWNodeFree(caps->host.nodes[i]);
+    VIR_FREE(caps->host.nodes);
 
     VIR_FREE(caps->host.netprefix);
     VIR_FREE(caps->host.pagesSize);
@@ -946,6 +960,58 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
     return 0;
 }
 
+static int
+virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
+                                     size_t nnodes,
+                                     virCapsHostMemBWNodePtr *nodes)
+{
+    size_t i = 0;
+    virBuffer controlBuf = VIR_BUFFER_INITIALIZER;
+
+    if (!nnodes)
+        return 0;
+
+    virBufferAddLit(buf, "<memory_bandwidth>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < nnodes; i++) {
+        virCapsHostMemBWNodePtr node = nodes[i];
+        virResctrlInfoMemBWPerNodePtr control = &node->control;
+        char *cpus_str = virBitmapFormat(node->cpus);
+
+        if (!cpus_str)
+            return -1;
+
+        virBufferAsprintf(buf,
+                          "<node id='%u' cpus='%s'",
+                          node->id, cpus_str);
+        VIR_FREE(cpus_str);
+
+        virBufferSetChildIndent(&controlBuf, buf);
+        virBufferAsprintf(&controlBuf,
+                          "<control granularity='%u' min ='%u' "
+                          "maxAllocs='%u'/>\n",
+                          control->granularity, control->min,
+                          control->max_allocation);
+
+        if (virBufferCheckError(&controlBuf) < 0)
+            return -1;
+
+        if (virBufferUse(&controlBuf)) {
+            virBufferAddLit(buf, ">\n");
+            virBufferAddBuffer(buf, &controlBuf);
+            virBufferAddLit(buf, "</node>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</memory_bandwidth>\n");
+
+    return 0;
+}
+
 /**
  * virCapabilitiesFormatXML:
  * @caps: capabilities to format
@@ -1047,6 +1113,10 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
     if (virCapabilitiesFormatCaches(&buf, caps->host.ncaches,
                                     caps->host.caches) < 0)
+        goto error;
+
+    if (virCapabilitiesFormatMemoryBandwidth(&buf, caps->host.nnodes,
+                                             caps->host.nodes) < 0)
         goto error;
 
     for (i = 0; i < caps->host.nsecModels; i++) {
@@ -1591,6 +1661,40 @@ virCapabilitiesInitResctrl(virCapsPtr caps)
 }
 
 
+static int
+virCapabilitiesInitResctrlMemory(virCapsPtr caps)
+{
+    virCapsHostMemBWNodePtr node = NULL;
+    size_t i = 0;
+    int ret = -1;
+
+    for (i = 0; i < caps->host.ncaches; i++) {
+        virCapsHostCacheBankPtr bank = caps->host.caches[i];
+        if (VIR_ALLOC(node) < 0)
+            goto cleanup;
+
+        if (virResctrlInfoGetMemoryBandwidth(caps->host.resctrl,
+                                             bank->level, &node->control) > 0) {
+            node->id = bank->id;
+            if (!(node->cpus = virBitmapNewCopy(bank->cpus)))
+                goto cleanup;
+
+            if (VIR_APPEND_ELEMENT(caps->host.nodes,
+                                   caps->host.nnodes, node) < 0) {
+                goto cleanup;
+            }
+        }
+        virCapsHostMemBWNodeFree(node);
+        node = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    virCapsHostMemBWNodeFree(node);
+    return ret;
+}
+
+
 int
 virCapabilitiesInitCaches(virCapsPtr caps)
 {
@@ -1719,6 +1823,9 @@ virCapabilitiesInitCaches(virCapsPtr caps)
      * 'index1' and 'index3' but no 'index2'). */
     qsort(caps->host.caches, caps->host.ncaches,
           sizeof(*caps->host.caches), virCapsHostCacheBankSorter);
+
+    if (virCapabilitiesInitResctrlMemory(caps) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
