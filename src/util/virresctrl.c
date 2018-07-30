@@ -36,9 +36,9 @@ VIR_LOG_INIT("util.virresctrl")
 
 
 /* Resctrl is short for Resource Control.  It might be implemented for various
- * resources, but at the time of this writing this is only supported for cache
- * allocation technology (aka CAT).  Hence the reson for leaving 'Cache' out of
- * all the structure and function names for now (can be added later if needed.
+ * resources. Currently this supports cache allocation technology (aka CAT) and
+ * memory bandwidth allocation (aka MBA). More resources technologies may be
+ * added in the future.
  */
 
 
@@ -88,6 +88,9 @@ typedef virResctrlAllocPerType *virResctrlAllocPerTypePtr;
 
 typedef struct _virResctrlAllocPerLevel virResctrlAllocPerLevel;
 typedef virResctrlAllocPerLevel *virResctrlAllocPerLevelPtr;
+
+typedef struct _virResctrlAllocMemBW virResctrlAllocMemBW;
+typedef virResctrlAllocMemBW *virResctrlAllocMemBWPtr;
 
 
 /* Class definitions and initializations */
@@ -180,7 +183,10 @@ virResctrlInfoDispose(void *obj)
  * consequently a directory under /sys/fs/resctrl).  Since it can have multiple
  * parts of multiple caches allocated it is represented as bunch of nested
  * sparse arrays (by sparse I mean array of pointers so that each might be NULL
- * in case there is no allocation for that particular one (level, cache, ...)).
+ * in case there is no allocation for that particular cache allocation (level,
+ * cache, ...) or memory allocation for particular node).
+ *
+ * =====Cache allocation technology (CAT)=====
  *
  * Since one allocation can be made for caches on different levels, the first
  * nested sparse array is of types virResctrlAllocPerLevel.  For example if you
@@ -205,6 +211,17 @@ virResctrlInfoDispose(void *obj)
  * all of them.  While doing that we store the bitmask in a sparse array of
  * virBitmaps named `masks` indexed the same way as `sizes`.  The upper bounds
  * of the sparse arrays are stored in nmasks or nsizes, respectively.
+ + *
+ * =====Memory Bandwidth allocation technology (MBA)=====
+ *
+ * The memory bandwidth allocation support in virResctrlAlloc works in the
+ * same fashion as CAT. However, memory bandwidth controller doesn't have a
+ * hierarchy organization as cache, each node have one memory bandwidth
+ * controller to memory bandwidth distribution. The number of memory bandwidth
+ * controller is identical with number of last level cache. So MBA also employs
+ * a sparse array to represent whether a memory bandwidth allocation happens
+ * on corresponding node. The available memory controller number is collected
+ * in 'virResctrlInfo'.
  */
 struct _virResctrlAllocPerType {
     /* There could be bool saying whether this is set or not, but since everything
@@ -225,11 +242,23 @@ struct _virResctrlAllocPerLevel {
      * VIR_CACHE_TYPE_LAST number of items */
 };
 
+/*
+ * virResctrlAllocMemBW represents one memory bandwidth allocation.
+ * Since it can have several last level caches in a NUMA system, it is
+ * also represented as a nested sparse arrays as virRestrlAllocPerLevel.
+ */
+struct _virResctrlAllocMemBW {
+    unsigned int **bandwidths;
+    size_t nbandwidths;
+};
+
 struct _virResctrlAlloc {
     virObject parent;
 
     virResctrlAllocPerLevelPtr *levels;
     size_t nlevels;
+
+    virResctrlAllocMemBWPtr mem_bw;
 
     /* The identifier (any unique string for now) */
     char *id;
@@ -272,6 +301,13 @@ virResctrlAllocDispose(void *obj)
         }
         VIR_FREE(level->types);
         VIR_FREE(level);
+    }
+
+    if (alloc->mem_bw) {
+        virResctrlAllocMemBWPtr mem_bw = alloc->mem_bw;
+        for (i = 0; i < mem_bw->nbandwidths; i++)
+            VIR_FREE(mem_bw->bandwidths[i]);
+        VIR_FREE(alloc->mem_bw);
     }
 
     VIR_FREE(alloc->id);
@@ -691,6 +727,9 @@ virResctrlAllocIsEmpty(virResctrlAllocPtr alloc)
 
     if (!alloc)
         return true;
+
+    if (alloc->mem_bw)
+        return false;
 
     for (i = 0; i < alloc->nlevels; i++) {
         virResctrlAllocPerLevelPtr a_level = alloc->levels[i];
@@ -1263,6 +1302,22 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
                 if (virResctrlAllocUpdateMask(ret, i, j, k, mask) < 0)
                     goto error;
             }
+        }
+    }
+
+    /* set default free memory bandwidth to 100%*/
+    if (info->membw_info) {
+        if (VIR_ALLOC(ret->mem_bw) < 0)
+            goto error;
+
+        if (VIR_EXPAND_N(ret->mem_bw->bandwidths, ret->mem_bw->nbandwidths,
+                         info->membw_info->max_id + 1) < 0)
+            goto error;
+
+        for (i = 0; i < ret->mem_bw->nbandwidths; i++) {
+            if (VIR_ALLOC(ret->mem_bw->bandwidths[i]) < 0)
+                goto error;
+            *(ret->mem_bw->bandwidths[i]) = 100;
         }
     }
 
