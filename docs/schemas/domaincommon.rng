@@ -983,6 +983,23 @@
             </oneOrMore>
           </element>
         </zeroOrMore>
+        <zeroOrMore>
+          <element name="memorytune">
+            <attribute name="vcpus">
+              <ref name='cpuset'/>
+            </attribute>
+            <oneOrMore>
+              <element name="node">
+                <attribute name="id">
+                  <ref name='unsignedInt'/>
+                </attribute>
+                <attribute name="bandwidth">
+                  <ref name='unsignedInt'/>
+                </attribute>
+              </element>
+            </oneOrMore>
+          </element>
+        </zeroOrMore>
       </interleave>
     </element>
   </define>

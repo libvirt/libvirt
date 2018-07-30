@@ -19418,6 +19418,129 @@ virDomainDefParseCaps(virDomainDefPtr def,
 }
 
 
+static int
+virDomainMemorytuneDefParseMemory(xmlXPathContextPtr ctxt,
+                                  xmlNodePtr node,
+                                  virResctrlAllocPtr alloc)
+{
+    xmlNodePtr oldnode = ctxt->node;
+    unsigned int id;
+    unsigned int bandwidth;
+    char *tmp = NULL;
+    int ret = -1;
+
+    ctxt->node = node;
+
+    tmp = virXMLPropString(node, "id");
+    if (!tmp) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing memorytune attribute 'id'"));
+        goto cleanup;
+    }
+    if (virStrToLong_uip(tmp, NULL, 10, &id) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid memorytune attribute 'id' value '%s'"),
+                       tmp);
+        goto cleanup;
+    }
+    VIR_FREE(tmp);
+
+    tmp = virXMLPropString(node, "bandwidth");
+    if (!tmp) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing memorytune attribute 'bandwidth'"));
+        goto cleanup;
+    }
+    if (virStrToLong_uip(tmp, NULL, 10, &bandwidth) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid memorytune attribute 'bandwidth' value '%s'"),
+                       tmp);
+        goto cleanup;
+    }
+    VIR_FREE(tmp);
+    if (virResctrlAllocSetMemoryBandwidth(alloc, id, bandwidth) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    ctxt->node = oldnode;
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
+static int
+virDomainMemorytuneDefParse(virDomainDefPtr def,
+                            xmlXPathContextPtr ctxt,
+                            xmlNodePtr node,
+                            unsigned int flags)
+{
+    xmlNodePtr oldnode = ctxt->node;
+    xmlNodePtr *nodes = NULL;
+    virBitmapPtr vcpus = NULL;
+    virResctrlAllocPtr alloc = NULL;
+    ssize_t i = 0;
+    int n;
+    int ret = -1;
+    bool new_alloc = false;
+
+    ctxt->node = node;
+
+    if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
+        goto cleanup;
+
+    if (virBitmapIsAllClear(vcpus)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((n = virXPathNodeSet("./node", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot extract memory nodes under memorytune"));
+        goto cleanup;
+    }
+
+    if (virDomainResctrlVcpuMatch(def, vcpus, &alloc) < 0)
+        goto cleanup;
+
+    if (!alloc) {
+        alloc = virResctrlAllocNew();
+        if (!alloc)
+            goto cleanup;
+        new_alloc = true;
+    } else {
+        alloc = virObjectRef(alloc);
+    }
+
+    for (i = 0; i < n; i++) {
+        if (virDomainMemorytuneDefParseMemory(ctxt, nodes[i], alloc) < 0)
+            goto cleanup;
+    }
+    if (virResctrlAllocIsEmpty(alloc)) {
+        ret = 0;
+        goto cleanup;
+    }
+    /*
+     * If this is a new allocation, format ID and append to resctrl, otherwise
+     * just update the existing alloc information, which is done in above
+     * virDomainMemorytuneDefParseMemory */
+    if (new_alloc) {
+        if (virDomainResctrlAppend(def, node, alloc, vcpus, flags) < 0)
+            goto cleanup;
+        vcpus = NULL;
+        alloc = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    ctxt->node = oldnode;
+    virObjectUnref(alloc);
+    virBitmapFree(vcpus);
+    VIR_FREE(nodes);
+    return ret;
+}
+
+
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlNodePtr root,
@@ -19893,6 +20016,18 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     for (i = 0; i < n; i++) {
         if (virDomainCachetuneDefParse(def, ctxt, nodes[i], flags) < 0)
+            goto error;
+    }
+    VIR_FREE(nodes);
+
+    if ((n = virXPathNodeSet("./cputune/memorytune", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot extract memorytune nodes"));
+        goto error;
+    }
+
+    for (i = 0; i < n; i++) {
+        if (virDomainMemorytuneDefParse(def, ctxt, nodes[i], flags) < 0)
             goto error;
     }
     VIR_FREE(nodes);
@@ -27199,6 +27334,68 @@ virDomainCachetuneDefFormat(virBufferPtr buf,
 
 
 static int
+virDomainMemorytuneDefFormatHelper(unsigned int id,
+                                   unsigned int bandwidth,
+                                   void *opaque)
+{
+    virBufferPtr buf = opaque;
+
+    virBufferAsprintf(buf,
+                      "<node id='%u' bandwidth='%u'/>\n",
+                      id, bandwidth);
+    return 0;
+}
+
+
+static int
+virDomainMemorytuneDefFormat(virBufferPtr buf,
+                            virDomainResctrlDefPtr resctrl,
+                            unsigned int flags)
+{
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    char *vcpus = NULL;
+    int ret = -1;
+
+    virBufferSetChildIndent(&childrenBuf, buf);
+    if (virResctrlAllocForeachMemory(resctrl->alloc,
+                                     virDomainMemorytuneDefFormatHelper,
+                                     &childrenBuf) < 0)
+        goto cleanup;
+
+    if (virBufferCheckError(&childrenBuf) < 0)
+        goto cleanup;
+
+    if (!virBufferUse(&childrenBuf)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    vcpus = virBitmapFormat(resctrl->vcpus);
+    if (!vcpus)
+        goto cleanup;
+
+    virBufferAsprintf(buf, "<memorytune vcpus='%s'", vcpus);
+
+    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
+        const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
+        if (!alloc_id)
+            goto cleanup;
+
+        virBufferAsprintf(buf, " id='%s'", alloc_id);
+    }
+    virBufferAddLit(buf, ">\n");
+
+    virBufferAddBuffer(buf, &childrenBuf);
+    virBufferAddLit(buf, "</memorytune>\n");
+
+    ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&childrenBuf);
+    VIR_FREE(vcpus);
+    return ret;
+}
+
+static int
 virDomainCputuneDefFormat(virBufferPtr buf,
                           virDomainDefPtr def,
                           unsigned int flags)
@@ -27302,6 +27499,9 @@ virDomainCputuneDefFormat(virBufferPtr buf,
 
     for (i = 0; i < def->nresctrls; i++)
         virDomainCachetuneDefFormat(&childrenBuf, def->resctrls[i], flags);
+
+    for (i = 0; i < def->nresctrls; i++)
+        virDomainMemorytuneDefFormat(&childrenBuf, def->resctrls[i], flags);
 
     if (virBufferCheckError(&childrenBuf) < 0)
         return -1;

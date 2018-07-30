@@ -759,6 +759,10 @@
       &lt;cache id='0' level='3' type='both' size='3' unit='MiB'/&gt;
       &lt;cache id='1' level='3' type='both' size='3' unit='MiB'/&gt;
     &lt;/cachetune&gt;
+    &lt;memorytune vcpus='0-3'&gt;
+      &lt;node id='0' bandwidth='60'/&gt;
+    &lt;/memorytune&gt;
+
   &lt;/cputune&gt;
   ...
 &lt;/domain&gt;
@@ -932,7 +936,9 @@
         size and required granularity are reported as well. The required
         attribute <code>vcpus</code> specifies to which vCPUs this allocation
         applies. A vCPU can only be member of one <code>cachetune</code> element
-        allocations. Supported subelements are:
+        allocation. The vCPUs specified by cachetune can be identical with those
+        in memorytune, however they are not allowed to overlap.
+        Supported subelements are:
         <dl>
           <dt><code>cache</code></dt>
           <dd>
@@ -972,7 +978,38 @@
             </dl>
           </dd>
         </dl>
+      </dd>
 
+      <dt><code>memorytune</code><span class="since">Since 4.7.0</span></dt>
+      <dd>
+        Optional <code>memorytune</code> element can control allocations for
+        memory bandwidth using the resctrl on the host. Whether or not is this
+        supported can be gathered from capabilities where some limitations like
+        minimum bandwidth and required granularity are reported as well. The
+        required attribute <code>vcpus</code> specifies to which vCPUs this
+        allocation applies. A vCPU can only be member of one
+        <code>memorytune</code> element allocation. The <code>vcpus</code> specified
+        by <code>memorytune</code> can be identical to those specified by
+        <code>cachetune</code>. However they are not allowed to overlap each other.
+        Supported subelements are:
+        <dl>
+          <dt><code>node</code></dt>
+          <dd>
+            This element controls the allocation of CPU memory bandwidth and has the
+            following attributes:
+            <dl>
+              <dt><code>id</code></dt>
+              <dd>
+                Host node id from which to allocate memory bandwidth.
+              </dd>
+              <dt><code>bandwidth</code></dt>
+              <dd>
+                The memory bandwidth to allocate from this node. The value by default
+                is in percentage.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
       </dd>
     </dl>
 
