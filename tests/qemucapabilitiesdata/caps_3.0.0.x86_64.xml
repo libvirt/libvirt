@@ -215,10 +215,10 @@
   <flag name='usb-storage.werror'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
-  <version>2012090</version>
+  <version>3000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>438109</microcodeVersion>
-  <package>v3.0.0-rc0-31-g633e824037</package>
+  <microcodeVersion>427797</microcodeVersion>
+  <package>v3.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='phys-bits' type='number' value='0'/>
@@ -327,6 +327,7 @@
     <property name='syscall' type='boolean' value='true' migratable='yes'/>
     <property name='level' type='number' value='13'/>
     <property name='avx512dq' type='boolean' value='false'/>
+    <property name='x-migrate-smi-count' type='boolean' value='true' migratable='yes'/>
     <property name='svm' type='boolean' value='false'/>
     <property name='full-cpuid-auto-level' type='boolean' value='true' migratable='yes'/>
     <property name='hv-reset' type='boolean' value='false'/>
@@ -580,6 +581,7 @@
     <property name='syscall' type='boolean' value='true' migratable='yes'/>
     <property name='level' type='number' value='13'/>
     <property name='avx512dq' type='boolean' value='false'/>
+    <property name='x-migrate-smi-count' type='boolean' value='true' migratable='yes'/>
     <property name='svm' type='boolean' value='true' migratable='yes'/>
     <property name='full-cpuid-auto-level' type='boolean' value='true' migratable='yes'/>
     <property name='hv-reset' type='boolean' value='false'/>

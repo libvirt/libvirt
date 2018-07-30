@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 90,
-      "minor": 12,
-      "major": 2
+      "micro": 0,
+      "minor": 0,
+      "major": 3
     },
-    "package": "v3.0.0-rc0-31-g633e824037"
+    "package": "v3.0.0"
   },
   "id": "libvirt-2"
 }
@@ -175,7 +175,7 @@
       "name": "system_wakeup"
     },
     {
-      "name": "exit-preconfig"
+      "name": "x-exit-preconfig"
     },
     {
       "name": "cont"
@@ -7193,8 +7193,6 @@
     {
       "name": "query-status",
       "ret-type": "1",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -7246,8 +7244,6 @@
     {
       "name": "watchdog-set-action",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "5"
     },
@@ -7264,368 +7260,276 @@
     {
       "name": "job-pause",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "8"
     },
     {
       "name": "job-resume",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "9"
     },
     {
       "name": "job-cancel",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "10"
     },
     {
       "name": "job-complete",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "11"
     },
     {
       "name": "job-dismiss",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "12"
     },
     {
       "name": "job-finalize",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "13"
     },
     {
       "name": "query-jobs",
       "ret-type": "[14]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "x-block-latency-histogram-set",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "15"
     },
     {
       "name": "query-block",
       "ret-type": "[16]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-blockstats",
       "ret-type": "[18]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "17"
     },
     {
       "name": "query-block-jobs",
       "ret-type": "[19]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "block_passwd",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "20"
     },
     {
       "name": "block_resize",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "21"
     },
     {
       "name": "blockdev-snapshot-sync",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "22"
     },
     {
       "name": "blockdev-snapshot",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "23"
     },
     {
       "name": "change-backing-file",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "24"
     },
     {
       "name": "block-commit",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "25"
     },
     {
       "name": "drive-backup",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "26"
     },
     {
       "name": "blockdev-backup",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "27"
     },
     {
       "name": "query-named-block-nodes",
       "ret-type": "[28]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "drive-mirror",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "29"
     },
     {
       "name": "block-dirty-bitmap-add",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "30"
     },
     {
       "name": "block-dirty-bitmap-remove",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "31"
     },
     {
       "name": "block-dirty-bitmap-clear",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "31"
     },
     {
       "name": "x-block-dirty-bitmap-enable",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "31"
     },
     {
       "name": "x-block-dirty-bitmap-disable",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "31"
     },
     {
       "name": "x-block-dirty-bitmap-merge",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "32"
     },
     {
       "name": "x-debug-block-dirty-bitmap-sha256",
       "ret-type": "33",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "31"
     },
     {
       "name": "blockdev-mirror",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "34"
     },
     {
       "name": "block_set_io_throttle",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "35"
     },
     {
       "name": "block-stream",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "36"
     },
     {
       "name": "block-job-set-speed",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "37"
     },
     {
       "name": "block-job-cancel",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "38"
     },
     {
       "name": "block-job-pause",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "39"
     },
     {
       "name": "block-job-resume",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "40"
     },
     {
       "name": "block-job-complete",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "41"
     },
     {
       "name": "block-job-dismiss",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "42"
     },
     {
       "name": "block-job-finalize",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "43"
     },
     {
       "name": "blockdev-add",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "44"
     },
     {
       "name": "blockdev-del",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "45"
     },
     {
       "name": "blockdev-create",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "46"
     },
     {
       "name": "blockdev-open-tray",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "47"
     },
     {
       "name": "blockdev-close-tray",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "48"
     },
     {
       "name": "blockdev-remove-medium",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "49"
     },
     {
       "name": "blockdev-insert-medium",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "50"
     },
     {
       "name": "blockdev-change-medium",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "51"
     },
@@ -7672,96 +7576,72 @@
     {
       "name": "block-set-write-threshold",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "60"
     },
     {
       "name": "x-blockdev-change",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "61"
     },
     {
       "name": "x-blockdev-set-iothread",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "62"
     },
     {
       "name": "query-pr-managers",
       "ret-type": "[63]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "blockdev-snapshot-internal-sync",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "64"
     },
     {
       "name": "blockdev-snapshot-delete-internal-sync",
       "ret-type": "66",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "65"
     },
     {
       "name": "eject",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "67"
     },
     {
       "name": "nbd-server-start",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "68"
     },
     {
       "name": "nbd-server-add",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "69"
     },
     {
       "name": "nbd-server-remove",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "70"
     },
     {
       "name": "x-nbd-server-add-bitmap",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "71"
     },
     {
       "name": "nbd-server-stop",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -7788,64 +7668,48 @@
     {
       "name": "query-chardev",
       "ret-type": "[76]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-chardev-backends",
       "ret-type": "[77]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "ringbuf-write",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "78"
     },
     {
       "name": "ringbuf-read",
       "ret-type": "str",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "79"
     },
     {
       "name": "chardev-add",
       "ret-type": "81",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "80"
     },
     {
       "name": "chardev-change",
       "ret-type": "81",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "82"
     },
     {
       "name": "chardev-remove",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "83"
     },
     {
       "name": "chardev-send-break",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "84"
     },
@@ -7857,32 +7721,24 @@
     {
       "name": "set_link",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "86"
     },
     {
       "name": "netdev_add",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "87"
     },
     {
       "name": "netdev_del",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "88"
     },
     {
       "name": "query-rx-filter",
       "ret-type": "[90]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "89"
     },
@@ -7894,88 +7750,66 @@
     {
       "name": "query-rocker",
       "ret-type": "93",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "92"
     },
     {
       "name": "query-rocker-ports",
       "ret-type": "[95]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "94"
     },
     {
       "name": "query-rocker-of-dpa-flows",
       "ret-type": "[97]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "96"
     },
     {
       "name": "query-rocker-of-dpa-groups",
       "ret-type": "[99]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "98"
     },
     {
       "name": "query-tpm-models",
       "ret-type": "[100]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-tpm-types",
       "ret-type": "[101]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-tpm",
       "ret-type": "[102]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "set_password",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "103"
     },
     {
       "name": "expire_password",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "104"
     },
     {
       "name": "screendump",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "105"
     },
     {
       "name": "query-spice",
       "ret-type": "106",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8002,24 +7836,18 @@
     {
       "name": "query-vnc",
       "ret-type": "110",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-vnc-servers",
       "ret-type": "[111]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "change-vnc-password",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "112"
     },
@@ -8041,80 +7869,60 @@
     {
       "name": "query-mice",
       "ret-type": "[116]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "send-key",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "117"
     },
     {
       "name": "input-send-event",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "118"
     },
     {
       "name": "query-migrate",
       "ret-type": "119",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "migrate-set-capabilities",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "120"
     },
     {
       "name": "query-migrate-capabilities",
       "ret-type": "[121]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "migrate-set-parameters",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "122"
     },
     {
       "name": "query-migrate-parameters",
       "ret-type": "123",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "client_migrate_info",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "124"
     },
     {
       "name": "migrate-start-postcopy",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8131,104 +7939,78 @@
     {
       "name": "x-colo-lost-heartbeat",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "migrate_cancel",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "migrate-continue",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "127"
     },
     {
       "name": "migrate_set_downtime",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "128"
     },
     {
       "name": "migrate_set_speed",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "129"
     },
     {
       "name": "migrate-set-cache-size",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "130"
     },
     {
       "name": "query-migrate-cache-size",
       "ret-type": "int",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "migrate",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "131"
     },
     {
       "name": "migrate-incoming",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "132"
     },
     {
       "name": "xen-save-devices-state",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "133"
     },
     {
       "name": "xen-set-replication",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "134"
     },
     {
       "name": "query-xen-replication-status",
       "ret-type": "135",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "xen-colo-do-checkpoint",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8236,7 +8018,6 @@
       "name": "migrate-recover",
       "ret-type": "0",
       "allow-oob": true,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "136"
     },
@@ -8244,135 +8025,102 @@
       "name": "migrate-pause",
       "ret-type": "0",
       "allow-oob": true,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "transaction",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "137"
     },
     {
       "name": "trace-event-get-state",
       "ret-type": "[139]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "138"
     },
     {
       "name": "trace-event-set-state",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "140"
     },
     {
       "name": "query-qmp-schema",
       "ret-type": "[141]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "qmp_capabilities",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "142"
     },
     {
       "name": "query-version",
       "ret-type": "143",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-commands",
       "ret-type": "[144]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "add_client",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "145"
     },
     {
       "name": "query-name",
       "ret-type": "146",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-kvm",
       "ret-type": "147",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-uuid",
       "ret-type": "148",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-events",
       "ret-type": "[149]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-cpus",
       "ret-type": "[150]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-cpus-fast",
       "ret-type": "[151]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-iothreads",
       "ret-type": "[152]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-balloon",
       "ret-type": "153",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8384,192 +8132,144 @@
     {
       "name": "query-pci",
       "ret-type": "[155]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "quit",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "stop",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "system_reset",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "system_powerdown",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "cpu-add",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "156"
     },
     {
       "name": "memsave",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "157"
     },
     {
       "name": "pmemsave",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "158"
     },
     {
       "name": "cont",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
-      "name": "exit-preconfig",
+      "name": "x-exit-preconfig",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "system_wakeup",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "inject-nmi",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "balloon",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "159"
     },
     {
       "name": "human-monitor-command",
       "ret-type": "str",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "160"
     },
     {
       "name": "qom-list",
       "ret-type": "[162]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "161"
     },
     {
       "name": "qom-get",
       "ret-type": "any",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "163"
     },
     {
       "name": "qom-set",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "164"
     },
     {
       "name": "change",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "165"
     },
     {
       "name": "qom-list-types",
       "ret-type": "[167]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "166"
     },
     {
       "name": "device-list-properties",
       "ret-type": "[162]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "168"
     },
     {
       "name": "qom-list-properties",
       "ret-type": "[162]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "169"
     },
     {
       "name": "xen-set-global-dirty-log",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "170"
     },
     {
       "name": "device_add",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "171"
     },
     {
       "name": "device_del",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "172"
     },
@@ -8581,16 +8281,12 @@
     {
       "name": "dump-guest-memory",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "174"
     },
     {
       "name": "query-dump",
       "ret-type": "175",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8602,152 +8298,114 @@
     {
       "name": "query-dump-guest-memory-capability",
       "ret-type": "177",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "dump-skeys",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "178"
     },
     {
       "name": "object-add",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "179"
     },
     {
       "name": "object-del",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "180"
     },
     {
       "name": "getfd",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "181"
     },
     {
       "name": "closefd",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "182"
     },
     {
       "name": "query-machines",
       "ret-type": "[183]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-memory-size-summary",
       "ret-type": "184",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-cpu-definitions",
       "ret-type": "[185]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-cpu-model-expansion",
       "ret-type": "187",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "186"
     },
     {
       "name": "query-cpu-model-comparison",
       "ret-type": "189",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "188"
     },
     {
       "name": "query-cpu-model-baseline",
       "ret-type": "191",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "190"
     },
     {
       "name": "add-fd",
       "ret-type": "193",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "192"
     },
     {
       "name": "remove-fd",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "194"
     },
     {
       "name": "query-fdsets",
       "ret-type": "[195]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-target",
       "ret-type": "196",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-command-line-options",
       "ret-type": "[198]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "197"
     },
     {
       "name": "query-memdev",
       "ret-type": "[199]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-memory-devices",
       "ret-type": "[200]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8759,8 +8417,6 @@
     {
       "name": "query-acpi-ospm-status",
       "ret-type": "[202]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8772,8 +8428,6 @@
     {
       "name": "rtc-reset-reinjection",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8785,56 +8439,42 @@
     {
       "name": "xen-load-devices-state",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "205"
     },
     {
       "name": "query-gic-capabilities",
       "ret-type": "[206]",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-hotpluggable-cpus",
       "ret-type": "[207]",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-vm-generation-id",
       "ret-type": "208",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-sev",
       "ret-type": "209",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-sev-launch-measure",
       "ret-type": "210",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-sev-capabilities",
       "ret-type": "211",
-      "allow-oob": false,
-      "allow-preconfig": false,
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -8846,8 +8486,6 @@
     {
       "name": "set-numa-node",
       "ret-type": "0",
-      "allow-oob": false,
-      "allow-preconfig": true,
       "meta-type": "command",
       "arg-type": "213"
     },
@@ -9143,6 +8781,11 @@
       "members": [
         {
           "name": "device",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "qdev",
           "default": null,
           "type": "str"
         },
@@ -16222,10 +15865,7 @@
         },
         {
           "name": "allow-oob",
-          "type": "bool"
-        },
-        {
-          "name": "allow-preconfig",
+          "default": null,
           "type": "bool"
         }
       ],
@@ -19938,6 +19578,7 @@
         "syscall": true,
         "level": 13,
         "avx512dq": false,
+        "x-migrate-smi-count": true,
         "svm": false,
         "full-cpuid-auto-level": true,
         "hv-reset": false,
@@ -20602,6 +20243,7 @@
         "syscall": true,
         "level": 13,
         "avx512dq": false,
+        "x-migrate-smi-count": true,
         "svm": false,
         "full-cpuid-auto-level": true,
         "hv-reset": false,
@@ -21905,6 +21547,7 @@
         "syscall": true,
         "level": 13,
         "avx512dq": false,
+        "x-migrate-smi-count": true,
         "svm": true,
         "full-cpuid-auto-level": true,
         "hv-reset": false,
@@ -22569,6 +22212,7 @@
         "syscall": true,
         "level": 13,
         "avx512dq": false,
+        "x-migrate-smi-count": true,
         "svm": true,
         "full-cpuid-auto-level": true,
         "hv-reset": false,
