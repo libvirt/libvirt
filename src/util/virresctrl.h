@@ -96,6 +96,11 @@ virResctrlAllocForeachCache(virResctrlAllocPtr alloc,
                             void *opaque);
 
 int
+virResctrlAllocSetMemoryBandwidth(virResctrlAllocPtr alloc,
+                                  unsigned int id,
+                                  unsigned int memory_bandwidth);
+
+int
 virResctrlAllocForeachMemory(virResctrlAllocPtr resctrl,
                              virResctrlAllocForeachMemoryCallback cb,
                              void *opaque);

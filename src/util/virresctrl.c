@@ -965,6 +965,54 @@ virResctrlAllocForeachCache(virResctrlAllocPtr alloc,
 }
 
 
+/* virResctrlAllocSetMemoryBandwidth
+ * @alloc: Pointer to an active allocation
+ * @id: node id of MBA to be set
+ * @memory_bandwidth: new memory bandwidth value
+ *
+ * Set the @memory_bandwidth for the node @id entry in the @alloc.
+ *
+ * Returns 0 on success, -1 on failure with error message set.
+ */
+int
+virResctrlAllocSetMemoryBandwidth(virResctrlAllocPtr alloc,
+                                  unsigned int id,
+                                  unsigned int memory_bandwidth)
+{
+    virResctrlAllocMemBWPtr mem_bw = alloc->mem_bw;
+
+    if (memory_bandwidth > 100) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Memory Bandwidth value exceeding 100 is invalid."));
+        return -1;
+    }
+
+    if (!mem_bw) {
+        if (VIR_ALLOC(mem_bw) < 0)
+            return -1;
+        alloc->mem_bw = mem_bw;
+    }
+
+    if (mem_bw->nbandwidths <= id &&
+        VIR_EXPAND_N(mem_bw->bandwidths, mem_bw->nbandwidths,
+                     id - mem_bw->nbandwidths + 1) < 0)
+        return -1;
+
+    if (mem_bw->bandwidths[id]) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Memory Bandwidth already defined for node %u"),
+                       id);
+        return -1;
+    }
+
+    if (VIR_ALLOC(mem_bw->bandwidths[id]) < 0)
+        return -1;
+
+    *(mem_bw->bandwidths[id]) = memory_bandwidth;
+    return 0;
+}
+
+
 /* virResctrlAllocForeachMemory
  * @alloc: Pointer to an active allocation
  * @cb: Callback function
