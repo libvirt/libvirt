@@ -19210,6 +19210,58 @@ virDomainCachetuneDefParseCache(xmlXPathContextPtr ctxt,
 
 
 static int
+virDomainResctrlAppend(virDomainDefPtr def,
+                       xmlNodePtr node,
+                       virResctrlAllocPtr alloc,
+                       virBitmapPtr vcpus,
+                       unsigned int flags)
+{
+    char *vcpus_str = NULL;
+    char *alloc_id = NULL;
+    virDomainResctrlDefPtr tmp_resctrl = NULL;
+    int ret = -1;
+
+    if (VIR_ALLOC(tmp_resctrl) < 0)
+        goto cleanup;
+
+    /* We need to format it back because we need to be consistent in the naming
+     * even when users specify some "sub-optimal" string there. */
+    vcpus_str = virBitmapFormat(vcpus);
+    if (!vcpus_str)
+        goto cleanup;
+
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+        alloc_id = virXMLPropString(node, "id");
+
+    if (!alloc_id) {
+        /* The number of allocations is limited and the directory structure is flat,
+         * not hierarchical, so we need to have all same allocations in one
+         * directory, so it's nice to have it named appropriately.  For now it's
+         * 'vcpus_...' but it's designed in order for it to be changeable in the
+         * future (it's part of the status XML). */
+        if (virAsprintf(&alloc_id, "vcpus_%s", vcpus_str) < 0)
+            goto cleanup;
+    }
+
+    if (virResctrlAllocSetID(alloc, alloc_id) < 0)
+        goto cleanup;
+
+    tmp_resctrl->vcpus = vcpus;
+    tmp_resctrl->alloc = alloc;
+
+    if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, tmp_resctrl) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virDomainResctrlDefFree(tmp_resctrl);
+    VIR_FREE(alloc_id);
+    VIR_FREE(vcpus_str);
+    return ret;
+}
+
+
+static int
 virDomainCachetuneDefParse(virDomainDefPtr def,
                            xmlXPathContextPtr ctxt,
                            xmlNodePtr node,
@@ -19219,18 +19271,11 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     xmlNodePtr *nodes = NULL;
     virBitmapPtr vcpus = NULL;
     virResctrlAllocPtr alloc = NULL;
-    virDomainResctrlDefPtr tmp_resctrl = NULL;
-    char *tmp = NULL;
-    char *vcpus_str = NULL;
-    char *alloc_id = NULL;
     ssize_t i = 0;
     int n;
     int ret = -1;
 
     ctxt->node = node;
-
-    if (VIR_ALLOC(tmp_resctrl) < 0)
-        goto cleanup;
 
     if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
         goto cleanup;
@@ -19269,45 +19314,17 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
         goto cleanup;
     }
 
-    /* We need to format it back because we need to be consistent in the naming
-     * even when users specify some "sub-optimal" string there. */
-    VIR_FREE(vcpus_str);
-    vcpus_str = virBitmapFormat(vcpus);
-    if (!vcpus_str)
+    if (virDomainResctrlAppend(def, node, alloc, vcpus, flags) < 0)
         goto cleanup;
-
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-        alloc_id = virXMLPropString(node, "id");
-
-    if (!alloc_id) {
-        /* The number of allocations is limited and the directory structure is flat,
-         * not hierarchical, so we need to have all same allocations in one
-         * directory, so it's nice to have it named appropriately.  For now it's
-         * 'vcpus_...' but it's designed in order for it to be changeable in the
-         * future (it's part of the status XML). */
-        if (virAsprintf(&alloc_id, "vcpus_%s", vcpus_str) < 0)
-            goto cleanup;
-    }
-
-    if (virResctrlAllocSetID(alloc, alloc_id) < 0)
-        goto cleanup;
-
-    VIR_STEAL_PTR(tmp_resctrl->vcpus, vcpus);
-    VIR_STEAL_PTR(tmp_resctrl->alloc, alloc);
-
-    if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, tmp_resctrl) < 0)
-        goto cleanup;
+    vcpus = NULL;
+    alloc = NULL;
 
     ret = 0;
  cleanup:
     ctxt->node = oldnode;
-    virDomainResctrlDefFree(tmp_resctrl);
     virObjectUnref(alloc);
     virBitmapFree(vcpus);
-    VIR_FREE(alloc_id);
-    VIR_FREE(vcpus_str);
     VIR_FREE(nodes);
-    VIR_FREE(tmp);
     return ret;
 }
 
