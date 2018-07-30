@@ -2648,6 +2648,7 @@ virResctrlAllocAddPID;
 virResctrlAllocCreate;
 virResctrlAllocDeterminePath;
 virResctrlAllocForeachCache;
+virResctrlAllocForeachMemory;
 virResctrlAllocFormat;
 virResctrlAllocGetID;
 virResctrlAllocGetUnused;

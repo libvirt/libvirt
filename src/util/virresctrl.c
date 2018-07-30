@@ -965,6 +965,39 @@ virResctrlAllocForeachCache(virResctrlAllocPtr alloc,
 }
 
 
+/* virResctrlAllocForeachMemory
+ * @alloc: Pointer to an active allocation
+ * @cb: Callback function
+ * @opaque: Opaque data to be passed to @cb
+ *
+ * If available, traverse the defined memory bandwidth allocations and
+ * call the @cb function.
+ *
+ * Returns 0 on success, -1 and immediate failure if the @cb has any failure.
+ */
+int
+virResctrlAllocForeachMemory(virResctrlAllocPtr alloc,
+                             virResctrlAllocForeachMemoryCallback cb,
+                             void *opaque)
+{
+    size_t i = 0;
+    virResctrlAllocMemBWPtr mem_bw;
+
+    if (!alloc || !alloc->mem_bw)
+        return 0;
+
+    mem_bw = alloc->mem_bw;
+    for (i = 0; i < mem_bw->nbandwidths; i++) {
+        if (mem_bw->bandwidths[i]) {
+            if (cb(i, *mem_bw->bandwidths[i], opaque) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 virResctrlAllocSetID(virResctrlAllocPtr alloc,
                      const char *id)
