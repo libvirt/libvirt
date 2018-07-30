@@ -986,6 +986,138 @@ virResctrlAllocGetID(virResctrlAllocPtr alloc)
 }
 
 
+/* Format the Memory Bandwidth Allocation line that will be found in
+ * the schemata files. The line should be start with "MB:" and be
+ * followed by "id=value" pairs separated by a semi-colon such as:
+ *
+ *     MB:0=100;1=100
+ *
+ * which indicates node id 0 has 100 percent bandwith and node id 1
+ * has 100 percent bandwidth. A trailing semi-colon is not formatted.
+ */
+static int
+virResctrlAllocMemoryBandwidthFormat(virResctrlAllocPtr alloc,
+                                     virBufferPtr buf)
+{
+    size_t i;
+
+    if (!alloc->mem_bw)
+        return 0;
+
+    virBufferAddLit(buf, "MB:");
+
+    for (i = 0; i < alloc->mem_bw->nbandwidths; i++) {
+        if (alloc->mem_bw->bandwidths[i]) {
+            virBufferAsprintf(buf, "%zd=%u;", i,
+                              *(alloc->mem_bw->bandwidths[i]));
+        }
+    }
+
+    virBufferTrim(buf, ";", 1);
+    virBufferAddChar(buf, '\n');
+    return virBufferCheckError(buf);
+}
+
+
+static int
+virResctrlAllocParseProcessMemoryBandwidth(virResctrlInfoPtr resctrl,
+                                           virResctrlAllocPtr alloc,
+                                           char *mem_bw)
+{
+    unsigned int bandwidth;
+    unsigned int id;
+    char *tmp = NULL;
+
+    tmp = strchr(mem_bw, '=');
+    if (!tmp)
+        return 0;
+    *tmp = '\0';
+    tmp++;
+
+    if (virStrToLong_uip(mem_bw, NULL, 10, &id) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid node id %u "), id);
+        return -1;
+    }
+    if (virStrToLong_uip(tmp, NULL, 10, &bandwidth) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid bandwidth %u"), bandwidth);
+        return -1;
+    }
+    if (bandwidth < resctrl->membw_info->min_bandwidth ||
+        id > resctrl->membw_info->max_id) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing or inconsistent resctrl info for "
+                         "memory bandwidth node '%u'"), id);
+        return -1;
+    }
+    if (alloc->mem_bw->nbandwidths <= id &&
+        VIR_EXPAND_N(alloc->mem_bw->bandwidths, alloc->mem_bw->nbandwidths,
+                     id - alloc->mem_bw->nbandwidths + 1) < 0) {
+        return -1;
+    }
+    if (!alloc->mem_bw->bandwidths[id]) {
+        if (VIR_ALLOC(alloc->mem_bw->bandwidths[id]) < 0)
+            return -1;
+    }
+
+    *(alloc->mem_bw->bandwidths[id]) = bandwidth;
+    return 0;
+}
+
+
+/* Parse a schemata formatted MB: entry. Format details are described in
+ * virResctrlAllocMemoryBandwidthFormat.
+ */
+static int
+virResctrlAllocParseMemoryBandwidthLine(virResctrlInfoPtr resctrl,
+                                        virResctrlAllocPtr alloc,
+                                        char *line)
+{
+    char **mbs = NULL;
+    char *tmp = NULL;
+    size_t nmbs = 0;
+    size_t i;
+    int ret = -1;
+
+    /* For no reason there can be spaces */
+    virSkipSpaces((const char **) &line);
+
+    if (STRNEQLEN(line, "MB", 2))
+        return 0;
+
+    if (!resctrl || !resctrl->membw_info ||
+        !resctrl->membw_info->min_bandwidth ||
+        !resctrl->membw_info->bandwidth_granularity) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or inconsistent resctrl info for "
+                         "memory bandwidth allocation"));
+        return -1;
+    }
+
+    if (!alloc->mem_bw) {
+        if (VIR_ALLOC(alloc->mem_bw) < 0)
+            return -1;
+    }
+
+    tmp = strchr(line, ':');
+    if (!tmp)
+        return 0;
+    tmp++;
+
+    mbs = virStringSplitCount(tmp, ";", 0, &nmbs);
+    for (i = 0; i < nmbs; i++) {
+        if (virResctrlAllocParseProcessMemoryBandwidth(resctrl, alloc, mbs[i]) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virStringListFree(mbs);
+    return ret;
+}
+
+
 static int
 virResctrlAllocFormatCache(virResctrlAllocPtr alloc,
                            virBufferPtr buf)
@@ -1041,6 +1173,11 @@ virResctrlAllocFormat(virResctrlAllocPtr alloc)
         return NULL;
 
     if (virResctrlAllocFormatCache(alloc, &buf) < 0) {
+        virBufferFreeAndReset(&buf);
+        return NULL;
+    }
+
+    if (virResctrlAllocMemoryBandwidthFormat(alloc, &buf) < 0) {
         virBufferFreeAndReset(&buf);
         return NULL;
     }
@@ -1173,6 +1310,9 @@ virResctrlAllocParse(virResctrlInfoPtr resctrl,
     for (i = 0; i < nlines; i++) {
         if (virResctrlAllocParseCacheLine(resctrl, alloc, lines[i]) < 0)
             goto cleanup;
+        if (virResctrlAllocParseMemoryBandwidthLine(resctrl, alloc, lines[i]) < 0)
+            goto cleanup;
+
     }
 
     ret = 0;
