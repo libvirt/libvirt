@@ -27294,10 +27294,10 @@ virDomainCachetuneDefFormat(virBufferPtr buf,
     int ret = -1;
 
     virBufferSetChildIndent(&childrenBuf, buf);
-    virResctrlAllocForeachCache(resctrl->alloc,
-                                virDomainCachetuneDefFormatHelper,
-                                &childrenBuf);
-
+    if (virResctrlAllocForeachCache(resctrl->alloc,
+                                    virDomainCachetuneDefFormatHelper,
+                                    &childrenBuf) < 0)
+        goto cleanup;
 
     if (virBufferCheckError(&childrenBuf) < 0)
         goto cleanup;
