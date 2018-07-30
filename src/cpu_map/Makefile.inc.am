@@ -1,6 +1,13 @@
 cpumapdir = $(pkgdatadir)/cpu_map
 cpumap_DATA = \
 	cpu_map/index.xml \
+	cpu_map/ppc64_vendors.xml \
+	cpu_map/ppc64_POWER7.xml \
+	cpu_map/ppc64_POWER9.xml \
+	cpu_map/ppc64_POWERPC_e6500.xml \
+	cpu_map/ppc64_POWER6.xml \
+	cpu_map/ppc64_POWER8.xml \
+	cpu_map/ppc64_POWERPC_e5500.xml \
 	$(NULL)
 
 EXTRA_DIST += $(cpumap_DATA)

@@ -2340,43 +2340,16 @@
   </arch>
 
   <arch name='ppc64'>
-    <!-- vendor definitions -->
-    <vendor name='IBM'/>
-    <vendor name='Freescale'/>
+    <include filename="ppc64_vendors.xml"/>
 
     <!-- IBM-based CPU models -->
-    <model name='POWER6'>
-      <vendor name='IBM'/>
-      <pvr value='0x003e0000' mask='0xffff0000'/>
-    </model>
-
-    <model name='POWER7'>
-      <vendor name='IBM'/>
-      <pvr value='0x003f0000' mask='0xffff0000'/>
-      <pvr value='0x004a0000' mask='0xffff0000'/>
-    </model>
-
-    <model name='POWER8'>
-      <vendor name='IBM'/>
-      <pvr value='0x004b0000' mask='0xffff0000'/>
-      <pvr value='0x004c0000' mask='0xffff0000'/>
-      <pvr value='0x004d0000' mask='0xffff0000'/>
-    </model>
-
-    <model name='POWER9'>
-      <vendor name='IBM'/>
-      <pvr value='0x004e0000' mask='0xffff0000'/>
-    </model>
+    <include filename="ppc64_POWER6.xml"/>
+    <include filename="ppc64_POWER7.xml"/>
+    <include filename="ppc64_POWER8.xml"/>
+    <include filename="ppc64_POWER9.xml"/>
 
     <!-- Freescale-based CPU models -->
-    <model name='POWERPC_e5500'>
-      <vendor name='Freescale'/>
-      <pvr value='0x80240000' mask='0xffff0000'/>
-    </model>
-
-    <model name='POWERPC_e6500'>
-      <vendor name='Freescale'/>
-      <pvr value='0x80400000' mask='0xffff0000'/>
-    </model>
+    <include filename="ppc64_POWERPC_e5500.xml"/>
+    <include filename="ppc64_POWERPC_e6500.xml"/>
   </arch>
 </cpus>
