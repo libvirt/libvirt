@@ -608,6 +608,20 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
     if (virResctrlInfoIsEmpty(resctrl))
         return 0;
 
+    /* Let's take the opportunity to update the number of last level
+     * cache. This number of memory bandwidth controller is same with
+     * last level cache */
+    if (resctrl->membw_info) {
+        virResctrlInfoMemBWPtr membw_info = resctrl->membw_info;
+
+        if (level > membw_info->last_level_cache) {
+            membw_info->last_level_cache = level;
+            membw_info->max_id = 0;
+        } else if (membw_info->last_level_cache == level) {
+            membw_info->max_id++;
+        }
+    }
+
     if (level >= resctrl->nlevels)
         return 0;
 
