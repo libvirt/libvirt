@@ -2559,7 +2559,7 @@ qemuProcessResctrlCreate(virQEMUDriverPtr driver,
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (!vm->def->ncachetunes)
+    if (!vm->def->nresctrls)
         return 0;
 
     /* Force capability refresh since resctrl info can change
@@ -2568,9 +2568,9 @@ qemuProcessResctrlCreate(virQEMUDriverPtr driver,
     if (!caps)
         return -1;
 
-    for (i = 0; i < vm->def->ncachetunes; i++) {
+    for (i = 0; i < vm->def->nresctrls; i++) {
         if (virResctrlAllocCreate(caps->host.resctrl,
-                                  vm->def->cachetunes[i]->alloc,
+                                  vm->def->resctrls[i]->alloc,
                                   priv->machineName) < 0)
             goto cleanup;
     }
@@ -5388,8 +5388,8 @@ qemuProcessSetupVcpu(virDomainObjPtr vm,
                             &vcpu->sched) < 0)
         return -1;
 
-    for (i = 0; i < vm->def->ncachetunes; i++) {
-        virDomainCachetuneDefPtr ct = vm->def->cachetunes[i];
+    for (i = 0; i < vm->def->nresctrls; i++) {
+        virDomainResctrlDefPtr ct = vm->def->resctrls[i];
 
         if (virBitmapIsBitSet(ct->vcpus, vcpuid)) {
             if (virResctrlAllocAddPID(ct->alloc, vcpupid) < 0)
@@ -7091,8 +7091,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     /* Remove resctrl allocation after cgroups are cleaned up which makes it
      * kind of safer (although removing the allocation should work even with
      * pids in tasks file */
-    for (i = 0; i < vm->def->ncachetunes; i++)
-        virResctrlAllocRemove(vm->def->cachetunes[i]->alloc);
+    for (i = 0; i < vm->def->nresctrls; i++)
+        virResctrlAllocRemove(vm->def->resctrls[i]->alloc);
 
     qemuProcessRemoveDomainStatus(driver, vm);
 
@@ -7818,8 +7818,8 @@ qemuProcessReconnect(void *opaque)
     if (qemuConnectAgent(driver, obj) < 0)
         goto error;
 
-    for (i = 0; i < obj->def->ncachetunes; i++) {
-        if (virResctrlAllocDeterminePath(obj->def->cachetunes[i]->alloc,
+    for (i = 0; i < obj->def->nresctrls; i++) {
+        if (virResctrlAllocDeterminePath(obj->def->resctrls[i]->alloc,
                                          priv->machineName) < 0)
             goto error;
     }
