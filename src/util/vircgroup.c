@@ -1118,7 +1118,7 @@ virCgroupNew(pid_t pid,
     return 0;
 
  error:
-    virCgroupFree(*group);
+    virCgroupFree(group);
     *group = NULL;
 
     return -1;
@@ -1319,8 +1319,8 @@ virCgroupNewPartition(const char *path,
     ret = 0;
  cleanup:
     if (ret != 0)
-        virCgroupFree(*group);
-    virCgroupFree(parent);
+        virCgroupFree(group);
+    virCgroupFree(&parent);
     return ret;
 }
 
@@ -1384,7 +1384,7 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
     if (virCgroupMakeGroup(partition, *group, create,
                            VIR_CGROUP_MEM_HIERACHY) < 0) {
         virCgroupRemove(*group);
-        virCgroupFree(*group);
+        virCgroupFree(group);
         return -1;
     }
 
@@ -1441,7 +1441,7 @@ virCgroupNewThread(virCgroupPtr domain,
 
     if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
         virCgroupRemove(*group);
-        virCgroupFree(*group);
+        virCgroupFree(group);
         return -1;
     }
 
@@ -1479,7 +1479,7 @@ virCgroupNewDetectMachine(const char *name,
                                        true, machinename)) {
         VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
                   name, drivername);
-        virCgroupFree(*group);
+        virCgroupFree(group);
         return 0;
     }
 
@@ -1532,7 +1532,7 @@ virCgroupNewMachineSystemd(const char *name,
 
     path = init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement;
     init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement = NULL;
-    virCgroupFree(init);
+    virCgroupFree(&init);
 
     if (!path || STREQ(path, "/") || path[0] != '/') {
         VIR_DEBUG("Systemd didn't setup its controller");
@@ -1564,13 +1564,13 @@ virCgroupNewMachineSystemd(const char *name,
             goto cleanup;
 
         if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_NONE) < 0) {
-            virCgroupFree(tmp);
+            virCgroupFree(&tmp);
             goto cleanup;
         }
         if (t) {
             *t = '/';
             offset = t;
-            virCgroupFree(parent);
+            virCgroupFree(&parent);
             parent = tmp;
         } else {
             *group = tmp;
@@ -1581,7 +1581,7 @@ virCgroupNewMachineSystemd(const char *name,
     if (virCgroupAddTask(*group, pidleader) < 0) {
         virErrorPtr saved = virSaveLastError();
         virCgroupRemove(*group);
-        virCgroupFree(*group);
+        virCgroupFree(group);
         if (saved) {
             virSetError(saved);
             virFreeError(saved);
@@ -1590,7 +1590,7 @@ virCgroupNewMachineSystemd(const char *name,
 
     ret = 0;
  cleanup:
-    virCgroupFree(parent);
+    virCgroupFree(&parent);
     return ret;
 }
 
@@ -1636,7 +1636,7 @@ virCgroupNewMachineManual(const char *name,
     if (virCgroupAddTask(*group, pidleader) < 0) {
         virErrorPtr saved = virSaveLastError();
         virCgroupRemove(*group);
-        virCgroupFree(*group);
+        virCgroupFree(group);
         if (saved) {
             virSetError(saved);
             virFreeError(saved);
@@ -1647,7 +1647,7 @@ virCgroupNewMachineManual(const char *name,
     ret = 0;
 
  cleanup:
-    virCgroupFree(parent);
+    virCgroupFree(&parent);
     return ret;
 }
 
@@ -1714,21 +1714,21 @@ virCgroupNewIgnoreError(void)
  * @group: The group structure to free
  */
 void
-virCgroupFree(virCgroupPtr group)
+virCgroupFree(virCgroupPtr *group)
 {
     size_t i;
 
-    if (!group)
+    if (*group == NULL)
         return;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        VIR_FREE(group->controllers[i].mountPoint);
-        VIR_FREE(group->controllers[i].linkPoint);
-        VIR_FREE(group->controllers[i].placement);
+        VIR_FREE((*group)->controllers[i].mountPoint);
+        VIR_FREE((*group)->controllers[i].linkPoint);
+        VIR_FREE((*group)->controllers[i].placement);
     }
 
-    VIR_FREE(group->path);
-    VIR_FREE(group);
+    VIR_FREE((*group)->path);
+    VIR_FREE(*group);
 }
 
 
@@ -2391,7 +2391,7 @@ virCgroupMemoryOnceInit(void)
                                       "memory.limit_in_bytes",
                                       &mem_unlimited));
  cleanup:
-    virCgroupFree(group);
+    virCgroupFree(&group);
     virCgroupMemoryUnlimitedKB = mem_unlimited >> 10;
 }
 
@@ -3021,12 +3021,12 @@ virCgroupGetPercpuVcpuSum(virCgroupPtr group,
             sum_cpu_time[j] += tmp;
         }
 
-        virCgroupFree(group_vcpu);
+        virCgroupFree(&group_vcpu);
     }
 
     ret = 0;
  cleanup:
-    virCgroupFree(group_vcpu);
+    virCgroupFree(&group_vcpu);
     return ret;
 }
 
@@ -3579,7 +3579,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
         if (dormdir)
             virCgroupRemove(subgroup);
 
-        virCgroupFree(subgroup);
+        virCgroupFree(&subgroup);
     }
     if (direrr < 0)
         goto cleanup;
@@ -3588,7 +3588,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     ret = killedAny ? 1 : 0;
 
  cleanup:
-    virCgroupFree(subgroup);
+    virCgroupFree(&subgroup);
     VIR_DIR_CLOSE(dp);
     return ret;
 }
@@ -3952,7 +3952,7 @@ virCgroupControllerAvailable(int controller)
         return ret;
 
     ret = virCgroupHasController(cgroup, controller);
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -4084,7 +4084,7 @@ virCgroupNewIgnoreError(void)
 
 
 void
-virCgroupFree(virCgroupPtr group ATTRIBUTE_UNUSED)
+virCgroupFree(virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -4749,7 +4749,7 @@ virCgroupDelThread(virCgroupPtr cgroup,
 
         /* Remove the offlined cgroup */
         virCgroupRemove(new_cgroup);
-        virCgroupFree(new_cgroup);
+        virCgroupFree(&new_cgroup);
     }
 
     return 0;

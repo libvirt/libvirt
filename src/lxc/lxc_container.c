@@ -1815,7 +1815,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
  cleanup:
     VIR_FREE(stateDir);
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     VIR_FREE(sec_mount_options);
     return ret;
 }

@@ -198,7 +198,7 @@ testCgroupDetectMounts(const void *args)
  cleanup:
     VIR_FREE(mounts);
     VIR_FREE(parsed);
-    virCgroupFree(group);
+    virCgroupFree(&group);
     virBufferFreeAndReset(&buf);
     return result;
 }
@@ -227,7 +227,7 @@ static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
     ret = validateCgroup(cgroup, "", mountsFull, links, placement);
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -304,7 +304,7 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
     ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsSmall, links, placementSmall);
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
@@ -313,7 +313,7 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
     ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsFull, links, placementFull);
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -353,7 +353,7 @@ static int testCgroupNewForPartitionNested(const void *args ATTRIBUTE_UNUSED)
     }
 
     /* Should now work */
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     if ((rv = virCgroupNewPartition("/deployment/production", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Failed to create /deployment/production cgroup: %d\n", -rv);
         goto cleanup;
@@ -363,7 +363,7 @@ static int testCgroupNewForPartitionNested(const void *args ATTRIBUTE_UNUSED)
                          mountsFull, links, placementFull);
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -402,14 +402,14 @@ static int testCgroupNewForPartitionNestedDeep(const void *args ATTRIBUTE_UNUSED
         goto cleanup;
     }
 
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     if ((rv = virCgroupNewPartition("/user/berrange.user", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Failed to create /user/berrange.user cgroup: %d\n", -rv);
         goto cleanup;
     }
 
     /* Should now work */
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     if ((rv = virCgroupNewPartition("/user/berrange.user/production", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Failed to create /user/berrange.user/production cgroup: %d\n", -rv);
         goto cleanup;
@@ -419,7 +419,7 @@ static int testCgroupNewForPartitionNestedDeep(const void *args ATTRIBUTE_UNUSED
                          mountsFull, links, placementFull);
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -455,8 +455,8 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
     ret = validateCgroup(domaincgroup, "/production.partition/foo.libvirt-lxc", mountsFull, links, placement);
 
  cleanup:
-    virCgroupFree(partitioncgroup);
-    virCgroupFree(domaincgroup);
+    virCgroupFree(&partitioncgroup);
+    virCgroupFree(&domaincgroup);
     return ret;
 }
 
@@ -506,10 +506,10 @@ static int testCgroupNewForPartitionDomainEscaped(const void *args ATTRIBUTE_UNU
     ret = validateCgroup(domaincgroup, "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc", mountsFull, links, placement);
 
  cleanup:
-    virCgroupFree(partitioncgroup3);
-    virCgroupFree(partitioncgroup2);
-    virCgroupFree(partitioncgroup1);
-    virCgroupFree(domaincgroup);
+    virCgroupFree(&partitioncgroup3);
+    virCgroupFree(&partitioncgroup2);
+    virCgroupFree(&partitioncgroup1);
+    virCgroupFree(&domaincgroup);
     return ret;
 }
 
@@ -535,7 +535,7 @@ static int testCgroupNewForSelfAllInOne(const void *args ATTRIBUTE_UNUSED)
     ret = validateCgroup(cgroup, "", mountsAllInOne, linksAllInOne, placement);
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -563,7 +563,7 @@ static int testCgroupNewForSelfLogind(const void *args ATTRIBUTE_UNUSED)
     ret = validateCgroup(cgroup, "", mountsLogind, linksLogind, placement);
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -690,7 +690,7 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     VIR_FREE(params);
     return ret;
 }
@@ -723,7 +723,7 @@ static int testCgroupGetMemoryUsage(const void *args ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -773,7 +773,7 @@ static int testCgroupGetBlkioIoServiced(const void *args ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -846,7 +846,7 @@ static int testCgroupGetBlkioIoDeviceServiced(const void *args ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
-    virCgroupFree(cgroup);
+    virCgroupFree(&cgroup);
     return ret;
 }
 
