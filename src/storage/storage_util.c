@@ -3609,8 +3609,8 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
         int err;
 
         if (virStringHasControlChars(ent->d_name)) {
-            VIR_WARN("Ignoring file with control characters under '%s'",
-                     def->target.path);
+            VIR_WARN("Ignoring file '%s' with control characters under '%s'",
+                     ent->d_name, def->target.path);
             continue;
         }
 
