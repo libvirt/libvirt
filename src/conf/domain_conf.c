@@ -19111,6 +19111,31 @@ virDomainResctrlParseVcpus(virDomainDefPtr def,
 
 
 static int
+virDomainResctrlVcpuMatch(virDomainDefPtr def,
+                          virBitmapPtr vcpus,
+                          virResctrlAllocPtr *alloc)
+{
+    ssize_t i = 0;
+
+    for (i = 0; i < def->nresctrls; i++) {
+        /* vcpus group has been created, directly use the existing one.
+         * Just updating memory allocation information of that group
+         */
+        if (virBitmapEqual(def->resctrls[i]->vcpus, vcpus)) {
+            *alloc = def->resctrls[i]->alloc;
+            break;
+        }
+        if (virBitmapOverlaps(def->resctrls[i]->vcpus, vcpus)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Overlapping vcpus in resctrls"));
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
+static int
 virDomainCachetuneDefParseCache(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
                                 virResctrlAllocPtr alloc)
@@ -19193,7 +19218,7 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     xmlNodePtr oldnode = ctxt->node;
     xmlNodePtr *nodes = NULL;
     virBitmapPtr vcpus = NULL;
-    virResctrlAllocPtr alloc = virResctrlAllocNew();
+    virResctrlAllocPtr alloc = NULL;
     virDomainResctrlDefPtr tmp_resctrl = NULL;
     char *tmp = NULL;
     char *vcpus_str = NULL;
@@ -19203,9 +19228,6 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     int ret = -1;
 
     ctxt->node = node;
-
-    if (!alloc)
-        goto cleanup;
 
     if (VIR_ALLOC(tmp_resctrl) < 0)
         goto cleanup;
@@ -19224,6 +19246,19 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
         goto cleanup;
     }
 
+    if (virDomainResctrlVcpuMatch(def, vcpus, &alloc) < 0)
+        goto cleanup;
+
+    if (!alloc) {
+        alloc = virResctrlAllocNew();
+        if (!alloc)
+            goto cleanup;
+    } else {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Identical vcpus in cachetunes found"));
+        goto cleanup;
+    }
+
     for (i = 0; i < n; i++) {
         if (virDomainCachetuneDefParseCache(ctxt, nodes[i], alloc) < 0)
             goto cleanup;
@@ -19232,14 +19267,6 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     if (virResctrlAllocIsEmpty(alloc)) {
         ret = 0;
         goto cleanup;
-    }
-
-    for (i = 0; i < def->nresctrls; i++) {
-        if (virBitmapOverlaps(def->resctrls[i]->vcpus, vcpus)) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Overlapping vcpus in cachetunes"));
-            goto cleanup;
-        }
     }
 
     /* We need to format it back because we need to be consistent in the naming
