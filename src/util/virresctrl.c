@@ -318,9 +318,9 @@ virResctrlUnlock(int fd)
 
 /* virResctrlInfo-related definitions */
 static int
-virResctrlGetInfo(virResctrlInfoPtr resctrl)
+virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
+                       DIR *dirp)
 {
-    DIR *dirp = NULL;
     char *endptr = NULL;
     char *tmp_str = NULL;
     int ret = -1;
@@ -331,12 +331,6 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
     virBitmapPtr tmp_map = NULL;
     virResctrlInfoPerLevelPtr i_level = NULL;
     virResctrlInfoPerTypePtr i_type = NULL;
-
-    rv = virDirOpenIfExists(&dirp, SYSFS_RESCTRL_PATH "/info");
-    if (rv <= 0) {
-        ret = rv;
-        goto cleanup;
-    }
 
     while ((rv = virDirRead(dirp, &ent, SYSFS_RESCTRL_PATH "/info")) > 0) {
         VIR_DEBUG("Parsing info type '%s'", ent->d_name);
@@ -443,8 +437,28 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dirp);
     VIR_FREE(i_type);
+    return ret;
+}
+
+
+static int
+virResctrlGetInfo(virResctrlInfoPtr resctrl)
+{
+    DIR *dirp = NULL;
+    int ret = -1;
+
+    ret = virDirOpenIfExists(&dirp, SYSFS_RESCTRL_PATH "/info");
+    if (ret <= 0)
+        goto cleanup;
+
+    ret = virResctrlGetCacheInfo(resctrl, dirp);
+    if (ret < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_DIR_CLOSE(dirp);
     return ret;
 }
 
