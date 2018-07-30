@@ -1,0 +1,26 @@
+<cpus>
+  <model name='kvm32'>
+    <feature name='apic'/>
+    <feature name='clflush'/>
+    <feature name='cmov'/>
+    <feature name='cx8'/>
+    <feature name='de'/>
+    <feature name='fpu'/>
+    <feature name='fxsr'/>
+    <feature name='mca'/>
+    <feature name='mce'/>
+    <feature name='mmx'/>
+    <feature name='msr'/>
+    <feature name='mtrr'/>
+    <feature name='pae'/>
+    <feature name='pat'/>
+    <feature name='pge'/>
+    <feature name='pni'/>
+    <feature name='pse'/>
+    <feature name='pse36'/>
+    <feature name='sep'/>
+    <feature name='sse'/>
+    <feature name='sse2'/>
+    <feature name='tsc'/>
+  </model>
+</cpus>

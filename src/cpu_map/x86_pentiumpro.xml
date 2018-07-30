@@ -1,0 +1,21 @@
+<cpus>
+  <model name='pentiumpro'>
+    <feature name='apic'/>
+    <feature name='cmov'/>
+    <feature name='cx8'/>
+    <feature name='de'/>
+    <feature name='fpu'/>
+    <feature name='fxsr'/>
+    <feature name='mce'/>
+    <feature name='mmx'/>
+    <feature name='msr'/>
+    <feature name='pae'/>
+    <feature name='pat'/>
+    <feature name='pge'/>
+    <feature name='pse'/>
+    <feature name='sep'/>
+    <feature name='sse'/>
+    <feature name='sse2'/>
+    <feature name='tsc'/>
+  </model>
+</cpus>
