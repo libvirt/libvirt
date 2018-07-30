@@ -721,22 +721,21 @@ x86VendorFind(virCPUx86MapPtr map,
 }
 
 
-static virCPUx86VendorPtr
+static int
 x86VendorParse(xmlXPathContextPtr ctxt,
-               virCPUx86MapPtr map)
+               const char *name,
+               void *data)
 {
+    virCPUx86MapPtr map = data;
     virCPUx86VendorPtr vendor = NULL;
     char *string = NULL;
+    int ret = -1;
 
     if (VIR_ALLOC(vendor) < 0)
         goto error;
 
-    vendor->name = virXPathString("string(@name)", ctxt);
-    if (!vendor->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing CPU vendor name"));
+    if (VIR_STRDUP(vendor->name, name) < 0)
         goto error;
-    }
 
     if (x86VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -755,37 +754,18 @@ x86VendorParse(xmlXPathContextPtr ctxt,
     if (virCPUx86VendorToCPUID(string, &vendor->cpuid) < 0)
         goto error;
 
+    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
+        goto error;
+
+    ret = 0;
+
  cleanup:
     VIR_FREE(string);
-    return vendor;
+    return ret;
 
  error:
     x86VendorFree(vendor);
-    vendor = NULL;
     goto cleanup;
-}
-
-
-static int
-x86VendorsLoad(virCPUx86MapPtr map,
-               xmlXPathContextPtr ctxt,
-               xmlNodePtr *nodes,
-               int n)
-{
-    virCPUx86VendorPtr vendor;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->vendors, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(vendor = x86VendorParse(ctxt, map)))
-            return -1;
-        map->vendors[map->nvendors++] = vendor;
-    }
-
-    return 0;
 }
 
 
@@ -910,27 +890,27 @@ x86ParseCPUID(xmlXPathContextPtr ctxt,
 }
 
 
-static virCPUx86FeaturePtr
+static int
 x86FeatureParse(xmlXPathContextPtr ctxt,
-                virCPUx86MapPtr map)
+                const char *name,
+                void *data)
 {
+    virCPUx86MapPtr map = data;
     xmlNodePtr *nodes = NULL;
     virCPUx86FeaturePtr feature;
     virCPUx86CPUID cpuid;
     size_t i;
     int n;
     char *str = NULL;
+    int ret = -1;
 
     if (!(feature = x86FeatureNew()))
         goto error;
 
     feature->migratable = true;
-    feature->name = virXPathString("string(@name)", ctxt);
-    if (!feature->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU feature name"));
+
+    if (VIR_STRDUP(feature->name, name) < 0)
         goto error;
-    }
 
     if (x86FeatureFind(map, feature->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -958,43 +938,25 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
             goto error;
     }
 
+    if (!feature->migratable &&
+        VIR_APPEND_ELEMENT_COPY(map->migrate_blockers,
+                                map->nblockers,
+                                feature) < 0)
+        goto error;
+
+    if (VIR_APPEND_ELEMENT(map->features, map->nfeatures, feature) < 0)
+        goto error;
+
+    ret = 0;
+
  cleanup:
     VIR_FREE(nodes);
     VIR_FREE(str);
-    return feature;
+    return ret;
 
  error:
     x86FeatureFree(feature);
-    feature = NULL;
     goto cleanup;
-}
-
-
-static int
-x86FeaturesLoad(virCPUx86MapPtr map,
-                xmlXPathContextPtr ctxt,
-                xmlNodePtr *nodes,
-                int n)
-{
-    virCPUx86FeaturePtr feature;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->features, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(feature = x86FeatureParse(ctxt, map)))
-            return -1;
-        map->features[map->nfeatures++] = feature;
-        if (!feature->migratable &&
-            VIR_APPEND_ELEMENT(map->migrate_blockers,
-                               map->nblockers,
-                               feature) < 0)
-            return -1;
-    }
-
-    return 0;
 }
 
 
@@ -1193,47 +1155,46 @@ x86ModelCompare(virCPUx86ModelPtr model1,
 }
 
 
-static virCPUx86ModelPtr
+static int
 x86ModelParse(xmlXPathContextPtr ctxt,
-              virCPUx86MapPtr map)
+              const char *name,
+              void *data)
 {
+    virCPUx86MapPtr map = data;
     xmlNodePtr *nodes = NULL;
     virCPUx86ModelPtr model;
     char *vendor = NULL;
     size_t i;
     int n;
+    int ret = -1;
 
     if (!(model = x86ModelNew()))
         goto error;
 
-    model->name = virXPathString("string(@name)", ctxt);
-    if (!model->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU model name"));
+    if (VIR_STRDUP(model->name, name) < 0)
         goto error;
-    }
 
     if (virXPathNode("./model", ctxt)) {
         virCPUx86ModelPtr ancestor;
-        char *name;
+        char *anname;
 
-        name = virXPathString("string(./model/@name)", ctxt);
-        if (!name) {
+        anname = virXPathString("string(./model/@name)", ctxt);
+        if (!anname) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing ancestor's name in CPU model %s"),
                            model->name);
             goto error;
         }
 
-        if (!(ancestor = x86ModelFind(map, name))) {
+        if (!(ancestor = x86ModelFind(map, anname))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Ancestor model %s not found for CPU model %s"),
-                           name, model->name);
-            VIR_FREE(name);
+                           anname, model->name);
+            VIR_FREE(anname);
             goto error;
         }
 
-        VIR_FREE(name);
+        VIR_FREE(anname);
 
         model->vendor = ancestor->vendor;
         model->signature = ancestor->signature;
@@ -1288,59 +1249,40 @@ x86ModelParse(xmlXPathContextPtr ctxt,
 
     for (i = 0; i < n; i++) {
         virCPUx86FeaturePtr feature;
-        char *name;
+        char *ftname;
 
-        if (!(name = virXMLPropString(nodes[i], "name"))) {
+        if (!(ftname = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing feature name for CPU model %s"), model->name);
             goto error;
         }
 
-        if (!(feature = x86FeatureFind(map, name))) {
+        if (!(feature = x86FeatureFind(map, ftname))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Feature %s required by CPU model %s not found"),
-                           name, model->name);
-            VIR_FREE(name);
+                           ftname, model->name);
+            VIR_FREE(ftname);
             goto error;
         }
-        VIR_FREE(name);
+        VIR_FREE(ftname);
 
         if (x86DataAdd(&model->data, &feature->data))
             goto error;
     }
 
+    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
+        goto error;
+
+    ret = 0;
+
  cleanup:
     VIR_FREE(vendor);
     VIR_FREE(nodes);
-    return model;
+    return ret;
 
  error:
     x86ModelFree(model);
-    model = NULL;
     goto cleanup;
-}
-
-
-static int
-x86ModelsLoad(virCPUx86MapPtr map,
-              xmlXPathContextPtr ctxt,
-              xmlNodePtr *nodes,
-              int n)
-{
-    virCPUx86ModelPtr model;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->models, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(model = x86ModelParse(ctxt, map)))
-            return -1;
-        map->models[map->nmodels++] = model;
-    }
-
-    return 0;
 }
 
 
@@ -1373,30 +1315,6 @@ x86MapFree(virCPUx86MapPtr map)
 }
 
 
-static int
-x86MapLoadCallback(cpuMapElement element,
-                   xmlXPathContextPtr ctxt,
-                   xmlNodePtr *nodes,
-                   int n,
-                   void *data)
-{
-    virCPUx86MapPtr map = data;
-
-    switch (element) {
-    case CPU_MAP_ELEMENT_VENDOR:
-        return x86VendorsLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_FEATURE:
-        return x86FeaturesLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_MODEL:
-        return x86ModelsLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_LAST:
-        break;
-    }
-
-    return 0;
-}
-
-
 static virCPUx86MapPtr
 virCPUx86LoadMap(void)
 {
@@ -1405,7 +1323,7 @@ virCPUx86LoadMap(void)
     if (VIR_ALLOC(map) < 0)
         return NULL;
 
-    if (cpuMapLoad("x86", x86MapLoadCallback, map) < 0)
+    if (cpuMapLoad("x86", x86VendorParse, x86FeatureParse, x86ModelParse, map) < 0)
         goto error;
 
     return map;

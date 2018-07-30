@@ -281,21 +281,19 @@ ppc64MapFree(struct ppc64_map *map)
     VIR_FREE(map);
 }
 
-static struct ppc64_vendor *
-ppc64VendorParse(xmlXPathContextPtr ctxt,
-                 struct ppc64_map *map)
+static int
+ppc64VendorParse(xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                 const char *name,
+                 void *data)
 {
+    struct ppc64_map *map = data;
     struct ppc64_vendor *vendor;
 
     if (VIR_ALLOC(vendor) < 0)
-        return NULL;
+        return -1;
 
-    vendor->name = virXPathString("string(@name)", ctxt);
-    if (!vendor->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU vendor name"));
+    if (VIR_STRDUP(vendor->name, name) < 0)
         goto error;
-    }
 
     if (ppc64VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -303,57 +301,36 @@ ppc64VendorParse(xmlXPathContextPtr ctxt,
         goto error;
     }
 
-    return vendor;
+    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
+        goto error;
+
+    return 0;
 
  error:
     ppc64VendorFree(vendor);
-    return NULL;
+    return -1;
 }
 
 
 static int
-ppc64VendorsLoad(struct ppc64_map *map,
-                 xmlXPathContextPtr ctxt,
-                 xmlNodePtr *nodes,
-                 int n)
-{
-    struct ppc64_vendor *vendor;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->vendors, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(vendor = ppc64VendorParse(ctxt, map)))
-            return -1;
-        map->vendors[map->nvendors++] = vendor;
-    }
-
-    return 0;
-}
-
-
-static struct ppc64_model *
 ppc64ModelParse(xmlXPathContextPtr ctxt,
-                struct ppc64_map *map)
+                const char *name,
+                void *data)
 {
+    struct ppc64_map *map = data;
     struct ppc64_model *model;
     xmlNodePtr *nodes = NULL;
     char *vendor = NULL;
     unsigned long pvr;
     size_t i;
     int n;
+    int ret = -1;
 
     if (VIR_ALLOC(model) < 0)
         goto error;
 
-    model->name = virXPathString("string(@name)", ctxt);
-    if (!model->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU model name"));
+    if (VIR_STRDUP(model->name, name) < 0)
         goto error;
-    }
 
     if (ppc64ModelFind(map, model->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -410,62 +387,21 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
         model->data.pvr[i].mask = pvr;
     }
 
+    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
+        goto error;
+
+    ret = 0;
+
  cleanup:
     VIR_FREE(vendor);
     VIR_FREE(nodes);
-    return model;
+    return ret;
 
  error:
     ppc64ModelFree(model);
-    model = NULL;
     goto cleanup;
 }
 
-
-static int
-ppc64ModelsLoad(struct ppc64_map *map,
-                xmlXPathContextPtr ctxt,
-                xmlNodePtr *nodes,
-                int n)
-{
-    struct ppc64_model *model;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->models, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(model = ppc64ModelParse(ctxt, map)))
-            return -1;
-        map->models[map->nmodels++] = model;
-    }
-
-    return 0;
-}
-
-
-static int
-ppc64MapLoadCallback(cpuMapElement element,
-                     xmlXPathContextPtr ctxt,
-                     xmlNodePtr *nodes,
-                     int n,
-                     void *data)
-{
-    struct ppc64_map *map = data;
-
-    switch (element) {
-    case CPU_MAP_ELEMENT_VENDOR:
-        return ppc64VendorsLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_MODEL:
-        return ppc64ModelsLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_FEATURE:
-    case CPU_MAP_ELEMENT_LAST:
-        break;
-    }
-
-    return 0;
-}
 
 static struct ppc64_map *
 ppc64LoadMap(void)
@@ -475,7 +411,7 @@ ppc64LoadMap(void)
     if (VIR_ALLOC(map) < 0)
         goto error;
 
-    if (cpuMapLoad("ppc64", ppc64MapLoadCallback, map) < 0)
+    if (cpuMapLoad("ppc64", ppc64VendorParse, NULL, ppc64ModelParse, map) < 0)
         goto error;
 
     return map;
