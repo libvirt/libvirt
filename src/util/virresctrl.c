@@ -1408,6 +1408,22 @@ virResctrlAllocSubtract(virResctrlAllocPtr dst,
 }
 
 
+static void
+virResctrlMemoryBandwidthSubtract(virResctrlAllocPtr free,
+                                  virResctrlAllocPtr used)
+{
+    size_t i;
+
+    if (!used->mem_bw)
+        return;
+
+    for (i = 0; i < used->mem_bw->nbandwidths; i++) {
+        if (used->mem_bw->bandwidths[i])
+            *(free->mem_bw->bandwidths[i]) -= *(used->mem_bw->bandwidths[i]);
+    }
+}
+
+
 static virResctrlAllocPtr
 virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
 {
@@ -1471,14 +1487,15 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
 }
 
 /*
- * This function creates an allocation that represents all unused parts of all
- * caches in the system.  It uses virResctrlInfo for creating a new full
- * allocation with all bits set (using virResctrlAllocNewFromInfo()) and then
- * scans for all allocations under /sys/fs/resctrl and subtracts each one of
- * them from it.  That way it can then return an allocation with only bit set
- * being those that are not mentioned in any other allocation.  It is used for
- * two things, a) calculating the masks when creating allocations and b) from
- * tests.
+ * This function creates an allocation that represents all unused parts of
+ * all caches and memory bandwidth in the system. It uses virResctrlInfo
+ * for creating a new full allocation with all bits set (using the
+ * virResctrlAllocNewFromInfo()), sets memory bandwidth 100%, and then scans
+ * for all allocations under /sys/fs/resctrl and subtracts each one of them
+ * from it. That way it can then return an allocation with only bit set
+ * being those that are not mentioned in any other allocation for CAT and
+ * available memory bandwidth for MBA. It is used for two things, calculating
+ * the masks and bandwidth available when creating allocations and from tests.
  */
 virResctrlAllocPtr
 virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
@@ -1524,6 +1541,7 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
             goto error;
         }
 
+        virResctrlMemoryBandwidthSubtract(ret, alloc);
         virResctrlAllocSubtract(ret, alloc);
         virObjectUnref(alloc);
         alloc = NULL;
@@ -1675,6 +1693,66 @@ virResctrlAllocFindUnused(virResctrlAllocPtr alloc,
 
 
 static int
+virResctrlAllocMemoryBandwidth(virResctrlInfoPtr resctrl,
+                               virResctrlAllocPtr alloc,
+                               virResctrlAllocPtr free)
+{
+    size_t i;
+    virResctrlAllocMemBWPtr mem_bw_alloc = alloc->mem_bw;
+    virResctrlAllocMemBWPtr mem_bw_free = free->mem_bw;
+    virResctrlInfoMemBWPtr mem_bw_info = resctrl->membw_info;
+
+    if (!mem_bw_alloc)
+        return 0;
+
+    if (mem_bw_alloc && !mem_bw_info) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("RDT Memory Bandwidth allocation unsupported"));
+        return -1;
+    }
+
+    for (i = 0; i < mem_bw_alloc->nbandwidths; i++) {
+        if (!mem_bw_alloc->bandwidths[i])
+            continue;
+
+        if (*(mem_bw_alloc->bandwidths[i]) % mem_bw_info->bandwidth_granularity) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Memory Bandwidth allocation of size "
+                             "%u is not divisible by granularity %u"),
+                           *(mem_bw_alloc->bandwidths[i]),
+                           mem_bw_info->bandwidth_granularity);
+            return -1;
+        }
+        if (*(mem_bw_alloc->bandwidths[i]) < mem_bw_info->min_bandwidth) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Memory Bandwidth allocation of size "
+                             "%u is smaller than the minimum "
+                             "allowed allocation %u"),
+                           *(mem_bw_alloc->bandwidths[i]),
+                           mem_bw_info->min_bandwidth);
+            return -1;
+        }
+        if (i > mem_bw_info->max_id) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("bandwidth controller id %zd does not "
+                             "exist, max controller id %u"),
+                           i, mem_bw_info->max_id);
+            return -1;
+        }
+        if (*(mem_bw_alloc->bandwidths[i]) > *(mem_bw_free->bandwidths[i])) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Not enough room for allocation of %u%% "
+                             "bandwidth on node %zd, available bandwidth %u%%"),
+                           *(mem_bw_alloc->bandwidths[i]), i,
+                           *(mem_bw_free->bandwidths[i]));
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
+static int
 virResctrlAllocCopyMasks(virResctrlAllocPtr dst,
                          virResctrlAllocPtr src)
 {
@@ -1713,10 +1791,10 @@ virResctrlAllocCopyMasks(virResctrlAllocPtr dst,
 
 
 /*
- * This function is called when creating an allocation in the system.  What it
- * does is that it gets all the unused bits using virResctrlAllocGetUnused() and
- * then tries to find a proper space for every requested allocation effectively
- * transforming `sizes` into `masks`.
+ * This function is called when creating an allocation in the system.
+ * What it does is that it gets all the unused resources using
+ * virResctrlAllocGetUnused and then tries to find a proper space for
+ * every requested allocation effectively transforming `sizes` into `masks`.
  */
 static int
 virResctrlAllocAssign(virResctrlInfoPtr resctrl,
@@ -1733,6 +1811,9 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
 
     alloc_default = virResctrlAllocGetDefault(resctrl);
     if (!alloc_default)
+        goto cleanup;
+
+    if (virResctrlAllocMemoryBandwidth(resctrl, alloc, alloc_free) < 0)
         goto cleanup;
 
     if (virResctrlAllocCopyMasks(alloc, alloc_default) < 0)
