@@ -42,7 +42,7 @@ struct virCgroupController {
     char *placement;
 };
 
-struct _virCgroup {
+struct virCgroup {
     char *path;
 
     struct virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];

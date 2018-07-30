@@ -50,6 +50,7 @@
 #include "vircgrouppriv.h"
 
 #include "virutil.h"
+#include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
