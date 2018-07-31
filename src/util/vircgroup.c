@@ -1494,68 +1494,22 @@ virCgroupNewDetectMachine(const char *name,
 }
 
 
-/*
- * Returns 0 on success, -1 on fatal error, -2 on systemd not available
- */
 static int
-virCgroupNewMachineSystemd(const char *name,
-                           const char *drivername,
-                           const unsigned char *uuid,
-                           const char *rootdir,
-                           pid_t pidleader,
-                           bool isContainer,
-                           size_t nnicindexes,
-                           int *nicindexes,
-                           const char *partition,
-                           int controllers,
-                           virCgroupPtr *group)
+virCgroupEnableMissingControllers(char *path,
+                                  pid_t pidleader,
+                                  int controllers,
+                                  virCgroupPtr *group)
 {
+    virCgroupPtr parent = NULL;
+    char *offset = path;
     int ret = -1;
-    int rv;
-    virCgroupPtr init, parent = NULL;
-    VIR_AUTOFREE(char *) path = NULL;
-    char *offset;
-
-    VIR_DEBUG("Trying to setup machine '%s' via systemd", name);
-    if ((rv = virSystemdCreateMachine(name,
-                                      drivername,
-                                      uuid,
-                                      rootdir,
-                                      pidleader,
-                                      isContainer,
-                                      nnicindexes,
-                                      nicindexes,
-                                      partition)) < 0)
-        return rv;
-
-    if (controllers != -1)
-        controllers |= (1 << VIR_CGROUP_CONTROLLER_SYSTEMD);
-
-    VIR_DEBUG("Detecting systemd placement");
-    if (virCgroupNewDetect(pidleader,
-                           controllers,
-                           &init) < 0)
-        return -1;
-
-    path = init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement;
-    init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement = NULL;
-    virCgroupFree(&init);
-
-    if (!path || STREQ(path, "/") || path[0] != '/') {
-        VIR_DEBUG("Systemd didn't setup its controller");
-        ret = -2;
-        goto cleanup;
-    }
-
-    offset = path;
 
     if (virCgroupNew(pidleader,
                      "",
                      NULL,
                      controllers,
                      &parent) < 0)
-        goto cleanup;
-
+        return ret;
 
     for (;;) {
         virCgroupPtr tmp;
@@ -1585,6 +1539,68 @@ virCgroupNewMachineSystemd(const char *name,
         }
     }
 
+    ret = 0;
+ cleanup:
+    virCgroupFree(&parent);
+    return ret;
+}
+
+
+/*
+ * Returns 0 on success, -1 on fatal error, -2 on systemd not available
+ */
+static int
+virCgroupNewMachineSystemd(const char *name,
+                           const char *drivername,
+                           const unsigned char *uuid,
+                           const char *rootdir,
+                           pid_t pidleader,
+                           bool isContainer,
+                           size_t nnicindexes,
+                           int *nicindexes,
+                           const char *partition,
+                           int controllers,
+                           virCgroupPtr *group)
+{
+    int rv;
+    virCgroupPtr init;
+    VIR_AUTOFREE(char *) path = NULL;
+
+    VIR_DEBUG("Trying to setup machine '%s' via systemd", name);
+    if ((rv = virSystemdCreateMachine(name,
+                                      drivername,
+                                      uuid,
+                                      rootdir,
+                                      pidleader,
+                                      isContainer,
+                                      nnicindexes,
+                                      nicindexes,
+                                      partition)) < 0)
+        return rv;
+
+    if (controllers != -1)
+        controllers |= (1 << VIR_CGROUP_CONTROLLER_SYSTEMD);
+
+    VIR_DEBUG("Detecting systemd placement");
+    if (virCgroupNewDetect(pidleader,
+                           controllers,
+                           &init) < 0)
+        return -1;
+
+    path = init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement;
+    init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement = NULL;
+    virCgroupFree(&init);
+
+    if (!path || STREQ(path, "/") || path[0] != '/') {
+        VIR_DEBUG("Systemd didn't setup its controller");
+        return -2;
+    }
+
+    if (virCgroupEnableMissingControllers(path, pidleader,
+                                          controllers, group) < 0) {
+        return -1;
+    }
+
     if (virCgroupAddTask(*group, pidleader) < 0) {
         virErrorPtr saved = virSaveLastError();
         virCgroupRemove(*group);
@@ -1595,10 +1611,7 @@ virCgroupNewMachineSystemd(const char *name,
         }
     }
 
-    ret = 0;
- cleanup:
-    virCgroupFree(&parent);
-    return ret;
+    return 0;
 }
 
 
