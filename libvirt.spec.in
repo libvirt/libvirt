@@ -1257,10 +1257,7 @@ rm -fr %{buildroot}
 
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
-# Avoid using makeinstall macro as it changes prefixes rather than setting
-# DESTDIR. Newer make_install macro would be better but it's not available
-# on RHEL 5, thus we need to expand it here.
-make %{?_smp_mflags} install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir} V=1
+%make_install %{?_smp_mflags} SYSTEMD_UNIT_DIR=%{_unitdir} V=1
 
 make %{?_smp_mflags} -C examples distclean V=1
 
