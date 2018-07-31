@@ -266,27 +266,22 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     if (virCgroupPartitionEscape(&partname) < 0)
         return false;
 
-    if (machinename &&
-        (virAsprintf(&partmachinename, "%s.libvirt-%s",
-                     machinename, drivername) < 0 ||
-         virCgroupPartitionEscape(&partmachinename) < 0))
+    if (virAsprintf(&partmachinename, "%s.libvirt-%s",
+                    machinename, drivername) < 0 ||
+        virCgroupPartitionEscape(&partmachinename) < 0)
         return false;
 
     if (!(scopename_old = virSystemdMakeScopeName(name, drivername, true)))
         return false;
 
-    /* We should keep trying even if this failed */
-    if (!machinename)
-        virResetLastError();
-    else if (!(scopename_new = virSystemdMakeScopeName(machinename,
-                                                       drivername, false)))
+    if (!(scopename_new = virSystemdMakeScopeName(machinename,
+                                                  drivername, false)))
         return false;
 
     if (virCgroupPartitionEscape(&scopename_old) < 0)
         return false;
 
-    if (scopename_new &&
-        virCgroupPartitionEscape(&scopename_new) < 0)
+    if (virCgroupPartitionEscape(&scopename_new) < 0)
         return false;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
@@ -315,16 +310,16 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
         tmp++;
 
         if (STRNEQ(tmp, name) &&
-            STRNEQ_NULLABLE(tmp, machinename) &&
+            STRNEQ(tmp, machinename) &&
             STRNEQ(tmp, partname) &&
-            STRNEQ_NULLABLE(tmp, partmachinename) &&
+            STRNEQ(tmp, partmachinename) &&
             STRNEQ(tmp, scopename_old) &&
-            STRNEQ_NULLABLE(tmp, scopename_new)) {
+            STRNEQ(tmp, scopename_new)) {
             VIR_DEBUG("Name '%s' for controller '%s' does not match "
                       "'%s', '%s', '%s', '%s' or '%s'",
                       tmp, virCgroupControllerTypeToString(i),
-                      name, NULLSTR(machinename), partname,
-                      scopename_old, NULLSTR(scopename_new));
+                      name, machinename, partname,
+                      scopename_old, scopename_new);
             return false;
         }
     }
