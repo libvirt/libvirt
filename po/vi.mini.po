@@ -6,10 +6,10 @@
 # Daniel  <veillard@redhat.com>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-03-05 01:32-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
 "language/vi/)\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -130,9 +130,6 @@ msgstr "'%s' không tồn tại"
 #, c-format
 msgid "'%s' file does not fit in memory"
 msgstr "tập tin '%s' không vừa trong bộ nhớ"
-
-msgid "'info blockstats' not supported by this qemu"
-msgstr "'info-blockstats' không được hỗ trợ bởi qemu này"
 
 msgid "(none)"
 msgstr "(không)"
@@ -449,10 +446,6 @@ msgid "Compute baseline CPU for a set of given CPUs."
 msgstr "Tính toán CPU gốc cho một tập hợp các CPU đã cho."
 
 #, c-format
-msgid "Config entry '%s' must be a string"
-msgstr "Mục cấu hình '%s' phải là một chuỗi"
-
-#, c-format
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr "Mục cấu hình '%s' phải thể hiện một giá trị logic (true|false)"
 
@@ -511,10 +504,6 @@ msgstr "Không thể thêm tham số 'IP' vào sơ đồ băm"
 
 msgid "Could not add variable 'MAC' to hashmap"
 msgstr "Không thể thêm tham số 'MAC' vào sơ đồ băm"
-
-#, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "Không thể cấp phát bộ nhớ cho đầu ra của '%s'"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -683,10 +672,6 @@ msgstr "Không thể phân tích chỉ mục đĩa hợp lệ từ '%s'"
 #, c-format
 msgid "Could not parse version number from '%s'"
 msgstr "Không thể phân tích số phiên bản từ '%s'"
-
-#, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "Không thể đặt tham số '%s' vào bản đồ băm"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -865,14 +850,6 @@ msgstr "Xoá một ổ đã cho."
 #, c-format
 msgid "Dest file %s too big for destination"
 msgstr "Tập tin đích %s quá lớn cho chỗ ghi"
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr "Bộ đệm ghi cho ifname ('%s') không đủ lớn"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr "Bộ đệm ghi cho linkdev (%s') không đủ lớn"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "Libvirt đích không hỗ trợ giao thức di trú p2p"
@@ -1265,14 +1242,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'numvcpus' to be an unsigned integer (1 or a multiple of "
-"2) but found %lld"
-msgstr ""
-"Mong đợi mục VMX 'numvcpus' là một số nguyên unsigned (1 hoặc bội của 2) "
-"nhưng lại thấy %lld"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%s'"
 msgstr ""
@@ -1365,10 +1334,6 @@ msgstr "Chỉ mục bộ điều khiển FDC %d vượt miền [0]"
 #, c-format
 msgid "FDC unit index %d out of [0..1] range"
 msgstr "Chỉ mục đơn vị FDC %d vượt miền [0..1]"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "Đăng ký môđun thất bại %s"
 
 #, c-format
 msgid "Failed opening %s"
@@ -1793,11 +1758,6 @@ msgstr "Thất bại khi mở tập tin '%s'"
 #, c-format
 msgid "Failed to open storage volume with path '%s'"
 msgstr "Thất bại khi mở ổ lưu trữ với đường dẫn '%s'"
-
-#, c-format
-msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr "Thất bại khi mở luồng cho miêu tả tập tin khi đọc đầu ra từ '%s': '%s'"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -2589,15 +2549,8 @@ msgstr "Thiếu mục cấu hình cốt yếu '%s'"
 msgid "Missing feature name for CPU model %s"
 msgstr "Thiếu tên tính năng cho mẫu CPU %s"
 
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "Thiếu biểu tượng đăng ký môđun %s"
-
 msgid "Missing or empty 'hostName' property"
 msgstr "Thiếu hoặc rỗng thuộc tính 'hostName'"
-
-msgid "Missing server name in phyp:// URI"
-msgstr "Thiếu tên máy phục vụ trong URI phyp://"
 
 msgid "Missing source host attribute for char device"
 msgstr "Thiếu thuộc tính máy chủ nguồn cho thiết bị ký tự"
@@ -2753,9 +2706,6 @@ msgstr ""
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "Không có thuộc tính <source> 'port' chỉ định với giao diện socket"
 
-msgid "No CPUs given"
-msgstr "Không có CPU được cho"
-
 #, c-format
 msgid "No IP address for host '%s' found: %s"
 msgstr "Không có địa chỉ IP cho máy chủ '%s' được tìm thấy: %s"
@@ -2789,16 +2739,8 @@ msgstr "Không có miền khớp tên '%s'"
 msgid "No domain with matching uuid '%s'"
 msgstr "Không có miền khớp uuid '%s'"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "Không có miền với tên '%s'"
-
 msgid "No error message provided"
 msgstr "Không có tin lỗi được cung cấp"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "Không có CPU máy chủ được chỉ định trong '%s'"
 
 msgid "No qemu command-line argument specified"
 msgstr "Không có tham số dòng lệnh qemu được chỉ định"
@@ -3708,10 +3650,6 @@ msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Bộ quản lý QEMU không mong đợi vẫn còn hoạt động trong khi xóa miền"
 
 #, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr "Dòng không mong muốn > %d ký tự khi phân tích đầu ra của '%s'"
-
-#, c-format
 msgid "Unix path %s too long for destination"
 msgstr "Đường dẫn Unix %s quá dài cho chỗ ghi"
 
@@ -3991,10 +3929,6 @@ msgstr "thoát công việc miền hoạt động"
 msgid "active"
 msgstr "hoạt động"
 
-#, c-format
-msgid "adding %s device failed: %s"
-msgstr "thêm thiết bị %s thất bại: %s"
-
 msgid "affect next boot"
 msgstr "ảnh hưởng vào khởi động kế tiếp"
 
@@ -4214,9 +4148,6 @@ msgstr "không thể tạo ống"
 #, c-format
 msgid "cannot create snapshot directory '%s'"
 msgstr "không thể tạo thư mục ảnh chụp '%s'"
-
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "không thể tạo các đĩa FAT ảo trong chế độ đọc-ghi"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -4448,22 +4379,6 @@ msgstr "không thể phân tích đơn vị drive '%s'"
 
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "không thể phân tích thông số instanceid như một uuid"
-
-#, c-format
-msgid "cannot parse json %s: %s"
-msgstr "không thể phân tích json %s: %s"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr "không thể phân tích thống kê còn lại của dữ liệu di trú %s"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "không thể phân tích thống kê tổng cộng của dữ liệu di trú %s"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr "không thể phân tích thống kê đã lưu chuyển của dữ liệu di trú %s"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -4856,10 +4771,6 @@ msgstr "không thể thay đổi trạng thái APIC thành: %s, rc=%08x"
 msgid "could not change PAE status to: %s, rc=%08x"
 msgstr "không thể thay đổi trạng thái PAE thành: %s, rc=%08x"
 
-#, c-format
-msgid "could not change media on %s: %s"
-msgstr "không thể thay đổi phương tiện trên %s: %s"
-
 msgid "could not connect to Xen Store"
 msgstr "không thể kết nối tới Xen Store"
 
@@ -4880,10 +4791,6 @@ msgstr "không thể xoá miền, rc=%08x"
 
 msgid "could not determine max vcpus for the domain"
 msgstr "không thể quyết định số vcpu lớn nhất cho miền"
-
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "không thể đẩy phương tiện ra trên %s: %s"
 
 msgid "could not find libvirtd"
 msgstr "không thể tìm libvirtd"
@@ -5095,10 +5002,6 @@ msgstr "tháo thiết bị đĩa"
 msgid "detach network interface"
 msgstr "tháo giao diện mạng"
 
-#, c-format
-msgid "detaching %s device failed: %s"
-msgstr "tháo thiết bị %s thất bại: %s"
-
 msgid "detailed domain vcpu information"
 msgstr "thông tin vcpu miền chi tiết"
 
@@ -5133,10 +5036,6 @@ msgstr "tắt tự khởi động"
 
 msgid "discover potential storage pool sources"
 msgstr "khám phá các nguồn pool lưu trữ tiềm năng"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "đĩa %s không chứa thông tin mã hóa nào"
 
 #, c-format
 msgid "disk %s not found"
@@ -5267,9 +5166,6 @@ msgstr "thông tin công việc miền"
 
 msgid "domain name or uuid"
 msgstr "tên miền hoặc uuid"
-
-msgid "domain name, id or uuid"
-msgstr "tên miền, id hoặc uuid"
 
 msgid "domain snapshot XML"
 msgstr "XML ảnh chụp miền"
@@ -5529,10 +5425,6 @@ msgid "failed to initialize SASL library: %d (%s)"
 msgstr "thất bại khi khởi chạy thư viện SASL: %d (%s)"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "thất bại khi tải môđun %s %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "thất bại khi đánh dấu network %s tự khởi động"
 
@@ -5598,10 +5490,6 @@ msgstr "thất bại khi xóa bỏ pool '%s'"
 
 msgid "failed to resume domain"
 msgstr "thất bại khi tiếp tục miền"
-
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "thất bại khi lưu đường dẫn chardev '%s'"
 
 msgid "failed to save content"
 msgstr "thất bại khi lưu nội dung"
@@ -5715,10 +5603,6 @@ msgstr "định dạng cho lưu trữ cơ sở"
 
 msgid "format of backing volume if taking a snapshot"
 msgstr "định dạng ổ backing nếu tạo một ảnh chụp"
-
-#, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr "cụm mật khẩu format='qcow' cho %s phải chứa một '\\0'"
 
 #, c-format
 msgid "formatter for %s %s reported error"
@@ -5875,10 +5759,6 @@ msgstr "kiểu mạng nội bộ không hỗ trợ"
 #, c-format
 msgid "invalid '=' after option --%s"
 msgstr "'=' không hợp lệ sau tùy chọn --%s"
-
-#, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "<encryption> không hợp lệ cho ổ %s"
 
 msgid "invalid MAC address"
 msgstr "địa chỉ MAC không hợp lệ"
@@ -6293,14 +6173,6 @@ msgstr "di trú: thời gian chết không hợp lệ"
 msgid "migration URI, usually can be omitted"
 msgstr "URI di trú, thường có thể bỏ qua"
 
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "di trú tới '%s' thất bại: %s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "di trú tới '%s' không được hỗ trợ bởi qemu này: %s"
-
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "di trú đã hoạt động, nhưng thiếu dữ liệu 'remaining' RAM"
 
@@ -6696,10 +6568,6 @@ msgstr "không có định dạng đĩa cho %s và thăm dò bị tắt"
 msgid "no disk found with alias %s"
 msgstr "không tìm thấy đĩa với biệt danh %s"
 
-#, c-format
-msgid "no disk found with path %s"
-msgstr "không tìm thấy đĩa với đường dẫn %s"
-
 msgid "no domain XML passed"
 msgstr "không có miền XML vượt qua"
 
@@ -6990,14 +6858,6 @@ msgid "pwd: cannot get current directory: %s"
 msgstr "pwd: không thể lấy thư mục hiện tại: %s"
 
 #, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "qemu không hỗ trợ đóng các móc tập tin: %s"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "qemu không hỗ trợ gửi các móc tập tin: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "giả lập qemu '%s' không hỗ trợ xen"
 
@@ -7125,9 +6985,6 @@ msgstr "các thuộc tính bí mật trong XML"
 msgid "secret is private"
 msgstr "bí mật là riêng tư"
 
-msgid "secrets already defined"
-msgstr "các bí mật đã định nghĩa"
-
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "chuỗi DOI bảo mật vượt quá %d byte lớn nhất"
@@ -7171,12 +7028,6 @@ msgstr "đặt giới hạn lớn nhất tại lần khởi động kế tiếp"
 
 msgid "set maximum tolerable downtime"
 msgstr "đặt thời gian chết cho phép lớn nhất"
-
-msgid "setting VNC password failed"
-msgstr "cài đặt mật khẩu VNC thất bại"
-
-msgid "setting disk password is not supported"
-msgstr "cài đặt mật khẩu đĩa không được hỗ trợ"
 
 msgid "setting up HAL callbacks failed"
 msgstr "cài đặt callback HAL thất bại"
@@ -7256,10 +7107,6 @@ msgstr "pool lưu trữ '%s' đã hoạt động"
 #, c-format
 msgid "storage pool '%s' is not active"
 msgstr "pool lưu trữ '%s' không hoạt động"
-
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr "pool lưu trữ không hỗ trợ dựng các ổ mã hóa từ các ổ khác"
 
 msgid "storage pool does not support encrypted volumes"
 msgstr "pool lưu trữ không hỗ trợ các ổ đã mã hóa"
@@ -7357,9 +7204,6 @@ msgstr "testOpen: cung cấp một đường dẫn hoặc sử dụng test:///de
 msgid "the backing volume if taking a snapshot"
 msgstr "ổ backing nếu tạo một ảnh chụp"
 
-msgid "the disk password is incorrect"
-msgstr "mật khẩu đĩa sai"
-
 msgid "the domain does not have a current snapshot"
 msgstr "miền không có ảnh chụp hiện tại"
 
@@ -7407,9 +7251,6 @@ msgstr "quá nhiều trình điều khiển đăng ký trong %s"
 msgid "too many memory stats requested: %d > %d"
 msgstr "quá nhiều thống kê bộ nhớ được yêu cầu: %d > %d"
 
-msgid "too many secrets for qcow encryption"
-msgstr "quá nhiều bí mật cho mã hóa qcow"
-
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "phương thức vận tải unix, ssh và ext không được hỗ trợ trong Windows"
 
@@ -7449,10 +7290,6 @@ msgstr "trình điều khiển trạng thái uml không hoạt động"
 
 msgid "umlStartup: out of memory"
 msgstr "umlStartup: thiếu bộ nhớ"
-
-#, c-format
-msgid "unable to add host net: %s"
-msgstr "không thể thêm mạng máy chủ: %s"
 
 #, c-format
 msgid "unable to allocate socket security context '%s'"
@@ -7629,10 +7466,6 @@ msgstr "kiểu địa chỉ đĩa %s không mong đợi"
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr "tuyến đĩa không mong đợi %d"
-
-#, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "chế độ đệm đĩa không mong đợi %d"
 
 #, c-format
 msgid "unexpected disk device %d"
@@ -8121,10 +7954,6 @@ msgstr "kiểu dữ liệu '%c' không hỗ trợ cho tham số '%s'"
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "tuyến đĩa không hỗ trợ '%s' với cài đặt thiết bị"
-
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "kiểu trình điều khiển đĩa không hỗ trợ cho '%s'"
 
 #, c-format
 msgid "unsupported disk type %s"

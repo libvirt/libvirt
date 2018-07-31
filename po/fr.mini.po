@@ -21,10 +21,10 @@
 # Thomas Canniot <thomas.canniot@laposte.net>, 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-02-26 09:47-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-02-26 09:47+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
 "Language: fr\n"
@@ -32,7 +32,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -218,9 +218,6 @@ msgid ""
 msgstr ""
 "« bus », « target » et « unit » doivent être spécifiés pour l'adresse source "
 "scsi hostdev"
-
-msgid "'info blockstats' not supported by this qemu"
-msgstr "« info blockstats » n'est pas pris en charge par cette qemu"
 
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
@@ -1833,9 +1830,6 @@ msgstr "Échec temporaire dans la résolution de nom"
 msgid "The certificate has no peers"
 msgstr "Le certificat n'a pas de pair"
 
-msgid "This libvirtd build does not support TLS"
-msgstr "Ce binaire de libvirt ne prend pas en charge TLS"
-
 msgid "Thread(s) per core:"
 msgstr "Thread(s) par coeur :"
 
@@ -2511,9 +2505,6 @@ msgstr "le domaine n'est pas actif"
 
 msgid "domain name or uuid"
 msgstr "nom du domaine ou UUID"
-
-msgid "domain name, id or uuid"
-msgstr "nom du domaine, ID ou UUID"
 
 msgid "domain state"
 msgstr "état du domaine"
@@ -3628,16 +3619,8 @@ msgid "unexpected disk bus %d"
 msgstr "bus de disque %d inattendu"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "mode de cache du disque %d inattendu"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "périphérique de disque %d inattendu"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "mode io du disque %d inattendu"
 
 #, c-format
 msgid "unexpected disk type %d"

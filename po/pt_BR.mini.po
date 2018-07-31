@@ -20,19 +20,19 @@
 # Filipe Rosset <rosset.filipe@gmail.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2017-04-15 11:51-0400\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2017-04-15 11:51+0000\n"
 "Last-Translator: Filipe Rosset <rosset.filipe@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
 "libvirt/language/pt_BR/)\n"
-"Language: pt-BR\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -562,9 +562,6 @@ msgstr "falta 'can-offline' na resposta de guest-get-vcpus"
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "atributo 'floor' permitido somente no elemento <inbound>"
 
-msgid "'info blockstats' not supported by this qemu"
-msgstr "o \"info blockstats\" não é suportado por este qemu"
-
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "falta 'logical-id' na resposta do guest-get-vcpus"
 
@@ -588,9 +585,6 @@ msgstr "atributo 'queries' deve ser um número positivo: %s"
 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues' é suportado somente pelo controlador virtio-scsi"
-
-msgid "'set_link' not supported by this qemu"
-msgstr "'set_link' não é suportado por este qemu"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' é somente válido para o volume de tipo 'file' "
@@ -690,12 +684,6 @@ msgstr "--%s ou --current é necessário"
 
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants requerem --from ou --current"
-
-msgid "--max-unauth-clients must be less than --max-clients"
-msgstr "--max-unauth-clients deve ser menor que --max-clients"
-
-msgid "--min-workers must be less than --max-workers"
-msgstr "--min-workers dee ser menor que --max-workers"
 
 msgid "--print-xml is incompatible with --no-metadata"
 msgstr "--print-xml é incompatível com o  --no-metadata"
@@ -1379,17 +1367,11 @@ msgstr "Não foi possível verificar o binário do QEMU %s"
 msgid "Cannot check dnsmasq binary %s"
 msgstr "Não foi possível verificar o binário do dnsmasq %s"
 
-msgid "Cannot check socket connection status"
-msgstr "Não foi possível verificar o status da conexão do soquete"
-
 msgid "Cannot close container iterator"
 msgstr "Não foi possível fechar o iterador de container"
 
 msgid "Cannot complete within timeout period"
 msgstr "Não foi possível concluir dentro do período limite"
-
-msgid "Cannot connect to agent socket"
-msgstr "falha ao conectar com o agente soquete"
 
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
@@ -2064,10 +2046,6 @@ msgid "Concrete job for %s invocation is in unknown state"
 msgstr "Trabalho concreto para invocação %s está em estado desconhecido"
 
 #, c-format
-msgid "Config entry '%s' must be a string"
-msgstr "Entrada de configuração '%s' deve ser uma faixa"
-
-#, c-format
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr ""
 "Entrada de config '%s' deve representar um valor booleano (verdadeiro|falso)"
@@ -2195,10 +2173,6 @@ msgstr "Não foi possível adicionar variável 'IP' em hashmap"
 
 msgid "Could not add variable 'MAC' to hashmap"
 msgstr "Não foi possível adicionar variável 'MAC' para hashmap"
-
-#, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "falha ao alocar memória  resultado de %s"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -2727,10 +2701,6 @@ msgid "Could not parse version number from '%s'"
 msgstr "Não foi possível analisar o número de versão do '%s'"
 
 #, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "Não foi possível colocar variante '%s' no hashmap"
-
-#, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "Não foi possível pesquisar valor de registro '%s\\%s'"
 
@@ -3084,14 +3054,6 @@ msgstr "Descendente:"
 #, c-format
 msgid "Dest file %s too big for destination"
 msgstr "Arquivo Dest %s é muito grande para o destino"
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr "Buffer de destino para ifname (\"%s\") não é grande o suficiente"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr "Buffer de destino para linkdev (\"%s\") não é grande o suficiente"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "libvirt destino não suporta o protocolo de migração de ponto a ponto"
@@ -3795,14 +3757,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'numvcpus' to be an unsigned integer (1 or a multiple of "
-"2) but found %lld"
-msgstr ""
-"Esperando a entrada do VMX 'numvcpus' a ser um inteiro não assinado (1 ou um "
-"múltiplo de 2) mas foi encontrado %lld"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%s'"
 msgstr ""
@@ -3918,10 +3872,6 @@ msgstr "Índice de unidade de FDC %d fora de intervalo "
 
 msgid "Failed"
 msgstr "Falhou"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "Falha do registro de módulo %s"
 
 #, c-format
 msgid "Failed opening %s"
@@ -4842,13 +4792,6 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "Falha ao abrir volume de armazenamento com o caminho '%s' "
 
 #, c-format
-msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr ""
-"Falha ao abrir faixa para descritor de arquivo ao ler o resultado a partir "
-"de  '%s': '%s'"
-
-#, c-format
 msgid "Failed to open tty %s"
 msgstr "falha ao abrir tty %s"
 
@@ -5426,10 +5369,6 @@ msgstr "Falha ao estabelecer a sessão SSH."
 msgid "Failure to mask address"
 msgstr "Falha ao mascarar endereço"
 
-#, c-format
-msgid "Failure while applying current filter on VM %s"
-msgstr "Falha ao aplicar o filtro atual em MV %s"
-
 msgid "Failure while reading log output"
 msgstr "Falha ao ler o resultado do log"
 
@@ -5450,14 +5389,6 @@ msgstr "Memória de kernel de campo muito longa para o destino"
 #, c-format
 msgid "Field name '%s' too long"
 msgstr "Nome do campo '%s' muito grande"
-
-#, c-format
-msgid ""
-"File '%s' does not contain a <cpu> element or is not a valid domain or "
-"capabilities XML"
-msgstr ""
-"Arquivo '%s' não contém um elemento <cpu> ou não é um domínio válido ou "
-"capacidades de XML"
 
 #, c-format
 msgid "File '%s' has unknown type"
@@ -6547,12 +6478,6 @@ msgstr "ID de iterador excede máximo de ID de %u"
 msgid "JSON monitor is required"
 msgstr "monitor JSON é requerido"
 
-msgid "JSON monitor should be using AddNetdev"
-msgstr "Monitor JSON deveria estar usando o AddNetdev"
-
-msgid "JSON monitor should be using RemoveNetdev"
-msgstr "Monitor de JSON deveria estar usando o RemoveNetdev"
-
 #, c-format
 msgid "Job submission failed on interface '%s'"
 msgstr "submissão de trabalhou falhou na interface '%s'"
@@ -6703,9 +6628,6 @@ msgstr ""
 msgid "Malformed TLS whitelist regular expression '%s'"
 msgstr "Expressão regular do whitelist TLS malformado '%s'"
 
-msgid "Malformed clients data in JSON document"
-msgstr "Dados de clientes malformados no documento JSON"
-
 #, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
 msgstr "Configurações de ctrl-alt-del malformada '%s'"
@@ -6718,9 +6640,6 @@ msgstr "Vaor de dispositivo malformado '%s'"
 msgid "Malformed lease target offset %s"
 msgstr "Offset alvo do lease é malformado %s"
 
-msgid "Malformed lockspaces data from JSON file"
-msgstr "Dados de lockspaces malformados a partir do arquivo JSON"
-
 msgid "Malformed mdnsGroupName data in JSON document"
 msgstr "Dados do mdnsGroupName malformados no documento JSON"
 
@@ -6730,15 +6649,6 @@ msgstr "Porta nbd malformada '%s'"
 
 msgid "Malformed owner value in JSON document"
 msgstr "Valor de proprietário malformado no documento JSON"
-
-msgid "Malformed owners value in JSON document"
-msgstr "Valor de proprietários malformados no documento JSON"
-
-msgid "Malformed resources value in JSON document"
-msgstr "Valor de recursos malfomado no documento JSON"
-
-msgid "Malformed services data in JSON document"
-msgstr "Dados de serviços malformados no documento JSON"
 
 #, c-format
 msgid "Malformed size %s"
@@ -7056,10 +6966,6 @@ msgstr "Falta dados do max_workers no documento do JSON"
 msgid "Missing min_workers data in JSON document"
 msgstr "Falta dados do min_workers no documento do JSON"
 
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "Falta símbolo de registro de módulo %s"
-
 msgid "Missing monitor reply object"
 msgstr "Objeto de resposta de monitor faltando"
 
@@ -7172,9 +7078,6 @@ msgstr "Falta dados restritos no documento JSON"
 msgid "Missing server data from JSON file"
 msgstr "Falta dados de servidor a partir do arquivo JSON"
 
-msgid "Missing server name in phyp:// URI"
-msgstr "Nome de servidor faltando em phyp:// URI"
-
 msgid "Missing service data in JSON document"
 msgstr "Falta dados de serviço no documento JSON"
 
@@ -7195,10 +7098,6 @@ msgstr "Falta o atributo do caminho da origem para o dispositivo char"
 
 msgid "Missing source service attribute for char device"
 msgstr "Falta o atributo da fonte do dispositivo de caractere"
-
-#, c-format
-msgid "Missing space when parsing output of '%s'"
-msgstr "Falta espaço ao analisar o resultado de '%s'"
 
 msgid "Missing storage block path"
 msgstr "Falta caminho de bloco de armazenamento"
@@ -7501,9 +7400,6 @@ msgid "No <source> 'port' attribute specified with socket interface"
 msgstr ""
 "Não foi especificado o atributo \"porta\" <source> com a interface do socket"
 
-msgid "No CPUs given"
-msgstr "Nenhuma CPUs fornecida"
-
 #, c-format
 msgid "No FD available at slot %zu"
 msgstr "Nenhum FD disponível no slot %zu"
@@ -7597,10 +7493,6 @@ msgstr "não existe domínio que corresponda ao uuid \"%s\""
 msgid "No domain with name %s"
 msgstr "Nenhum domínio com nome %s"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "Não existe domínio com o nome '%s'"
-
 msgid "No error message from child failure"
 msgstr "Nenhuma mensagem de erro da falha do filho"
 
@@ -7622,14 +7514,6 @@ msgstr "Nenhum dispositivo veth disponível"
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "Nenhum backend de gráficos com o índice %d"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "nenhuma CPU host especificada \"%s\""
-
-#, c-format
-msgid "No info for device '%s'"
-msgstr "Nenhuma informação para o dispositivo '%s'"
 
 msgid "No interface attached to bridge"
 msgstr "Nenhuma Interface conectada com ponte"
@@ -8085,9 +7969,6 @@ msgstr "Frase senha para a chave '%s'"
 
 msgid "Password request failed"
 msgstr "Requisição de senha falhou "
-
-msgid "Password request seen, but no handler available"
-msgstr "Requisição de senha vista, mas não há nenhum manuseador disponível"
 
 msgid "Path"
 msgstr "Caminho"
@@ -9820,9 +9701,6 @@ msgstr "Esta função não é suportada na plataforma WIN32"
 msgid "This host is not managed by a vCenter"
 msgstr "Este host não é gerenciado pelo vCenter"
 
-msgid "This libvirtd build does not support TLS"
-msgstr "Esta construção do libvirtd  não suporta o TLS"
-
 msgid "This type of device cannot be hot unplugged"
 msgstr ""
 "esse tipo de dispositivo de disco não pode ser desconectado de forma hot"
@@ -10199,12 +10077,6 @@ msgstr "Não foi possível copiar manuseio de arquivo de soquete"
 msgid "Unable to create %s"
 msgstr "Incapaz de criar %s"
 
-msgid "Unable to create JSON formatter"
-msgstr "Falha ao criar formatador do JSON"
-
-msgid "Unable to create JSON parser"
-msgstr "Não foi possível criar o analisardor do JSON"
-
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "falha em criar  LPAR. Razão: '%s'"
@@ -10393,10 +10265,6 @@ msgstr "Falha ao codificar o número de FDs"
 #, c-format
 msgid "Unable to exec shell %s"
 msgstr "Não foi possível executar o shell %s"
-
-#, c-format
-msgid "Unable to extract disk path from %s"
-msgstr "Falha ao extrair caminho de disco de %s"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr ""
@@ -11204,10 +11072,6 @@ msgstr "Tipo de sistema de arquivo inesperado %s"
 msgid "Unexpected hostdev mode %d"
 msgstr "modo de hostdev inesperado %d"
 
-#, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr "Linha inesperada > %d caracteres ao analisar resultado de '%s'"
-
 msgid "Unexpected lock parameters for disk resource"
 msgstr "Parâmetros de bloqueio inesperados para o recurso de disco"
 
@@ -11970,10 +11834,6 @@ msgstr ""
 msgid "add a column showing parent snapshot"
 msgstr "adiciona uma coluna exibindo snapshot pai"
 
-#, c-format
-msgid "adding %s device failed: %s"
-msgstr "adição do dispositivo %s falhou: %s"
-
 msgid "additionally display the type and device value"
 msgstr "Adicionalmente exibe o tipo de valor de dispositivo"
 
@@ -12107,9 +11967,6 @@ msgid ""
 msgstr ""
 "em linha %d: %s%s\n"
 "%s"
-
-msgid "atomic live snapshot of multiple disks is unsupported"
-msgstr "snapshot ativo atômico de discos múltiplos não é suportado"
 
 msgid "attach device from an XML file"
 msgstr "conecta um dispositivo a partir de um arquivo XML"
@@ -12696,9 +12553,6 @@ msgstr "não fo possível criar pipe para a migração tunnelled"
 msgid "cannot create snapshot directory '%s'"
 msgstr "não foi possível criar o diretório de snapshot \"%s\""
 
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "não foi possível criar os discos FAT virtuais em modo leitura-gravação"
-
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "não foi possível decodificar os dados da CPU para a arquitetura %s"
@@ -13001,9 +12855,6 @@ msgstr "não foi possível misturar a faixa I/O com comando assíncrono"
 msgid "cannot mix string I/O with daemon"
 msgstr "não foi possível misturar a faixa de I/O com o daemon "
 
-msgid "cannot modify network device alias"
-msgstr "não foi possível modificar alias de dispositivo de rede"
-
 msgid "cannot modify network device boot index setting"
 msgstr ""
 "não foi possível modificar configuração de índice de inicialização de "
@@ -13150,20 +13001,6 @@ msgid "cannot parse device start location"
 msgstr "não foi possível analisar a localização de início do dispositivo"
 
 #, c-format
-msgid "cannot parse disk migration data remaining statistic %s"
-msgstr ""
-"não foi possível analisar estatística remanescente de dados de migração %s"
-
-#, c-format
-msgid "cannot parse disk migration data total statistic %s"
-msgstr "não foi possível analisar estatística total de dados de migração %s"
-
-#, c-format
-msgid "cannot parse disk migration data transferred statistic %s"
-msgstr ""
-"não foi possível analisar a estatística transferida dos dados de migração %s"
-
-#, c-format
 msgid "cannot parse drive bus '%s'"
 msgstr "não foi possível analisar o bus do driver '%s'"
 
@@ -13188,24 +13025,6 @@ msgstr "não foi possível analisar parâmetro de interfaceid como uma uuid"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "não foi possível analisar o modo io '%s'"
-
-#, c-format
-msgid "cannot parse json %s: %s"
-msgstr "não foi possível analisar json %s: %s"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr ""
-"não foi possível analisar estatística remanescente de dados de migração %s"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "não foi possível analisar estatística total de dados de migração %s"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr ""
-"não foi possível analisar estatística transferida de dados de migração  %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -13941,10 +13760,6 @@ msgstr "não foi possível mudar o estado do API para:%s, rc=%08x"
 msgid "could not change PAE status to: %s, rc=%08x"
 msgstr "não foi possível mudar o estado PAE para: %s, rc=%08x"
 
-#, c-format
-msgid "could not change media on %s: %s"
-msgstr "não foi possível mudar  a mídia em  %s: %s"
-
 msgid "could not close handshake fd"
 msgstr "não foi possível fechar o handshake fd"
 
@@ -13995,10 +13810,6 @@ msgstr "não foi possível desconectar a pasta compartilhada '%s', rc=%08x"
 
 msgid "could not determine max vcpus for the domain"
 msgstr "não foi possível determinar o número máximo de vcpus para o domínio"
-
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "não foi possível retirar mídia em  %s: %s"
 
 msgid "could not find libvirtd"
 msgstr "não foi possível encontrar libvirtd"
@@ -14351,9 +14162,6 @@ msgstr "a conta do vcpu atual deve ser igual ao máximo"
 msgid "current vcpus must be equal to maxvcpus"
 msgstr "vcpus atual deve ser igual ao maxvcpus"
 
-msgid "currently is supported only taking screenshots of screen ID 0"
-msgstr "atualmente é suportado somente obtendo screenshots do ID 0 da tela"
-
 #, c-format
 msgid "daemonized command cannot set working directory %s"
 msgstr "comando daemonized não pode definir diretório em funcionamento %s"
@@ -14462,10 +14270,6 @@ msgstr "desconecta a interface de rede"
 msgid "detach node device from its device driver"
 msgstr "desconecta dispositivo de nó ao seu driver de dispositivo"
 
-#, c-format
-msgid "detaching %s device failed: %s"
-msgstr "desconexão do dispositivo %s falhou: %s"
-
 msgid "detaching serial console is not supported"
 msgstr "desconectar o console em série não é suportado"
 
@@ -14517,9 +14321,6 @@ msgstr "chave do dispositivo"
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr "nome do dispositivo ou par wwn no formato 'wwnn,wwpn'"
 
-msgid "device name rejected"
-msgstr "nome do dispositivo foi rejeitado"
-
 msgid "device not present in domain configuration"
 msgstr "dispositivo não está presente na configuração do domínio"
 
@@ -14542,9 +14343,6 @@ msgstr "tipo de dispostivo '%s' não pode ser atualizado"
 #, c-format
 msgid "device type '%s' cannot hot unplugged"
 msgstr "tipo de dispositivo '%s' não pode ser desconectado hot"
-
-msgid "device-list-properties reply data was missing 'name'"
-msgstr "resposta de query-list-properties estava faltando 'name'"
 
 msgid "devices cgroup isn't mounted"
 msgstr "dispositivos cgroup não foi montado"
@@ -14593,10 +14391,6 @@ msgstr "descobre origens potenciais para pools de armazenamento"
 
 msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
 msgstr "separa classes de NUMA cpu que não são suportadas com este QEMU"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "o disco %s não possui nenhuma informação de criptografia"
 
 #, c-format
 msgid "disk %s has no source file to be committed"
@@ -14892,9 +14686,6 @@ msgstr "informações de trabalho de domínio"
 msgid "domain name or uuid"
 msgstr "nome do domínio ou uuid"
 
-msgid "domain name, id or uuid"
-msgstr "nome do domínio, id ou uuid"
-
 msgid "domain save job"
 msgstr "trabalho de salvamento de domínio"
 
@@ -15163,9 +14954,6 @@ msgstr "esperando %zu veths, mas obteve %zu"
 
 msgid "expecting a name"
 msgstr "um nome é esperado"
-
-msgid "expecting a scsi:00.00.00 address."
-msgstr "esperando por um endereço scsi:00.00.00."
 
 msgid "expecting a separator"
 msgstr "um separador é esperado"
@@ -15494,10 +15282,6 @@ msgid "failed to list host interfaces: %s%s%s"
 msgstr "Falha ao listar interfaces de host: %s%s%s"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "falha ao carregar o modelo %s %s"
-
-#, c-format
 msgid "failed to lookup interface with MAC address '%s'"
 msgstr "falha ao procurar por interface com o enderçeo MAC '%s'"
 
@@ -15672,20 +15456,12 @@ msgstr "falha ao executar '%s' a --version %s"
 msgid "failed to run apparmor_parser"
 msgstr "falha ao executar apparmor_parser"
 
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "falha ao salvar caminho chardev '%s'"
-
 msgid "failed to save content"
 msgstr "falha ao salvar o conteúdo"
 
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr "falha ao procurar o finalde %s"
-
-#, c-format
-msgid "failed to send key '%s'"
-msgstr "falha ao enviar a chave '%s'"
 
 msgid "failed to serialize S-Expr"
 msgstr "falha ao serializar S-Expr"
@@ -15938,10 +15714,6 @@ msgstr "formato para armazenamento subjacente"
 
 msgid "format of backing volume if taking a snapshot"
 msgstr "formato de volume de backup se tirar um snapshot"
-
-#, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr "frase senha de format='qcow' para %s não deve conter um '\\0'"
 
 #, c-format
 msgid "formatter for %s %s reported error"
@@ -16234,9 +16006,6 @@ msgstr ""
 msgid "info balloon reply was missing balloon data"
 msgstr "Resposta de balão de informação estava faltando dados de balão"
 
-msgid "info block not supported by this qemu"
-msgstr "o \"info blockstats\" não é suportado por este qemu"
-
 msgid "info migration reply was missing return status"
 msgstr "Resposta de Balão de informação estava faltando dados de retorno"
 
@@ -16347,10 +16116,6 @@ msgstr "inválido '=' after option --%s"
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
 msgstr "elemento <address> inválido encontrado em <forward> de rede %s"
-
-#, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "<encryption> inválida para o volume %s"
 
 #, c-format
 msgid "invalid <host> element found in <dns> of network %s"
@@ -16505,10 +16270,6 @@ msgstr "Retorno de catchup inválido"
 msgid "invalid catchup threshold"
 msgstr "Limite de catchup inválido"
 
-#, c-format
-msgid "invalid certificate name: %s"
-msgstr "Nome de certificado inválido: %s"
-
 msgid "invalid cipher size for TLS session"
 msgstr "tamanho da cifra para a sessão TLS inválido"
 
@@ -16525,10 +16286,6 @@ msgstr "ponteiro de conexão inválido em"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "ponteiro de conexão inválido em %s"
-
-#, c-format
-msgid "invalid database name: %s"
-msgstr "Nome de banco de dados inválido: %s"
 
 #, c-format
 msgid "invalid device name '%s'"
@@ -17430,14 +17187,6 @@ msgstr "migração cancelada"
 msgid "migration protocol going backwards %s => %s"
 msgstr "protocolo de migração indo para trás %s => %s"
 
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "migração para '%s' falhou: %s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "migração para '%s' não foi suportada por este qemu: %s"
-
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr ""
 "migração estava ativa, mas os dados da RAM 'remanescentes' estavam faltando"
@@ -18317,10 +18066,6 @@ msgid "no disk found with alias %s"
 msgstr "não foi encontrado nenhum disco com o alias %s"
 
 #, c-format
-msgid "no disk found with path %s"
-msgstr "não foi encontrado nenhum disco com o caminho %s"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "nenhum disco nomeado '%s'"
 
@@ -18648,10 +18393,6 @@ msgstr "ok"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "commit online não é suportada neste binário do QEMU"
-
-msgid "only 1 graphics device of each type (sdl, vnc, spice) is supported"
-msgstr ""
-"somente 1 dispositivo gráfico de cada tipo (sdl, vnc, spice) é suportado"
 
 msgid "only TCP listen is supported for chr device"
 msgstr "para dispositivo chr, somente há suporte à escuta TCP "
@@ -19093,14 +18834,6 @@ msgid "qemu does not support SGA"
 msgstr "qemu não suporta SGA"
 
 #, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "qemu não suporta fechamento de manuseios de arquivo: %s"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "qemu não suporta envio de manuseios de arquivo: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "o emulador do qemu '%s' não suporta o xen"
 
@@ -19136,14 +18869,8 @@ msgstr "qom-set tipo de propriedade de objeto inválido %d"
 msgid "query-command-line-options parameter data was missing 'name'"
 msgstr "parâmetro de opções de query-command-line estava faltando 'name'"
 
-msgid "query-command-line-options parameter data was not an array"
-msgstr "dados de parâmetros de opções query-commands-line não era uma matriz"
-
 msgid "query-command-line-options reply data was missing 'option'"
 msgstr "dados de resposta da opção query-command-line estava faltando 'option'"
-
-msgid "query-command-line-options reply data was not an array"
-msgstr "dados de resposta de query-commands-line não era uma matriz"
 
 msgid "query-command-line-options reply was missing return data"
 msgstr "resposta de query-command-line estava faltando dados de retorno"
@@ -19404,9 +19131,6 @@ msgstr "reutiliza quaisquer arquivos externos existentes"
 msgid "reuse existing destination"
 msgstr "reusar o destino existente"
 
-msgid "reuse is not supported with this QEMU binary"
-msgstr "reutilização não é suportado com este binário de QEMU"
-
 msgid "revert requires force"
 msgstr "reversão requer força"
 
@@ -19422,9 +19146,6 @@ msgstr "reversão para ponto de recuperação prévio "
 
 msgid "rollback to previous saved configuration created via iface-begin"
 msgstr "reversão para configuração prévia criada via iface-begin foi salva"
-
-msgid "rombar and romfile are supported only for PCI devices"
-msgstr "rombar e romfile são suportados somente para dispositivos de PCI"
 
 msgid "root element was not source"
 msgstr "elemento root não era a fonte"
@@ -19520,9 +19241,6 @@ msgstr "atributos de segredo no XML"
 msgid "secret is private"
 msgstr "segredo é privado"
 
-msgid "secrets already defined"
-msgstr "segredos já definidos"
-
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "faixa DOI de segurança excede max de bytes %d"
@@ -19613,12 +19331,6 @@ msgstr "configuração ACPI S3 não é suportado"
 
 msgid "setting ACPI S4 not supported"
 msgstr "configuração ACPI S4 não é suportado"
-
-msgid "setting VNC password failed"
-msgstr "falha ao definir a senha VNC"
-
-msgid "setting disk password is not supported"
-msgstr "configuração de senha de disco não é suportada"
 
 msgid "setting up HAL callbacks failed"
 msgstr "falha ao definir as chamadas HAL "
@@ -19723,9 +19435,6 @@ msgstr "socketpair falhou"
 
 msgid "sockpair failed"
 msgstr "falha no sockpair"
-
-msgid "socks field in JSON was not an array"
-msgstr "campo de socks no JSON não era uma matriz"
 
 msgid "source config data format"
 msgstr "formato de dados de configuração fonte"
@@ -19846,12 +19555,6 @@ msgstr "o pool de armazenamento \"%s\" não está ativo"
 #, c-format
 msgid "storage pool '%s' is still active"
 msgstr "pool de armazenamento '%s' ainda está ativo"
-
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr ""
-"o pool de armazenamento não tem suporte para a criação de volume de outros "
-"volumes"
 
 msgid "storage pool does not support changing of volume capacity"
 msgstr ""
@@ -20040,12 +19743,6 @@ msgstr "o endereço MAC '%s' corresponde às interfaces múltiplas"
 msgid "the QEMU binary does not support %s"
 msgstr "O binário QEMU não suporta %s"
 
-msgid "the QEMU binary does not support kqemu"
-msgstr "o binário do QEMU  não suporta kqemu"
-
-msgid "the QEMU binary does not support kvm"
-msgstr "o binário QEMU não suporta kvm"
-
 msgid "the backing volume if taking a snapshot"
 msgstr "o volume de backup caso tire um snapshot"
 
@@ -20061,9 +19758,6 @@ msgstr "o codeset do keycodes, padrão: linux"
 
 msgid "the default lockspace already exists"
 msgstr "o lockspace padrão já existe"
-
-msgid "the disk password is incorrect"
-msgstr "a senha de disco está incorreta"
 
 msgid "the domain does not have a current snapshot"
 msgstr "o domínio não possui um snapshot atual"
@@ -20234,9 +19928,6 @@ msgstr "muitos códigos chave"
 msgid "too many memory stats requested: %d > %d"
 msgstr "muitas stats de memória requisitadas: %d > %d"
 
-msgid "too many secrets for qcow encryption"
-msgstr "muitos segredos para a criptografia qcow"
-
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "topo '%s' na corrente para '%s' não possui arquivo de backup"
@@ -20354,10 +20045,6 @@ msgstr "Não foi possível acessar disco %s\n"
 msgid "unable to add SSH host key for host '%s': %s"
 msgstr "incapaz de adicionar a chave de host SSH para o host '%s': %s"
 
-#, c-format
-msgid "unable to add host net: %s"
-msgstr "não foi possível adicionar rede de host: %s"
-
 msgid "unable to allocate security context"
 msgstr "não foi possível alocar o contexto de segurança"
 
@@ -20418,9 +20105,6 @@ msgid ""
 msgstr ""
 "falha ao remover interface '%s' em rede '%s'. Está sendo utilizado "
 "atualmente pelos domínios %d"
-
-msgid "unable to determine array size"
-msgstr "Não foi possível determinar o tamanho de matriz"
 
 msgid "unable to determine if snapshot has parent"
 msgstr "falha ao determinar se o snapshot possui pai"
@@ -20548,10 +20232,6 @@ msgstr "não foi possível registrar eventos de monitor"
 #, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "Incapaz de salvar metadados para snapshots de %s"
-
-#, c-format
-msgid "unable to send file handle '%s': %s"
-msgstr "não foi possível enciar manuseio de arquivo '%s': %s"
 
 #, c-format
 msgid "unable to set AppArmor profile '%s' for '%s'"
@@ -20701,14 +20381,6 @@ msgid "unexpected address type for scsi disk"
 msgstr "tipo de endereço inesperado para o disco scsi"
 
 #, c-format
-msgid "unexpected async job %d"
-msgstr "async inesperado %d"
-
-#, c-format
-msgid "unexpected balloon information '%s'"
-msgstr "informação de balão inesperada '%s'"
-
-#, c-format
 msgid "unexpected boot device type %d"
 msgstr "tipo de dispositivo de inicialização %d inesperado"
 
@@ -20747,16 +20419,8 @@ msgid "unexpected disk bus %d"
 msgstr "barramento de disco %d inesperado"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "modo de cache de disco %d inesperado"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "dispositivo de disco %d inesperado"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "modo io de disco  %d inesperado"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -20875,10 +20539,6 @@ msgstr "tipo de pool não esperado"
 
 msgid "unexpected problem reading snapshot xml"
 msgstr "problema inesperado ao ler xml de snapshot"
-
-#, c-format
-msgid "unexpected reply from info status: %s"
-msgstr "Resposta inesperada do status de info: %s"
 
 #, c-format
 msgid "unexpected root element <%s> expecting <device>"
@@ -21305,11 +20965,6 @@ msgid "unknown hub device type '%s'"
 msgstr "tipo de dispositvo de hub desconhecido '%s'"
 
 #, c-format
-msgid "unknown image format of '%s' and format probing is disabled"
-msgstr ""
-"formato de imagem desconhecido '%s' e análise de formato é desabilitado"
-
-#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "tipo de barramento de entrada desconhecido \"%s\""
 
@@ -21728,10 +21383,6 @@ msgstr "bus de disco não suportado '%s' com configuração de dispositivo"
 msgid "unsupported disk device"
 msgstr "dispositivo de disco não suportado"
 
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "O tipo de driver de disco não é suportado para '%s'"
-
 msgid "unsupported disk type"
 msgstr "tipo de disco não suportado"
 
@@ -22048,10 +21699,6 @@ msgstr ""
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%s'"
 msgstr "virNWFilterDHCPSnoopReq virThreadCreate falhou na interface '%s'"
-
-#, c-format
-msgid "virNWFilterDHCPSnoopReq: can't copy variables on if %s"
-msgstr "virNWFilterDHCPSnoopReq: não foi possível copiar variáveis em se %s"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %d corrupt"

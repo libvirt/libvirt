@@ -10,10 +10,10 @@
 # Piotr Drąg <piotrdrag@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2016-09-16 11:27-0400\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2016-09-16 11:27+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
 "pl/)\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -183,9 +183,6 @@ msgstr "„%s” nie istnieje"
 #, c-format
 msgid "'%s' file does not fit in memory"
 msgstr "plik „%s” nie mieści się w pamięci"
-
-msgid "'info blockstats' not supported by this qemu"
-msgstr "„info blockstats” jest nieobsługiwane przez te QEMU"
 
 msgid "(none)"
 msgstr "(brak)"
@@ -564,10 +561,6 @@ msgid "Compute baseline CPU for a set of given CPUs."
 msgstr "Oblicza podstawowy procesor dla zestawu podanych procesorów."
 
 #, c-format
-msgid "Config entry '%s' must be a string"
-msgstr "Wpis konfiguracji „%s” musi być ciągiem"
-
-#, c-format
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr ""
 "Wpis konfiguracji „%s” musi mieć wartość zmiennej logicznej (true|false)"
@@ -634,10 +627,6 @@ msgstr "Nie można dodać zmiennej „IP” do mapy skrótów"
 
 msgid "Could not add variable 'MAC' to hashmap"
 msgstr "Nie można dodać zmiennej „MAC” do mapy skrótów"
-
-#, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "Nie można przydzielić pamięci dla wyjścia „%s”"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -886,10 +875,6 @@ msgstr "Nie można przetworzyć prawidłowego indeksu dysku z „%s”"
 msgid "Could not parse version number from '%s'"
 msgstr "Nie można przetworzyć numeru wersji z „%s”"
 
-#, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "Nie można umieścić zmiennej „%s” w mapie sum kontrolnych"
-
 msgid "Could not re-enable SIGPIPE"
 msgstr "Nie można ponownie włączyć SIGPIPE"
 
@@ -1111,14 +1096,6 @@ msgstr "Usuwa podany wolumin."
 #, c-format
 msgid "Dest file %s too big for destination"
 msgstr "Plik docelowy %s jest za duży dla celu"
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr "Bufor docelowy dla ifname („%s”) nie jest dość duży"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr "Bufor docelowy dla linkdev („%s”) nie jest dość duży"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr ""
@@ -1544,14 +1521,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'numvcpus' to be an unsigned integer (1 or a multiple of "
-"2) but found %lld"
-msgstr ""
-"Oczekiwano, że wpis „numvcpus” VMX wynosi niepodpisaną liczbę całkowitą (1 "
-"lub wielokrotność 2), ale odnaleziono %lld"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%s'"
 msgstr ""
@@ -1650,10 +1619,6 @@ msgstr "Indeks kontrolera FDC %d jest spoza zakresu [0]"
 #, c-format
 msgid "FDC unit index %d out of [0..1] range"
 msgstr "Indeks jednostki FDC %d jest spoza zakresu [0...1]"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "Rejestracja modułu %s się nie powiodła"
 
 #, c-format
 msgid "Failed opening %s"
@@ -2120,13 +2085,6 @@ msgstr "Otwarcie pliku „%s” się nie powiodło"
 msgid "Failed to open storage volume with path '%s'"
 msgstr ""
 "Otwarcie woluminu pamięci masowej za pomocą ścieżki „%s” się nie powiodło"
-
-#, c-format
-msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr ""
-"Otwarcie potoku dla deskryptora pliku podczas odczytywania wyjścia z „%s” "
-"się nie powiodło: „%s”"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -3026,15 +2984,8 @@ msgstr "Brak niezbędnego wpisu konfiguracji „%s”"
 msgid "Missing feature name for CPU model %s"
 msgstr "Brak nazwy funkcji dla modelu procesora %s"
 
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "Brak symbolu rejestracji modułu %s"
-
 msgid "Missing or empty 'hostName' property"
 msgstr "Brak właściwości „hostName” lub jest pusta"
-
-msgid "Missing server name in phyp:// URI"
-msgstr "Brak nazwy serwera w adresie URI phyp://"
 
 msgid "Missing source host attribute for char device"
 msgstr "Brak atrybutu źródłowego gospodarza dla urządzenia znakowego"
@@ -3196,9 +3147,6 @@ msgstr ""
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "Brak atrybutu <source> „port” podanego za pomocą interfejsu gniazda"
 
-msgid "No CPUs given"
-msgstr "Nie podano procesorów"
-
 #, c-format
 msgid "No IP address for host '%s' found: %s"
 msgstr "Nie odnaleziono adresu IP dla gospodarza „%s”: %s"
@@ -3236,16 +3184,8 @@ msgstr "Brak domeny pasującej do nazwy „%s”"
 msgid "No domain with matching uuid '%s'"
 msgstr "Brak domeny pasującej do UUID „%s”"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "Brak domeny o nazwie „%s”"
-
 msgid "No error message provided"
 msgstr "Nie podano komunikatu o błędzie"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "Nie podano procesora gospodarza w „%s”"
 
 msgid "No qemu command-line argument specified"
 msgstr "Nie podano żadnego parametru QEMU w wierszu poleceń"
@@ -4356,10 +4296,6 @@ msgid "Unexpected error"
 msgstr "Nieoczekiwany błąd"
 
 #, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr "Nieoczekiwany wiersz > %d znaków podczas przetwarzania wyjścia „%s”"
-
-#, c-format
 msgid "Unix path %s too long for destination"
 msgstr "Gniazdo uniksowe %s jest za długie dla celu"
 
@@ -4692,10 +4628,6 @@ msgstr "przerywa zadanie aktywnej domeny"
 msgid "active"
 msgstr "aktywne"
 
-#, c-format
-msgid "adding %s device failed: %s"
-msgstr "dodanie urządzenia %s się nie powiodło: %s"
-
 msgid "affect next boot"
 msgstr "ma wpływ na następne uruchomienie"
 
@@ -5003,9 +4935,6 @@ msgstr "nie można utworzyć potoku dla tunelowanej migracji"
 msgid "cannot create snapshot directory '%s'"
 msgstr "nie można utworzyć katalogu migawki „%s”"
 
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "nie można utworzyć wirtualnych dysków FAT w trybie do odczytu i zapisu"
-
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "nie można dekodować danych procesora dla architektury %s"
@@ -5267,22 +5196,6 @@ msgstr "nie można przetworzyć parametru instanceid jako UUID"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "nie można przetworzyć trybu wejścia/wyjścia „%s”"
-
-#, c-format
-msgid "cannot parse json %s: %s"
-msgstr "nie można przetworzyć JSON %s: %s"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr "nie można przetworzyć statystyki pozostałych danych migracji %s"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "nie można przetworzyć statystyki całkowitych danych migracji %s"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr "nie można przetworzyć statystyki przesłanych danych migracji %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -5778,10 +5691,6 @@ msgstr "nie można zmienić stanu APIC na: %s, rc=%08x"
 msgid "could not change PAE status to: %s, rc=%08x"
 msgstr "nie można zmienić stanu PAE na: %s, rc=%08x"
 
-#, c-format
-msgid "could not change media on %s: %s"
-msgstr "nie można zmienić nośnika w %s: %s"
-
 msgid "could not close logfile"
 msgstr "nie można zamknąć pliku dziennika"
 
@@ -5808,10 +5717,6 @@ msgstr "nie można usunąć domeny, rc=%08x"
 
 msgid "could not determine max vcpus for the domain"
 msgstr "nie można ustalić maksymalnych wirtualnych procesorów dla domeny"
-
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "nie można wysunąć nośnika w %s: %s"
 
 msgid "could not find libvirtd"
 msgstr "nie można odnaleźć libvirtd"
@@ -6076,10 +5981,6 @@ msgstr "odłącza urządzenie dyskowe"
 msgid "detach network interface"
 msgstr "odłącza interfejs sieciowy"
 
-#, c-format
-msgid "detaching %s device failed: %s"
-msgstr "odłączenie urządzenia %s się nie powiodło: %s"
-
 msgid "detailed domain vcpu information"
 msgstr "szczegółowe informacje o wirtualnych procesorach domeny"
 
@@ -6121,10 +6022,6 @@ msgstr "wyłącza automatyczne uruchamianie"
 
 msgid "discover potential storage pool sources"
 msgstr "wykrywa potencjalne źródła puli pamięci masowej"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "dysk %s nie ma żadnej informacji o szyfrowaniu"
 
 #, c-format
 msgid "disk %s not found"
@@ -6264,9 +6161,6 @@ msgstr "informacje o zadaniu domeny"
 
 msgid "domain name or uuid"
 msgstr "nazwa lub UUID domeny"
-
-msgid "domain name, id or uuid"
-msgstr "nazwa domeny, identyfikator lub UUID"
 
 msgid "domain save job"
 msgstr "zadanie zapisu domeny"
@@ -6585,10 +6479,6 @@ msgid "failed to initialize SASL library: %d (%s)"
 msgstr "zainicjowanie biblioteki SASL się nie powiodło: %d (%s)"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "wczytanie modułu %s %s się nie powiodło"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "oznaczenie sieci %s jako automatycznie uruchamianej się nie powiodło"
 
@@ -6668,10 +6558,6 @@ msgstr "wznowienie domeny się nie powiodło"
 
 msgid "failed to run apparmor_parser"
 msgstr "wykonanie apparmor_parser się nie powiodło"
-
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "zapisanie ścieżki urządzenia znakowego „%s” się nie powiodło"
 
 msgid "failed to save content"
 msgstr "zapisanie zawartości się nie powiodło"
@@ -6799,10 +6685,6 @@ msgstr "format podstawowej pamięci masowej"
 
 msgid "format of backing volume if taking a snapshot"
 msgstr "format woluminu zapasowego, jeśli wykonywana jest migawka"
-
-#, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr "format=„qcow” hasło dla %s nie może zawiera „\\0”"
 
 #, c-format
 msgid "formatter for %s %s reported error"
@@ -6985,10 +6867,6 @@ msgstr "typ sieci wewnętrznej jest nieobsługiwany"
 msgid "invalid '=' after option --%s"
 msgstr "nieprawidłowe „=” po opcji --%s"
 
-#, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "nieprawidłowe <szyfrowanie> dla woluminu %s"
-
 msgid "invalid MAC address"
 msgstr "nieprawidłowy adres MAC"
 
@@ -7091,10 +6969,6 @@ msgstr "nieprawidłowa liczba dociągnięcia"
 msgid "invalid catchup threshold"
 msgstr "nieprawidłowa stopień dociągnięcia"
 
-#, c-format
-msgid "invalid certificate name: %s"
-msgstr "nieprawidłowa nazwa certyfikatu: %s"
-
 msgid "invalid cipher size for TLS session"
 msgstr "nieprawidłowy rozmiar szyfru dla sesji TLS"
 
@@ -7104,10 +6978,6 @@ msgstr "nieprawidłowy wskaźnik połączenia w"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "nieprawidłowy wskaźnik połączenia w %s"
-
-#, c-format
-msgid "invalid database name: %s"
-msgstr "nieprawidłowa nazwa bazy danych: %s"
 
 #, c-format
 msgid "invalid device name '%s'"
@@ -7493,14 +7363,6 @@ msgstr ""
 
 msgid "migration URI, usually can be omitted"
 msgstr "adres URI migracji, zwykle można pominąć"
-
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "migracja do „%s” się nie powiodła: %s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "migracja do „%s” jest nieobsługiwane przez to QEMU: %s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "migracja była aktywna, ale brak danych RAM „pozostało”"
@@ -7936,10 +7798,6 @@ msgstr "brak formatu dysku dla %s, a wykrywanie jest wyłączone"
 msgid "no disk found with alias %s"
 msgstr "nie odnaleziono dysku z aliasem %s"
 
-#, c-format
-msgid "no disk found with path %s"
-msgstr "nie odnaleziono dysku ze ścieżką %s"
-
 msgid "no domain XML passed"
 msgstr "nie przekazano XML domeny"
 
@@ -8312,14 +8170,6 @@ msgid "pwd: cannot get current directory: %s"
 msgstr "pwd: nie można uzyskać bieżącego katalogu: %s"
 
 #, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "QEMU nie obsługuje zamykania obsługi plików: %s"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "QEMU nie obsługuje wysyłania obsługi plików: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "emulator QEMU „%s” nie obsługuje Xena"
 
@@ -8463,9 +8313,6 @@ msgstr "atrybuty sekretu w XML"
 msgid "secret is private"
 msgstr "sekret jest prywatny"
 
-msgid "secrets already defined"
-msgstr "sekrety są już określone"
-
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "ciąg DOI bezpieczeństwa przekracza maksymalne %d bajtów"
@@ -8509,12 +8356,6 @@ msgstr "ustawia maksymalne ograniczenie podczas następnego uruchomienia"
 
 msgid "set maximum tolerable downtime"
 msgstr "ustawia maksymalny tolerowany czas braku odpowiedzi"
-
-msgid "setting VNC password failed"
-msgstr "ustawienie hasła VNC się nie powiodło"
-
-msgid "setting disk password is not supported"
-msgstr "ustawienie hasła dysku jest nieobsługiwane"
 
 msgid "setting up HAL callbacks failed"
 msgstr "ustawienie wywołań zwrotnych HAL się nie powiodło"
@@ -8618,12 +8459,6 @@ msgstr "pula pamięci masowej „%s” jest już aktywna"
 #, c-format
 msgid "storage pool '%s' is not active"
 msgstr "pula pamięci masowej „%s” jest nieaktywna"
-
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr ""
-"pula pamięci masowej nie obsługuje tworzenia zaszyfrowanych woluminów "
-"z innych woluminów"
 
 msgid "storage pool does not support encrypted volumes"
 msgstr "pula pamięci masowej nie obsługuje zaszyfrowanych woluminów"
@@ -8736,9 +8571,6 @@ msgstr "testOpen: należy podać ścieżkę lub użyć test:///domyślna"
 msgid "the backing volume if taking a snapshot"
 msgstr "wolumin zapasowy, jeśli wykonywana jest migawka"
 
-msgid "the disk password is incorrect"
-msgstr "hasło dysku jest niepoprawne"
-
 msgid "the domain does not have a current snapshot"
 msgstr "domena nie ma bieżącej migawki"
 
@@ -8795,9 +8627,6 @@ msgstr "zarejestrowano za dużo sterowników w %s"
 msgid "too many memory stats requested: %d > %d"
 msgstr "zażądano za dużo statystyk pamięci: %d > %d"
 
-msgid "too many secrets for qcow encryption"
-msgstr "za dużo sekretów dla szyfrowania qcow"
-
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "metody przesyłu unix, ssh i ext nie są obsługiwane w systemie Windows"
 
@@ -8845,10 +8674,6 @@ msgstr "nie można uzyskać dostępu do urządzenia %s\n"
 #, c-format
 msgid "unable to access disk %s\n"
 msgstr "nie można uzyskać dostępu do dysku %s\n"
-
-#, c-format
-msgid "unable to add host net: %s"
-msgstr "nie można dodać sieci gospodarza: %s"
 
 #, c-format
 msgid "unable to allocate socket security context '%s'"
@@ -9050,16 +8875,8 @@ msgid "unexpected disk bus %d"
 msgstr "nieoczekiwana magistrala dysku %d"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "nieoczekiwany tryb pamięci podręcznej dysku %d"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "nieoczekiwany urządzenie dysku %d"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "nieoczekiwany tryb wejścia/wyjścia dysku %d"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -9623,10 +9440,6 @@ msgstr "nieobsługiwany typ danych „%c” dla parametru „%s”"
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "nieobsługiwana magistrala dysku „%s” w ustawieniach urządzenia"
-
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "nieobsługiwany typ sterownika dysku dla „%s”"
 
 #, c-format
 msgid "unsupported disk type %s"

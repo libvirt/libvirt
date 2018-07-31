@@ -8,19 +8,19 @@
 # runab <runab@redhat.com>, 2006-2010
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-02-26 07:10-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-02-26 07:10+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
 "language/bn_IN/)\n"
-"Language: bn-IN\n"
+"Language: bn_IN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -190,9 +190,6 @@ msgstr ""
 
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "'floor' অ্যাট্রিবিউট শুধুমাত্র <inbound> উপাদানে অনুমোদিত"
-
-msgid "'info blockstats' not supported by this qemu"
-msgstr "'info blockstats' কমান্ড এই qemu দ্বারা সমর্থিত নয়"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' এবং 'burst' এর 'average' অ্যাট্রিবিউটের প্রয়োজন"
@@ -734,10 +731,6 @@ msgstr "ডোমেইনের কোর তথ্য সংরক্ষণ �
 msgid "Core(s) per socket:"
 msgstr "প্রতি সকেটে কোর সংখ্যা:"
 
-#, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "'%s'-র আউটপুটের জন্য মেমরি বরাদ্দ করা যায়নি"
-
 msgid "Could not configure network"
 msgstr "নেটওয়ার্ক কনফিগার করতে ব্যর্থ"
 
@@ -833,10 +826,6 @@ msgstr "usb ফাইল %s পার্স করতে ব্যর্থ"
 #, c-format
 msgid "Could not parse version number from '%s'"
 msgstr "সংস্করণ নম্বর '%s' থেকে পার্জ করা যায়নি"
-
-#, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "পরিবর্তনশীল '%s' hashmap এ রাখা যায়নি"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -1225,10 +1214,6 @@ msgid "Failed"
 msgstr "বিফল"
 
 #, c-format
-msgid "Failed module registration %s"
-msgstr "মডিউল নিবন্ধন ব্যর্থ হয়েছে %s"
-
-#, c-format
 msgid "Failed to add PCI device ID '%s' to %s"
 msgstr "PCI ডিভাইসের ID '%s', %s-এ যোগ করতে ব্যর্থ"
 
@@ -1585,11 +1570,6 @@ msgstr "'%s' ফাইল খুলতে ব্যর্থ"
 #, c-format
 msgid "Failed to open storage volume with path '%s'"
 msgstr "'%s' পাথ সহ সংরক্ষণের ভলিউম খুলতে ব্যর্থ"
-
-#, c-format
-msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr "'%s' থেকে আউটপুট পড়ার সময় ফাইল ডেসক্রিপ্টরের জন্য স্ট্রিম খুলতে ব্যর্থ: '%s'"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -2344,10 +2324,6 @@ msgstr "নেটওয়ার্ক '%s' DNS HOST রেকর্ডে ip �
 msgid "Missing mandatory average or floor attributes"
 msgstr "বাধ্যতামূলক গড় বা ফ্লোর অ্যাট্রিবিউট অনুপস্থিত"
 
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "মডিউল নিবন্ধন সংকেত %s অনুপস্থিত"
-
 msgid "Missing or empty 'hostName' property"
 msgstr "'hostName' বিশিষ্টতা অনুপস্থিত বা খালি"
 
@@ -2392,9 +2368,6 @@ msgstr "portgroup এ প্রয়োজনীয় নাম অ্যা�
 #, c-format
 msgid "Missing required name or value in DNS TXT record of network %s"
 msgstr "%s নেটওয়ার্কের DNS TXT রেকর্ডে প্রয়োজনীয় নাম বা মান অনুপস্থিত"
-
-msgid "Missing server name in phyp:// URI"
-msgstr "phyp:// URI-র মধ্যে সার্ভারের নাম অনুপস্থিত"
 
 msgid "Missing source host attribute for char device"
 msgstr "ক্যারেক্টার ডিভাইসের ক্ষেত্রে সোর্স হোস্ট বৈশিষ্ট্য অনুপস্থিত"
@@ -2549,9 +2522,6 @@ msgstr ""
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "সকেট ইন্টার-ফেসের সাথে <source> 'port' বৈশিষ্ট্য উল্লিখিত হয়নি।"
 
-msgid "No CPUs given"
-msgstr "কোনো CPU উল্লিখিত হয়নি"
-
 msgid "No JSON parser implementation is available"
 msgstr "কোনো JSON পার্সারের বাস্তবায়ন উপলব্ধ নেই"
 
@@ -2579,16 +2549,8 @@ msgstr "ID %d দিয়ে কোনো ডোমেন নেই"
 msgid "No domain with matching uuid '%s'"
 msgstr "uuid '%s'-র সাথে সুসংগত ডোমেইন অনুপস্থিত"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "'%s'নাম দিয়ে কোনো ডোমেন নেই"
-
 msgid "No error message provided"
 msgstr "কোনো ত্রুটির বার্তা উপস্থিত নেই"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "'%s'-র মধ্যে কোনো হোস্ট CPU নির্ধারণ করা হয়নি"
 
 msgid "No master USB controller specified"
 msgstr "কোনো মাস্টার USB কন্ট্রোলার নির্দিষ্ট করা হয়নি"
@@ -3490,9 +3452,6 @@ msgstr "ডোমেইন বর্তমানে সক্রিয় নয়"
 msgid "This host is not managed by a vCenter"
 msgstr "এই হোস্ট একটি vCenter দ্বারা পরিচালিত নয়"
 
-msgid "This libvirtd build does not support TLS"
-msgstr "এই libvirtd বিল্ড TLS সমর্থন করে না"
-
 msgid "This type of device cannot be hot unplugged"
 msgstr "এই ধরনের ডিভাইস হট-আনপ্লাগ করা সম্ভব নয়"
 
@@ -3663,12 +3622,6 @@ msgstr "অপ্রত্যাশিত ডিস্ক sgio মোড '%d'"
 #, c-format
 msgid "Unexpected hostdev mode %d"
 msgstr "অপ্রত্যাশিত hostdev মোড %d"
-
-#, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr ""
-"%d থেকে বেশি অক্ষর বিশিষ্ট একটি পংক্তি, '%s'-র আউটপুট পার্স করার সময় "
-"অপ্রত্যাশিতভাবে প্রাপ্ত হয়েছে"
 
 #, c-format
 msgid "Unix path %s too long for destination"
@@ -4197,9 +4150,6 @@ msgstr "পাথ '%s' নির্মাণ করতে ব্যর্থ"
 msgid "cannot create pipe"
 msgstr "পাইপ নির্মাণ করতে ব্যর্থ"
 
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "পড়া-লেখার মোডে ভার্চিয়াল FAT ডিস্ক নির্মাণ করা সম্ভব নয়"
-
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "%s আর্কিটেকচারের জন্য CPU-র জন্য ডি-কোড করা সম্ভব নয়"
@@ -4449,22 +4399,6 @@ msgstr "instanceid প্যারামিটার uuid হিসাবে প
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "instanceid প্যারামিটার uuid হিসাবে পার্জ করা যাবে না"
-
-#, c-format
-msgid "cannot parse json %s: %s"
-msgstr "json %s পার্স করা সম্ভব নয়: %s"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr "মাইগ্রেট করা তথ্যের অবশিষ্ট অংশের পরিসংখ্যান %s পার্শ করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "মাইগ্রেট করা তথ্যের সম্পূর্ণ পরিমানের পরিসংখ্যান %s পার্শ করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr "মাইগ্রেট করা পরিবাহিত তথ্যের পরিসংখ্যান %s পার্শ করতে ব্যর্থ"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -4884,10 +4818,6 @@ msgstr "ব্যান্ডউইথ সর্বোচ্চ মান '%s' �
 msgid "could not determine max vcpus for the domain"
 msgstr "ডোমেইনের ক্ষেত্রে প্রযোজ্য সর্বাধিক vcpu নির্ধারণ করা যায়নি"
 
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "%s-র মধ্যে উপস্থিত মিডিয়া বের করে নেওয়া যায়নি: %s"
-
 msgid "could not find libvirtd"
 msgstr "libvirtd অনুসন্ধান করতে ব্যর্থ"
 
@@ -5044,10 +4974,6 @@ msgid "detach network interface"
 msgstr "নেটওয়ার্ক ইন্টারফেস বিচ্ছিন্ন করুন"
 
 #, c-format
-msgid "detaching %s device failed: %s"
-msgstr "%s ডিভাইস বিচ্ছিন্ন করতে ব্যর্থ: %s"
-
-#, c-format
 msgid "device %s is not a PCI device"
 msgstr "%s ডিভাইসটি PCI ডিভাইস নয়"
 
@@ -5078,10 +5004,6 @@ msgstr "স্বয়ংক্রিয় প্রারম্ভকরণ নি�
 
 msgid "discover potential storage pool sources"
 msgstr "সম্ভাব্য সংগ্রহের পুলের সোর্স অনুসন্ধান করুন"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "%s ডিস্কের ক্ষেত্রে এনক্রিপশন সংক্রান্ত কোনো তথ্য উপস্থিত নেই"
 
 #, c-format
 msgid "disk %s not found"
@@ -5210,9 +5132,6 @@ msgstr "ডোমেইনের কর্ম সংক্রান্ত তথ
 
 msgid "domain name or uuid"
 msgstr "ডোমেইনের নাম অথবা uuid"
-
-msgid "domain name, id or uuid"
-msgstr "ডোমেইনের নাম, id অথবা uuid"
 
 msgid "domain state"
 msgstr "ডোমেইনের অবস্থা"
@@ -5443,10 +5362,6 @@ msgid "failed to initialize SASL library: %d (%s)"
 msgstr "SASL লাইব্রেরি আরম্ভ করতে ব্যর্থ : %d (%s)"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "মডিউল লোড করতে ব্যর্থ %s %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "নেটওয়ার্ক %s, স্বয়ং প্রারম্ভকারী রূপে চিহ্নিত করতে ব্যর্থ"
 
@@ -5508,10 +5423,6 @@ msgstr "পুল '%s' মুছে ফেলতে ব্যর্থ"
 
 msgid "failed to resume domain"
 msgstr "ডোমেইন পুনরারম্ভ করতে ব্যর্থ"
-
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "'%s' chardev পাথ সংরক্ষণ করতে ব্যর্থ"
 
 msgid "failed to save content"
 msgstr "বিষয়বস্তু সংরক্ষণ করতে ব্যর্থ"
@@ -5618,12 +5529,6 @@ msgstr "ফ্লোর অ্যাট্রিবিউট এখনও পর
 
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' অ্যাট্রিবিউটে উপেক্ষিত অক্ষর"
-
-#, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr ""
-"%s-র পরিচয় পংক্তির ক্ষেত্রে চিহ্নিত format='qcow' বিন্যাসের মধ্যে '\\0' অন্তর্ভুক্ত "
-"করা যাবে না"
 
 #, c-format
 msgid "formatter for %s %s reported error"
@@ -5793,10 +5698,6 @@ msgstr ""
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
 msgstr "অবৈধ <address> উপাদান পাওয়া গেছে <forward> এ, %s নেটওয়ার্কের"
-
-#, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "%s ভলিউমের জন্য <encryption> বৈধ নয়"
 
 #, c-format
 msgid "invalid <host> element found in <dns> of network %s"
@@ -6280,14 +6181,6 @@ msgstr "মাইগ্রেট: ডাউন-টাইম বৈধ নয়"
 
 msgid "migration URI, usually can be omitted"
 msgstr "মাইগ্রেশনের URI, সাধারণত উল্লেখ করা আবশ্যক নয়"
-
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "'%s'-এ মাইগ্রেট করতে ব্যর্থ: %s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "এই qemu দ্বারা '%s'-এ মাইগ্রেশন সমর্থিত নয়: %s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "মাইগ্রেশন সক্রিয় অবস্থায়, কিন্তু RAM সংক্রান্ত 'remaining' তথ্য অনুপস্থিত"
@@ -6833,10 +6726,6 @@ msgid "no device found with alias %s"
 msgstr "%s উপনাম দিয়ে কোনো ডিভাইস খুঁজে পাওয়া যায়নি"
 
 #, c-format
-msgid "no disk found with path %s"
-msgstr "%s পাথ সহ কোনো ডিস্ক পাওয়া যায়নি"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "'%s' নামের কোনো ডিস্ক নেই"
 
@@ -7149,14 +7038,6 @@ msgid "pwd: cannot get current directory: %s"
 msgstr "pwd: বর্তমান ডিরেক্টরি প্রাপ্ত করতে ব্যর্থ: %s"
 
 #, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "qemu দ্বারা ফাইল হ্যান্ডেল বন্ধ করার প্রক্রিয়া সমর্থিত হয় না: %s"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "qemu দ্বারা ফাইল হ্যান্ডেল প্রেরণ সমর্থিত হয় না: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "'%s' qemu এমুলেটর দ্বারা xen সমর্থিত হয় না"
 
@@ -7269,9 +7150,6 @@ msgstr "XML-র মধ্যে গোপনীয় বৈশিষ্ট্য"
 msgid "secret is private"
 msgstr "গোপনীয় তথ্য প্রাইভেট রূপে ধার্য করা হয়েছে"
 
-msgid "secrets already defined"
-msgstr "গোপনীয় তথ্য পূর্বেই নির্ধারিত হয়েছে"
-
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "নিরাপত্তার DOI স্ট্রিং সর্বাধিক %d বাইটের বেশি"
@@ -7306,12 +7184,6 @@ msgstr "গোপনীয় মান নির্ধারণ করুন"
 
 msgid "set maximum tolerable downtime"
 msgstr "সর্বাধিক সহনীয় ডাউন-টাইম নির্ধারণ করুন"
-
-msgid "setting VNC password failed"
-msgstr "VNC পাসওয়ার্ড নির্ধারণ করতে ব্যর্থ"
-
-msgid "setting disk password is not supported"
-msgstr "ডিস্কের পাসওয়ার্ড নির্ধারণ ব্যবস্থা সমর্থিত নয়"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio শুধুমাত্র scsi হোস্ট ডিভাইসের ক্ষেত্রে সমর্থিত"
@@ -7427,12 +7299,6 @@ msgstr "সংরক্ষণের পুল '%s' পূর্বেই সক�
 msgid "storage pool '%s' is not active"
 msgstr "সংরক্ষণের পুল '%s' সক্রিয় নয়"
 
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr ""
-"সংগ্রহের পুল দ্বারা উপস্থিত ভলিউমের ভিত্তিতে এনক্রিপ্ট করার ভলিউম নির্মাণ সমর্থিত হয় "
-"না"
-
 msgid "storage pool does not support encrypted volumes"
 msgstr "সংগ্রহের পুল দ্বারা এনক্রিপ্ট করা ভলিউম সমর্থিত হয় ন"
 
@@ -7540,9 +7406,6 @@ msgstr ""
 "<forward> 'dev' অ্যাট্রিবিউট ব্যবহার করা যাবে না, যখন <address> বা <pf> উপ-"
 "উপাদান %s নেটওয়ার্কে উপস্থিত"
 
-msgid "the disk password is incorrect"
-msgstr "ডিস্কের পাসওয়ার্ড সঠিক নয়"
-
 msgid "the state to restore"
 msgstr "পুনরুদ্ধারের জন্য চিহ্নিত অবস্থা"
 
@@ -7620,9 +7483,6 @@ msgstr "%s-র মধ্যে অত্যাধিক সংখ্যক ড�
 #, c-format
 msgid "too many memory stats requested: %d > %d"
 msgstr "অত্যাধিক সংখ্যক মেমরির পরিসংখ্যানের অনুরোধ জানানো হয়েছে: %d > %d"
-
-msgid "too many secrets for qcow encryption"
-msgstr "qcow এনক্রিপশনের জন্য অত্যাধিক গোপনীয় তথ্য"
 
 msgid "total and read/write bytes_sec cannot be set at the same time"
 msgstr "total এবং read/write bytes_sec একই সংগে সেট করা যায় না"
@@ -7841,16 +7701,8 @@ msgid "unexpected disk bus %d"
 msgstr "অপ্রত্যাশিত ডিস্ক বাস %d"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "অপ্রত্যাশিত ডিস্ক ক্যাশে মোড %d"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "অপ্রত্যাশিত ডিস্ক ডিভাইস %d"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "অপ্রত্যাশিত ডিস্ক io মোড %d"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -8638,10 +8490,6 @@ msgstr "অসমর্থিত ধরনের তথ্য '%c', '%s' আর�
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "ডিভাইস প্রস্তুতির সাথে অসমর্থিত ডিস্ক বাস '%s'"
-
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "'%s'-র জন্য অসমর্থিত ধরনের ডিস্ক ড্রাইভার"
 
 #, c-format
 msgid "unsupported disk type %s"

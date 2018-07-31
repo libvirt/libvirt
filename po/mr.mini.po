@@ -11,10 +11,10 @@
 # sandeeps <sshedmak@redhat.com>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-02-27 01:03-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
 "mr/)\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -726,9 +726,6 @@ msgstr "'cmd_per_lun' फक्त virtio-scsi कंट्रोलरमार
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "'floor' गुणधर्म फक्त <inbound> एलिमेंटमध्ये स्वीकारले जाते"
 
-msgid "'info blockstats' not supported by this qemu"
-msgstr "'info blockstats' या qemu द्वारे समर्थीत नाही"
-
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpusच्या प्रतिसादात 'logical-id' आढळले नाही"
 
@@ -753,9 +750,6 @@ msgstr "'queues' गुणधर्म पॉजिटिव्ह संख्�
 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "फक्त virtio-scsi कंट्रोलरतर्फे 'queues' समर्थीत आहे"
-
-msgid "'set_link' not supported by this qemu"
-msgstr "ह्या qemu तर्फे 'set_link' समर्थीत नाही"
 
 msgid "'sgio' is not supported for SCSI generic device yet "
 msgstr "SCSI जेनेरिक साधनकरिता 'sgio' अजूनही समर्थीत नाही "
@@ -1552,17 +1546,11 @@ msgstr "QEMU बाइनरि %s तपासणे अशक्य"
 msgid "Cannot check dnsmasq binary %s"
 msgstr "dnsmasq बाइनरि %s तपासणे अशक्य"
 
-msgid "Cannot check socket connection status"
-msgstr "सॉकेट जोडणी स्थिती तपासणे अशक्य"
-
 msgid "Cannot close container iterator"
 msgstr "कंटेनर आइटरेटर बंद करणे अशक्य"
 
 msgid "Cannot complete within timeout period"
 msgstr "वेळसमाप्ति कालावधी अंतर्गत पूर्ण करणे अशक्य"
-
-msgid "Cannot connect to agent socket"
-msgstr "एजंट सॉकेटशी जोडणी अशक्य"
 
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
@@ -2354,10 +2342,6 @@ msgid "Concrete job for %s invocation is in unknown state"
 msgstr "%s इंवोकेशनकरिता काँक्रिट जॉब अपरिचीत स्तरात आहे"
 
 #, c-format
-msgid "Config entry '%s' must be a string"
-msgstr "संरचना नोंदणी '%s' स्ट्रिंग पाहिजे"
-
-#, c-format
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr "संरचना नोंदणी '%s' ने बूलियन मूल्य (true|false) प्रस्तुत करायला हवे"
 
@@ -2470,10 +2454,6 @@ msgstr "hashmap करिता वेरियेबल 'IP' समाविष
 
 msgid "Could not add variable 'MAC' to hashmap"
 msgstr "hashmap करिता वेरियेबल 'MAC' समाविष्ट करणे अशक्य"
-
-#, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "'%s' च्या आऊटपुट करिता स्मृतीचे वाटप करणे अशक्य"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -2997,10 +2977,6 @@ msgid "Could not parse version number from '%s'"
 msgstr "'%s' पासून आवृत्ती क्रमांक वाचणे अशक्य"
 
 #, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "वेरियेबल '%s' ला hashmap मध्ये समाविष्ट करणे अशक्य"
-
-#, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "रेजिस्ट्री मूल्य '%s\\%s' चौकशी करणे अशक्य"
 
@@ -3374,14 +3350,6 @@ msgstr "डिसेंडेंट्स्:"
 #, c-format
 msgid "Dest file %s too big for destination"
 msgstr "Dest फाइल %s लक्ष्यकरिता खूप मोठे आहे"
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr "ifname ('%s') करिता लक्ष्य बफर मोठे नाही"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr "linkdev ('%s') करिता लक्ष्य बफर मोठे नाही"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "लक्ष्य libvirt पीअर-टू-पीअर स्थानांतरन प्रोटोकॉलकरिता समर्थन पुरवत नाही"
@@ -3928,9 +3896,6 @@ msgstr "'%s' च्या निर्माणवेळी चाईल्ड �
 msgid "Error from child process opening '%s'"
 msgstr "'%s' उघडतेवेळी चाइल्ड प्रोसेसपासून त्रुटी"
 
-msgid "Error generating NIC -device string"
-msgstr "NIC -device स्ट्रिंग निर्माण करतेवेळी त्रुटी"
-
 #, c-format
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr "फिजिकल फंक्शनचे '%s' virtual_functions प्राप्त करतेवेळी त्रुटी"
@@ -4114,14 +4079,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'numvcpus' to be an unsigned integer (1 or a multiple of "
-"2) but found %lld"
-msgstr ""
-"VMX नोंदणी 'numvcpus' चे मूल्य अनसाइंड इंटिजर (1 किंवा 2 चे गुणाकार) असे अपेक्षित आहे, "
-"परंतु %lld आढळले"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%s'"
 msgstr ""
@@ -4244,10 +4201,6 @@ msgstr "येणाऱ्या माइग्रेशनकरिता स�
 
 msgid "Failed"
 msgstr "अपयशी"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "मॉड्युल रेजिस्ट्रेशन %s अपयशी"
 
 #, c-format
 msgid "Failed opening %s"
@@ -5238,11 +5191,6 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "मार्ग '%s' सह स्टोरेज वॉल्यूम उघडण्यास अपयशी"
 
 #, c-format
-msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr "'%s' पासून आऊटपुट वाचतेवेळी फाइल डिस्क्रिप्टरकरिता स्ट्रीम उघडण्यास अपयशी: '%s'"
-
-#, c-format
 msgid "Failed to open tty %s"
 msgstr "tty %s उघडण्यास अपयशी"
 
@@ -5842,10 +5790,6 @@ msgstr "SSH सत्र स्थापीत करतेवेळी त्�
 msgid "Failure to mask address"
 msgstr "मास्क पत्तामध्ये अपयश"
 
-#, c-format
-msgid "Failure while applying current filter on VM %s"
-msgstr "VM %s वरील सध्याचे फिल्टर लागू करतेवेळी अपयश"
-
 msgid "Failure while reading log output"
 msgstr "लॉग आऊटपुट वाचतेवेळी त्रुटी आढळली"
 
@@ -5870,13 +5814,6 @@ msgstr "लक्ष्यकरिता क्षेत्र कर्नल 
 #, c-format
 msgid "Field name '%s' too long"
 msgstr "क्षेत्र नाव '%s' खूप लांब आहे"
-
-#, c-format
-msgid ""
-"File '%s' does not contain a <cpu> element or is not a valid domain or "
-"capabilities XML"
-msgstr ""
-"फाइल '%s' मध्ये <cpu> एलिमेंट समाविष्टीत नाही किंवा वैध डोमेन किंवा क्षमता XML नाही"
 
 #, c-format
 msgid "File '%s' has unknown type"
@@ -7052,12 +6989,6 @@ msgstr "आइटरेटर ID %u च्या कमाल ID पेक्ष
 msgid "JSON monitor is required"
 msgstr "JSON मॉनिटर आवश्यक"
 
-msgid "JSON monitor should be using AddNetdev"
-msgstr "JSON मॉनिटरने AddNetdevचा वापर केला पाहिजे"
-
-msgid "JSON monitor should be using RemoveNetdev"
-msgstr "JSON मॉनिटरने RemoveNetdevचा वापर केला पाहिजे"
-
 #, c-format
 msgid "Job submission failed on interface '%s'"
 msgstr "इंटरफेस '%s' वरील जॉब सादरिकरण अपयशी"
@@ -7232,9 +7163,6 @@ msgstr "सदोषीत 'uri_aliases' काँफिग नोंदणी '
 msgid "Malformed TLS whitelist regular expression '%s'"
 msgstr "सदोषीत TLS विशलिस्ट रेग्युलर एक्सप्रेशन '%s'"
 
-msgid "Malformed clients data in JSON document"
-msgstr "JSON दस्तऐवजात सदोषीत क्लाएंट डाटा आढळले"
-
 #, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
 msgstr "सदोषीत ctrl-alt-del सेटिंग '%s'"
@@ -7246,9 +7174,6 @@ msgstr "सदोषीत साधन मूल्य '%s'"
 #, c-format
 msgid "Malformed lease target offset %s"
 msgstr "सदोषीत लिज् लक्ष्य ऑफसेट %s"
-
-msgid "Malformed lockspaces data from JSON file"
-msgstr "JSON फाइलमध्ये सदोषीत lockspaces डाटा"
 
 msgid "Malformed max_anonymous_clients data in JSON document"
 msgstr "JSON दस्तऐवजात सदोषीत max_anonymous_clients डाटा"
@@ -7262,15 +7187,6 @@ msgstr "सदोषीत nbd पोर्ट '%s'"
 
 msgid "Malformed owner value in JSON document"
 msgstr "JSON दस्तऐवजात सदोषीत मालकी मूल्य आढळले"
-
-msgid "Malformed owners value in JSON document"
-msgstr "JSON दस्तऐवजात सदोषीत मालकी मूल्य आढळले"
-
-msgid "Malformed resources value in JSON document"
-msgstr "JSON दस्तऐवजात सदोषीत रिसोअर्सेस् मूल्य आढळले"
-
-msgid "Malformed services data in JSON document"
-msgstr "JSON दस्तऐवजात सदोषीत services डाटा"
 
 #, c-format
 msgid "Malformed size %s"
@@ -7608,9 +7524,6 @@ msgstr "माइग्रेशन कूकिमध्ये लॉक ड्
 msgid "Missing lockspaces data from JSON file"
 msgstr "JSON फाइलमध्ये lockspaces डाटा आढळले नाही"
 
-msgid "Missing lxc.rootfs configuration"
-msgstr "lxc.rootfs संरचना आढळले नाही"
-
 msgid "Missing magic data in JSON document"
 msgstr "JSON दस्तऐवजात मॅजिक डाटा आढळले नाही"
 
@@ -7628,10 +7541,6 @@ msgstr "JSON दस्तऐवजात max_workers डाटा आढळल�
 
 msgid "Missing min_workers data in JSON document"
 msgstr "JSON दस्तऐवजातील min_workers डाटा आढळले नाही"
-
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "मॉड्युल रेजिस्ट्रेसन सिम्बल %s आढळले नाही"
 
 msgid "Missing monitor reply object"
 msgstr "मॉनिटर प्रतिसाद ऑब्जेक्ट आढळले नाही"
@@ -7761,9 +7670,6 @@ msgstr "scsi_host PCI पत्ता एलिमेंट आढळले न�
 msgid "Missing server data from JSON file"
 msgstr "JSON फाइलमध्ये सर्व्हर डाटा आढळले नाही"
 
-msgid "Missing server name in phyp:// URI"
-msgstr "phyp:// URI मध्ये सर्व्हरचे नाव आढळले नाही"
-
 msgid "Missing service data in JSON document"
 msgstr "JSON दस्तऐवजात सर्व्हिस डाटा आढळले नाही"
 
@@ -7790,10 +7696,6 @@ msgstr "char साधन करिता स्त्रोत मार्ग 
 
 msgid "Missing source service attribute for char device"
 msgstr "char साधन करिता स्त्रोत सेवा गुणविशेष आढळले नाही"
-
-#, c-format
-msgid "Missing space when parsing output of '%s'"
-msgstr "'%s' चे आउटपुट वाचतेवेळी मोकळी जागा आढळले नाही"
 
 msgid "Missing storage block path"
 msgstr "स्टोरेज ब्लॉक मार्ग आढळले नाही"
@@ -8120,9 +8022,6 @@ msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
 msgstr ""
 "<interface type='vhostuser'> करिता शून्य <source> 'type' गुणधर्म निर्देशीत केले"
 
-msgid "No CPUs given"
-msgstr "CPUs वाटप आढळले नाही"
-
 #, c-format
 msgid "No FD available at slot %zu"
 msgstr "स्लॉट %zu करिता FD उपलब्ध केले नाही"
@@ -8236,10 +8135,6 @@ msgstr "जुळणाऱ्या uuid '%s' सह क्षेत्र आ�
 msgid "No domain with name %s"
 msgstr "नाव %s डोमेन आढळले नाही"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "नाव '%s' सह डोमेन नाही"
-
 msgid "No error message from child failure"
 msgstr "चाइल्ड अपयशपासून त्रुटी संदेश अशक्य"
 
@@ -8265,14 +8160,6 @@ msgstr "प्रकार '%s' सह ग्राफिकल डिस्प�
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "इंडेक्स् %d सह ग्राफिक्स् बॅकएंड आढळले नाही"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "'%s' मध्ये यजमान CPU निर्देशीत केले नाही"
-
-#, c-format
-msgid "No info for device '%s'"
-msgstr "साधन '%s' करिता माहिती आढळली नाही"
 
 msgid "No interface attached to bridge"
 msgstr "ब्रिजकरिता जुळलेले इंटरफेस आढळले नाही"
@@ -8757,9 +8644,6 @@ msgstr "कि '%s' करिता पासफ्रेज"
 
 msgid "Password request failed"
 msgstr "पासवर्ड विनंती अपयशी"
-
-msgid "Password request seen, but no handler available"
-msgstr "पासवर्ड विनंती आढळली, परंतु हँडलर आढळले नाही"
 
 msgid "Path"
 msgstr "मार्ग"
@@ -10579,9 +10463,6 @@ msgstr "WIN32 प्लॅटफॉर्मवर हे फंक्शन स
 msgid "This host is not managed by a vCenter"
 msgstr "हे यजमान vCenter तर्फे व्यवस्थापीत नाही"
 
-msgid "This libvirtd build does not support TLS"
-msgstr "हे libvirtd बिल्ड TLS करिता समर्थन पुरवत नाही"
-
 msgid "This snapshot has children, please delete theses snapshots before"
 msgstr "या स्नॅपशॉटकडे चिल्डरन आहे, कृपया या स्नॅपशॉट्सना नष्ट करा"
 
@@ -11052,9 +10933,6 @@ msgstr "सर्व डिस्क्सना पाठोपाठ बंद
 msgid "Unable to close the new medium, rc=%08x"
 msgstr "नवीन मिडीयम बंद करणे अशक्य, rc=%08x"
 
-msgid "Unable to compute hash of data"
-msgstr "डाटाचे हॅश कम्प्युट करणे अशक्य"
-
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "libxlचे मेमरि मॅनेजमेंट घटक संरचीत करणे अशक्य"
 
@@ -11076,12 +10954,6 @@ msgstr "%s निर्माण करणे अशक्य"
 #, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "हार्डडिस्क निर्माण अशक्य, rc=%08x"
-
-msgid "Unable to create JSON formatter"
-msgstr "JSON फॉरमॅटर निर्माम करणे अशक्य"
-
-msgid "Unable to create JSON parser"
-msgstr "JSON पार्सर निर्माण करणे अशक्य"
 
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
@@ -11290,10 +11162,6 @@ msgstr "माउंट नेमस्पेसमध्ये जाणे अ
 #, c-format
 msgid "Unable to exec shell %s"
 msgstr "शेल %s exec करण्यास अशक्य"
-
-#, c-format
-msgid "Unable to extract disk path from %s"
-msgstr "%s पासून डिस्क मार्ग प्राप्त करणे अशक्य"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "'cpuacct' cgroups कंट्रोलर माउंट शोधण अशक्य"
@@ -12302,10 +12170,6 @@ msgstr "अनपेक्षित फाइलप्रणाली प्र�
 msgid "Unexpected hostdev mode %d"
 msgstr "अनपेक्षीत hostdev मोड %d"
 
-#, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr "'%2$s' चे आऊटपुट वाचतेवेळी अनपेक्षीत ओळ > %1$d अक्षरे, आढळले"
-
 msgid "Unexpected lock parameters for disk resource"
 msgstr "डिस्क स्रोतकरिता अनपेक्षित लॉग घटके"
 
@@ -13203,10 +13067,6 @@ msgstr ""
 msgid "add a column showing parent snapshot"
 msgstr "पॅरेंट स्नॅपशॉट दाखवणारे स्तंभ समाविष्ट करा"
 
-#, c-format
-msgid "adding %s device failed: %s"
-msgstr "%s साधन समाविष्ट करण्यास अपयशी: %s"
-
 msgid "additionally display the type and device value"
 msgstr "अगाऊरित्या प्रकार व साधन मूल्य दाखवा"
 
@@ -13351,9 +13211,6 @@ msgid ""
 msgstr ""
 "%d: %s%s येथे\n"
 "%s"
-
-msgid "atomic live snapshot of multiple disks is unsupported"
-msgstr "एकापेक्षा जास्त डिस्क्स्चे अटॉमिक लाइव्ह स्नॅपशॉट असमर्थीत आहे"
 
 msgid "attach device from an XML file"
 msgstr "XML फाइलपासून साधन संयुक्त करा"
@@ -13683,10 +13540,6 @@ msgstr "कॉलर uri_out ला दुर्लक्ष करतो"
 msgid "can only passthrough directories"
 msgstr "फक्त डिरेक्ट्रिज् पासथ्रु करणे शक्य आहे"
 
-#, c-format
-msgid "can't canonicalize path '%s'"
-msgstr "मार्ग '%s' ला कॅनॉनिकलाइज करणे अशक्य"
-
 msgid "can't change link state: device alias not found"
 msgstr "लिंक स्तर बदलणे अशक्य: डिव्हाइस अलायस आढळले नाही"
 
@@ -13959,9 +13812,6 @@ msgstr "टन्नल्ड् माइग्रेशनकरिता प�
 #, c-format
 msgid "cannot create snapshot directory '%s'"
 msgstr "स्नॅपशॉट डिरेक्ट्री '%s' निर्माण करणे अशक्य"
-
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "read-write मोडमध्ये वर्च्युअल FAT डिस्कस् निर्माण करणे अशक्य आहे"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -14314,9 +14164,6 @@ msgstr "असिंक्रोनस आदेशसह स्ट्रिं�
 msgid "cannot mix string I/O with daemon"
 msgstr "डिमनसह स्ट्रिंग I/O एकत्र करणे अशक्य"
 
-msgid "cannot modify network device alias"
-msgstr "नेटवर्क साधन अलायस संपादित करणे अशक्य"
-
 msgid "cannot modify network device boot index setting"
 msgstr "नेटवर्क साधन बूट इंडेक्स् सेटिंग संपादित करणे अशक्य"
 
@@ -14462,18 +14309,6 @@ msgid "cannot parse device start location"
 msgstr "साधनाचे प्रारंभ स्थान वाचू शकले नाही"
 
 #, c-format
-msgid "cannot parse disk migration data remaining statistic %s"
-msgstr "डिस्क माइग्रेशन डाटाची उर्वरीत आकडेवारी %s वाचणे अशक्य"
-
-#, c-format
-msgid "cannot parse disk migration data total statistic %s"
-msgstr "डिस्क माइग्रेशन डाटाची एकूण आकडेवारी %s वाचणे अशक्य"
-
-#, c-format
-msgid "cannot parse disk migration data transferred statistic %s"
-msgstr "डिस्क माइग्रेशन डाटा ट्रांसफर्ड आकडेवारि %s वाचणे अशक्य"
-
-#, c-format
 msgid "cannot parse drive bus '%s'"
 msgstr "ड्राइव्ह बस '%s' वाचणे अशक्य"
 
@@ -14498,26 +14333,6 @@ msgstr "uuid म्हणून interfaceid घटक वाचणे अशक�
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "io मोड '%s' वाचणे अशक्य"
-
-#, c-format
-msgid "cannot parse json %s: %s"
-msgstr "json %s वाचण्यास अशक्य: %s"
-
-#, c-format
-msgid "cannot parse json %s: unterminated string/map/array"
-msgstr "json %s वाचणे अशक्य: समाप्त नसलेले स्ट्रिंग/मॅप/अरे"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr "स्थानांतरन डाटाची उर्वरीत आकडेवारी %s वाचणे अशक्य"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "स्थानांतरन डाटाची एकूण आकडेवारी %s वाचणे अशक्य"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr "स्थानांतरन डाटाची स्थानांतरीत आकडेवारी %s वाचणे अशक्य"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -15296,10 +15111,6 @@ msgstr "APIC स्थितीला: %s, rc=%08x करिता बदलण�
 msgid "could not change PAE status to: %s, rc=%08x"
 msgstr "PAE स्थितीला: %s, rc=%08x करिता बदलणे अशक्य"
 
-#, c-format
-msgid "could not change media on %s: %s"
-msgstr "%s: %s वरील मिडिया बदलणे अशक्य"
-
 msgid "could not close handshake fd"
 msgstr "हँडशेक fd बंद करणे अशक्य"
 
@@ -15349,10 +15160,6 @@ msgstr "शेअर्ड फोल्डर '%s', rc=%08x विलग कर�
 
 msgid "could not determine max vcpus for the domain"
 msgstr "क्षेत्रकरिता कमाल vcpus ओळखणे अशक्य आहे"
-
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "%s वरील मिडीया बाहेर काढण्यास अशक्य: %s"
 
 #, c-format
 msgid "could not find base image in chain for '%s'"
@@ -15735,9 +15542,6 @@ msgstr "सध्याचे vcpu प्रमाण कमाल असाय�
 msgid "current vcpus must be equal to maxvcpus"
 msgstr "सध्याचे vcpus maxvcpus करिता समांतर असायला हवे"
 
-msgid "currently is supported only taking screenshots of screen ID 0"
-msgstr "स्क्रीन ID 0 चे स्क्रीनशॉट घेऊन सध्या समर्थीत केले जाते"
-
 #, c-format
 msgid "daemonized command cannot set working directory %s"
 msgstr "डिमन असलेले आदेश कार्यरत डिरेक्ट्री %s ठरवण्यास अशक्य"
@@ -15845,10 +15649,6 @@ msgstr "जाळ संवाद वेगळे करा"
 msgid "detach node device from its device driver"
 msgstr "डिव्हाइस ड्राइव्हरपासून नोड साधनाला विलग करा"
 
-#, c-format
-msgid "detaching %s device failed: %s"
-msgstr "%s साधण वेगळे करण्यास अपयशी: %s"
-
 msgid "detaching serial console is not supported"
 msgstr "सिरिअल कंसोलला विलग करणे समर्थीत नाही"
 
@@ -15897,9 +15697,6 @@ msgstr "साधन कि"
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr "साधन नाव किंवा 'wwnn,wwpn' रूपणमधील wwn जोडी"
 
-msgid "device name rejected"
-msgstr "साधन नाव नकारले"
-
 msgid "device not present in domain configuration"
 msgstr "डोमेन संरचनामध्ये साधन अनुपलब्ध"
 
@@ -15930,9 +15727,6 @@ msgstr "'%s' पत्तासह साधनाची जोडणी खं�
 #, c-format
 msgid "device with invalid '%s' address cannot be detached"
 msgstr "'%s' पत्तासह साधनाची जोडणी खंडीत करणे अशक्य"
-
-msgid "device-list-properties reply data was missing 'name'"
-msgstr "device-list-properties प्रतिसादमध्ये डाटामध्ये 'name' आढळले नाही"
 
 msgid "devices cgroup isn't mounted"
 msgstr "साधन cgroup माउंट केले नाही"
@@ -15983,10 +15777,6 @@ msgstr "वास्तविक साठा संग्रह स्त्र
 
 msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
 msgstr "ह्या QEMUतर्फे डिसजॉइंट NUMA cpu व्याप्ति समर्थीत नाही"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "डिस्क %s कडे एनक्रिप्शन माहिती आढळली नाही"
 
 #, c-format
 msgid "disk %s has no source file to be committed"
@@ -16292,9 +16082,6 @@ msgstr "स्वयं नष्ट करण्यासाठी डोमे
 msgid "domain is no longer running"
 msgstr "डोमेन यापुढे सुरू नाही"
 
-msgid "domain is not active"
-msgstr "डोमेन सक्रिय नाही"
-
 msgid "domain is not in running state"
 msgstr "क्षेत्र कार्यरत स्थितीत नाही"
 
@@ -16324,9 +16111,6 @@ msgstr "डोमेन जॉबची माहिती"
 
 msgid "domain name or uuid"
 msgstr "डोमेन नाव किंवा uuid"
-
-msgid "domain name, id or uuid"
-msgstr "डोमेन नाव, id किंवा uuid"
 
 msgid "domain save job"
 msgstr "डोमेन सेव्ह जॉब"
@@ -16694,9 +16478,6 @@ msgstr "%zu वेथ्स् अपेक्षीत, परंतु %zu प
 
 msgid "expecting a name"
 msgstr "नाव अपेक्षित"
-
-msgid "expecting a scsi:00.00.00 address."
-msgstr "scsi:00.00.00 पत्ता अपेक्षित आहे."
 
 msgid "expecting a separator"
 msgstr "विलगक अपेक्षित"
@@ -17117,10 +16898,6 @@ msgid "failed to list host interfaces: %s%s%s"
 msgstr "यजमान संवाद: %s%s%s सूचीत दाखवण्यास अपयशी"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "मॉड्युल %s %s लोड करणे अशक्य"
-
-#, c-format
 msgid "failed to lookup interface with MAC address '%s'"
 msgstr "MAC पत्ता '%s' सह इंटरफेस शोधण्यास अपयशी"
 
@@ -17281,10 +17058,6 @@ msgid "failed to read libxl header"
 msgstr "libxl शीर्षक वाचण्यास अपयशी"
 
 #, c-format
-msgid "failed to read link of gluster file '%s'"
-msgstr "gluster फाइल '%s' ची दुवा वाचण्यास अपयशी"
-
-#, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s' अंतर्गत मेटाडेटा लांबी वाचण्यास अपयशी"
 
@@ -17352,20 +17125,12 @@ msgstr "'%s --version': %s चालवण्यास अपयशी"
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser चालवण्यास अपयशी"
 
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "chardev मार्ग '%s' साठवण्यास अपयशी"
-
 msgid "failed to save content"
 msgstr "समाविष्टे सुरक्षित करण्यास अपयशी"
 
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr "%s ची समाप्ति सीक करण्यास अपयशी"
-
-#, c-format
-msgid "failed to send key '%s'"
-msgstr "कि '%s' पाठवण्यास अपयशी"
 
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr ला सिरीयलाइज करण्यात अपयशी"
@@ -17390,10 +17155,6 @@ msgid "failed to set cpuset.cpus in cgroup for emulator threads"
 msgstr "एम्युलेटर थ्रेडस्करिता cpuset.cpus ठरवणे अपयशी"
 
 #, c-format
-msgid "failed to set gluster volfile server '%s'"
-msgstr "gluster volfile सर्व्हर '%s' ठरवण्यास अपयशी"
-
-#, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr "स्नॅपशॉट '%s' ला सध्याचे म्हणून ठरवण्यास अपयशी"
 
@@ -17405,10 +17166,6 @@ msgstr "stdin फाइल हॅन्डलची मांडणी करण
 
 msgid "failed to setup stdout file handle"
 msgstr "stdout फाइल हॅन्डलची मांडणी करण्यास अपयशी"
-
-#, c-format
-msgid "failed to stat gluster path '%s'"
-msgstr "gluster मार्ग '%s' ची आकडेवारी अपयशी"
 
 #, c-format
 msgid "failed to stat remote file '%s'"
@@ -17573,9 +17330,6 @@ msgstr "फक्त-डिस्क्स स्नॅशॉट्सद्व�
 msgid "filter by domain name, id or uuid"
 msgstr "डोमेन नाव, id किंवा uuid मार्फत फिल्टर करा"
 
-msgid "filter by domain name, id, or uuid"
-msgstr "डोमेन नाव, id किंवा uuid मार्फत फिल्टर करा"
-
 msgid "filter by event name"
 msgstr "इव्हेंट नावनुरूप फिल्टर करा"
 
@@ -17682,10 +17436,6 @@ msgstr "स्नॅपशॉट घेतेवेळी बॅकिंग व
 
 msgid "format of the destination file"
 msgstr "लक्ष्य फाइलचे रूपण"
-
-#, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr "format='qcow' वाक्यरचना, %s करिता, यामध्ये '\\0' आढळले नाही पाहिजे"
 
 #, c-format
 msgid "formatter for %s %s reported error"
@@ -18083,9 +17833,6 @@ msgstr "अयोग्य बूट क्रम '%s', सकारात्म
 msgid "info balloon reply was missing balloon data"
 msgstr "info balloon प्रतिसादात balloon डाटा आढळले नाही"
 
-msgid "info block not supported by this qemu"
-msgstr "ह्या qemu तर्फे माहिती ब्लॉक समर्थीत नाही"
-
 msgid "info kvm reply missing 'enabled' field"
 msgstr "info kvm प्रतिसादमध्ये 'enabled' क्षेत्र आढळले नाही"
 
@@ -18245,10 +17992,6 @@ msgstr "पर्याय --%s नंतर अवैधन '='"
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
 msgstr "नेटवर्क %sच्या <forward>मध्ये अवैध <address> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "खंड %s करिता अवैध <encryption>"
 
 #, c-format
 msgid "invalid <forwarder> element found in <dns> of network %s"
@@ -18431,10 +18174,6 @@ msgid "invalid catchup threshold"
 msgstr "अवैध कॅचअप थ्रेशहोल्ड्"
 
 #, c-format
-msgid "invalid certificate name: %s"
-msgstr "अवैध प्रमाणपत्र नाव: %s"
-
-#, c-format
 msgid ""
 "invalid character in protocol attribute '%s' in DNS SRV record of network "
 "'%s'"
@@ -18459,10 +18198,6 @@ msgstr "अवैध जोडणी निर्देशक यात"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "अवैध जोडणी निर्देशक %s मध्ये"
-
-#, c-format
-msgid "invalid database name: %s"
-msgstr "अवैध डाटाबेस नाव: %s"
 
 #, c-format
 msgid "invalid device name '%s'"
@@ -19521,14 +19256,6 @@ msgstr "माइग्रेशन रद्द केले"
 msgid "migration protocol going backwards %s => %s"
 msgstr "माइग्रेशन प्रोटोकॉल %s => %s मागे जात आहे"
 
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "'%s' करिता स्थानांतरन अपयशी: %s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "'%s' करिता या qemu द्वारे समर्थन शक्य नाही: %s"
-
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "स्थानांतरन सक्रिय होते, परंतु RAM 'remaining' डाटा आढळले नाही"
 
@@ -19753,10 +19480,6 @@ msgstr "फिल्टर पॅरामिटिर तक्ता आढळ
 
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत फ्लॅग नाव आढळले नाही"
-
-#, c-format
-msgid "missing gluster volume name for path '%s'"
-msgstr "मार्ग '%s' करिता gluster वॉल्युम नाव आढळले नाही"
 
 msgid "missing graphics device type"
 msgstr "चित्रलेखीय साधन प्रकार आढळले नाही"
@@ -20575,10 +20298,6 @@ msgid "no disk found with alias %s"
 msgstr "अलायस %s सह डिस्क आढळले नाही"
 
 #, c-format
-msgid "no disk found with path %s"
-msgstr "मार्ग %s सह डिस्क आढळले नाही"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "'%s' नावाची डिस्क आढळली नाही"
 
@@ -20942,9 +20661,6 @@ msgstr "ठिक आहे"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "QEMU बाइनरीसह ऑनलाइन कमीट समर्थीत नाही"
-
-msgid "only 1 graphics device of each type (sdl, vnc, spice) is supported"
-msgstr "फक्त १ ग्राफिक्स साधन (sdl, vnc, spice) समर्थीत आहे"
 
 msgid "only TCP listen is supported for chr device"
 msgstr "char साधन करिता फक्त TCP सक्रीयता समर्थीत आहे"
@@ -21482,14 +21198,6 @@ msgstr "pwd: वर्तमान डिरेक्ट्री प्रा�
 msgid "qemu does not support SGA"
 msgstr "qemu SGA करिता समर्थन पुरवत नाही"
 
-#, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "फाइल हँडल्स् बंद करणे qemu द्वारे समर्थीत नाही: %s"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "qemu फाइल हँडल्स् पाठवण्यासाठी समर्थन पुरवत नाही: %s"
-
 msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
 msgstr ""
 "qemu, PMSUSPENDED स्तरमध्ये घेतलेल्या स्नॅटशॉटच्या पुन्हआवृत्तीकरिता समर्थन पुरवत नाही"
@@ -21535,14 +21243,8 @@ msgstr "qom-set अवैध ऑब्जेक्ट गुणधर्म प�
 msgid "query-command-line-options parameter data was missing 'name'"
 msgstr "query-command-line-options पॅरामिटर डाटामध्ये 'name' नाही"
 
-msgid "query-command-line-options parameter data was not an array"
-msgstr "query-command-line-options पॅरामिटिर डाटा अरे नाही"
-
 msgid "query-command-line-options reply data was missing 'option'"
 msgstr "query-command-line-options प्रतिसाद डाटामध्ये 'option' आढळले नाही"
-
-msgid "query-command-line-options reply data was not an array"
-msgstr "query-command-line-options प्रतिसाद डाटा अरे नाही"
 
 msgid "query-command-line-options reply was missing return data"
 msgstr "query-command-line-options प्रतिसादमध्ये रिटर्न डाटा आढळले नाही"
@@ -21873,9 +21575,6 @@ msgstr "अस्तित्वातील बाहेरच्या फा�
 msgid "reuse existing destination"
 msgstr "अस्तित्वातील लक्ष्यचा पुनःवापर करा"
 
-msgid "reuse is not supported with this QEMU binary"
-msgstr "ह्या QEMU बाइनरीसह पुनःवापर समर्थीत नाही"
-
 msgid "revert requires force"
 msgstr "जबरनपणे पूर्वस्थितीत आणा"
 
@@ -21894,9 +21593,6 @@ msgstr "मागील मूळस्थिती पॉइंटकरित�
 
 msgid "rollback to previous saved configuration created via iface-begin"
 msgstr "iface-begin सह निर्मीत मागील साठवलेले संरचनाकरिता रोलबॅक करा"
-
-msgid "rombar and romfile are supported only for PCI devices"
-msgstr "rombar व romfile फक्त PCI साधनांकरिता समर्थीत आहे"
 
 msgid "root element was not source"
 msgstr "रूट घटक स्रोत नाही"
@@ -21990,9 +21686,6 @@ msgstr "XML मधील गोपणीय गुणधर्म"
 
 msgid "secret is private"
 msgstr "गोपणीयता व्यक्तिगत आहे"
-
-msgid "secrets already defined"
-msgstr "गोपणीयता आधीपासूनच ठरवले आहे"
 
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
@@ -22094,12 +21787,6 @@ msgstr "ACPI S3 ठरवणे समर्थीत नाही"
 
 msgid "setting ACPI S4 not supported"
 msgstr "ACPI S4 ठरवणे समर्थीत नाही"
-
-msgid "setting VNC password failed"
-msgstr "VNC पासवर्डनसेटकरण्यास अपयशी"
-
-msgid "setting disk password is not supported"
-msgstr "डिस्क पासवर्ड सेट करणे समर्थीत नाही"
 
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
@@ -22225,9 +21912,6 @@ msgstr "socketpair अपयशी"
 
 msgid "sockpair failed"
 msgstr "sockpair अपयशी"
-
-msgid "socks field in JSON was not an array"
-msgstr "JSON मधील socks क्षेत्र अरे नाही"
 
 #, c-format
 msgid "sound card model '%s' is not supported by qemu"
@@ -22377,10 +22061,6 @@ msgstr "साठा संग्रह '%s' सक्रीय नाही"
 #, c-format
 msgid "storage pool '%s' is still active"
 msgstr "स्टोरेज पूल '%s' अजूनही सक्रीय आहे"
-
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr "इतर खंडांपासून स्टोरेज पूल एनक्रिप्टेड खंड बांधणीकरिता समर्थन पुरवत नाही"
 
 msgid "storage pool does not support changing of volume capacity"
 msgstr "स्टोरेज पूल खंड क्षमता बदलण्यास समर्थन पुरवत नाही"
@@ -22610,12 +22290,6 @@ msgstr "MAC पत्ता '%s' एकापेक्षाजास्त इ�
 msgid "the QEMU binary does not support %s"
 msgstr "QEMU बाइनरि %s करिता समर्थन पुरवत नाही"
 
-msgid "the QEMU binary does not support kqemu"
-msgstr "QEMU बाइनरि kqemu करिता समर्थन पुरवत नाही"
-
-msgid "the QEMU binary does not support kvm"
-msgstr "QEMU बाइनरि kvm करिता समर्थन पुरवत नाही"
-
 msgid "the backing volume if taking a snapshot"
 msgstr "स्नॅपशॉट घ्यायचे असल्यास बॅकिंग वॉल्युम"
 
@@ -22631,9 +22305,6 @@ msgstr "किकोड्स्चे कोडसेट, default:linux"
 
 msgid "the default lockspace already exists"
 msgstr "पूर्वनिर्धारित लॉकस्पेस आधिपासून अस्तित्वात आहे"
-
-msgid "the disk password is incorrect"
-msgstr "डिस्क पासवर्ड चुकीचा आहे"
 
 msgid "the domain does not have a current snapshot"
 msgstr "डोमेनकडे सध्याचे स्नॅपशॉट नाही"
@@ -22817,9 +22488,6 @@ msgstr "टामर %s टाइमर ट्रॅकच्या सेटि
 msgid "too many NUMA cells: %d > %d"
 msgstr "खूपच जास्त NUMA कक्ष: %d > %d"
 
-msgid "too many conflicts when generating a uuid"
-msgstr "uuid निर्माण करतेवेळी एकापेक्षा जास्त मतभेद आढळले"
-
 msgid "too many disk snapshot requests for domain"
 msgstr "डोमैनकरिता एकापेक्षा जास्त डिस्क स्नॅपशॉट विनंती"
 
@@ -22839,9 +22507,6 @@ msgstr "एकापेक्षाजास्त किकोड्स्"
 #, c-format
 msgid "too many memory stats requested: %d > %d"
 msgstr "एकापेक्षा जास्त स्मृती आकडेवारीकरिता विनंती केली: %d > %d"
-
-msgid "too many secrets for qcow encryption"
-msgstr "qcow एनक्रिप्शन करिता एकापेक्षा जास्त गोपणीयता आढळले"
 
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
@@ -22976,10 +22641,6 @@ msgstr "डिस्क %s करिता प्रवेश अशक्य\n"
 msgid "unable to add SSH host key for host '%s': %s"
 msgstr "यजमान '%s': %s करिता SSH यजमान कि समाविष्ट करणे अशक्य"
 
-#, c-format
-msgid "unable to add host net: %s"
-msgstr "यजमान नेट: %s समाविष्ट करणे अशक्य"
-
 msgid "unable to allocate security context"
 msgstr "सेक्युरिटि संदर्भचे वाटप करण्यास अशक्य"
 
@@ -23039,9 +22700,6 @@ msgid ""
 "by %d domains."
 msgstr ""
 "इंटरफेस '%s' नष्ट करण्यास अशक्य, नेटवर्क '%s' मध्ये. ते सध्या   %d डोमेन्स्तर्फे वारले जाते."
-
-msgid "unable to determine array size"
-msgstr "अरे आकार ओळखण्यास अशक्य"
 
 msgid "unable to determine if snapshot has parent"
 msgstr "स्नॅपशॉटकडे पॅरेंट आहे हे ओळखणे अशक्य"
@@ -23229,10 +22887,6 @@ msgid "unable to save metadata for snapshot %s"
 msgstr "स्नॅपशॉट %sकरिता मेटाडेटा साठवणे अशक्य"
 
 #, c-format
-msgid "unable to send file handle '%s': %s"
-msgstr "फाइल हँडल '%s': %s पाठवणे अशक्य"
-
-#, c-format
 msgid "unable to set AppArmor profile '%s' for '%s'"
 msgstr "'%2$s' करिता AppArmor प्रोफाइल '%1$s' सेट करणे अशक्य"
 
@@ -23398,14 +23052,6 @@ msgid "unexpected address type for scsi disk"
 msgstr "scsi डिस्ककरिता अनपेक्षीत पत्ता प्रकार"
 
 #, c-format
-msgid "unexpected async job %d"
-msgstr "अनपेक्षित async जॉब %d"
-
-#, c-format
-msgid "unexpected balloon information '%s'"
-msgstr "अनपेक्षित बलून माहिती '%s'"
-
-#, c-format
 msgid "unexpected boot device type %d"
 msgstr "अनपेक्षीत बूट साधन प्रकार %d"
 
@@ -23452,16 +23098,8 @@ msgid "unexpected disk bus %d"
 msgstr "अनपेक्षीत डिस्क बस %d"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "अनपेक्षीत डिस्क कॅशे पद्धत %d"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "अनपेक्षीत डिस्क साधन %d"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "अनपेक्षीत डिस्क io मोड %d"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -23590,10 +23228,6 @@ msgstr "स्नॅपशॉट xml वाचतेवेळी अनपेक
 
 msgid "unexpected protocol type"
 msgstr "अनपेक्षित प्रोटोकॉल प्रकार"
-
-#, c-format
-msgid "unexpected reply from info status: %s"
-msgstr "माहिती: %s पासून अनपेक्षित प्रतिसाद प्राप्त झाले"
 
 #, c-format
 msgid "unexpected root element <%s> expecting <device>"
@@ -24124,10 +23758,6 @@ msgid "unknown hub device type '%s'"
 msgstr "अपरिचीत हब डिव्हाइस प्रकार '%s'"
 
 #, c-format
-msgid "unknown image format of '%s' and format probing is disabled"
-msgstr "'%s' प्रकारचे अपरिचीत प्रतिमा रूपण व रूपण शोध बंद आहे"
-
-#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "अपरिचीत अधिप्रमाणन प्रकार '%s'"
 
@@ -24595,10 +24225,6 @@ msgstr "उपकरण सेटअपसह असमर्थीत डिस
 msgid "unsupported disk device"
 msgstr "असमर्थीत डिस्क साधन"
 
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "'%s' करिता असमर्थीत डिस्क ड्राइव्हर प्रकार"
-
 msgid "unsupported disk type"
 msgstr "असमर्थीत डिस्क प्रकार"
 
@@ -24956,10 +24582,6 @@ msgstr "इंटरफेस \"%s\" ifkey \"%s\" वरील virNWFilterDHCPSn
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%s'"
 msgstr "इंटरफेस '%s' वरील virNWFilterDHCPSnoopReq virThreadCreate अपयशी"
-
-#, c-format
-msgid "virNWFilterDHCPSnoopReq: can't copy variables on if %s"
-msgstr "virNWFilterDHCPSnoopReq: %s असल्यास वेरियेब्ल्स्चे प्रत बनवणे अशक्य"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %d corrupt"

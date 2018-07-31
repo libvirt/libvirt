@@ -21,10 +21,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2018-04-05 02:33-0400\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2018-04-05 02:33+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/libvirt/"
 "language/uk/)\n"
@@ -34,7 +34,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -259,42 +259,6 @@ msgid ""
 msgstr ""
 "\n"
 "  АНОТАЦІЯ\n"
-
-#, c-format
-msgid ""
-"\n"
-"%s [options] [< def.xml]\n"
-"\n"
-"  Options:\n"
-"    -a | --add                     load profile\n"
-"    -c | --create                  create profile from template\n"
-"    -d | --dryrun                  dry run\n"
-"    -D | --delete                  unload and delete profile\n"
-"    -f | --add-file <file>         add file to profile\n"
-"    -F | --append-file <file>      append file to profile\n"
-"    -r | --replace                 reload profile\n"
-"    -R | --remove                  unload profile\n"
-"    -h | --help                    this help\n"
-"    -p | --probing [0|1]           allow disk format probing\n"
-"    -u | --uuid <uuid>             uuid (profile name)\n"
-"\n"
-msgstr ""
-"\n"
-"%s [параметри] [< def.xml]\n"
-"\n"
-"  Параметри:\n"
-"    -a | --add                     завантажити профіль\n"
-"    -c | --create                  створити профіль від шаблону\n"
-"    -D | --delete                  вивантажити і вилучити профіль\n"
-"    -d | --dryrun                  запуск без виконання дій\n"
-"    -f | --add-file <файл>         додати файл до профілю\n"
-"    -F | --append-file <файл>      долучити файл до профілю\n"
-"    -r | --replace                 перезавантажити профіль\n"
-"    -R | --remove                  вивантажити профіль\n"
-"    -h | --help                    це довідкове повідомлення\n"
-"    -p | --probing [0|1]           дозволити зондування формату диска\n"
-"    -u | --uuid <uuid>             uuid (назва профілю)\n"
-"\n"
 
 #, c-format
 msgid ""
@@ -1366,15 +1330,6 @@ msgstr "атрибут «floor» можна використовувати ли�
 msgid "'gluster' command line tool not found"
 msgstr "не знайдено інструмента командного рядка «gluster»"
 
-#, c-format
-msgid "'info blockstats' contains malformed parameter '%s' value '%s'"
-msgstr ""
-"«info blockstats» містить помилкове форматування: параметр «%s», значення "
-"«%s»"
-
-msgid "'info blockstats' not supported by this qemu"
-msgstr "У цій версії QEMU не передбачено підтримки команди «info blockstats»"
-
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
 msgstr "підтримку «ioeventfd» передбачено лише для контролерів virtio-scsi"
 
@@ -1441,9 +1396,6 @@ msgstr ""
 #, c-format
 msgid "'rx_queue_size' attribute must be positive number: %s"
 msgstr "значенням атрибута «rx_queue_size» має бути додатне число: %s"
-
-msgid "'set_link' not supported by this qemu"
-msgstr "підтримки «set_link» у цій версії qemu не передбачено"
 
 msgid "'sgio' is not supported for SCSI generic device yet "
 msgstr "підтримки «sgio» для загальних пристроїв SCSI ще не передбачено "
@@ -1626,12 +1578,6 @@ msgstr "Використання --descendants вимагає використа
 
 msgid "--format only works with --memory-only"
 msgstr "--format можна використовувати лише разом з --memory-only"
-
-msgid "--max-unauth-clients must be less than --max-clients"
-msgstr "--max-unauth-clients має бути меншим за --max-clients"
-
-msgid "--min-workers must be less than --max-workers"
-msgstr "--min-workers має бути меншими за --max-workers"
 
 msgid "--print-xml is incompatible with --no-metadata"
 msgstr ""
@@ -2442,9 +2388,6 @@ msgstr ""
 "Підтримки налаштовування кешу рівня %d, ідентифікатор %u, для типу області "
 "«%s» не передбачено"
 
-msgid "Cache tune not supported on this platform"
-msgstr "Підтримки налаштовування кешу на цій платформі не передбачено"
-
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
 msgstr "Кешу із ідентифікатором %u для рівня %d не існує"
@@ -2739,9 +2682,6 @@ msgstr "Неможливо перевірити сімейство адрес н
 msgid "Cannot check dnsmasq binary %s"
 msgstr "Не вдалося перевірити виконуваний файл dnsmasq, %s"
 
-msgid "Cannot check socket connection status"
-msgstr "Не вдалося перевірити стан з’єднання з сокетом"
-
 msgid "Cannot close container iterator"
 msgstr "Не вдалося закрити ітератор контейнера"
 
@@ -2750,9 +2690,6 @@ msgstr "Не вдалося закрити resctrl"
 
 msgid "Cannot complete within timeout period"
 msgstr "Не вдалося виконати протягом періоду очікування"
-
-msgid "Cannot connect to agent socket"
-msgstr "Не вдалося встановити з’єднання з сокетом агента"
 
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
@@ -3882,10 +3819,6 @@ msgstr ""
 "приватної мережі"
 
 #, c-format
-msgid "Config entry '%s' must be a string"
-msgstr "Запис налаштувань «%s» має бути рядком"
-
-#, c-format
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr "Запис налаштувань «%s» має бути булевим значенням (true або false)"
 
@@ -4051,10 +3984,6 @@ msgstr "Не вдалося додати змінну «IP» до карти х�
 
 msgid "Could not add variable 'MAC' to hashmap"
 msgstr "Не вдалося додати змінну «MAC» до карти хешів"
-
-#, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "Не вдалося розмістити у пам’яті вивід «%s»"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -4769,10 +4698,6 @@ msgid "Could not press key %d"
 msgstr "Не вдалося натиснути клавішу %d"
 
 #, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "Не вдалося розмістити змінну «%s» у карті хешів"
-
-#, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "Не вдалося надіслати запит щодо значення регістру «%s\\%s»"
 
@@ -5250,14 +5175,6 @@ msgstr "Похідні:"
 #, c-format
 msgid "Dest file %s too big for destination"
 msgstr "Файл %s є занадто великим для призначення"
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr "Буфер призначення для ifname («%s») є недостатньо об’ємним"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr "Буфер призначення для linkdev («%s») не є достатньо об’ємним"
 
 msgid ""
 "Destination libvirt does not support migration with extensible parameters"
@@ -6007,9 +5924,6 @@ msgid "Error from child process opening '%s'"
 msgstr ""
 "Повідомлення про помилку від дочірнього процесу під час спроби відкрити «%s»"
 
-msgid "Error generating NIC -device string"
-msgstr "Помилка під час створення рядка NIC -device"
-
 #, c-format
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr "Помилка під час отримання virtual_functions «%s» фізичної функції"
@@ -6222,14 +6136,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'numvcpus' to be an unsigned integer (1 or a multiple of "
-"2) but found %lld"
-msgstr ""
-"Значенням запису VMX «numvcpus» мало бути додатне ціле число (1 або число, "
-"кратне до 2), але вказано %lld"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%s'"
 msgstr ""
@@ -6311,13 +6217,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting domain XML entry 'vcpu' to be 1 or a multiple of 2 but found %d"
-msgstr ""
-"Значенням запису XML домену «vcpu» має бути 1 або число, кратне до 2, але "
-"вказано %d"
-
-#, c-format
-msgid ""
 "Expecting product 'gsx' or 'esx' or 'embeddedEsx' or 'vpx' but found '%s'"
 msgstr ""
 "Значенням продукту мав бути рядок «gsx», «esx», «embeddedEsx» або «vpx», "
@@ -6381,10 +6280,6 @@ msgstr "Не вдалося обробити дані, які було виве�
 
 msgid "Failed"
 msgstr "Помилка"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "Не вдалося зареєструвати модуль %s"
 
 #, c-format
 msgid "Failed new node mode for target '%s'"
@@ -7635,13 +7530,6 @@ msgstr "Не вдалося відкрити том сховища даних з
 
 #, c-format
 msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr ""
-"Не вдалося відкрити потік даних для дескриптора файла під час читання даних, "
-"виведених «%s»: «%s»"
-
-#, c-format
-msgid ""
 "Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
 msgstr ""
 "Не вдалося відкрити такий диск, dvd або пристрій для читання дискет для "
@@ -8438,11 +8326,6 @@ msgstr "Помилка під час запуску libvirt_lxc: %s\n"
 msgid "Failure to mask address"
 msgstr "Помилка під час спроби маскування адреси"
 
-#, c-format
-msgid "Failure while applying current filter on VM %s"
-msgstr ""
-"Помилка під час застосування поточного фільтра на віртуальній машині %s"
-
 msgid "Failure while reading log output"
 msgstr "Помилка при читанні виводу журналу"
 
@@ -8479,14 +8362,6 @@ msgstr "Поле пам’яті ядра є занадто довгим для 
 #, c-format
 msgid "Field name '%s' too long"
 msgstr "Назва поля, «%s», є занадто довгою"
-
-#, c-format
-msgid ""
-"File '%s' does not contain a <cpu> element or is not a valid domain or "
-"capabilities XML"
-msgstr ""
-"У файлі «%s» не міститься елемента <cpu> або маємо справу з некоректним XML "
-"домену або можливостей."
 
 #, c-format
 msgid "File '%s' has unknown type"
@@ -9131,9 +9006,6 @@ msgstr "у цій версії QEMU не передбачено IOThreads"
 
 msgid "IOThreads not supported with this binary"
 msgstr "підтримки IOThreads у цьому виконуваному файлі не передбачено"
-
-msgid "IOThreads only available for virtio pci and virtio ccw controllers"
-msgstr "IOThreads доступне лише для контролерів PCI virtio та vitio ccw"
 
 msgid "IOThreads only available for virtio pci and virtio ccw disk"
 msgstr "IOThreads доступне лише для дисків PCI та CCW virtio"
@@ -10345,12 +10217,6 @@ msgstr "У визначенні резервного тому у JSON, «%s», �
 msgid "JSON monitor is required"
 msgstr "потрібен монітор JSON"
 
-msgid "JSON monitor should be using AddNetdev"
-msgstr "монітор JSON має використовувати AddNetdev"
-
-msgid "JSON monitor should be using RemoveNetdev"
-msgstr "монітор JSON має використовувати RemoveNetdev"
-
 #, c-format
 msgid "Job submission failed on interface '%s'"
 msgstr "Помилка під час надсилання завдання на інтерфейсі «%s»"
@@ -10600,9 +10466,6 @@ msgstr "Помилкове форматування формального ви�
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "Помилкове форматування поля auth_pending у документі щодо стану JSON"
 
-msgid "Malformed clients data in JSON document"
-msgstr "Помилкове форматування даних записів клієнтів у документі JSON"
-
 msgid "Malformed conn_time field in JSON state document"
 msgstr "Помилкове форматування поля conn_time у документі щодо стану JSON"
 
@@ -10628,9 +10491,6 @@ msgstr "Помилкове форматування диска призначе�
 msgid "Malformed file structure: %s"
 msgstr "Помилкове форматування структури файлів: %s"
 
-msgid "Malformed files data from JSON file"
-msgstr "Помилкове форматування даних файлів з файла JSON"
-
 #, c-format
 msgid "Malformed format for filter '%s'"
 msgstr "Помилкове форматування для фільтра «%s»"
@@ -10647,9 +10507,6 @@ msgstr ""
 msgid "Malformed lease target offset %s"
 msgstr "Помилкове форматування відступу наданого призначення %s"
 
-msgid "Malformed lockspaces data from JSON file"
-msgstr "Помилкове форматування даних щодо просторів блокування у файлі JSON"
-
 msgid "Malformed max_anonymous_clients data in JSON document"
 msgstr "Помилкове форматування даних max_anonymous_clients у документі JSON"
 
@@ -10663,17 +10520,8 @@ msgstr "Помилкове форматування запису порту nbd,
 msgid "Malformed owner value in JSON document"
 msgstr "Помилкове форматування значення власника у документі JSON"
 
-msgid "Malformed owners value in JSON document"
-msgstr "Помилкове форматування значення власників у документі JSON"
-
-msgid "Malformed resources value in JSON document"
-msgstr "Помилкове форматування значення ресурсів у документі JSON"
-
 msgid "Malformed servers data in JSON document"
 msgstr "Помилкове форматування даних записів серверів у документі JSON"
-
-msgid "Malformed services data in JSON document"
-msgstr "Помилкове форматування даних записів служб у документі JSON"
 
 #, c-format
 msgid "Malformed size %s"
@@ -11182,9 +11030,6 @@ msgstr "У куці перенесення не вказано назви дра
 msgid "Missing lockspaces data from JSON file"
 msgstr "У файлі JSON не вистачає даних щодо просторів блокування"
 
-msgid "Missing lxc.rootfs configuration"
-msgstr "Не вистачає налаштувань lxc.rootfs"
-
 msgid "Missing macs"
 msgstr "Пропущено mac-и"
 
@@ -11208,10 +11053,6 @@ msgstr "У документі JSON не вистачає даних max_workers"
 msgid "Missing min_workers data in JSON document"
 msgstr "У документі JSON не вистачає даних min_workers"
 
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "Не вистачає символу реєстрації модуля %s"
-
 msgid "Missing monitor reply object"
 msgstr "Не виявлено об’єкта відповіді монітора"
 
@@ -11223,11 +11064,6 @@ msgstr "Документі стану JSON не вистачає поля nreque
 
 msgid "Missing or empty 'hostName' property"
 msgstr "Не вказано властивість «hostName» або вказано порожнє значення"
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for level '%ud' type '%s'"
-msgstr ""
-"Не вказано даних resctrl для рівня «%ud», тип «%s» або вказано несумісні дані"
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
 msgstr ""
@@ -11456,9 +11292,6 @@ msgstr "Пропущено роздільник у інформації sched «
 msgid "Missing server data from JSON file"
 msgstr "У файлі JSON не вистачає даних щодо сервера"
 
-msgid "Missing server name in phyp:// URI"
-msgstr "У посиланні «phyp://» немає назви сервера"
-
 msgid "Missing service data in JSON document"
 msgstr "У документі JSON не вистачає даних служби"
 
@@ -11485,10 +11318,6 @@ msgstr "Немає атрибута path у source для символьного
 
 msgid "Missing source service attribute for char device"
 msgstr "Відсутній атрибут service у source для символьного пристрою"
-
-#, c-format
-msgid "Missing space when parsing output of '%s'"
-msgstr "Не вистачило місця у пам’яті під час обробки даних, виведених «%s»"
 
 msgid "Missing storage block path"
 msgstr "Не вказано шлях до блокового пристрою зберігання даних"
@@ -11921,9 +11750,6 @@ msgstr ""
 "Не встановлено шляху до сертифікатів CA, який відповідав би ключу або "
 "сертифікату сервера"
 
-msgid "No CPUs given"
-msgstr "Не задано процесорів"
-
 #, c-format
 msgid "No FD available at slot %zu"
 msgstr "Немає доступного дескриптора файла на слоті %zu"
@@ -12068,10 +11894,6 @@ msgstr "Немає домену з відповідним UUID «%s»"
 msgid "No domain with name %s"
 msgstr "Немає домену з назвою %s"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "Немає домену з назвою «%s»"
-
 msgid "No error message from child failure"
 msgstr "Не отримано повідомлення про помилку дочірнього процесу"
 
@@ -12116,16 +11938,8 @@ msgstr "Не знайдено графічного дисплея типу «%s�
 msgid "No graphics backend with index %d"
 msgstr "Немає графічного сервера з індексом %d"
 
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "У «%s» не вказано процесора основної системи"
-
 msgid "No identity information available for client"
 msgstr "Немає відомостей щодо профілю клієнта"
-
-#, c-format
-msgid "No info for device '%s'"
-msgstr "Немає даних щодо пристрою «%s»"
 
 msgid "No interface attached to bridge"
 msgstr "До містка не долучено інтерфейсу"
@@ -12980,10 +12794,6 @@ msgstr "Пароль до ключа «%s»"
 
 msgid "Password request failed"
 msgstr "Невдала спроба запиту щодо пароля"
-
-msgid "Password request seen, but no handler available"
-msgstr ""
-"Виявлено запит щодо пароля, але жоден з обробників таких подій не є доступним"
 
 #, c-format
 msgid "Password set successfully for %s in %s"
@@ -14111,10 +13921,6 @@ msgstr "Номер послідовного порту, %d, не лежить у
 #, c-format
 msgid "Server count %zd greater than default name count %zu"
 msgstr "Кількість серверів, %zd, перевищує кількість типових назв, %zu"
-
-#, c-format
-msgid "Server count %zd should be positive"
-msgstr "Кількість серверів, %zd, має бути додатною"
 
 msgid "Server name not in URI"
 msgstr "У адресі немає назви сервера"
@@ -15885,9 +15691,6 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Цією основною системою не керує vCenter"
 
-msgid "This libvirtd build does not support TLS"
-msgstr "У цьому варіанті libvirtd не передбачено підтримки TLS"
-
 msgid "This snapshot has children, please delete theses snapshots before"
 msgstr "У цього знімка є дочірні. Будь ласка, спочатку вилучіть ці знімки"
 
@@ -16538,9 +16341,6 @@ msgstr "Не вдалося рекурсивно завершити роботу
 msgid "Unable to close the new medium, rc=%08x"
 msgstr "Не вдалося завершити роботу з новим носієм даних, rc=%08x"
 
-msgid "Unable to compute hash of data"
-msgstr "Не вдалося обчислити хеш-суму даних"
-
 #, c-format
 msgid ""
 "Unable to configure VF %d of PF '%s' because the PF is not online. Please "
@@ -16582,12 +16382,6 @@ msgstr "Не вдалося створити пристрій %s %s"
 #, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "Не вдалося створити запис жорсткого диска, rc=%08x"
-
-msgid "Unable to create JSON formatter"
-msgstr "Не вдалося створити інструмент форматування JSON"
-
-msgid "Unable to create JSON parser"
-msgstr "Не вдалося створити обробник JSON"
 
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
@@ -16846,10 +16640,6 @@ msgstr "Не вдалося увійти до простору назв для �
 #, c-format
 msgid "Unable to exec shell %s"
 msgstr "Не вдалося виконати оболонку %s"
-
-#, c-format
-msgid "Unable to extract disk path from %s"
-msgstr "Не вдалося визначити шлях до диска за %s"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "Не вдалося знайти точку монтування контролера cgroup «cpuacct»"
@@ -18227,11 +18017,6 @@ msgstr "Неочікуваний тип файлової системи %s"
 #, c-format
 msgid "Unexpected hostdev mode %d"
 msgstr "Неочікуваний режим роботи пристрою основної системи, %d"
-
-#, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr ""
-"Неочікувана довжина рядка > %d символів під час обробки даних, виведених «%s»"
 
 msgid "Unexpected lock parameters for disk resource"
 msgstr "Неочікувані параметри блокування для дискового ресурсу"
@@ -19648,10 +19433,6 @@ msgstr "додати потік введення-виведення до гос�
 msgid "add backing chain information to block stats"
 msgstr "додати інформацію щодо резервного ланцюжка до статистики блоків"
 
-#, c-format
-msgid "adding %s device failed: %s"
-msgstr "помилка під час спроби додавання пристрою %s: %s"
-
 msgid "additionally display the type and device value"
 msgstr "додатково показати значення типу і пристрою"
 
@@ -19879,10 +19660,6 @@ msgstr ""
 
 msgid "at most one CPU cache element may be specified"
 msgstr "можна вказувати не більше одного елемента кешу процесора"
-
-msgid "atomic live snapshot of multiple disks is unsupported"
-msgstr ""
-"підтримки елементарних інтерактивних знімків декількох дисків не передбачено"
 
 msgid "ats driver option is only supported for virtio devices"
 msgstr "підтримку параметра драйвера ats передбачено лише для пристроїв virtio"
@@ -20366,10 +20143,6 @@ msgstr ""
 "не вдалося додати модуль керування пам’яті для гостьового вузла «%d», "
 "оскільки у гостьовій системі налаштовано лише «%zu» вузлів NUMA"
 
-#, c-format
-msgid "can't canonicalize path '%s'"
-msgstr "не вдалося перетворити рядок шляху у канонічну форму «%s»"
-
 msgid "can't change link state: device alias not found"
 msgstr ""
 "неможливо змінити стан посилання на «вимкнено»: не знайдено альтернативної "
@@ -20487,16 +20260,6 @@ msgstr "не вдалося створити семафор завдання"
 
 msgid "cannot acquire state change lock"
 msgstr "не вдалося створити блокування зміни станів"
-
-#, c-format
-msgid "cannot acquire state change lock (held by %s)"
-msgstr "не вдалося створити блокування зміни станів (утримується %s)"
-
-#, c-format
-msgid "cannot acquire state change lock (held by %s) due to max_queued limit"
-msgstr ""
-"неможливо створити блокування (утримується %s) від зміни стану через "
-"перевищення обмеження max_queued"
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr ""
@@ -20756,9 +20519,6 @@ msgstr "не вдалося створити канал для тунельов�
 #, c-format
 msgid "cannot create snapshot directory '%s'"
 msgstr "не вдалося створити каталог знімків «%s»"
-
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "не можна створювати віртуальні диски FAT у режимі читання-запису"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -21242,9 +21002,6 @@ msgstr "не можна змінювати MTU"
 msgid "cannot modify field '%s' of the disk"
 msgstr "не вдалося внести зміни до поля «%s» диска"
 
-msgid "cannot modify network device alias"
-msgstr "неможливо змінити псевдонім пристрою мережі"
-
 msgid "cannot modify network device boot index setting"
 msgstr "неможливо змінити параметр покажчика завантаження пристрою мережі"
 
@@ -21407,23 +21164,6 @@ msgid "cannot parse device start location"
 msgstr "не вдалося обробити дані щодо початку пристрою"
 
 #, c-format
-msgid "cannot parse disk migration data remaining statistic %s"
-msgstr ""
-"не вдалося обробити статистичні дані щодо ще не переданих даних диска під "
-"час перенесення %s"
-
-#, c-format
-msgid "cannot parse disk migration data total statistic %s"
-msgstr ""
-"не вдалося обробити загальні статистичні дані щодо перенесення диска %s"
-
-#, c-format
-msgid "cannot parse disk migration data transferred statistic %s"
-msgstr ""
-"не вдалося обробити статистичні дані щодо переданих даних диска під час "
-"перенесення %s"
-
-#, c-format
 msgid "cannot parse drive bus '%s'"
 msgstr "не вдалося обробити канал диска «%s»"
 
@@ -21450,40 +21190,12 @@ msgid "cannot parse io mode '%s'"
 msgstr "не вдалося обробити дані щодо режиму вводу-виводу «%s»"
 
 #, c-format
-msgid "cannot parse json %s: %s"
-msgstr "не вдалося обробити json %s: %s"
-
-#, c-format
-msgid "cannot parse json %s: too many items present"
-msgstr "не вдалося обробити json %s: забагато записів"
-
-#, c-format
-msgid "cannot parse json %s: unterminated string/map/array"
-msgstr "не вдалося обробити json %s: незавершений рядок, карта або масив"
-
-#, c-format
 msgid "cannot parse memory '%s'"
 msgstr "не вдалося обробити пам'ять «%s»"
 
 #, c-format
 msgid "cannot parse memory value '%s'"
 msgstr "не вдалося обробити значення пам'яті «%s»"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr ""
-"не вдалося обробити статистичні дані щодо ще не переданих даних під час "
-"перенесення %s"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "не вдалося обробити загальні статистичні дані щодо перенесення %s"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr ""
-"не вдалося обробити статистичні дані щодо переданих даних під час "
-"перенесення %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -21850,10 +21562,6 @@ msgid "cannot seek in '%s'"
 msgstr "не вдалося встановити позицію у «%s»"
 
 #, c-format
-msgid "cannot seek into '%s'"
-msgstr "не вдалося виконати позиціювання на «%s»"
-
-#, c-format
 msgid "cannot seek to beginning of file '%s'"
 msgstr "не вдалося перенести позицію на початок файла «%s»"
 
@@ -22065,9 +21773,6 @@ msgstr ""
 
 msgid "cannot use custom tap device in session mode"
 msgstr "не можна використовувати нетиповий пристрій tap у режимі сеансу"
-
-msgid "cannot use inputvol with encrypted raw volume"
-msgstr "не можна використовувати inputvol для зашифрованого простого тому"
 
 msgid "cannot use namespaces in session mode"
 msgstr "не можна використовувати простори назв у режимі сеансу"
@@ -22608,10 +22313,6 @@ msgstr "не вдалося змінити стан APIC на: %s, rc=%08x"
 msgid "could not change PAE status to: %s, rc=%08x"
 msgstr "не вдалося змінити стан PAE на: %s, rc=%08x"
 
-#, c-format
-msgid "could not change media on %s: %s"
-msgstr "не вдалося змінити носій даних у %s: %s"
-
 msgid "could not close handshake fd"
 msgstr "не вдалося закрити файловий дескриптор встановлення з’єднання"
 
@@ -22663,10 +22364,6 @@ msgstr "не вдалося від’єднати теку спільного в
 
 msgid "could not determine max vcpus for the domain"
 msgstr "не вдалося визначити максимальну кількість процесорів для домену"
-
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "не вдалося вилучити носій даних з %s: %s"
 
 #, c-format
 msgid "could not find backing store index %u in chain for '%s'"
@@ -23108,11 +22805,6 @@ msgstr ""
 "поточна кількість віртуальних процесорів має бути рівною максимальній "
 "кількості віртуальних процесорів"
 
-msgid "currently is supported only taking screenshots of screen ID 0"
-msgstr ""
-"у поточній версії передбачено створення знімків вікон лише для екрана з "
-"ідентифікатором 0"
-
 msgid "daemon's admin server connection URI"
 msgstr "URI з’єднання адміністративного сервера фонової служби"
 
@@ -23283,10 +22975,6 @@ msgid "detach node device from its device driver"
 msgstr "від’єднати вузловий пристрій від його драйвера"
 
 #, c-format
-msgid "detaching %s device failed: %s"
-msgstr "помилка під час спроби від’єднання пристрою %s: %s"
-
-#, c-format
 msgid "detaching device type '%s' is unsupported"
 msgstr "підтримки від’єднання пристроїв типу «%s» не передбачено"
 
@@ -23368,9 +23056,6 @@ msgstr "ключ пристрою"
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr "назва пристрою або пара wwn у форматі «wwnn,wwpn»"
 
-msgid "device name rejected"
-msgstr "назву пристрою відхилено"
-
 msgid "device not found"
 msgstr "пристрій не знайдено"
 
@@ -23411,9 +23096,6 @@ msgstr "пристрій з адресою «%s» не можна від’єд�
 #, c-format
 msgid "device with invalid '%s' address cannot be detached"
 msgstr "пристрій із некоректною адресою «%s» не можна від’єднувати"
-
-msgid "device-list-properties reply data was missing 'name'"
-msgstr "у даних відповіді device-list-properties не міститься поля «name»"
 
 msgid "devices cgroup isn't mounted"
 msgstr "cgroup пристроїв не змонтовано"
@@ -23496,10 +23178,6 @@ msgstr "виявити потенційні джерела резервних с
 
 msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
 msgstr "У цьому QEMU не передбачено відокремлених діапазонів процесорів NUMA"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "диск %s не містить жодних даних щодо шифрування"
 
 #, c-format
 msgid "disk %s has no source file to be committed"
@@ -23884,9 +23562,6 @@ msgstr "домен позначено для автоматичного знищ
 msgid "domain is no longer running"
 msgstr "домен вже не працює"
 
-msgid "domain is not active"
-msgstr "домен не є активним"
-
 msgid "domain is not in running state"
 msgstr "домен не виконується"
 
@@ -23920,9 +23595,6 @@ msgstr "у %s не існує файла основного ключа доме�
 
 msgid "domain name or uuid"
 msgstr "назва домену або uuid"
-
-msgid "domain name, id or uuid"
-msgstr "назва домену, id або uuid"
 
 msgid "domain save job"
 msgstr "завдання зі збереження домену"
@@ -24562,9 +24234,6 @@ msgstr "очікується назва"
 msgid "expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."
 msgstr "мало бути вказано адресу pci:0000.00.00.00 або ccw:00.0.0000."
 
-msgid "expecting a scsi:00.00.00 address."
-msgstr "слід вказати адресу scsi:00.00.00."
-
 msgid "expecting a separator"
 msgstr "очікується розділювач"
 
@@ -24728,9 +24397,6 @@ msgstr "не вдалося обчислити хеш ключа ssh вузла"
 #, c-format
 msgid "failed to change to directory '%s' in '%s'"
 msgstr "не вдалося змінити каталог на «%s» у «%s»"
-
-msgid "failed to chown luks secret file"
-msgstr "не вдалося змінити власника файла ключів luks"
 
 #, c-format
 msgid "failed to clone RBD volume %s to %s"
@@ -24959,19 +24625,8 @@ msgstr "не вдалося знайти справжній пристрій д�
 msgid "failed to finish job for disk %s"
 msgstr "не вдалося завершити виконання завдання для диска %s"
 
-#, c-format
-msgid "failed to gather stats for disk '%s'"
-msgstr "не вдалося зібрати статистичні дані щодо диска «%s»"
-
 msgid "failed to generate XML"
 msgstr "не вдалося створити дані у форматі XML"
-
-msgid "failed to generate byte stream"
-msgstr "не вдалося створити потік байтів"
-
-#, c-format
-msgid "failed to generate byte stream, ret=%d"
-msgstr "не вдалося створити потік байтів, ret=%d"
 
 msgid "failed to generate uuid"
 msgstr "не вдалося створити uuid"
@@ -25139,10 +24794,6 @@ msgstr "не вдалося ініціалізувати шифрування: �
 msgid "failed to initialize domain condition"
 msgstr "не вдалося ініціалізувати умову для домену"
 
-#, c-format
-msgid "failed to initialize gluster connection (src=%p priv=%p)"
-msgstr "не вдалося ініціалізувати з’єднання gluster (src=%p priv=%p)"
-
 msgid "failed to initialize libssh"
 msgstr "не вдалося ініціалізувати libssh"
 
@@ -25160,14 +24811,6 @@ msgstr "не вдалося виконати ітерування знімком
 #, c-format
 msgid "failed to list host interfaces: %s%s%s"
 msgstr "не вдалося побудувати список інтерфейсів основної системи: %s%s%s"
-
-#, c-format
-msgid "failed to load module %s %s"
-msgstr "не вдалося завантажити модуль %s %s"
-
-#, c-format
-msgid "failed to load storage backend module '%s'"
-msgstr "не вдалося завантажити модуль обробки сховища даних «%s»"
 
 #, c-format
 msgid "failed to lookup interface with MAC address '%s'"
@@ -25220,9 +24863,6 @@ msgstr "помилка при відкриванні файла"
 #, c-format
 msgid "failed to open logfile %s"
 msgstr "не вдалося відкрити файл журналу %s"
-
-msgid "failed to open luks secret file for write"
-msgstr "не вдалося відкрити файл ключів шифрування luks для запису"
 
 #, c-format
 msgid "failed to open netns %s"
@@ -25416,10 +25056,6 @@ msgid "failed to read libxl header"
 msgstr "не вдалося прочитати заголовок libxl"
 
 #, c-format
-msgid "failed to read link of gluster file '%s'"
-msgstr "не вдалося прочитати посилання файла gluster «%s»"
-
-#, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "не вдалося прочитати довжину метаданих у «%s»"
 
@@ -25519,10 +25155,6 @@ msgstr "не вдалося виконати команду «%s --version»: %s
 msgid "failed to run apparmor_parser"
 msgstr "не вдалося виконати apparmor_parser"
 
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "не вдалося зберегти дані щодо адреси символьного пристрою «%s»"
-
 msgid "failed to save content"
 msgstr "помилка збереження вмісту"
 
@@ -25537,10 +25169,6 @@ msgstr "не вдалося встановити позицію на кінец�
 #, c-format
 msgid "failed to seek to end of '%s'"
 msgstr "не вдалося встановити позицію на кінець «%s»"
-
-#, c-format
-msgid "failed to send key '%s'"
-msgstr "не вдалося надіслати ключ «%s»"
 
 msgid "failed to serialize S-Expr"
 msgstr "помилка перетворення S-Expr"
@@ -25571,10 +25199,6 @@ msgstr ""
 "не вдалося встановити cpuset.cpus у cgroup для потоку введення-виведення %d"
 
 #, c-format
-msgid "failed to set gluster volfile server '%s'"
-msgstr "не вдалося налаштувати сервер volfile gluster «%s»"
-
-#, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr "не вдалося зробити знімок «%s» поточним"
 
@@ -25586,10 +25210,6 @@ msgstr "Не вдалося встановити дескриптор файла
 
 msgid "failed to setup stdout file handle"
 msgstr "Не вдалося встановити дескриптор файла stdout"
-
-#, c-format
-msgid "failed to stat gluster path '%s'"
-msgstr "не вдалося отримати статистичні дані щодо шляху gluster «%s»"
 
 #, c-format
 msgid "failed to stat network status file '%s'"
@@ -25702,9 +25322,6 @@ msgstr "не вдалося записати заголовок до файла 
 #, c-format
 msgid "failed to write known_host file '%s': %s"
 msgstr "не вдалося записати файл known_host «%s»: %s"
-
-msgid "failed to write luks secret file"
-msgstr "не вдалося записати дані до файла ключів luks"
 
 msgid "failed to write master key file for domain"
 msgstr "не вдалося записати файл основного ключа домену"
@@ -25836,9 +25453,6 @@ msgstr "фільтрувати за знімками лише дисків"
 
 msgid "filter by domain name, id or uuid"
 msgstr "фільтрувати за назвою домену, ідентифікатором або UUID"
-
-msgid "filter by domain name, id, or uuid"
-msgstr "фільтрувати за назвою домену, ідентифікатором або uuid"
 
 msgid "filter by event name"
 msgstr "фільтрувати за назвою події"
@@ -25997,10 +25611,6 @@ msgstr "формат резервного тому у разі створенн�
 
 msgid "format of the destination file"
 msgstr "формат файла призначення"
-
-#, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr "Пароль format='qcow' для %s не може містити «\\0»"
 
 #, c-format
 msgid "formatter for %s %s reported error"
@@ -26278,14 +25888,8 @@ msgstr ""
 "під час спроби під’єднання у «гарячому» режимі гостьова система несподівано "
 "завершила роботу"
 
-msgid "guest-get-fsinfo 'disk' data was not an array"
-msgstr "дані «disk» guest-get-fsinfo не є масивом"
-
 msgid "guest-get-fsinfo reply was missing return data"
 msgstr "У відповіді guest-get-fsinfo немає повернених даних"
-
-msgid "guest-get-fsinfo return information was not an array"
-msgstr "повернуті дані guest-get-fsinfo не є масивом"
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "у повернутих даних немає відповіді guest-get-vcpus"
@@ -26686,15 +26290,6 @@ msgstr "підтримки налаштовування стану окреми�
 msgid "info balloon reply was missing balloon data"
 msgstr "результат info balloon не містить даних щодо додаткової пам’яті"
 
-msgid "info block not supported by this qemu"
-msgstr "у цій версії QEMU не передбачено підтримки команди «info block»"
-
-msgid "info blockstats entry was malformed"
-msgstr "помилкове форматування запису щодо статистики блоків"
-
-msgid "info blockstats reply was malformed"
-msgstr "помилкове форматування відповіді щодо статистики блоків"
-
 msgid "info kvm reply missing 'enabled' field"
 msgstr "у результаті info kvm немає поля «enabled»"
 
@@ -26923,10 +26518,6 @@ msgid "invalid <address> element found in <forward> of network %s"
 msgstr "у записі <forward> мережі %s виявлено некоректний елемент <address>"
 
 #, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "некоректне значення <encryption> для тому %s"
-
-#, c-format
 msgid "invalid <forwarder> element found in <dns> of network %s"
 msgstr "у записі <forwarder> мережі %s виявлено некоректний елемент <dns>"
 
@@ -27146,10 +26737,6 @@ msgid "invalid catchup threshold"
 msgstr "некоректне порогове значення перехоплення"
 
 #, c-format
-msgid "invalid certificate name: %s"
-msgstr "некоректна назва сертифікату: %s"
-
-#, c-format
 msgid "invalid channel state value '%s'"
 msgstr "некоректне значення стану каналу, «%s»"
 
@@ -27189,10 +26776,6 @@ msgstr "неправильний вказівник з'єднання у %s"
 #, c-format
 msgid "invalid cssid value '%s' for '%s'"
 msgstr "некоректне значення cssid, «%s», для «%s»"
-
-#, c-format
-msgid "invalid database name: %s"
-msgstr "некоректна назва бази даних: %s"
 
 #, c-format
 msgid "invalid device API '%s' for device %s: device only supports '%s'"
@@ -28863,14 +28446,6 @@ msgstr "статистичні дані перенесення доступні 
 msgid "migration successfully aborted"
 msgstr "перенесення успішно перервано"
 
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "помилка під час перенесення на «%s»: %s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "перенесення на «%s» не підтримується цією версією QEMU: %s"
-
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr ""
 "виконується перенесення, але даних щодо ще не переданих до оперативної "
@@ -29262,10 +28837,6 @@ msgstr "не вказано таблиці фільтрування параме
 
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "у записі кешу можливостей QEMU не вистачає назви прапорця"
-
-#, c-format
-msgid "missing gluster volume name for path '%s'"
-msgstr "не вказано назви тому gluster для шляху «%s»"
 
 msgid "missing graphics device type"
 msgstr "не вказано тип графічного адаптера"
@@ -30468,10 +30039,6 @@ msgid "no disk found with alias %s"
 msgstr "не знайдено диска з псевдонімом %s"
 
 #, c-format
-msgid "no disk found with path %s"
-msgstr "не знайдено диска з шляхом %s"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "немає диска з назвою «%s»"
 
@@ -31013,11 +30580,6 @@ msgstr "для пристрою pc-dimm передбачено підтримк�
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "для пристрою спільної пам’яті передбачено підтримку лише адрес «pci»"
 
-msgid "only 1 graphics device of each type (sdl, vnc, spice) is supported"
-msgstr ""
-"передбачено підтримку лише одного графічного пристрою кожного типу (sdl, "
-"vnc, spice)"
-
 msgid "only JSON objects can be top level"
 msgstr "на верхньому рівні можуть бути лише об’єкти JSON"
 
@@ -31457,9 +31019,6 @@ msgstr ""
 "підтримку контролерів pcie-expander-bus передбачено лише для типів "
 "комп’ютерів на основі q35"
 
-msgid "peeking is supported only for RAW disks"
-msgstr "підтримку підглядання передбачено лише для дисків RAW"
-
 msgid "peer-2-peer migration"
 msgstr "перенесення з вузла на вузол"
 
@@ -31859,20 +31418,12 @@ msgstr ""
 msgid "qemu does not support SGA"
 msgstr "У qemu не передбачено підтримки SGA"
 
-#, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "У QEMU не передбачено підтримки закриття дескрипторів файлів: %s"
-
 msgid "qemu does not support drive-mirror command"
 msgstr "У qemu не передбачено підтримки команди drive-mirror"
 
 msgid "qemu does not support more than one entry to Type 2 in SMBIOS table"
 msgstr ""
 "у qemu не передбачено підтримку понад одного запису типу 2 у таблиці SMBIOS"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "У QEMU не передбачено підтримки надсилання дескрипторів файлів: %s"
 
 msgid "qemu does not support the accel2d setting"
 msgstr "у qemu не передбачено підтримки встановлення accel2d"
@@ -31951,15 +31502,9 @@ msgid "query-command-line-options parameter data was missing 'name'"
 msgstr ""
 "у даних параметра query-command-line-options не міститься елемента «name»"
 
-msgid "query-command-line-options parameter data was not an array"
-msgstr "дані параметра query-command-line-options не є масивом"
-
 msgid "query-command-line-options reply data was missing 'option'"
 msgstr ""
 "у даних відповіді query-command-line-options не міститься елемента «option»"
-
-msgid "query-command-line-options reply data was not an array"
-msgstr "дані відповіді query-command-line-options не є масивом"
 
 msgid "query-command-line-options reply was missing return data"
 msgstr "у відповіді query-command-line-options не міститься повернених даних"
@@ -32352,9 +31897,6 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "потребує елементарної дії"
 
-msgid "resctrl not supported on this platform"
-msgstr "На цій платформі підтримки resctrl не передбачено"
-
 msgid "reset"
 msgstr "скинути"
 
@@ -32456,9 +31998,6 @@ msgstr "повторно використати всі вже створені �
 msgid "reuse existing destination"
 msgstr "повторно використати вже створену теку призначення"
 
-msgid "reuse is not supported with this QEMU binary"
-msgstr "повторне використання не підтримується цим двійковим компонентом QEMU"
-
 msgid "revert requires force"
 msgstr "повернення має бути виконано у примусовому режимі"
 
@@ -32478,9 +32017,6 @@ msgstr "повернення до попередньої точки віднов
 msgid "rollback to previous saved configuration created via iface-begin"
 msgstr ""
 "відновити попередні збережені налаштування, створені за допомогою iface-begin"
-
-msgid "rombar and romfile are supported only for PCI devices"
-msgstr "підтримку rombar і romfile передбачено лише для пристроїв PCI"
 
 msgid "root element was not source"
 msgstr "кореневий елемент не є «source»"
@@ -32618,9 +32154,6 @@ msgstr "ключ є конфіденційним"
 
 msgid "secret state driver is not active"
 msgstr "драйвер стану secret не активний"
-
-msgid "secrets already defined"
-msgstr "ключі вже визначено"
 
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
@@ -32792,16 +32325,9 @@ msgstr "підтримки встановлення MTU на типі інтер
 msgid "setting NUMA distances is not supported with this qemu"
 msgstr "з цим QEMU не передбачено підтримки встановлення відстаней NUMA"
 
-msgid "setting VNC password failed"
-msgstr "спроба встановлення пароля VNC завершилася невдало"
-
 #, c-format
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr "встановлення ширини каналу на інтерфейсах типу «%s» ще не реалізовано"
-
-msgid "setting disk password is not supported"
-msgstr ""
-"підтримки можливості встановлення пароля для доступу до диска не передбачено"
 
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
@@ -32855,13 +32381,6 @@ msgstr ""
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
 msgstr "поверхневе копіювання диска «%s» до файла необроблених даних неможливе"
-
-#, c-format
-msgid ""
-"shared access for disk '%s' requires use of explicitly specified disk format"
-msgstr ""
-"спільний доступ для диска «%s» потребує використання явно вказаного формату "
-"диска"
 
 #, c-format
 msgid "shared access for disk '%s' requires use of supported storage format"
@@ -33039,9 +32558,6 @@ msgstr "Помилка socketpair"
 
 msgid "sockpair failed"
 msgstr "помилка у sockpair"
-
-msgid "socks field in JSON was not an array"
-msgstr "поле socks у JSON не є масивом"
 
 #, c-format
 msgid "sound card model '%s' is not supported by qemu"
@@ -33280,12 +32796,6 @@ msgstr "буфер даних «%s» не є активним"
 #, c-format
 msgid "storage pool '%s' is still active"
 msgstr "резервне сховище «%s» все ще є активним"
-
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr ""
-"у резервному сховищі даних не передбачено підтримки побудови шифрованих "
-"томів на основі інших томів"
 
 msgid "storage pool does not support changing of volume capacity"
 msgstr "для сховища даних не передбачено зміни місткості тому"
@@ -33549,11 +33059,6 @@ msgstr "завершено аварійно"
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: вкажіть шлях або використовуйте test:///default"
 
-msgid "text monitor doesn't support block stats for backing chain members"
-msgstr ""
-"у текстовому моніторі не передбачено підтримки статистики за блоками для "
-"елементів зворотного ланцюжка обробки"
-
 #, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
@@ -33576,12 +33081,6 @@ msgstr "MAC-адреса «%s» відповідає декільком інте
 #, c-format
 msgid "the QEMU binary does not support %s"
 msgstr "виконуваний файл QEMU не підтримує роботу з %s"
-
-msgid "the QEMU binary does not support kqemu"
-msgstr "виконуваний файл QEMU не підтримує роботу з kqemu"
-
-msgid "the QEMU binary does not support kvm"
-msgstr "виконуваний файл QEMU не підтримує роботу з kvm"
 
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr ""
@@ -33634,9 +33133,6 @@ msgstr ""
 
 msgid "the default lockspace already exists"
 msgstr "типовий простір блокування вже існує"
-
-msgid "the disk password is incorrect"
-msgstr "помилковий пароль до диска"
 
 msgid "the domain does not have a current snapshot"
 msgstr "у домені немає поточного знімка"
@@ -33866,9 +33362,6 @@ msgstr "час, який слід встановити"
 msgid "time_t overflow"
 msgstr "переповнення time_t"
 
-msgid "timed out waiting for disk tray status update"
-msgstr "перевищено час очікування на оновлення стану лотка диска"
-
 msgid "timeout must be positive"
 msgstr "час очікування має бути додатним"
 
@@ -33914,9 +33407,6 @@ msgstr ""
 #, c-format
 msgid "too many NUMA cells: %d > %d"
 msgstr "занадто багато комірок NUMA: %d > %d"
-
-msgid "too many conflicts when generating a uuid"
-msgstr "занадто багато конфліктів під час створення UUID"
 
 msgid "too many current snapshots"
 msgstr "забагато поточних знімків"
@@ -34152,9 +33642,6 @@ msgstr ""
 msgid "too many secrets for luks encryption"
 msgstr "занадто багато ключів для шифрування luks"
 
-msgid "too many secrets for qcow encryption"
-msgstr "занадто багато ключів для шифрування qcow"
-
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "початок «%s» у ланцюжку «%s» не має резервного файла"
@@ -34340,10 +33827,6 @@ msgstr "не вдалося отримати доступ до диска %s\n"
 msgid "unable to add SSH host key for host '%s': %s"
 msgstr "не вдалося додати ключ SSH вузла для вузла «%s»: %s"
 
-#, c-format
-msgid "unable to add host net: %s"
-msgstr "не вдалося додати мережу основної системи: %s"
-
 msgid "unable to allocate security context"
 msgstr "не вдалося розмістити контекст безпеки"
 
@@ -34415,9 +33898,6 @@ msgid ""
 msgstr ""
 "не вдалося вилучити інтерфейс «%s» у мережі «%s». Зараз цей інтерфейс "
 "використовується %d доменами."
-
-msgid "unable to determine array size"
-msgstr "не вдалося визначити розмір масиву"
 
 msgid "unable to determine if snapshot has parent"
 msgstr "не вдалося визначити, чи має знімок батьківський запис"
@@ -34682,10 +34162,6 @@ msgid "unable to seek to hole"
 msgstr "не вдалося виконати позиціювання на «дірку»"
 
 #, c-format
-msgid "unable to send file handle '%s': %s"
-msgstr "не вдалося надіслати дескриптор файла «%s»: %s"
-
-#, c-format
 msgid "unable to set AppArmor profile '%s' for '%s'"
 msgstr "не вдалося встановити профіль AppArmor «%s» для «%s»"
 
@@ -34901,14 +34377,6 @@ msgid "unexpected address type for usb disk"
 msgstr "неочікуваний тип адреси для диска USB"
 
 #, c-format
-msgid "unexpected async job %d"
-msgstr "неочікуване асинхронне завдання %d"
-
-#, c-format
-msgid "unexpected balloon information '%s'"
-msgstr "неочікувані дані щодо резервного сховища «%s»"
-
-#, c-format
 msgid "unexpected boot device type %d"
 msgstr "неочікуваний тип завантажувального пристрою %d"
 
@@ -34963,16 +34431,8 @@ msgid "unexpected disk bus %d"
 msgstr "неочікувана шина диска %d"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "неочікуваний режим кешу диска %d"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "неочікуваний пристрій диска %d"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "неочікуваний режим вводу-виводу диска %d"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -35150,10 +34610,6 @@ msgstr "неочікувані проблеми з читанням XML знім
 
 msgid "unexpected protocol type"
 msgstr "неочікуваний тип протоколу"
-
-#, c-format
-msgid "unexpected reply from info status: %s"
-msgstr "неочікувана відповідь на info status: %s"
 
 #, c-format
 msgid "unexpected root element <%s> expecting <device>"
@@ -35809,10 +35265,6 @@ msgid "unknown hub device type '%s'"
 msgstr "невідомий тип основного пристрою «%s»"
 
 #, c-format
-msgid "unknown image format of '%s' and format probing is disabled"
-msgstr "невідомий формат образу «%s», засіб визначення формату вимкнено"
-
-#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "невідомий тип шини вводу «%s»"
 
@@ -36416,10 +35868,6 @@ msgstr "непідтримуваний пристрій диска"
 #, c-format
 msgid "unsupported disk driver %s"
 msgstr "непідтримуваний драйвер диска, %s"
-
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "непідтримуваний тип драйвера дисків для «%s»"
 
 msgid "unsupported disk type"
 msgstr "непідтримуваний тип диска"
@@ -37082,10 +36530,6 @@ msgstr ""
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%s'"
 msgstr "помилка virThreadCreate у virNWFilterDHCPSnoopReq на інтерфейсі «%s»"
-
-#, c-format
-msgid "virNWFilterDHCPSnoopReq: can't copy variables on if %s"
-msgstr "virNWFilterDHCPSnoopReq: копіювання змінних неможливе, якщо %s"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %d corrupt"

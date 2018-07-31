@@ -13,10 +13,10 @@
 # Seong-ho Cho <darkcircle.0426@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-02-27 07:48-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
 "ko/)\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -277,9 +277,6 @@ msgstr "scsi hostdev 소스 주소의 'bus', 'target', 'unit'을 지정해야 �
 
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "'floor' 속성은 <inbound> 요소에만 허용됨 "
-
-msgid "'info blockstats' not supported by this qemu"
-msgstr "이 qemu에서는 'info blockstats'를 지원하지 않습니다"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' 및 'burst'에는 'average' 속성이 필요함 "
@@ -756,9 +753,6 @@ msgstr "QEMU 바이너리 %s를 확인할 수 없음"
 msgid "Cannot check dnsmasq binary %s"
 msgstr "dnsmasq 바이너리 %s를 확인할 수 없음"
 
-msgid "Cannot check socket connection status"
-msgstr "소켓 연결 상태를 확인할 수 없음"
-
 #, c-format
 msgid "Cannot create %s"
 msgstr "%s을 생성할 수 없음"
@@ -1174,10 +1168,6 @@ msgid "Could not add variable 'MAC' to hashmap"
 msgstr "해시맵에 'MAC' 변수를 추가할 수 없음 "
 
 #, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "'%s'의 출력을 위한 메모리를 할당할 수 없습니다"
-
-#, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "디스크 '%s'에 주소를 할당할 수 없음"
 
@@ -1553,10 +1543,6 @@ msgid "Could not parse version number from '%s'"
 msgstr "'%s'에서 버전 번호를 구문 분석할 수 없습니다"
 
 #, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "해시맵에 변수 '%s'를 넣을 수 없습니다"
-
-#, c-format
 msgid "Could not read '%s' from config for container %d"
 msgstr "설정에서 %s'를 읽을 수 없음 (컨테이너 %d에 대해)"
 
@@ -1820,14 +1806,6 @@ msgstr "주어진 볼륨을 삭제."
 #, c-format
 msgid "Dest file %s too big for destination"
 msgstr "목적 파일 %s가 목적지에 대해 너무 큼"
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr "ifname ('%s')의 대상 버퍼 공간이 부족합니다"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr "linkdev ('%s')의 대상 버퍼 공간이 부족합니다"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "목적지 libvirt가 피어간 이전 프로토콜을 지원하지 않습니다"
@@ -2220,10 +2198,6 @@ msgstr "실패 "
 
 msgid "Failed"
 msgstr "실패"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "모듈 등록 %s 실패"
 
 #, c-format
 msgid "Failed opening %s"
@@ -2765,13 +2739,6 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "경로가 '%s'인 저장소 볼륨을 여는 데 실패했습니다"
 
 #, c-format
-msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr ""
-"'%s'로부터의 출력을 읽는 도중에 파일 디스크립터에 대한 스트림을 여는 데 실패"
-"했습니다: '%s'"
-
-#, c-format
 msgid "Failed to open tty %s"
 msgstr "tty %s를 여는 데 실패"
 
@@ -3084,10 +3051,6 @@ msgstr "실패 동작 %s은 sanlock에 의해 지원되지 않습니다 "
 
 msgid "Failure establishing SSH session."
 msgstr "SSH 세션 설정 중 실패"
-
-#, c-format
-msgid "Failure while applying current filter on VM %s"
-msgstr "VM %s에 현재 필터를 적용하는데 실패했습니다"
 
 #, c-format
 msgid "Family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"
@@ -3902,10 +3865,6 @@ msgstr "네트워크 '%s' DNS HOST 기록에 ip 및 호스트 이름이 누락�
 msgid "Missing magic data in JSON document"
 msgstr "JSON 문서에서 magic 데이터가 누락되어 있음 "
 
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "모듈 등록 기호 %s가 누락되어 있음"
-
 msgid "Missing name parameter for domain object"
 msgstr "도메인 개체의 이름 매개 변수가 누락되어 있음 "
 
@@ -3968,9 +3927,6 @@ msgstr "네트워크 %s의 DNS TXT 기록에 필요한 이름 또는 값이 누�
 
 msgid "Missing server data from JSON file"
 msgstr "JSON 파일에서 서버 데이터가 누락되어 있습니다 "
-
-msgid "Missing server name in phyp:// URI"
-msgstr "phyp:// URI에 서버 이름이 빠짐"
 
 msgid "Missing source host attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 호스트 특성 빠짐"
@@ -4166,9 +4122,6 @@ msgstr ""
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "<source> 'port' 속성이  소켓 인터페이스로 지정되지 않았습니다."
 
-msgid "No CPUs given"
-msgstr "CPU가 지정되지 않았습니다"
-
 #, c-format
 msgid "No IP address for host '%s' found: %s"
 msgstr "호스트 '%s'의 IP 주소를 찾을 수 없음: %s"
@@ -4227,19 +4180,11 @@ msgstr "'%s' UUID와 일치하는 도메인 없음"
 msgid "No domain with name %s"
 msgstr "%s라는 이름의 도메인이 없습니다 "
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "이름이 '%s'인 도메인이 없음"
-
 msgid "No error message provided"
 msgstr "오류 메세지 없음"
 
 msgid "No errors found\n"
 msgstr "오류 메세지를 찾을 수 없음\n"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "'%s'에 호스트 CPU가 지정되지 않았습니다"
 
 msgid "No interface attached to bridge"
 msgstr "브리지에 인터페이스가 첨부되어 있지 않습니다"
@@ -5351,9 +5296,6 @@ msgstr "'%s'에서 '%s'로 서버가 리디렉션되었습니다 "
 msgid "This host is not managed by a vCenter"
 msgstr "이 호스트는 vCenter에 의해 관리되지 않습니다"
 
-msgid "This libvirtd build does not support TLS"
-msgstr "libvirtd 빌드는 TLS를 지원하지 않습니다"
-
 msgid "This type of device cannot be hot unplugged"
 msgstr "이런 유형의 장치는 핫 언플러그될 수 없습니다"
 
@@ -5811,10 +5753,6 @@ msgstr "예기치 못한 파일 시스템 유형 %s"
 #, c-format
 msgid "Unexpected hostdev mode %d"
 msgstr "예기치 못한 hostdev 모드 %d"
-
-#, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr "예기치 못한 줄 > %d 문자가 '%s'의 출력을 구문분석 하는 중 나왔습니다"
 
 msgid "Unexpected lock parameters for disk resource"
 msgstr "디스크 리소스의 예상치 않은 잠금 매개 변수 "
@@ -6504,9 +6442,6 @@ msgstr "경로 %s를 생성할 수 없음"
 msgid "cannot create pipe"
 msgstr "파이프를 생성할 수 없음"
 
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "가상 FAT 디스크를 읽기-쓰기 모드로 생성할 수 없음"
-
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
@@ -6776,22 +6711,6 @@ msgstr "uuid로 인터페이스 ID 매개 변수를 구문 분석할 수 없음"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "io 모드 '%s'를 구문 분석할 수 없음 "
-
-#, c-format
-msgid "cannot parse json %s: %s"
-msgstr "json %s를 구문 분석할 수 없음: %s"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr "잔여 이전 데이터 통계 %s를 구문분석할 수 없음"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "전체 이전 데이터 통계 %s를 구문분석할 수 없음"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr "전송된 이전 데이터 통계 %s를 구문분석할 수 없음"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -7262,10 +7181,6 @@ msgstr "대역폭 피크 값 '%s'을 변환할 수 없습니다 "
 msgid "could not determine max vcpus for the domain"
 msgstr "도메인에 대해 최대 vcpu를 결정할 수 없음"
 
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "%s상의 매체를 꺼내기할 수 없음: %s"
-
 msgid "could not find libvirtd"
 msgstr "libvirtd를 찾을 수 없음"
 
@@ -7499,10 +7414,6 @@ msgid "detach network interface"
 msgstr "네트워크 인터페이스 분리"
 
 #, c-format
-msgid "detaching %s device failed: %s"
-msgstr "%s 장치 탈착이 실패했습니다: %s"
-
-#, c-format
 msgid "device %s is not a PCI device"
 msgstr "장치 %s는 PCI 장치가 아닙니다"
 
@@ -7539,10 +7450,6 @@ msgstr "자동 시작 비활성"
 
 msgid "discover potential storage pool sources"
 msgstr "사용가능한 저장소 풀 소스를 발견합니다"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "디스크 %s가 암호화 정보를 가지고 있지 않습니다"
 
 #, c-format
 msgid "disk %s not found"
@@ -7707,9 +7614,6 @@ msgstr "도메인 작업 정보"
 
 msgid "domain name or uuid"
 msgstr "도메인명 또는 uuid"
-
-msgid "domain name, id or uuid"
-msgstr "도메인명, id 또는 uuid"
 
 msgid "domain save job"
 msgstr "도메인 저장 작업 "
@@ -8070,10 +7974,6 @@ msgid "failed to list host interfaces: %s%s%s"
 msgstr "호스트 인터페이스를 나열하는데 실패했습니다: %s%s%s"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "모듈 %s %s 불러오기 실패"
-
-#, c-format
 msgid "failed to lookup interface with MAC address '%s'"
 msgstr "MAC 주소 '%s'의 인터페이스를 검색하는데 실패했습니다 "
 
@@ -8184,16 +8084,8 @@ msgstr "'%s --version' 실행 실패: %s"
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser 실행 실패"
 
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "chardev 경로 '%s'를 저장하는 데 실패"
-
 msgid "failed to save content"
 msgstr "내용 저장 실패"
-
-#, c-format
-msgid "failed to send key '%s'"
-msgstr "키 '%s' 전송 실패"
 
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr 나열하기 실패"
@@ -8334,10 +8226,6 @@ msgstr "'compat' 속성에서 금지된 문자 "
 
 msgid "force device update"
 msgstr "장치 업데이트 강제"
-
-#, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr "format='qcow'. %s를 위한 암호구는 '\\0'를 포함해서는 안됩니다."
 
 #, c-format
 msgid "formatter for %s %s reported error"
@@ -8556,10 +8444,6 @@ msgid "invalid <address> element found in <forward> of network %s"
 msgstr "네트워크 %s의 <forward>에서 잘못된 <address> 요소가 발견되었습니다 "
 
 #, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "볼륨 %s에 대해 잘못된 <encryption>"
-
-#, c-format
 msgid "invalid <host> element found in <dns> of network %s"
 msgstr "네트워크 %s의 <dns>에서 잘못된 <host> 요소가 발견되었습니다 "
 
@@ -8708,10 +8592,6 @@ msgstr "잘못된 catchup slew입니다 "
 msgid "invalid catchup threshold"
 msgstr "잘못된 catchup threshold입니다"
 
-#, c-format
-msgid "invalid certificate name: %s"
-msgstr "잘못된 인증서 이름: %s"
-
 msgid "invalid cipher size for TLS session"
 msgstr "TLS 세션에 대한 잘못된 암호화 크기"
 
@@ -8727,10 +8607,6 @@ msgstr "잘못된 연결 포인터"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s에 있는 잘못된 연결 포인터"
-
-#, c-format
-msgid "invalid database name: %s"
-msgstr "잘못된 데이터 베이스 이름: %s"
 
 #, c-format
 msgid "invalid device name '%s'"
@@ -9208,14 +9084,6 @@ msgstr "이전 URI, 주로 생략 가능"
 
 msgid "migration canceled"
 msgstr "마이그레이션 취소됨"
-
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "'%s'로의 이전이 실패: %s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "'%s'로의 이전이 본 qemu에 의해 지원되지 않음: %s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "이전이 작동중이지만, RAM '남아있는' 데이터를 잃어버렸습니다"
@@ -9830,10 +9698,6 @@ msgid "no device found with alias %s"
 msgstr "별칭 %s의 장치를 찾을 수 없음 "
 
 #, c-format
-msgid "no disk found with path %s"
-msgstr "경로 %s에 대한 디스크를 찾지 못했습니다"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "'%s'라는 디스크가 없음"
 
@@ -10019,9 +9883,6 @@ msgstr "오프라인 마이그레이션은 소스 호스트에 의해 지원되�
 
 msgid "ok"
 msgstr "ok"
-
-msgid "only 1 graphics device of each type (sdl, vnc, spice) is supported"
-msgstr "각 유형 (sdl, vnc, spice)의 1 개의 그래픽 장치만이 지원됨"
 
 msgid "only TCP listen is supported for chr device"
 msgstr "문자 장치에 대해 TCP listen만을 지원"
@@ -10253,14 +10114,6 @@ msgid "pwd: cannot get current directory: %s"
 msgstr "pwd: 현재 디렉터리를 얻을 수 없음: %s"
 
 #, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "qemu가 파일 핸들을 닫는 것을 지원하지 않습니다: %s"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "qemu가 파일 핸들을 보내는 것을 지원하지 않습니다: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qeum 에뮬레이터 '%s'가 xen을 지원하지 않습니다"
 
@@ -10424,9 +10277,6 @@ msgstr "XML로 된 비밀 정보 특성"
 msgid "secret is private"
 msgstr "비밀정보가 개인용입니다"
 
-msgid "secrets already defined"
-msgstr "비밀정보가 이미 정의되었습니다"
-
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "보안 DOI 문자열이 최대 %d 바이트를 넘어갑니다"
@@ -10474,12 +10324,6 @@ msgstr "ACPI S3 설정이 지원되지 않음"
 
 msgid "setting ACPI S4 not supported"
 msgstr "ACPI S4 설정이 지원되지 않음"
-
-msgid "setting VNC password failed"
-msgstr "VNC 암호 설정이 실패했습니다"
-
-msgid "setting disk password is not supported"
-msgstr "디스크 암호 설정을 지원하지 않습니다"
 
 msgid "setting up HAL callbacks failed"
 msgstr "HAL 콜백 설정 실패 "
@@ -10644,11 +10488,6 @@ msgstr "저장소 풀 '%s'가 이미 동작중이 아닙니다"
 msgid "storage pool '%s' is still active"
 msgstr "저장소 풀 '%s'가 아직 동작 중입니다"
 
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr ""
-"저장소 풀이 다른 볼륨에서 암호화된 볼륨을 만드는 것을 지원하지 않습니다"
-
 msgid "storage pool does not support encrypted volumes"
 msgstr "저장소 풀이 암호화된 볼륨을 지원하지 않음"
 
@@ -10789,17 +10628,8 @@ msgstr "MAC 주소 '%s'가 여러 인터페이스와 일치합니다 "
 msgid "the QEMU binary does not support %s"
 msgstr "QEMU 바이너리는 %s을 지원하지 않음"
 
-msgid "the QEMU binary does not support kqemu"
-msgstr "QEMU 바이너리는 kqemu를 지원하지 않음"
-
-msgid "the QEMU binary does not support kvm"
-msgstr "QEMU 바이너리를 kvm을 지원하지 않음"
-
 msgid "the default lockspace already exists"
 msgstr "기본값 잠금 공간이 이미 존재합니다 "
-
-msgid "the disk password is incorrect"
-msgstr "디스크 암호가 잘못되었습니다"
 
 msgid "the domain does not have a current snapshot"
 msgstr "도메인에는 현재 스냅샷이 없습니다"
@@ -10911,9 +10741,6 @@ msgstr "과도한 드라이버가 %s에 등록됨"
 msgid "too many memory stats requested: %d > %d"
 msgstr "너무 많은 메모리 stat이 요청되었습니다: %d > %d"
 
-msgid "too many secrets for qcow encryption"
-msgstr "qcow 암호화에 대해 너무 많은 비밀 정보"
-
 msgid "total and read/write bytes_sec cannot be set at the same time"
 msgstr "합계 및 bytes_sec 읽기/쓰기는 동시에 설정할 수 없습니다"
 
@@ -10980,10 +10807,6 @@ msgstr "디스크 %s에 액세스할 수 없음\n"
 #, c-format
 msgid "unable to add SSH host key for host '%s': %s"
 msgstr "호스트 '%s'의 SSH 호스트 키를 추가할 수 없음: %s"
-
-#, c-format
-msgid "unable to add host net: %s"
-msgstr "호스트 넷을 추가할 수 없음: %s"
 
 msgid "unable to allocate security context"
 msgstr "보안 문맥을 할당할 수 없음"
@@ -11244,10 +11067,6 @@ msgid "unexpected address type for scsi disk"
 msgstr "SCSI 디스크에 대해 예기치 못한 주소 유형"
 
 #, c-format
-msgid "unexpected balloon information '%s'"
-msgstr "알 수 없는 부울 정보 '%s'"
-
-#, c-format
 msgid "unexpected boot device type %d"
 msgstr "예기치 못한 부트 장치 유형 %d"
 
@@ -11286,16 +11105,8 @@ msgid "unexpected disk bus %d"
 msgstr "예기치 못한 디스크 버스 %d"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "예기치 못한 디스크 캐시 모드 %d"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "예기치 못한 디스크 장치 %d"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "예기치 못한 디스크 io 모드 %d"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -11396,10 +11207,6 @@ msgstr "예기치 못한 pci hostdev 드라이버 이름 유형 %d"
 
 msgid "unexpected pool type"
 msgstr "예기치 못한 풀 유형"
-
-#, c-format
-msgid "unexpected reply from info status: %s"
-msgstr "정보 상태에서 예기치 못한 응답: %s"
 
 #, c-format
 msgid "unexpected root element <%s> expecting <device>"
@@ -12171,10 +11978,6 @@ msgstr "장치 설정과 함께 지원하지 않는 디스크 버스 '%s'"
 
 msgid "unsupported disk device"
 msgstr "지원하지 않는 디스크 장치"
-
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "'%s'에 대해 예기치 못한 디스크 드라이버 유형"
 
 msgid "unsupported disk type"
 msgstr "지원하지 않는 디스크 형식"

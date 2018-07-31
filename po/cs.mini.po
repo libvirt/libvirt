@@ -9,10 +9,10 @@
 # Zdenek <chmelarz@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2016-09-15 06:18-0400\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2016-09-15 06:18+0000\n"
 "Last-Translator: Zdenek <chmelarz@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
 "cs/)\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -474,10 +474,6 @@ msgid "Could not parse version number from '%s'"
 msgstr "Nelze parsovat číslo verze z '%s'"
 
 #, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "Nelze vložit proměnnou '%s' do hashmap"
-
-#, c-format
 msgid "Could not resume domain: %s"
 msgstr "Nepodařilo se probudit doménu: %s"
 
@@ -733,10 +729,6 @@ msgstr "Editovat XML konfiguraci pro úložiště."
 #, c-format
 msgid "Error opening file %s"
 msgstr "Chyba otevírání souboru %s"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "Selhala registrace modulu %s"
 
 #, c-format
 msgid "Failed opening %s"
@@ -1399,9 +1391,6 @@ msgstr "Síť nebyla nalezena: %s"
 msgid "Network type %d is not supported"
 msgstr "Typ sítě %d není podporován"
 
-msgid "No CPUs given"
-msgstr "Nebyla zadána CPU"
-
 #, c-format
 msgid "No IP address for host '%s' found: %s"
 msgstr "IP adresa pro hosta '%s' nalezena: %s"
@@ -1422,16 +1411,8 @@ msgstr "Žádná doména odpovídající jménu '%s'"
 msgid "No domain with matching uuid '%s'"
 msgstr "Žádná doména odpovídající uuid '%s'"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "Žádná doména se jménem '%s'"
-
 msgid "No error message provided"
 msgstr "Chybová zpráva nebyla zadána"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "Nebylo specifikováno žádné hostitelské CPU v '%s'"
 
 #, c-format
 msgid "No support for %s in command 'attach-disk'"
@@ -2137,10 +2118,6 @@ msgid "cannot parse instanceid parameter as a uuid"
 msgstr "nelze parsovat parametr instanceid jako uuid"
 
 #, c-format
-msgid "cannot parse json %s: %s"
-msgstr "nelze parsovat json %s: %s"
-
-#, c-format
 msgid "cannot parse product %s"
 msgstr "nelze parsovat produkt %s"
 
@@ -2476,9 +2453,6 @@ msgstr "doména neběží"
 msgid "domain name or uuid"
 msgstr "uuid nebo jméno domény"
 
-msgid "domain name, id or uuid"
-msgstr "jméno, id nebo uuid domény"
-
 msgid "domain snapshot XML"
 msgstr "XML definice obrazu domény"
 
@@ -2624,10 +2598,6 @@ msgstr "nepodařilo se zjistit verzi knihovny"
 #, c-format
 msgid "failed to get vol '%s'"
 msgstr "nepodařilo se získat svazek '%s'"
-
-#, c-format
-msgid "failed to load module %s %s"
-msgstr "selhalo nahrání modulu %s %s"
 
 #, c-format
 msgid "failed to mark network %s as autostarted"
@@ -3655,16 +3625,8 @@ msgid "unexpected disk bus %d"
 msgstr "neočekávaná sběrnice disku %d"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "neočekávaný model diskové cache %d"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "neočekávané diskové zařízení %d"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "neočekávaný io mód disku %d"
 
 #, c-format
 msgid "unexpected disk type %d"

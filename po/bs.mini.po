@@ -7,10 +7,10 @@
 # Daniel  <veillard@redhat.com>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-02-26 07:12-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-02-26 07:12+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
 "bs/)\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -426,9 +426,6 @@ msgstr "podaci domene nisu potpuni, vbd nema src"
 
 msgid "domain name or uuid"
 msgstr "naziv domene ili uuid"
-
-msgid "domain name, id or uuid"
-msgstr "naziv domene, id ili uuid"
 
 msgid "domain state"
 msgstr "stanje domene"

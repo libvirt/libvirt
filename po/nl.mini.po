@@ -9,10 +9,10 @@
 # Richard E. van der Luit <nippur@fedoraproject.org>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-02-26 09:23-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
 "nl/)\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -177,9 +177,6 @@ msgstr "'%s' bestaat niet"
 #, c-format
 msgid "'%s' file does not fit in memory"
 msgstr "'%s' bestand past niet in geheugen"
-
-msgid "'info blockstats' not supported by this qemu"
-msgstr "'info blockstats' niet ondersteund door deze qemu"
 
 msgid "(none)"
 msgstr "(geen)"
@@ -537,10 +534,6 @@ msgid "Compute baseline CPU for a set of given CPUs."
 msgstr "Bereken baseline CPU voor een set van gegeven CPU's."
 
 #, c-format
-msgid "Config entry '%s' must be a string"
-msgstr "Configuratie ingang '%s' moet een tekenreeks zijn"
-
-#, c-format
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr ""
 "Configuratie ingang '%s' met een booleaanse waarde representeren (true|false)"
@@ -607,10 +600,6 @@ msgstr "Kon variabele 'IP' niet toevoegen aan hashkaart"
 
 msgid "Could not add variable 'MAC' to hashmap"
 msgstr "Kon variabele 'MAC' niet toevoegen aan hashkaart"
-
-#, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "Kan geen geheugen toewijzen voor output van '%s'"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -857,10 +846,6 @@ msgstr "Kon geen geldige schijf index ontleden uit '%s'"
 msgid "Could not parse version number from '%s'"
 msgstr "Kan versie nummer niet ontleden uit '%s'"
 
-#, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "Kan variabele '%s' niet in hashkaart plaatsen"
-
 msgid "Could not re-enable SIGPIPE"
 msgstr "Kan SIGPIPE niet opnieuw inschakelen"
 
@@ -1081,14 +1066,6 @@ msgstr "Verwijder een bepaalde volume."
 #, c-format
 msgid "Dest file %s too big for destination"
 msgstr "Bestemming bestand %s is te groot voor bestemming"
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr "Bestemming buffer voor ifname ('%s') is niet groot genoeg"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr "Bestemming buffer voor linkdev ('%s') is niet groot genoeg"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "Bestemming libvirt ondersteunt geen peer-to-peer migratie protocol"
@@ -1501,14 +1478,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'numvcpus' to be an unsigned integer (1 or a multiple of "
-"2) but found %lld"
-msgstr ""
-"Verwacht dat VMX ingang 'numvcpus' een geheel getal zonder teken (1 of een "
-"veelvoud van 2) is maar vond %lld"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%s'"
 msgstr ""
@@ -1606,10 +1575,6 @@ msgstr "FDC controller index %d is buiten [0] reeks"
 #, c-format
 msgid "FDC unit index %d out of [0..1] range"
 msgstr "FDC unit index %d is buiten [0..1] reeks"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "Module registratie %s mislukte"
 
 #, c-format
 msgid "Failed opening %s"
@@ -2051,13 +2016,6 @@ msgstr "Openen van bestand '%s' mislukte"
 #, c-format
 msgid "Failed to open storage volume with path '%s'"
 msgstr "Openen van opslag volume met pad '%s' mislukte"
-
-#, c-format
-msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr ""
-"Openen van stream voor bestand descriptor mislukte bij het lezen van output "
-"van '%s': '%s'"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -2928,15 +2886,8 @@ msgstr "Essentieel configuratie ingang '%s' ontbreekt"
 msgid "Missing feature name for CPU model %s"
 msgstr "Ontbrekende eigenschap naam voor CPU model %s"
 
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "Ontbrekend module registratie symbool %s"
-
 msgid "Missing or empty 'hostName' property"
 msgstr "Ontbrekende of lege 'hostName' eigenschap"
-
-msgid "Missing server name in phyp:// URI"
-msgstr "Ontbrekende server naam in phyp:// URI"
 
 msgid "Missing source host attribute for char device"
 msgstr "Ontbrekend bron host attribuut voor karakter apparaat"
@@ -3099,9 +3050,6 @@ msgstr ""
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "Geen <source> 'port' attribuut gespecificeerd voor socket interfac"
 
-msgid "No CPUs given"
-msgstr "Geen CPU's gegeven"
-
 #, c-format
 msgid "No IP address for host '%s' found: %s"
 msgstr "Geen IP adres voor host '%s' gevonden: %s"
@@ -3135,16 +3083,8 @@ msgstr "Geen domein met overeenkomende naam '%s'"
 msgid "No domain with matching uuid '%s'"
 msgstr "Geen domein met overeenkomend uuid '%s'"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "Geen domein met naam '%s'"
-
 msgid "No error message provided"
 msgstr "Geen fout boodschap aangeboden"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "Geen host CPU gespecificeerd in '%s'"
 
 msgid "No qemu command-line argument specified"
 msgstr "Geen qemu commando-regel argument opgegeven"
@@ -4160,10 +4100,6 @@ msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Onverwachte QEMU monitor nog actief tijdens verwijderen van domein"
 
 #, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr "Onverwachte regel > %d karakters bij het ontleden van output van '%s'"
-
-#, c-format
 msgid "Unix path %s too long for destination"
 msgstr "Unix pad %s is te lang voor bestemming"
 
@@ -4483,10 +4419,6 @@ msgstr "actieve domein taak afbreken"
 msgid "active"
 msgstr "actief"
 
-#, c-format
-msgid "adding %s device failed: %s"
-msgstr "toevoegen %s apparaat mislukte: %s"
-
 msgid "affect next boot"
 msgstr "beïnvloed volgende opstart"
 
@@ -4762,9 +4694,6 @@ msgstr "kan pipe niet aanmaken"
 msgid "cannot create snapshot directory '%s'"
 msgstr "kan snapshot map '%s' niet aanmaken"
 
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "kan geen virtuele FAT schijven in lees-schrijf mode aanmaken"
-
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "kan CPU data voor %s architectuur niet decoderen"
@@ -5018,22 +4947,6 @@ msgstr "kan instanceid parameter niet ontleden als een uuid"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "kan parse io mode '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse json %s: %s"
-msgstr "kan json %s niet ontleden: %s"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr "kon migratie resterende data statistiek %s niet ontleden"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "kon migratie totale data statistiek %s niet ontleden"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr "kon migratie overgedragen data statistiek %s niet ontleden"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -5515,10 +5428,6 @@ msgstr "kan APIC status niet veranderen naar: %s, rc=%08x"
 msgid "could not change PAE status to: %s, rc=%08x"
 msgstr "kan PAE status niet veranderen naar: %s, rc=%08x"
 
-#, c-format
-msgid "could not change media on %s: %s"
-msgstr "kon media in %s niet veranderen: %s"
-
 msgid "could not close logfile"
 msgstr "kon logbestand niet sluiten"
 
@@ -5545,10 +5454,6 @@ msgstr "kan het domein niet verwijderen, rc=%08x"
 
 msgid "could not determine max vcpus for the domain"
 msgstr "kan max vcpus voor het domein niet bepalen"
-
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "kon media in %s niet uitwerpen: %s"
 
 msgid "could not find libvirtd"
 msgstr "kan libvirtd niet vinden"
@@ -5811,10 +5716,6 @@ msgstr "schijf apparaat loskoppelen"
 msgid "detach network interface"
 msgstr "koppel netwerk interface los"
 
-#, c-format
-msgid "detaching %s device failed: %s"
-msgstr "loskoppelen %s apparaat mislukte: %s"
-
 msgid "detailed domain vcpu information"
 msgstr "gedetailleerde domein vcpu informatie"
 
@@ -5856,10 +5757,6 @@ msgstr "Automatisch starten uitzetten"
 
 msgid "discover potential storage pool sources"
 msgstr "ontdek potentiële opslag pool bronnen"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "schijf %s heeft geen informatie encryptie"
 
 #, c-format
 msgid "disk %s not found"
@@ -5999,9 +5896,6 @@ msgstr "domein taak informatie"
 
 msgid "domain name or uuid"
 msgstr "domein naam of uuid"
-
-msgid "domain name, id or uuid"
-msgstr "domein naam, id of uuid"
 
 msgid "domain save job"
 msgstr "domein opslaan taak"
@@ -6302,10 +6196,6 @@ msgid "failed to initialize SASL library: %d (%s)"
 msgstr "SASL bibliotheek initialiseren mislukte: %d (%s)"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "laden van module %s mislukt %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "netwerk %s als autostart te markeren mislukte"
 
@@ -6381,10 +6271,6 @@ msgstr "domein hervatten mislukte"
 
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser draaien mislukte"
-
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "opslaan van chardev pad '%s' mislukte"
 
 msgid "failed to save content"
 msgstr "inhoud opslaan mislukte"
@@ -6511,10 +6397,6 @@ msgstr "formaat voor onderliggende opslag"
 
 msgid "format of backing volume if taking a snapshot"
 msgstr "formaat van back-up volume als een snapshot genomen wordt"
-
-#, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr "format='qcow' wachtzin voor %s mag geen '\\0' bevatten"
 
 #, c-format
 msgid "formatter for %s %s reported error"
@@ -6689,10 +6571,6 @@ msgstr "intern netwerk type niet ondersteund"
 msgid "invalid '=' after option --%s"
 msgstr "ongeldige '=' na de optie --%s"
 
-#, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "ongeldige <encryption> voor volume %s"
-
 msgid "invalid MAC address"
 msgstr "ongeldig MAC adres"
 
@@ -6795,10 +6673,6 @@ msgstr "ongeldige catchup slew"
 msgid "invalid catchup threshold"
 msgstr "ongeldige catchup drempel"
 
-#, c-format
-msgid "invalid certificate name: %s"
-msgstr "ongeldige certificaat naam: %s"
-
 msgid "invalid cipher size for TLS session"
 msgstr "ongeldige code grootte voor TLS sessie"
 
@@ -6808,10 +6682,6 @@ msgstr "ongeldige verbinding aanwijzer in"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "ongeldige verbinding aanwijzer in %s"
-
-#, c-format
-msgid "invalid database name: %s"
-msgstr "ongeldige database naam: %s"
 
 #, c-format
 msgid "invalid device name '%s'"
@@ -7169,14 +7039,6 @@ msgstr "migreren: Onverwachte time-out voor offline migratie"
 
 msgid "migration URI, usually can be omitted"
 msgstr "migratie URI, kan meestal weggelaten worden"
-
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "migratie naar '%s' mislukte: %s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "migratie naar '%s' wordt door deze qemu niet ondersteund: %s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "migratie was actief, maar RAM 'overblijvende' data ontbrak"
@@ -7596,10 +7458,6 @@ msgstr "geen schijf formaat voor %s en onderzoeken is uitgezet"
 msgid "no disk found with alias %s"
 msgstr "geen schijf gevonden met elias %s"
 
-#, c-format
-msgid "no disk found with path %s"
-msgstr "geen schijf gevonden met pad %s"
-
 msgid "no domain XML passed"
 msgstr "geen domein XML doorgegeven"
 
@@ -7941,14 +7799,6 @@ msgid "pwd: cannot get current directory: %s"
 msgstr "pwd: kan huidige map niet verkrijgen: %s"
 
 #, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "qemu ondersteund niet het sluiten van bestand hendels: %s"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "qemu ondersteund niet het versturen van bestand hendels: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu emulator '%s' heeft geen ondersteuning voor xen"
 
@@ -8080,9 +7930,6 @@ msgstr "geheim attributen in XML"
 msgid "secret is private"
 msgstr "geheim is privé"
 
-msgid "secrets already defined"
-msgstr "geheimen al gedefinieerd"
-
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "beveiliging DOI tekenreeks overschrijdt max %d bytes"
@@ -8126,12 +7973,6 @@ msgstr "stel maximum limiet voor volgende opstart in"
 
 msgid "set maximum tolerable downtime"
 msgstr "stel maximaal toelaatbare down-time in"
-
-msgid "setting VNC password failed"
-msgstr "instellen VNC wachtwoord mislukte"
-
-msgid "setting disk password is not supported"
-msgstr "instellen schijf wachtwoord wordt niet ondersteund"
 
 msgid "setting up HAL callbacks failed"
 msgstr "instellen van HAL callbacks faalde"
@@ -8248,12 +8089,6 @@ msgstr "opslag pool '%s' is al actief"
 msgid "storage pool '%s' is not active"
 msgstr "opslag pool '%s' is niet actief"
 
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr ""
-"opslag pool ondersteunt niet het bouwen van versleutelde volumes van andere "
-"volumes "
-
 msgid "storage pool does not support encrypted volumes"
 msgstr "opslag pool ondersteunt geen versleutelde volumes"
 
@@ -8359,9 +8194,6 @@ msgstr "testOpen: geef een pad op of gebruik test:///default"
 msgid "the backing volume if taking a snapshot"
 msgstr "de back-up volume als een snapshot genomen wordt"
 
-msgid "the disk password is incorrect"
-msgstr "het schijf wachtwoord is onjuist"
-
 msgid "the domain does not have a current snapshot"
 msgstr "het domein heeft geen actuele snapshot"
 
@@ -8418,9 +8250,6 @@ msgstr "te veel drivers geregistreerd in %s"
 msgid "too many memory stats requested: %d > %d"
 msgstr "teveel geheugen stats verzocht: %d > %d"
 
-msgid "too many secrets for qcow encryption"
-msgstr "te veel geheimen voor qcow encryptie"
-
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
 "overdracht methodes unix, ssh en ext worden niet ondersteund met Windows"
@@ -8469,10 +8298,6 @@ msgstr "kan geen toegang tot apparaat %s krijgen\n"
 #, c-format
 msgid "unable to access disk %s\n"
 msgstr "kan geen toegang tot schijf %s krijgen\n"
-
-#, c-format
-msgid "unable to add host net: %s"
-msgstr "kan host netwerk niet toevoegen: %s"
 
 #, c-format
 msgid "unable to allocate socket security context '%s'"
@@ -8668,16 +8493,8 @@ msgid "unexpected disk bus %d"
 msgstr "onverwachte schijf bus %d"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "onverwachte schijf cache mode %d"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "onverwacht schijf apparaat %d"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "onverwachte schijf io mode %d"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -9239,10 +9056,6 @@ msgstr "niet-ondersteund data type '%c' voor arg '%s'"
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "niet-ondersteunde schijf bus '%s' met apparaat instelling"
-
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "niet-ondersteund schijf driver type '%s'"
 
 #, c-format
 msgid "unsupported disk type %s"

@@ -11,10 +11,10 @@
 # Göran Uddeborg <goeran@uddeborg.se>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2017-02-26 05:02-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2017-02-26 05:02+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
 "sv/)\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -810,9 +810,6 @@ msgstr "Saknat CPU-funktionsnamn"
 msgid "Missing CPU model name"
 msgstr "Saknat CPU-modellnamn"
 
-msgid "Missing server name in phyp:// URI"
-msgstr "Servernamn saknas i phyp://URI"
-
 msgid "Missing source host attribute for char device"
 msgstr "Källvärdsattribut saknas för teckenenhet"
 
@@ -1150,9 +1147,6 @@ msgstr "Mål-sysinfo matchar inte källan"
 
 msgid "Temporary failure in name resolution"
 msgstr "Tillfälliga fel i namnuppslagning"
-
-msgid "This libvirtd build does not support TLS"
-msgstr "Detta libvirtd-bygge stödjer inte TLS"
 
 msgid "This type of device cannot be hot unplugged"
 msgstr "Denna typ av enhet kan inte vara tas bort under drift"
@@ -1639,9 +1633,6 @@ msgstr "domäninformation inkomplett, vbd har ingen src"
 
 msgid "domain name or uuid"
 msgstr "domännamn eller uuid"
-
-msgid "domain name, id or uuid"
-msgstr "domännman, id eller uuid"
 
 msgid "domain state"
 msgstr "domäntillstånd"
@@ -2196,9 +2187,6 @@ msgstr "säkerhetsavbildsetikett saknas"
 msgid "security label is missing"
 msgstr "säkerhetsetikett saknas"
 
-msgid "setting disk password is not supported"
-msgstr "att sätta disklösenord stödjs inte"
-
 msgid "setting up HAL callbacks failed"
 msgstr "att sätta upp HAL-återanrop misslyckades"
 
@@ -2294,9 +2282,6 @@ msgstr "måltypen måste anges för %s-enhet"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ange en sökväg eller använd test:///default"
-
-msgid "the disk password is incorrect"
-msgstr "disklösenordet är felaktigt"
 
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "resultatet får inte plats i REMOTE_NODE_MAX_CELLS"

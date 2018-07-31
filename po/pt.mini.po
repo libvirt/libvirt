@@ -7,10 +7,10 @@
 # pmdaniel <danielthpro@gmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-02-24 02:16-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-02-24 02:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Portuguese <trans-pt@lists.fedoraproject.org>\n"
 "Language: pt\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -732,9 +732,6 @@ msgstr "informação do domínio incompleta, o 'vbd' não tem origem"
 
 msgid "domain name or uuid"
 msgstr "nome ou UUID do domínio"
-
-msgid "domain name, id or uuid"
-msgstr "nome, 'id' ou 'uuid' do domínio"
 
 msgid "domain state"
 msgstr "estado do domínio"

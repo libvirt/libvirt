@@ -17,19 +17,19 @@
 # Daniel Berrange <dan-zanata@berrange.com>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2018-04-06 11:06-0400\n"
-"Last-Translator: Leah Liu <lliu@redhat.com>\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2018-05-04 06:13+0000\n"
+"Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
 "language/zh_CN/)\n"
-"Language: zh-CN\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -715,9 +715,6 @@ msgstr "guest-get-fsinfo 回复中缺少 'disk' "
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "只在 <inbound> 元素中可使用 'floor' 属性"
 
-msgid "'info blockstats' not supported by this qemu"
-msgstr "这个 qemu 不支持 'info blockstats'"
-
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus 回复中缺少 'logical-id'"
 
@@ -748,9 +745,6 @@ msgstr "'queues' 属性必须是正数：%s"
 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "只有 virtio-scsi 支持 'queues'"
-
-msgid "'set_link' not supported by this qemu"
-msgstr "这个 qemu 不支持 'set_link"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' 只能用于 'file' 类型卷"
@@ -1538,17 +1532,11 @@ msgstr "无法检查 QEMU 二进制文件 %s"
 msgid "Cannot check dnsmasq binary %s"
 msgstr "无法检查 dnsmasq 二进制 %s"
 
-msgid "Cannot check socket connection status"
-msgstr "无法检查插槽连接状态"
-
 msgid "Cannot close container iterator"
 msgstr "无法关闭容器迭代程序"
 
 msgid "Cannot complete within timeout period"
 msgstr "无法在超时限制时间内完成"
-
-msgid "Cannot connect to agent socket"
-msgstr "无法连接到代理插槽"
 
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
@@ -2212,10 +2200,6 @@ msgid "Concrete job for %s invocation is in unknown state"
 msgstr "%s 调用的具体任务处于 unknown 状态"
 
 #, c-format
-msgid "Config entry '%s' must be a string"
-msgstr "配置条目 '%s' 必须是字符串"
-
-#, c-format
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr "配置条目 '%s' 必须代表布尔值（true|false）"
 
@@ -2328,10 +2312,6 @@ msgstr "无法在哈希映射中添加可变  'IP'"
 
 msgid "Could not add variable 'MAC' to hashmap"
 msgstr "无法在哈希映射中添加可变  'MAC'"
-
-#, c-format
-msgid "Could not allocate memory for output of '%s'"
-msgstr "无法为 '%s' 的输出分配内存 "
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -2855,10 +2835,6 @@ msgid "Could not parse version number from '%s'"
 msgstr "无法从 '%s' 中解析版本号"
 
 #, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "无法将变量 '%s' 放到哈希表中"
-
-#, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "无法查询注册值 '%s\\%s'"
 
@@ -3234,14 +3210,6 @@ msgstr "降序："
 #, c-format
 msgid "Dest file %s too big for destination"
 msgstr "对于目的地来说目的文件 %s 太大"
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr "ifname ('%s')  的目的缓存不够大"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr "linkdev ('%s') 的目的缓存不够大"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "目的地 libvirt 不支持点对点迁移协议"
@@ -3932,13 +3900,6 @@ msgstr " VMX 条目 'memsize' 应为一个未分配的整数（4 的倍数）但
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'numvcpus' to be an unsigned integer (1 or a multiple of "
-"2) but found %lld"
-msgstr ""
-" VMX 条目 'numvcpus' 应为一个未分配的整数（1 或者 2  的倍数）但却显示为 %lld"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%s'"
 msgstr " VMX 条目 'sched.cpu.affinity' 应为用逗号分开的列表但却显示为 '%s'"
@@ -4043,10 +4004,6 @@ msgstr "无法创建套接字用来进行传入迁移"
 
 msgid "Failed"
 msgstr "已失败"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "失败的模块注册 %s"
 
 #, c-format
 msgid "Failed opening %s"
@@ -4974,11 +4931,6 @@ msgid "Failed to open storage volume with path '%s'"
 msgstr "使用路径 '%s' 打开存储卷失败"
 
 #, c-format
-msgid ""
-"Failed to open stream for file descriptor when reading output from '%s': '%s'"
-msgstr "从  '%s' 读取输出结果时为文件描述符打开流失败： '%s'"
-
-#, c-format
 msgid "Failed to open tty %s"
 msgstr "打开 tty %s 失败"
 
@@ -5559,10 +5511,6 @@ msgstr "建立 SSH 会话失败"
 msgid "Failure to mask address"
 msgstr "为地址添加掩码失败"
 
-#, c-format
-msgid "Failure while applying current filter on VM %s"
-msgstr "在 VM %s 中应用现有过滤器失败"
-
 msgid "Failure while reading log output"
 msgstr "读取日志输出失败"
 
@@ -5594,12 +5542,6 @@ msgstr "对于目的地来说内核内存字段太长"
 #, c-format
 msgid "Field name '%s' too long"
 msgstr "字段名称 '%s' 过长"
-
-#, c-format
-msgid ""
-"File '%s' does not contain a <cpu> element or is not a valid domain or "
-"capabilities XML"
-msgstr "文件 '%s' 不包含 <cpu> 元素或者不适有效域或者功能 XML"
 
 #, c-format
 msgid "File '%s' has unknown type"
@@ -6696,12 +6638,6 @@ msgstr "迭代器 ID 超过 %u 的最大 ID"
 msgid "JSON monitor is required"
 msgstr "需要 JSON 监控器"
 
-msgid "JSON monitor should be using AddNetdev"
-msgstr "JSON 监视器应使用 AddNetdev"
-
-msgid "JSON monitor should be using RemoveNetdev"
-msgstr "JSON 监视器应使用 RemoveNetdev"
-
 #, c-format
 msgid "Job submission failed on interface '%s'"
 msgstr "接口 '%s' 中的任务提交失败"
@@ -6854,9 +6790,6 @@ msgstr "不正常的 'uri_aliases' 配置条目 '%s'，应为 'alias=uri://host/
 msgid "Malformed TLS whitelist regular expression '%s'"
 msgstr "受损的 TLS 白列表正则表达式 '%s'"
 
-msgid "Malformed clients data in JSON document"
-msgstr "JSON 文件中的不正常 clients 数据"
-
 #, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
 msgstr "不正常 ctrl-alt-del 设置 '%s'"
@@ -6869,9 +6802,6 @@ msgstr "不正常设备值 '%s'"
 msgid "Malformed lease target offset %s"
 msgstr "有缺陷的租约目标补偿 %s"
 
-msgid "Malformed lockspaces data from JSON file"
-msgstr "JSON 文件中的不正常 Lockspace 数据"
-
 msgid "Malformed mdnsGroupName data in JSON document"
 msgstr "JSON 文件中的不正常 mdnsGroupName 数据"
 
@@ -6881,15 +6811,6 @@ msgstr "不正常 nbd 端口 '%s'"
 
 msgid "Malformed owner value in JSON document"
 msgstr "JSON 文件中的不正常 owner 值"
-
-msgid "Malformed owners value in JSON document"
-msgstr "JSON 文件中的不正常 owners 值"
-
-msgid "Malformed resources value in JSON document"
-msgstr "JSON 文件中的不正常 resources 值"
-
-msgid "Malformed services data in JSON document"
-msgstr "JSON 文件中的不正常 services 数据"
 
 #, c-format
 msgid "Malformed size %s"
@@ -7197,9 +7118,6 @@ msgstr "迁移 cookie 中缺少锁驱动器名称"
 msgid "Missing lockspaces data from JSON file"
 msgstr "缺少 JSON 文件中的 Lockspace 数据"
 
-msgid "Missing lxc.rootfs configuration"
-msgstr "缺少 lxc.rootfs 配置"
-
 msgid "Missing magic data in JSON document"
 msgstr "JSON 文件中缺少 magic 数据"
 
@@ -7217,10 +7135,6 @@ msgstr "JSON 文件中缺少 max_workers 数据"
 
 msgid "Missing min_workers data in JSON document"
 msgstr "JSON 文件中缺少 min_workers 数据"
-
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "缺少模块注册符号 %s"
 
 msgid "Missing monitor reply object"
 msgstr "缺少监控程序回复对象"
@@ -7350,9 +7264,6 @@ msgstr "缺少 scsi_host PCI 地址元素"
 msgid "Missing server data from JSON file"
 msgstr "缺少 JSON 文件中的 server 数据"
 
-msgid "Missing server name in phyp:// URI"
-msgstr "在 phyp:// URI 缺少服务器名"
-
 msgid "Missing service data in JSON document"
 msgstr "JSON 文件中缺少 service 数据"
 
@@ -7379,10 +7290,6 @@ msgstr "缺少字符设备的源路径属性"
 
 msgid "Missing source service attribute for char device"
 msgstr "缺少字符设备的源服务属性"
-
-#, c-format
-msgid "Missing space when parsing output of '%s'"
-msgstr "解析 '%s' 输出时缺少空格"
 
 msgid "Missing storage block path"
 msgstr "缺少存储块路径"
@@ -7676,9 +7583,6 @@ msgstr "没有使用套接字接口指定 <source>‘port’属性"
 msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
 msgstr "没有为 <interface type='vhostuser'> 指定 <source> 'type' 属性"
 
-msgid "No CPUs given"
-msgstr "没有给出任何 CPU"
-
 #, c-format
 msgid "No FD available at slot %zu"
 msgstr "插槽 %zu 没有可用 FD"
@@ -7782,10 +7686,6 @@ msgstr "没有匹配 uuid '%s' 的域"
 msgid "No domain with name %s"
 msgstr "没有名为 %s 的域"
 
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "没有名为 '%s' 的域"
-
 msgid "No error message from child failure"
 msgstr "没有子进程失败的出错信息"
 
@@ -7801,14 +7701,6 @@ msgstr "没有可用的 NBD 设备"
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "没有使用索引 %d 的图形后端"
-
-#, c-format
-msgid "No host CPU specified in '%s'"
-msgstr "'%s' 中未指定主机 CPU"
-
-#, c-format
-msgid "No info for device '%s'"
-msgstr "无设备 '%s' 的信息"
 
 msgid "No interface attached to bridge"
 msgstr "没有附加要桥接的接口"
@@ -8258,9 +8150,6 @@ msgstr "密钥 '%s' 的密码短语"
 
 msgid "Password request failed"
 msgstr "密码请求失败"
-
-msgid "Password request seen, but no handler available"
-msgstr "看到所需密码，但没有可用的句柄。"
 
 msgid "Path"
 msgstr "路径"
@@ -9979,9 +9868,6 @@ msgstr "WIN32 平台不支持这个功能"
 msgid "This host is not managed by a vCenter"
 msgstr "这台主机不是由 vCenter 管理"
 
-msgid "This libvirtd build does not support TLS"
-msgstr "这个 libvirtd 构建不支持 TLS"
-
 msgid "This type of device cannot be hot unplugged"
 msgstr "无法热插拔此类设备"
 
@@ -10395,12 +10281,6 @@ msgstr "无法复制插槽文件句柄"
 msgid "Unable to create %s"
 msgstr "无法创建 %s"
 
-msgid "Unable to create JSON formatter"
-msgstr "无法生成 JSON 格式化程序"
-
-msgid "Unable to create JSON parser"
-msgstr "无法生成 JSON 解析程序"
-
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "无法生成 LPAR。原因：'%s'"
@@ -10589,10 +10469,6 @@ msgstr "无法编码信息净负荷"
 
 msgid "Unable to encode number of FDs"
 msgstr "无法对 FD 号进行编码"
-
-#, c-format
-msgid "Unable to extract disk path from %s"
-msgstr "无法从 %s 中提取磁盘路径"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "无法找到 'cpuacct' cgroups 控制器挂载"
@@ -11413,10 +11289,6 @@ msgstr "意外的文件系统类型 %s"
 #, c-format
 msgid "Unexpected hostdev mode %d"
 msgstr "意外的 hostdev 模式 %d"
-
-#, c-format
-msgid "Unexpected line > %d characters when parsing output of '%s'"
-msgstr "解析  '%d' 的输出时行超过 %s 字符"
 
 msgid "Unexpected lock parameters for disk resource"
 msgstr "无法为磁盘资源锁定参数"
@@ -12272,10 +12144,6 @@ msgstr " 活跃 qemu 域需要外部磁盘快照；地盘 %s 要求内部快照�
 msgid "add a column showing parent snapshot"
 msgstr "添加一列显示上级快照"
 
-#, c-format
-msgid "adding %s device failed: %s"
-msgstr "添加 %s 设备失败：%s"
-
 msgid "additionally display the type and device value"
 msgstr "type 和 device 值的附加显示"
 
@@ -12401,9 +12269,6 @@ msgid ""
 msgstr ""
 "在行 %d: %s%s\n"
 "%s"
-
-msgid "atomic live snapshot of multiple disks is unsupported"
-msgstr "不支持错磁盘的 atomic live 快照"
 
 msgid "attach device from an XML file"
 msgstr "从一个XML文件附加装置"
@@ -12958,9 +12823,6 @@ msgstr "无法为管道迁移生成通道"
 msgid "cannot create snapshot directory '%s'"
 msgstr "无法生成快照目录 '%s'"
 
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "无法采用 read-write 模式生成虚拟 FAT 磁盘"
-
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "无法为 %s 架构解码 CPU 数据"
@@ -13279,9 +13141,6 @@ msgstr "无法将字符 I/O 与异步命令混合"
 msgid "cannot mix string I/O with daemon"
 msgstr "无法将字符 I/O 与守护进程混合"
 
-msgid "cannot modify network device alias"
-msgstr "无法修改网络设备别名"
-
 msgid "cannot modify network device boot index setting"
 msgstr "无法修改网络设备引导索引设置"
 
@@ -13423,18 +13282,6 @@ msgid "cannot parse device start location"
 msgstr "无法解析设备起始位置"
 
 #, c-format
-msgid "cannot parse disk migration data remaining statistic %s"
-msgstr "无法解析磁盘迁移数据剩余的统计数据 %s"
-
-#, c-format
-msgid "cannot parse disk migration data total statistic %s"
-msgstr "无法解析磁盘迁移数据统计数据总额 %s"
-
-#, c-format
-msgid "cannot parse disk migration data transferred statistic %s"
-msgstr "无法解析迁磁盘移数据转移的统计数据 %s"
-
-#, c-format
 msgid "cannot parse drive bus '%s'"
 msgstr "无法解析驱动器总线 '%s'"
 
@@ -13459,22 +13306,6 @@ msgstr "无法将 interfaceid 参数解析为 uuid"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "无法解析 io 模式 '%s'"
-
-#, c-format
-msgid "cannot parse json %s: %s"
-msgstr "无法解析 json %s: %s"
-
-#, c-format
-msgid "cannot parse migration data remaining statistic %s"
-msgstr "无法解析迁移数据剩余的统计数据 %s"
-
-#, c-format
-msgid "cannot parse migration data total statistic %s"
-msgstr "无法解析迁移数据统计数据总额 %s"
-
-#, c-format
-msgid "cannot parse migration data transferred statistic %s"
-msgstr "无法解析迁移数据转移的统计数据 %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -14210,10 +14041,6 @@ msgstr "无法将 APIC 状态改为：%s, rc=%08x"
 msgid "could not change PAE status to: %s, rc=%08x"
 msgstr "无法将PAE 状态改为：%s, rc=%08x"
 
-#, c-format
-msgid "could not change media on %s: %s"
-msgstr "无法在 %s 中更改介质：%s"
-
 msgid "could not close handshake fd"
 msgstr "无法关闭握手 fd"
 
@@ -14263,10 +14090,6 @@ msgstr "无法从共享文件夹中分离 '%s', rc=%08x"
 
 msgid "could not determine max vcpus for the domain"
 msgstr "无法决定该域的最大 vcpu"
-
-#, c-format
-msgid "could not eject media on %s: %s"
-msgstr "无法在 %s 中弹出介质：%s"
 
 #, c-format
 msgid "could not find event callback %d for deletion"
@@ -14627,9 +14450,6 @@ msgstr "当前 vcpu 计数必须等于最大值"
 msgid "current vcpus must be equal to maxvcpus"
 msgstr "当前 vcpus 必须等于 maxvcpus"
 
-msgid "currently is supported only taking screenshots of screen ID 0"
-msgstr "目前只支持提取页面 ID 0 的快照"
-
 #, c-format
 msgid "daemonized command cannot set working directory %s"
 msgstr "守护进程式的命令不能设定工作目录 %s"
@@ -14734,10 +14554,6 @@ msgstr "分离网络界面"
 msgid "detach node device from its device driver"
 msgstr "将节点设备与其设备驱动程序分离"
 
-#, c-format
-msgid "detaching %s device failed: %s"
-msgstr "分离 %s 设备失败：%s"
-
 msgid "detaching serial console is not supported"
 msgstr "不支持断开串口控制台"
 
@@ -14786,9 +14602,6 @@ msgstr "设备密钥"
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr "设备名称或者 wwn 格式为 'wwnn,wwpn'"
 
-msgid "device name rejected"
-msgstr "设备名称被拒绝"
-
 msgid "device not present in domain configuration"
 msgstr "域配置中没有设备"
 
@@ -14811,9 +14624,6 @@ msgstr "无法更新设备类型 '%s'"
 #, c-format
 msgid "device type '%s' cannot hot unplugged"
 msgstr "无法热插拔设备类型 '%s'。"
-
-msgid "device-list-properties reply data was missing 'name'"
-msgstr "device-list-properties 回复缺少 'name'"
 
 msgid "devices cgroup isn't mounted"
 msgstr "为挂载设备 cgroup"
@@ -14860,10 +14670,6 @@ msgstr "发现潜在存储池源"
 
 msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
 msgstr "这个 QEMU 不支持断开的 NUMA cpu 范围"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "磁盘 %s 不包含任何加密信息"
 
 #, c-format
 msgid "disk %s has no source file to be committed"
@@ -15139,9 +14945,6 @@ msgstr "将域标记为自动销毁"
 msgid "domain is no longer running"
 msgstr "域不再运行"
 
-msgid "domain is not active"
-msgstr "域不活跃"
-
 msgid "domain is not in running state"
 msgstr "域没有处于运行状态"
 
@@ -15171,9 +14974,6 @@ msgstr "域任务信息"
 
 msgid "domain name or uuid"
 msgstr "域名或 uuid"
-
-msgid "domain name, id or uuid"
-msgstr "域名，id 或 uuid"
 
 msgid "domain save job"
 msgstr "域保存任务"
@@ -15340,7 +15140,7 @@ msgid "entry was missing 'type'"
 msgstr "条目缺少 'type' "
 
 msgid "enumerate devices on this host"
-msgstr "这台主机中中的枚举设备"
+msgstr "这台主机中的枚举设备"
 
 msgid "error"
 msgstr "错误"
@@ -15483,9 +15283,6 @@ msgstr "应为 %zu veths，但得到是 %zu。"
 
 msgid "expecting a name"
 msgstr "需要一个名称"
-
-msgid "expecting a scsi:00.00.00 address."
-msgstr "应为 scsi:00.00.00 地址。"
 
 msgid "expecting a separator"
 msgstr "需要一个分隔符"
@@ -15838,10 +15635,6 @@ msgid "failed to list host interfaces: %s%s%s"
 msgstr "列出主机接口失败：%s%s%s"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "载入模块 %s %s 失败"
-
-#, c-format
 msgid "failed to lookup interface with MAC address '%s'"
 msgstr "无法找到 MAC 地址为 '%s' 的接口"
 
@@ -16045,20 +15838,12 @@ msgstr "运行 '%s --version' 失败: %s"
 msgid "failed to run apparmor_parser"
 msgstr "运行 apparmor_parser 失败"
 
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "保存 chardev 路径 '%s' 失败"
-
 msgid "failed to save content"
 msgstr "保存内容失败"
 
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr "查找 %s 的结尾失败"
-
-#, c-format
-msgid "failed to send key '%s'"
-msgstr "发送密钥 '%s' 失败"
 
 msgid "failed to serialize S-Expr"
 msgstr "序列化S-Expr失败"
@@ -16328,10 +16113,6 @@ msgid "format of backing volume if taking a snapshot"
 msgstr "提取快照时的后端卷格式"
 
 #, c-format
-msgid "format='qcow' passphrase for %s must not contain a '\\0'"
-msgstr "%s 的 format='qcow' 密码短语一定不能包含 '\\0'"
-
-#, c-format
 msgid "formatter for %s %s reported error"
 msgstr "%s%s 的格式化程序报错"
 
@@ -16459,14 +16240,8 @@ msgstr "虚拟机意外退出"
 msgid "guest unexpectedly quit during hotplug"
 msgstr "热插拔过程中虚拟机意外退出"
 
-msgid "guest-get-fsinfo 'disk' data was not an array"
-msgstr "guest-get-fsinfo 'disk' 数据不是阵列"
-
 msgid "guest-get-fsinfo reply was missing return data"
 msgstr "guest-get-fsinfo 回复缺少返回数据"
-
-msgid "guest-get-fsinfo return information was not an array"
-msgstr "guest-get-fsinfo 返回信息不是阵列"
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus 回复缺少返回数据"
@@ -16642,9 +16417,6 @@ msgstr "错误的引导顺序 '%s‘，应为正整数。"
 msgid "info balloon reply was missing balloon data"
 msgstr "info 布尔值回复缺少布尔数据"
 
-msgid "info block not supported by this qemu"
-msgstr "这个 qemu 不支持 info block"
-
 msgid "info migration reply was missing return status"
 msgstr "信息迁移回复缺少返回的状态"
 
@@ -16767,10 +16539,6 @@ msgstr "选项 --%s 后的无效 '=' "
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
 msgstr "网络 %s 的 <forward> 中找到无效 <address> 元素"
-
-#, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "卷 %s 的无效 <encryption>"
 
 #, c-format
 msgid "invalid <forwarder> element found in <dns> of network %s"
@@ -16949,10 +16717,6 @@ msgid "invalid catchup threshold"
 msgstr "无效 catchup 临界值"
 
 #, c-format
-msgid "invalid certificate name: %s"
-msgstr "无效证书名称：%s"
-
-#, c-format
 msgid "invalid channel state value '%s'"
 msgstr "无效频道状态值 '%s'"
 
@@ -16981,10 +16745,6 @@ msgstr "无效的连接指向"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "无效的连接指向 %s"
-
-#, c-format
-msgid "invalid database name: %s"
-msgstr "无效数据库名称：%s"
 
 #, c-format
 msgid "invalid device name '%s'"
@@ -17965,14 +17725,6 @@ msgstr "取消迁移"
 msgid "migration protocol going backwards %s => %s"
 msgstr "迁移协议反向进行 %s => %s"
 
-#, c-format
-msgid "migration to '%s' failed: %s"
-msgstr "迁移到 '%s' 失败：%s"
-
-#, c-format
-msgid "migration to '%s' not supported by this qemu: %s"
-msgstr "这个 qemu 不支持迁移到 '%s' ：%s"
-
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "迁移是活跃的但缺少 RAM 'remaining' 数据"
 
@@ -18914,10 +18666,6 @@ msgid "no disk found with alias %s"
 msgstr "未发现别名为 %s 的磁盘"
 
 #, c-format
-msgid "no disk found with path %s"
-msgstr "未发现路径为 %s 的磁盘"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "没有名为 '%s' 的磁盘"
 
@@ -19254,9 +19002,6 @@ msgstr "确定"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持在线指派"
-
-msgid "only 1 graphics device of each type (sdl, vnc, spice) is supported"
-msgstr "为每种类型只支持一个图形设备（sdl、vnc、spice）"
 
 msgid "only TCP listen is supported for chr device"
 msgstr "只支持字符设备的 TCP 侦听"
@@ -19696,14 +19441,6 @@ msgid "qemu does not support SGA"
 msgstr "qemu 不支持 SGA"
 
 #, c-format
-msgid "qemu does not support closing of file handles: %s"
-msgstr "qemu 不支持关闭文件句柄：%s"
-
-#, c-format
-msgid "qemu does not support sending of file handles: %s"
-msgstr "qemu 不支持发送文件句柄：%s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu 模拟器 '%s' 不支持 xen"
 
@@ -19741,14 +19478,8 @@ msgstr "qom-set 无效属性类型 %d"
 msgid "query-command-line-options parameter data was missing 'name'"
 msgstr "query-command-line-options 参数数据缺少 'name'"
 
-msgid "query-command-line-options parameter data was not an array"
-msgstr "query-command-line-options 参数数据不是一个阵列"
-
 msgid "query-command-line-options reply data was missing 'option'"
 msgstr "query-command-line-options 回复数据缺少'option'"
-
-msgid "query-command-line-options reply data was not an array"
-msgstr "query-command-line-options 回复数据不是一个阵列"
 
 msgid "query-command-line-options reply was missing return data"
 msgstr "query-command-line-options 回复缺少返回数据"
@@ -20005,9 +19736,6 @@ msgstr "重新使用任意现有外部文件"
 msgid "reuse existing destination"
 msgstr "重新使用现有目的地"
 
-msgid "reuse is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制中不支持重新使用"
-
 msgid "revert requires force"
 msgstr "转换请求强制"
 
@@ -20023,9 +19751,6 @@ msgstr "返回到之前的恢复点"
 
 msgid "rollback to previous saved configuration created via iface-begin"
 msgstr "恢复到之前保存的使用 iface-begin 生成的更改"
-
-msgid "rombar and romfile are supported only for PCI devices"
-msgstr "只为 PCI 设备支持 rombar 和 romfile"
 
 msgid "root element was not source"
 msgstr "root 元素不是源"
@@ -20119,9 +19844,6 @@ msgstr "XML 中的 secret 属性"
 
 msgid "secret is private"
 msgstr "secret 是专用的"
-
-msgid "secrets already defined"
-msgstr "已定义 secrets"
 
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
@@ -20217,12 +19939,6 @@ msgstr "不支持设定 ACPI S3"
 
 msgid "setting ACPI S4 not supported"
 msgstr "不支持设定 ACPI S4"
-
-msgid "setting VNC password failed"
-msgstr "设定 VNC 密码失败"
-
-msgid "setting disk password is not supported"
-msgstr "不支持设定磁盘密码"
 
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
@@ -20336,9 +20052,6 @@ msgstr "socketpair 失败"
 
 msgid "sockpair failed"
 msgstr "sockpair 失败"
-
-msgid "socks field in JSON was not an array"
-msgstr "JSON 中的 socks 字段不是一个阵列"
 
 msgid "source config data format"
 msgstr "源配置数据格式"
@@ -20463,10 +20176,6 @@ msgstr "存储池 '%s' 未激活"
 #, c-format
 msgid "storage pool '%s' is still active"
 msgstr "存储池 '%s' 仍处于激活状态"
-
-msgid ""
-"storage pool does not support building encrypted volumes from other volumes"
-msgstr "存储池不支持从其他卷构建加密卷"
 
 msgid "storage pool does not support changing of volume capacity"
 msgstr "存储池不支持更改卷容量"
@@ -20665,12 +20374,6 @@ msgstr "MAC 地址 '%s' 与多个接口映射"
 msgid "the QEMU binary does not support %s"
 msgstr "QEMU 二进制不支持 %s"
 
-msgid "the QEMU binary does not support kqemu"
-msgstr "QEMU 二进制不支持 kqemu"
-
-msgid "the QEMU binary does not support kvm"
-msgstr "QEMU 二进制不支持 kvm"
-
 msgid "the backing volume if taking a snapshot"
 msgstr "提取快照时的后端卷"
 
@@ -20684,9 +20387,6 @@ msgstr "序列号代码集，默认：linux"
 
 msgid "the default lockspace already exists"
 msgstr "已存在默认 lockspace"
-
-msgid "the disk password is incorrect"
-msgstr "磁盘密码不正确"
 
 msgid "the domain does not have a current snapshot"
 msgstr "该域没有当前快照"
@@ -20860,9 +20560,6 @@ msgstr "太多序列号"
 msgid "too many memory stats requested: %d > %d"
 msgstr "stats 请求过多：%d > %d"
 
-msgid "too many secrets for qcow encryption"
-msgstr "qcow 加密有太多 secret"
-
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "链 '%s' 的顶部 '%s' 没有后备文件"
@@ -20988,10 +20685,6 @@ msgstr "无法访问磁盘 %s\n"
 msgid "unable to add SSH host key for host '%s': %s"
 msgstr "无法主机 '%s' 添加 SSH 主机密钥：%s"
 
-#, c-format
-msgid "unable to add host net: %s"
-msgstr "无法添加主机网络：%s"
-
 msgid "unable to allocate security context"
 msgstr "无法分配安全上下文"
 
@@ -21050,9 +20743,6 @@ msgid ""
 "unable to delete interface '%s' in network '%s'. It is currently being used  "
 "by %d domains."
 msgstr "无法删除网络 '%s' 中的接口 '%s'。它目前由 %d 域使用。"
-
-msgid "unable to determine array size"
-msgstr "无法确定阵列大小"
 
 msgid "unable to determine if snapshot has parent"
 msgstr "无法确定快照是否有上级"
@@ -21188,10 +20878,6 @@ msgstr "无法注册监控程序事件"
 #, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "无法为快照 %s 保存元数据"
-
-#, c-format
-msgid "unable to send file handle '%s': %s"
-msgstr "无法发送文件句柄 '%s': %s"
 
 #, c-format
 msgid "unable to set AppArmor profile '%s' for '%s'"
@@ -21344,14 +21030,6 @@ msgid "unexpected address type for scsi disk"
 msgstr "scsi 磁盘中有意外的地址类型"
 
 #, c-format
-msgid "unexpected async job %d"
-msgstr "意外的异步任务 %d"
-
-#, c-format
-msgid "unexpected balloon information '%s'"
-msgstr "意外布尔信息 '%s'"
-
-#, c-format
 msgid "unexpected boot device type %d"
 msgstr "意外的引导设备类型 %d"
 
@@ -21398,16 +21076,8 @@ msgid "unexpected disk bus %d"
 msgstr "意外的磁盘总线 %d"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "意外的磁盘缓存模式 %d"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "意外的磁盘设备 %d"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "意外的磁盘 io 模式 %d"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -21536,10 +21206,6 @@ msgstr "读取快照 xml 时的意外问题"
 
 msgid "unexpected protocol type"
 msgstr "意外规则协议"
-
-#, c-format
-msgid "unexpected reply from info status: %s"
-msgstr "来自信息状态的意外回复：%s"
 
 #, c-format
 msgid "unexpected root element <%s> expecting <device>"
@@ -22043,10 +21709,6 @@ msgid "unknown hub device type '%s'"
 msgstr "未知集线器设备类型 '%s'"
 
 #, c-format
-msgid "unknown image format of '%s' and format probing is disabled"
-msgstr "已禁用 '%s' 的未知映像格式以及格式探测"
-
-#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "未知输入总线类型 '%s'"
 
@@ -22518,10 +22180,6 @@ msgstr "磁盘设定不支持的磁盘总线 '%s'  "
 msgid "unsupported disk device"
 msgstr "不支持的磁盘设备"
 
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "'%s' 不支持的磁盘驱动器类型"
-
 msgid "unsupported disk type"
 msgstr "不支持的磁盘类型"
 
@@ -22867,10 +22525,6 @@ msgstr "接口 \"%s\" ifkey \"%s\" 中的 virNWFilterDHCPSnoopReq req add 失败
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%s'"
 msgstr "接口 '%s' 中的 virNWFilterDHCPSnoopReq virThreadCreate 失败"
-
-#, c-format
-msgid "virNWFilterDHCPSnoopReq: can't copy variables on if %s"
-msgstr "virNWFilterDHCPSnoopReq: 如果是 %s，则无法在其中复制变量。"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %d corrupt"

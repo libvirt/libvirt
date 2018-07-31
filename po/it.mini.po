@@ -10,10 +10,10 @@
 # Silvio Pierro <perplesso82@gmail.com>, 2009
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.3.0\n"
+"Project-Id-Version: libvirt 4.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-24 12:51+0100\n"
-"PO-Revision-Date: 2015-02-27 05:14-0500\n"
+"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"PO-Revision-Date: 2015-02-27 05:14+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/libvirt/language/"
 "it/)\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"X-Generator: Zanata 4.5.0\n"
 
 msgid ""
 "\n"
@@ -134,9 +134,6 @@ msgstr "%s: troppi argomenti nella linea di comando\n"
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: nome dell'hypervisor %s non supportato\n"
-
-msgid "'info blockstats' not supported by this qemu"
-msgstr "'info blockstats' non è supportato da questo qemu"
 
 msgid "(re)connect to hypervisor"
 msgstr "(ri)connettersi all'hypervisor"
@@ -610,10 +607,6 @@ msgid "Could not parse version number from '%s'"
 msgstr "Errore nel parsing del numero di versione da '%s'"
 
 #, c-format
-msgid "Could not put variable '%s' into hashmap"
-msgstr "Impossibile inserire la variabile '%s' nella mappa hash"
-
-#, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
 msgstr ""
 "Impossibile leggere 'IP_ADDRESS' dalla configurazione per il contenitore %d"
@@ -762,16 +755,6 @@ msgstr "Eliminare un dato pool."
 
 msgid "Delete a given vol."
 msgstr "Eliminare un dato vol."
-
-#, c-format
-msgid "Destination buffer for ifname ('%s') not large enough"
-msgstr ""
-"Il buffer di destinazione per ifname ('%s') non è sufficientemente grande"
-
-#, c-format
-msgid "Destination buffer for linkdev ('%s') not large enough"
-msgstr ""
-"Il buffer di destinazione per linkdev ('%s') non è sufficientemente grande"
 
 msgid "Detach device from an XML <file>"
 msgstr "Scollegare dispositivo da un <file> XML"
@@ -992,10 +975,6 @@ msgstr "Scandenza della password non supportata"
 
 msgid "FAIL"
 msgstr "FAIL"
-
-#, c-format
-msgid "Failed module registration %s"
-msgstr "Registrazione del modulo fallita %s"
 
 #, c-format
 msgid "Failed opening %s"
@@ -1748,15 +1727,8 @@ msgstr "Nome predecessore mancante nel modello %s della CPU"
 msgid "Missing feature name for CPU model %s"
 msgstr "Nome feature della CPU modello %s mancante"
 
-#, c-format
-msgid "Missing module registration symbol %s"
-msgstr "Simbolo di registrazione del modulo %s mancante"
-
 msgid "Missing or empty 'hostName' property"
 msgstr "Proprietà 'hostName' vuota o mancante"
-
-msgid "Missing server name in phyp:// URI"
-msgstr "Nome del server mancante nell'URI phyp://"
 
 msgid "Missing source host attribute for char device"
 msgstr "Attributo host sorgente mancante per il dispositivo a caratteri"
@@ -1899,9 +1871,6 @@ msgstr ""
 "Nessun <source> attributo 'port' è stato specificato con l'interfaccia del "
 "socket"
 
-msgid "No CPUs given"
-msgstr "Nessuna CPU attribuita"
-
 #, c-format
 msgid "No IP address for host '%s' found: %s"
 msgstr "Nessun indirizzo IP trovato per l'host '%s': %s"
@@ -1931,10 +1900,6 @@ msgstr "Non ci sono domini con nome corrispondente a '%s'"
 #, c-format
 msgid "No domain with matching uuid '%s'"
 msgstr "Non ci sono domini con uuid corrispondente a '%s'"
-
-#, c-format
-msgid "No domain with name '%s'"
-msgstr "Nessun dominio con nome '%s'"
 
 msgid "No error message provided"
 msgstr "Nessun messaggio d'errore fornito"
@@ -2796,10 +2761,6 @@ msgstr "[--%s <string>]"
 msgid "active"
 msgstr "attivo"
 
-#, c-format
-msgid "adding %s device failed: %s"
-msgstr "aggiunta dispositivo %s fallita: %s"
-
 msgid "allow the resize to shrink the volume"
 msgstr "permetti al ridimensionamento di ridurre il volume"
 
@@ -2963,9 +2924,6 @@ msgstr "impossibile creare la pipe"
 #, c-format
 msgid "cannot create snapshot directory '%s'"
 msgstr "impossibile creare la directory '%s' per l'istantanea"
-
-msgid "cannot create virtual FAT disks in read-write mode"
-msgstr "impossibile creare dischi FAT virtuali in modalità lettura-scrittura"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -3610,10 +3568,6 @@ msgid "detach network interface"
 msgstr "scollegare una interfaccia di rete"
 
 #, c-format
-msgid "detaching %s device failed: %s"
-msgstr "scollegamento dispositivo %s fallito: %s"
-
-#, c-format
 msgid "device %s is not a PCI device"
 msgstr "il dispositivo %s non è un dispositivo PCI"
 
@@ -3635,10 +3589,6 @@ msgstr "disabilita avvio automatico"
 
 msgid "discover potential storage pool sources"
 msgstr "scopri potenziali sorgenti di memoria di stampa"
-
-#, c-format
-msgid "disk %s does not have any encryption information"
-msgstr "il disco %s non presenta alcuna informazione di cifratura"
 
 #, c-format
 msgid "disk %s not found"
@@ -3739,9 +3689,6 @@ msgstr "Il dominio non è in esecuzione"
 
 msgid "domain name or uuid"
 msgstr "nome del dominio o uuid"
-
-msgid "domain name, id or uuid"
-msgstr "nome del dominio, id o uuid"
 
 msgid "domain state"
 msgstr "stato del dominio"
@@ -3918,10 +3865,6 @@ msgid "failed to initialize SASL library: %d (%s)"
 msgstr "impossibile inizializzare la libreria SASL: %d (%s)"
 
 #, c-format
-msgid "failed to load module %s %s"
-msgstr "impossibile caricare il modulo %s %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "Impossibile contrassegnare la rete %s come auto avviante"
 
@@ -3980,10 +3923,6 @@ msgstr "impossibile leggere il file temporaneo creato con il template %s"
 
 msgid "failed to resume domain"
 msgstr "impossibile ripristinare il dominio"
-
-#, c-format
-msgid "failed to save chardev path '%s'"
-msgstr "impossibile salvare il percorso chardev '%s'"
 
 msgid "failed to save content"
 msgstr "impossibile salvare il contenuto"
@@ -4186,10 +4125,6 @@ msgstr "nome interfaccia %s non adatto per il buffer"
 msgid "internal error"
 msgstr "errore interno"
 
-#, c-format
-msgid "invalid <encryption> for volume %s"
-msgstr "<encryption> non valida per il volume %s"
-
 msgid "invalid MAC address"
 msgstr "indirizzo MAC non valido"
 
@@ -4282,10 +4217,6 @@ msgstr "slew catchup non valido"
 msgid "invalid catchup threshold"
 msgstr "soglia catchup del timer non valida"
 
-#, c-format
-msgid "invalid certificate name: %s"
-msgstr "nome certificato non valido: %s"
-
 msgid "invalid cipher size for TLS session"
 msgstr "dimensione cifratore invalida per la sessione TLS"
 
@@ -4295,10 +4226,6 @@ msgstr "puntatore di collegamento non valido in"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "puntatore di collegamento non valido in %s"
-
-#, c-format
-msgid "invalid database name: %s"
-msgstr "nome database non valido: %s"
 
 #, c-format
 msgid "invalid device name '%s'"
@@ -4894,10 +4821,6 @@ msgstr "nessun formato disco per %s e il probing è disabilitato"
 msgid "no disk found with alias %s"
 msgstr "nessun disco trovato con alias %s"
 
-#, c-format
-msgid "no disk found with path %s"
-msgstr "nessun disco trovato con il percorso %s"
-
 msgid "no domain XML passed"
 msgstr "nessun dominio XML fornito"
 
@@ -5254,12 +5177,6 @@ msgstr ""
 msgid "server verification (of our certificate or IP address) failed"
 msgstr "verifica del server (del nostro certificato o indirizzo IP) fallita"
 
-msgid "setting VNC password failed"
-msgstr "impostazione della password di VNC fallita"
-
-msgid "setting disk password is not supported"
-msgstr "non è supportata l'impostazione della password del disco"
-
 msgid "setting up HAL callbacks failed"
 msgstr "impostazione callback per HAL fallita"
 
@@ -5400,9 +5317,6 @@ msgstr "il target type deve essere specificato per il dispositivo %s"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: fornire un percorso o usare test:///default"
-
-msgid "the disk password is incorrect"
-msgstr "la password del disco non è corretta"
 
 msgid "the domain does not have a current snapshot"
 msgstr "il dominio non ha alcuna istantanea corrente"
@@ -5563,10 +5477,6 @@ msgid "unexpected address type for scsi disk"
 msgstr "tipo di indirizzo non previsto per il disco scsi"
 
 #, c-format
-msgid "unexpected async job %d"
-msgstr "job asincrono %d non atteso"
-
-#, c-format
 msgid "unexpected boot device type %d"
 msgstr "tipo di dispositivo di avvio %d inaspettato"
 
@@ -5598,16 +5508,8 @@ msgid "unexpected disk bus %d"
 msgstr "bus del disco %d inaspettato"
 
 #, c-format
-msgid "unexpected disk cache mode %d"
-msgstr "modalità di cache del disco %d inaspettato"
-
-#, c-format
 msgid "unexpected disk device %d"
 msgstr "dispositivo disco %d inaspettato"
-
-#, c-format
-msgid "unexpected disk io mode %d"
-msgstr "modo disk io %d non atteso"
 
 #, c-format
 msgid "unexpected disk type %d"
@@ -6119,10 +6021,6 @@ msgstr "tipo di dati '%c' non supportati per l'arg '%s'"
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "bus del disco '%s' non supportato con l'impostazione del dispositivo"
-
-#, c-format
-msgid "unsupported disk driver type for '%s'"
-msgstr "tipo di driver disco non supportato per '%s'"
 
 #, c-format
 msgid "unsupported disk type '%s'"
