@@ -86,6 +86,8 @@ UTIL_SOURCES = \
 	util/viriscsi.h \
 	util/virjson.c \
 	util/virjson.h \
+	util/virjsoncompat.c \
+	util/virjsoncompat.h \
 	util/virkeycode.c \
 	util/virkeycode.h \
 	util/virkeyfile.c \
@@ -264,7 +266,6 @@ libvirt_util_la_CFLAGS = \
 	$(NULL)
 libvirt_util_la_LIBADD = \
 	$(CAPNG_LIBS) \
-	$(JANSSON_LIBS) \
 	$(LIBNL_LIBS) \
 	$(THREAD_LIBS) \
 	$(AUDIT_LIBS) \
