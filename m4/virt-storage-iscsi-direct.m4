@@ -29,6 +29,9 @@ AC_DEFUN([LIBVIRT_STORAGE_CHECK_ISCSI_DIRECT], [
     with_storage_iscsi_direct=$with_libiscsi
   fi
   if test "$with_storage_iscsi_direct" = "yes"; then
+    if test "$with_libiscsi" = "no"; then
+      AC_MSG_ERROR([Need libiscsi for iscsi-direct storage driver])
+    fi
     AC_DEFINE_UNQUOTED([WITH_STORAGE_ISCSI_DIRECT], [1],
                        [whether iSCSI backend for storage driver is enabled])
   fi

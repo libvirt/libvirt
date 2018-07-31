@@ -203,6 +203,7 @@ if WITH_STORAGE_ISCSI_DIRECT
 libvirt_storage_backend_iscsi_direct_la_SOURCES = $(STORAGE_DRIVER_ISCSI_DIRECT_SOURCES)
 libvirt_storage_backend_iscsi_direct_la_CFLAGS = \
 	-I$(srcdir)/conf \
+	-I$(srcdir)/secret \
 	$(LIBISCSI_CFLAGS) \
 	$(AM_CFLAGS) \
 	$(NULL)
@@ -212,6 +213,7 @@ libvirt_storage_backend_iscsi_direct_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_iscsi_direct_la_LIBADD = \
 	libvirt.la \
 	../gnulib/lib/libgnu.la \
+	$(LIBISCSI_LIBS) \
 	$(NULL)
 endif WITH_STORAGE_ISCSI_DIRECT
 
