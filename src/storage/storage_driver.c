@@ -1566,6 +1566,7 @@ storageVolLookupByPathCallback(virStoragePoolObjPtr obj,
         case VIR_STORAGE_POOL_LOGICAL:
         case VIR_STORAGE_POOL_DISK:
         case VIR_STORAGE_POOL_ISCSI:
+        case VIR_STORAGE_POOL_ISCSI_DIRECT:
         case VIR_STORAGE_POOL_SCSI:
         case VIR_STORAGE_POOL_MPATH:
         case VIR_STORAGE_POOL_VSTORAGE:

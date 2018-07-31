@@ -1203,6 +1203,9 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             case VIR_STORAGE_POOL_ISCSI:
                 flags |= VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI;
                 break;
+            case VIR_STORAGE_POOL_ISCSI_DIRECT:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI;
+                break;
             case VIR_STORAGE_POOL_SCSI:
                 flags |= VIR_CONNECT_LIST_STORAGE_POOLS_SCSI;
                 break;

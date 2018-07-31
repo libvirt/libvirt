@@ -31,6 +31,11 @@ STORAGE_DRIVER_ISCSI_SOURCES = \
 	storage/storage_backend_iscsi.c \
 	$(NULL)
 
+STORAGE_DRIVER_ISCSI_DIRECT_SOURCES = \
+	storage/storage_backend_iscsi_direct.h \
+	storage/storage_backend_iscsi_direct.c \
+	$(NULL)
+
 STORAGE_DRIVER_SCSI_SOURCES = \
 	storage/storage_backend_scsi.h \
 	storage/storage_backend_scsi.c \
@@ -89,6 +94,7 @@ EXTRA_DIST += \
 	$(STORAGE_FILE_FS_SOURCES) \
 	$(STORAGE_DRIVER_LVM_SOURCES) \
 	$(STORAGE_DRIVER_ISCSI_SOURCES) \
+	$(STORAGE_DRIVER_ISCSI_DIRECT_SOURCES) \
 	$(STORAGE_DRIVER_SCSI_SOURCES) \
 	$(STORAGE_DRIVER_MPATH_SOURCES) \
 	$(STORAGE_DRIVER_DISK_SOURCES) \
@@ -192,6 +198,22 @@ libvirt_storage_backend_iscsi_la_LIBADD = \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE_ISCSI
+
+if WITH_STORAGE_ISCSI_DIRECT
+libvirt_storage_backend_iscsi_direct_la_SOURCES = $(STORAGE_DRIVER_ISCSI_DIRECT_SOURCES)
+libvirt_storage_backend_iscsi_direct_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(LIBISCSI_CFLAGS) \
+	$(AM_CFLAGS) \
+	$(NULL)
+
+storagebackend_LTLIBRARIES += libvirt_storage_backend_iscsi-direct.la
+libvirt_storage_backend_iscsi_direct_la_LDFLAGS = $(AM_LDFLAGS_MOD)
+libvirt_storage_backend_iscsi_direct_la_LIBADD = \
+	libvirt.la \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+endif WITH_STORAGE_ISCSI_DIRECT
 
 if WITH_STORAGE_SCSI
 libvirt_storage_backend_scsi_la_SOURCES = $(STORAGE_DRIVER_SCSI_SOURCES)

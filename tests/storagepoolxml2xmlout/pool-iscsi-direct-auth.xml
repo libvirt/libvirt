@@ -1,0 +1,17 @@
+<pool type='iscsi-direct'>
+  <name>iscsi-direct-auth</name>
+  <uuid>034d66fc-f507-437a-b552-c479ffd63820</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <host name='iscsi.example.com'/>
+    <device path='iqn.2013-06.com.example:iscsi-pool'/>
+    <initiator>
+      <iqn name='iqn.2013-06.com.example:iscsi-initiator'/>
+    </initiator>
+    <auth type='chap' username='user'>
+      <secret uuid='10ed4ad4-c7b0-4696-b574-b40e04fea84b'/>
+    </auth>
+  </source>
+</pool>

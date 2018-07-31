@@ -18,6 +18,7 @@
         <ref name='poollogical'/>
         <ref name='pooldisk'/>
         <ref name='pooliscsi'/>
+        <ref name='pooliscsidirect'/>
         <ref name='poolscsi'/>
         <ref name='poolmpath'/>
         <ref name='poolrbd'/>
@@ -98,6 +99,19 @@
       <ref name='sizing'/>
       <ref name='sourceiscsi'/>
       <ref name='target'/>
+    </interleave>
+  </define>
+
+  <define name='pooliscsidirect'>
+    <attribute name='type'>
+      <value>iscsi-direct</value>
+    </attribute>
+    <interleave>
+      <ref name='commonmetadata'/>
+      <optional>
+        <ref name='sizing'/>
+      </optional>
+      <ref name='sourceiscsidirect'/>
     </interleave>
   </define>
 
@@ -311,6 +325,14 @@
           <ref name="virYesNo"/>
         </attribute>
       </optional>
+    </element>
+  </define>
+
+  <define name='sourceinfodeviscsidirect'>
+    <element name='device'>
+      <attribute name='path'>
+        <ref name='IscsiQualifiedName'/>
+      </attribute>
     </element>
   </define>
 
@@ -590,6 +612,19 @@
         </optional>
         <optional>
           <ref name='sourceinfovendor'/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name='sourceiscsidirect'>
+    <element name='source'>
+      <interleave>
+        <ref name='sourceinfohost'/>
+        <ref name='sourceinfodeviscsidirect'/>
+        <ref name='initiatorinfo'/>
+        <optional>
+          <ref name='sourceinfoauth'/>
         </optional>
       </interleave>
     </element>

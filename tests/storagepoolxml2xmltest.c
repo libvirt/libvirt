@@ -102,6 +102,8 @@ mymain(void)
     DO_TEST("pool-zfs-sourcedev");
     DO_TEST("pool-rbd");
     DO_TEST("pool-vstorage");
+    DO_TEST("pool-iscsi-direct-auth");
+    DO_TEST("pool-iscsi-direct");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -1,0 +1,14 @@
+<pool type='iscsi-direct'>
+  <name>iscsi-direct</name>
+  <uuid>034d66fc-f507-437a-b552-c479ffd63819</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <host name='iscsi.example.com'/>
+    <device path='iqn.2013-06.com.example:iscsi-pool'/>
+    <initiator>
+      <iqn name='iqn.2013-06.com.example:iscsi-initiator'/>
+    </initiator>
+  </source>
+</pool>

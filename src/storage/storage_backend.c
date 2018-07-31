@@ -43,6 +43,9 @@
 #if WITH_STORAGE_ISCSI
 # include "storage_backend_iscsi.h"
 #endif
+#if WITH_STORAGE_ISCSI_DIRECT
+# include "storage_backend_iscsi_direct.h"
+#endif
 #if WITH_STORAGE_SCSI
 # include "storage_backend_scsi.h"
 #endif
@@ -121,6 +124,9 @@ virStorageBackendDriversRegister(bool allbackends ATTRIBUTE_UNUSED)
 #endif
 #if WITH_STORAGE_ISCSI
     VIR_STORAGE_BACKEND_REGISTER(virStorageBackendISCSIRegister, "iscsi");
+#endif
+#if WITH_STORAGE_ISCSI_DIRECT
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendISCSIDirectRegister, "iscsi-direct");
 #endif
 #if WITH_STORAGE_SCSI
     VIR_STORAGE_BACKEND_REGISTER(virStorageBackendSCSIRegister, "scsi");

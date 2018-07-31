@@ -85,6 +85,7 @@ typedef enum {
     VIR_STORAGE_POOL_LOGICAL,  /* Logical volume groups / volumes */
     VIR_STORAGE_POOL_DISK,     /* Disk partitions */
     VIR_STORAGE_POOL_ISCSI,    /* iSCSI targets */
+    VIR_STORAGE_POOL_ISCSI_DIRECT, /* iSCSI targets using libiscsi */
     VIR_STORAGE_POOL_SCSI,     /* SCSI HBA */
     VIR_STORAGE_POOL_MPATH,    /* Multipath devices */
     VIR_STORAGE_POOL_RBD,      /* RADOS Block Device */

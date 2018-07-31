@@ -62,9 +62,9 @@ VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,
               "dir", "fs", "netfs",
               "logical", "disk", "iscsi",
-              "scsi", "mpath", "rbd",
-              "sheepdog", "gluster", "zfs",
-              "vstorage")
+              "iscsi-direct", "scsi", "mpath",
+              "rbd", "sheepdog", "gluster",
+              "zfs", "vstorage")
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
               VIR_STORAGE_POOL_FS_LAST,
@@ -201,6 +201,17 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
      .poolOptions = {
          .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
                    VIR_STORAGE_POOL_SOURCE_DEVICE |
+                   VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN),
+      },
+      .volOptions = {
+         .formatToString = virStoragePoolFormatDiskTypeToString,
+      }
+    },
+    {.poolType = VIR_STORAGE_POOL_ISCSI_DIRECT,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
+                   VIR_STORAGE_POOL_SOURCE_DEVICE |
+                   VIR_STORAGE_POOL_SOURCE_NETWORK |
                    VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN),
       },
       .volOptions = {
@@ -803,6 +814,13 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
     }
 
+    if (ret->type == VIR_STORAGE_POOL_ISCSI_DIRECT &&
+        !ret->source.initiator.iqn) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("missing initiator IQN"));
+        goto error;
+    }
+
  cleanup:
     VIR_FREE(uuid);
     VIR_FREE(type);
@@ -1000,11 +1018,12 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
     if (virStoragePoolSourceFormat(buf, options, &def->source) < 0)
         return -1;
 
-    /* RBD, Sheepdog, and Gluster devices are not local block devs nor
+    /* RBD, Sheepdog, Gluster and Iscsi-direct devices are not local block devs nor
      * files, so they don't have a target */
     if (def->type != VIR_STORAGE_POOL_RBD &&
         def->type != VIR_STORAGE_POOL_SHEEPDOG &&
-        def->type != VIR_STORAGE_POOL_GLUSTER) {
+        def->type != VIR_STORAGE_POOL_GLUSTER &&
+        def->type != VIR_STORAGE_POOL_ISCSI_DIRECT) {
         virBufferAddLit(buf, "<target>\n");
         virBufferAdjustIndent(buf, 2);
 
