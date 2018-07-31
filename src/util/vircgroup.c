@@ -356,6 +356,51 @@ virCgroupCopyMounts(virCgroupPtr group,
 }
 
 
+static int
+virCgroupResolveMountLink(char *mntDir,
+                          const char *typeStr,
+                          virCgroupControllerPtr controller)
+{
+    VIR_AUTOFREE(char *) linkSrc = NULL;
+    char *dirName;
+    struct stat sb;
+
+    dirName = strrchr(mntDir, '/');
+    if (!dirName) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing '/' separator in cgroup mount '%s'"), mntDir);
+        return -1;
+    }
+
+    if (!strchr(dirName + 1, ','))
+        return 0;
+
+    *dirName = '\0';
+    if (virAsprintf(&linkSrc, "%s/%s", mntDir, typeStr) < 0)
+        return -1;
+    *dirName = '/';
+
+    if (lstat(linkSrc, &sb) < 0) {
+        if (errno == ENOENT) {
+            VIR_WARN("Controller %s co-mounted at %s is missing symlink at %s",
+                     typeStr, mntDir, linkSrc);
+        } else {
+            virReportSystemError(errno, _("Cannot stat %s"), linkSrc);
+            return -1;
+        }
+    } else {
+        if (!S_ISLNK(sb.st_mode)) {
+            VIR_WARN("Expecting a symlink at %s for controller %s",
+                     linkSrc, typeStr);
+        } else {
+            VIR_STEAL_PTR(controller->linkPoint, linkSrc);
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * Process /proc/mounts figuring out what controllers are
  * mounted and where
@@ -397,8 +442,6 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
                 }
 
                 if (typelen == len && STREQLEN(typestr, tmp, len)) {
-                    struct stat sb;
-                    char *tmp2;
 
                     /* Note that the lines in /proc/mounts have the same
                      * order than the mount operations, and that there may
@@ -412,44 +455,12 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
                     if (VIR_STRDUP(controller->mountPoint, entry.mnt_dir) < 0)
                         goto cleanup;
 
-                    tmp2 = strrchr(entry.mnt_dir, '/');
-                    if (!tmp2) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Missing '/' separator in cgroup mount '%s'"),
-                                       entry.mnt_dir);
-                        goto cleanup;
-                    }
-
                     /* If it is a co-mount it has a filename like "cpu,cpuacct"
                      * and we must identify the symlink path */
-                    if (checkLinks && strchr(tmp2 + 1, ',')) {
-                        VIR_AUTOFREE(char *) linksrc = NULL;
-
-                        *tmp2 = '\0';
-                        if (virAsprintf(&linksrc, "%s/%s",
-                                        entry.mnt_dir, typestr) < 0)
+                    if (checkLinks &&
+                        virCgroupResolveMountLink(entry.mnt_dir, typestr,
+                                                  controller) < 0) {
                             goto cleanup;
-                        *tmp2 = '/';
-
-                        if (lstat(linksrc, &sb) < 0) {
-                            if (errno == ENOENT) {
-                                VIR_WARN("Controller %s co-mounted at %s is missing symlink at %s",
-                                         typestr, entry.mnt_dir, linksrc);
-                            } else {
-                                virReportSystemError(errno,
-                                                     _("Cannot stat %s"),
-                                                     linksrc);
-                                goto cleanup;
-                            }
-                        } else {
-                            if (!S_ISLNK(sb.st_mode)) {
-                                VIR_WARN("Expecting a symlink at %s for controller %s",
-                                         linksrc, typestr);
-                            } else {
-                                controller->linkPoint = linksrc;
-                                linksrc = NULL;
-                            }
-                        }
                     }
                 }
                 tmp = next;
