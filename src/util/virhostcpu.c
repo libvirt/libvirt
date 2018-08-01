@@ -197,7 +197,6 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define PROCSTAT_PATH "/proc/stat"
-# define VIR_HOST_CPU_MASK_LEN 1024
 
 # define LINUX_NB_CPU_STATS 4
 
