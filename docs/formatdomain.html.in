@@ -8094,7 +8094,9 @@ qemu-kvm -net nic,model=? /dev/null
     <dt><code>shmem</code></dt>
     <dd>
       The <code>shmem</code> element has one mandatory attribute,
-      <code>name</code> to identify the shared memory.
+      <code>name</code> to identify the shared memory. This attribute cannot
+      be directory specific to <code>.</code> or <code>..</code> as well as
+      it cannot involve path separator <code>/</code>.
     </dd>
     <dt><code>model</code></dt>
     <dd>
