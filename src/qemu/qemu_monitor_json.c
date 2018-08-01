@@ -2299,7 +2299,7 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
 
 #define QEMU_MONITOR_BLOCK_STAT_GET(NAME, VAR, MANDATORY) \
     if (MANDATORY || virJSONValueObjectHasKey(stats, NAME)) { \
-        nstats++; \
+        (*nstats)++; \
         if (virJSONValueObjectGetNumberLong(stats, NAME, &VAR) < 0) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("cannot read %s statistic"), NAME); \
