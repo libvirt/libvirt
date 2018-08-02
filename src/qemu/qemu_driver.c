@@ -20093,23 +20093,6 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
-                            "rd.reqs", entry->rd_req);
-    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
-                            "rd.bytes", entry->rd_bytes);
-    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
-                            "rd.times", entry->rd_total_times);
-    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
-                            "wr.reqs", entry->wr_req);
-    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
-                            "wr.bytes", entry->wr_bytes);
-    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
-                            "wr.times", entry->wr_total_times);
-    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
-                            "fl.reqs", entry->flush_req);
-    QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, block_idx,
-                            "fl.times", entry->flush_total_times);
-
     QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
                              "allocation", entry->wr_highest_offset);
 
@@ -20131,6 +20114,39 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
     if (entry->write_threshold)
         QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx, "threshold",
                                  entry->write_threshold);
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+static int
+qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
+                                      virHashTablePtr stats,
+                                      size_t recordnr,
+                                      virDomainStatsRecordPtr records,
+                                      int *nrecords)
+{
+    qemuBlockStats *entry;
+    int ret = -1;
+
+    /* In case where qemu didn't provide the stats we stop here rather than
+     * trying to refresh the stats from the disk. Inability to provide stats is
+     * usually caused by blocked storage so this would make libvirtd hang */
+    if (!stats || !frontendname || !(entry = virHashLookup(stats, frontendname))) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "rd.reqs", entry->rd_req);
+    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "rd.bytes", entry->rd_bytes);
+    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "rd.times", entry->rd_total_times);
+    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "wr.reqs", entry->wr_req);
+    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "wr.bytes", entry->wr_bytes);
+    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "wr.times", entry->wr_total_times);
+    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "fl.reqs", entry->flush_req);
+    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "fl.times", entry->flush_total_times);
 
     ret = 0;
  cleanup:
@@ -20190,6 +20206,10 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
 
         if (qemuDomainGetStatsBlockExportHeader(disk, src, *recordnr,
                                                 records, nrecords) < 0)
+            goto cleanup;
+
+        if (qemuDomainGetStatsBlockExportFrontend(alias, stats, *recordnr,
+                                                  records, nrecords) < 0)
             goto cleanup;
 
         if (qemuDomainGetStatsOneBlock(driver, cfg, dom, records, nrecords,
