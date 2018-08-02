@@ -35,7 +35,6 @@ struct virCapabilitiesData {
     virArch arch;
     bool offlineMigrate;
     bool liveMigrate;
-    bool resctrl; /* Whether both resctrl and system sysfs are used */
 };
 
 static int
@@ -46,24 +45,19 @@ test_virCapabilities(const void *opaque)
     virCapsPtr caps = NULL;
     char *capsXML = NULL;
     char *path = NULL;
-    char *dir = NULL;
+    char *system = NULL;
     char *resctrl = NULL;
     int ret = -1;
 
-    /*
-     * We want to keep our directory structure clean, so if there's both resctrl
-     * and system used, we need to use slightly different path; a subdir.
-     */
-    if (virAsprintf(&dir, "%s/vircaps2xmldata/linux-%s%s",
-                    abs_srcdir, data->filename,
-                    data->resctrl ? "/system" : "") < 0)
+    if (virAsprintf(&system, "%s/vircaps2xmldata/linux-%s/system",
+                    abs_srcdir, data->filename) < 0)
         goto cleanup;
 
     if (virAsprintf(&resctrl, "%s/vircaps2xmldata/linux-%s/resctrl",
                     abs_srcdir, data->filename) < 0)
         goto cleanup;
 
-    virFileWrapperAddPrefix("/sys/devices/system", dir);
+    virFileWrapperAddPrefix("/sys/devices/system", system);
     virFileWrapperAddPrefix("/sys/fs/resctrl", resctrl);
     caps = virCapabilitiesNew(data->arch, data->offlineMigrate, data->liveMigrate);
 
@@ -89,7 +83,7 @@ test_virCapabilities(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(dir);
+    VIR_FREE(system);
     VIR_FREE(resctrl);
     VIR_FREE(path);
     VIR_FREE(capsXML);
@@ -102,27 +96,24 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(filename, arch, offlineMigrate, liveMigrate, resctrl) \
+#define DO_TEST_FULL(filename, arch, offlineMigrate, liveMigrate) \
     do { \
         struct virCapabilitiesData data = {filename, arch, \
                                            offlineMigrate, \
-                                           liveMigrate, resctrl}; \
+                                           liveMigrate}; \
         if (virTestRun(filename, test_virCapabilities, &data) < 0) \
             ret = -1; \
     } while (0)
 
-    DO_TEST_FULL("basic", VIR_ARCH_X86_64, false, false, false);
-    DO_TEST_FULL("basic", VIR_ARCH_AARCH64, true, false, false);
+    DO_TEST_FULL("basic", VIR_ARCH_X86_64, false, false);
+    DO_TEST_FULL("basic", VIR_ARCH_AARCH64, true, false);
 
-    /* We say there is 'resctrl' even though there is none.  This is special
-     * case because we want to use this test data for a negative tests for
-     * resctrl. */
-    DO_TEST_FULL("caches", VIR_ARCH_X86_64, true, true, true);
+    DO_TEST_FULL("caches", VIR_ARCH_X86_64, true, true);
 
-    DO_TEST_FULL("resctrl", VIR_ARCH_X86_64, true, true, true);
-    DO_TEST_FULL("resctrl-cdp", VIR_ARCH_X86_64, true, true, true);
-    DO_TEST_FULL("resctrl-skx", VIR_ARCH_X86_64, true, true, true);
-    DO_TEST_FULL("resctrl-skx-twocaches", VIR_ARCH_X86_64, true, true, true);
+    DO_TEST_FULL("resctrl", VIR_ARCH_X86_64, true, true);
+    DO_TEST_FULL("resctrl-cdp", VIR_ARCH_X86_64, true, true);
+    DO_TEST_FULL("resctrl-skx", VIR_ARCH_X86_64, true, true);
+    DO_TEST_FULL("resctrl-skx-twocaches", VIR_ARCH_X86_64, true, true);
 
     return ret;
 }
