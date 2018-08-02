@@ -131,7 +131,8 @@ virStorageBackendISCSIDirectSetAuth(struct iscsi_context *iscsi,
 
 static int
 virISCSIDirectSetContext(struct iscsi_context *iscsi,
-                         const char *target_name)
+                         const char *target_name,
+                         enum iscsi_session_type session)
 {
     if (iscsi_init_transport(iscsi, TCP_TRANSPORT) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -139,13 +140,15 @@ virISCSIDirectSetContext(struct iscsi_context *iscsi,
                        iscsi_get_error(iscsi));
         return -1;
     }
-    if (iscsi_set_targetname(iscsi, target_name) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to set target name: %s"),
-                       iscsi_get_error(iscsi));
-        return -1;
+    if (session == ISCSI_SESSION_NORMAL) {
+        if (iscsi_set_targetname(iscsi, target_name) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to set target name: %s"),
+                           iscsi_get_error(iscsi));
+            return -1;
+        }
     }
-    if (iscsi_set_session_type(iscsi, ISCSI_SESSION_NORMAL) < 0) {
+    if (iscsi_set_session_type(iscsi, session) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to set session type: %s"),
                        iscsi_get_error(iscsi));
@@ -398,11 +401,157 @@ virISCSIDirectDisconnect(struct iscsi_context *iscsi)
 }
 
 static int
+virISCSIDirectUpdateTargets(struct iscsi_context *iscsi,
+                            size_t *ntargets,
+                            char ***targets)
+{
+    int ret = -1;
+    struct iscsi_discovery_address *addr;
+    struct iscsi_discovery_address *tmp_addr;
+    size_t tmp_ntargets = 0;
+    char **tmp_targets = NULL;
+
+    if (!(addr = iscsi_discovery_sync(iscsi))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to discover session: %s"),
+                       iscsi_get_error(iscsi));
+        return ret;
+    }
+
+    for (tmp_addr = addr; tmp_addr; tmp_addr = tmp_addr->next) {
+        char *target = NULL;
+
+        if (VIR_STRDUP(target, tmp_addr->target_name) < 0)
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(tmp_targets, tmp_ntargets, target) < 0) {
+            VIR_FREE(target);
+            goto cleanup;
+        }
+    }
+
+    VIR_STEAL_PTR(*targets, tmp_targets);
+    *ntargets = tmp_ntargets;
+    tmp_ntargets = 0;
+
+    ret = 0;
+ cleanup:
+    iscsi_free_discovery_data(iscsi, addr);
+    virStringListFreeCount(tmp_targets, tmp_ntargets);
+    return ret;
+}
+
+static int
+virISCSIDirectScanTargets(char *initiator_iqn,
+                          char *portal,
+                          size_t *ntargets,
+                          char ***targets)
+{
+    struct iscsi_context *iscsi = NULL;
+    int ret = -1;
+
+    if (!(iscsi = virISCSIDirectCreateContext(initiator_iqn)))
+        goto cleanup;
+    if (virISCSIDirectSetContext(iscsi, NULL, ISCSI_SESSION_DISCOVERY) < 0)
+        goto cleanup;
+    if (virISCSIDirectConnect(iscsi, portal) < 0)
+        goto cleanup;
+    if (virISCSIDirectUpdateTargets(iscsi, ntargets, targets) < 0)
+        goto disconnect;
+
+    ret = 0;
+ disconnect:
+    virISCSIDirectDisconnect(iscsi);
+ cleanup:
+    iscsi_destroy_context(iscsi);
+    return ret;
+}
+
+static int
 virStorageBackendISCSIDirectCheckPool(virStoragePoolObjPtr pool,
                                       bool *isActive)
 {
     *isActive = virStoragePoolObjIsActive(pool);
     return 0;
+}
+
+static char *
+virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
+                                            unsigned int flags)
+{
+    virStoragePoolSourcePtr source = NULL;
+    size_t ntargets = 0;
+    char **targets = NULL;
+    char *ret = NULL;
+    size_t i;
+    virStoragePoolSourceList list = {
+        .type = VIR_STORAGE_POOL_ISCSI_DIRECT,
+        .nsources = 0,
+        .sources = NULL
+    };
+    char *portal = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!srcSpec) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("hostname must be specified for iscsi sources"));
+        return NULL;
+    }
+
+    if (!(source = virStoragePoolDefParseSourceString(srcSpec, list.type)))
+        return NULL;
+
+    if (source->nhost != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Expected exactly 1 host for the storage pool"));
+        goto cleanup;
+    }
+
+    if (!source->initiator.iqn) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("missing initiator IQN"));
+        goto cleanup;
+    }
+
+    if (!(portal = virStorageBackendISCSIDirectPortal(source)))
+        goto cleanup;
+
+    if (virISCSIDirectScanTargets(source->initiator.iqn, portal, &ntargets, &targets) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(list.sources, ntargets) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ntargets; i++) {
+        if (VIR_ALLOC_N(list.sources[i].devices, 1) < 0 ||
+            VIR_ALLOC_N(list.sources[i].hosts, 1) < 0)
+            goto cleanup;
+        list.sources[i].nhost = 1;
+        list.sources[i].hosts[0] = source->hosts[0];
+        list.sources[i].initiator = source->initiator;
+        list.sources[i].ndevice = 1;
+        list.sources[i].devices[0].path = targets[i];
+        list.nsources++;
+    }
+
+    if (!(ret = virStoragePoolSourceListFormat(&list)))
+        goto cleanup;
+
+ cleanup:
+    if (list.sources) {
+        for (i = 0; i < ntargets; i++) {
+            VIR_FREE(list.sources[i].hosts);
+            VIR_FREE(list.sources[i].devices);
+        }
+        VIR_FREE(list.sources);
+    }
+    for (i = 0; i < ntargets; i++)
+        VIR_FREE(targets[i]);
+    VIR_FREE(targets);
+    VIR_FREE(portal);
+    virStoragePoolSourceFree(source);
+    return ret;
 }
 
 static int
@@ -419,7 +568,7 @@ virStorageBackendISCSIDirectRefreshPool(virStoragePoolObjPtr pool)
         goto cleanup;
     if (virStorageBackendISCSIDirectSetAuth(iscsi, &def->source) < 0)
         goto cleanup;
-    if (virISCSIDirectSetContext(iscsi, def->source.devices[0].path) < 0)
+    if (virISCSIDirectSetContext(iscsi, def->source.devices[0].path, ISCSI_SESSION_NORMAL) < 0)
         goto cleanup;
     if (virISCSIDirectConnect(iscsi, portal) < 0)
         goto cleanup;
@@ -439,6 +588,7 @@ virStorageBackend virStorageBackendISCSIDirect = {
     .type = VIR_STORAGE_POOL_ISCSI_DIRECT,
 
     .checkPool = virStorageBackendISCSIDirectCheckPool,
+    .findPoolSources = virStorageBackendISCSIDirectFindPoolSources,
     .refreshPool = virStorageBackendISCSIDirectRefreshPool,
 };
 
