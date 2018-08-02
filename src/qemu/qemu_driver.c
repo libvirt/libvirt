@@ -20069,7 +20069,6 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virDomainObjPtr dom,
                            virDomainStatsRecordPtr record,
                            int *maxparams,
-                           const char *diskdst,
                            const char *entryname,
                            virStorageSourcePtr src,
                            size_t block_idx,
@@ -20077,15 +20076,6 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
 {
     qemuBlockStats *entry;
     int ret = -1;
-
-    QEMU_ADD_NAME_PARAM(record, maxparams, "block", "name", block_idx, diskdst);
-
-    if (virStorageSourceIsLocalStorage(src) && src->path)
-        QEMU_ADD_NAME_PARAM(record, maxparams, "block", "path",
-                            block_idx, src->path);
-    if (src->id)
-        QEMU_ADD_BLOCK_PARAM_UI(record, maxparams, block_idx, "backingIndex",
-                                src->id);
 
     /* the VM is offline so we have to go and load the stast from the disk by
      * ourselves */
@@ -20149,6 +20139,29 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
 
 
 static int
+qemuDomainGetStatsBlockExportHeader(virDomainDiskDefPtr disk,
+                                    virStorageSourcePtr src,
+                                    size_t recordnr,
+                                    virDomainStatsRecordPtr records,
+                                    int *nrecords)
+{
+    int ret = -1;
+
+    QEMU_ADD_NAME_PARAM(records, nrecords, "block", "name", recordnr, disk->dst);
+
+    if (virStorageSourceIsLocalStorage(src) && src->path)
+        QEMU_ADD_NAME_PARAM(records, nrecords, "block", "path", recordnr, src->path);
+    if (src->id)
+        QEMU_ADD_BLOCK_PARAM_UI(records, nrecords, recordnr, "backingIndex",
+                                src->id);
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+static int
 qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
                                   virHashTablePtr stats,
                                   virHashTablePtr nodestats,
@@ -20175,8 +20188,12 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
 
         qemuDomainGetStatsOneBlockRefreshNamed(src, alias, stats, nodestats);
 
+        if (qemuDomainGetStatsBlockExportHeader(disk, src, *recordnr,
+                                                records, nrecords) < 0)
+            goto cleanup;
+
         if (qemuDomainGetStatsOneBlock(driver, cfg, dom, records, nrecords,
-                                       disk->dst, alias, src, *recordnr,
+                                       alias, src, *recordnr,
                                        stats) < 0)
             goto cleanup;
 
