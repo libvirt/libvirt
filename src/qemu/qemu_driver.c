@@ -20149,6 +20149,51 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
 
 
 static int
+qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
+                                  virHashTablePtr stats,
+                                  virHashTablePtr nodestats,
+                                  virDomainStatsRecordPtr records,
+                                  int *nrecords,
+                                  size_t *recordnr,
+                                  bool visitBacking,
+                                  virQEMUDriverPtr driver,
+                                  virQEMUDriverConfigPtr cfg,
+                                  virDomainObjPtr dom)
+
+{
+    char *alias = NULL;
+    virStorageSourcePtr src = disk->src;
+    int ret = -1;
+
+    while (virStorageSourceIsBacking(src) &&
+           (src == disk->src || visitBacking)) {
+
+        /* alias may be NULL if the VM is not running */
+        if (disk->info.alias &&
+            !(alias = qemuDomainStorageAlias(disk->info.alias, src->id)))
+            goto cleanup;
+
+        qemuDomainGetStatsOneBlockRefreshNamed(src, alias, stats, nodestats);
+
+        if (qemuDomainGetStatsOneBlock(driver, cfg, dom, records, nrecords,
+                                       disk->dst, alias, src, *recordnr,
+                                       stats) < 0)
+            goto cleanup;
+
+        VIR_FREE(alias);
+        (*recordnr)++;
+        src = src->backingStore;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(alias);
+    return ret;
+}
+
+
+static int
 qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
                         virDomainObjPtr dom,
                         virDomainStatsRecordPtr record,
@@ -20168,7 +20213,6 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     int count_index = -1;
     size_t visited = 0;
     bool visitBacking = !!(privflags & QEMU_DOMAIN_STATS_BACKING);
-    char *alias = NULL;
 
     if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
         qemuDomainObjEnterMonitor(driver, dom);
@@ -20200,35 +20244,16 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     QEMU_ADD_COUNT_PARAM(record, maxparams, "block", 0);
 
     for (i = 0; i < dom->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = dom->def->disks[i];
-        virStorageSourcePtr src = disk->src;
-
-        while (virStorageSourceIsBacking(src) &&
-               (src == disk->src || visitBacking)) {
-
-            /* alias may be NULL if the VM is not running */
-            if (disk->info.alias &&
-                !(alias = qemuDomainStorageAlias(disk->info.alias, src->id)))
-                goto cleanup;
-
-            qemuDomainGetStatsOneBlockRefreshNamed(src, alias, stats, nodestats);
-
-            if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
-                                           disk->dst, alias, src, visited,
-                                           stats) < 0)
-                goto cleanup;
-
-            VIR_FREE(alias);
-            visited++;
-            src = src->backingStore;
-        }
+        if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats, nodestats,
+                                              record, maxparams, &visited,
+                                              visitBacking, driver, cfg, dom) < 0)
+            goto cleanup;
     }
 
     record->params[count_index].value.ui = visited;
     ret = 0;
 
  cleanup:
-    VIR_FREE(alias);
     virHashFree(stats);
     virHashFree(nodestats);
     virJSONValueFree(nodedata);
