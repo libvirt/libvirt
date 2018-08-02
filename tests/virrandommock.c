@@ -44,6 +44,14 @@ virRandomBytes(unsigned char *buf,
     return 0;
 }
 
+uint64_t virRandomBits(int nbits)
+{
+    /* Chosen by a fair roll of a 2^64 sided dice */
+    uint64_t ret = 0x0706050403020100;
+    if (nbits < 64)
+        ret &= ((1ULL << nbits) - 1);
+    return ret;
+}
 
 int virRandomGenerateWWN(char **wwn,
                          const char *virt_type ATTRIBUTE_UNUSED)
