@@ -138,7 +138,8 @@ testCompareXMLToDomConfig(const char *xmlfile,
     libxl_domain_config_dispose(&actualconfig);
     libxl_domain_config_dispose(&expectconfig);
     xtl_logger_destroy(log);
-    cfg->caps = NULL;
+    if (cfg)
+        cfg->caps = NULL;
     virObjectUnref(cfg);
     return ret;
 }
