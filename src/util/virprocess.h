@@ -55,6 +55,9 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
 int virProcessKill(pid_t pid, int sig);
 
 int virProcessKillPainfully(pid_t pid, bool force);
+int virProcessKillPainfullyDelay(pid_t pid,
+                                 bool force,
+                                 unsigned int extradelay);
 
 int virProcessSetAffinity(pid_t pid, virBitmapPtr map);
 

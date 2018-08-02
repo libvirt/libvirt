@@ -6908,8 +6908,11 @@ qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
         return 0;
     }
 
-    ret = virProcessKillPainfully(vm->pid,
-                                  !!(flags & VIR_QEMU_PROCESS_KILL_FORCE));
+    /* Request an extra delay of two seconds per current nhostdevs
+     * to be safe against stalls by the kernel freeing up the resources */
+    ret = virProcessKillPainfullyDelay(vm->pid,
+                                       !!(flags & VIR_QEMU_PROCESS_KILL_FORCE),
+                                       vm->def->nhostdevs * 2);
 
     return ret;
 }

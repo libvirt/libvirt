@@ -341,15 +341,21 @@ int virProcessKill(pid_t pid, int sig)
  * Returns 0 if it was killed gracefully, 1 if it
  * was killed forcibly, -1 if it is still alive,
  * or another error occurred.
+ *
+ * Callers can proide an extra delay in seconds to
+ * wait longer than the default.
  */
 int
-virProcessKillPainfully(pid_t pid, bool force)
+virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
 {
     size_t i;
     int ret = -1;
+    /* This is in 1/5th seconds since polling is on a 0.2s interval */
+    unsigned int polldelay = 75 + (extradelay*5);
     const char *signame = "TERM";
 
-    VIR_DEBUG("vpid=%lld force=%d", (long long)pid, force);
+    VIR_DEBUG("vpid=%lld force=%d extradelay=%u",
+              (long long)pid, force, extradelay);
 
     /* This loop sends SIGTERM, then waits a few iterations (10 seconds)
      * to see if it dies. If the process still hasn't exited, and
@@ -357,9 +363,12 @@ virProcessKillPainfully(pid_t pid, bool force)
      * wait up to 5 seconds more for the process to exit before
      * returning.
      *
+     * An extra delay can be passed by the caller for cases that are
+     * expected to clean up slower than usual.
+     *
      * Note that setting @force could result in dataloss for the process.
      */
-    for (i = 0; i < 75; i++) {
+    for (i = 0; i < polldelay; i++) {
         int signum;
         if (i == 0) {
             signum = SIGTERM; /* kindly suggest it should exit */
@@ -401,6 +410,11 @@ virProcessKillPainfully(pid_t pid, bool force)
     return ret;
 }
 
+
+int virProcessKillPainfully(pid_t pid, bool force)
+{
+    return virProcessKillPainfullyDelay(pid, force, 0);
+}
 
 #if HAVE_SCHED_GETAFFINITY
 
