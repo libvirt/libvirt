@@ -68,7 +68,9 @@ uint64_t virRandomBits(int nbits)
         return 0;
     }
 
-    ret &= (1ULL << nbits) - 1;
+    if (nbits < 64)
+        ret &= (1ULL << nbits) - 1;
+
     return ret;
 }
 
