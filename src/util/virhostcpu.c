@@ -200,35 +200,6 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 
 # define LINUX_NB_CPU_STATS 4
 
-
-static unsigned long
-virHostCPUCountThreadSiblings(unsigned int cpu)
-{
-    unsigned long ret = 0;
-    int rv = -1;
-    char *str = NULL;
-    size_t i;
-
-    rv = virFileReadValueString(&str,
-                                "%s/cpu/cpu%u/topology/thread_siblings",
-                                SYSFS_SYSTEM_PATH, cpu);
-    if (rv == -2) {
-        ret = 1;
-        goto cleanup;
-    }
-    if (rv < 0)
-        goto cleanup;
-
-    for (i = 0; str[i] != '\0'; i++) {
-        if (c_isxdigit(str[i]))
-            ret += count_one_bits(virHexToBin(str[i]));
-    }
-
- cleanup:
-    VIR_FREE(str);
-    return ret;
-}
-
 int
 virHostCPUGetSocket(unsigned int cpu, unsigned int *socket)
 {
@@ -286,6 +257,22 @@ virHostCPUGetSiblingsList(unsigned int cpu)
             ignore_value(virBitmapSetBit(ret, cpu));
     }
 
+    return ret;
+}
+
+static unsigned long
+virHostCPUCountThreadSiblings(unsigned int cpu)
+{
+    virBitmapPtr siblings_map;
+    unsigned long ret = 0;
+
+    if (!(siblings_map = virHostCPUGetSiblingsList(cpu)))
+        goto cleanup;
+
+    ret = virBitmapCountBits(siblings_map);
+
+ cleanup:
+    virBitmapFree(siblings_map);
     return ret;
 }
 
