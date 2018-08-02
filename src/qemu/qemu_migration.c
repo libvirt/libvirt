@@ -1584,7 +1584,8 @@ qemuMigrationSrcWaitForCompletion(virQEMUDriverPtr driver,
 
         if (events) {
             if (virDomainObjWait(vm) < 0) {
-                jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
+                if (virDomainObjIsActive(vm))
+                    jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
                 return -2;
             }
         } else {
