@@ -854,13 +854,6 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
                  conn->uri->path, conn->uri->scheme);
     }
 
-    /* Require auth */
-    if (!auth || !auth->cb) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Missing or invalid auth pointer"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     /* Allocate per-connection private data */
     if (VIR_ALLOC(priv) < 0)
         goto cleanup;
