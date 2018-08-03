@@ -28,7 +28,7 @@
 
 #include <selinux/selinux.h>
 #include <selinux/context.h>
-#include <attr/xattr.h>
+#include <sys/xattr.h>
 
 #include "internal.h"
 #include "testutils.h"
