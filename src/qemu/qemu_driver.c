@@ -11069,7 +11069,7 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
     virHashTablePtr blockstats = NULL;
     qemuBlockStatsPtr stats;
     int nstats;
-    char *diskAlias = NULL;
+    const char *entryname = NULL;
     int ret = -1;
 
     if (*path) {
@@ -11084,8 +11084,7 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (VIR_STRDUP(diskAlias, disk->info.alias) < 0)
-            goto cleanup;
+        entryname = disk->info.alias;
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -11101,10 +11100,10 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
     if (VIR_ALLOC(*retstats) < 0)
         goto cleanup;
 
-    if (diskAlias) {
-        if (!(stats = virHashLookup(blockstats, diskAlias))) {
+    if (entryname) {
+        if (!(stats = virHashLookup(blockstats, entryname))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot find statistics for device '%s'"), diskAlias);
+                           _("cannot find statistics for device '%s'"), entryname);
             goto cleanup;
         }
 
@@ -11116,7 +11115,6 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
     ret = nstats;
 
  cleanup:
-    VIR_FREE(diskAlias);
     virHashFree(blockstats);
     return ret;
 }
