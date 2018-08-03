@@ -2333,6 +2333,28 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
 
 
 static int
+qemuMonitorJSONAddOneBlockStatsInfo(qemuBlockStatsPtr bstats,
+                                    const char *name,
+                                    virHashTablePtr stats)
+{
+    qemuBlockStatsPtr copy = NULL;
+
+    if (VIR_ALLOC(copy) < 0)
+        return -1;
+
+    if (bstats)
+        *copy = *bstats;
+
+    if (virHashAddEntry(stats, name, copy) < 0) {
+        VIR_FREE(copy);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
                                     const char *dev_name,
                                     int depth,
@@ -2342,18 +2364,38 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
     qemuBlockStatsPtr bstats = NULL;
     int ret = -1;
     int nstats = 0;
-    char *entry_name = qemuDomainStorageAlias(dev_name, depth);
+    const char *qdevname = NULL;
+    const char *nodename = NULL;
+    char *devicename = NULL;
     virJSONValuePtr backing;
 
-    if (!entry_name)
+    if (dev_name &&
+        !(devicename = qemuDomainStorageAlias(dev_name, depth)))
         goto cleanup;
+
+    qdevname = virJSONValueObjectGetString(dev, "qdev");
+    nodename = virJSONValueObjectGetString(dev, "node-name");
+
+    if (!devicename && !qdevname && !nodename) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("blockstats device entry was not in expected format"));
+        goto cleanup;
+    }
 
     if (!(bstats = qemuMonitorJSONBlockStatsCollectData(dev, &nstats)))
         goto cleanup;
 
-    if (virHashAddEntry(hash, entry_name, bstats) < 0)
+    if (devicename &&
+        qemuMonitorJSONAddOneBlockStatsInfo(bstats, devicename, hash) < 0)
         goto cleanup;
-    bstats = NULL;
+
+    if (qdevname && STRNEQ_NULLABLE(qdevname, devicename) &&
+        qemuMonitorJSONAddOneBlockStatsInfo(bstats, qdevname, hash) < 0)
+        goto cleanup;
+
+    if (nodename &&
+        qemuMonitorJSONAddOneBlockStatsInfo(bstats, nodename, hash) < 0)
+        goto cleanup;
 
     if (backingChain &&
         (backing = virJSONValueObjectGetObject(dev, "backing")) &&
@@ -2364,7 +2406,7 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
     ret = nstats;
  cleanup:
     VIR_FREE(bstats);
-    VIR_FREE(entry_name);
+    VIR_FREE(devicename);
     return ret;
 }
 
@@ -2425,6 +2467,9 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
                              "in expected format"));
             goto cleanup;
         }
+
+        if (*dev_name == '\0')
+            dev_name = NULL;
 
         rc = qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, 0, hash,
                                                  backingChain);
