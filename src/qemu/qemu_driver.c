@@ -20206,9 +20206,12 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
                                                 records, nrecords) < 0)
             goto cleanup;
 
-        if (qemuDomainGetStatsBlockExportFrontend(alias, stats, *recordnr,
-                                                  records, nrecords) < 0)
-            goto cleanup;
+        /* The following stats make sense only for the frontend device */
+        if (n == disk->src) {
+            if (qemuDomainGetStatsBlockExportFrontend(alias, stats, *recordnr,
+                                                      records, nrecords) < 0)
+                goto cleanup;
+        }
 
         if (qemuDomainGetStatsOneBlock(driver, cfg, dom, records, nrecords,
                                        alias, n, *recordnr,
