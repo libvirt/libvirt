@@ -2233,6 +2233,61 @@ virQEMUCapsProbeQMPDevices(virQEMUCapsPtr qemuCaps,
 }
 
 
+/* Historically QEMU x86 targets defaulted to 'pc' machine type but
+ * in future x86_64 might switch to 'q35'. Such a change is considered
+ * an ABI break from libvirt's POV. Other QEMU targets may not declare
+ * a default machine at all, causing libvirt to use the first reported
+ * machine in the list.
+ *
+ * Here we record a preferred default machine for all arches, so
+ * that we're not vulnerable to changes in QEMU defaults or machine
+ * list ordering.
+ */
+static const char *preferredMachines[VIR_ARCH_LAST] =
+{
+    [VIR_ARCH_ALPHA] = "clipper",
+    [VIR_ARCH_ARMV6L] = NULL, /* No QEMU impl */
+    [VIR_ARCH_ARMV7L] = "integratorcp",
+    [VIR_ARCH_ARMV7B] = "integratorcp",
+
+    [VIR_ARCH_AARCH64] = "integratorcp",
+    [VIR_ARCH_CRIS] = "axis-dev88",
+    [VIR_ARCH_I686] = "pc",
+    [VIR_ARCH_ITANIUM] = NULL, /* doesn't exist in QEMU any more */
+    [VIR_ARCH_LM32] = "lm32-evr",
+
+    [VIR_ARCH_M68K] = "mcf5208evb",
+    [VIR_ARCH_MICROBLAZE] = "petalogix-s3adsp1800",
+    [VIR_ARCH_MICROBLAZEEL] = "petalogix-s3adsp1800",
+    [VIR_ARCH_MIPS] = "malta",
+    [VIR_ARCH_MIPSEL] = "malta",
+
+    [VIR_ARCH_MIPS64] = "malta",
+    [VIR_ARCH_MIPS64EL] = "malta",
+    [VIR_ARCH_OR32] = "or1k-sim",
+    [VIR_ARCH_PARISC] = NULL, /* No QEMU impl */
+    [VIR_ARCH_PARISC64] = NULL, /* No QEMU impl */
+
+    [VIR_ARCH_PPC] = "g3beige",
+    [VIR_ARCH_PPCLE] = "g3beige",
+    [VIR_ARCH_PPC64] = "pseries",
+    [VIR_ARCH_PPC64LE] = "pseries",
+    [VIR_ARCH_PPCEMB] = "bamboo",
+
+    [VIR_ARCH_S390] = NULL, /* No QEMU impl*/
+    [VIR_ARCH_S390X] = "s390-ccw-virtio",
+    [VIR_ARCH_SH4] = "shix",
+    [VIR_ARCH_SH4EB] = "shix",
+    [VIR_ARCH_SPARC] = "SS-5",
+
+    [VIR_ARCH_SPARC64] = "sun4u",
+    [VIR_ARCH_UNICORE32] = "puv3",
+    [VIR_ARCH_X86_64] = "pc",
+    [VIR_ARCH_XTENSA] = "sim",
+    [VIR_ARCH_XTENSAEB] = "sim",
+};
+
+
 static int
 virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
                                 qemuMonitorPtr mon)
@@ -2241,7 +2296,9 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
     int nmachines = 0;
     int ret = -1;
     size_t i;
-    size_t defIdx = 0;
+    ssize_t defIdx = -1;
+    ssize_t preferredIdx = -1;
+    const char *preferredMachine = preferredMachines[qemuCaps->arch];
 
     if ((nmachines = qemuMonitorGetMachines(mon, &machines)) < 0)
         return -1;
@@ -2263,12 +2320,29 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         mach->maxCpus = machines[i]->maxCpus;
         mach->hotplugCpus = machines[i]->hotplugCpus;
 
+        if (preferredMachine &&
+            (STREQ_NULLABLE(mach->alias, preferredMachine) ||
+             STREQ(mach->name, preferredMachine))) {
+            preferredIdx = qemuCaps->nmachineTypes - 1;
+        }
+
         if (machines[i]->isDefault)
             defIdx = qemuCaps->nmachineTypes - 1;
     }
 
-    if (defIdx)
-        virQEMUCapsSetDefaultMachine(qemuCaps, defIdx);
+    /*
+     * We'll prefer to use our own historical default machine
+     * to avoid mgmt apps seeing semantics changes when QEMU
+     * alters its defaults.
+     *
+     * Our preferred machine might have been compiled out of
+     * QEMU at build time though, so we still fallback to honouring
+     * QEMU's reported default in that case
+     */
+    if (preferredIdx == -1)
+        preferredIdx = defIdx;
+    if (preferredIdx != -1)
+        virQEMUCapsSetDefaultMachine(qemuCaps, preferredIdx);
 
     ret = 0;
 
