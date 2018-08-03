@@ -152,12 +152,6 @@ xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto error;
     }
 
-    if (auth == NULL) {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                  _("Authentication Credentials not found"));
-        goto error;
-    }
-
     if (conn->uri->user != NULL) {
         if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto error;
