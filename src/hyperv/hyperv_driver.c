@@ -128,13 +128,6 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    /* Require auth */
-    if (auth == NULL || auth->cb == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Missing or invalid auth pointer"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     /* Allocate per-connection private data */
     if (VIR_ALLOC(priv) < 0)
         goto cleanup;
