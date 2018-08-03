@@ -20191,20 +20191,18 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
 
 {
     char *alias = NULL;
-    virStorageSourcePtr src = disk->src;
+    virStorageSourcePtr n;
     int ret = -1;
 
-    while (virStorageSourceIsBacking(src) &&
-           (src == disk->src || visitBacking)) {
-
+    for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         /* alias may be NULL if the VM is not running */
         if (disk->info.alias &&
-            !(alias = qemuDomainStorageAlias(disk->info.alias, src->id)))
+            !(alias = qemuDomainStorageAlias(disk->info.alias, n->id)))
             goto cleanup;
 
-        qemuDomainGetStatsOneBlockRefreshNamed(src, alias, stats, nodestats);
+        qemuDomainGetStatsOneBlockRefreshNamed(n, alias, stats, nodestats);
 
-        if (qemuDomainGetStatsBlockExportHeader(disk, src, *recordnr,
+        if (qemuDomainGetStatsBlockExportHeader(disk, n, *recordnr,
                                                 records, nrecords) < 0)
             goto cleanup;
 
@@ -20213,13 +20211,15 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
             goto cleanup;
 
         if (qemuDomainGetStatsOneBlock(driver, cfg, dom, records, nrecords,
-                                       alias, src, *recordnr,
+                                       alias, n, *recordnr,
                                        stats) < 0)
             goto cleanup;
 
         VIR_FREE(alias);
         (*recordnr)++;
-        src = src->backingStore;
+
+        if (!visitBacking)
+            break;
     }
 
     ret = 0;
