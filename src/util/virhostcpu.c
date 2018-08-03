@@ -293,9 +293,6 @@ virHostCPUParseNode(const char *node,
                     int *threads,
                     int *offline)
 {
-    /* Biggest value we can expect to be used as either socket id
-     * or core id. Bitmaps will need to be sized accordingly */
-    const int ID_MAX = 4095;
     int ret = -1;
     int processors = 0;
     DIR *cpudir = NULL;
@@ -324,7 +321,7 @@ virHostCPUParseNode(const char *node,
         goto cleanup;
 
     /* enumerate sockets in the node */
-    if (!(sockets_map = virBitmapNew(ID_MAX + 1)))
+    if (!(sockets_map = virBitmapNewEmpty()))
         goto cleanup;
 
     while ((direrr = virDirRead(cpudir, &cpudirent, node)) > 0) {
@@ -343,14 +340,8 @@ virHostCPUParseNode(const char *node,
 
         if (virHostCPUGetSocket(cpu, &sock) < 0)
             goto cleanup;
-        if (sock > ID_MAX) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Socket %d can't be handled (max socket is %d)"),
-                           sock, ID_MAX);
-            goto cleanup;
-        }
 
-        if (virBitmapSetBit(sockets_map, sock) < 0)
+        if (virBitmapSetBitExpand(sockets_map, sock) < 0)
             goto cleanup;
 
         if (sock > sock_max)
@@ -367,7 +358,7 @@ virHostCPUParseNode(const char *node,
         goto cleanup;
 
     for (i = 0; i < sock_max; i++)
-        if (!(cores_maps[i] = virBitmapNew(ID_MAX + 1)))
+        if (!(cores_maps[i] = virBitmapNewEmpty()))
             goto cleanup;
 
     /* Iterate over all CPUs in the node, in ascending order */
@@ -411,14 +402,8 @@ virHostCPUParseNode(const char *node,
             if (virHostCPUGetCore(cpu, &core) < 0)
                 goto cleanup;
         }
-        if (core > ID_MAX) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Core %d can't be handled (max core is %d)"),
-                           core, ID_MAX);
-            goto cleanup;
-        }
 
-        if (virBitmapSetBit(cores_maps[sock], core) < 0)
+        if (virBitmapSetBitExpand(cores_maps[sock], core) < 0)
             goto cleanup;
 
         if (!(siblings = virHostCPUCountThreadSiblings(cpu)))
