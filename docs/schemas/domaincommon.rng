@@ -340,7 +340,7 @@
         <attribute name="machine">
           <choice>
             <value>xenpv</value>
-            <value>xenner</value>
+            <value>xenfv</value>
           </choice>
         </attribute>
       </optional>
