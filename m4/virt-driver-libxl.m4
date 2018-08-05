@@ -46,10 +46,10 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
     dnl The libxl driver will make use of this new parameter for specifying
     dnl the Xen migration stream version. Specify LIBXL_API_VERSION to trigger
     dnl an error if there is too old xenlight
-    old_CFLAGS="$CFLAGS"
+    libxlold_CFLAGS="$CFLAGS"
     CFLAGS="$CFLAGS $LIBXL_API_VERSION"
     LIBVIRT_CHECK_LIB([LIBXL], [xenlight], [libxl_ctx_alloc], [libxl.h], [fail="1"])
-    CFLAGS="$old_CFLAGS"
+    CFLAGS="$libxlold_CFLAGS"
 
     if test $fail = 1; then
       AC_MSG_ERROR([You must install the libxl Library from Xen >= 4.4 to compile libxenlight driver with -lxl])
