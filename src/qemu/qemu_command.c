@@ -10217,10 +10217,14 @@ qemuBuildVsockDevStr(virDomainDefPtr def,
 {
     qemuDomainVsockPrivatePtr priv = (qemuDomainVsockPrivatePtr)vsock->privateData;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *device = "vhost-vsock-pci";
     char *ret = NULL;
 
-    virBufferAsprintf(&buf, "%s", device);
+    if (vsock->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+        virBufferAddLit(&buf, "vhost-vsock-ccw");
+    } else {
+        virBufferAddLit(&buf, "vhost-vsock-pci");
+    }
+
     virBufferAsprintf(&buf, ",id=%s", vsock->info.alias);
     virBufferAsprintf(&buf, ",guest-cid=%u", vsock->guest_cid);
     virBufferAsprintf(&buf, ",vhostfd=%s%u", fdprefix, priv->vhostfd);

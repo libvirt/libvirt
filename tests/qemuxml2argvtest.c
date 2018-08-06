@@ -2952,6 +2952,8 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("vhost-vsock");
     DO_TEST_CAPS_LATEST("vhost-vsock-auto");
+    DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw-auto", "s390x");
 
     DO_TEST("launch-security-sev",
             QEMU_CAPS_KVM,

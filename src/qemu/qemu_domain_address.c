@@ -306,7 +306,8 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
        declare address-less virtio devices to be of address type 'type'
        disks, networks, videos, consoles, controllers, memballoon and rng
        in this order
-       if type is ccw filesystem devices are declared to be of address type ccw
+       if type is ccw filesystem and vsock devices are declared to be of
+       address type ccw
     */
     size_t i;
 
@@ -372,6 +373,10 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
         for (i = 0; i < def->nfss; i++) {
             if (def->fss[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
                 def->fss[i]->info.type = type;
+        }
+        if (def->vsock &&
+            def->vsock->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            def->vsock->info.type = type;
         }
     }
 }

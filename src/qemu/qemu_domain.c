@@ -5546,7 +5546,8 @@ qemuDomainDeviceDefValidateMemory(const virDomainMemoryDef *memory ATTRIBUTE_UNU
 
 
 static int
-qemuDomainDeviceDefValidateVsock(const virDomainVsockDef *vsock ATTRIBUTE_UNUSED,
+qemuDomainDeviceDefValidateVsock(const virDomainVsockDef *vsock,
+                                 const virDomainDef *def,
                                  virQEMUCapsPtr qemuCaps)
 {
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_VSOCK)) {
@@ -5555,6 +5556,11 @@ qemuDomainDeviceDefValidateVsock(const virDomainVsockDef *vsock ATTRIBUTE_UNUSED
                          "with this QEMU binary"));
         return -1;
     }
+
+    if (!qemuDomainCheckCCWS390AddressSupport(def, vsock->info, qemuCaps,
+                                              "vsock"))
+        return -1;
+
     return 0;
 }
 
@@ -5702,7 +5708,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VSOCK:
-        ret = qemuDomainDeviceDefValidateVsock(dev->data.vsock, qemuCaps);
+        ret = qemuDomainDeviceDefValidateVsock(dev->data.vsock, def, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_TPM:

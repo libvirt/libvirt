@@ -1208,6 +1208,11 @@ mymain(void)
 
     DO_TEST("vhost-vsock", QEMU_CAPS_DEVICE_VHOST_VSOCK);
     DO_TEST("vhost-vsock-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK);
+    DO_TEST("vhost-vsock-ccw", QEMU_CAPS_DEVICE_VHOST_VSOCK,
+            QEMU_CAPS_CCW);
+    DO_TEST("vhost-vsock-ccw-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK,
+            QEMU_CAPS_CCW);
+
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
