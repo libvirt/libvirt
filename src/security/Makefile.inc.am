@@ -14,6 +14,8 @@ SECURITY_DRIVER_SOURCES = \
 	security/security_dac.c \
 	security/security_manager.h \
 	security/security_manager.c \
+	security/security_util.h \
+	security/security_util.c \
 	$(NULL)
 
 SECURITY_DRIVER_SELINUX_SOURCES = \
