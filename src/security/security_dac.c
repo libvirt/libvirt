@@ -29,6 +29,7 @@
 #endif
 
 #include "security_dac.h"
+#include "security_util.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "viralloc.h"
@@ -411,15 +412,26 @@ virSecurityDACGetImageIds(virSecurityLabelDefPtr seclabel,
  *
  * Remember the owner of @path (represented by @uid:@gid).
  *
- * Returns: 0 on success, -1 on failure
+ * Returns: the @path refcount, or
+ *          -1 on failure
  */
 static int
 virSecurityDACRememberLabel(virSecurityDACDataPtr priv ATTRIBUTE_UNUSED,
-                            const char *path ATTRIBUTE_UNUSED,
-                            uid_t uid ATTRIBUTE_UNUSED,
-                            gid_t gid ATTRIBUTE_UNUSED)
+                            const char *path,
+                            uid_t uid,
+                            gid_t gid)
 {
-    return 0;
+    char *label = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&label, "+%u:+%u",
+                    (unsigned int)uid,
+                    (unsigned int)gid) < 0)
+        return -1;
+
+    ret = virSecuritySetRememberedLabel(SECURITY_DAC_NAME, path, label);
+    VIR_FREE(label);
+    return ret;
 }
 
 /**
@@ -439,11 +451,27 @@ virSecurityDACRememberLabel(virSecurityDACDataPtr priv ATTRIBUTE_UNUSED,
  */
 static int
 virSecurityDACRecallLabel(virSecurityDACDataPtr priv ATTRIBUTE_UNUSED,
-                          const char *path ATTRIBUTE_UNUSED,
-                          uid_t *uid ATTRIBUTE_UNUSED,
-                          gid_t *gid ATTRIBUTE_UNUSED)
+                          const char *path,
+                          uid_t *uid,
+                          gid_t *gid)
 {
-    return 0;
+    char *label;
+    int ret = -1;
+
+    if (virSecurityGetRememberedLabel(SECURITY_DAC_NAME,
+                                      path, &label) < 0)
+        goto cleanup;
+
+    if (!label)
+        return 1;
+
+    if (virParseOwnershipIds(label, uid, gid) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(label);
+    return ret;
 }
 
 static virSecurityDriverStatus
@@ -709,6 +737,7 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     struct stat sb;
+    int refcount;
     int rc;
 
     if (!path && src && src->path &&
@@ -729,8 +758,22 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
             return -1;
         }
 
-        if (virSecurityDACRememberLabel(priv, path, sb.st_uid, sb.st_gid) < 0)
+        refcount = virSecurityDACRememberLabel(priv, path, sb.st_uid, sb.st_gid);
+        if (refcount < 0) {
             return -1;
+        } else if (refcount > 1) {
+            /* Refcount is greater than 1 which means that there
+             * is @refcount domains using the @path. Do not
+             * change the label (as it would almost certainly
+             * cause the other domains to lose access to the
+             * @path). */
+            if (sb.st_uid != uid || sb.st_gid != gid) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("Setting different DAC user or group on %s "
+                                 "which is already in use"), path);
+                return -1;
+            }
+        }
     }
 
     VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
