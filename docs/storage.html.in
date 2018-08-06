@@ -447,10 +447,10 @@
   &lt;source&gt;
     &lt;host name="iscsi.example.com"/&gt;
     &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
+    &lt;initiator&gt;
+      &lt;iqn name="iqn.2013-06.com.example:iscsi-initiator"/&gt;
+    &lt;/initiator&gt;
   &lt;/source&gt;
-  &lt;initiator&gt;
-    &lt;iqn name="iqn.2013-06.com.example:iscsi-initiator"/&gt;
-  &lt;/initiator&gt;
 &lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
