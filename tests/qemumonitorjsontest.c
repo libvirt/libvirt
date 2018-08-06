@@ -1585,12 +1585,29 @@ testQemuMonitorJSONqemuMonitorJSONGetVirtType(const void *data)
     return ret;
 }
 
+
+static void
+testQemuMonitorJSONGetBlockInfoPrint(const struct qemuDomainDiskInfo *d)
+{
+    VIR_TEST_VERBOSE("removable: %d, tray: %d, tray_open: %d, empty: %d, "
+                     "io_status: %d, nodename: '%s'\n",
+                     d->removable, d->tray, d->tray_open, d->empty,
+                     d->io_status, NULLSTR(d->nodename));
+}
+
+
 static int
 testHashEqualQemuDomainDiskInfo(const void *value1, const void *value2)
 {
     const struct qemuDomainDiskInfo *info1 = value1, *info2 = value2;
+    int ret;
 
-    return memcmp(info1, info2, sizeof(*info1));
+    if ((ret = memcmp(info1, info2, sizeof(*info1))) != 0) {
+        testQemuMonitorJSONGetBlockInfoPrint(info1);
+        testQemuMonitorJSONGetBlockInfoPrint(info2);
+    }
+
+    return ret;
 }
 
 static int
