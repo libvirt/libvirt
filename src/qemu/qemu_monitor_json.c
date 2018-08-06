@@ -2243,13 +2243,6 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (virJSONValueObjectGetBoolean(dev, "locked", &info->locked) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot read %s value"),
-                           "locked");
-            goto cleanup;
-        }
-
         /* 'tray_open' is present only if the device has a tray */
         if (virJSONValueObjectGetBoolean(dev, "tray_open", &info->tray_open) == 0)
             info->tray = true;

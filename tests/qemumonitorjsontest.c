@@ -1647,7 +1647,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *data)
     if (VIR_ALLOC(info) < 0)
         goto cleanup;
 
-    info->locked = true;
     info->removable = true;
     info->tray = true;
 

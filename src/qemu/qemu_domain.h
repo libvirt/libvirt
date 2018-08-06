@@ -438,7 +438,6 @@ struct _qemuDomainVcpuPrivate {
 
 struct qemuDomainDiskInfo {
     bool removable;
-    bool locked;
     bool tray;
     bool tray_open;
     bool empty;
