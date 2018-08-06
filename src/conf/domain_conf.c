@@ -30170,6 +30170,34 @@ virDomainDiskTranslateSourcePoolAuth(virDomainDiskDefPtr def,
 }
 
 
+static int
+virDomainDiskTranslateISCSIDirect(virDomainDiskDefPtr def,
+                                  virStoragePoolDefPtr pooldef)
+{
+    def->src->srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
+    def->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
+
+    if (virDomainDiskTranslateSourcePoolAuth(def,
+                                             &pooldef->source) < 0)
+        return -1;
+
+    /* Source pool may not fill in the secrettype field,
+     * so we need to do so here
+     */
+    if (def->src->auth && !def->src->auth->secrettype) {
+        const char *secrettype =
+            virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_ISCSI);
+        if (VIR_STRDUP(def->src->auth->secrettype, secrettype) < 0)
+            return -1;
+    }
+
+    if (virDomainDiskAddISCSIPoolSourceHost(def, pooldef) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
 {
@@ -30280,6 +30308,20 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
         break;
 
     case VIR_STORAGE_POOL_ISCSI_DIRECT:
+        if (def->startupPolicy) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'startupPolicy' is only valid for "
+                             "'file' type volume"));
+            goto cleanup;
+        }
+
+        def->src->srcpool->mode = VIR_STORAGE_SOURCE_POOL_MODE_DIRECT;
+
+        if (virDomainDiskTranslateISCSIDirect(def, pooldef) < 0)
+            goto cleanup;
+
+        break;
+
     case VIR_STORAGE_POOL_ISCSI:
         if (def->startupPolicy) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -30300,24 +30342,7 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
            break;
 
        case VIR_STORAGE_SOURCE_POOL_MODE_DIRECT:
-           def->src->srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
-           def->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
-
-           if (virDomainDiskTranslateSourcePoolAuth(def,
-                                                    &pooldef->source) < 0)
-               goto cleanup;
-
-           /* Source pool may not fill in the secrettype field,
-            * so we need to do so here
-            */
-           if (def->src->auth && !def->src->auth->secrettype) {
-               const char *secrettype =
-                   virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_ISCSI);
-               if (VIR_STRDUP(def->src->auth->secrettype, secrettype) < 0)
-                   goto cleanup;
-           }
-
-           if (virDomainDiskAddISCSIPoolSourceHost(def, pooldef) < 0)
+           if (virDomainDiskTranslateISCSIDirect(def, pooldef) < 0)
                goto cleanup;
            break;
        }
