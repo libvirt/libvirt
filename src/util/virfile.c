@@ -64,6 +64,10 @@
 # include <linux/cdrom.h>
 #endif
 
+#if HAVE_LIBATTR
+# include <sys/xattr.h>
+#endif
+
 #include "configmake.h"
 #include "intprops.h"
 #include "vircommand.h"
@@ -4354,3 +4358,120 @@ virFileWaitForExists(const char *path,
 
     return 0;
 }
+
+
+#if HAVE_LIBATTR
+/**
+ * virFileGetXAttr;
+ * @path: a filename
+ * @name: name of xattr
+ * @value: read value
+ *
+ * Reads xattr with @name for given @path and stores it into
+ * @value. Caller is responsible for freeing @value.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with errno set).
+ */
+int
+virFileGetXAttr(const char *path,
+                const char *name,
+                char **value)
+{
+    char *buf = NULL;
+    int ret = -1;
+
+    /* We might be racing with somebody who sets the same attribute. */
+    while (1) {
+        ssize_t need;
+        ssize_t got;
+
+        /* The first call determines how many bytes we need to allocate. */
+        if ((need = getxattr(path, name, NULL, 0)) < 0)
+            goto cleanup;
+
+        if (VIR_REALLOC_N_QUIET(buf, need + 1) < 0)
+            goto cleanup;
+
+        if ((got = getxattr(path, name, buf, need)) < 0) {
+            if (errno == ERANGE)
+                continue;
+            goto cleanup;
+        }
+
+        buf[got] = '\0';
+        break;
+    }
+
+    VIR_STEAL_PTR(*value, buf);
+    ret = 0;
+ cleanup:
+    VIR_FREE(buf);
+    return ret;
+}
+
+/**
+ * virFileSetXAttr:
+ * @path: a filename
+ * @name: name of xattr
+ * @value: value to set
+ *
+ * Sets xattr of @name and @value on @path.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with errno set).
+ */
+int
+virFileSetXAttr(const char *path,
+                const char *name,
+                const char *value)
+{
+    return setxattr(path, name, value, strlen(value), 0);
+}
+
+/**
+ * virFileRemoveXAttr:
+ * @path: a filename
+ * @name: name of xattr
+ *
+ * Remove xattr of @name on @path.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with errno set).
+ */
+int
+virFileRemoveXAttr(const char *path,
+                   const char *name)
+{
+    return removexattr(path, name);
+}
+
+#else /* !HAVE_LIBATTR */
+
+int
+virFileGetXAttr(const char *path ATTRIBUTE_UNUSED,
+                const char *name ATTRIBUTE_UNUSED,
+                char **value ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+int
+virFileSetXAttr(const char *path ATTRIBUTE_UNUSED,
+                const char *name ATTRIBUTE_UNUSED,
+                const char *value ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+int
+virFileRemoveXAttr(const char *path ATTRIBUTE_UNUSED,
+                   const char *name ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+#endif /* HAVE_LIBATTR */
