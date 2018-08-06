@@ -46,6 +46,14 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Add ccw support for vhost-vsock
+        </summary>
+        <description>
+          Support the vhost-vsock-ccw device on S390.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
