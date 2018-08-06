@@ -621,10 +621,11 @@ testCompareXMLToArgv(const void *data)
 static int
 mymain(void)
 {
-    int ret = 0;
+    int ret = 0, i;
     char *fakerootdir;
     bool skipLegacyCPUs = false;
-    char *capslatest_x86_64 = NULL;
+    const char *archs[] = { "x86_64", "s390x" };
+    virHashTablePtr capslatest = NULL;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
         fprintf(stderr, "Out of memory\n");
@@ -693,12 +694,23 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->memoryBackingDir, "/var/lib/libvirt/qemu/ram") < 0)
         return EXIT_FAILURE;
 
-    if (!(capslatest_x86_64 = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
-                                                           "x86_64", "xml")))
+    capslatest = virHashCreate(4, virHashValueFree);
+    if (!capslatest)
         return EXIT_FAILURE;
 
-    VIR_TEST_VERBOSE("\nlatest caps x86_64: %s\n", capslatest_x86_64);
+    VIR_TEST_VERBOSE("\n");
 
+    for (i = 0; i < ARRAY_CARDINALITY(archs); ++i) {
+        char *cap = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
+                                                 archs[i], "xml");
+
+        if (!cap || virHashAddEntry(capslatest, archs[i], cap) < 0)
+            return EXIT_FAILURE;
+
+        VIR_TEST_VERBOSE("latest caps for %s: %s\n", archs[i], cap);
+    }
+
+    VIR_TEST_VERBOSE("\n");
 
 /**
  * The following set of macros allows testing of XML -> argv conversion with a
@@ -746,9 +758,12 @@ mymain(void)
 # define DO_TEST_CAPS_VER(name, ver) \
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
+# define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
+    DO_TEST_CAPS_INTERNAL(name, arch "-latest", NULL, 0, 0, arch, \
+                          virHashLookup(capslatest, arch), true)
+
 # define DO_TEST_CAPS_LATEST(name) \
-    DO_TEST_CAPS_INTERNAL(name, "x86_64-latest", NULL, 0, 0, "x86_64", \
-                          capslatest_x86_64, true)
+    DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
 
 /**
  * The following test macros should be used only in cases when the tests require
@@ -2948,7 +2963,7 @@ mymain(void)
     VIR_FREE(driver.config->nbdTLSx509certdir);
     qemuTestDriverFree(&driver);
     VIR_FREE(fakerootdir);
-    VIR_FREE(capslatest_x86_64);
+    virHashFree(capslatest);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
