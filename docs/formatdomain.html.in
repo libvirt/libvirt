@@ -820,7 +820,7 @@
       <dt><code>period</code></dt>
       <dd>
         The optional <code>period</code> element specifies the enforcement
-        interval(unit: microseconds). Within <code>period</code>, each vCPU of
+        interval (unit: microseconds). Within <code>period</code>, each vCPU of
         the domain will not be allowed to consume more than <code>quota</code>
         worth of runtime. The value should be in range [1000, 1000000]. A period
         with value 0 means no value.
@@ -830,7 +830,7 @@
       <dt><code>quota</code></dt>
       <dd>
         The optional <code>quota</code> element specifies the maximum allowed
-        bandwidth(unit: microseconds). A domain with <code>quota</code> as any
+        bandwidth (unit: microseconds). A domain with <code>quota</code> as any
         negative value indicates that the domain has infinite bandwidth for
         vCPU threads, which means that it is not bandwidth controlled. The value
         should be in range [1000, 18446744073709551] or less than 0. A quota
@@ -863,8 +863,8 @@
       <dt><code>emulator_period</code></dt>
       <dd>
         The optional <code>emulator_period</code> element specifies the enforcement
-        interval(unit: microseconds). Within <code>emulator_period</code>, emulator
-        threads(those excluding vCPUs) of the domain will not be allowed to consume
+        interval (unit: microseconds). Within <code>emulator_period</code>, emulator
+        threads (those excluding vCPUs) of the domain will not be allowed to consume
         more than <code>emulator_quota</code> worth of runtime. The value should be
         in range [1000, 1000000]. A period with value 0 means no value.
         <span class="since">Only QEMU driver support since 0.10.0</span>
@@ -872,7 +872,7 @@
       <dt><code>emulator_quota</code></dt>
       <dd>
         The optional <code>emulator_quota</code> element specifies the maximum
-        allowed bandwidth(unit: microseconds) for domain's emulator threads(those
+        allowed bandwidth (unit: microseconds) for domain's emulator threads (those
         excluding vCPUs). A domain with <code>emulator_quota</code> as any negative
         value indicates that the domain has infinite bandwidth for emulator threads
         (those excluding vCPUs), which means that it is not bandwidth controlled.
@@ -884,7 +884,7 @@
       <dt><code>iothread_period</code></dt>
       <dd>
         The optional <code>iothread_period</code> element specifies the
-        enforcement interval(unit: microseconds) for IOThreads. Within
+        enforcement interval (unit: microseconds) for IOThreads. Within
         <code>iothread_period</code>, each IOThread of the domain will
         not be allowed to consume more than <code>iothread_quota</code>
         worth of runtime. The value should be in range [1000, 1000000].
@@ -894,7 +894,7 @@
       <dt><code>iothread_quota</code></dt>
       <dd>
         The optional <code>iothread_quota</code> element specifies the maximum
-        allowed bandwidth(unit: microseconds) for IOThreads. A domain with
+        allowed bandwidth (unit: microseconds) for IOThreads. A domain with
         <code>iothread_quota</code> as any negative value indicates that the
         domain IOThreads have infinite bandwidth, which means that it is
         not bandwidth controlled. The value should be in range
@@ -4385,8 +4385,8 @@
     <p>
       USB, PCI and SCSI devices attached to the host can be passed through
       to the guest using the <code>hostdev</code> element.
-      <span class="since">since after 0.4.4 for USB, 0.6.0 for PCI(KVM only)
-        and 1.0.6 for SCSI(KVM only)</span>:
+      <span class="since">since after 0.4.4 for USB, 0.6.0 for PCI (KVM only)
+        and 1.0.6 for SCSI (KVM only)</span>:
     </p>
 
 <pre>
