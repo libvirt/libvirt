@@ -351,7 +351,7 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
     size_t i;
     int ret = -1;
     /* This is in 1/5th seconds since polling is on a 0.2s interval */
-    unsigned int polldelay = 75 + (extradelay*5);
+    unsigned int polldelay = (force ? 200 : 75) + (extradelay*5);
     const char *signame = "TERM";
 
     VIR_DEBUG("vpid=%lld force=%d extradelay=%u",
@@ -360,7 +360,7 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
     /* This loop sends SIGTERM, then waits a few iterations (10 seconds)
      * to see if it dies. If the process still hasn't exited, and
      * @force is requested, a SIGKILL will be sent, and this will
-     * wait up to 5 seconds more for the process to exit before
+     * wait up to 30 seconds more for the process to exit before
      * returning.
      *
      * An extra delay can be passed by the caller for cases that are
