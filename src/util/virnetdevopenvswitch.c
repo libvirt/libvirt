@@ -473,7 +473,6 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     size_t ntokens = 0;
     int status;
     int ret = -1;
-    VIR_AUTOFREE(char *) ovs_timeout = NULL;
 
     /* Openvswitch vhostuser path are hardcoded to
      * /<runstatedir>/openvswitch/<ifname>
