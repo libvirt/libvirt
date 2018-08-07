@@ -94,7 +94,8 @@ int qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
                                             virHashTablePtr stats,
                                             bool backingChain);
 int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
-                               const char *devce,
+                               const char *device,
+                               const char *nodename,
                                unsigned long long size);
 
 int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,

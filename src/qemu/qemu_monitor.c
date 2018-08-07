@@ -2312,13 +2312,21 @@ qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 int
 qemuMonitorBlockResize(qemuMonitorPtr mon,
                        const char *device,
+                       const char *nodename,
                        unsigned long long size)
 {
-    VIR_DEBUG("device=%s size=%llu", device, size);
+    VIR_DEBUG("device=%s nodename=%s size=%llu",
+              NULLSTR(device), NULLSTR(nodename), size);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONBlockResize(mon, device, size);
+    if ((!device && !nodename) || (device && nodename)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("exactly one of 'device' and 'nodename' need to be specified"));
+        return -1;
+    }
+
+    return qemuMonitorJSONBlockResize(mon, device, nodename, size);
 }
 
 

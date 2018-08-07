@@ -10989,7 +10989,7 @@ qemuDomainBlockResize(virDomainPtr dom,
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (qemuMonitorBlockResize(priv->mon, device, size) < 0) {
+    if (qemuMonitorBlockResize(priv->mon, device, NULL, size) < 0) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto endjob;
     }

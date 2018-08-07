@@ -2542,6 +2542,7 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 
 int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
                                const char *device,
+                               const char *nodename,
                                unsigned long long size)
 {
     int ret = -1;
@@ -2549,7 +2550,8 @@ int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("block_resize",
-                                     "s:device", device,
+                                     "S:device", device,
+                                     "S:node-name", nodename,
                                      "U:size", size,
                                      NULL);
     if (!cmd)
