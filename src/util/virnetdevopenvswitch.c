@@ -424,7 +424,6 @@ int
 virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 {
     virCommandPtr cmd = NULL;
-    int ret = -1;
     int exitstatus;
 
     *master = NULL;
@@ -438,7 +437,7 @@ virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to run command to get OVS master for "
                          "interface %s"), ifname);
-        goto cleanup;
+        return -1;
     }
 
     /* non-0 exit code just means that the interface has no master in OVS */
@@ -454,9 +453,7 @@ virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 
     VIR_DEBUG("OVS master for %s is %s", ifname, *master ? *master : "(none)");
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
