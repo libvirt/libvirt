@@ -226,6 +226,12 @@ struct _virStoragePRDef {
     char *mgralias;
 };
 
+typedef struct _virStorageSourceInitiatorDef virStorageSourceInitiatorDef;
+typedef virStorageSourceInitiatorDef *virStorageSourceInitiatorDefPtr;
+struct _virStorageSourceInitiatorDef {
+    char *iqn; /* Initiator IQN */
+};
+
 typedef struct _virStorageDriverData virStorageDriverData;
 typedef virStorageDriverData *virStorageDriverDataPtr;
 
