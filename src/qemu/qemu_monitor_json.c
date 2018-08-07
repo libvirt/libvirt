@@ -2550,8 +2550,6 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 }
 
 
-/* Return 0 on success, -1 on failure, or -2 if not supported.  Size
- * is in bytes.  */
 int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
                                const char *device,
                                unsigned long long size)
@@ -2569,11 +2567,6 @@ int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        ret = -2;
-        goto cleanup;
-    }
 
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
