@@ -39,6 +39,17 @@
     </element>
   </define>
 
+  <define name='initiatorinfo'>
+    <element name='initiator'>
+      <element name='iqn'>
+        <attribute name='name'>
+          <text/>
+        </attribute>
+        <empty/>
+      </element>
+    </element>
+  </define>
+
   <define name="reconnect">
     <element name="reconnect">
       <attribute name="enabled">
