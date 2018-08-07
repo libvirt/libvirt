@@ -492,6 +492,21 @@ int
 virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
                                          virBufferPtr buf);
 
+void
+virStorageSourceInitiatorParseXML(xmlXPathContextPtr ctxt,
+                                  virStorageSourceInitiatorDefPtr initiator);
+
+void
+virStorageSourceInitiatorFormatXML(virStorageSourceInitiatorDefPtr initiator,
+                                   virBufferPtr buf);
+
+int
+virStorageSourceInitiatorCopy(virStorageSourceInitiatorDefPtr dest,
+                              const virStorageSourceInitiatorDef *src);
+
+void
+virStorageSourceInitiatorClear(virStorageSourceInitiatorDefPtr initiator);
+
 int virStorageFileInit(virStorageSourcePtr src);
 int virStorageFileInitAs(virStorageSourcePtr src,
                          uid_t uid, gid_t gid);

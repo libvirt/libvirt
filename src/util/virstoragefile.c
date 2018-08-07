@@ -4314,6 +4314,40 @@ virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
     return 0;
 }
 
+void
+virStorageSourceInitiatorParseXML(xmlXPathContextPtr ctxt,
+                                  virStorageSourceInitiatorDefPtr initiator)
+{
+    initiator->iqn = virXPathString("string(./initiator/iqn/@name)", ctxt);
+}
+
+void
+virStorageSourceInitiatorFormatXML(virStorageSourceInitiatorDefPtr initiator,
+                                   virBufferPtr buf)
+{
+    if (!initiator->iqn)
+        return;
+
+    virBufferAddLit(buf, "<initiator>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<iqn name='%s'/>\n", initiator->iqn);
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</initiator>\n");
+}
+
+int
+virStorageSourceInitiatorCopy(virStorageSourceInitiatorDefPtr dest,
+                              const virStorageSourceInitiatorDef *src)
+{
+    return VIR_STRDUP(dest->iqn, src->iqn);
+}
+
+void
+virStorageSourceInitiatorClear(virStorageSourceInitiatorDefPtr initiator)
+{
+    VIR_FREE(initiator->iqn);
+}
+
 static bool
 virStorageFileIsInitialized(const virStorageSource *src)
 {
