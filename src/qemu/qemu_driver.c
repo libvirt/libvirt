@@ -20111,8 +20111,29 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         }
     }
 
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+static int
+qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
+                                            virHashTablePtr stats,
+                                            size_t recordnr,
+                                            virDomainStatsRecordPtr records,
+                                            int *nrecords)
+{
+    qemuBlockStats *entry;
+    int ret = -1;
+
+    if (!stats || !entryname || !(entry = virHashLookup(stats, entryname))) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (entry->write_threshold)
-        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx, "threshold",
+        QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "threshold",
                                  entry->write_threshold);
 
     ret = 0;
@@ -20216,6 +20237,11 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
         if (qemuDomainGetStatsOneBlock(driver, cfg, dom, records, nrecords,
                                        alias, n, *recordnr,
                                        stats) < 0)
+            goto cleanup;
+
+        if (qemuDomainGetStatsBlockExportBackendStorage(alias,
+                                                        stats, *recordnr,
+                                                        records, nrecords) < 0)
             goto cleanup;
 
         VIR_FREE(alias);
