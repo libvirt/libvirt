@@ -2833,7 +2833,7 @@ static int virNetDevGetMcastList(const char *ifname,
     char *buf = NULL;
     char *next = NULL;
     int ret = -1, len;
-    virNetDevMcastEntryPtr entry = NULL;
+    VIR_AUTOPTR(virNetDevMcastEntry) entry = NULL;
 
     mcast->entries = NULL;
     mcast->nentries = 0;
@@ -2867,7 +2867,6 @@ static int virNetDevGetMcastList(const char *ifname,
     ret = 0;
  cleanup:
     VIR_FREE(buf);
-    VIR_FREE(entry);
 
     return ret;
 }

@@ -305,7 +305,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
             .nl_groups = 0,
     };
     struct pollfd fds[1];
-    virNetlinkHandle *nlhandle = NULL;
+    VIR_AUTOPTR(virNetlinkHandle) nlhandle = NULL;
     int len = 0;
 
     memset(fds, 0, sizeof(fds));
@@ -333,7 +333,6 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
         *respbuflen = 0;
     }
 
-    virNetlinkFree(nlhandle);
     return ret;
 }
 
@@ -355,7 +354,7 @@ virNetlinkDumpCommand(struct nl_msg *nl_msg,
             .nl_pid    = dst_pid,
             .nl_groups = 0,
     };
-    virNetlinkHandle *nlhandle = NULL;
+    VIR_AUTOPTR(virNetlinkHandle) nlhandle = NULL;
 
     if (!(nlhandle = virNetlinkSendRequest(nl_msg, src_pid, nladdr,
                                            protocol, groups)))
@@ -382,7 +381,6 @@ virNetlinkDumpCommand(struct nl_msg *nl_msg,
 
  cleanup:
     VIR_FREE(resp);
-    virNetlinkFree(nlhandle);
     return ret;
 }
 
