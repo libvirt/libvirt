@@ -4682,6 +4682,15 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         return -1;
     }
 
+    /* Use QEMU_CAPS_ISCSI_PASSWORD_SECRET as witness that iscsi 'initiator-name'
+     * option is available, it was introduced at the same time. */
+    if (src->initiator.iqn &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iSCSI initiator IQN not supported with this QEMU binary"));
+        return -1;
+    }
+
     return 0;
 }
 

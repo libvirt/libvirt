@@ -55,6 +55,16 @@
       </source>
       <target dev='sda' bus='scsi'/>
     </disk>
+    <disk type='network' device='lun'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:server/0'>
+        <host name='example.org' port='3260'/>
+        <initiator>
+          <iqn name='iqn.1992-01.com.example:client'/>
+        </initiator>
+      </source>
+      <target dev='sdb' bus='scsi'/>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
     <controller type='scsi' index='0' model='virtio-scsi'/>

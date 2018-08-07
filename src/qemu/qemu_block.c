@@ -819,6 +819,7 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src)
      *   lun:1,
      *   user:"username",
      *   password-secret:"secret-alias",
+     *   initiator-name:"iqn.2017-04.com.example:client"
      * }
      */
 
@@ -860,6 +861,7 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src)
                                           "s:transport", "tcp",
                                           "S:user", username,
                                           "S:password-secret", objalias,
+                                          "S:initiator-name", src->initiator.iqn,
                                           NULL));
         goto cleanup;
 
