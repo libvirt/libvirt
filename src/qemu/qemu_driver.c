@@ -10963,12 +10963,6 @@ qemuDomainBlockResize(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_BLOCK_RESIZE_BYTES, -1);
 
-    if (path[0] == '\0') {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("empty path"));
-        return -1;
-    }
-
     /* We prefer operating on bytes.  */
     if ((flags & VIR_DOMAIN_BLOCK_RESIZE_BYTES) == 0) {
         if (size > ULLONG_MAX / 1024) {
@@ -10996,7 +10990,7 @@ qemuDomainBlockResize(virDomainPtr dom,
 
     if (!(disk = virDomainDiskByName(vm->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path: %s"), path);
+                       _("disk '%s' was not found in the domain config"), path);
         goto endjob;
     }
 
