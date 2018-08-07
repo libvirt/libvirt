@@ -205,7 +205,7 @@ virNetServerDispatchNewMessage(virNetServerClientPtr client,
     virObjectRef(srv);
     virObjectUnlock(srv);
 
-    if (srv->workers) {
+    if (virThreadPoolGetMaxWorkers(srv->workers) > 0)  {
         virNetServerJobPtr job;
 
         if (VIR_ALLOC(job) < 0)
@@ -367,8 +367,7 @@ virNetServerPtr virNetServerNew(const char *name,
     if (!(srv = virObjectLockableNew(virNetServerClass)))
         return NULL;
 
-    if (max_workers &&
-        !(srv->workers = virThreadPoolNew(min_workers, max_workers,
+    if (!(srv->workers = virThreadPoolNew(min_workers, max_workers,
                                           priority_workers,
                                           virNetServerHandleJob,
                                           srv)))
@@ -579,21 +578,18 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         goto error;
 
     if (virJSONValueObjectAppendNumberUint(object, "min_workers",
-                                           srv->workers == NULL ? 0 :
                                            virThreadPoolGetMinWorkers(srv->workers)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot set min_workers data in JSON document"));
         goto error;
     }
     if (virJSONValueObjectAppendNumberUint(object, "max_workers",
-                                           srv->workers == NULL ? 0 :
                                            virThreadPoolGetMaxWorkers(srv->workers)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot set max_workers data in JSON document"));
         goto error;
     }
     if (virJSONValueObjectAppendNumberUint(object, "priority_workers",
-                                           srv->workers == NULL ? 0 :
                                            virThreadPoolGetPriorityWorkers(srv->workers)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot set priority_workers data in JSON document"));
