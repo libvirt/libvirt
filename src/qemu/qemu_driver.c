@@ -10943,6 +10943,7 @@ qemuDomainBlockResize(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     int ret = -1;
     char *device = NULL;
+    const char *nodename = NULL;
     virDomainDiskDefPtr disk = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_RESIZE_BYTES, -1);
@@ -10985,11 +10986,22 @@ qemuDomainBlockResize(virDomainPtr dom,
         disk->src->format == VIR_STORAGE_FILE_QED)
         size = VIR_ROUND_UP(size, 512);
 
-    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
-        goto endjob;
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (virStorageSourceIsEmpty(disk->src) || disk->src->readonly) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("can't resize empty or readonly disk '%s'"),
+                           disk->dst);
+            goto endjob;
+        }
+
+        nodename = disk->src->nodeformat;
+    } else {
+        if (!(device = qemuAliasDiskDriveFromDisk(disk)))
+            goto endjob;
+    }
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (qemuMonitorBlockResize(priv->mon, device, NULL, size) < 0) {
+    if (qemuMonitorBlockResize(priv->mon, device, nodename, size) < 0) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto endjob;
     }
