@@ -380,7 +380,7 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
     VIR_FREE(source->dir);
     VIR_FREE(source->name);
     virStorageAdapterClear(&source->adapter);
-    VIR_FREE(source->initiator.iqn);
+    virStorageSourceInitiatorClear(&source->initiator);
     virStorageAuthDefFree(source->auth);
     VIR_FREE(source->vendor);
     VIR_FREE(source->product);
@@ -488,7 +488,8 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     }
 
     VIR_FREE(nodeset);
-    source->initiator.iqn = virXPathString("string(./initiator/iqn/@name)", ctxt);
+
+    virStorageSourceInitiatorParseXML(ctxt, &source->initiator);
 
     nsource = virXPathNodeSet("./device", ctxt, &nodeset);
     if (nsource < 0)
@@ -950,15 +951,8 @@ virStoragePoolSourceFormat(virBufferPtr buf,
     if (options->flags & VIR_STORAGE_POOL_SOURCE_NAME)
         virBufferEscapeString(buf, "<name>%s</name>\n", src->name);
 
-    if ((options->flags & VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN) &&
-        src->initiator.iqn) {
-        virBufferAddLit(buf, "<initiator>\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<iqn name='%s'/>\n",
-                              src->initiator.iqn);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</initiator>\n");
-    }
+    if (options->flags & VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN)
+        virStorageSourceInitiatorFormatXML(&src->initiator, buf);
 
     if (options->formatToString) {
         const char *format = (options->formatToString)(src->format);
