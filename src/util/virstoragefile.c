@@ -2272,6 +2272,9 @@ virStorageSourceCopy(const virStorageSource *src,
         !(ret->pr = virStoragePRDefCopy(src->pr)))
         goto error;
 
+    if (virStorageSourceInitiatorCopy(&ret->initiator, &src->initiator))
+        goto error;
+
     if (backingChain && src->backingStore) {
         if (!(ret->backingStore = virStorageSourceCopy(src->backingStore,
                                                        true)))
@@ -2502,6 +2505,8 @@ virStorageSourceClear(virStorageSourcePtr def)
 
     VIR_FREE(def->tlsAlias);
     VIR_FREE(def->tlsCertdir);
+
+    virStorageSourceInitiatorClear(&def->initiator);
 
     memset(def, 0, sizeof(*def));
 }

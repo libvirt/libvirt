@@ -261,6 +261,8 @@ struct _virStorageSource {
     bool encryptionInherited;
     virStoragePRDefPtr pr;
 
+    virStorageSourceInitiatorDef initiator;
+
     virObjectPtr privateData;
 
     int format; /* virStorageFileFormat in domain backing chains, but

@@ -1699,6 +1699,9 @@
       <optional>
         <ref name="encryption"/>
       </optional>
+      <optional>
+        <ref name="initiatorinfo"/>
+      </optional>
     </element>
   </define>
 

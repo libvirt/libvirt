@@ -8853,6 +8853,8 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
     virStorageSourceNetworkAssignDefaultPorts(src);
 
+    virStorageSourceInitiatorParseXML(ctxt, &src->initiator);
+
     ret = 0;
 
  cleanup:
@@ -23568,6 +23570,8 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
     virBufferEscapeString(childBuf, "<snapshot name='%s'/>\n", src->snapshot);
     virBufferEscapeString(childBuf, "<config file='%s'/>\n", src->configFile);
 
+    virStorageSourceInitiatorFormatXML(&src->initiator, childBuf);
+
     return 0;
 }
 
@@ -30193,6 +30197,12 @@ virDomainDiskTranslateISCSIDirect(virDomainDiskDefPtr def,
 
     if (virDomainDiskAddISCSIPoolSourceHost(def, pooldef) < 0)
         return -1;
+
+    if (!def->src->initiator.iqn && pooldef->source.initiator.iqn &&
+        virStorageSourceInitiatorCopy(&def->src->initiator,
+                                      &pooldef->source.initiator) < 0) {
+        return -1;
+    }
 
     return 0;
 }
