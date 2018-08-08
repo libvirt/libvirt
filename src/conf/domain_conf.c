@@ -4088,6 +4088,31 @@ virDomainDefPostParseMemory(virDomainDefPtr def,
 }
 
 
+static void
+virDomainDefPostParseMemtune(virDomainDefPtr def)
+{
+    size_t i;
+
+    if (virDomainNumaGetNodeCount(def->numa) == 0) {
+        /* If guest NUMA is not configured and any hugepage page has nodemask
+         * set to "0" free and clear that nodemas, otherwise we would rise
+         * an error that there is no guest NUMA node configured. */
+        for (i = 0; i < def->mem.nhugepages; i++) {
+            ssize_t nextBit;
+
+            if (!def->mem.hugepages[i].nodemask)
+                continue;
+
+            nextBit = virBitmapNextSetBit(def->mem.hugepages[i].nodemask, 0);
+            if (nextBit < 0) {
+                virBitmapFree(def->mem.hugepages[i].nodemask);
+                def->mem.hugepages[i].nodemask = NULL;
+            }
+        }
+    }
+}
+
+
 static int
 virDomainDefAddConsoleCompat(virDomainDefPtr def)
 {
@@ -5144,6 +5169,8 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
 
     if (virDomainDefPostParseMemory(def, data->parseFlags) < 0)
         return -1;
+
+    virDomainDefPostParseMemtune(def);
 
     if (virDomainDefRejectDuplicateControllers(def) < 0)
         return -1;
