@@ -317,8 +317,10 @@ BuildRequires: /usr/bin/qemu-img
 %endif
 # For LVM drivers
 BuildRequires: lvm2
-# For ISCSI driver
+# For pool type=iscsi
 BuildRequires: iscsi-initiator-utils
+# For pool type=iscsi-direct
+BuildRequires: libiscsi
 # For disk driver
 BuildRequires: parted-devel
 # For Multipath support
@@ -591,6 +593,16 @@ The storage driver backend adding implementation of the storage APIs for iscsi
 volumes using the host iscsi stack.
 
 
+%package daemon-driver-storage-iscsi-direct
+Summary: Storage driver plugin for iscsi-direct
+Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
+
+%description daemon-driver-storage-iscsi-direct
+The storage driver backend adding implementation of the storage APIs for iscsi
+volumes using libiscsi direct connection.
+
+
 %package daemon-driver-storage-mpath
 Summary: Storage driver plugin for multipath volumes
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
@@ -667,6 +679,7 @@ Requires: libvirt-daemon-driver-storage-disk = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage-logical = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage-scsi = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage-iscsi = %{version}-%{release}
+Requires: libvirt-daemon-driver-storage-iscsi-direct = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage-mpath = %{version}-%{release}
 %if %{with_storage_gluster}
 Requires: libvirt-daemon-driver-storage-gluster = %{version}-%{release}
@@ -1172,6 +1185,7 @@ rm -f po/stamp-po
            --with-storage-fs \
            --with-storage-lvm \
            --with-storage-iscsi \
+           --with-storage-iscsi-direct \
            --with-storage-scsi \
            --with-storage-disk \
            --with-storage-mpath \
@@ -1636,6 +1650,9 @@ exit 0
 
 %files daemon-driver-storage-iscsi
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_iscsi.so
+
+%files daemon-driver-storage-iscsi-direct
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_iscsi-direct.so
 
 %files daemon-driver-storage-mpath
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_mpath.so
