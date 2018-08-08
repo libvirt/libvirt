@@ -3848,8 +3848,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
     actualType = virDomainNetGetActualType(net);
 
     switch (actualType) {
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-    case VIR_DOMAIN_NET_TYPE_NETWORK: {
+    case VIR_DOMAIN_NET_TYPE_BRIDGE: {
         const char *brname = virDomainNetGetActualBridgeName(net);
         if (!brname) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3867,6 +3866,10 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
         if (!(veth = virLXCProcessSetupInterfaceDirect(conn, vm->def, net)))
             goto cleanup;
     }   break;
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unexpectedly found type=network for actual NIC type"));
+        goto cleanup;
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -3912,7 +3915,6 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
     } else if (veth) {
         switch (actualType) {
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             ignore_value(virNetDevVethDelete(veth));
             break;
@@ -3921,6 +3923,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
             ignore_value(virNetDevMacVLanDelete(veth));
             break;
 
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -4352,13 +4355,17 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (virNetDevVethDelete(detach->ifname) < 0) {
             virDomainAuditNet(vm, detach, NULL, "detach", false);
             goto cleanup;
         }
         break;
+
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unexpectedly found type=network for actual NIC type"));
+        goto cleanup;
 
         /* It'd be nice to support this, but with macvlan
          * once assigned to a container nothing exists on
