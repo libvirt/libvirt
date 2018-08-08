@@ -325,6 +325,7 @@ mymain(void)
     DO_TEST("pmu-feature", NONE);
     DO_TEST("pmu-feature-off", NONE);
 
+    DO_TEST("pages-discard", NONE);
     DO_TEST("hugepages-default", NONE);
     DO_TEST("hugepages-numa-default-dimm", NONE);
     DO_TEST("hugepages-pages", NONE);

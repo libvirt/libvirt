@@ -944,6 +944,9 @@ mymain(void)
     DO_TEST("pmu-feature", NONE);
     DO_TEST("pmu-feature-off", NONE);
 
+    DO_TEST("pages-discard",
+            QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD);
     DO_TEST("hugepages-default", NONE);
     DO_TEST("hugepages-numa-default",
             QEMU_CAPS_OBJECT_MEMORY_FILE);
@@ -952,8 +955,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages",
             QEMU_CAPS_OBJECT_MEMORY_RAM,
-            QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD);
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages2", QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages3", QEMU_CAPS_OBJECT_MEMORY_RAM,
