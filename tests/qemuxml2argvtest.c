@@ -958,6 +958,7 @@ mymain(void)
     DO_TEST("hugepages-default", NONE);
     DO_TEST("hugepages-default-2M", NONE);
     DO_TEST("hugepages-default-system-size", NONE);
+    DO_TEST("hugepages-default-1G-nodeset-2M", NONE);
     DO_TEST_FAILURE("hugepages-nodeset-nonexist",
                     QEMU_CAPS_DEVICE_PC_DIMM,
                     QEMU_CAPS_OBJECT_MEMORY_FILE,

@@ -331,6 +331,7 @@ mymain(void)
     DO_TEST("hugepages-default", NONE);
     DO_TEST("hugepages-default-2M", NONE);
     DO_TEST("hugepages-default-system-size", NONE);
+    DO_TEST("hugepages-default-1G-nodeset-2M", NONE);
     DO_TEST("hugepages-numa-default-2M", NONE);
     DO_TEST("hugepages-numa-default-dimm", NONE);
     DO_TEST("hugepages-numa-nodeset", NONE);
