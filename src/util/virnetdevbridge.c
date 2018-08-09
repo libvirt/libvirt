@@ -126,8 +126,7 @@ static int virNetDevBridgeSet(const char *brname,
                               int fd,                 /* control socket */
                               struct ifreq *ifr)      /* pre-filled bridge name */
 {
-    char *path = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) path = NULL;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "%s/bridge/%s", brname, paramname) < 0)
         return -1;
@@ -138,7 +137,7 @@ static int virNetDevBridgeSet(const char *brname,
         if (virFileWriteStr(path, valuestr, 0) < 0) {
             virReportSystemError(errno,
                                  _("Unable to set bridge %s %s"), brname, paramname);
-            goto cleanup;
+            return -1;
         }
     } else {
         unsigned long paramid;
@@ -149,21 +148,18 @@ static int virNetDevBridgeSet(const char *brname,
         } else {
             virReportSystemError(EINVAL,
                                  _("Unable to set bridge %s %s"), brname, paramname);
-            goto cleanup;
+            return -1;
         }
         unsigned long args[] = { paramid, value, 0, 0 };
         ifr->ifr_data = (char*)&args;
         if (ioctl(fd, SIOCDEVPRIVATE, ifr) < 0) {
             virReportSystemError(errno,
                                  _("Unable to set bridge %s %s"), brname, paramname);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 
 
@@ -171,16 +167,17 @@ static int virNetDevBridgeGet(const char *brname,
                               const char *paramname,  /* sysfs param name */
                               unsigned long *value)   /* current value */
 {
-    char *path = NULL;
     int ret = -1;
     int fd = -1;
     struct ifreq ifr;
+    VIR_AUTOFREE(char *) path = NULL;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "%s/bridge/%s", brname, paramname) < 0)
         return -1;
 
     if (virFileExists(path)) {
-        char *valuestr;
+        VIR_AUTOFREE(char *) valuestr = NULL;
+
         if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long),
                            &valuestr) < 0)
             goto cleanup;
@@ -189,10 +186,8 @@ static int virNetDevBridgeGet(const char *brname,
             virReportSystemError(EINVAL,
                                  _("Unable to get bridge %s %s"),
                                  brname, paramname);
-            VIR_FREE(valuestr);
             goto cleanup;
         }
-        VIR_FREE(valuestr);
     } else {
         struct __bridge_info info;
         unsigned long args[] = { BRCTL_GET_BRIDGE_INFO, (unsigned long)&info, 0, 0 };
@@ -221,7 +216,6 @@ static int virNetDevBridgeGet(const char *brname,
     ret = 0;
  cleanup:
     VIR_FORCE_CLOSE(fd);
-    VIR_FREE(path);
     return ret;
 }
 #endif /* __linux__ */
@@ -233,9 +227,9 @@ virNetDevBridgePortSet(const char *brname,
                        const char *paramname,
                        unsigned long value)
 {
-    char *path = NULL;
     char valuestr[INT_BUFSIZE_BOUND(value)];
     int ret = -1;
+    VIR_AUTOFREE(char *) path = NULL;
 
     snprintf(valuestr, sizeof(valuestr), "%lu", value);
 
@@ -254,7 +248,6 @@ virNetDevBridgePortSet(const char *brname,
                              brname, ifname, paramname, valuestr);
     }
 
-    VIR_FREE(path);
     return ret;
 }
 
@@ -265,29 +258,24 @@ virNetDevBridgePortGet(const char *brname,
                        const char *paramname,
                        unsigned long *value)
 {
-    char *path = NULL;
-    char *valuestr = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) path = NULL;
+    VIR_AUTOFREE(char *) valuestr = NULL;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "%s/brif/%s/%s",
                     brname, ifname, paramname) < 0)
         return -1;
 
     if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long), &valuestr) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStrToLong_ul(valuestr, NULL, 10, value) < 0) {
         virReportSystemError(EINVAL,
                              _("Unable to get bridge %s port %s %s"),
                              brname, ifname, paramname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(path);
-    VIR_FREE(valuestr);
-    return ret;
+    return 0;
 }
 
 
@@ -430,12 +418,12 @@ virNetDevBridgeCreate(const char *brname)
     /* use a netlink RTM_NEWLINK message to create the bridge */
     const char *type = "bridge";
     int rc = -1;
-    struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
     unsigned int recvbuflen;
     struct nl_msg *nl_msg;
     struct nlattr *linkinfo;
+    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
 
     nl_msg = nlmsg_alloc_simple(RTM_NEWLINK,
                                 NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
@@ -495,7 +483,6 @@ virNetDevBridgeCreate(const char *brname)
     rc = 0;
  cleanup:
     nlmsg_free(nl_msg);
-    VIR_FREE(resp);
     return rc;
 
  malformed_resp:
@@ -1069,11 +1056,11 @@ virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
                          unsigned int flags, bool isAdd)
 {
     int ret = -1;
-    struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
     unsigned int recvbuflen;
     struct nl_msg *nl_msg;
     struct ndmsg ndm = { .ndm_family = PF_BRIDGE, .ndm_state = NUD_NOARP };
+    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
 
     if (virNetDevGetIndex(ifname, &ndm.ndm_ifindex) < 0)
         return -1;
@@ -1142,7 +1129,6 @@ virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
     ret = 0;
  cleanup:
     nlmsg_free(nl_msg);
-    VIR_FREE(resp);
     return ret;
 
  malformed_resp:
