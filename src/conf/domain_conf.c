@@ -6185,6 +6185,35 @@ virDomainDefLifecycleActionValidate(const virDomainDef *def)
 
 
 static int
+virDomainDefMemtuneValidate(const virDomainDef *def)
+{
+    const virDomainMemtune *mem = &(def->mem);
+    size_t i;
+    ssize_t pos = virDomainNumaGetNodeCount(def->numa) - 1;
+
+    for (i = 0; i < mem->nhugepages; i++) {
+        ssize_t nextBit;
+
+        if (!mem->hugepages[i].nodemask) {
+            /* This is the master hugepage to use. Skip it as it has no
+             * nodemask anyway. */
+            continue;
+        }
+
+        nextBit = virBitmapNextSetBit(mem->hugepages[i].nodemask, pos);
+        if (nextBit >= 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("hugepages: node %zd not found"),
+                           nextBit);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDefValidateInternal(const virDomainDef *def)
 {
     if (virDomainDefCheckDuplicateDiskInfo(def) < 0)
@@ -6217,6 +6246,9 @@ virDomainDefValidateInternal(const virDomainDef *def)
     }
 
     if (virDomainDefLifecycleActionValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefMemtuneValidate(def) < 0)
         return -1;
 
     return 0;

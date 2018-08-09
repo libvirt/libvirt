@@ -7433,16 +7433,6 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
     if (!def->mem.nhugepages)
         return 0;
 
-    if (def->mem.hugepages[0].nodemask) {
-        ssize_t next_bit = virBitmapNextSetBit(def->mem.hugepages[0].nodemask, -1);
-        if (next_bit >= 0) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("hugepages: node %zd not found"),
-                           next_bit);
-            return -1;
-        }
-    }
-
     /* There is one special case: if user specified "huge"
      * pages of regular system pages size.
      * And there is nothing to do in this case.
@@ -7574,30 +7564,6 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
     if (!virDomainNumatuneNodesetIsAvailable(def->numa, priv->autoNodeset))
         goto cleanup;
-
-    for (i = 0; i < def->mem.nhugepages; i++) {
-        ssize_t next_bit, pos = 0;
-
-        if (!def->mem.hugepages[i].nodemask) {
-            /* This is the master hugepage to use. Skip it as it has no
-             * nodemask anyway. */
-            continue;
-        }
-
-        if (ncells) {
-            /* Fortunately, we allow only guest NUMA nodes to be continuous
-             * starting from zero. */
-            pos = ncells - 1;
-        }
-
-        next_bit = virBitmapNextSetBit(def->mem.hugepages[i].nodemask, pos);
-        if (next_bit >= 0) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("hugepages: node %zd not found"),
-                           next_bit);
-            goto cleanup;
-        }
-    }
 
     if (VIR_ALLOC_N(nodeBackends, ncells) < 0)
         goto cleanup;

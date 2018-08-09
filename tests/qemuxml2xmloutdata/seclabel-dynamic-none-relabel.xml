@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>262144</currentMemory>
   <memoryBacking>
     <hugepages>
-      <page size='2048' unit='KiB' nodeset='0'/>
+      <page size='2048' unit='KiB'/>
     </hugepages>
   </memoryBacking>
   <vcpu placement='static'>4</vcpu>
