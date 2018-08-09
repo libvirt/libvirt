@@ -5743,6 +5743,11 @@
             <ref name="featurestate"/>
           </element>
         </optional>
+        <optional>
+          <element name="tlbflush">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

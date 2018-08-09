@@ -22,6 +22,7 @@
       <vendor_id state='on' value='KVM Hv'/>
       <frequencies state='on'/>
       <reenlightenment state='on'/>
+      <tlbflush state='on'/>
     </hyperv>
   </features>
   <clock offset='utc'/>

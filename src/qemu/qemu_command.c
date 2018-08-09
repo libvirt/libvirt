@@ -6868,6 +6868,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             case VIR_DOMAIN_HYPERV_RESET:
             case VIR_DOMAIN_HYPERV_FREQUENCIES:
             case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+            case VIR_DOMAIN_HYPERV_TLBFLUSH:
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(&buf, ",hv_%s",
                                       virDomainHypervTypeToString(i));

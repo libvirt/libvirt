@@ -22,6 +22,7 @@
       <vendor_id state='off'/>
       <frequencies state='off'/>
       <reenlightenment state='off'/>
+      <tlbflush state='off'/>
     </hyperv>
   </features>
   <clock offset='utc'/>

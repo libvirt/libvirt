@@ -1976,6 +1976,7 @@
     &lt;vendor_id state='on' value='KVM Hv'/&gt;
     &lt;frequencies state='on'/&gt;
     &lt;reenlightenment state='on'/&gt;
+    &lt;tlbflush state='on'/&gt;
   &lt;/hyperv&gt;
   &lt;kvm&gt;
     &lt;hidden state='on'/&gt;
@@ -2107,6 +2108,12 @@
         <tr>
           <td>reenlightenment</td>
           <td>Enable re-enlightenment notification on migration</td>
+          <td> on, off</td>
+          <td><span class="since">4.7.0 (QEMU 3.0)</span></td>
+        </tr>
+        <tr>
+          <td>tlbflush</td>
+          <td>Enable PV TLB flush support</td>
           <td> on, off</td>
           <td><span class="since">4.7.0 (QEMU 3.0)</span></td>
         </tr>
