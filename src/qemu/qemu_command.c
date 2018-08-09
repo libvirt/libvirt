@@ -3148,12 +3148,12 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     if (useHugepage || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
 
-        if (useHugepage) {
-            if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &memPath) < 0)
+        if (mem->nvdimmPath) {
+            if (VIR_STRDUP(memPath, mem->nvdimmPath) < 0)
                 goto cleanup;
             prealloc = true;
-        } else if (mem->nvdimmPath) {
-            if (VIR_STRDUP(memPath, mem->nvdimmPath) < 0)
+        } else if (useHugepage) {
+            if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &memPath) < 0)
                 goto cleanup;
             prealloc = true;
         } else {
