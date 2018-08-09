@@ -509,7 +509,7 @@ qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(backend = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps, false)))
+    if (!(backend = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
         goto cleanup;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, backend, qemuCaps) < 0)

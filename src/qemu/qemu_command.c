@@ -1632,7 +1632,6 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
 
 static char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
-                  bool bootable ATTRIBUTE_UNUSED,
                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
@@ -2244,14 +2243,12 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
 static int
 qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
                                virDomainDiskDefPtr disk,
-                               virQEMUCapsPtr qemuCaps,
-                               bool driveBoot)
+                               virQEMUCapsPtr qemuCaps)
 {
     qemuBlockStorageSourceAttachDataPtr data = NULL;
     int ret = -1;
 
-    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps,
-                                                          driveBoot)))
+    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
         return -1;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data, qemuCaps) < 0 ||
@@ -2271,12 +2268,11 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
                          const virDomainDef *def,
                          virDomainDiskDefPtr disk,
                          virQEMUCapsPtr qemuCaps,
-                         unsigned int bootindex,
-                         bool driveBoot)
+                         unsigned int bootindex)
 {
     char *optstr;
 
-    if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps, driveBoot) < 0)
+    if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps) < 0)
         return -1;
 
     if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
@@ -2326,7 +2322,6 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
         unsigned int bootindex = 0;
-        bool driveBoot = false;
 
         if (disk->info.bootIndex) {
             bootindex = disk->info.bootIndex;
@@ -2349,7 +2344,7 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
         }
 
         if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps,
-                                     bootindex, driveBoot) < 0)
+                                     bootindex) < 0)
             return -1;
     }
 
@@ -10691,15 +10686,14 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
  */
 qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                         virQEMUCapsPtr qemuCaps,
-                                         bool driveBoot)
+                                         virQEMUCapsPtr qemuCaps)
 {
     qemuBlockStorageSourceAttachDataPtr data = NULL;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(data->driveCmd = qemuBuildDriveStr(disk, driveBoot, qemuCaps)) ||
+    if (!(data->driveCmd = qemuBuildDriveStr(disk, qemuCaps)) ||
         !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk))) {
         qemuBlockStorageSourceAttachDataFree(data);
         return NULL;

@@ -103,8 +103,7 @@ bool qemuDiskBusNeedsDriveArg(int bus);
 
 qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                         virQEMUCapsPtr qemuCaps,
-                                         bool driveBoot);
+                                         virQEMUCapsPtr qemuCaps);
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
                                           qemuBlockStorageSourceAttachDataPtr data,
