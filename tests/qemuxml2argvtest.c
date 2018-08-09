@@ -945,7 +945,7 @@ mymain(void)
     DO_TEST("pmu-feature-off", NONE);
 
     DO_TEST("hugepages-default", NONE);
-    DO_TEST("hugepages-numa",
+    DO_TEST("hugepages-numa-default",
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_ICH9_USB_EHCI1,
