@@ -208,7 +208,8 @@ static int
 virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
                                 char **ifacename)
 {
-    int ret = -1, exitstatus = -1;
+    int exitstatus = -1;
+    VIR_AUTOFREE(char *) iface_name = NULL;
     VIR_AUTOFREE(char *) temp_ifacename = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
@@ -233,7 +234,7 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to run command '%s' to create new iscsi interface"),
                        ISCSIADM);
-        goto cleanup;
+        return -1;
     }
     virCommandFree(cmd);
 
@@ -252,26 +253,23 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
                        ISCSIADM, initiatoriqn);
-        goto cleanup;
+        return -1;
     }
 
     /* Check again to make sure the interface was created. */
-    if (virStorageBackendIQNFound(initiatoriqn, ifacename) != IQN_FOUND) {
+    if (virStorageBackendIQNFound(initiatoriqn, &iface_name) != IQN_FOUND) {
         VIR_DEBUG("Failed to find interface '%s' with IQN '%s' "
                   "after attempting to create it",
                   &temp_ifacename[0], initiatoriqn);
-        goto cleanup;
+        return -1;
     } else {
         VIR_DEBUG("Interface '%s' with IQN '%s' was created successfully",
-                  *ifacename, initiatoriqn);
+                  iface_name, initiatoriqn);
     }
 
-    ret = 0;
+    VIR_STEAL_PTR(*ifacename, iface_name);
 
- cleanup:
-    if (ret != 0)
-        VIR_FREE(*ifacename);
-    return ret;
+    return 0;
 }
 
 
