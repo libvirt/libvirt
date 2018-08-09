@@ -6457,7 +6457,7 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
                          virQEMUCapsPtr qemuCaps)
 {
     virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
-    char *boot_order_str = NULL, *boot_opts_str = NULL;
+    char *boot_opts_str = NULL;
 
     if (def->os.bootmenu) {
         if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES)
@@ -6499,20 +6499,11 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
         goto error;
 
     boot_opts_str = virBufferContentAndReset(&boot_buf);
-    if (boot_order_str || boot_opts_str) {
+    if (boot_opts_str) {
         virCommandAddArg(cmd, "-boot");
-
-        if (boot_order_str && boot_opts_str) {
-            virCommandAddArgFormat(cmd, "order=%s,%s",
-                                   boot_order_str, boot_opts_str);
-        } else if (boot_order_str) {
-            virCommandAddArg(cmd, boot_order_str);
-        } else if (boot_opts_str) {
-            virCommandAddArg(cmd, boot_opts_str);
-        }
+        virCommandAddArg(cmd, boot_opts_str);
     }
     VIR_FREE(boot_opts_str);
-    VIR_FREE(boot_order_str);
 
     if (def->os.kernel)
         virCommandAddArgList(cmd, "-kernel", def->os.kernel, NULL);
@@ -6533,7 +6524,6 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
     return 0;
 
  error:
-    VIR_FREE(boot_order_str);
     VIR_FREE(boot_opts_str);
     virBufferFreeAndReset(&boot_buf);
     return -1;
