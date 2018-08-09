@@ -9427,10 +9427,10 @@ qemuDomainMachineNeedsFDC(const char *machine)
 
     if (p) {
         if (STRPREFIX(p, "1.") ||
-            STRPREFIX(p, "2.0") ||
-            STRPREFIX(p, "2.1") ||
-            STRPREFIX(p, "2.2") ||
-            STRPREFIX(p, "2.3"))
+            STREQ(p, "2.0") ||
+            STREQ(p, "2.1") ||
+            STREQ(p, "2.2") ||
+            STREQ(p, "2.3"))
             return false;
         return true;
     }
