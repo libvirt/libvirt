@@ -28,9 +28,9 @@ addr=0x1 \
 -device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -device qemu-xhci,id=usb,bus=pci.1,addr=0x0 \
 -drive file=/tmp/firmware.img,format=raw,if=none,id=drive-fdc0-0-0 \
+-drive file=/tmp/data.img,format=qcow2,if=none,id=drive-fdc0-0-1 \
 -global isa-fdc.driveA=drive-fdc0-0-0 \
 -global isa-fdc.bootindexA=1 \
--drive file=/tmp/data.img,format=qcow2,if=none,id=drive-fdc0-0-1 \
 -global isa-fdc.driveB=drive-fdc0-0-1 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

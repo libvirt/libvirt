@@ -37,9 +37,9 @@ readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,\
 bootindex=1 \
 -drive file=/dev/fd0,format=raw,if=none,id=drive-fdc0-0-0 \
+-drive file=/dev/fd1,format=raw,if=none,id=drive-fdc0-0-1 \
 -global isa-fdc.driveA=drive-fdc0-0-0 \
 -global isa-fdc.bootindexA=4 \
--drive file=/dev/fd1,format=raw,if=none,id=drive-fdc0-0-1 \
 -global isa-fdc.driveB=drive-fdc0-0-1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:11,bus=pci.0,\

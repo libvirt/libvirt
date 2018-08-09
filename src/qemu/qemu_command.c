@@ -2143,50 +2143,77 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
 
 
 static int
-qemuBuildFloppyCommandLineOptions(virCommandPtr cmd,
-                                  const virDomainDef *def,
-                                  virDomainDiskDefPtr disk,
-                                  virQEMUCapsPtr qemuCaps,
-                                  unsigned int bootindex)
+qemuBuildFloppyCommandLineControllerOptions(virCommandPtr cmd,
+                                            const virDomainDef *def,
+                                            virQEMUCapsPtr qemuCaps,
+                                            unsigned int bootFloppy)
 {
     virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
+    bool explicitfdc = qemuDomainNeedsFDC(def);
+    bool hasfloppy = false;
+    unsigned int bootindex;
     char driveLetter;
     char *backendAlias = NULL;
     char *backendStr = NULL;
     char *bootindexStr = NULL;
+    size_t i;
     int ret = -1;
 
-    if (disk->info.addr.drive.unit)
-        driveLetter = 'B';
-    else
-        driveLetter = 'A';
+    virBufferAddLit(&fdc_opts, "isa-fdc,");
 
-    if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
-        goto cleanup;
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr disk = def->disks[i];
 
-    if (backendAlias &&
-        virAsprintf(&backendStr, "drive%c=%s", driveLetter, backendAlias) < 0)
-        goto cleanup;
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC)
+            continue;
 
-    if (bootindex &&
-        virAsprintf(&bootindexStr, "bootindex%c=%u", driveLetter, bootindex) < 0)
-        goto cleanup;
+        hasfloppy = true;
 
-    if (!qemuDomainNeedsFDC(def)) {
-        if (backendStr) {
-            virCommandAddArg(cmd, "-global");
-            virCommandAddArgFormat(cmd, "isa-fdc.%s", backendStr);
+        if (disk->info.bootIndex) {
+            bootindex = disk->info.bootIndex;
+        } else {
+            bootindex = bootFloppy;
+            bootFloppy = 0;
         }
 
-        if (bootindexStr) {
-            virCommandAddArg(cmd, "-global");
-            virCommandAddArgFormat(cmd, "isa-fdc.%s", bootindexStr);
+        if (disk->info.addr.drive.unit)
+            driveLetter = 'B';
+        else
+            driveLetter = 'A';
+
+        if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
+            goto cleanup;
+
+        if (backendAlias &&
+            virAsprintf(&backendStr, "drive%c=%s", driveLetter, backendAlias) < 0)
+            goto cleanup;
+
+        if (bootindex &&
+            virAsprintf(&bootindexStr, "bootindex%c=%u", driveLetter, bootindex) < 0)
+            goto cleanup;
+
+        if (!explicitfdc) {
+            if (backendStr) {
+                virCommandAddArg(cmd, "-global");
+                virCommandAddArgFormat(cmd, "isa-fdc.%s", backendStr);
+            }
+
+            if (bootindexStr) {
+                virCommandAddArg(cmd, "-global");
+                virCommandAddArgFormat(cmd, "isa-fdc.%s", bootindexStr);
+            }
+        } else {
+            virBufferStrcat(&fdc_opts, backendStr, ",", NULL);
+            virBufferStrcat(&fdc_opts, bootindexStr, ",", NULL);
         }
-    } else {
+
+        VIR_FREE(backendAlias);
+        VIR_FREE(backendStr);
+        VIR_FREE(bootindexStr);
+    }
+
+    if (explicitfdc && hasfloppy) {
         /* Newer Q35 machine types require an explicit FDC controller */
-        virBufferAddLit(&fdc_opts, "isa-fdc,");
-        virBufferStrcat(&fdc_opts, backendStr, ",", NULL);
-        virBufferStrcat(&fdc_opts, bootindexStr, NULL);
         virBufferTrim(&fdc_opts, ",", -1);
         virCommandAddArg(cmd, "-device");
         virCommandAddArgBuffer(cmd, &fdc_opts);
@@ -2276,11 +2303,7 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
         return -1;
 
     if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-            if (qemuBuildFloppyCommandLineOptions(cmd, def, disk, qemuCaps,
-                                                  bootindex) < 0)
-                return -1;
-        } else {
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC) {
             virCommandAddArg(cmd, "-device");
 
             if (!(optstr = qemuBuildDiskDeviceStr(def, disk, bootindex,
@@ -2331,10 +2354,6 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
                 bootindex = bootCD;
                 bootCD = 0;
                 break;
-            case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-                bootindex = bootFloppy;
-                bootFloppy = 0;
-                break;
             case VIR_DOMAIN_DISK_DEVICE_DISK:
             case VIR_DOMAIN_DISK_DEVICE_LUN:
                 bootindex = bootDisk;
@@ -2347,6 +2366,9 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
                                      bootindex) < 0)
             return -1;
     }
+
+    if (qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps, bootFloppy) < 0)
+        return -1;
 
     return 0;
 }
