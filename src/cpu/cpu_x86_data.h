@@ -64,6 +64,7 @@ struct _virCPUx86CPUID {
 # define VIR_CPU_x86_KVM_HV_VPINDEX   "__kvm_hv_vpindex"
 # define VIR_CPU_x86_KVM_HV_RESET     "__kvm_hv_reset"
 # define VIR_CPU_x86_KVM_HV_FREQUENCIES "__kvm_hv_frequencies"
+# define VIR_CPU_x86_KVM_HV_REENLIGHTENMENT "__kvm_hv_reenlightenment"
 
 
 # define VIR_CPU_X86_DATA_INIT { 0 }
