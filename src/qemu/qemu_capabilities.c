@@ -1570,6 +1570,25 @@ virQEMUCapsHostCPUDataClear(virQEMUCapsHostCPUDataPtr cpuData)
 }
 
 
+static int
+virQEMUCapsSEVInfoCopy(virSEVCapabilityPtr *dst,
+                       virSEVCapabilityPtr src)
+{
+    VIR_AUTOPTR(virSEVCapability) tmp = NULL;
+
+    if (VIR_ALLOC(tmp) < 0 ||
+        VIR_STRDUP(tmp->pdh, src->pdh) < 0 ||
+        VIR_STRDUP(tmp->cert_chain, src->cert_chain) < 0)
+        return -1;
+
+    tmp->cbitpos = src->cbitpos;
+    tmp->reduced_phys_bits = src->reduced_phys_bits;
+
+    VIR_STEAL_PTR(*dst, tmp);
+    return 0;
+}
+
+
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 {
     virQEMUCapsPtr ret = virQEMUCapsNew();
@@ -1631,6 +1650,11 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     ret->ngicCapabilities = qemuCaps->ngicCapabilities;
     for (i = 0; i < qemuCaps->ngicCapabilities; i++)
         ret->gicCapabilities[i] = qemuCaps->gicCapabilities[i];
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST) &&
+        virQEMUCapsSEVInfoCopy(&ret->sevCapabilities,
+                               qemuCaps->sevCapabilities) < 0)
+        goto error;
 
     return ret;
 
@@ -3344,6 +3368,58 @@ virQEMUCapsCachePrivFree(void *privData)
 }
 
 
+static int
+virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
+{
+    VIR_AUTOPTR(virSEVCapability) sev = NULL;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST))
+        return 0;
+
+    if (virXPathBoolean("boolean(./sev)", ctxt) == 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing SEV platform data in QEMU "
+                         "capabilities cache"));
+        return -1;
+    }
+
+    if (VIR_ALLOC(sev) < 0)
+        return -1;
+
+    if (virXPathUInt("string(./sev/cbitpos)", ctxt, &sev->cbitpos) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing or malformed SEV cbitpos information "
+                         "in QEMU capabilities cache"));
+        return -1;
+    }
+
+    if (virXPathUInt("string(./sev/reducedPhysBits)", ctxt,
+                     &sev->reduced_phys_bits) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing or malformed SEV reducedPhysBits information "
+                         "in QEMU capabilities cache"));
+        return -1;
+    }
+
+    if (!(sev->pdh = virXPathString("string(./sev/pdh)", ctxt)))  {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing SEV pdh information "
+                         "in QEMU capabilities cache"));
+        return -1;
+    }
+
+    if (!(sev->cert_chain = virXPathString("string(./sev/certChain)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing SEV certChain information "
+                         "in QEMU capabilities cache"));
+        return -1;
+    }
+
+    VIR_STEAL_PTR(qemuCaps->sevCapabilities, sev);
+    return 0;
+}
+
+
 /*
  * Parsing a doc that looks like
  *
@@ -3592,6 +3668,9 @@ virQEMUCapsLoadCache(virArch hostArch,
     }
     VIR_FREE(nodes);
 
+    if (virQEMUCapsParseSEVInfo(qemuCaps, ctxt) < 0)
+        goto cleanup;
+
     virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
 
@@ -3709,6 +3788,24 @@ virQEMUCapsFormatCPUModels(virQEMUCapsPtr qemuCaps,
 }
 
 
+static void
+virQEMUCapsFormatSEVInfo(virQEMUCapsPtr qemuCaps, virBufferPtr buf)
+{
+    virSEVCapabilityPtr sev = virQEMUCapsGetSEVCapabilities(qemuCaps);
+
+    virBufferAddLit(buf, "<sev>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(buf, "<cbitpos>%u</cbitpos>\n", sev->cbitpos);
+    virBufferAsprintf(buf, "<reducedPhysBits>%u</reducedPhysBits>\n",
+                      sev->reduced_phys_bits);
+    virBufferEscapeString(buf, "<pdh>%s</pdh>\n", sev->pdh);
+    virBufferEscapeString(buf, "<certChain>%s</certChain>\n",
+                          sev->cert_chain);
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</sev>\n");
+}
+
+
 char *
 virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
 {
@@ -3789,6 +3886,9 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
                           kernel ? "yes" : "no",
                           emulated ? "yes" : "no");
     }
+
+    if (qemuCaps->sevCapabilities)
+        virQEMUCapsFormatSEVInfo(qemuCaps, &buf);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</qemuCaps>\n");
