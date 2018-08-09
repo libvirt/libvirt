@@ -20,6 +20,7 @@
       <stimer state='off'/>
       <reset state='off'/>
       <vendor_id state='off'/>
+      <frequencies state='off'/>
     </hyperv>
   </features>
   <clock offset='utc'/>

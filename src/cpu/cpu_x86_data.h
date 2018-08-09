@@ -63,6 +63,7 @@ struct _virCPUx86CPUID {
 # define VIR_CPU_x86_KVM_HV_VAPIC     "__kvm_hv_vapic"
 # define VIR_CPU_x86_KVM_HV_VPINDEX   "__kvm_hv_vpindex"
 # define VIR_CPU_x86_KVM_HV_RESET     "__kvm_hv_reset"
+# define VIR_CPU_x86_KVM_HV_FREQUENCIES "__kvm_hv_frequencies"
 
 
 # define VIR_CPU_X86_DATA_INIT { 0 }

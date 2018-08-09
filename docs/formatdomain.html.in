@@ -1974,6 +1974,7 @@
     &lt;synic state='on'/&gt;
     &lt;reset state='on'/&gt;
     &lt;vendor_id state='on' value='KVM Hv'/&gt;
+    &lt;frequencies state='on'/&gt;
   &lt;/hyperv&gt;
   &lt;kvm&gt;
     &lt;hidden state='on'/&gt;
@@ -2095,6 +2096,12 @@
           <td>Set hypervisor vendor id</td>
           <td>on, off; value - string, up to 12 characters</td>
           <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
+        </tr>
+        <tr>
+          <td>frequencies</td>
+          <td>Expose frequency MSRs</td>
+          <td> on, off</td>
+          <td><span class="since">4.7.0 (QEMU 2.12)</span></td>
         </tr>
       </table>
       </dd>

@@ -3912,6 +3912,7 @@ qemuProcessVerifyHypervFeatures(virDomainDefPtr def,
         case VIR_DOMAIN_HYPERV_SYNIC:
         case VIR_DOMAIN_HYPERV_STIMER:
         case VIR_DOMAIN_HYPERV_RESET:
+        case VIR_DOMAIN_HYPERV_FREQUENCIES:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("host doesn't support hyperv '%s' feature"),
                            virDomainHypervTypeToString(i));
