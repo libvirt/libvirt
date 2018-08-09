@@ -997,6 +997,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
     DO_TEST("disk-floppy", NONE);
     DO_TEST_CAPS_LATEST("disk-floppy");
+    DO_TEST_CAPS_LATEST("disk-floppy-q35-2_9");
+    DO_TEST_CAPS_LATEST("disk-floppy-q35-2_11");
     DO_TEST_FAILURE("disk-floppy-pseries",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("disk-floppy-tray", NONE);
