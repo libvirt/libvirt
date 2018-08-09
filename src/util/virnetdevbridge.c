@@ -417,12 +417,11 @@ virNetDevBridgeCreate(const char *brname)
 {
     /* use a netlink RTM_NEWLINK message to create the bridge */
     const char *type = "bridge";
-    int rc = -1;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
     unsigned int recvbuflen;
-    struct nl_msg *nl_msg;
     struct nlattr *linkinfo;
+    VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
     VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
 
     nl_msg = nlmsg_alloc_simple(RTM_NEWLINK,
@@ -444,7 +443,7 @@ virNetDevBridgeCreate(const char *brname)
 
     if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
                           NETLINK_ROUTE, 0) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
@@ -462,15 +461,14 @@ virNetDevBridgeCreate(const char *brname)
                 /* fallback to ioctl if netlink doesn't support creating
                  * bridges
                  */
-                rc = virNetDevBridgeCreateWithIoctl(brname);
-                goto cleanup;
+                return virNetDevBridgeCreateWithIoctl(brname);
             }
 # endif
 
             virReportSystemError(-err->error,
                                  _("error creating bridge interface %s"),
                                  brname);
-            goto cleanup;
+            return -1;
         }
         break;
 
@@ -480,19 +478,16 @@ virNetDevBridgeCreate(const char *brname)
         goto malformed_resp;
     }
 
-    rc = 0;
- cleanup:
-    nlmsg_free(nl_msg);
-    return rc;
+    return 0;
 
  malformed_resp:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
-    goto cleanup;
+    return -1;
  buffer_too_small:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
-    goto cleanup;
+    return -1;
 }
 
 
@@ -1055,11 +1050,10 @@ static int
 virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
                          unsigned int flags, bool isAdd)
 {
-    int ret = -1;
     struct nlmsgerr *err;
     unsigned int recvbuflen;
-    struct nl_msg *nl_msg;
     struct ndmsg ndm = { .ndm_family = PF_BRIDGE, .ndm_state = NUD_NOARP };
+    VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
     VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
 
     if (virNetDevGetIndex(ifname, &ndm.ndm_ifindex) < 0)
@@ -1103,7 +1097,7 @@ virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
 
     if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
                           NETLINK_ROUTE, 0) < 0) {
-        goto cleanup;
+        return -1;
     }
     if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
         goto malformed_resp;
@@ -1116,7 +1110,7 @@ virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
         if (err->error) {
             virReportSystemError(-err->error,
                                  _("error adding fdb entry for %s"), ifname);
-            goto cleanup;
+            return -1;
         }
         break;
     case NLMSG_DONE:
@@ -1126,20 +1120,17 @@ virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
         goto malformed_resp;
     }
 
-    ret = 0;
- cleanup:
-    nlmsg_free(nl_msg);
-    return ret;
+    return 0;
 
  malformed_resp:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
-    goto cleanup;
+    return -1;
 
  buffer_too_small:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
-    goto cleanup;
+    return -1;
 }
 
 
