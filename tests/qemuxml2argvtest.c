@@ -877,10 +877,8 @@ mymain(void)
     DO_TEST("boot-order",
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-complex",
-            QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-strict",
-            QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_BOOT_STRICT,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
 
@@ -1004,31 +1002,26 @@ mymain(void)
     DO_TEST("disk-floppy-tray", NONE);
     DO_TEST("disk-virtio-s390",
             QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("disk-virtio", QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST("disk-virtio", NONE);
     DO_TEST("disk-virtio-ccw",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-virtio-ccw-many",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-virtio-scsi-ccw", QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("disk-order",
-            QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_VIRTIO_BLK_SCSI);
+    DO_TEST("disk-order", QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-virtio-queues",
             QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
-    DO_TEST("disk-boot-disk",
-            QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST("disk-boot-cdrom",
-            QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST("floppy-drive-fat",
-            QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST("disk-boot-disk", NONE);
+    DO_TEST("disk-boot-cdrom", NONE);
+    DO_TEST("floppy-drive-fat", NONE);
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
     DO_TEST("disk-readonly-disk", NONE);
     DO_TEST_CAPS_LATEST("disk-readonly-disk");
-    DO_TEST("disk-fmt-qcow",
-            QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST_PARSE_ERROR("disk-fmt-cow", QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST_PARSE_ERROR("disk-fmt-dir", QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST_PARSE_ERROR("disk-fmt-iso", QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST("disk-fmt-qcow", NONE);
+    DO_TEST_PARSE_ERROR("disk-fmt-cow", NONE);
+    DO_TEST_PARSE_ERROR("disk-fmt-dir", NONE);
+    DO_TEST_PARSE_ERROR("disk-fmt-iso", NONE);
     DO_TEST("disk-shared", NONE);
     DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_PARSE_ERROR("disk-shared-qcow", NONE);

@@ -52,7 +52,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_VNC_COLON, /* VNC takes or address + display */
     X_QEMU_CAPS_NO_REBOOT, /* Is the -no-reboot flag available */
     X_QEMU_CAPS_DRIVE, /* Is the new -drive arg available */
-    QEMU_CAPS_DRIVE_BOOT, /* Does -drive support boot=on */
+    X_QEMU_CAPS_DRIVE_BOOT, /* Does -drive support boot=on */
 
     /* 5 */
     X_QEMU_CAPS_NAME, /* Is the -name flag available */

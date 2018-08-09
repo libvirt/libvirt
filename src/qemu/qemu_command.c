@@ -1632,7 +1632,7 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
 
 static char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
-                  bool bootable,
+                  bool bootable ATTRIBUTE_UNUSED,
                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
@@ -1688,15 +1688,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
             virBufferAddLit(&opt, ",media=cdrom");
         }
     }
-
-    /* This is a frontend attribute which was replaced by bootindex passed in
-     * with -device arguments. */
-    if (bootable &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) &&
-        (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
-         disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
-        disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
-        virBufferAddLit(&opt, ",boot=on");
 
     if (disk->src->readonly)
         virBufferAddLit(&opt, ",readonly=on");
@@ -10242,14 +10233,6 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 
     if (qemuBuildCommandLineValidate(driver, def) < 0)
         goto error;
-
-    /*
-     * do not use boot=on for drives when not using KVM since this
-     * is not supported at all in upstream QEMU.
-     */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
-        (def->virtType == VIR_DOMAIN_VIRT_QEMU))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DRIVE_BOOT);
 
     cmd = virCommandNew(def->emulator);
 
