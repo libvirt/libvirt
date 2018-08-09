@@ -966,12 +966,13 @@ mymain(void)
     DO_TEST("hugepages-numa-nodeset-part",
             QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_FAILURE("hugepages-numa-nodeset-nonexist",
+                    QEMU_CAPS_OBJECT_MEMORY_RAM,
+                    QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-shared",
             QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_PARSE_ERROR("hugepages-memaccess-invalid", NONE);
-    DO_TEST_FAILURE("hugepages-pages4",
-            QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages5", NONE);
     DO_TEST("hugepages-pages6", NONE);
     DO_TEST("hugepages-pages7",

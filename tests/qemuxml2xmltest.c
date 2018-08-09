@@ -332,7 +332,7 @@ mymain(void)
     DO_TEST("hugepages-numa-default-dimm", NONE);
     DO_TEST("hugepages-numa-nodeset", NONE);
     DO_TEST("hugepages-numa-nodeset-part", NONE);
-    DO_TEST("hugepages-pages4", NONE);
+    DO_TEST("hugepages-numa-nodeset-nonexist", NONE);
     DO_TEST("hugepages-pages5", NONE);
     DO_TEST("hugepages-pages6", NONE);
     DO_TEST("hugepages-pages7", NONE);
