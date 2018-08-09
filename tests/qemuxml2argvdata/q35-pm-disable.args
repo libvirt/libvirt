@@ -22,7 +22,6 @@ nowait \
 -no-acpi \
 -global ICH9-LPC.disable_s3=1 \
 -global ICH9-LPC.disable_s4=1 \
--boot n \
 -device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
 -device ioh3420,port=0x10,chassis=3,id=pci.3,bus=pcie.0,addr=0x2 \

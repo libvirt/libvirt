@@ -25,7 +25,6 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -device spapr-pci-host-bridge,index=1,id=pci.1,numa_node=1 \
 -device spapr-pci-host-bridge,index=2,id=pci.2 \
 -device spapr-pci-host-bridge,index=3,id=pci.3,numa_node=0

@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -chardev socket,id=charrng0,host=1.2.3.4,port=1234 \

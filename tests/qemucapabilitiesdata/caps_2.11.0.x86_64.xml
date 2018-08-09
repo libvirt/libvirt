@@ -6,7 +6,6 @@
   <flag name='kvm'/>
   <flag name='no-hpet'/>
   <flag name='spice'/>
-  <flag name='boot-index'/>
   <flag name='hda-duplex'/>
   <flag name='ccid-emulated'/>
   <flag name='ccid-passthru'/>

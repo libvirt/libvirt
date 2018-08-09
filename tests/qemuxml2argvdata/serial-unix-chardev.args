@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -chardev socket,id=charserial0,path=/tmp/serial.sock \
 -device isa-serial,chardev=charserial0,id=serial0 \

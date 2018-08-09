@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device ich9-usb-ehci1,id=usb1,bus=pci.0,addr=0x4.0x7 \
 -device ich9-usb-uhci1,masterbus=usb1.0,firstport=0,bus=pci.0,multifunction=on,\

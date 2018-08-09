@@ -20,12 +20,11 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \
 -usb \
 -drive file=/dev/ide,format=raw,if=none,id=drive-ide0-0-0,cache=none \
 -device ide-drive,bus=ide.0,unit=0,share-rw=on,drive=drive-ide0-0-0,\
-id=ide0-0-0 \
+id=ide0-0-0,bootindex=1 \
 -drive file=/dev/scsi,format=raw,if=none,id=drive-scsi0-0-0-0,cache=none \
 -device scsi-disk,bus=scsi0.0,channel=0,scsi-id=0,lun=0,share-rw=on,\
 drive=drive-scsi0-0-0-0,id=scsi0-0-0-0 \

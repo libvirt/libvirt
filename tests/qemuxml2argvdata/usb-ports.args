@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -device usb-hub,id=hub0,bus=usb.0,port=1 \
 -device usb-hub,id=hub1,bus=usb.0,port=1.2 \

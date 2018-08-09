@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -vnc 127.0.0.1:3,tls,x509verify=/etc/pki/libvirt-vnc,sasl \
 -vga cirrus

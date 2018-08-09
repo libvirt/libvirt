@@ -20,5 +20,5 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot order=n,reboot-timeout=128 \
+-boot reboot-timeout=128 \
 -usb

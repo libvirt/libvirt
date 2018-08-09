@@ -19,6 +19,5 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -acpitable sig=SLIC,file=/var/lib/libvirt/acpi/slic.dat \
 -usb

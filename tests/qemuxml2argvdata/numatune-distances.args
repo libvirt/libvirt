@@ -61,6 +61,5 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -usb \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

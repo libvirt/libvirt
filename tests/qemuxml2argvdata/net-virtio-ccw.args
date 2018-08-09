@@ -19,7 +19,6 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -netdev user,id=hostnet0 \
 -device virtio-net-ccw,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,\
 devno=fe.0.0001 \

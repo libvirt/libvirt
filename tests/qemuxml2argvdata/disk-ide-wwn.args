@@ -20,9 +20,8 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-1 \
--device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,\
+-device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,bootindex=1,\
 wwn=0x5000c50015ea71ad,serial=WD-WMAP9A966149 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

@@ -20,8 +20,8 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot a \
 -usb \
 -drive file=fat:floppy:/var/somefiles,if=none,id=drive-fdc0-0-0,readonly=on \
 -global isa-fdc.driveA=drive-fdc0-0-0 \
+-global isa-fdc.bootindexA=1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

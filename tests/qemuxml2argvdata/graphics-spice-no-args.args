@@ -19,7 +19,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -spice port=0 \
 -vga cirrus \

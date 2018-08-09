@@ -19,7 +19,6 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1 \
 -device pci-ohci,id=usb1,bus=pci.0,addr=0x2 \
 -chardev pty,id=charserial0 \

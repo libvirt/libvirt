@@ -18,7 +18,7 @@ nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot order=cna,menu=off \
+-boot menu=off \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x7 \
 -device usb-ccid,id=ccid0,bus=usb.0,port=1.1 \
@@ -26,13 +26,13 @@ nowait \
 -drive file=/tmp/fdr.img,format=raw,if=none,id=drive-virtio-disk0,cache=none,\
 aio=native \
 -device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -drive file=/tmp/Fedora-17-x86_64-Live-Desktop.iso,format=raw,if=none,\
 id=drive-ide0-1-0,media=cdrom,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:4d:4b:19,bus=pci.0,\
-addr=0x3 \
+addr=0x3,bootindex=2 \
 -chardev spicevmc,id=charsmartcard0,name=smartcard \
 -device ccid-card-passthru,chardev=charsmartcard0,id=smartcard0,bus=ccid0.0 \
 -chardev pty,id=charserial0 \

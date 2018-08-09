@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -device virtio-mouse-pci,id=input0,bus=pci.0,addr=0x4 \
 -device virtio-keyboard-pci,id=input1,bus=pci.0,addr=0xa \

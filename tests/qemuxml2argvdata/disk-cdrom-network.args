@@ -19,11 +19,11 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot d \
 -usb \
 -drive file=ftp://host.name:21/url/path/file.iso,format=raw,if=none,\
 id=drive-ide0-0-0,media=cdrom,readonly=on \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
+bootindex=1 \
 -drive file=ftps://host.name:990/url/path/file.iso,format=raw,if=none,\
 id=drive-ide0-0-1,media=cdrom,readonly=on \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \

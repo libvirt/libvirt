@@ -20,9 +20,10 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot order=d,menu=off \
+-boot menu=off \
 -usb \
 -drive file=/dev/cdrom,format=raw,if=none,id=drive-ide0-1-0,media=cdrom,\
 readonly=on \
--device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
+-device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,\
+bootindex=1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

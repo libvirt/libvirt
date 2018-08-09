@@ -20,11 +20,10 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-1 \
 -device 'ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,\
-serial=\ \ WD-WMAP9A966149' \
+bootindex=1,serial=\ \ WD-WMAP9A966149' \
 -drive file=/dev/HostVG/AllSerialChars,format=raw,if=none,id=drive-ide0-0-2 \
 -device 'ide-drive,bus=ide.0,unit=2,drive=drive-ide0-0-2,id=ide0-0-2,\
 serial=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_\ .+' \

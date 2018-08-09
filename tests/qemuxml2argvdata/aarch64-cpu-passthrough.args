@@ -21,6 +21,5 @@ path=/tmp/lib/domain--1-aarch64test/monitor.sock,server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0
+-device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1

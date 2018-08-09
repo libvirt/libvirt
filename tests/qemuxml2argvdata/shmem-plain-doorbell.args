@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -object memory-backend-file,id=shmmem-shmem0,mem-path=/dev/shm/shmem0,\
 size=4194304,share=yes \

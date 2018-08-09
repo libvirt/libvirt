@@ -22,7 +22,6 @@ path=/tmp/lib/domain--1-expander-test/monitor.sock,server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device pxb,bus_nr=254,id=pci.1,numa_node=1,bus=pci.0,addr=0x3 \
 -device pxb,bus_nr=252,id=pci.2,bus=pci.0,addr=0x4 \
 -netdev user,id=hostnet0 \

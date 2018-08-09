@@ -19,7 +19,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -vnc vnc=unix:/tmp/foo=bar.sock \
 -vga cirrus

@@ -18,7 +18,6 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x3 \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.0,addr=0x4 \
 -usb \

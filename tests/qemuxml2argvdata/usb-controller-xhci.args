@@ -20,5 +20,4 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device nec-usb-xhci,p2=8,p3=8,id=usb,bus=pci.0,addr=0x3

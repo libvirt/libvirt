@@ -20,10 +20,10 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
+bootindex=1 \
 -netdev tap,fd=3,id=hostnet0 \
 -device rtl8139,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,\
 addr=0x3 \

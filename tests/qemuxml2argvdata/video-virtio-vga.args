@@ -20,10 +20,10 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,\
 id=drive-ide0-0-0,cache=none \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
+bootindex=1 \
 -device virtio-vga,id=video0,max_outputs=1,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

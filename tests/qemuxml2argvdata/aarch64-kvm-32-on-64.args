@@ -20,12 +20,11 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -kernel /arm.kernel \
 -initrd /arm.initrd \
 -append 'console=ttyAMA0,115200n8 rw root=/dev/vda rootwait physmap.enabled=0' \
 -drive file=/arm.raw,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0 \
+-device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-device,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37 \
 -chardev pty,id=charserial0 \

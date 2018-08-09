@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/var/iso/f18kde.iso,format=raw,if=none,id=drive-virtio-disk0,\
 media=cdrom,readonly=on \

@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -chardev spicevmc,id=charredir0,name=usbredir \
 -device 'usb-redir,chardev=charredir0,id=redir0,\

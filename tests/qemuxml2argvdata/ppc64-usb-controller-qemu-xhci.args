@@ -19,6 +19,5 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -device qemu-xhci,id=usb,bus=pci.0,addr=0x1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6

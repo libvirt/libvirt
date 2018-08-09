@@ -21,7 +21,6 @@ path=/tmp/lib/domain--1-virt-manager-basic/monitor.sock,server,nowait \
 -no-shutdown \
 -global ICH9-LPC.disable_s3=1 \
 -global ICH9-LPC.disable_s4=1 \
--boot c \
 -device ioh3420,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
 addr=0x2 \
 -device ioh3420,port=0x11,chassis=2,id=pci.2,bus=pcie.0,addr=0x2.0x1 \
@@ -34,7 +33,7 @@ addr=0x2 \
 -drive file=/var/lib/libvirt/images/basic.qcow2,format=qcow2,if=none,\
 id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.4,addr=0x0,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:9a:e6:c6,bus=pci.1,\
 addr=0x0 \

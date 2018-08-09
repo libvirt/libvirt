@@ -21,7 +21,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -kernel /var/lib/libvirt/images/guest.vmlinuz \
 -initrd /var/lib/libvirt/images/guest.initramfs \
 -append 'console=ttyAMA0 rw root=/dev/vda rootwait'

@@ -20,5 +20,4 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device intel-iommu,intremap=on,eim=on

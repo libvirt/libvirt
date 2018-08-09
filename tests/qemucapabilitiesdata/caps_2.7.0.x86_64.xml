@@ -7,7 +7,6 @@
   <flag name='no-hpet'/>
   <flag name='pci-configfd'/>
   <flag name='spice'/>
-  <flag name='boot-index'/>
   <flag name='hda-duplex'/>
   <flag name='pci-bootindex'/>
   <flag name='ccid-emulated'/>

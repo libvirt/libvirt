@@ -19,11 +19,10 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -device virtio-scsi-ccw,id=scsi0,devno=fe.0.0001 \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -device vhost-scsi-ccw,wwpn=naa.5123456789abcde0,vhostfd=3,id=hostdev0,\
 devno=fe.0.0002 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0003

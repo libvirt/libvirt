@@ -21,11 +21,10 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -device virtio-scsi-ccw,iothread=iothread2,id=scsi0,devno=fe.0.0001 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-ccw,iothread=iothread1,devno=fe.0.0000,\
-drive=drive-virtio-disk0,id=virtio-disk0 \
+drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-scsi0-0-2-0 \
 -device scsi-disk,bus=scsi0.0,channel=0,scsi-id=2,lun=0,\
 drive=drive-scsi0-0-2-0,id=scsi0-0-2-0 \

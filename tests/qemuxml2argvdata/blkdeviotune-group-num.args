@@ -20,13 +20,13 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
 cache=none,throttling.bps-total=5000,throttling.iops-total=6000,\
 throttling.bps-total-max=10000,throttling.iops-total-max=11000,\
 throttling.group=libvirt_iotune_group1 \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
+bootindex=1 \
 -drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,\
 cache=none,throttling.bps-read=5000,throttling.bps-write=5500,\
 throttling.iops-read=3500,throttling.iops-write=4000,\

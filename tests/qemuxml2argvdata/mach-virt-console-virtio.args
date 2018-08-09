@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device virtio-serial,id=virtio-serial0 \
 -chardev pty,id=charconsole0 \
 -device virtconsole,chardev=charconsole0,id=console0

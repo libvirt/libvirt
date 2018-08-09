@@ -20,6 +20,5 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

@@ -20,6 +20,5 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot n \
 -usb \
 -device pvpanic,ioport=1285

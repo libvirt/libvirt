@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device ioh3420,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
 addr=0x2 \
 -device ioh3420,port=0x11,chassis=2,id=pci.2,bus=pcie.0,addr=0x2.0x1 \
@@ -42,7 +41,7 @@ addr=0x3 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.4,addr=0x0 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk1 \
 -device virtio-blk-pci,bus=pci.7,addr=0x0,drive=drive-virtio-disk1,\
-id=virtio-disk1 \
+id=virtio-disk1,bootindex=1 \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
 -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=/import/from/host,\
 bus=pci.1,addr=0x0 \

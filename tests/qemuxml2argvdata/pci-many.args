@@ -19,7 +19,6 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -usb \
 -drive file=/var/iso/f18kde.iso,format=raw,if=none,id=drive-ide0-1-0,\
 media=cdrom,readonly=on \
@@ -27,7 +26,7 @@ media=cdrom,readonly=on \
 -drive file=/var/lib/libvirt/images/test.img,format=raw,if=none,\
 id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -drive file=/var/lib/libvirt/images/test1.img,format=raw,if=none,\
 id=drive-virtio-disk1 \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,\

@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device virtio-scsi-pci,iommu_platform=on,ats=on,id=scsi0,bus=pci.0,addr=0x8 \
 -device virtio-serial-pci,id=virtio-serial0,iommu_platform=on,ats=on,bus=pci.0,\
 addr=0x9 \
@@ -28,7 +27,7 @@ addr=0x9 \
 -drive file=/var/lib/libvirt/images/img1,format=raw,if=none,\
 id=drive-virtio-disk0 \
 -device virtio-blk-pci,iommu_platform=on,ats=on,bus=pci.0,addr=0xa,\
-drive=drive-virtio-disk0,id=virtio-disk0 \
+drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/fs1 \
 -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fs1,iommu_platform=on,\
 ats=on,bus=pci.0,addr=0x3 \

@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device virtio-serial-pci,id=virtio-serial1,bus=pci.0,addr=0xa \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x3 \
 -device usb-ccid,id=ccid0,bus=usb.0,port=1 \

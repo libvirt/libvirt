@@ -115,7 +115,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_SPICE, /* Is -spice avail */
     X_QEMU_CAPS_VGA_NONE, /* The 'none' arg for '-vga' */
     X_QEMU_CAPS_MIGRATE_QEMU_FD, /* -incoming fd:n */
-    QEMU_CAPS_BOOTINDEX, /* -device bootindex property */
+    X_QEMU_CAPS_BOOTINDEX, /* -device bootindex property */
 
     /* 50 */
     QEMU_CAPS_HDA_DUPLEX, /* -device hda-duplex */

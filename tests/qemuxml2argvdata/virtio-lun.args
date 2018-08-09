@@ -20,12 +20,12 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot order=dc,menu=on \
+-boot menu=on \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
 -usb \
 -drive file=/dev/sdfake,format=qcow2,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,scsi=on,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=2 \
 -drive file=/dev/sdfake2,format=qcow2,if=none,id=drive-virtio-disk1 \
 -device virtio-blk-pci,scsi=on,bus=pci.0,addr=0x5,drive=drive-virtio-disk1,\
 id=virtio-disk1 \

@@ -19,5 +19,4 @@ cap-hpt-max-page-size=1048576k,cap-htm=on \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
--no-shutdown \
--boot c
+-no-shutdown

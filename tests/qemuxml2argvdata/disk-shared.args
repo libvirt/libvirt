@@ -20,12 +20,11 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0,\
 cache=none \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
-serial=XYZXYZXYZYXXYZYZYXYZY \
+bootindex=1,serial=XYZXYZXYZYXXYZYZYXYZY \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-1-0,\
 media=cdrom,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \

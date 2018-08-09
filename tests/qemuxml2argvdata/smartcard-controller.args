@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -usb \
 -device ccid-card-emulated,backend=nss-emulated,id=smartcard0,bus=ccid0.0 \

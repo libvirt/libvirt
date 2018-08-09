@@ -19,7 +19,6 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -chardev pty,id=charserial0 \
 -device sclpconsole,chardev=charserial0,id=serial0 \
 -chardev pty,id=charserial1 \

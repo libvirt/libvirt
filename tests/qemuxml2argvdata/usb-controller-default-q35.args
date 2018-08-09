@@ -20,5 +20,4 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device piix3-usb-uhci,id=usb,bus=pcie.0,addr=0x1

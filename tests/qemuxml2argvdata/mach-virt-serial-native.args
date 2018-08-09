@@ -20,6 +20,5 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0

@@ -20,6 +20,5 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot a \
 -drive file=/tmp/firmware.img,format=raw,if=none,id=drive-fdc0-0-0 \
--device isa-fdc,driveA=drive-fdc0-0-0
+-device isa-fdc,driveA=drive-fdc0-0-0,bootindexA=1

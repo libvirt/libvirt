@@ -28,7 +28,6 @@ server,nowait \
 -no-shutdown \
 -global PIIX4_PM.disable_s3=1 \
 -global PIIX4_PM.disable_s4=1 \
--boot c \
 -device ich9-usb-ehci1,id=usb,bus=pci.0,addr=0x6.0x7 \
 -device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pci.0,multifunction=on,\
 addr=0x6 \
@@ -38,7 +37,7 @@ addr=0x6 \
 -drive file=/var/lib/libvirt/images/fedora.qcow2,format=qcow2,if=none,\
 id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x7,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -drive if=none,id=drive-ide0-0-0,media=cdrom,readonly=on \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -chardev socket,id=charchannel0,\

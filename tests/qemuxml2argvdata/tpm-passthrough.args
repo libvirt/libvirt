@@ -19,7 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot order=c,menu=on \
+-boot menu=on \
 -usb \
 -tpmdev passthrough,id=tpm-tpm0,path=/dev/tpm0,\
 cancel-path=/sys/class/misc/tpm0/device/cancel \

@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device lsi,id=scsi0,bus=pci.0,multifunction=off,addr=0x3 \
 -device lsi,id=scsi1,bus=pci.0,multifunction=on,addr=0x4 \
 -device lsi,id=scsi2,bus=pci.0,multifunction=on,addr=0x4.0x1 \
@@ -32,5 +31,6 @@ server,nowait \
 -device lsi,id=scsi8,bus=pci.0,addr=0x4.0x7 \
 -usb \
 -drive file=/tmp/scsidisk.img,format=raw,if=none,id=drive-scsi0-0-0 \
--device scsi-disk,bus=scsi0.0,scsi-id=0,drive=drive-scsi0-0-0,id=scsi0-0-0 \
+-device scsi-disk,bus=scsi0.0,scsi-id=0,drive=drive-scsi0-0-0,id=scsi0-0-0,\
+bootindex=1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5

@@ -20,12 +20,12 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device lsi,id=scsi0,bus=pci.0,addr=0x3 \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
 cache=writeback \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
+bootindex=1 \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-1,\
 cache=unsafe \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \

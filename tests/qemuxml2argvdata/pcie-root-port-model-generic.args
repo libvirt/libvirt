@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device pcie-root-port,port=0x10,chassis=1,id=pci.1,bus=pcie.0,\
 multifunction=on,addr=0x2 \
 -device pcie-root-port,port=0x11,chassis=2,id=pci.2,bus=pcie.0,addr=0x2.0x1 \

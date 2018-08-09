@@ -20,13 +20,12 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \
 -usb \
 -drive file=iscsi://example.org:6000/iqn.1992-01.com.example/0,format=raw,\
 if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -drive file=iscsi://example.org:6000/iqn.1992-01.com.example/1,format=raw,\
 if=none,id=drive-virtio-disk1 \
 -device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk1,\

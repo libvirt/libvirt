@@ -20,13 +20,12 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:\
 6000/iqn.1992-01.com.example%3Astorage/1,format=raw,if=none,\
 id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -drive 'file=rbd:pool/image:id=myname:\
 key=QVFDVm41aE82SHpGQWhBQXEwTkN2OGp0SmNJY0UrSE9CbE1RMUE=:\
 auth_supported=cephx\;none:mon_host=mon1.example.org\:6321\;mon2.example.org\:\

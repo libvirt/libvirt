@@ -20,9 +20,9 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/dev/disk/by-path/ip-192.168.44.1:\
 3260-iscsi-iqn.2011-02.lan.hdserver:hydrar-desktop.win7vm-lun-0,format=raw,\
 if=none,id=drive-ide0-0-0 \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
+bootindex=1

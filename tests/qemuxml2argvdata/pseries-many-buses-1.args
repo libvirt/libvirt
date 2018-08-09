@@ -19,6 +19,5 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -device spapr-pci-host-bridge,index=1,id=pci.1 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.1.0,addr=0x1

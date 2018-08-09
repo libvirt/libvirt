@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=/some/block/device/unit:0:0:1,if=none,id=drive-ide0-0-1,\
 media=cdrom,readonly=on \
@@ -29,7 +28,8 @@ media=cdrom,readonly=on \
 id=drive-ide0-0-2,media=cdrom,readonly=on \
 -device ide-drive,bus=ide.0,unit=2,drive=drive-ide0-0-2,id=ide0-0-2 \
 -drive file=/tmp/idedisk.img,format=raw,if=none,id=drive-ide0-0-3 \
--device ide-drive,bus=ide.0,unit=3,drive=drive-ide0-0-3,id=ide0-0-3 \
+-device ide-drive,bus=ide.0,unit=3,drive=drive-ide0-0-3,id=ide0-0-3,\
+bootindex=1 \
 -drive file=iscsi://iscsi.example.com:3260/demo-target/3,if=none,\
 id=drive-ide0-0-4,media=cdrom,readonly=on \
 -device ide-drive,bus=ide.0,unit=4,drive=drive-ide0-0-4,id=ide0-0-4 \

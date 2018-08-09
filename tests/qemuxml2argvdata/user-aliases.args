@@ -34,7 +34,6 @@ server,nowait \
 -no-shutdown \
 -global PIIX4_PM.disable_s3=0 \
 -global PIIX4_PM.disable_s4=0 \
--boot cd \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x8 \
 -device usb-ccid,id=ua-myCCID,bus=ua-SomeWeirdController.0,port=1 \
 -device usb-ccid,id=ua-myCCID2,bus=ua-SomeWeirdController.0,port=2 \
@@ -44,7 +43,8 @@ id=drive-ua-myDisk1,cache=none \
 -global isa-fdc.driveA=drive-ua-myDisk1 \
 -drive file=/var/lib/libvirt/images/gentoo.qcow2,format=qcow2,if=none,\
 id=drive-ua-myDisk2 \
--device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-ua-myDisk2,id=ua-myDisk2 \
+-device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-ua-myDisk2,id=ua-myDisk2,\
+bootindex=1 \
 -object secret,id=ua-myEncryptedDisk1-luks-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
@@ -56,7 +56,7 @@ id=ua-myEncryptedDisk1 \
 -drive file=/home/zippy/tmp/install-amd64-minimal-20140619.iso,format=raw,\
 if=none,id=drive-ua-WhatAnAwesomeCDROM,media=cdrom,readonly=on,cache=none \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ua-WhatAnAwesomeCDROM,\
-id=ua-WhatAnAwesomeCDROM \
+id=ua-WhatAnAwesomeCDROM,bootindex=2 \
 -netdev tap,fd=3,id=hostua-CheckoutThisNIC,vhost=on,vhostfd=44 \
 -device virtio-net-pci,netdev=hostua-CheckoutThisNIC,id=ua-CheckoutThisNIC,\
 mac=52:54:00:d6:c0:0b,bus=pci.0,addr=0x3 \

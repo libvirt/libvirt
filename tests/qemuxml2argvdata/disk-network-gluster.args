@@ -20,12 +20,11 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -drive file=gluster://example.org:6000/Volume1/Image,file.debug=4,format=raw,\
 if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -drive 'file=gluster+unix:///Volume2/Image?socket=/path/to/sock,file.debug=4,\
 format=raw,if=none,id=drive-virtio-disk1' \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,\

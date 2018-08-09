@@ -864,38 +864,24 @@ mymain(void)
     DO_TEST("boot-floppy-q35",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI);
-    DO_TEST("bootindex-floppy-q35",
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-multi", NONE);
     DO_TEST("boot-menu-enable", NONE);
-    DO_TEST("boot-menu-enable-bootindex",
-            QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-menu-enable-with-timeout",
             QEMU_CAPS_SPLASH_TIMEOUT);
     DO_TEST_FAILURE("boot-menu-enable-with-timeout", NONE);
     DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid", NONE);
     DO_TEST("boot-menu-disable", NONE);
     DO_TEST("boot-menu-disable-drive", NONE);
-    DO_TEST("boot-menu-disable-drive-bootindex",
-            QEMU_CAPS_BOOTINDEX);
     DO_TEST_PARSE_ERROR("boot-dev+order",
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-order",
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-complex",
             QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("boot-complex-bootindex",
-            QEMU_CAPS_DRIVE_BOOT,
-            QEMU_CAPS_BOOTINDEX,
-            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-strict",
             QEMU_CAPS_DRIVE_BOOT,
-            QEMU_CAPS_BOOTINDEX, QEMU_CAPS_BOOT_STRICT,
+            QEMU_CAPS_BOOT_STRICT,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
 
     DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
@@ -1082,8 +1068,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-tlsx509");
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
-    DO_TEST("disk-no-boot",
-            QEMU_CAPS_BOOTINDEX);
+    DO_TEST("disk-no-boot", NONE);
     DO_TEST_PARSE_ERROR("disk-device-lun-type-invalid",
                         QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_FAILURE("disk-usb-nosupport", NONE);
@@ -1414,10 +1399,8 @@ mymain(void)
     DO_TEST("console-virtio-many",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("console-virtio-s390",
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("console-virtio-ccw",
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("console-sclp",
@@ -1497,7 +1480,6 @@ mymain(void)
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_USB_REDIR_BOOTINDEX);
     DO_TEST("usb-redir-filter",
             QEMU_CAPS_USB_HUB,
@@ -1562,8 +1544,7 @@ mymain(void)
     DO_TEST("watchdog-device", NONE);
     DO_TEST("watchdog-dump", NONE);
     DO_TEST("watchdog-injectnmi", NONE);
-    DO_TEST("watchdog-diag288",
-            QEMU_CAPS_BOOTINDEX, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("watchdog-diag288", QEMU_CAPS_VIRTIO_S390);
     DO_TEST("balloon-device", NONE);
     DO_TEST("balloon-device-deflate",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
@@ -1589,7 +1570,6 @@ mymain(void)
     DO_TEST("hostdev-usb-address", NONE);
     DO_TEST("hostdev-usb-address-device", NONE);
     DO_TEST("hostdev-usb-address-device-boot",
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_USB_HOST_BOOTINDEX);
     DO_TEST("hostdev-pci-address", NONE);
     DO_TEST("hostdev-pci-address-device", NONE);
@@ -2031,19 +2011,16 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_EGD);
     DO_TEST("virtio-rng-ccw",
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     DO_TEST("s390-allow-bogus-usb-none",
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);
     DO_TEST("s390-allow-bogus-usb-controller",
-            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);
@@ -2491,7 +2468,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU, QEMU_CAPS_BOOTINDEX);
+            QEMU_CAPS_DEVICE_VIRTIO_GPU);
     DO_TEST("aarch64-video-default",
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
@@ -2743,21 +2720,21 @@ mymain(void)
 
     DO_TEST("machine-loadparm-s390",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390,
-            QEMU_CAPS_BOOTINDEX, QEMU_CAPS_LOADPARM);
+            QEMU_CAPS_LOADPARM);
     DO_TEST("machine-loadparm-net-s390",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390,
-            QEMU_CAPS_BOOTINDEX, QEMU_CAPS_LOADPARM);
+            QEMU_CAPS_LOADPARM);
     DO_TEST("machine-loadparm-multiple-disks-nets-s390",
             QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
+            QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_LOADPARM);
     DO_TEST_PARSE_ERROR("machine-loadparm-s390-char-invalid",
                         QEMU_CAPS_CCW,
-                        QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
+                        QEMU_CAPS_VIRTIO_S390,
                         QEMU_CAPS_LOADPARM);
     DO_TEST_PARSE_ERROR("machine-loadparm-s390-len-invalid",
                         QEMU_CAPS_CCW,
-                        QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
+                        QEMU_CAPS_VIRTIO_S390,
                         QEMU_CAPS_LOADPARM);
 
     DO_TEST("qemu-ns-domain-ns0", NONE);

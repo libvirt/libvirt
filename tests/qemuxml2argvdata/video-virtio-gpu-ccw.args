@@ -18,10 +18,9 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -vnc 127.0.0.1:0 \
 -device virtio-gpu-ccw,id=video0,max_outputs=1,devno=fe.0.0002 \
 -device virtio-gpu-ccw,id=video1,max_outputs=1,devno=fe.0.0003 \

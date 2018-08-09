@@ -19,10 +19,9 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot c \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,\
-id=virtio-disk0 \
+id=virtio-disk0,bootindex=1 \
 -device virtio-keyboard-ccw,id=input0,devno=fe.0.0002 \
 -device virtio-mouse-ccw,id=input1,devno=fe.0.0003 \
 -device virtio-tablet-ccw,id=input2,devno=fe.0.0004 \

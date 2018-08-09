@@ -20,7 +20,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot c \
 -usb \
 -device virtio-input-host-pci,id=input0,evdev=/dev/input/event1234,bus=pci.0,\
 addr=0x4 \
