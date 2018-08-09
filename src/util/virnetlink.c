@@ -38,7 +38,6 @@
 #include "virnetlink.h"
 #include "virnetdev.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "virthread.h"
 #include "virmacaddr.h"
 #include "virerror.h"

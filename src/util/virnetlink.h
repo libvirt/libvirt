@@ -22,6 +22,7 @@
 
 # include "internal.h"
 # include "virmacaddr.h"
+# include "viralloc.h"
 
 # if defined(__linux__) && defined(HAVE_LIBNL)
 
@@ -43,6 +44,8 @@ struct nlattr;
 struct nlmsghdr;
 
 # endif /* __linux__ */
+
+typedef struct nl_msg virNetlinkMsg;
 
 int virNetlinkStartup(void);
 void virNetlinkShutdown(void);
@@ -122,5 +125,7 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
  */
 int virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
                                 unsigned int protocol);
+
+VIR_DEFINE_AUTOPTR_FUNC(virNetlinkMsg, nlmsg_free)
 
 #endif /* __VIR_NETLINK_H__ */
