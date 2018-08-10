@@ -168,7 +168,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 
     if (!domCaps->machine &&
         VIR_STRDUP(domCaps->machine,
-                   virQEMUCapsGetDefaultMachine(qemuCaps)) < 0)
+                   virQEMUCapsGetPreferredMachine(qemuCaps)) < 0)
         goto cleanup;
 
     if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,

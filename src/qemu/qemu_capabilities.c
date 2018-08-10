@@ -4977,7 +4977,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
             goto cleanup;
         }
     } else {
-        machine = virQEMUCapsGetDefaultMachine(qemuCaps);
+        machine = virQEMUCapsGetPreferredMachine(qemuCaps);
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
@@ -5036,8 +5036,12 @@ virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
 }
 
 
+/*
+ * The preferred machine to use if none is listed explicitly
+ * Note that this may differ from QEMU's own default machine
+ */
 const char *
-virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
+virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps)
 {
     if (!qemuCaps->nmachineTypes)
         return NULL;
