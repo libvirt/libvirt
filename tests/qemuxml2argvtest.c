@@ -951,6 +951,10 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD);
+    DO_TEST("pages-dimm-discard",
+            QEMU_CAPS_DEVICE_PC_DIMM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD);
     DO_TEST("hugepages-default", NONE);
     DO_TEST("hugepages-default-2M", NONE);
     DO_TEST("hugepages-default-system-size", NONE);
@@ -975,9 +979,6 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_PARSE_ERROR("hugepages-memaccess-invalid", NONE);
-    DO_TEST("hugepages-pages7",
-            QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD);
     DO_TEST_FAILURE("hugepages-pages8",
                     QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_OBJECT_MEMORY_FILE,
                     QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD);
