@@ -528,7 +528,7 @@ nss_libnss_libvirt_impl_la_CFLAGS = \
 nss_libnss_libvirt_impl_la_LIBADD = \
 	../gnulib/lib/libgnu.la \
 	../src/libvirt-nss.la \
-	$(DLOPEN_LIBS)
+	$(NULL)
 
 nss_libnss_libvirt_la_SOURCES =
 nss_libnss_libvirt_la_LDFLAGS = \
@@ -556,7 +556,7 @@ nss_libnss_libvirt_guest_impl_la_CFLAGS = \
 nss_libnss_libvirt_guest_impl_la_LIBADD = \
 	../gnulib/lib/libgnu.la \
 	../src/libvirt-nss.la \
-	$(DLOPEN_LIBS)
+	$(NULL)
 
 nss_libnss_libvirt_guest_la_SOURCES =
 nss_libnss_libvirt_guest_la_LDFLAGS = \

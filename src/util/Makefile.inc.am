@@ -278,6 +278,7 @@ libvirt_util_la_LIBADD = \
 	$(NUMACTL_LIBS) \
 	$(ACL_LIBS) \
 	$(GNUTLS_LIBS) \
+	$(DLOPEN_LIBS) \
 	$(NULL)
 
 
