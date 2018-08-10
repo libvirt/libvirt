@@ -328,12 +328,12 @@ mymain(void)
     DO_TEST("pages-discard", NONE);
     DO_TEST("pages-discard-hugepages", NONE);
     DO_TEST("hugepages-default", NONE);
+    DO_TEST("hugepages-default-2M", NONE);
     DO_TEST("hugepages-numa-default-2M", NONE);
     DO_TEST("hugepages-numa-default-dimm", NONE);
     DO_TEST("hugepages-numa-nodeset", NONE);
     DO_TEST("hugepages-numa-nodeset-part", NONE);
     DO_TEST("hugepages-numa-nodeset-nonexist", NONE);
-    DO_TEST("hugepages-pages5", NONE);
     DO_TEST("hugepages-pages6", NONE);
     DO_TEST("hugepages-pages7", NONE);
     DO_TEST("hugepages-shared", NONE);
