@@ -963,7 +963,8 @@ mymain(void)
     DO_TEST("hugepages-numa-nodeset",
             QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-pages3", QEMU_CAPS_OBJECT_MEMORY_RAM,
+    DO_TEST("hugepages-numa-nodeset-part",
+            QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-shared",
             QEMU_CAPS_OBJECT_MEMORY_RAM,
