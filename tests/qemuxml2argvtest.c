@@ -946,12 +946,6 @@ mymain(void)
 
     DO_TEST("hugepages-default", NONE);
     DO_TEST("hugepages-numa-default",
-            QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_HDA_DUPLEX, QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-numa-default-dimm",
             QEMU_CAPS_DEVICE_PC_DIMM,
