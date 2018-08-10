@@ -953,7 +953,7 @@ mymain(void)
     DO_TEST("hugepages-numa-default-dimm",
             QEMU_CAPS_DEVICE_PC_DIMM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-pages",
+    DO_TEST("hugepages-numa-nodeset",
             QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages2", QEMU_CAPS_OBJECT_MEMORY_RAM,
