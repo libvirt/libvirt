@@ -327,9 +327,9 @@ mymain(void)
 
     DO_TEST("pages-discard", NONE);
     DO_TEST("hugepages-default", NONE);
+    DO_TEST("hugepages-numa-default-2M", NONE);
     DO_TEST("hugepages-numa-default-dimm", NONE);
     DO_TEST("hugepages-numa-nodeset", NONE);
-    DO_TEST("hugepages-pages2", NONE);
     DO_TEST("hugepages-pages3", NONE);
     DO_TEST("hugepages-pages4", NONE);
     DO_TEST("hugepages-pages5", NONE);
