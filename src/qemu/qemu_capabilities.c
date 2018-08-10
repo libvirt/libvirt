@@ -516,6 +516,7 @@ struct virQEMUCapsMachineType {
     char *alias;
     unsigned int maxCpus;
     bool hotplugCpus;
+    bool qemuDefault;
 };
 
 typedef struct _virQEMUCapsHostCPUData virQEMUCapsHostCPUData;
@@ -1644,6 +1645,8 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
             goto error;
         ret->machineTypes[i].maxCpus = qemuCaps->machineTypes[i].maxCpus;
         ret->machineTypes[i].hotplugCpus = qemuCaps->machineTypes[i].hotplugCpus;
+        ret->machineTypes[i].qemuDefault = qemuCaps->machineTypes[i].qemuDefault;
+
     }
 
     if (VIR_ALLOC_N(ret->gicCapabilities, qemuCaps->ngicCapabilities) < 0)
@@ -2339,8 +2342,10 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
             preferredIdx = qemuCaps->nmachineTypes - 1;
         }
 
-        if (machines[i]->isDefault)
+        if (machines[i]->isDefault) {
+            mach->qemuDefault = true;
             defIdx = qemuCaps->nmachineTypes - 1;
+        }
     }
 
     /*
@@ -3424,7 +3429,7 @@ virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
  *   ...
  *   <cpu name="pentium3"/>
  *   ...
- *   <machine name="pc-1.0" alias="pc" hotplugCpus='yes' maxCpus="4"/>
+ *   <machine name="pc-1.0" alias="pc" hotplugCpus='yes' maxCpus="4" default="yes"/>
  *   ...
  * </qemuCaps>
  */
@@ -3588,6 +3593,11 @@ virQEMUCapsLoadCache(virArch hostArch,
             str = virXMLPropString(nodes[i], "hotplugCpus");
             if (STREQ_NULLABLE(str, "yes"))
                 qemuCaps->machineTypes[i].hotplugCpus = true;
+            VIR_FREE(str);
+
+            str = virXMLPropString(nodes[i], "default");
+            if (STREQ_NULLABLE(str, "yes"))
+                qemuCaps->machineTypes[i].qemuDefault = true;
             VIR_FREE(str);
         }
     }
@@ -3858,8 +3868,11 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
                               qemuCaps->machineTypes[i].alias);
         if (qemuCaps->machineTypes[i].hotplugCpus)
             virBufferAddLit(&buf, " hotplugCpus='yes'");
-        virBufferAsprintf(&buf, " maxCpus='%u'/>\n",
+        virBufferAsprintf(&buf, " maxCpus='%u'",
                           qemuCaps->machineTypes[i].maxCpus);
+        if (qemuCaps->machineTypes[i].qemuDefault)
+            virBufferAddLit(&buf, " default='yes'");
+        virBufferAddLit(&buf, "/>\n");
     }
 
     for (i = 0; i < qemuCaps->ngicCapabilities; i++) {

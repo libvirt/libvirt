@@ -1029,7 +1029,7 @@
   <cpu type='tcg' name='MPC8544E_v11'/>
   <cpu type='tcg' name='405GPb'/>
   <cpu type='tcg' name='MPC8541E_v11'/>
-  <machine name='pseries-2.10' alias='pseries' hotplugCpus='yes' maxCpus='1024'/>
+  <machine name='pseries-2.10' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes'/>
   <machine name='ref405ep' maxCpus='1'/>
   <machine name='virtex-ml507' maxCpus='1'/>
   <machine name='powernv' maxCpus='2048'/>

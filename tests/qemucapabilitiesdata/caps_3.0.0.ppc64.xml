@@ -1047,7 +1047,7 @@
   <cpu type='tcg' name='750_v3.1'/>
   <cpu type='tcg' name='power5+_v2.1'/>
   <cpu type='tcg' name='mpc8568e'/>
-  <machine name='pseries-3.0' alias='pseries' hotplugCpus='yes' maxCpus='1024'/>
+  <machine name='pseries-3.0' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes'/>
   <machine name='ref405ep' maxCpus='1'/>
   <machine name='sam460ex' maxCpus='1'/>
   <machine name='virtex-ml507' maxCpus='1'/>

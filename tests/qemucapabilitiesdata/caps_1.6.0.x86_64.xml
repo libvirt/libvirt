@@ -164,7 +164,7 @@
   <cpu type='tcg' name='core2duo'/>
   <cpu type='tcg' name='phenom'/>
   <cpu type='tcg' name='qemu64'/>
-  <machine name='pc-i440fx-1.6' alias='pc' maxCpus='255'/>
+  <machine name='pc-i440fx-1.6' alias='pc' maxCpus='255' default='yes'/>
   <machine name='pc-q35-1.4' maxCpus='255'/>
   <machine name='pc-q35-1.5' maxCpus='255'/>
   <machine name='pc-q35-1.6' alias='q35' maxCpus='255'/>

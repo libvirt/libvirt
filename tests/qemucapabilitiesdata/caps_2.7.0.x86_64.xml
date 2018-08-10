@@ -241,7 +241,7 @@
   <cpu type='tcg' name='core2duo'/>
   <cpu type='tcg' name='phenom'/>
   <cpu type='tcg' name='qemu64'/>
-  <machine name='pc-i440fx-2.7' alias='pc' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.7' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes'/>
   <machine name='pc-0.12' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-1.3' hotplugCpus='yes' maxCpus='255'/>

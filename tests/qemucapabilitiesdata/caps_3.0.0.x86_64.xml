@@ -1156,7 +1156,7 @@
     <blocker name='3dnowprefetch'/>
   </cpu>
   <cpu type='tcg' name='486' usable='yes'/>
-  <machine name='pc-i440fx-3.0' alias='pc' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-3.0' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes'/>
   <machine name='isapc' hotplugCpus='yes' maxCpus='1'/>
   <machine name='pc-1.1' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-1.2' hotplugCpus='yes' maxCpus='255'/>

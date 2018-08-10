@@ -1004,7 +1004,7 @@
   <cpu type='tcg' name='MPC8544E_v11'/>
   <cpu type='tcg' name='405GPb'/>
   <cpu type='tcg' name='MPC8541E_v11'/>
-  <machine name='pseries-2.6' alias='pseries' maxCpus='255'/>
+  <machine name='pseries-2.6' alias='pseries' maxCpus='255' default='yes'/>
   <machine name='ref405ep' maxCpus='1'/>
   <machine name='virtex-ml507' maxCpus='1'/>
   <machine name='ppce500' maxCpus='32'/>
