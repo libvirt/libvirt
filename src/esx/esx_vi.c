@@ -205,11 +205,17 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
         break;
 
       case CURLINFO_DATA_IN:
+      case CURLINFO_SSL_DATA_IN:
         VIR_DEBUG("CURLINFO_DATA_IN [[[[%s]]]]", buffer);
         break;
 
       case CURLINFO_DATA_OUT:
+      case CURLINFO_SSL_DATA_OUT:
         VIR_DEBUG("CURLINFO_DATA_OUT [[[[%s]]]]", buffer);
+        break;
+
+      case CURLINFO_END:
+        VIR_DEBUG("CURLINFO_END [[[[%s]]]]", buffer);
         break;
 
       default:
