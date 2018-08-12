@@ -41,6 +41,8 @@
 
 #define ISCSI_DEFAULT_TARGET_PORT 3260
 #define VIR_ISCSI_TEST_UNIT_TIMEOUT 30 * 1000
+#define BLOCK_PER_PACKET 128
+#define VOL_NAME_PREFIX "unit:0:0:"
 
 VIR_LOG_INIT("storage.storage_backend_iscsi_direct");
 
@@ -225,7 +227,7 @@ virISCSIDirectSetVolumeAttributes(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
-    if (virAsprintf(&vol->name, "unit:0:0:%u", lun) < 0)
+    if (virAsprintf(&vol->name, "%s%u", VOL_NAME_PREFIX, lun) < 0)
         return -1;
     if (virAsprintf(&vol->key, "ip-%s-iscsi-%s-lun-%u", portal,
                     def->source.devices[0].path, lun) < 0)
@@ -608,12 +610,126 @@ virStorageBackendISCSIDirectRefreshPool(virStoragePoolObjPtr pool)
     return ret;
 }
 
+static int
+virStorageBackendISCSIDirectGetLun(virStorageVolDefPtr vol,
+                                   int *lun)
+{
+    const char *name = vol->name;
+    int ret = -1;
+
+    if (!STRPREFIX(name, VOL_NAME_PREFIX)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid volume name %s"), name);
+        goto cleanup;
+    }
+
+    name += strlen(VOL_NAME_PREFIX);
+    if (virStrToLong_i(name, NULL, 10, lun) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+static int
+virStorageBackendISCSIDirectVolWipeZero(virStorageVolDefPtr vol,
+                                        struct iscsi_context *iscsi)
+{
+    uint32_t lba = 0;
+    uint32_t block_size;
+    uint32_t nb_block;
+    struct scsi_task *task = NULL;
+    int lun = 0;
+    int ret = -1;
+    unsigned char *data;
+
+    if (virStorageBackendISCSIDirectGetLun(vol, &lun) < 0)
+        return ret;
+    if (virISCSIDirectTestUnitReady(iscsi, lun) < 0)
+        return ret;
+    if (virISCSIDirectGetVolumeCapacity(iscsi, lun, &block_size, &nb_block))
+        return ret;
+    if (VIR_ALLOC_N(data, block_size * BLOCK_PER_PACKET))
+        return ret;
+
+    while (lba < nb_block) {
+        if (nb_block - lba > block_size * BLOCK_PER_PACKET) {
+
+            if (!(task = iscsi_write10_sync(iscsi, lun, lba, data,
+                                            block_size * BLOCK_PER_PACKET,
+                                            block_size, 0, 0, 0, 0, 0)))
+                goto cleanup;
+            scsi_free_scsi_task(task);
+            lba += BLOCK_PER_PACKET;
+        } else {
+            if (!(task = iscsi_write10_sync(iscsi, lun, lba, data, block_size,
+                                        block_size, 0, 0, 0, 0, 0)))
+                goto cleanup;
+            scsi_free_scsi_task(task);
+            lba++;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(data);
+    return ret;
+}
+
+static int
+virStorageBackenISCSIDirectWipeVol(virStoragePoolObjPtr pool,
+                                   virStorageVolDefPtr vol,
+                                   unsigned int algorithm,
+                                   unsigned int flags)
+{
+    struct iscsi_context *iscsi = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(iscsi = virStorageBackendISCSIDirectSetConnection(pool, NULL)))
+        return -1;
+
+    switch ((virStorageVolWipeAlgorithm) algorithm) {
+    case VIR_STORAGE_VOL_WIPE_ALG_ZERO:
+        if (virStorageBackendISCSIDirectVolWipeZero(vol, iscsi) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to wipe volume %s"),
+                           vol->name);
+            goto cleanup;
+        }
+        break;
+    case VIR_STORAGE_VOL_WIPE_ALG_TRIM:
+    case VIR_STORAGE_VOL_WIPE_ALG_NNSA:
+    case VIR_STORAGE_VOL_WIPE_ALG_DOD:
+    case VIR_STORAGE_VOL_WIPE_ALG_BSI:
+    case VIR_STORAGE_VOL_WIPE_ALG_GUTMANN:
+    case VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER:
+    case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7:
+    case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33:
+    case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
+    case VIR_STORAGE_VOL_WIPE_ALG_LAST:
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported algorithm %d"),
+                       algorithm);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virISCSIDirectDisconnect(iscsi);
+    iscsi_destroy_context(iscsi);
+    return ret;
+}
+
+
 virStorageBackend virStorageBackendISCSIDirect = {
     .type = VIR_STORAGE_POOL_ISCSI_DIRECT,
 
     .checkPool = virStorageBackendISCSIDirectCheckPool,
     .findPoolSources = virStorageBackendISCSIDirectFindPoolSources,
     .refreshPool = virStorageBackendISCSIDirectRefreshPool,
+    .wipeVol = virStorageBackenISCSIDirectWipeVol,
 };
 
 int
