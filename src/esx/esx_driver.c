@@ -1317,6 +1317,8 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
                 ++ptr;
             }
 
+            /* Make sure the string fits in mode */
+            dynamicProperty->val->string[sizeof(nodeinfo->model) - 1] = '\0';
             if (virStrcpyStatic(nodeinfo->model, dynamicProperty->val->string) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("CPU Model %s too long for destination"),
