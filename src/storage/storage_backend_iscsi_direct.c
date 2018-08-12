@@ -237,13 +237,13 @@ virISCSIDirectSetVolumeAttributes(virStoragePoolObjPtr pool,
 }
 
 static int
-virISCSIDirectSetVolumeCapacity(struct iscsi_context *iscsi,
-                                virStorageVolDefPtr vol,
-                                int lun)
+virISCSIDirectGetVolumeCapacity(struct iscsi_context *iscsi,
+                                int lun,
+                                uint32_t *block_size,
+                                uint32_t *nb_block)
 {
     struct scsi_task *task = NULL;
     struct scsi_inquiry_standard *inq = NULL;
-    long long size = 0;
     int ret = -1;
 
     if (!(task = iscsi_inquiry_sync(iscsi, lun, 0, 0, 64)) ||
@@ -282,10 +282,8 @@ virISCSIDirectSetVolumeCapacity(struct iscsi_context *iscsi,
             goto cleanup;
         }
 
-        size  = rc10->block_size;
-        size *= rc10->lba;
-        vol->target.capacity = size;
-        vol->target.allocation = size;
+        *block_size  = rc10->block_size;
+        *nb_block = rc10->lba;
 
     }
 
@@ -303,6 +301,8 @@ virISCSIDirectRefreshVol(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageVolDefPtr vol = NULL;
+    uint32_t block_size;
+    uint32_t nb_block;
     int ret = -1;
 
     virStoragePoolObjClearVols(pool);
@@ -314,9 +314,11 @@ virISCSIDirectRefreshVol(virStoragePoolObjPtr pool,
 
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
-    if (virISCSIDirectSetVolumeCapacity(iscsi, vol, lun) < 0)
+    if (virISCSIDirectGetVolumeCapacity(iscsi, lun, &block_size, &nb_block) < 0)
         goto cleanup;
 
+    vol->target.capacity = block_size * nb_block;
+    vol->target.allocation = block_size * nb_block;
     def->capacity += vol->target.capacity;
     def->allocation += vol->target.allocation;
 
