@@ -556,23 +556,45 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
     return ret;
 }
 
-static int
-virStorageBackendISCSIDirectRefreshPool(virStoragePoolObjPtr pool)
+static struct iscsi_context *
+virStorageBackendISCSIDirectSetConnection(virStoragePoolObjPtr pool,
+                                          char **portalRet)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     struct iscsi_context *iscsi = NULL;
     char *portal = NULL;
-    int ret = -1;
 
     if (!(iscsi = virISCSIDirectCreateContext(def->source.initiator.iqn)))
-        goto cleanup;
+        goto error;
     if (!(portal = virStorageBackendISCSIDirectPortal(&def->source)))
-        goto cleanup;
+        goto error;
     if (virStorageBackendISCSIDirectSetAuth(iscsi, &def->source) < 0)
-        goto cleanup;
+        goto error;
     if (virISCSIDirectSetContext(iscsi, def->source.devices[0].path, ISCSI_SESSION_NORMAL) < 0)
-        goto cleanup;
+        goto error;
     if (virISCSIDirectConnect(iscsi, portal) < 0)
+        goto error;
+
+    if (portalRet)
+        VIR_STEAL_PTR(*portalRet, portal);
+
+ cleanup:
+    VIR_FREE(portal);
+    return iscsi;
+
+ error:
+    iscsi_destroy_context(iscsi);
+    iscsi = NULL;
+    goto cleanup;
+}
+
+static int
+virStorageBackendISCSIDirectRefreshPool(virStoragePoolObjPtr pool)
+{
+    struct iscsi_context *iscsi = NULL;
+    char *portal = NULL;
+    int ret = -1;
+    if (!(iscsi = virStorageBackendISCSIDirectSetConnection(pool, &portal)))
         goto cleanup;
     if (virISCSIDirectReportLuns(pool, iscsi, portal) < 0)
         goto disconect;
@@ -580,9 +602,9 @@ virStorageBackendISCSIDirectRefreshPool(virStoragePoolObjPtr pool)
     ret = 0;
  disconect:
     virISCSIDirectDisconnect(iscsi);
+    iscsi_destroy_context(iscsi);
  cleanup:
     VIR_FREE(portal);
-    iscsi_destroy_context(iscsi);
     return ret;
 }
 
