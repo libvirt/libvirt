@@ -24,19 +24,23 @@
 #ifndef __QEMU_PARSE_COMMAND_H__
 # define __QEMU_PARSE_COMMAND_H__
 
+# include "virfilecache.h"
+
 # define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
 
 /*
  * NB: def->name can be NULL upon return and the caller
  * *must* decide how to fill in a name in this case
  */
-virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
+virDomainDefPtr qemuParseCommandLineString(virFileCachePtr capsCache,
+                                           virCapsPtr caps,
                                            virDomainXMLOptionPtr xmlopt,
                                            const char *args,
                                            char **pidfile,
                                            virDomainChrSourceDefPtr *monConfig,
                                            bool *monJSON);
-virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
+virDomainDefPtr qemuParseCommandLinePid(virFileCachePtr capsCache,
+                                        virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
                                         pid_t pid,
                                         char **pidfile,

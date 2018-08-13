@@ -2069,6 +2069,18 @@ const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
     return name;
 }
 
+const char *
+virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
+        if (qemuCaps->machineTypes[i].qemuDefault)
+            return qemuCaps->machineTypes[i].name;
+    }
+
+    return NULL;
+}
 
 int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
                                  const char *name)

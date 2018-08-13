@@ -7103,7 +7103,8 @@ static char *qemuConnectDomainXMLFromNative(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    def = qemuParseCommandLineString(caps, driver->xmlopt, config,
+    def = qemuParseCommandLineString(driver->qemuCapsCache,
+                                     caps, driver->xmlopt, config,
                                      NULL, NULL, NULL);
     if (!def)
         goto cleanup;
@@ -16606,7 +16607,8 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!(def = qemuParseCommandLinePid(caps, driver->xmlopt, pid,
+    if (!(def = qemuParseCommandLinePid(driver->qemuCapsCache,
+                                        caps, driver->xmlopt, pid,
                                         &pidfile, &monConfig, &monJSON)))
         goto cleanup;
 

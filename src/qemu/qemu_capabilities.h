@@ -559,6 +559,7 @@ bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                    virCPUMode mode);
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
                                            const char *name);
+const char *virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps);
 int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
                                  const char *name);
 bool virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,

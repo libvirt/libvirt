@@ -65,7 +65,8 @@ static int testCompareXMLToArgvFiles(const char *xmlfile,
     if (virTestLoadFile(cmdfile, &cmd) < 0)
         goto fail;
 
-    if (!(vmdef = qemuParseCommandLineString(driver.caps, driver.xmlopt,
+    if (!(vmdef = qemuParseCommandLineString(driver.qemuCapsCache,
+                                             driver.caps, driver.xmlopt,
                                              cmd, NULL, NULL, NULL)))
         goto fail;
 
@@ -154,6 +155,20 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
+# define LOAD_CAPS(arch) \
+    do { \
+        virQEMUCapsPtr qemuCaps; \
+        qemuCaps = qemuTestParseCapabilitiesArch(VIR_ARCH_X86_64, \
+                                                 "qemucapabilitiesdata/caps_2.12.0." arch ".xml"); \
+        if (virFileCacheInsertData(driver.qemuCapsCache, \
+                                   "/usr/bin/qemu-system-" arch, \
+                                   qemuCaps) < 0) \
+            return EXIT_FAILURE; \
+    } while (0)
+
+    LOAD_CAPS("x86_64");
+    LOAD_CAPS("aarch64");
+    LOAD_CAPS("ppc64");
 
 # define DO_TEST_FULL(name, flags) \
     do { \
@@ -290,7 +305,6 @@ mymain(void)
     DO_TEST("machine-keywrap-none-argv");
 
     DO_TEST("nomachine-x86_64");
-    DO_TEST("nomachine-aarch64");
     DO_TEST("nomachine-ppc64");
 
     qemuTestDriverFree(&driver);

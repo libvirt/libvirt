@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>524288</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='ppc64' machine='pseries'>hvm</type>
+    <type arch='ppc64' machine='pseries-2.12'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>
@@ -14,7 +14,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
-    <controller type='usb' index='0'>
+    <controller type='usb' index='0' model='pci-ohci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'>

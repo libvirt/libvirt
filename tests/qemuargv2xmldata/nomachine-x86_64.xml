@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>524288</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-0.11'>hvm</type>
+    <type arch='x86_64' machine='pc-i440fx-2.12'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
@@ -30,7 +30,7 @@
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
-    <controller type='usb' index='0'>
+    <controller type='usb' index='0' model='piix3-uhci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
