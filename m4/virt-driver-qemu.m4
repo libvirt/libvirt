@@ -27,9 +27,6 @@ AC_DEFUN([LIBVIRT_DRIVER_ARG_QEMU], [
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_QEMU], [
   AC_REQUIRE([LIBVIRT_CHECK_JANSSON])
-  if test "$with_qemu:$with_jansson" = "yes:no"; then
-    AC_MSG_ERROR([Jansson >= 2.5 is required to build QEMU driver])
-  fi
   if test "$with_qemu" = "check"; then
     with_qemu=$with_jansson
   fi
