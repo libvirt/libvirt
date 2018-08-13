@@ -303,6 +303,11 @@ virStorageBackendISCSISetAuth(const char *portal,
                                  &secret_value, &secret_size) < 0)
         goto cleanup;
 
+    if (VIR_REALLOC_N(secret_value, secret_size + 1) < 0)
+        goto cleanup;
+
+    secret_value[secret_size] = '\0';
+
     if (virISCSINodeUpdate(portal,
                            source->devices[0].path,
                            "node.session.auth.authmethod",

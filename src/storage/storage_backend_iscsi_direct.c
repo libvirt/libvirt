@@ -115,6 +115,11 @@ virStorageBackendISCSIDirectSetAuth(struct iscsi_context *iscsi,
                                  &secret_value, &secret_size) < 0)
         goto cleanup;
 
+    if (VIR_REALLOC_N(secret_value, secret_size + 1) < 0)
+        goto cleanup;
+
+    secret_value[secret_size] = '\0';
+
     if (iscsi_set_initiator_username_pwd(iscsi,
                                          authdef->username,
                                          (const char *)secret_value) < 0) {
