@@ -898,8 +898,6 @@ Requires: ncurses
 Requires: gettext
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
-# We dlopen(libjansson.so.4), so need an explicit dep
-Requires: jansson
 %if %{with_bash_completion}
 Requires: %{name}-bash-completion = %{version}-%{release}
 %endif

@@ -1437,8 +1437,7 @@ virJSONValueCopy(const virJSONValue *in)
 
 
 #if WITH_JANSSON
-
-# include "virjsoncompat.h"
+# include <jansson.h>
 
 static virJSONValuePtr
 virJSONValueFromJansson(json_t *json)
@@ -1524,9 +1523,6 @@ virJSONValueFromString(const char *jsonstring)
     json_error_t error;
     size_t flags = JSON_REJECT_DUPLICATES |
                    JSON_DECODE_ANY;
-
-    if (virJSONInitialize() < 0)
-        return NULL;
 
     if (!(json = json_loads(jsonstring, flags, &error))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1633,9 +1629,6 @@ virJSONValueToString(virJSONValuePtr object,
     size_t flags = JSON_ENCODE_ANY;
     json_t *json;
     char *str = NULL;
-
-    if (virJSONInitialize() < 0)
-        return NULL;
 
     if (pretty)
         flags |= JSON_INDENT(2);
