@@ -2060,6 +2060,10 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             goto error;
         break;
 
+    case VIR_DOMAIN_DISK_BUS_FDC:
+        virBufferAsprintf(&opt, "floppy,unit=%d", disk->info.addr.drive.unit);
+        break;
+
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported disk bus '%s' with device setup"), bus);
@@ -2181,16 +2185,19 @@ qemuBuildFloppyCommandLineControllerOptions(virCommandPtr cmd,
         else
             driveLetter = 'A';
 
-        if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
-            goto cleanup;
-
-        if (backendAlias &&
-            virAsprintf(&backendStr, "drive%c=%s", driveLetter, backendAlias) < 0)
-            goto cleanup;
-
         if (bootindex &&
             virAsprintf(&bootindexStr, "bootindex%c=%u", driveLetter, bootindex) < 0)
             goto cleanup;
+
+        /* with -blockdev we setup the floppy device and it's backend with -device */
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
+                goto cleanup;
+
+            if (backendAlias &&
+                virAsprintf(&backendStr, "drive%c=%s", driveLetter, backendAlias) < 0)
+                goto cleanup;
+        }
 
         if (!explicitfdc) {
             if (backendStr) {
@@ -2304,7 +2311,8 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
         return -1;
 
     if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC) {
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC ||
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
             virCommandAddArg(cmd, "-device");
 
             if (!(optstr = qemuBuildDiskDeviceStr(def, disk, bootindex,
@@ -2328,6 +2336,7 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
     unsigned int bootCD = 0;
     unsigned int bootFloppy = 0;
     unsigned int bootDisk = 0;
+    bool blockdev = virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     for (i = 0; i < def->os.nBootDevs; i++) {
         switch (def->os.bootDevs[i]) {
@@ -2342,6 +2351,12 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
             break;
         }
     }
+
+    /* If we want to express the floppy drives via -device, the controller needs
+     * to be instantiated prior to that */
+    if (blockdev &&
+        qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps, bootFloppy) < 0)
+        return -1;
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
@@ -2363,12 +2378,17 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
             }
         }
 
-        if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps,
-                                     bootindex) < 0)
+        /* The floppy device itself does not support the bootindex property
+         * so we need to set it up for the controller */
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+            bootindex = 0;
+
+        if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps, bootindex) < 0)
             return -1;
     }
 
-    if (qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps, bootFloppy) < 0)
+    if (!blockdev &&
+        qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps, bootFloppy) < 0)
         return -1;
 
     return 0;
