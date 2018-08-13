@@ -26,7 +26,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
-#if defined(HAVE_SOCKETPAIR) && defined(WITH_JANSSON)
+#if defined(HAVE_SOCKETPAIR) && defined(WITH_YAJL)
 struct testClientPriv {
     int magic;
 };

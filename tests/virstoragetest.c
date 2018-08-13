@@ -1317,7 +1317,7 @@ mymain(void)
                        "  <host name='example.org' port='6000'/>\n"
                        "</source>\n");
 
-#ifdef WITH_JANSSON
+#ifdef WITH_YAJL
     TEST_BACKING_PARSE("json:", NULL);
     TEST_BACKING_PARSE("json:asdgsdfg", NULL);
     TEST_BACKING_PARSE("json:{}", NULL);
@@ -1581,7 +1581,7 @@ mymain(void)
                        "<source protocol='vxhs' name='c6718f6b-0401-441d-a8c3-1f0064d75ee0'>\n"
                        "  <host name='example.com' port='9999'/>\n"
                        "</source>\n");
-#endif /* WITH_JANSSON */
+#endif /* WITH_YAJL */
 
  cleanup:
     /* Final cleanup */

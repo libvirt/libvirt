@@ -27,9 +27,9 @@ AC_DEFUN([LIBVIRT_CHECK_NSS],[
   bsd_nss=no
   fail=0
   if test "x$with_nss_plugin" != "xno" ; then
-    if test "x$with_jansson" != "xyes" ; then
+    if test "x$with_yajl" != "xyes" ; then
       if test "x$with_nss_plugin" = "xyes" ; then
-        AC_MSG_ERROR([Can't build nss plugin without JSON support])
+        AC_MSG_ERROR([Can't build nss plugin without yajl])
       else
         with_nss_plugin=no
       fi

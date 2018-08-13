@@ -33,7 +33,7 @@
 
 #include "testutils.h"
 
-#if defined(WITH_LIBXL) && defined(WITH_JANSSON) && defined(HAVE_LIBXL_DOMAIN_CONFIG_FROM_JSON)
+#if defined(WITH_LIBXL) && defined(WITH_YAJL) && defined(HAVE_LIBXL_DOMAIN_CONFIG_FROM_JSON)
 
 # include "internal.h"
 # include "viralloc.h"
@@ -228,4 +228,4 @@ int main(void)
     return EXIT_AM_SKIP;
 }
 
-#endif /* WITH_LIBXL && WITH_JANSSON && HAVE_LIBXL_DOMAIN_CONFIG_FROM_JSON */
+#endif /* WITH_LIBXL && WITH_YAJL && HAVE_LIBXL_DOMAIN_CONFIG_FROM_JSON */

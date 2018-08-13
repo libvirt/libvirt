@@ -309,7 +309,6 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
             goto cleanup;
 
         virBufferAdd(&buf, jsonstr, -1);
-        virBufferAddLit(&buf, "\n");
         VIR_FREE(jsonstr);
     }
 
