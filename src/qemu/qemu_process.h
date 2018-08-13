@@ -187,8 +187,9 @@ bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
 int qemuProcessSetSchedParams(int id, pid_t pid, size_t nsp,
                               virDomainThreadSchedParamPtr sp);
 
-virDomainDiskDefPtr qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
-                                                     const char *alias);
+virDomainDiskDefPtr qemuProcessFindDomainDiskByAliasOrQOM(virDomainObjPtr vm,
+                                                          const char *alias,
+                                                          const char *qomid);
 
 int qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm);
 

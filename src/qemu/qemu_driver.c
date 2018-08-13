@@ -4727,7 +4727,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if ((disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias)))
+    if ((disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL)))
         qemuBlockJobEventProcess(driver, vm, disk, QEMU_ASYNC_JOB_NONE, type, status);
 
  endjob:

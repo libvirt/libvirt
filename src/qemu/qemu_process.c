@@ -350,27 +350,47 @@ qemuProcessHandleMonitorError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+/**
+ * qemuProcessFindDomainDiskByAliasOrQOM:
+ * @vm: domain object to search for the disk
+ * @alias: -drive or -device alias of the disk
+ * @qomid: QOM tree device name
+ *
+ * Looks up a disk in the domain definition of @vm which either matches the
+ * -drive or -device alias used for the backend and frontend respectively or the
+ * QOM name. If @alias is empty it's treated as NULL as it's a mandatory field
+ * in some cases.
+ *
+ * Returns a disk from @vm or NULL if it could not be found.
+ */
 virDomainDiskDefPtr
-qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
-                                 const char *alias)
+qemuProcessFindDomainDiskByAliasOrQOM(virDomainObjPtr vm,
+                                      const char *alias,
+                                      const char *qomid)
 {
     size_t i;
 
-    alias = qemuAliasDiskDriveSkipPrefix(alias);
+    if (alias && *alias == '\0')
+        alias = NULL;
+
+    if (alias)
+        alias = qemuAliasDiskDriveSkipPrefix(alias);
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk;
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-        disk = vm->def->disks[i];
-        if (disk->info.alias != NULL && STREQ(disk->info.alias, alias))
+        if ((disk->info.alias && STREQ_NULLABLE(disk->info.alias, alias)) ||
+            (diskPriv->qomName && STREQ_NULLABLE(diskPriv->qomName, qomid)))
             return disk;
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("no disk found with alias %s"),
-                   alias);
+                   _("no disk found with alias '%s' or id '%s'"),
+                   NULLSTR(alias), NULLSTR(qomid));
     return NULL;
 }
+
 
 static int
 qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
@@ -849,7 +869,7 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
-    disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias);
+    disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL);
 
     if (disk) {
         srcPath = virDomainDiskGetSource(disk);
@@ -912,7 +932,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     VIR_DEBUG("Block job for device %s (domain: %p,%s) type %d status %d",
               diskAlias, vm, vm->def->name, type, status);
 
-    if (!(disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias)))
+    if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL)))
         goto error;
     diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
@@ -1050,7 +1070,7 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
-    disk = qemuProcessFindDomainDiskByAlias(vm, devAlias);
+    disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, devAlias, NULL);
 
     if (disk) {
         event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
