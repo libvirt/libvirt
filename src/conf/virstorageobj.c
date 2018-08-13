@@ -1910,8 +1910,8 @@ virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
 
 #define MATCH(FLAG) (flags & (FLAG))
 static bool
-virStoragePoolMatch(virStoragePoolObjPtr obj,
-                    unsigned int flags)
+virStoragePoolObjMatch(virStoragePoolObjPtr obj,
+                       unsigned int flags)
 {
     /* filter by active state */
     if (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) &&
@@ -2005,7 +2005,7 @@ virStoragePoolObjListExportCallback(void *payload,
     if (data->filter && !data->filter(data->conn, obj->def))
         goto cleanup;
 
-    if (!virStoragePoolMatch(obj, data->flags))
+    if (!virStoragePoolObjMatch(obj, data->flags))
         goto cleanup;
 
     if (data->pools) {

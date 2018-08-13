@@ -1284,8 +1284,8 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
 
 #define MATCH(FLAG) (flags & (FLAG))
 static bool
-virNetworkMatch(virNetworkObjPtr obj,
-                unsigned int flags)
+virNetworkObjMatch(virNetworkObjPtr obj,
+                   unsigned int flags)
 {
     /* filter by active state */
     if (MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) &&
@@ -1345,7 +1345,7 @@ virNetworkObjListExportCallback(void *payload,
         !data->filter(data->conn, obj->def))
         goto cleanup;
 
-    if (!virNetworkMatch(obj, data->flags))
+    if (!virNetworkObjMatch(obj, data->flags))
         goto cleanup;
 
     if (!data->nets) {
@@ -1561,7 +1561,7 @@ virNetworkObjListPruneHelper(const void *payload,
     int want = 0;
 
     virObjectLock(obj);
-    want = virNetworkMatch(obj, data->flags);
+    want = virNetworkObjMatch(obj, data->flags);
     virObjectUnlock(obj);
     return want;
 }
