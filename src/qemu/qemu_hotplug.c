@@ -641,15 +641,11 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuHotplugDiskSourceDataPtr diskdata = NULL;
     char *devstr = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
 
     if (qemuAssignDeviceDiskAlias(vm->def, disk) < 0)
-        goto error;
-
-    if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto error;
 
     if (!(diskdata = qemuHotplugDiskSourceAttachPrepare(disk, priv->qemuCaps)))
@@ -686,7 +682,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     qemuHotplugDiskSourceDataFree(diskdata);
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(devstr);
-    virObjectUnref(cfg);
     return ret;
 
  exit_monitor:
@@ -927,6 +922,8 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
                                bool forceMediaChange)
 {
     size_t i;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
     int ret = -1;
@@ -941,6 +938,9 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainDetermineDiskChain(driver, vm, disk, true) < 0)
+        goto cleanup;
+
+    if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto cleanup;
 
     switch ((virDomainDiskDevice) disk->device)  {
@@ -1013,6 +1013,7 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
  cleanup:
     if (ret != 0)
         ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
+    virObjectUnref(cfg);
     return ret;
 }
 
