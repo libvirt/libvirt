@@ -651,8 +651,7 @@ virNetDevIPCheckIPv6Forwarding(void)
 
  cleanup:
     nlmsg_free(nlmsg);
-    for (i = 0; i < data.ndevices; i++)
-        VIR_FREE(data.devices[i]);
+    virStringListFreeCount(data.devices, data.ndevices);
     return valid;
 }
 
