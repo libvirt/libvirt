@@ -838,7 +838,9 @@ virNodeDeviceMatch(virNodeDeviceObjPtr obj,
 #undef MATCH
 
 
-struct virNodeDeviceObjListExportData {
+typedef struct _virNodeDeviceObjListExportData virNodeDeviceObjListExportData;
+typedef virNodeDeviceObjListExportData *virNodeDeviceObjListExportDataPtr;
+struct _virNodeDeviceObjListExportData {
     virConnectPtr conn;
     virNodeDeviceObjListFilter filter;
     unsigned int flags;
@@ -854,7 +856,7 @@ virNodeDeviceObjListExportCallback(void *payload,
 {
     virNodeDeviceObjPtr obj = payload;
     virNodeDeviceDefPtr def;
-    struct virNodeDeviceObjListExportData *data = opaque;
+    virNodeDeviceObjListExportDataPtr data = opaque;
     virNodeDevicePtr device = NULL;
 
     if (data->error)
@@ -890,7 +892,7 @@ virNodeDeviceObjListExport(virConnectPtr conn,
                            virNodeDeviceObjListFilter filter,
                            unsigned int flags)
 {
-    struct virNodeDeviceObjListExportData data = {
+    virNodeDeviceObjListExportData data = {
         .conn = conn, .filter = filter, .flags = flags,
         .devices = NULL, .ndevices = 0, .error = false };
 

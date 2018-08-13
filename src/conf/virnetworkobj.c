@@ -1316,7 +1316,9 @@ virNetworkMatch(virNetworkObjPtr obj,
 #undef MATCH
 
 
-struct virNetworkObjListData {
+typedef struct _virNetworkObjListExportData virNetworkObjListExportData;
+typedef virNetworkObjListExportData *virNetworkObjListExportDataPtr;
+struct _virNetworkObjListExportData {
     virConnectPtr conn;
     virNetworkPtr *nets;
     virNetworkObjListFilter filter;
@@ -1330,7 +1332,7 @@ virNetworkObjListPopulate(void *payload,
                           const void *name ATTRIBUTE_UNUSED,
                           void *opaque)
 {
-    struct virNetworkObjListData *data = opaque;
+    virNetworkObjListExportDataPtr data = opaque;
     virNetworkObjPtr obj = payload;
     virNetworkPtr net = NULL;
 
@@ -1372,7 +1374,7 @@ virNetworkObjListExport(virConnectPtr conn,
                         unsigned int flags)
 {
     int ret = -1;
-    struct virNetworkObjListData data = {
+    virNetworkObjListExportData data = {
         .conn = conn, .nets = NULL, .filter = filter, .flags = flags,
         .nnets = 0, .error = false };
 

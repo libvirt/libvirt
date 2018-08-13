@@ -960,7 +960,9 @@ virStoragePoolObjVolumeGetNames(virStoragePoolObjPtr obj,
 }
 
 
-struct _virStorageVolObjExportData {
+typedef struct _virStoragePoolObjVolumeListExportData virStoragePoolObjVolumeListExportData;
+typedef virStoragePoolObjVolumeListExportData *virStoragePoolObjVolumeListExportDataPtr;
+struct _virStoragePoolObjVolumeListExportData {
     virConnectPtr conn;
     virStoragePoolVolumeACLFilter filter;
     virStoragePoolDefPtr pooldef;
@@ -975,7 +977,7 @@ virStoragePoolObjVolumeListExportCb(void *payload,
                                     void *opaque)
 {
     virStorageVolObjPtr volobj = payload;
-    struct _virStorageVolObjExportData *data = opaque;
+    virStoragePoolObjVolumeListExportDataPtr data = opaque;
     virStorageVolPtr vol = NULL;
 
     if (data->error)
@@ -1012,7 +1014,7 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
                                   virStoragePoolVolumeACLFilter filter)
 {
     virStorageVolObjListPtr volumes = obj->volumes;
-    struct _virStorageVolObjExportData data = {
+    virStoragePoolObjVolumeListExportData data = {
         .conn = conn, .filter = filter, .pooldef = obj->def, .error = false,
         .nvols = 0, .vols = NULL };
 
@@ -1971,7 +1973,9 @@ virStoragePoolMatch(virStoragePoolObjPtr obj,
 #undef MATCH
 
 
-struct _virStoragePoolExportData {
+typedef struct _virStoragePoolObjListExportData virStoragePoolObjListExportData;
+typedef virStoragePoolObjListExportData *virStoragePoolObjListExportDataPtr;
+struct _virStoragePoolObjListExportData {
     virConnectPtr conn;
     virStoragePoolObjListACLFilter filter;
     bool checkActive;
@@ -1990,7 +1994,7 @@ virStoragePoolObjListExportCb(void *payload,
                               void *opaque)
 {
     virStoragePoolObjPtr obj = payload;
-    struct _virStoragePoolExportData *data = opaque;
+    virStoragePoolObjListExportDataPtr data = opaque;
     virStoragePoolPtr pool = NULL;
 
     if (data->error)
@@ -2028,7 +2032,7 @@ virStoragePoolObjListExport(virConnectPtr conn,
                             virStoragePoolObjListFilter filter,
                             unsigned int flags)
 {
-    struct _virStoragePoolExportData data = {
+    virStoragePoolObjListExportData data = {
         .conn = conn, .filter = filter, .flags = flags, .error = false,
         .nPools = 0, .pools = NULL };
 
