@@ -3831,7 +3831,9 @@ just I<--build> is provided, then B<pool-build> is called with no flags.
 [I<--auth-type authtype> I<--auth-username username>
 [I<--secret-usage usage> | I<--secret-uuid uuid>]]
 [[I<--adapter-name name>] | [I<--adapter-wwnn> wwnn I<--adapter-wwpn> wwpn]
-[I<--adapter-parent parent>]]
+[I<--adapter-parent parent> |
+ I<--adapter-parent-wwnn parent_wwnn> I<adapter-parent-wwpn parent_wwpn> |
+ I<--adapter-parent-fabric-wwn parent_fabric_wwn>]]
 [I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]] [I<--print-xml>]
 
 
