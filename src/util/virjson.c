@@ -420,6 +420,28 @@ virJSONValueNewString(const char *data)
 }
 
 
+virJSONValuePtr
+virJSONValueNewStringLen(const char *data,
+                         size_t length)
+{
+    virJSONValuePtr val;
+
+    if (!data)
+        return virJSONValueNewNull();
+
+    if (VIR_ALLOC(val) < 0)
+        return NULL;
+
+    val->type = VIR_JSON_TYPE_STRING;
+    if (VIR_STRNDUP(val->data.string, data, length) < 0) {
+        VIR_FREE(val);
+        return NULL;
+    }
+
+    return val;
+}
+
+
 static virJSONValuePtr
 virJSONValueNewNumber(const char *data)
 {
