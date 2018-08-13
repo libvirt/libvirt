@@ -76,7 +76,6 @@ qemuMonitorSend(qemuMonitorPtr mon,
         printLineSkipEmpty("\n", stdout);
 
     printLineSkipEmpty(reformatted, stdout);
-    printLineSkipEmpty("\n", stdout);
     VIR_FREE(reformatted);
 
     return realQemuMonitorSend(mon, msg);
@@ -117,7 +116,6 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
             printLineSkipEmpty("\n", stdout);
 
         printLineSkipEmpty(json, stdout);
-        printLineSkipEmpty("\n", stdout);
     }
 
  cleanup:
