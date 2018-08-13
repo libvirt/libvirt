@@ -271,15 +271,4 @@ json_true_impl(void)
     return json_true_ptr();
 }
 
-
-#else /* !WITH_JANSSON */
-
-
-int
-virJSONInitialize(void)
-{
-    return 0;
-}
-
-
-#endif /* !WITH_JANSSON */
+#endif /* WITH_JANSSON */
