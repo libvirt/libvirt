@@ -7599,7 +7599,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
-        ret = qemuDomainAttachDeviceDiskLive(driver, vm, dev);
+        ret = qemuDomainAttachDeviceDiskLive(driver, vm, dev, false);
         if (!ret) {
             alias = dev->data.disk->info.alias;
             dev->data.disk = NULL;
@@ -7850,12 +7850,6 @@ qemuDomainChangeDiskLive(virDomainObjPtr vm,
     virDomainDeviceDef oldDev = { .type = dev->type };
     int ret = -1;
 
-    if (virDomainDiskTranslateSourcePool(disk) < 0)
-        goto cleanup;
-
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, true) < 0)
-        goto cleanup;
-
     if (!(orig_disk = virDomainDiskFindByBusAndDst(vm->def,
                                                    disk->bus, disk->dst))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7884,18 +7878,8 @@ qemuDomainChangeDiskLive(virDomainObjPtr vm,
             goto cleanup;
         }
 
-        /* Add the new disk src into shared disk hash table */
-        if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
+        if (qemuDomainAttachDeviceDiskLive(driver, vm, dev, force) < 0)
             goto cleanup;
-
-        if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
-                                           dev->data.disk->src, force) < 0) {
-            ignore_value(qemuRemoveSharedDisk(driver, dev->data.disk,
-                                              vm->def->name));
-            goto cleanup;
-        }
-
-        dev->data.disk->src = NULL;
     }
 
     orig_disk->startupPolicy = dev->data.disk->startupPolicy;

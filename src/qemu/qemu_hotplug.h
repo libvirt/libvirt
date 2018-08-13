@@ -28,12 +28,6 @@
 # include "qemu_domain.h"
 # include "domain_conf.h"
 
-int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
-                                   virDomainDiskDefPtr disk,
-                                   virStorageSourcePtr newsrc,
-                                   bool force);
-
 void qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              qemuDomainAsyncJob asyncJob,
@@ -60,7 +54,8 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
                                      virDomainControllerDefPtr controller);
 int qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
-                                   virDomainDeviceDefPtr dev);
+                                   virDomainDeviceDefPtr dev,
+                                   bool forceMediaChange);
 int qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainNetDefPtr net);
