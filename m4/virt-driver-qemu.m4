@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_QEMU], [
-  LIBVIRT_ARG_WITH_FEATURE([QEMU], [QEMU/KVM], [check])
+  LIBVIRT_ARG_WITH_FEATURE([QEMU], [QEMU/KVM], [yes])
   LIBVIRT_ARG_WITH([QEMU_USER], [username to run QEMU system instance as],
                    ['platform dependent'])
   LIBVIRT_ARG_WITH([QEMU_GROUP], [groupname to run QEMU system instance as],
@@ -26,10 +26,6 @@ AC_DEFUN([LIBVIRT_DRIVER_ARG_QEMU], [
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_QEMU], [
-  AC_REQUIRE([LIBVIRT_CHECK_JANSSON])
-  if test "$with_qemu" = "check"; then
-    with_qemu=$with_jansson
-  fi
   if test "$with_qemu" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_QEMU], 1, [whether QEMU driver is enabled])
   fi
