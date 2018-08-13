@@ -272,9 +272,9 @@ struct _virInterfaceObjListExportData {
 };
 
 static int
-virInterfaceObjListPopulate(void *payload,
-                            const void *name ATTRIBUTE_UNUSED,
-                            void *opaque)
+virInterfaceObjListExportCallback(void *payload,
+                                  const void *name ATTRIBUTE_UNUSED,
+                                  void *opaque)
 {
     virInterfaceObjListExportDataPtr data = opaque;
     virInterfaceObjPtr obj = payload;
@@ -327,7 +327,7 @@ virInterfaceObjListExport(virConnectPtr conn,
                               virHashSize(ifaceobjs->objsName) + 1) < 0)
         goto cleanup;
 
-    virHashForEach(ifaceobjs->objsName, virInterfaceObjListPopulate, &data);
+    virHashForEach(ifaceobjs->objsName, virInterfaceObjListExportCallback, &data);
 
     if (data.error)
         goto cleanup;
