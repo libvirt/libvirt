@@ -337,11 +337,6 @@ mymain(void)
     char *capslatest_x86_64 = NULL;
     virQEMUCapsPtr caps_x86_64 = NULL;
 
-#if !WITH_STABLE_ORDERING_JANSSON
-    fputs("libvirt not compiled with recent enough Jansson, skipping this test\n", stderr);
-    return EXIT_AM_SKIP;
-#endif
-
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 

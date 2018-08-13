@@ -76,11 +76,6 @@ mymain(void)
     int ret = 0;
     testQemuCommandBuildObjectFromJSONData data1;
 
-#if !WITH_STABLE_ORDERING_JANSSON
-    fputs("libvirt not compiled with recent enough Jansson, skipping this test\n", stderr);
-    return EXIT_AM_SKIP;
-#endif
-
 #if !WITH_JANSSON
     fputs("libvirt not compiled with JSON support, skipping this test\n", stderr);
     return EXIT_AM_SKIP;

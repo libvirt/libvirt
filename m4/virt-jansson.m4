@@ -22,9 +22,6 @@ AC_DEFUN([LIBVIRT_ARG_JANSSON],[
 AC_DEFUN([LIBVIRT_CHECK_JANSSON],[
   dnl Jansson http://www.digip.org/jansson/
   LIBVIRT_CHECK_PKG([JANSSON], [jansson], [2.5])
-  dnl Older versions of Jansson did not preserve the order of object keys
-  dnl use this check to guard the tests that are sensitive to this
-  LIBVIRT_CHECK_PKG([STABLE_ORDERING_JANSSON], [jansson], [2.8], [true])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_JANSSON],[

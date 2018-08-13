@@ -375,11 +375,6 @@ mymain(void)
     int ret = 0;
     const char *server_names[] = { "testServer0", "testServer1" };
 
-# if !WITH_STABLE_ORDERING_JANSSON
-    fputs("libvirt not compiled with recent enough Jansson, skipping this test\n", stderr);
-    return EXIT_AM_SKIP;
-# endif
-
     if (virInitialize() < 0 ||
         virEventRegisterDefaultImpl() < 0) {
         virDispatchError(NULL);
