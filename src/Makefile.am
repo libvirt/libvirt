@@ -752,7 +752,6 @@ libvirt_setuid_rpc_client_la_CFLAGS = \
 		$(AM_CFLAGS) \
 		$(SECDRIVER_CFLAGS) \
 		$(XDR_CFLAGS) \
-		$(DLOPEN_LIBS) \
 		$(NULL)
 endif WITH_SETUID_RPC_CLIENT
 
@@ -1001,7 +1000,6 @@ libvirt_nss_la_CFLAGS = \
 		$(NULL)
 libvirt_nss_la_LDFLAGS = \
 		$(AM_LDFLAGS) \
-		$(DLOPEN_LIBS) \
 		$(NULL)
 endif WITH_NSS
 
