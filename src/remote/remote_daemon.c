@@ -59,7 +59,6 @@
 #include "virutil.h"
 #include "virgettext.h"
 #include "util/virnetdevopenvswitch.h"
-#include "virjsoncompat.h"
 
 #include "driver.h"
 
@@ -1183,9 +1182,6 @@ int main(int argc, char **argv) {
         VIR_ERROR(_("Can't initialize logging"));
         exit(EXIT_FAILURE);
     }
-
-    if (virJSONInitialize() < 0)
-        exit(EXIT_FAILURE);
 
     daemonSetupNetDevOpenvswitch(config);
 

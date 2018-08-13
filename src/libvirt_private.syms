@@ -2133,10 +2133,6 @@ virJSONValueObjectStealObject;
 virJSONValueToString;
 
 
-# util/virjsoncompat.h
-virJSONInitialize;
-
-
 # util/virkeycode.h
 virKeycodeSetTypeFromString;
 virKeycodeSetTypeToString;
