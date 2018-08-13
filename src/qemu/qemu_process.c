@@ -1053,9 +1053,7 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     disk = qemuProcessFindDomainDiskByAlias(vm, devAlias);
 
     if (disk) {
-        event = virDomainEventTrayChangeNewFromObj(vm,
-                                                   devAlias,
-                                                   reason);
+        event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
         /* Update disk tray status */
         if (reason == VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN)
             disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
