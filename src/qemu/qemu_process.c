@@ -1061,6 +1061,7 @@ static int
 qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                             virDomainObjPtr vm,
                             const char *devAlias,
+                            const char *devid,
                             int reason,
                             void *opaque)
 {
@@ -1070,7 +1071,7 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
-    disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, devAlias, NULL);
+    disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, devAlias, devid);
 
     if (disk) {
         event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);

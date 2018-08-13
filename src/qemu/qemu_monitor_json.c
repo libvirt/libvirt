@@ -1031,11 +1031,16 @@ static void
 qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon,
                                 virJSONValuePtr data)
 {
-    const char *devAlias = NULL;
+    const char *devAlias = virJSONValueObjectGetString(data, "device");
+    const char *devid = virJSONValueObjectGetString(data, "id");
     bool trayOpened;
     int reason;
 
-    if ((devAlias = virJSONValueObjectGetString(data, "device")) == NULL) {
+    /* drive alias is always reported but empty for -blockdev */
+    if (*devAlias == '\0')
+        devAlias = NULL;
+
+    if (!devAlias && !devid) {
         VIR_WARN("missing device in tray change event");
         return;
     }
@@ -1050,7 +1055,7 @@ qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon,
     else
         reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
 
-    qemuMonitorEmitTrayChange(mon, devAlias, reason);
+    qemuMonitorEmitTrayChange(mon, devAlias, devid, reason);
 }
 
 static void

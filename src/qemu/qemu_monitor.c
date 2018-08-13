@@ -1460,13 +1460,14 @@ qemuMonitorEmitGraphics(qemuMonitorPtr mon,
 int
 qemuMonitorEmitTrayChange(qemuMonitorPtr mon,
                           const char *devAlias,
+                          const char *devid,
                           int reason)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
     QEMU_MONITOR_CALLBACK(mon, ret, domainTrayChange, mon->vm,
-                          devAlias, reason);
+                          devAlias, devid, reason);
 
     return ret;
 }

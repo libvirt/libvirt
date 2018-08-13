@@ -181,6 +181,7 @@ typedef int (*qemuMonitorDomainBlockJobCallback)(qemuMonitorPtr mon,
 typedef int (*qemuMonitorDomainTrayChangeCallback)(qemuMonitorPtr mon,
                                                    virDomainObjPtr vm,
                                                    const char *devAlias,
+                                                   const char *devid,
                                                    int reason,
                                                    void *opaque);
 typedef int (*qemuMonitorDomainPMWakeupCallback)(qemuMonitorPtr mon,
@@ -397,6 +398,7 @@ int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
                             const char *saslUsername);
 int qemuMonitorEmitTrayChange(qemuMonitorPtr mon,
                               const char *devAlias,
+                              const char *devid,
                               int reason);
 int qemuMonitorEmitPMWakeup(qemuMonitorPtr mon);
 int qemuMonitorEmitPMSuspend(qemuMonitorPtr mon);
