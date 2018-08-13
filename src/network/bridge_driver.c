@@ -2453,6 +2453,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         goto err1;
 
     virNetworkObjSetMacMap(obj, macmap);
+    macmap = NULL;
 
     /* Set bridge options */
 
@@ -2590,6 +2591,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         ignore_value(virNetDevTapDelete(macTapIfName, NULL));
         VIR_FREE(macTapIfName);
     }
+    virNetworkObjUnrefMacMap(obj);
     VIR_FREE(macMapFile);
 
  err0:
