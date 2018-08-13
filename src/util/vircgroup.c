@@ -4336,6 +4336,21 @@ virCgroupSetMemory(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
+virCgroupGetMemoryStat(virCgroupPtr group ATTRIBUTE_UNUSED,
+                       unsigned long long *cache ATTRIBUTE_UNUSED,
+                       unsigned long long *activeAnon ATTRIBUTE_UNUSED,
+                       unsigned long long *inactiveAnon ATTRIBUTE_UNUSED,
+                       unsigned long long *activeFile ATTRIBUTE_UNUSED,
+                       unsigned long long *inactiveFile ATTRIBUTE_UNUSED,
+                       unsigned long long *unevictable ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
 virCgroupGetMemoryUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
                         unsigned long *kb ATTRIBUTE_UNUSED)
 {
