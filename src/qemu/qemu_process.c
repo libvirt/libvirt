@@ -855,6 +855,7 @@ static int
 qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                          virDomainObjPtr vm,
                          const char *diskAlias,
+                         const char *nodename,
                          int action,
                          const char *reason,
                          void *opaque)
@@ -869,7 +870,16 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
-    disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL);
+
+    if (*diskAlias == '\0')
+        diskAlias = NULL;
+
+    if (diskAlias)
+        disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL);
+    else if (nodename)
+        disk = qemuDomainDiskLookupByNodename(vm->def, nodename, NULL, NULL);
+    else
+        disk = NULL;
 
     if (disk) {
         srcPath = virDomainDiskGetSource(disk);

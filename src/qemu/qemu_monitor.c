@@ -1421,6 +1421,7 @@ qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action)
 int
 qemuMonitorEmitIOError(qemuMonitorPtr mon,
                        const char *diskAlias,
+                       const char *nodename,
                        int action,
                        const char *reason)
 {
@@ -1428,7 +1429,7 @@ qemuMonitorEmitIOError(qemuMonitorPtr mon,
     VIR_DEBUG("mon=%p", mon);
 
     QEMU_MONITOR_CALLBACK(mon, ret, domainIOError, mon->vm,
-                          diskAlias, action, reason);
+                          diskAlias, nodename, action, reason);
     return ret;
 }
 

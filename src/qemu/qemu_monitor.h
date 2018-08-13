@@ -155,6 +155,7 @@ typedef int (*qemuMonitorDomainWatchdogCallback)(qemuMonitorPtr mon,
 typedef int (*qemuMonitorDomainIOErrorCallback)(qemuMonitorPtr mon,
                                                 virDomainObjPtr vm,
                                                 const char *diskAlias,
+                                                const char *nodename,
                                                 int action,
                                                 const char *reason,
                                                 void *opaque);
@@ -383,6 +384,7 @@ int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset);
 int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action);
 int qemuMonitorEmitIOError(qemuMonitorPtr mon,
                            const char *diskAlias,
+                           const char *nodename,
                            int action,
                            const char *reason);
 int qemuMonitorEmitGraphics(qemuMonitorPtr mon,

@@ -765,6 +765,7 @@ static void
 qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
 {
     const char *device;
+    const char *nodename;
     const char *action;
     const char *reason = "";
     bool nospc = false;
@@ -782,6 +783,8 @@ qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
     if ((device = virJSONValueObjectGetString(data, "device")) == NULL)
         VIR_WARN("missing device in disk io error event");
 
+    nodename = virJSONValueObjectGetString(data, "node-name");
+
     if (virJSONValueObjectGetBoolean(data, "nospace", &nospc) == 0 && nospc)
         reason = "enospc";
 
@@ -790,7 +793,7 @@ qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
         actionID = VIR_DOMAIN_EVENT_IO_ERROR_NONE;
     }
 
-    qemuMonitorEmitIOError(mon, device, actionID, reason);
+    qemuMonitorEmitIOError(mon, device, nodename, actionID, reason);
 }
 
 
