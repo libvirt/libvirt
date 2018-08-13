@@ -33,17 +33,11 @@
   mount options=(rw,rslave)  -> /,
   mount options=(rw, nosuid) -> /{var/,}run/libvirt/qemu/*.dev/,
 
-  mount options=(rw, move) /dev/           -> /{var/,}run/libvirt/qemu/*.dev/,
-  mount options=(rw, move) /dev/hugepages/ -> /{var/,}run/libvirt/qemu/*.hugepages/,
-  mount options=(rw, move) /dev/mqueue/    -> /{var/,}run/libvirt/qemu/*.mqueue/,
-  mount options=(rw, move) /dev/pts/       -> /{var/,}run/libvirt/qemu/*.pts/,
-  mount options=(rw, move) /dev/shm/       -> /{var/,}run/libvirt/qemu/*.shm/,
-
-  mount options=(rw, move) /{var/,}run/libvirt/qemu/*.dev/       -> /dev/,
-  mount options=(rw, move) /{var/,}run/libvirt/qemu/*.hugepages/ -> /dev/hugepages/,
-  mount options=(rw, move) /{var/,}run/libvirt/qemu/*.mqueue/    -> /dev/mqueue/,
-  mount options=(rw, move) /{var/,}run/libvirt/qemu/*.pts/       -> /dev/pts/,
-  mount options=(rw, move) /{var/,}run/libvirt/qemu/*.shm/       -> /dev/shm/,
+  # libvirt provides any mounts under /dev to qemu namespaces
+  mount options=(rw, move) /dev/ -> /{,var/}run/libvirt/qemu/*.dev/,
+  mount options=(rw, move) /dev/** -> /{,var/}run/libvirt/qemu/*{,/},
+  mount options=(rw, move) /{,var/}run/libvirt/qemu/*.dev/ -> /dev/,
+  mount options=(rw, move) /{,var/}run/libvirt/qemu/*{,/} -> /dev/**,
 
   network inet stream,
   network inet dgram,
