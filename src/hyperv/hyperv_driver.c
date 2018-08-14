@@ -152,21 +152,15 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
         if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto cleanup;
     } else {
-        username = virAuthGetUsername(conn, auth, "hyperv", "administrator", conn->uri->server);
-
-        if (username == NULL) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
+        if (!(username = virAuthGetUsername(conn, auth, "hyperv",
+                                            "administrator",
+                                            conn->uri->server)))
             goto cleanup;
-        }
     }
 
-    password = virAuthGetPassword(conn, auth, "hyperv", username, conn->uri->server);
-
-    if (password == NULL) {
-        virReportError(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
+    if (!(password = virAuthGetPassword(conn, auth, "hyperv", username,
+                                        conn->uri->server)))
         goto cleanup;
-    }
-
 
     if (hypervInitConnection(conn, priv, username, password) < 0)
         goto cleanup;
