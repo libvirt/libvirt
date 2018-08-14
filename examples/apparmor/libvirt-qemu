@@ -180,6 +180,19 @@
   # for rbd
   /etc/ceph/ceph.conf r,
 
+  # Various functions will need to enumerate /tmp (e.g. ceph), allow the base
+  # dir and a few known functions like samba support.
+  # We want to avoid to give blanket rw permission to everything under /tmp,
+  # users are expected to add site specific addons for more uncommon cases.
+  # Qemu processes usually all run as the same users, so the "owner"
+  # restriction prevents access to other services files, but not across
+  # different instances.
+  # This is a tradeoff between usability and security - if paths would be more
+  # predictable that would be preferred - at least for write rules we would
+  # want more unique paths per rule.
+  /{,var/}tmp/ r,
+  owner /{,var/}tmp/**/ r,
+
   # for file-posix getting limits since 9103f1ce
   /sys/devices/**/block/*/queue/max_segments r,
 
