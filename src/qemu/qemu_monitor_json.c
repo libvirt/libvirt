@@ -4423,33 +4423,6 @@ qemuMonitorJSONBlockCommit(qemuMonitorPtr mon, const char *device,
     return ret;
 }
 
-int
-qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
-                          const char *device)
-{
-    int ret = -1;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-
-    cmd = qemuMonitorJSONMakeCommand("block-job-complete",
-                                     "s:device", device,
-                                     NULL);
-    if (!cmd)
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
 
 static char *
 qemuMonitorJSONDiskNameLookupOne(virJSONValuePtr image,
@@ -4896,6 +4869,34 @@ qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
 
     ret = 0;
 
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
+                          const char *device)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("block-job-complete",
+                                     "s:device", device,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
