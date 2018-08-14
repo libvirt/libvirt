@@ -4805,12 +4805,6 @@ qemuMonitorJSONBlockJobError(virJSONValuePtr reply,
     if (qemuMonitorJSONErrorIsClass(error, "DeviceNotActive")) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("No active operation on device: %s"), device);
-    } else if (qemuMonitorJSONErrorIsClass(error, "DeviceInUse")) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Device %s in use"), device);
-    } else if (qemuMonitorJSONErrorIsClass(error, "NotSupported")) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Operation is not supported for device: %s"), device);
     } else if (qemuMonitorJSONErrorIsClass(error, "CommandNotFound")) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("Command '%s' is not found"), cmd_name);
