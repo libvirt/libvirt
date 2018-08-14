@@ -153,6 +153,12 @@ virAuthGetUsernamePath(const char *path,
     if (ret != NULL)
         return ret;
 
+    if (!auth) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Missing authentication credentials"));
+        return NULL;
+    }
+
     memset(&cred, 0, sizeof(virConnectCredential));
 
     if (defaultUsername != NULL) {
@@ -225,6 +231,12 @@ virAuthGetPasswordPath(const char *path,
         return NULL;
     if (ret != NULL)
         return ret;
+
+    if (!auth) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Missing authentication credentials"));
+        return NULL;
+    }
 
     memset(&cred, 0, sizeof(virConnectCredential));
 
