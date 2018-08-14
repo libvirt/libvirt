@@ -36,6 +36,9 @@
 #   undef inline
 #  endif
 
+typedef struct nl_msg virNetlinkMsg;
+VIR_DEFINE_AUTOPTR_FUNC(virNetlinkMsg, nlmsg_free)
+
 # else
 
 struct nl_msg;
@@ -44,8 +47,6 @@ struct nlattr;
 struct nlmsghdr;
 
 # endif /* __linux__ */
-
-typedef struct nl_msg virNetlinkMsg;
 
 int virNetlinkStartup(void);
 void virNetlinkShutdown(void);
@@ -125,7 +126,5 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
  */
 int virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
                                 unsigned int protocol);
-
-VIR_DEFINE_AUTOPTR_FUNC(virNetlinkMsg, nlmsg_free)
 
 #endif /* __VIR_NETLINK_H__ */
