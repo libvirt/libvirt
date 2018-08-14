@@ -957,13 +957,9 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto err;
     } else {
-        username = virAuthGetUsername(conn, auth, "ssh", NULL, conn->uri->server);
-
-        if (username == NULL) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("Username request failed"));
+        if (!(username = virAuthGetUsername(conn, auth, "ssh", NULL,
+                                            conn->uri->server)))
             goto err;
-        }
     }
 
     memset(&hints, 0, sizeof(hints));
@@ -1034,13 +1030,9 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED) {
 
-        password = virAuthGetPassword(conn, auth, "ssh", username, conn->uri->server);
-
-        if (password == NULL) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("Password request failed"));
+        if (!(password = virAuthGetPassword(conn, auth, "ssh", username,
+                                            conn->uri->server)))
             goto disconnect;
-        }
 
         while ((rc =
                 libssh2_userauth_password(session, username,
