@@ -637,8 +637,6 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
             if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
                                                     "ssh", sess->username,
                                                     sess->hostname))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to retrieve password"));
                 ret = SSH_AUTH_ERROR;
                 goto cleanup;
             }

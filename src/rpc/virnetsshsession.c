@@ -726,11 +726,8 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
         while (true) {
             if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
                                                     "ssh", priv->username,
-                                                    sess->hostname))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to retrieve password"));
+                                                    sess->hostname)))
                 goto cleanup;
-            }
 
             /* tunelled password authentication */
             if ((rc = libssh2_userauth_password(sess->session,
