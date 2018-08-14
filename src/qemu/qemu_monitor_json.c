@@ -6435,6 +6435,20 @@ qemuMonitorJSONGetGICCapabilities(qemuMonitorPtr mon,
 }
 
 
+/**
+ * qemuMonitorJSONGetSEVCapabilities:
+ * @mon: qemu monitor object
+ * @capabilities: pointer to pointer to a SEV capability structure to be filled
+ *
+ * This function queries and fills in AMD's SEV platform-specific data.
+ * Note that from QEMU's POV both -object sev-guest and query-sev-capabilities
+ * can be present even if SEV is not available, which basically leaves us with
+ * checking for JSON "GenericError" in order to differentiate between
+ * compiled-in support and actual SEV support on the platform.
+ *
+ * Returns -1 on error, 0 if SEV is not supported, and 1 if SEV is supported on
+ * the platform.
+ */
 int
 qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
                                   virSEVCapability **capabilities)
@@ -6458,8 +6472,7 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    /* Both -object sev-guest and query-sev-capabilities can be present
-     * even if SEV is not available */
+    /* QEMU has only compiled-in support of SEV */
     if (qemuMonitorJSONHasError(reply, "GenericError")) {
         ret = 0;
         goto cleanup;
@@ -6511,8 +6524,7 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
     capability->cbitpos = cbitpos;
     capability->reduced_phys_bits = reduced_phys_bits;
     VIR_STEAL_PTR(*capabilities, capability);
-    ret = 0;
-
+    ret = 1;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
