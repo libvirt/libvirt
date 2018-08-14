@@ -635,20 +635,14 @@ esxConnectToHost(esxPrivate *priv,
         if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto cleanup;
     } else {
-        username = virAuthGetUsername(conn, auth, "esx", "root", conn->uri->server);
-
-        if (!username) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
+        if (!(username = virAuthGetUsername(conn, auth, "esx", "root",
+                                            conn->uri->server)))
             goto cleanup;
-        }
     }
 
-    password = virAuthGetPassword(conn, auth, "esx", username, conn->uri->server);
-
-    if (!password) {
-        virReportError(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
+    if (!(password = virAuthGetPassword(conn, auth, "esx", username,
+                                        conn->uri->server)))
         goto cleanup;
-    }
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->parsedUri->transport,
                     conn->uri->server, conn->uri->port) < 0)
@@ -733,20 +727,13 @@ esxConnectToVCenter(esxPrivate *priv,
         if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto cleanup;
     } else {
-        username = virAuthGetUsername(conn, auth, "esx", "administrator", hostname);
-
-        if (!username) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
+        if (!(username = virAuthGetUsername(conn, auth, "esx", "administrator",
+                                            hostname)))
             goto cleanup;
-        }
     }
 
-    password = virAuthGetPassword(conn, auth, "esx", username, hostname);
-
-    if (!password) {
-        virReportError(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
+    if (!(password = virAuthGetPassword(conn, auth, "esx", username, hostname)))
         goto cleanup;
-    }
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->parsedUri->transport,
                     hostname, conn->uri->port) < 0)
