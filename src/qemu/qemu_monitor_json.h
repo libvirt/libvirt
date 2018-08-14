@@ -270,6 +270,9 @@ int qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
                               const char *jobname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+bool qemuMonitorJSONSupportsActiveCommit(qemuMonitorPtr mon)
+    ATTRIBUTE_NONNULL(1);
+
 int qemuMonitorJSONBlockCommit(qemuMonitorPtr mon,
                                const char *device,
                                const char *top,

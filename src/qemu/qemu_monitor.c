@@ -3302,7 +3302,7 @@ qemuMonitorSupportsActiveCommit(qemuMonitorPtr mon)
     if (!mon || !mon->json)
         return false;
 
-    return qemuMonitorJSONBlockCommit(mon, "bogus", NULL, NULL, NULL, 0) == -2;
+    return qemuMonitorJSONSupportsActiveCommit(mon);
 }
 
 
