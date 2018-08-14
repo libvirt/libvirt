@@ -210,14 +210,8 @@ virAuthGetUsername(virConnectPtr conn,
     if (virAuthGetConfigFilePath(conn, &path) < 0)
         return NULL;
 
-    if (!auth || !auth->cb) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Missing or invalid auth pointer"));
-        return NULL;
-    }
-
     return virAuthGetUsernamePath(path, auth, servicename,
-                                 defaultUsername, hostname);
+                                  defaultUsername, hostname);
 }
 
 
@@ -291,12 +285,6 @@ virAuthGetPassword(virConnectPtr conn,
 
     if (virAuthGetConfigFilePath(conn, &path) < 0)
         return NULL;
-
-    if (!auth || !auth->cb) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Missing or invalid auth pointer"));
-        return NULL;
-    }
 
     return virAuthGetPasswordPath(path, auth, servicename, username, hostname);
 }
