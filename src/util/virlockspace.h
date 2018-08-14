@@ -22,6 +22,8 @@
 #ifndef __VIR_LOCK_SPACE_H__
 # define __VIR_LOCK_SPACE_H__
 
+# include <sys/types.h>
+
 # include "internal.h"
 # include "virjson.h"
 
@@ -50,6 +52,8 @@ typedef enum {
 int virLockSpaceAcquireResource(virLockSpacePtr lockspace,
                                 const char *resname,
                                 pid_t owner,
+                                off_t start,
+                                off_t len,
                                 unsigned int flags);
 
 int virLockSpaceReleaseResource(virLockSpacePtr lockspace,

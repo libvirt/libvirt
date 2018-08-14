@@ -99,6 +99,8 @@ static int testLockSpaceResourceLockExcl(const void *args ATTRIBUTE_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
+    const off_t start = 0;
+    const off_t len = 1;
 
     rmdir(LOCKSPACE_DIR);
 
@@ -111,13 +113,13 @@ static int testLockSpaceResourceLockExcl(const void *args ATTRIBUTE_UNUSED)
     if (virLockSpaceCreateResource(lockspace, "foo") < 0)
         goto cleanup;
 
-    if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(), 0) < 0)
+    if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(), start, len, 0) < 0)
         goto cleanup;
 
     if (!virFileExists(LOCKSPACE_DIR "/foo"))
         goto cleanup;
 
-    if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(), 0) == 0)
+    if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(), start, len, 0) == 0)
         goto cleanup;
 
     if (virLockSpaceDeleteResource(lockspace, "foo") == 0)
@@ -145,6 +147,8 @@ static int testLockSpaceResourceLockExclAuto(const void *args ATTRIBUTE_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
+    const off_t start = 0;
+    const off_t len = 1;
 
     rmdir(LOCKSPACE_DIR);
 
@@ -158,6 +162,7 @@ static int testLockSpaceResourceLockExclAuto(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(),
+                                    start, len,
                                     VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE) < 0)
         goto cleanup;
 
@@ -183,6 +188,8 @@ static int testLockSpaceResourceLockShr(const void *args ATTRIBUTE_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
+    const off_t start = 0;
+    const off_t len = 1;
 
     rmdir(LOCKSPACE_DIR);
 
@@ -196,13 +203,16 @@ static int testLockSpaceResourceLockShr(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(),
+                                    start, len,
                                     VIR_LOCK_SPACE_ACQUIRE_SHARED) < 0)
         goto cleanup;
 
-    if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(), 0) == 0)
+    if (virLockSpaceAcquireResource(lockspace, "foo",
+                                    geteuid(), start, len, 0) == 0)
         goto cleanup;
 
     if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(),
+                                    start, len,
                                     VIR_LOCK_SPACE_ACQUIRE_SHARED) < 0)
         goto cleanup;
 
@@ -237,6 +247,8 @@ static int testLockSpaceResourceLockShrAuto(const void *args ATTRIBUTE_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
+    const off_t start = 0;
+    const off_t len = 1;
 
     rmdir(LOCKSPACE_DIR);
 
@@ -250,6 +262,7 @@ static int testLockSpaceResourceLockShrAuto(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(),
+                                    start, len,
                                     VIR_LOCK_SPACE_ACQUIRE_SHARED |
                                     VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE) < 0)
         goto cleanup;
@@ -258,6 +271,7 @@ static int testLockSpaceResourceLockShrAuto(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(),
+                                    start, len,
                                     VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE) == 0)
         goto cleanup;
 
@@ -265,6 +279,7 @@ static int testLockSpaceResourceLockShrAuto(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (virLockSpaceAcquireResource(lockspace, "foo", geteuid(),
+                                    start, len,
                                     VIR_LOCK_SPACE_ACQUIRE_SHARED |
                                     VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE) < 0)
         goto cleanup;
@@ -297,6 +312,8 @@ static int testLockSpaceResourceLockPath(const void *args ATTRIBUTE_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
+    const off_t start = 0;
+    const off_t len = 1;
 
     rmdir(LOCKSPACE_DIR);
 
@@ -309,13 +326,15 @@ static int testLockSpaceResourceLockPath(const void *args ATTRIBUTE_UNUSED)
     if (virLockSpaceCreateResource(lockspace, LOCKSPACE_DIR "/foo") < 0)
         goto cleanup;
 
-    if (virLockSpaceAcquireResource(lockspace, LOCKSPACE_DIR "/foo", geteuid(), 0) < 0)
+    if (virLockSpaceAcquireResource(lockspace, LOCKSPACE_DIR "/foo",
+                                    geteuid(), start, len, 0) < 0)
         goto cleanup;
 
     if (!virFileExists(LOCKSPACE_DIR "/foo"))
         goto cleanup;
 
-    if (virLockSpaceAcquireResource(lockspace, LOCKSPACE_DIR "/foo", geteuid(), 0) == 0)
+    if (virLockSpaceAcquireResource(lockspace, LOCKSPACE_DIR "/foo",
+                                    geteuid(), start, len, 0) == 0)
         goto cleanup;
 
     if (virLockSpaceDeleteResource(lockspace, LOCKSPACE_DIR "/foo") == 0)
