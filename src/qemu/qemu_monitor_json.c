@@ -4821,9 +4821,8 @@ qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
-    const char *cmd_name = "block-stream";
 
-    if (!(cmd = qemuMonitorJSONMakeCommand(cmd_name,
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-stream",
                                            "s:device", device,
                                            "Y:speed", speed,
                                            "S:base", base,
@@ -4853,9 +4852,8 @@ qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
-    const char *cmd_name = "block-job-cancel";
 
-    if (!(cmd = qemuMonitorJSONMakeCommand(cmd_name,
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-job-cancel",
                                            "s:device", device,
                                            NULL)))
         return -1;
@@ -4883,9 +4881,8 @@ qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
-    const char *cmd_name = "block-job-set-speed";
 
-    if (!(cmd = qemuMonitorJSONMakeCommand(cmd_name,
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-job-set-speed",
                                            "s:device", device,
                                            "J:speed", speed,
                                            NULL)))
