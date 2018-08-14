@@ -4833,7 +4833,7 @@ qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONBlockJobError(cmd, reply, device) < 0)
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
 
     ret = 0;
