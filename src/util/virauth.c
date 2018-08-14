@@ -175,6 +175,12 @@ virAuthGetUsernamePath(const char *path,
         if (auth->credtype[ncred] != VIR_CRED_AUTHNAME)
             continue;
 
+        if (!auth->cb) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Missing authentication callback"));
+            return NULL;
+        }
+
         cred.type = VIR_CRED_AUTHNAME;
         cred.prompt = prompt;
         cred.challenge = hostname;
@@ -249,6 +255,12 @@ virAuthGetPasswordPath(const char *path,
         if (auth->credtype[ncred] != VIR_CRED_PASSPHRASE &&
             auth->credtype[ncred] != VIR_CRED_NOECHOPROMPT) {
             continue;
+        }
+
+        if (!auth->cb) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Missing authentication callback"));
+            return NULL;
         }
 
         cred.type = auth->credtype[ncred];
