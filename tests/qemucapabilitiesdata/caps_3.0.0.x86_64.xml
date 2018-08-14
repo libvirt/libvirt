@@ -216,7 +216,7 @@
   <flag name='vfio-pci.display'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>427797</microcodeVersion>
+  <microcodeVersion>427584</microcodeVersion>
   <package>v3.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

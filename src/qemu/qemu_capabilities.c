@@ -1307,6 +1307,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+qcow2/encrypt/+luks/key-secret", QEMU_CAPS_QCOW2_LUKS },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
     { "screendump/arg-type/device", QEMU_CAPS_SCREENDUMP_DEVICE },
+    { "block-commit/arg-type/*top",  QEMU_CAPS_ACTIVE_COMMIT },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;
@@ -2163,9 +2164,10 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
         VIR_FORCE_CLOSE(fd);
     }
 
-    /* Probe for active commit of qemu 2.1 (for now, we are choosing
-     * to ignore the fact that qemu 2.0 can also do active commit) */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCK_COMMIT) &&
+    /* Probe for active commit of qemu 2.1. We don't need to query directly
+     * if we have QMP schema support */
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCK_COMMIT) &&
         qemuMonitorSupportsActiveCommit(mon))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_ACTIVE_COMMIT);
 

@@ -205,7 +205,7 @@
   <flag name='egl-headless'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>367995</microcodeVersion>
+  <microcodeVersion>367782</microcodeVersion>
   <package> (v2.10.0)</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

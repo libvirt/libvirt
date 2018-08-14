@@ -121,7 +121,7 @@
   <flag name='egl-headless'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>307899</microcodeVersion>
+  <microcodeVersion>307686</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='z14-base' migratability='no'>

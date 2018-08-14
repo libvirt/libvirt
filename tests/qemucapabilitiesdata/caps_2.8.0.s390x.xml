@@ -111,7 +111,7 @@
   <flag name='vhost-vsock'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>246206</microcodeVersion>
+  <microcodeVersion>245993</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='zEC12.2-base' migratability='no'>

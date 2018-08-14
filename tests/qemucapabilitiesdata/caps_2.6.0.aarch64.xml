@@ -145,7 +145,7 @@
   <flag name='hda-output'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>232358</microcodeVersion>
+  <microcodeVersion>232145</microcodeVersion>
   <package></package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>

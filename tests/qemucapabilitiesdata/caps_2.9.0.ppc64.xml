@@ -151,7 +151,7 @@
   <flag name='vhost-vsock'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>350708</microcodeVersion>
+  <microcodeVersion>350495</microcodeVersion>
   <package> (v2.9.0)</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>
