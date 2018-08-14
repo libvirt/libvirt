@@ -219,4 +219,13 @@ qemuBuildVsockDevStr(virDomainDefPtr def,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
 
+/* this function is exported so that tests can mock the FDs */
+int
+qemuBuildTPMOpenBackendFDs(const char *tpmdev,
+                           const char *cancel_path,
+                           int *tpmfd,
+                           int *cancelfd)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4);
+
 #endif /* __QEMU_COMMAND_H__*/

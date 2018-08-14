@@ -9688,6 +9688,31 @@ qemuBuildTPMDevStr(const virDomainDef *def,
 }
 
 
+/* this function is exported so that tests can mock the FDs */
+int
+qemuBuildTPMOpenBackendFDs(const char *tpmdev,
+                           const char *cancel_path,
+                           int *tpmfd,
+                           int *cancelfd)
+{
+    if ((*tpmfd = open(tpmdev, O_RDWR)) < 0) {
+        virReportSystemError(errno, _("Could not open TPM device %s"),
+                             tpmdev);
+        return -1;
+    }
+
+    if ((*cancelfd = open(cancel_path, O_WRONLY)) < 0) {
+        virReportSystemError(errno,
+                             _("Could not open TPM device's cancel "
+                               "path %s"), cancel_path);
+        VIR_FORCE_CLOSE(*tpmfd);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static char *
 qemuBuildTPMBackendStr(const virDomainDef *def,
                        virCommandPtr cmd,
@@ -9726,30 +9751,16 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
             goto error;
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ADD_FD)) {
-            *tpmfd = open(tpmdev, O_RDWR);
-            if (*tpmfd < 0) {
-                virReportSystemError(errno, _("Could not open TPM device %s"),
-                                     tpmdev);
+            if (qemuBuildTPMOpenBackendFDs(tpmdev, cancel_path, tpmfd, cancelfd) < 0)
                 goto error;
-            }
 
-            virCommandPassFD(cmd, *tpmfd,
-                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+            virCommandPassFD(cmd, *tpmfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+            virCommandPassFD(cmd, *cancelfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
             devset = qemuVirCommandGetDevSet(cmd, *tpmfd);
             if (devset == NULL)
                 goto error;
 
-            *cancelfd = open(cancel_path, O_WRONLY);
-            if (*cancelfd < 0) {
-                virReportSystemError(errno,
-                                     _("Could not open TPM device's cancel "
-                                       "path %s"), cancel_path);
-                goto error;
-            }
             VIR_FREE(cancel_path);
-
-            virCommandPassFD(cmd, *cancelfd,
-                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
             cancel_path = qemuVirCommandGetDevSet(cmd, *cancelfd);
             if (cancel_path == NULL)
                 goto error;
