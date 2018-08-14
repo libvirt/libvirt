@@ -320,7 +320,7 @@ BuildRequires: lvm2
 # For pool type=iscsi
 BuildRequires: iscsi-initiator-utils
 # For pool type=iscsi-direct
-BuildRequires: libiscsi
+BuildRequires: libiscsi-devel
 # For disk driver
 BuildRequires: parted-devel
 # For Multipath support
