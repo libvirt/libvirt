@@ -191,10 +191,12 @@ virAuthGetUsernamePath(const char *path,
         if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0)
             VIR_FREE(cred.result);
 
-        break;
+        return cred.result;
     }
 
-    return cred.result;
+    virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                   _("Missing VIR_CRED_AUTHNAME credential type"));
+    return NULL;
 }
 
 
@@ -267,10 +269,13 @@ virAuthGetPasswordPath(const char *path,
         if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0)
             VIR_FREE(cred.result);
 
-        break;
+        return cred.result;
     }
 
-    return cred.result;
+    virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                   _("Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT "
+                     "credential type"));
+    return NULL;
 }
 
 
