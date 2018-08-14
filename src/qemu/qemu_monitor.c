@@ -3323,13 +3323,13 @@ qemuMonitorDiskNameLookup(qemuMonitorPtr mon,
 /* Use the block-job-complete monitor command to pivot a block copy job.  */
 int
 qemuMonitorDrivePivot(qemuMonitorPtr mon,
-                      const char *device)
+                      const char *jobname)
 {
-    VIR_DEBUG("device=%s", device);
+    VIR_DEBUG("jobname=%s", jobname);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONDrivePivot(mon, device);
+    return qemuMonitorJSONDrivePivot(mon, jobname);
 }
 
 
@@ -3403,26 +3403,26 @@ qemuMonitorBlockStream(qemuMonitorPtr mon,
 
 int
 qemuMonitorBlockJobCancel(qemuMonitorPtr mon,
-                          const char *device)
+                          const char *jobname)
 {
-    VIR_DEBUG("device=%s", device);
+    VIR_DEBUG("jobname=%s", jobname);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONBlockJobCancel(mon, device);
+    return qemuMonitorJSONBlockJobCancel(mon, jobname);
 }
 
 
 int
 qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
-                            const char *device,
+                            const char *jobname,
                             unsigned long long bandwidth)
 {
-    VIR_DEBUG("device=%s, bandwidth=%lluB", device, bandwidth);
+    VIR_DEBUG("jobname=%s, bandwidth=%lluB", jobname, bandwidth);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONBlockJobSetSpeed(mon, device, bandwidth);
+    return qemuMonitorJSONBlockJobSetSpeed(mon, jobname, bandwidth);
 }
 
 

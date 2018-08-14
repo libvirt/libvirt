@@ -872,7 +872,7 @@ int qemuMonitorBlockdevMirror(qemuMonitorPtr mon,
                               unsigned int flags)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 int qemuMonitorDrivePivot(qemuMonitorPtr mon,
-                          const char *device)
+                          const char *jobname)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockCommit(qemuMonitorPtr mon,
@@ -914,11 +914,11 @@ int qemuMonitorBlockStream(qemuMonitorPtr mon,
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockJobCancel(qemuMonitorPtr mon,
-                              const char *device)
+                              const char *jobname)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
-                                const char *device,
+                                const char *jobname,
                                 unsigned long long bandwidth);
 
 typedef struct _qemuMonitorBlockJobInfo qemuMonitorBlockJobInfo;

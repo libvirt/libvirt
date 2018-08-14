@@ -4768,14 +4768,14 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
 static int
 qemuMonitorJSONBlockJobError(virJSONValuePtr cmd,
                              virJSONValuePtr reply,
-                             const char *device)
+                             const char *jobname)
 {
     virJSONValuePtr error;
 
     if ((error = virJSONValueObjectGet(reply, "error")) &&
         (qemuMonitorJSONErrorIsClass(error, "DeviceNotActive"))) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("No active operation on device: %s"), device);
+                       _("No active block job '%s'"), jobname);
         return -1;
     }
 
@@ -4820,21 +4820,21 @@ qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
-                              const char *device)
+                              const char *jobname)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block-job-cancel",
-                                           "s:device", device,
+                                           "s:device", jobname,
                                            NULL)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONBlockJobError(cmd, reply, device) < 0)
+    if (qemuMonitorJSONBlockJobError(cmd, reply, jobname) < 0)
         goto cleanup;
 
     ret = 0;
@@ -4848,7 +4848,7 @@ qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
-                                const char *device,
+                                const char *jobname,
                                 unsigned long long speed)
 {
     int ret = -1;
@@ -4856,7 +4856,7 @@ qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block-job-set-speed",
-                                           "s:device", device,
+                                           "s:device", jobname,
                                            "J:speed", speed,
                                            NULL)))
         return -1;
@@ -4864,7 +4864,7 @@ qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONBlockJobError(cmd, reply, device) < 0)
+    if (qemuMonitorJSONBlockJobError(cmd, reply, jobname) < 0)
         goto cleanup;
 
     ret = 0;
@@ -4878,14 +4878,14 @@ qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
-                          const char *device)
+                          const char *jobname)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("block-job-complete",
-                                     "s:device", device,
+                                     "s:device", jobname,
                                      NULL);
     if (!cmd)
         return -1;
@@ -4893,7 +4893,7 @@ qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONBlockJobError(cmd, reply, device) < 0)
+    if (qemuMonitorJSONBlockJobError(cmd, reply, jobname) < 0)
         goto cleanup;
 
     ret = 0;
