@@ -4793,29 +4793,20 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
 
 
 static int
-qemuMonitorJSONBlockJobError(virJSONValuePtr reply,
-                             const char *cmd_name,
+qemuMonitorJSONBlockJobError(virJSONValuePtr cmd,
+                             virJSONValuePtr reply,
                              const char *device)
 {
     virJSONValuePtr error;
 
-    if (!(error = virJSONValueObjectGet(reply, "error")))
-        return 0;
-
-    if (qemuMonitorJSONErrorIsClass(error, "DeviceNotActive")) {
+    if ((error = virJSONValueObjectGet(reply, "error")) &&
+        (qemuMonitorJSONErrorIsClass(error, "DeviceNotActive"))) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("No active operation on device: %s"), device);
-    } else if (qemuMonitorJSONErrorIsClass(error, "CommandNotFound")) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Command '%s' is not found"), cmd_name);
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected error: (%s) '%s'"),
-                       NULLSTR(virJSONValueObjectGetString(error, "class")),
-                       NULLSTR(virJSONValueObjectGetString(error, "desc")));
+        return -1;
     }
 
-    return -1;
+    return qemuMonitorJSONCheckError(cmd, reply);
 }
 
 
@@ -4843,7 +4834,7 @@ qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONBlockJobError(reply, cmd_name, device) < 0)
+    if (qemuMonitorJSONBlockJobError(cmd, reply, device) < 0)
         goto cleanup;
 
     ret = 0;
@@ -4872,7 +4863,7 @@ qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONBlockJobError(reply, cmd_name, device) < 0)
+    if (qemuMonitorJSONBlockJobError(cmd, reply, device) < 0)
         goto cleanup;
 
     ret = 0;
@@ -4903,7 +4894,7 @@ qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONBlockJobError(reply, cmd_name, device) < 0)
+    if (qemuMonitorJSONBlockJobError(cmd, reply, device) < 0)
         goto cleanup;
 
     ret = 0;
