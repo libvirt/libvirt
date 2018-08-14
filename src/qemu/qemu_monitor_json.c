@@ -4893,7 +4893,7 @@ qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+    if (qemuMonitorJSONBlockJobError(cmd, reply, device) < 0)
         goto cleanup;
 
     ret = 0;
