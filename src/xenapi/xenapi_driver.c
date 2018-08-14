@@ -156,22 +156,14 @@ xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
         if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto error;
     } else {
-        username = virAuthGetUsername(conn, auth, "xen", NULL, conn->uri->server);
-
-        if (username == NULL) {
-            xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                      _("Username request failed"));
+        if (!(username = virAuthGetUsername(conn, auth, "xen", NULL,
+                                            conn->uri->server)))
             goto error;
-        }
     }
 
-    password = virAuthGetPassword(conn, auth, "xen", username, conn->uri->server);
-
-    if (password == NULL) {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                  _("Password request failed"));
+    if (!(password = virAuthGetPassword(conn, auth, "xen", username,
+                                        conn->uri->server)))
         goto error;
-    }
 
     if (VIR_ALLOC(privP) < 0)
         goto error;
