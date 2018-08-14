@@ -44,6 +44,15 @@
           iscsiadm. It support basic pool operations: checkPool and refreshPool.
         </description>
       </change>
+      <change>
+        <summary>
+          Add support for MBA (Memory Bandwidth Allocation technology)
+        </summary>
+        <description>
+          Domain vCPU threads can now have allocated some parts of host memory
+          bandwidth by using the <code>memorytune</code> element in <code>cputune</code>.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
