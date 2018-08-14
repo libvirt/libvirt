@@ -1374,12 +1374,9 @@ testConnectAuthenticate(virConnectPtr conn,
     /* Authentication is required because the test XML contains a
      * non-empty <auth/> section.  First we must ask for a username.
      */
-    username = virAuthGetUsername(conn, auth, "test", NULL, "localhost"/*?*/);
-    if (!username) {
-        virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("authentication failed when asking for username"));
+    if (!(username = virAuthGetUsername(conn, auth, "test", NULL,
+                                        "localhost"/*?*/)))
         goto cleanup;
-    }
 
     /* Does the username exist? */
     for (i = 0; i < privconn->numAuths; ++i) {
@@ -1391,13 +1388,9 @@ testConnectAuthenticate(virConnectPtr conn,
  found_user:
     /* Even if we didn't find the user, we still ask for a password. */
     if (i == -1 || privconn->auths[i].password != NULL) {
-        password = virAuthGetPassword(conn, auth, "test",
-                                      username, "localhost");
-        if (password == NULL) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("authentication failed when asking for password"));
+        if (!(password = virAuthGetPassword(conn, auth, "test", username,
+                                            "localhost")))
             goto cleanup;
-        }
     }
 
     if (i == -1 ||
