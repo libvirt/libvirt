@@ -184,12 +184,26 @@ virNetDevRunEthernetScript(const char *ifname ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static void (*real_virCommandPassFD)(virCommandPtr cmd, int fd, unsigned int flags);
+
+static const int testCommandPassSafeFDs[] = { -1 };
+
 void
-virCommandPassFD(virCommandPtr cmd ATTRIBUTE_UNUSED,
-                 int fd ATTRIBUTE_UNUSED,
-                 unsigned int flags ATTRIBUTE_UNUSED)
+virCommandPassFD(virCommandPtr cmd,
+                 int fd,
+                 unsigned int flags)
 {
-    /* nada */
+    size_t i;
+
+    for (i = 0; i < ARRAY_CARDINALITY(testCommandPassSafeFDs); i++) {
+        if (testCommandPassSafeFDs[i] == fd) {
+            if (!real_virCommandPassFD)
+                VIR_MOCK_REAL_INIT(virCommandPassFD);
+
+            real_virCommandPassFD(cmd, fd, flags);
+            return;
+        }
+    }
 }
 
 int
