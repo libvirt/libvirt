@@ -188,8 +188,11 @@ virAuthGetUsernamePath(const char *path,
         cred.result = NULL;
         cred.resultlen = 0;
 
-        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0)
+        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
+            virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                           _("Username request failed"));
             VIR_FREE(cred.result);
+        }
 
         return cred.result;
     }
@@ -266,8 +269,11 @@ virAuthGetPasswordPath(const char *path,
         cred.result = NULL;
         cred.resultlen = 0;
 
-        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0)
+        if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
+            virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                           _("Password request failed"));
             VIR_FREE(cred.result);
+        }
 
         return cred.result;
     }
