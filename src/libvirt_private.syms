@@ -1576,6 +1576,9 @@ virCgroupSetOwner;
 virCgroupSupportsCpuBW;
 virCgroupTerminateMachine;
 
+# util/vircgroupbackend.h
+virCgroupBackendGetAll;
+virCgroupBackendRegister;
 
 # util/virclosecallbacks.h
 virCloseCallbacksGet;
