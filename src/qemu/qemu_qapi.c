@@ -33,10 +33,58 @@ VIR_LOG_INIT("qemu.qemu_qapi");
 
 
 /**
+ * virQEMUQAPISchemaObjectGet:
+ * @field: name of the object containing the requested type
+ * @name: name of the requested type
+ * @namefield: name of the object property holding @name
+ * @elem: QAPI schema entry JSON object
+ *
+ * Helper that selects the type of a QMP schema object member or it's variant
+ * member. Returns the QMP entry on success or NULL on error.
+ */
+static virJSONValuePtr
+virQEMUQAPISchemaObjectGet(const char *field,
+                           const char *name,
+                           const char *namefield,
+                           virJSONValuePtr elem)
+{
+    virJSONValuePtr arr;
+    virJSONValuePtr cur;
+    const char *curname;
+    size_t i;
+
+    if (!(arr = virJSONValueObjectGetArray(elem, field)))
+        return NULL;
+
+    for (i = 0; i < virJSONValueArraySize(arr); i++) {
+        if (!(cur = virJSONValueArrayGet(arr, i)) ||
+            !(curname = virJSONValueObjectGetString(cur, namefield)))
+            continue;
+
+        if (STREQ(name, curname))
+            return cur;
+    }
+
+    return NULL;
+}
+
+
+static const char *
+virQEMUQAPISchemaTypeFromObject(virJSONValuePtr obj)
+{
+    if (!obj)
+        return NULL;
+
+    return virJSONValueObjectGetString(obj, "type");
+}
+
+
+/**
  * virQEMUQAPISchemaObjectGetType:
  * @field: name of the object containing the requested type
  * @name: name of the requested type
  * @namefield: name of the object property holding @name
+ * @elem: QAPI schema entry JSON object
  *
  * Helper that selects the type of a QMP schema object member or it's variant
  * member. Returns the type string on success or NULL on error.
@@ -47,26 +95,9 @@ virQEMUQAPISchemaObjectGetType(const char *field,
                                const char *namefield,
                                virJSONValuePtr elem)
 {
-    virJSONValuePtr arr;
-    virJSONValuePtr cur;
-    const char *curname;
-    const char *type;
-    size_t i;
+    virJSONValuePtr obj = virQEMUQAPISchemaObjectGet(field, name, namefield, elem);
 
-    if (!(arr = virJSONValueObjectGetArray(elem, field)))
-        return NULL;
-
-    for (i = 0; i < virJSONValueArraySize(arr); i++) {
-        if (!(cur = virJSONValueArrayGet(arr, i)) ||
-            !(curname = virJSONValueObjectGetString(cur, namefield)) ||
-            !(type = virJSONValueObjectGetString(cur, "type")))
-            continue;
-
-        if (STREQ(name, curname))
-            return type;
-    }
-
-    return NULL;
+    return virQEMUQAPISchemaTypeFromObject(obj);
 }
 
 
