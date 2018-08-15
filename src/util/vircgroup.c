@@ -631,24 +631,11 @@ virCgroupDetectPlacement(virCgroupPtr group,
 
 
 static int
-virCgroupDetect(virCgroupPtr group,
-                pid_t pid,
-                int controllers,
-                const char *path,
-                virCgroupPtr parent)
+virCgroupDetectControllers(virCgroupPtr group,
+                           int controllers)
 {
     size_t i;
     size_t j;
-    VIR_DEBUG("group=%p controllers=%d path=%s parent=%p",
-              group, controllers, path, parent);
-
-    if (parent) {
-        if (virCgroupCopyMounts(group, parent) < 0)
-            return -1;
-    } else {
-        if (virCgroupDetectMounts(group) < 0)
-            return -1;
-    }
 
     if (controllers >= 0) {
         VIR_DEBUG("Filtering controllers %d", controllers);
@@ -703,8 +690,37 @@ virCgroupDetect(virCgroupPtr group,
         }
     }
 
+    return controllers;
+}
+
+
+static int
+virCgroupDetect(virCgroupPtr group,
+                pid_t pid,
+                int controllers,
+                const char *path,
+                virCgroupPtr parent)
+{
+    size_t i;
+    int rc;
+
+    VIR_DEBUG("group=%p controllers=%d path=%s parent=%p",
+              group, controllers, path, parent);
+
+    if (parent) {
+        if (virCgroupCopyMounts(group, parent) < 0)
+            return -1;
+    } else {
+        if (virCgroupDetectMounts(group) < 0)
+            return -1;
+    }
+
+    rc = virCgroupDetectControllers(group, controllers);
+    if (rc < 0)
+        return -1;
+
     /* Check that at least 1 controller is available */
-    if (!controllers) {
+    if (rc == 0) {
         virReportSystemError(ENXIO, "%s",
                              _("At least one cgroup controller is required"));
         return -1;
