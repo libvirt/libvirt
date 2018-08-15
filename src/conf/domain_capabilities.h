@@ -25,6 +25,7 @@
 
 # include "internal.h"
 # include "domain_conf.h"
+# include "viralloc.h"
 
 typedef const char * (*virDomainCapsValToStr)(int value);
 
@@ -215,4 +216,7 @@ char * virDomainCapsFormat(virDomainCapsPtr const caps);
 
 void
 virSEVCapabilitiesFree(virSEVCapability *capabilities);
+
+VIR_DEFINE_AUTOPTR_FUNC(virSEVCapability, virSEVCapabilitiesFree);
+
 #endif /* __DOMAIN_CAPABILITIES_H__ */

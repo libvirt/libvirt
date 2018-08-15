@@ -5263,9 +5263,8 @@ static int
 virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsPtr domCaps)
 {
-    virSEVCapability *sev;
     virSEVCapability *cap = qemuCaps->sevCapabilities;
-    int ret = -1;
+    VIR_AUTOPTR(virSEVCapability) sev = NULL;
 
     if (!cap)
         return 0;
@@ -5274,19 +5273,16 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
         return -1;
 
     if (VIR_STRDUP(sev->pdh, cap->pdh) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(sev->cert_chain, cap->cert_chain) < 0)
-        goto cleanup;
+        return -1;
 
     sev->cbitpos = cap->cbitpos;
     sev->reduced_phys_bits = cap->reduced_phys_bits;
     VIR_STEAL_PTR(domCaps->sev, sev);
 
-    ret = 0;
- cleanup:
-    virSEVCapabilitiesFree(sev);
-    return ret;
+    return 0;
 }
 
 

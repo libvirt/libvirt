@@ -6443,9 +6443,11 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr caps;
-    virSEVCapability *capability = NULL;
-    const char *pdh = NULL, *cert_chain = NULL;
-    unsigned int cbitpos, reduced_phys_bits;
+    const char *pdh = NULL;
+    const char *cert_chain = NULL;
+    unsigned int cbitpos;
+    unsigned int reduced_phys_bits;
+    VIR_AUTOPTR(virSEVCapability) capability = NULL;
 
     *capabilities = NULL;
 
@@ -6476,7 +6478,7 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
     }
 
     if (virJSONValueObjectGetNumberUint(caps, "reduced-phys-bits",
-                                       &reduced_phys_bits) < 0) {
+                                        &reduced_phys_bits) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("query-sev-capabilities reply was missing"
                          " 'reduced-phys-bits' field"));
@@ -6512,7 +6514,6 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
     ret = 0;
 
  cleanup:
-    virSEVCapabilitiesFree(capability);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
 
