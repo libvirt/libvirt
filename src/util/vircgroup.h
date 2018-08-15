@@ -114,7 +114,7 @@ void virCgroupFree(virCgroupPtr *group);
 
 bool virCgroupHasController(virCgroupPtr cgroup, int controller);
 int virCgroupPathOfController(virCgroupPtr group,
-                              int controller,
+                              unsigned int controller,
                               const char *key,
                               char **path);
 

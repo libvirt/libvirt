@@ -1772,28 +1772,13 @@ virCgroupHasController(virCgroupPtr cgroup, int controller)
 
 int
 virCgroupPathOfController(virCgroupPtr group,
-                          int controller,
+                          unsigned int controller,
                           const char *key,
                           char **path)
 {
-    if (controller == -1) {
-        size_t i;
-        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-            /* Reject any controller with a placement
-             * of '/' to avoid doing bad stuff to the root
-             * cgroup
-             */
-            if (group->controllers[i].mountPoint &&
-                group->controllers[i].placement &&
-                STRNEQ(group->controllers[i].placement, "/")) {
-                controller = i;
-                break;
-            }
-        }
-    }
-    if (controller == -1) {
-        virReportSystemError(ENOSYS, "%s",
-                             _("No controllers are mounted"));
+    if (controller >= VIR_CGROUP_CONTROLLER_LAST) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid controller id '%d'"), controller);
         return -1;
     }
 
@@ -3505,6 +3490,31 @@ virCgroupRemove(virCgroupPtr group)
 }
 
 
+static int
+virCgroupPathOfAnyController(virCgroupPtr group,
+                             const char *name,
+                             char **keypath)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        /* Reject any controller with a placement
+         * of '/' to avoid doing bad stuff to the root
+         * cgroup
+         */
+        if (group->controllers[i].mountPoint &&
+            group->controllers[i].placement &&
+            STRNEQ(group->controllers[i].placement, "/")) {
+            return virCgroupPathOfController(group, i, name, keypath);
+        }
+    }
+
+    virReportSystemError(ENOSYS, "%s",
+                         _("No controllers are mounted"));
+    return -1;
+}
+
+
 /*
  * Returns 1 if some PIDs are killed, 0 if none are killed, or -1 on error
  */
@@ -3519,7 +3529,7 @@ virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
     VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
               group, group->path, signum, pids);
 
-    if (virCgroupPathOfController(group, -1, "tasks", &keypath) < 0)
+    if (virCgroupPathOfAnyController(group, "tasks", &keypath) < 0)
         return -1;
 
     /* PIDs may be forking as we kill them, so loop
@@ -3622,7 +3632,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
               group, group->path, signum, pids);
 
-    if (virCgroupPathOfController(group, -1, "", &keypath) < 0)
+    if (virCgroupPathOfAnyController(group, "", &keypath) < 0)
         return -1;
 
     if ((rc = virCgroupKillInternal(group, signum, pids)) < 0)
@@ -4180,7 +4190,7 @@ virCgroupHasController(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
 
 int
 virCgroupPathOfController(virCgroupPtr group ATTRIBUTE_UNUSED,
-                          int controller ATTRIBUTE_UNUSED,
+                          unsigned int controller ATTRIBUTE_UNUSED,
                           const char *key ATTRIBUTE_UNUSED,
                           char **path ATTRIBUTE_UNUSED)
 {
