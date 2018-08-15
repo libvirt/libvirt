@@ -17092,8 +17092,8 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
                                              baseSource);
     if (!baseSource || basePath)
-        ret = qemuMonitorBlockStream(priv->mon, device, basePath, backingPath,
-                                     speed);
+        ret = qemuMonitorBlockStream(priv->mon, device, NULL, false, basePath,
+                                     NULL, backingPath, speed);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 

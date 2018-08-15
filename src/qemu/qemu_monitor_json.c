@@ -4907,19 +4907,33 @@ qemuMonitorJSONBlockJobError(virJSONValuePtr cmd,
 int
 qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
                            const char *device,
+                           const char *jobname,
+                           bool persistjob,
                            const char *base,
+                           const char *baseNode,
                            const char *backingName,
                            unsigned long long speed)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
+    virTristateBool autofinalize = VIR_TRISTATE_BOOL_ABSENT;
+    virTristateBool autodismiss = VIR_TRISTATE_BOOL_ABSENT;
+
+    if (persistjob) {
+        autofinalize = VIR_TRISTATE_BOOL_YES;
+        autodismiss = VIR_TRISTATE_BOOL_NO;
+    }
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block-stream",
                                            "s:device", device,
+                                           "S:job-id", jobname,
                                            "Y:speed", speed,
                                            "S:base", base,
+                                           "S:base-node", baseNode,
                                            "S:backing-file", backingName,
+                                           "T:auto-finalize", autofinalize,
+                                           "T:auto-dismiss", autodismiss,
                                            NULL)))
         return -1;
 

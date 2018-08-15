@@ -302,7 +302,10 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
 
 int qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
                                const char *device,
+                               const char *jobname,
+                               bool persistjob,
                                const char *base,
+                               const char *baseNode,
                                const char *backingName,
                                unsigned long long speed)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

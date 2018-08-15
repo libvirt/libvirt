@@ -949,7 +949,10 @@ int qemuMonitorSendKey(qemuMonitorPtr mon,
 
 int qemuMonitorBlockStream(qemuMonitorPtr mon,
                            const char *device,
+                           const char *jobname,
+                           bool persistjob,
                            const char *base,
+                           const char *baseNode,
                            const char *backingName,
                            unsigned long long bandwidth)
     ATTRIBUTE_NONNULL(2);
