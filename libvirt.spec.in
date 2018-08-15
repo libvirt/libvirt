@@ -1163,13 +1163,13 @@ exit 1
 %define arg_selinux_mount --with-selinux-mount="/sys/fs/selinux"
 
 %if 0%{?fedora}
-    # Nightly firmware repo x86/OVMF
+    # Nightly edk2.git-ovmf-x64
     LOADERS="/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd:/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd"
-    # Nightly firmware repo aarch64/AAVMF
+    # Nightly edk2.git-aarch64
     LOADERS="$LOADERS:/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2.git/aarch64/vars-template-pflash.raw"
-    # Fedora official x86/OVMF
+    # Fedora edk2-ovmf
     LOADERS="$LOADERS:/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd"
-    # Fedora official aarch64/AAVMF
+    # Fedora edk2-aarch64
     LOADERS="$LOADERS:/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw"
     %define arg_loader_nvram --with-loader-nvram="$LOADERS"
 %endif
