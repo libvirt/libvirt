@@ -25,6 +25,8 @@
 #include "virerror.h"
 #include "virlog.h"
 
+#include "c-ctype.h"
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_qapi");
@@ -75,6 +77,8 @@ virQEMUQAPISchemaTraverse(const char *baseName,
 {
     virJSONValuePtr base;
     const char *metatype;
+    const char *querystr;
+    char modifier;
 
     while (1) {
         if (!(base = virHashLookup(schema, baseName)))
@@ -93,13 +97,19 @@ virQEMUQAPISchemaTraverse(const char *baseName,
 
             continue;
         } else if (STREQ(metatype, "object")) {
-            if (**query == '+')
+            querystr = *query;
+            modifier = **query;
+
+            if (!c_isalpha(modifier))
+                querystr++;
+
+            if (modifier == '+')
                 baseName = virQEMUQAPISchemaObjectGetType("variants",
-                                                          *query + 1,
+                                                          querystr,
                                                           "case", base);
             else
                 baseName = virQEMUQAPISchemaObjectGetType("members",
-                                                          *query,
+                                                          querystr,
                                                           "name", base);
 
             if (!baseName)
@@ -138,6 +148,9 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  * subattribute: specifies member name of object types
  * +variant_discriminator: In the case of unionized objects, select a
  *                         specific case to introspect.
+ *
+ * If the name of any (sub)attribute starts with non-alphabetical symbols it
+ * needs to be prefixed by a single space.
  *
  * Array types are automatically flattened to the singular type. Alternate
  * types are currently not supported.
