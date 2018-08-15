@@ -350,18 +350,22 @@ virCgroupCopyMounts(virCgroupPtr group,
 
 
 static int
-virCgroupResolveMountLink(char *mntDir,
+virCgroupResolveMountLink(const char *mntDir,
                           const char *typeStr,
                           virCgroupControllerPtr controller)
 {
     VIR_AUTOFREE(char *) linkSrc = NULL;
+    VIR_AUTOFREE(char *) tmp = NULL;
     char *dirName;
     struct stat sb;
 
-    dirName = strrchr(mntDir, '/');
+    if (VIR_STRDUP(tmp, mntDir) < 0)
+        return -1;
+
+    dirName = strrchr(tmp, '/');
     if (!dirName) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing '/' separator in cgroup mount '%s'"), mntDir);
+                       _("Missing '/' separator in cgroup mount '%s'"), tmp);
         return -1;
     }
 
@@ -369,14 +373,14 @@ virCgroupResolveMountLink(char *mntDir,
         return 0;
 
     *dirName = '\0';
-    if (virAsprintf(&linkSrc, "%s/%s", mntDir, typeStr) < 0)
+    if (virAsprintf(&linkSrc, "%s/%s", tmp, typeStr) < 0)
         return -1;
     *dirName = '/';
 
     if (lstat(linkSrc, &sb) < 0) {
         if (errno == ENOENT) {
             VIR_WARN("Controller %s co-mounted at %s is missing symlink at %s",
-                     typeStr, mntDir, linkSrc);
+                     typeStr, tmp, linkSrc);
         } else {
             virReportSystemError(errno, _("Cannot stat %s"), linkSrc);
             return -1;
