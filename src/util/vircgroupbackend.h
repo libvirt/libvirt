@@ -316,6 +316,14 @@ typedef int
                              unsigned long long *user,
                              unsigned long long *sys);
 
+typedef int
+(*virCgroupSetFreezerStateCB)(virCgroupPtr group,
+                              const char *state);
+
+typedef int
+(*virCgroupGetFreezerStateCB)(virCgroupPtr group,
+                              char **state);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -382,6 +390,9 @@ struct _virCgroupBackend {
     virCgroupGetCpuacctUsageCB getCpuacctUsage;
     virCgroupGetCpuacctPercpuUsageCB getCpuacctPercpuUsage;
     virCgroupGetCpuacctStatCB getCpuacctStat;
+
+    virCgroupSetFreezerStateCB setFreezerState;
+    virCgroupGetFreezerStateCB getFreezerState;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

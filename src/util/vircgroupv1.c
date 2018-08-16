@@ -1928,6 +1928,26 @@ virCgroupV1GetCpuacctStat(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1SetFreezerState(virCgroupPtr group,
+                           const char *state)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_FREEZER,
+                                "freezer.state", state);
+}
+
+
+static int
+virCgroupV1GetFreezerState(virCgroupPtr group,
+                           char **state)
+{
+    return virCgroupGetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_FREEZER,
+                                "freezer.state", state);
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1992,6 +2012,9 @@ virCgroupBackend virCgroupV1Backend = {
     .getCpuacctUsage = virCgroupV1GetCpuacctUsage,
     .getCpuacctPercpuUsage = virCgroupV1GetCpuacctPercpuUsage,
     .getCpuacctStat = virCgroupV1GetCpuacctStat,
+
+    .setFreezerState = virCgroupV1SetFreezerState,
+    .getFreezerState = virCgroupV1GetFreezerState,
 };
 
 

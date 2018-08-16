@@ -2599,18 +2599,14 @@ virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
 int
 virCgroupSetFreezerState(virCgroupPtr group, const char *state)
 {
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_FREEZER,
-                                "freezer.state", state);
+    VIR_CGROUP_BACKEND_CALL(group, setFreezerState, -1, state);
 }
 
 
 int
 virCgroupGetFreezerState(virCgroupPtr group, char **state)
 {
-    return virCgroupGetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_FREEZER,
-                                "freezer.state", state);
+    VIR_CGROUP_BACKEND_CALL(group, getFreezerState, -1, state);
 }
 
 
