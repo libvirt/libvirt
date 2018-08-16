@@ -332,6 +332,11 @@ int qemuMonitorJSONJobDismiss(qemuMonitorPtr mon,
                               const char *jobname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONJobCancel(qemuMonitorPtr mon,
+                             const char *jobname,
+                             bool quiet)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
                            const char *name,
                            virDomainNetInterfaceLinkState state);

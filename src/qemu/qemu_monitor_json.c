@@ -5088,6 +5088,34 @@ qemuMonitorJSONJobDismiss(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorJSONJobCancel(qemuMonitorPtr mon,
+                         const char *jobname,
+                         bool quiet)
+{
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("job-cancel",
+                                           "s:id", jobname,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (quiet) {
+        if (virJSONValueObjectHasKey(reply, "error") != 0)
+            return -1;
+    } else {
+        if (qemuMonitorJSONBlockJobError(cmd, reply, jobname) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
                                 const char *protocol,
                                 const char *fdname,

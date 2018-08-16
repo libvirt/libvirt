@@ -1341,6 +1341,7 @@ GEN_TEST_FUNC(qemuMonitorJSONAddBitmap, "node", "bitmap", true)
 GEN_TEST_FUNC(qemuMonitorJSONEnableBitmap, "node", "bitmap")
 GEN_TEST_FUNC(qemuMonitorJSONDeleteBitmap, "node", "bitmap")
 GEN_TEST_FUNC(qemuMonitorJSONJobDismiss, "jobname")
+GEN_TEST_FUNC(qemuMonitorJSONJobCancel, "jobname", false)
 
 static int
 testQemuMonitorJSONqemuMonitorJSONNBDServerStart(const void *opaque)
@@ -3059,6 +3060,7 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONEnableBitmap);
     DO_TEST_GEN(qemuMonitorJSONDeleteBitmap);
     DO_TEST_GEN(qemuMonitorJSONJobDismiss);
+    DO_TEST_GEN(qemuMonitorJSONJobCancel);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetAllBlockStatsInfo);
