@@ -254,13 +254,14 @@ int qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int qemuMonitorJSONBlockdevMirror(qemuMonitorPtr mon,
                                   const char *jobname,
+                                  bool persistjob,
                                   const char *device,
                                   const char *target,
                                   unsigned long long speed,
                                   unsigned int granularity,
                                   unsigned long long buf_size,
                                   bool shallow)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 int qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
                               const char *jobname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

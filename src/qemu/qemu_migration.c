@@ -840,7 +840,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     mon_ret = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm), data);
 
     if (mon_ret == 0)
-        mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), NULL,
+        mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), NULL, false,
                                             diskAlias, copysrc->nodeformat,
                                             mirror_speed, 0, 0, mirror_shallow);
 
