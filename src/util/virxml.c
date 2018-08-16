@@ -847,7 +847,8 @@ virXMLParseHelper(int domcode,
 
     if (virGetLastErrorCode() == VIR_ERR_OK) {
         virGenericReportError(domcode, VIR_ERR_XML_ERROR,
-                              "%s", _("failed to parse xml document"));
+                              _("failed to parse xml document '%s'"),
+                              filename ? filename : "[inline data]");
     }
     goto cleanup;
 }
