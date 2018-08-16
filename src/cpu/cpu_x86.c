@@ -1251,7 +1251,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid CPU signature family in model %s"),
                            model->name);
-            goto cleanup;
+            goto error;
         }
 
         rc = virXPathUInt("string(./signature/@model)", ctxt, &sigModel);
@@ -1259,7 +1259,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid CPU signature model in model %s"),
                            model->name);
-            goto cleanup;
+            goto error;
         }
 
         model->signature = x86MakeSignature(sigFamily, sigModel, 0);
