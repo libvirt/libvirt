@@ -288,27 +288,28 @@ ppc64VendorParse(xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
 {
     struct ppc64_map *map = data;
     struct ppc64_vendor *vendor;
+    int ret = -1;
 
     if (VIR_ALLOC(vendor) < 0)
         return -1;
 
     if (VIR_STRDUP(vendor->name, name) < 0)
-        goto error;
+        goto cleanup;
 
     if (ppc64VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
-        goto error;
+        goto cleanup;
     }
 
     if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
-        goto error;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
 
- error:
+ cleanup:
     ppc64VendorFree(vendor);
-    return -1;
+    return ret;
 }
 
 
@@ -327,15 +328,15 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
     int ret = -1;
 
     if (VIR_ALLOC(model) < 0)
-        goto error;
+        goto cleanup;
 
     if (VIR_STRDUP(model->name, name) < 0)
-        goto error;
+        goto cleanup;
 
     if (ppc64ModelFind(map, model->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU model %s already defined"), model->name);
-        goto error;
+        goto cleanup;
     }
 
     if (virXPathBoolean("boolean(./vendor)", ctxt)) {
@@ -344,14 +345,14 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid vendor element in CPU model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
 
         if (!(model->vendor = ppc64VendorFind(map, vendor))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown vendor %s referenced by CPU model %s"),
                            vendor, model->name);
-            goto error;
+            goto cleanup;
         }
     }
 
@@ -359,11 +360,11 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing PVR information for CPU model %s"),
                        model->name);
-        goto error;
+        goto cleanup;
     }
 
     if (VIR_ALLOC_N(model->data.pvr, n) < 0)
-        goto error;
+        goto cleanup;
 
     model->data.len = n;
 
@@ -374,7 +375,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing or invalid PVR value in CPU model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
         model->data.pvr[i].value = pvr;
 
@@ -382,24 +383,21 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing or invalid PVR mask in CPU model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
         model->data.pvr[i].mask = pvr;
     }
 
     if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
-        goto error;
+        goto cleanup;
 
     ret = 0;
 
  cleanup:
+    ppc64ModelFree(model);
     VIR_FREE(vendor);
     VIR_FREE(nodes);
     return ret;
-
- error:
-    ppc64ModelFree(model);
-    goto cleanup;
 }
 
 

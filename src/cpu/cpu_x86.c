@@ -732,15 +732,15 @@ x86VendorParse(xmlXPathContextPtr ctxt,
     int ret = -1;
 
     if (VIR_ALLOC(vendor) < 0)
-        goto error;
+        goto cleanup;
 
     if (VIR_STRDUP(vendor->name, name) < 0)
-        goto error;
+        goto cleanup;
 
     if (x86VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
-        goto error;
+        goto cleanup;
     }
 
     string = virXPathString("string(@string)", ctxt);
@@ -748,24 +748,21 @@ x86VendorParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing vendor string for CPU vendor %s"),
                        vendor->name);
-        goto error;
+        goto cleanup;
     }
 
     if (virCPUx86VendorToCPUID(string, &vendor->cpuid) < 0)
-        goto error;
+        goto cleanup;
 
     if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
-        goto error;
+        goto cleanup;
 
     ret = 0;
 
  cleanup:
+    x86VendorFree(vendor);
     VIR_FREE(string);
     return ret;
-
- error:
-    x86VendorFree(vendor);
-    goto cleanup;
 }
 
 
@@ -905,17 +902,17 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     int ret = -1;
 
     if (!(feature = x86FeatureNew()))
-        goto error;
+        goto cleanup;
 
     feature->migratable = true;
 
     if (VIR_STRDUP(feature->name, name) < 0)
-        goto error;
+        goto cleanup;
 
     if (x86FeatureFind(map, feature->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU feature %s already defined"), feature->name);
-        goto error;
+        goto cleanup;
     }
 
     str = virXPathString("string(@migratable)", ctxt);
@@ -924,7 +921,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
 
     n = virXPathNodeSet("./cpuid", ctxt, &nodes);
     if (n < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
@@ -932,31 +929,28 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid cpuid[%zu] in %s feature"),
                            i, feature->name);
-            goto error;
+            goto cleanup;
         }
         if (virCPUx86DataAddCPUIDInt(&feature->data, &cpuid))
-            goto error;
+            goto cleanup;
     }
 
     if (!feature->migratable &&
         VIR_APPEND_ELEMENT_COPY(map->migrate_blockers,
                                 map->nblockers,
                                 feature) < 0)
-        goto error;
+        goto cleanup;
 
     if (VIR_APPEND_ELEMENT(map->features, map->nfeatures, feature) < 0)
-        goto error;
+        goto cleanup;
 
     ret = 0;
 
  cleanup:
+    x86FeatureFree(feature);
     VIR_FREE(nodes);
     VIR_FREE(str);
     return ret;
-
- error:
-    x86FeatureFree(feature);
-    goto cleanup;
 }
 
 
@@ -1169,10 +1163,10 @@ x86ModelParse(xmlXPathContextPtr ctxt,
     int ret = -1;
 
     if (!(model = x86ModelNew()))
-        goto error;
+        goto cleanup;
 
     if (VIR_STRDUP(model->name, name) < 0)
-        goto error;
+        goto cleanup;
 
     if (virXPathNode("./model", ctxt)) {
         virCPUx86ModelPtr ancestor;
@@ -1183,7 +1177,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing ancestor's name in CPU model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
 
         if (!(ancestor = x86ModelFind(map, anname))) {
@@ -1191,7 +1185,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
                            _("Ancestor model %s not found for CPU model %s"),
                            anname, model->name);
             VIR_FREE(anname);
-            goto error;
+            goto cleanup;
         }
 
         VIR_FREE(anname);
@@ -1199,7 +1193,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
         model->vendor = ancestor->vendor;
         model->signature = ancestor->signature;
         if (x86DataCopy(&model->data, &ancestor->data) < 0)
-            goto error;
+            goto cleanup;
     }
 
     if (virXPathBoolean("boolean(./signature)", ctxt)) {
@@ -1212,7 +1206,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid CPU signature family in model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
 
         rc = virXPathUInt("string(./signature/@model)", ctxt, &sigModel);
@@ -1220,7 +1214,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid CPU signature model in model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
 
         model->signature = x86MakeSignature(sigFamily, sigModel, 0);
@@ -1232,20 +1226,20 @@ x86ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid vendor element in CPU model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
 
         if (!(model->vendor = x86VendorFind(map, vendor))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown vendor %s referenced by CPU model %s"),
                            vendor, model->name);
-            goto error;
+            goto cleanup;
         }
     }
 
     n = virXPathNodeSet("./feature", ctxt, &nodes);
     if (n < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < n; i++) {
         virCPUx86FeaturePtr feature;
@@ -1254,7 +1248,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
         if (!(ftname = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing feature name for CPU model %s"), model->name);
-            goto error;
+            goto cleanup;
         }
 
         if (!(feature = x86FeatureFind(map, ftname))) {
@@ -1262,27 +1256,24 @@ x86ModelParse(xmlXPathContextPtr ctxt,
                            _("Feature %s required by CPU model %s not found"),
                            ftname, model->name);
             VIR_FREE(ftname);
-            goto error;
+            goto cleanup;
         }
         VIR_FREE(ftname);
 
         if (x86DataAdd(&model->data, &feature->data))
-            goto error;
+            goto cleanup;
     }
 
     if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
-        goto error;
+        goto cleanup;
 
     ret = 0;
 
  cleanup:
+    x86ModelFree(model);
     VIR_FREE(vendor);
     VIR_FREE(nodes);
     return ret;
-
- error:
-    x86ModelFree(model);
-    goto cleanup;
 }
 
 
