@@ -99,8 +99,8 @@ cpuMapLoadInclude(const char *filename,
     char *mapfile;
 
     if (!(mapfile = virFileFindResource(filename,
-                                        abs_topsrcdir "/src/cpu",
-                                        PKGDATADIR)))
+                                        abs_topsrcdir "/src/cpu_map",
+                                        PKGDATADIR "/cpu_map")))
         return -1;
 
     VIR_DEBUG("Loading CPU map include from %s", mapfile);
@@ -187,9 +187,9 @@ int cpuMapLoad(const char *arch,
     int ret = -1;
     char *mapfile;
 
-    if (!(mapfile = virFileFindResource("cpu_map.xml",
-                                        abs_topsrcdir "/src/cpu",
-                                        PKGDATADIR)))
+    if (!(mapfile = virFileFindResource("index.xml",
+                                        abs_topsrcdir "/src/cpu_map",
+                                        PKGDATADIR "/cpu_map")))
         return -1;
 
     VIR_DEBUG("Loading '%s' CPU map from %s", NULLSTR(arch), mapfile);

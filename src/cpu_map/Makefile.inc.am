@@ -1,0 +1,6 @@
+cpumapdir = $(pkgdatadir)/cpu_map
+cpumap_DATA = \
+	cpu_map/index.xml \
+	$(NULL)
+
+EXTRA_DIST += $(cpumap_DATA)

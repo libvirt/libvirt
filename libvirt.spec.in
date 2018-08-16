@@ -1863,7 +1863,7 @@ exit 0
 %{_datadir}/libvirt/schemas/storagepool.rng
 %{_datadir}/libvirt/schemas/storagevol.rng
 
-%{_datadir}/libvirt/cpu_map.xml
+%{_datadir}/libvirt/cpu_map/*.xml
 
 %{_datadir}/libvirt/test-screenshot.png
 

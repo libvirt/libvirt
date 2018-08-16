@@ -100,6 +100,7 @@ man7_MANS =
 include util/Makefile.inc.am
 include conf/Makefile.inc.am
 include cpu/Makefile.inc.am
+include cpu_map/Makefile.inc.am
 include security/Makefile.inc.am
 include access/Makefile.inc.am
 include logging/Makefile.inc.am
@@ -363,12 +364,6 @@ check-local: check-protocol check-symfile check-symsorting \
 	check-aclperms check-admin-symfile check-admin-symsorting
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
-
-
-
-pkgdata_DATA =	cpu/cpu_map.xml
-
-EXTRA_DIST +=	$(pkgdata_DATA)
 
 #########################
 #
