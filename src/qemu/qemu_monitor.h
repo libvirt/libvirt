@@ -987,6 +987,10 @@ int qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
                                qemuMonitorBlockJobInfoPtr info)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+int qemuMonitorJobDismiss(qemuMonitorPtr mon,
+                          const char *jobname)
+    ATTRIBUTE_NONNULL(2);
+
 int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
                             const char *protocol,
                             int fd,
