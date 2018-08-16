@@ -2225,6 +2225,7 @@ qemuBuildFloppyCommandLineControllerOptions(virCommandPtr cmd,
     VIR_FREE(backendAlias);
     VIR_FREE(backendStr);
     VIR_FREE(bootindexStr);
+    virBufferFreeAndReset(&fdc_opts);
     return ret;
 }
 
