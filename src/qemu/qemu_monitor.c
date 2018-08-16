@@ -3257,18 +3257,27 @@ qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
 
 /* Start a block-commit block job.  bandwidth is in bytes/sec.  */
 int
-qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
-                       const char *top, const char *base,
+qemuMonitorBlockCommit(qemuMonitorPtr mon,
+                       const char *device,
+                       const char *jobname,
+                       bool persistjob,
+                       const char *top,
+                       const char *topNode,
+                       const char *base,
+                       const char *baseNode,
                        const char *backingName,
                        unsigned long long bandwidth)
 {
-    VIR_DEBUG("device=%s, top=%s, base=%s, backingName=%s, bandwidth=%llu",
-              device, top, base, NULLSTR(backingName), bandwidth);
+    VIR_DEBUG("device=%s, jobname=%s, persistjob=%d, top=%s, topNode=%s, "
+              "base=%s, baseNode=%s, backingName=%s, bandwidth=%llu",
+              device, NULLSTR(jobname), persistjob, NULLSTR(top), NULLSTR(topNode),
+              NULLSTR(base), NULLSTR(baseNode), NULLSTR(backingName), bandwidth);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONBlockCommit(mon, device, top, base,
-                                         backingName, bandwidth);
+    return qemuMonitorJSONBlockCommit(mon, device, jobname, persistjob, top,
+                                      topNode, base, baseNode, backingName,
+                                      bandwidth);
 }
 
 

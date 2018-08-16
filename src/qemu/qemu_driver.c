@@ -18058,8 +18058,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
     topPath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
                                         topSource);
     if (basePath && topPath)
-        ret = qemuMonitorBlockCommit(priv->mon, device,
-                                     topPath, basePath, backingPath,
+        ret = qemuMonitorBlockCommit(priv->mon, device, NULL, false,
+                                     topPath, NULL, basePath, NULL, backingPath,
                                      speed);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0) {
         ret = -1;

@@ -4507,21 +4507,39 @@ qemuMonitorJSONSupportsActiveCommit(qemuMonitorPtr mon)
 /* speed is in bytes/sec. Returns 0 on success, -1 with error message
  * emitted on failure. */
 int
-qemuMonitorJSONBlockCommit(qemuMonitorPtr mon, const char *device,
-                           const char *top, const char *base,
+qemuMonitorJSONBlockCommit(qemuMonitorPtr mon,
+                           const char *device,
+                           const char *jobname,
+                           bool persistjob,
+                           const char *top,
+                           const char *topNode,
+                           const char *base,
+                           const char *baseNode,
                            const char *backingName,
                            unsigned long long speed)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
+    virTristateBool autofinalize = VIR_TRISTATE_BOOL_ABSENT;
+    virTristateBool autodismiss = VIR_TRISTATE_BOOL_ABSENT;
+
+    if (persistjob) {
+        autofinalize = VIR_TRISTATE_BOOL_YES;
+        autodismiss = VIR_TRISTATE_BOOL_NO;
+    }
 
     cmd = qemuMonitorJSONMakeCommand("block-commit",
                                      "s:device", device,
+                                     "S:job-id", jobname,
                                      "Y:speed", speed,
                                      "S:top", top,
+                                     "S:top-node", topNode,
                                      "S:base", base,
+                                     "S:base-node", baseNode,
                                      "S:backing-file", backingName,
+                                     "T:auto-finalize", autofinalize,
+                                     "T:auto-dismiss", autodismiss,
                                      NULL);
     if (!cmd)
         return -1;

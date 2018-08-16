@@ -918,11 +918,15 @@ int qemuMonitorDrivePivot(qemuMonitorPtr mon,
 
 int qemuMonitorBlockCommit(qemuMonitorPtr mon,
                            const char *device,
+                           const char *jobname,
+                           bool persistjob,
                            const char *top,
+                           const char *topNode,
                            const char *base,
+                           const char *baseNode,
                            const char *backingName,
                            unsigned long long bandwidth)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(2);
 bool qemuMonitorSupportsActiveCommit(qemuMonitorPtr mon);
 char *qemuMonitorDiskNameLookup(qemuMonitorPtr mon,
                                 const char *device,
