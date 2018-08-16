@@ -996,6 +996,10 @@ int qemuMonitorJobCancel(qemuMonitorPtr mon,
                          bool quiet)
     ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJobComplete(qemuMonitorPtr mon,
+                           const char *jobname)
+    ATTRIBUTE_NONNULL(2);
+
 int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
                             const char *protocol,
                             int fd,

@@ -3489,6 +3489,18 @@ qemuMonitorJobCancel(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorJobComplete(qemuMonitorPtr mon,
+                       const char *jobname)
+{
+    VIR_DEBUG("jobname=%s", jobname);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONJobComplete(mon, jobname);
+}
+
+
+int
 qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
                               const char *drivealias,
                               const char *qomid,
