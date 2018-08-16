@@ -142,6 +142,8 @@ virJSONValueGetType(const virJSONValue *value)
  *
  * b: boolean value
  * B: boolean value, omitted if false
+ * T: boolean value specified by a virTristate(Bool|Switch) value, omitted on
+ * the _ABSENT value
  *
  * d: double precision floating point number
  * n: json null value
@@ -265,12 +267,23 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
             rc = virJSONValueObjectAppendNumberDouble(obj, key, val);
         }   break;
 
+        case 'T':
         case 'B':
         case 'b': {
             int val = va_arg(args, int);
 
             if (!val && type == 'B')
                 continue;
+
+            if (type == 'T') {
+                if (val == VIR_TRISTATE_BOOL_ABSENT)
+                    continue;
+
+                if (val == VIR_TRISTATE_BOOL_NO)
+                    val = 0;
+                else
+                    val = 1;
+            }
 
             rc = virJSONValueObjectAppendBoolean(obj, key, val);
         }   break;
