@@ -19,6 +19,10 @@
  */
 #include <config.h>
 
+#ifdef __linux__
+# include <mntent.h>
+#endif /* __linux__ */
+
 #include "internal.h"
 
 #define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
@@ -28,7 +32,9 @@
 #include "vircgroup.h"
 #include "vircgroupbackend.h"
 #include "vircgroupv2.h"
+#include "virfile.h"
 #include "virlog.h"
+#include "virstring.h"
 
 VIR_LOG_INIT("util.cgroup");
 
@@ -41,8 +47,52 @@ VIR_ENUM_IMPL(virCgroupV2Controller, VIR_CGROUP_CONTROLLER_LAST,
 
 #ifdef __linux__
 
+/* We're looking for one 'cgroup2' fs mount which has some
+ * controllers enabled. */
+static bool
+virCgroupV2Available(void)
+{
+    bool ret = false;
+    FILE *mounts = NULL;
+    struct mntent entry;
+    char buf[CGROUP_MAX_VAL];
+
+    if (!(mounts = fopen("/proc/mounts", "r")))
+        return false;
+
+    while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
+        VIR_AUTOFREE(char *) contFile = NULL;
+        VIR_AUTOFREE(char *) contStr = NULL;
+
+        if (STRNEQ(entry.mnt_type, "cgroup2"))
+            continue;
+
+        /* Systemd uses cgroup v2 for process tracking but no controller is
+         * available. We should consider this configuration as cgroup v2 is
+         * not available. */
+        if (virAsprintf(&contFile, "%s/cgroup.controllers", entry.mnt_dir) < 0)
+            goto cleanup;
+
+        if (virFileReadAll(contFile, 1024 * 1024, &contStr) < 0)
+            goto cleanup;
+
+        if (STREQ(contStr, ""))
+            continue;
+
+        ret = true;
+        break;
+    }
+
+ cleanup:
+    VIR_FORCE_FCLOSE(mounts);
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
+
+    .available = virCgroupV2Available,
 };
 
 
