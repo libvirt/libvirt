@@ -1785,6 +1785,36 @@ virCgroupV1GetCpuShares(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1SetCpuCfsPeriod(virCgroupPtr group,
+                           unsigned long long cfs_period)
+{
+    /* The cfs_period should be greater or equal than 1ms, and less or equal
+     * than 1s.
+     */
+    if (cfs_period < 1000 || cfs_period > 1000000) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cfs_period '%llu' must be in range (1000, 1000000)"),
+                       cfs_period);
+        return -1;
+    }
+
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_period_us", cfs_period);
+}
+
+
+static int
+virCgroupV1GetCpuCfsPeriod(virCgroupPtr group,
+                           unsigned long long *cfs_period)
+{
+    return virCgroupGetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_period_us", cfs_period);
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1840,6 +1870,8 @@ virCgroupBackend virCgroupV1Backend = {
 
     .setCpuShares = virCgroupV1SetCpuShares,
     .getCpuShares = virCgroupV1GetCpuShares,
+    .setCpuCfsPeriod = virCgroupV1SetCpuCfsPeriod,
+    .getCpuCfsPeriod = virCgroupV1GetCpuCfsPeriod,
 };
 
 

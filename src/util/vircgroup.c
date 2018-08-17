@@ -2223,19 +2223,7 @@ virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
 int
 virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
 {
-    /* The cfs_period should be greater or equal than 1ms, and less or equal
-     * than 1s.
-     */
-    if (cfs_period < 1000 || cfs_period > 1000000) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_period '%llu' must be in range (1000, 1000000)"),
-                       cfs_period);
-        return -1;
-    }
-
-    return virCgroupSetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.cfs_period_us", cfs_period);
+    VIR_CGROUP_BACKEND_CALL(group, setCpuCfsPeriod, -1, cfs_period);
 }
 
 
@@ -2250,9 +2238,7 @@ virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
 int
 virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
 {
-    return virCgroupGetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.cfs_period_us", cfs_period);
+    VIR_CGROUP_BACKEND_CALL(group, getCpuCfsPeriod, -1, cfs_period);
 }
 
 
