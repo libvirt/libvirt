@@ -137,6 +137,14 @@ typedef int
                        gid_t gid,
                        int controllers);
 
+typedef int
+(*virCgroupSetBlkioWeightCB)(virCgroupPtr group,
+                             unsigned int weight);
+
+typedef int
+(*virCgroupGetBlkioWeightCB)(virCgroupPtr group,
+                             unsigned int *weight);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -159,6 +167,10 @@ struct _virCgroupBackend {
     virCgroupHasEmptyTasksCB hasEmptyTasks;
     virCgroupBindMountCB bindMount;
     virCgroupSetOwnerCB setOwner;
+
+    /* Optional cgroup controller specific callbacks. */
+    virCgroupSetBlkioWeightCB setBlkioWeight;
+    virCgroupGetBlkioWeightCB getBlkioWeight;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
@@ -168,5 +180,13 @@ virCgroupBackendRegister(virCgroupBackendPtr backend);
 
 virCgroupBackendPtr *
 virCgroupBackendGetAll(void);
+
+# define VIR_CGROUP_BACKEND_CALL(group, func, ret, ...) \
+    if (!group->backend->func) { \
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, \
+                       _("operation '%s' not supported"), #func); \
+        return ret; \
+    } \
+    return group->backend->func(group, ##__VA_ARGS__);
 
 #endif /* __VIR_CGROUP_BACKEND_H__ */

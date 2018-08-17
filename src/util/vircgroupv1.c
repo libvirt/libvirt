@@ -928,6 +928,32 @@ virCgroupV1SetOwner(virCgroupPtr cgroup,
 }
 
 
+static int
+virCgroupV1SetBlkioWeight(virCgroupPtr group,
+                          unsigned int weight)
+{
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "blkio.weight",
+                                weight);
+}
+
+
+static int
+virCgroupV1GetBlkioWeight(virCgroupPtr group,
+                          unsigned int *weight)
+{
+    unsigned long long tmp;
+    int ret;
+    ret = virCgroupGetValueU64(group,
+                               VIR_CGROUP_CONTROLLER_BLKIO,
+                               "blkio.weight", &tmp);
+    if (ret == 0)
+        *weight = tmp;
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -949,6 +975,9 @@ virCgroupBackend virCgroupV1Backend = {
     .hasEmptyTasks = virCgroupV1HasEmptyTasks,
     .bindMount = virCgroupV1BindMount,
     .setOwner = virCgroupV1SetOwner,
+
+    .setBlkioWeight = virCgroupV1SetBlkioWeight,
+    .getBlkioWeight = virCgroupV1GetBlkioWeight,
 };
 
 

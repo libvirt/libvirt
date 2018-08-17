@@ -1506,10 +1506,7 @@ virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
 int
 virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight)
 {
-    return virCgroupSetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_BLKIO,
-                                "blkio.weight",
-                                weight);
+    VIR_CGROUP_BACKEND_CALL(group, setBlkioWeight, -1, weight);
 }
 
 
@@ -1524,14 +1521,7 @@ virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight)
 int
 virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
 {
-    unsigned long long tmp;
-    int ret;
-    ret = virCgroupGetValueU64(group,
-                               VIR_CGROUP_CONTROLLER_BLKIO,
-                               "blkio.weight", &tmp);
-    if (ret == 0)
-        *weight = tmp;
-    return ret;
+    VIR_CGROUP_BACKEND_CALL(group, getBlkioWeight, -1, weight);
 }
 
 /**
