@@ -1693,14 +1693,7 @@ virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
 {
-    long long unsigned int usage_in_bytes;
-    int ret;
-    ret = virCgroupGetValueU64(group,
-                               VIR_CGROUP_CONTROLLER_MEMORY,
-                               "memory.memsw.usage_in_bytes", &usage_in_bytes);
-    if (ret == 0)
-        *kb = usage_in_bytes >> 10;
-    return ret;
+    VIR_CGROUP_BACKEND_CALL(group, getMemSwapUsage, -1, kb);
 }
 
 

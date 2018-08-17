@@ -251,6 +251,10 @@ typedef int
 (*virCgroupGetMemSwapHardLimitCB)(virCgroupPtr group,
                                   unsigned long long *kb);
 
+typedef int
+(*virCgroupGetMemSwapUsageCB)(virCgroupPtr group,
+                              unsigned long long *kb);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -299,6 +303,7 @@ struct _virCgroupBackend {
     virCgroupGetMemorySoftLimitCB getMemorySoftLimit;
     virCgroupSetMemSwapHardLimitCB setMemSwapHardLimit;
     virCgroupGetMemSwapHardLimitCB getMemSwapHardLimit;
+    virCgroupGetMemSwapUsageCB getMemSwapUsage;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

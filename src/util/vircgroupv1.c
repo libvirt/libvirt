@@ -1655,6 +1655,21 @@ virCgroupV1GetMemSwapHardLimit(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1GetMemSwapUsage(virCgroupPtr group,
+                           unsigned long long *kb)
+{
+    long long unsigned int usage_in_bytes;
+    int ret;
+    ret = virCgroupGetValueU64(group,
+                               VIR_CGROUP_CONTROLLER_MEMORY,
+                               "memory.memsw.usage_in_bytes", &usage_in_bytes);
+    if (ret == 0)
+        *kb = usage_in_bytes >> 10;
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1701,6 +1716,7 @@ virCgroupBackend virCgroupV1Backend = {
     .getMemorySoftLimit = virCgroupV1GetMemorySoftLimit,
     .setMemSwapHardLimit = virCgroupV1SetMemSwapHardLimit,
     .getMemSwapHardLimit = virCgroupV1GetMemSwapHardLimit,
+    .getMemSwapUsage = virCgroupV1GetMemSwapUsage,
 };
 
 
