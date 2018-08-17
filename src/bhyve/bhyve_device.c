@@ -110,7 +110,7 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
             ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) &&
              (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI))) {
             if (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
-                !virDeviceInfoPCIAddressWanted(&def->controllers[i]->info))
+                !virDeviceInfoPCIAddressIsWanted(&def->controllers[i]->info))
                 continue;
 
             if (virDomainPCIAddressReserveNextAddr(addrs,
@@ -122,7 +122,7 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->nnets; i++) {
-        if (!virDeviceInfoPCIAddressWanted(&def->nets[i]->info))
+        if (!virDeviceInfoPCIAddressIsWanted(&def->nets[i]->info))
             continue;
         if (virDomainPCIAddressReserveNextAddr(addrs,
                                                &def->nets[i]->info,
@@ -148,7 +148,7 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->nvideos; i++) {
-        if (!virDeviceInfoPCIAddressWanted(&def->videos[i]->info))
+        if (!virDeviceInfoPCIAddressIsWanted(&def->videos[i]->info))
             continue;
         if (virDomainPCIAddressReserveNextAddr(addrs,
                                                &def->videos[i]->info,

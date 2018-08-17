@@ -706,7 +706,7 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
     if (!(addrStr = virDomainPCIAddressAsString(&dev->addr.pci)))
         goto cleanup;
 
-    if (virDeviceInfoPCIAddressPresent(dev)) {
+    if (virDeviceInfoPCIAddressIsPresent(dev)) {
         /* We do not support hotplug multi-function PCI device now, so we should
          * reserve the whole slot. The function of the PCI device must be 0.
          */
