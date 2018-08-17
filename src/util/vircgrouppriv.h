@@ -88,6 +88,12 @@ int virCgroupGetValueForBlkDev(virCgroupPtr group,
                                const char *path,
                                char **value);
 
+int virCgroupNew(pid_t pid,
+                 const char *path,
+                 virCgroupPtr parent,
+                 int controllers,
+                 virCgroupPtr *group);
+
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,
