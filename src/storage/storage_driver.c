@@ -705,7 +705,7 @@ storagePoolCreateXML(virConnectPtr conn,
     if (virStoragePoolCreateXMLEnsureACL(conn, newDef) < 0)
         goto cleanup;
 
-    if (virStoragePoolObjSourceFindDuplicate(conn, driver->pools, newDef) < 0)
+    if (virStoragePoolObjSourceFindDuplicate(driver->pools, newDef) < 0)
         goto cleanup;
 
     if ((backend = virStorageBackendForType(newDef->type)) == NULL)
@@ -796,7 +796,7 @@ storagePoolDefineXML(virConnectPtr conn,
     if (virStoragePoolDefineXMLEnsureACL(conn, newDef) < 0)
         goto cleanup;
 
-    if (virStoragePoolObjSourceFindDuplicate(conn, driver->pools, newDef) < 0)
+    if (virStoragePoolObjSourceFindDuplicate(driver->pools, newDef) < 0)
         goto cleanup;
 
     if (virStorageBackendForType(newDef->type) == NULL)

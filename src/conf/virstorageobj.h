@@ -246,8 +246,7 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                         virStoragePoolObjPtr obj);
 
 int
-virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
-                                     virStoragePoolObjListPtr pools,
+virStoragePoolObjSourceFindDuplicate(virStoragePoolObjListPtr pools,
                                      virStoragePoolDefPtr def);
 
 int

@@ -1169,7 +1169,6 @@ virStorageIsSameHostnum(const char *name,
 /*
  * matchFCHostToSCSIHost:
  *
- * @conn: Connection pointer
  * @fchost: fc_host adapter ptr (either def or pool->def)
  * @scsi_hostnum: Already determined "scsi_pool" hostnum
  *
@@ -1177,10 +1176,10 @@ virStorageIsSameHostnum(const char *name,
  *         fc_adapter host# and the scsi_host host#
  */
 static bool
-matchFCHostToSCSIHost(virConnectPtr conn,
-                      virStorageAdapterFCHostPtr fchost,
+matchFCHostToSCSIHost(virStorageAdapterFCHostPtr fchost,
                       unsigned int scsi_hostnum)
 {
+    virConnectPtr conn = NULL;
     bool ret = false;
     char *name = NULL;
     char *scsi_host_name = NULL;
@@ -1211,7 +1210,8 @@ matchFCHostToSCSIHost(virConnectPtr conn,
          * If the parent fc_hostnum is the same as the scsi_hostnum, we
          * have a match.
          */
-        if (conn && !fchost->parent) {
+        if (!fchost->parent &&
+            (conn = virGetConnectNodeDev())) {
             if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
                 goto cleanup;
             if ((parent_name = virNodeDeviceGetParentName(conn,
@@ -1240,6 +1240,7 @@ matchFCHostToSCSIHost(virConnectPtr conn,
     VIR_FREE(name);
     VIR_FREE(parent_name);
     VIR_FREE(scsi_host_name);
+    virConnectClose(conn);
     return ret;
 }
 
@@ -1318,8 +1319,7 @@ virStoragePoolObjSourceMatchTypeDIR(virStoragePoolObjPtr obj,
 
 static virStoragePoolObjPtr
 virStoragePoolObjSourceMatchTypeISCSI(virStoragePoolObjPtr obj,
-                                      virStoragePoolDefPtr def,
-                                      virConnectPtr conn)
+                                      virStoragePoolDefPtr def)
 {
     virStorageAdapterPtr pool_adapter = &obj->def->source.adapter;
     virStorageAdapterPtr def_adapter = &def->source.adapter;
@@ -1363,7 +1363,7 @@ virStoragePoolObjSourceMatchTypeISCSI(virStoragePoolObjPtr obj,
         if (getSCSIHostNumber(def_scsi_host, &scsi_hostnum) < 0)
             return NULL;
 
-        if (matchFCHostToSCSIHost(conn, pool_fchost, scsi_hostnum))
+        if (matchFCHostToSCSIHost(pool_fchost, scsi_hostnum))
             return obj;
 
     } else if (pool_adapter->type == VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST &&
@@ -1374,7 +1374,7 @@ virStoragePoolObjSourceMatchTypeISCSI(virStoragePoolObjPtr obj,
         if (getSCSIHostNumber(pool_scsi_host, &scsi_hostnum) < 0)
             return NULL;
 
-        if (matchFCHostToSCSIHost(conn, def_fchost, scsi_hostnum))
+        if (matchFCHostToSCSIHost(def_fchost, scsi_hostnum))
             return obj;
     }
 
@@ -1411,7 +1411,6 @@ virStoragePoolObjSourceMatchTypeDEVICE(virStoragePoolObjPtr obj,
 
 
 struct _virStoragePoolObjFindDuplicateData {
-    virConnectPtr conn;
     virStoragePoolDefPtr def;
 };
 
@@ -1439,7 +1438,7 @@ virStoragePoolObjSourceFindDuplicateCb(const void *payload,
 
     case VIR_STORAGE_POOL_SCSI:
         if (data->def->type == obj->def->type &&
-            virStoragePoolObjSourceMatchTypeISCSI(obj, data->def, data->conn))
+            virStoragePoolObjSourceMatchTypeISCSI(obj, data->def))
             return 1;
         break;
 
@@ -1488,12 +1487,10 @@ virStoragePoolObjSourceFindDuplicateCb(const void *payload,
 
 
 int
-virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
-                                     virStoragePoolObjListPtr pools,
+virStoragePoolObjSourceFindDuplicate(virStoragePoolObjListPtr pools,
                                      virStoragePoolDefPtr def)
 {
-    struct _virStoragePoolObjFindDuplicateData data = { .conn = conn,
-                                                        .def = def };
+    struct _virStoragePoolObjFindDuplicateData data = {.def = def};
     virStoragePoolObjPtr obj = NULL;
 
     virObjectRWLockRead(pools);
