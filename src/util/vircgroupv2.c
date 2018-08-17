@@ -1304,6 +1304,26 @@ virCgroupV2GetMemSwapUsage(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetCpuShares(virCgroupPtr group,
+                        unsigned long long shares)
+{
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.weight", shares);
+}
+
+
+static int
+virCgroupV2GetCpuShares(virCgroupPtr group,
+                        unsigned long long *shares)
+{
+    return virCgroupGetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.weight", shares);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1351,6 +1371,9 @@ virCgroupBackend virCgroupV2Backend = {
     .setMemSwapHardLimit = virCgroupV2SetMemSwapHardLimit,
     .getMemSwapHardLimit = virCgroupV2GetMemSwapHardLimit,
     .getMemSwapUsage = virCgroupV2GetMemSwapUsage,
+
+    .setCpuShares = virCgroupV2SetCpuShares,
+    .getCpuShares = virCgroupV2GetCpuShares,
 };
 
 
