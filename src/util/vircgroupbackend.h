@@ -100,6 +100,9 @@ typedef int
                         bool create,
                         unsigned int flags);
 
+typedef int
+(*virCgroupRemoveCB)(virCgroupPtr group);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -117,6 +120,7 @@ struct _virCgroupBackend {
     virCgroupGetAnyControllerCB getAnyController;
     virCgroupPathOfControllerCB pathOfController;
     virCgroupMakeGroupCB makeGroup;
+    virCgroupRemoveCB remove;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

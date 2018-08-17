@@ -88,4 +88,6 @@ int virCgroupNewDomainPartition(virCgroupPtr partition,
                                 virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
+int virCgroupRemoveRecursively(char *grppath);
+
 #endif /* __VIR_CGROUP_PRIV_H__ */

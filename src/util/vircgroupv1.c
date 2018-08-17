@@ -667,6 +667,44 @@ virCgroupV1MakeGroup(virCgroupPtr parent,
 }
 
 
+static int
+virCgroupV1Remove(virCgroupPtr group)
+{
+    int rc = 0;
+    size_t i;
+
+    VIR_DEBUG("Removing cgroup %s", group->path);
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        VIR_AUTOFREE(char *) grppath = NULL;
+
+        /* Skip over controllers not mounted */
+        if (!group->controllers[i].mountPoint)
+            continue;
+
+        /* We must never rmdir() in systemd's hierarchy */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
+
+        /* Don't delete the root group, if we accidentally
+           ended up in it for some reason */
+        if (STREQ(group->controllers[i].placement, "/"))
+            continue;
+
+        if (virCgroupV1PathOfController(group,
+                                        i,
+                                        NULL,
+                                        &grppath) != 0)
+            continue;
+
+        VIR_DEBUG("Removing cgroup %s and all child cgroups", grppath);
+        rc = virCgroupRemoveRecursively(grppath);
+    }
+    VIR_DEBUG("Done removing cgroup %s", group->path);
+
+    return rc;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -683,6 +721,7 @@ virCgroupBackend virCgroupV1Backend = {
     .getAnyController = virCgroupV1GetAnyController,
     .pathOfController = virCgroupV1PathOfController,
     .makeGroup = virCgroupV1MakeGroup,
+    .remove = virCgroupV1Remove,
 };
 
 

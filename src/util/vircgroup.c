@@ -2919,7 +2919,7 @@ virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
 }
 
 
-static int
+int
 virCgroupRemoveRecursively(char *grppath)
 {
     DIR *grpdir;
@@ -2982,38 +2982,7 @@ virCgroupRemoveRecursively(char *grppath)
 int
 virCgroupRemove(virCgroupPtr group)
 {
-    int rc = 0;
-    size_t i;
-
-    VIR_DEBUG("Removing cgroup %s", group->path);
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        VIR_AUTOFREE(char *) grppath = NULL;
-
-        /* Skip over controllers not mounted */
-        if (!group->controllers[i].mountPoint)
-            continue;
-
-        /* We must never rmdir() in systemd's hierarchy */
-        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
-            continue;
-
-        /* Don't delete the root group, if we accidentally
-           ended up in it for some reason */
-        if (STREQ(group->controllers[i].placement, "/"))
-            continue;
-
-        if (virCgroupPathOfController(group,
-                                      i,
-                                      NULL,
-                                      &grppath) != 0)
-            continue;
-
-        VIR_DEBUG("Removing cgroup %s and all child cgroups", grppath);
-        rc = virCgroupRemoveRecursively(grppath);
-    }
-    VIR_DEBUG("Done removing cgroup %s", group->path);
-
-    return rc;
+    return group->backend->remove(group);
 }
 
 
