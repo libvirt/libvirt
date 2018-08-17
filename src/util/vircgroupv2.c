@@ -412,6 +412,25 @@ virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
 }
 
 
+static int
+virCgroupV2Remove(virCgroupPtr group)
+{
+    VIR_AUTOFREE(char *) grppath = NULL;
+    int controller;
+
+    /* Don't delete the root group, if we accidentally
+       ended up in it for some reason */
+    if (STREQ(group->unified.placement, "/"))
+        return 0;
+
+    controller = virCgroupV2GetAnyController(group);
+    if (virCgroupV2PathOfController(group, controller, "", &grppath) < 0)
+        return 0;
+
+    return virCgroupRemoveRecursively(grppath);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -428,6 +447,7 @@ virCgroupBackend virCgroupV2Backend = {
     .getAnyController = virCgroupV2GetAnyController,
     .pathOfController = virCgroupV2PathOfController,
     .makeGroup = virCgroupV2MakeGroup,
+    .remove = virCgroupV2Remove,
 };
 
 
