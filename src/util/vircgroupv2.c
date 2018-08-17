@@ -431,6 +431,20 @@ virCgroupV2Remove(virCgroupPtr group)
 }
 
 
+static int
+virCgroupV2AddTask(virCgroupPtr group,
+                   pid_t pid,
+                   unsigned int flags)
+{
+    int controller = virCgroupV2GetAnyController(group);
+
+    if (flags & VIR_CGROUP_TASK_THREAD)
+        return virCgroupSetValueI64(group, controller, "cgroup.threads", pid);
+    else
+        return virCgroupSetValueI64(group, controller, "cgroup.procs", pid);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -448,6 +462,7 @@ virCgroupBackend virCgroupV2Backend = {
     .pathOfController = virCgroupV2PathOfController,
     .makeGroup = virCgroupV2MakeGroup,
     .remove = virCgroupV2Remove,
+    .addTask = virCgroupV2AddTask,
 };
 
 
