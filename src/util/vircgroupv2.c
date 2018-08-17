@@ -1324,6 +1324,72 @@ virCgroupV2GetCpuShares(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetCpuCfsPeriod(virCgroupPtr group,
+                           unsigned long long cfs_period)
+{
+    VIR_AUTOFREE(char *) value = NULL;
+    VIR_AUTOFREE(char *) str = NULL;
+    char *tmp;
+
+    /* The cfs_period should be greater or equal than 1ms, and less or equal
+     * than 1s.
+     */
+    if (cfs_period < 1000 || cfs_period > 1000000) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cfs_period '%llu' must be in range (1000, 1000000)"),
+                       cfs_period);
+        return -1;
+    }
+
+    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
+                             "cpu.max", &str) < 0) {
+        return -1;
+    }
+
+    if (!(tmp = strchr(str, ' '))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid 'cpu.max' data."));
+        return -1;
+    }
+    *tmp = '\n';
+
+    if (virAsprintf(&value, "%s %llu", str, cfs_period) < 0)
+        return -1;
+
+    return virCgroupSetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.max", value);
+}
+
+
+static int
+virCgroupV2GetCpuCfsPeriod(virCgroupPtr group,
+                           unsigned long long *cfs_period)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+    char *tmp;
+
+    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
+                             "cpu.max", &str) < 0) {
+        return -1;
+    }
+
+    if (!(tmp = strchr(str, ' '))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid 'cpu.max' data."));
+        return -1;
+    }
+
+    if (virStrToLong_ull(tmp, NULL, 10, cfs_period) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse value '%s' from cpu.max."), str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1374,6 +1440,8 @@ virCgroupBackend virCgroupV2Backend = {
 
     .setCpuShares = virCgroupV2SetCpuShares,
     .getCpuShares = virCgroupV2GetCpuShares,
+    .setCpuCfsPeriod = virCgroupV2SetCpuCfsPeriod,
+    .getCpuCfsPeriod = virCgroupV2GetCpuCfsPeriod,
 };
 
 
