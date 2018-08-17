@@ -1048,6 +1048,95 @@ virCgroupV1GetBlkioIoServiced(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1GetBlkioIoDeviceServiced(virCgroupPtr group,
+                                    const char *path,
+                                    long long *bytes_read,
+                                    long long *bytes_write,
+                                    long long *requests_read,
+                                    long long *requests_write)
+{
+    VIR_AUTOFREE(char *) str1 = NULL;
+    VIR_AUTOFREE(char *) str2 = NULL;
+    VIR_AUTOFREE(char *) str3 = NULL;
+    char *p1 = NULL;
+    char *p2 = NULL;
+    size_t i;
+
+    const char *value_names[] = {
+        "Read ",
+        "Write "
+    };
+    long long *bytes_ptrs[] = {
+        bytes_read,
+        bytes_write
+    };
+    long long *requests_ptrs[] = {
+        requests_read,
+        requests_write
+    };
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.io_service_bytes", &str1) < 0)
+        return -1;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.io_serviced", &str2) < 0)
+        return -1;
+
+    if (!(str3 = virCgroupGetBlockDevString(path)))
+        return -1;
+
+    if (!(p1 = strstr(str1, str3))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot find byte stats for block device '%s'"),
+                       str3);
+        return -1;
+    }
+
+    if (!(p2 = strstr(str2, str3))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot find request stats for block device '%s'"),
+                       str3);
+        return -1;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+        if (!(p1 = strstr(p1, value_names[i]))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot find byte %sstats for block device '%s'"),
+                           value_names[i], str3);
+            return -1;
+        }
+
+        if (virStrToLong_ll(p1 + strlen(value_names[i]), &p1, 10, bytes_ptrs[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot parse %sstat '%s'"),
+                           value_names[i], p1 + strlen(value_names[i]));
+            return -1;
+        }
+
+        if (!(p2 = strstr(p2, value_names[i]))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot find request %sstats for block device '%s'"),
+                           value_names[i], str3);
+            return -1;
+        }
+
+        if (virStrToLong_ll(p2 + strlen(value_names[i]), &p2, 10, requests_ptrs[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot parse %sstat '%s'"),
+                           value_names[i], p2 + strlen(value_names[i]));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1073,6 +1162,7 @@ virCgroupBackend virCgroupV1Backend = {
     .setBlkioWeight = virCgroupV1SetBlkioWeight,
     .getBlkioWeight = virCgroupV1GetBlkioWeight,
     .getBlkioIoServiced = virCgroupV1GetBlkioIoServiced,
+    .getBlkioIoDeviceServiced = virCgroupV1GetBlkioIoDeviceServiced,
 };
 
 

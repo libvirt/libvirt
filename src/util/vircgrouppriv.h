@@ -80,6 +80,8 @@ int virCgroupSetValueI64(virCgroupPtr group,
 
 int virCgroupPartitionEscape(char **path);
 
+char *virCgroupGetBlockDevString(const char *path);
+
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,
