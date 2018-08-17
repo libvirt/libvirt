@@ -866,6 +866,68 @@ virCgroupV1BindMount(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1SetOwner(virCgroupPtr cgroup,
+                    uid_t uid,
+                    gid_t gid,
+                    int controllers)
+{
+    int ret = -1;
+    size_t i;
+    DIR *dh = NULL;
+    int direrr;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        VIR_AUTOFREE(char *) base = NULL;
+        struct dirent *de;
+
+        if (!((1 << i) & controllers))
+            continue;
+
+        if (!cgroup->controllers[i].mountPoint)
+            continue;
+
+        if (virAsprintf(&base, "%s%s", cgroup->controllers[i].mountPoint,
+                        cgroup->controllers[i].placement) < 0)
+            goto cleanup;
+
+        if (virDirOpen(&dh, base) < 0)
+            goto cleanup;
+
+        while ((direrr = virDirRead(dh, &de, base)) > 0) {
+            VIR_AUTOFREE(char *) entry = NULL;
+
+            if (virAsprintf(&entry, "%s/%s", base, de->d_name) < 0)
+                goto cleanup;
+
+            if (chown(entry, uid, gid) < 0) {
+                virReportSystemError(errno,
+                                     _("cannot chown '%s' to (%u, %u)"),
+                                     entry, uid, gid);
+                goto cleanup;
+            }
+        }
+        if (direrr < 0)
+            goto cleanup;
+
+        if (chown(base, uid, gid) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot chown '%s' to (%u, %u)"),
+                                 base, uid, gid);
+            goto cleanup;
+        }
+
+        VIR_DIR_CLOSE(dh);
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_DIR_CLOSE(dh);
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -886,6 +948,7 @@ virCgroupBackend virCgroupV1Backend = {
     .addTask = virCgroupV1AddTask,
     .hasEmptyTasks = virCgroupV1HasEmptyTasks,
     .bindMount = virCgroupV1BindMount,
+    .setOwner = virCgroupV1SetOwner,
 };
 
 

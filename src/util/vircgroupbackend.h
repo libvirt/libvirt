@@ -131,6 +131,12 @@ typedef int
                         const char *oldroot,
                         const char *mountopts);
 
+typedef int
+(*virCgroupSetOwnerCB)(virCgroupPtr cgroup,
+                       uid_t uid,
+                       gid_t gid,
+                       int controllers);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -152,6 +158,7 @@ struct _virCgroupBackend {
     virCgroupAddTaskCB addTask;
     virCgroupHasEmptyTasksCB hasEmptyTasks;
     virCgroupBindMountCB bindMount;
+    virCgroupSetOwnerCB setOwner;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
