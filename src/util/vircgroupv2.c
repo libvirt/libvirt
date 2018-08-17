@@ -1390,6 +1390,56 @@ virCgroupV2GetCpuCfsPeriod(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetCpuCfsQuota(virCgroupPtr group,
+                          long long cfs_quota)
+{
+    /* The cfs_quota should be greater or equal than 1ms */
+    if (cfs_quota >= 0 &&
+        (cfs_quota < 1000 ||
+         cfs_quota > ULLONG_MAX / 1000)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cfs_quota '%lld' must be in range (1000, %llu)"),
+                       cfs_quota, ULLONG_MAX / 1000);
+        return -1;
+    }
+
+    if (cfs_quota == ULLONG_MAX / 1000) {
+        return virCgroupSetValueStr(group,
+                                    VIR_CGROUP_CONTROLLER_CPU,
+                                    "cpu.max", "max");
+    }
+
+    return virCgroupSetValueI64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.max", cfs_quota);
+}
+
+
+static int
+virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
+                          long long *cfs_quota)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+
+    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
+                             "cpu.max", &str) < 0) {
+        return -1;
+    }
+
+    if (STREQLEN(str, "max", 3))
+        *cfs_quota = ULLONG_MAX / 1000;
+
+    if (virStrToLong_ll(str, NULL, 10, cfs_quota) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse value '%s' from cpu.max."), str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1442,6 +1492,8 @@ virCgroupBackend virCgroupV2Backend = {
     .getCpuShares = virCgroupV2GetCpuShares,
     .setCpuCfsPeriod = virCgroupV2SetCpuCfsPeriod,
     .getCpuCfsPeriod = virCgroupV2GetCpuCfsPeriod,
+    .setCpuCfsQuota = virCgroupV2SetCpuCfsQuota,
+    .getCpuCfsQuota = virCgroupV2GetCpuCfsQuota,
 };
 
 
