@@ -402,6 +402,17 @@ virCgroupV1ValidatePlacement(virCgroupPtr group,
 }
 
 
+static char *
+virCgroupV1StealPlacement(virCgroupPtr group)
+{
+    char *ret = NULL;
+
+    VIR_STEAL_PTR(ret, group->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement);
+
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -412,6 +423,7 @@ virCgroupBackend virCgroupV1Backend = {
     .detectMounts = virCgroupV1DetectMounts,
     .detectPlacement = virCgroupV1DetectPlacement,
     .validatePlacement = virCgroupV1ValidatePlacement,
+    .stealPlacement = virCgroupV1StealPlacement,
 };
 
 

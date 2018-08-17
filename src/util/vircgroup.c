@@ -1319,8 +1319,7 @@ virCgroupNewMachineSystemd(const char *name,
                            &init) < 0)
         return -1;
 
-    path = init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement;
-    init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement = NULL;
+    path = init->backend->stealPlacement(init);
     virCgroupFree(&init);
 
     if (!path || STREQ(path, "/") || path[0] != '/') {
