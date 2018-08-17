@@ -1633,14 +1633,7 @@ virCgroupGetMemoryStat(virCgroupPtr group,
 int
 virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
 {
-    long long unsigned int usage_in_bytes;
-    int ret;
-    ret = virCgroupGetValueU64(group,
-                               VIR_CGROUP_CONTROLLER_MEMORY,
-                               "memory.usage_in_bytes", &usage_in_bytes);
-    if (ret == 0)
-        *kb = (unsigned long) usage_in_bytes >> 10;
-    return ret;
+    VIR_CGROUP_BACKEND_CALL(group, getMemoryUsage, -1, kb);
 }
 
 

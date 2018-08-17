@@ -223,6 +223,10 @@ typedef int
                             unsigned long long *inactiveFile,
                             unsigned long long *unevictable);
 
+typedef int
+(*virCgroupGetMemoryUsageCB)(virCgroupPtr group,
+                             unsigned long *kb);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -264,6 +268,7 @@ struct _virCgroupBackend {
 
     virCgroupSetMemoryCB setMemory;
     virCgroupGetMemoryStatCB getMemoryStat;
+    virCgroupGetMemoryUsageCB getMemoryUsage;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
