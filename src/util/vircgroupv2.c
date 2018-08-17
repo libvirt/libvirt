@@ -131,11 +131,20 @@ virCgroupV2ValidateMachineGroup(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2CopyMounts(virCgroupPtr group,
+                      virCgroupPtr parent)
+{
+    return VIR_STRDUP(group->unified.mountPoint, parent->unified.mountPoint);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
     .available = virCgroupV2Available,
     .validateMachineGroup = virCgroupV2ValidateMachineGroup,
+    .copyMounts = virCgroupV2CopyMounts,
 };
 
 
