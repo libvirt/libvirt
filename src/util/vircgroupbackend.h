@@ -214,6 +214,15 @@ typedef int
 (*virCgroupSetMemoryCB)(virCgroupPtr group,
                         unsigned long long kb);
 
+typedef int
+(*virCgroupGetMemoryStatCB)(virCgroupPtr group,
+                            unsigned long long *cache,
+                            unsigned long long *activeAnon,
+                            unsigned long long *inactiveAnon,
+                            unsigned long long *activeFile,
+                            unsigned long long *inactiveFile,
+                            unsigned long long *unevictable);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -254,6 +263,7 @@ struct _virCgroupBackend {
     virCgroupGetBlkioDeviceWriteBpsCB getBlkioDeviceWriteBps;
 
     virCgroupSetMemoryCB setMemory;
+    virCgroupGetMemoryStatCB getMemoryStat;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
