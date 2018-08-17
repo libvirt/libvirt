@@ -1486,17 +1486,15 @@ virStoragePoolObjSourceFindDuplicateCb(const void *payload,
 }
 
 
-int
+static int
 virStoragePoolObjSourceFindDuplicate(virStoragePoolObjListPtr pools,
                                      virStoragePoolDefPtr def)
 {
     struct _virStoragePoolObjFindDuplicateData data = {.def = def};
     virStoragePoolObjPtr obj = NULL;
 
-    virObjectRWLockRead(pools);
     obj = virHashSearch(pools->objs, virStoragePoolObjSourceFindDuplicateCb,
                         &data, NULL);
-    virObjectRWUnlock(pools);
 
     if (obj) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -1530,6 +1528,9 @@ virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
     int rc;
 
     virObjectRWLockWrite(pools);
+
+    if (virStoragePoolObjSourceFindDuplicate(pools, def) < 0)
+        goto error;
 
     rc = virStoragePoolObjIsDuplicate(pools, def, check_active, &obj);
 

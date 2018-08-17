@@ -1160,7 +1160,6 @@ virStoragePoolObjSetActive;
 virStoragePoolObjSetAutostart;
 virStoragePoolObjSetConfigFile;
 virStoragePoolObjSetDef;
-virStoragePoolObjSourceFindDuplicate;
 virStoragePoolObjVolumeGetNames;
 virStoragePoolObjVolumeListExport;
 
