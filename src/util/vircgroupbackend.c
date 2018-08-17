@@ -20,6 +20,7 @@
 #include <config.h>
 
 #include "vircgroupbackend.h"
+#include "vircgroupv1.h"
 #include "virerror.h"
 #include "virthread.h"
 
@@ -49,6 +50,7 @@ virCgroupBackendRegister(virCgroupBackendPtr backend)
 static void
 virCgroupBackendOnceInit(void)
 {
+    virCgroupV1Register();
 }
 
 

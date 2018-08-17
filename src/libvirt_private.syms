@@ -1580,6 +1580,9 @@ virCgroupTerminateMachine;
 virCgroupBackendGetAll;
 virCgroupBackendRegister;
 
+# util/vircgroupv1.h
+virCgroupV1Register;
+
 # util/virclosecallbacks.h
 virCloseCallbacksGet;
 virCloseCallbacksGetConn;
