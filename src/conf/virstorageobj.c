@@ -1047,6 +1047,68 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
 }
 
 
+/*
+ * virStoragePoolObjIsDuplicate:
+ * @doms : virStoragePoolObjListPtr to search
+ * @def  : virStoragePoolDefPtr definition of pool to lookup
+ * @check_active: If true, ensure that pool is not active
+ *
+ * Returns: -1 on error
+ *          0 if pool is new
+ *          1 if pool is a duplicate
+ */
+int
+virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
+                             virStoragePoolDefPtr def,
+                             bool check_active)
+{
+    int ret = -1;
+    virStoragePoolObjPtr obj = NULL;
+
+    /* See if a Pool with matching UUID already exists */
+    obj = virStoragePoolObjFindByUUID(pools, def->uuid);
+    if (obj) {
+        /* UUID matches, but if names don't match, refuse it */
+        if (STRNEQ(obj->def->name, def->name)) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(obj->def->uuid, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("pool '%s' is already defined with uuid %s"),
+                           obj->def->name, uuidstr);
+            goto cleanup;
+        }
+
+        if (check_active) {
+            /* UUID & name match, but if Pool is already active, refuse it */
+            if (virStoragePoolObjIsActive(obj)) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("pool is already active as '%s'"),
+                               obj->def->name);
+                goto cleanup;
+            }
+        }
+
+        ret = 1;
+    } else {
+        /* UUID does not match, but if a name matches, refuse it */
+        obj = virStoragePoolObjFindByName(pools, def->name);
+        if (obj) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(obj->def->uuid, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("pool '%s' already exists with uuid %s"),
+                           def->name, uuidstr);
+            goto cleanup;
+        }
+        ret = 0;
+    }
+
+ cleanup:
+    virStoragePoolObjEndAPI(&obj);
+    return ret;
+}
+
+
 /**
  * virStoragePoolObjAssignDef:
  * @pools: Storage Pool object list pointer
@@ -1449,68 +1511,6 @@ virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
     while (data.nnames)
         VIR_FREE(data.names[--data.nnames]);
     return -1;
-}
-
-
-/*
- * virStoragePoolObjIsDuplicate:
- * @doms : virStoragePoolObjListPtr to search
- * @def  : virStoragePoolDefPtr definition of pool to lookup
- * @check_active: If true, ensure that pool is not active
- *
- * Returns: -1 on error
- *          0 if pool is new
- *          1 if pool is a duplicate
- */
-int
-virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
-                             virStoragePoolDefPtr def,
-                             bool check_active)
-{
-    int ret = -1;
-    virStoragePoolObjPtr obj = NULL;
-
-    /* See if a Pool with matching UUID already exists */
-    obj = virStoragePoolObjFindByUUID(pools, def->uuid);
-    if (obj) {
-        /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(obj->def->name, def->name)) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(obj->def->uuid, uuidstr);
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("pool '%s' is already defined with uuid %s"),
-                           obj->def->name, uuidstr);
-            goto cleanup;
-        }
-
-        if (check_active) {
-            /* UUID & name match, but if Pool is already active, refuse it */
-            if (virStoragePoolObjIsActive(obj)) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("pool is already active as '%s'"),
-                               obj->def->name);
-                goto cleanup;
-            }
-        }
-
-        ret = 1;
-    } else {
-        /* UUID does not match, but if a name matches, refuse it */
-        obj = virStoragePoolObjFindByName(pools, def->name);
-        if (obj) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(obj->def->uuid, uuidstr);
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("pool '%s' already exists with uuid %s"),
-                           def->name, uuidstr);
-            goto cleanup;
-        }
-        ret = 0;
-    }
-
- cleanup:
-    virStoragePoolObjEndAPI(&obj);
-    return ret;
 }
 
 
