@@ -78,6 +78,11 @@ int virCgroupSetValueI64(virCgroupPtr group,
                          const char *key,
                          long long int value);
 
+int virCgroupGetValueI64(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         long long int *value);
+
 int virCgroupPartitionEscape(char **path);
 
 char *virCgroupGetBlockDevString(const char *path);

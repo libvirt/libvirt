@@ -292,6 +292,14 @@ typedef int
 (*virCgroupGetCpuCfsPeriodCB)(virCgroupPtr group,
                               unsigned long long *cfs_period);
 
+typedef int
+(*virCgroupSetCpuCfsQuotaCB)(virCgroupPtr group,
+                             long long cfs_quota);
+
+typedef int
+(*virCgroupGetCpuCfsQuotaCB)(virCgroupPtr group,
+                             long long *cfs_quota);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -351,6 +359,8 @@ struct _virCgroupBackend {
     virCgroupGetCpuSharesCB getCpuShares;
     virCgroupSetCpuCfsPeriodCB setCpuCfsPeriod;
     virCgroupGetCpuCfsPeriodCB getCpuCfsPeriod;
+    virCgroupSetCpuCfsQuotaCB setCpuCfsQuota;
+    virCgroupGetCpuCfsQuotaCB getCpuCfsQuota;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

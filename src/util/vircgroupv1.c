@@ -1815,6 +1815,36 @@ virCgroupV1GetCpuCfsPeriod(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1SetCpuCfsQuota(virCgroupPtr group,
+                          long long cfs_quota)
+{
+    /* The cfs_quota should be greater or equal than 1ms */
+    if (cfs_quota >= 0 &&
+        (cfs_quota < 1000 ||
+         cfs_quota > ULLONG_MAX / 1000)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cfs_quota '%lld' must be in range (1000, %llu)"),
+                       cfs_quota, ULLONG_MAX / 1000);
+        return -1;
+    }
+
+    return virCgroupSetValueI64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_quota_us", cfs_quota);
+}
+
+
+static int
+virCgroupV1GetCpuCfsQuota(virCgroupPtr group,
+                          long long *cfs_quota)
+{
+    return virCgroupGetValueI64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_quota_us", cfs_quota);
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1872,6 +1902,8 @@ virCgroupBackend virCgroupV1Backend = {
     .getCpuShares = virCgroupV1GetCpuShares,
     .setCpuCfsPeriod = virCgroupV1SetCpuCfsPeriod,
     .getCpuCfsPeriod = virCgroupV1GetCpuCfsPeriod,
+    .setCpuCfsQuota = virCgroupV1SetCpuCfsQuota,
+    .getCpuCfsQuota = virCgroupV1GetCpuCfsQuota,
 };
 
 

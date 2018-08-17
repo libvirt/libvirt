@@ -555,7 +555,7 @@ virCgroupSetValueI64(virCgroupPtr group,
 }
 
 
-static int
+int
 virCgroupGetValueI64(virCgroupPtr group,
                      int controller,
                      const char *key,
@@ -2254,19 +2254,7 @@ virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
 int
 virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
 {
-    /* The cfs_quota should be greater or equal than 1ms */
-    if (cfs_quota >= 0 &&
-        (cfs_quota < 1000 ||
-         cfs_quota > ULLONG_MAX / 1000)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_quota '%lld' must be in range (1000, %llu)"),
-                       cfs_quota, ULLONG_MAX / 1000);
-        return -1;
-    }
-
-    return virCgroupSetValueI64(group,
-                                VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.cfs_quota_us", cfs_quota);
+    VIR_CGROUP_BACKEND_CALL(group, setCpuCfsQuota, -1, cfs_quota);
 }
 
 
@@ -2590,9 +2578,7 @@ virCgroupKillPainfully(virCgroupPtr group)
 int
 virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
 {
-    return virCgroupGetValueI64(group,
-                                VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.cfs_quota_us", cfs_quota);
+    VIR_CGROUP_BACKEND_CALL(group, getCpuCfsQuota, -1, cfs_quota);
 }
 
 
