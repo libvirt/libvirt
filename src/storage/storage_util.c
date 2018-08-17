@@ -2294,12 +2294,12 @@ storageBackendResizeQemuImg(virStoragePoolObjPtr pool,
      * a multiple of 512 */
     capacity = VIR_ROUND_UP(capacity, 512);
 
-    cmd = virCommandNew(img_tool);
+    cmd = virCommandNewArgList(img_tool, "resize", NULL);
+    if (capacity < vol->target.capacity)
+        virCommandAddArg(cmd, "--shrink");
     if (!vol->target.encryption) {
-        virCommandAddArgList(cmd, "resize", vol->target.path, NULL);
+        virCommandAddArg(cmd, vol->target.path);
     } else {
-        virCommandAddArg(cmd, "resize");
-
         if (storageBackendCreateQemuImgSecretObject(cmd, secretPath,
                                                     secretAlias) < 0)
             goto cleanup;
