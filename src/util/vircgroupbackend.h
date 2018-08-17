@@ -210,6 +210,10 @@ typedef int
                                      const char *path,
                                      unsigned long long *wbps);
 
+typedef int
+(*virCgroupSetMemoryCB)(virCgroupPtr group,
+                        unsigned long long kb);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -248,6 +252,8 @@ struct _virCgroupBackend {
     virCgroupGetBlkioDeviceReadBpsCB getBlkioDeviceReadBps;
     virCgroupSetBlkioDeviceWriteBpsCB setBlkioDeviceWriteBps;
     virCgroupGetBlkioDeviceWriteBpsCB getBlkioDeviceWriteBps;
+
+    virCgroupSetMemoryCB setMemory;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
