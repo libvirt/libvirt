@@ -145,6 +145,13 @@ typedef int
 (*virCgroupGetBlkioWeightCB)(virCgroupPtr group,
                              unsigned int *weight);
 
+typedef int
+(*virCgroupGetBlkioIoServicedCB)(virCgroupPtr group,
+                                 long long *bytes_read,
+                                 long long *bytes_write,
+                                 long long *requests_read,
+                                 long long *requests_write);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -171,6 +178,7 @@ struct _virCgroupBackend {
     /* Optional cgroup controller specific callbacks. */
     virCgroupSetBlkioWeightCB setBlkioWeight;
     virCgroupGetBlkioWeightCB getBlkioWeight;
+    virCgroupGetBlkioIoServicedCB getBlkioIoServiced;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

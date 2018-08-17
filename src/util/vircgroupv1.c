@@ -954,6 +954,100 @@ virCgroupV1GetBlkioWeight(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1GetBlkioIoServiced(virCgroupPtr group,
+                              long long *bytes_read,
+                              long long *bytes_write,
+                              long long *requests_read,
+                              long long *requests_write)
+{
+    long long stats_val;
+    VIR_AUTOFREE(char *) str1 = NULL;
+    VIR_AUTOFREE(char *) str2 = NULL;
+    char *p1 = NULL;
+    char *p2 = NULL;
+    size_t i;
+
+    const char *value_names[] = {
+        "Read ",
+        "Write "
+    };
+    long long *bytes_ptrs[] = {
+        bytes_read,
+        bytes_write
+    };
+    long long *requests_ptrs[] = {
+        requests_read,
+        requests_write
+    };
+
+    *bytes_read = 0;
+    *bytes_write = 0;
+    *requests_read = 0;
+    *requests_write = 0;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.io_service_bytes", &str1) < 0)
+        return -1;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.io_serviced", &str2) < 0)
+        return -1;
+
+    /* sum up all entries of the same kind, from all devices */
+    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+        p1 = str1;
+        p2 = str2;
+
+        while ((p1 = strstr(p1, value_names[i]))) {
+            p1 += strlen(value_names[i]);
+            if (virStrToLong_ll(p1, &p1, 10, &stats_val) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Cannot parse byte %sstat '%s'"),
+                               value_names[i],
+                               p1);
+                return -1;
+            }
+
+            if (stats_val < 0 ||
+                (stats_val > 0 && *bytes_ptrs[i] > (LLONG_MAX - stats_val)))
+            {
+                virReportError(VIR_ERR_OVERFLOW,
+                               _("Sum of byte %sstat overflows"),
+                               value_names[i]);
+                return -1;
+            }
+            *bytes_ptrs[i] += stats_val;
+        }
+
+        while ((p2 = strstr(p2, value_names[i]))) {
+            p2 += strlen(value_names[i]);
+            if (virStrToLong_ll(p2, &p2, 10, &stats_val) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Cannot parse %srequest stat '%s'"),
+                               value_names[i],
+                               p2);
+                return -1;
+            }
+
+            if (stats_val < 0 ||
+                (stats_val > 0 && *requests_ptrs[i] > (LLONG_MAX - stats_val)))
+            {
+                virReportError(VIR_ERR_OVERFLOW,
+                               _("Sum of %srequest stat overflows"),
+                               value_names[i]);
+                return -1;
+            }
+            *requests_ptrs[i] += stats_val;
+        }
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -978,6 +1072,7 @@ virCgroupBackend virCgroupV1Backend = {
 
     .setBlkioWeight = virCgroupV1SetBlkioWeight,
     .getBlkioWeight = virCgroupV1GetBlkioWeight,
+    .getBlkioIoServiced = virCgroupV1GetBlkioIoServiced,
 };
 
 
