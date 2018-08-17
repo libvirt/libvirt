@@ -1041,6 +1041,80 @@ virCgroupV2SetMemory(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2GetMemoryStat(virCgroupPtr group,
+                         unsigned long long *cache,
+                         unsigned long long *activeAnon,
+                         unsigned long long *inactiveAnon,
+                         unsigned long long *activeFile,
+                         unsigned long long *inactiveFile,
+                         unsigned long long *unevictable)
+{
+    VIR_AUTOFREE(char *) stat = NULL;
+    char *line = NULL;
+    unsigned long long cacheVal = 0;
+    unsigned long long activeAnonVal = 0;
+    unsigned long long inactiveAnonVal = 0;
+    unsigned long long activeFileVal = 0;
+    unsigned long long inactiveFileVal = 0;
+    unsigned long long unevictableVal = 0;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_MEMORY,
+                             "memory.stat",
+                             &stat) < 0) {
+        return -1;
+    }
+
+    line = stat;
+
+    while (line) {
+        char *newLine = strchr(line, '\n');
+        char *valueStr = strchr(line, ' ');
+        unsigned long long value;
+
+        if (newLine)
+            *newLine = '\0';
+
+        if (!valueStr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot parse 'memory.stat' cgroup file."));
+            return -1;
+        }
+        *valueStr = '\0';
+
+        if (virStrToLong_ull(valueStr + 1, NULL, 10, &value) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to parse '%s' as an integer"),
+                           valueStr + 1);
+            return -1;
+        }
+
+        if (STREQ(line, "file"))
+            cacheVal = value >> 10;
+        else if (STREQ(line, "active_anon"))
+            activeAnonVal = value >> 10;
+        else if (STREQ(line, "inactive_anon"))
+            inactiveAnonVal = value >> 10;
+        else if (STREQ(line, "active_file"))
+            activeFileVal = value >> 10;
+        else if (STREQ(line, "inactive_file"))
+            inactiveFileVal = value >> 10;
+        else if (STREQ(line, "unevictable"))
+            unevictableVal = value >> 10;
+    }
+
+    *cache = cacheVal;
+    *activeAnon = activeAnonVal;
+    *inactiveAnon = inactiveAnonVal;
+    *activeFile = activeFileVal;
+    *inactiveFile = inactiveFileVal;
+    *unevictable = unevictableVal;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1079,6 +1153,7 @@ virCgroupBackend virCgroupV2Backend = {
     .getBlkioDeviceWriteBps = virCgroupV2GetBlkioDeviceWriteBps,
 
     .setMemory = virCgroupV2SetMemory,
+    .getMemoryStat = virCgroupV2GetMemoryStat,
 };
 
 
