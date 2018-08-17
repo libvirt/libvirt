@@ -5479,11 +5479,16 @@ qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveShmemDevice(driver, vm, shmem);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveShmemDevice(driver, vm, shmem);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
