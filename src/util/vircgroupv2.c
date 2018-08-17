@@ -810,6 +810,74 @@ virCgroupV2GetBlkioDeviceReadIops(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetBlkioDeviceWriteIops(virCgroupPtr group,
+                                   const char *path,
+                                   unsigned int wiops)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) blkstr = NULL;
+
+    if (!(blkstr = virCgroupGetBlockDevString(path)))
+        return -1;
+
+    if (wiops == 0) {
+        if (virAsprintf(&str, "%swiops=max", blkstr) < 0)
+            return -1;
+    } else {
+        if (virAsprintf(&str, "%swiops=%u", blkstr, wiops) < 0)
+            return -1;
+    }
+
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "io.max",
+                                str);
+}
+
+
+static int
+virCgroupV2GetBlkioDeviceWriteIops(virCgroupPtr group,
+                                   const char *path,
+                                   unsigned int *wiops)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+    const char *name = "wiops=";
+    char *tmp;
+
+    if (virCgroupGetValueForBlkDev(group,
+                                   VIR_CGROUP_CONTROLLER_BLKIO,
+                                   "io.max",
+                                   path,
+                                   &str) < 0) {
+        return -1;
+    }
+
+    if (!str) {
+        *wiops = 0;
+    } else {
+        if (!(tmp = strstr(str, name))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to find '%s' limit for block device '%s'"),
+                           name, path);
+            return -1;
+        }
+        tmp += strlen(name);
+
+        if (STREQLEN(tmp, "max", 3)) {
+            *wiops = 0;
+        } else if (virStrToLong_ui(tmp, NULL, 10, wiops) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to parse '%s' as an integer"),
+                           str);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -840,6 +908,8 @@ virCgroupBackend virCgroupV2Backend = {
     .getBlkioDeviceWeight = virCgroupV2GetBlkioDeviceWeight,
     .setBlkioDeviceReadIops = virCgroupV2SetBlkioDeviceReadIops,
     .getBlkioDeviceReadIops = virCgroupV2GetBlkioDeviceReadIops,
+    .setBlkioDeviceWriteIops = virCgroupV2SetBlkioDeviceWriteIops,
+    .getBlkioDeviceWriteIops = virCgroupV2GetBlkioDeviceWriteIops,
 };
 
 
