@@ -520,6 +520,52 @@ virCgroupV2SetOwner(virCgroupPtr cgroup,
 }
 
 
+static int
+virCgroupV2SetBlkioWeight(virCgroupPtr group,
+                          unsigned int weight)
+{
+    VIR_AUTOFREE(char *) value = NULL;
+
+    if (virAsprintf(&value, "default %u", weight) < 0)
+        return -1;
+
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "io.weight",
+                                value);
+}
+
+
+static int
+virCgroupV2GetBlkioWeight(virCgroupPtr group,
+                          unsigned int *weight)
+{
+    VIR_AUTOFREE(char *) value = NULL;
+    char *tmp;
+
+    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                             "io.weight", &value) < 0) {
+        return -1;
+    }
+
+    if (!(tmp = strstr(value, "default "))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot find default io weight."));
+        return -1;
+    }
+    tmp += strlen("default ");
+
+    if (virStrToLong_ui(tmp, NULL, 10, weight) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to parse '%s' as an integer"),
+                       tmp);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -541,6 +587,9 @@ virCgroupBackend virCgroupV2Backend = {
     .hasEmptyTasks = virCgroupV2HasEmptyTasks,
     .bindMount = virCgroupV2BindMount,
     .setOwner = virCgroupV2SetOwner,
+
+    .setBlkioWeight = virCgroupV2SetBlkioWeight,
+    .getBlkioWeight = virCgroupV2GetBlkioWeight,
 };
 
 
