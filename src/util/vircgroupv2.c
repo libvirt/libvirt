@@ -1455,6 +1455,37 @@ virCgroupV2SupportsCpuBW(virCgroupPtr cgroup)
 }
 
 
+static int
+virCgroupV2GetCpuacctUsage(virCgroupPtr group,
+                           unsigned long long *usage)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+    char *tmp;
+
+    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                             "cpu.stat", &str) < 0) {
+        return -1;
+    }
+
+    if (!(tmp = strstr(str, "usage_usec "))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse cpu usage stat '%s'"), str);
+        return -1;
+    }
+    tmp += strlen("usage_usec ");
+
+    if (virStrToLong_ull(tmp, &tmp, 10, usage) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse value '%s' as number."), tmp);
+        return -1;
+    }
+
+    *usage *= 1000;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1510,6 +1541,8 @@ virCgroupBackend virCgroupV2Backend = {
     .setCpuCfsQuota = virCgroupV2SetCpuCfsQuota,
     .getCpuCfsQuota = virCgroupV2GetCpuCfsQuota,
     .supportsCpuBW = virCgroupV2SupportsCpuBW,
+
+    .getCpuacctUsage = virCgroupV2GetCpuacctUsage,
 };
 
 
