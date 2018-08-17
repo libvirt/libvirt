@@ -1129,6 +1129,47 @@ virCgroupV2GetMemoryUsage(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetMemoryHardLimit(virCgroupPtr group,
+                              unsigned long long kb)
+{
+    return virCgroupV2SetMemory(group, kb);
+}
+
+
+static int
+virCgroupV2GetMemoryHardLimit(virCgroupPtr group,
+                              unsigned long long *kb)
+{
+    VIR_AUTOFREE(char *) value = NULL;
+    unsigned long long max;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_MEMORY,
+                             "memory.max", &value) < 0) {
+        return -1;
+    }
+
+    if (STREQ(value, "max")) {
+        *kb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+        return 0;
+    }
+
+    if (virStrToLong_ull(value, NULL, 10, &max) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse value '%s' as number."),
+                       value);
+        return -1;
+    }
+
+    *kb = max >> 10;
+    if (*kb >= VIR_DOMAIN_MEMORY_PARAM_UNLIMITED)
+        *kb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1169,6 +1210,8 @@ virCgroupBackend virCgroupV2Backend = {
     .setMemory = virCgroupV2SetMemory,
     .getMemoryStat = virCgroupV2GetMemoryStat,
     .getMemoryUsage = virCgroupV2GetMemoryUsage,
+    .setMemoryHardLimit = virCgroupV2SetMemoryHardLimit,
+    .getMemoryHardLimit = virCgroupV2GetMemoryHardLimit,
 };
 
 
