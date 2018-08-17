@@ -41,12 +41,17 @@ typedef bool
                                    const char *drivername,
                                    const char *machinename);
 
+typedef int
+(*virCgroupCopyMountsCB)(virCgroupPtr group,
+                         virCgroupPtr parent);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
     /* Mandatory callbacks that need to be implemented for every backend. */
     virCgroupAvailableCB available;
     virCgroupValidateMachineGroupCB validateMachineGroup;
+    virCgroupCopyMountsCB copyMounts;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

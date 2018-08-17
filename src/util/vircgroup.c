@@ -232,27 +232,6 @@ virCgroupPartitionEscape(char **path)
 
 
 static int
-virCgroupCopyMounts(virCgroupPtr group,
-                    virCgroupPtr parent)
-{
-    size_t i;
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!parent->controllers[i].mountPoint)
-            continue;
-
-        if (VIR_STRDUP(group->controllers[i].mountPoint,
-                       parent->controllers[i].mountPoint) < 0)
-            return -1;
-
-        if (VIR_STRDUP(group->controllers[i].linkPoint,
-                       parent->controllers[i].linkPoint) < 0)
-            return -1;
-    }
-    return 0;
-}
-
-
-static int
 virCgroupResolveMountLink(const char *mntDir,
                           const char *typeStr,
                           virCgroupControllerPtr controller)
@@ -649,7 +628,7 @@ virCgroupDetect(virCgroupPtr group,
     }
 
     if (parent) {
-        if (virCgroupCopyMounts(group, parent) < 0)
+        if (group->backend->copyMounts(group, parent) < 0)
             return -1;
     } else {
         if (virCgroupDetectMounts(group) < 0)

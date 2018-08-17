@@ -159,11 +159,33 @@ virCgroupV1ValidateMachineGroup(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1CopyMounts(virCgroupPtr group,
+                      virCgroupPtr parent)
+{
+    size_t i;
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        if (!parent->controllers[i].mountPoint)
+            continue;
+
+        if (VIR_STRDUP(group->controllers[i].mountPoint,
+                       parent->controllers[i].mountPoint) < 0)
+            return -1;
+
+        if (VIR_STRDUP(group->controllers[i].linkPoint,
+                       parent->controllers[i].linkPoint) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
     .available = virCgroupV1Available,
     .validateMachineGroup = virCgroupV1ValidateMachineGroup,
+    .copyMounts = virCgroupV1CopyMounts,
 };
 
 
