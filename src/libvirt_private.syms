@@ -93,12 +93,15 @@ virCPUModeTypeToString;
 
 
 # conf/device_conf.h
+virDeviceInfoPCIAddressIsPresent;
+virDeviceInfoPCIAddressIsWanted;
 virDomainDeviceInfoAddressIsEqual;
 virDomainDeviceInfoCopy;
 virInterfaceLinkFormat;
 virInterfaceLinkParseXML;
 virPCIDeviceAddressEqual;
 virPCIDeviceAddressFormat;
+virPCIDeviceAddressIsEmpty;
 virPCIDeviceAddressIsValid;
 virPCIDeviceAddressParseXML;
 

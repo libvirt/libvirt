@@ -188,27 +188,10 @@ bool virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
 
 int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                                bool report);
+bool virPCIDeviceAddressIsEmpty(const virPCIDeviceAddress *addr);
 
-static inline bool
-virPCIDeviceAddressIsEmpty(const virPCIDeviceAddress *addr)
-{
-    return !(addr->domain || addr->bus || addr->slot);
-}
-
-static inline bool
-virDeviceInfoPCIAddressIsWanted(const virDomainDeviceInfo *info)
-{
-    return info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
-        (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-         virPCIDeviceAddressIsEmpty(&info->addr.pci));
-}
-
-static inline bool
-virDeviceInfoPCIAddressIsPresent(const virDomainDeviceInfo *info)
-{
-    return info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-       !virPCIDeviceAddressIsEmpty(&info->addr.pci);
-}
+bool virDeviceInfoPCIAddressIsWanted(const virDomainDeviceInfo *info);
+bool virDeviceInfoPCIAddressIsPresent(const virDomainDeviceInfo *info);
 
 int virPCIDeviceAddressParseXML(xmlNodePtr node,
                                 virPCIDeviceAddressPtr addr);
