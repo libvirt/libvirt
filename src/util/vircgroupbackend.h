@@ -126,6 +126,11 @@ typedef int
 (*virCgroupHasEmptyTasksCB)(virCgroupPtr cgroup,
                             int controller);
 
+typedef int
+(*virCgroupBindMountCB)(virCgroupPtr group,
+                        const char *oldroot,
+                        const char *mountopts);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -146,6 +151,7 @@ struct _virCgroupBackend {
     virCgroupRemoveCB remove;
     virCgroupAddTaskCB addTask;
     virCgroupHasEmptyTasksCB hasEmptyTasks;
+    virCgroupBindMountCB bindMount;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
