@@ -1014,6 +1014,33 @@ virCgroupV2GetBlkioDeviceWriteBps(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetMemory(virCgroupPtr group,
+                     unsigned long long kb)
+{
+    unsigned long long maxkb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    if (kb > maxkb) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Memory '%llu' must be less than %llu"),
+                       kb, maxkb);
+        return -1;
+    }
+
+    if (kb == maxkb) {
+        return virCgroupSetValueStr(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.max",
+                                    "max");
+    } else {
+        return virCgroupSetValueU64(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.max",
+                                    kb << 10);
+    }
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1050,6 +1077,8 @@ virCgroupBackend virCgroupV2Backend = {
     .getBlkioDeviceReadBps = virCgroupV2GetBlkioDeviceReadBps,
     .setBlkioDeviceWriteBps = virCgroupV2SetBlkioDeviceWriteBps,
     .getBlkioDeviceWriteBps = virCgroupV2GetBlkioDeviceWriteBps,
+
+    .setMemory = virCgroupV2SetMemory,
 };
 
 
