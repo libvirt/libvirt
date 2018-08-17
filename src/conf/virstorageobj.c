@@ -1052,22 +1052,28 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
  * @doms : virStoragePoolObjListPtr to search
  * @def  : virStoragePoolDefPtr definition of pool to lookup
  * @check_active: If true, ensure that pool is not active
+ * @objRet: returned pool object
  *
- * Returns: -1 on error
+ * Assumes @pools is locked by caller already.
+ *
+ * Returns: -1 on error (name/uuid mismatch or check_active failure)
  *          0 if pool is new
- *          1 if pool is a duplicate
+ *          1 if pool is a duplicate (name and UUID match)
  */
-int
+static int
 virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
                              virStoragePoolDefPtr def,
-                             bool check_active)
+                             bool check_active,
+                             virStoragePoolObjPtr *objRet)
 {
     int ret = -1;
     virStoragePoolObjPtr obj = NULL;
 
     /* See if a Pool with matching UUID already exists */
-    obj = virStoragePoolObjFindByUUID(pools, def->uuid);
+    obj = virStoragePoolObjFindByUUIDLocked(pools, def->uuid);
     if (obj) {
+        virObjectLock(obj);
+
         /* UUID matches, but if names don't match, refuse it */
         if (STRNEQ(obj->def->name, def->name)) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1088,11 +1094,14 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
             }
         }
 
+        VIR_STEAL_PTR(*objRet, obj);
         ret = 1;
     } else {
         /* UUID does not match, but if a name matches, refuse it */
-        obj = virStoragePoolObjFindByName(pools, def->name);
+        obj = virStoragePoolObjFindByNameLocked(pools, def->name);
         if (obj) {
+            virObjectLock(obj);
+
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(obj->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
@@ -1113,6 +1122,7 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
  * virStoragePoolObjAssignDef:
  * @pools: Storage Pool object list pointer
  * @def: Storage pool definition to add or update
+ * @check_active: If true, ensure that pool is not active
  *
  * Lookup the @def to see if it already exists in the @pools in order
  * to either update or add if it does not exist.
@@ -1121,15 +1131,20 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
  */
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
-                           virStoragePoolDefPtr def)
+                           virStoragePoolDefPtr def,
+                           bool check_active)
 {
-    virStoragePoolObjPtr obj;
+    virStoragePoolObjPtr obj = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    int rc;
 
     virObjectRWLockWrite(pools);
 
-    if ((obj = virStoragePoolObjFindByNameLocked(pools, def->name))) {
-        virObjectLock(obj);
+    rc = virStoragePoolObjIsDuplicate(pools, def, check_active, &obj);
+
+    if (rc < 0)
+        goto error;
+    if (rc > 0) {
         if (!virStoragePoolObjIsActive(obj)) {
             virStoragePoolDefFree(obj->def);
             obj->def = def;
@@ -1186,7 +1201,7 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
         return NULL;
     }
 
-    if (!(obj = virStoragePoolObjAssignDef(pools, def))) {
+    if (!(obj = virStoragePoolObjAssignDef(pools, def, false))) {
         virStoragePoolDefFree(def);
         return NULL;
     }
@@ -1248,7 +1263,7 @@ virStoragePoolObjLoadState(virStoragePoolObjListPtr pools,
     }
 
     /* create the object */
-    if (!(obj = virStoragePoolObjAssignDef(pools, def)))
+    if (!(obj = virStoragePoolObjAssignDef(pools, def, true)))
         goto error;
 
     /* XXX: future handling of some additional useful status data,

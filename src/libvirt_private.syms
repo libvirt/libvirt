@@ -1143,7 +1143,6 @@ virStoragePoolObjGetVolumesCount;
 virStoragePoolObjIncrAsyncjobs;
 virStoragePoolObjIsActive;
 virStoragePoolObjIsAutostart;
-virStoragePoolObjIsDuplicate;
 virStoragePoolObjListExport;
 virStoragePoolObjListForEach;
 virStoragePoolObjListNew;

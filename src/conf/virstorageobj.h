@@ -189,7 +189,8 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
 
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
-                           virStoragePoolDefPtr def);
+                           virStoragePoolDefPtr def,
+                           bool check_active);
 
 int
 virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
@@ -243,11 +244,6 @@ virStoragePoolObjListNew(void);
 void
 virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                         virStoragePoolObjPtr obj);
-
-int
-virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
-                             virStoragePoolDefPtr def,
-                             bool check_active);
 
 int
 virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
