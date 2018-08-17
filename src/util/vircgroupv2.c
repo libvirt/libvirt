@@ -1170,6 +1170,65 @@ virCgroupV2GetMemoryHardLimit(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetMemorySoftLimit(virCgroupPtr group,
+                              unsigned long long kb)
+{
+    unsigned long long maxkb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    if (kb > maxkb) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Memory '%llu' must be less than %llu"),
+                       kb, maxkb);
+        return -1;
+    }
+
+    if (kb == maxkb) {
+        return virCgroupSetValueStr(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.high",
+                                    "max");
+    } else {
+        return virCgroupSetValueU64(group,
+                                    VIR_CGROUP_CONTROLLER_MEMORY,
+                                    "memory.high",
+                                    kb << 10);
+    }
+}
+
+
+static int
+virCgroupV2GetMemorySoftLimit(virCgroupPtr group,
+                              unsigned long long *kb)
+{
+    VIR_AUTOFREE(char *) value = NULL;
+    unsigned long long high;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_MEMORY,
+                             "memory.high", &value) < 0)
+        return -1;
+
+    if (STREQ(value, "max")) {
+        *kb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+        return 0;
+    }
+
+    if (virStrToLong_ull(value, NULL, 10, &high) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse value '%s' as number."),
+                       value);
+        return -1;
+    }
+
+    *kb = high >> 10;
+    if (*kb >= VIR_DOMAIN_MEMORY_PARAM_UNLIMITED)
+        *kb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1212,6 +1271,8 @@ virCgroupBackend virCgroupV2Backend = {
     .getMemoryUsage = virCgroupV2GetMemoryUsage,
     .setMemoryHardLimit = virCgroupV2SetMemoryHardLimit,
     .getMemoryHardLimit = virCgroupV2GetMemoryHardLimit,
+    .setMemorySoftLimit = virCgroupV2SetMemorySoftLimit,
+    .getMemorySoftLimit = virCgroupV2GetMemorySoftLimit,
 };
 
 
