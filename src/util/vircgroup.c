@@ -3461,18 +3461,7 @@ virCgroupSupportsCpuBW(virCgroupPtr cgroup)
 int
 virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller)
 {
-    int ret = -1;
-    VIR_AUTOFREE(char *) content = NULL;
-
-    if (!cgroup)
-        return -1;
-
-    ret = virCgroupGetValueStr(cgroup, controller, "tasks", &content);
-
-    if (ret == 0 && content[0] == '\0')
-        ret = 1;
-
-    return ret;
+    return cgroup->backend->hasEmptyTasks(cgroup, controller);
 }
 
 bool

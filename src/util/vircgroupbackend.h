@@ -122,6 +122,10 @@ typedef int
                       pid_t pid,
                       unsigned int flags);
 
+typedef int
+(*virCgroupHasEmptyTasksCB)(virCgroupPtr cgroup,
+                            int controller);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -141,6 +145,7 @@ struct _virCgroupBackend {
     virCgroupMakeGroupCB makeGroup;
     virCgroupRemoveCB remove;
     virCgroupAddTaskCB addTask;
+    virCgroupHasEmptyTasksCB hasEmptyTasks;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
