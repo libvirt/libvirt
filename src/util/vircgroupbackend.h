@@ -300,6 +300,9 @@ typedef int
 (*virCgroupGetCpuCfsQuotaCB)(virCgroupPtr group,
                              long long *cfs_quota);
 
+typedef bool
+(*virCgroupSupportsCpuBWCB)(virCgroupPtr cgroup);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -361,6 +364,7 @@ struct _virCgroupBackend {
     virCgroupGetCpuCfsPeriodCB getCpuCfsPeriod;
     virCgroupSetCpuCfsQuotaCB setCpuCfsQuota;
     virCgroupGetCpuCfsQuotaCB getCpuCfsQuota;
+    virCgroupSupportsCpuBWCB supportsCpuBW;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

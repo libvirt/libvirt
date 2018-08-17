@@ -2681,18 +2681,7 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
 bool
 virCgroupSupportsCpuBW(virCgroupPtr cgroup)
 {
-    VIR_AUTOFREE(char *) path = NULL;
-
-    if (!cgroup)
-        return false;
-
-    if (virCgroupPathOfController(cgroup, VIR_CGROUP_CONTROLLER_CPU,
-                                  "cpu.cfs_period_us", &path) < 0) {
-        virResetLastError();
-        return false;
-    }
-
-    return virFileExists(path);
+    VIR_CGROUP_BACKEND_CALL(cgroup, supportsCpuBW, false);
 }
 
 int
