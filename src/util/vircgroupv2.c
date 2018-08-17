@@ -1486,6 +1486,54 @@ virCgroupV2GetCpuacctUsage(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2GetCpuacctStat(virCgroupPtr group,
+                          unsigned long long *user,
+                          unsigned long long *sys)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+    char *tmp;
+    unsigned long long userVal = 0;
+    unsigned long long sysVal = 0;
+
+    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                             "cpu.stat", &str) < 0) {
+        return -1;
+    }
+
+    if (!(tmp = strstr(str, "user_usec "))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse cpu user stat '%s'"), str);
+        return -1;
+    }
+    tmp += strlen("user_usec ");
+
+    if (virStrToLong_ull(tmp, &tmp, 10, &userVal) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse value '%s' as number."), tmp);
+        return -1;
+    }
+
+    if (!(tmp = strstr(str, "system_usec "))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse cpu sys stat '%s'"), str);
+        return -1;
+    }
+    tmp += strlen("system_usec ");
+
+    if (virStrToLong_ull(tmp, &tmp, 10, &sysVal) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse value '%s' as number."), tmp);
+        return -1;
+    }
+
+    *user = userVal * 1000;
+    *sys = sysVal * 1000;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1543,6 +1591,7 @@ virCgroupBackend virCgroupV2Backend = {
     .supportsCpuBW = virCgroupV2SupportsCpuBW,
 
     .getCpuacctUsage = virCgroupV2GetCpuacctUsage,
+    .getCpuacctStat = virCgroupV2GetCpuacctStat,
 };
 
 
