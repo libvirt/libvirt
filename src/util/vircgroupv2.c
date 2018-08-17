@@ -1440,6 +1440,21 @@ virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
 }
 
 
+static bool
+virCgroupV2SupportsCpuBW(virCgroupPtr cgroup)
+{
+    VIR_AUTOFREE(char *) path = NULL;
+
+    if (virCgroupV2PathOfController(cgroup, VIR_CGROUP_CONTROLLER_CPU,
+                                    "cpu.max", &path) < 0) {
+        virResetLastError();
+        return false;
+    }
+
+    return virFileExists(path);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1494,6 +1509,7 @@ virCgroupBackend virCgroupV2Backend = {
     .getCpuCfsPeriod = virCgroupV2GetCpuCfsPeriod,
     .setCpuCfsQuota = virCgroupV2SetCpuCfsQuota,
     .getCpuCfsQuota = virCgroupV2GetCpuCfsQuota,
+    .supportsCpuBW = virCgroupV2SupportsCpuBW,
 };
 
 
