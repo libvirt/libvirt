@@ -693,6 +693,55 @@ virCgroupV2GetBlkioIoDeviceServiced(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetBlkioDeviceWeight(virCgroupPtr group,
+                                const char *path,
+                                unsigned int weight)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) blkstr = NULL;
+
+    if (!(blkstr = virCgroupGetBlockDevString(path)))
+        return -1;
+
+    if (virAsprintf(&str, "%s%d", blkstr, weight) < 0)
+        return -1;
+
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "io.weight",
+                                str);
+}
+
+
+static int
+virCgroupV2GetBlkioDeviceWeight(virCgroupPtr group,
+                                const char *path,
+                                unsigned int *weight)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+
+    if (virCgroupGetValueForBlkDev(group,
+                                   VIR_CGROUP_CONTROLLER_BLKIO,
+                                   "io.weight",
+                                   path,
+                                   &str) < 0) {
+        return -1;
+    }
+
+    if (!str) {
+        *weight = 0;
+    } else if (virStrToLong_ui(str, NULL, 10, weight) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to parse '%s' as an integer"),
+                       str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -719,6 +768,8 @@ virCgroupBackend virCgroupV2Backend = {
     .getBlkioWeight = virCgroupV2GetBlkioWeight,
     .getBlkioIoServiced = virCgroupV2GetBlkioIoServiced,
     .getBlkioIoDeviceServiced = virCgroupV2GetBlkioIoDeviceServiced,
+    .setBlkioDeviceWeight = virCgroupV2SetBlkioDeviceWeight,
+    .getBlkioDeviceWeight = virCgroupV2GetBlkioDeviceWeight,
 };
 
 
