@@ -630,6 +630,69 @@ virCgroupV2GetBlkioIoServiced(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2GetBlkioIoDeviceServiced(virCgroupPtr group,
+                                    const char *path,
+                                    long long *bytes_read,
+                                    long long *bytes_write,
+                                    long long *requests_read,
+                                    long long *requests_write)
+{
+    VIR_AUTOFREE(char *) str1 = NULL;
+    VIR_AUTOFREE(char *) str2 = NULL;
+    char *p1;
+    size_t i;
+
+    const char *value_names[] = {
+        "rbytes=",
+        "wbytes=",
+        "rios=",
+        "wios=",
+    };
+    long long *value_ptrs[] = {
+        bytes_read,
+        bytes_write,
+        requests_read,
+        requests_write
+    };
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "io.stat", &str1) < 0) {
+        return -1;
+    }
+
+    if (!(str2 = virCgroupGetBlockDevString(path)))
+        return -1;
+
+    if (!(p1 = strstr(str1, str2))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot find byte stats for block device '%s'"),
+                       str2);
+        return -1;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+        if (!(p1 = strstr(p1, value_names[i]))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot find byte '%s' stats for block device '%s'"),
+                           value_names[i], str2);
+            return -1;
+        }
+
+        p1 += strlen(value_names[i]);
+        if (virStrToLong_ll(p1, &p1, 10, value_ptrs[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot parse '%s' stat '%s'"),
+                           value_names[i], p1);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -655,6 +718,7 @@ virCgroupBackend virCgroupV2Backend = {
     .setBlkioWeight = virCgroupV2SetBlkioWeight,
     .getBlkioWeight = virCgroupV2GetBlkioWeight,
     .getBlkioIoServiced = virCgroupV2GetBlkioIoServiced,
+    .getBlkioIoDeviceServiced = virCgroupV2GetBlkioIoDeviceServiced,
 };
 
 
