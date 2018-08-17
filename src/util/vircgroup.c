@@ -1052,7 +1052,7 @@ virCgroupMakeGroup(virCgroupPtr parent,
         }
 
         if (virCgroupPathOfController(group, i, "", &path) < 0)
-            return -1;
+            goto error;
 
         /* As of Feb 2011, clang can't see that the above function
          * call did not modify group. */
@@ -1076,7 +1076,7 @@ virCgroupMakeGroup(virCgroupPtr parent,
                     virReportSystemError(errno,
                                          _("Failed to create controller %s for group"),
                                          virCgroupControllerTypeToString(i));
-                    return -1;
+                    goto error;
                 }
             }
             if (group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint != NULL &&
@@ -1084,7 +1084,7 @@ virCgroupMakeGroup(virCgroupPtr parent,
                  STREQ(group->controllers[i].mountPoint,
                        group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint))) {
                 if (virCgroupCpuSetInherit(parent, group) < 0)
-                    return -1;
+                    goto error;
             }
             /*
              * Note that virCgroupSetMemoryUseHierarchy should always be
@@ -1096,13 +1096,17 @@ virCgroupMakeGroup(virCgroupPtr parent,
                  STREQ(group->controllers[i].mountPoint,
                        group->controllers[VIR_CGROUP_CONTROLLER_MEMORY].mountPoint))) {
                 if (virCgroupSetMemoryUseHierarchy(group) < 0)
-                    return -1;
+                    goto error;
             }
         }
     }
 
     VIR_DEBUG("Done making controllers for group");
     return 0;
+
+ error:
+    virCgroupRemove(group);
+    return -1;
 }
 
 
@@ -1316,10 +1320,8 @@ virCgroupNewPartition(const char *path,
         if (virCgroupNew(-1, parentPath, NULL, controllers, &parent) < 0)
             goto cleanup;
 
-        if (virCgroupMakeGroup(parent, *group, create, VIR_CGROUP_NONE) < 0) {
-            virCgroupRemove(*group);
+        if (virCgroupMakeGroup(parent, *group, create, VIR_CGROUP_NONE) < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;
@@ -1389,7 +1391,6 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
      */
     if (virCgroupMakeGroup(partition, *group, create,
                            VIR_CGROUP_MEM_HIERACHY) < 0) {
-        virCgroupRemove(*group);
         virCgroupFree(group);
         return -1;
     }
@@ -1446,7 +1447,6 @@ virCgroupNewThread(virCgroupPtr domain,
         return -1;
 
     if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
-        virCgroupRemove(*group);
         virCgroupFree(group);
         return -1;
     }
