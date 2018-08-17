@@ -1115,6 +1115,20 @@ virCgroupV2GetMemoryStat(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2GetMemoryUsage(virCgroupPtr group,
+                          unsigned long *kb)
+{
+    unsigned long long usage_in_bytes;
+    int ret = virCgroupGetValueU64(group,
+                                   VIR_CGROUP_CONTROLLER_MEMORY,
+                                   "memory.current", &usage_in_bytes);
+    if (ret == 0)
+        *kb = (unsigned long) usage_in_bytes >> 10;
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1154,6 +1168,7 @@ virCgroupBackend virCgroupV2Backend = {
 
     .setMemory = virCgroupV2SetMemory,
     .getMemoryStat = virCgroupV2GetMemoryStat,
+    .getMemoryUsage = virCgroupV2GetMemoryUsage,
 };
 
 
