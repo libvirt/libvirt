@@ -2176,8 +2176,13 @@ storageVolDownload(virStorageVolPtr vol,
         goto cleanup;
     }
 
-    ret = backend->downloadVol(obj, voldef, stream,
-                               offset, length, flags);
+    virStoragePoolObjIncrAsyncjobs(obj);
+    voldef->in_use++;
+
+    ret = backend->downloadVol(obj, voldef, stream, offset, length, flags);
+
+    voldef->in_use--;
+    virStoragePoolObjDecrAsyncjobs(obj);
 
  cleanup:
     virStoragePoolObjEndAPI(&obj);
@@ -2326,6 +2331,7 @@ storageVolUpload(virStorageVolPtr vol,
     virStoragePoolDefPtr def;
     virStorageVolDefPtr voldef = NULL;
     virStorageVolStreamInfoPtr cbdata = NULL;
+    int rc;
     int ret = -1;
 
     virCheckFlags(VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM, -1);
@@ -2370,8 +2376,15 @@ storageVolUpload(virStorageVolPtr vol,
         VIR_STRDUP(cbdata->vol_path, voldef->target.path) < 0)
         goto cleanup;
 
-    if ((ret = backend->uploadVol(obj, voldef, stream,
-                                  offset, length, flags)) < 0)
+    virStoragePoolObjIncrAsyncjobs(obj);
+    voldef->in_use++;
+
+    rc = backend->uploadVol(obj, voldef, stream, offset, length, flags);
+
+    voldef->in_use--;
+    virStoragePoolObjDecrAsyncjobs(obj);
+
+    if (rc < 0)
         goto cleanup;
 
     /* Add cleanup callback - call after uploadVol since the stream
@@ -2381,7 +2394,7 @@ storageVolUpload(virStorageVolPtr vol,
                                   virStorageVolFDStreamCloseCb,
                                   cbdata, NULL);
     cbdata = NULL;
-
+    ret = 0;
  cleanup:
     virStoragePoolObjEndAPI(&obj);
     if (cbdata)
@@ -2499,6 +2512,7 @@ storageVolWipePattern(virStorageVolPtr vol,
     virStorageBackendPtr backend;
     virStoragePoolObjPtr obj = NULL;
     virStorageVolDefPtr voldef = NULL;
+    int rc;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -2538,7 +2552,15 @@ storageVolWipePattern(virStorageVolPtr vol,
         goto cleanup;
     }
 
-    if (backend->wipeVol(obj, voldef, algorithm, flags) < 0)
+    virStoragePoolObjIncrAsyncjobs(obj);
+    voldef->in_use++;
+
+    rc = backend->wipeVol(obj, voldef, algorithm, flags);
+
+    voldef->in_use--;
+    virStoragePoolObjDecrAsyncjobs(obj);
+
+    if (rc < 0)
         goto cleanup;
 
     /* Instead of using the refreshVol, since much changes on the target
