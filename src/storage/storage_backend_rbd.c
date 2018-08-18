@@ -1063,7 +1063,7 @@ virStorageBackendRBDBuildVolFrom(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendRBDRefreshVol(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendRBDRefreshVol(virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol)
 {
     virStorageBackendRBDStatePtr ptr = NULL;
@@ -1083,7 +1083,7 @@ virStorageBackendRBDRefreshVol(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendRBDResizeVol(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendRBDResizeVol(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol,
                               unsigned long long capacity,
                               unsigned int flags)
