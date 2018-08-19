@@ -1439,7 +1439,8 @@ virCgroupHasController(virCgroupPtr cgroup, int controller)
         return false;
     if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
         return false;
-    return cgroup->controllers[controller].mountPoint != NULL;
+
+    return cgroup->backend->hasController(cgroup, controller);
 }
 
 

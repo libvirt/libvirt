@@ -477,6 +477,14 @@ virCgroupV1DetectControllers(virCgroupPtr group,
 }
 
 
+static bool
+virCgroupV1HasController(virCgroupPtr group,
+                         int controller)
+{
+    return group->controllers[controller].mountPoint != NULL;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -489,6 +497,7 @@ virCgroupBackend virCgroupV1Backend = {
     .validatePlacement = virCgroupV1ValidatePlacement,
     .stealPlacement = virCgroupV1StealPlacement,
     .detectControllers = virCgroupV1DetectControllers,
+    .hasController = virCgroupV1HasController,
 };
 
 

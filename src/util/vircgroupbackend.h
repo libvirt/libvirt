@@ -73,6 +73,10 @@ typedef int
 (*virCgroupDetectControllersCB)(virCgroupPtr group,
                                 int controllers);
 
+typedef bool
+(*virCgroupHasControllerCB)(virCgroupPtr cgroup,
+                            int controller);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -86,6 +90,7 @@ struct _virCgroupBackend {
     virCgroupValidatePlacementCB validatePlacement;
     virCgroupStealPlacementCB stealPlacement;
     virCgroupDetectControllersCB detectControllers;
+    virCgroupHasControllerCB hasController;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
