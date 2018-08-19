@@ -3169,19 +3169,11 @@ virCgroupPathOfAnyController(virCgroupPtr group,
                              const char *name,
                              char **keypath)
 {
-    size_t i;
+    int controller;
 
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        /* Reject any controller with a placement
-         * of '/' to avoid doing bad stuff to the root
-         * cgroup
-         */
-        if (group->controllers[i].mountPoint &&
-            group->controllers[i].placement &&
-            STRNEQ(group->controllers[i].placement, "/")) {
-            return virCgroupPathOfController(group, i, name, keypath);
-        }
-    }
+    controller = group->backend->getAnyController(group);
+    if (controller >= 0)
+        return virCgroupPathOfController(group, controller, name, keypath);
 
     virReportSystemError(ENOSYS, "%s",
                          _("No controllers are mounted"));
