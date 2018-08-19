@@ -306,6 +306,14 @@ virCgroupV2HasController(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2GetAnyController(virCgroupPtr group)
+{
+    /* The least significant bit is position 1. */
+    return ffs(group->unified.controllers) - 1;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -319,6 +327,7 @@ virCgroupBackend virCgroupV2Backend = {
     .stealPlacement = virCgroupV2StealPlacement,
     .detectControllers = virCgroupV2DetectControllers,
     .hasController = virCgroupV2HasController,
+    .getAnyController = virCgroupV2GetAnyController,
 };
 
 
