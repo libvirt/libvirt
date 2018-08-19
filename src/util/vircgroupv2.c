@@ -314,6 +314,29 @@ virCgroupV2GetAnyController(virCgroupPtr group)
 }
 
 
+static int
+virCgroupV2PathOfController(virCgroupPtr group,
+                            int controller,
+                            const char *key,
+                            char **path)
+{
+    if (!virCgroupV2HasController(group, controller)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("v2 controller '%s' is not available"),
+                       virCgroupV2ControllerTypeToString(controller));
+        return -1;
+    }
+
+    if (virAsprintf(path, "%s%s/%s",
+                    group->unified.mountPoint,
+                    group->unified.placement,
+                    key ? key : "") < 0)
+        return -1;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -328,6 +351,7 @@ virCgroupBackend virCgroupV2Backend = {
     .detectControllers = virCgroupV2DetectControllers,
     .hasController = virCgroupV2HasController,
     .getAnyController = virCgroupV2GetAnyController,
+    .pathOfController = virCgroupV2PathOfController,
 };
 
 
