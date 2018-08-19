@@ -80,6 +80,12 @@ typedef bool
 typedef int
 (*virCgroupGetAnyControllerCB)(virCgroupPtr group);
 
+typedef int
+(*virCgroupPathOfControllerCB)(virCgroupPtr group,
+                               int controller,
+                               const char *key,
+                               char **path);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -95,6 +101,7 @@ struct _virCgroupBackend {
     virCgroupDetectControllersCB detectControllers;
     virCgroupHasControllerCB hasController;
     virCgroupGetAnyControllerCB getAnyController;
+    virCgroupPathOfControllerCB pathOfController;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

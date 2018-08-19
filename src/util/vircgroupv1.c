@@ -506,6 +506,36 @@ virCgroupV1GetAnyController(virCgroupPtr group)
 }
 
 
+static int
+virCgroupV1PathOfController(virCgroupPtr group,
+                            int controller,
+                            const char *key,
+                            char **path)
+{
+    if (group->controllers[controller].mountPoint == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("v1 controller '%s' is not mounted"),
+                       virCgroupV1ControllerTypeToString(controller));
+        return -1;
+    }
+
+    if (group->controllers[controller].placement == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("v1 controller '%s' is not enabled for group"),
+                       virCgroupV1ControllerTypeToString(controller));
+        return -1;
+    }
+
+    if (virAsprintf(path, "%s%s/%s",
+                    group->controllers[controller].mountPoint,
+                    group->controllers[controller].placement,
+                    key ? key : "") < 0)
+        return -1;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -520,6 +550,7 @@ virCgroupBackend virCgroupV1Backend = {
     .detectControllers = virCgroupV1DetectControllers,
     .hasController = virCgroupV1HasController,
     .getAnyController = virCgroupV1GetAnyController,
+    .pathOfController = virCgroupV1PathOfController,
 };
 
 

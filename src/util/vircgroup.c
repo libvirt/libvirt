@@ -1456,27 +1456,7 @@ virCgroupPathOfController(virCgroupPtr group,
         return -1;
     }
 
-    if (group->controllers[controller].mountPoint == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Controller '%s' is not mounted"),
-                       virCgroupControllerTypeToString(controller));
-        return -1;
-    }
-
-    if (group->controllers[controller].placement == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Controller '%s' is not enabled for group"),
-                       virCgroupControllerTypeToString(controller));
-        return -1;
-    }
-
-    if (virAsprintf(path, "%s%s/%s",
-                    group->controllers[controller].mountPoint,
-                    group->controllers[controller].placement,
-                    key ? key : "") < 0)
-        return -1;
-
-    return 0;
+    return group->backend->pathOfController(group, controller, key, path);
 }
 
 
