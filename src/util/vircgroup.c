@@ -1054,10 +1054,6 @@ virCgroupMakeGroup(virCgroupPtr parent,
         if (virCgroupPathOfController(group, i, "", &path) < 0)
             goto error;
 
-        /* As of Feb 2011, clang can't see that the above function
-         * call did not modify group. */
-        sa_assert(group->controllers[i].mountPoint);
-
         VIR_DEBUG("Make controller %s", path);
         if (!virFileExists(path)) {
             if (!create ||
