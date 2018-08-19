@@ -2178,9 +2178,11 @@ storageVolDownload(virStorageVolPtr vol,
 
     virStoragePoolObjIncrAsyncjobs(obj);
     voldef->in_use++;
+    virObjectUnlock(obj);
 
     ret = backend->downloadVol(obj, voldef, stream, offset, length, flags);
 
+    virObjectLock(obj);
     voldef->in_use--;
     virStoragePoolObjDecrAsyncjobs(obj);
 
@@ -2378,9 +2380,11 @@ storageVolUpload(virStorageVolPtr vol,
 
     virStoragePoolObjIncrAsyncjobs(obj);
     voldef->in_use++;
+    virObjectUnlock(obj);
 
     rc = backend->uploadVol(obj, voldef, stream, offset, length, flags);
 
+    virObjectLock(obj);
     voldef->in_use--;
     virStoragePoolObjDecrAsyncjobs(obj);
 
@@ -2554,9 +2558,11 @@ storageVolWipePattern(virStorageVolPtr vol,
 
     virStoragePoolObjIncrAsyncjobs(obj);
     voldef->in_use++;
+    virObjectUnlock(obj);
 
     rc = backend->wipeVol(obj, voldef, algorithm, flags);
 
+    virObjectLock(obj);
     voldef->in_use--;
     virStoragePoolObjDecrAsyncjobs(obj);
 

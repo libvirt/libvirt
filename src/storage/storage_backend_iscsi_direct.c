@@ -693,7 +693,11 @@ virStorageBackenISCSIDirectWipeVol(virStoragePoolObjPtr pool,
 
     virCheckFlags(0, -1);
 
-    if (!(iscsi = virStorageBackendISCSIDirectSetConnection(pool, NULL)))
+    virObjectLock(pool);
+    iscsi = virStorageBackendISCSIDirectSetConnection(pool, NULL);
+    virObjectUnlock(pool);
+
+    if (!iscsi)
         return -1;
 
     switch ((virStorageVolWipeAlgorithm) algorithm) {
