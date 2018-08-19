@@ -212,13 +212,7 @@ static int make_controller(const char *path, mode_t mode)
     if (STRPREFIX(controller, "cpu,cpuacct")) {
         MAKE_FILE("cpu.cfs_period_us", "100000\n");
         MAKE_FILE("cpu.cfs_quota_us", "-1\n");
-        MAKE_FILE("cpu.rt_period_us", "1000000\n");
-        MAKE_FILE("cpu.rt_runtime_us", "950000\n");
         MAKE_FILE("cpu.shares", "1024\n");
-        MAKE_FILE("cpu.stat",
-                  "nr_periods 0\n"
-                  "nr_throttled 0\n"
-                  "throttled_time 0\n");
         MAKE_FILE("cpuacct.stat",
                   "user 216687025\n"
                   "system 43421396\n");
@@ -233,46 +227,19 @@ static int make_controller(const char *path, mode_t mode)
                   "709566900 0 0 0 0 0 0 0 444777342 0 0 0 0 0 0 0 "
                   "5683512916 0 0 0 0 0 0 0 635751356 0 0 0 0 0 0 0\n");
     } else if (STRPREFIX(controller, "cpuset")) {
-        MAKE_FILE("cpuset.cpu_exclusive", "1\n");
         if (STREQ(controller, "cpuset"))
             MAKE_FILE("cpuset.cpus", "0-1");
         else
             MAKE_FILE("cpuset.cpus", ""); /* Values don't inherit */
-        MAKE_FILE("cpuset.mem_exclusive", "1\n");
-        MAKE_FILE("cpuset.mem_hardwall", "0\n");
         MAKE_FILE("cpuset.memory_migrate", "0\n");
-        MAKE_FILE("cpuset.memory_pressure", "0\n");
-        MAKE_FILE("cpuset.memory_pressure_enabled", "0\n");
-        MAKE_FILE("cpuset.memory_spread_page", "0\n");
-        MAKE_FILE("cpuset.memory_spread_slab", "0\n");
         if (STREQ(controller, "cpuset"))
             MAKE_FILE("cpuset.mems", "0");
         else
             MAKE_FILE("cpuset.mems", ""); /* Values don't inherit */
-        MAKE_FILE("cpuset.sched_load_balance", "1\n");
-        MAKE_FILE("cpuset.sched_relax_domain_level", "-1\n");
     } else if (STRPREFIX(controller, "memory")) {
-        MAKE_FILE("memory.failcnt", "0\n");
-        MAKE_FILE("memory.force_empty", ""); /* Write only */
-        MAKE_FILE("memory.kmem.tcp.failcnt", "0\n");
-        MAKE_FILE("memory.kmem.tcp.limit_in_bytes", "9223372036854775807\n");
-        MAKE_FILE("memory.kmem.tcp.max_usage_in_bytes", "0\n");
-        MAKE_FILE("memory.kmem.tcp.usage_in_bytes", "16384\n");
         MAKE_FILE("memory.limit_in_bytes", "9223372036854775807\n");
-        MAKE_FILE("memory.max_usage_in_bytes", "0\n");
-        MAKE_FILE("memory.memsw.failcnt", ""); /* Not supported */
         MAKE_FILE("memory.memsw.limit_in_bytes", ""); /* Not supported */
-        MAKE_FILE("memory.memsw.max_usage_in_bytes", ""); /* Not supported */
         MAKE_FILE("memory.memsw.usage_in_bytes", ""); /* Not supported */
-        MAKE_FILE("memory.move_charge_at_immigrate", "0\n");
-        MAKE_FILE("memory.numa_stat",
-                  "total=367664 N0=367664\n"
-                  "file=314764 N0=314764\n"
-                  "anon=51999 N0=51999\n"
-                  "unevictable=901 N0=901\n");
-        MAKE_FILE("memory.oom_control",
-                  "oom_kill_disable 0\n"
-                  "under_oom 0\n");
         MAKE_FILE("memory.soft_limit_in_bytes", "9223372036854775807\n");
         MAKE_FILE("memory.stat",
                   "cache 1336619008\n"
@@ -304,50 +271,11 @@ static int make_controller(const char *path, mode_t mode)
                   "recent_rotated_file 2547948\n"
                   "recent_scanned_anon 113796164\n"
                   "recent_scanned_file 8199863\n");
-        MAKE_FILE("memory.swappiness", "60\n");
         MAKE_FILE("memory.usage_in_bytes", "1455321088\n");
         MAKE_FILE("memory.use_hierarchy", "0\n");
     } else if (STRPREFIX(controller, "freezer")) {
         MAKE_FILE("freezer.state", "THAWED");
     } else if (STRPREFIX(controller, "blkio")) {
-        MAKE_FILE("blkio.io_merged",
-                  "8:0 Read 1100949\n"
-                  "8:0 Write 2248076\n"
-                  "8:0 Sync 63063\n"
-                  "8:0 Async 3285962\n"
-                  "8:0 Total 3349025\n");
-        MAKE_FILE("blkio.io_queued",
-                  "8:0 Read 0\n"
-                  "8:0 Write 0\n"
-                  "8:0 Sync 0\n"
-                  "8:0 Async 0\n"
-                  "8:0 Total 0\n");
-        MAKE_FILE("blkio.io_service_bytes",
-                  "8:0 Read 59542078464\n"
-                  "8:0 Write 397369182208\n"
-                  "8:0 Sync 234080922624\n"
-                  "8:0 Async 222830338048\n"
-                  "8:0 Total 456911260672\n");
-        MAKE_FILE("blkio.io_serviced",
-                  "8:0 Read 3402504\n"
-                  "8:0 Write 14966516\n"
-                  "8:0 Sync 12064031\n"
-                  "8:0 Async 6304989\n"
-                  "8:0 Total 18369020\n");
-        MAKE_FILE("blkio.io_service_time",
-                  "8:0 Read 10747537542349\n"
-                  "8:0 Write 9200028590575\n"
-                  "8:0 Sync 6449319855381\n"
-                  "8:0 Async 13498246277543\n"
-                  "8:0 Total 19947566132924\n");
-        MAKE_FILE("blkio.io_wait_time",
-                  "8:0 Read 14687514824889\n"
-                  "8:0 Write 357748452187691\n"
-                  "8:0 Sync 55296974349413\n"
-                  "8:0 Async 317138992663167\n"
-                  "8:0 Total 372435967012580\n");
-        MAKE_FILE("blkio.reset_stats", ""); /* Write only */
-        MAKE_FILE("blkio.sectors", "8:0 892404806\n");
         MAKE_FILE("blkio.throttle.io_service_bytes",
                   "8:0 Read 59542107136\n"
                   "8:0 Write 411440480256\n"
@@ -374,7 +302,6 @@ static int make_controller(const char *path, mode_t mode)
         MAKE_FILE("blkio.throttle.read_iops_device", "");
         MAKE_FILE("blkio.throttle.write_bps_device", "");
         MAKE_FILE("blkio.throttle.write_iops_device", "");
-        MAKE_FILE("blkio.time", "8:0 61019089\n");
         MAKE_FILE("blkio.weight", "1000\n");
         MAKE_FILE("blkio.weight_device", "");
 
