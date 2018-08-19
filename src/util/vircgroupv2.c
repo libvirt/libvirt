@@ -298,6 +298,14 @@ virCgroupV2DetectControllers(virCgroupPtr group,
 }
 
 
+static bool
+virCgroupV2HasController(virCgroupPtr group,
+                         int controller)
+{
+    return group->unified.controllers & (1 << controller);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -310,6 +318,7 @@ virCgroupBackend virCgroupV2Backend = {
     .validatePlacement = virCgroupV2ValidatePlacement,
     .stealPlacement = virCgroupV2StealPlacement,
     .detectControllers = virCgroupV2DetectControllers,
+    .hasController = virCgroupV2HasController,
 };
 
 
