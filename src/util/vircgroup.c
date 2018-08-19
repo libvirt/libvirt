@@ -1079,24 +1079,20 @@ virCgroupMakeGroup(virCgroupPtr parent,
                     goto error;
                 }
             }
-            if (group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint != NULL &&
-                (i == VIR_CGROUP_CONTROLLER_CPUSET ||
-                 STREQ(group->controllers[i].mountPoint,
-                       group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint))) {
-                if (virCgroupCpuSetInherit(parent, group) < 0)
-                    goto error;
+            if (i == VIR_CGROUP_CONTROLLER_CPUSET &&
+                group->controllers[i].mountPoint != NULL &&
+                virCgroupCpuSetInherit(parent, group) < 0) {
+                goto error;
             }
             /*
              * Note that virCgroupSetMemoryUseHierarchy should always be
              * called prior to creating subcgroups and attaching tasks.
              */
             if ((flags & VIR_CGROUP_MEM_HIERACHY) &&
-                (group->controllers[VIR_CGROUP_CONTROLLER_MEMORY].mountPoint != NULL) &&
-                (i == VIR_CGROUP_CONTROLLER_MEMORY ||
-                 STREQ(group->controllers[i].mountPoint,
-                       group->controllers[VIR_CGROUP_CONTROLLER_MEMORY].mountPoint))) {
-                if (virCgroupSetMemoryUseHierarchy(group) < 0)
-                    goto error;
+                i == VIR_CGROUP_CONTROLLER_MEMORY &&
+                group->controllers[i].mountPoint != NULL &&
+                virCgroupSetMemoryUseHierarchy(group) < 0) {
+                goto error;
             }
         }
     }
