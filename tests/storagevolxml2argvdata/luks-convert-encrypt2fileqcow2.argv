@@ -1,0 +1,7 @@
+qemu-img create -f qcow2 \
+-o compat=0.10 /var/lib/libvirt/images/sparse-qcow2.img 1073741824K
+qemu-img convert --image-opts -n --target-image-opts \
+--object secret,id=encrypt2.img_encrypt0,file=/path/to/inputSecretFile \
+driver=luks,file.filename=/var/lib/libvirt/images/encrypt2.img,\
+key-secret=encrypt2.img_encrypt0 \
+driver=qcow2,file.filename=/var/lib/libvirt/images/sparse-qcow2.img

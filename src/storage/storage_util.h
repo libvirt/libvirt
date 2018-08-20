@@ -167,6 +167,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                                          unsigned int flags,
                                          const char *create_tool,
                                          const char *secretPath,
+                                         const char *inputSecretPath,
                                          virStorageVolEncryptConvertStep convertStep);
 
 int virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
