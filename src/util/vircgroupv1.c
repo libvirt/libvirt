@@ -1948,6 +1948,28 @@ virCgroupV1GetFreezerState(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1SetCpusetMems(virCgroupPtr group,
+                         const char *mems)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.mems",
+                                mems);
+}
+
+
+static int
+virCgroupV1GetCpusetMems(virCgroupPtr group,
+                         char **mems)
+{
+    return virCgroupGetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.mems",
+                                mems);
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -2015,6 +2037,9 @@ virCgroupBackend virCgroupV1Backend = {
 
     .setFreezerState = virCgroupV1SetFreezerState,
     .getFreezerState = virCgroupV1GetFreezerState,
+
+    .setCpusetMems = virCgroupV1SetCpusetMems,
+    .getCpusetMems = virCgroupV1GetCpusetMems,
 };
 
 

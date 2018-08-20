@@ -1708,10 +1708,7 @@ virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
 {
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_CPUSET,
-                                "cpuset.mems",
-                                mems);
+    VIR_CGROUP_BACKEND_CALL(group, setCpusetMems, -1, mems);
 }
 
 
@@ -1726,10 +1723,7 @@ virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
 int
 virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
 {
-    return virCgroupGetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_CPUSET,
-                                "cpuset.mems",
-                                mems);
+    VIR_CGROUP_BACKEND_CALL(group, getCpusetMems, -1, mems);
 }
 
 
