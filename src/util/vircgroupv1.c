@@ -1863,6 +1863,25 @@ virCgroupV1SupportsCpuBW(virCgroupPtr cgroup)
 }
 
 
+static int
+virCgroupV1GetCpuacctUsage(virCgroupPtr group,
+                           unsigned long long *usage)
+{
+    return virCgroupGetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPUACCT,
+                                "cpuacct.usage", usage);
+}
+
+
+static int
+virCgroupV1GetCpuacctPercpuUsage(virCgroupPtr group,
+                                 char **usage)
+{
+    return virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                                "cpuacct.usage_percpu", usage);
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1923,6 +1942,9 @@ virCgroupBackend virCgroupV1Backend = {
     .setCpuCfsQuota = virCgroupV1SetCpuCfsQuota,
     .getCpuCfsQuota = virCgroupV1GetCpuCfsQuota,
     .supportsCpuBW = virCgroupV1SupportsCpuBW,
+
+    .getCpuacctUsage = virCgroupV1GetCpuacctUsage,
+    .getCpuacctPercpuUsage = virCgroupV1GetCpuacctPercpuUsage,
 };
 
 

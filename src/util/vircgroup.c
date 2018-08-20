@@ -2261,8 +2261,7 @@ virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
 int
 virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
 {
-    return virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
-                                "cpuacct.usage_percpu", usage);
+    VIR_CGROUP_BACKEND_CALL(group, getCpuacctPercpuUsage, -1, usage);
 }
 
 
@@ -2585,9 +2584,7 @@ virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
 int
 virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
 {
-    return virCgroupGetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_CPUACCT,
-                                "cpuacct.usage", usage);
+    VIR_CGROUP_BACKEND_CALL(group, getCpuacctUsage, -1, usage);
 }
 
 

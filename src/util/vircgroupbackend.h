@@ -303,6 +303,14 @@ typedef int
 typedef bool
 (*virCgroupSupportsCpuBWCB)(virCgroupPtr cgroup);
 
+typedef int
+(*virCgroupGetCpuacctUsageCB)(virCgroupPtr group,
+                              unsigned long long *usage);
+
+typedef int
+(*virCgroupGetCpuacctPercpuUsageCB)(virCgroupPtr group,
+                                    char **usage);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -365,6 +373,9 @@ struct _virCgroupBackend {
     virCgroupSetCpuCfsQuotaCB setCpuCfsQuota;
     virCgroupGetCpuCfsQuotaCB getCpuCfsQuota;
     virCgroupSupportsCpuBWCB supportsCpuBW;
+
+    virCgroupGetCpuacctUsageCB getCpuacctUsage;
+    virCgroupGetCpuacctPercpuUsageCB getCpuacctPercpuUsage;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
