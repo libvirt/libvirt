@@ -1738,10 +1738,7 @@ virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
 int
 virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate)
 {
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_CPUSET,
-                                "cpuset.memory_migrate",
-                                migrate ? "1" : "0");
+    VIR_CGROUP_BACKEND_CALL(group, setCpusetMemoryMigrate, -1, migrate);
 }
 
 
@@ -1756,13 +1753,7 @@ virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate)
 int
 virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
 {
-    unsigned long long value = 0;
-    int ret = virCgroupGetValueU64(group,
-                                   VIR_CGROUP_CONTROLLER_CPUSET,
-                                   "cpuset.memory_migrate",
-                                   &value);
-    *migrate = !!value;
-    return ret;
+    VIR_CGROUP_BACKEND_CALL(group, getCpusetMemoryMigrate, -1, migrate);
 }
 
 

@@ -1970,6 +1970,31 @@ virCgroupV1GetCpusetMems(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1SetCpusetMemoryMigrate(virCgroupPtr group,
+                                  bool migrate)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.memory_migrate",
+                                migrate ? "1" : "0");
+}
+
+
+static int
+virCgroupV1GetCpusetMemoryMigrate(virCgroupPtr group,
+                                  bool *migrate)
+{
+    unsigned long long value = 0;
+    int ret = virCgroupGetValueU64(group,
+                                   VIR_CGROUP_CONTROLLER_CPUSET,
+                                   "cpuset.memory_migrate",
+                                   &value);
+    *migrate = !!value;
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -2040,6 +2065,8 @@ virCgroupBackend virCgroupV1Backend = {
 
     .setCpusetMems = virCgroupV1SetCpusetMems,
     .getCpusetMems = virCgroupV1GetCpusetMems,
+    .setCpusetMemoryMigrate = virCgroupV1SetCpusetMemoryMigrate,
+    .getCpusetMemoryMigrate = virCgroupV1GetCpusetMemoryMigrate,
 };
 
 
