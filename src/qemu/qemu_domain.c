@@ -3950,6 +3950,29 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
 
 
 static int
+qemuDomainDefValidateMemory(const virDomainDef *def)
+{
+    const long system_page_size = virGetSystemPageSizeKB();
+
+    /* We can't guarantee any other mem.access
+     * if no guest NUMA nodes are defined. */
+    if (def->mem.nhugepages != 0 &&
+        def->mem.hugepages[0].size != system_page_size &&
+        virDomainNumaGetNodeCount(def->numa) == 0 &&
+        def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
+        def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_PRIVATE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("memory access mode '%s' not supported "
+                         "without guest numa node"),
+                       virDomainMemoryAccessTypeToString(def->mem.access));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefValidate(const virDomainDef *def,
                       virCapsPtr caps ATTRIBUTE_UNUSED,
                       void *opaque)
@@ -4069,6 +4092,9 @@ qemuDomainDefValidate(const virDomainDef *def,
     }
 
     if (qemuDomainDefValidateFeatures(def, qemuCaps) < 0)
+        goto cleanup;
+
+    if (qemuDomainDefValidateMemory(def) < 0)
         goto cleanup;
 
     ret = 0;
@@ -5600,30 +5626,6 @@ qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
 
 
 static int
-qemuDomainDeviceDefValidateMemory(const virDomainMemoryDef *memory ATTRIBUTE_UNUSED,
-                                  const virDomainDef *def)
-{
-    const long system_page_size = virGetSystemPageSizeKB();
-
-    /* We can't guarantee any other mem.access
-     * if no guest NUMA nodes are defined. */
-    if (def->mem.nhugepages != 0 &&
-        def->mem.hugepages[0].size != system_page_size &&
-        virDomainNumaGetNodeCount(def->numa) == 0 &&
-        def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
-        def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_PRIVATE) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("memory access mode '%s' not supported "
-                         "without guest numa node"),
-                       virDomainMemoryAccessTypeToString(def->mem.access));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 qemuDomainDeviceDefValidateVsock(const virDomainVsockDef *vsock,
                                  const virDomainDef *def,
                                  virQEMUCapsPtr qemuCaps)
@@ -5781,10 +5783,6 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                                     qemuCaps);
         break;
 
-    case VIR_DOMAIN_DEVICE_MEMORY:
-        ret = qemuDomainDeviceDefValidateMemory(dev->data.memory, def);
-        break;
-
     case VIR_DOMAIN_DEVICE_VSOCK:
         ret = qemuDomainDeviceDefValidateVsock(dev->data.vsock, def, qemuCaps);
         break;
@@ -5806,6 +5804,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_NONE:
