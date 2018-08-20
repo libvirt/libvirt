@@ -311,6 +311,11 @@ typedef int
 (*virCgroupGetCpuacctPercpuUsageCB)(virCgroupPtr group,
                                     char **usage);
 
+typedef int
+(*virCgroupGetCpuacctStatCB)(virCgroupPtr group,
+                             unsigned long long *user,
+                             unsigned long long *sys);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -376,6 +381,7 @@ struct _virCgroupBackend {
 
     virCgroupGetCpuacctUsageCB getCpuacctUsage;
     virCgroupGetCpuacctPercpuUsageCB getCpuacctPercpuUsage;
+    virCgroupGetCpuacctStatCB getCpuacctStat;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

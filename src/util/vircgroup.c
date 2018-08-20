@@ -2592,44 +2592,7 @@ int
 virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
                         unsigned long long *sys)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    char *p;
-    static double scale = -1.0;
-
-    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
-                             "cpuacct.stat", &str) < 0)
-        return -1;
-
-    if (!(p = STRSKIP(str, "user ")) ||
-        virStrToLong_ull(p, &p, 10, user) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse user stat '%s'"),
-                       p);
-        return -1;
-    }
-    if (!(p = STRSKIP(p, "\nsystem ")) ||
-        virStrToLong_ull(p, NULL, 10, sys) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse sys stat '%s'"),
-                       p);
-        return -1;
-    }
-    /* times reported are in system ticks (generally 100 Hz), but that
-     * rate can theoretically vary between machines.  Scale things
-     * into approximate nanoseconds.  */
-    if (scale < 0) {
-        long ticks_per_sec = sysconf(_SC_CLK_TCK);
-        if (ticks_per_sec == -1) {
-            virReportSystemError(errno, "%s",
-                                 _("Cannot determine system clock HZ"));
-            return -1;
-        }
-        scale = 1000000000.0 / ticks_per_sec;
-    }
-    *user *= scale;
-    *sys *= scale;
-
-    return 0;
+    VIR_CGROUP_BACKEND_CALL(group, getCpuacctStat, -1, user, sys);
 }
 
 
