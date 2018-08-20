@@ -340,6 +340,14 @@ typedef int
 (*virCgroupGetCpusetMemoryMigrateCB)(virCgroupPtr group,
                                      bool *migrate);
 
+typedef int
+(*virCgroupSetCpusetCpusCB)(virCgroupPtr group,
+                            const char *cpus);
+
+typedef int
+(*virCgroupGetCpusetCpusCB)(virCgroupPtr group,
+                            char **cpus);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -414,6 +422,8 @@ struct _virCgroupBackend {
     virCgroupGetCpusetMemsCB getCpusetMems;
     virCgroupSetCpusetMemoryMigrateCB setCpusetMemoryMigrate;
     virCgroupGetCpusetMemoryMigrateCB getCpusetMemoryMigrate;
+    virCgroupSetCpusetCpusCB setCpusetCpus;
+    virCgroupGetCpusetCpusCB getCpusetCpus;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

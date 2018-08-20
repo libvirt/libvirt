@@ -1768,10 +1768,7 @@ virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
 int
 virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
 {
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_CPUSET,
-                                "cpuset.cpus",
-                                cpus);
+    VIR_CGROUP_BACKEND_CALL(group, setCpusetCpus, -1, cpus);
 }
 
 
@@ -1786,10 +1783,7 @@ virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
 int
 virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
 {
-    return virCgroupGetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_CPUSET,
-                                "cpuset.cpus",
-                                cpus);
+    VIR_CGROUP_BACKEND_CALL(group, getCpusetCpus, -1, cpus);
 }
 
 
