@@ -5760,7 +5760,6 @@ virDomainInputDefValidate(const virDomainInputDef *input)
         case VIR_DOMAIN_INPUT_TYPE_MOUSE:
         case VIR_DOMAIN_INPUT_TYPE_TABLET:
         case VIR_DOMAIN_INPUT_TYPE_KBD:
-        case VIR_DOMAIN_INPUT_TYPE_LAST:
             if (input->source.evdev) {
                  virReportError(VIR_ERR_XML_ERROR, "%s",
                                 _("setting source evdev path only supported for "
@@ -5771,6 +5770,11 @@ virDomainInputDefValidate(const virDomainInputDef *input)
 
         case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
             break;
+
+        case VIR_DOMAIN_INPUT_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainInputType, input->type);
+            return -1;
     }
 
     return 0;
