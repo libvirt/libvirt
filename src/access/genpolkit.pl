@@ -22,8 +22,8 @@ use warnings;
 
 my @objects = (
     "CONNECT", "DOMAIN", "INTERFACE",
-    "NETWORK","NODE_DEVICE", "NWFILTER",
-     "SECRET", "STORAGE_POOL", "STORAGE_VOL",
+    "NETWORK","NODE_DEVICE", "NWFILTER_BINDING", "NWFILTER",
+    "SECRET", "STORAGE_POOL", "STORAGE_VOL",
     );
 
 my $objects = join ("|", @objects);
