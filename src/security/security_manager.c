@@ -73,8 +73,8 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
                             const char *virtDriver,
                             unsigned int flags)
 {
-    virSecurityManagerPtr mgr;
-    char *privateData;
+    virSecurityManagerPtr mgr = NULL;
+    char *privateData = NULL;
 
     if (virSecurityManagerInitialize() < 0)
         return NULL;
@@ -87,22 +87,22 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
     if (VIR_ALLOC_N(privateData, drv->privateDataLen) < 0)
         return NULL;
 
-    if (!(mgr = virObjectLockableNew(virSecurityManagerClass))) {
-        VIR_FREE(privateData);
-        return NULL;
-    }
+    if (!(mgr = virObjectLockableNew(virSecurityManagerClass)))
+        goto error;
 
     mgr->drv = drv;
     mgr->flags = flags;
     mgr->virtDriver = virtDriver;
-    mgr->privateData = privateData;
+    VIR_STEAL_PTR(mgr->privateData, privateData);
 
-    if (drv->open(mgr) < 0) {
-        virObjectUnref(mgr);
-        return NULL;
-    }
+    if (drv->open(mgr) < 0)
+        goto error;
 
     return mgr;
+ error:
+    VIR_FREE(privateData);
+    virObjectUnref(mgr);
+    return NULL;
 }
 
 
