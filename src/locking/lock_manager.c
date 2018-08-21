@@ -105,6 +105,8 @@ static void virLockManagerLogParams(size_t nparams,
 /**
  * virLockManagerPluginNew:
  * @name: the name of the plugin
+ * @driverName: the hypervisor driver that loads the plugin
+ * @configDir: path to dir where config files are stored
  * @flag: optional plugin flags
  *
  * Attempt to load the plugin $(libdir)/libvirt/lock-driver/@name.so
@@ -130,11 +132,13 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     char *configFile = NULL;
 
     VIR_DEBUG("name=%s driverName=%s configDir=%s flags=0x%x",
-              name, driverName, configDir, flags);
+              name, NULLSTR(driverName), NULLSTR(configDir), flags);
 
-    if (virAsprintf(&configFile, "%s/%s-%s.conf",
-                    configDir, driverName, name) < 0)
+    if (driverName && configDir &&
+        virAsprintf(&configFile, "%s/%s-%s.conf",
+                    configDir, driverName, name) < 0) {
         return NULL;
+    }
 
     if (STREQ(name, "nop")) {
         driver = &virLockDriverNop;

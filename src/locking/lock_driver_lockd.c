@@ -371,8 +371,10 @@ static int virLockManagerLockDaemonInit(unsigned int version,
     driver->requireLeaseForDisks = true;
     driver->autoDiskLease = true;
 
-    if (virLockManagerLockDaemonLoadConfig(configFile) < 0)
+    if (configFile &&
+        virLockManagerLockDaemonLoadConfig(configFile) < 0) {
         goto error;
+    }
 
     if (driver->autoDiskLease) {
         if (driver->fileLockSpaceDir &&
