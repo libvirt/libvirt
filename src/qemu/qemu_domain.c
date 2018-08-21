@@ -1066,6 +1066,7 @@ qemuDomainDiskPrivateDispose(void *obj)
     VIR_FREE(priv->blockJobError);
     virStorageSourceFree(priv->migrSource);
     VIR_FREE(priv->qomName);
+    VIR_FREE(priv->nodeCopyOnRead);
 }
 
 static virClassPtr qemuDomainStorageSourcePrivateClass;
@@ -2131,6 +2132,7 @@ qemuDomainDiskPrivateParse(xmlXPathContextPtr ctxt,
     qemuDomainDiskPrivatePtr priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
     priv->qomName = virXPathString("string(./qom/@name)", ctxt);
+    priv->nodeCopyOnRead = virXPathString("string(./nodenames/nodename[@type='copyOnRead']/@name)", ctxt);
 
     return 0;
 }
@@ -2143,6 +2145,15 @@ qemuDomainDiskPrivateFormat(virDomainDiskDefPtr disk,
     qemuDomainDiskPrivatePtr priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
     virBufferEscapeString(buf, "<qom name='%s'/>\n", priv->qomName);
+
+    if (priv->nodeCopyOnRead) {
+        virBufferAddLit(buf, "<nodenames>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<nodename type='copyOnRead' name='%s'/>\n",
+                              priv->nodeCopyOnRead);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</nodenames>\n");
+    }
 
     return 0;
 }

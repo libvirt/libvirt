@@ -398,6 +398,7 @@ struct _qemuDomainDiskPrivate {
     bool removable; /* device media can be removed/changed */
 
     char *qomName; /* QOM path of the disk (also refers to the block backend) */
+    char *nodeCopyOnRead; /* nodename of the disk-wide copy-on-read blockdev layer */
 };
 
 # define QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src) \

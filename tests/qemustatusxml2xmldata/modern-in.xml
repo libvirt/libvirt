@@ -335,6 +335,9 @@
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
         <privateData>
           <qom name='virtio-disk1/virtio-backend'/>
+          <nodenames>
+            <nodename type='copyOnRead' name='cor-node'/>
+          </nodenames>
         </privateData>
       </disk>
       <disk type='file' device='cdrom'>
