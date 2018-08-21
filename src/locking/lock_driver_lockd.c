@@ -369,6 +369,8 @@ static int virLockManagerLockDaemonDeinit(void)
     if (!driver)
         return 0;
 
+    VIR_FREE(driver->scsiLockSpaceDir);
+    VIR_FREE(driver->lvmLockSpaceDir);
     VIR_FREE(driver->fileLockSpaceDir);
     VIR_FREE(driver);
 
