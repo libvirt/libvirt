@@ -699,6 +699,7 @@ storagePloopResize(virStorageVolDefPtr vol,
 struct _virStorageBackendQemuImgInfo {
     int format;
     const char *type;
+    const char *inputType;
     const char *path;
     unsigned long long size_arg;
     unsigned long long allocation;
@@ -1021,6 +1022,15 @@ virStorageBackendCreateQemuImgSetInfo(virStoragePoolObjPtr pool,
         return -1;
     }
 
+    if (inputvol &&
+        !(info->inputType =
+          virStorageFileFormatTypeToString(inputvol->target.format))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown inputvol storage vol type %d"),
+                       inputvol->target.format);
+        return -1;
+    }
+
     if (info->preallocate && info->format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("metadata preallocation only available with qcow2"));
@@ -1080,6 +1090,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
     struct _virStorageBackendQemuImgInfo info = {
         .format = vol->target.format,
         .type = NULL,
+        .inputType = NULL,
         .path = vol->target.path,
         .allocation = vol->target.allocation,
         .encryption = !!vol->target.encryption,
@@ -1152,7 +1163,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
             virCommandAddArgFormat(cmd, "%lluK", info.size_arg);
     } else {
         /* source */
-        virCommandAddArgFormat(cmd, "driver=raw,file.filename=%s",
+        virCommandAddArgFormat(cmd, "driver=%s,file.filename=%s",
+                               info.inputType ? info.inputType : "raw",
                                info.inputPath);
 
         /* dest */

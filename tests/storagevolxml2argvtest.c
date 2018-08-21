@@ -284,6 +284,10 @@ mymain(void)
             "pool-dir", "vol-file",
             "luks-convert", 0);
 
+    DO_TEST("pool-dir", "vol-luks-convert",
+            "pool-dir", "vol-file-qcow2",
+            "luks-convert-qcow2", 0);
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
