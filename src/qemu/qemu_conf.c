@@ -430,6 +430,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     virStringListFree(cfg->securityDriverNames);
 
     VIR_FREE(cfg->lockManagerName);
+    VIR_FREE(cfg->metadataLockManagerName);
 
     virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
 
@@ -840,6 +841,18 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
     if (virConfGetValueString(conf, "lock_manager", &cfg->lockManagerName) < 0)
         goto cleanup;
+
+    if (virConfGetValueString(conf, "metadata_lock_manager",
+                              &cfg->metadataLockManagerName) < 0)
+        goto cleanup;
+    if (cfg->metadataLockManagerName &&
+        STRNEQ(cfg->metadataLockManagerName, "lockd")) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown metadata lock manager name %s"),
+                       cfg->metadataLockManagerName);
+        goto cleanup;
+    }
+
     if (virConfGetValueString(conf, "stdio_handler", &stdioHandler) < 0)
         goto cleanup;
     if (stdioHandler) {

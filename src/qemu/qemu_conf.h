@@ -186,6 +186,7 @@ struct _virQEMUDriverConfig {
     bool autoStartBypassCache;
 
     char *lockManagerName;
+    char *metadataLockManagerName;
 
     int keepAliveInterval;
     unsigned int keepAliveCount;
