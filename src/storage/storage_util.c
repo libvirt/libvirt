@@ -716,7 +716,6 @@ struct _virStorageBackendQemuImgInfo {
     int inputFormat;
 
     char *secretAlias;
-    const char *secretPath;
 };
 
 
@@ -1088,7 +1087,6 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         .compat = vol->target.compat,
         .features = vol->target.features,
         .nocow = vol->target.nocow,
-        .secretPath = secretPath,
         .secretAlias = NULL,
     };
     virStorageEncryptionPtr enc = vol->target.encryption;
@@ -1131,14 +1129,14 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
 
     if (enc) {
-        if (!info.secretPath) {
+        if (!secretPath) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("path to secret data file is required"));
             goto error;
         }
         if (virAsprintf(&info.secretAlias, "%s_encrypt0", vol->name) < 0)
             goto error;
-        if (storageBackendCreateQemuImgSecretObject(cmd, info.secretPath,
+        if (storageBackendCreateQemuImgSecretObject(cmd, secretPath,
                                                     info.secretAlias) < 0)
             goto error;
         encinfo = &enc->encinfo;
