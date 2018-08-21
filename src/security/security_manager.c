@@ -117,9 +117,13 @@ virSecurityManagerNewStack(virSecurityManagerPtr primary)
     if (!mgr)
         return NULL;
 
-    virSecurityStackAddNested(mgr, primary);
+    if (virSecurityStackAddNested(mgr, primary) < 0)
+        goto error;
 
     return mgr;
+ error:
+    virObjectUnref(mgr);
+    return NULL;
 }
 
 
