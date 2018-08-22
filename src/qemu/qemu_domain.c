@@ -9556,6 +9556,28 @@ qemuDomainMachineIsARMVirt(const char *machine,
 
 
 bool
+qemuDomainIsRISCVVirt(const virDomainDef *def)
+{
+    return qemuDomainMachineIsRISCVVirt(def->os.machine, def->os.arch);
+}
+
+
+bool
+qemuDomainMachineIsRISCVVirt(const char *machine,
+                             const virArch arch)
+{
+    if (!ARCH_IS_RISCV(arch))
+        return false;
+
+    if (STRNEQ(machine, "virt") &&
+        !STRPREFIX(machine, "virt-"))
+        return false;
+
+    return true;
+}
+
+
+bool
 qemuDomainIsPSeries(const virDomainDef *def)
 {
     return qemuDomainMachineIsPSeries(def->os.machine, def->os.arch);

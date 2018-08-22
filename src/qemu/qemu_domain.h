@@ -815,6 +815,7 @@ bool qemuDomainHasPCIeRoot(const virDomainDef *def);
 bool qemuDomainNeedsFDC(const virDomainDef *def);
 bool qemuDomainIsS390CCW(const virDomainDef *def);
 bool qemuDomainIsARMVirt(const virDomainDef *def);
+bool qemuDomainIsRISCVVirt(const virDomainDef *def);
 bool qemuDomainIsPSeries(const virDomainDef *def);
 bool qemuDomainHasBuiltinIDE(const virDomainDef *def);
 
@@ -824,6 +825,8 @@ bool qemuDomainMachineNeedsFDC(const char *machine);
 bool qemuDomainMachineIsS390CCW(const char *machine);
 bool qemuDomainMachineIsARMVirt(const char *machine,
                                 const virArch arch);
+bool qemuDomainMachineIsRISCVVirt(const char *machine,
+                                  const virArch arch);
 bool qemuDomainMachineIsPSeries(const char *machine,
                                 const virArch arch);
 bool qemuDomainMachineHasBuiltinIDE(const char *machine);
