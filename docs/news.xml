@@ -53,6 +53,14 @@
           bandwidth by using the <code>memorytune</code> element in <code>cputune</code>.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for RISC-V guests
+        </summary>
+        <description>
+          riscv32 and riscv64 guest architectures are now supported.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
