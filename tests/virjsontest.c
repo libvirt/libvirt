@@ -589,6 +589,9 @@ mymain(void)
     DO_TEST_PARSE("float without garbage", "[ 1.024e19 ]", "[1.024e19]");
     DO_TEST_PARSE_FAIL("float with garbage", "[ 0.0314159ee+100 ]");
 
+    DO_TEST_PARSE("unsigned minus one", "[ 18446744073709551615 ]", "[18446744073709551615]");
+    DO_TEST_PARSE("another big number", "[ 9223372036854775808 ]", "[9223372036854775808]");
+
     DO_TEST_PARSE("string", "[ \"The meaning of life\" ]",
                   "[\"The meaning of life\"]");
     DO_TEST_PARSE_FAIL("unterminated string", "[ \"The meaning of lif ]");
