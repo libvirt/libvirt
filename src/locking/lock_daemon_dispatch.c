@@ -37,6 +37,9 @@ VIR_LOG_INIT("locking.lock_daemon_dispatch");
 
 #include "lock_daemon_dispatch_stubs.h"
 
+#define DEFAULT_OFFSET 0
+#define METADATA_OFFSET 1
+
 static int
 virLockSpaceProtocolDispatchAcquireResource(virNetServerPtr server ATTRIBUTE_UNUSED,
                                             virNetServerClientPtr client,
@@ -50,13 +53,14 @@ virLockSpaceProtocolDispatchAcquireResource(virNetServerPtr server ATTRIBUTE_UNU
         virNetServerClientGetPrivateData(client);
     virLockSpacePtr lockspace;
     unsigned int newFlags;
-    off_t start = 0;
+    off_t start = DEFAULT_OFFSET;
     off_t len = 1;
 
     virMutexLock(&priv->lock);
 
     virCheckFlagsGoto(VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED |
-                      VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE, cleanup);
+                      VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE |
+                      VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_METADATA, cleanup);
 
     if (priv->restricted) {
         virReportError(VIR_ERR_OPERATION_DENIED, "%s",
@@ -82,6 +86,8 @@ virLockSpaceProtocolDispatchAcquireResource(virNetServerPtr server ATTRIBUTE_UNU
         newFlags |= VIR_LOCK_SPACE_ACQUIRE_SHARED;
     if (flags & VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE)
         newFlags |= VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE;
+    if (flags & VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_METADATA)
+        start = METADATA_OFFSET;
 
     if (virLockSpaceAcquireResource(lockspace,
                                     args->name,

@@ -723,7 +723,8 @@ static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
 
         args.flags &=
             ~(VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED |
-              VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE);
+              VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE |
+              VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_METADATA);
 
         if (virNetClientProgramCall(program,
                                     client,
