@@ -77,12 +77,13 @@ struct _virSecurityDACChownItem {
     const virStorageSource *src;
     uid_t uid;
     gid_t gid;
+    bool restore;
 };
 
 typedef struct _virSecurityDACChownList virSecurityDACChownList;
 typedef virSecurityDACChownList *virSecurityDACChownListPtr;
 struct _virSecurityDACChownList {
-    virSecurityDACDataPtr priv;
+    virSecurityManagerPtr manager;
     virSecurityDACChownItemPtr *items;
     size_t nItems;
 };
@@ -95,7 +96,8 @@ virSecurityDACChownListAppend(virSecurityDACChownListPtr list,
                               const char *path,
                               const virStorageSource *src,
                               uid_t uid,
-                              gid_t gid)
+                              gid_t gid,
+                              bool restore)
 {
     int ret = -1;
     char *tmp = NULL;
@@ -111,6 +113,7 @@ virSecurityDACChownListAppend(virSecurityDACChownListPtr list,
     item->src = src;
     item->uid = uid;
     item->gid = gid;
+    item->restore = restore;
 
     if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0)
         goto cleanup;
@@ -159,25 +162,29 @@ static int
 virSecurityDACTransactionAppend(const char *path,
                                 const virStorageSource *src,
                                 uid_t uid,
-                                gid_t gid)
+                                gid_t gid,
+                                bool restore)
 {
     virSecurityDACChownListPtr list = virThreadLocalGet(&chownList);
     if (!list)
         return 0;
 
-    if (virSecurityDACChownListAppend(list, path, src, uid, gid) < 0)
+    if (virSecurityDACChownListAppend(list, path, src, uid, gid, restore) < 0)
         return -1;
 
     return 1;
 }
 
 
-static int virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
-                                              const virStorageSource *src,
-                                              const char *path,
-                                              uid_t uid,
-                                              gid_t gid);
+static int virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
+                                      const virStorageSource *src,
+                                      const char *path,
+                                      uid_t uid,
+                                      gid_t gid);
 
+static int virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
+                                                  const virStorageSource *src,
+                                                  const char *path);
 /**
  * virSecurityDACTransactionRun:
  * @pid: process pid
@@ -196,16 +203,25 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
 {
     virSecurityDACChownListPtr list = opaque;
     size_t i;
+    int rv = 0;
 
     for (i = 0; i < list->nItems; i++) {
         virSecurityDACChownItemPtr item = list->items[i];
 
         /* TODO Implement rollback */
-        if (virSecurityDACSetOwnershipInternal(list->priv,
-                                               item->src,
-                                               item->path,
-                                               item->uid,
-                                               item->gid) < 0)
+        if (!item->restore) {
+            rv = virSecurityDACSetOwnership(list->manager,
+                                            item->src,
+                                            item->path,
+                                            item->uid,
+                                            item->gid);
+        } else {
+            rv = virSecurityDACRestoreFileLabelInternal(list->manager,
+                                                        item->src,
+                                                        item->path);
+        }
+
+        if (rv < 0)
             return -1;
     }
 
@@ -455,7 +471,6 @@ virSecurityDACPreFork(virSecurityManagerPtr mgr)
 static int
 virSecurityDACTransactionStart(virSecurityManagerPtr mgr)
 {
-    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityDACChownListPtr list;
 
     list = virThreadLocalGet(&chownList);
@@ -468,7 +483,7 @@ virSecurityDACTransactionStart(virSecurityManagerPtr mgr)
     if (VIR_ALLOC(list) < 0)
         return -1;
 
-    list->priv = priv;
+    list->manager = mgr;
 
     if (virThreadLocalSet(&chownList, list) < 0) {
         virReportSystemError(errno, "%s",
@@ -564,11 +579,6 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
     /* Be aware that this function might run in a separate process.
      * Therefore, any driver state changes would be thrown away. */
 
-    if ((rc = virSecurityDACTransactionAppend(path, src, uid, gid)) < 0)
-        return -1;
-    else if (rc > 0)
-        return 0;
-
     VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
              NULLSTR(src ? src->path : path), (long)uid, (long)gid);
 
@@ -640,10 +650,19 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     struct stat sb;
+    int rc;
 
     if (!path && src && src->path &&
         virStorageSourceIsLocalStorage(src))
         path = src->path;
+
+    /* Be aware that this function might run in a separate process.
+     * Therefore, any driver state changes would be thrown away. */
+
+    if ((rc = virSecurityDACTransactionAppend(path, src, uid, gid, false)) < 0)
+        return -1;
+    else if (rc > 0)
+        return 0;
 
     if (path) {
         if (stat(path, &sb) < 0) {
@@ -675,6 +694,14 @@ virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
     if (!path && src && src->path &&
         virStorageSourceIsLocalStorage(src))
         path = src->path;
+
+    /* Be aware that this function might run in a separate process.
+     * Therefore, any driver state changes would be thrown away. */
+
+    if ((rv = virSecurityDACTransactionAppend(path, src, uid, gid, true)) < 0)
+        return -1;
+    else if (rv > 0)
+        return 0;
 
     if (path) {
         rv = virSecurityDACRecallLabel(priv, path, &uid, &gid);
