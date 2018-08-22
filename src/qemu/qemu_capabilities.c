@@ -1788,10 +1788,10 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
         return false;
     }
 
-    /* If 'virt' supports PCI, it supports multibus.
+    /* If ARM 'virt' supports PCI, it supports multibus.
      * No extra conditions here for simplicity.
      */
-    if (qemuDomainIsVirt(def))
+    if (qemuDomainIsARMVirt(def))
         return true;
 
     return false;
@@ -5338,7 +5338,7 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
     virDomainCapsFeatureGICPtr gic = &domCaps->gic;
     virGICVersion version;
 
-    if (!qemuDomainMachineIsVirt(domCaps->machine, domCaps->arch))
+    if (!qemuDomainMachineIsARMVirt(domCaps->machine, domCaps->arch))
         return 0;
 
     for (version = VIR_GIC_VERSION_LAST - 1;

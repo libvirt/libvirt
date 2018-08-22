@@ -3256,7 +3256,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     case VIR_ARCH_AARCH64:
         addDefaultUSB = false;
         addDefaultMemballoon = false;
-        if (qemuDomainIsVirt(def))
+        if (qemuDomainIsARMVirt(def))
             addPCIeRoot = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX);
         break;
 
@@ -3437,7 +3437,7 @@ qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def,
      * was not included in the domain XML, we need to choose a suitable
      * GIC version ourselves */
     if ((def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ABSENT &&
-         qemuDomainIsVirt(def)) ||
+         qemuDomainIsARMVirt(def)) ||
         (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON &&
          def->gic_version == VIR_GIC_VERSION_NONE)) {
         virGICVersion version;
@@ -3889,7 +3889,7 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
 
         case VIR_DOMAIN_FEATURE_GIC:
             if (def->features[i] == VIR_TRISTATE_SWITCH_ON &&
-                !qemuDomainIsVirt(def)) {
+                !qemuDomainIsARMVirt(def)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("The '%s' feature is not supported for "
                                  "architecture '%s' or machine type '%s'"),
@@ -4302,7 +4302,7 @@ qemuDomainChrDefValidate(const virDomainChrDef *dev,
             isCompatible = false;
         }
 
-        if (!qemuDomainIsVirt(def) &&
+        if (!qemuDomainIsARMVirt(def) &&
             (dev->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM ||
              dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011)) {
             isCompatible = false;
@@ -5827,7 +5827,7 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
         if (STREQ(def->os.machine, "versatilepb"))
             return "smc91c111";
 
-        if (qemuDomainIsVirt(def))
+        if (qemuDomainIsARMVirt(def))
             return "virtio";
 
         /* Incomplete. vexpress (and a few others) use this, but not all
@@ -6127,7 +6127,7 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
         } else if (qemuDomainIsPSeries(def)) {
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO;
-        } else if (qemuDomainIsVirt(def)) {
+        } else if (qemuDomainIsARMVirt(def)) {
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM;
         } else if (ARCH_IS_S390(def->os.arch)) {
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP;
@@ -6321,7 +6321,7 @@ qemuDomainDeviceVideoDefPostParse(virDomainVideoDefPtr video,
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
         if (ARCH_IS_PPC64(def->os.arch))
             video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
-        else if (qemuDomainIsVirt(def) || ARCH_IS_S390(def->os.arch))
+        else if (qemuDomainIsARMVirt(def) || ARCH_IS_S390(def->os.arch))
             video->type = VIR_DOMAIN_VIDEO_TYPE_VIRTIO;
         else
             video->type = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
@@ -9531,15 +9531,15 @@ qemuDomainMachineIsS390CCW(const char *machine)
 
 
 bool
-qemuDomainIsVirt(const virDomainDef *def)
+qemuDomainIsARMVirt(const virDomainDef *def)
 {
-    return qemuDomainMachineIsVirt(def->os.machine, def->os.arch);
+    return qemuDomainMachineIsARMVirt(def->os.machine, def->os.arch);
 }
 
 
 bool
-qemuDomainMachineIsVirt(const char *machine,
-                        const virArch arch)
+qemuDomainMachineIsARMVirt(const char *machine,
+                           const virArch arch)
 {
     if (arch != VIR_ARCH_ARMV7L &&
         arch != VIR_ARCH_AARCH64)
