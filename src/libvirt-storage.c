@@ -1125,9 +1125,10 @@ virStoragePoolGetAutostart(virStoragePoolPtr pool,
 /**
  * virStoragePoolSetAutostart:
  * @pool: pointer to storage pool
- * @autostart: new flag setting
+ * @autostart: whether the storage pool should be automatically started 0 or 1
  *
- * Sets the autostart flag
+ * Configure the storage pool to be automatically started
+ * when the host machine boots.
  *
  * Returns 0 on success, -1 on failure
  */
