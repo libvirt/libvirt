@@ -63,6 +63,8 @@ struct _virLockManagerLockDaemonPrivate {
             char *name;
             int id;
             pid_t pid;
+
+            bool hasRWDisks;
         } dom;
 
         struct {
@@ -74,8 +76,6 @@ struct _virLockManagerLockDaemonPrivate {
 
     size_t nresources;
     virLockManagerLockDaemonResourcePtr resources;
-
-    bool hasRWDisks;
 };
 
 
@@ -585,7 +585,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             if (!driver->autoDiskLease) {
                 if (!(flags & (VIR_LOCK_MANAGER_RESOURCE_SHARED |
                                VIR_LOCK_MANAGER_RESOURCE_READONLY)))
-                    priv->hasRWDisks = true;
+                    priv->t.dom.hasRWDisks = true;
                 return 0;
             }
 
@@ -731,7 +731,7 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
 
     if (priv->type == VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN &&
         priv->nresources == 0 &&
-        priv->hasRWDisks &&
+        priv->t.dom.hasRWDisks &&
         driver->requireLeaseForDisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Read/write, exclusive access, disks were present, but no leases specified"));
