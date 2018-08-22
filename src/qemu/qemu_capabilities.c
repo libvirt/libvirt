@@ -2298,15 +2298,18 @@ static const char *preferredMachines[] =
     "pseries", /* VIR_ARCH_PPC64LE */
     "bamboo", /* VIR_ARCH_PPCEMB */
 
+    "spike_v1.10", /* VIR_ARCH_RISCV32 */
+    "spike_v1.10", /* VIR_ARCH_RISCV64 */
     NULL, /* VIR_ARCH_S390 (no QEMU impl) */
     "s390-ccw-virtio", /* VIR_ARCH_S390X */
     "shix", /* VIR_ARCH_SH4 */
+
     "shix", /* VIR_ARCH_SH4EB */
     "SS-5", /* VIR_ARCH_SPARC */
-
     "sun4u", /* VIR_ARCH_SPARC64 */
     "puv3", /* VIR_ARCH_UNICORE32 */
     "pc", /* VIR_ARCH_X86_64 */
+
     "sim", /* VIR_ARCH_XTENSA */
     "sim", /* VIR_ARCH_XTENSAEB */
 };

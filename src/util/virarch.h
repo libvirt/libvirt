@@ -55,15 +55,18 @@ typedef enum {
     VIR_ARCH_PPC64LE,      /* PowerPC     64 LE http://en.wikipedia.org/wiki/PowerPC */
     VIR_ARCH_PPCEMB,       /* PowerPC     32 BE http://en.wikipedia.org/wiki/PowerPC */
 
+    VIR_ARCH_RISCV32,      /* RISC-V      32 LE http://en.wikipedia.org/wiki/RISC-V */
+    VIR_ARCH_RISCV64,      /* RISC-V      64 LE http://en.wikipedia.org/wiki/RISC-V */
     VIR_ARCH_S390,         /* S390        32 BE http://en.wikipedia.org/wiki/S390 */
     VIR_ARCH_S390X,        /* S390        64 BE http://en.wikipedia.org/wiki/S390x */
     VIR_ARCH_SH4,          /* SuperH4     32 LE http://en.wikipedia.org/wiki/SuperH */
+
     VIR_ARCH_SH4EB,        /* SuperH4     32 BE http://en.wikipedia.org/wiki/SuperH */
     VIR_ARCH_SPARC,        /* Sparc       32 BE http://en.wikipedia.org/wiki/Sparc */
-
     VIR_ARCH_SPARC64,      /* Sparc       64 BE http://en.wikipedia.org/wiki/Sparc */
     VIR_ARCH_UNICORE32,    /* UniCore     32 LE http://en.wikipedia.org/wiki/Unicore*/
     VIR_ARCH_X86_64,       /* x86         64 LE http://en.wikipedia.org/wiki/X86 */
+
     VIR_ARCH_XTENSA,       /* XTensa      32 LE http://en.wikipedia.org/wiki/Xtensa#Processor_Cores */
     VIR_ARCH_XTENSAEB,     /* XTensa      32 BE http://en.wikipedia.org/wiki/Xtensa#Processor_Cores */
 
@@ -86,6 +89,9 @@ typedef enum {
                              (arch) == VIR_ARCH_ARMV7L ||\
                              (arch) == VIR_ARCH_ARMV7B ||\
                              (arch) == VIR_ARCH_AARCH64)
+
+# define ARCH_IS_RISCV(arch) ((arch) == VIR_ARCH_RISCV32 ||\
+                              (arch) == VIR_ARCH_RISCV64)
 
 # define ARCH_IS_S390(arch) ((arch) == VIR_ARCH_S390 ||\
                              (arch) == VIR_ARCH_S390X)

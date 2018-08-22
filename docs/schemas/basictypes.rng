@@ -398,6 +398,8 @@
       <value>ppc64</value>
       <value>ppc64le</value>
       <value>ppcemb</value>
+      <value>riscv32</value>
+      <value>riscv64</value>
       <value>s390</value>
       <value>s390x</value>
       <value>sh4</value>

@@ -3306,6 +3306,8 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     case VIR_ARCH_OR32:
     case VIR_ARCH_PARISC:
     case VIR_ARCH_PARISC64:
+    case VIR_ARCH_RISCV32:
+    case VIR_ARCH_RISCV64:
     case VIR_ARCH_PPCLE:
     case VIR_ARCH_UNICORE32:
     case VIR_ARCH_XTENSA:
