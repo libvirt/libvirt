@@ -656,7 +656,7 @@ qemuStateInitialize(bool privileged,
         goto error;
     }
     if (virFileMakePath(cfg->snapshotDir) < 0) {
-        virReportSystemError(errno, _("Failed to create save dir %s"),
+        virReportSystemError(errno, _("Failed to create snapshot dir %s"),
                              cfg->snapshotDir);
         goto error;
     }
