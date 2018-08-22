@@ -42,6 +42,8 @@ typedef enum {
 typedef enum {
     /* The managed object is a virtual guest domain */
     VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN = 0,
+    /* The managed object is a daemon (e.g. libvirtd) */
+    VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON = 1,
 } virLockManagerObjectType;
 
 typedef enum {
