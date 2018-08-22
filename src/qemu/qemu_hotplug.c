@@ -700,6 +700,7 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
  cleanup:
     qemuHotplugDiskSourceDataFree(newbackend);
     qemuHotplugDiskSourceDataFree(oldbackend);
+    VIR_FREE(nodename);
     /* caller handles correct exchange of sources */
     disk->src = oldsrc;
     return ret;
