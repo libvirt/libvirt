@@ -579,9 +579,6 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
     /* Be aware that this function might run in a separate process.
      * Therefore, any driver state changes would be thrown away. */
 
-    VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
-             NULLSTR(src ? src->path : path), (long)uid, (long)gid);
-
     if (priv && src && priv->chownCallback) {
         rc = priv->chownCallback(src, uid, gid);
         /* here path is used only for error messages */
@@ -674,6 +671,9 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
             return -1;
     }
 
+    VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
+             NULLSTR(src ? src->path : path), (long)uid, (long)gid);
+
     return virSecurityDACSetOwnershipInternal(priv, src, path, uid, gid);
 }
 
@@ -687,9 +687,6 @@ virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
     int rv;
     uid_t uid = 0;  /* By default return to root:root */
     gid_t gid = 0;
-
-    VIR_INFO("Restoring DAC user and group on '%s'",
-             NULLSTR(src ? src->path : path));
 
     if (!path && src && src->path &&
         virStorageSourceIsLocalStorage(src))
@@ -710,6 +707,9 @@ virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
         if (rv > 0)
             return 0;
     }
+
+    VIR_INFO("Restoring DAC user and group on '%s' to %ld:%ld",
+             NULLSTR(src ? src->path : path), (long)uid, (long)gid);
 
     return virSecurityDACSetOwnershipInternal(priv, src, path, uid, gid);
 }
