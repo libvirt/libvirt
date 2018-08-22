@@ -180,6 +180,12 @@ test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
     CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, "/usr/bin/qemu-system-ppc64", NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
+    CAPSCOMP(-1, VIR_ARCH_RISCV32, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_RISCV32,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-riscv32", "spike_v1.10");
+    CAPSCOMP(-1, VIR_ARCH_RISCV64, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_RISCV64,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-riscv64", "spike_v1.10");
     CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, "s390-virtio",
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_S390X,
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-s390x",

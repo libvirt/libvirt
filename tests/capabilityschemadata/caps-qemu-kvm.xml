@@ -209,6 +209,42 @@
   </guest>
 
   <guest>
+    <os_type>hvm</os_type>
+    <arch name='riscv32'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-riscv32</emulator>
+      <machine maxCpus='1'>spike_v1.10</machine>
+      <machine maxCpus='1'>spike_v1.9.1</machine>
+      <machine maxCpus='1'>sifive_e</machine>
+      <machine maxCpus='8'>virt</machine>
+      <machine maxCpus='1'>sifive_u</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <disksnapshot default='on' toggle='no'/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='riscv64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-riscv64</emulator>
+      <machine maxCpus='1'>spike_v1.10</machine>
+      <machine maxCpus='1'>spike_v1.9.1</machine>
+      <machine maxCpus='1'>sifive_e</machine>
+      <machine maxCpus='8'>virt</machine>
+      <machine maxCpus='1'>sifive_u</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <disksnapshot default='on' toggle='no'/>
+    </features>
+  </guest>
+
+  <guest>
     <os_type>xen</os_type>
     <arch name='i686'>
       <wordsize>32</wordsize>
