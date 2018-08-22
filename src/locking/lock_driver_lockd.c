@@ -650,8 +650,7 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
 
             memset(&args, 0, sizeof(args));
 
-            if (priv->resources[i].lockspace)
-                args.path = priv->resources[i].lockspace;
+            args.path = priv->resources[i].lockspace;
             args.name = priv->resources[i].name;
             args.flags = priv->resources[i].flags;
 
