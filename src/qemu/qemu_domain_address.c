@@ -485,6 +485,14 @@ qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
 }
 
 
+static void
+qemuDomainAssignVirtioMMIOAddresses(virDomainDefPtr def,
+                                    virQEMUCapsPtr qemuCaps)
+{
+    qemuDomainAssignARMVirtioMMIOAddresses(def, qemuCaps);
+}
+
+
 /**
  * qemuDomainDeviceCalculatePCIConnectFlags:
  *
@@ -2923,7 +2931,7 @@ qemuDomainAssignAddresses(virDomainDefPtr def,
     if (qemuDomainAssignS390Addresses(def, qemuCaps) < 0)
         return -1;
 
-    qemuDomainAssignARMVirtioMMIOAddresses(def, qemuCaps);
+    qemuDomainAssignVirtioMMIOAddresses(def, qemuCaps);
 
     if (qemuDomainAssignPCIAddresses(def, qemuCaps, driver, obj) < 0)
         return -1;
