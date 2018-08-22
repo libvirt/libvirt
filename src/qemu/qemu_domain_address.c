@@ -486,10 +486,26 @@ qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
 
 
 static void
+qemuDomainAssignRISCVVirtioMMIOAddresses(virDomainDefPtr def,
+                                         virQEMUCapsPtr qemuCaps)
+{
+    if (!qemuDomainIsRISCVVirt(def))
+        return;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MMIO)) {
+        qemuDomainPrimeVirtioDeviceAddresses(def,
+                                             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO);
+    }
+}
+
+
+static void
 qemuDomainAssignVirtioMMIOAddresses(virDomainDefPtr def,
                                     virQEMUCapsPtr qemuCaps)
 {
     qemuDomainAssignARMVirtioMMIOAddresses(def, qemuCaps);
+
+    qemuDomainAssignRISCVVirtioMMIOAddresses(def, qemuCaps);
 }
 
 
