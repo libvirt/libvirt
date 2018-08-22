@@ -5001,8 +5001,8 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr io_throttle,
             goto cleanup;
         }
 
-        if ((drivealias && STRNEQ(current_drive, drivealias)) ||
-            (qdevid && STRNEQ(current_qdev, qdevid)))
+        if ((drivealias && current_drive && STRNEQ(current_drive, drivealias)) ||
+            (qdevid && current_qdev && STRNEQ(current_qdev, qdevid)))
             continue;
 
         found = true;
