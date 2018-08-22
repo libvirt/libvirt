@@ -2157,7 +2157,9 @@ static bool
 qemuDomainSupportsPCI(virDomainDefPtr def,
                       virQEMUCapsPtr qemuCaps)
 {
-    if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
+    if ((def->os.arch != VIR_ARCH_ARMV7L) &&
+        (def->os.arch != VIR_ARCH_AARCH64) &&
+        !ARCH_IS_RISCV(def->os.arch))
         return true;
 
     if (STREQ(def->os.machine, "versatilepb"))
