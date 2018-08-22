@@ -1,0 +1,19 @@
+<domain type='qemu'>
+  <name>riscv64</name>
+  <uuid>fd65fc03-8838-4c4d-9d8d-395802488790</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='riscv64' machine='virt'>hvm</type>
+    <kernel>/var/lib/libvirt/images/bbl</kernel>
+    <cmdline>console=ttyS0 ro root=/dev/vda</cmdline>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-riscv64</emulator>
+    <disk type='file'>
+      <source file='/var/lib/libvirt/images/stage4-disk.img'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <serial type='pty'/>
+  </devices>
+</domain>
