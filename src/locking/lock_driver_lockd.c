@@ -486,6 +486,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
     char *newName = NULL;
     char *newLockspace = NULL;
     bool autoCreate = false;
+    int ret = -1;
 
     virCheckFlags(VIR_LOCK_MANAGER_RESOURCE_READONLY |
                   VIR_LOCK_MANAGER_RESOURCE_SHARED, -1);
@@ -498,7 +499,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         if (params || nparams) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unexpected parameters for disk resource"));
-            return -1;
+            goto cleanup;
         }
         if (!driver->autoDiskLease) {
             if (!(flags & (VIR_LOCK_MANAGER_RESOURCE_SHARED |
@@ -514,12 +515,12 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             driver->lvmLockSpaceDir) {
             VIR_DEBUG("Trying to find an LVM UUID for %s", name);
             if (virStorageFileGetLVMKey(name, &newName) < 0)
-                goto error;
+                goto cleanup;
 
             if (newName) {
                 VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
                 if (VIR_STRDUP(newLockspace, driver->lvmLockSpaceDir) < 0)
-                    goto error;
+                    goto cleanup;
                 autoCreate = true;
                 break;
             }
@@ -531,12 +532,12 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             driver->scsiLockSpaceDir) {
             VIR_DEBUG("Trying to find an SCSI ID for %s", name);
             if (virStorageFileGetSCSIKey(name, &newName) < 0)
-                goto error;
+                goto cleanup;
 
             if (newName) {
                 VIR_DEBUG("Got an SCSI ID %s for %s", newName, name);
                 if (VIR_STRDUP(newLockspace, driver->scsiLockSpaceDir) < 0)
-                    goto error;
+                    goto cleanup;
                 autoCreate = true;
                 break;
             }
@@ -546,16 +547,16 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
         if (driver->fileLockSpaceDir) {
             if (VIR_STRDUP(newLockspace, driver->fileLockSpaceDir) < 0)
-                goto error;
+                goto cleanup;
             if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &newName) < 0)
-                goto error;
+                goto cleanup;
             autoCreate = true;
             VIR_DEBUG("Using indirect lease %s for %s", newName, name);
         } else {
             if (VIR_STRDUP(newLockspace, "") < 0)
-                goto error;
+                goto cleanup;
             if (VIR_STRDUP(newName, name) < 0)
-                goto error;
+                goto cleanup;
             VIR_DEBUG("Using direct lease for %s", name);
         }
 
@@ -569,7 +570,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                 if (params[i].value.ul != 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Offset must be zero for this lock manager"));
-                    return -1;
+                    goto cleanup;
                 }
             } else if (STREQ(params[i].key, "lockspace")) {
                 lockspace = params[i].value.str;
@@ -579,33 +580,33 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected parameter %s for lease resource"),
                                params[i].key);
-                return -1;
+                goto cleanup;
             }
         }
         if (!path || !lockspace) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing path or lockspace for lease resource"));
-            return -1;
+            goto cleanup;
         }
         if (virAsprintf(&newLockspace, "%s/%s",
                         path, lockspace) < 0)
-            return -1;
+            goto cleanup;
         if (VIR_STRDUP(newName, name) < 0)
-            goto error;
+            goto cleanup;
 
     }   break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown lock manager object type %d"),
                        type);
-        return -1;
+        goto cleanup;
     }
 
     if (VIR_EXPAND_N(priv->resources, priv->nresources, 1) < 0)
-        goto error;
+        goto cleanup;
 
-    priv->resources[priv->nresources-1].lockspace = newLockspace;
-    priv->resources[priv->nresources-1].name = newName;
+    VIR_STEAL_PTR(priv->resources[priv->nresources-1].lockspace, newLockspace);
+    VIR_STEAL_PTR(priv->resources[priv->nresources-1].name, newName);
 
     if (flags & VIR_LOCK_MANAGER_RESOURCE_SHARED)
         priv->resources[priv->nresources-1].flags |=
@@ -615,12 +616,11 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         priv->resources[priv->nresources-1].flags |=
             VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE;
 
-    return 0;
-
- error:
+    ret = 0;
+ cleanup:
     VIR_FREE(newLockspace);
     VIR_FREE(newName);
-    return -1;
+    return ret;
 }
 
 
