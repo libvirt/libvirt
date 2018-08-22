@@ -377,15 +377,13 @@ static int virLockManagerLockDaemonDeinit(void)
     return 0;
 }
 
-static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
+static void
+virLockManagerLockDaemonPrivateFree(virLockManagerLockDaemonPrivatePtr priv)
 {
-    virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
     size_t i;
 
     if (!priv)
         return;
-
-    lock->privateData = NULL;
 
     for (i = 0; i < priv->nresources; i++) {
         VIR_FREE(priv->resources[i].lockspace);
@@ -394,8 +392,16 @@ static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
     VIR_FREE(priv->resources);
 
     VIR_FREE(priv->name);
-
     VIR_FREE(priv);
+}
+
+static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
+{
+    if (!lock)
+        return;
+
+    virLockManagerLockDaemonPrivateFree(lock->privateData);
+    lock->privateData = NULL;
 }
 
 
@@ -405,14 +411,14 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                                        virLockManagerParamPtr params,
                                        unsigned int flags)
 {
-    virLockManagerLockDaemonPrivatePtr priv;
+    virLockManagerLockDaemonPrivatePtr priv = NULL;
     size_t i;
+    int ret = -1;
 
     virCheckFlags(VIR_LOCK_MANAGER_NEW_STARTED, -1);
 
     if (VIR_ALLOC(priv) < 0)
         return -1;
-    lock->privateData = priv;
 
     switch (type) {
     case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
@@ -421,7 +427,7 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                 memcpy(priv->uuid, params[i].value.uuid, VIR_UUID_BUFLEN);
             } else if (STREQ(params[i].key, "name")) {
                 if (VIR_STRDUP(priv->name, params[i].value.str) < 0)
-                    return -1;
+                    goto cleanup;
             } else if (STREQ(params[i].key, "id")) {
                 priv->id = params[i].value.iv;
             } else if (STREQ(params[i].key, "pid")) {
@@ -432,24 +438,25 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected parameter %s for object"),
                                params[i].key);
+                goto cleanup;
             }
         }
         if (priv->id == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing ID parameter for domain object"));
-            return -1;
+            goto cleanup;
         }
         if (priv->pid == 0)
             VIR_DEBUG("Missing PID parameter for domain object");
         if (!priv->name) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing name parameter for domain object"));
-            return -1;
+            goto cleanup;
         }
         if (!virUUIDIsValid(priv->uuid)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing UUID parameter for domain object"));
-            return -1;
+            goto cleanup;
         }
         break;
 
@@ -457,10 +464,14 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown lock manager object type %d"),
                        type);
-        return -1;
+        goto cleanup;
     }
 
-    return 0;
+    VIR_STEAL_PTR(lock->privateData, priv);
+    ret = 0;
+ cleanup:
+    virLockManagerLockDaemonPrivateFree(priv);
+    return ret;
 }
 
 
