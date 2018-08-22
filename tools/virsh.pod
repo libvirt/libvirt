@@ -4836,13 +4836,23 @@ of the network filters directly.
 =item B<nwfilter-binding-create> I<xmlfile>
 
 Associate a network port with a network filter. The network filter backend
-will immediately attempt to instantiate the filter rules on the port.
+will immediately attempt to instantiate the filter rules on the port. This
+command may be used to associate a filter with a currently running guest
+that does not have a filter defined for a specific network port. Since the
+bindings are generally automatically managed by the hypervisor, using this
+command to define a filter for a network port and then starting the guest
+afterwards may prevent the guest from starting if it attempts to use the
+network port and finds a filter already defined.
 
 =item B<nwfilter-binding-delete> I<port-name>
 
 Disassociate a network port from a network filter. The network filter
 backend will immediately tear down the filter rules that exist on the
-port.
+port. This command may be used to remove the network port binding for
+a filter currently in use for the guest while the guest is running
+without needing to restart the guest. Restoring the network port binding
+filter for the running guest would be accomplished by using
+I<nwfilter-binding-create>.
 
 =item B<nwfilter-binding-list>
 

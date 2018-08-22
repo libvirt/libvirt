@@ -678,7 +678,14 @@ virNWFilterBindingGetFilterName(virNWFilterBindingPtr binding)
  * @flags: currently unused, pass 0
  *
  * Define a new network filter, based on an XML description
- * similar to the one returned by virNWFilterGetXMLDesc()
+ * similar to the one returned by virNWFilterGetXMLDesc(). This
+ * API may be used to associate a filter with a currently running
+ * guest that does not have a filter defined for a specific network
+ * port. Since the bindings are generally automatically managed by
+ * the hypervisor, using this command to define a filter for a network
+ * port and then starting the guest afterwards may prevent the guest
+ * from starting if it attempts to use the network port and finds a
+ * filter already defined.
  *
  * virNWFilterFree should be used to free the resources after the
  * binding object is no longer needed.
@@ -717,7 +724,12 @@ virNWFilterBindingCreateXML(virConnectPtr conn, const char *xml, unsigned int fl
  * @binding: a binding object
  *
  * Delete the binding object. This does not free the
- * associated virNWFilterBindingPtr object.
+ * associated virNWFilterBindingPtr object. This API
+ * may be used to remove the network port binding filter
+ * currently in use for the guest while the guest is
+ * running without needing to restart the guest. Restoring
+ * the network port binding filter for the running guest
+ * would be accomplished by using virNWFilterBindingCreateXML.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
