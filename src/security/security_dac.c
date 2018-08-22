@@ -627,7 +627,7 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
 
 static int
 virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
-                           virStorageSourcePtr src,
+                           const virStorageSource *src,
                            const char *path,
                            uid_t uid,
                            gid_t gid)
@@ -655,7 +655,7 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
-                                       virStorageSourcePtr src,
+                                       const virStorageSource *src,
                                        const char *path)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
