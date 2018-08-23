@@ -39,6 +39,7 @@
 #include "virmacaddr.h"
 #include "virxml.h"
 #include "virstring.h"
+#include "vsh-table.h"
 
 VIR_ENUM_DECL(virshDomainIOError)
 VIR_ENUM_IMPL(virshDomainIOError,
@@ -1901,6 +1902,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     char id_buf[INT_BUFSIZE_BOUND(unsigned int)];
     unsigned int id;
     unsigned int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE;
+    vshTablePtr table = NULL;
 
     /* construct filter flags */
     if (vshCommandOptBool(cmd, "inactive") ||
@@ -1940,15 +1942,12 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     /* print table header in legacy mode */
     if (optTable) {
         if (optTitle)
-            vshPrintExtra(ctl, " %-5s %-30s %-10s %-20s\n%s\n",
-                          _("Id"), _("Name"), _("State"), _("Title"),
-                          "-----------------------------------------"
-                          "-----------------------------------------");
+            table = vshTableNew("Id", "Name", "State", "Title", NULL);
         else
-            vshPrintExtra(ctl, " %-5s %-30s %s\n%s\n",
-                          _("Id"), _("Name"), _("State"),
-                          "-----------------------------------------"
-                          "-----------");
+            table = vshTableNew("Id", "Name", "State", NULL);
+
+        if (!table)
+            goto cleanup;
     }
 
     for (i = 0; i < list->ndomains; i++) {
@@ -1973,20 +1972,22 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
             if (optTitle) {
                 if (!(title = virshGetDomainDescription(ctl, dom, true, 0)))
                     goto cleanup;
-
-                vshPrint(ctl, " %-5s %-30s %-10s %-20s\n", id_buf,
-                         virDomainGetName(dom),
-                         state == -2 ? _("saved")
-                         : virshDomainStateToString(state),
-                         title);
-
+                if (vshTableRowAppend(table, id_buf,
+                                      virDomainGetName(dom),
+                                      state == -2 ? _("saved")
+                                      : virshDomainStateToString(state),
+                                      title, NULL) < 0)
+                    goto cleanup;
                 VIR_FREE(title);
             } else {
-                vshPrint(ctl, " %-5s %-30s %s\n", id_buf,
-                         virDomainGetName(dom),
-                         state == -2 ? _("saved")
-                         : virshDomainStateToString(state));
+                if (vshTableRowAppend(table, id_buf,
+                                      virDomainGetName(dom),
+                                      state == -2 ? _("saved")
+                                      : virshDomainStateToString(state),
+                                      NULL) < 0)
+                    goto cleanup;
             }
+
         } else if (optUUID && optName) {
             if (virDomainGetUUIDString(dom, uuid) < 0) {
                 vshError(ctl, "%s", _("Failed to get domain's UUID"));
@@ -2004,8 +2005,12 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
+    if (optTable)
+        vshTablePrintToStdout(table, ctl);
+
     ret = true;
  cleanup:
+    vshTableFree(table);
     virshDomainListFree(list);
     return ret;
 }
