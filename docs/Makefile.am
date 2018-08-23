@@ -132,8 +132,6 @@ dot_php_in = $(notdir $(wildcard $(srcdir)/*.php.in))
 dot_php_code_in = $(dot_php_in:%.php.in=%.php.code.in)
 dot_php = $(dot_php_in:%.php.in=%.php)
 
-patches = $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/api_extension/*.patch))
-
 xml = \
   libvirt-api.xml \
   libvirt-refs.xml
@@ -177,7 +175,7 @@ EXTRA_DIST= \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
-  $(logofiles) $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
+  $(logofiles) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
   $(internals_html_in) $(internals_html) $(fonts) \
   aclperms.htmlinc \
   hvsupport.pl \
