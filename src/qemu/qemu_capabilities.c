@@ -2266,49 +2266,51 @@ virQEMUCapsProbeQMPDevices(virQEMUCapsPtr qemuCaps,
  * that we're not vulnerable to changes in QEMU defaults or machine
  * list ordering.
  */
-static const char *preferredMachines[VIR_ARCH_LAST] =
+static const char *preferredMachines[] =
 {
-    [VIR_ARCH_ALPHA] = "clipper",
-    [VIR_ARCH_ARMV6L] = NULL, /* No QEMU impl */
-    [VIR_ARCH_ARMV7L] = "integratorcp",
-    [VIR_ARCH_ARMV7B] = "integratorcp",
+    NULL, /* VIR_ARCH_NONE (not a real arch :) */
+    "clipper", /* VIR_ARCH_ALPHA */
+    NULL, /* VIR_ARCH_ARMV6L (no QEMU impl) */
+    "integratorcp", /* VIR_ARCH_ARMV7L */
+    "integratorcp", /* VIR_ARCH_ARMV7B */
 
-    [VIR_ARCH_AARCH64] = "integratorcp",
-    [VIR_ARCH_CRIS] = "axis-dev88",
-    [VIR_ARCH_I686] = "pc",
-    [VIR_ARCH_ITANIUM] = NULL, /* doesn't exist in QEMU any more */
-    [VIR_ARCH_LM32] = "lm32-evr",
+    "integratorcp", /* VIR_ARCH_AARCH64 */
+    "axis-dev88", /* VIR_ARCH_CRIS */
+    "pc", /* VIR_ARCH_I686 */
+    NULL, /* VIR_ARCH_ITANIUM (doesn't exist in QEMU any more) */
+    "lm32-evr", /* VIR_ARCH_LM32 */
 
-    [VIR_ARCH_M68K] = "mcf5208evb",
-    [VIR_ARCH_MICROBLAZE] = "petalogix-s3adsp1800",
-    [VIR_ARCH_MICROBLAZEEL] = "petalogix-s3adsp1800",
-    [VIR_ARCH_MIPS] = "malta",
-    [VIR_ARCH_MIPSEL] = "malta",
+    "mcf5208evb", /* VIR_ARCH_M68K */
+    "petalogix-s3adsp1800", /* VIR_ARCH_MICROBLAZE */
+    "petalogix-s3adsp1800", /* VIR_ARCH_MICROBLAZEEL */
+    "malta", /* VIR_ARCH_MIPS */
+    "malta", /* VIR_ARCH_MIPSEL */
 
-    [VIR_ARCH_MIPS64] = "malta",
-    [VIR_ARCH_MIPS64EL] = "malta",
-    [VIR_ARCH_OR32] = "or1k-sim",
-    [VIR_ARCH_PARISC] = NULL, /* No QEMU impl */
-    [VIR_ARCH_PARISC64] = NULL, /* No QEMU impl */
+    "malta", /* VIR_ARCH_MIPS64 */
+    "malta", /* VIR_ARCH_MIPS64EL */
+    "or1k-sim", /* VIR_ARCH_OR32 */
+    NULL, /* VIR_ARCH_PARISC (no QEMU impl) */
+    NULL, /* VIR_ARCH_PARISC64 (no QEMU impl) */
 
-    [VIR_ARCH_PPC] = "g3beige",
-    [VIR_ARCH_PPCLE] = "g3beige",
-    [VIR_ARCH_PPC64] = "pseries",
-    [VIR_ARCH_PPC64LE] = "pseries",
-    [VIR_ARCH_PPCEMB] = "bamboo",
+    "g3beige", /* VIR_ARCH_PPC */
+    "g3beige", /* VIR_ARCH_PPCLE */
+    "pseries", /* VIR_ARCH_PPC64 */
+    "pseries", /* VIR_ARCH_PPC64LE */
+    "bamboo", /* VIR_ARCH_PPCEMB */
 
-    [VIR_ARCH_S390] = NULL, /* No QEMU impl*/
-    [VIR_ARCH_S390X] = "s390-ccw-virtio",
-    [VIR_ARCH_SH4] = "shix",
-    [VIR_ARCH_SH4EB] = "shix",
-    [VIR_ARCH_SPARC] = "SS-5",
+    NULL, /* VIR_ARCH_S390 (no QEMU impl) */
+    "s390-ccw-virtio", /* VIR_ARCH_S390X */
+    "shix", /* VIR_ARCH_SH4 */
+    "shix", /* VIR_ARCH_SH4EB */
+    "SS-5", /* VIR_ARCH_SPARC */
 
-    [VIR_ARCH_SPARC64] = "sun4u",
-    [VIR_ARCH_UNICORE32] = "puv3",
-    [VIR_ARCH_X86_64] = "pc",
-    [VIR_ARCH_XTENSA] = "sim",
-    [VIR_ARCH_XTENSAEB] = "sim",
+    "sun4u", /* VIR_ARCH_SPARC64 */
+    "puv3", /* VIR_ARCH_UNICORE32 */
+    "pc", /* VIR_ARCH_X86_64 */
+    "sim", /* VIR_ARCH_XTENSA */
+    "sim", /* VIR_ARCH_XTENSAEB */
 };
+verify(ARRAY_CARDINALITY(preferredMachines) == VIR_ARCH_LAST);
 
 
 static int
