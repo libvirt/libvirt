@@ -73,9 +73,8 @@
     <p>
       Submit new code in the form of one patch per step.  That's not to say
       submit patches before you have working functionality--get the whole thing
-      working and make sure you're happy with it.  Then use git or some other
-      version control system that lets you rewrite your commit history and
-      break patches into pieces so you don't drop a big blob of code on the
+      working and make sure you're happy with it.  Then use git to break the
+      changes into pieces so you don't drop a big blob of code on the
       mailing list in one go.  Also, you should follow the upstream tree, and
       rebase your series to adapt your patches to work with any other changes
       that were accepted upstream during your development.
