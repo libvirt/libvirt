@@ -144,7 +144,9 @@ libvirt_shell_la_LIBADD = \
 		$(READLINE_LIBS) \
 		../gnulib/lib/libgnu.la \
 		$(NULL)
-libvirt_shell_la_SOURCES = vsh.c vsh.h
+libvirt_shell_la_SOURCES = \
+		vsh.c vsh.h \
+		vsh-table.c vsh-table.h
 
 virt_host_validate_SOURCES = \
 		virt-host-validate.c \
