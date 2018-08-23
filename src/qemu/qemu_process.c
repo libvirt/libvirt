@@ -2343,6 +2343,7 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
 /*
  * To be run between fork/exec of QEMU only
  */
+#if defined(HAVE_SCHED_GETAFFINITY) || defined(HAVE_BSD_CPU_AFFINITY)
 static int
 qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 {
@@ -2413,6 +2414,13 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
     virBitmapFree(hostcpumap);
     return ret;
 }
+#else /* !defined(HAVE_SCHED_GETAFFINITY) && !defined(HAVE_BSD_CPU_AFFINITY) */
+static int
+qemuProcessInitCpuAffinity(virDomainObjPtr vm ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+#endif /* !defined(HAVE_SCHED_GETAFFINITY) && !defined(HAVE_BSD_CPU_AFFINITY) */
 
 /* set link states to down on interfaces at qemu start */
 static int
