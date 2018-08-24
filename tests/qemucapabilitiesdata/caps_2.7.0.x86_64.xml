@@ -61,7 +61,6 @@
   <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
   <flag name='usb-net'/>
-  <flag name='add-fd'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
   <flag name='rng-random'/>
@@ -181,7 +180,7 @@
   <flag name='mch'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>243792</microcodeVersion>
+  <microcodeVersion>243599</microcodeVersion>
   <package> (v2.7.0)</package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='Opteron_G5'/>

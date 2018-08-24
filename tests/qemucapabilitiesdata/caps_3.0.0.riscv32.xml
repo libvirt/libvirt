@@ -20,7 +20,6 @@
   <flag name='drive-mirror'/>
   <flag name='blockdev-snapshot-sync'/>
   <flag name='device-video-primary'/>
-  <flag name='add-fd'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
   <flag name='rng-random'/>

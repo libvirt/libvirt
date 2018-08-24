@@ -1009,7 +1009,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-vnc", QEMU_CAPS_VNC },
     { "drive-mirror", QEMU_CAPS_DRIVE_MIRROR },
     { "blockdev-snapshot-sync", QEMU_CAPS_DISK_SNAPSHOT },
-    { "add-fd", QEMU_CAPS_ADD_FD },
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
     { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
@@ -2147,22 +2146,6 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
                                   virQEMUCapsCommands,
                                   ncommands, commands);
     virStringListFreeCount(commands, ncommands);
-
-    /* QMP add-fd was introduced in 1.2, but did not support
-     * management control of set numbering, and did not have a
-     * counterpart -add-fd command line option.  We require the
-     * add-fd features from 1.3 or later.  */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ADD_FD)) {
-        int fd = open("/dev/null", O_RDONLY);
-        if (fd < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("unable to probe for add-fd"));
-            return -1;
-        }
-        if (qemuMonitorAddFd(mon, 0, fd, "/dev/null") < 0)
-            virQEMUCapsClear(qemuCaps, QEMU_CAPS_ADD_FD);
-        VIR_FORCE_CLOSE(fd);
-    }
 
     /* Probe for active commit of qemu 2.1. We don't need to query directly
      * if we have QMP schema support */

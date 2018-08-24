@@ -28,7 +28,6 @@
   <flag name='blockdev-snapshot-sync'/>
   <flag name='device-video-primary'/>
   <flag name='s390-sclp'/>
-  <flag name='add-fd'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
   <flag name='rng-random'/>
@@ -115,7 +114,7 @@
   <flag name='vhost-vsock'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>269412</microcodeVersion>
+  <microcodeVersion>269219</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='z13.2-base' migratability='no'>

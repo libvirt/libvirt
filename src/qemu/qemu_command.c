@@ -9724,7 +9724,9 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
     const virDomainTPMDef *tpm = def->tpm;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *type = NULL;
-    char *cancel_path = NULL, *devset = NULL;
+    char *cancel_path = NULL;
+    char *devset = NULL;
+    char *cancelset = NULL;
     const char *tpmdev;
 
     *tpmfd = -1;
@@ -9750,28 +9752,24 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
         if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
             goto error;
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ADD_FD)) {
-            if (qemuBuildTPMOpenBackendFDs(tpmdev, cancel_path, tpmfd, cancelfd) < 0)
-                goto error;
+        if (qemuBuildTPMOpenBackendFDs(tpmdev, cancel_path, tpmfd, cancelfd) < 0)
+            goto error;
 
-            virCommandPassFD(cmd, *tpmfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-            virCommandPassFD(cmd, *cancelfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-            devset = qemuVirCommandGetDevSet(cmd, *tpmfd);
-            if (devset == NULL)
-                goto error;
+        virCommandPassFD(cmd, *tpmfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+        virCommandPassFD(cmd, *cancelfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
 
-            VIR_FREE(cancel_path);
-            cancel_path = qemuVirCommandGetDevSet(cmd, *cancelfd);
-            if (cancel_path == NULL)
-                goto error;
-        }
+        if (!(devset = qemuVirCommandGetDevSet(cmd, *tpmfd)) ||
+            !(cancelset = qemuVirCommandGetDevSet(cmd, *cancelfd)))
+            goto error;
+
         virBufferAddLit(&buf, ",path=");
-        virQEMUBuildBufferEscapeComma(&buf, devset ? devset : tpmdev);
+        virQEMUBuildBufferEscapeComma(&buf, devset);
 
         virBufferAddLit(&buf, ",cancel-path=");
-        virQEMUBuildBufferEscapeComma(&buf, cancel_path);
+        virQEMUBuildBufferEscapeComma(&buf, cancelset);
 
         VIR_FREE(devset);
+        VIR_FREE(cancelset);
         VIR_FREE(cancel_path);
 
         break;

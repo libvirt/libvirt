@@ -48,7 +48,6 @@
   <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
   <flag name='usb-net'/>
-  <flag name='add-fd'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
   <flag name='rng-random'/>
@@ -145,7 +144,7 @@
   <flag name='hda-output'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>232145</microcodeVersion>
+  <microcodeVersion>231952</microcodeVersion>
   <package></package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>

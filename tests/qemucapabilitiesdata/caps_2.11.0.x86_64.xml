@@ -59,7 +59,6 @@
   <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
   <flag name='usb-net'/>
-  <flag name='add-fd'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
   <flag name='rng-random'/>
@@ -209,7 +208,7 @@
   <flag name='egl-headless'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>371242</microcodeVersion>
+  <microcodeVersion>371049</microcodeVersion>
   <package> (v2.11.0)</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

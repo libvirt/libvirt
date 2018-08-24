@@ -45,7 +45,6 @@
   <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
   <flag name='usb-net'/>
-  <flag name='add-fd'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
   <flag name='rng-random'/>
@@ -170,7 +169,7 @@
   <flag name='vfio-pci.display'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>428121</microcodeVersion>
+  <microcodeVersion>427928</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>

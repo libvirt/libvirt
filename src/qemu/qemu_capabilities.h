@@ -225,7 +225,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 125 */
     QEMU_CAPS_DEVICE_USB_SERIAL, /* -device usb-serial */
     QEMU_CAPS_DEVICE_USB_NET, /* -device usb-net */
-    QEMU_CAPS_ADD_FD, /* -add-fd */
+    X_QEMU_CAPS_ADD_FD, /* -add-fd */
     QEMU_CAPS_NBD_SERVER, /* nbd-server-start QMP command */
     QEMU_CAPS_DEVICE_VIRTIO_RNG, /* virtio-rng device */
 
