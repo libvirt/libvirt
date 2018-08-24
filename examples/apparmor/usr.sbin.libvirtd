@@ -50,10 +50,10 @@
   # for --p2p migrations
   unix (send, receive) type=stream addr=none peer=(label=unconfined addr=none),
 
-  ptrace (trace) peer=unconfined,
-  ptrace (trace) peer=/usr/sbin/libvirtd,
-  ptrace (trace) peer=/usr/sbin/dnsmasq,
-  ptrace (trace) peer=libvirt-*,
+  ptrace (read,trace) peer=unconfined,
+  ptrace (read,trace) peer=/usr/sbin/libvirtd,
+  ptrace (read,trace) peer=/usr/sbin/dnsmasq,
+  ptrace (read,trace) peer=libvirt-*,
 
   signal (send) peer=/usr/sbin/dnsmasq,
   signal (read, send) peer=libvirt-*,
