@@ -62,6 +62,10 @@ typedef int
                               const char *controllers,
                               const char *selfpath);
 
+typedef int
+(*virCgroupValidatePlacementCB)(virCgroupPtr group,
+                                pid_t pid);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -72,6 +76,7 @@ struct _virCgroupBackend {
     virCgroupCopyPlacementCB copyPlacement;
     virCgroupDetectMountsCB detectMounts;
     virCgroupDetectPlacementCB detectPlacement;
+    virCgroupValidatePlacementCB validatePlacement;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

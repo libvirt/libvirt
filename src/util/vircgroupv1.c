@@ -372,6 +372,36 @@ virCgroupV1DetectPlacement(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1ValidatePlacement(virCgroupPtr group,
+                             pid_t pid)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        if (!group->controllers[i].mountPoint)
+            continue;
+
+        if (!group->controllers[i].placement) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not find placement for v1 controller %s at %s"),
+                           virCgroupV1ControllerTypeToString(i),
+                           group->controllers[i].placement);
+            return -1;
+        }
+
+        VIR_DEBUG("Detected mount/mapping %zu:%s at %s in %s for pid %lld",
+                  i,
+                  virCgroupV1ControllerTypeToString(i),
+                  group->controllers[i].mountPoint,
+                  group->controllers[i].placement,
+                  (long long) pid);
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -381,6 +411,7 @@ virCgroupBackend virCgroupV1Backend = {
     .copyPlacement = virCgroupV1CopyPlacement,
     .detectMounts = virCgroupV1DetectMounts,
     .detectPlacement = virCgroupV1DetectPlacement,
+    .validatePlacement = virCgroupV1ValidatePlacement,
 };
 
 

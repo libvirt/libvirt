@@ -346,36 +346,6 @@ virCgroupDetectPlacement(virCgroupPtr group,
 
 
 static int
-virCgroupValidatePlacement(virCgroupPtr group,
-                           pid_t pid)
-{
-    size_t i;
-
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!group->controllers[i].mountPoint)
-            continue;
-
-        if (!group->controllers[i].placement) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find placement for controller %s at %s"),
-                           virCgroupControllerTypeToString(i),
-                           group->controllers[i].placement);
-            return -1;
-        }
-
-        VIR_DEBUG("Detected mount/mapping %zu:%s at %s in %s for pid %lld",
-                  i,
-                  virCgroupControllerTypeToString(i),
-                  group->controllers[i].mountPoint,
-                  group->controllers[i].placement,
-                  (long long) pid);
-    }
-
-    return 0;
-}
-
-
-static int
 virCgroupDetectControllers(virCgroupPtr group,
                            int controllers)
 {
@@ -500,7 +470,7 @@ virCgroupDetect(virCgroupPtr group,
         return -1;
 
     /* Check that for every mounted controller, we found our placement */
-    if (virCgroupValidatePlacement(group, pid) < 0)
+    if (group->backend->validatePlacement(group, pid) < 0)
         return -1;
 
     return 0;
