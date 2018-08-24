@@ -1518,7 +1518,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *data)
     if (qemuMonitorTestAddItem(test, "query-balloon",
                                "{"
                                "    \"return\": {"
-                               "        \"actual\": 4294967296"
+                               "        \"actual\": 18446744073709551615"
                                "    },"
                                "    \"id\": \"libvirt-9\""
                                "}") < 0)
@@ -1527,7 +1527,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *data)
     if (qemuMonitorJSONGetBalloonInfo(qemuMonitorTestGetMonitor(test), &currmem) < 0)
         goto cleanup;
 
-    if (currmem != (4294967296ULL/1024)) {
+    if (currmem != (18446744073709551615ULL/1024)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected currmem value: %llu", currmem);
         goto cleanup;
