@@ -297,9 +297,9 @@ libxlMigrateDstReceive(virNetSocketPtr sock,
     libxlMigrationDstArgs *args = opaque;
     virNetSocketPtr *socks = args->socks;
     size_t nsocks = args->nsocks;
+    libxlDomainObjPrivatePtr priv = args->vm->privateData;
     virNetSocketPtr client_sock;
     int recvfd = -1;
-    virThread thread;
     size_t i;
 
     /* Accept migration connection */
@@ -318,7 +318,10 @@ libxlMigrateDstReceive(virNetSocketPtr sock,
      * the migration data
      */
     args->recvfd = recvfd;
-    if (virThreadCreate(&thread, false,
+    VIR_FREE(priv->migrationDstReceiveThr);
+    if (VIR_ALLOC(priv->migrationDstReceiveThr) < 0)
+        goto fail;
+    if (virThreadCreate(priv->migrationDstReceiveThr, true,
                         libxlDoMigrateDstReceive, args) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to create thread for receiving migration data"));
@@ -557,7 +560,6 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
     libxlDriverPrivatePtr driver = dconn->privateData;
     virDomainObjPtr vm = NULL;
     libxlMigrationDstArgs *args = NULL;
-    virThread thread;
     bool taint_hook = false;
     libxlDomainObjPrivatePtr priv = NULL;
     char *xmlout = NULL;
@@ -617,7 +619,10 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
     args->nsocks = 0;
     mig = NULL;
 
-    if (virThreadCreate(&thread, false, libxlDoMigrateDstReceive, args) < 0) {
+    VIR_FREE(priv->migrationDstReceiveThr);
+    if (VIR_ALLOC(priv->migrationDstReceiveThr) < 0)
+        goto error;
+    if (virThreadCreate(priv->migrationDstReceiveThr, true, libxlDoMigrateDstReceive, args) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to create thread for receiving migration data"));
         goto endjob;
@@ -1290,6 +1295,13 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
     libxlDomainObjPrivatePtr priv = vm->privateData;
     virObjectEventPtr event = NULL;
     virDomainPtr dom = NULL;
+
+    if (priv->migrationDstReceiveThr) {
+        virObjectUnlock(vm);
+        virThreadJoin(priv->migrationDstReceiveThr);
+        virObjectLock(vm);
+        VIR_FREE(priv->migrationDstReceiveThr);
+    }
 
     virPortAllocatorRelease(priv->migrationPort);
     priv->migrationPort = 0;

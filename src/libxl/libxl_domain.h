@@ -65,6 +65,7 @@ struct _libxlDomainObjPrivate {
     /* console */
     virChrdevsPtr devs;
     libxl_evgen_domain_death *deathW;
+    virThreadPtr migrationDstReceiveThr;
     unsigned short migrationPort;
     char *lockState;
 
