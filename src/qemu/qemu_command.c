@@ -3046,7 +3046,8 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                 cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT &&
                 !qemuDomainIsQ35(def) &&
-                !qemuDomainIsARMVirt(def)) {
+                !qemuDomainIsARMVirt(def) &&
+                !qemuDomainIsRISCVVirt(def)) {
 
                 /* An appropriate default USB controller model should already
                  * have been selected in qemuDomainDeviceDefPostParse(); if
@@ -3085,6 +3086,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
     if (usbcontroller == 0 &&
         !qemuDomainIsQ35(def) &&
         !qemuDomainIsARMVirt(def) &&
+        !qemuDomainIsRISCVVirt(def) &&
         !ARCH_IS_S390(def->os.arch)) {
         /* We haven't added any USB controller yet, but we haven't been asked
          * not to add one either. Add a legacy USB controller, unless we're

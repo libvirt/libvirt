@@ -21,7 +21,6 @@ server,nowait \
 -no-shutdown \
 -kernel /var/lib/libvirt/images/bbl \
 -append 'console=ttyS0 ro root=/dev/vda' \
--usb \
 -drive file=/var/lib/libvirt/images/stage4-disk.img,format=raw,if=none,\
 id=drive-virtio-disk0 \
 -device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
