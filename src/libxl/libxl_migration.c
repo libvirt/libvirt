@@ -264,7 +264,6 @@ libxlDoMigrateDstReceive(void *opaque)
     libxlDriverPrivatePtr driver = args->conn->privateData;
     int recvfd = args->recvfd;
     size_t i;
-    int ret;
 
     virObjectRef(vm);
     virObjectLock(vm);
@@ -274,12 +273,10 @@ libxlDoMigrateDstReceive(void *opaque)
     /*
      * Always start the domain paused.  If needed, unpause in the
      * finish phase, after transfer of the domain is complete.
+     * Errors and cleanup are also handled in the finish phase.
      */
-    ret = libxlDomainStartRestore(driver, vm, true, recvfd,
-                                  args->migcookie->xenMigStreamVer);
-
-    if (ret < 0 && !vm->persistent)
-        virDomainObjListRemove(driver->domains, vm);
+    libxlDomainStartRestore(driver, vm, true, recvfd,
+                            args->migcookie->xenMigStreamVer);
 
     /* Remove all listen socks from event handler, and close them. */
     for (i = 0; i < nsocks; i++) {
