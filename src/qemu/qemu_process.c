@@ -3167,20 +3167,29 @@ qemuProcessNotifyNets(virDomainDefPtr def)
     }
 }
 
-static int
-qemuProcessFiltersInstantiate(virDomainDefPtr def, bool ignoreExists)
+/* Attempt to instantiate the filters. Ignore failures because it's
+ * possible that someone deleted a filter binding and the associated
+ * filter while the guest was running and we don't want that action
+ * to cause failure to keep the guest running during the reconnection
+ * processing. Nor do we necessarily want other failures to do the
+ * same. We'll just log the error conditions other than of course
+ * ignoreExists possibility (e.g. the true flag) */
+static void
+qemuProcessFiltersInstantiate(virDomainDefPtr def)
 {
     size_t i;
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if ((net->filter) && (net->ifname)) {
-            if (virDomainConfNWFilterInstantiate(def->name, def->uuid, net, ignoreExists) < 0)
-                return 1;
+            if (virDomainConfNWFilterInstantiate(def->name, def->uuid, net,
+                                                 true) < 0) {
+                VIR_WARN("filter '%s' instantiation for '%s' failed '%s'",
+                         net->filter, net->ifname, virGetLastErrorMessage());
+                virResetLastError();
+            }
         }
     }
-
-    return 0;
 }
 
 static int
@@ -7893,8 +7902,7 @@ qemuProcessReconnect(void *opaque)
 
     qemuProcessNotifyNets(obj->def);
 
-    if (qemuProcessFiltersInstantiate(obj->def, true))
-        goto error;
+    qemuProcessFiltersInstantiate(obj->def);
 
     if (qemuProcessRefreshDisks(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
