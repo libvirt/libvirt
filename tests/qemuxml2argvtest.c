@@ -2007,12 +2007,14 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_QXL_VGAMEM);
+    DO_TEST_CAPS_LATEST("video-qxl-device-vram64");
     DO_TEST("video-qxl-sec-device",
             QEMU_CAPS_DEVICE_QXL, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     DO_TEST("video-qxl-sec-device-vgamem",
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_QXL_VGAMEM);
+    DO_TEST_CAPS_LATEST("video-qxl-sec-device-vram64");
     DO_TEST("video-qxl-heads",
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL,

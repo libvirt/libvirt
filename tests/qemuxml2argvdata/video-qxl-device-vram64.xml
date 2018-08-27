@@ -14,12 +14,6 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <disk type='file' device='disk'>
-      <driver name='qemu' type='qcow2' cache='none'/>
-      <source file='/var/lib/libvirt/images/QEMUGuest1'/>
-      <target dev='hda' bus='ide'/>
-      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
-    </disk>
     <controller type='ide' index='0'/>
     <video>
       <model type='qxl' vram64='131072' heads='1'/>
