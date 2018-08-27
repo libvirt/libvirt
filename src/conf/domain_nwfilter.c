@@ -149,9 +149,12 @@ virDomainConfNWFilterTeardownImpl(virConnectPtr conn,
 void
 virDomainConfNWFilterTeardown(virDomainNetDefPtr net)
 {
-    virConnectPtr conn = virGetConnectNWFilter();
+    virConnectPtr conn;
 
-    if (!conn)
+    if (!net->filter)
+        return;
+
+    if (!(conn = virGetConnectNWFilter()))
         return;
 
     virDomainConfNWFilterTeardownImpl(conn, net);
@@ -163,14 +166,19 @@ void
 virDomainConfVMNWFilterTeardown(virDomainObjPtr vm)
 {
     size_t i;
-    virConnectPtr conn = virGetConnectNWFilter();
+    virConnectPtr conn = NULL;
 
-    if (!conn)
-        return;
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
 
+        if (!net->filter)
+            continue;
 
-    for (i = 0; i < vm->def->nnets; i++)
-        virDomainConfNWFilterTeardownImpl(conn, vm->def->nets[i]);
+        if (!conn && !(conn = virGetConnectNWFilter()))
+            return;
+
+        virDomainConfNWFilterTeardownImpl(conn, net);
+    }
 
     virObjectUnref(conn);
 }
