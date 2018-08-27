@@ -8318,6 +8318,14 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
  * media, altering the graphics configuration such as password,
  * reconfiguring the NIC device backend connectivity, etc.
  *
+ * The supplied XML description of the device should contain all
+ * the information that is found in the corresponding domain XML.
+ * Leaving out any piece of information may be treated as a
+ * request for its removal, which may be denied. For instance,
+ * when users want to change CDROM media only for live XML, they
+ * must provide live disk XML as found in the corresponding live
+ * domain XML with only the disk path changed.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
