@@ -329,8 +329,10 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
             goto cleanup;
         vm->def = def;
 
-        if (virDomainObjListAddObjLocked(doms, vm) < 0)
+        if (virDomainObjListAddObjLocked(doms, vm) < 0) {
+            vm->def = NULL;
             goto error;
+        }
     }
  cleanup:
     return vm;
