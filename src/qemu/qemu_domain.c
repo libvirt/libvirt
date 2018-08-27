@@ -4186,6 +4186,7 @@ qemuDomainChrSerialTargetModelToTargetType(int targetModel)
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY:
         return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A:
         return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE:
@@ -4251,6 +4252,7 @@ qemuDomainChrTargetDefValidate(const virDomainChrDef *chr)
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A:
 
             expected = qemuDomainChrSerialTargetModelToTargetType(chr->targetModel);
 
@@ -4301,15 +4303,20 @@ qemuDomainChrDefValidate(const virDomainChrDef *dev,
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
         bool isCompatible = true;
 
+        if (dev->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM) {
+            if (dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011 &&
+                !qemuDomainIsARMVirt(def)) {
+                isCompatible = false;
+            }
+            if (dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A &&
+                !qemuDomainIsRISCVVirt(def)) {
+                isCompatible = false;
+            }
+        }
+
         if (!qemuDomainIsPSeries(def) &&
             (dev->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO ||
              dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY)) {
-            isCompatible = false;
-        }
-
-        if (!qemuDomainIsARMVirt(def) &&
-            (dev->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM ||
-             dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011)) {
             isCompatible = false;
         }
 
@@ -6132,7 +6139,7 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
         } else if (qemuDomainIsPSeries(def)) {
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO;
-        } else if (qemuDomainIsARMVirt(def)) {
+        } else if (qemuDomainIsARMVirt(def) || qemuDomainIsRISCVVirt(def)) {
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM;
         } else if (ARCH_IS_S390(def->os.arch)) {
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP;
@@ -6156,7 +6163,11 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
             chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY;
             break;
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
-            chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011;
+            if (qemuDomainIsARMVirt(def)) {
+                chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011;
+            } else if (qemuDomainIsRISCVVirt(def)) {
+                chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A;
+            }
             break;
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP:
             chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE;

@@ -493,6 +493,7 @@ VIR_ENUM_IMPL(virDomainChrSerialTargetModel,
               "pl011",
               "sclpconsole",
               "sclplmconsole",
+              "16550a",
 );
 
 VIR_ENUM_IMPL(virDomainChrDevice, VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,

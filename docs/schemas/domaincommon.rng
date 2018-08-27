@@ -3733,6 +3733,7 @@
           <value>pci-serial</value>
           <value>spapr-vty</value>
           <value>pl011</value>
+          <value>16550a</value>
           <value>sclpconsole</value>
           <value>sclplmconsole</value>
         </choice>

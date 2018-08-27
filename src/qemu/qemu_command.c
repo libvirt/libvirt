@@ -9151,6 +9151,7 @@ qemuChrSerialTargetModelToCaps(virDomainChrSerialTargetModel targetModel)
         return QEMU_CAPS_DEVICE_SCLPLMCONSOLE;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
         return QEMU_CAPS_DEVICE_PL011;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
         break;
@@ -9187,6 +9188,16 @@ qemuChrIsPlatformDevice(const virDomainDef *def,
         if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM &&
             chr->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011) {
+            return true;
+        }
+    }
+
+    if (ARCH_IS_RISCV(def->os.arch)) {
+
+        /* 16550a (used by riscv/virt guests) is a platform device */
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+            chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM &&
+            chr->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A) {
             return true;
         }
     }
@@ -10581,6 +10592,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
         break;
 
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
         /* Except from _LAST, which is just a guard value and will never

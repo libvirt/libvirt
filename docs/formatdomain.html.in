@@ -7011,7 +7011,8 @@ qemu-kvm -net nic,model=? /dev/null
       is available) and <code>pci-serial</code> (usable whenever PCI support
       is available); <span class="since">since 3.10.0</span>,
       <code>spapr-vio-serial</code> (usable with ppc64/pseries guests),
-      <code>system-serial</code> (usable with aarch64/virt guests) and
+      <code>system-serial</code> (usable with aarch64/virt and,
+      <span class="since">since 4.7.0</span>, riscv/virt guests) and
       <code>sclp-serial</code> (usable with s390 and s390x guests) are
       available as well.
     </p>
@@ -7025,10 +7026,11 @@ qemu-kvm -net nic,model=? /dev/null
       target type); <code>pci-serial</code>
       (usable with the <code>pci-serial</code> target type);
       <code>spapr-vty</code> (usable with the <code>spapr-vio-serial</code>
-      target type); <code>pl011</code> (usable with the
-      <code>system-serial</code> target type); <code>sclpconsole</code> and
-      <code>sclplmconsole</code> (usable with the <code>sclp-serial</code>
-      target type).
+      target type); <code>pl011</code> and,
+      <span class="since">since 4.7.0</span>, <code>16550a</code> (usable
+      with the <code>system-serial</code> target type);
+      <code>sclpconsole</code> and <code>sclplmconsole</code> (usable with
+      the <code>sclp-serial</code> target type).
     </p>
 
     <p>
