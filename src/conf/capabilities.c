@@ -873,7 +873,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 {
     size_t i = 0;
     size_t j = 0;
-    virBuffer controlBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
 
     if (!ncaches)
         return 0;
@@ -902,7 +902,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                           short_size, unit, cpus_str);
         VIR_FREE(cpus_str);
 
-        virBufferSetChildIndent(&controlBuf, buf);
+        virBufferSetChildIndent(&childrenBuf, buf);
         for (j = 0; j < bank->ncontrols; j++) {
             const char *min_unit;
             virResctrlInfoPerCachePtr controls = bank->controls[j];
@@ -928,26 +928,26 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                 }
             }
 
-            virBufferAsprintf(&controlBuf,
+            virBufferAsprintf(&childrenBuf,
                               "<control granularity='%llu'",
                               gran_short_size);
 
             if (min_short_size)
-                virBufferAsprintf(&controlBuf, " min='%llu'", min_short_size);
+                virBufferAsprintf(&childrenBuf, " min='%llu'", min_short_size);
 
-            virBufferAsprintf(&controlBuf,
+            virBufferAsprintf(&childrenBuf,
                               " unit='%s' type='%s' maxAllocs='%u'/>\n",
                               unit,
                               virCacheTypeToString(controls->scope),
                               controls->max_allocation);
         }
 
-        if (virBufferCheckError(&controlBuf) < 0)
+        if (virBufferCheckError(&childrenBuf) < 0)
             return -1;
 
-        if (virBufferUse(&controlBuf)) {
+        if (virBufferUse(&childrenBuf)) {
             virBufferAddLit(buf, ">\n");
-            virBufferAddBuffer(buf, &controlBuf);
+            virBufferAddBuffer(buf, &childrenBuf);
             virBufferAddLit(buf, "</bank>\n");
         } else {
             virBufferAddLit(buf, "/>\n");
@@ -966,7 +966,7 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
                                      virCapsHostMemBWNodePtr *nodes)
 {
     size_t i = 0;
-    virBuffer controlBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
 
     if (!nnodes)
         return 0;
@@ -987,19 +987,19 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
                           node->id, cpus_str);
         VIR_FREE(cpus_str);
 
-        virBufferSetChildIndent(&controlBuf, buf);
-        virBufferAsprintf(&controlBuf,
+        virBufferSetChildIndent(&childrenBuf, buf);
+        virBufferAsprintf(&childrenBuf,
                           "<control granularity='%u' min ='%u' "
                           "maxAllocs='%u'/>\n",
                           control->granularity, control->min,
                           control->max_allocation);
 
-        if (virBufferCheckError(&controlBuf) < 0)
+        if (virBufferCheckError(&childrenBuf) < 0)
             return -1;
 
-        if (virBufferUse(&controlBuf)) {
+        if (virBufferUse(&childrenBuf)) {
             virBufferAddLit(buf, ">\n");
-            virBufferAddBuffer(buf, &controlBuf);
+            virBufferAddBuffer(buf, &childrenBuf);
             virBufferAddLit(buf, "</node>\n");
         } else {
             virBufferAddLit(buf, "/>\n");
