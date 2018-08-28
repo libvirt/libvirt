@@ -399,6 +399,11 @@ libxlDomainMigrationSrcBegin(virConnectPtr conn,
     virDomainDefPtr def;
     char *xml = NULL;
 
+    /*
+     * In the case of successful migration, a job is started here and
+     * terminated in the confirm phase. Errors in the begin or perform
+     * phase will also terminate the job.
+     */
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -428,6 +433,9 @@ libxlDomainMigrationSrcBegin(virConnectPtr conn,
         goto endjob;
 
     xml = virDomainDefFormat(def, cfg->caps, VIR_DOMAIN_DEF_FORMAT_SECURE);
+    /* Valid xml means success! EndJob in the confirm phase */
+    if (xml)
+        goto cleanup;
 
  endjob:
     libxlDomainObjEndJob(driver, vm);
@@ -1169,6 +1177,14 @@ libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
     ret = libxlDoMigrateSrcP2P(driver, vm, sconn, xmlin, dconn, dconnuri,
                                dname, uri_str, flags);
 
+    if (ret < 0) {
+        /*
+         * Confirm phase will not be executed if perform fails. End the
+         * job started in begin phase.
+         */
+        libxlDomainObjEndJob(driver, vm);
+    }
+
  cleanup:
     orig_err = virSaveLastError();
     virObjectUnlock(vm);
@@ -1232,11 +1248,17 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivatePtr driver,
     ret = libxlDoMigrateSrcSend(driver, vm, flags, sockfd);
     virObjectLock(vm);
 
-    if (ret < 0)
+    if (ret < 0) {
         virDomainLockProcessResume(driver->lockManager,
                                    "xen:///system",
                                    vm,
                                    priv->lockState);
+        /*
+         * Confirm phase will not be executed if perform fails. End the
+         * job started in begin phase.
+         */
+        libxlDomainObjEndJob(driver, vm);
+    }
 
  cleanup:
     VIR_FORCE_CLOSE(sockfd);
@@ -1386,6 +1408,8 @@ libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
     ret = 0;
 
  cleanup:
+    /* EndJob for corresponding BeginJob in begin phase */
+    libxlDomainObjEndJob(driver, vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
