@@ -972,20 +972,12 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
     char *cookieout = NULL;
     int cookieoutlen;
     bool cancelled = true;
+    bool notify_source = true;
     virErrorPtr orig_err = NULL;
     int ret = -1;
     /* For tunnel migration */
     virStreamPtr st = NULL;
     struct libxlTunnelControl *tc = NULL;
-
-    dom_xml = libxlDomainMigrationSrcBegin(sconn, vm, xmlin,
-                                           &cookieout, &cookieoutlen);
-    if (!dom_xml)
-        goto cleanup;
-
-    if (virTypedParamsAddString(&params, &nparams, &maxparams,
-                                VIR_MIGRATE_PARAM_DEST_XML, dom_xml) < 0)
-        goto cleanup;
 
     if (dname &&
         virTypedParamsAddString(&params, &nparams, &maxparams,
@@ -997,6 +989,19 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
                                 VIR_MIGRATE_PARAM_URI, uri) < 0)
         goto cleanup;
 
+    dom_xml = libxlDomainMigrationSrcBegin(sconn, vm, xmlin,
+                                           &cookieout, &cookieoutlen);
+    /*
+     * If dom_xml is non-NULL the begin phase has succeeded, and the
+     * confirm phase must be called to cleanup the migration operation.
+     */
+    if (!dom_xml)
+        goto cleanup;
+
+    if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, dom_xml) < 0)
+        goto confirm;
+
     /* We don't require the destination to have P2P support
      * as it looks to be normal migration from the receiver perpective.
      */
@@ -1006,7 +1011,7 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
     virObjectUnlock(vm);
     if (flags & VIR_MIGRATE_TUNNELLED) {
         if (!(st = virStreamNew(dconn, 0)))
-            goto cleanup;
+            goto confirm;
         ret = dconn->driver->domainMigratePrepareTunnel3Params
             (dconn, st, params, nparams, cookieout, cookieoutlen, NULL, NULL, destflags);
     } else {
@@ -1016,7 +1021,7 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
     virObjectLock(vm);
 
     if (ret == -1)
-        goto cleanup;
+        goto confirm;
 
     if (!(flags & VIR_MIGRATE_TUNNELLED)) {
         if (uri_out) {
@@ -1038,8 +1043,10 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
     else
         ret = libxlDomainMigrationSrcPerform(driver, vm, NULL, NULL,
                                              uri_out, NULL, flags);
-    if (ret < 0)
+    if (ret < 0) {
+        notify_source = false;
         orig_err = virSaveLastError();
+    }
 
     cancelled = (ret < 0);
 
@@ -1067,12 +1074,15 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
     if (!orig_err)
         orig_err = virSaveLastError();
 
-    VIR_DEBUG("Confirm3 cancelled=%d vm=%p", cancelled, vm);
-    ret = libxlDomainMigrationSrcConfirm(driver, vm, flags, cancelled);
+ confirm:
+    if (notify_source) {
+        VIR_DEBUG("Confirm3 cancelled=%d vm=%p", cancelled, vm);
+        ret = libxlDomainMigrationSrcConfirm(driver, vm, flags, cancelled);
 
-    if (ret < 0)
-        VIR_WARN("Guest %s probably left in 'paused' state on source",
-                 vm->def->name);
+        if (ret < 0)
+            VIR_WARN("Guest %s probably left in 'paused' state on source",
+                     vm->def->name);
+    }
 
  cleanup:
     if (flags & VIR_MIGRATE_TUNNELLED) {
