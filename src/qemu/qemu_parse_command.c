@@ -1838,7 +1838,7 @@ qemuParseCommandLine(virFileCachePtr capsCache,
                      virDomainChrSourceDefPtr *monConfig,
                      bool *monJSON)
 {
-    virDomainDefPtr def;
+    virDomainDefPtr def = NULL;
     size_t i;
     bool nographics = false;
     bool fullscreen = false;
@@ -1852,7 +1852,7 @@ qemuParseCommandLine(virFileCachePtr capsCache,
     virDomainDiskDefPtr disk = NULL;
     const char *ceph_args = qemuFindEnv(progenv, "CEPH_ARGS");
     bool have_sdl = false;
-    virQEMUCapsPtr qemuCaps;
+    virQEMUCapsPtr qemuCaps = NULL;
 
     if (pidfile)
         *pidfile = NULL;
