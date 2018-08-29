@@ -123,7 +123,7 @@ testUnicode(const void *opaque ATTRIBUTE_UNUSED)
 " Id   名稱                  государство  \n"
 "-----------------------------------------\n"
 " 1    fedora28              running      \n"
-" 2    🙊🙉🙈rhel7.5🙆🙆🙅   running      \n";
+" 2    つへソrhel7.5つへソ   running      \n";
     vshTablePtr table;
 
     table = vshTableNew("Id", "名稱", "государство", NULL);
@@ -131,7 +131,7 @@ testUnicode(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     vshTableRowAppend(table, "1", "fedora28", "running", NULL);
-    vshTableRowAppend(table, "2", "🙊🙉🙈rhel7.5🙆🙆🙅", "running",
+    vshTableRowAppend(table, "2", "つへソrhel7.5つへソ", "running",
                       NULL);
 
     act = vshTablePrintToString(table, true);
