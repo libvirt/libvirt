@@ -209,6 +209,23 @@ bool virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
                               virPCIDeviceAddress *addr2);
 
 bool virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr);
+int virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
+                                      virDomainDeviceCCWAddressPtr addr);
+
+int virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
+                                        virDomainDeviceDriveAddressPtr addr);
+
+int virDomainDeviceVirtioSerialAddressParseXML(xmlNodePtr node,
+                                               virDomainDeviceVirtioSerialAddressPtr addr);
+
+int virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
+                                       virDomainDeviceCcidAddressPtr addr);
+
+int virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
+                                      virDomainDeviceUSBAddressPtr addr);
+
+int virDomainDeviceSpaprVioAddressParseXML(xmlNodePtr node,
+                                           virDomainDeviceSpaprVioAddressPtr addr);
 
 int virInterfaceLinkParseXML(xmlNodePtr node,
                              virNetDevIfLinkPtr lnk);
