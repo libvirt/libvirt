@@ -6154,14 +6154,7 @@ libxlDomainMigrateFinish3Params(virConnectPtr dconn,
         return NULL;
     }
 
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0) {
-        virDomainObjEndAPI(&vm);
-        return NULL;
-    }
-
     ret = libxlDomainMigrationDstFinish(dconn, vm, flags, cancelled);
-
-    libxlDomainObjEndJob(driver, vm);
 
     virDomainObjEndAPI(&vm);
 

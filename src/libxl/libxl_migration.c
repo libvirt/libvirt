@@ -266,9 +266,6 @@ libxlDoMigrateDstReceive(void *opaque)
     size_t i;
 
     virObjectRef(vm);
-    virObjectLock(vm);
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
-        goto cleanup;
 
     /*
      * Always start the domain paused.  If needed, unpause in the
@@ -288,10 +285,6 @@ libxlDoMigrateDstReceive(void *opaque)
     args->nsocks = 0;
     VIR_FORCE_CLOSE(recvfd);
     virObjectUnref(args);
-
-    libxlDomainObjEndJob(driver, vm);
-
- cleanup:
     virDomainObjEndAPI(&vm);
 }
 
@@ -583,6 +576,13 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
         goto error;
     *def = NULL;
 
+    /*
+     * Unless an error is encountered in this function, the job will
+     * be terminated in the finish phase.
+     */
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto error;
+
     priv = vm->privateData;
 
     if (taint_hook) {
@@ -595,18 +595,18 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
      * stream -> pipe -> recvfd of libxlDomainStartRestore
      */
     if (pipe(dataFD) < 0)
-        goto error;
+        goto endjob;
 
     /* Stream data will be written to pipeIn */
     if (virFDStreamOpen(st, dataFD[1]) < 0)
-        goto error;
+        goto endjob;
     dataFD[1] = -1; /* 'st' owns the FD now & will close it */
 
     if (libxlMigrationDstArgsInitialize() < 0)
-        goto error;
+        goto endjob;
 
     if (!(args = virObjectNew(libxlMigrationDstArgsClass)))
-        goto error;
+        goto endjob;
 
     args->conn = virObjectRef(dconn);
     args->vm = virObjectRef(vm);
@@ -620,11 +620,14 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
     if (virThreadCreate(&thread, false, libxlDoMigrateDstReceive, args) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to create thread for receiving migration data"));
-        goto error;
+        goto endjob;
     }
 
     ret = 0;
     goto done;
+
+ endjob:
+    libxlDomainObjEndJob(driver, vm);
 
  error:
     libxlMigrationCookieFree(mig);
@@ -679,6 +682,13 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
         goto error;
     *def = NULL;
 
+    /*
+     * Unless an error is encountered in this function, the job will
+     * be terminated in the finish phase.
+     */
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto error;
+
     priv = vm->privateData;
 
     if (taint_hook) {
@@ -689,27 +699,27 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
     /* Create socket connection to receive migration data */
     if (!uri_in) {
         if ((hostname = virGetHostname()) == NULL)
-            goto error;
+            goto endjob;
 
         if (STRPREFIX(hostname, "localhost")) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("hostname on destination resolved to localhost,"
                              " but migration requires an FQDN"));
-            goto error;
+            goto endjob;
         }
 
         if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
-            goto error;
+            goto endjob;
 
         priv->migrationPort = port;
         if (virAsprintf(uri_out, "tcp://%s:%d", hostname, port) < 0)
-            goto error;
+            goto endjob;
     } else {
         if (!(STRPREFIX(uri_in, "tcp://"))) {
             /* not full URI, add prefix tcp:// */
             char *tmp;
             if (virAsprintf(&tmp, "tcp://%s", uri_in) < 0)
-                goto error;
+                goto endjob;
             uri = virURIParse(tmp);
             VIR_FREE(tmp);
         } else {
@@ -720,20 +730,20 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("unable to parse URI: %s"),
                            uri_in);
-            goto error;
+            goto endjob;
         }
 
         if (uri->server == NULL) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("missing host in migration URI: %s"),
                            uri_in);
-            goto error;
+            goto endjob;
         }
         hostname = uri->server;
 
         if (uri->port == 0) {
             if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
-                goto error;
+                goto endjob;
 
             priv->migrationPort = port;
         } else {
@@ -741,7 +751,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
         }
 
         if (virAsprintf(uri_out, "tcp://%s:%d", hostname, port) < 0)
-            goto error;
+            goto endjob;
     }
 
     snprintf(portstr, sizeof(portstr), "%d", port);
@@ -751,14 +761,14 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
                                  &socks, &nsocks) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Fail to create socket for incoming migration"));
-        goto error;
+        goto endjob;
     }
 
     if (libxlMigrationDstArgsInitialize() < 0)
-        goto error;
+        goto endjob;
 
     if (!(args = virObjectNew(libxlMigrationDstArgsClass)))
-        goto error;
+        goto endjob;
 
     args->conn = virObjectRef(dconn);
     args->vm = virObjectRef(vm);
@@ -786,10 +796,13 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
     }
 
     if (!nsocks_listen)
-        goto error;
+        goto endjob;
 
     ret = 0;
     goto done;
+
+ endjob:
+    libxlDomainObjEndJob(driver, vm);
 
  error:
     for (i = 0; i < nsocks; i++) {
@@ -1354,6 +1367,8 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
             virDomainObjListRemove(driver->domains, vm);
     }
 
+    /* EndJob for corresponding BeginJob in prepare phase */
+    libxlDomainObjEndJob(driver, vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return dom;
