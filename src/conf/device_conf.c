@@ -32,6 +32,21 @@
 
 #define VIR_FROM_THIS VIR_FROM_DEVICE
 
+VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
+              "none",
+              "pci",
+              "drive",
+              "virtio-serial",
+              "ccid",
+              "usb",
+              "spapr-vio",
+              "virtio-s390",
+              "ccw",
+              "virtio-mmio",
+              "isa",
+              "dimm",
+);
+
 int
 virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
                         virDomainDeviceInfoPtr src)

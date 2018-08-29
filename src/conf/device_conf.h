@@ -51,6 +51,8 @@ typedef enum {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 } virDomainDeviceAddressType;
 
+VIR_ENUM_DECL(virDomainDeviceAddress);
+
 typedef struct _virDomainDeviceDriveAddress virDomainDeviceDriveAddress;
 typedef virDomainDeviceDriveAddress *virDomainDeviceDriveAddressPtr;
 struct _virDomainDeviceDriveAddress {

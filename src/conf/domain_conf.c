@@ -263,20 +263,6 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "iommu",
               "vsock")
 
-VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
-              "none",
-              "pci",
-              "drive",
-              "virtio-serial",
-              "ccid",
-              "usb",
-              "spapr-vio",
-              "virtio-s390",
-              "ccw",
-              "virtio-mmio",
-              "isa",
-              "dimm")
-
 VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "disk",
               "cdrom",

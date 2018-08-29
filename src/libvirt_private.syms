@@ -95,6 +95,7 @@ virCPUModeTypeToString;
 # conf/device_conf.h
 virDeviceInfoPCIAddressIsPresent;
 virDeviceInfoPCIAddressIsWanted;
+virDomainDeviceAddressTypeToString;
 virDomainDeviceInfoAddressIsEqual;
 virDomainDeviceInfoCopy;
 virInterfaceLinkFormat;
@@ -291,7 +292,6 @@ virDomainDefValidate;
 virDomainDefVcpuOrderClear;
 virDomainDeleteConfig;
 virDomainDeviceAddressIsValid;
-virDomainDeviceAddressTypeToString;
 virDomainDeviceAliasIsUserAlias;
 virDomainDeviceDefCopy;
 virDomainDeviceDefFree;
