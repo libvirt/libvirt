@@ -310,7 +310,7 @@
       on the size and placement of volumes. The 'free extents'
       information will detail the regions which are available for creating
       new volumes. A volume cannot span across 2 different free extents.
-      It will default to using <code>msdos</code> as the pool source format.
+      It will default to using <code>dos</code> as the pool source format.
     </p>
 
     <h3>Example pool input</h3>
@@ -357,8 +357,10 @@
       </li>
     </ul>
     <p>
-      The <code>dos</code> or <code>gpt</code> formats are recommended for
-      best portability - the latter is needed for disks larger than 2TB.
+      The formats <code>dos</code> ("msdos" in parted terminology,
+      good for BIOS systems) or <code>gpt</code> (good for UEFI
+      systems) are recommended for best portability - the latter is
+      needed for disks larger than 2TB.
     </p>
 
     <h3>Valid volume format types</h3>
