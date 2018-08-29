@@ -160,8 +160,9 @@ virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
     return true;
 }
 
-int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
-                               bool report)
+bool
+virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
+                           bool report)
 {
     if (addr->domain > 0xFFFF) {
         if (report)
@@ -169,7 +170,7 @@ int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                            _("Invalid PCI address domain='0x%x', "
                              "must be <= 0xFFFF"),
                            addr->domain);
-        return 0;
+        return false;
     }
     if (addr->bus > 0xFF) {
         if (report)
@@ -177,7 +178,7 @@ int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                            _("Invalid PCI address bus='0x%x', "
                              "must be <= 0xFF"),
                            addr->bus);
-        return 0;
+        return false;
     }
     if (addr->slot > 0x1F) {
         if (report)
@@ -185,7 +186,7 @@ int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                            _("Invalid PCI address slot='0x%x', "
                              "must be <= 0x1F"),
                            addr->slot);
-        return 0;
+        return false;
     }
     if (addr->function > 7) {
         if (report)
@@ -193,16 +194,16 @@ int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                            _("Invalid PCI address function=0x%x, "
                              "must be <= 7"),
                            addr->function);
-        return 0;
+        return false;
     }
     if (virPCIDeviceAddressIsEmpty(addr)) {
         if (report)
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Invalid PCI address 0000:00:00, at least "
                              "one of domain, bus, or slot must be > 0"));
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
 
@@ -321,7 +322,7 @@ virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
     return false;
 }
 
-int
+bool
 virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr)
 {
     return addr->cssid <= VIR_DOMAIN_DEVICE_CCW_MAX_CSSID &&
@@ -329,32 +330,32 @@ virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr)
            addr->devno <= VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO;
 }
 
-int
+bool
 virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                               int type)
 {
     if (info->type != type)
-        return 0;
+        return false;
 
     switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         return virPCIDeviceAddressIsValid(&info->addr.pci, false);
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
-        return 1;
+        return true;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
-        return 1;
+        return true;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
         return virDomainDeviceCCWAddressIsValid(&info->addr.ccw);
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 int
