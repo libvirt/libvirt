@@ -188,6 +188,9 @@ bool virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
                                        const virDomainDeviceInfo *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
+int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
+                                  int type);
+
 int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                                bool report);
 bool virPCIDeviceAddressIsEmpty(const virPCIDeviceAddress *addr);
@@ -204,6 +207,8 @@ int virPCIDeviceAddressFormat(virBufferPtr buf,
 
 bool virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
                               virPCIDeviceAddress *addr2);
+
+int virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr);
 
 int virInterfaceLinkParseXML(xmlNodePtr node,
                              virNetDevIfLinkPtr lnk);

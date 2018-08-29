@@ -322,6 +322,42 @@ virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
 }
 
 int
+virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr)
+{
+    return addr->cssid <= VIR_DOMAIN_DEVICE_CCW_MAX_CSSID &&
+           addr->ssid <= VIR_DOMAIN_DEVICE_CCW_MAX_SSID &&
+           addr->devno <= VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO;
+}
+
+int
+virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
+                              int type)
+{
+    if (info->type != type)
+        return 0;
+
+    switch (info->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
+        return virPCIDeviceAddressIsValid(&info->addr.pci, false);
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+        return 1;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+        return 1;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+        return virDomainDeviceCCWAddressIsValid(&info->addr.ccw);
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
+        return 1;
+    }
+
+    return 0;
+}
+
+int
 virInterfaceLinkParseXML(xmlNodePtr node,
                          virNetDevIfLinkPtr lnk)
 {
