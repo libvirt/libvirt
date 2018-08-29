@@ -23,6 +23,7 @@
   <feature name='rdrand'/>
   <feature name='arat'/>
   <feature name='tsc_adjust'/>
+  <feature name='intel-pt'/>
   <feature name='xsaveopt'/>
   <feature name='pdpe1gb'/>
   <feature name='abm'/>

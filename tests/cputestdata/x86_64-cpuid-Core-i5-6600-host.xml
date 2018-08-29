@@ -20,6 +20,7 @@
   <feature name='osxsave'/>
   <feature name='tsc_adjust'/>
   <feature name='clflushopt'/>
+  <feature name='intel-pt'/>
   <feature name='xsaves'/>
   <feature name='pdpe1gb'/>
   <feature name='invtsc'/>

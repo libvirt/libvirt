@@ -22,6 +22,7 @@
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
   <feature name='clflushopt'/>
+  <feature name='intel-pt'/>
   <feature name='pku'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>

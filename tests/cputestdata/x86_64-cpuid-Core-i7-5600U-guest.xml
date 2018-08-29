@@ -22,6 +22,7 @@
   <feature policy='require' name='rdrand'/>
   <feature policy='require' name='arat'/>
   <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='xsaveopt'/>
   <feature policy='require' name='pdpe1gb'/>
   <feature policy='require' name='abm'/>

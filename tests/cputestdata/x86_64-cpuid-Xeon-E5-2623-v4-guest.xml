@@ -20,6 +20,7 @@
   <feature policy='require' name='osxsave'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='cmt'/>
+  <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='mbm_total'/>
   <feature policy='require' name='mbm_local'/>
   <feature policy='require' name='pdpe1gb'/>

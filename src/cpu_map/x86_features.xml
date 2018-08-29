@@ -252,6 +252,9 @@
   <feature name='clwb'>
     <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x01000000'/>
   </feature>
+  <feature name='intel-pt'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x02000000'/>
+  </feature>
   <feature name='avx512pf'>
     <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x04000000'/>
   </feature>
@@ -274,11 +277,35 @@
   <feature name='avx512vbmi'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000002'/>
   </feature>
+  <feature name='umip'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000004'/>
+  </feature>
   <feature name='pku'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000008'/>
   </feature>
   <feature name='ospke'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000010'/>
+  </feature>
+  <feature name='avx512vbmi2'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000040'/>
+  </feature>
+  <feature name='gfni'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000100'/>
+  </feature>
+  <feature name='vaes'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000200'/>
+  </feature>
+  <feature name='vpclmulqdq'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000400'/>
+  </feature>
+  <feature name='avx512vnni'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000800'/>
+  </feature>
+  <feature name='avx512bitalg'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00001000'/>
+  </feature>
+  <feature name='avx512-vpopcntdq'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00004000'/>
   </feature>
   <feature name='la57'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00010000'/>
@@ -289,6 +316,9 @@
   </feature>
   <feature name='avx512-4fmaps'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000008'/>
+  </feature>
+  <feature name='pconfig'>
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00040000'/>
   </feature>
   <feature name='spec-ctrl'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x04000000'/>
@@ -425,6 +455,9 @@
   </feature>
 
   <!-- More AMD-specific features -->
+  <feature name='wbnoinvd'>
+    <cpuid eax_in='0x80000008' ebx='0x00000200'/>
+  </feature>
   <feature name='ibpb'>
     <cpuid eax_in='0x80000008' ebx='0x00001000'/>
   </feature>
