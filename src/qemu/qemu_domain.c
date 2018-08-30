@@ -6391,6 +6391,7 @@ qemuDomainHostdevDefMdevPostParse(virDomainHostdevSubsysMediatedDevPtr mdevsrc,
     /* QEMU 2.12 added support for vfio-pci display type, we default to
      * 'display=off' to stay safe from future changes */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_DISPLAY) &&
+        mdevsrc->model == VIR_MDEV_MODEL_TYPE_VFIO_PCI &&
         mdevsrc->display == VIR_TRISTATE_SWITCH_ABSENT)
         mdevsrc->display = VIR_TRISTATE_SWITCH_OFF;
 
