@@ -21901,6 +21901,13 @@ virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
         return false;
     }
 
+    if (src->mtu != dst->mtu) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target network card MTU %d does not match source %d"),
+                       dst->mtu, src->mtu);
+        return false;
+    }
+
     if (src->virtio && dst->virtio &&
         !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
