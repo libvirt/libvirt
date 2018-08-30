@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/libvirt/libvirt.svg)](https://travis-ci.org/libvirt/libvirt)
  [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/355/badge)](https://bestpractices.coreinfrastructure.org/projects/355)
+[![Code Quality: Cpp](https://img.shields.io/lgtm/grade/cpp/g/libvirt/libvirt.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/libvirt/libvirt/context:cpp)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/libvirt/libvirt.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/libvirt/libvirt/alerts)
 
 Libvirt API for virtualization
 ==============================
