@@ -7531,21 +7531,22 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
     const long system_page_size = virGetSystemPageSizeKB();
     char *mem_path = NULL;
 
-    /*
-     *  No-op if hugepages were not requested.
-     */
-    if (!def->mem.nhugepages)
+    /* There are two cases where we want to put -mem-path onto
+     * the command line: First one is when there are no guest
+     * NUMA nodes and hugepages are configured. The second one is
+     * if user requested file allocation. */
+    if (def->mem.nhugepages &&
+        def->mem.hugepages[0].size != system_page_size) {
+        if (qemuGetDomainHupageMemPath(def, cfg,
+                                       def->mem.hugepages[0].size,
+                                       &mem_path) < 0)
+            return -1;
+    } else if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
+        if (qemuGetMemoryBackingPath(def, cfg, "ram", &mem_path) < 0)
+            return -1;
+    } else {
         return 0;
-
-    /* There is one special case: if user specified "huge"
-     * pages of regular system pages size.
-     * And there is nothing to do in this case.
-     */
-    if (def->mem.hugepages[0].size == system_page_size)
-        return 0;
-
-    if (qemuGetDomainHupageMemPath(def, cfg, def->mem.hugepages[0].size, &mem_path) < 0)
-        return -1;
+    }
 
     if (def->mem.allocation != VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
         virCommandAddArgList(cmd, "-mem-prealloc", NULL);
