@@ -11114,6 +11114,8 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
+        **retstats = *stats;
+
         if (blockdev) {
             /* capacity are reported only per node-name so we need to transfer them */
             qemuBlockStatsPtr capstats;
@@ -11127,8 +11129,6 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
                 (*retstats)->write_threshold = capstats->write_threshold;
             }
         }
-
-        **retstats = *stats;
     } else {
         for (i = 0; i < vm->def->ndisks; i++) {
             disk = vm->def->disks[i];
