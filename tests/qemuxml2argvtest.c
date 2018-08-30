@@ -1976,7 +1976,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_SERIAL);
     DO_TEST("mach-virt-console-native",
             QEMU_CAPS_DEVICE_PL011);
-    DO_TEST("mach-virt-console-virtio", NONE);
+    DO_TEST("mach-virt-console-virtio",
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     DO_TEST_PARSE_ERROR("mach-virt-serial-invalid-machine", NONE);
 
     DO_TEST("disk-ide-split",

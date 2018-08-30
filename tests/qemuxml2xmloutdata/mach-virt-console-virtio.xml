@@ -18,7 +18,9 @@
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <controller type='usb' index='0' model='none'/>
-    <controller type='virtio-serial' index='0'/>
+    <controller type='virtio-serial' index='0'>
+      <address type='virtio-mmio'/>
+    </controller>
     <console type='pty'>
       <target type='virtio' port='0'/>
     </console>
