@@ -227,6 +227,7 @@ mymain(void)
     DO_TEST_DIR("interface.rng", "interfaceschemadata");
     DO_TEST_DIR("network.rng", "../src/network", "networkxml2xmlin",
                 "networkxml2xmlout", "networkxml2confdata");
+    DO_TEST_DIR("networkport.rng", "virnetworkportxml2xmldata");
     DO_TEST_DIR("nodedev.rng", "nodedevschemadata");
     DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout", "../examples/xml/nwfilter");
     DO_TEST_DIR("nwfilterbinding.rng", "virnwfilterbindingxml2xmldata");

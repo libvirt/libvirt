@@ -1,0 +1,15 @@
+<networkport>
+  <uuid>5d744f21-ba4a-4d6e-bdb2-30a35ff3207d</uuid>
+  <owner>
+    <name>memtest</name>
+    <uuid>d54df46f-1ab5-4a22-8618-4560ef5fac2c</uuid>
+  </owner>
+  <group>web1</group>
+  <mac address='52:54:00:7b:35:93'/>
+  <bandwidth classID='1729'>
+    <inbound average='1000' peak='4000' floor='2000' burst='1024'/>
+    <outbound average='128' peak='256' burst='32768'/>
+  </bandwidth>
+  <rxfilters trustGuest='yes'/>
+  <plug type='bridge' bridge='virbr0'/>
+</networkport>

@@ -7,6 +7,8 @@ NETDEV_CONF_SOURCES = \
 	conf/netdev_vport_profile_conf.c \
 	conf/netdev_vlan_conf.h \
 	conf/netdev_vlan_conf.c \
+	conf/virnetworkportdef.h \
+	conf/virnetworkportdef.c \
 	$(NULL)
 
 DOMAIN_CONF_SOURCES = \

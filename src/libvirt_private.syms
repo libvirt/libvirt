@@ -1075,6 +1075,16 @@ virNetworkObjUpdate;
 virNetworkObjUpdateAssignDef;
 
 
+# conf/virnetworkportdef.h
+virNetworkPortDefFormat;
+virNetworkPortDefFormatBuf;
+virNetworkPortDefFree;
+virNetworkPortDefParseFile;
+virNetworkPortDefParseNode;
+virNetworkPortDefParseString;
+virNetworkPortDefSaveStatus;
+
+
 # conf/virnodedeviceobj.h
 virNodeDeviceObjEndAPI;
 virNodeDeviceObjGetDef;

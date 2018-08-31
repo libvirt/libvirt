@@ -72,6 +72,7 @@
         <dd>Description of the XML schemas for
           <a href="formatdomain.html">domains</a>,
           <a href="formatnetwork.html">networks</a>,
+          <a href="formatnetworkport.html">network ports</a>,
           <a href="formatnwfilter.html">network filtering</a>,
           <a href="formatstorage.html">storage</a>,
           <a href="formatstorageencryption.html">storage encryption</a>,

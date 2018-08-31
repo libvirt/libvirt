@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<!-- A Relax NG schema for the libvirt network port XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href='basictypes.rng'/>
+  <include href='networkcommon.rng'/>
+
+  <start>
+    <ref name="networkport"/>
+  </start>
+
+  <define name="networkport">
+    <element name="networkport">
+      <interleave>
+        <element name="uuid">
+          <ref name="UUID"/>
+        </element>
+        <ref name="owner"/>
+        <ref name="mac"/>
+        <optional>
+          <ref name="group"/>
+        </optional>
+        <optional>
+          <ref name="rxfilters"/>
+        </optional>
+        <optional>
+          <ref name="virtualPortProfile"/>
+        </optional>
+        <optional>
+          <ref name="bandwidth"/>
+        </optional>
+        <optional>
+          <ref name="plug"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="owner">
+    <element name="owner">
+      <element name="name">
+        <text/>
+      </element>
+      <element name="uuid">
+        <ref name="UUID"/>
+      </element>
+    </element>
+  </define>
+
+  <define name="mac">
+    <element name="mac">
+      <attribute name="address">
+        <ref name="uniMacAddr"/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="group">
+    <element name="group">
+      <ref name="deviceName"/>
+    </element>
+  </define>
+
+  <define name="rxfilters">
+    <element name="rxfilters">
+      <attribute name="trustGuest">
+        <ref name="virYesNo"/>
+      </attribute>
+    </element>
+  </define>
+
+  <define name="plug">
+    <element name="plug">
+      <choice>
+        <ref name="plugnetwork"/>
+        <ref name="plugbridge"/>
+        <ref name="plugdirect"/>
+        <ref name="plughostdevpci"/>
+      </choice>
+    </element>
+  </define>
+
+  <define name="plugnetwork">
+    <attribute name="type">
+      <value>network</value>
+    </attribute>
+    <attribute name="bridge">
+      <ref name="deviceName"/>
+    </attribute>
+    <optional>
+      <attribute name="macTableManager">
+        <ref name="macTableManager"/>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="plugbridge">
+    <attribute name="type">
+      <value>bridge</value>
+    </attribute>
+    <attribute name="bridge">
+      <ref name="deviceName"/>
+    </attribute>
+    <optional>
+      <attribute name="macTableManager">
+        <ref name="macTableManager"/>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="plugdirect">
+    <attribute name="type">
+      <value>direct</value>
+    </attribute>
+    <attribute name="dev">
+      <ref name="deviceName"/>
+    </attribute>
+    <attribute name="mode">
+      <choice>
+        <value>bridge</value>
+        <value>passthrough</value>
+        <value>private</value>
+        <value>vepa</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <define name="plughostdevpci">
+    <attribute name="type">
+      <value>hostdev-pci</value>
+    </attribute>
+    <optional>
+      <attribute name="managed">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <optional>
+      <element name="driver">
+        <attribute name="name">
+          <choice>
+            <value>kvm</value>
+            <value>vfio</value>
+          </choice>
+        </attribute>
+        <empty/>
+      </element>
+    </optional>
+    <element name='address'>
+      <ref name="pciaddress"/>
+    </element>
+  </define>
+
+</grammar>

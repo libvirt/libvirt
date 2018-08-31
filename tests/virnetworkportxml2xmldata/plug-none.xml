@@ -1,0 +1,8 @@
+<networkport>
+  <uuid>5d744f21-ba4a-4d6e-bdb2-30a35ff3207d</uuid>
+  <owner>
+    <name>memtest</name>
+    <uuid>d54df46f-1ab5-4a22-8618-4560ef5fac2c</uuid>
+  </owner>
+  <mac address='52:54:00:7b:35:93'/>
+</networkport>

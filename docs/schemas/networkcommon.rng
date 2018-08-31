@@ -134,6 +134,11 @@
 
   <define name="bandwidth">
     <element name="bandwidth">
+      <optional>
+        <attribute name="classID">
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
       <interleave>
         <optional>
           <element name="inbound">
