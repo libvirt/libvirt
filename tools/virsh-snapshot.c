@@ -50,9 +50,6 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     bool ret = false;
     virDomainSnapshotPtr snapshot;
     bool halt = false;
-    char *doc = NULL;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
     const char *name = NULL;
 
     snapshot = virDomainSnapshotCreateXML(dom, buffer, flags);
@@ -101,10 +98,7 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     ret = true;
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
     virshDomainSnapshotFree(snapshot);
-    VIR_FREE(doc);
     return ret;
 }
 
