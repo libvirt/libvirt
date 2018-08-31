@@ -706,9 +706,9 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
 
     if (priv->password) {
         /* tunelled password authentication */
-        if ((ret = libssh2_userauth_password(sess->session,
-                                             priv->username,
-                                             priv->password)) == 0) {
+        if ((rc = libssh2_userauth_password(sess->session,
+                                            priv->username,
+                                            priv->password)) == 0) {
             ret = 0;
             goto cleanup;
         }
@@ -737,7 +737,7 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
                 goto cleanup;
             }
 
-            if (ret != LIBSSH2_ERROR_AUTHENTICATION_FAILED)
+            if (rc != LIBSSH2_ERROR_AUTHENTICATION_FAILED)
                 break;
 
             VIR_FREE(password);
@@ -750,10 +750,10 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
                    _("authentication failed: %s"), errmsg);
 
     /* determine exist status */
-    if (ret == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
-        return 1;
+    if (rc == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
+        ret = 1;
     else
-        return -1;
+        ret = -1;
 
  cleanup:
     VIR_FREE(password);
