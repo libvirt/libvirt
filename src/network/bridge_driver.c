@@ -169,11 +169,14 @@ networkRefreshDaemons(virNetworkDriverStatePtr driver);
 
 static int
 networkPlugBandwidth(virNetworkObjPtr obj,
-                     virDomainNetDefPtr iface);
+                     virMacAddrPtr mac,
+                     virNetDevBandwidthPtr ifaceBand,
+                     unsigned int *class_id);
 
 static int
 networkUnplugBandwidth(virNetworkObjPtr obj,
-                       virDomainNetDefPtr iface);
+                       virNetDevBandwidthPtr ifaceBand,
+                       unsigned int *class_id);
 
 static void
 networkNetworkObjTaint(virNetworkObjPtr obj,
@@ -4512,7 +4515,9 @@ networkAllocateActualDevice(virNetworkPtr net,
             goto error;
         }
 
-        if (networkPlugBandwidth(obj, iface) < 0)
+        if (networkPlugBandwidth(obj, &iface->mac, iface->bandwidth,
+                                 iface->data.network.actual ?
+                                 &iface->data.network.actual->class_id : NULL) < 0)
             goto error;
         break;
 
@@ -4605,7 +4610,9 @@ networkAllocateActualDevice(virNetworkPtr net,
                 }
             }
 
-            if (networkPlugBandwidth(obj, iface) < 0)
+            if (networkPlugBandwidth(obj, &iface->mac, iface->bandwidth,
+                                     iface->data.network.actual ?
+                                     &iface->data.network.actual->class_id : NULL) < 0)
                 goto error;
             break;
         }
@@ -5027,14 +5034,17 @@ networkReleaseActualDevice(virNetworkPtr net,
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
     case VIR_NETWORK_FORWARD_OPEN:
-        if (iface->data.network.actual && networkUnplugBandwidth(obj, iface) < 0)
+        if (iface->data.network.actual &&
+            networkUnplugBandwidth(obj, iface->bandwidth,
+                                   &iface->data.network.actual->class_id) < 0)
             goto error;
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
         if (iface->data.network.actual &&
             actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-            networkUnplugBandwidth(obj, iface) < 0)
+            networkUnplugBandwidth(obj, iface->bandwidth,
+                                   &iface->data.network.actual->class_id) < 0)
             goto error;
         break;
     case VIR_NETWORK_FORWARD_PRIVATE:
@@ -5174,7 +5184,7 @@ static int
 networkCheckBandwidth(virNetworkObjPtr obj,
                       virNetDevBandwidthPtr ifaceBand,
                       virNetDevBandwidthPtr oldBandwidth,
-                      virMacAddr ifaceMac,
+                      virMacAddrPtr ifaceMac,
                       unsigned long long *new_rate)
 {
     int ret = -1;
@@ -5184,7 +5194,7 @@ networkCheckBandwidth(virNetworkObjPtr obj,
     unsigned long long tmp_new_rate = 0;
     char ifmac[VIR_MAC_STRING_BUFLEN];
 
-    virMacAddrFormat(&ifaceMac, ifmac);
+    virMacAddrFormat(ifaceMac, ifmac);
 
     if (ifaceBand && ifaceBand->in && ifaceBand->in->floor &&
         !(netBand && netBand->in)) {
@@ -5269,44 +5279,45 @@ networkNextClassID(virNetworkObjPtr obj)
 
 static int
 networkPlugBandwidthImpl(virNetworkObjPtr obj,
-                         virDomainNetDefPtr iface,
+                         virMacAddrPtr mac,
                          virNetDevBandwidthPtr ifaceBand,
+                         unsigned int *class_id,
                          unsigned long long new_rate)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     virBitmapPtr classIdMap = virNetworkObjGetClassIdMap(obj);
     unsigned long long tmp_floor_sum = virNetworkObjGetFloorSum(obj);
-    ssize_t class_id = 0;
+    ssize_t next_id = 0;
     int plug_ret;
     int ret = -1;
 
     /* generate new class_id */
-    if ((class_id = networkNextClassID(obj)) < 0) {
+    if ((next_id = networkNextClassID(obj)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not generate next class ID"));
         goto cleanup;
     }
 
     plug_ret = virNetDevBandwidthPlug(def->bridge, def->bandwidth,
-                                      &iface->mac, ifaceBand, class_id);
+                                      mac, ifaceBand, next_id);
     if (plug_ret < 0) {
-        ignore_value(virNetDevBandwidthUnplug(def->bridge, class_id));
+        ignore_value(virNetDevBandwidthUnplug(def->bridge, next_id));
         goto cleanup;
     }
 
     /* QoS was set, generate new class ID */
-    iface->data.network.actual->class_id = class_id;
+    *class_id = next_id;
     /* update sum of 'floor'-s of attached NICs */
     tmp_floor_sum += ifaceBand->in->floor;
     virNetworkObjSetFloorSum(obj, tmp_floor_sum);
     /* update status file */
     if (virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
-        ignore_value(virBitmapClearBit(classIdMap, class_id));
+        ignore_value(virBitmapClearBit(classIdMap, next_id));
         tmp_floor_sum -= ifaceBand->in->floor;
         virNetworkObjSetFloorSum(obj, tmp_floor_sum);
-        iface->data.network.actual->class_id = 0;
-        ignore_value(virNetDevBandwidthUnplug(def->bridge, class_id));
+        *class_id = 0;
+        ignore_value(virNetDevBandwidthUnplug(def->bridge, next_id));
         goto cleanup;
     }
     /* update rate for non guaranteed NICs */
@@ -5324,16 +5335,17 @@ networkPlugBandwidthImpl(virNetworkObjPtr obj,
 
 static int
 networkPlugBandwidth(virNetworkObjPtr obj,
-                     virDomainNetDefPtr iface)
+                     virMacAddrPtr mac,
+                     virNetDevBandwidthPtr ifaceBand,
+                     unsigned int *class_id)
 {
     int ret = -1;
     int plug_ret;
     unsigned long long new_rate = 0;
     char ifmac[VIR_MAC_STRING_BUFLEN];
-    virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
 
     if ((plug_ret = networkCheckBandwidth(obj, ifaceBand, NULL,
-                                          iface->mac, &new_rate)) < 0) {
+                                          mac, &new_rate)) < 0) {
         /* helper reported error */
         goto cleanup;
     }
@@ -5344,16 +5356,9 @@ networkPlugBandwidth(virNetworkObjPtr obj,
         goto cleanup;
     }
 
-    virMacAddrFormat(&iface->mac, ifmac);
-    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK ||
-        !iface->data.network.actual) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot set bandwidth on interface '%s' of type %d"),
-                       ifmac, iface->type);
-        goto cleanup;
-    }
+    virMacAddrFormat(mac, ifmac);
 
-    if (networkPlugBandwidthImpl(obj, iface, ifaceBand, new_rate) < 0)
+    if (networkPlugBandwidthImpl(obj, mac, ifaceBand, class_id, new_rate) < 0)
         goto cleanup;
 
     ret = 0;
@@ -5365,7 +5370,8 @@ networkPlugBandwidth(virNetworkObjPtr obj,
 
 static int
 networkUnplugBandwidth(virNetworkObjPtr obj,
-                       virDomainNetDefPtr iface)
+                       virNetDevBandwidthPtr ifaceBand,
+                       unsigned int *class_id)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     virBitmapPtr classIdMap = virNetworkObjGetClassIdMap(obj);
@@ -5373,10 +5379,8 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
     virNetworkDriverStatePtr driver = networkGetDriver();
     int ret = 0;
     unsigned long long new_rate;
-    virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
 
-    if (iface->data.network.actual &&
-        iface->data.network.actual->class_id) {
+    if (class_id && *class_id) {
         if (!def->bandwidth || !def->bandwidth->in) {
             VIR_WARN("Network %s has no bandwidth but unplug requested",
                      def->name);
@@ -5388,8 +5392,7 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
         if (def->bandwidth->in->peak > 0)
             new_rate = def->bandwidth->in->peak;
 
-        ret = virNetDevBandwidthUnplug(def->bridge,
-                                       iface->data.network.actual->class_id);
+        ret = virNetDevBandwidthUnplug(def->bridge, *class_id);
         if (ret < 0)
             goto cleanup;
         /* update sum of 'floor'-s of attached NICs */
@@ -5397,14 +5400,12 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
         virNetworkObjSetFloorSum(obj, tmp_floor_sum);
 
         /* return class ID */
-        ignore_value(virBitmapClearBit(classIdMap,
-                                       iface->data.network.actual->class_id));
+        ignore_value(virBitmapClearBit(classIdMap, *class_id));
         /* update status file */
         if (virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
             tmp_floor_sum += ifaceBand->in->floor;
             virNetworkObjSetFloorSum(obj, tmp_floor_sum);
-            ignore_value(virBitmapSetBit(classIdMap,
-                                         iface->data.network.actual->class_id));
+            ignore_value(virBitmapSetBit(classIdMap, *class_id));
             goto cleanup;
         }
         /* update rate for non guaranteed NICs */
@@ -5414,7 +5415,7 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
             VIR_WARN("Unable to update rate for 1:2 class on %s bridge",
                      def->bridge);
         /* no class is associated any longer */
-        iface->data.network.actual->class_id = 0;
+        *class_id = 0;
     }
 
  cleanup:
@@ -5485,7 +5486,7 @@ networkBandwidthChangeAllowed(virDomainNetDefPtr iface,
         return false;
     }
 
-    if (networkCheckBandwidth(obj, newBandwidth, ifaceBand, iface->mac, NULL) < 0)
+    if (networkCheckBandwidth(obj, newBandwidth, ifaceBand, &iface->mac, NULL) < 0)
         goto cleanup;
 
     ret = true;
@@ -5528,7 +5529,7 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
     def = virNetworkObjGetDef(obj);
 
     if ((plug_ret = networkCheckBandwidth(obj, newBandwidth, ifaceBand,
-                                          iface->mac, &new_rate)) < 0) {
+                                          &iface->mac, &new_rate)) < 0) {
         /* helper reported error */
         goto cleanup;
     }
@@ -5574,12 +5575,17 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
     } else if (newBandwidth->in && newBandwidth->in->floor) {
         /* .. or we need to plug in new .. */
 
-        if (networkPlugBandwidthImpl(obj, iface, newBandwidth, new_rate) < 0)
+        if (networkPlugBandwidthImpl(obj, &iface->mac, newBandwidth,
+                                     iface->data.network.actual ?
+                                     &iface->data.network.actual->class_id : NULL,
+                                     new_rate) < 0)
             goto cleanup;
     } else {
         /* .. or unplug old. */
 
-        if (networkUnplugBandwidth(obj, iface) < 0)
+        if (networkUnplugBandwidth(obj, iface->bandwidth,
+                                   iface->data.network.actual ?
+                                   &iface->data.network.actual->class_id : NULL) < 0)
             goto cleanup;
     }
 
