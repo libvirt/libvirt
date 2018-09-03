@@ -80,6 +80,8 @@ struct _virNetDevVPortProfile {
 
 bool virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a,
                                 virNetDevVPortProfilePtr b);
+int virNetDevVPortProfileCopy(virNetDevVPortProfilePtr *dst,
+                              const virNetDevVPortProfile *src);
 
 int virNetDevVPortProfileCheckComplete(virNetDevVPortProfilePtr virtport,
                                        bool generateMissing);

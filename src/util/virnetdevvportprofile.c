@@ -127,6 +127,22 @@ virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a, virNetDevVPortProfilePtr 
     return true;
 }
 
+
+int virNetDevVPortProfileCopy(virNetDevVPortProfilePtr *dst, const virNetDevVPortProfile *src)
+{
+    if (!src) {
+        *dst = NULL;
+        return 0;
+    }
+
+    if (VIR_ALLOC(*dst) < 0)
+        return -1;
+
+    memcpy(*dst, src, sizeof(*src));
+    return 0;
+}
+
+
 /* virNetDevVPortProfileCheckComplete() checks that all attributes
  * required for the type of virtport are specified. When
  * generateMissing is true, any missing attribute that can be
