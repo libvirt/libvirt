@@ -162,3 +162,9 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
                            virDomainDiskDefPtr disk,
                            virStorageSourcePtr newsrc,
                            bool reuse);
+
+int
+qemuBlockStorageSourceCreateGetFormatProps(virStorageSourcePtr src,
+                                           virStorageSourcePtr backing,
+                                           virJSONValuePtr *props)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
