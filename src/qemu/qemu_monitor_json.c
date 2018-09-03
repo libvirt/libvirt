@@ -8639,6 +8639,32 @@ qemuMonitorJSONSetWatchdogAction(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorJSONBlockdevCreate(qemuMonitorPtr mon,
+                              const char *jobname,
+                              virJSONValuePtr props)
+{
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("blockdev-create",
+                                     "s:job-id", jobname,
+                                     "a:options", &props,
+                                     NULL);
+    virJSONValueFree(props);
+    if (!cmd)
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
 qemuMonitorJSONBlockdevAdd(qemuMonitorPtr mon,
                            virJSONValuePtr props)
 {

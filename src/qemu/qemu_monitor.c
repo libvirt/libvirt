@@ -4420,6 +4420,36 @@ qemuMonitorSetWatchdogAction(qemuMonitorPtr mon,
 
 
 /**
+ * qemuMonitorBlockdevCreate:
+ * @mon: monitor object
+ * @jobname: name of the job
+ * @props: JSON object describing the blockdev to add
+ *
+ * Instructs qemu to create/format a new stroage or format layer. Note that
+ * the job does not add the created/formatted image into qemu and
+ * qemuMonitorBlockdevAdd needs to be called separately with corresponding
+ * arguments. Note that the arguments for creating and adding are different.
+ *
+ * Note that @props is always consumed by this function and should not be
+ * accessed after calling this function.
+ */
+int
+qemuMonitorBlockdevCreate(qemuMonitorPtr mon,
+                          const char *jobname,
+                          virJSONValuePtr props)
+{
+    VIR_DEBUG("jobname=%s props=%p", jobname, props);
+
+    QEMU_CHECK_MONITOR_GOTO(mon, error);
+
+    return qemuMonitorJSONBlockdevCreate(mon, jobname, props);
+
+ error:
+    virJSONValueFree(props);
+    return -1;
+}
+
+/**
  * qemuMonitorBlockdevAdd:
  * @mon: monitor object
  * @props: JSON object describing the blockdev to add

@@ -581,6 +581,11 @@ int qemuMonitorJSONSetWatchdogAction(qemuMonitorPtr mon,
                                      const char *action)
     ATTRIBUTE_NONNULL(1);
 
+int qemuMonitorJSONBlockdevCreate(qemuMonitorPtr mon,
+                                  const char *jobname,
+                                  virJSONValuePtr props)
+    ATTRIBUTE_NONNULL(1);
+
 int qemuMonitorJSONBlockdevAdd(qemuMonitorPtr mon,
                                virJSONValuePtr props)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
