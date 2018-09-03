@@ -67,6 +67,7 @@
 #include "network_event.h"
 #include "virhook.h"
 #include "virjson.h"
+#include "virnetworkportdef.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 #define MAX_BRIDGE_ID 256
@@ -4381,17 +4382,16 @@ networkAllocateActualDevice(virNetworkPtr net,
                             virDomainNetDefPtr iface)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
-    virDomainNetType actualType = iface->type;
     virNetworkObjPtr obj = NULL;
     virNetworkDefPtr netdef = NULL;
-    virNetDevBandwidthPtr bandwidth = NULL;
     virPortGroupDefPtr portgroup = NULL;
-    virNetDevVPortProfilePtr virtport = iface->virtPortProfile;
-    virNetDevVlanPtr vlan = NULL;
     virNetworkForwardIfDefPtr dev = NULL;
     size_t i;
     int ret = -1;
+    virNetDevVPortProfilePtr portprofile = NULL;
+    virNetworkPortDefPtr port = NULL;
 
+    VIR_DEBUG("Allocating port from net %s", net->name);
     obj = virNetworkObjFindByName(driver->networks, net->name);
     if (!obj) {
         virReportError(VIR_ERR_NO_NETWORK,
@@ -4406,9 +4406,6 @@ networkAllocateActualDevice(virNetworkPtr net,
         goto error;
     }
 
-    virDomainActualNetDefFree(iface->data.network.actual);
-    iface->data.network.actual = NULL;
-
     netdef = virNetworkObjGetDef(obj);
 
     if (!virNetworkObjIsActive(obj)) {
@@ -4418,62 +4415,57 @@ networkAllocateActualDevice(virNetworkPtr net,
         goto error;
     }
 
-    if (VIR_ALLOC(iface->data.network.actual) < 0)
+    if (!(port = virDomainNetDefToNetworkPort(dom, iface)))
         goto error;
 
+    VIR_DEBUG("Interface port group %s", port->group);
     /* portgroup can be present for any type of network, in particular
      * for bandwidth information, so we need to check for that and
      * fill it in appropriately for all forward types.
      */
-    portgroup = virPortGroupFindByName(netdef, iface->data.network.portgroup);
+    portgroup = virPortGroupFindByName(netdef, port->group);
 
-    /* If there is already interface-specific bandwidth, just use that
-     * (already in NetDef). Otherwise, if there is bandwidth info in
-     * the portgroup, fill that into the ActualDef.
-     */
+    if (!port->bandwidth) {
+        if (portgroup && portgroup->bandwidth &&
+            virNetDevBandwidthCopy(&port->bandwidth,
+                                   portgroup->bandwidth) < 0)
+            goto error;
+    }
 
-    if (iface->bandwidth)
-        bandwidth = iface->bandwidth;
-    else if (portgroup && portgroup->bandwidth)
-        bandwidth = portgroup->bandwidth;
+    if (port->vlan.nTags == 0) {
+        virNetDevVlanPtr vlan = NULL;
+        if (portgroup && portgroup->vlan.nTags > 0)
+            vlan = &portgroup->vlan;
+        else if (netdef->vlan.nTags > 0)
+            vlan = &netdef->vlan;
 
-    if (bandwidth && virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
-                                            bandwidth) < 0)
-        goto error;
+        if (vlan && virNetDevVlanCopy(&port->vlan, vlan) < 0)
+            goto error;
+    }
 
-    /* copy appropriate vlan info to actualNet */
-    if (iface->vlan.nTags > 0)
-        vlan = &iface->vlan;
-    else if (portgroup && portgroup->vlan.nTags > 0)
-        vlan = &portgroup->vlan;
-    else if (netdef->vlan.nTags > 0)
-        vlan = &netdef->vlan;
-
-    if (vlan && virNetDevVlanCopy(&iface->data.network.actual->vlan, vlan) < 0)
-        goto error;
-
-    if (iface->trustGuestRxFilters)
-       iface->data.network.actual->trustGuestRxFilters
-          = iface->trustGuestRxFilters;
-    else if (portgroup && portgroup->trustGuestRxFilters)
-       iface->data.network.actual->trustGuestRxFilters
-          = portgroup->trustGuestRxFilters;
-    else if (netdef->trustGuestRxFilters)
-       iface->data.network.actual->trustGuestRxFilters
-          = netdef->trustGuestRxFilters;
+    if (!port->trustGuestRxFilters) {
+        if (portgroup && portgroup->trustGuestRxFilters)
+            port->trustGuestRxFilters = portgroup->trustGuestRxFilters;
+        else if (netdef->trustGuestRxFilters)
+            port->trustGuestRxFilters = netdef->trustGuestRxFilters;
+    }
 
     /* merge virtualports from interface, network, and portgroup to
      * arrive at actual virtualport to use
      */
-    if (virNetDevVPortProfileMerge3(&iface->data.network.actual->virtPortProfile,
-                                    iface->virtPortProfile,
+    if (virNetDevVPortProfileMerge3(&portprofile,
+                                    port->virtPortProfile,
                                     netdef->virtPortProfile,
                                     portgroup
                                     ? portgroup->virtPortProfile : NULL) < 0) {
-        goto error;
+                goto error;
     }
-    virtport = iface->data.network.actual->virtPortProfile;
+    if (portprofile) {
+        VIR_FREE(port->virtPortProfile);
+        port->virtPortProfile = portprofile;
+    }
 
+    VIR_DEBUG("Processing forward type %d", netdef->forward.type);
     switch ((virNetworkForwardType) netdef->forward.type) {
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
@@ -4483,38 +4475,28 @@ networkAllocateActualDevice(virNetworkPtr net,
          * NETWORK; we just keep the info from the portgroup in
          * iface->data.network.actual
          */
-        iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
+        port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_NETWORK;
 
-        /* we also store the bridge device and macTableManager settings
-         * in iface->data.network.actual->data.bridge for later use
-         * after the domain's tap device is created (to attach to the
-         * bridge and set flood/learning mode on the tap device)
-         */
-        if (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
-                       netdef->bridge) < 0)
+        if (VIR_STRDUP(port->plug.bridge.brname, netdef->bridge) < 0)
             goto error;
-        iface->data.network.actual->data.bridge.macTableManager
-           = netdef->macTableManager;
+        port->plug.bridge.macTableManager = netdef->macTableManager;
 
-        if (virtport) {
+        if (port->virtPortProfile) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("<virtualport type='%s'> not supported for network "
                              "'%s' which uses IP forwarding"),
-                           virNetDevVPortTypeToString(virtport->virtPortType),
+                           virNetDevVPortTypeToString(port->virtPortProfile->virtPortType),
                            netdef->name);
             goto error;
         }
 
-        if (networkPlugBandwidth(obj, &iface->mac, iface->bandwidth,
-                                 iface->data.network.actual ?
-                                 &iface->data.network.actual->class_id : NULL) < 0)
+        if (networkPlugBandwidth(obj, &port->mac, port->bandwidth, &port->class_id) < 0)
             goto error;
         break;
 
     case VIR_NETWORK_FORWARD_HOSTDEV: {
-        virDomainHostdevSubsysPCIBackendType backend;
+        port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI;
 
-        iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_HOSTDEV;
         if (networkCreateInterfacePool(netdef) < 0)
             goto error;
 
@@ -4532,42 +4514,19 @@ networkAllocateActualDevice(virNetworkPtr net,
                            netdef->name);
             goto error;
         }
-        iface->data.network.actual->data.hostdev.def.parentnet = iface;
-        iface->data.network.actual->data.hostdev.def.info = &iface->info;
-        iface->data.network.actual->data.hostdev.def.mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-        iface->data.network.actual->data.hostdev.def.managed = netdef->forward.managed ? 1 : 0;
-        iface->data.network.actual->data.hostdev.def.source.subsys.type = dev->type;
-        iface->data.network.actual->data.hostdev.def.source.subsys.u.pci.addr = dev->device.pci;
+        port->plug.hostdevpci.addr = dev->device.pci;
+        port->plug.hostdevpci.driver = netdef->forward.driverName;
+        port->plug.hostdevpci.managed = netdef->forward.managed;
 
-        switch (netdef->forward.driverName) {
-        case VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT:
-            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT;
-            break;
-        case VIR_NETWORK_FORWARD_DRIVER_NAME_KVM:
-            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
-            break;
-        case VIR_NETWORK_FORWARD_DRIVER_NAME_VFIO:
-            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
-            break;
-        default:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unrecognized driver name value %d "
-                             " in network '%s'"),
-                           netdef->forward.driverName, netdef->name);
-            goto error;
-        }
-        iface->data.network.actual->data.hostdev.def.source.subsys.u.pci.backend
-            = backend;
-
-        if (virtport) {
+        if (port->virtPortProfile) {
             /* make sure type is supported for hostdev connections */
-            if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBG &&
-                virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBH) {
+            if (port->virtPortProfile->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBG &&
+                port->virtPortProfile->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBH) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("<virtualport type='%s'> not supported for network "
                                  "'%s' which uses an SR-IOV Virtual Function "
                                  "via PCI passthrough"),
-                               virNetDevVPortTypeToString(virtport->virtPortType),
+                               virNetDevVPortTypeToString(port->virtPortProfile->virtPortType),
                                netdef->name);
                 goto error;
             }
@@ -4581,28 +4540,24 @@ networkAllocateActualDevice(virNetworkPtr net,
              * is VIR_DOMAIN_NET_TYPE_BRIDGE
              */
 
-            iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_BRIDGE;
-            if (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
-                           netdef->bridge) < 0)
+            port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE;
+            if (VIR_STRDUP(port->plug.bridge.brname, netdef->bridge) < 0)
                 goto error;
-            iface->data.network.actual->data.bridge.macTableManager
-               = netdef->macTableManager;
+            port->plug.bridge.macTableManager = netdef->macTableManager;
 
-            if (virtport) {
+            if (port->virtPortProfile) {
                 /* only type='openvswitch' is allowed for bridges */
-                if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+                if (port->virtPortProfile->virtPortType != VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("<virtualport type='%s'> not supported for network "
                                      "'%s' which uses a bridge device"),
-                                   virNetDevVPortTypeToString(virtport->virtPortType),
+                                   virNetDevVPortTypeToString(port->virtPortProfile->virtPortType),
                                    netdef->name);
                     goto error;
                 }
             }
 
-            if (networkPlugBandwidth(obj, &iface->mac, iface->bandwidth,
-                                     iface->data.network.actual ?
-                                     &iface->data.network.actual->class_id : NULL) < 0)
+            if (networkPlugBandwidth(obj, &port->mac, port->bandwidth, &port->class_id) < 0)
                 goto error;
             break;
         }
@@ -4620,22 +4575,22 @@ networkAllocateActualDevice(virNetworkPtr net,
          */
 
         /* Set type=direct and appropriate <source mode='xxx'/> */
-        iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_DIRECT;
+        port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_DIRECT;
 
         /* NO need to check the value returned from virNetDevMacVLanModeTypeFromString
          * it must be valid for these forward type(bridge|private|vepa|passthrough)
          */
-        iface->data.network.actual->data.direct.mode =
+        port->plug.direct.mode =
             virNetDevMacVLanModeTypeFromString(virNetworkForwardTypeToString(netdef->forward.type));
 
-        if (virtport) {
+        if (port->virtPortProfile) {
             /* make sure type is supported for macvtap connections */
-            if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBG &&
-                virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBH) {
+            if (port->virtPortProfile->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBG &&
+                port->virtPortProfile->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBH) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("<virtualport type='%s'> not supported for network "
                                  "'%s' which uses a macvtap device"),
-                               virNetDevVPortTypeToString(virtport->virtPortType),
+                               virNetDevVPortTypeToString(port->virtPortProfile->virtPortType),
                                netdef->name);
                 goto error;
             }
@@ -4664,8 +4619,8 @@ networkAllocateActualDevice(virNetworkPtr net,
              */
             if ((netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
                 ((netdef->forward.type == VIR_NETWORK_FORWARD_PRIVATE) &&
-                 iface->data.network.actual->virtPortProfile &&
-                 (iface->data.network.actual->virtPortProfile->virtPortType
+                 port->virtPortProfile &&
+                 (port->virtPortProfile->virtPortType
                   == VIR_NETDEV_VPORT_PROFILE_8021QBH))) {
 
                 /* pick first dev with 0 connections */
@@ -4691,7 +4646,7 @@ networkAllocateActualDevice(virNetworkPtr net,
                                netdef->name);
                 goto error;
             }
-            if (VIR_STRDUP(iface->data.network.actual->data.direct.linkdev,
+            if (VIR_STRDUP(port->plug.direct.linkdev,
                            dev->device.dev) < 0)
                 goto error;
         }
@@ -4704,30 +4659,30 @@ networkAllocateActualDevice(virNetworkPtr net,
     }
 
     if (virNetworkObjMacMgrAdd(obj, driver->dnsmasqStateDir,
-                               dom->name, &iface->mac) < 0)
+                               dom->name, &port->mac) < 0)
         goto error;
 
-    if (virNetDevVPortProfileCheckComplete(virtport, true) < 0)
+    if (virNetDevVPortProfileCheckComplete(port->virtPortProfile, true) < 0)
         goto error;
 
     /* make sure that everything now specified for the device is
      * actually supported on this type of network. NB: network,
      * netdev, and iface->data.network.actual may all be NULL.
      */
+    VIR_DEBUG("Sanity check port config");
 
-    if (virDomainNetGetActualVlan(iface)) {
+    if (port->vlan.nTags) {
         /* vlan configuration via libvirt is only supported for PCI
          * Passthrough SR-IOV devices (hostdev or macvtap passthru
          * mode) and openvswitch bridges. Otherwise log an error and
          * fail
          */
-        if (!(actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
-              (actualType == VIR_DOMAIN_NET_TYPE_DIRECT &&
-               virDomainNetGetActualDirectMode(iface)
-               == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) ||
-              (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-               virtport && virtport->virtPortType
-               == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))) {
+        if (!(port->plugtype == VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI ||
+              (port->plugtype == VIR_NETWORK_PORT_PLUG_TYPE_DIRECT &&
+               port->plug.direct.mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) ||
+              (port->plugtype == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+               port->virtPortProfile &&
+               port->virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("an interface connecting to network '%s' "
                              "is requesting a vlan tag, but that is not "
@@ -4736,16 +4691,15 @@ networkAllocateActualDevice(virNetworkPtr net,
             goto error;
         }
     }
-    if (virDomainNetGetActualBandwidth(iface)) {
-        /* bandwidth configuration via libvirt is not supported for
-         * hostdev network devices
-         */
-        if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("bandwidth settings are not supported "
-                             "for hostdev interfaces"));
-            goto error;
-        }
+
+    /* bandwidth configuration via libvirt is not supported for
+     * hostdev network devices
+     */
+    if (port->bandwidth && port->plugtype == VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("bandwidth settings are not supported "
+                         "for hostdev interfaces"));
+        goto error;
     }
 
     netdef->connections++;
@@ -4763,9 +4717,15 @@ networkAllocateActualDevice(virNetworkPtr net,
     }
     networkLogAllocation(netdef, dev, &iface->mac, true);
 
+    VIR_DEBUG("Populating net def");
+    if (virDomainNetDefActualFromNetworkPort(iface, port) < 0)
+        goto error;
+
+    VIR_DEBUG("Port allocated");
     ret = 0;
 
  cleanup:
+    virNetworkPortDefFree(port);
     virNetworkObjEndAPI(&obj);
     return ret;
 
