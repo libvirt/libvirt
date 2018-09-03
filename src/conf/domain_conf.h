@@ -3552,6 +3552,23 @@ bool
 virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
                                    virDomainLifecycleAction action);
 
+// Forward decl to avoid pulling in virnetworkportdef.h because
+// that pulls in virhostdev.h which pulls in domain_conf.h (evil)
+typedef struct _virNetworkPortDef virNetworkPortDef;
+typedef virNetworkPortDef *virNetworkPortDefPtr;
+
+virNetworkPortDefPtr
+virDomainNetDefToNetworkPort(virDomainDefPtr dom,
+                             virDomainNetDefPtr iface);
+
+int
+virDomainNetDefActualFromNetworkPort(virDomainNetDefPtr iface,
+                                     virNetworkPortDefPtr port);
+
+virNetworkPortDefPtr
+virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
+                                   virDomainNetDefPtr iface);
+
 typedef int
 (*virDomainNetAllocateActualDeviceImpl)(virNetworkPtr net,
                                         virDomainDefPtr dom,
