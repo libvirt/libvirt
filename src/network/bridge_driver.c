@@ -4469,6 +4469,18 @@ networkAllocateActualDevice(virNetworkPtr net,
        iface->data.network.actual->trustGuestRxFilters
           = netdef->trustGuestRxFilters;
 
+    /* merge virtualports from interface, network, and portgroup to
+     * arrive at actual virtualport to use
+     */
+    if (virNetDevVPortProfileMerge3(&iface->data.network.actual->virtPortProfile,
+                                    iface->virtPortProfile,
+                                    netdef->virtPortProfile,
+                                    portgroup
+                                    ? portgroup->virtPortProfile : NULL) < 0) {
+        goto error;
+    }
+    virtport = iface->data.network.actual->virtPortProfile;
+
     switch ((virNetworkForwardType) netdef->forward.type) {
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
@@ -4490,6 +4502,15 @@ networkAllocateActualDevice(virNetworkPtr net,
             goto error;
         iface->data.network.actual->data.bridge.macTableManager
            = netdef->macTableManager;
+
+        if (virtport) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("<virtualport type='%s'> not supported for network "
+                             "'%s' which uses IP forwarding"),
+                           virNetDevVPortTypeToString(virtport->virtPortType),
+                           netdef->name);
+            goto error;
+        }
 
         if (networkPlugBandwidth(obj, iface) < 0)
             goto error;
@@ -4543,17 +4564,6 @@ networkAllocateActualDevice(virNetworkPtr net,
         iface->data.network.actual->data.hostdev.def.source.subsys.u.pci.backend
             = backend;
 
-        /* merge virtualports from interface, network, and portgroup to
-         * arrive at actual virtualport to use
-         */
-        if (virNetDevVPortProfileMerge3(&iface->data.network.actual->virtPortProfile,
-                                        iface->virtPortProfile,
-                                        netdef->virtPortProfile,
-                                        portgroup
-                                        ? portgroup->virtPortProfile : NULL) < 0) {
-            goto error;
-        }
-        virtport = iface->data.network.actual->virtPortProfile;
         if (virtport) {
             /* make sure type is supported for hostdev connections */
             if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBG &&
@@ -4583,17 +4593,6 @@ networkAllocateActualDevice(virNetworkPtr net,
             iface->data.network.actual->data.bridge.macTableManager
                = netdef->macTableManager;
 
-            /* merge virtualports from interface, network, and portgroup to
-             * arrive at actual virtualport to use
-             */
-            if (virNetDevVPortProfileMerge3(&iface->data.network.actual->virtPortProfile,
-                                            iface->virtPortProfile,
-                                            netdef->virtPortProfile,
-                                            portgroup
-                                            ? portgroup->virtPortProfile : NULL) < 0) {
-                goto error;
-            }
-            virtport = iface->data.network.actual->virtPortProfile;
             if (virtport) {
                 /* only type='openvswitch' is allowed for bridges */
                 if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
@@ -4632,17 +4631,6 @@ networkAllocateActualDevice(virNetworkPtr net,
         iface->data.network.actual->data.direct.mode =
             virNetDevMacVLanModeTypeFromString(virNetworkForwardTypeToString(netdef->forward.type));
 
-        /* merge virtualports from interface, network, and portgroup to
-         * arrive at actual virtualport to use
-         */
-        if (virNetDevVPortProfileMerge3(&iface->data.network.actual->virtPortProfile,
-                                        iface->virtPortProfile,
-                                        netdef->virtPortProfile,
-                                        portgroup
-                                        ? portgroup->virtPortProfile : NULL) < 0) {
-            goto error;
-        }
-        virtport = iface->data.network.actual->virtPortProfile;
         if (virtport) {
             /* make sure type is supported for macvtap connections */
             if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBG &&
