@@ -1602,7 +1602,7 @@ qemuDiskSourceGetProps(virStorageSourcePtr src)
     virJSONValuePtr props;
     virJSONValuePtr ret;
 
-    if (!(props = qemuBlockStorageSourceGetBackendProps(src, true)))
+    if (!(props = qemuBlockStorageSourceGetBackendProps(src, true, false)))
         return NULL;
 
     if (virJSONValueObjectCreate(&ret, "a:file", &props, NULL) < 0) {

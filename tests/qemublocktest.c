@@ -67,7 +67,7 @@ testBackingXMLjsonXML(const void *args)
         return -1;
     }
 
-    if (!(backendprops = qemuBlockStorageSourceGetBackendProps(xmlsrc, true))) {
+    if (!(backendprops = qemuBlockStorageSourceGetBackendProps(xmlsrc, true, false))) {
         fprintf(stderr, "failed to format disk source json\n");
         return -1;
     }
@@ -213,7 +213,7 @@ testQemuDiskXMLToProps(const void *opaque)
             goto cleanup;
 
         if (!(formatProps = qemuBlockStorageSourceGetBlockdevProps(n)) ||
-            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false))) {
+            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false, false))) {
             if (!data->fail) {
                 VIR_TEST_VERBOSE("failed to generate qemu blockdev props\n");
                 goto cleanup;
