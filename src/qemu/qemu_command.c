@@ -301,7 +301,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         size_t i;
 
-        if (!(devStr = virDomainPCIAddressAsString(&info->addr.pci)))
+        if (!(devStr = virPCIDeviceAddressAsString(&info->addr.pci)))
             goto cleanup;
         for (i = 0; i < domainDef->ncontrollers; i++) {
             virDomainControllerDefPtr cont = domainDef->controllers[i];

@@ -2496,7 +2496,7 @@ virObjectUnref;
 
 
 # util/virpci.h
-virDomainPCIAddressAsString;
+virPCIDeviceAddressAsString;
 virPCIDeviceAddressGetIOMMUGroupAddresses;
 virPCIDeviceAddressGetIOMMUGroupNum;
 virPCIDeviceAddressGetSysfsFile;

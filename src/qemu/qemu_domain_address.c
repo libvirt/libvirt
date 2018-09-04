@@ -1306,7 +1306,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
      * inappropriate address types.
      */
     if (!info->pciConnectFlags) {
-        char *addrStr = virDomainPCIAddressAsString(&info->addr.pci);
+        char *addrStr = virPCIDeviceAddressAsString(&info->addr.pci);
 
         VIR_WARN("qemuDomainDeviceCalculatePCIConnectFlags() thinks that the "
                  "device with PCI address %s should not have a PCI address",
@@ -1554,7 +1554,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
             memset(&tmp_addr, 0, sizeof(tmp_addr));
             tmp_addr.slot = 2;
 
-            if (!(addrStr = virDomainPCIAddressAsString(&tmp_addr)))
+            if (!(addrStr = virPCIDeviceAddressAsString(&tmp_addr)))
                 goto cleanup;
             if (!virDomainPCIAddressValidate(addrs, &tmp_addr,
                                              addrStr, flags, true))
@@ -1743,7 +1743,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
             memset(&tmp_addr, 0, sizeof(tmp_addr));
             tmp_addr.slot = 1;
 
-            if (!(addrStr = virDomainPCIAddressAsString(&tmp_addr)))
+            if (!(addrStr = virPCIDeviceAddressAsString(&tmp_addr)))
                 goto cleanup;
             if (!virDomainPCIAddressValidate(addrs, &tmp_addr,
                                              addrStr, flags, true))

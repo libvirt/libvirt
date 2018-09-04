@@ -1685,7 +1685,7 @@ virPCIGetAddrString(unsigned int domain,
 }
 
 char *
-virDomainPCIAddressAsString(virPCIDeviceAddressPtr addr)
+virPCIDeviceAddressAsString(virPCIDeviceAddressPtr addr)
 {
     char *str;
 

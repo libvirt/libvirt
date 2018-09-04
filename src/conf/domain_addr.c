@@ -604,7 +604,7 @@ virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
     virErrorNumber errType = (fromConfig
                               ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
 
-    if (!(addrStr = virDomainPCIAddressAsString(addr)))
+    if (!(addrStr = virPCIDeviceAddressAsString(addr)))
         goto cleanup;
 
     /* Add an extra bus if necessary */
@@ -689,7 +689,7 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
     if (!flags)
        return 0;
 
-    if (!(addrStr = virDomainPCIAddressAsString(&dev->addr.pci)))
+    if (!(addrStr = virPCIDeviceAddressAsString(&dev->addr.pci)))
         goto cleanup;
 
     if (virDeviceInfoPCIAddressIsPresent(dev)) {
@@ -770,7 +770,7 @@ virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
 
     *found = false;
 
-    if (!(addrStr = virDomainPCIAddressAsString(searchAddr)))
+    if (!(addrStr = virPCIDeviceAddressAsString(searchAddr)))
         goto cleanup;
 
     if (!virDomainPCIAddressFlagsCompatible(searchAddr, addrStr, bus->flags,
