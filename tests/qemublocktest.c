@@ -30,6 +30,9 @@
 
 # include "qemu/qemu_command.h"
 
+# define LIBVIRT_SNAPSHOT_CONF_PRIV_H_ALLOW
+# include "conf/snapshot_conf_priv.h"
+
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.storagetest");
@@ -342,6 +345,138 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
 }
 
 
+struct testQemuImageCreateData {
+    const char *name;
+    const char *backingname;
+    virHashTablePtr schema;
+    virJSONValuePtr schemaroot;
+    virQEMUDriverPtr driver;
+    virQEMUCapsPtr qemuCaps;
+};
+
+static const char *testQemuImageCreatePath = abs_srcdir "/qemublocktestdata/imagecreate/";
+
+static virStorageSourcePtr
+testQemuImageCreateLoadDiskXML(const char *name,
+                               virDomainXMLOptionPtr xmlopt)
+
+{
+    virDomainSnapshotDiskDefPtr diskdef = NULL;
+    VIR_AUTOPTR(xmlDoc) doc = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    xmlNodePtr node;
+    VIR_AUTOFREE(char *) xmlpath = NULL;
+    virStorageSourcePtr ret = NULL;
+
+    if (virAsprintf(&xmlpath, "%s%s.xml",
+                    testQemuImageCreatePath, name) < 0)
+        return NULL;
+
+    if (!(doc = virXMLParseFileCtxt(xmlpath, &ctxt)))
+        return NULL;
+
+    if (!(node = virXPathNode("//disk", ctxt))) {
+        VIR_TEST_VERBOSE("failed to find <source> element\n");
+        return NULL;
+    }
+
+    if (VIR_ALLOC(diskdef) < 0)
+        return NULL;
+
+    if (virDomainSnapshotDiskDefParseXML(node, ctxt, diskdef,
+                                         VIR_DOMAIN_DEF_PARSE_STATUS,
+                                         xmlopt) == 0)
+        VIR_STEAL_PTR(ret, diskdef->src);
+
+    virDomainSnapshotDiskDefFree(diskdef);
+    return ret;
+}
+
+
+static int
+testQemuImageCreate(const void *opaque)
+{
+    struct testQemuImageCreateData *data = (void *) opaque;
+    VIR_AUTOPTR(virJSONValue) protocolprops = NULL;
+    VIR_AUTOPTR(virJSONValue) formatprops = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
+    VIR_AUTOCLEAN(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) actualbuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOFREE(char *) jsonprotocol = NULL;
+    VIR_AUTOFREE(char *) jsonformat = NULL;
+    VIR_AUTOFREE(char *) actual = NULL;
+    VIR_AUTOFREE(char *) jsonpath = NULL;
+
+    if (!(src = testQemuImageCreateLoadDiskXML(data->name, data->driver->xmlopt)))
+        return -1;
+
+    if (data->backingname &&
+        !(src->backingStore = testQemuImageCreateLoadDiskXML(data->backingname,
+                                                             data->driver->xmlopt)))
+        return -1;
+
+    if (testQemuDiskXMLToJSONFakeSecrets(src) < 0)
+        return -1;
+
+    /* fake some sizes */
+    src->capacity = 1337;
+    src->physical = 42;
+
+    if (qemuDomainValidateStorageSource(src, data->qemuCaps) < 0)
+        return -1;
+
+    if (qemuBlockStorageSourceCreateGetStorageProps(src, &protocolprops) < 0)
+        return -1;
+
+    if (qemuBlockStorageSourceCreateGetFormatProps(src, src->backingStore, &formatprops) < 0)
+        return -1;
+
+    if (formatprops) {
+        if (!(jsonformat = virJSONValueToString(formatprops, true)))
+            return -1;
+
+        if (testQEMUSchemaValidate(formatprops, data->schemaroot, data->schema,
+                                   &debug) < 0) {
+            VIR_AUTOFREE(char *) debugmsg = virBufferContentAndReset(&debug);
+            VIR_TEST_VERBOSE("blockdev-create format json does not conform to QAPI schema");
+            VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
+                           jsonformat, NULLSTR(debugmsg));
+            return -1;
+        }
+        virBufferFreeAndReset(&debug);
+    }
+
+    if (protocolprops) {
+        if (!(jsonprotocol = virJSONValueToString(protocolprops, true)))
+            return -1;
+
+        if (testQEMUSchemaValidate(protocolprops, data->schemaroot, data->schema,
+                                   &debug) < 0) {
+            VIR_AUTOFREE(char *) debugmsg = virBufferContentAndReset(&debug);
+            VIR_TEST_VERBOSE("blockdev-create protocol json does not conform to QAPI schema");
+            VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
+                           jsonprotocol, NULLSTR(debugmsg));
+            return -1;
+        }
+        virBufferFreeAndReset(&debug);
+    }
+
+    virBufferStrcat(&actualbuf, "protocol:\n", NULLSTR(jsonprotocol),
+                    "\nformat:\n", NULLSTR(jsonformat), NULL);
+    virBufferTrim(&actualbuf, "\n", -1);
+    virBufferAddLit(&actualbuf, "\n");
+
+    if (virAsprintf(&jsonpath, "%s%s.json",
+                    testQemuImageCreatePath, data->name) < 0)
+        return -1;
+
+    if (!(actual = virBufferContentAndReset(&actualbuf)))
+        return -1;
+
+    return virTestCompareToFile(actual, jsonpath);
+}
+
+
 static int
 testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
 {
@@ -383,6 +518,7 @@ mymain(void)
     virQEMUDriver driver;
     struct testBackingXMLjsonXMLdata xmljsonxmldata;
     struct testQemuDiskXMLToJSONData diskxmljsondata;
+    struct testQemuImageCreateData imagecreatedata;
     char *capslatest_x86_64 = NULL;
     virQEMUCapsPtr caps_x86_64 = NULL;
 
@@ -390,6 +526,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     diskxmljsondata.driver = &driver;
+    imagecreatedata.driver = &driver;
 
     if (!(capslatest_x86_64 = testQemuGetLatestCapsForArch("x86_64", "xml")))
         return EXIT_FAILURE;
@@ -401,6 +538,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     diskxmljsondata.qemuCaps = caps_x86_64;
+    imagecreatedata.qemuCaps = caps_x86_64;
 
     virTestCounterReset("qemu storage source xml->json->xml ");
 
@@ -547,6 +685,41 @@ mymain(void)
 
     TEST_DISK_TO_JSON("block-raw-noopts");
     TEST_DISK_TO_JSON("block-raw-reservations");
+
+# define TEST_IMAGE_CREATE(testname, testbacking) \
+    do { \
+        imagecreatedata.name = testname; \
+        imagecreatedata.backingname = testbacking; \
+        if (virTestRun("image create xml to props " testname, testQemuImageCreate, \
+                       &imagecreatedata) < 0) \
+            ret = -1; \
+    } while (0)
+    imagecreatedata.schema = diskxmljsondata.schema;
+    if (virQEMUQAPISchemaPathGet("blockdev-create/arg-type/options",
+                                 imagecreatedata.schema,
+                                 &imagecreatedata.schemaroot) < 0 ||
+        !imagecreatedata.schemaroot) {
+        VIR_TEST_VERBOSE("failed to find schema entry for blockdev-create\n");
+        ret = -1;
+        goto cleanup;
+    }
+
+    TEST_IMAGE_CREATE("raw", NULL);
+    TEST_IMAGE_CREATE("raw-nbd", NULL);
+    TEST_IMAGE_CREATE("luks-noopts", NULL);
+    TEST_IMAGE_CREATE("luks-encopts", NULL);
+    TEST_IMAGE_CREATE("qcow2", NULL);
+    TEST_IMAGE_CREATE("qcow2-luks-noopts", NULL);
+    TEST_IMAGE_CREATE("qcow2-luks-encopts", NULL);
+    TEST_IMAGE_CREATE("qcow2-backing-raw", "raw");
+    TEST_IMAGE_CREATE("qcow2-backing-raw-nbd", "raw-nbd");
+    TEST_IMAGE_CREATE("qcow2-backing-luks", "luks-noopts");
+    TEST_IMAGE_CREATE("qcow2-luks-encopts-backing", "qcow2");
+
+    TEST_IMAGE_CREATE("network-gluster-qcow2", NULL);
+    TEST_IMAGE_CREATE("network-rbd-qcow2", NULL);
+    TEST_IMAGE_CREATE("network-ssh-qcow2", NULL);
+    TEST_IMAGE_CREATE("network-sheepdog-qcow2", NULL);
 
  cleanup:
     virHashFree(diskxmljsondata.schema);

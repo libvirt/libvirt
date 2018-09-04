@@ -1,0 +1,11 @@
+<disk device='disk' name='vda'>
+  <driver type='qcow2'/>
+  <source file='/var/lib/libvirt/images/i.qcow2'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='0123456789ABCDEF0123456789ABCDE'/>
+        <nodename type='format' name='0123456789ABCDEF0123456789ABCDE'/>
+      </nodenames>
+    </privateData>
+  </source>
+</disk>

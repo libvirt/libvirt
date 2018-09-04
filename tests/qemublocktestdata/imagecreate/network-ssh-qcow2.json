@@ -1,0 +1,19 @@
+protocol:
+{
+  "driver": "ssh",
+  "location": {
+    "path": "asdf/i.qcow2",
+    "server": {
+      "host": "example.com",
+      "port": "1234"
+    }
+  },
+  "size": 42
+}
+
+format:
+{
+  "driver": "qcow2",
+  "file": "0123456789ABCDEF0123456789ABCDE",
+  "size": 1337
+}

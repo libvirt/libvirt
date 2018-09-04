@@ -1,0 +1,9 @@
+protocol:
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/i.img",
+  "size": 42
+}
+
+format:
+<null>

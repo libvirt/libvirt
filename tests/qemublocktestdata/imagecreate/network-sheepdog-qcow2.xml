@@ -1,0 +1,12 @@
+<disk device='disk' name='vda' type='network'>
+  <driver type='qcow2'/>
+  <source protocol='sheepdog' name='asdf/i.qcow2'>
+    <host name='example.com' port='1234'/>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='0123456789ABCDEF0123456789ABCDE'/>
+        <nodename type='format' name='0123456789ABCDEF0123456789ABCDE'/>
+      </nodenames>
+    </privateData>
+  </source>
+</disk>

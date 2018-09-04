@@ -1,0 +1,20 @@
+protocol:
+{
+  "driver": "sheepdog",
+  "location": {
+    "server": {
+      "type": "inet",
+      "host": "example.com",
+      "port": "1234"
+    },
+    "vdi": "asdf/i.qcow2"
+  },
+  "size": 42
+}
+
+format:
+{
+  "driver": "qcow2",
+  "file": "0123456789ABCDEF0123456789ABCDE",
+  "size": 1337
+}

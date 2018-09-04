@@ -1,0 +1,17 @@
+protocol:
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/i.qcow2",
+  "size": 42
+}
+
+format:
+{
+  "driver": "qcow2",
+  "file": "0123456789ABCDEF0123456789ABCDE",
+  "size": 1337,
+  "encrypt": {
+    "key-secret": "0123456789ABCDEF0123456789ABCDE-encalias",
+    "format": "luks"
+  }
+}

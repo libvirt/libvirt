@@ -1,0 +1,16 @@
+<disk device='disk' name='vda'>
+  <driver type='raw'/>
+  <source file='/var/lib/libvirt/images/i.img'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='0123456789ABCDEF0123456789ABCDE'/>
+        <nodename type='format' name='0123456789ABCDEF0123456789ABCDE'/>
+      </nodenames>
+    </privateData>
+    <encryption format='luks'>
+      <secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/>
+      <cipher name='serpent' size='256' mode='cbc' hash='sha256'/>
+      <ivgen name='plain64' hash='sha256'/>
+    </encryption>
+  </source>
+</disk>

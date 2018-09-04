@@ -1,0 +1,19 @@
+protocol:
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/i.img",
+  "size": 42
+}
+
+format:
+{
+  "key-secret": "0123456789ABCDEF0123456789ABCDE-encalias",
+  "cipher-alg": "serpent-256",
+  "cipher-mode": "cbc",
+  "hash-alg": "sha256",
+  "ivgen-alg": "plain64",
+  "ivgen-hash-alg": "sha256",
+  "driver": "luks",
+  "file": "0123456789ABCDEF0123456789ABCDE",
+  "size": 1337
+}

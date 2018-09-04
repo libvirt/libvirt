@@ -1,0 +1,24 @@
+protocol:
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/i.qcow2",
+  "size": 42
+}
+
+format:
+{
+  "driver": "qcow2",
+  "file": "0123456789ABCDEF0123456789ABCDE",
+  "size": 1337,
+  "backing-file": "/var/lib/libvirt/images/i.qcow2",
+  "backing-fmt": "qcow2",
+  "encrypt": {
+    "key-secret": "0123456789ABCDEF0123456789ABCDE-encalias",
+    "cipher-alg": "serpent-256",
+    "cipher-mode": "cbc",
+    "hash-alg": "sha256",
+    "ivgen-alg": "plain64",
+    "ivgen-hash-alg": "sha256",
+    "format": "luks"
+  }
+}
