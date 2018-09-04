@@ -30,6 +30,7 @@ DOMAIN_CONF_SOURCES = \
 	conf/moment_conf.h \
 	conf/snapshot_conf.c \
 	conf/snapshot_conf.h \
+	conf/snapshot_conf_priv.h \
 	conf/numa_conf.c \
 	conf/numa_conf.h \
 	conf/virconftypes.h \

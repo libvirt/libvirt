@@ -47,6 +47,9 @@
 #include "virstring.h"
 #include "virdomainsnapshotobjlist.h"
 
+#define LIBVIRT_SNAPSHOT_CONF_PRIV_H_ALLOW
+#include "snapshot_conf_priv.h"
+
 #define VIR_FROM_THIS VIR_FROM_DOMAIN_SNAPSHOT
 
 VIR_LOG_INIT("conf.snapshot_conf");
@@ -122,7 +125,7 @@ virDomainSnapshotDefDispose(void *obj)
     virObjectUnref(def->cookie);
 }
 
-static int
+int
 virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
                                  xmlXPathContextPtr ctxt,
                                  virDomainSnapshotDiskDefPtr def,
