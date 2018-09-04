@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <locale.h>
+#include <wctype.h>
 
 #include "internal.h"
 #include "testutils.h"
@@ -158,6 +159,15 @@ testUnicodeArabic(const void *opaque ATTRIBUTE_UNUSED)
 " 1              ﻉﺪﻴﻟ ﺎﻠﺜﻘﻴﻟ ﻕﺎﻣ ﻊﻧ, ٣٠ ﻎﻴﻨﻳﺍ ﻮﺘﻧﺎﻤﺗ ﺎﻠﺛﺎﻠﺛ، ﺄﺳﺭ, ﺩﻮﻟ   ﺩﻮﻟ. ﺄﻣﺎﻣ ﺍ ﺎﻧ ﻲﻜﻧ  \n"
 " ﺺﻔﺣﺓ           ﺖﻜﺘﻴﻛﺍً ﻊﻟ, ﺎﻠﺠﻧﻭﺩ ﻭﺎﻠﻌﺗﺍﺩ                              ﺵﺭ                  \n";
     vshTablePtr table;
+    wchar_t wc;
+
+    /* If this char is not classed as printable, the actual
+     * output won't match what this test expects. The code
+     * is still operating correctly, but we have different
+     * layout */
+    mbrtowc(&wc, "،", MB_CUR_MAX, NULL);
+    if (!iswprint(wc))
+        return EXIT_AM_SKIP;
 
     table = vshTableNew("ﻡﺍ ﻢﻣﺍ ﻕﺎﺌﻣﺓ", "ﺓ ﺎﻠﺼﻋ", "ﺍﻸﺜﻧﺎﻧ", NULL);
     if (!table)
@@ -192,6 +202,15 @@ testUnicodeZeroWidthChar(const void *opaque ATTRIBUTE_UNUSED)
 " 1\u200B    fedora28   run\u200Bning  \n"
 " 2    rhel7.5    running  \n";
     char *act = NULL;
+    wchar_t wc;
+
+    /* If this char is not classed as printable, the actual
+     * output won't match what this test expects. The code
+     * is still operating correctly, but we have different
+     * layout */
+    mbrtowc(&wc, "\u200B", MB_CUR_MAX, NULL);
+    if (!iswprint(wc))
+        return EXIT_AM_SKIP;
 
     table = vshTableNew("I\u200Bd", "Name", "\u200BStatus", NULL);
     if (!table)
