@@ -34,7 +34,7 @@
     "direct": false,
     "no-flush": true
   },
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -59,6 +59,6 @@
     "direct": false,
     "no-flush": true
   },
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }

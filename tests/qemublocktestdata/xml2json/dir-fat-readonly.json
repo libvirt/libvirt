@@ -10,6 +10,6 @@
   "floppy": false,
   "rw": false,
   "node-name": "node-s",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }

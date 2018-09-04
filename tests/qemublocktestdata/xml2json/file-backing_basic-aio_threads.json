@@ -10,7 +10,7 @@
   "filename": "/var/lib/libvirt/images/a",
   "aio": "threads",
   "node-name": "node-a-s",
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -25,7 +25,7 @@
   "filename": "/var/lib/libvirt/images/b",
   "aio": "threads",
   "node-name": "node-b-s",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -47,7 +47,7 @@
     }
   ],
   "node-name": "node-c-s",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -61,6 +61,6 @@
   "filename": "/var/lib/libvirt/images/d",
   "aio": "threads",
   "node-name": "node-d-s",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }

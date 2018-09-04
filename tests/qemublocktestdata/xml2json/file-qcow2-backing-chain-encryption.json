@@ -13,7 +13,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/a",
   "node-name": "node-a-s",
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -31,6 +31,6 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/b",
   "node-name": "node-b-s",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }

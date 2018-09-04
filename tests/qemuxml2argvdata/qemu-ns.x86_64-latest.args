@@ -30,7 +30,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
-"node-name":"libvirt-1-storage","read-only":false,"discard":"unmap"}' \
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
 "file":"libvirt-1-storage"}' \
 -device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \

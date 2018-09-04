@@ -9,7 +9,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1507297895",
   "node-name": "#block004",
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -22,6 +22,6 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1484071872",
   "node-name": "#block256",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }

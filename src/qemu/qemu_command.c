@@ -1602,7 +1602,7 @@ qemuDiskSourceGetProps(virStorageSourcePtr src)
     virJSONValuePtr props;
     virJSONValuePtr ret;
 
-    if (!(props = qemuBlockStorageSourceGetBackendProps(src, true, false)))
+    if (!(props = qemuBlockStorageSourceGetBackendProps(src, true, false, false)))
         return NULL;
 
     if (virJSONValueObjectCreate(&ret, "a:file", &props, NULL) < 0) {
@@ -11178,7 +11178,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
         return NULL;
 
     for (n = top; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(n)))
+        if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(n, true)))
             return NULL;
 
         if (qemuBuildStorageSourceAttachPrepareCommon(n, elem, qemuCaps) < 0)

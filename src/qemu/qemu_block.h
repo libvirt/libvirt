@@ -59,7 +59,8 @@ qemuBlockStorageSourceSupportsConcurrentAccess(virStorageSourcePtr src);
 virJSONValuePtr
 qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
                                       bool legacy,
-                                      bool onlytarget);
+                                      bool onlytarget,
+                                      bool autoreadonly);
 
 virURIPtr
 qemuBlockStorageSourceGetURI(virStorageSourcePtr src);
@@ -106,7 +107,8 @@ VIR_DEFINE_AUTOPTR_FUNC(qemuBlockStorageSourceAttachData,
                         qemuBlockStorageSourceAttachDataFree);
 
 qemuBlockStorageSourceAttachDataPtr
-qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src);
+qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
+                                            bool autoreadonly);
 
 qemuBlockStorageSourceAttachDataPtr
 qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,

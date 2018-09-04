@@ -1027,6 +1027,7 @@ qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSourcePtr src,
  * @src: disk source
  * @legacy: use legacy formatting of attributes (for -drive / old qemus)
  * @onlytarget: omit any data which does not identify the image itself
+ * @autoreadonly: use the auto-read-only feature of qemu
  *
  * Creates a JSON object describing the underlying storage or protocol of a
  * storage source. Returns NULL on error and reports an appropriate error message.
@@ -1034,11 +1035,23 @@ qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSourcePtr src,
 virJSONValuePtr
 qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
                                       bool legacy,
-                                      bool onlytarget)
+                                      bool onlytarget,
+                                      bool autoreadonly)
 {
     int actualType = virStorageSourceGetActualType(src);
     VIR_AUTOPTR(virJSONValue) fileprops = NULL;
     const char *driver = NULL;
+    virTristateBool aro = VIR_TRISTATE_BOOL_ABSENT;
+    virTristateBool ro = VIR_TRISTATE_BOOL_ABSENT;
+
+    if (autoreadonly) {
+        aro = VIR_TRISTATE_BOOL_YES;
+    } else {
+        if (src->readonly)
+            ro = VIR_TRISTATE_BOOL_YES;
+        else
+            ro = VIR_TRISTATE_BOOL_NO;
+    }
 
     switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -1142,7 +1155,8 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
                 return NULL;
 
             if (virJSONValueObjectAdd(fileprops,
-                                      "b:read-only", src->readonly,
+                                      "T:read-only", ro,
+                                      "T:auto-read-only", aro,
                                       "s:discard", "unmap",
                                       NULL) < 0)
                 return NULL;
@@ -1447,6 +1461,7 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
 /**
  * qemuBlockStorageSourceAttachPrepareBlockdev:
  * @src: storage source to prepare data from
+ * @autoreadonly: use 'auto-read-only' feature of qemu
  *
  * Creates a qemuBlockStorageSourceAttachData structure containing data to attach
  * @src to a VM using the blockdev-add approach. Note that this function only
@@ -1459,7 +1474,8 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
  * error is reported
  */
 qemuBlockStorageSourceAttachDataPtr
-qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
+qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
+                                            bool autoreadonly)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
 
@@ -1467,7 +1483,9 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
         return NULL;
 
     if (!(data->formatProps = qemuBlockStorageSourceGetBlockdevProps(src)) ||
-        !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src, false, false)))
+        !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src, false,
+                                                                     false,
+                                                                     autoreadonly)))
         return NULL;
 
     data->storageNodeName = src->nodestorage;

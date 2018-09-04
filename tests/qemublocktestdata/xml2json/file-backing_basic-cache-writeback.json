@@ -17,7 +17,7 @@
     "direct": false,
     "no-flush": false
   },
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -39,7 +39,7 @@
     "direct": false,
     "no-flush": false
   },
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -69,7 +69,7 @@
     "direct": false,
     "no-flush": false
   },
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -90,6 +90,6 @@
     "direct": false,
     "no-flush": false
   },
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }

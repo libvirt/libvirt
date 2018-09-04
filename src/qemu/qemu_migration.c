@@ -830,7 +830,9 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
         virAsprintf(&copysrc->nodeformat, "migration-%s-format", disk->dst) < 0)
         goto cleanup;
 
-    if (!(data = qemuBlockStorageSourceAttachPrepareBlockdev(copysrc)))
+    /* Migration via blockdev-mirror was supported sooner than the auto-read-only
+     * feature was added to qemu */
+    if (!(data = qemuBlockStorageSourceAttachPrepareBlockdev(copysrc, false)))
         goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,

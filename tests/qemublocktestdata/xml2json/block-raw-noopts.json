@@ -8,6 +8,6 @@
   "driver": "host_device",
   "filename": "/dev/blah",
   "node-name": "0123456789ABCDEF0123456789ABCDE",
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }

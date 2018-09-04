@@ -9,7 +9,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1507297895",
   "node-name": "#block004",
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -23,7 +23,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1484071872",
   "node-name": "#block256",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -37,7 +37,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1483615252",
   "node-name": "#block418",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -51,7 +51,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1483605924",
   "node-name": "#block624",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -65,7 +65,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1483605920",
   "node-name": "#block869",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -79,7 +79,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1483546244",
   "node-name": "#block1047",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -93,7 +93,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1483545901",
   "node-name": "#block1279",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -107,7 +107,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1483545313",
   "node-name": "#block1444",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -121,7 +121,7 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.1483536402",
   "node-name": "#block1602",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }
 {
@@ -135,6 +135,6 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/rhel7.3.qcow2",
   "node-name": "#block1864",
-  "read-only": true,
+  "auto-read-only": true,
   "discard": "unmap"
 }

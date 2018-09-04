@@ -17,6 +17,6 @@
     "direct": true,
     "no-flush": false
   },
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }

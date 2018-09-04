@@ -14,6 +14,6 @@
   },
   "tls-creds": "node-a-s-tls0",
   "node-name": "node-a-s",
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }

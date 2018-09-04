@@ -9,6 +9,6 @@
   "filename": "/dev/blah",
   "pr-manager": "node-a-st-pr-alias",
   "node-name": "node-a-st",
-  "read-only": false,
+  "auto-read-only": true,
   "discard": "unmap"
 }
