@@ -99,6 +99,17 @@ virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDefPtr disk)
     disk->src = NULL;
 }
 
+void
+virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDefPtr disk)
+{
+    if (!disk)
+        return;
+
+    virDomainSnapshotDiskDefClear(disk);
+    VIR_FREE(disk);
+}
+
+
 /* Allocate a new virDomainSnapshotDef; free with virObjectUnref() */
 virDomainSnapshotDefPtr
 virDomainSnapshotDefNew(void)
