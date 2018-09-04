@@ -159,17 +159,11 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         virDomainDiskSourceParse(cur, ctxt, def->src, flags, xmlopt) < 0)
         goto cleanup;
 
-    if ((driver = virXPathString("string(./driver/@type)", ctxt))) {
-        def->src->format = virStorageFileFormatTypeFromString(driver);
-        if (def->src->format < VIR_STORAGE_FILE_BACKING) {
+    if ((driver = virXPathString("string(./driver/@type)", ctxt)) &&
+        (def->src->format = virStorageFileFormatTypeFromString(driver)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           def->src->format <= 0
-                           ? _("unknown disk snapshot driver '%s'")
-                           : _("disk format '%s' lacks backing file "
-                               "support"),
-                           driver);
+                           _("unknown disk snapshot driver '%s'"), driver);
             goto cleanup;
-        }
     }
 
     /* validate that the passed path is absolute */
