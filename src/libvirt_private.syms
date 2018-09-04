@@ -119,7 +119,6 @@ virPCIDeviceAddressParseXML;
 virDomainCCWAddressAssign;
 virDomainCCWAddressSetCreateFromDomain;
 virDomainCCWAddressSetFree;
-virDomainPCIAddressAsString;
 virDomainPCIAddressBusIsFullyReserved;
 virDomainPCIAddressBusSetModel;
 virDomainPCIAddressEnsureAddr;
@@ -2497,6 +2496,7 @@ virObjectUnref;
 
 
 # util/virpci.h
+virDomainPCIAddressAsString;
 virPCIDeviceAddressGetIOMMUGroupAddresses;
 virPCIDeviceAddressGetIOMMUGroupNum;
 virPCIDeviceAddressGetSysfsFile;

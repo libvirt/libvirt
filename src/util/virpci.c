@@ -1684,6 +1684,19 @@ virPCIGetAddrString(unsigned int domain,
     return 0;
 }
 
+char *
+virDomainPCIAddressAsString(virPCIDeviceAddressPtr addr)
+{
+    char *str;
+
+    ignore_value(virAsprintf(&str, "%.4x:%.2x:%.2x.%.1x",
+                             addr->domain,
+                             addr->bus,
+                             addr->slot,
+                             addr->function));
+    return str;
+}
+
 virPCIDevicePtr
 virPCIDeviceNew(unsigned int domain,
                 unsigned int bus,

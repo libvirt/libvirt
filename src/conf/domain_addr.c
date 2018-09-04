@@ -573,20 +573,6 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
 }
 
 
-char *
-virDomainPCIAddressAsString(virPCIDeviceAddressPtr addr)
-{
-    char *str;
-
-    ignore_value(virAsprintf(&str, "%.4x:%.2x:%.2x.%.1x",
-                             addr->domain,
-                             addr->bus,
-                             addr->slot,
-                             addr->function));
-    return str;
-}
-
-
 /*
  * Check if the PCI slot is used by another device.
  */
