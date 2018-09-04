@@ -19,17 +19,19 @@
 #include <stdlib.h>
 
 #include "testutils.h"
-#include "testutilsqemu.h"
-#include "testutilsqemuschema.h"
-#include "virstoragefile.h"
-#include "virstring.h"
-#include "virlog.h"
-#include "qemu/qemu_block.h"
-#include "qemu/qemu_qapi.h"
 
-#include "qemu/qemu_command.h"
+#if WITH_YAJL
+# include "testutilsqemu.h"
+# include "testutilsqemuschema.h"
+# include "virstoragefile.h"
+# include "virstring.h"
+# include "virlog.h"
+# include "qemu/qemu_block.h"
+# include "qemu/qemu_qapi.h"
 
-#define VIR_FROM_THIS VIR_FROM_NONE
+# include "qemu/qemu_command.h"
+
+# define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.storagetest");
 
@@ -355,7 +357,7 @@ mymain(void)
 
     virTestCounterReset("qemu storage source xml->json->xml ");
 
-#define TEST_JSON_FORMAT(tpe, xmlstr) \
+# define TEST_JSON_FORMAT(tpe, xmlstr) \
     do { \
         xmljsonxmldata.type = tpe; \
         xmljsonxmldata.xml = xmlstr; \
@@ -364,7 +366,7 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-#define TEST_JSON_FORMAT_NET(xmlstr)\
+# define TEST_JSON_FORMAT_NET(xmlstr) \
     TEST_JSON_FORMAT(VIR_STORAGE_TYPE_NETWORK, xmlstr)
 
     TEST_JSON_FORMAT(VIR_STORAGE_TYPE_FILE, "<source file='/path/to/file'/>\n");
@@ -417,7 +419,7 @@ mymain(void)
                          "  <host name='example.com' port='9999'/>\n"
                          "</source>\n");
 
-#define TEST_DISK_TO_JSON_FULL(nme, fl) \
+# define TEST_DISK_TO_JSON_FULL(nme, fl) \
     do { \
         diskxmljsondata.name = nme; \
         diskxmljsondata.props = NULL; \
@@ -435,7 +437,7 @@ mymain(void)
         testQemuDiskXMLToPropsClear(&diskxmljsondata); \
     } while (0)
 
-#define TEST_DISK_TO_JSON(nme) TEST_DISK_TO_JSON_FULL(nme, false)
+# define TEST_DISK_TO_JSON(nme) TEST_DISK_TO_JSON_FULL(nme, false)
 
     if (!(diskxmljsondata.schema = testQEMUSchemaLoad())) {
         ret = -1;
@@ -499,5 +501,13 @@ mymain(void)
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
+#else
+static int
+mymain(void)
+{
+    return EXIT_AM_SKIP;
+}
+#endif
 
 VIR_TEST_MAIN(mymain)
