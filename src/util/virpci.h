@@ -218,13 +218,6 @@ int virPCIGetSysfsFile(char *virPCIDeviceName,
                              char **pci_sysfs_device_link)
     ATTRIBUTE_RETURN_CHECK;
 
-int virPCIGetAddrString(unsigned int domain,
-                        unsigned int bus,
-                        unsigned int slot,
-                        unsigned int function,
-                        char **pciConfigAddr)
-    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
-
 char *virPCIDeviceAddressAsString(virPCIDeviceAddressPtr addr)
       ATTRIBUTE_NONNULL(1);
 

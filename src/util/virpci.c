@@ -1668,22 +1668,6 @@ virPCIDeviceReadID(virPCIDevicePtr dev, const char *id_name)
     return id_str;
 }
 
-int
-virPCIGetAddrString(unsigned int domain,
-                    unsigned int bus,
-                    unsigned int slot,
-                    unsigned int function,
-                    char **pciConfigAddr)
-{
-    VIR_AUTOPTR(virPCIDevice) dev = NULL;
-
-    dev = virPCIDeviceNew(domain, bus, slot, function);
-    if (!dev || VIR_STRDUP(*pciConfigAddr, dev->name) < 0)
-        return -1;
-
-    return 0;
-}
-
 char *
 virPCIDeviceAddressAsString(virPCIDeviceAddressPtr addr)
 {
