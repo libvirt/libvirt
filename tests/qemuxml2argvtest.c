@@ -656,7 +656,13 @@ mymain(void)
     int ret = 0, i;
     char *fakerootdir;
     bool skipLegacyCPUs = false;
-    const char *archs[] = { "x86_64", "s390x" };
+    const char *archs[] = {
+        "aarch64",
+        "ppc64",
+        "riscv64",
+        "s390x",
+        "x86_64",
+    };
     virHashTablePtr capslatest = NULL;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
