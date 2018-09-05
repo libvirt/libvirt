@@ -1670,6 +1670,72 @@ virCgroupV1GetMemSwapUsage(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1AllowDevice(virCgroupPtr group,
+                       char type,
+                       int major,
+                       int minor,
+                       int perms)
+{
+    VIR_AUTOFREE(char *) devstr = NULL;
+    VIR_AUTOFREE(char *) majorstr = NULL;
+    VIR_AUTOFREE(char *) minorstr = NULL;
+
+    if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
+        (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0))
+        return -1;
+
+    if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
+        (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0))
+        return -1;
+
+    if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,
+                    virCgroupGetDevicePermsString(perms)) < 0)
+        return -1;
+
+    if (virCgroupSetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_DEVICES,
+                             "devices.allow",
+                             devstr) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virCgroupV1DenyDevice(virCgroupPtr group,
+                      char type,
+                      int major,
+                      int minor,
+                      int perms)
+{
+    VIR_AUTOFREE(char *) devstr = NULL;
+    VIR_AUTOFREE(char *) majorstr = NULL;
+    VIR_AUTOFREE(char *) minorstr = NULL;
+
+    if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
+        (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0))
+        return -1;
+
+    if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
+        (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0))
+        return -1;
+
+    if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,
+                    virCgroupGetDevicePermsString(perms)) < 0)
+        return -1;
+
+    if (virCgroupSetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_DEVICES,
+                             "devices.deny",
+                             devstr) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1717,6 +1783,9 @@ virCgroupBackend virCgroupV1Backend = {
     .setMemSwapHardLimit = virCgroupV1SetMemSwapHardLimit,
     .getMemSwapHardLimit = virCgroupV1GetMemSwapHardLimit,
     .getMemSwapUsage = virCgroupV1GetMemSwapUsage,
+
+    .allowDevice = virCgroupV1AllowDevice,
+    .denyDevice = virCgroupV1DenyDevice,
 };
 
 

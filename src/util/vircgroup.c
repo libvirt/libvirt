@@ -1871,29 +1871,7 @@ int
 virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
                      int perms)
 {
-    VIR_AUTOFREE(char *) devstr = NULL;
-    VIR_AUTOFREE(char *) majorstr = NULL;
-    VIR_AUTOFREE(char *) minorstr = NULL;
-
-    if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
-        (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0))
-        return -1;
-
-    if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
-        (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0))
-        return -1;
-
-    if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,
-                    virCgroupGetDevicePermsString(perms)) < 0)
-        return -1;
-
-    if (virCgroupSetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_DEVICES,
-                             "devices.allow",
-                             devstr) < 0)
-        return -1;
-
-    return 0;
+    VIR_CGROUP_BACKEND_CALL(group, allowDevice, -1, type, major, minor, perms);
 }
 
 
@@ -1932,11 +1910,11 @@ virCgroupAllowDevicePath(virCgroupPtr group,
     if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode))
         return 1;
 
-    return virCgroupAllowDevice(group,
-                                S_ISCHR(sb.st_mode) ? 'c' : 'b',
-                                major(sb.st_rdev),
-                                minor(sb.st_rdev),
-                                perms);
+    VIR_CGROUP_BACKEND_CALL(group, allowDevice, -1,
+                            S_ISCHR(sb.st_mode) ? 'c' : 'b',
+                            major(sb.st_rdev),
+                            minor(sb.st_rdev),
+                            perms);
 }
 
 
@@ -1955,29 +1933,7 @@ int
 virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
                     int perms)
 {
-    VIR_AUTOFREE(char *) devstr = NULL;
-    VIR_AUTOFREE(char *) majorstr = NULL;
-    VIR_AUTOFREE(char *) minorstr = NULL;
-
-    if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
-        (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0))
-        return -1;
-
-    if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
-        (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0))
-        return -1;
-
-    if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,
-                    virCgroupGetDevicePermsString(perms)) < 0)
-        return -1;
-
-    if (virCgroupSetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_DEVICES,
-                             "devices.deny",
-                             devstr) < 0)
-        return -1;
-
-    return 0;
+    VIR_CGROUP_BACKEND_CALL(group, denyDevice, -1, type, major, minor, perms);
 }
 
 
@@ -2016,11 +1972,11 @@ virCgroupDenyDevicePath(virCgroupPtr group,
     if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode))
         return 1;
 
-    return virCgroupDenyDevice(group,
-                               S_ISCHR(sb.st_mode) ? 'c' : 'b',
-                               major(sb.st_rdev),
-                               minor(sb.st_rdev),
-                               perms);
+    VIR_CGROUP_BACKEND_CALL(group, denyDevice, -1,
+                            S_ISCHR(sb.st_mode) ? 'c' : 'b',
+                            major(sb.st_rdev),
+                            minor(sb.st_rdev),
+                            perms);
 }
 
 
