@@ -1833,6 +1833,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
     virJSONValuePtr data;
     virDomainFSInfoPtr *info_ret = NULL;
     virPCIDeviceAddress pci_address;
+    const char *result = NULL;
 
     cmd = qemuAgentMakeCommand("guest-get-fsinfo", NULL);
     if (!cmd)
@@ -1878,27 +1879,33 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
         if (VIR_ALLOC(info_ret[i]) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(info_ret[i]->mountpoint,
-                       virJSONValueObjectGetString(entry, "mountpoint")) < 0) {
+        if (!(result = virJSONValueObjectGetString(entry, "mountpoint"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'mountpoint' missing in reply of "
                              "guest-get-fsinfo"));
             goto cleanup;
         }
 
-        if (VIR_STRDUP(info_ret[i]->name,
-                       virJSONValueObjectGetString(entry, "name")) < 0) {
+        if (VIR_STRDUP(info_ret[i]->mountpoint, result) < 0)
+            goto cleanup;
+
+        if (!(result = virJSONValueObjectGetString(entry, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'name' missing in reply of guest-get-fsinfo"));
             goto cleanup;
         }
 
-        if (VIR_STRDUP(info_ret[i]->fstype,
-                       virJSONValueObjectGetString(entry, "type")) < 0) {
+        if (VIR_STRDUP(info_ret[i]->name, result) < 0)
+            goto cleanup;
+
+        if (!(result = virJSONValueObjectGetString(entry, "type"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'type' missing in reply of guest-get-fsinfo"));
             goto cleanup;
         }
+
+        if (VIR_STRDUP(info_ret[i]->fstype, result) < 0)
+            goto cleanup;
 
         if (!(entry = virJSONValueObjectGet(entry, "disk"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
