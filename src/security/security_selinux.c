@@ -1040,11 +1040,15 @@ virSecuritySELinuxTransactionStart(virSecurityManagerPtr mgr)
  * @mgr: security manager
  * @pid: domain's PID
  *
- * Enters the @pid namespace (usually @pid refers to a domain) and
- * performs all the sefilecon()-s on the list. Note that the
- * transaction is also freed, therefore new one has to be started after
- * successful return from this function. Also it is considered as error
- * if there's no transaction set and this function is called.
+ * If @pis is not -1 then enter the @pid namespace (usually @pid refers
+ * to a domain) and perform all the sefilecon()-s on the list. If @pid
+ * is -1 then the transaction is performed in the namespace of the
+ * caller.
+ *
+ * Note that the transaction is also freed, therefore new one has to be
+ * started after successful return from this function. Also it is
+ * considered as error if there's no transaction set and this function
+ * is called.
  *
  * Returns: 0 on success,
  *         -1 otherwise.
@@ -1066,9 +1070,12 @@ virSecuritySELinuxTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (virProcessRunInMountNamespace(pid,
-                                      virSecuritySELinuxTransactionRun,
-                                      list) < 0)
+    if ((pid == -1 &&
+         virSecuritySELinuxTransactionRun(pid, list) < 0) ||
+        (pid != -1 &&
+         virProcessRunInMountNamespace(pid,
+                                       virSecuritySELinuxTransactionRun,
+                                       list) < 0))
         goto cleanup;
 
     ret = 0;
