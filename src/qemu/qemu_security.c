@@ -523,3 +523,59 @@ qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
     virSecurityManagerTransactionAbort(driver->securityManager);
     return ret;
 }
+
+
+int
+qemuSecuritySetSavedStateLabel(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   const char *savefile)
+{
+    int ret = -1;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerSetSavedStateLabel(driver->securityManager,
+                                             vm->def,
+                                             savefile) < 0)
+        goto cleanup;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionCommit(driver->securityManager,
+                                            vm->pid) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}
+
+
+int
+qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       const char *savefile)
+{
+    int ret = -1;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
+                                                 vm->def,
+                                                 savefile) < 0)
+        goto cleanup;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionCommit(driver->securityManager,
+                                            vm->pid) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}

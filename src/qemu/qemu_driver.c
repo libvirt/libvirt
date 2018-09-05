@@ -4043,7 +4043,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     }
     unlink_tmp = true;
 
-    qemuSecuritySetSavedStateLabel(driver->securityManager, vm->def, tmp);
+    qemuSecuritySetSavedStateLabel(driver, vm, tmp);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorScreendump(priv->mon, videoAlias, screen, tmp) < 0) {
@@ -6662,8 +6662,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     virObjectUnref(cookie);
     virCommandFree(cmd);
     VIR_FREE(errbuf);
-    if (qemuSecurityRestoreSavedStateLabel(driver->securityManager,
-                                           vm->def, path) < 0)
+    if (qemuSecurityRestoreSavedStateLabel(driver, vm, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
     virObjectUnref(cfg);
     return ret;
@@ -11828,7 +11827,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
         goto endjob;
     }
 
-    qemuSecuritySetSavedStateLabel(driver->securityManager, vm->def, tmp);
+    qemuSecuritySetSavedStateLabel(driver, vm, tmp);
 
     priv = vm->privateData;
     qemuDomainObjEnterMonitor(driver, vm);

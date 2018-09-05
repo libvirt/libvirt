@@ -100,6 +100,14 @@ int qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
                                    const char *path,
                                    bool allowSubtree);
 
+int qemuSecuritySetSavedStateLabel(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   const char *savefile);
+
+int qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       const char *savefile);
+
 /* Please note that for these APIs there is no wrapper yet. Do NOT blindly add
  * new APIs here. If an API can touch a /dev file add a proper wrapper instead.
  */
@@ -119,11 +127,9 @@ int qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
 # define qemuSecurityPreFork virSecurityManagerPreFork
 # define qemuSecurityReleaseLabel virSecurityManagerReleaseLabel
 # define qemuSecurityReserveLabel virSecurityManagerReserveLabel
-# define qemuSecurityRestoreSavedStateLabel virSecurityManagerRestoreSavedStateLabel
 # define qemuSecuritySetChildProcessLabel virSecurityManagerSetChildProcessLabel
 # define qemuSecuritySetDaemonSocketLabel virSecurityManagerSetDaemonSocketLabel
 # define qemuSecuritySetImageFDLabel virSecurityManagerSetImageFDLabel
-# define qemuSecuritySetSavedStateLabel virSecurityManagerSetSavedStateLabel
 # define qemuSecuritySetSocketLabel virSecurityManagerSetSocketLabel
 # define qemuSecuritySetTapFDLabel virSecurityManagerSetTapFDLabel
 # define qemuSecurityStackAddNested virSecurityManagerStackAddNested
