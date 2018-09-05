@@ -3012,6 +3012,14 @@ mymain(void)
     DO_TEST("riscv64-virt",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
 
+    /* Simple headless guests for various architectures */
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-headless", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-headless", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-headless", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-headless", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("x86_64-pc-headless", "x86_64");
+    DO_TEST_CAPS_ARCH_LATEST("x86_64-q35-headless", "x86_64");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
