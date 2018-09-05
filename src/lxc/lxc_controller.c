@@ -2625,7 +2625,8 @@ int main(int argc, char *argv[])
     ctrl->handshakeFd = handshakeFd;
 
     if (!(ctrl->securityManager = virSecurityManagerNew(securityDriver,
-                                                        LXC_DRIVER_NAME, 0)))
+                                                        LXC_DRIVER_NAME,
+                                                        NULL, 0)))
         goto cleanup;
 
     if (ctrl->def->seclabels) {

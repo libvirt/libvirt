@@ -1532,7 +1532,7 @@ lxcSecurityInit(virLXCDriverConfigPtr cfg)
         flags |= VIR_SECURITY_MANAGER_REQUIRE_CONFINED;
 
     virSecurityManagerPtr mgr = virSecurityManagerNew(cfg->securityDriverName,
-                                                      LXC_DRIVER_NAME, flags);
+                                                      LXC_DRIVER_NAME, NULL, flags);
     if (!mgr)
         goto error;
 

@@ -28,6 +28,7 @@
 #include "viralloc.h"
 #include "virobject.h"
 #include "virlog.h"
+#include "locking/lock_manager.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -40,6 +41,8 @@ struct _virSecurityManager {
     unsigned int flags;
     const char *virtDriver;
     void *privateData;
+
+    virLockManagerPluginPtr lockPlugin;
 };
 
 static virClassPtr virSecurityManagerClass;
@@ -50,8 +53,12 @@ void virSecurityManagerDispose(void *obj)
 {
     virSecurityManagerPtr mgr = obj;
 
-    if (mgr->drv->close)
+    if (mgr->drv &&
+        mgr->drv->close)
         mgr->drv->close(mgr);
+
+    virObjectUnref(mgr->lockPlugin);
+
     VIR_FREE(mgr->privateData);
 }
 
@@ -71,6 +78,7 @@ VIR_ONCE_GLOBAL_INIT(virSecurityManager);
 static virSecurityManagerPtr
 virSecurityManagerNewDriver(virSecurityDriverPtr drv,
                             const char *virtDriver,
+                            const char *lockManagerPluginName,
                             unsigned int flags)
 {
     virSecurityManagerPtr mgr = NULL;
@@ -89,6 +97,14 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
 
     if (!(mgr = virObjectLockableNew(virSecurityManagerClass)))
         goto error;
+
+    if (!lockManagerPluginName)
+        lockManagerPluginName = "nop";
+
+    if (!(mgr->lockPlugin = virLockManagerPluginNew(lockManagerPluginName,
+                                                    NULL, NULL, 0))) {
+        goto error;
+    }
 
     mgr->drv = drv;
     mgr->flags = flags;
@@ -112,6 +128,7 @@ virSecurityManagerNewStack(virSecurityManagerPtr primary)
     virSecurityManagerPtr mgr =
         virSecurityManagerNewDriver(&virSecurityDriverStack,
                                     virSecurityManagerGetDriver(primary),
+                                    NULL,
                                     primary->flags);
 
     if (!mgr)
@@ -119,6 +136,8 @@ virSecurityManagerNewStack(virSecurityManagerPtr primary)
 
     if (virSecurityStackAddNested(mgr, primary) < 0)
         goto error;
+
+    mgr->lockPlugin = virObjectRef(mgr->lockPlugin);
 
     return mgr;
  error:
@@ -142,6 +161,7 @@ virSecurityManagerNewDAC(const char *virtDriver,
                          uid_t user,
                          gid_t group,
                          unsigned int flags,
+                         const char *lockManagerPluginName,
                          virSecurityManagerDACChownCallback chownCallback)
 {
     virSecurityManagerPtr mgr;
@@ -152,6 +172,7 @@ virSecurityManagerNewDAC(const char *virtDriver,
 
     mgr = virSecurityManagerNewDriver(&virSecurityDriverDAC,
                                       virtDriver,
+                                      lockManagerPluginName,
                                       flags & VIR_SECURITY_MANAGER_NEW_MASK);
 
     if (!mgr)
@@ -173,6 +194,7 @@ virSecurityManagerNewDAC(const char *virtDriver,
 virSecurityManagerPtr
 virSecurityManagerNew(const char *name,
                       const char *virtDriver,
+                      const char *lockManagerPluginName,
                       unsigned int flags)
 {
     virSecurityDriverPtr drv = virSecurityDriverLookup(name, virtDriver);
@@ -201,6 +223,7 @@ virSecurityManagerNew(const char *name,
 
     return virSecurityManagerNewDriver(drv,
                                        virtDriver,
+                                       lockManagerPluginName,
                                        flags);
 }
 

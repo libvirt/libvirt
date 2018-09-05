@@ -355,6 +355,7 @@ qemuSecurityInit(virQEMUDriverPtr driver)
         while (names && *names) {
             if (!(mgr = qemuSecurityNew(*names,
                                         QEMU_DRIVER_NAME,
+                                        cfg->metadataLockManagerName,
                                         flags)))
                 goto error;
             if (!stack) {
@@ -370,6 +371,7 @@ qemuSecurityInit(virQEMUDriverPtr driver)
     } else {
         if (!(mgr = qemuSecurityNew(NULL,
                                     QEMU_DRIVER_NAME,
+                                    cfg->metadataLockManagerName,
                                     flags)))
             goto error;
         if (!(stack = qemuSecurityNewStack(mgr)))
@@ -386,6 +388,7 @@ qemuSecurityInit(virQEMUDriverPtr driver)
                                        cfg->user,
                                        cfg->group,
                                        flags,
+                                       cfg->metadataLockManagerName,
                                        qemuSecurityChownCallback)))
             goto error;
         if (!stack) {
