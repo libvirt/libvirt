@@ -1818,10 +1818,7 @@ virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
 int
 virCgroupDenyAllDevices(virCgroupPtr group)
 {
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_DEVICES,
-                                "devices.deny",
-                                "a");
+    VIR_CGROUP_BACKEND_CALL(group, denyAllDevices, -1);
 }
 
 /**
@@ -1841,18 +1838,7 @@ virCgroupDenyAllDevices(virCgroupPtr group)
 int
 virCgroupAllowAllDevices(virCgroupPtr group, int perms)
 {
-    int ret = -1;
-
-    if (virCgroupAllowDevice(group, 'b', -1, -1, perms) < 0)
-        goto cleanup;
-
-    if (virCgroupAllowDevice(group, 'c', -1, -1, perms) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    return ret;
+    VIR_CGROUP_BACKEND_CALL(group, allowAllDevices, -1, perms);
 }
 
 

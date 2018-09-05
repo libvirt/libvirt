@@ -1736,6 +1736,35 @@ virCgroupV1DenyDevice(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1AllowAllDevices(virCgroupPtr group,
+                           int perms)
+{
+    int ret = -1;
+
+    if (virCgroupV1AllowDevice(group, 'b', -1, -1, perms) < 0)
+        goto cleanup;
+
+    if (virCgroupV1AllowDevice(group, 'c', -1, -1, perms) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+static int
+virCgroupV1DenyAllDevices(virCgroupPtr group)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_DEVICES,
+                                "devices.deny",
+                                "a");
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1786,6 +1815,8 @@ virCgroupBackend virCgroupV1Backend = {
 
     .allowDevice = virCgroupV1AllowDevice,
     .denyDevice = virCgroupV1DenyDevice,
+    .allowAllDevices = virCgroupV1AllowAllDevices,
+    .denyAllDevices = virCgroupV1DenyAllDevices,
 };
 
 

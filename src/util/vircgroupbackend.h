@@ -269,6 +269,13 @@ typedef int
                          int minor,
                          int perms);
 
+typedef int
+(*virCgroupAllowAllDevicesCB)(virCgroupPtr group,
+                              int perms);
+
+typedef int
+(*virCgroupDenyAllDevicesCB)(virCgroupPtr group);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -321,6 +328,8 @@ struct _virCgroupBackend {
 
     virCgroupAllowDeviceCB allowDevice;
     virCgroupDenyDeviceCB denyDevice;
+    virCgroupAllowAllDevicesCB allowAllDevices;
+    virCgroupDenyAllDevicesCB denyAllDevices;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
