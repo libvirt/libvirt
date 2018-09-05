@@ -109,7 +109,7 @@ int qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
                                        const char *savefile);
 
 /* Please note that for these APIs there is no wrapper yet. Do NOT blindly add
- * new APIs here. If an API can touch a /dev file add a proper wrapper instead.
+ * new APIs here. If an API can touch a file add a proper wrapper instead.
  */
 # define qemuSecurityCheckAllLabel virSecurityManagerCheckAllLabel
 # define qemuSecurityClearSocketLabel virSecurityManagerClearSocketLabel
