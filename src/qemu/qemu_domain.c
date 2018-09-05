@@ -808,8 +808,7 @@ qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuSecurityDomainSetPathLabel(driver->securityManager,
-                                       vm->def, path, false) < 0)
+    if (qemuSecurityDomainSetPathLabel(driver, vm, path, false) < 0)
         goto cleanup;
 
     ret = 0;

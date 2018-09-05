@@ -95,12 +95,16 @@ int qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
 void qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
                                     virDomainDefPtr def);
 
+int qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   const char *path,
+                                   bool allowSubtree);
+
 /* Please note that for these APIs there is no wrapper yet. Do NOT blindly add
  * new APIs here. If an API can touch a /dev file add a proper wrapper instead.
  */
 # define qemuSecurityCheckAllLabel virSecurityManagerCheckAllLabel
 # define qemuSecurityClearSocketLabel virSecurityManagerClearSocketLabel
-# define qemuSecurityDomainSetPathLabel virSecurityManagerDomainSetPathLabel
 # define qemuSecurityGenLabel virSecurityManagerGenLabel
 # define qemuSecurityGetBaseLabel virSecurityManagerGetBaseLabel
 # define qemuSecurityGetDOI virSecurityManagerGetDOI

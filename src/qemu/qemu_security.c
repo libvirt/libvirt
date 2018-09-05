@@ -493,3 +493,33 @@ qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
 {
     virSecurityManagerRestoreTPMLabels(driver->securityManager, def);
 }
+
+
+int
+qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               const char *path,
+                               bool allowSubtree)
+{
+    int ret = -1;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerDomainSetPathLabel(driver->securityManager,
+                                             vm->def,
+                                             path,
+                                             allowSubtree) < 0)
+        goto cleanup;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionCommit(driver->securityManager,
+                                            vm->pid) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}

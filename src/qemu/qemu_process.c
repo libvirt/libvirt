@@ -2790,8 +2790,7 @@ qemuProcessStartManagedPRDaemon(virDomainObjPtr vm)
         virCgroupAddMachineTask(priv->cgroup, cpid) < 0)
         goto cleanup;
 
-    if (qemuSecurityDomainSetPathLabel(driver->securityManager,
-                                       vm->def, socketPath, true) < 0)
+    if (qemuSecurityDomainSetPathLabel(driver, vm, socketPath, true) < 0)
         goto cleanup;
 
     priv->prDaemonRunning = true;
@@ -3653,7 +3652,7 @@ qemuProcessNeedMemoryBackingPath(virDomainDefPtr def,
 
 static int
 qemuProcessBuildDestroyMemoryPathsImpl(virQEMUDriverPtr driver,
-                                       virDomainDefPtr def,
+                                       virDomainObjPtr vm,
                                        const char *path,
                                        bool build)
 {
@@ -3668,8 +3667,7 @@ qemuProcessBuildDestroyMemoryPathsImpl(virQEMUDriverPtr driver,
             return -1;
         }
 
-        if (qemuSecurityDomainSetPathLabel(driver->securityManager,
-                                           def, path, true) < 0)
+        if (qemuSecurityDomainSetPathLabel(driver, vm, path, true) < 0)
             return -1;
     } else {
         if (virFileDeleteTree(path) < 0)
@@ -3705,7 +3703,7 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
             if (!path)
                 goto cleanup;
 
-            if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm->def,
+            if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm,
                                                        path, build) < 0)
                 goto cleanup;
 
@@ -3717,7 +3715,7 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
         if (qemuGetMemoryBackingDomainPath(vm->def, cfg, &path) < 0)
             goto cleanup;
 
-        if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm->def,
+        if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm,
                                                    path, build) < 0)
             goto cleanup;
 
@@ -4909,8 +4907,7 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuSecurityDomainSetPathLabel(driver->securityManager,
-                                       vm->def, path, true) < 0)
+    if (qemuSecurityDomainSetPathLabel(driver, vm, path, true) < 0)
         goto cleanup;
 
     ret = 0;
