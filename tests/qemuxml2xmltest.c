@@ -1098,12 +1098,30 @@ mymain(void)
     DO_TEST("video-virtio-gpu-virgl", NONE);
     DO_TEST("video-virtio-gpu-spice-gl", NONE);
     DO_TEST("video-virtio-gpu-sdl-gl", NONE);
-    DO_TEST("virtio-input", NONE);
-    DO_TEST("virtio-input-passthrough", NONE);
+
+    DO_TEST("virtio-input",
+            QEMU_CAPS_VIRTIO_KEYBOARD,
+            QEMU_CAPS_VIRTIO_MOUSE,
+            QEMU_CAPS_VIRTIO_TABLET);
+    DO_TEST("virtio-input-passthrough",
+            QEMU_CAPS_VIRTIO_INPUT_HOST);
 
     DO_TEST("memorybacking-set", NONE);
     DO_TEST("memorybacking-unset", NONE);
-    DO_TEST("virtio-options", QEMU_CAPS_VIRTIO_SCSI);
+
+    DO_TEST("virtio-options",
+            QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_VIRTIO_KEYBOARD,
+            QEMU_CAPS_VIRTIO_MOUSE,
+            QEMU_CAPS_VIRTIO_TABLET,
+            QEMU_CAPS_VIRTIO_INPUT_HOST,
+            QEMU_CAPS_DEVICE_VIRTIO_GPU,
+            QEMU_CAPS_VIRTIO_GPU_VIRGL,
+            QEMU_CAPS_DEVICE_VIRTIO_RNG,
+            QEMU_CAPS_OBJECT_RNG_RANDOM,
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM,
+            QEMU_CAPS_VIRTIO_PCI_ATS);
 
     virObjectUnref(cfg);
 
