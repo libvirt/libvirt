@@ -4096,7 +4096,9 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
         virQEMUBuildBufferEscapeComma(&buf, dev->source.evdev);
         break;
     case VIR_DOMAIN_INPUT_TYPE_LAST:
-        break;
+    default:
+        virReportEnumRangeError(virDomainInputType, dev->type);
+        goto error;
     }
 
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
