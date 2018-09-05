@@ -105,6 +105,10 @@ int qemuAgentUpdateCPUInfo(unsigned int nvcpus,
                            qemuAgentCPUInfoPtr cpuinfo,
                            int ncpuinfo);
 
+int
+qemuAgentGetHostname(qemuAgentPtr mon,
+                     char **hostname);
+
 int qemuAgentGetTime(qemuAgentPtr mon,
                      long long *seconds,
                      unsigned int *nseconds);

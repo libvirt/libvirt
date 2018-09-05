@@ -1684,6 +1684,50 @@ qemuAgentUpdateCPUInfo(unsigned int nvcpus,
 
 
 int
+qemuAgentGetHostname(qemuAgentPtr mon,
+                     char **hostname)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data = NULL;
+    const char *result = NULL;
+
+    cmd = qemuAgentMakeCommand("guest-get-host-name",
+                               NULL);
+
+    if (!cmd)
+        return ret;
+
+    if (qemuAgentCommand(mon, cmd, &reply, true,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+        goto cleanup;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed return value"));
+        goto cleanup;
+    }
+
+    if (!(result = virJSONValueObjectGetString(data, "host-name"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("'host-name' missing in guest-get-host-name reply"));
+        goto cleanup;
+    }
+
+    if (VIR_STRDUP(*hostname, result) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
 qemuAgentGetTime(qemuAgentPtr mon,
                  long long *seconds,
                  unsigned int *nseconds)
