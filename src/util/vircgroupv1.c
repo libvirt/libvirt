@@ -1765,6 +1765,26 @@ virCgroupV1DenyAllDevices(virCgroupPtr group)
 }
 
 
+static int
+virCgroupV1SetCpuShares(virCgroupPtr group,
+                        unsigned long long shares)
+{
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.shares", shares);
+}
+
+
+static int
+virCgroupV1GetCpuShares(virCgroupPtr group,
+                        unsigned long long *shares)
+{
+    return virCgroupGetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.shares", shares);
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1817,6 +1837,9 @@ virCgroupBackend virCgroupV1Backend = {
     .denyDevice = virCgroupV1DenyDevice,
     .allowAllDevices = virCgroupV1AllowAllDevices,
     .denyAllDevices = virCgroupV1DenyAllDevices,
+
+    .setCpuShares = virCgroupV1SetCpuShares,
+    .getCpuShares = virCgroupV1GetCpuShares,
 };
 
 

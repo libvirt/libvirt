@@ -276,6 +276,14 @@ typedef int
 typedef int
 (*virCgroupDenyAllDevicesCB)(virCgroupPtr group);
 
+typedef int
+(*virCgroupSetCpuSharesCB)(virCgroupPtr group,
+                           unsigned long long shares);
+
+typedef int
+(*virCgroupGetCpuSharesCB)(virCgroupPtr group,
+                           unsigned long long *shares);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -330,6 +338,9 @@ struct _virCgroupBackend {
     virCgroupDenyDeviceCB denyDevice;
     virCgroupAllowAllDevicesCB allowAllDevices;
     virCgroupDenyAllDevicesCB denyAllDevices;
+
+    virCgroupSetCpuSharesCB setCpuShares;
+    virCgroupGetCpuSharesCB getCpuShares;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

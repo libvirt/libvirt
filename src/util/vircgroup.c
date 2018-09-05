@@ -2201,18 +2201,14 @@ virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
 int
 virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares)
 {
-    return virCgroupSetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.shares", shares);
+    VIR_CGROUP_BACKEND_CALL(group, setCpuShares, -1, shares);
 }
 
 
 int
 virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
 {
-    return virCgroupGetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.shares", shares);
+    VIR_CGROUP_BACKEND_CALL(group, getCpuShares, -1, shares);
 }
 
 
