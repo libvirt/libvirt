@@ -2014,11 +2014,8 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virBufferAddLit(&opt, "virtio-blk-pci");
         }
 
-        if (disk->iothread &&
-            (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW ||
-             disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
+        if (disk->iothread)
             virBufferAsprintf(&opt, ",iothread=iothread%u", disk->iothread);
-        }
 
         qemuBuildIoEventFdStr(&opt, disk->ioeventfd, qemuCaps);
         if (disk->event_idx &&
