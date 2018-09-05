@@ -37,6 +37,17 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Retrieve guest hostname through QEMU Guest Agent command
+        </summary>
+	<description>
+          QEMU is now able to retrieve the guest hostname using a new QEMU-GA
+	  command called 'guest-get-host-name'. Virsh users can execute
+          'domhostname' for QEMU driver for domains configured to use the
+          Guest Agent.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
