@@ -27585,10 +27585,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
          * but no leading indentation before the starting element.
          * Thankfully, libxml maps what looks like globals into
          * thread-local uses, so we are thread-safe.  */
-            xmlIndentTreeOutput = 1;
-            xmlbuf = xmlBufferCreate();
-            if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
-                            virBufferGetIndent(buf, false) / 2, 1) < 0) {
+        xmlIndentTreeOutput = 1;
+        xmlbuf = xmlBufferCreate();
+        if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
+                        virBufferGetIndent(buf, false) / 2, 1) < 0) {
             xmlBufferFree(xmlbuf);
             xmlIndentTreeOutput = oldIndentTreeOutput;
             goto error;
