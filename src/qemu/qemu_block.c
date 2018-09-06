@@ -2227,3 +2227,91 @@ qemuBlockStorageSourceCreateGetFormatProps(virStorageSourcePtr src,
     virReportEnumRangeError(virStorageFileFormat, src->format);
     return -1;
 }
+
+
+/**
+ * qemuBlockStorageSourceCreateGetStorageProps:
+ * @src: storage source to create
+ * @props: filled with props to be used with 'blockdev-create' to create @src
+ *
+ * This function should be used only if @src->type is VIR_STORAGE_TYPE_NETWORK.
+ * Note that @props may be NULL if qemu does not support creation storage
+ * on given protocol. @src->physical is used as size for the storage.
+ */
+int
+qemuBlockStorageSourceCreateGetStorageProps(virStorageSourcePtr src,
+                                            virJSONValuePtr *props)
+{
+    int actualType = virStorageSourceGetActualType(src);
+    VIR_AUTOPTR(virJSONValue) location = NULL;
+    const char *driver = NULL;
+    const char *filename = NULL;
+
+    switch ((virStorageType) actualType) {
+    case VIR_STORAGE_TYPE_FILE:
+        driver = "file";
+        filename = src->path;
+        break;
+
+    case VIR_STORAGE_TYPE_NETWORK:
+        switch ((virStorageNetProtocol) src->protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+            driver = "gluster";
+            if (!(location = qemuBlockStorageSourceGetGlusterProps(src, false, false)))
+                return -1;
+            break;
+
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+            driver = "rbd";
+            if (!(location = qemuBlockStorageSourceGetRBDProps(src, false)))
+                return -1;
+            break;
+
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+            driver = "sheepdog";
+            if (!(location = qemuBlockStorageSourceGetSheepdogProps(src)))
+                return -1;
+            break;
+
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+            driver = "ssh";
+            if (!(location = qemuBlockStorageSourceGetSshProps(src)))
+                return -1;
+            break;
+
+            /* unsupported/impossible */
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
+            return 0;
+        }
+        break;
+
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+        return 0;
+
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+         virReportEnumRangeError(virStorageType, actualType);
+         return -1;
+    }
+
+    if (virJSONValueObjectCreate(props,
+                                 "s:driver", driver,
+                                 "S:filename", filename,
+                                 "A:location", &location,
+                                 "u:size", src->physical,
+                                 NULL) < 0)
+        return -1;
+
+    return 0;
+}

@@ -168,3 +168,8 @@ qemuBlockStorageSourceCreateGetFormatProps(virStorageSourcePtr src,
                                            virStorageSourcePtr backing,
                                            virJSONValuePtr *props)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+
+int
+qemuBlockStorageSourceCreateGetStorageProps(virStorageSourcePtr src,
+                                            virJSONValuePtr *props)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
