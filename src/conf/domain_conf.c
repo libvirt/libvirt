@@ -5467,11 +5467,14 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        /* path can be auto generated */
+        /* The source path can be auto generated for certain specific
+         * types of channels, but in most cases we should report an
+         * error if the user didn't provide it */
         if (!def->data.nix.path &&
-            (!chr_def ||
-             (chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN &&
-              chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO))) {
+            !(chr_def &&
+              chr_def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+              (chr_def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN ||
+               chr_def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source path attribute for char device"));
             return -1;
