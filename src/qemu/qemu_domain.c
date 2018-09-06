@@ -12476,7 +12476,8 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
     size_t i;
     int ret = -1;
 
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) ||
+        !npaths)
         return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -12606,8 +12607,7 @@ qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
                                  &npaths, &paths, NULL) < 0)
         goto cleanup;
 
-    if (npaths != 0 &&
-        qemuDomainNamespaceUnlinkPaths(vm, (const char **)paths, npaths) < 0)
+    if (qemuDomainNamespaceUnlinkPaths(vm, (const char **)paths, npaths) < 0)
         goto cleanup;
 
     ret = 0;
