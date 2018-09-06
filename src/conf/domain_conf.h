@@ -2889,8 +2889,8 @@ void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
 void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def);
-int virDomainChrSourceDefCopy(virDomainChrSourceDefPtr src,
-                              virDomainChrSourceDefPtr dest);
+int virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
+                              virDomainChrSourceDefPtr src);
 void virDomainSoundCodecDefFree(virDomainSoundCodecDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
