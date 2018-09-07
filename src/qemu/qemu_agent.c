@@ -1544,9 +1544,6 @@ qemuAgentSetVCPUsCommand(qemuAgentPtr mon,
                          VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
 
-    if (qemuAgentCheckError(cmd, reply) < 0)
-        goto cleanup;
-
     /* All negative values are invalid. Return of 0 is bogus since we wouldn't
      * call the guest agent so that 0 cpus would be set successfully. Reporting
      * more successfully set vcpus that we've asked for is invalid. */
