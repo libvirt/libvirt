@@ -1886,6 +1886,21 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
 }
 
 
+int
+qemuBlockSnapshotAddBlockdev(virJSONValuePtr actions,
+                             virDomainDiskDefPtr disk,
+                             virStorageSourcePtr newsrc)
+{
+    if (qemuMonitorJSONTransactionAdd(actions, "blockdev-snapshot",
+                                      "s:node", disk->src->nodeformat,
+                                      "s:overlay", newsrc->nodeformat,
+                                      NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuBlockStorageGetCopyOnReadProps:
  * @disk: disk with copy-on-read enabled
