@@ -65,6 +65,19 @@ int virNetlinkDumpCommand(struct nl_msg *nl_msg,
                           unsigned int protocol, unsigned int groups,
                           void *opaque);
 
+typedef struct _virNetlinkNewLinkData virNetlinkNewLinkData;
+typedef virNetlinkNewLinkData *virNetlinkNewLinkDataPtr;
+struct _virNetlinkNewLinkData {
+    const int *ifindex;             /* The index for the 'link' device */
+    const virMacAddr *mac;          /* The MAC address of the device */
+    const uint32_t *macvlan_mode;   /* The mode of macvlan */
+};
+
+int virNetlinkNewLink(const char *ifname,
+                      const char *type,
+                      virNetlinkNewLinkDataPtr data,
+                      int *error);
+
 typedef int (*virNetlinkDelLinkFallback)(const char *ifname);
 
 int virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback);
