@@ -307,113 +307,33 @@ virNetDevMacVLanCreate(const char *ifname,
                        uint32_t macvlan_mode,
                        int *retry)
 {
-    int rc = -1;
-    struct nlmsgerr *err;
-    struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
-    int ifindex;
-    unsigned int recvbuflen;
-    struct nl_msg *nl_msg;
-    struct nlattr *linkinfo, *info_data;
-    char macstr[VIR_MAC_STRING_BUFLEN];
-    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+    int error = 0;
+    int ifindex = 0;
+    virNetlinkNewLinkData data = {
+        .macvlan_mode = &macvlan_mode,
+        .mac = macaddress,
+    };
+
+    *retry = 0;
 
     if (virNetDevGetIndex(srcdev, &ifindex) < 0)
         return -1;
 
-    *retry = 0;
-
-    nl_msg = nlmsg_alloc_simple(RTM_NEWLINK,
-                                NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
-
-    if (nla_put_u32(nl_msg, IFLA_LINK, ifindex) < 0)
-        goto buffer_too_small;
-
-    if (nla_put(nl_msg, IFLA_ADDRESS, VIR_MAC_BUFLEN, macaddress) < 0)
-        goto buffer_too_small;
-
-    if (ifname &&
-        nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
-        goto buffer_too_small;
-
-    if (!(linkinfo = nla_nest_start(nl_msg, IFLA_LINKINFO)))
-        goto buffer_too_small;
-
-    if (nla_put(nl_msg, IFLA_INFO_KIND, strlen(type), type) < 0)
-        goto buffer_too_small;
-
-    if (macvlan_mode > 0) {
-        if (!(info_data = nla_nest_start(nl_msg, IFLA_INFO_DATA)))
-            goto buffer_too_small;
-
-        if (nla_put(nl_msg, IFLA_MACVLAN_MODE, sizeof(macvlan_mode),
-                    &macvlan_mode) < 0)
-            goto buffer_too_small;
-
-        nla_nest_end(nl_msg, info_data);
-    }
-
-    nla_nest_end(nl_msg, linkinfo);
-
-    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
-                          NETLINK_ROUTE, 0) < 0) {
-        goto cleanup;
-    }
-
-    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
-        goto malformed_resp;
-
-    switch (resp->nlmsg_type) {
-    case NLMSG_ERROR:
-        err = (struct nlmsgerr *)NLMSG_DATA(resp);
-        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
-            goto malformed_resp;
-
-        switch (err->error) {
-
-        case 0:
-            break;
-
-        case -EEXIST:
+    data.ifindex = &ifindex;
+    if (virNetlinkNewLink(ifname, type, &data, &error) < 0) {
+        char macstr[VIR_MAC_STRING_BUFLEN];
+        if (error == -EEXIST)
             *retry = 1;
-            goto cleanup;
-
-        default:
-            virReportSystemError(-err->error,
+        else if (error < 0)
+            virReportSystemError(-error,
                                  _("error creating %s interface %s@%s (%s)"),
                                  type, ifname, srcdev,
                                  virMacAddrFormat(macaddress, macstr));
-            goto cleanup;
-        }
-        break;
 
-    case NLMSG_DONE:
-        break;
-
-    default:
-        goto malformed_resp;
+        return -1;
     }
 
-    rc = 0;
- cleanup:
-    nlmsg_free(nl_msg);
-    return rc;
-
- malformed_resp:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("malformed netlink response message"));
-    goto cleanup;
-
- buffer_too_small:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("allocated netlink buffer is too small"));
-    goto cleanup;
+    return 0;
 }
 
 /**

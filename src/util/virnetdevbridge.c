@@ -416,78 +416,23 @@ int
 virNetDevBridgeCreate(const char *brname)
 {
     /* use a netlink RTM_NEWLINK message to create the bridge */
-    const char *type = "bridge";
-    struct nlmsgerr *err;
-    struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
-    unsigned int recvbuflen;
-    struct nlattr *linkinfo;
-    VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
-    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+    int error = 0;
 
-    nl_msg = nlmsg_alloc_simple(RTM_NEWLINK,
-                                NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
-    if (nla_put(nl_msg, IFLA_IFNAME, strlen(brname)+1, brname) < 0)
-        goto buffer_too_small;
-    if (!(linkinfo = nla_nest_start(nl_msg, IFLA_LINKINFO)))
-        goto buffer_too_small;
-    if (nla_put(nl_msg, IFLA_INFO_KIND, strlen(type), type) < 0)
-        goto buffer_too_small;
-    nla_nest_end(nl_msg, linkinfo);
-
-    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
-                          NETLINK_ROUTE, 0) < 0) {
-        return -1;
-    }
-
-    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
-        goto malformed_resp;
-
-    switch (resp->nlmsg_type) {
-    case NLMSG_ERROR:
-        err = (struct nlmsgerr *)NLMSG_DATA(resp);
-        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
-            goto malformed_resp;
-
-        if (err->error < 0) {
+    if (virNetlinkNewLink(brname, "bridge", NULL, &error) < 0) {
 # if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
-            if (err->error == -EOPNOTSUPP) {
-                /* fallback to ioctl if netlink doesn't support creating
-                 * bridges
-                 */
-                return virNetDevBridgeCreateWithIoctl(brname);
-            }
-# endif
-
-            virReportSystemError(-err->error,
-                                 _("error creating bridge interface %s"),
-                                 brname);
-            return -1;
+        if (error == -EOPNOTSUPP) {
+            /* fallback to ioctl if netlink doesn't support creating bridges */
+            return virNetDevBridgeCreateWithIoctl(brname);
         }
-        break;
+# endif
+        if (error < 0)
+            virReportSystemError(-error, _("error creating bridge interface %s"),
+                                 brname);
 
-    case NLMSG_DONE:
-        break;
-    default:
-        goto malformed_resp;
+        return -1;
     }
 
     return 0;
-
- malformed_resp:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("malformed netlink response message"));
-    return -1;
- buffer_too_small:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("allocated netlink buffer is too small"));
-    return -1;
 }
 
 
