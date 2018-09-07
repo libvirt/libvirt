@@ -192,7 +192,8 @@ static int virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
  *
  * This is the callback that runs in the same namespace as the domain we are
  * relabelling. For given transaction (@opaque) it relabels all the paths on
- * the list.
+ * the list. Depending on security manager configuration it might lock paths
+ * we will relabel.
  *
  * Returns: 0 on success
  *         -1 otherwise.
@@ -202,8 +203,26 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
                              void *opaque)
 {
     virSecurityDACChownListPtr list = opaque;
+    const char **paths = NULL;
+    size_t npaths = 0;
     size_t i;
     int rv = 0;
+    int ret = -1;
+
+    if (VIR_ALLOC_N(paths, list->nItems) < 0)
+        return -1;
+
+    for (i = 0; i < list->nItems; i++) {
+        const char *p = list->items[i]->path;
+
+        if (virFileIsDir(p))
+            continue;
+
+        VIR_APPEND_ELEMENT_COPY_INPLACE(paths, npaths, p);
+    }
+
+    if (virSecurityManagerMetadataLock(list->manager, paths, npaths) < 0)
+        goto cleanup;
 
     for (i = 0; i < list->nItems; i++) {
         virSecurityDACChownItemPtr item = list->items[i];
@@ -222,10 +241,19 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
         }
 
         if (rv < 0)
-            return -1;
+            break;
     }
 
-    return 0;
+    if (virSecurityManagerMetadataUnlock(list->manager, paths, npaths) < 0)
+        goto cleanup;
+
+    if (rv < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(paths);
+    return ret;
 }
 
 
