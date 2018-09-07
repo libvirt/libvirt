@@ -1376,6 +1376,7 @@ mymain(void)
     DO_TEST("net-mcast", NONE);
     DO_TEST("net-udp", NONE);
     DO_TEST("net-hostdev", NONE);
+    DO_TEST("net-hostdev-bootorder", NONE);
     DO_TEST("net-hostdev-multidomain", NONE);
     DO_TEST("net-hostdev-vfio",
             QEMU_CAPS_DEVICE_VFIO_PCI);

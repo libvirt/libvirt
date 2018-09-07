@@ -5016,6 +5016,14 @@ virDomainDefCollectBootOrder(virDomainDefPtr def ATTRIBUTE_UNUSED,
     if (info->bootIndex == 0)
         return 0;
 
+    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
+        dev->data.hostdev->parent.type != VIR_DOMAIN_DEVICE_NONE) {
+        /* This hostdev is a child of a higher level device
+         * (e.g. interface), and thus already being counted on the
+         * list for the other device type.
+         */
+        return 0;
+    }
     if (virAsprintf(&order, "%u", info->bootIndex) < 0)
         goto cleanup;
 

@@ -433,6 +433,7 @@ mymain(void)
     DO_TEST("net-virtio-network-portgroup", NONE);
     DO_TEST("net-virtio-rxtxqueuesize", NONE);
     DO_TEST("net-hostdev", NONE);
+    DO_TEST("net-hostdev-bootorder", NONE);
     DO_TEST("net-hostdev-vfio", NONE);
     DO_TEST("net-midonet", NONE);
     DO_TEST("net-openvswitch", NONE);
