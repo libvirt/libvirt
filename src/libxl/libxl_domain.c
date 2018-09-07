@@ -520,6 +520,18 @@ libxlDomainShutdownThread(void *opaque)
         case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
         }
+    } else if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND) {
+        virDomainObjSetState(vm, VIR_DOMAIN_PMSUSPENDED,
+                             VIR_DOMAIN_PMSUSPENDED_UNKNOWN);
+
+        dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                           VIR_DOMAIN_EVENT_PMSUSPENDED,
+                                           VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY);
+        /*
+         * Similar to the xl implementation, ignore SUSPEND.  Any actions needed
+         * after calling libxl_domain_suspend() are handled by it's callers.
+         */
+        goto endjob;
     } else {
         VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
         goto endjob;
@@ -563,7 +575,6 @@ void
 libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
 {
     libxlDriverPrivatePtr driver = data;
-    libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
     struct libxlShutdownThreadInfo *shutdown_info = NULL;
     virThread thread;
     libxlDriverConfigPtr cfg;
@@ -572,13 +583,6 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
         VIR_INFO("Unhandled event type %d", event->type);
         goto error;
     }
-
-    /*
-     * Similar to the xl implementation, ignore SUSPEND.  Any actions needed
-     * after calling libxl_domain_suspend() are handled by its callers.
-     */
-    if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
-        goto error;
 
     /*
      * Start a thread to handle shutdown.  We don't want to be tying up
