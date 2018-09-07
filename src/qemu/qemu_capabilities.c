@@ -1072,7 +1072,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "cirrus-vga", QEMU_CAPS_DEVICE_CIRRUS_VGA },
     { "vmware-svga", QEMU_CAPS_DEVICE_VMWARE_SVGA },
     { "usb-serial", QEMU_CAPS_DEVICE_USB_SERIAL },
-    { "usb-net", QEMU_CAPS_DEVICE_USB_NET },
     { "virtio-rng-pci", QEMU_CAPS_DEVICE_VIRTIO_RNG },
     { "virtio-rng-s390", QEMU_CAPS_DEVICE_VIRTIO_RNG },
     { "virtio-rng-ccw", QEMU_CAPS_DEVICE_VIRTIO_RNG },
