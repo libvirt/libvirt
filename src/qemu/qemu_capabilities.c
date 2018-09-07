@@ -1219,7 +1219,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPiix4PM[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBRedir[] = {
     { "filter", QEMU_CAPS_USB_REDIR_FILTER },
-    { "bootindex", QEMU_CAPS_USB_REDIR_BOOTINDEX },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBHost[] = {

@@ -9482,15 +9482,8 @@ qemuBuildRedirdevDevStr(const virDomainDef *def,
         }
     }
 
-    if (dev->info.bootIndex) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_BOOTINDEX)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("USB redirection booting is not "
-                             "supported by this version of QEMU"));
-            goto error;
-        }
+    if (dev->info.bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", dev->info.bootIndex);
-    }
 
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
         goto error;
