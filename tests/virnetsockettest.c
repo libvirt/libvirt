@@ -243,8 +243,10 @@ testSocketAccept(const void *opaque)
                         &cdata) < 0)
         goto cleanup;
 
-    while (rsock == NULL)
-        virEventRunDefaultImpl();
+    while (rsock == NULL) {
+        if (virEventRunDefaultImpl() < 0)
+            break;
+    }
 
     for (i = 0; i < nlsock; i++) {
         if (lsock[i] == rsock) {
