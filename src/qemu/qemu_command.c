@@ -5335,14 +5335,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                                              "is not supported with this version of qemu"));
                             return -1;
                         }
-                    } else {
-                        if (!virQEMUCapsGet(qemuCaps,
-                                            QEMU_CAPS_PCI_BOOTINDEX)) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                           _("booting from assigned PCI devices is not "
-                                             "supported with this version of qemu"));
-                            return -1;
-                        }
                     }
                 }
                 if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
