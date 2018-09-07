@@ -5400,8 +5400,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 bootIndex = *bootHostdevNet;
                 *bootHostdevNet = 0;
             }
-            if ((backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
-                virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
+            if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 int configfd = qemuOpenPCIConfig(hostdev);
 
                 if (configfd >= 0) {

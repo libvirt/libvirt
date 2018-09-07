@@ -98,7 +98,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 35 */
     X_QEMU_CAPS_TDF, /* -tdf flag (user-mode pit catchup) */
-    QEMU_CAPS_PCI_CONFIGFD, /* pci-assign.configfd */
+    X_QEMU_CAPS_PCI_CONFIGFD, /* pci-assign.configfd */
     X_QEMU_CAPS_NODEFCONFIG, /* -nodefconfig */
     X_QEMU_CAPS_BOOT_MENU, /* -boot menu=on support */
     X_QEMU_CAPS_ENABLE_KQEMU, /* -enable-kqemu flag */

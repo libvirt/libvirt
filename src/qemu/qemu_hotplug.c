@@ -1644,8 +1644,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
         goto error;
     releaseaddr = true;
-    if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
+    if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
         configfd = qemuOpenPCIConfig(hostdev);
         if (configfd >= 0) {
             if (virAsprintf(&configfd_name, "fd-%s", info->alias) < 0)
