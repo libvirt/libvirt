@@ -1636,8 +1636,7 @@ mymain(void)
 
     DO_TEST("hostdev-usb-address", NONE);
     DO_TEST("hostdev-usb-address-device", NONE);
-    DO_TEST("hostdev-usb-address-device-boot",
-            QEMU_CAPS_USB_HOST_BOOTINDEX);
+    DO_TEST("hostdev-usb-address-device-boot", NONE);
     DO_TEST("hostdev-pci-address", NONE);
     DO_TEST("hostdev-pci-address-device", NONE);
     DO_TEST("hostdev-vfio",
