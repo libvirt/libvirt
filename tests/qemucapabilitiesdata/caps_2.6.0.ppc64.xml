@@ -51,7 +51,6 @@
   <flag name='nvram'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='vfio-pci.bootindex'/>
   <flag name='scsi-generic'/>
   <flag name='scsi-generic.bootindex'/>
   <flag name='mem-merge'/>

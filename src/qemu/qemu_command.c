@@ -5325,18 +5325,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                                  "supported for PCI, USB and SCSI devices"));
                 return -1;
             } else {
-                if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-                    if (subsys->u.pci.backend ==
-                        VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                        if (!virQEMUCapsGet(qemuCaps,
-                                            QEMU_CAPS_VFIO_PCI_BOOTINDEX)) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                           _("booting from PCI devices assigned with VFIO "
-                                             "is not supported with this version of qemu"));
-                            return -1;
-                        }
-                    }
-                }
                 if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
                     !virQEMUCapsGet(qemuCaps,
                                     QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX)) {

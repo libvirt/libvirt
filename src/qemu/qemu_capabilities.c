@@ -1195,7 +1195,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPCIAssign[] = {
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVfioPCI[] = {
-    { "bootindex", QEMU_CAPS_VFIO_PCI_BOOTINDEX },
     { "display", QEMU_CAPS_VFIO_PCI_DISPLAY },
 };
 
