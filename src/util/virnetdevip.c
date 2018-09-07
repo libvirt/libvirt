@@ -283,7 +283,6 @@ virNetDevIPRouteAdd(const char *ifname,
                     virSocketAddrPtr gateway,
                     unsigned int metric)
 {
-    struct nlmsghdr *resp = NULL;
     unsigned int recvbuflen;
     unsigned int ifindex;
     struct rtmsg rtmsg;
@@ -296,6 +295,7 @@ virNetDevIPRouteAdd(const char *ifname,
     VIR_AUTOPTR(virNetlinkMsg) nlmsg = NULL;
     VIR_AUTOFREE(char *) toStr = NULL;
     VIR_AUTOFREE(char *) viaStr = NULL;
+    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
 
     actualAddr = addr;
 
