@@ -12428,7 +12428,8 @@ qemuDomainNamespaceMknodPaths(virDomainObjPtr vm,
     int ret = -1;
     size_t i;
 
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) ||
+        !npaths)
         return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -12521,9 +12522,6 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
     char *dmPath = NULL;
     int ret = -1;
 
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        return 0;
-
     for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (virStorageSourceIsEmpty(next) ||
             !virStorageSourceIsLocalStorage(next)) {
@@ -12574,9 +12572,6 @@ qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
     char **paths = NULL;
     size_t i, npaths = 0;
 
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        return 0;
-
     if (qemuDomainGetHostdevPath(NULL, hostdev, false, &npaths, &paths, NULL) < 0)
         goto cleanup;
 
@@ -12599,9 +12594,6 @@ qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
     int ret = -1;
     char **paths = NULL;
     size_t i, npaths = 0;
-
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        return 0;
 
     if (qemuDomainGetHostdevPath(vm->def, hostdev, true,
                                  &npaths, &paths, NULL) < 0)
