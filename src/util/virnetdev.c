@@ -3163,28 +3163,6 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
 
 
 # if HAVE_DECL_DEVLINK_CMD_ESWITCH_GET
-/**
- * virNetDevPutExtraHeader
- * reserve and prepare room for an extra header
- * This function sets to zero the room that is required to put the extra
- * header after the initial Netlink header. This function also increases
- * the nlmsg_len field.
- *
- * @nlh: pointer to Netlink header
- * @size: size of the extra header that we want to put
- *
- * Returns pointer to the start of the extended header
- */
-static void *
-virNetDevPutExtraHeader(struct nlmsghdr *nlh,
-                        size_t size)
-{
-    char *ptr = (char *)nlh + nlh->nlmsg_len;
-    size_t len = NLMSG_ALIGN(size);
-    nlh->nlmsg_len += len;
-    return ptr;
-}
-
 
 /**
  * virNetDevGetFamilyId:
@@ -3199,7 +3177,11 @@ virNetDevGetFamilyId(const char *family_name)
 {
     struct nl_msg *nl_msg = NULL;
     struct nlmsghdr *resp = NULL;
-    struct genlmsghdr* gmsgh = NULL;
+    struct genlmsghdr gmsgh = {
+        .cmd = CTRL_CMD_GETFAMILY,
+        .version = DEVLINK_GENL_VERSION,
+        .reserved = 0,
+    };
     struct nlattr *tb[CTRL_ATTR_MAX + 1] = {NULL, };
     unsigned int recvbuflen;
     uint32_t family_id = 0;
@@ -3210,11 +3192,8 @@ virNetDevGetFamilyId(const char *family_name)
         goto cleanup;
     }
 
-    if (!(gmsgh = virNetDevPutExtraHeader(nlmsg_hdr(nl_msg), sizeof(struct genlmsghdr))))
+    if (nlmsg_append(nl_msg, &gmsgh, sizeof(gmsgh), NLMSG_ALIGNTO) < 0)
         goto cleanup;
-
-    gmsgh->cmd = CTRL_CMD_GETFAMILY;
-    gmsgh->version = DEVLINK_GENL_VERSION;
 
     if (nla_put_string(nl_msg, CTRL_ATTR_FAMILY_NAME, family_name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3262,7 +3241,11 @@ virNetDevSwitchdevFeature(const char *ifname,
     unsigned int recvbuflen;
     struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {NULL, };
     virPCIDevicePtr pci_device_ptr = NULL;
-    struct genlmsghdr* gmsgh = NULL;
+    struct genlmsghdr gmsgh = {
+        .cmd = DEVLINK_CMD_ESWITCH_GET,
+        .version = DEVLINK_GENL_VERSION,
+        .reserved = 0,
+    };
     const char *pci_name;
     char *pfname = NULL;
     int is_vf = -1;
@@ -3292,11 +3275,8 @@ virNetDevSwitchdevFeature(const char *ifname,
         goto cleanup;
     }
 
-    if (!(gmsgh = virNetDevPutExtraHeader(nlmsg_hdr(nl_msg), sizeof(struct genlmsghdr))))
+    if (nlmsg_append(nl_msg, &gmsgh, sizeof(gmsgh), NLMSG_ALIGNTO) < 0)
         goto cleanup;
-
-    gmsgh->cmd = DEVLINK_CMD_ESWITCH_GET;
-    gmsgh->version = DEVLINK_GENL_VERSION;
 
     pci_name = virPCIDeviceGetName(pci_device_ptr);
 
