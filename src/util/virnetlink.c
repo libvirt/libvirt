@@ -537,41 +537,27 @@ virNetlinkNewLink(const char *ifname,
     if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
         goto buffer_too_small;
 
-    if (ifname && nla_put(nl_msg, IFLA_IFNAME,
-                          (strlen(ifname) + 1), ifname) < 0)
-        goto buffer_too_small;
+    NETLINK_MSG_PUT(nl_msg, IFLA_IFNAME, (strlen(ifname) + 1), ifname);
 
-    if (!(linkinfo = nla_nest_start(nl_msg, IFLA_LINKINFO)))
-        goto buffer_too_small;
-
-    if (type && nla_put(nl_msg, IFLA_INFO_KIND, (strlen(type) + 1), type) < 0)
-        goto buffer_too_small;
+    NETLINK_MSG_NEST_START(nl_msg, linkinfo, IFLA_LINKINFO);
+    NETLINK_MSG_PUT(nl_msg, IFLA_INFO_KIND, (strlen(type) + 1), type);
 
     if ((STREQ(type, "macvtap") || STREQ(type, "macvlan")) &&
          extra_args &&
          extra_args->macvlan_mode &&
          *extra_args->macvlan_mode > 0) {
-        if (!(infodata = nla_nest_start(nl_msg, IFLA_INFO_DATA)))
-            goto buffer_too_small;
-
-        if (nla_put(nl_msg, IFLA_MACVLAN_MODE,
-                    sizeof(uint32_t), extra_args->macvlan_mode) < 0)
-            goto buffer_too_small;
-
-        nla_nest_end(nl_msg, infodata);
+        NETLINK_MSG_NEST_START(nl_msg, infodata, IFLA_INFO_DATA);
+        NETLINK_MSG_PUT(nl_msg, IFLA_MACVLAN_MODE,
+                        sizeof(uint32_t), extra_args->macvlan_mode);
+        NETLINK_MSG_NEST_END(nl_msg, infodata);
     }
 
-    nla_nest_end(nl_msg, linkinfo);
+    NETLINK_MSG_NEST_END(nl_msg, linkinfo);
 
     if (extra_args) {
-        if (extra_args->ifindex &&
-            nla_put(nl_msg, IFLA_LINK,
-                    sizeof(uint32_t), extra_args->ifindex) < 0)
-            goto buffer_too_small;
-
-        if (extra_args->mac &&
-            nla_put(nl_msg, IFLA_ADDRESS, VIR_MAC_BUFLEN, extra_args->mac) < 0)
-            goto buffer_too_small;
+        NETLINK_MSG_PUT(nl_msg, IFLA_LINK,
+                        sizeof(uint32_t), extra_args->ifindex);
+        NETLINK_MSG_PUT(nl_msg, IFLA_ADDRESS, VIR_MAC_BUFLEN, extra_args->mac);
     }
 
     if (virNetlinkCommand(nl_msg, &resp, &buflen, 0, 0, NETLINK_ROUTE, 0) < 0)
