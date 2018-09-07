@@ -2035,10 +2035,9 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
     if (!(cmd = qemuAgentMakeCommand("guest-network-get-interfaces", NULL)))
         goto cleanup;
 
-    if (qemuAgentCommand(mon, cmd, &reply, false, VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
-        qemuAgentCheckError(cmd, reply) < 0) {
+    if (qemuAgentCommand(mon, cmd, &reply, false,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
-    }
 
     if (!(ret_array = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
