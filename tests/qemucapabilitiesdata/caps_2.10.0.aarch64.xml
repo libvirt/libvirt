@@ -156,7 +156,7 @@
   <flag name='egl-headless'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>307241</microcodeVersion>
+  <microcodeVersion>305067</microcodeVersion>
   <package> (v2.10.0)</package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>

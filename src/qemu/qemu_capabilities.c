@@ -1191,9 +1191,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPCIAssign[] = {
-};
-
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVfioPCI[] = {
     { "display", QEMU_CAPS_VFIO_PCI_DISPLAY },
 };
@@ -1218,12 +1215,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPiix4PM[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBRedir[] = {
     { "filter", QEMU_CAPS_USB_REDIR_FILTER },
-};
-
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBHost[] = {
-};
-
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSCSIGeneric[] = {
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsI440FXPCIHost[] = {
@@ -1340,12 +1331,6 @@ static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-net-s390", virQEMUCapsDevicePropsVirtioNet,
       ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioNet),
       QEMU_CAPS_DEVICE_VIRTIO_NET },
-    { "pci-assign", virQEMUCapsDevicePropsPCIAssign,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsPCIAssign),
-      -1 },
-    { "kvm-pci-assign", virQEMUCapsDevicePropsPCIAssign,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsPCIAssign),
-      -1 },
     { "vfio-pci", virQEMUCapsDevicePropsVfioPCI,
       ARRAY_CARDINALITY(virQEMUCapsDevicePropsVfioPCI),
       QEMU_CAPS_DEVICE_VFIO_PCI },
@@ -1361,12 +1346,6 @@ static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "usb-redir", virQEMUCapsDevicePropsUSBRedir,
       ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBRedir),
       QEMU_CAPS_USB_REDIR },
-    { "usb-host", virQEMUCapsDevicePropsUSBHost,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBHost),
-      -1 },
-    { "scsi-generic", virQEMUCapsDevicePropsSCSIGeneric,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsSCSIGeneric),
-      QEMU_CAPS_DEVICE_SCSI_GENERIC },
     { "i440FX-pcihost", virQEMUCapsDevicePropsI440FXPCIHost,
       ARRAY_CARDINALITY(virQEMUCapsDevicePropsI440FXPCIHost),
       -1 },

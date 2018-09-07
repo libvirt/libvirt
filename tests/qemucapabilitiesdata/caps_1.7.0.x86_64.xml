@@ -108,7 +108,7 @@
   <flag name='mch'/>
   <version>1007000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>54569</microcodeVersion>
+  <microcodeVersion>52111</microcodeVersion>
   <package></package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='Opteron_G5'/>
