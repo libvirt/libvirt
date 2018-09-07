@@ -29,10 +29,14 @@
 #include "virobject.h"
 #include "virlog.h"
 #include "locking/lock_manager.h"
+#include "virfile.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
 VIR_LOG_INIT("security.security_manager");
+
+virMutex lockManagerMutex = VIR_MUTEX_INITIALIZER;
 
 struct _virSecurityManager {
     virObjectLockable parent;
@@ -43,6 +47,10 @@ struct _virSecurityManager {
     void *privateData;
 
     virLockManagerPluginPtr lockPlugin;
+    /* This is a FD that represents a connection to virtlockd so
+     * that connection is kept open in between MetdataLock() and
+     * MetadataUnlock() calls. */
+    int clientfd;
 };
 
 static virClassPtr virSecurityManagerClass;
@@ -58,6 +66,7 @@ void virSecurityManagerDispose(void *obj)
         mgr->drv->close(mgr);
 
     virObjectUnref(mgr->lockPlugin);
+    VIR_FORCE_CLOSE(mgr->clientfd);
 
     VIR_FREE(mgr->privateData);
 }
@@ -110,6 +119,7 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
     mgr->flags = flags;
     mgr->virtDriver = virtDriver;
     VIR_STEAL_PTR(mgr->privateData, privateData);
+    mgr->clientfd = -1;
 
     if (drv->open(mgr) < 0)
         goto error;
@@ -1263,4 +1273,132 @@ virSecurityManagerRestoreTPMLabels(virSecurityManagerPtr mgr,
     }
 
     return 0;
+}
+
+
+static virLockManagerPtr
+virSecurityManagerNewLockManager(virSecurityManagerPtr mgr,
+                                 const char * const *paths,
+                                 size_t npaths)
+{
+    virLockManagerPtr lock;
+    virLockManagerParam params[] = {
+        { .type = VIR_LOCK_MANAGER_PARAM_TYPE_UUID,
+            .key = "uuid",
+        },
+        { .type = VIR_LOCK_MANAGER_PARAM_TYPE_STRING,
+            .key = "name",
+            .value = { .cstr = "libvirtd-sec" },
+        },
+        { .type = VIR_LOCK_MANAGER_PARAM_TYPE_UINT,
+            .key = "pid",
+            .value = { .iv = getpid() },
+        },
+    };
+    const unsigned int flags = 0;
+    size_t i;
+
+    if (virGetHostUUID(params[0].value.uuid) < 0)
+        return NULL;
+
+    if (!(lock = virLockManagerNew(virLockManagerPluginGetDriver(mgr->lockPlugin),
+                                   VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON,
+                                   ARRAY_CARDINALITY(params),
+                                   params,
+                                   flags)))
+        return NULL;
+
+    for (i = 0; i < npaths; i++) {
+        if (virLockManagerAddResource(lock,
+                                      VIR_LOCK_MANAGER_RESOURCE_TYPE_METADATA,
+                                      paths[i], 0, NULL, 0) < 0)
+            goto error;
+    }
+
+    return lock;
+ error:
+    virLockManagerFree(lock);
+    return NULL;
+}
+
+
+/* How many seconds should we try to acquire the lock before
+ * giving up. */
+#define LOCK_ACQUIRE_TIMEOUT 60
+
+int
+virSecurityManagerMetadataLock(virSecurityManagerPtr mgr,
+                               const char * const *paths,
+                               size_t npaths)
+{
+    virLockManagerPtr lock;
+    virTimeBackOffVar timebackoff;
+    int fd = -1;
+    int rv = -1;
+    int ret = -1;
+
+    virMutexLock(&lockManagerMutex);
+
+    if (!(lock = virSecurityManagerNewLockManager(mgr, paths, npaths)))
+        goto cleanup;
+
+    if (virTimeBackOffStart(&timebackoff, 1, LOCK_ACQUIRE_TIMEOUT * 1000) < 0)
+        goto cleanup;
+    while (virTimeBackOffWait(&timebackoff)) {
+        rv = virLockManagerAcquire(lock, NULL,
+                                   VIR_LOCK_MANAGER_ACQUIRE_ROLLBACK,
+                                   VIR_DOMAIN_LOCK_FAILURE_DEFAULT, &fd);
+
+        if (rv >= 0)
+            break;
+
+        if (virGetLastErrorCode() == VIR_ERR_RESOURCE_BUSY)
+            continue;
+
+        goto cleanup;
+    }
+
+    if (rv < 0)
+        goto cleanup;
+
+    mgr->clientfd = fd;
+    fd = -1;
+
+    ret = 0;
+ cleanup:
+    virLockManagerFree(lock);
+    VIR_FORCE_CLOSE(fd);
+    if (ret < 0)
+        virMutexUnlock(&lockManagerMutex);
+    return ret;
+}
+
+
+int
+virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr,
+                                 const char * const *paths,
+                                 size_t npaths)
+{
+    virLockManagerPtr lock;
+    int fd;
+    int ret = -1;
+
+    /* lockManagerMutex acquired from previous
+     * virSecurityManagerMetadataLock() call. */
+
+    fd = mgr->clientfd;
+    mgr->clientfd = -1;
+
+    if (!(lock = virSecurityManagerNewLockManager(mgr, paths, npaths)))
+        goto cleanup;
+
+    if (virLockManagerRelease(lock, NULL, 0) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virLockManagerFree(lock);
+    VIR_FORCE_CLOSE(fd);
+    virMutexUnlock(&lockManagerMutex);
+    return ret;
 }

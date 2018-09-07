@@ -199,4 +199,11 @@ int virSecurityManagerSetTPMLabels(virSecurityManagerPtr mgr,
 int virSecurityManagerRestoreTPMLabels(virSecurityManagerPtr mgr,
                                        virDomainDefPtr vm);
 
+int virSecurityManagerMetadataLock(virSecurityManagerPtr mgr,
+                                   const char * const *paths,
+                                   size_t npaths);
+int virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr,
+                                     const char * const *paths,
+                                     size_t npaths);
+
 #endif /* VIR_SECURITY_MANAGER_H__ */
