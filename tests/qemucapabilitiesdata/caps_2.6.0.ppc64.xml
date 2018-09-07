@@ -52,7 +52,6 @@
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
   <flag name='scsi-generic'/>
-  <flag name='scsi-generic.bootindex'/>
   <flag name='mem-merge'/>
   <flag name='vnc-websocket'/>
   <flag name='drive-discard'/>

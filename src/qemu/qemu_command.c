@@ -5324,15 +5324,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                                _("booting from assigned devices is only "
                                  "supported for PCI, USB and SCSI devices"));
                 return -1;
-            } else {
-                if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
-                    !virQEMUCapsGet(qemuCaps,
-                                    QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("booting from assigned SCSI devices is not"
-                                     " supported with this version of qemu"));
-                    return -1;
-                }
             }
         }
 

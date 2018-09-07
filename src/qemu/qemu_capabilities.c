@@ -1224,7 +1224,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBHost[] = {
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSCSIGeneric[] = {
-    { "bootindex", QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsI440FXPCIHost[] = {

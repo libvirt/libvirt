@@ -2436,8 +2436,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_SCSI_GENERIC);
     DO_TEST("hostdev-scsi-virtio-scsi",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_DEVICE_SCSI_GENERIC,
-            QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX);
+            QEMU_CAPS_DEVICE_SCSI_GENERIC);
     DO_TEST("hostdev-scsi-lsi-iscsi",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_LSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
