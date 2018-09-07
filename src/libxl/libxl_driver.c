@@ -412,6 +412,17 @@ libxlReconnectDomain(virDomainObjPtr vm,
                                             vm->def, hostdev_flags) < 0)
         goto error;
 
+    if (d_info.shutdown &&
+            d_info.shutdown_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
+        virDomainObjSetState(vm, VIR_DOMAIN_PMSUSPENDED,
+                             VIR_DOMAIN_PMSUSPENDED_UNKNOWN);
+    else if (d_info.paused)
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
+                             VIR_DOMAIN_PAUSED_UNKNOWN);
+    else
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_UNKNOWN);
+
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
