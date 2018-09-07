@@ -3669,11 +3669,8 @@ qemuProcessBuildDestroyMemoryPathsImpl(virQEMUDriverPtr driver,
         }
 
         if (qemuSecurityDomainSetPathLabel(driver->securityManager,
-                                           def, path, true) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to label %s"), path);
+                                           def, path, true) < 0)
             return -1;
-        }
     } else {
         if (virFileDeleteTree(path) < 0)
             return -1;
