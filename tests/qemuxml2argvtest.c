@@ -425,8 +425,6 @@ testUpdateQEMUCaps(const struct testInfo *info,
     virQEMUCapsInitHostCPUModel(info->qemuCaps, caps->host.arch,
                                 VIR_DOMAIN_VIRT_QEMU);
 
-    virQEMUCapsFilterByMachineType(info->qemuCaps, vm->def->os.machine);
-
     ret = 0;
 
  cleanup:
