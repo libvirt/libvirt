@@ -418,11 +418,6 @@ testUpdateQEMUCaps(const struct testInfo *info,
                          !!(info->flags & FLAG_SKIP_LEGACY_CPUS)) < 0)
         goto cleanup;
 
-    virQEMUCapsFreeHostCPUModel(info->qemuCaps, caps->host.arch,
-                                VIR_DOMAIN_VIRT_KVM);
-    virQEMUCapsFreeHostCPUModel(info->qemuCaps, caps->host.arch,
-                                VIR_DOMAIN_VIRT_QEMU);
-
     virQEMUCapsInitHostCPUModel(info->qemuCaps, caps->host.arch,
                                 VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsInitHostCPUModel(info->qemuCaps, caps->host.arch,
