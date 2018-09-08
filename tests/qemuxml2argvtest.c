@@ -293,6 +293,7 @@ typedef enum {
     FLAG_EXPECT_FAILURE     = 1 << 0,
     FLAG_EXPECT_PARSE_ERROR = 1 << 1,
     FLAG_FIPS               = 1 << 2,
+    FLAG_STEAL_VM           = 1 << 3,
 } virQemuXML2ArgvTestFlags;
 
 struct testInfo {
@@ -471,6 +472,7 @@ testCheckExclusiveFlags(int flags)
     virCheckFlags(FLAG_EXPECT_FAILURE |
                   FLAG_EXPECT_PARSE_ERROR |
                   FLAG_FIPS |
+                  FLAG_STEAL_VM |
                   0, -1);
 
     return 0;
@@ -643,7 +645,7 @@ testCompareXMLToArgv(const void *data)
         ret = 0;
     }
 
-    if (!(flags & FLAG_EXPECT_FAILURE) && ret == 0)
+    if (flags & FLAG_STEAL_VM)
         VIR_STEAL_PTR(info->vm, vm);
 
  cleanup:
@@ -852,6 +854,9 @@ mymain(void)
 
 # define DO_TEST_GIC(name, gic, ...) \
     DO_TEST_FULL(name, NULL, -1, 0, 0, gic, __VA_ARGS__)
+
+# define DO_TEST_WITH_STARTUP(name, ...) \
+    DO_TEST_FULL(name, NULL, -1, FLAG_STEAL_VM, 0, GIC_NONE, __VA_ARGS__)
 
 # define DO_TEST_FAILURE(name, ...) \
     DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE, \
@@ -1092,7 +1097,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-fmt-cow", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-dir", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-iso", NONE);
-    DO_TEST("disk-shared", NONE);
+    DO_TEST_WITH_STARTUP("disk-shared", NONE);
     DO_TEST_CAPS_VER("disk-shared", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_PARSE_ERROR("disk-shared-qcow", NONE);
