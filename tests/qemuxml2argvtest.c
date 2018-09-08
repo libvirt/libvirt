@@ -442,17 +442,14 @@ testCompareXMLToStartupXML(const void *data)
     char *actual = NULL;
     int ret = -1;
 
-    if (!info->vm)
-        return EXIT_AM_SKIP;
+    if (!info->vm) {
+        VIR_TEST_DEBUG("VM object missing. Did the args conversion succeed?");
+        return -1;
+    }
 
     if (virAsprintf(&xml, "%s/qemuxml2startupxmloutdata/%s.xml",
                     abs_srcdir, info->name) < 0)
         goto cleanup;
-
-    if (!virFileExists(xml)) {
-        ret = EXIT_AM_SKIP;
-        goto cleanup;
-    }
 
     if (!(actual = virDomainDefFormat(info->vm->def, NULL, format_flags)))
         goto cleanup;
