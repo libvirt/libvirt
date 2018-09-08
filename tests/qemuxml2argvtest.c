@@ -475,6 +475,8 @@ testCheckExclusiveFlags(int flags)
                   FLAG_STEAL_VM |
                   0, -1);
 
+    VIR_EXCLUSIVE_FLAGS_RET(FLAG_STEAL_VM, FLAG_EXPECT_FAILURE, -1);
+    VIR_EXCLUSIVE_FLAGS_RET(FLAG_STEAL_VM, FLAG_EXPECT_PARSE_ERROR, -1);
     return 0;
 }
 
@@ -842,7 +844,8 @@ mymain(void)
         if (virTestRun("QEMU XML-2-ARGV " name, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
-        if (virTestRun("QEMU XML-2-startup-XML " name, \
+        if (((flags) & FLAG_STEAL_VM) && \
+            virTestRun("QEMU XML-2-startup-XML " name, \
                        testCompareXMLToStartupXML, &info) < 0) \
             ret = -1; \
         virObjectUnref(info.qemuCaps); \
