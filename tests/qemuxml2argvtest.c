@@ -294,6 +294,7 @@ typedef enum {
     FLAG_EXPECT_PARSE_ERROR = 1 << 1,
     FLAG_FIPS               = 1 << 2,
     FLAG_STEAL_VM           = 1 << 3,
+    FLAG_REAL_CAPS          = 1 << 4,
 } virQemuXML2ArgvTestFlags;
 
 struct testInfo {
@@ -470,6 +471,7 @@ testCheckExclusiveFlags(int flags)
                   FLAG_EXPECT_PARSE_ERROR |
                   FLAG_FIPS |
                   FLAG_STEAL_VM |
+                  FLAG_REAL_CAPS |
                   0, -1);
 
     VIR_EXCLUSIVE_FLAGS_RET(FLAG_STEAL_VM, FLAG_EXPECT_FAILURE, -1);
@@ -566,7 +568,8 @@ testCompareXMLToArgv(const void *data)
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
         goto cleanup;
 
-    if (testUpdateQEMUCaps(info, vm, driver.caps) < 0)
+    if (!(info->flags & FLAG_REAL_CAPS) &&
+        testUpdateQEMUCaps(info, vm, driver.caps) < 0)
         goto cleanup;
 
     log = virTestLogContentAndReset();
@@ -783,7 +786,7 @@ mymain(void)
     do { \
         static struct testInfo info = { \
             name, "." suffix, NULL, migrateFrom, migrateFrom ? 7 : -1,\
-            (flags), parseFlags, false, NULL \
+            (flags | FLAG_REAL_CAPS), parseFlags, false, NULL \
         }; \
         info.skipLegacyCPUs = skipLegacyCPUs; \
         if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
