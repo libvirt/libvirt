@@ -1662,6 +1662,8 @@ void virQEMUCapsDispose(void *obj)
 
     VIR_FREE(qemuCaps->gicCapabilities);
 
+    virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
+
     virQEMUCapsHostCPUDataClear(&qemuCaps->kvmCPU);
     virQEMUCapsHostCPUDataClear(&qemuCaps->tcgCPU);
 }
