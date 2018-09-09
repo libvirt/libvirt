@@ -466,6 +466,18 @@ testCompareXMLToStartupXML(const void *data)
 
 
 static int
+testCheckExclusiveFlags(int flags)
+{
+    virCheckFlags(FLAG_EXPECT_FAILURE |
+                  FLAG_EXPECT_PARSE_ERROR |
+                  FLAG_FIPS |
+                  0, -1);
+
+    return 0;
+}
+
+
+static int
 testCompareXMLToArgv(const void *data)
 {
     struct testInfo *info = (void *) data;
@@ -506,6 +518,9 @@ testCompareXMLToArgv(const void *data)
 
     if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
         flags |= FLAG_FIPS;
+
+    if (testCheckExclusiveFlags(info->flags) < 0)
+        goto cleanup;
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto cleanup;
