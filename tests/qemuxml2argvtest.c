@@ -295,6 +295,7 @@ typedef enum {
     FLAG_FIPS               = 1 << 2,
     FLAG_STEAL_VM           = 1 << 3,
     FLAG_REAL_CAPS          = 1 << 4,
+    FLAG_SKIP_LEGACY_CPUS   = 1 << 5,
 } virQemuXML2ArgvTestFlags;
 
 struct testInfo {
@@ -305,7 +306,6 @@ struct testInfo {
     int migrateFd;
     unsigned int flags;
     unsigned int parseFlags;
-    bool skipLegacyCPUs;
     virDomainObjPtr vm;
 };
 
@@ -414,7 +414,8 @@ testUpdateQEMUCaps(const struct testInfo *info,
 
     virQEMUCapsInitQMPBasicArch(info->qemuCaps);
 
-    if (testAddCPUModels(info->qemuCaps, info->skipLegacyCPUs) < 0)
+    if (testAddCPUModels(info->qemuCaps,
+                         !!(info->flags & FLAG_SKIP_LEGACY_CPUS)) < 0)
         goto cleanup;
 
     virQEMUCapsFreeHostCPUModel(info->qemuCaps, caps->host.arch,
@@ -472,10 +473,12 @@ testCheckExclusiveFlags(int flags)
                   FLAG_FIPS |
                   FLAG_STEAL_VM |
                   FLAG_REAL_CAPS |
+                  FLAG_SKIP_LEGACY_CPUS |
                   0, -1);
 
     VIR_EXCLUSIVE_FLAGS_RET(FLAG_STEAL_VM, FLAG_EXPECT_FAILURE, -1);
     VIR_EXCLUSIVE_FLAGS_RET(FLAG_STEAL_VM, FLAG_EXPECT_PARSE_ERROR, -1);
+    VIR_EXCLUSIVE_FLAGS_RET(FLAG_REAL_CAPS, FLAG_SKIP_LEGACY_CPUS, -1);
     return 0;
 }
 
@@ -672,7 +675,6 @@ mymain(void)
 {
     int ret = 0, i;
     char *fakerootdir;
-    bool skipLegacyCPUs = false;
     const char *archs[] = {
         "aarch64",
         "ppc64",
@@ -786,9 +788,8 @@ mymain(void)
     do { \
         static struct testInfo info = { \
             name, "." suffix, NULL, migrateFrom, migrateFrom ? 7 : -1,\
-            (flags | FLAG_REAL_CAPS), parseFlags, false, NULL \
+            (flags | FLAG_REAL_CAPS), parseFlags, NULL \
         }; \
-        info.skipLegacyCPUs = skipLegacyCPUs; \
         if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
                                                             capsfile))) \
             return EXIT_FAILURE; \
@@ -835,9 +836,8 @@ mymain(void)
     do { \
         static struct testInfo info = { \
             name, NULL, NULL, migrateFrom, migrateFd, (flags), parseFlags, \
-            false, NULL \
+            NULL \
         }; \
-        info.skipLegacyCPUs = skipLegacyCPUs; \
         if (testInitQEMUCaps(&info, gic) < 0) \
             return EXIT_FAILURE; \
         virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST); \
@@ -1749,10 +1749,12 @@ mymain(void)
     DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("cpu-host-model", NONE);
     DO_TEST("cpu-host-model-vendor", NONE);
-    skipLegacyCPUs = true;
-    DO_TEST("cpu-host-model-fallback", NONE);
-    DO_TEST_FAILURE("cpu-host-model-nofallback", NONE);
-    skipLegacyCPUs = false;
+    DO_TEST_FULL("cpu-host-model-fallback", NULL, -1,
+                 FLAG_SKIP_LEGACY_CPUS, 0,
+                 GIC_NONE, NONE);
+    DO_TEST_FULL("cpu-host-model-nofallback", NULL, -1,
+                 FLAG_SKIP_LEGACY_CPUS | FLAG_EXPECT_FAILURE,
+                 0, GIC_NONE, NONE);
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
