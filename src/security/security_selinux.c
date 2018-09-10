@@ -1291,9 +1291,9 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
 {
     struct stat buf;
     security_context_t fcon = NULL;
-    int rc = -1;
     char *newpath = NULL;
     char ebuf[1024];
+    int ret = -1;
 
     /* Some paths are auto-generated, so let's be safe here and do
      * nothing if nothing is needed.
@@ -1320,15 +1320,18 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
          * which makes this an expected non error
          */
         VIR_WARN("cannot lookup default selinux label for %s", newpath);
-        rc = 0;
-    } else {
-        rc = virSecuritySELinuxSetFilecon(mgr, newpath, fcon);
+        ret = 0;
+        goto cleanup;
     }
 
+    if (virSecuritySELinuxSetFilecon(mgr, newpath, fcon) < 0)
+        goto cleanup;
+
+    ret = 0;
  cleanup:
     freecon(fcon);
     VIR_FREE(newpath);
-    return rc;
+    return ret;
 }
 
 
