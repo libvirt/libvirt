@@ -1491,7 +1491,7 @@ virCgroupEnableMissingControllers(char *path,
     int ret = -1;
 
     if (virCgroupNew(pidleader,
-                     "",
+                     "/",
                      NULL,
                      controllers,
                      &parent) < 0)
