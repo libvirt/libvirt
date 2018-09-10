@@ -90,7 +90,7 @@ struct _virSecuritySELinuxContextItem {
 typedef struct _virSecuritySELinuxContextList virSecuritySELinuxContextList;
 typedef virSecuritySELinuxContextList *virSecuritySELinuxContextListPtr;
 struct _virSecuritySELinuxContextList {
-    bool privileged;
+    virSecurityManagerPtr manager;
     virSecuritySELinuxContextItemPtr *items;
     size_t nItems;
 };
@@ -212,8 +212,29 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
                                  void *opaque)
 {
     virSecuritySELinuxContextListPtr list = opaque;
+    bool privileged = virSecurityManagerGetPrivileged(list->manager);
+    const char **paths = NULL;
+    size_t npaths = 0;
     size_t i;
+    int rv;
+    int ret = -1;
 
+    if (VIR_ALLOC_N(paths, list->nItems) < 0)
+        return -1;
+
+    for (i = 0; i < list->nItems; i++) {
+        const char *p = list->items[i]->path;
+
+        if (virFileIsDir(p))
+            continue;
+
+        VIR_APPEND_ELEMENT_COPY_INPLACE(paths, npaths, p);
+    }
+
+    if (virSecurityManagerMetadataLock(list->manager, paths, npaths) < 0)
+        goto cleanup;
+
+    rv = 0;
     for (i = 0; i < list->nItems; i++) {
         virSecuritySELinuxContextItemPtr item = list->items[i];
 
@@ -221,11 +242,22 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
         if (virSecuritySELinuxSetFileconHelper(item->path,
                                                item->tcon,
                                                item->optional,
-                                               list->privileged) < 0)
-            return -1;
+                                               privileged) < 0) {
+            rv = -1;
+            break;
+        }
     }
 
-    return 0;
+    if (virSecurityManagerMetadataUnlock(list->manager, paths, npaths) < 0)
+        goto cleanup;
+
+    if (rv < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(paths);
+    return ret;
 }
 
 
@@ -1010,7 +1042,6 @@ virSecuritySELinuxGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 static int
 virSecuritySELinuxTransactionStart(virSecurityManagerPtr mgr)
 {
-    bool privileged = virSecurityManagerGetPrivileged(mgr);
     virSecuritySELinuxContextListPtr list;
 
     list = virThreadLocalGet(&contextList);
@@ -1023,7 +1054,7 @@ virSecuritySELinuxTransactionStart(virSecurityManagerPtr mgr)
     if (VIR_ALLOC(list) < 0)
         return -1;
 
-    list->privileged = privileged;
+    list->manager = mgr;
 
     if (virThreadLocalSet(&contextList, list) < 0) {
         virReportSystemError(errno, "%s",
