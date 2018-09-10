@@ -1146,19 +1146,13 @@ virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
  * return 1 if labelling was not possible.  Otherwise, require a label
  * change, and return 0 for success, -1 for failure.  */
 static int
-virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
-                                   bool optional, bool privileged)
+virSecuritySELinuxSetFileconImpl(const char *path, const char *tcon,
+                                 bool optional, bool privileged)
 {
     security_context_t econ;
-    int rc;
 
     /* Be aware that this function might run in a separate process.
      * Therefore, any driver state changes would be thrown away. */
-
-    if ((rc = virSecuritySELinuxTransactionAppend(path, tcon, optional)) < 0)
-        return -1;
-    else if (rc > 0)
-        return 0;
 
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
 
@@ -1212,6 +1206,22 @@ virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
     }
     return 0;
 }
+
+
+static int
+virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
+                                   bool optional, bool privileged)
+{
+    int rc;
+
+    if ((rc = virSecuritySELinuxTransactionAppend(path, tcon, optional)) < 0)
+        return -1;
+    else if (rc > 0)
+        return 0;
+
+    return virSecuritySELinuxSetFileconImpl(path, tcon, optional, privileged);
+}
+
 
 static int
 virSecuritySELinuxSetFileconOptional(virSecurityManagerPtr mgr,
@@ -1289,10 +1299,12 @@ static int
 virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
                                    const char *path)
 {
+    bool privileged = virSecurityManagerGetPrivileged(mgr);
     struct stat buf;
     security_context_t fcon = NULL;
     char *newpath = NULL;
     char ebuf[1024];
+    int rc;
     int ret = -1;
 
     /* Some paths are auto-generated, so let's be safe here and do
@@ -1324,7 +1336,12 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
         goto cleanup;
     }
 
-    if (virSecuritySELinuxSetFilecon(mgr, newpath, fcon) < 0)
+    if ((rc = virSecuritySELinuxTransactionAppend(path, fcon, false)) < 0)
+        return -1;
+    else if (rc > 0)
+        return 0;
+
+    if (virSecuritySELinuxSetFileconImpl(newpath, fcon, false, privileged) < 0)
         goto cleanup;
 
     ret = 0;
