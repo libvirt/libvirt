@@ -1306,13 +1306,13 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
     if (virFileResolveLink(path, &newpath) < 0) {
         VIR_WARN("cannot resolve symlink %s: %s", path,
                  virStrerror(errno, ebuf, sizeof(ebuf)));
-        goto err;
+        goto cleanup;
     }
 
     if (stat(newpath, &buf) != 0) {
         VIR_WARN("cannot stat %s: %s", newpath,
                  virStrerror(errno, ebuf, sizeof(ebuf)));
-        goto err;
+        goto cleanup;
     }
 
     if (getContext(mgr, newpath, buf.st_mode, &fcon) < 0) {
@@ -1325,7 +1325,7 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
         rc = virSecuritySELinuxSetFilecon(mgr, newpath, fcon);
     }
 
- err:
+ cleanup:
     freecon(fcon);
     VIR_FREE(newpath);
     return rc;
