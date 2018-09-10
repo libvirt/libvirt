@@ -35,6 +35,15 @@
 <libvirt>
   <release version="v4.8.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          Xen: Support PM Suspend and Wakeup
+        </summary>
+        <description>
+          The libxl driver now supports the virDomainPMSuspendForDuration
+          and virDomainPMWakeup APIs.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
