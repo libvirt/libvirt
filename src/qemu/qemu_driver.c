@@ -16273,7 +16273,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                                  detail);
             } else if (!was_running) {
                 /* Transition 8 */
-                detail = VIR_DOMAIN_EVENT_RESUMED;
+                detail = VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT;
                 event = virDomainEventLifecycleNewFromObj(vm,
                                                  VIR_DOMAIN_EVENT_RESUMED,
                                                  detail);
