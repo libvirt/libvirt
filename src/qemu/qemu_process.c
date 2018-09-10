@@ -712,21 +712,28 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverPtr driver = opaque;
     virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv;
+    virDomainRunningReason reason = VIR_DOMAIN_RUNNING_UNPAUSED;
 
     virObjectLock(vm);
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
 
+    priv = vm->privateData;
+    if (priv->runningReason != VIR_DOMAIN_RUNNING_UNKNOWN) {
+        reason = priv->runningReason;
+        priv->runningReason = VIR_DOMAIN_RUNNING_UNKNOWN;
+    }
+
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         if (priv->gotShutdown) {
             VIR_DEBUG("Ignoring RESUME event after SHUTDOWN");
             goto unlock;
         }
 
-        VIR_DEBUG("Transitioned guest %s out of paused into resumed state",
-                  vm->def->name);
+        VIR_DEBUG("Transitioned guest %s out of paused into resumed state, "
+                  "reason '%s'",
+                  vm->def->name, virDomainRunningReasonTypeToString(reason));
 
-        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
-                                 VIR_DOMAIN_RUNNING_UNPAUSED);
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
@@ -3087,6 +3094,8 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
     }
     VIR_FREE(priv->lockState);
 
+    priv->runningReason = reason;
+
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto release;
 
@@ -3104,6 +3113,7 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
     return ret;
 
  release:
+    priv->runningReason = VIR_DOMAIN_RUNNING_UNKNOWN;
     if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
         VIR_WARN("Unable to release lease on %s", vm->def->name);
     VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
@@ -5987,6 +5997,7 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     priv->monError = false;
     priv->monStart = 0;
     priv->gotShutdown = false;
+    priv->runningReason = VIR_DOMAIN_RUNNING_UNKNOWN;
 
     VIR_DEBUG("Updating guest CPU definition");
     if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, caps, flags) < 0)

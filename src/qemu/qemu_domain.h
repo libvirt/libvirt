@@ -366,6 +366,10 @@ struct _qemuDomainObjPrivate {
 
     /* counter for generating node names for qemu disks */
     unsigned long long nodenameindex;
+
+    /* qemuProcessStartCPUs stores the reason for starting vCPUs here for the
+     * RESUME event handler to use it */
+    virDomainRunningReason runningReason;
 };
 
 # define QEMU_DOMAIN_PRIVATE(vm) \
