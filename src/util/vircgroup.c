@@ -1152,8 +1152,21 @@ virCgroupNew(pid_t pid,
 }
 
 
+typedef enum {
+    /* Adds a whole process with all threads to specific cgroup except
+     * to systemd named controller. */
+    VIR_CGROUP_TASK_PROCESS = 1 << 0,
+
+    /* Same as VIR_CGROUP_TASK_PROCESS but it also adds the task to systemd
+     * named controller. */
+    VIR_CGROUP_TASK_SYSTEMD = 1 << 1,
+} virCgroupTaskFlags;
+
+
 static int
-virCgroupAddTaskInternal(virCgroupPtr group, pid_t pid, bool withSystemd)
+virCgroupAddTaskInternal(virCgroupPtr group,
+                         pid_t pid,
+                         unsigned int flags)
 {
     int ret = -1;
     size_t i;
@@ -1166,7 +1179,8 @@ virCgroupAddTaskInternal(virCgroupPtr group, pid_t pid, bool withSystemd)
         /* We must never add tasks in systemd's hierarchy
          * unless we're intentionally trying to move a
          * task into a systemd machine scope */
-        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD && !withSystemd)
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD &&
+            !(flags & VIR_CGROUP_TASK_SYSTEMD))
             continue;
 
         if (virCgroupSetValueI64(group, i, "tasks", pid) < 0)
@@ -1192,7 +1206,7 @@ virCgroupAddTaskInternal(virCgroupPtr group, pid_t pid, bool withSystemd)
 int
 virCgroupAddProcess(virCgroupPtr group, pid_t pid)
 {
-    return virCgroupAddTaskInternal(group, pid, false);
+    return virCgroupAddTaskInternal(group, pid, VIR_CGROUP_TASK_PROCESS);
 }
 
 /**
@@ -1209,7 +1223,9 @@ virCgroupAddProcess(virCgroupPtr group, pid_t pid)
 int
 virCgroupAddMachineProcess(virCgroupPtr group, pid_t pid)
 {
-    return virCgroupAddTaskInternal(group, pid, true);
+    return virCgroupAddTaskInternal(group, pid,
+                                    VIR_CGROUP_TASK_PROCESS |
+                                    VIR_CGROUP_TASK_SYSTEMD);
 }
 
 
