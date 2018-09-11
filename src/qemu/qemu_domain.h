@@ -1082,4 +1082,7 @@ char * qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivatePtr priv);
 unsigned int qemuDomainStorageIdNew(qemuDomainObjPrivatePtr priv);
 void qemuDomainStorageIdReset(qemuDomainObjPrivatePtr priv);
 
+virDomainEventResumedDetailType
+qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason);
+
 #endif /* __QEMU_DOMAIN_H__ */

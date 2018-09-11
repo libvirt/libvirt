@@ -13505,3 +13505,32 @@ qemuDomainStorageIdReset(qemuDomainObjPrivatePtr priv)
 {
     priv->nodenameindex = 0;
 }
+
+
+virDomainEventResumedDetailType
+qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason)
+{
+    switch (reason) {
+    case VIR_DOMAIN_RUNNING_RESTORED:
+    case VIR_DOMAIN_RUNNING_FROM_SNAPSHOT:
+        return VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT;
+
+    case VIR_DOMAIN_RUNNING_MIGRATED:
+    case VIR_DOMAIN_RUNNING_MIGRATION_CANCELED:
+        return VIR_DOMAIN_EVENT_RESUMED_MIGRATED;
+
+    case VIR_DOMAIN_RUNNING_POSTCOPY:
+        return VIR_DOMAIN_EVENT_RESUMED_POSTCOPY;
+
+    case VIR_DOMAIN_RUNNING_UNKNOWN:
+    case VIR_DOMAIN_RUNNING_SAVE_CANCELED:
+    case VIR_DOMAIN_RUNNING_BOOTED:
+    case VIR_DOMAIN_RUNNING_UNPAUSED:
+    case VIR_DOMAIN_RUNNING_WAKEUP:
+    case VIR_DOMAIN_RUNNING_CRASHED:
+    case VIR_DOMAIN_RUNNING_LAST:
+        break;
+    }
+
+    return VIR_DOMAIN_EVENT_RESUMED_UNPAUSED;
+}

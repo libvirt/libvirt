@@ -714,6 +714,7 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv;
     virDomainRunningReason reason = VIR_DOMAIN_RUNNING_UNPAUSED;
+    virDomainEventResumedDetailType eventDetail;
 
     virObjectLock(vm);
 
@@ -729,14 +730,16 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             goto unlock;
         }
 
+        eventDetail = qemuDomainRunningReasonToResumeEvent(reason);
         VIR_DEBUG("Transitioned guest %s out of paused into resumed state, "
-                  "reason '%s'",
-                  vm->def->name, virDomainRunningReasonTypeToString(reason));
+                  "reason '%s', event detail %d",
+                  vm->def->name, virDomainRunningReasonTypeToString(reason),
+                  eventDetail);
 
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
         event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_RESUMED,
-                                         VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
+                                                  VIR_DOMAIN_EVENT_RESUMED,
+                                                  eventDetail);
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             VIR_WARN("Unable to save status on vm %s after state change",
