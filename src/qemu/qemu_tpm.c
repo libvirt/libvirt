@@ -905,7 +905,7 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
                            _("Could not get process id of swtpm"));
             goto cleanup;
         }
-        if (virCgroupAddTask(cgroup, pid) < 0)
+        if (virCgroupAddProcess(cgroup, pid) < 0)
             goto cleanup;
         break;
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:

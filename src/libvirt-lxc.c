@@ -306,7 +306,7 @@ int virDomainLxcEnterCGroup(virDomainPtr domain,
     if (virCgroupNewDetect(domain->id, -1, &cgroup) < 0)
         goto error;
 
-    if (virCgroupAddTask(cgroup, getpid()) < 0)
+    if (virCgroupAddProcess(cgroup, getpid()) < 0)
         goto error;
 
     virCgroupFree(&cgroup);

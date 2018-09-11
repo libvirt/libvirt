@@ -1498,8 +1498,8 @@ virBufferVasprintf;
 
 
 # util/vircgroup.h
-virCgroupAddMachineTask;
-virCgroupAddTask;
+virCgroupAddMachineProcess;
+virCgroupAddProcess;
 virCgroupAllowAllDevices;
 virCgroupAllowDevice;
 virCgroupAllowDevicePath;

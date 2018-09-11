@@ -874,12 +874,12 @@ static int virLXCControllerSetupCgroupLimits(virLXCControllerPtr ctrl)
                                             ctrl->nicindexes)))
         goto cleanup;
 
-    if (virCgroupAddMachineTask(ctrl->cgroup, getpid()) < 0)
+    if (virCgroupAddMachineProcess(ctrl->cgroup, getpid()) < 0)
         goto cleanup;
 
     /* Add all qemu-nbd tasks to the cgroup */
     for (i = 0; i < ctrl->nnbdpids; i++) {
-        if (virCgroupAddMachineTask(ctrl->cgroup, ctrl->nbdpids[i]) < 0)
+        if (virCgroupAddMachineProcess(ctrl->cgroup, ctrl->nbdpids[i]) < 0)
             goto cleanup;
     }
 

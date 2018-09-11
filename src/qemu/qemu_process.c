@@ -2549,7 +2549,7 @@ qemuProcessSetupPid(virDomainObjPtr vm,
             goto cleanup;
 
         /* Move the thread to the sub dir */
-        if (virCgroupAddTask(cgroup, pid) < 0)
+        if (virCgroupAddProcess(cgroup, pid) < 0)
             goto cleanup;
 
     }
@@ -2787,7 +2787,7 @@ qemuProcessStartManagedPRDaemon(virDomainObjPtr vm)
     }
 
     if (priv->cgroup &&
-        virCgroupAddMachineTask(priv->cgroup, cpid) < 0)
+        virCgroupAddMachineProcess(priv->cgroup, cpid) < 0)
         goto cleanup;
 
     if (qemuSecurityDomainSetPathLabel(driver, vm, socketPath, true) < 0)

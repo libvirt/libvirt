@@ -1179,35 +1179,35 @@ virCgroupAddTaskInternal(virCgroupPtr group, pid_t pid, bool withSystemd)
 }
 
 /**
- * virCgroupAddTask:
+ * virCgroupAddProcess:
  *
- * @group: The cgroup to add a task to
- * @pid: The pid of the task to add
+ * @group: The cgroup to add a process to
+ * @pid: The pid of the process to add
  *
- * Will add the task to all controllers, except the
+ * Will add the process to all controllers, except the
  * systemd unit controller.
  *
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupAddTask(virCgroupPtr group, pid_t pid)
+virCgroupAddProcess(virCgroupPtr group, pid_t pid)
 {
     return virCgroupAddTaskInternal(group, pid, false);
 }
 
 /**
- * virCgroupAddMachineTask:
+ * virCgroupAddMachineProcess:
  *
- * @group: The cgroup to add a task to
- * @pid: The pid of the task to add
+ * @group: The cgroup to add a process to
+ * @pid: The pid of the process to add
  *
- * Will add the task to all controllers, including the
+ * Will add the process to all controllers, including the
  * systemd unit controller.
  *
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupAddMachineTask(virCgroupPtr group, pid_t pid)
+virCgroupAddMachineProcess(virCgroupPtr group, pid_t pid)
 {
     return virCgroupAddTaskInternal(group, pid, true);
 }
@@ -1588,7 +1588,7 @@ virCgroupNewMachineSystemd(const char *name,
         goto error;
     }
 
-    if (virCgroupAddTask(*group, pidleader) < 0)
+    if (virCgroupAddProcess(*group, pidleader) < 0)
         goto error;
 
     return 0;
@@ -1644,7 +1644,7 @@ virCgroupNewMachineManual(const char *name,
                                     group) < 0)
         goto cleanup;
 
-    if (virCgroupAddTask(*group, pidleader) < 0) {
+    if (virCgroupAddProcess(*group, pidleader) < 0) {
         virErrorPtr saved = virSaveLastError();
         virCgroupRemove(*group);
         virCgroupFree(group);
@@ -4194,8 +4194,8 @@ virCgroupPathOfController(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupAddTask(virCgroupPtr group ATTRIBUTE_UNUSED,
-                 pid_t pid ATTRIBUTE_UNUSED)
+virCgroupAddProcess(virCgroupPtr group ATTRIBUTE_UNUSED,
+                    pid_t pid ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -4204,8 +4204,8 @@ virCgroupAddTask(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupAddMachineTask(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        pid_t pid ATTRIBUTE_UNUSED)
+virCgroupAddMachineProcess(virCgroupPtr group ATTRIBUTE_UNUSED,
+                           pid_t pid ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
