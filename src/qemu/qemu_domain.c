@@ -3953,18 +3953,35 @@ static int
 qemuDomainDefValidateMemory(const virDomainDef *def)
 {
     const long system_page_size = virGetSystemPageSizeKB();
+    const virDomainMemtune *mem = &def->mem;
+
+    if (mem->nhugepages == 0)
+        return 0;
+
+    if (mem->allocation == VIR_DOMAIN_MEMORY_ALLOCATION_ONDEMAND) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("hugepages are not allowed with memory "
+                         "allocation ondemand"));
+        return -1;
+    }
+
+    if (mem->source == VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("hugepages are not allowed with anonymous "
+                         "memory source"));
+        return -1;
+    }
 
     /* We can't guarantee any other mem.access
      * if no guest NUMA nodes are defined. */
-    if (def->mem.nhugepages != 0 &&
-        def->mem.hugepages[0].size != system_page_size &&
+    if (mem->hugepages[0].size != system_page_size &&
         virDomainNumaGetNodeCount(def->numa) == 0 &&
-        def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
-        def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_PRIVATE) {
+        mem->access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
+        mem->access != VIR_DOMAIN_MEMORY_ACCESS_PRIVATE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("memory access mode '%s' not supported "
                          "without guest numa node"),
-                       virDomainMemoryAccessTypeToString(def->mem.access));
+                       virDomainMemoryAccessTypeToString(mem->access));
         return -1;
     }
 

@@ -6187,23 +6187,6 @@ virDomainDefMemtuneValidate(const virDomainDef *def)
     size_t i;
     ssize_t pos = virDomainNumaGetNodeCount(def->numa) - 1;
 
-    if (mem->nhugepages == 0)
-        return 0;
-
-    if (mem->allocation == VIR_DOMAIN_MEMORY_ALLOCATION_ONDEMAND) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("hugepages are not allowed with memory "
-                         "allocation ondemand"));
-        return -1;
-    }
-
-    if (mem->source == VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("hugepages are not allowed with anonymous "
-                         "memory source"));
-        return -1;
-    }
-
     for (i = 0; i < mem->nhugepages; i++) {
         size_t j;
         ssize_t nextBit;
