@@ -1150,13 +1150,16 @@
         suitable for the specific environment at the same time to mitigate
         the risks described above. <span class="since">Since 1.0.6</span></dd>
        <dt><code>source</code></dt>
-       <dd>In this attribute you can switch to file memorybacking or keep
-         default anonymous.</dd>
+       <dd>Using the <code>type</code> attribute, it's possible to provide
+         "file" to utilize file memorybacking or keep the default
+         "anonymous".</dd>
        <dt><code>access</code></dt>
-       <dd>Specify if memory is shared or private. This can be overridden per
-         numa node by <code>memAccess</code></dd>
+       <dd>Using the <code>mode</code> attribute, specify if the memory is
+         to be "shared" or "private". This can be overridden per numa node by
+         <code>memAccess</code>.</dd>
        <dt><code>allocation</code></dt>
-       <dd>Specify when allocate the memory</dd>
+       <dd>Using the <code>mode</code> attribute, specify when to allocate
+         the memory by supplying either "immediate" or "ondemand".</dd>
        <dt><code>discard</code></dt>
        <dd>When set and supported by hypervisor the memory
          content is discarded just before guest shuts down (or
