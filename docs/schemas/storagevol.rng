@@ -139,6 +139,7 @@
         </element>
         <ref name='format'/>
         <ref name='permissions'/>
+        <ref name='timestamps'/>
       </interleave>
     </element>
   </define>
