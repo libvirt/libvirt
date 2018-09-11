@@ -3292,7 +3292,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
         VIR_DEBUG("Incoming migration finished, resuming domain %s",
                   vm->def->name);
         if (qemuProcessStartCPUs(driver, vm,
-                                 VIR_DOMAIN_RUNNING_UNPAUSED,
+                                 VIR_DOMAIN_RUNNING_MIGRATED,
                                  QEMU_ASYNC_JOB_NONE) < 0) {
             VIR_WARN("Could not resume domain %s", vm->def->name);
         }
@@ -3399,7 +3399,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
             (reason == VIR_DOMAIN_PAUSED_MIGRATION ||
              reason == VIR_DOMAIN_PAUSED_UNKNOWN)) {
             if (qemuProcessStartCPUs(driver, vm,
-                                     VIR_DOMAIN_RUNNING_UNPAUSED,
+                                     VIR_DOMAIN_RUNNING_MIGRATION_CANCELED,
                                      QEMU_ASYNC_JOB_NONE) < 0) {
                 VIR_WARN("Could not resume domain %s", vm->def->name);
             }
@@ -3457,7 +3457,7 @@ qemuProcessRecoverJob(virQEMUDriverPtr driver,
                 reason == VIR_DOMAIN_PAUSED_MIGRATION)) ||
               reason == VIR_DOMAIN_PAUSED_UNKNOWN)) {
              if (qemuProcessStartCPUs(driver, vm,
-                                      VIR_DOMAIN_RUNNING_UNPAUSED,
+                                      VIR_DOMAIN_RUNNING_SAVE_CANCELED,
                                       QEMU_ASYNC_JOB_NONE) < 0) {
                  VIR_WARN("Could not resume domain '%s' after migration to file",
                           vm->def->name);
