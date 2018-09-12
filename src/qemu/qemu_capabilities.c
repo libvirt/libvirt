@@ -1726,10 +1726,10 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
          *
          *    ref405ep: no pci
          *       taihu: no pci
-         *      bamboo: 1.1.0
+         *      bamboo: 1.1.0 (<= 1.5.0, so basically forever)
          *       mac99: 2.0.0
          *     g3beige: 2.0.0
-         *        prep: 1.4.0
+         *        prep: 1.4.0 (<= 1.5.0, so basically forever)
          *     pseries: 2.0.0
          *   mpc8544ds: forever
          * virtex-m507: no pci
@@ -1751,16 +1751,11 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
             STREQ(def->os.machine, "ppce500"))
             return true;
 
-        if (qemuCaps->version >= 1004000 &&
-            STREQ(def->os.machine, "prep"))
+        if (STREQ(def->os.machine, "bamboo") ||
+            STREQ(def->os.machine, "mpc8544ds") ||
+            STREQ(def->os.machine, "prep")) {
             return true;
-
-        if (qemuCaps->version >= 1001000 &&
-            STREQ(def->os.machine, "bamboo"))
-            return true;
-
-        if (STREQ(def->os.machine, "mpc8544ds"))
-            return true;
+        }
 
         return false;
     }
