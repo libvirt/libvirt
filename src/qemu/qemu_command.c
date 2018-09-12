@@ -7843,15 +7843,8 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
         virBufferAsprintf(&opt, ":%d",
                           graphics->data.vnc.port - 5900);
 
-        if (graphics->data.vnc.websocket) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("VNC WebSockets are not supported "
-                                 "with this QEMU binary"));
-                goto error;
-            }
+        if (graphics->data.vnc.websocket)
             virBufferAsprintf(&opt, ",websocket=%d", graphics->data.vnc.websocket);
-        }
         break;
 
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:

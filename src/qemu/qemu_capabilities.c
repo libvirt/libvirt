@@ -4148,10 +4148,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     virQEMUCapsInitQMPBasicArch(qemuCaps);
 
-    /* WebSockets were introduced between 1.3.0 and 1.3.1 */
-    if (qemuCaps->version >= 1003001)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET);
-
     /* -chardev spiceport is supported from 1.4.0, but usable through
      * qapi only since 1.5.0, however, it still cannot be queried
      * for as a capability */

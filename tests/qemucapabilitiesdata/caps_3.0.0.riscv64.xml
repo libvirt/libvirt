@@ -27,7 +27,6 @@
   <flag name='tpm-passthrough'/>
   <flag name='scsi-generic'/>
   <flag name='mem-merge'/>
-  <flag name='vnc-websocket'/>
   <flag name='drive-discard'/>
   <flag name='mlock'/>
   <flag name='device-del-event'/>

@@ -253,7 +253,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 145 */
     X_QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX, /* -device scsi-generic.bootindex */
     QEMU_CAPS_MEM_MERGE, /* -machine mem-merge */
-    QEMU_CAPS_VNC_WEBSOCKET, /* -vnc x:y,websocket */
+    X_QEMU_CAPS_VNC_WEBSOCKET, /* -vnc x:y,websocket */
     QEMU_CAPS_DRIVE_DISCARD, /* -drive discard=off(ignore)|on(unmap) */
     QEMU_CAPS_REALTIME_MLOCK, /* -realtime mlock=on|off */
 
