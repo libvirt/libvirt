@@ -727,12 +727,8 @@ storagePoolCreateXML(virConnectPtr conn,
     }
 
     if (backend->startPool &&
-        backend->startPool(obj) < 0) {
-        virStoragePoolObjRemove(driver->pools, obj);
-        virObjectUnref(obj);
-        obj = NULL;
-        goto cleanup;
-    }
+        backend->startPool(obj) < 0)
+        goto error;
 
     stateFile = virFileBuildPath(driver->stateDir, def->name, ".xml");
 
@@ -743,10 +739,7 @@ storagePoolCreateXML(virConnectPtr conn,
             unlink(stateFile);
         if (backend->stopPool)
             backend->stopPool(obj);
-        virStoragePoolObjRemove(driver->pools, obj);
-        virObjectUnref(obj);
-        obj = NULL;
-        goto cleanup;
+        goto error;
     }
 
     event = virStoragePoolEventLifecycleNew(def->name,
@@ -765,6 +758,12 @@ storagePoolCreateXML(virConnectPtr conn,
     virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return pool;
+
+ error:
+    virStoragePoolObjRemove(driver->pools, obj);
+    virObjectUnref(obj);
+    obj = NULL;
+    goto cleanup;
 }
 
 static virStoragePoolPtr
