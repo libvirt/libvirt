@@ -43,6 +43,31 @@ VIR_LOG_INIT("qemu.qemu_blockjob");
 
 
 /**
+ * qemuBlockJobEmitEvents:
+ *
+ * Emits the VIR_DOMAIN_EVENT_ID_BLOCK_JOB and VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2
+ * for a block job.
+ */
+static void
+qemuBlockJobEmitEvents(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       virDomainDiskDefPtr disk,
+                       virDomainBlockJobType type,
+                       virConnectDomainEventBlockJobStatus status)
+{
+    virObjectEventPtr event = NULL;
+    virObjectEventPtr event2 = NULL;
+
+    event = virDomainEventBlockJobNewFromObj(vm, virDomainDiskGetSource(disk),
+                                             type, status);
+    virObjectEventStateQueue(driver->domainEventState, event);
+
+    event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type, status);
+    virObjectEventStateQueue(driver->domainEventState, event2);
+}
+
+
+/**
  * qemuBlockJobUpdate:
  * @vm: domain
  * @disk: domain disk
@@ -101,9 +126,6 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                          int type,
                          int status)
 {
-    virObjectEventPtr event = NULL;
-    virObjectEventPtr event2 = NULL;
-    const char *path;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainDiskDefPtr persistDisk = NULL;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
@@ -114,14 +136,11 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
               type,
               status);
 
-    /* Have to generate two variants of the event for old vs. new
-     * client callbacks */
     if (type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
         disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
         type = disk->mirrorJob;
-    path = virDomainDiskGetSource(disk);
-    event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
-    event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type, status);
+
+    qemuBlockJobEmitEvents(driver, vm, disk, type, status);
 
     /* If we completed a block pull or commit, then update the XML
      * to match.  */
@@ -209,9 +228,6 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
             VIR_WARN("Unable to update persistent definition on vm %s "
                      "after block job", vm->def->name);
     }
-
-    virObjectEventStateQueue(driver->domainEventState, event);
-    virObjectEventStateQueue(driver->domainEventState, event2);
 
     virObjectUnref(cfg);
 }
