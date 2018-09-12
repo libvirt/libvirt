@@ -200,27 +200,22 @@ virNetDevSetupControl(const char *ifname ATTRIBUTE_UNUSED,
  */
 int virNetDevExists(const char *ifname)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     if (ioctl(fd, SIOCGIFFLAGS, &ifr)) {
         if (errno == ENODEV || errno == ENXIO)
-            ret = 0;
-        else
-            virReportSystemError(errno,
-                                 _("Unable to check interface flags for %s"), ifname);
-        goto cleanup;
+            return 0;
+
+        virReportSystemError(errno, _("Unable to check interface flags for %s"),
+                             ifname);
+        return -1;
     }
 
-    ret = 1;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 1;
 }
 #else
 int virNetDevExists(const char *ifname)
@@ -251,20 +246,20 @@ virNetDevSetMACInternal(const char *ifname,
                         const virMacAddr *macaddr,
                         bool quiet)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
     char macstr[VIR_MAC_STRING_BUFLEN];
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     /* To fill ifr.ifr_hdaddr.sa_family field */
     if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot get interface MAC on '%s'"),
+        virReportSystemError(errno, _("Cannot get interface MAC on '%s'"),
                              ifname);
-        goto cleanup;
+
+        VIR_DEBUG("SIOCSIFHWADDR %s get MAC - Fail", ifname);
+        return -1;
     }
 
     virMacAddrGetRaw(macaddr, (unsigned char *)ifr.ifr_hwaddr.sa_data);
@@ -272,24 +267,22 @@ virNetDevSetMACInternal(const char *ifname,
     if (ioctl(fd, SIOCSIFHWADDR, &ifr) < 0) {
 
         if (quiet &&
-            (errno == EADDRNOTAVAIL || errno == EPERM))
-            goto cleanup;
+            (errno == EADDRNOTAVAIL || errno == EPERM)) {
+            VIR_DEBUG("SIOCSIFHWADDR %s MAC=%s - Fail",
+                      ifname, virMacAddrFormat(macaddr, macstr));
+            return -1;
+        }
 
         virReportSystemError(errno,
                              _("Cannot set interface MAC to %s on '%s'"),
                              virMacAddrFormat(macaddr, macstr), ifname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
+    VIR_DEBUG("SIOCSIFHWADDR %s MAC=%s - Success",
+              ifname, virMacAddrFormat(macaddr, macstr));
 
- cleanup:
-    VIR_DEBUG("SIOCSIFHWADDR %s MAC=%s - %s",
-              ifname, virMacAddrFormat(macaddr, macstr),
-              ret < 0 ? "Fail" : "Success");
-
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 
 
@@ -305,8 +298,7 @@ virNetDevSetMACInternal(const char *ifname,
         struct ifreq ifr;
         struct sockaddr_dl sdl;
         char mac[VIR_MAC_STRING_BUFLEN + 1] = ":";
-        int s;
-        int ret = -1;
+        VIR_AUTOCLOSE s = -1;
 
         if ((s = virNetDevSetupControl(ifname, &ifr)) < 0)
             return -1;
@@ -320,23 +312,19 @@ virNetDevSetMACInternal(const char *ifname,
 
         if (ioctl(s, SIOCSIFLLADDR, &ifr) < 0) {
             if (quiet &&
-                (errno == EADDRNOTAVAIL || errno == EPERM))
-                goto cleanup;
+                (errno == EADDRNOTAVAIL || errno == EPERM)) {
+                VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - Fail", ifname, mac + 1);
+                return -1;
+            }
 
             virReportSystemError(errno,
                                  _("Cannot set interface MAC to %s on '%s'"),
                                  mac + 1, ifname);
-            goto cleanup;
+            return -1;
         }
 
-        ret = 0;
- cleanup:
-        VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - %s", ifname, mac + 1,
-                  ret < 0 ? "Fail" : "Success");
-
-        VIR_FORCE_CLOSE(s);
-
-        return ret;
+        VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - Success", ifname, mac + 1);
+        return 0;
 }
 
 
@@ -379,9 +367,8 @@ virNetDevSetMAC(const char *ifname,
 int virNetDevGetMAC(const char *ifname,
                     virMacAddrPtr macaddr)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -390,16 +377,12 @@ int virNetDevGetMAC(const char *ifname,
         virReportSystemError(errno,
                              _("Cannot get interface MAC on '%s'"),
                              ifname);
-        goto cleanup;
+        return -1;
     }
 
     virMacAddrSetRaw(macaddr, (unsigned char *)ifr.ifr_hwaddr.sa_data);
 
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else
 int virNetDevGetMAC(const char *ifname,
@@ -424,9 +407,8 @@ int virNetDevGetMAC(const char *ifname,
  */
 int virNetDevGetMTU(const char *ifname)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -435,14 +417,10 @@ int virNetDevGetMTU(const char *ifname)
         virReportSystemError(errno,
                              _("Cannot get interface MTU on '%s'"),
                              ifname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = ifr.ifr_mtu;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return ifr.ifr_mtu;
 }
 #else
 int virNetDevGetMTU(const char *ifname)
@@ -468,9 +446,8 @@ int virNetDevGetMTU(const char *ifname)
  */
 int virNetDevSetMTU(const char *ifname, int mtu)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -481,14 +458,10 @@ int virNetDevSetMTU(const char *ifname, int mtu)
         virReportSystemError(errno,
                              _("Cannot set interface MTU on '%s'"),
                              ifname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else
 int virNetDevSetMTU(const char *ifname, int mtu ATTRIBUTE_UNUSED)
@@ -592,9 +565,8 @@ int virNetDevSetNamespace(const char *ifname, pid_t pidInNs)
  */
 int virNetDevSetName(const char* ifname, const char *newifname)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -604,7 +576,7 @@ int virNetDevSetName(const char* ifname, const char *newifname)
         virReportSystemError(ERANGE,
                              _("Network interface name '%s' is too long"),
                              newifname);
-        goto cleanup;
+        return -1;
     }
 # else
     ifr.ifr_data = (caddr_t)newifname;
@@ -614,14 +586,10 @@ int virNetDevSetName(const char* ifname, const char *newifname)
         virReportSystemError(errno,
                              _("Unable to rename '%s' to '%s'"),
                              ifname, newifname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else
 int virNetDevSetName(const char* ifname, const char *newifname)
@@ -638,10 +606,9 @@ int virNetDevSetName(const char* ifname, const char *newifname)
 static int
 virNetDevSetIFFlag(const char *ifname, int flag, bool val)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
     int ifflags;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -650,7 +617,7 @@ virNetDevSetIFFlag(const char *ifname, int flag, bool val)
         virReportSystemError(errno,
                              _("Cannot get interface flags on '%s'"),
                              ifname);
-        goto cleanup;
+        return -1;
     }
 
     if (val)
@@ -664,15 +631,11 @@ virNetDevSetIFFlag(const char *ifname, int flag, bool val)
             virReportSystemError(errno,
                                  _("Cannot set interface flags on '%s'"),
                                  ifname);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else
 static int
@@ -765,9 +728,8 @@ virNetDevSetRcvAllMulti(const char *ifname,
 static int
 virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -776,15 +738,11 @@ virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
         virReportSystemError(errno,
                              _("Cannot get interface flags on '%s'"),
                              ifname);
-        goto cleanup;
+        return -1;
     }
 
     *val = (ifr.ifr_flags & flag) ? true : false;
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else
 static int
@@ -909,9 +867,8 @@ char *virNetDevGetName(int ifindex)
 #if defined(SIOCGIFINDEX) && defined(HAVE_STRUCT_IFREQ)
 int virNetDevGetIndex(const char *ifname, int *ifindex)
 {
-    int ret = -1;
     struct ifreq ifreq;
-    int fd = socket(VIR_NETDEV_FAMILY, SOCK_DGRAM, 0);
+    VIR_AUTOCLOSE fd = socket(VIR_NETDEV_FAMILY, SOCK_DGRAM, 0);
 
     if (fd < 0) {
         virReportSystemError(errno, "%s",
@@ -925,13 +882,13 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
         virReportSystemError(ERANGE,
                              _("invalid interface name %s"),
                              ifname);
-        goto cleanup;
+        return -1;
     }
 
     if (ioctl(fd, SIOCGIFINDEX, &ifreq) < 0) {
         virReportSystemError(errno,
                              _("Unable to get index for interface %s"), ifname);
-        goto cleanup;
+        return -1;
     }
 
 # ifdef HAVE_STRUCT_IFREQ_IFR_INDEX
@@ -939,11 +896,7 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
 # else
     *ifindex = ifreq.ifr_ifindex;
 # endif
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else /* ! SIOCGIFINDEX */
 int virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
@@ -1013,8 +966,7 @@ int virNetDevGetVLanID(const char *ifname, int *vlanid)
     struct vlan_ioctl_args vlanargs = {
       .cmd = GET_VLAN_VID_CMD,
     };
-    int ret = -1;
-    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
+    VIR_AUTOCLOSE fd = socket(PF_PACKET, SOCK_DGRAM, 0);
 
     if (fd < 0) {
         virReportSystemError(errno, "%s",
@@ -1026,22 +978,17 @@ int virNetDevGetVLanID(const char *ifname, int *vlanid)
         virReportSystemError(ERANGE,
                              _("invalid interface name %s"),
                              ifname);
-        goto cleanup;
+        return -1;
     }
 
     if (ioctl(fd, SIOCGIFVLAN, &vlanargs) != 0) {
         virReportSystemError(errno,
                              _("Unable to get VLAN for interface %s"), ifname);
-        goto cleanup;
+        return -1;
     }
 
     *vlanid = vlanargs.u.VID;
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-
-    return ret;
+    return 0;
 }
 #else /* ! SIOCGIFVLAN */
 int virNetDevGetVLanID(const char *ifname ATTRIBUTE_UNUSED,
@@ -1070,55 +1017,43 @@ int virNetDevGetVLanID(const char *ifname ATTRIBUTE_UNUSED,
 int virNetDevValidateConfig(const char *ifname,
                             const virMacAddr *macaddr, int ifindex)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
     int idx;
     int rc;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((rc = virNetDevExists(ifname)) < 0)
         return -1;
-    if (rc == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (rc == 0)
+        return 0;
 
     if (macaddr != NULL) {
         if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
             return -1;
 
         if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
-            if (errno == ENODEV) {
-                ret = 0;
-                goto cleanup;
-            }
+            if (errno == ENODEV)
+                return 0;
+
             virReportSystemError(errno,
                                  _("could not get MAC address of interface %s"),
                                  ifname);
-            goto cleanup;
+            return -1;
         }
 
         if (virMacAddrCmpRaw(macaddr,
-                             (unsigned char *)ifr.ifr_hwaddr.sa_data) != 0) {
-            ret = 0;
-            goto cleanup;
-        }
+                             (unsigned char *)ifr.ifr_hwaddr.sa_data) != 0)
+            return 0;
     }
 
     if (ifindex != -1) {
         if (virNetDevGetIndex(ifname, &idx) < 0)
-            goto cleanup;
-        if (idx != ifindex) {
-            ret = 0;
-            goto cleanup;
-        }
+            return -1;
+        if (idx != ifindex)
+            return 0;
     }
 
-    ret = 1;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 1;
 }
 #else
 int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
@@ -2649,9 +2584,8 @@ virNetDevGetLinkInfo(const char *ifname,
 int virNetDevAddMulti(const char *ifname,
                       virMacAddrPtr macaddr)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -2664,13 +2598,10 @@ int virNetDevAddMulti(const char *ifname,
         virReportSystemError(errno,
                              _("Cannot add multicast MAC %s on '%s' interface"),
                              virMacAddrFormat(macaddr, macstr), ifname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else
 int virNetDevAddMulti(const char *ifname ATTRIBUTE_UNUSED,
@@ -2698,9 +2629,8 @@ int virNetDevAddMulti(const char *ifname ATTRIBUTE_UNUSED,
 int virNetDevDelMulti(const char *ifname,
                       virMacAddrPtr macaddr)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -2713,13 +2643,10 @@ int virNetDevDelMulti(const char *ifname,
         virReportSystemError(errno,
                              _("Cannot add multicast MAC %s on '%s' interface"),
                              virMacAddrFormat(macaddr, macstr), ifname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else
 int virNetDevDelMulti(const char *ifname ATTRIBUTE_UNUSED,
@@ -3388,10 +3315,9 @@ int virNetDevSetCoalesce(const char *ifname,
                          virNetDevCoalescePtr coalesce,
                          bool update)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
     struct ethtool_coalesce coal = {0};
+    VIR_AUTOCLOSE fd = -1;
 
     if (!coalesce && !update)
         return 0;
@@ -3433,7 +3359,7 @@ int virNetDevSetCoalesce(const char *ifname,
         virReportSystemError(errno,
                              _("Cannot set coalesce info on '%s'"),
                              ifname);
-        goto cleanup;
+        return -1;
     }
 
     if (coalesce) {
@@ -3467,10 +3393,7 @@ int virNetDevSetCoalesce(const char *ifname,
         }
     }
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 # else
 int virNetDevSetCoalesce(const char *ifname,
@@ -3503,30 +3426,26 @@ virNetDevGetFeatures(const char *ifname,
                      virBitmapPtr *out)
 {
     struct ifreq ifr;
-    int ret = -1;
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
 
     if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
         return -1;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
-        goto cleanup;
+        return -1;
 
     virNetDevGetEthtoolFeatures(*out, fd, &ifr);
 
     if (virNetDevGetEthtoolGFeatures(*out, fd, &ifr) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNetDevRDMAFeature(ifname, out) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNetDevSwitchdevFeature(ifname, out) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #else
 int
