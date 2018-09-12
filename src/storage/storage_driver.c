@@ -108,14 +108,14 @@ storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
     virStorageBackendPtr backend;
     char *stateFile;
 
-    if (!(stateFile = virFileBuildPath(driver->stateDir, def->name, ".xml")))
-        goto cleanup;
-
     if ((backend = virStorageBackendForType(def->type)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing backend %d"), def->type);
-        goto cleanup;
+        return;
     }
+
+    if (!(stateFile = virFileBuildPath(driver->stateDir, def->name, ".xml")))
+        return;
 
     /* Backends which do not support 'checkPool' are considered
      * inactive by default. */
@@ -148,8 +148,7 @@ storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
     if (!virStoragePoolObjIsActive(obj))
         virStoragePoolUpdateInactive(&obj);
 
- cleanup:
-    if (!active && stateFile)
+    if (!active)
         ignore_value(unlink(stateFile));
     VIR_FREE(stateFile);
 
