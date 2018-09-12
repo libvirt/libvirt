@@ -76,6 +76,18 @@ static void storageDriverUnlock(void)
 }
 
 
+static void
+storagePoolRefreshFailCleanup(virStorageBackendPtr backend,
+                              virStoragePoolObjPtr obj,
+                              const char *stateFile)
+{
+    if (stateFile)
+        ignore_value(unlink(stateFile));
+    if (backend->stopPool)
+        backend->stopPool(obj);
+}
+
+
 /**
  * virStoragePoolUpdateInactive:
  * @poolptr: pointer to a variable holding the pool object pointer
@@ -124,6 +136,7 @@ storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to initialize storage pool '%s': %s"),
                        def->name, virGetLastErrorMessage());
+        ignore_value(unlink(stateFile));
         active = false;
     }
 
@@ -134,8 +147,7 @@ storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
     if (active) {
         virStoragePoolObjClearVols(obj);
         if (backend->refreshPool(obj) < 0) {
-            if (backend->stopPool)
-                backend->stopPool(obj);
+            storagePoolRefreshFailCleanup(backend, obj, stateFile);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to restart storage pool '%s': %s"),
                            def->name, virGetLastErrorMessage());
@@ -148,8 +160,6 @@ storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
     if (!virStoragePoolObjIsActive(obj))
         virStoragePoolUpdateInactive(&obj);
 
-    if (!active)
-        ignore_value(unlink(stateFile));
     VIR_FREE(stateFile);
 
     return;
@@ -196,10 +206,7 @@ storageDriverAutostartCallback(virStoragePoolObjPtr obj,
         if (!stateFile ||
             virStoragePoolSaveState(stateFile, def) < 0 ||
             backend->refreshPool(obj) < 0) {
-            if (stateFile)
-                unlink(stateFile);
-            if (backend->stopPool)
-                backend->stopPool(obj);
+            storagePoolRefreshFailCleanup(backend, obj, stateFile);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to autostart storage pool '%s': %s"),
                            def->name, virGetLastErrorMessage());
@@ -735,10 +742,7 @@ storagePoolCreateXML(virConnectPtr conn,
     virStoragePoolObjClearVols(obj);
     if (!stateFile || virStoragePoolSaveState(stateFile, def) < 0 ||
         backend->refreshPool(obj) < 0) {
-        if (stateFile)
-            unlink(stateFile);
-        if (backend->stopPool)
-            backend->stopPool(obj);
+        storagePoolRefreshFailCleanup(backend, obj, stateFile);
         goto error;
     }
 
@@ -936,10 +940,7 @@ storagePoolCreate(virStoragePoolPtr pool,
     virStoragePoolObjClearVols(obj);
     if (!stateFile || virStoragePoolSaveState(stateFile, def) < 0 ||
         backend->refreshPool(obj) < 0) {
-        if (stateFile)
-            unlink(stateFile);
-        if (backend->stopPool)
-            backend->stopPool(obj);
+        storagePoolRefreshFailCleanup(backend, obj, stateFile);
         goto cleanup;
     }
 
@@ -1171,10 +1172,7 @@ storagePoolRefresh(virStoragePoolPtr pool,
     if (backend->refreshPool(obj) < 0) {
         char *stateFile = virFileBuildPath(driver->stateDir, def->name, ".xml");
 
-        if (stateFile)
-            unlink(stateFile);
-        if (backend->stopPool)
-            backend->stopPool(obj);
+        storagePoolRefreshFailCleanup(backend, obj, stateFile);
         VIR_FREE(stateFile);
 
         event = virStoragePoolEventLifecycleNew(def->name,
