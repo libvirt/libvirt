@@ -1171,8 +1171,13 @@ storagePoolRefresh(virStoragePoolPtr pool,
 
     virStoragePoolObjClearVols(obj);
     if (backend->refreshPool(obj) < 0) {
+        char *stateFile = virFileBuildPath(driver->stateDir, def->name, ".xml");
+
+        if (stateFile)
+            unlink(stateFile);
         if (backend->stopPool)
             backend->stopPool(obj);
+        VIR_FREE(stateFile);
 
         event = virStoragePoolEventLifecycleNew(def->name,
                                                 def->uuid,
