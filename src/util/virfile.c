@@ -1969,29 +1969,22 @@ int
 virFileIsCDROM(const char *path)
 {
     struct stat st;
-    int fd;
-    int ret = -1;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = open(path, O_RDONLY | O_NONBLOCK)) < 0)
-        goto cleanup;
+        return -1;
 
     if (fstat(fd, &st) < 0)
-        goto cleanup;
+        return -1;
 
-    if (!S_ISBLK(st.st_mode)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!S_ISBLK(st.st_mode))
+        return 0;
 
     /* Attempt to detect via a CDROM specific ioctl */
     if (ioctl(fd, CDROM_DRIVE_STATUS, CDSL_CURRENT) >= 0)
-        ret = 1;
-    else
-        ret = 0;
+        return 1;
 
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 
 #else
