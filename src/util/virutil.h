@@ -152,6 +152,10 @@ int virGetUserID(const char *name,
 int virGetGroupID(const char *name,
                   gid_t *gid) ATTRIBUTE_RETURN_CHECK;
 
+int virDoesUserExist(const char *name);
+int virDoesGroupExist(const char *name);
+
+
 bool virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);
 
 bool virValidateWWN(const char *wwn);
