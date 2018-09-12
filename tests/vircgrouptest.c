@@ -113,16 +113,6 @@ const char *mountsAllInOne[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_BLKIO] = "/not/really/sys/fs/cgroup",
     [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
 };
-const char *mountsLogind[VIR_CGROUP_CONTROLLER_LAST] = {
-    [VIR_CGROUP_CONTROLLER_CPU] = NULL,
-    [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
-    [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
-    [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
-    [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-    [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
-    [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
-    [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/not/really/sys/fs/cgroup/systemd",
-};
 
 const char *links[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_CPU] = "/not/really/sys/fs/cgroup/cpu",
@@ -136,17 +126,6 @@ const char *links[VIR_CGROUP_CONTROLLER_LAST] = {
 };
 
 const char *linksAllInOne[VIR_CGROUP_CONTROLLER_LAST] = {
-    [VIR_CGROUP_CONTROLLER_CPU] = NULL,
-    [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
-    [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
-    [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
-    [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-    [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
-    [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
-    [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
-};
-
-const char *linksLogind[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_CPU] = NULL,
     [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
     [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
@@ -554,24 +533,13 @@ static int testCgroupNewForSelfLogind(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
     int ret = -1;
-    const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = NULL,
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
-        [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
-        [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
-        [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
-        [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
-        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/",
-    };
 
-    if (virCgroupNewSelf(&cgroup) < 0) {
-        fprintf(stderr, "Cannot create cgroup for self\n");
+    if (virCgroupNewSelf(&cgroup) == 0) {
+        fprintf(stderr, "Expected cgroup creation to fail.\n");
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "", mountsLogind, linksLogind, placement);
-
+    ret = 0;
  cleanup:
     virCgroupFree(&cgroup);
     return ret;

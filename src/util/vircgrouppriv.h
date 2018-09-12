@@ -30,6 +30,7 @@
 # define __VIR_CGROUP_PRIV_H__
 
 # include "vircgroup.h"
+# include "vircgroupbackend.h"
 
 struct _virCgroupController {
     int type;
@@ -46,6 +47,8 @@ typedef virCgroupController *virCgroupControllerPtr;
 
 struct _virCgroup {
     char *path;
+
+    virCgroupBackendPtr backend;
 
     virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };

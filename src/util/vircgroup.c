@@ -707,9 +707,27 @@ virCgroupDetect(virCgroupPtr group,
                 virCgroupPtr parent)
 {
     int rc;
+    size_t i;
+    virCgroupBackendPtr *backends = virCgroupBackendGetAll();
 
     VIR_DEBUG("group=%p controllers=%d path=%s parent=%p",
               group, controllers, path, parent);
+
+    if (!backends)
+        return -1;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (backends[i] && backends[i]->available()) {
+            group->backend = backends[i];
+            break;
+        }
+    }
+
+    if (!group->backend) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no cgroup backend available"));
+        return -1;
+    }
 
     if (parent) {
         if (virCgroupCopyMounts(group, parent) < 0)
