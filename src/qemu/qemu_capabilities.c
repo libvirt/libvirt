@@ -4148,12 +4148,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     virQEMUCapsInitQMPBasicArch(qemuCaps);
 
-    /* -chardev spiceport is supported from 1.4.0, but usable through
-     * qapi only since 1.5.0, however, it still cannot be queried
-     * for as a capability */
-    if (qemuCaps->version >= 1005000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT);
-
     if (qemuCaps->version >= 1006000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
 
