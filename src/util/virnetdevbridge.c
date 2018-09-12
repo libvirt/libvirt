@@ -81,9 +81,8 @@ static int virNetDevBridgeCmd(const char *brname,
                               void *arg,
                               size_t argsize)
 {
-    int s;
-    int ret = -1;
     struct ifdrv ifd;
+    VIR_AUTOCLOSE s = -1;
 
     memset(&ifd, 0, sizeof(ifd));
 
@@ -97,19 +96,14 @@ static int virNetDevBridgeCmd(const char *brname,
        virReportSystemError(ERANGE,
                             _("Network interface name '%s' is too long"),
                             brname);
-       goto cleanup;
+       return -1;
     }
 
     ifd.ifd_cmd = op;
     ifd.ifd_len = argsize;
     ifd.ifd_data = arg;
 
-    ret = ioctl(s, SIOCSDRVSPEC, &ifd);
-
- cleanup:
-    VIR_FORCE_CLOSE(s);
-
-    return ret;
+    return ioctl(s, SIOCSDRVSPEC, &ifd);
 }
 #endif
 
@@ -167,10 +161,9 @@ static int virNetDevBridgeGet(const char *brname,
                               const char *paramname,  /* sysfs param name */
                               unsigned long *value)   /* current value */
 {
-    int ret = -1;
-    int fd = -1;
     struct ifreq ifr;
     VIR_AUTOFREE(char *) path = NULL;
+    VIR_AUTOCLOSE fd = -1;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "%s/bridge/%s", brname, paramname) < 0)
         return -1;
@@ -180,26 +173,26 @@ static int virNetDevBridgeGet(const char *brname,
 
         if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long),
                            &valuestr) < 0)
-            goto cleanup;
+            return -1;
 
         if (virStrToLong_ul(valuestr, NULL, 10, value) < 0) {
             virReportSystemError(EINVAL,
                                  _("Unable to get bridge %s %s"),
                                  brname, paramname);
-            goto cleanup;
+            return -1;
         }
     } else {
         struct __bridge_info info;
         unsigned long args[] = { BRCTL_GET_BRIDGE_INFO, (unsigned long)&info, 0, 0 };
 
         if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
-            goto cleanup;
+            return -1;
 
         ifr.ifr_data = (char*)&args;
         if (ioctl(fd, SIOCDEVPRIVATE, ifr) < 0) {
             virReportSystemError(errno,
                                  _("Unable to get bridge %s %s"), brname, paramname);
-            goto cleanup;
+            return -1;
         }
 
         if (STREQ(paramname, "stp_state")) {
@@ -209,14 +202,11 @@ static int virNetDevBridgeGet(const char *brname,
         } else {
             virReportSystemError(EINVAL,
                                  _("Unable to get bridge %s %s"), brname, paramname);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #endif /* __linux__ */
 
@@ -391,8 +381,7 @@ virNetDevBridgePortSetUnicastFlood(const char *brname ATTRIBUTE_UNUSED,
 static int
 virNetDevBridgeCreateWithIoctl(const char *brname)
 {
-    int fd = -1;
-    int ret = -1;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(NULL, NULL)) < 0)
         return -1;
@@ -400,14 +389,10 @@ virNetDevBridgeCreateWithIoctl(const char *brname)
     if (ioctl(fd, SIOCBRADDBR, brname) < 0) {
         virReportSystemError(errno,
                              _("Unable to create bridge %s"), brname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #endif
 
@@ -448,9 +433,8 @@ virNetDevBridgeCreate(const char *brname)
 int
 virNetDevBridgeCreate(const char *brname)
 {
-    int s;
     struct ifreq ifr;
-    int ret = - 1;
+    VIR_AUTOCLOSE s = -1;
 
     if ((s = virNetDevSetupControl("bridge", &ifr)) < 0)
         return -1;
@@ -458,16 +442,13 @@ virNetDevBridgeCreate(const char *brname)
     if (ioctl(s, SIOCIFCREATE2, &ifr) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to create bridge device"));
-        goto cleanup;
+        return -1;
     }
 
     if (virNetDevSetName(ifr.ifr_name, brname) == -1)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(s);
-    return ret;
+    return 0;
 }
 #else
 int virNetDevBridgeCreate(const char *brname)
@@ -490,8 +471,7 @@ int virNetDevBridgeCreate(const char *brname)
 static int
 virNetDevBridgeDeleteWithIoctl(const char *brname)
 {
-    int fd = -1;
-    int ret = -1;
+    VIR_AUTOCLOSE fd = -1;
 
     ignore_value(virNetDevSetOnline(brname, false));
 
@@ -501,14 +481,10 @@ virNetDevBridgeDeleteWithIoctl(const char *brname)
     if (ioctl(fd, SIOCBRDELBR, brname) < 0) {
         virReportSystemError(errno,
                              _("Unable to delete bridge %s"), brname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #endif
 
@@ -541,9 +517,8 @@ virNetDevBridgeDelete(const char *brname)
 int
 virNetDevBridgeDelete(const char *brname)
 {
-    int s;
     struct ifreq ifr;
-    int ret = -1;
+    VIR_AUTOCLOSE s = -1;
 
     if ((s = virNetDevSetupControl(brname, &ifr)) < 0)
         return -1;
@@ -552,13 +527,10 @@ virNetDevBridgeDelete(const char *brname)
         virReportSystemError(errno,
                              _("Unable to remove bridge %s"),
                              brname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(s);
-    return ret;
+    return 0;
 }
 #else
 int virNetDevBridgeDelete(const char *brname ATTRIBUTE_UNUSED)
@@ -582,9 +554,8 @@ int virNetDevBridgeDelete(const char *brname ATTRIBUTE_UNUSED)
 int virNetDevBridgeAddPort(const char *brname,
                            const char *ifname)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         return -1;
@@ -592,19 +563,16 @@ int virNetDevBridgeAddPort(const char *brname,
     if (!(ifr.ifr_ifindex = if_nametoindex(ifname))) {
         virReportSystemError(ENODEV,
                              _("Unable to get interface index for %s"), ifname);
-        goto cleanup;
+        return -1;
     }
 
     if (ioctl(fd, SIOCBRADDIF, &ifr) < 0) {
         virReportSystemError(errno,
                              _("Unable to add bridge %s port %s"), brname, ifname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #elif defined(HAVE_BSD_BRIDGE_MGMT)
 int virNetDevBridgeAddPort(const char *brname,
@@ -651,9 +619,8 @@ int virNetDevBridgeAddPort(const char *brname,
 int virNetDevBridgeRemovePort(const char *brname,
                               const char *ifname)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         return -1;
@@ -662,19 +629,16 @@ int virNetDevBridgeRemovePort(const char *brname,
         virReportSystemError(ENODEV,
                              _("Unable to get interface index for %s"), ifname);
 
-        goto cleanup;
+        return -1;
     }
 
     if (ioctl(fd, SIOCBRDELIF, &ifr) < 0) {
         virReportSystemError(errno,
                              _("Unable to remove bridge %s port %s"), brname, ifname);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 #elif defined(HAVE_BSD_BRIDGE_MGMT)
 int virNetDevBridgeRemovePort(const char *brname,
@@ -723,19 +687,14 @@ int virNetDevBridgeRemovePort(const char *brname,
 int virNetDevBridgeSetSTPDelay(const char *brname,
                                int delay)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = virNetDevBridgeSet(brname, "forward_delay", MS_TO_JIFFIES(delay),
-                             fd, &ifr);
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return virNetDevBridgeSet(brname, "forward_delay", MS_TO_JIFFIES(delay),
+                              fd, &ifr);
 }
 
 
@@ -776,19 +735,14 @@ int virNetDevBridgeGetSTPDelay(const char *brname,
 int virNetDevBridgeSetSTP(const char *brname,
                           bool enable)
 {
-    int fd = -1;
-    int ret = -1;
     struct ifreq ifr;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = virNetDevBridgeSet(brname, "stp_state", enable ? 1 : 0,
-                             fd, &ifr);
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return virNetDevBridgeSet(brname, "stp_state", enable ? 1 : 0,
+                              fd, &ifr);
 }
 
 
