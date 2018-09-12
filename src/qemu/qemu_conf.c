@@ -197,9 +197,11 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         if (virAsprintf(&cfg->swtpmStorageDir, "%s/lib/libvirt/swtpm",
                         LOCALSTATEDIR) < 0)
             goto error;
-        if (virGetUserID("tss", &cfg->swtpm_user) < 0)
+        if (virDoesUserExist("tss") != 0 ||
+            virGetUserID("tss", &cfg->swtpm_user) < 0)
             cfg->swtpm_user = 0; /* fall back to root */
-        if (virGetGroupID("tss", &cfg->swtpm_group) < 0)
+        if (virDoesGroupExist("tss") != 0 ||
+            virGetGroupID("tss", &cfg->swtpm_group) < 0)
             cfg->swtpm_group = 0; /* fall back to root */
     } else {
         char *rundir;
