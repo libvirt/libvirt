@@ -456,7 +456,6 @@ qemuProcessFakeReboot(void *opaque)
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
-    virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainRunningReason reason = VIR_DOMAIN_RUNNING_BOOTED;
     int ret = -1, rc;
@@ -493,9 +492,6 @@ qemuProcessFakeReboot(void *opaque)
         goto endjob;
     }
     priv->gotShutdown = false;
-    event = virDomainEventLifecycleNewFromObj(vm,
-                                     VIR_DOMAIN_EVENT_RESUMED,
-                                     VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -511,7 +507,6 @@ qemuProcessFakeReboot(void *opaque)
     if (ret == -1)
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
     virDomainObjEndAPI(&vm);
-    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
 }
 
@@ -3109,7 +3104,10 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
     if (ret < 0)
         goto release;
 
-    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
+    /* The RESUME event handler will change the domain state with the reason
+     * saved in priv->runningReason and it will also emit corresponding domain
+     * lifecycle event.
+     */
 
  cleanup:
     virObjectUnref(cfg);

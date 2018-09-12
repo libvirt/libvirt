@@ -1861,7 +1861,6 @@ static int qemuDomainResume(virDomainPtr dom)
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virObjectEventPtr event = NULL;
     int state;
     int reason;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -1900,9 +1899,6 @@ static int qemuDomainResume(virDomainPtr dom)
                                "%s", _("resume operation failed"));
             goto endjob;
         }
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_RESUMED,
-                                         VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto endjob;
@@ -1913,7 +1909,6 @@ static int qemuDomainResume(virDomainPtr dom)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -15983,7 +15978,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainDefPtr config = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
-    bool was_running = false;
     bool was_stopped = false;
     qemuDomainSaveCookiePtr cookie;
     virCPUDefPtr origCPU = NULL;
@@ -16174,7 +16168,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             priv = vm->privateData;
             if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
                 /* Transitions 5, 6 */
-                was_running = true;
                 if (qemuProcessStopCPUs(driver, vm,
                                         VIR_DOMAIN_PAUSED_FROM_SNAPSHOT,
                                         QEMU_ASYNC_JOB_START) < 0)
@@ -16270,12 +16263,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
                 event = virDomainEventLifecycleNewFromObj(vm,
                                                  VIR_DOMAIN_EVENT_STARTED,
-                                                 detail);
-            } else if (!was_running) {
-                /* Transition 8 */
-                detail = VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT;
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                                 VIR_DOMAIN_EVENT_RESUMED,
                                                  detail);
             }
         }

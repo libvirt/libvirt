@@ -2982,14 +2982,10 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
         virFreeError(orig_err);
 
         if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
-            reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
+            reason == VIR_DOMAIN_PAUSED_POSTCOPY)
             qemuMigrationAnyPostcopyFailed(driver, vm);
-        } else if (qemuMigrationSrcRestoreDomainState(driver, vm)) {
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                                      VIR_DOMAIN_EVENT_RESUMED,
-                                                      VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-            virObjectEventStateQueue(driver->domainEventState, event);
-        }
+        else
+            qemuMigrationSrcRestoreDomainState(driver, vm);
 
         qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                  priv->job.migParams, priv->job.apiFlags);
@@ -4624,11 +4620,7 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
         qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                  priv->job.migParams, priv->job.apiFlags);
 
-    if (qemuMigrationSrcRestoreDomainState(driver, vm)) {
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_RESUMED,
-                                         VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-    }
+    qemuMigrationSrcRestoreDomainState(driver, vm);
 
     qemuMigrationJobFinish(driver, vm);
     if (!virDomainObjIsActive(vm) && ret == 0) {
@@ -4672,7 +4664,6 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
                              unsigned long resource)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virObjectEventPtr event = NULL;
     int ret = -1;
 
     /* If we didn't start the job in the begin phase, start it now. */
@@ -4694,11 +4685,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
                                         nmigrate_disks, migrate_disks, migParams);
 
     if (ret < 0) {
-        if (qemuMigrationSrcRestoreDomainState(driver, vm)) {
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                                      VIR_DOMAIN_EVENT_RESUMED,
-                                                      VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-        }
+        qemuMigrationSrcRestoreDomainState(driver, vm);
         goto endjob;
     }
 
@@ -4722,7 +4709,6 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
 
@@ -5074,13 +5060,8 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
                 goto endjob;
         }
 
-        if (inPostCopy) {
+        if (inPostCopy)
             doKill = false;
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                        VIR_DOMAIN_EVENT_RESUMED,
-                                        VIR_DOMAIN_EVENT_RESUMED_POSTCOPY);
-            virObjectEventStateQueue(driver->domainEventState, event);
-        }
     }
 
     if (mig->jobInfo) {
@@ -5111,10 +5092,20 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
 
     dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
 
-    event = virDomainEventLifecycleNewFromObj(vm,
-                                              VIR_DOMAIN_EVENT_RESUMED,
-                                              VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-    virObjectEventStateQueue(driver->domainEventState, event);
+    if (inPostCopy) {
+        /* The only RESUME event during post-copy migration is triggered by
+         * QEMU when the running domain moves from the source to the
+         * destination host, but then the migration keeps running until all
+         * modified memory is transferred from the source host. This will
+         * result in VIR_DOMAIN_EVENT_RESUMED with RESUMED_POSTCOPY detail.
+         * However, our API documentation says we need to fire another RESUMED
+         * event at the very end of migration with RESUMED_MIGRATED detail.
+         */
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_RESUMED,
+                                                  VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+        virObjectEventStateQueue(driver->domainEventState, event);
+    }
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
