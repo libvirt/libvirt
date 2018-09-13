@@ -1004,7 +1004,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "block-stream", QEMU_CAPS_BLOCKJOB_ASYNC },
     { "dump-guest-memory", QEMU_CAPS_DUMP_GUEST_MEMORY },
     { "query-spice", QEMU_CAPS_SPICE },
-    { "query-kvm", QEMU_CAPS_KVM },
     { "block-commit", QEMU_CAPS_BLOCK_COMMIT },
     { "query-vnc", QEMU_CAPS_VNC },
     { "drive-mirror", QEMU_CAPS_DRIVE_MIRROR },
@@ -2621,25 +2620,11 @@ virQEMUCapsProbeQMPKVMState(virQEMUCapsPtr qemuCaps,
     bool enabled = false;
     bool present = false;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-        return 0;
-
     if (qemuMonitorGetKVMState(mon, &enabled, &present) < 0)
         return -1;
 
-    /* The QEMU_CAPS_KVM flag was initially set according to the QEMU
-     * reporting the recognition of 'query-kvm' QMP command. That merely
-     * indicates existence of the command though, not whether KVM support
-     * is actually available, nor whether it is enabled by default.
-     *
-     * If it is not present we need to clear the flag, and if it is
-     * not enabled by default we need to change the flag.
-     */
-    if (!present) {
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_KVM);
-    } else if (!enabled) {
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_KVM);
-    }
+    if (present && enabled)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
 
     return 0;
 }
