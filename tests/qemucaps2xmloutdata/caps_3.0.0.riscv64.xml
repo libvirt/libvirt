@@ -1,0 +1,25 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>riscv64</arch>
+    </cpu>
+    <power_management/>
+    <iommu support='no'/>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='riscv64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-riscv64</emulator>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+    </features>
+  </guest>
+
+</capabilities>

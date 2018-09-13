@@ -1,0 +1,29 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>aarch64</arch>
+    </cpu>
+    <power_management/>
+    <iommu support='no'/>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='aarch64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-aarch64</emulator>
+      <domain type='qemu'/>
+      <domain type='kvm'>
+        <emulator>/usr/bin/qemu-system-aarch64</emulator>
+      </domain>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <acpi default='on' toggle='yes'/>
+    </features>
+  </guest>
+
+</capabilities>

@@ -187,7 +187,37 @@ mymain(void)
     if (virTestRun(name "(" arch ")", testQemuCapsXML, &data) < 0) \
         ret = -1
 
+    /* Keep this in sync with qemucapabilitiestest */
+    DO_TEST("x86_64", "caps_1.5.3");
     DO_TEST("x86_64", "caps_1.6.0");
+    DO_TEST("x86_64", "caps_1.7.0");
+    DO_TEST("x86_64", "caps_2.1.1");
+    DO_TEST("x86_64", "caps_2.4.0");
+    DO_TEST("x86_64", "caps_2.5.0");
+    DO_TEST("x86_64", "caps_2.6.0");
+    DO_TEST("x86_64", "caps_2.7.0");
+    DO_TEST("x86_64", "caps_2.8.0");
+    DO_TEST("x86_64", "caps_2.9.0");
+    DO_TEST("x86_64", "caps_2.10.0");
+    DO_TEST("x86_64", "caps_2.11.0");
+    DO_TEST("x86_64", "caps_2.12.0");
+    DO_TEST("x86_64", "caps_3.0.0");
+    DO_TEST("aarch64", "caps_2.6.0");
+    DO_TEST("aarch64", "caps_2.10.0");
+    DO_TEST("aarch64", "caps_2.12.0");
+    DO_TEST("ppc64", "caps_2.6.0");
+    DO_TEST("ppc64", "caps_2.9.0");
+    DO_TEST("ppc64", "caps_2.10.0");
+    DO_TEST("ppc64", "caps_2.12.0");
+    DO_TEST("ppc64", "caps_3.0.0");
+    DO_TEST("s390x", "caps_2.7.0");
+    DO_TEST("s390x", "caps_2.8.0");
+    DO_TEST("s390x", "caps_2.9.0");
+    DO_TEST("s390x", "caps_2.10.0");
+    DO_TEST("s390x", "caps_2.11.0");
+    DO_TEST("s390x", "caps_2.12.0");
+    DO_TEST("riscv32", "caps_3.0.0");
+    DO_TEST("riscv64", "caps_3.0.0");
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

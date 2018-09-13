@@ -1,0 +1,28 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>s390x</arch>
+    </cpu>
+    <power_management/>
+    <iommu support='no'/>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='s390x'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-s390x</emulator>
+      <domain type='qemu'/>
+      <domain type='kvm'>
+        <emulator>/usr/bin/qemu-system-s390x</emulator>
+      </domain>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+    </features>
+  </guest>
+
+</capabilities>

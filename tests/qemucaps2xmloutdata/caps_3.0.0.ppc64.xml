@@ -1,0 +1,28 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>ppc64</arch>
+    </cpu>
+    <power_management/>
+    <iommu support='no'/>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='ppc64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-ppc64</emulator>
+      <domain type='qemu'/>
+      <domain type='kvm'>
+        <emulator>/usr/bin/qemu-system-ppc64</emulator>
+      </domain>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+    </features>
+  </guest>
+
+</capabilities>
