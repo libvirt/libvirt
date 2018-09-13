@@ -82,7 +82,6 @@ vshAdmClientTransportToString(int transport)
 static int
 vshAdmGetTimeStr(vshControl *ctl, time_t then, char **result)
 {
-
     char *tmp = NULL;
     struct tm timeinfo;
 

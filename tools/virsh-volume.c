@@ -520,7 +520,6 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 static xmlChar *
 virshMakeCloneXML(const char *origxml, const char *newname)
 {
-
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
