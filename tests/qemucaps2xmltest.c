@@ -32,7 +32,7 @@ typedef struct _testQemuData testQemuData;
 typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     const char *base;
-    virArch guestarch;
+    const char *archName;
 };
 
 static virQEMUCapsPtr
@@ -87,23 +87,28 @@ testGetCaps(char *capsData, const testQemuData *data)
 {
     virQEMUCapsPtr qemuCaps = NULL;
     virCapsPtr caps = NULL;
+    virArch arch = virArchFromString(data->archName);
+    char *binary = NULL;
+
+    if (virAsprintf(&binary, "/usr/bin/qemu-system-%s", data->archName) < 0)
+        goto error;
 
     if ((qemuCaps = testQemuGetCaps(capsData)) == NULL) {
         fprintf(stderr, "failed to parse qemu capabilities flags");
         goto error;
     }
 
-    if ((caps = virCapabilitiesNew(data->guestarch, false, false)) == NULL) {
+    if ((caps = virCapabilitiesNew(arch, false, false)) == NULL) {
         fprintf(stderr, "failed to create the fake capabilities");
         goto error;
     }
 
     if (virQEMUCapsInitGuestFromBinary(caps,
-                                       "/usr/bin/qemu-system-i386",
+                                       binary,
                                        qemuCaps,
                                        NULL,
                                        NULL,
-                                       data->guestarch) < 0) {
+                                       arch) < 0) {
         fprintf(stderr, "failed to create the capabilities from qemu");
         goto error;
     }
@@ -114,6 +119,7 @@ testGetCaps(char *capsData, const testQemuData *data)
  error:
     virObjectUnref(qemuCaps);
     virObjectUnref(caps);
+    VIR_FREE(binary);
     return NULL;
 }
 
@@ -127,12 +133,12 @@ testQemuCapsXML(const void *opaque)
     char *capsXml = NULL;
     virCapsPtr capsProvided = NULL;
 
-    if (virAsprintf(&xmlFile, "%s/qemucaps2xmldata/%s.xml",
-                    abs_srcdir, data->base) < 0)
+    if (virAsprintf(&xmlFile, "%s/qemucaps2xmloutdata/%s.%s.xml",
+                    abs_srcdir, data->base, data->archName) < 0)
         goto cleanup;
 
-    if (virAsprintf(&capsFile, "%s/qemucaps2xmldata/%s.caps",
-                    abs_srcdir, data->base) < 0)
+    if (virAsprintf(&capsFile, "%s/qemucapabilitiesdata/%s.%s.xml",
+                    abs_srcdir, data->base, data->archName) < 0)
         goto cleanup;
 
     if (virTestLoadFile(capsFile, &capsData) < 0)
@@ -175,16 +181,13 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-#define DO_TEST_FULL(name, guest) \
+#define DO_TEST(arch, name) \
+    data.archName = arch; \
     data.base = name; \
-    data.guestarch = guest; \
-    if (virTestRun(name, testQemuCapsXML, &data) < 0) \
+    if (virTestRun(name "(" arch ")", testQemuCapsXML, &data) < 0) \
         ret = -1
 
-#define DO_TEST(name) DO_TEST_FULL(name, VIR_ARCH_I686)
-
-    DO_TEST("all_1.6.0-1");
-    DO_TEST("nodisksnapshot_1.6.0-1");
+    DO_TEST("x86_64", "caps_1.6.0");
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
