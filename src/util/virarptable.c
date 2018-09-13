@@ -152,6 +152,8 @@ virArpTableGet(void)
         }
     }
 
+    return table;
+
  cleanup:
     virArpTableFree(table);
     return NULL;
