@@ -2872,10 +2872,10 @@ virCommandFree(virCommandPtr cmd)
 void
 virCommandDoAsyncIO(virCommandPtr cmd)
 {
-   if (!cmd || cmd->has_error)
-       return;
+    if (!cmd || cmd->has_error)
+        return;
 
-   cmd->flags |= VIR_EXEC_ASYNC_IO | VIR_EXEC_NONBLOCK;
+    cmd->flags |= VIR_EXEC_ASYNC_IO | VIR_EXEC_NONBLOCK;
 }
 
 /**

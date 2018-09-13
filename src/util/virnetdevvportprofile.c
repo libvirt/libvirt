@@ -451,7 +451,7 @@ int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
 
 static struct nla_policy ifla_port_policy[IFLA_PORT_MAX + 1] =
 {
-  [IFLA_PORT_RESPONSE]      = { .type = NLA_U16 },
+    [IFLA_PORT_RESPONSE] = { .type = NLA_U16 },
 };
 
 static uint32_t

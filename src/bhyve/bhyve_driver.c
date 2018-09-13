@@ -197,27 +197,27 @@ bhyveConnectOpen(virConnectPtr conn,
                  virConfPtr conf ATTRIBUTE_UNUSED,
                  unsigned int flags)
 {
-     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-     if (STRNEQ(conn->uri->path, "/system")) {
-         virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unexpected bhyve URI path '%s', try bhyve:///system"),
-                        conn->uri->path);
-         return VIR_DRV_OPEN_ERROR;
-     }
+    if (STRNEQ(conn->uri->path, "/system")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected bhyve URI path '%s', try bhyve:///system"),
+                       conn->uri->path);
+        return VIR_DRV_OPEN_ERROR;
+    }
 
-     if (bhyve_driver == NULL) {
-         virReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("bhyve state driver is not active"));
-         return VIR_DRV_OPEN_ERROR;
-     }
+    if (bhyve_driver == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("bhyve state driver is not active"));
+        return VIR_DRV_OPEN_ERROR;
+    }
 
-     if (virConnectOpenEnsureACL(conn) < 0)
-         return VIR_DRV_OPEN_ERROR;
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
 
-     conn->privateData = bhyve_driver;
+    conn->privateData = bhyve_driver;
 
-     return VIR_DRV_OPEN_SUCCESS;
+    return VIR_DRV_OPEN_SUCCESS;
 }
 
 static int

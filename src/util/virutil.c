@@ -940,7 +940,7 @@ char *virGetUserConfigDirectory(void)
 
 char *virGetUserCacheDirectory(void)
 {
-     return virGetXDGDirectory("XDG_CACHE_HOME", ".cache");
+    return virGetXDGDirectory("XDG_CACHE_HOME", ".cache");
 }
 
 char *virGetUserRuntimeDirectory(void)

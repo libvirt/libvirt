@@ -2301,48 +2301,49 @@ qemuDomainAddressFindNewTargetIndex(virDomainDefPtr def)
 static int
 qemuDomainAddressFindNewBusNr(virDomainDefPtr def)
 {
-/* Try to find a nice default for busNr for a new pci-expander-bus.
- * This is a bit tricky, since you need to satisfy the following:
- *
- * 1) There need to be enough unused bus numbers between busNr of this
- *    bus and busNr of the next highest bus for the guest to assign a
- *    unique bus number to each PCI bus that is a child of this
- *    bus. Each PCI controller. On top of this, the pxb device (which
- *    implements the pci-expander-bus) includes a pci-bridge within
- *    it, and that bridge also uses one bus number (so each pxb device
- *    requires at least 2 bus numbers).
- *
- * 2) There need to be enough bus numbers *below* this for all the
- *    child controllers of the pci-expander-bus with the next lower
- *    busNr (or the pci-root bus if there are no lower
- *    pci-expander-buses).
- *
- * 3) If at all possible, we want to avoid needing to change the busNr
- *    of a bus in the future, as that changes the guest's device ABI,
- *    which could potentially lead to issues with a guest OS that is
- *    picky about such things.
- *
- *  Due to the impossibility of predicting what might be added to the
- *  config in the future, we can't make a foolproof choice, but since
- *  a pci-expander-bus (pxb) has slots for 32 devices, and the only
- *  practical use for it is to assign real devices on a particular
- *  NUMA node in the host, it's reasonably safe to assume it should
- *  never need any additional child buses (probably only a few of the
- *  32 will ever be used). So for pci-expander-bus we find the lowest
- *  existing busNr, and set this one to the current lowest - 2 (one
- *  for the pxb, one for the intergrated pci-bridge), thus leaving the
- *  maximum possible bus numbers available for other buses plugged
- *  into pci-root (i.e. pci-bridges and other
- *  pci-expander-buses). Anyone who needs more than 32 devices
- *  descended from one pci-expander-bus should set the busNr manually
- *  in the config.
- *
- *  There is room for more error checking here - in particular we
- *  can/should determine the ultimate parent (root-bus) of each PCI
- *  controller and determine if there is enough space for all the
- *  buses within the current range allotted to the bus just prior to
- *  this one.
- */
+    /* Try to find a nice default for busNr for a new pci-expander-bus.
+     * This is a bit tricky, since you need to satisfy the following:
+     *
+     * 1) There need to be enough unused bus numbers between busNr of this
+     *    bus and busNr of the next highest bus for the guest to assign a
+     *    unique bus number to each PCI bus that is a child of this
+     *    bus. Each PCI controller. On top of this, the pxb device (which
+     *    implements the pci-expander-bus) includes a pci-bridge within
+     *    it, and that bridge also uses one bus number (so each pxb device
+     *    requires at least 2 bus numbers).
+     *
+     * 2) There need to be enough bus numbers *below* this for all the
+     *    child controllers of the pci-expander-bus with the next lower
+     *    busNr (or the pci-root bus if there are no lower
+     *    pci-expander-buses).
+     *
+     * 3) If at all possible, we want to avoid needing to change the busNr
+     *    of a bus in the future, as that changes the guest's device ABI,
+     *    which could potentially lead to issues with a guest OS that is
+     *    picky about such things.
+     *
+     *  Due to the impossibility of predicting what might be added to the
+     *  config in the future, we can't make a foolproof choice, but since
+     *  a pci-expander-bus (pxb) has slots for 32 devices, and the only
+     *  practical use for it is to assign real devices on a particular
+     *  NUMA node in the host, it's reasonably safe to assume it should
+     *  never need any additional child buses (probably only a few of the
+     *  32 will ever be used). So for pci-expander-bus we find the lowest
+     *  existing busNr, and set this one to the current lowest - 2 (one
+     *  for the pxb, one for the intergrated pci-bridge), thus leaving the
+     *  maximum possible bus numbers available for other buses plugged
+     *  into pci-root (i.e. pci-bridges and other
+     *  pci-expander-buses). Anyone who needs more than 32 devices
+     *  descended from one pci-expander-bus should set the busNr manually
+     *  in the config.
+     *
+     *  There is room for more error checking here - in particular we
+     *  can/should determine the ultimate parent (root-bus) of each PCI
+     *  controller and determine if there is enough space for all the
+     *  buses within the current range allotted to the bus just prior to
+     *  this one.
+     */
+
     size_t i;
     int lowestBusNr = 256;
 

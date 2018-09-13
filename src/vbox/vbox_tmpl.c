@@ -1253,11 +1253,11 @@ _systemPropertiesGetMaxNetworkAdapters(ISystemProperties *systemProperties, PRUi
                                        PRUint32 *maxNetworkAdapters)
 {
 #if VBOX_API_VERSION < 4001000
-        return systemProperties->vtbl->GetNetworkAdapterCount(systemProperties,
-                                                              maxNetworkAdapters);
+    return systemProperties->vtbl->GetNetworkAdapterCount(systemProperties,
+                                                          maxNetworkAdapters);
 #else  /* VBOX_API_VERSION >= 4000000 */
-        return systemProperties->vtbl->GetMaxNetworkAdapters(systemProperties, chipset,
-                                                             maxNetworkAdapters);
+    return systemProperties->vtbl->GetMaxNetworkAdapters(systemProperties, chipset,
+                                                         maxNetworkAdapters);
 #endif /* VBOX_API_VERSION >= 4000000 */
 }
 

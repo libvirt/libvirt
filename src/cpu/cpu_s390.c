@@ -48,50 +48,50 @@ static int
 virCPUs390Update(virCPUDefPtr guest,
                  const virCPUDef *host)
 {
-     virCPUDefPtr updated = NULL;
-     int ret = -1;
-     size_t i;
+    virCPUDefPtr updated = NULL;
+    int ret = -1;
+    size_t i;
 
-     if (guest->match == VIR_CPU_MATCH_MINIMUM) {
-         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("match mode %s not supported"),
-                        virCPUMatchTypeToString(guest->match));
-         goto cleanup;
-     }
+    if (guest->match == VIR_CPU_MATCH_MINIMUM) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("match mode %s not supported"),
+                       virCPUMatchTypeToString(guest->match));
+        goto cleanup;
+    }
 
-     if (guest->mode != VIR_CPU_MODE_HOST_MODEL) {
-         ret = 0;
-         goto cleanup;
-     }
+    if (guest->mode != VIR_CPU_MODE_HOST_MODEL) {
+        ret = 0;
+        goto cleanup;
+    }
 
-     if (!host) {
-         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("unknown host CPU model"));
-         goto cleanup;
-     }
+    if (!host) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unknown host CPU model"));
+        goto cleanup;
+    }
 
-     if (!(updated = virCPUDefCopyWithoutModel(guest)))
-         goto cleanup;
+    if (!(updated = virCPUDefCopyWithoutModel(guest)))
+        goto cleanup;
 
-     updated->mode = VIR_CPU_MODE_CUSTOM;
-     if (virCPUDefCopyModel(updated, host, true) < 0)
-         goto cleanup;
+    updated->mode = VIR_CPU_MODE_CUSTOM;
+    if (virCPUDefCopyModel(updated, host, true) < 0)
+        goto cleanup;
 
-     for (i = 0; i < guest->nfeatures; i++) {
-        if (virCPUDefUpdateFeature(updated,
-                                   guest->features[i].name,
-                                   guest->features[i].policy) < 0)
-            goto cleanup;
-     }
+    for (i = 0; i < guest->nfeatures; i++) {
+       if (virCPUDefUpdateFeature(updated,
+                                  guest->features[i].name,
+                                  guest->features[i].policy) < 0)
+           goto cleanup;
+    }
 
-     virCPUDefStealModel(guest, updated, false);
-     guest->mode = VIR_CPU_MODE_CUSTOM;
-     guest->match = VIR_CPU_MATCH_EXACT;
-     ret = 0;
+    virCPUDefStealModel(guest, updated, false);
+    guest->mode = VIR_CPU_MODE_CUSTOM;
+    guest->match = VIR_CPU_MATCH_EXACT;
+    ret = 0;
 
  cleanup:
-     virCPUDefFree(updated);
-     return ret;
+    virCPUDefFree(updated);
+    return ret;
 }
 
 

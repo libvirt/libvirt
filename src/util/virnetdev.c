@@ -295,36 +295,36 @@ virNetDevSetMACInternal(const char *ifname,
                         const virMacAddr *macaddr,
                         bool quiet)
 {
-        struct ifreq ifr;
-        struct sockaddr_dl sdl;
-        char mac[VIR_MAC_STRING_BUFLEN + 1] = ":";
-        VIR_AUTOCLOSE s = -1;
+    struct ifreq ifr;
+    struct sockaddr_dl sdl;
+    char mac[VIR_MAC_STRING_BUFLEN + 1] = ":";
+    VIR_AUTOCLOSE s = -1;
 
-        if ((s = virNetDevSetupControl(ifname, &ifr)) < 0)
-            return -1;
+    if ((s = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return -1;
 
-        virMacAddrFormat(macaddr, mac + 1);
-        sdl.sdl_len = sizeof(sdl);
-        link_addr(mac, &sdl);
+    virMacAddrFormat(macaddr, mac + 1);
+    sdl.sdl_len = sizeof(sdl);
+    link_addr(mac, &sdl);
 
-        memcpy(ifr.ifr_addr.sa_data, sdl.sdl_data, VIR_MAC_BUFLEN);
-        ifr.ifr_addr.sa_len = VIR_MAC_BUFLEN;
+    memcpy(ifr.ifr_addr.sa_data, sdl.sdl_data, VIR_MAC_BUFLEN);
+    ifr.ifr_addr.sa_len = VIR_MAC_BUFLEN;
 
-        if (ioctl(s, SIOCSIFLLADDR, &ifr) < 0) {
-            if (quiet &&
-                (errno == EADDRNOTAVAIL || errno == EPERM)) {
-                VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - Fail", ifname, mac + 1);
-                return -1;
-            }
-
-            virReportSystemError(errno,
-                                 _("Cannot set interface MAC to %s on '%s'"),
-                                 mac + 1, ifname);
+    if (ioctl(s, SIOCSIFLLADDR, &ifr) < 0) {
+        if (quiet &&
+            (errno == EADDRNOTAVAIL || errno == EPERM)) {
+            VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - Fail", ifname, mac + 1);
             return -1;
         }
 
-        VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - Success", ifname, mac + 1);
-        return 0;
+        virReportSystemError(errno,
+                             _("Cannot set interface MAC to %s on '%s'"),
+                             mac + 1, ifname);
+        return -1;
+    }
+
+    VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - Success", ifname, mac + 1);
+    return 0;
 }
 
 

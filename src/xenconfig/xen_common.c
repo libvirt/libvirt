@@ -1911,11 +1911,11 @@ xenFormatVif(virConfPtr conf,
              virDomainDefPtr def,
              const char *vif_typename)
 {
-   virConfValuePtr netVal = NULL;
-   size_t i;
-   int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
+    virConfValuePtr netVal = NULL;
+    size_t i;
+    int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
 
-   if (VIR_ALLOC(netVal) < 0)
+    if (VIR_ALLOC(netVal) < 0)
         goto cleanup;
     netVal->type = VIR_CONF_LIST;
     netVal->list = NULL;
@@ -1923,7 +1923,7 @@ xenFormatVif(virConfPtr conf,
     for (i = 0; i < def->nnets; i++) {
         if (xenFormatNet(conn, netVal, def->nets[i],
                          hvm, vif_typename) < 0)
-           goto cleanup;
+            goto cleanup;
     }
 
     if (netVal->list != NULL) {

@@ -36,10 +36,10 @@ static void virBhyveDriverConfigDispose(void *obj);
 
 static int virBhyveConfigOnceInit(void)
 {
-     if (!VIR_CLASS_NEW(virBhyveDriverConfig, virClassForObject()))
-         return -1;
+    if (!VIR_CLASS_NEW(virBhyveDriverConfig, virClassForObject()))
+        return -1;
 
-     return 0;
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virBhyveConfig)

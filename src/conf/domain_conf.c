@@ -14435,7 +14435,7 @@ virDomainNVRAMDefParseXML(virDomainXMLOptionPtr xmlopt,
                           xmlNodePtr node,
                           unsigned int flags)
 {
-   virDomainNVRAMDefPtr def;
+    virDomainNVRAMDefPtr def;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
