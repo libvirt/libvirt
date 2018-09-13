@@ -463,7 +463,6 @@ static bool
 x86DataIsSubset(const virCPUx86Data *data,
                 const virCPUx86Data *subset)
 {
-
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit((virCPUx86Data *)subset);
     const virCPUx86CPUID *cpuid;
     const virCPUx86CPUID *cpuidSubset;

@@ -89,7 +89,6 @@ bhyveNetCleanup(virDomainObjPtr vm)
 static int
 virBhyveFormatDevMapFile(const char *vm_name, char **fn_out)
 {
-
     return virAsprintf(fn_out, "%s/grub_bhyve-%s-device.map", BHYVE_STATE_DIR,
                        vm_name);
 }

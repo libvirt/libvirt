@@ -216,7 +216,6 @@ virStorageBackendSheepdogDeleteVol(virStoragePoolObjPtr pool,
                                    virStorageVolDefPtr vol,
                                    unsigned int flags)
 {
-
     virCheckFlags(0, -1);
 
     virCommandPtr cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "delete", vol->name, NULL);
@@ -386,7 +385,6 @@ virStorageBackendSheepdogResizeVol(virStoragePoolObjPtr pool,
                                    unsigned long long capacity,
                                    unsigned int flags)
 {
-
     virCheckFlags(0, -1);
 
     virCommandPtr cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "resize", vol->name, NULL);
@@ -396,7 +394,6 @@ virStorageBackendSheepdogResizeVol(virStoragePoolObjPtr pool,
 
     virCommandFree(cmd);
     return ret;
-
 }
 
 

@@ -486,7 +486,6 @@ static void
 networkAddGeneralIPv6FirewallRules(virFirewallPtr fw,
                                    virNetworkDefPtr def)
 {
-
     if (!virNetworkDefGetIPByIndex(def, AF_INET6, 0) &&
         !def->ipv6nogw) {
         return;

@@ -87,7 +87,6 @@ virCPUDefFreeFeatures(virCPUDefPtr def)
 void ATTRIBUTE_NONNULL(1)
 virCPUDefFreeModel(virCPUDefPtr def)
 {
-
     VIR_FREE(def->model);
     VIR_FREE(def->vendor);
     VIR_FREE(def->vendor_id);

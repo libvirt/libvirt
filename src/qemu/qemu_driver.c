@@ -5092,7 +5092,6 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
                        int maplen,
                        unsigned int flags)
 {
-
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDefPtr def;

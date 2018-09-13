@@ -796,7 +796,6 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
 int
 virNWFilterLearnInit(void)
 {
-
     if (pendingLearnReq)
         return 0;
 

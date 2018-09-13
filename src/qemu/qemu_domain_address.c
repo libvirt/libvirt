@@ -915,7 +915,6 @@ qemuDomainFillDevicePCIConnectFlagsIterInit(virDomainDefPtr def,
                                             virQEMUDriverPtr driver,
                                             qemuDomainFillDevicePCIConnectFlagsIterData *data)
 {
-
     data->driver = driver;
 
     if (qemuDomainHasPCIeRoot(def)) {

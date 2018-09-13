@@ -177,7 +177,6 @@ bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver)
 void
 bhyveMonitorClose(bhyveMonitorPtr mon)
 {
-
     if (mon == NULL)
         return;
 

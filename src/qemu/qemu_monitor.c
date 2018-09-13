@@ -4121,7 +4121,6 @@ int
 qemuMonitorGetIOThreads(qemuMonitorPtr mon,
                         qemuMonitorIOThreadInfoPtr **iothreads)
 {
-
     VIR_DEBUG("iothreads=%p", iothreads);
 
     QEMU_CHECK_MONITOR(mon);

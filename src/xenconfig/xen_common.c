@@ -1346,7 +1346,6 @@ xenFormatNet(virConnectPtr conn,
 static int
 xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
 {
-
     virConfValuePtr pciVal = NULL;
     int hasPCI = 0;
     size_t i;

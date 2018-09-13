@@ -559,7 +559,6 @@ static void
 virDomainCapsFeatureSEVFormat(virBufferPtr buf,
                               virSEVCapabilityPtr const sev)
 {
-
     if (!sev) {
         virBufferAddLit(buf, "<sev supported='no'/>\n");
     } else {

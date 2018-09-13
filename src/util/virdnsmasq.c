@@ -885,6 +885,5 @@ dnsmasqCapsGetVersion(dnsmasqCapsPtr caps)
 bool
 dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag)
 {
-
     return caps && virBitmapIsBitSet(caps->flags, flag);
 }

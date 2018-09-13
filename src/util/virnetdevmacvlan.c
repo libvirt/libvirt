@@ -83,7 +83,6 @@ virBitmapPtr macvlanIDs = NULL;
 static int
 virNetDevMacVLanOnceInit(void)
 {
-
     if (!macvtapIDs &&
         !(macvtapIDs = virBitmapNew(MACVLAN_MAX_ID + 1)))
         return -1;

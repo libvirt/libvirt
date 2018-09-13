@@ -183,7 +183,6 @@ vzGetDriverConnection(void)
 void
 vzDestroyDriverConnection(void)
 {
-
     vzDriverPtr driver;
     vzConnPtr privconn_list;
 

@@ -44,7 +44,6 @@ static vboxUniformedAPI gVBoxAPI;
 
 static int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-
     /** Currently only one pool supported, the default one
      * given by ISystemProperties::defaultHardDiskFolder()
      */

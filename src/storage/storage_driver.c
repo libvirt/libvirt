@@ -2258,7 +2258,6 @@ virStorageBackendPloopRestoreDesc(char *path)
 static void
 virStorageVolPoolRefreshThread(void *opaque)
 {
-
     virStorageVolStreamInfoPtr cbdata = opaque;
     virStoragePoolObjPtr obj = NULL;
     virStoragePoolDefPtr def;

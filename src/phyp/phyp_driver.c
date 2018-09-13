@@ -3652,7 +3652,6 @@ phypDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 static int
 phypDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
-
     phyp_driverPtr phyp_driver = dom->conn->privateData;
     LIBSSH2_SESSION *session = phyp_driver->session;
     char *managed_system = phyp_driver->managed_system;

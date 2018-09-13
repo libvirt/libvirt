@@ -989,7 +989,6 @@ static int
 virDomainKeyWrapCipherDefParseXML(virDomainKeyWrapDefPtr keywrap,
                                   xmlNodePtr node)
 {
-
     char *name = NULL;
     char *state = NULL;
     int state_type;
@@ -6900,7 +6899,6 @@ static int
 virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                                      virDomainHostdevDefPtr def)
 {
-
     int ret = -1;
     bool got_product, got_vendor;
     xmlNodePtr cur;
@@ -12138,7 +12136,6 @@ virDomainChrSourceDefParseUnix(virDomainChrSourceDefPtr def,
                                xmlNodePtr source,
                                xmlXPathContextPtr ctxt)
 {
-
     int mode;
 
     if ((mode = virDomainChrSourceDefParseMode(source)) < 0)
@@ -14194,7 +14191,6 @@ virDomainWatchdogDefParseXML(virDomainXMLOptionPtr xmlopt,
                              xmlNodePtr node,
                              unsigned int flags)
 {
-
     char *model = NULL;
     char *action = NULL;
     virDomainWatchdogDefPtr def;
@@ -16291,7 +16287,6 @@ virDomainChrTargetTypeToString(int deviceType,
 int
 virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev)
 {
-
     return VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev);
 }
 
@@ -16630,7 +16625,6 @@ virDomainDiskByName(virDomainDefPtr def,
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk)
 {
-
     if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
         return -1;
 
@@ -16846,7 +16840,6 @@ virDomainNetRemove(virDomainDefPtr def, size_t i)
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller)
 {
-
     if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0)
         return -1;
 
@@ -17063,7 +17056,6 @@ void virDomainLeaseInsertPreAlloced(virDomainDefPtr def,
 virDomainLeaseDefPtr
 virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i)
 {
-
     virDomainLeaseDefPtr lease = def->leases[i];
 
     VIR_DELETE_ELEMENT(def->leases, i, def->nleases);
@@ -28656,7 +28648,6 @@ virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
                             int *busIdx,
                             int *devIdx)
 {
-
     int idx = virDiskNameToIndex(disk->dst);
     if (idx < 0)
         return -1;
@@ -28687,7 +28678,6 @@ virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
 int
 virDomainFSInsert(virDomainDefPtr def, virDomainFSDefPtr fs)
 {
-
     return VIR_APPEND_ELEMENT(def->fss, def->nfss, fs);
 }
 

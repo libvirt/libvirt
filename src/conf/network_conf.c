@@ -355,8 +355,6 @@ virSocketAddrRangeParseXML(const char *networkName,
                            xmlNodePtr node,
                            virSocketAddrRangePtr range)
 {
-
-
     char *start = NULL, *end = NULL;
     int ret = -1;
 

@@ -133,7 +133,6 @@ bhyveAutostartDomains(bhyveConnPtr driver)
 virCapsPtr ATTRIBUTE_NONNULL(1)
 bhyveDriverGetCapabilities(bhyveConnPtr driver)
 {
-
     return virObjectRef(driver->caps);
 }
 

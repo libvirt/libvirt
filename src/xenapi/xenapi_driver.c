@@ -447,7 +447,6 @@ xenapiNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 static char *
 xenapiConnectGetCapabilities(virConnectPtr conn)
 {
-
     virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
     if (caps)
         return virCapabilitiesFormatXML(caps);
@@ -1241,7 +1240,6 @@ xenapiDomainGetVcpus(virDomainPtr dom,
                      virVcpuInfoPtr info, int maxinfo,
                      unsigned char *cpumaps, int maplen)
 {
-
     xen_vm_set *vms = NULL;
     xen_vm vm = NULL;
     xen_string_string_map *vcpu_params = NULL;

@@ -63,7 +63,6 @@ static int virLockManagerNopAddResource(virLockManagerPtr lock ATTRIBUTE_UNUSED,
                                         virLockManagerParamPtr params ATTRIBUTE_UNUSED,
                                         unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
-
     return 0;
 }
 

@@ -665,7 +665,6 @@ int
 virNetDevSetOnline(const char *ifname,
                    bool online)
 {
-
     return virNetDevSetIFFlag(ifname, VIR_IFF_UP, online);
 }
 
@@ -1073,7 +1072,6 @@ int
 virNetDevSysfsFile(char **pf_sysfs_device_link, const char *ifname,
                    const char *file)
 {
-
     if (virAsprintf(pf_sysfs_device_link, SYSFS_NET_DIR "%s/%s", ifname, file) < 0)
         return -1;
     return 0;
@@ -1083,7 +1081,6 @@ static int
 virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
                      const char *file)
 {
-
     if (virAsprintf(pf_sysfs_device_link, SYSFS_NET_DIR "%s/device/%s", ifname,
                     file) < 0)
         return -1;

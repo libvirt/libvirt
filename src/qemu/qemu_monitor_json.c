@@ -1554,7 +1554,6 @@ int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
                            const char *name,
                            virDomainNetInterfaceLinkState state)
 {
-
     int ret = -1;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("set_link",

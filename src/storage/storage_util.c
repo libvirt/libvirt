@@ -3174,7 +3174,6 @@ virStorageBackendBLKIDFindEmpty(const char *device,
                                 const char *format,
                                 bool writelabel)
 {
-
     int ret = -1;
     int rc;
     blkid_probe probe = NULL;

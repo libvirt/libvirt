@@ -147,7 +147,6 @@ bhyveBuildNetArgStr(virConnectPtr conn,
 static int
 bhyveBuildConsoleArgStr(const virDomainDef *def, virCommandPtr cmd)
 {
-
     virDomainChrDefPtr chr = NULL;
 
     if (!def->nserials)
@@ -710,7 +709,6 @@ virBhyveProcessBuildCustomLoaderCmd(virDomainDefPtr def)
 static bool
 virBhyveUsableDisk(virDomainDiskDefPtr disk)
 {
-
     if (virDomainDiskTranslateSourcePool(disk) < 0)
         return false;
 
@@ -734,7 +732,6 @@ virBhyveUsableDisk(virDomainDiskDefPtr disk)
 static void
 virBhyveFormatGrubDevice(virBufferPtr devicemap, virDomainDiskDefPtr def)
 {
-
     if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
         virBufferAsprintf(devicemap, "(cd) %s\n",
                           virDomainDiskGetSource(def));

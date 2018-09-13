@@ -1724,7 +1724,6 @@ virGetDeviceID(const char *path ATTRIBUTE_UNUSED,
                int *maj ATTRIBUTE_UNUSED,
                int *min ATTRIBUTE_UNUSED)
 {
-
     return -ENOSYS;
 }
 #endif

@@ -2819,7 +2819,6 @@ virFileAccessibleAs(const char *path,
                     uid_t uid ATTRIBUTE_UNUSED,
                     gid_t gid ATTRIBUTE_UNUSED)
 {
-
     VIR_WARN("Ignoring uid/gid due to WIN32");
 
     return access(path, mode);

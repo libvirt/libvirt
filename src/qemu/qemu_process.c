@@ -5489,7 +5489,6 @@ int
 qemuProcessSetupIOThread(virDomainObjPtr vm,
                          virDomainIOThreadIDDefPtr iothread)
 {
-
     return qemuProcessSetupPid(vm, iothread->thread_id,
                                VIR_CGROUP_THREAD_IOTHREAD,
                                iothread->iothread_id,

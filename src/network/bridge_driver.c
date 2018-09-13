@@ -3237,7 +3237,6 @@ static int
 networkFindUnusedBridgeName(virNetworkObjListPtr nets,
                             virNetworkDefPtr def)
 {
-
     int ret = -1, id = 0;
     char *newname = NULL;
     const char *templ = "virbr%d";

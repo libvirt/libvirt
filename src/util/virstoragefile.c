@@ -4753,7 +4753,6 @@ virStorageFileReportBrokenChain(int errcode,
                                 virStorageSourcePtr src,
                                 virStorageSourcePtr parent)
 {
-
     if (src->drv) {
         unsigned int access_user = src->drv->uid;
         unsigned int access_group = src->drv->gid;

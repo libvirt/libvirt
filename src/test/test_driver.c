@@ -2719,7 +2719,6 @@ static int testConnectListDefinedDomains(virConnectPtr conn,
                                          char **const names,
                                          int maxnames)
 {
-
     testDriverPtr privconn = conn->privateData;
 
     memset(names, 0, sizeof(*names)*maxnames);
@@ -5235,7 +5234,6 @@ testStorageVolDelete(virStorageVolPtr vol,
 static int
 testStorageVolumeTypeForPool(int pooltype)
 {
-
     switch (pooltype) {
         case VIR_STORAGE_POOL_DIR:
         case VIR_STORAGE_POOL_FS:

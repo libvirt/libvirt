@@ -301,7 +301,6 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def,
                          virDomainNetDefPtr net,
                          int idx)
 {
-
     if (net->info.alias)
         return 0;
 
