@@ -47,6 +47,7 @@
 
 #include "virutil.h"
 #include "viralloc.h"
+#include "vircgroupbackend.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
@@ -59,8 +60,6 @@
 #include "virthread.h"
 
 VIR_LOG_INIT("util.cgroup");
-
-#define CGROUP_MAX_VAL 512
 
 #define VIR_FROM_THIS VIR_FROM_CGROUP
 
@@ -128,29 +127,18 @@ virCgroupGetDevicePermsString(int perms)
 bool
 virCgroupAvailable(void)
 {
-    bool ret = false;
-    FILE *mounts = NULL;
-    struct mntent entry;
-    char buf[CGROUP_MAX_VAL];
+    size_t i;
+    virCgroupBackendPtr *backends = virCgroupBackendGetAll();
 
-    if (!virFileExists("/proc/cgroups"))
+    if (!backends)
         return false;
 
-    if (!(mounts = fopen("/proc/mounts", "r")))
-        return false;
-
-    while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
-        /* We're looking for at least one 'cgroup' fs mount,
-         * which is *not* a named mount. */
-        if (STREQ(entry.mnt_type, "cgroup") &&
-            !strstr(entry.mnt_opts, "name=")) {
-            ret = true;
-            break;
-        }
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (backends[i] && backends[i]->available())
+            return true;
     }
 
-    VIR_FORCE_FCLOSE(mounts);
-    return ret;
+    return false;
 }
 
 

@@ -25,14 +25,21 @@
 
 # include "vircgroup.h"
 
+# define CGROUP_MAX_VAL 512
 
 typedef enum {
     VIR_CGROUP_BACKEND_TYPE_V1 = 0,
     VIR_CGROUP_BACKEND_TYPE_LAST,
 } virCgroupBackendType;
 
+typedef bool
+(*virCgroupAvailableCB)(void);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
+
+    /* Mandatory callbacks that need to be implemented for every backend. */
+    virCgroupAvailableCB available;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

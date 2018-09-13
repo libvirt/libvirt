@@ -20,6 +20,10 @@
  */
 #include <config.h>
 
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+# include <mntent.h>
+#endif
+
 #include "internal.h"
 
 #define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
@@ -29,6 +33,7 @@
 #include "vircgroup.h"
 #include "vircgroupbackend.h"
 #include "vircgroupv1.h"
+#include "virfile.h"
 #include "virlog.h"
 
 VIR_LOG_INIT("util.cgroup");
@@ -43,8 +48,38 @@ VIR_ENUM_IMPL(virCgroupV1Controller, VIR_CGROUP_CONTROLLER_LAST,
               "name=systemd");
 
 
+/* We're looking for at least one 'cgroup' fs mount,
+ * which is *not* a named mount. */
+static bool
+virCgroupV1Available(void)
+{
+    bool ret = false;
+    FILE *mounts = NULL;
+    struct mntent entry;
+    char buf[CGROUP_MAX_VAL];
+
+    if (!virFileExists("/proc/cgroups"))
+        return false;
+
+    if (!(mounts = fopen("/proc/mounts", "r")))
+        return false;
+
+    while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
+        if (STREQ(entry.mnt_type, "cgroup") && !strstr(entry.mnt_opts, "name=")) {
+            ret = true;
+            break;
+        }
+    }
+
+    VIR_FORCE_FCLOSE(mounts);
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
+
+    .available = virCgroupV1Available,
 };
 
 
