@@ -66,7 +66,7 @@ virNumaIsAvailable(void)
 int
 virNumaGetMaxNode(void)
 {
-   return 7;
+    return 7;
 }
 
 /* We shouldn't need to mock virNumaNodeIsAvailable() and *definitely* not

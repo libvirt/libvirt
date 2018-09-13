@@ -126,19 +126,19 @@ static void testTLSDerEncode(ASN1_TYPE src,
                              const char *src_name,
                              gnutls_datum_t * res)
 {
-  int size;
-  char *data = NULL;
+    int size;
+    char *data = NULL;
 
-  size = 0;
-  asn1_der_coding(src, src_name, NULL, &size, NULL);
+    size = 0;
+    asn1_der_coding(src, src_name, NULL, &size, NULL);
 
-  if (VIR_ALLOC_N(data, size) < 0)
-      abort();
+    if (VIR_ALLOC_N(data, size) < 0)
+        abort();
 
-  asn1_der_coding(src, src_name, data, &size, NULL);
+    asn1_der_coding(src, src_name, data, &size, NULL);
 
-  res->data = (unsigned char *)data;
-  res->size = size;
+    res->data = (unsigned char *)data;
+    res->size = size;
 }
 
 
