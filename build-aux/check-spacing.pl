@@ -31,6 +31,7 @@ foreach my $file (@ARGV) {
     my $cb_linenum = 0;
     my $cb_code = "";
     my $cb_scolon = 0;
+    my $fn_linenum = 0;
 
     open FILE, $file;
 
@@ -49,6 +50,27 @@ foreach my $file (@ARGV) {
         $data =~ s,//.*$,//,;
 
         next if $data =~ /^#/;
+
+        # Detect start of function block
+        if ($data =~ /^{$/) {
+            $fn_linenum = $.;
+        }
+
+        # Handle first line of function block
+        if ($fn_linenum && $fn_linenum != $.) {
+            if ($data =~ /^\s*$/) {
+                print "Blank line before content in function body:\n";
+                print "$file:$.:\n$line";
+                $ret = 1;
+            } elsif ($data !~ /^[ ]{4}\S/) {
+                unless ($data =~ /^[ ]\w+:$/ || $data =~ /^}/) {
+                    print "Incorrect indentation in function body:\n";
+                    print "$file:$.:\n$line";
+                    $ret = 1;
+                }
+            }
+            $fn_linenum = 0;
+        }
 
         # Kill contents of multi-line comments
         # and detect end of multi-line comments
