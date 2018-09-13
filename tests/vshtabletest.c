@@ -116,7 +116,6 @@ testVshTableRowAppend(const void *opaque ATTRIBUTE_UNUSED)
 static int
 testUnicode(const void *opaque ATTRIBUTE_UNUSED)
 {
-
     int ret = 0;
     char *act = NULL;
 
@@ -149,7 +148,6 @@ testUnicode(const void *opaque ATTRIBUTE_UNUSED)
 static int
 testUnicodeArabic(const void *opaque ATTRIBUTE_UNUSED)
 {
-
     int ret = 0;
     char *act = NULL;
 
@@ -193,7 +191,6 @@ testUnicodeArabic(const void *opaque ATTRIBUTE_UNUSED)
 static int
 testUnicodeZeroWidthChar(const void *opaque ATTRIBUTE_UNUSED)
 {
-
     int ret = 0;
     vshTablePtr table = NULL;
     const char *exp =
