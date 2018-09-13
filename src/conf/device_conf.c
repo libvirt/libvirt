@@ -161,59 +161,6 @@ virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
 }
 
 bool
-virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
-                           bool report)
-{
-    if (addr->domain > 0xFFFF) {
-        if (report)
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid PCI address domain='0x%x', "
-                             "must be <= 0xFFFF"),
-                           addr->domain);
-        return false;
-    }
-    if (addr->bus > 0xFF) {
-        if (report)
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid PCI address bus='0x%x', "
-                             "must be <= 0xFF"),
-                           addr->bus);
-        return false;
-    }
-    if (addr->slot > 0x1F) {
-        if (report)
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid PCI address slot='0x%x', "
-                             "must be <= 0x1F"),
-                           addr->slot);
-        return false;
-    }
-    if (addr->function > 7) {
-        if (report)
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid PCI address function=0x%x, "
-                             "must be <= 7"),
-                           addr->function);
-        return false;
-    }
-    if (virPCIDeviceAddressIsEmpty(addr)) {
-        if (report)
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Invalid PCI address 0000:00:00, at least "
-                             "one of domain, bus, or slot must be > 0"));
-        return false;
-    }
-    return true;
-}
-
-
-bool
-virPCIDeviceAddressIsEmpty(const virPCIDeviceAddress *addr)
-{
-    return !(addr->domain || addr->bus || addr->slot);
-}
-
-bool
 virDeviceInfoPCIAddressIsWanted(const virDomainDeviceInfo *info)
 {
     return info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
@@ -307,19 +254,6 @@ virPCIDeviceAddressFormat(virBufferPtr buf,
                       addr.slot,
                       addr.function);
     return 0;
-}
-
-bool
-virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
-                         virPCIDeviceAddress *addr2)
-{
-    if (addr1->domain == addr2->domain &&
-        addr1->bus == addr2->bus &&
-        addr1->slot == addr2->slot &&
-        addr1->function == addr2->function) {
-        return true;
-    }
-    return false;
 }
 
 bool

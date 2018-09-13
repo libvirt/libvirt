@@ -218,6 +218,13 @@ int virPCIGetSysfsFile(char *virPCIDeviceName,
                              char **pci_sysfs_device_link)
     ATTRIBUTE_RETURN_CHECK;
 
+bool virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
+                                bool report);
+bool virPCIDeviceAddressIsEmpty(const virPCIDeviceAddress *addr);
+
+bool virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
+                              virPCIDeviceAddress *addr2);
+
 char *virPCIDeviceAddressAsString(virPCIDeviceAddressPtr addr)
       ATTRIBUTE_NONNULL(1);
 

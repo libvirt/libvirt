@@ -108,10 +108,7 @@ virDomainDeviceUSBAddressParseXML;
 virDomainDeviceVirtioSerialAddressParseXML;
 virInterfaceLinkFormat;
 virInterfaceLinkParseXML;
-virPCIDeviceAddressEqual;
 virPCIDeviceAddressFormat;
-virPCIDeviceAddressIsEmpty;
-virPCIDeviceAddressIsValid;
 virPCIDeviceAddressParseXML;
 
 
@@ -2498,10 +2495,13 @@ virObjectUnref;
 
 # util/virpci.h
 virPCIDeviceAddressAsString;
+virPCIDeviceAddressEqual;
 virPCIDeviceAddressGetIOMMUGroupAddresses;
 virPCIDeviceAddressGetIOMMUGroupNum;
 virPCIDeviceAddressGetSysfsFile;
 virPCIDeviceAddressIOMMUGroupIterate;
+virPCIDeviceAddressIsEmpty;
+virPCIDeviceAddressIsValid;
 virPCIDeviceAddressParse;
 virPCIDeviceCopy;
 virPCIDeviceDetach;
