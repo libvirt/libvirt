@@ -79,7 +79,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_XEN_DOMID, /* -xen-domid */
     X_QEMU_CAPS_MIGRATE_QEMU_UNIX, /* qemu migration via unix sockets */
     X_QEMU_CAPS_CHARDEV, /* Is the new -chardev arg available */
-    QEMU_CAPS_ENABLE_KVM, /* -enable-kvm flag */
+    X_QEMU_CAPS_ENABLE_KVM, /* -enable-kvm flag */
     X_QEMU_CAPS_MONITOR_JSON, /* JSON mode for monitor */
 
     /* 25 */

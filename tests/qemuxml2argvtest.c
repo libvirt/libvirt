@@ -965,16 +965,15 @@ mymain(void)
     DO_TEST("clock-france", NONE);
     DO_TEST("clock-hpet-off", NONE);
     DO_TEST("clock-catchup", QEMU_CAPS_KVM_PIT_TICK_POLICY);
-    DO_TEST("cpu-kvmclock", QEMU_CAPS_ENABLE_KVM);
-    DO_TEST("cpu-host-kvmclock", QEMU_CAPS_ENABLE_KVM);
+    DO_TEST("cpu-kvmclock", NONE);
+    DO_TEST("cpu-host-kvmclock", NONE);
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
     DO_TEST("clock-timer-hyperv-rtc", QEMU_CAPS_KVM);
 
-    DO_TEST("cpu-eoi-disabled", QEMU_CAPS_ENABLE_KVM);
-    DO_TEST("cpu-eoi-enabled", QEMU_CAPS_ENABLE_KVM);
+    DO_TEST("cpu-eoi-disabled", NONE);
+    DO_TEST("cpu-eoi-enabled", NONE);
     DO_TEST("controller-order",
             QEMU_CAPS_KVM,
-            QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_CCID_PASSTHRU,
             QEMU_CAPS_SPICE,
@@ -986,7 +985,7 @@ mymain(void)
     DO_TEST("eoi-enabled", NONE);
     DO_TEST("pv-spinlock-disabled", NONE);
     DO_TEST("pv-spinlock-enabled", NONE);
-    DO_TEST("kvmclock+eoi-disabled", QEMU_CAPS_ENABLE_KVM);
+    DO_TEST("kvmclock+eoi-disabled", NONE);
 
     DO_TEST("hyperv", NONE);
     DO_TEST("hyperv-off", NONE);
