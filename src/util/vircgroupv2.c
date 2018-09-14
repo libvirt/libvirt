@@ -35,6 +35,7 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virsystemd.h"
 
 VIR_LOG_INIT("util.cgroup");
 
@@ -89,10 +90,52 @@ virCgroupV2Available(void)
 }
 
 
+static bool
+virCgroupV2ValidateMachineGroup(virCgroupPtr group,
+                                const char *name ATTRIBUTE_UNUSED,
+                                const char *drivername,
+                                const char *machinename)
+{
+    VIR_AUTOFREE(char *) partmachinename = NULL;
+    VIR_AUTOFREE(char *) scopename = NULL;
+    char *tmp;
+
+    if (virAsprintf(&partmachinename, "%s.libvirt-%s", machinename,
+                    drivername) < 0) {
+        return false;
+    }
+
+    if (virCgroupPartitionEscape(&partmachinename) < 0)
+        return false;
+
+    if (!(scopename = virSystemdMakeScopeName(machinename, drivername,
+                                              false))) {
+        return false;
+    }
+
+    if (virCgroupPartitionEscape(&scopename) < 0)
+        return false;
+
+    if (!(tmp = strrchr(group->unified.placement, '/')))
+        return false;
+    tmp++;
+
+    if (STRNEQ(tmp, partmachinename) &&
+        STRNEQ(tmp, scopename)) {
+        VIR_DEBUG("Name '%s' for unified does not match '%s' or '%s'",
+                  tmp, partmachinename, scopename);
+        return false;
+    }
+
+    return true;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
     .available = virCgroupV2Available,
+    .validateMachineGroup = virCgroupV2ValidateMachineGroup,
 };
 
 
