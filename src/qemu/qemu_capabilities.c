@@ -834,9 +834,8 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     if (!binary)
         return 0;
 
-    if (virFileExists("/dev/kvm") &&
-        (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM) ||
-         kvmbin))
+    if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM) ||
+        kvmbin)
         haskvm = true;
 
     if (virQEMUCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
