@@ -1248,6 +1248,18 @@ virGetGroupList(uid_t uid ATTRIBUTE_UNUSED, gid_t gid ATTRIBUTE_UNUSED,
     return 0;
 }
 
+int
+virDoesUserExist(const char *name ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+int
+virDoesGroupExist(const char *name ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 # ifdef WIN32
 /* These methods are adapted from GLib2 under terms of LGPLv2+ */
 static int
