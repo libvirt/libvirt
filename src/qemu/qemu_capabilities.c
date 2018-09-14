@@ -885,7 +885,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
         if ((dom = virCapabilitiesAddGuestDomain(guest,
                                                  VIR_DOMAIN_VIRT_KVM,
-                                                 kvmbin ? kvmbin : binary,
+                                                 kvmbin ? kvmbin : NULL,
                                                  NULL,
                                                  nmachines,
                                                  machines)) == NULL) {
