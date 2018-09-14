@@ -426,9 +426,7 @@ virCgroupMountOptsMatchController(const char *mntOpts,
  * mounted and where
  */
 int
-virCgroupDetectMountsFromFile(virCgroupPtr group,
-                              const char *path,
-                              bool checkLinks)
+virCgroupDetectMounts(virCgroupPtr group)
 {
     size_t i;
     FILE *mounts = NULL;
@@ -436,9 +434,9 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
     char buf[CGROUP_MAX_VAL];
     int ret = -1;
 
-    mounts = fopen(path, "r");
+    mounts = fopen("/proc/mounts", "r");
     if (mounts == NULL) {
-        virReportSystemError(errno, _("Unable to open %s"), path);
+        virReportSystemError(errno, "%s", _("Unable to open /proc/mounts"));
         return -1;
     }
 
@@ -466,8 +464,7 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
 
                 /* If it is a co-mount it has a filename like "cpu,cpuacct"
                  * and we must identify the symlink path */
-                if (checkLinks &&
-                    virCgroupResolveMountLink(entry.mnt_dir, typestr,
+                if (virCgroupResolveMountLink(entry.mnt_dir, typestr,
                                               controller) < 0) {
                     goto cleanup;
                 }
@@ -479,12 +476,6 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
  cleanup:
     VIR_FORCE_FCLOSE(mounts);
     return ret;
-}
-
-static int
-virCgroupDetectMounts(virCgroupPtr group)
-{
-    return virCgroupDetectMountsFromFile(group, "/proc/mounts", true);
 }
 
 
@@ -4086,9 +4077,7 @@ virCgroupAvailable(void)
 
 
 int
-virCgroupDetectMountsFromFile(virCgroupPtr group ATTRIBUTE_UNUSED,
-                              const char *path ATTRIBUTE_UNUSED,
-                              bool checkLinks ATTRIBUTE_UNUSED)
+virCgroupDetectMounts(virCgroupPtr group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));

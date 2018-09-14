@@ -50,9 +50,7 @@ struct _virCgroup {
     virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
-int virCgroupDetectMountsFromFile(virCgroupPtr group,
-                                  const char *path,
-                                  bool checkLinks);
+int virCgroupDetectMounts(virCgroupPtr group);
 
 int virCgroupNewPartition(const char *path,
                           bool create,

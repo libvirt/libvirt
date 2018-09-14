@@ -163,21 +163,21 @@ testCgroupDetectMounts(const void *args)
 {
     int result = -1;
     const char *file = args;
-    char *mounts = NULL;
     char *parsed = NULL;
     const char *actual;
     virCgroupPtr group = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    if (virAsprintf(&mounts, "%s/vircgroupdata/%s.mounts",
-                    abs_srcdir, file) < 0 ||
-        virAsprintf(&parsed, "%s/vircgroupdata/%s.parsed",
-                    abs_srcdir, file) < 0 ||
-        VIR_ALLOC(group) < 0)
+    setenv("VIR_CGROUP_MOCK_FILENAME", file, 1);
+
+    if (virAsprintf(&parsed, "%s/vircgroupdata/%s.parsed", abs_srcdir, file) < 0)
         goto cleanup;
 
-    if (virCgroupDetectMountsFromFile(group, mounts, false) < 0)
+    if (VIR_ALLOC(group) < 0)
+        goto cleanup;
+
+    if (virCgroupDetectMounts(group) < 0)
         goto cleanup;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
@@ -195,7 +195,7 @@ testCgroupDetectMounts(const void *args)
     result = 0;
 
  cleanup:
-    VIR_FREE(mounts);
+    unsetenv("VIR_CGROUP_MOCK_FILENAME");
     VIR_FREE(parsed);
     virCgroupFree(&group);
     virBufferFreeAndReset(&buf);
