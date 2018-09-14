@@ -1513,7 +1513,6 @@ virCgroupDelThread;
 virCgroupDenyAllDevices;
 virCgroupDenyDevice;
 virCgroupDenyDevicePath;
-virCgroupDetectMounts;
 virCgroupFree;
 virCgroupGetBlkioDeviceReadBps;
 virCgroupGetBlkioDeviceReadIops;

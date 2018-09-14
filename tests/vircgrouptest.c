@@ -158,26 +158,37 @@ const char *linksLogind[VIR_CGROUP_CONTROLLER_LAST] = {
 };
 
 
+struct _detectMountsData {
+    const char *file;
+    bool fail;
+};
+
+
 static int
 testCgroupDetectMounts(const void *args)
 {
     int result = -1;
-    const char *file = args;
+    const struct _detectMountsData *data = args;
     char *parsed = NULL;
     const char *actual;
     virCgroupPtr group = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    setenv("VIR_CGROUP_MOCK_FILENAME", file, 1);
+    setenv("VIR_CGROUP_MOCK_FILENAME", data->file, 1);
 
-    if (virAsprintf(&parsed, "%s/vircgroupdata/%s.parsed", abs_srcdir, file) < 0)
+    if (virAsprintf(&parsed, "%s/vircgroupdata/%s.parsed",
+                    abs_srcdir, data->file) < 0) {
         goto cleanup;
+    }
 
-    if (VIR_ALLOC(group) < 0)
+    if (virCgroupNewSelf(&group) < 0) {
+        if (data->fail)
+            result = 0;
         goto cleanup;
+    }
 
-    if (virCgroupDetectMounts(group) < 0)
+    if (data->fail)
         goto cleanup;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
@@ -869,13 +880,16 @@ mymain(void)
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
 
-# define DETECT_MOUNTS(file) \
+# define DETECT_MOUNTS_FULL(file, fail) \
     do { \
+        struct _detectMountsData data = { file, fail }; \
         if (virTestRun("Detect cgroup mounts for " file, \
                        testCgroupDetectMounts, \
-                       file) < 0) \
+                       &data) < 0) \
             ret = -1; \
     } while (0)
+# define DETECT_MOUNTS(file) DETECT_MOUNTS_FULL(file, false);
+# define DETECT_MOUNTS_FAIL(file) DETECT_MOUNTS_FULL(file, true);
 
     DETECT_MOUNTS("ovirt-node-6.6");
     DETECT_MOUNTS("ovirt-node-7.1");
@@ -886,7 +900,7 @@ mymain(void)
     DETECT_MOUNTS("cgroups2");
     DETECT_MOUNTS("cgroups3");
     DETECT_MOUNTS("all-in-one");
-    DETECT_MOUNTS("no-cgroups");
+    DETECT_MOUNTS_FAIL("no-cgroups");
     DETECT_MOUNTS("kubevirt");
 
     setenv("VIR_CGROUP_MOCK_FILENAME", "systemd", 1);

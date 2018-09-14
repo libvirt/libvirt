@@ -425,7 +425,7 @@ virCgroupMountOptsMatchController(const char *mntOpts,
  * Process /proc/mounts figuring out what controllers are
  * mounted and where
  */
-int
+static int
 virCgroupDetectMounts(virCgroupPtr group)
 {
     size_t i;
@@ -4073,15 +4073,6 @@ bool
 virCgroupAvailable(void)
 {
     return false;
-}
-
-
-int
-virCgroupDetectMounts(virCgroupPtr group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
 }
 
 

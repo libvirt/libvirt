@@ -50,8 +50,6 @@ struct _virCgroup {
     virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
-int virCgroupDetectMounts(virCgroupPtr group);
-
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,
