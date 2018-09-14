@@ -583,6 +583,7 @@ struct _virQEMUCaps {
 
 struct virQEMUCapsSearchData {
     virArch arch;
+    const char *binaryFilter;
 };
 
 
@@ -4743,7 +4744,15 @@ virQEMUCapsCompareArch(const void *payload,
     struct virQEMUCapsSearchData *data = (struct virQEMUCapsSearchData *)opaque;
     const virQEMUCaps *qemuCaps = payload;
 
-    return qemuCaps->arch == data->arch;
+    if (qemuCaps->arch != data->arch)
+        return false;
+
+    if (data->binaryFilter &&
+        !strstr(qemuCaps->binary, data->binaryFilter)) {
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -4752,20 +4761,28 @@ virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
                              virArch arch)
 {
     virQEMUCapsPtr ret = NULL;
+    const char *binaryFilters[] = {
+        "qemu-system-",
+        NULL,
+    };
     virArch archs[] = {
         arch,
         virQEMUCapsFindTarget(virArchFromHost(), arch),
     };
+    size_t i;
     size_t j;
 
-    for (j = 0; j < ARRAY_CARDINALITY(archs); j++) {
-        struct virQEMUCapsSearchData data = {
-            .arch = archs[j],
-        };
+    for (i = 0; i < ARRAY_CARDINALITY(binaryFilters); i++) {
+        for (j = 0; j < ARRAY_CARDINALITY(archs); j++) {
+            struct virQEMUCapsSearchData data = {
+                .arch = archs[j],
+                .binaryFilter = binaryFilters[i],
+            };
 
-        ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
-        if (ret)
-            goto done;
+            ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
+            if (ret)
+                goto done;
+        }
     }
 
     virReportError(VIR_ERR_INVALID_ARG,
