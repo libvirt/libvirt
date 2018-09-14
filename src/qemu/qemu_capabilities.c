@@ -4752,26 +4752,27 @@ virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
                              virArch arch)
 {
     virQEMUCapsPtr ret = NULL;
-    virArch target;
-    struct virQEMUCapsSearchData data = { .arch = arch };
+    virArch archs[] = {
+        arch,
+        virQEMUCapsFindTarget(virArchFromHost(), arch),
+    };
+    size_t j;
 
-    ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
-    if (!ret) {
-        /* If the first attempt at finding capabilities has failed, try
-         * again using the QEMU target as lookup key instead */
-        target = virQEMUCapsFindTarget(virArchFromHost(), data.arch);
-        if (target != data.arch) {
-            data.arch = target;
-            ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
-        }
+    for (j = 0; j < ARRAY_CARDINALITY(archs); j++) {
+        struct virQEMUCapsSearchData data = {
+            .arch = archs[j],
+        };
+
+        ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
+        if (ret)
+            goto done;
     }
 
-    if (!ret) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("unable to find any emulator to serve '%s' "
-                         "architecture"), virArchToString(arch));
-    }
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("unable to find any emulator to serve '%s' "
+                     "architecture"), virArchToString(arch));
 
+ done:
     VIR_DEBUG("Returning caps %p for arch %s", ret, virArchToString(arch));
 
     return ret;
