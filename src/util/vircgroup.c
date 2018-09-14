@@ -231,82 +231,6 @@ virCgroupPartitionEscape(char **path)
 }
 
 
-static int
-virCgroupResolveMountLink(const char *mntDir,
-                          const char *typeStr,
-                          virCgroupControllerPtr controller)
-{
-    VIR_AUTOFREE(char *) linkSrc = NULL;
-    VIR_AUTOFREE(char *) tmp = NULL;
-    char *dirName;
-    struct stat sb;
-
-    if (VIR_STRDUP(tmp, mntDir) < 0)
-        return -1;
-
-    dirName = strrchr(tmp, '/');
-    if (!dirName) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing '/' separator in cgroup mount '%s'"), tmp);
-        return -1;
-    }
-
-    if (!strchr(dirName + 1, ','))
-        return 0;
-
-    *dirName = '\0';
-    if (virAsprintf(&linkSrc, "%s/%s", tmp, typeStr) < 0)
-        return -1;
-    *dirName = '/';
-
-    if (lstat(linkSrc, &sb) < 0) {
-        if (errno == ENOENT) {
-            VIR_WARN("Controller %s co-mounted at %s is missing symlink at %s",
-                     typeStr, tmp, linkSrc);
-        } else {
-            virReportSystemError(errno, _("Cannot stat %s"), linkSrc);
-            return -1;
-        }
-    } else {
-        if (!S_ISLNK(sb.st_mode)) {
-            VIR_WARN("Expecting a symlink at %s for controller %s",
-                     linkSrc, typeStr);
-        } else {
-            VIR_STEAL_PTR(controller->linkPoint, linkSrc);
-        }
-    }
-
-    return 0;
-}
-
-
-static bool
-virCgroupMountOptsMatchController(const char *mntOpts,
-                                  const char *typeStr)
-{
-    const char *tmp = mntOpts;
-    int typeLen = strlen(typeStr);
-
-    while (tmp) {
-        const char *next = strchr(tmp, ',');
-        int len;
-        if (next) {
-            len = next - tmp;
-            next++;
-        } else {
-            len = strlen(tmp);
-        }
-
-        if (typeLen == len && STREQLEN(typeStr, tmp, len))
-            return true;
-
-        tmp = next;
-    }
-
-    return false;
-}
-
-
 /*
  * Process /proc/mounts figuring out what controllers are
  * mounted and where
@@ -314,7 +238,6 @@ virCgroupMountOptsMatchController(const char *mntOpts,
 static int
 virCgroupDetectMounts(virCgroupPtr group)
 {
-    size_t i;
     FILE *mounts = NULL;
     struct mntent entry;
     char buf[CGROUP_MAX_VAL];
@@ -327,34 +250,11 @@ virCgroupDetectMounts(virCgroupPtr group)
     }
 
     while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
-        if (STRNEQ(entry.mnt_type, "cgroup"))
-            continue;
-
-        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-            const char *typestr = virCgroupControllerTypeToString(i);
-
-            if (virCgroupMountOptsMatchController(entry.mnt_opts, typestr)) {
-                /* Note that the lines in /proc/mounts have the same
-                 * order than the mount operations, and that there may
-                 * be duplicates due to bind mounts. This means
-                 * that the same mount point may be processed more than
-                 * once. We need to save the results of the last one,
-                 * and we need to be careful to release the memory used
-                 * by previous processing. */
-                virCgroupControllerPtr controller = &group->controllers[i];
-
-                VIR_FREE(controller->mountPoint);
-                VIR_FREE(controller->linkPoint);
-                if (VIR_STRDUP(controller->mountPoint, entry.mnt_dir) < 0)
-                    goto cleanup;
-
-                /* If it is a co-mount it has a filename like "cpu,cpuacct"
-                 * and we must identify the symlink path */
-                if (virCgroupResolveMountLink(entry.mnt_dir, typestr,
-                                              controller) < 0) {
-                    goto cleanup;
-                }
-            }
+        if (group->backend->detectMounts(group,
+                                         entry.mnt_type,
+                                         entry.mnt_opts,
+                                         entry.mnt_dir) < 0) {
+            goto cleanup;
         }
     }
 
@@ -428,7 +328,6 @@ virCgroupDetectPlacement(virCgroupPtr group,
                          pid_t pid,
                          const char *path)
 {
-    size_t i;
     FILE *mapping  = NULL;
     char line[1024];
     int ret = -1;
@@ -468,30 +367,9 @@ virCgroupDetectPlacement(virCgroupPtr group,
         controllers++;
         selfpath++;
 
-        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-            const char *typestr = virCgroupControllerTypeToString(i);
-
-            if (virCgroupMountOptsMatchController(controllers, typestr) &&
-                group->controllers[i].mountPoint != NULL &&
-                group->controllers[i].placement == NULL) {
-                /*
-                 * selfpath == "/" + path="" -> "/"
-                 * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
-                 * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
-                 */
-                if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
-                    if (VIR_STRDUP(group->controllers[i].placement,
-                                   selfpath) < 0)
-                        goto cleanup;
-                } else {
-                    if (virAsprintf(&group->controllers[i].placement,
-                                    "%s%s%s", selfpath,
-                                    (STREQ(selfpath, "/") ||
-                                     STREQ(path, "") ? "" : "/"),
-                                    path) < 0)
-                        goto cleanup;
-                }
-            }
+        if (group->backend->detectPlacement(group, path, controllers,
+                                            selfpath) < 0) {
+            goto cleanup;
         }
     }
 
