@@ -53,6 +53,8 @@ struct _virCgroup {
     virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
+int virCgroupPartitionEscape(char **path);
+
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,

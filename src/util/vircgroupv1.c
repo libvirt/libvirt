@@ -35,6 +35,8 @@
 #include "vircgroupv1.h"
 #include "virfile.h"
 #include "virlog.h"
+#include "virstring.h"
+#include "virsystemd.h"
 
 VIR_LOG_INIT("util.cgroup");
 
@@ -76,10 +78,92 @@ virCgroupV1Available(void)
 }
 
 
+static bool
+virCgroupV1ValidateMachineGroup(virCgroupPtr group,
+                                const char *name,
+                                const char *drivername,
+                                const char *machinename)
+{
+    size_t i;
+    VIR_AUTOFREE(char *) partname = NULL;
+    VIR_AUTOFREE(char *) scopename_old = NULL;
+    VIR_AUTOFREE(char *) scopename_new = NULL;
+    VIR_AUTOFREE(char *) partmachinename = NULL;
+
+    if (virAsprintf(&partname, "%s.libvirt-%s",
+                    name, drivername) < 0)
+        return false;
+
+    if (virCgroupPartitionEscape(&partname) < 0)
+        return false;
+
+    if (virAsprintf(&partmachinename, "%s.libvirt-%s",
+                    machinename, drivername) < 0 ||
+        virCgroupPartitionEscape(&partmachinename) < 0)
+        return false;
+
+    if (!(scopename_old = virSystemdMakeScopeName(name, drivername, true)))
+        return false;
+
+    if (!(scopename_new = virSystemdMakeScopeName(machinename,
+                                                  drivername, false)))
+        return false;
+
+    if (virCgroupPartitionEscape(&scopename_old) < 0)
+        return false;
+
+    if (virCgroupPartitionEscape(&scopename_new) < 0)
+        return false;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        char *tmp;
+
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
+
+        if (!group->controllers[i].placement)
+            continue;
+
+        tmp = strrchr(group->controllers[i].placement, '/');
+        if (!tmp)
+            return false;
+
+        if (i == VIR_CGROUP_CONTROLLER_CPU ||
+            i == VIR_CGROUP_CONTROLLER_CPUACCT ||
+            i == VIR_CGROUP_CONTROLLER_CPUSET) {
+            if (STREQ(tmp, "/emulator"))
+                *tmp = '\0';
+            tmp = strrchr(group->controllers[i].placement, '/');
+            if (!tmp)
+                return false;
+        }
+
+        tmp++;
+
+        if (STRNEQ(tmp, name) &&
+            STRNEQ(tmp, machinename) &&
+            STRNEQ(tmp, partname) &&
+            STRNEQ(tmp, partmachinename) &&
+            STRNEQ(tmp, scopename_old) &&
+            STRNEQ(tmp, scopename_new)) {
+            VIR_DEBUG("Name '%s' for controller '%s' does not match "
+                      "'%s', '%s', '%s', '%s' or '%s'",
+                      tmp, virCgroupV1ControllerTypeToString(i),
+                      name, machinename, partname,
+                      scopename_old, scopename_new);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
     .available = virCgroupV1Available,
+    .validateMachineGroup = virCgroupV1ValidateMachineGroup,
 };
 
 

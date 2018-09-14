@@ -35,11 +35,18 @@ typedef enum {
 typedef bool
 (*virCgroupAvailableCB)(void);
 
+typedef bool
+(*virCgroupValidateMachineGroupCB)(virCgroupPtr group,
+                                   const char *name,
+                                   const char *drivername,
+                                   const char *machinename);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
     /* Mandatory callbacks that need to be implemented for every backend. */
     virCgroupAvailableCB available;
+    virCgroupValidateMachineGroupCB validateMachineGroup;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
