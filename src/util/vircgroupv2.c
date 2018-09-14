@@ -180,6 +180,31 @@ virCgroupV2DetectMounts(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2DetectPlacement(virCgroupPtr group,
+                           const char *path,
+                           const char *controllers ATTRIBUTE_UNUSED,
+                           const char *selfpath)
+{
+    if (group->unified.placement)
+        return 0;
+
+    /*
+     * selfpath == "/" + path="" -> "/"
+     * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
+     * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
+     */
+    if (virAsprintf(&group->unified.placement,
+                    "%s%s%s", selfpath,
+                    (STREQ(selfpath, "/") ||
+                     STREQ(path, "") ? "" : "/"),
+                    path) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -188,6 +213,7 @@ virCgroupBackend virCgroupV2Backend = {
     .copyMounts = virCgroupV2CopyMounts,
     .copyPlacement = virCgroupV2CopyPlacement,
     .detectMounts = virCgroupV2DetectMounts,
+    .detectPlacement = virCgroupV2DetectPlacement,
 };
 
 
