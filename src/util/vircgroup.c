@@ -265,42 +265,6 @@ virCgroupDetectMounts(virCgroupPtr group)
 }
 
 
-static int
-virCgroupCopyPlacement(virCgroupPtr group,
-                       const char *path,
-                       virCgroupPtr parent)
-{
-    size_t i;
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!group->controllers[i].mountPoint)
-            continue;
-
-        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
-            continue;
-
-        if (path[0] == '/') {
-            if (VIR_STRDUP(group->controllers[i].placement, path) < 0)
-                return -1;
-        } else {
-            /*
-             * parent == "/" + path="" => "/"
-             * parent == "/libvirt.service" + path == "" => "/libvirt.service"
-             * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
-             */
-            if (virAsprintf(&group->controllers[i].placement,
-                            "%s%s%s",
-                            parent->controllers[i].placement,
-                            (STREQ(parent->controllers[i].placement, "/") ||
-                             STREQ(path, "") ? "" : "/"),
-                            path) < 0)
-                return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 /*
  * virCgroupDetectPlacement:
  * @group: the group to process
@@ -528,7 +492,7 @@ virCgroupDetect(virCgroupPtr group,
      * based on the parent cgroup...
      */
     if ((parent || path[0] == '/') &&
-        virCgroupCopyPlacement(group, path, parent) < 0)
+        group->backend->copyPlacement(group, path, parent) < 0)
         return -1;
 
     /* ... but use /proc/cgroups to fill in the rest */

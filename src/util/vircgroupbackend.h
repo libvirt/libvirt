@@ -46,6 +46,11 @@ typedef int
                          virCgroupPtr parent);
 
 typedef int
+(*virCgroupCopyPlacementCB)(virCgroupPtr group,
+                            const char *path,
+                            virCgroupPtr parent);
+
+typedef int
 (*virCgroupDetectMountsCB)(virCgroupPtr group,
                            const char *mntType,
                            const char *mntOpts,
@@ -64,6 +69,7 @@ struct _virCgroupBackend {
     virCgroupAvailableCB available;
     virCgroupValidateMachineGroupCB validateMachineGroup;
     virCgroupCopyMountsCB copyMounts;
+    virCgroupCopyPlacementCB copyPlacement;
     virCgroupDetectMountsCB detectMounts;
     virCgroupDetectPlacementCB detectPlacement;
 };

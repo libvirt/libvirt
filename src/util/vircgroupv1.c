@@ -183,6 +183,42 @@ virCgroupV1CopyMounts(virCgroupPtr group,
 
 
 static int
+virCgroupV1CopyPlacement(virCgroupPtr group,
+                         const char *path,
+                         virCgroupPtr parent)
+{
+    size_t i;
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        if (!group->controllers[i].mountPoint)
+            continue;
+
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
+
+        if (path[0] == '/') {
+            if (VIR_STRDUP(group->controllers[i].placement, path) < 0)
+                return -1;
+        } else {
+            /*
+             * parent == "/" + path="" => "/"
+             * parent == "/libvirt.service" + path == "" => "/libvirt.service"
+             * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
+             */
+            if (virAsprintf(&group->controllers[i].placement,
+                            "%s%s%s",
+                            parent->controllers[i].placement,
+                            (STREQ(parent->controllers[i].placement, "/") ||
+                             STREQ(path, "") ? "" : "/"),
+                            path) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 virCgroupV1ResolveMountLink(const char *mntDir,
                             const char *typeStr,
                             virCgroupControllerPtr controller)
@@ -342,6 +378,7 @@ virCgroupBackend virCgroupV1Backend = {
     .available = virCgroupV1Available,
     .validateMachineGroup = virCgroupV1ValidateMachineGroup,
     .copyMounts = virCgroupV1CopyMounts,
+    .copyPlacement = virCgroupV1CopyPlacement,
     .detectMounts = virCgroupV1DetectMounts,
     .detectPlacement = virCgroupV1DetectPlacement,
 };
