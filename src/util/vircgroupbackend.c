@@ -52,6 +52,7 @@ virCgroupBackendRegister(virCgroupBackendPtr backend)
 static void
 virCgroupBackendOnceInit(void)
 {
+    virCgroupV2Register();
     virCgroupV1Register();
 }
 
