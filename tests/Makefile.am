@@ -122,7 +122,7 @@ EXTRA_DIST = \
 	qemuargv2xmldata \
 	qemublocktestdata \
 	qemucapabilitiesdata \
-	qemucaps2xmldata \
+	qemucaps2xmloutdata \
 	qemuhotplugtestcpus \
 	qemuhotplugtestdevices \
 	qemuhotplugtestdomains \
