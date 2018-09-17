@@ -3932,6 +3932,14 @@ virQEMUCapsIsValid(void *data,
         return false;
     }
 
+    if (!virQEMUCapsGuestIsNative(priv->hostArch, qemuCaps->arch)) {
+        VIR_DEBUG("Guest arch (%s) is not native to host arch (%s), "
+                  "skipping KVM-related checks",
+                  virArchToString(qemuCaps->arch),
+                  virArchToString(priv->hostArch));
+        return true;
+    }
+
     kvmUsable = virFileAccessibleAs("/dev/kvm", R_OK | W_OK,
                                     priv->runUid, priv->runGid) == 0;
 
