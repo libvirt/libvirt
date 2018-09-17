@@ -161,7 +161,7 @@ testSocketIncoming(virNetSocketPtr sock,
                    void *opaque)
 {
     virNetSocketPtr *retsock = opaque;
-    VIR_DEBUG("Incoming sock=%p events=%d\n", sock, events);
+    VIR_DEBUG("Incoming sock=%p events=%d", sock, events);
     *retsock = sock;
 }
 

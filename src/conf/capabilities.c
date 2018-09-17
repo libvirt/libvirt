@@ -691,7 +691,7 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
                               machinetype, machine->name, NULLSTR(machine->canonical));
                     continue;
                 }
-                VIR_DEBUG("Match machine type machine %s\n", NULLSTR(machinetype));
+                VIR_DEBUG("Match machine type machine %s", NULLSTR(machinetype));
 
                 foundmachine = machine;
                 break;
