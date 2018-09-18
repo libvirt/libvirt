@@ -219,6 +219,17 @@ virCgroupV2ValidatePlacement(virCgroupPtr group,
 }
 
 
+static char *
+virCgroupV2StealPlacement(virCgroupPtr group)
+{
+    char *ret;
+
+    VIR_STEAL_PTR(ret, group->unified.placement);
+
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -229,6 +240,7 @@ virCgroupBackend virCgroupV2Backend = {
     .detectMounts = virCgroupV2DetectMounts,
     .detectPlacement = virCgroupV2DetectPlacement,
     .validatePlacement = virCgroupV2ValidatePlacement,
+    .stealPlacement = virCgroupV2StealPlacement,
 };
 
 
