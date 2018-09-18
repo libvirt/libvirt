@@ -604,6 +604,45 @@ static int testCgroupNewForSelfUnified(const void *args ATTRIBUTE_UNUSED)
 }
 
 
+static int testCgroupNewForSelfHybrid(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+    const char *empty[VIR_CGROUP_CONTROLLER_LAST] = { 0 };
+    const char *mounts[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/not/really/sys/fs/cgroup/cpuset",
+        [VIR_CGROUP_CONTROLLER_DEVICES] = "/not/really/sys/fs/cgroup/devices",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/not/really/sys/fs/cgroup/freezer",
+        [VIR_CGROUP_CONTROLLER_NET_CLS] = "/not/really/sys/fs/cgroup/net_cls",
+        [VIR_CGROUP_CONTROLLER_PERF_EVENT] = "/not/really/sys/fs/cgroup/perf_event",
+    };
+    const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/",
+        [VIR_CGROUP_CONTROLLER_DEVICES] = "/",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/",
+        [VIR_CGROUP_CONTROLLER_NET_CLS] = "/",
+        [VIR_CGROUP_CONTROLLER_PERF_EVENT] = "/",
+    };
+    unsigned int controllers =
+        (1 << VIR_CGROUP_CONTROLLER_CPU) |
+        (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+        (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
+        (1 << VIR_CGROUP_CONTROLLER_BLKIO);
+
+    if (virCgroupNewSelf(&cgroup) < 0) {
+        fprintf(stderr, "Cannot create cgroup for self\n");
+        goto cleanup;
+    }
+
+    ret = validateCgroup(cgroup, "", mounts, empty, placement,
+                         "/not/really/sys/fs/cgroup/unified", "/", controllers);
+
+ cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
+
 static int testCgroupAvailable(const void *args)
 {
     bool got = virCgroupAvailable();
@@ -1020,6 +1059,15 @@ mymain(void)
     if (virTestRun("New cgroup for self (unified)", testCgroupNewForSelfUnified, NULL) < 0)
         ret = -1;
     if (virTestRun("Cgroup available (unified)", testCgroupAvailable, (void*)0x1) < 0)
+        ret = -1;
+    cleanupFakeFS(fakerootdir);
+
+    /* cgroup hybrid */
+
+    fakerootdir = initFakeFS("hybrid", "hybrid");
+    if (virTestRun("New cgroup for self (hybrid)", testCgroupNewForSelfHybrid, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Cgroup available (hybrid)", testCgroupAvailable, (void*)0x1) < 0)
         ret = -1;
     cleanupFakeFS(fakerootdir);
 
