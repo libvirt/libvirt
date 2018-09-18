@@ -1,0 +1,9 @@
+8:pids:/
+7:hugetlb:/
+6:perf_event:/
+5:freezer:/
+4:net_cls:/
+3:devices:/
+2:cpuset:/
+1:name=openrc:/
+0::/

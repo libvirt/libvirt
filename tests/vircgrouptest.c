@@ -902,6 +902,9 @@ mymain(void)
     fakerootdir = initFakeFS("unified", NULL);
     DETECT_MOUNTS("unified");
     cleanupFakeFS(fakerootdir);
+    fakerootdir = initFakeFS("hybrid", NULL);
+    DETECT_MOUNTS("hybrid");
+    cleanupFakeFS(fakerootdir);
 
     fakerootdir = initFakeFS(NULL, "systemd");
     if (virTestRun("New cgroup for self", testCgroupNewForSelf, NULL) < 0)
