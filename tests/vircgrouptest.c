@@ -569,14 +569,35 @@ static int testCgroupNewForSelfAllInOne(const void *args ATTRIBUTE_UNUSED)
 static int testCgroupNewForSelfLogind(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
-    int ret = -1;
 
-    if (virCgroupNewSelf(&cgroup) == 0) {
-        fprintf(stderr, "Expected cgroup creation to fail.\n");
+    if (virCgroupNewSelf(&cgroup) >= 0) {
+        fprintf(stderr, "Expected to fail, only systemd cgroup available.\n");
+        virCgroupFree(&cgroup);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int testCgroupNewForSelfUnified(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+    const char *empty[VIR_CGROUP_CONTROLLER_LAST] = { 0 };
+    unsigned int controllers =
+        (1 << VIR_CGROUP_CONTROLLER_CPU) |
+        (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+        (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
+        (1 << VIR_CGROUP_CONTROLLER_BLKIO);
+
+    if (virCgroupNewSelf(&cgroup) < 0) {
+        fprintf(stderr, "Cannot create cgroup for self\n");
         goto cleanup;
     }
 
-    ret = 0;
+    ret = validateCgroup(cgroup, "", empty, empty, empty,
+                         "/not/really/sys/fs/cgroup", "/", controllers);
  cleanup:
     virCgroupFree(&cgroup);
     return ret;
@@ -993,7 +1014,14 @@ mymain(void)
         ret = -1;
     cleanupFakeFS(fakerootdir);
 
+    /* cgroup unified */
 
+    fakerootdir = initFakeFS("unified", "unified");
+    if (virTestRun("New cgroup for self (unified)", testCgroupNewForSelfUnified, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Cgroup available (unified)", testCgroupAvailable, (void*)0x1) < 0)
+        ret = -1;
+    cleanupFakeFS(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
