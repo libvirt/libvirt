@@ -105,7 +105,8 @@ static int make_file(const char *path,
     return ret;
 }
 
-static int make_controller(const char *path, mode_t mode)
+
+static int make_controller_v1(const char *path, mode_t mode)
 {
     int ret = -1;
     const char *controller;
@@ -231,10 +232,85 @@ static int make_controller(const char *path, mode_t mode)
         goto cleanup;
     }
 
+# undef MAKE_FILE
+
     ret = 0;
  cleanup:
     return ret;
 }
+
+
+static int make_controller_v2(const char *path, mode_t mode)
+{
+    if (!STRPREFIX(path, fakesysfscgroupdir)) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if (real_mkdir(path, mode) < 0 && errno != EEXIST)
+        return -1;
+
+# define MAKE_FILE(name, value) \
+    do { \
+        if (make_file(path, name, value) < 0) \
+            return -1; \
+    } while (0)
+
+    MAKE_FILE("cgroup.controllers", "cpu io memory\n");
+    MAKE_FILE("cgroup.subtree_control", "");
+    MAKE_FILE("cgroup.type", "domain\n");
+    MAKE_FILE("cpu.max", "max 100000\n");
+    MAKE_FILE("cpu.stat",
+              "usage_usec 0\n"
+              "user_usec 0\n"
+              "system_usec 0\n"
+              "nr_periods 0\n"
+              "nr_throttled 0\n"
+              "throttled_usec 0\n");
+    MAKE_FILE("cpu.weight", "100\n");
+    MAKE_FILE("memory.current", "1455321088\n");
+    MAKE_FILE("memory.high", "max\n");
+    MAKE_FILE("memory.max", "max\n");
+    MAKE_FILE("memory.stat",
+              "anon 0\n"
+              "file 0\n"
+              "kernel_stack 0\n"
+              "slab 0\n"
+              "sock 0\n"
+              "shmem 0\n"
+              "file_mapped 0\n"
+              "file_dirty 0\n"
+              "file_writeback 0\n"
+              "inactive_anon 0\n"
+              "active_anon 0\n"
+              "inactive_file 0\n"
+              "active_file 0\n"
+              "unevictable 0\n"
+              "slab_reclaimable 0\n"
+              "slab_unreclaimable 0\n"
+              "pgfault 0\n"
+              "pgmajfault 0\n"
+              "pgrefill 0\n"
+              "pgscan 0\n"
+              "pgsteal 0\n"
+              "pgactivate 0\n"
+              "pgdeactivate 0\n"
+              "pglazyfree 0\n"
+              "pglazyfreed 0\n"
+              "workingset_refault 0\n"
+              "workingset_activate 0\n"
+              "workingset_nodereclaim 0\n");
+    MAKE_FILE("memory.swap.current", "0\n");
+    MAKE_FILE("memory.swap.max", "max\n");
+    MAKE_FILE("io.stat", "8:0 rbytes=26828800 wbytes=77062144 rios=2256 wios=7849 dbytes=0 dios=0\n");
+    MAKE_FILE("io.max", "");
+    MAKE_FILE("io.weight", "default 100\n");
+
+# undef MAKE_FILE
+
+    return 0;
+}
+
 
 static void init_syms(void)
 {
@@ -249,15 +325,63 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(open);
 }
 
+
+static int make_controller(const char *path, mode_t mode)
+{
+    const char *mock;
+    bool unified = false;
+    bool hybrid = false;
+
+    mock = getenv("VIR_CGROUP_MOCK_MODE");
+    if (mock) {
+        if (STREQ(mock, "unified")) {
+            unified = true;
+        } else if (STREQ(mock, "hybrid")) {
+            hybrid = true;
+        } else {
+            fprintf(stderr, "invalid mode '%s'\n", mock);
+            abort();
+        }
+    }
+
+    if (unified || (hybrid && strstr(path, "unified"))) {
+        return make_controller_v2(path, mode);
+    } else {
+        return make_controller_v1(path, mode);
+    }
+}
+
+
 static void init_sysfs(void)
 {
-    if (fakerootdir && fakesysfscgroupdir)
-        return;
+    const char *mock;
+    char *newfakerootdir;
+    bool unified = false;
+    bool hybrid = false;
 
-    if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
+    if (!(newfakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
         fprintf(stderr, "Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
         abort();
     }
+
+    if (fakerootdir && STREQ(fakerootdir, newfakerootdir))
+        return;
+
+    fakerootdir = newfakerootdir;
+
+    mock = getenv("VIR_CGROUP_MOCK_MODE");
+    if (mock) {
+        if (STREQ(mock, "unified")) {
+            unified = true;
+        } else if (STREQ(mock, "hybrid")) {
+            hybrid = true;
+        } else {
+            fprintf(stderr, "invalid mode '%s'\n", mock);
+            abort();
+        }
+    }
+
+    VIR_FREE(fakesysfscgroupdir);
 
     if (virAsprintfQuiet(&fakesysfscgroupdir, "%s%s",
                          fakerootdir, SYSFS_CGROUP_PREFIX) < 0)
@@ -281,18 +405,25 @@ static void init_sysfs(void)
         free(path); \
     } while (0)
 
-    MAKE_CONTROLLER("cpu");
-    MAKE_CONTROLLER("cpuacct");
-    MAKE_CONTROLLER("cpu,cpuacct");
-    MAKE_CONTROLLER("cpu,cpuacct/system");
-    MAKE_CONTROLLER("cpuset");
-    MAKE_CONTROLLER("blkio");
-    MAKE_CONTROLLER("memory");
-    MAKE_CONTROLLER("freezer");
+    if (unified) {
+        MAKE_CONTROLLER("");
+    } else if (hybrid) {
+        MAKE_CONTROLLER("unified");
+        MAKE_CONTROLLER("cpuset");
+        MAKE_CONTROLLER("freezer");
+    } else {
+        MAKE_CONTROLLER("cpu");
+        MAKE_CONTROLLER("cpuacct");
+        MAKE_CONTROLLER("cpu,cpuacct");
+        MAKE_CONTROLLER("cpuset");
+        MAKE_CONTROLLER("blkio");
+        MAKE_CONTROLLER("memory");
+        MAKE_CONTROLLER("freezer");
 
-    if (make_file(fakesysfscgroupdir,
-                  SYSFS_CPU_PRESENT_MOCKED, "8-23,48-159\n") < 0)
-        abort();
+        if (make_file(fakesysfscgroupdir,
+                      SYSFS_CPU_PRESENT_MOCKED, "8-23,48-159\n") < 0)
+            abort();
+    }
 }
 
 
