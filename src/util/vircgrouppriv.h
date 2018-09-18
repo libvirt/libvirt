@@ -45,12 +45,21 @@ struct _virCgroupV1Controller {
 typedef struct _virCgroupV1Controller virCgroupV1Controller;
 typedef virCgroupV1Controller *virCgroupV1ControllerPtr;
 
+struct _virCgroupV2Controller {
+    int controllers;
+    char *mountPoint;
+    char *placement;
+};
+typedef struct _virCgroupV2Controller virCgroupV2Controller;
+typedef virCgroupV2Controller *virCgroupV2ControllerPtr;
+
 struct _virCgroup {
     char *path;
 
     virCgroupBackendPtr backend;
 
     virCgroupV1Controller legacy[VIR_CGROUP_CONTROLLER_LAST];
+    virCgroupV2Controller unified;
 };
 
 int virCgroupSetValueStr(virCgroupPtr group,

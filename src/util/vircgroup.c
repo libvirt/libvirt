@@ -1236,6 +1236,9 @@ virCgroupFree(virCgroupPtr *group)
         VIR_FREE((*group)->legacy[i].placement);
     }
 
+    VIR_FREE((*group)->unified.mountPoint);
+    VIR_FREE((*group)->unified.placement);
+
     VIR_FREE((*group)->path);
     VIR_FREE(*group);
 }

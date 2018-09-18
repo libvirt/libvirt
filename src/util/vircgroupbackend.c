@@ -21,6 +21,7 @@
 
 #include "vircgroupbackend.h"
 #include "vircgroupv1.h"
+#include "vircgroupv2.h"
 #include "virerror.h"
 #include "virthread.h"
 
@@ -28,6 +29,7 @@
 
 VIR_ENUM_DECL(virCgroupBackend);
 VIR_ENUM_IMPL(virCgroupBackend, VIR_CGROUP_BACKEND_TYPE_LAST,
+              "cgroup V2",
               "cgroup V1");
 
 static virOnceControl virCgroupBackendOnce = VIR_ONCE_CONTROL_INITIALIZER;

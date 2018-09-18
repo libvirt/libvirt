@@ -50,7 +50,8 @@ typedef enum {
 } virCgroupBackendTaskFlags;
 
 typedef enum {
-    VIR_CGROUP_BACKEND_TYPE_V1 = 0,
+    VIR_CGROUP_BACKEND_TYPE_V2 = 0,
+    VIR_CGROUP_BACKEND_TYPE_V1,
     VIR_CGROUP_BACKEND_TYPE_LAST,
 } virCgroupBackendType;
 

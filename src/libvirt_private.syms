@@ -1583,6 +1583,9 @@ virCgroupBackendRegister;
 # util/vircgroupv1.h
 virCgroupV1Register;
 
+# util/vircgroupv2.h
+virCgroupV2Register;
+
 # util/virclosecallbacks.h
 virCloseCallbacksGet;
 virCloseCallbacksGetConn;

@@ -27,6 +27,8 @@ UTIL_SOURCES = \
 	util/vircgroupbackend.h \
 	util/vircgroupv1.c \
 	util/vircgroupv1.h \
+	util/vircgroupv2.c \
+	util/vircgroupv2.h \
 	util/virclosecallbacks.c \
 	util/virclosecallbacks.h \
 	util/vircommand.c \
