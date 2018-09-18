@@ -708,6 +708,15 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
     const char *archstr;
     virArch target;
 
+    /* armv7l guests can only take advantage of KVM on aarch64 hosts by
+     * using the qemu-system-aarch64 binary, so look for that one first
+     * to avoid using qemu-system-arm (and thus TCG) instead */
+    if (hostarch == VIR_ARCH_AARCH64 && guestarch == VIR_ARCH_ARMV7L) {
+        archstr = virQEMUCapsArchToString(hostarch);
+        if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
+            goto out;
+    }
+
     /* First attempt: try the guest architecture as it is */
     archstr = virQEMUCapsArchToString(guestarch);
     if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
@@ -762,24 +771,9 @@ virQEMUCapsInitGuest(virCapsPtr caps,
             "/usr/libexec/qemu-kvm", /* RHEL */
             "qemu-kvm", /* Fedora */
             "kvm", /* Debian/Ubuntu */
-            NULL,
         };
 
-        /* x86 32-on-64 can be used with qemu-system-i386 and
-         * qemu-system-x86_64, so if we don't find a specific kvm binary,
-         * we can just fall back to the host arch native binary and
-         * everything works fine.
-         *
-         * arm is different in that 32-on-64 _only_ works with
-         * qemu-system-aarch64. So we have to add it to the kvmbins list
-         */
-        if (hostarch == VIR_ARCH_AARCH64 && guestarch == VIR_ARCH_ARMV7L)
-            kvmbins[3] = "qemu-system-aarch64";
-
         for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
-            if (!kvmbins[i])
-                continue;
-
             kvmbin = virFindFileInPath(kvmbins[i]);
 
             if (!kvmbin)
