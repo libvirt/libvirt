@@ -337,6 +337,81 @@ virCgroupV2PathOfController(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2EnableController(virCgroupPtr parent,
+                            int controller)
+{
+    VIR_AUTOFREE(char *) val = NULL;
+
+    if (virAsprintf(&val, "+%s",
+                    virCgroupV2ControllerTypeToString(controller)) < 0) {
+        return -1;
+    }
+
+    if (virCgroupSetValueStr(parent, controller,
+                             "cgroup.subtree_control", val) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
+                     virCgroupPtr group,
+                     bool create,
+                     unsigned int flags)
+{
+    VIR_AUTOFREE(char *) path = NULL;
+    int controller;
+
+    VIR_DEBUG("Make group %s", group->path);
+
+    controller = virCgroupV2GetAnyController(group);
+    if (virCgroupV2PathOfController(group, controller, "", &path) < 0)
+        return -1;
+
+    VIR_DEBUG("Make controller %s", path);
+
+    if (!virFileExists(path) &&
+        (!create || (mkdir(path, 0755) < 0 && errno != EEXIST))) {
+        virReportSystemError(errno, _("Failed to create v2 cgroup '%s'"),
+                             group->path);
+        return -1;
+    }
+
+    if (create) {
+        if (flags & VIR_CGROUP_THREAD) {
+            if (virCgroupSetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
+                                     "cgroup.type", "threaded") < 0) {
+                return -1;
+            }
+
+            if (virCgroupV2EnableController(parent,
+                                            VIR_CGROUP_CONTROLLER_CPU) < 0) {
+                return -1;
+            }
+        } else {
+            size_t i;
+            for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+                if (!virCgroupV2HasController(parent, i))
+                    continue;
+
+                /* Controllers that are implicitly enabled if available. */
+                if (i == VIR_CGROUP_CONTROLLER_CPUACCT)
+                    continue;
+
+                if (virCgroupV2EnableController(parent, i) < 0)
+                    return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -352,6 +427,7 @@ virCgroupBackend virCgroupV2Backend = {
     .hasController = virCgroupV2HasController,
     .getAnyController = virCgroupV2GetAnyController,
     .pathOfController = virCgroupV2PathOfController,
+    .makeGroup = virCgroupV2MakeGroup,
 };
 
 

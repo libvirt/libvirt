@@ -938,7 +938,7 @@ virCgroupNewThread(virCgroupPtr domain,
     if (virCgroupNew(-1, name, domain, controllers, group) < 0)
         return -1;
 
-    if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
+    if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_THREAD) < 0) {
         virCgroupFree(group);
         return -1;
     }

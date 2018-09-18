@@ -33,6 +33,7 @@ typedef enum {
                                        * before creating subcgroups and
                                        * attaching tasks
                                        */
+    VIR_CGROUP_THREAD = 1 << 1, /* cgroup v2 handles threads differently */
 } virCgroupBackendFlags;
 
 typedef enum {
