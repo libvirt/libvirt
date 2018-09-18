@@ -612,8 +612,6 @@ const char *virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps);
 int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    const char *binary,
                                    virQEMUCapsPtr qemubinCaps,
-                                   const char *kvmbin,
-                                   virQEMUCapsPtr kvmbinCaps,
                                    virArch guestarch);
 
 int virQEMUCapsFillDomainCaps(virCapsPtr caps,

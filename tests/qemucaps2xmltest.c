@@ -106,8 +106,6 @@ testGetCaps(char *capsData, const testQemuData *data)
     if (virQEMUCapsInitGuestFromBinary(caps,
                                        binary,
                                        qemuCaps,
-                                       NULL,
-                                       NULL,
                                        arch) < 0) {
         fprintf(stderr, "failed to create the capabilities from qemu");
         goto error;

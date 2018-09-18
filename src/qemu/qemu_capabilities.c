@@ -789,7 +789,6 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 
     ret = virQEMUCapsInitGuestFromBinary(caps,
                                          binary, qemubinCaps,
-                                         NULL, NULL,
                                          guestarch);
 
     VIR_FREE(binary);
@@ -802,8 +801,6 @@ int
 virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                const char *binary,
                                virQEMUCapsPtr qemubinCaps,
-                               const char *kvmbin,
-                               virQEMUCapsPtr kvmbinCaps,
                                virArch guestarch)
 {
     virCapsGuestPtr guest;
@@ -816,8 +813,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     if (!binary)
         return 0;
 
-    if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM) ||
-        kvmbin)
+    if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM))
         haskvm = true;
 
     if (virQEMUCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
@@ -863,21 +859,14 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     if (haskvm) {
         virCapsGuestDomainPtr dom;
 
-        if (kvmbin &&
-            virQEMUCapsGetMachineTypesCaps(kvmbinCaps, &nmachines, &machines) < 0)
-            goto cleanup;
-
         if ((dom = virCapabilitiesAddGuestDomain(guest,
                                                  VIR_DOMAIN_VIRT_KVM,
-                                                 kvmbin ? kvmbin : NULL,
                                                  NULL,
-                                                 nmachines,
-                                                 machines)) == NULL) {
+                                                 NULL,
+                                                 0,
+                                                 NULL)) == NULL) {
             goto cleanup;
         }
-
-        machines = NULL;
-        nmachines = 0;
     }
 
     if ((ARCH_IS_X86(guestarch) || guestarch == VIR_ARCH_AARCH64) &&
