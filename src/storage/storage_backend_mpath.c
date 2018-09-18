@@ -24,7 +24,6 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <stdio.h>
 #include <fcntl.h>
 
 #include <libdevmapper.h>

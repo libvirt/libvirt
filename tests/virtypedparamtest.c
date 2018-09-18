@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <stdio.h>
 #include <virtypedparam.h>
 
 #include "testutils.h"

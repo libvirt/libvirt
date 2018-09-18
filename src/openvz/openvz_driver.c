@@ -32,7 +32,6 @@
 #include <sys/poll.h>
 #include <limits.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>

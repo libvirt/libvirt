@@ -23,7 +23,6 @@
 #include <config.h>
 #include <sys/utsname.h>
 #include <dirent.h>
-#include <stdio.h>
 #include <sys/types.h>
 
 #include "viralloc.h"

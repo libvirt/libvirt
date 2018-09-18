@@ -23,7 +23,6 @@
 #include <config.h>
 
 #include <regex.h>
-#include <stdio.h>
 
 #include "viriscsi.h"
 

@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#include <stdio.h>
 #include "internal.h"
 #define NO_LIBVIRT /* This file intentionally does not link to libvirt */
 #include "testutils.h"

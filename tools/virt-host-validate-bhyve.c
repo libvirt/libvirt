@@ -23,7 +23,6 @@
 
 #include <sys/param.h>
 #include <sys/linker.h>
-#include <stdio.h>
 
 #include "virt-host-validate-bhyve.h"
 #include "virt-host-validate-common.h"

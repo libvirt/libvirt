@@ -19,7 +19,6 @@
  */
 
 #include <config.h>
-#include <stdio.h>
 #include <dlfcn.h>
 
 #include "internal.h"

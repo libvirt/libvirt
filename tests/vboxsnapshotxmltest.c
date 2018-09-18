@@ -4,7 +4,6 @@
 
 #ifdef WITH_VBOX
 
-# include <stdio.h>
 # include <stdlib.h>
 # include <regex.h>
 # include "vbox/vbox_snapshot_conf.h"

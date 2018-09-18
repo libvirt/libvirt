@@ -22,7 +22,6 @@
 
 #ifndef WIN32
 
-# include <stdio.h>
 # include <gnutls/gnutls.h>
 
 # include "internal.h"

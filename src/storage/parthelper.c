@@ -33,7 +33,6 @@
 #include <config.h>
 
 #include <parted/parted.h>
-#include <stdio.h>
 #include <string.h>
 #include <libdevmapper.h>
 #include <sys/types.h>

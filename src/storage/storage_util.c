@@ -19,7 +19,6 @@
 #include <config.h>
 
 #include <string.h>
-#include <stdio.h>
 #include <regex.h>
 #include <sys/types.h>
 #include <sys/wait.h>

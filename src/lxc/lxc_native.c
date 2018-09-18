@@ -22,7 +22,6 @@
  */
 
 #include <config.h>
-#include <stdio.h>
 
 #include "internal.h"
 #include "lxc_container.h"

@@ -21,7 +21,6 @@
 #include <config.h>
 
 #include <locale.h>
-#include <stdio.h>
 
 #include "configmake.h"
 #include "internal.h"

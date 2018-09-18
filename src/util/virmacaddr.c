@@ -24,7 +24,6 @@
 #include <config.h>
 
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "c-ctype.h"
 #include "virmacaddr.h"

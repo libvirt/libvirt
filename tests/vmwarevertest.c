@@ -22,7 +22,6 @@
 
 #ifdef WITH_VMWARE
 
-# include <stdio.h>
 # include <stdlib.h>
 
 # include "vmware/vmware_conf.h"

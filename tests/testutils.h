@@ -23,7 +23,6 @@
 #ifndef __VIR_TEST_UTILS_H__
 # define __VIR_TEST_UTILS_H__
 
-# include <stdio.h>
 # include "viralloc.h"
 # include "virfile.h"
 # include "virstring.h"

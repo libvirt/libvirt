@@ -26,7 +26,6 @@
 
 #include <config.h>
 
-#include <stdio.h>
 
 #include "virnetdevopenvswitch.h"
 #include "vircommand.h"

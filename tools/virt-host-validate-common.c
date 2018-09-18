@@ -23,7 +23,6 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <sys/utsname.h>
 #ifdef HAVE_MNTENT_H

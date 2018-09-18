@@ -29,7 +29,6 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include <sys/wait.h>

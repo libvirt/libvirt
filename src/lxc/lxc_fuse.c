@@ -24,7 +24,6 @@
 
 #include <config.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/mount.h>

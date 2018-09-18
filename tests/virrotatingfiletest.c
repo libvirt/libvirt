@@ -20,7 +20,6 @@
 
 #include <config.h>
 #include <sys/stat.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 

@@ -31,7 +31,6 @@
 # include <errno.h>
 # include <arpa/inet.h>
 # include <netinet/in.h>
-# include <stdio.h>
 # include <unistd.h>
 
 static bool host_has_ipv6;

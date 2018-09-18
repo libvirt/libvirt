@@ -23,7 +23,6 @@
  */
 #include <config.h>
 
-#include <stdio.h>
 #if defined HAVE_MNTENT_H && defined HAVE_SYS_MOUNT_H \
     && defined HAVE_GETMNTENT_R
 # include <mntent.h>

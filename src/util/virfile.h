@@ -26,7 +26,6 @@
 #ifndef __VIR_FILE_H_
 # define __VIR_FILE_H_
 
-# include <stdio.h>
 # include <dirent.h>
 
 # include "internal.h"

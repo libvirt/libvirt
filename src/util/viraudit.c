@@ -24,7 +24,6 @@
 #ifdef WITH_AUDIT
 # include <libaudit.h>
 #endif
-#include <stdio.h>
 #include <unistd.h>
 
 #include "virerror.h"
