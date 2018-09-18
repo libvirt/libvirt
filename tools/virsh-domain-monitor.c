@@ -715,7 +715,8 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
         source = virXPathString("string(./source/@bridge"
                                 "|./source/@dev"
                                 "|./source/@network"
-                                "|./source/@name)", ctxt);
+                                "|./source/@name"
+                                "|./source/@path)", ctxt);
 
         target = virXPathString("string(./target/@dev)", ctxt);
         model = virXPathString("string(./model/@type)", ctxt);
