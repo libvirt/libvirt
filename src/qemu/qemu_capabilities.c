@@ -767,8 +767,6 @@ virQEMUCapsInitGuest(virCapsPtr caps,
     if (virQEMUCapsGuestIsNative(hostarch, guestarch) && !binary) {
         const char *kvmbins[] = {
             "/usr/libexec/qemu-kvm", /* RHEL */
-            "qemu-kvm", /* Fedora */
-            "kvm", /* Debian/Ubuntu */
         };
 
         for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
