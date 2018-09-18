@@ -43,7 +43,10 @@ static int validateCgroup(virCgroupPtr cgroup,
                           const char *expectPath,
                           const char **expectMountPoint,
                           const char **expectLinkPoint,
-                          const char **expectPlacement)
+                          const char **expectPlacement,
+                          const char *expectUnifiedMountPoint,
+                          const char *expectUnifiedPlacement,
+                          unsigned int expectUnifiedControllers)
 {
     size_t i;
 
@@ -78,6 +81,38 @@ static int validateCgroup(virCgroupPtr cgroup,
                     virCgroupControllerTypeToString(i));
             return -1;
         }
+    }
+
+    if (STRNEQ_NULLABLE(expectUnifiedMountPoint,
+                        cgroup->unified.mountPoint)) {
+        fprintf(stderr, "Wrong mount '%s', expected '%s' for 'unified'\n",
+                cgroup->unified.mountPoint,
+                expectUnifiedMountPoint);
+        return -1;
+    }
+    if (STRNEQ_NULLABLE(expectUnifiedPlacement,
+                        cgroup->unified.placement)) {
+        fprintf(stderr, "Wrong placement '%s', expected '%s' for 'unified'\n",
+                cgroup->unified.placement,
+                expectUnifiedPlacement);
+        return -1;
+    }
+    if (expectUnifiedControllers != cgroup->unified.controllers) {
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+            int type = 1 << i;
+            if ((expectUnifiedControllers & type) != (cgroup->unified.controllers & type)) {
+                const char *typeStr = virCgroupControllerTypeToString(i);
+                if (expectUnifiedControllers & type) {
+                    fprintf(stderr, "expected controller '%s' for 'unified', "
+                            "but it's missing\n", typeStr);
+                } else {
+                    fprintf(stderr, "existing controller '%s' for 'unified', "
+                            "but it's not expected\n", typeStr);
+                }
+            }
+
+        }
+        return -1;
     }
 
     return 0;
@@ -215,7 +250,7 @@ static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "", mountsFull, links, placement);
+    ret = validateCgroup(cgroup, "", mountsFull, links, placement, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -294,14 +329,14 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsSmall, links, placementSmall);
+    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsSmall, links, placementSmall, NULL, NULL, 0);
     virCgroupFree(&cgroup);
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsFull, links, placementFull);
+    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsFull, links, placementFull, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -351,7 +386,7 @@ static int testCgroupNewForPartitionNested(const void *args ATTRIBUTE_UNUSED)
     }
 
     ret = validateCgroup(cgroup, "/deployment.partition/production.partition",
-                         mountsFull, links, placementFull);
+                         mountsFull, links, placementFull, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -407,7 +442,7 @@ static int testCgroupNewForPartitionNestedDeep(const void *args ATTRIBUTE_UNUSED
     }
 
     ret = validateCgroup(cgroup, "/user/berrange.user/production.partition",
-                         mountsFull, links, placementFull);
+                         mountsFull, links, placementFull, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -443,7 +478,7 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(domaincgroup, "/production.partition/foo.libvirt-lxc", mountsFull, links, placement);
+    ret = validateCgroup(domaincgroup, "/production.partition/foo.libvirt-lxc", mountsFull, links, placement, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&partitioncgroup);
@@ -494,7 +529,7 @@ static int testCgroupNewForPartitionDomainEscaped(const void *args ATTRIBUTE_UNU
      * since our fake /proc/cgroups pretends this controller
      * isn't compiled into the kernel
      */
-    ret = validateCgroup(domaincgroup, "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc", mountsFull, links, placement);
+    ret = validateCgroup(domaincgroup, "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc", mountsFull, links, placement, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&partitioncgroup3);
@@ -523,7 +558,7 @@ static int testCgroupNewForSelfAllInOne(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "", mountsAllInOne, linksAllInOne, placement);
+    ret = validateCgroup(cgroup, "", mountsAllInOne, linksAllInOne, placement, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
