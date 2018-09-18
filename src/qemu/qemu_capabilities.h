@@ -248,7 +248,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_PCI_BRIDGE, /* -device pci-bridge */
     QEMU_CAPS_DEVICE_VFIO_PCI, /* -device vfio-pci */
     X_QEMU_CAPS_VFIO_PCI_BOOTINDEX, /* bootindex param for vfio-pci device */
-    QEMU_CAPS_DEVICE_SCSI_GENERIC, /* -device scsi-generic */
+    X_QEMU_CAPS_DEVICE_SCSI_GENERIC, /* -device scsi-generic */
 
     /* 145 */
     X_QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX, /* -device scsi-generic.bootindex */

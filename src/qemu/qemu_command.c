@@ -5384,51 +5384,38 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
 
         /* SCSI */
         if (virHostdevIsSCSIDevice(hostdev)) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
-                virDomainHostdevSubsysSCSIPtr scsisrc =
-                    &hostdev->source.subsys.u.scsi;
-                char *drvstr;
+            virDomainHostdevSubsysSCSIPtr scsisrc =
+                &hostdev->source.subsys.u.scsi;
+            char *drvstr;
 
-                if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-                    virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc =
-                        &scsisrc->u.iscsi;
-                    qemuDomainStorageSourcePrivatePtr srcPriv =
-                        QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
+            if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+                virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc =
+                    &scsisrc->u.iscsi;
+                qemuDomainStorageSourcePrivatePtr srcPriv =
+                    QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
 
-                    if (qemuBuildDiskSecinfoCommandLine(cmd, srcPriv ?
-                                                        srcPriv->secinfo :
-                                                        NULL) < 0)
-                        return -1;
-                }
-
-                virCommandAddArg(cmd, "-drive");
-                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+                if (qemuBuildDiskSecinfoCommandLine(cmd, srcPriv ?
+                                                    srcPriv->secinfo :
+                                                    NULL) < 0)
                     return -1;
-                virCommandAddArg(cmd, drvstr);
-                VIR_FREE(drvstr);
-
-                virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev)))
-                    return -1;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("SCSI passthrough is not supported by this version of qemu"));
-                return -1;
             }
+
+            virCommandAddArg(cmd, "-drive");
+            if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, drvstr);
+            VIR_FREE(drvstr);
+
+            virCommandAddArg(cmd, "-device");
+            if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
         }
 
         /* SCSI_host */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("SCSI passthrough is not supported by this "
-                                 "version of qemu"));
-                return -1;
-            }
-
             if (hostdev->source.subsys.u.scsi_host.protocol ==
                 VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST) {
                 char *vhostfdName = NULL;

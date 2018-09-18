@@ -1027,7 +1027,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "spapr-nvram", QEMU_CAPS_DEVICE_NVRAM },
     { "pci-bridge", QEMU_CAPS_DEVICE_PCI_BRIDGE },
     { "vfio-pci", QEMU_CAPS_DEVICE_VFIO_PCI },
-    { "scsi-generic", QEMU_CAPS_DEVICE_SCSI_GENERIC },
     { "i82801b11-bridge", QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE },
     { "usb-storage", QEMU_CAPS_DEVICE_USB_STORAGE },
     { "virtio-mmio", QEMU_CAPS_DEVICE_VIRTIO_MMIO },
@@ -5155,10 +5154,8 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
 
     VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
-                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI);
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC))
-        VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
-                                 VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI);
+                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI,
+                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI);
 
     /* No virDomainHostdevCapsType for QEMU */
     virDomainCapsEnumClear(&hostdev->capsType);

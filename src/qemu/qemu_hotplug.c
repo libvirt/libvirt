@@ -2619,12 +2619,6 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     qemuDomainSecretInfoPtr secinfo = NULL;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("SCSI passthrough is not supported by this version of qemu"));
-        return -1;
-    }
-
     /* Let's make sure the disk has a controller defined and loaded before
      * trying to add it. The controller used by the disk must exist before a
      * qemu command line string is generated.
@@ -2758,12 +2752,6 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
     bool teardownlabel = false;
     bool teardowndevice = false;
     bool releaseaddr = false;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("SCSI passthrough is not supported by this version of qemu"));
-        return -1;
-    }
 
     if (qemuHostdevPrepareSCSIVHostDevices(driver, vm->def->name, &hostdev, 1) < 0)
         return -1;

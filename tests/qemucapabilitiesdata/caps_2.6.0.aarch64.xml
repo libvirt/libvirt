@@ -53,7 +53,6 @@
   <flag name='megasas'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='scsi-generic'/>
   <flag name='mem-merge'/>
   <flag name='drive-discard'/>
   <flag name='mlock'/>
