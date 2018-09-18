@@ -224,7 +224,7 @@ virCgroupV1CopyPlacement(virCgroupPtr group,
 static int
 virCgroupV1ResolveMountLink(const char *mntDir,
                             const char *typeStr,
-                            virCgroupControllerPtr controller)
+                            virCgroupV1ControllerPtr controller)
 {
     VIR_AUTOFREE(char *) linkSrc = NULL;
     VIR_AUTOFREE(char *) tmp = NULL;
@@ -319,7 +319,7 @@ virCgroupV1DetectMounts(virCgroupPtr group,
              * once. We need to save the results of the last one,
              * and we need to be careful to release the memory used
              * by previous processing. */
-            virCgroupControllerPtr controller = &group->controllers[i];
+            virCgroupV1ControllerPtr controller = &group->controllers[i];
 
             VIR_FREE(controller->mountPoint);
             VIR_FREE(controller->linkPoint);

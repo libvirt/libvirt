@@ -32,7 +32,7 @@
 # include "vircgroup.h"
 # include "vircgroupbackend.h"
 
-struct _virCgroupController {
+struct _virCgroupV1Controller {
     int type;
     char *mountPoint;
     /* If mountPoint holds several controllers co-mounted,
@@ -42,15 +42,15 @@ struct _virCgroupController {
     char *linkPoint;
     char *placement;
 };
-typedef struct _virCgroupController virCgroupController;
-typedef virCgroupController *virCgroupControllerPtr;
+typedef struct _virCgroupV1Controller virCgroupV1Controller;
+typedef virCgroupV1Controller *virCgroupV1ControllerPtr;
 
 struct _virCgroup {
     char *path;
 
     virCgroupBackendPtr backend;
 
-    virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
+    virCgroupV1Controller controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
 int virCgroupSetValueStr(virCgroupPtr group,
