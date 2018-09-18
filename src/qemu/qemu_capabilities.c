@@ -747,7 +747,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                      virArch guestarch)
 {
     char *binary = NULL;
-    virQEMUCapsPtr qemubinCaps = NULL;
+    virQEMUCapsPtr qemuCaps = NULL;
     int ret = -1;
 
     /* Check for existence of base emulator, or alternate base
@@ -764,18 +764,18 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 
     /* Ignore binary if extracting version info fails */
     if (binary) {
-        if (!(qemubinCaps = virQEMUCapsCacheLookup(cache, binary))) {
+        if (!(qemuCaps = virQEMUCapsCacheLookup(cache, binary))) {
             virResetLastError();
             VIR_FREE(binary);
         }
     }
 
     ret = virQEMUCapsInitGuestFromBinary(caps,
-                                         binary, qemubinCaps,
+                                         binary, qemuCaps,
                                          guestarch);
 
     VIR_FREE(binary);
-    virObjectUnref(qemubinCaps);
+    virObjectUnref(qemuCaps);
 
     return ret;
 }
@@ -783,7 +783,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 int
 virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                const char *binary,
-                               virQEMUCapsPtr qemubinCaps,
+                               virQEMUCapsPtr qemuCaps,
                                virArch guestarch)
 {
     virCapsGuestPtr guest;
@@ -795,7 +795,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     if (!binary)
         return 0;
 
-    if (virQEMUCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
+    if (virQEMUCapsGetMachineTypesCaps(qemuCaps, &nmachines, &machines) < 0)
         goto cleanup;
 
     /* We register kvm as the base emulator too, since we can
@@ -820,7 +820,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     if (!virCapabilitiesAddGuestFeature(guest, "deviceboot", true, false))
         goto cleanup;
 
-    if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_DISK_SNAPSHOT))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SNAPSHOT))
         hasdisksnapshot = true;
 
     if (!virCapabilitiesAddGuestFeature(guest, "disksnapshot", hasdisksnapshot,
@@ -835,7 +835,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                       NULL) == NULL)
         goto cleanup;
 
-    if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM)) {
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
         if (virCapabilitiesAddGuestDomain(guest,
                                           VIR_DOMAIN_VIRT_KVM,
                                           NULL,
