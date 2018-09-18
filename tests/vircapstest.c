@@ -18,7 +18,6 @@
  */
 
 #include <config.h>
-#include <stdlib.h>
 
 #include "testutils.h"
 #include "testutilslxc.h"

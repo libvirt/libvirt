@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include <limits.h>
-#include <string.h>
 #include <curl/curl.h>
 #include <xen/api/xen_all.h>
 #include "internal.h"

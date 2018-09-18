@@ -23,7 +23,6 @@
 #include <config.h>
 #include "virt-admin.h"
 
-#include <errno.h>
 #include <getopt.h>
 
 #if WITH_READLINE

@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "virscsi.h"
 #include "testutils.h"

@@ -21,8 +21,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <string.h>
 
 #include "virsocketaddr.h"
 #include "testutils.h"

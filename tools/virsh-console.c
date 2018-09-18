@@ -30,8 +30,6 @@
 # include <fcntl.h>
 # include <termios.h>
 # include <poll.h>
-# include <string.h>
-# include <errno.h>
 # include <unistd.h>
 # include <signal.h>
 # include <c-ctype.h>

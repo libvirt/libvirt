@@ -25,16 +25,12 @@
 #include <config.h>
 #include "virsh.h"
 
-#include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
 #include <unistd.h>
-#include <errno.h>
 #include <getopt.h>
 #include <sys/time.h>
 #include <fcntl.h>
 #include <time.h>
-#include <limits.h>
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <signal.h>

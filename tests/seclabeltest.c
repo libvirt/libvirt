@@ -1,9 +1,6 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 #include "security/security_driver.h"
 #include "virrandom.h"
 #include "testutils.h"

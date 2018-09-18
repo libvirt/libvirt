@@ -48,8 +48,6 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
 
 #if WITH_VIRTUALPORT
 
-# include <stdint.h>
-# include <errno.h>
 # include <fcntl.h>
 # include <c-ctype.h>
 # include <sys/socket.h>

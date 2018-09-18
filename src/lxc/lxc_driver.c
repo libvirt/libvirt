@@ -27,7 +27,6 @@
 #include <fcntl.h>
 #include <sched.h>
 #include <sys/utsname.h>
-#include <string.h>
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>

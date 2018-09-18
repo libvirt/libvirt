@@ -4,7 +4,6 @@
 
 #ifdef WITH_ESX
 
-# include <string.h>
 # include <unistd.h>
 
 # include "internal.h"

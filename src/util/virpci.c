@@ -29,12 +29,9 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <limits.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdlib.h>
 
 #include "dirname.h"
 #include "virlog.h"

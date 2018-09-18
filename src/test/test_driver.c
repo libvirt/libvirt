@@ -23,7 +23,6 @@
 
 #include <config.h>
 
-#include <string.h>
 #include <sys/time.h>
 #include <fcntl.h>
 #include <unistd.h>

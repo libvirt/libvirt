@@ -1,6 +1,5 @@
 #include <config.h>
 #ifdef WITH_QEMU
-# include <stdlib.h>
 
 # include "testutilsqemu.h"
 # include "testutilshostcpus.h"

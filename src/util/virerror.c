@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
 
 #include "virerror.h"

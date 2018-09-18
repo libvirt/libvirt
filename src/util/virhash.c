@@ -21,8 +21,6 @@
 
 #include <config.h>
 
-#include <string.h>
-#include <stdlib.h>
 
 #include "virerror.h"
 #include "virhash.h"

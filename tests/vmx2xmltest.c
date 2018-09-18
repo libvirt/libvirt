@@ -4,7 +4,6 @@
 
 #ifdef WITH_VMX
 
-# include <string.h>
 # include <unistd.h>
 
 # include "internal.h"

@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include <stdarg.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <sys/utsname.h>
 #ifdef HAVE_MNTENT_H

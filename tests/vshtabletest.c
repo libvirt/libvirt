@@ -18,7 +18,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <locale.h>
 #include <wctype.h>
 

@@ -28,7 +28,6 @@
 #include "virlog.h"
 #include "virerror.h"
 
-#include <stdlib.h>
 
 VIR_LOG_INIT("util.event");
 

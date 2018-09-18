@@ -24,7 +24,6 @@
 
 #if defined(__ELF__)
 
-# include <stdlib.h>
 # include <dbus/dbus.h>
 
 # include "virpolkit.h"

@@ -26,7 +26,6 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <regex.h>
-#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 

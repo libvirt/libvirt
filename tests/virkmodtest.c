@@ -22,7 +22,6 @@
 
 #ifdef __linux__
 
-# include <stdlib.h>
 # define __VIR_COMMAND_PRIV_H_ALLOW__
 # include "vircommandpriv.h"
 # include "virkmod.h"

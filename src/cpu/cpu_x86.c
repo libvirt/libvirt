@@ -23,7 +23,6 @@
 
 #include <config.h>
 
-#include <stdint.h>
 
 #include "virlog.h"
 #include "viralloc.h"

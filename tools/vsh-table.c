@@ -25,7 +25,6 @@
 #include <config.h>
 #include "vsh-table.h"
 
-#include <string.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <wchar.h>

@@ -42,8 +42,6 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
               "passthrough")
 
 #if WITH_MACVTAP
-# include <stdint.h>
-# include <errno.h>
 # include <fcntl.h>
 # include <sys/socket.h>
 # include <sys/ioctl.h>

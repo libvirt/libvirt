@@ -16,7 +16,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "conf/cpu_conf.h"
 #include "cpu/cpu.h"

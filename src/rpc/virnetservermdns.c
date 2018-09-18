@@ -26,7 +26,6 @@
 #include <config.h>
 
 #include <time.h>
-#include <stdlib.h>
 
 #if WITH_AVAHI
 # include <avahi-client/client.h>

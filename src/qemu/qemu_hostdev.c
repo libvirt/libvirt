@@ -25,7 +25,6 @@
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <errno.h>
 
 #include "qemu_hostdev.h"
 #include "virlog.h"

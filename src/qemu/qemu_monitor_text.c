@@ -23,7 +23,6 @@
 
 #include <config.h>
 
-#include <string.h>
 
 #include "qemu_monitor_text.h"
 #include "viralloc.h"

@@ -27,12 +27,8 @@
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <dirent.h>
-#include <limits.h>
-#include <string.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>

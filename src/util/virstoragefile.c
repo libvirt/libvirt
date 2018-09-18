@@ -26,7 +26,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
 #include "viralloc.h"
 #include "virxml.h"
 #include "viruuid.h"

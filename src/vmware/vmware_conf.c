@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <string.h>
 
 #include "vircommand.h"
 #include "cpu/cpu.h"

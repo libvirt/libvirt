@@ -29,7 +29,6 @@
 #include <poll.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
 #include <sys/time.h>
 
 #include "qemu_agent.h"

@@ -22,9 +22,6 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 #include "virconf.h"
 #include "viralloc.h"
 #include "testutils.h"

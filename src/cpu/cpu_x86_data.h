@@ -24,7 +24,6 @@
 #ifndef __VIR_CPU_X86_DATA_H__
 # define __VIR_CPU_X86_DATA_H__
 
-# include <stdint.h>
 
 typedef struct _virCPUx86CPUID virCPUx86CPUID;
 struct _virCPUx86CPUID {

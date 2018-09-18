@@ -26,12 +26,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <limits.h>
-#include <string.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <libssh2.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

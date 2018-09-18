@@ -24,7 +24,6 @@
 
 #ifdef __linux__
 
-# include <stdlib.h>
 
 # define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
 # include "vircgrouppriv.h"

@@ -24,7 +24,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <libhal.h>
 
 #include "node_device_conf.h"

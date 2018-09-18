@@ -28,7 +28,6 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <getopt.h>
-#include <stdlib.h>
 #include <grp.h>
 
 #include "libvirt_internal.h"

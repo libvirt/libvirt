@@ -25,12 +25,8 @@
 
 #include <sys/types.h>
 #include <sys/poll.h>
-#include <limits.h>
-#include <string.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <sys/utsname.h>
 #include <sys/stat.h>
 #include <fcntl.h>

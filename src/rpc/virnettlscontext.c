@@ -22,7 +22,6 @@
 
 #include <unistd.h>
 #include <fnmatch.h>
-#include <stdlib.h>
 
 #include <gnutls/gnutls.h>
 #include <gnutls/crypto.h>

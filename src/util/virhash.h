@@ -13,8 +13,6 @@
 #ifndef __VIR_HASH_H__
 # define __VIR_HASH_H__
 
-# include <stdint.h>
-# include <stdbool.h>
 
 # include "viralloc.h"
 

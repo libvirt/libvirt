@@ -38,7 +38,6 @@
 #include <sys/un.h>
 #include <sys/personality.h>
 #include <unistd.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <getopt.h>

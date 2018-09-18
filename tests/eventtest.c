@@ -22,7 +22,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <signal.h>
 #include <time.h>
 

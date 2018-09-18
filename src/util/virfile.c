@@ -41,7 +41,6 @@
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 # include <mntent.h>
 #endif
-#include <stdlib.h>
 #if HAVE_MMAP
 # include <sys/mman.h>
 #endif

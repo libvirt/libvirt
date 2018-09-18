@@ -20,7 +20,6 @@
 
 #ifndef WIN32
 
-# include <stdlib.h>
 # include <fcntl.h>
 
 # include "viralloc.h"

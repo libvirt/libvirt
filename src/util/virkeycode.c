@@ -19,7 +19,6 @@
 
 #include <config.h>
 #include "virkeycode.h"
-#include <string.h>
 #include <stddef.h>
 
 #include "virkeycodetable_atset1.h"

@@ -35,8 +35,6 @@
 #include "virstring.h"
 #include "datatypes.h"
 
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <regex.h>
 #include <sys/types.h>

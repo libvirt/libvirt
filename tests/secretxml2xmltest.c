@@ -1,6 +1,5 @@
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "internal.h"
 #include "testutils.h"

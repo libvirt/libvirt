@@ -19,7 +19,6 @@
  */
 
 #include <config.h>
-#include <stdlib.h>
 
 #if HAVE_DLFCN_H
 # include <dlfcn.h>
@@ -28,7 +27,6 @@
 #if defined(__linux__) && defined(RTLD_NEXT)
 # include "internal.h"
 # include <sys/socket.h>
-# include <errno.h>
 # include <arpa/inet.h>
 # include <netinet/in.h>
 # include <unistd.h>

@@ -23,11 +23,7 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <limits.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>

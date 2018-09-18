@@ -23,10 +23,6 @@
 
 #include <config.h>
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <errno.h>
 #include <dirent.h>
 #include <sys/utsname.h>
 #include <fcntl.h>

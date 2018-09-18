@@ -22,7 +22,6 @@
  */
 #include <config.h>
 
-#include <stdlib.h>
 #include <wireshark/config.h>
 #include <wireshark/epan/proto.h>
 #include <wireshark/epan/packet.h>

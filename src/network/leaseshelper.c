@@ -25,7 +25,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "virthread.h"
 #include "virfile.h"

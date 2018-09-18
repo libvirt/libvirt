@@ -1,5 +1,4 @@
 #include <config.h>
-#include <stdlib.h>
 
 #include "testutils.h"
 #include "virfilewrapper.h"

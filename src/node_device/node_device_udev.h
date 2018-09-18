@@ -21,7 +21,6 @@
  */
 
 #include <libudev.h>
-#include <stdint.h>
 
 #define SYSFS_DATA_SIZE 4096
 #define DMI_DEVPATH "/sys/devices/virtual/dmi/id"

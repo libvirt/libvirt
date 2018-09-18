@@ -23,10 +23,6 @@
 
 #include <config.h>
 
-#include <limits.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
 #include <sys/types.h>
 
 #include "virbitmap.h"

@@ -21,9 +21,7 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <stdlib.h>
 #include <fcntl.h>
-#include <string.h>
 #include <sys/stat.h>
 
 #include "internal.h"

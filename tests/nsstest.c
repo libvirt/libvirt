@@ -24,7 +24,6 @@
 
 #ifdef NSS
 
-# include <stdbool.h>
 # include <arpa/inet.h>
 # include "libvirt_nss.h"
 # include "virsocketaddr.h"

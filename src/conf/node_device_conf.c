@@ -25,7 +25,6 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <errno.h>
 
 #include "virerror.h"
 #include "datatypes.h"

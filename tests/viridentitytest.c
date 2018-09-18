@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #if WITH_SELINUX
 # include <selinux/selinux.h>

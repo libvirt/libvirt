@@ -24,7 +24,6 @@
 #ifndef __QEMU_SECURITY_H__
 # define __QEMU_SECURITY_H__
 
-# include <stdbool.h>
 
 # include "qemu_conf.h"
 # include "domain_conf.h"

@@ -23,7 +23,6 @@
 #include <config.h>
 
 #include <fcntl.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 

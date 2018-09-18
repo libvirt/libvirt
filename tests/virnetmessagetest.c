@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <signal.h>
 
 #include "testutils.h"

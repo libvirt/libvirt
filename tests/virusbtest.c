@@ -19,7 +19,6 @@
  */
 
 #include <config.h>
-#include <stdlib.h>
 
 #include "viralloc.h"
 #include "virerror.h"

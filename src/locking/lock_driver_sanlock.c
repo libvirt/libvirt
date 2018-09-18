@@ -21,11 +21,8 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
-#include <string.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

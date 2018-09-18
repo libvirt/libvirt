@@ -24,8 +24,6 @@
 
 #include <fcntl.h>
 #include <signal.h>
-#include <errno.h>
-#include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #if HAVE_SYS_MOUNT_H

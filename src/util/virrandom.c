@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <inttypes.h>
 #include <math.h>
 #include <strings.h>

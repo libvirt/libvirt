@@ -23,11 +23,8 @@
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <string.h>
 #include <poll.h>
 #include <sys/time.h>
-#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 

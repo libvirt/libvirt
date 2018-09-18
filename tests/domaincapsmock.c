@@ -15,7 +15,6 @@
  */
 
 #include <config.h>
-#include <limits.h>
 
 #include "virhostcpu.h"
 

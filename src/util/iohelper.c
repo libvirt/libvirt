@@ -29,7 +29,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
 
 #include "virutil.h"
 #include "virthread.h"

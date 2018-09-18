@@ -26,10 +26,8 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <poll.h>
 #include <sys/stat.h>
 
@@ -40,7 +38,6 @@
 #endif
 
 #include <sys/types.h>
-#include <string.h>
 #include <termios.h>
 
 #if WITH_DEVMAPPER

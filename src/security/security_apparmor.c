@@ -31,7 +31,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/apparmor.h>
-#include <errno.h>
 #include <unistd.h>
 #include <wait.h>
 

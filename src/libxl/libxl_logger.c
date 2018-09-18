@@ -22,7 +22,6 @@
  */
 #include <config.h>
 
-#include <string.h>
 #include <libxl.h>
 
 #include "internal.h"

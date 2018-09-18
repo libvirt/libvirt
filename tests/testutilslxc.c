@@ -1,6 +1,5 @@
 #include <config.h>
 #ifdef WITH_LXC
-# include <stdlib.h>
 
 # include "testutilslxc.h"
 # include "testutils.h"

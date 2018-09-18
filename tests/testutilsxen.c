@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include <sys/utsname.h>
-#include <stdlib.h>
 
 #include "testutilsxen.h"
 #include "testutilshostcpus.h"

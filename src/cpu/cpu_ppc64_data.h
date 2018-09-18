@@ -24,7 +24,6 @@
 #ifndef __VIR_CPU_PPC64_DATA_H__
 # define __VIR_CPU_PPC64_DATA_H__
 
-# include <stdint.h>
 
 typedef struct _virCPUppc64PVR virCPUppc64PVR;
 struct _virCPUppc64PVR {

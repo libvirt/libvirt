@@ -28,7 +28,6 @@
 #include <sys/un.h>
 #include <poll.h>
 #include <unistd.h>
-#include <string.h>
 #include <sys/time.h>
 
 #include "qemu_monitor_text.h"

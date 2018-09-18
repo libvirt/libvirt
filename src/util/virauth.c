@@ -22,7 +22,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "virauth.h"
 #include "virutil.h"

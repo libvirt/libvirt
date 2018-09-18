@@ -24,7 +24,6 @@
 
 #if defined(WITH_DBUS) && defined(__linux__)
 
-# include <stdlib.h>
 # include <dbus/dbus.h>
 
 # define __VIR_SYSTEMD_PRIV_H_ALLOW__ 1

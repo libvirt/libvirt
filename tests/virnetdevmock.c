@@ -22,7 +22,6 @@
 
 #ifdef __linux__
 # include "internal.h"
-# include <stdlib.h>
 # include "virstring.h"
 # include "virnetdev.h"
 
