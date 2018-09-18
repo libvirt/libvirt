@@ -747,10 +747,8 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                      virArch guestarch)
 {
     size_t i;
-    char *kvmbin = NULL;
     char *binary = NULL;
     virQEMUCapsPtr qemubinCaps = NULL;
-    virQEMUCapsPtr kvmbinCaps = NULL;
     int ret = -1;
 
     /* Check for existence of base emulator, or alternate base
@@ -766,7 +764,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
         }
     }
 
-    if (virQEMUCapsGuestIsNative(hostarch, guestarch)) {
+    if (virQEMUCapsGuestIsNative(hostarch, guestarch) && !binary) {
         const char *kvmbins[] = {
             "/usr/libexec/qemu-kvm", /* RHEL */
             "qemu-kvm", /* Fedora */
@@ -774,36 +772,28 @@ virQEMUCapsInitGuest(virCapsPtr caps,
         };
 
         for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
-            kvmbin = virFindFileInPath(kvmbins[i]);
+            binary = virFindFileInPath(kvmbins[i]);
 
-            if (!kvmbin)
+            if (!binary)
                 continue;
 
-            if (!(kvmbinCaps = virQEMUCapsCacheLookup(cache, kvmbin))) {
+            if (!(qemubinCaps = virQEMUCapsCacheLookup(cache, binary))) {
                 virResetLastError();
-                VIR_FREE(kvmbin);
+                VIR_FREE(binary);
                 continue;
             }
 
-            if (!binary) {
-                binary = kvmbin;
-                qemubinCaps = kvmbinCaps;
-                kvmbin = NULL;
-                kvmbinCaps = NULL;
-            }
             break;
         }
     }
 
     ret = virQEMUCapsInitGuestFromBinary(caps,
                                          binary, qemubinCaps,
-                                         kvmbin, kvmbinCaps,
+                                         NULL, NULL,
                                          guestarch);
 
     VIR_FREE(binary);
-    VIR_FREE(kvmbin);
     virObjectUnref(qemubinCaps);
-    virObjectUnref(kvmbinCaps);
 
     return ret;
 }
