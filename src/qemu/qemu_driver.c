@@ -6598,11 +6598,15 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         restored = true;
 
     if (intermediatefd != -1) {
+        virErrorPtr orig_err = NULL;
+
         if (!restored) {
             /* if there was an error setting up qemu, the intermediate
              * process will wait forever to write to stdout, so we
-             * must manually kill it.
+             * must manually kill it and ignore any error related to
+             * the process
              */
+            orig_err = virSaveLastError();
             VIR_FORCE_CLOSE(intermediatefd);
             VIR_FORCE_CLOSE(*fd);
         }
@@ -6612,6 +6616,11 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
             restored = false;
         }
         VIR_DEBUG("Decompression binary stderr: %s", NULLSTR(errbuf));
+
+        if (orig_err) {
+            virSetError(orig_err);
+            virFreeError(orig_err);
+        }
     }
     VIR_FORCE_CLOSE(intermediatefd);
 
