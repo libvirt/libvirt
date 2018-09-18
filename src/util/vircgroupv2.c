@@ -205,6 +205,20 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2ValidatePlacement(virCgroupPtr group,
+                             pid_t pid ATTRIBUTE_UNUSED)
+{
+    if (!group->unified.placement) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not find placement for v2 controller"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -214,6 +228,7 @@ virCgroupBackend virCgroupV2Backend = {
     .copyPlacement = virCgroupV2CopyPlacement,
     .detectMounts = virCgroupV2DetectMounts,
     .detectPlacement = virCgroupV2DetectPlacement,
+    .validatePlacement = virCgroupV2ValidatePlacement,
 };
 
 
