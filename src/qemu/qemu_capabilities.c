@@ -804,7 +804,6 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                virArch guestarch)
 {
     virCapsGuestPtr guest;
-    bool haskvm = false;
     virCapsGuestMachinePtr *machines = NULL;
     size_t nmachines = 0;
     int ret = -1;
@@ -812,9 +811,6 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
     if (!binary)
         return 0;
-
-    if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM))
-        haskvm = true;
 
     if (virQEMUCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
         goto cleanup;
@@ -856,15 +852,13 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                       NULL) == NULL)
         goto cleanup;
 
-    if (haskvm) {
-        virCapsGuestDomainPtr dom;
-
-        if ((dom = virCapabilitiesAddGuestDomain(guest,
-                                                 VIR_DOMAIN_VIRT_KVM,
-                                                 NULL,
-                                                 NULL,
-                                                 0,
-                                                 NULL)) == NULL) {
+    if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM)) {
+        if (virCapabilitiesAddGuestDomain(guest,
+                                          VIR_DOMAIN_VIRT_KVM,
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL) {
             goto cleanup;
         }
     }
