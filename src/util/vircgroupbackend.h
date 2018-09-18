@@ -28,6 +28,14 @@
 # define CGROUP_MAX_VAL 512
 
 typedef enum {
+    VIR_CGROUP_NONE = 0, /* create subdir under each cgroup if possible. */
+    VIR_CGROUP_MEM_HIERACHY = 1 << 0, /* call virCgroupSetMemoryUseHierarchy
+                                       * before creating subcgroups and
+                                       * attaching tasks
+                                       */
+} virCgroupBackendFlags;
+
+typedef enum {
     VIR_CGROUP_BACKEND_TYPE_V1 = 0,
     VIR_CGROUP_BACKEND_TYPE_LAST,
 } virCgroupBackendType;
@@ -86,6 +94,12 @@ typedef int
                                const char *key,
                                char **path);
 
+typedef int
+(*virCgroupMakeGroupCB)(virCgroupPtr parent,
+                        virCgroupPtr group,
+                        bool create,
+                        unsigned int flags);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -102,6 +116,7 @@ struct _virCgroupBackend {
     virCgroupHasControllerCB hasController;
     virCgroupGetAnyControllerCB getAnyController;
     virCgroupPathOfControllerCB pathOfController;
+    virCgroupMakeGroupCB makeGroup;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

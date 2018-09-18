@@ -536,6 +536,137 @@ virCgroupV1PathOfController(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1CpuSetInherit(virCgroupPtr parent,
+                         virCgroupPtr group)
+{
+    size_t i;
+    const char *inherit_values[] = {
+        "cpuset.cpus",
+        "cpuset.mems",
+        "cpuset.memory_migrate",
+    };
+
+    VIR_DEBUG("Setting up inheritance %s -> %s", parent->path, group->path);
+    for (i = 0; i < ARRAY_CARDINALITY(inherit_values); i++) {
+        VIR_AUTOFREE(char *) value = NULL;
+
+        if (virCgroupGetValueStr(parent,
+                                 VIR_CGROUP_CONTROLLER_CPUSET,
+                                 inherit_values[i],
+                                 &value) < 0)
+            return -1;
+
+        VIR_DEBUG("Inherit %s = %s", inherit_values[i], value);
+
+        if (virCgroupSetValueStr(group,
+                                 VIR_CGROUP_CONTROLLER_CPUSET,
+                                 inherit_values[i],
+                                 value) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virCgroupV1SetMemoryUseHierarchy(virCgroupPtr group)
+{
+    unsigned long long value;
+    const char *filename = "memory.use_hierarchy";
+
+    if (virCgroupGetValueU64(group,
+                             VIR_CGROUP_CONTROLLER_MEMORY,
+                             filename, &value) < 0)
+        return -1;
+
+    /* Setting twice causes error, so if already enabled, skip setting */
+    if (value == 1)
+        return 0;
+
+    VIR_DEBUG("Setting up %s/%s", group->path, filename);
+    if (virCgroupSetValueU64(group,
+                             VIR_CGROUP_CONTROLLER_MEMORY,
+                             filename, 1) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virCgroupV1MakeGroup(virCgroupPtr parent,
+                     virCgroupPtr group,
+                     bool create,
+                     unsigned int flags)
+{
+    size_t i;
+
+    VIR_DEBUG("Make group %s", group->path);
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        VIR_AUTOFREE(char *) path = NULL;
+
+        /* We must never mkdir() in systemd's hierarchy */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
+            VIR_DEBUG("Not creating systemd controller group");
+            continue;
+        }
+
+        /* Skip over controllers that aren't mounted */
+        if (!group->controllers[i].mountPoint) {
+            VIR_DEBUG("Skipping unmounted controller %s",
+                      virCgroupV1ControllerTypeToString(i));
+            continue;
+        }
+
+        if (virCgroupV1PathOfController(group, i, "", &path) < 0)
+            return -1;
+
+        VIR_DEBUG("Make controller %s", path);
+        if (!virFileExists(path)) {
+            if (!create ||
+                mkdir(path, 0755) < 0) {
+                if (errno == EEXIST)
+                    continue;
+                /* With a kernel that doesn't support multi-level directory
+                 * for blkio controller, libvirt will fail and disable all
+                 * other controllers even though they are available. So
+                 * treat blkio as unmounted if mkdir fails. */
+                if (i == VIR_CGROUP_CONTROLLER_BLKIO) {
+                    VIR_DEBUG("Ignoring mkdir failure with blkio controller. Kernel probably too old");
+                    VIR_FREE(group->controllers[i].mountPoint);
+                    continue;
+                } else {
+                    virReportSystemError(errno,
+                                         _("Failed to create v1 controller %s for group"),
+                                         virCgroupV1ControllerTypeToString(i));
+                    return -1;
+                }
+            }
+            if (i == VIR_CGROUP_CONTROLLER_CPUSET &&
+                group->controllers[i].mountPoint != NULL &&
+                virCgroupV1CpuSetInherit(parent, group) < 0) {
+                return -1;
+            }
+            /*
+             * Note that virCgroupV1SetMemoryUseHierarchy should always be
+             * called prior to creating subcgroups and attaching tasks.
+             */
+            if ((flags & VIR_CGROUP_MEM_HIERACHY) &&
+                i == VIR_CGROUP_CONTROLLER_MEMORY &&
+                group->controllers[i].mountPoint != NULL &&
+                virCgroupV1SetMemoryUseHierarchy(group) < 0) {
+                return -1;
+            }
+        }
+    }
+
+    VIR_DEBUG("Done making controllers for group");
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -551,6 +682,7 @@ virCgroupBackend virCgroupV1Backend = {
     .hasController = virCgroupV1HasController,
     .getAnyController = virCgroupV1GetAnyController,
     .pathOfController = virCgroupV1PathOfController,
+    .makeGroup = virCgroupV1MakeGroup,
 };
 
 

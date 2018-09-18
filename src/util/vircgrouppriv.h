@@ -53,6 +53,26 @@ struct _virCgroup {
     virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
+int virCgroupSetValueStr(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         const char *value);
+
+int virCgroupGetValueStr(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         char **value);
+
+int virCgroupSetValueU64(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         unsigned long long int value);
+
+int virCgroupGetValueU64(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         unsigned long long int *value);
+
 int virCgroupPartitionEscape(char **path);
 
 int virCgroupNewPartition(const char *path,
