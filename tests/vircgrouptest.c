@@ -899,6 +899,9 @@ mymain(void)
     DETECT_MOUNTS("all-in-one");
     DETECT_MOUNTS_FAIL("no-cgroups");
     DETECT_MOUNTS("kubevirt");
+    fakerootdir = initFakeFS("unified", NULL);
+    DETECT_MOUNTS("unified");
+    cleanupFakeFS(fakerootdir);
 
     fakerootdir = initFakeFS(NULL, "systemd");
     if (virTestRun("New cgroup for self", testCgroupNewForSelf, NULL) < 0)
