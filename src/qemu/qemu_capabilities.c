@@ -746,7 +746,6 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                      virArch hostarch,
                      virArch guestarch)
 {
-    size_t i;
     char *binary = NULL;
     virQEMUCapsPtr qemubinCaps = NULL;
     int ret = -1;
@@ -756,32 +755,18 @@ virQEMUCapsInitGuest(virCapsPtr caps,
      */
     binary = virQEMUCapsFindBinaryForArch(hostarch, guestarch);
 
+    /* RHEL doesn't follow the usual naming for QEMU binaries and ships
+     * a single binary named qemu-kvm outside of $PATH instead */
+    if (virQEMUCapsGuestIsNative(hostarch, guestarch) && !binary) {
+        if (VIR_STRDUP(binary, "/usr/libexec/qemu-kvm") < 0)
+            return -1;
+    }
+
     /* Ignore binary if extracting version info fails */
     if (binary) {
         if (!(qemubinCaps = virQEMUCapsCacheLookup(cache, binary))) {
             virResetLastError();
             VIR_FREE(binary);
-        }
-    }
-
-    if (virQEMUCapsGuestIsNative(hostarch, guestarch) && !binary) {
-        const char *kvmbins[] = {
-            "/usr/libexec/qemu-kvm", /* RHEL */
-        };
-
-        for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
-            binary = virFindFileInPath(kvmbins[i]);
-
-            if (!binary)
-                continue;
-
-            if (!(qemubinCaps = virQEMUCapsCacheLookup(cache, binary))) {
-                virResetLastError();
-                VIR_FREE(binary);
-                continue;
-            }
-
-            break;
         }
     }
 
