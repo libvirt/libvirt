@@ -631,15 +631,19 @@ bool
 virQEMUCapsGuestIsNative(virArch host,
                          virArch guest)
 {
+    /* host & guest arches match */
     if (host == guest)
         return true;
 
+    /* hostarch is x86_64 and guest arch is i686 (needs -cpu qemu32) */
     if (host == VIR_ARCH_X86_64 && guest == VIR_ARCH_I686)
         return true;
 
+    /* hostarch is aarch64 and guest arch is armv7l (needs -cpu aarch64=off) */
     if (host == VIR_ARCH_AARCH64 && guest == VIR_ARCH_ARMV7L)
         return true;
 
+    /* hostarch and guestarch are both ppc64 */
     if (ARCH_IS_PPC64(host) && ARCH_IS_PPC64(guest))
         return true;
 
@@ -753,12 +757,6 @@ virQEMUCapsInitGuest(virCapsPtr caps,
         }
     }
 
-    /* qemu-kvm/kvm binaries can only be used if
-     *  - host & guest arches match
-     *  - hostarch is x86_64 and guest arch is i686 (needs -cpu qemu32)
-     *  - hostarch is aarch64 and guest arch is armv7l (needs -cpu aarch64=off)
-     *  - hostarch and guestarch are both ppc64*
-     */
     if (virQEMUCapsGuestIsNative(hostarch, guestarch)) {
         const char *kvmbins[] = {
             "/usr/libexec/qemu-kvm", /* RHEL */
