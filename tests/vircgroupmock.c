@@ -56,7 +56,7 @@ const char *fakedevicedir0 = FAKEDEVDIR0;
 const char *fakedevicedir1 = FAKEDEVDIR1;
 
 
-# define SYSFS_CGROUP_PREFIX "/not/really/sys/fs/cgroup/"
+# define SYSFS_CGROUP_PREFIX "/not/really/sys/fs/cgroup"
 # define SYSFS_CPU_PRESENT "/sys/devices/system/cpu/present"
 # define SYSFS_CPU_PRESENT_MOCKED "devices_system_cpu_present"
 
@@ -354,7 +354,7 @@ int access(const char *path, int mode)
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
         char *newpath;
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -386,7 +386,7 @@ int __lxstat(int ver, const char *path, struct stat *sb)
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
         char *newpath;
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -417,7 +417,7 @@ int lstat(const char *path, struct stat *sb)
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
         char *newpath;
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -448,7 +448,7 @@ int __xstat(int ver, const char *path, struct stat *sb)
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
         char *newpath;
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -487,7 +487,7 @@ int stat(const char *path, struct stat *sb)
         }
     } else if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -519,7 +519,7 @@ int mkdir(const char *path, mode_t mode)
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
         char *newpath;
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -552,7 +552,7 @@ int open(const char *path, int flags, ...)
 
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
