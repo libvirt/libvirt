@@ -119,6 +119,8 @@ SECRET_CONF_SOURCES = \
 NODE_DEVICE_CONF_SOURCES = \
 	conf/node_device_conf.c \
 	conf/node_device_conf.h \
+	conf/node_device_util.c \
+	conf/node_device_util.h \
 	conf/virnodedeviceobj.c \
 	conf/virnodedeviceobj.h \
 	$(NULL)

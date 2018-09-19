@@ -722,14 +722,11 @@ virNodeDevCapsDefFree;
 virNodeDevCapTypeFromString;
 virNodeDevCapTypeToString;
 virNodeDeviceCapsListExport;
-virNodeDeviceCreateVport;
 virNodeDeviceDefFormat;
 virNodeDeviceDefFree;
 virNodeDeviceDefParseFile;
 virNodeDeviceDefParseNode;
 virNodeDeviceDefParseString;
-virNodeDeviceDeleteVport;
-virNodeDeviceGetParentName;
 virNodeDeviceGetPCIDynamicCaps;
 virNodeDeviceGetSCSIHostCaps;
 virNodeDeviceGetSCSITargetCaps;
@@ -742,6 +739,10 @@ virNodeDeviceEventLifecycleNew;
 virNodeDeviceEventStateRegisterID;
 virNodeDeviceEventUpdateNew;
 
+# conf/node_device_util.h
+virNodeDeviceCreateVport;
+virNodeDeviceDeleteVport;
+virNodeDeviceGetParentName;
 
 # conf/numa_conf.h
 virDomainMemoryAccessTypeFromString;

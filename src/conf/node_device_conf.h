@@ -367,17 +367,6 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV          | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV)
 
-char *
-virNodeDeviceGetParentName(virConnectPtr conn,
-                           const char *nodedev_name);
-
-char *
-virNodeDeviceCreateVport(virStorageAdapterFCHostPtr fchost);
-
-int
-virNodeDeviceDeleteVport(virConnectPtr conn,
-                         virStorageAdapterFCHostPtr fchost);
-
 int
 virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host);
 

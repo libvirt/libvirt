@@ -22,6 +22,7 @@
 
 #include "datatypes.h"
 #include "node_device_conf.h"
+#include "node_device_util.h"
 #include "virstorageobj.h"
 
 #include "viralloc.h"

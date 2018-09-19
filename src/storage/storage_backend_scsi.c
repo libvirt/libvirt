@@ -35,6 +35,7 @@
 #include "virstring.h"
 #include "storage_util.h"
 #include "node_device_conf.h"
+#include "node_device_util.h"
 #include "driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
