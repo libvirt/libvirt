@@ -23,6 +23,45 @@
 use strict;
 use warnings;
 
+#
+# CheckFunctionBody:
+# $_[0]: $data(in)
+# $_[1]: $location(in), which format is file-path:line-num:line-code
+# $_[2]: $fn_linenum(inout), maintains start line-num of function body
+# Returns 0 in case of success or 1 on failure
+#
+# Check incorrect indentation and blank first line in function body.
+# For efficiency, it only checks the first line of function body.
+# But it's enough for most cases.
+# (It could be better that we use *state* to declare @fn_linenum and
+#  move it into this subroutine. But *state* requires version >= v5.10.)
+#
+sub CheckFunctionBody {
+    my $ret = 0;
+    my ($data, $location, $fn_linenum) = @_;
+
+    # Check first line of function block
+    if ($$fn_linenum) {
+        if ($$data =~ /^\s*$/) {
+            print "Blank line before content in function body:\n$$location";
+            $ret = 1;
+        } elsif ($$data !~ /^[ ]{4}\S/) {
+            unless ($$data =~ /^[ ]\w+:$/ || $$data =~ /^}/) {
+                print "Incorrect indentation in function body:\n$$location";
+                $ret = 1;
+            }
+        }
+        $$fn_linenum = 0;
+    }
+
+    # Detect start of function block
+    if ($$data =~ /^{$/) {
+        $$fn_linenum = $.;
+    }
+
+    return $ret;
+}
+
 my $ret = 0;
 my $incomment = 0;
 
@@ -37,6 +76,7 @@ foreach my $file (@ARGV) {
 
     while (defined (my $line = <FILE>)) {
         my $data = $line;
+        my $location = "$file:$.:\n$line";
         # For temporary modifications
         my $tmpdata;
 
@@ -51,26 +91,7 @@ foreach my $file (@ARGV) {
 
         next if $data =~ /^#/;
 
-        # Detect start of function block
-        if ($data =~ /^{$/) {
-            $fn_linenum = $.;
-        }
-
-        # Handle first line of function block
-        if ($fn_linenum && $fn_linenum != $.) {
-            if ($data =~ /^\s*$/) {
-                print "Blank line before content in function body:\n";
-                print "$file:$.:\n$line";
-                $ret = 1;
-            } elsif ($data !~ /^[ ]{4}\S/) {
-                unless ($data =~ /^[ ]\w+:$/ || $data =~ /^}/) {
-                    print "Incorrect indentation in function body:\n";
-                    print "$file:$.:\n$line";
-                    $ret = 1;
-                }
-            }
-            $fn_linenum = 0;
-        }
+        $ret = 1 if CheckFunctionBody(\$data, \$location, \$fn_linenum);
 
         # Kill contents of multi-line comments
         # and detect end of multi-line comments
