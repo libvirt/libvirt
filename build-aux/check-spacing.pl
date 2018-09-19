@@ -201,6 +201,55 @@ sub CheckWhiteSpaces {
     return $ret;
 }
 
+#
+# CheckCurlyBrackets:
+# $_[0]: $data(in)
+# $_[1]: $file(in)
+# $_[2]: $line(in)
+# $_[3]: $cb_linenum(inout)
+# $_[4]: $cb_code(inout)
+# $_[5]: $cb_scolon(inout)
+#
+# Check whitespaces according to code spec of libvirt.
+#
+sub CheckCurlyBrackets {
+    my $ret = 0;
+    my ($data, $file, $line, $cb_linenum, $cb_code, $cb_scolon) = @_;
+
+    # One line conditional statements with one line bodies should
+    # not use curly brackets.
+    if ($$data =~ /^\s*(if|while|for)\b.*\{$/) {
+        $$cb_linenum = $.;
+        $$cb_code = $$line;
+        $$cb_scolon = 0;
+    }
+
+    # We need to check for exactly one semicolon inside the body,
+    # because empty statements (e.g. with comment only) are
+    # allowed
+    if ($$cb_linenum == $. - 1 && $$data =~ /^[^;]*;[^;]*$/) {
+        $$cb_code .= $$line;
+        $$cb_scolon = 1;
+    }
+
+    if ($$data =~ /^\s*}\s*$/ &&
+        $$cb_linenum == $. - 2 &&
+        $$cb_scolon) {
+
+        print "Curly brackets around single-line body:\n";
+        print "$$file:$$cb_linenum-$.:\n$$cb_code$$line";
+        $ret = 1;
+
+        # There _should_ be no need to reset the values; but to
+        # keep my inner peace...
+        $$cb_linenum = 0;
+        $$cb_scolon = 0;
+        $$cb_code = "";
+    }
+
+    return $ret;
+}
+
 my $ret = 0;
 
 foreach my $file (@ARGV) {
@@ -234,36 +283,8 @@ foreach my $file (@ARGV) {
 
         $ret = 1 if CheckWhiteSpaces(\$data, \$location);
 
-        # One line conditional statements with one line bodies should
-        # not use curly brackets.
-        if ($data =~ /^\s*(if|while|for)\b.*\{$/) {
-            $cb_linenum = $.;
-            $cb_code = $line;
-            $cb_scolon = 0;
-        }
-
-        # We need to check for exactly one semicolon inside the body,
-        # because empty statements (e.g. with comment only) are
-        # allowed
-        if ($cb_linenum == $. - 1 && $data =~ /^[^;]*;[^;]*$/) {
-            $cb_code .= $line;
-            $cb_scolon = 1;
-        }
-
-        if ($data =~ /^\s*}\s*$/ &&
-            $cb_linenum == $. - 2 &&
-            $cb_scolon) {
-
-            print "Curly brackets around single-line body:\n";
-            print "$file:$cb_linenum-$.:\n$cb_code$line";
-            $ret = 1;
-
-            # There _should_ be no need to reset the values; but to
-            # keep my inner peace...
-            $cb_linenum = 0;
-            $cb_scolon = 0;
-            $cb_code = "";
-        }
+        $ret = 1 if CheckCurlyBrackets(\$data, \$file, \$line,
+                                       \$cb_linenum, \$cb_code, \$cb_scolon);
     }
     close FILE;
 }
