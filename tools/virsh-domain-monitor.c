@@ -1942,9 +1942,9 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     /* print table header in legacy mode */
     if (optTable) {
         if (optTitle)
-            table = vshTableNew("Id", "Name", "State", "Title", NULL);
+            table = vshTableNew(_("Id"), _("Name"), _("State"), _("Title"), NULL);
         else
-            table = vshTableNew("Id", "Name", "State", NULL);
+            table = vshTableNew(_("Id"), _("Name"), _("State"), NULL);
 
         if (!table)
             goto cleanup;
