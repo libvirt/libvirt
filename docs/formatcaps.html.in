@@ -91,7 +91,27 @@
         </dd>
 
         <dt><code>arch</code></dt>
-        <dd>This element brings some information on supported guest architecture.</dd>
+        <dd>This element brings some information on supported guest
+          architecture. Possible subelements are:
+          <dl>
+            <dt><code>wordsize</code></dt><dd>Size of CPU word in bits, for example 64.</dd>
+            <dt><code>emulator</code></dt><dd>Emulator (device model) path, for
+              use in <a href="formatdomain.html#elementEmulator">emulator</a>
+              element of domain XML.</dd>
+            <dt><code>loader</code></dt><dd>Loader path, for use in
+              <a href="formatdomain.html#elementLoader">loader</a> element of domain
+              XML.</dd>
+            <dt><code>machine</code></dt><dd>Machine type, for use in
+              <a href="formatdomain.html#attributeOSTypeMachine">machine</a>
+              attribute of os/type element in domain XML. For example Xen
+              supports <code>xenfv</code> for HVM or <code>xenpv</code> for
+              PV.</dd>
+            <dt><code>domain</code></dt><dd>The <code>type</code> attribute of
+              this element specifies the type of hypervisor required to run the
+              domain. Use in <a href="formatdomain.html#attributeDomainType">type</a>
+              attribute of the domain root element.</dd>
+          </dl>
+        </dd>
 
         <dt><code>features</code></dt>
         <dd>This optional element encases possible features that can be used
