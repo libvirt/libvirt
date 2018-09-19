@@ -100,6 +100,7 @@ sub KillComments {
 # CheckWhiteSpaces:
 # $_[0]: $data(in)
 # $_[1]: $location(in), which format is file-path:line-num:line-code
+# Returns 0 in case of success or 1 on failure
 #
 # Check whitespaces according to code spec of libvirt.
 #
@@ -209,6 +210,7 @@ sub CheckWhiteSpaces {
 # $_[3]: $cb_linenum(inout)
 # $_[4]: $cb_code(inout)
 # $_[5]: $cb_scolon(inout)
+# Returns 0 in case of success or 1 on failure
 #
 # Check whitespaces according to code spec of libvirt.
 #
@@ -250,6 +252,74 @@ sub CheckCurlyBrackets {
     return $ret;
 }
 
+#
+# CheckMisalignment:
+# $_[0]: $data(in)
+# $_[1]: $file(in)
+# $_[2]: $line(in)
+# $_[3]: @paren_stack(inout), which maintains information
+#         of the parenthesis
+# Returns 0 in case of success or 1 on failure
+#
+# Check misaligned stuff in parenthesis:
+# 1. For misaligned arguments of function
+# 2. For misaligned conditions of [if|while|switch|...]
+#
+sub CheckMisalignment {
+    my $ret = 0;
+    my ($data, $file, $line, $paren_stack) = @_;
+
+    # Check alignment based on @paren_stack
+    if (@$paren_stack) {
+        if ($$data =~ /(\S+.*$)/) {
+            my $pos = $$paren_stack[-1][0];
+            my $linenum = $$paren_stack[-1][1];
+            my $code = $$paren_stack[-1][2];
+            if ($pos + 1 != length($`)) {
+                my $pad = "";
+                if ($. > $linenum + 1) {
+                    $pad = " " x $pos . " ...\n";
+                }
+                print "Misaligned line in parenthesis:\n";
+                print "$$file:$linenum-$.:\n$code$pad$$line\n";
+                $ret = 1;
+            }
+        }
+    }
+
+    # Maintain @paren_stack
+    if ($$data =~ /.*[()]/) {
+        my $pos = 0;
+        my $temp = $$data;
+
+        # Kill the content between matched parenthesis and themselves
+        # within the current line.
+        $temp =~ s,(\((?:[^()]++|(?R))*+\)),"X" x (length $&),ge;
+
+        # Pop a item for the open-paren when finding close-paren
+        while (($pos = index($temp, "\)", $pos)) >= 0) {
+            if (@$paren_stack) {
+                pop(@$paren_stack);
+                $pos++;
+            } else {
+                print "Warning: found unbalanced parenthesis:\n";
+                print "$$file:$.:\n$$line\n";
+                $ret = 1;
+                last;
+            }
+        }
+
+        # Push the item for open-paren on @paren_stack
+        # @item = [ position of the open-paren, linenum, code-line ]
+        while (($pos = index($temp, "\(", $pos)) >= 0) {
+            push @$paren_stack, [$pos, $., $$line];
+            $pos++;
+        }
+    }
+
+    return $ret;
+}
+
 my $ret = 0;
 
 foreach my $file (@ARGV) {
@@ -259,32 +329,50 @@ foreach my $file (@ARGV) {
     my $cb_scolon = 0;
     my $fn_linenum = 0;
     my $incomment = 0;
+    my @paren_stack;
 
     open FILE, $file;
 
     while (defined (my $line = <FILE>)) {
+        my $has_define = 0;
         my $data = $line;
         my $location = "$file:$.:\n$line";
 
         # Kill any quoted , ; = or "
         $data =~ s/'[";,=]'/'X'/g;
 
-        # Kill any quoted strings
-        $data =~ s,"(?:[^\\\"]|\\.)*","XXX",g;
+        # Kill any quoted strings. Replace with equal-length "XXXX..."
+        $data =~ s,"(([^\\\"]|\\.)*)","\"".'X'x(length $1)."\"",ge;
+        $data =~ s,'(([^\\\']|\\.)*)',"\'".'X'x(length $1)."\'",ge;
 
         # Kill any C++ style comments
         $data =~ s,//.*$,//,;
 
-        next if $data =~ /^#/;
+        $has_define = 1 if $data =~ /(?:^#\s*define\b)/;
+        if (not $has_define) {
+            # Ignore all macros except for #define
+            next if $data =~ /^#/;
 
-        $ret = 1 if CheckFunctionBody(\$data, \$location, \$fn_linenum);
+            $ret = 1 if CheckFunctionBody(\$data, \$location, \$fn_linenum);
 
-        KillComments(\$data, \$incomment);
+            KillComments(\$data, \$incomment);
 
-        $ret = 1 if CheckWhiteSpaces(\$data, \$location);
+            $ret = 1 if CheckWhiteSpaces(\$data, \$location);
 
-        $ret = 1 if CheckCurlyBrackets(\$data, \$file, \$line,
-                                       \$cb_linenum, \$cb_code, \$cb_scolon);
+            $ret = 1 if CheckCurlyBrackets(\$data, \$file, \$line,
+                                           \$cb_linenum, \$cb_code, \$cb_scolon);
+        }
+
+        #####################################################################
+        # Temporary Filter for CheckMisalignment:
+        # Here we introduce a white-list of path, since there're
+        # too much misalignment.
+        # We _need_ fix these misalignment in batches.
+        # We _should_ remove it as soon as fixing all.
+        #####################################################################
+        next unless $file =~ /^src\/util\//;
+
+        $ret = 1 if CheckMisalignment(\$data, \$file, \$line, \@paren_stack);
     }
     close FILE;
 }
