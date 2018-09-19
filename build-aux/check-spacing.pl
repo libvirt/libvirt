@@ -62,8 +62,41 @@ sub CheckFunctionBody {
     return $ret;
 }
 
+#
+# KillComments:
+# $_[0]: $data(inout)
+# $_[1]: $incomment(inout)
+#
+# Remove all content of comments
+# (Also, the @incomment could be declared with *state* and move it in.)
+#
+sub KillComments {
+    my ($data, $incomment) = @_;
+
+    # Kill contents of multi-line comments
+    # and detect end of multi-line comments
+    if ($$incomment) {
+        if ($$data =~ m,\*/,) {
+            $$incomment = 0;
+            $$data =~ s,^.*\*/,*/,;
+        } else {
+            $$data = "";
+        }
+    }
+
+    # Kill single line comments, and detect
+    # start of multi-line comments
+    if ($$data =~ m,/\*.*\*/,) {
+        $$data =~ s,/\*.*\*/,/* */,;
+    } elsif ($$data =~ m,/\*,) {
+        $$incomment = 1;
+        $$data =~ s,/\*.*,/*,;
+    }
+
+    return;
+}
+
 my $ret = 0;
-my $incomment = 0;
 
 foreach my $file (@ARGV) {
     # Per-file variables for multiline Curly Bracket (cb_) check
@@ -71,6 +104,7 @@ foreach my $file (@ARGV) {
     my $cb_code = "";
     my $cb_scolon = 0;
     my $fn_linenum = 0;
+    my $incomment = 0;
 
     open FILE, $file;
 
@@ -93,25 +127,7 @@ foreach my $file (@ARGV) {
 
         $ret = 1 if CheckFunctionBody(\$data, \$location, \$fn_linenum);
 
-        # Kill contents of multi-line comments
-        # and detect end of multi-line comments
-        if ($incomment) {
-            if ($data =~ m,\*/,) {
-                $incomment = 0;
-                $data =~ s,^.*\*/,*/,;
-            } else {
-                $data = "";
-            }
-        }
-
-        # Kill single line comments, and detect
-        # start of multi-line comments
-        if ($data =~ m,/\*.*\*/,) {
-            $data =~ s,/\*.*\*/,/* */,;
-        } elsif ($data =~ m,/\*,) {
-            $incomment = 1;
-            $data =~ s,/\*.*,/*,;
-        }
+        KillComments(\$data, \$incomment);
 
         # We need to match things like
         #
