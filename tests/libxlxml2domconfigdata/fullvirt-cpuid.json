@@ -21,11 +21,11 @@
         ],
         "sched_params": {
         },
+        "nested_hvm": "False",
         "type.hvm": {
             "pae": "True",
             "apic": "True",
             "acpi": "True",
-            "nested_hvm": "False",
             "nographic": "True",
             "vnc": {
                 "enable": "False"

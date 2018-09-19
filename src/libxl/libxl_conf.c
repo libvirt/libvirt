@@ -455,7 +455,18 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                     }
                 }
             }
-            libxl_defbool_set(&b_info->u.hvm.nested_hvm, hasHwVirt);
+#ifdef LIBXL_HAVE_BUILDINFO_NESTED_HVM
+            libxl_defbool_set(&b_info->nested_hvm, hasHwVirt);
+#else
+            if (hvm) {
+                libxl_defbool_set(&b_info->u.hvm.nested_hvm, hasHwVirt);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported nested HVM setting for %s machine on this Xen version"),
+                        def->os.machine);
+                return -1;
+            }
+#endif
         }
 
         if (def->cpu && def->cpu->mode == VIR_CPU_MODE_CUSTOM) {

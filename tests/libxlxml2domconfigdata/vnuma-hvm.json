@@ -109,11 +109,11 @@
         "sched_params": {
 
         },
+        "nested_hvm": "True",
         "type.hvm": {
             "pae": "True",
             "apic": "True",
             "acpi": "True",
-            "nested_hvm": "True",
             "vga": {
                 "kind": "cirrus"
             },
