@@ -34,9 +34,6 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
     LIBXL_FIRMWARE_DIR=$($PKG_CONFIG --variable xenfirmwaredir xenlight)
     LIBXL_EXECBIN_DIR=$($PKG_CONFIG --variable libexec_bin xenlight)
 
-    old_LIBS="$LIBS"
-    old_CFLAGS="$CFLAGS"
-
     LIBXL_CFLAGS="$LIBXL_CFLAGS $LIBXL_API_VERSION"
 
     dnl If building with libxl, use the libxl utility header and lib too
