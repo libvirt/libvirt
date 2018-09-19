@@ -60,7 +60,7 @@ struct _virClass {
                          obj, obj->u.s.magic); \
         } else { \
             VIR_WARN("Object %p (%s) is not a %s instance", \
-                      anyobj, obj->klass->name, #objclass); \
+                     anyobj, obj->klass->name, #objclass); \
         } \
     } while (0)
 

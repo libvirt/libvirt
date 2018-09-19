@@ -600,8 +600,9 @@ dnsmasqReload(pid_t pid ATTRIBUTE_UNUSED)
 #ifndef WIN32
     if (kill(pid, SIGHUP) != 0) {
         virReportSystemError(errno,
-            _("Failed to make dnsmasq (PID: %d) reload config files."),
-            pid);
+                             _("Failed to make dnsmasq (PID: %d)"
+                               " reload config files."),
+                             pid);
         return -1;
     }
 #endif /* WIN32 */

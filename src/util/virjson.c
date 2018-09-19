@@ -1898,7 +1898,7 @@ virJSONValueToStringOne(virJSONValuePtr object,
             if (yajl_gen_string(g,
                                 (unsigned char *)object->data.object.pairs[i].key,
                                 strlen(object->data.object.pairs[i].key))
-                                != yajl_gen_status_ok)
+                != yajl_gen_status_ok)
                 return -1;
             if (virJSONValueToStringOne(object->data.object.pairs[i].value, g) < 0)
                 return -1;

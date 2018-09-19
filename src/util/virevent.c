@@ -285,14 +285,12 @@ int virEventRegisterDefaultImpl(void)
         return -1;
     }
 
-    virEventRegisterImpl(
-        virEventPollAddHandle,
-        virEventPollUpdateHandle,
-        virEventPollRemoveHandle,
-        virEventPollAddTimeout,
-        virEventPollUpdateTimeout,
-        virEventPollRemoveTimeout
-        );
+    virEventRegisterImpl(virEventPollAddHandle,
+                         virEventPollUpdateHandle,
+                         virEventPollRemoveHandle,
+                         virEventPollAddTimeout,
+                         virEventPollUpdateTimeout,
+                         virEventPollRemoveTimeout);
 
     return 0;
 }

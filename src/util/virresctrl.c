@@ -845,7 +845,7 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("level %u cache size %llu does not match "
                                  "expected size %llu"),
-                                 level, i_type->size, size);
+                               level, i_type->size, size);
                 goto error;
             }
             i_type->max_cache_id++;
@@ -1666,9 +1666,8 @@ virResctrlAllocGetGroup(virResctrlInfoPtr resctrl,
 {
     char *schemata = NULL;
     int rv = virFileReadValueString(&schemata,
-                                     SYSFS_RESCTRL_PATH
-                                     "/%s/schemata",
-                                     groupname);
+                                    SYSFS_RESCTRL_PATH "/%s/schemata",
+                                    groupname);
 
     *alloc = NULL;
 

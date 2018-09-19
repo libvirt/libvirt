@@ -1079,7 +1079,7 @@ virNetDevSysfsFile(char **pf_sysfs_device_link, const char *ifname,
 
 static int
 virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
-                     const char *file)
+                         const char *file)
 {
     if (virAsprintf(pf_sysfs_device_link, SYSFS_NET_DIR "%s/device/%s", ifname,
                     file) < 0)
@@ -2717,7 +2717,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                 break;
             case VIR_MCAST_TYPE_ADDR_TOKEN:
                 if (virMacAddrParseHex((const char*)token,
-                    &mcast->macaddr) < 0) {
+                                       &mcast->macaddr) < 0) {
                     virReportSystemError(EINVAL,
                                          _("Failed to parse MAC address from '%s'"),
                                          buf);

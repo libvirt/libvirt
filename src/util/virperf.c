@@ -212,8 +212,8 @@ virPerfEventEnable(virPerfPtr perf,
         return 0;
 
     if (event_attr->attrType == 0 && (type == VIR_PERF_EVENT_CMT ||
-                                       type == VIR_PERF_EVENT_MBMT ||
-                                       type == VIR_PERF_EVENT_MBML)) {
+                                      type == VIR_PERF_EVENT_MBMT ||
+                                      type == VIR_PERF_EVENT_MBML)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                        _("unable to enable host cpu perf event for %s"),
                        virPerfEventTypeToString(type));

@@ -321,7 +321,7 @@ virScaleInteger(unsigned long long *value, const char *suffix,
             base = 1000;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                         _("unknown suffix '%s'"), suffix);
+                           _("unknown suffix '%s'"), suffix);
             return -1;
         }
         scale = 1;

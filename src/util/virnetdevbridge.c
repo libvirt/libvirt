@@ -642,7 +642,7 @@ int virNetDevBridgeRemovePort(const char *brname,
 }
 #elif defined(HAVE_BSD_BRIDGE_MGMT)
 int virNetDevBridgeRemovePort(const char *brname,
-                           const char *ifname)
+                              const char *ifname)
 {
     struct ifbreq req;
 

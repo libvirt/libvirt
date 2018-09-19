@@ -320,7 +320,7 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev,
         if (!linkdev) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("The device at %s has no network device name"),
-                             sysfs_path);
+                           sysfs_path);
             return -1;
         }
 
@@ -538,13 +538,12 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
     if (virHostdevNetDevice(hostdev, 0, &linkdev, &vf) < 0)
         return -1;
 
-    virtPort = virDomainNetGetActualVirtPortProfile(
-                                 hostdev->parent.data.net);
+    virtPort = virDomainNetGetActualVirtPortProfile(hostdev->parent.data.net);
     if (virtPort) {
         return virHostdevNetConfigVirtPortProfile(linkdev, vf, virtPort,
-                                                 &hostdev->parent.data.net->mac,
-                                                 NULL,
-                                                 port_profile_associate);
+                                                  &hostdev->parent.data.net->mac,
+                                                  NULL,
+                                                  port_profile_associate);
     } else {
         /* we need to try 3 different places for the config file:
          * 1) ${stateDir}/${PF}_vf${vf}
@@ -768,7 +767,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
             } else {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("Unmanaged PCI device %s must be manually "
-                               "detached from the host"),
+                                 "detached from the host"),
                                virPCIDeviceGetName(pci));
                 goto reattachdevs;
             }
@@ -1918,8 +1917,8 @@ virHostdevReAttachSCSIHostDevices(virHostdevManagerPtr mgr,
     }
 
     VIR_DEBUG("Removing %s:%u:%u:%llu dom=%s from activeSCSIHostdevs",
-               scsihostsrc->adapter, scsihostsrc->bus, scsihostsrc->target,
-               scsihostsrc->unit, dom_name);
+              scsihostsrc->adapter, scsihostsrc->bus, scsihostsrc->target,
+              scsihostsrc->unit, dom_name);
 
     virSCSIDeviceListDel(mgr->activeSCSIHostdevs, tmp,
                          drv_name, dom_name);
@@ -2006,7 +2005,7 @@ virHostdevReAttachSCSIVHostDevices(virHostdevManagerPtr mgr,
         if (STREQ_NULLABLE(drv_name, usedby_drvname) &&
             STREQ_NULLABLE(dom_name, usedby_domname)) {
             VIR_DEBUG("Removing %s dom=%s from activeSCSIVHostHostdevs",
-                       hostsrc->wwpn, dom_name);
+                      hostsrc->wwpn, dom_name);
 
             virSCSIVHostDeviceListDel(mgr->activeSCSIVHostHostdevs, tmp);
         }
@@ -2171,8 +2170,8 @@ virHostdevPrepareDomainDevices(virHostdevManagerPtr mgr,
 
     if (flags & VIR_HOSTDEV_SP_USB) {
         if (virHostdevPrepareUSBDevices(mgr, driver, def->name,
-                                         def->hostdevs, def->nhostdevs,
-                                         flags) < 0)
+                                        def->hostdevs, def->nhostdevs,
+                                        flags) < 0)
             return -1;
     }
 

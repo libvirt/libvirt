@@ -56,13 +56,13 @@ VIR_ENUM_IMPL(virPCIStubDriver, VIR_PCI_STUB_DRIVER_LAST,
               "pciback", /* XEN */
               "pci-stub", /* KVM */
               "vfio-pci", /* VFIO */
-);
+              );
 
 VIR_ENUM_IMPL(virPCIHeader, VIR_PCI_HEADER_LAST,
               "endpoint",
               "pci-bridge",
               "cardbus-bridge",
-);
+              );
 
 struct _virPCIDevice {
     virPCIDeviceAddress address;

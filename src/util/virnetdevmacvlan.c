@@ -599,25 +599,25 @@ virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
     case RTM_GETLINK:
         VIR_DEBUG(" IFINFOMSG");
         VIR_DEBUG("        ifi_family = 0x%02x",
-            ((struct ifinfomsg *)data)->ifi_family);
+                  ((struct ifinfomsg *)data)->ifi_family);
         VIR_DEBUG("        ifi_type   = 0x%x",
-            ((struct ifinfomsg *)data)->ifi_type);
+                  ((struct ifinfomsg *)data)->ifi_type);
         VIR_DEBUG("        ifi_index  = %i",
-            ((struct ifinfomsg *)data)->ifi_index);
+                  ((struct ifinfomsg *)data)->ifi_index);
         VIR_DEBUG("        ifi_flags  = 0x%04x",
-            ((struct ifinfomsg *)data)->ifi_flags);
+                  ((struct ifinfomsg *)data)->ifi_flags);
         VIR_DEBUG("        ifi_change = 0x%04x",
-            ((struct ifinfomsg *)data)->ifi_change);
+                  ((struct ifinfomsg *)data)->ifi_change);
     }
     /* DEBUG end */
 
     /* Parse netlink message assume a setlink with vfports */
     memcpy(&ifinfo, NLMSG_DATA(hdr), sizeof(ifinfo));
     VIR_DEBUG("family:%#x type:%#x index:%d flags:%#x change:%#x",
-        ifinfo.ifi_family, ifinfo.ifi_type, ifinfo.ifi_index,
-        ifinfo.ifi_flags, ifinfo.ifi_change);
+              ifinfo.ifi_family, ifinfo.ifi_type, ifinfo.ifi_index,
+              ifinfo.ifi_flags, ifinfo.ifi_change);
     if (nlmsg_parse(hdr, sizeof(ifinfo),
-        (struct nlattr **)&tb, IFLA_MAX, NULL)) {
+                    (struct nlattr **)&tb, IFLA_MAX, NULL)) {
         VIR_DEBUG("error parsing request...");
         return;
     }
@@ -628,13 +628,13 @@ virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
         nla_for_each_nested(tb_vfinfo_list, tb[IFLA_VFINFO_LIST], rem) {
             if (nla_type(tb_vfinfo_list) != IFLA_VF_INFO) {
                 VIR_DEBUG("nested parsing of"
-                    "IFLA_VFINFO_LIST failed.");
+                          "IFLA_VFINFO_LIST failed.");
                 return;
             }
             if (nla_parse_nested(tb_vfinfo, IFLA_VF_MAX,
-                tb_vfinfo_list, ifla_vf_policy)) {
+                                 tb_vfinfo_list, ifla_vf_policy)) {
                 VIR_DEBUG("nested parsing of "
-                    "IFLA_VF_INFO failed.");
+                          "IFLA_VF_INFO failed.");
                 return;
             }
         }
@@ -688,7 +688,7 @@ virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
                 continue;
             }
             if (nla_parse_nested(tb3, IFLA_PORT_MAX, tb_vf_ports,
-                ifla_port_policy)) {
+                                 ifla_port_policy)) {
                 VIR_DEBUG("nested parsing on level 2"
                           " failed.");
             }
@@ -739,8 +739,8 @@ virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
             }
 
             if (tb3[IFLA_PORT_RESPONSE]) {
-                VIR_DEBUG("IFLA_PORT_RESPONSE = %d", *(uint16_t *)
-                    RTA_DATA(tb3[IFLA_PORT_RESPONSE]));
+                VIR_DEBUG("IFLA_PORT_RESPONSE = %d",
+                          *(uint16_t *) RTA_DATA(tb3[IFLA_PORT_RESPONSE]));
             }
         }
     }
@@ -1103,7 +1103,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
 
         if ((virNetDevReadNetConfig(linkdev, -1, stateDir,
                                     &adminMAC, &vlan, &MAC) == 0) &&
-           (adminMAC || vlan || MAC)) {
+            (adminMAC || vlan || MAC)) {
 
             ignore_value(virNetDevSetNetConfig(linkdev, -1,
                                                adminMAC, vlan, MAC, !!vlan));

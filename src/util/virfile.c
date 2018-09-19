@@ -303,7 +303,7 @@ virFileWrapperFdNew(int *fd ATTRIBUTE_UNUSED,
                     unsigned int fdflags ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("virFileWrapperFd unsupported on this platform"));
+                   _("virFileWrapperFd unsupported on this platform"));
     return NULL;
 }
 #endif
@@ -657,7 +657,7 @@ static int virFileLoopDeviceOpenLoopCtl(char **dev_name, int *fd)
 
     if ((*fd = open(looppath, O_RDWR)) < 0) {
         virReportSystemError(errno,
-                _("Unable to open %s"), looppath);
+                             _("Unable to open %s"), looppath);
         VIR_FREE(looppath);
         return -1;
     }
@@ -3483,7 +3483,7 @@ virFileIsSharedFSType(const char *path,
 
         if ((p = strrchr(dirpath, '/')) == NULL) {
             virReportSystemError(EINVAL,
-                         _("Invalid relative path '%s'"), path);
+                                 _("Invalid relative path '%s'"), path);
             return -1;
         }
 

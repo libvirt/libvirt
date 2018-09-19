@@ -30,4 +30,4 @@ VIR_ENUM_IMPL(virGICVersion, VIR_GIC_VERSION_LAST,
               "host",
               "2",
               "3",
-);
+              );

@@ -300,7 +300,7 @@ virStorageEncryptionParseNode(xmlNodePtr node,
             /* If no cipher node, then fail */
             if (!encdef->encinfo.cipher_name) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                                _("ivgen element found, but cipher is missing"));
+                               _("ivgen element found, but cipher is missing"));
                 goto cleanup;
             }
 

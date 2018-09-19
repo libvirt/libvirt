@@ -542,9 +542,9 @@ virNetlinkNewLink(const char *ifname,
     NETLINK_MSG_PUT(nl_msg, IFLA_INFO_KIND, (strlen(type) + 1), type);
 
     if ((STREQ(type, "macvtap") || STREQ(type, "macvlan")) &&
-         extra_args &&
-         extra_args->macvlan_mode &&
-         *extra_args->macvlan_mode > 0) {
+        extra_args &&
+        extra_args->macvlan_mode &&
+        *extra_args->macvlan_mode > 0) {
         NETLINK_MSG_NEST_START(nl_msg, infodata, IFLA_INFO_DATA);
         NETLINK_MSG_PUT(nl_msg, IFLA_MACVLAN_MODE,
                         sizeof(uint32_t), extra_args->macvlan_mode);
@@ -870,7 +870,7 @@ virNetlinkEventCallback(int watch,
     virNetlinkEventServerLock(srv);
 
     VIR_DEBUG("dispatching to max %d clients, called from event watch %d",
-            (int)srv->handlesCount, watch);
+              (int)srv->handlesCount, watch);
 
     for (i = 0; i < srv->handlesCount; i++) {
         if (srv->handles[i].deleted != VIR_NETLINK_HANDLE_VALID)
@@ -1142,7 +1142,7 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
         VIR_DEBUG("Used %zu handle slots, adding at least %d more",
                   srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
         if (VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
-                        srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT) < 0)
+                         srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT) < 0)
             goto error;
     }
     r = srv->handlesCount++;

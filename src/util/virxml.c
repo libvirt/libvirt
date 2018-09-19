@@ -1252,7 +1252,7 @@ virXMLValidatorInit(const char *schemafile)
         goto error;
 
     if (!(validator->rngParser =
-              xmlRelaxNGNewParserCtxt(validator->schemafile))) {
+          xmlRelaxNGNewParserCtxt(validator->schemafile))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to create RNG parser for %s"),
                        validator->schemafile);

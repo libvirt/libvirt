@@ -138,10 +138,10 @@ virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, virNetDevVlanPtr virtVlan)
  * Returns 0 in case of success or -1 in case of failure.
  */
 int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
-                                   const virMacAddr *macaddr,
-                                   const unsigned char *vmuuid,
-                                   virNetDevVPortProfilePtr ovsport,
-                                   virNetDevVlanPtr virtVlan)
+                                const virMacAddr *macaddr,
+                                const unsigned char *vmuuid,
+                                virNetDevVPortProfilePtr ovsport,
+                                virNetDevVlanPtr virtVlan)
 {
     char macaddrstr[VIR_MAC_STRING_BUFLEN];
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];
@@ -181,21 +181,21 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 
     if (ovsport->profileID[0] == '\0') {
         virCommandAddArgList(cmd,
-                        "--", "set", "Interface", ifname, attachedmac_ex_id,
-                        "--", "set", "Interface", ifname, ifaceid_ex_id,
-                        "--", "set", "Interface", ifname, vmid_ex_id,
-                        "--", "set", "Interface", ifname,
-                        "external-ids:iface-status=active",
-                        NULL);
+                             "--", "set", "Interface", ifname, attachedmac_ex_id,
+                             "--", "set", "Interface", ifname, ifaceid_ex_id,
+                             "--", "set", "Interface", ifname, vmid_ex_id,
+                             "--", "set", "Interface", ifname,
+                             "external-ids:iface-status=active",
+                             NULL);
     } else {
         virCommandAddArgList(cmd,
-                        "--", "set", "Interface", ifname, attachedmac_ex_id,
-                        "--", "set", "Interface", ifname, ifaceid_ex_id,
-                        "--", "set", "Interface", ifname, vmid_ex_id,
-                        "--", "set", "Interface", ifname, profile_ex_id,
-                        "--", "set", "Interface", ifname,
-                        "external-ids:iface-status=active",
-                        NULL);
+                             "--", "set", "Interface", ifname, attachedmac_ex_id,
+                             "--", "set", "Interface", ifname, ifaceid_ex_id,
+                             "--", "set", "Interface", ifname, vmid_ex_id,
+                             "--", "set", "Interface", ifname, profile_ex_id,
+                             "--", "set", "Interface", ifname,
+                             "external-ids:iface-status=active",
+                             NULL);
     }
 
     if (virCommandRun(cmd, NULL) < 0) {

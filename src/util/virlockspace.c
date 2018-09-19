@@ -269,7 +269,7 @@ virLockSpacePtr virLockSpaceNew(const char *directory)
             if (!virFileIsDir(directory)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Lockspace location %s exists, but is not a directory"),
-                           directory);
+                               directory);
                 goto error;
             }
         } else {

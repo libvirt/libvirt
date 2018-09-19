@@ -2062,9 +2062,9 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
         return -1;
 
     return virCgroupSetValueStr(group,
-                               VIR_CGROUP_CONTROLLER_BLKIO,
-                               "blkio.throttle.read_iops_device",
-                               str);
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "blkio.throttle.read_iops_device",
+                                str);
 }
 
 
@@ -2091,9 +2091,9 @@ virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
         return -1;
 
     return virCgroupSetValueStr(group,
-                               VIR_CGROUP_CONTROLLER_BLKIO,
-                               "blkio.throttle.write_iops_device",
-                               str);
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "blkio.throttle.write_iops_device",
+                                str);
 }
 
 
@@ -2120,9 +2120,9 @@ virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
         return -1;
 
     return virCgroupSetValueStr(group,
-                               VIR_CGROUP_CONTROLLER_BLKIO,
-                               "blkio.throttle.read_bps_device",
-                               str);
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "blkio.throttle.read_bps_device",
+                                str);
 }
 
 /**
@@ -2148,9 +2148,9 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
         return -1;
 
     return virCgroupSetValueStr(group,
-                               VIR_CGROUP_CONTROLLER_BLKIO,
-                               "blkio.throttle.write_bps_device",
-                               str);
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "blkio.throttle.write_bps_device",
+                                str);
 }
 
 
@@ -2178,9 +2178,9 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
         return -1;
 
     return virCgroupSetValueStr(group,
-                               VIR_CGROUP_CONTROLLER_BLKIO,
-                               "blkio.weight_device",
-                               str);
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "blkio.weight_device",
+                                str);
 }
 
 /**
@@ -3214,8 +3214,8 @@ virCgroupGetPercpuStats(virCgroupPtr group,
             goto cleanup;
 
         for (i = start_cpu; i < need_cpus; i++) {
-            if (virTypedParameterAssign(&params[(i - start_cpu) * nparams +
-                                                param_idx],
+            int idx = (i - start_cpu) * nparams + param_idx;
+            if (virTypedParameterAssign(&params[idx],
                                         VIR_DOMAIN_CPU_STATS_VCPUTIME,
                                         VIR_TYPED_PARAM_ULLONG,
                                         sum_cpu_time[i]) < 0)

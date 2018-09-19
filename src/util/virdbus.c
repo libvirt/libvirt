@@ -1567,7 +1567,7 @@ virDBusCall(DBusConnection *conn,
             ret = 0;
         } else {
             virReportError(VIR_ERR_DBUS_SERVICE, _("%s: %s"), member,
-                localerror.message ? localerror.message : _("unknown error"));
+                           localerror.message ? : _("unknown error"));
         }
         goto cleanup;
     }

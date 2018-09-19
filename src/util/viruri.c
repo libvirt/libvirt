@@ -342,7 +342,7 @@ virURIFindAliasMatch(char *const*aliases, const char *alias,
             virReportError(VIR_ERR_CONF_SYNTAX,
                            _("Malformed 'uri_aliases' config entry '%s', "
                              "aliases may only contain 'a-Z, 0-9, _, -'"),
-                            *aliases);
+                           *aliases);
             return -1;
         }
 

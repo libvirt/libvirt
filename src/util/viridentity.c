@@ -242,7 +242,7 @@ int virIdentitySetAttr(virIdentityPtr ident,
 
     if (ident->attrs[attr]) {
         virReportError(VIR_ERR_OPERATION_DENIED, "%s",
-                        _("Identity attribute is already set"));
+                       _("Identity attribute is already set"));
         goto cleanup;
     }
 
@@ -463,8 +463,8 @@ int virIdentitySetUNIXUserID(virIdentityPtr ident,
         return -1;
 
     return virIdentitySetAttr(ident,
-                             VIR_IDENTITY_ATTR_UNIX_USER_ID,
-                             val);
+                              VIR_IDENTITY_ATTR_UNIX_USER_ID,
+                              val);
 }
 
 
@@ -486,8 +486,8 @@ int virIdentitySetUNIXGroupID(virIdentityPtr ident,
         return -1;
 
     return virIdentitySetAttr(ident,
-                             VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
-                             val);
+                              VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
+                              val);
 }
 
 
@@ -500,8 +500,8 @@ int virIdentitySetUNIXProcessID(virIdentityPtr ident,
         return -1;
 
     return virIdentitySetAttr(ident,
-                             VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
-                             val);
+                              VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
+                              val);
 }
 
 
@@ -514,8 +514,8 @@ int virIdentitySetUNIXProcessTime(virIdentityPtr ident,
         return -1;
 
     return virIdentitySetAttr(ident,
-                             VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
-                             val);
+                              VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
+                              val);
 }
 
 

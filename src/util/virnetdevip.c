@@ -404,7 +404,7 @@ virNetDevIPParseDadStatus(struct nlmsghdr *nlh, int len,
         VIR_WARNINGS_NO_CAST_ALIGN
         rtattr_ptr = (struct rtattr *) IFA_RTA(ifaddrmsg_ptr);
         for (; RTA_OK(rtattr_ptr, ifaddrmsg_len);
-            rtattr_ptr = RTA_NEXT(rtattr_ptr, ifaddrmsg_len)) {
+             rtattr_ptr = RTA_NEXT(rtattr_ptr, ifaddrmsg_len)) {
             VIR_WARNINGS_RESET
             if (RTA_PAYLOAD(rtattr_ptr) != sizeof(struct in6_addr)) {
                 /* No address: ignore. */
@@ -660,9 +660,10 @@ virNetDevIPAddrAdd(const char *ifname,
         return -1;
 
     /* format up a broadcast address if this is IPv4 */
-    if (!peerstr && ((VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET)) &&
-        ((virSocketAddrBroadcastByPrefix(addr, prefix, &broadcast) < 0) ||
-         !(bcaststr = virSocketAddrFormat(&broadcast))))) {
+    if (!peerstr &&
+        ((VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET)) &&
+         ((virSocketAddrBroadcastByPrefix(addr, prefix, &broadcast) < 0) ||
+          !(bcaststr = virSocketAddrFormat(&broadcast))))) {
         return -1;
     }
 
@@ -749,7 +750,7 @@ virNetDevIPRouteAdd(const char *ifname,
     virCommandAddArgList(cmd, "route", "add", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     virCommandAddArgList(cmd, "via", gatewaystr, "dev", ifname,
-                              "proto", "static", "metric", NULL);
+                         "proto", "static", "metric", NULL);
     virCommandAddArgFormat(cmd, "%u", metric);
 
     if (virCommandRun(cmd, NULL) < 0)

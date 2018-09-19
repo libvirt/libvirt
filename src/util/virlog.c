@@ -632,23 +632,23 @@ virLogVMessage(virLogSourcePtr source,
                 char *initmsg = NULL;
                 if (virLogVersionString(&rawinitmsg, &initmsg) >= 0)
                     virLogOutputs[i]->f(&virLogSelf, VIR_LOG_INFO,
-                                       __FILE__, __LINE__, __func__,
-                                       timestamp, NULL, 0, rawinitmsg, initmsg,
-                                       virLogOutputs[i]->data);
+                                        __FILE__, __LINE__, __func__,
+                                        timestamp, NULL, 0, rawinitmsg, initmsg,
+                                        virLogOutputs[i]->data);
                 VIR_FREE(initmsg);
                 if (virLogHostnameString(&hoststr, &initmsg) >= 0)
                     virLogOutputs[i]->f(&virLogSelf, VIR_LOG_INFO,
-                                       __FILE__, __LINE__, __func__,
-                                       timestamp, NULL, 0, hoststr, initmsg,
-                                       virLogOutputs[i]->data);
+                                        __FILE__, __LINE__, __func__,
+                                        timestamp, NULL, 0, hoststr, initmsg,
+                                        virLogOutputs[i]->data);
                 VIR_FREE(hoststr);
                 VIR_FREE(initmsg);
                 virLogOutputs[i]->logInitMessage = false;
             }
             virLogOutputs[i]->f(source, priority,
-                               filename, linenr, funcname,
-                               timestamp, metadata, filterflags,
-                               str, msg, virLogOutputs[i]->data);
+                                filename, linenr, funcname,
+                                timestamp, metadata, filterflags,
+                                str, msg, virLogOutputs[i]->data);
         }
     }
     if (virLogNbOutputs == 0) {

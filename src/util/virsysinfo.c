@@ -1601,7 +1601,7 @@ virSysinfoBaseBoardIsEqual(virSysinfoBaseBoardDefPtr src,
 
 static bool
 virSysinfoChassisIsEqual(virSysinfoChassisDefPtr src,
-                           virSysinfoChassisDefPtr dst)
+                         virSysinfoChassisDefPtr dst)
 {
     bool identical = false;
 

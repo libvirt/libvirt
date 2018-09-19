@@ -1168,7 +1168,7 @@ virSocketAddrIsNumericLocalhost(const char *addr)
     switch (res.data.stor.ss_family) {
     case AF_INET:
         return memcmp(&res.data.inet4.sin_addr.s_addr, &tmp.s_addr,
-                     sizeof(res.data.inet4.sin_addr.s_addr)) == 0;
+                      sizeof(res.data.inet4.sin_addr.s_addr)) == 0;
     case AF_INET6:
         return IN6_IS_ADDR_LOOPBACK(&res.data.inet6.sin6_addr);
     }

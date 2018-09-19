@@ -700,7 +700,7 @@ int virProcessSetNamespaces(size_t nfdlist,
 
     if (nfdlist == 0) {
         virReportInvalidArg(nfdlist, "%s",
-                             _("Expected at least one file descriptor"));
+                            _("Expected at least one file descriptor"));
         return -1;
     }
     for (i = 0; i < nfdlist; i++) {

@@ -117,10 +117,10 @@ virQEMUBuildCommandLineJSONIterate(const char *key,
             return -1;
 
         return virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf,
-                                                 data->arrayFunc, false);
+                                                  data->arrayFunc, false);
     } else {
         return virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
-                                                 data->arrayFunc, false);
+                                                  data->arrayFunc, false);
     }
 }
 
