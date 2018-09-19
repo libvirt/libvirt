@@ -634,11 +634,6 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             return -1;
         }
 #endif
-
-        /* Allow libxl to calculate shadow memory requirements */
-        b_info->shadow_memkb =
-            libxl_get_required_shadow_memory(b_info->max_memkb,
-                                             b_info->max_vcpus);
     } else {
         /*
          * For compatibility with the legacy xen toolstack, default to pygrub
@@ -691,6 +686,11 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             return -1;
         }
     }
+
+    /* Allow libxl to calculate shadow memory requirements */
+    b_info->shadow_memkb =
+        libxl_get_required_shadow_memory(b_info->max_memkb,
+                                         b_info->max_vcpus);
 
     return 0;
 }
