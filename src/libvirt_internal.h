@@ -129,6 +129,8 @@ typedef enum {
 
 int virConnectSupportsFeature(virConnectPtr conn, int feature);
 
+int virDomainMigrateCheckNotLocal(const char *dconnuri);
+
 int virDomainMigratePrepare (virConnectPtr dconn,
                              char **cookie,
                              int *cookielen,

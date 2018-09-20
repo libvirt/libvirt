@@ -81,6 +81,7 @@ ignored_words = {
 
 ignored_functions = {
     "virConnectSupportsFeature": "private function for remote access",
+    "virDomainMigrateCheckNotLocal": "private function for migration",
     "virDomainMigrateFinish": "private function for migration",
     "virDomainMigrateFinish2": "private function for migration",
     "virDomainMigratePerform": "private function for migration",

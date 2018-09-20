@@ -1481,6 +1481,7 @@ virHostdevUpdateActiveUSBDevices;
 virConnectSupportsFeature;
 virDomainMigrateBegin3;
 virDomainMigrateBegin3Params;
+virDomainMigrateCheckNotLocal;
 virDomainMigrateConfirm3;
 virDomainMigrateConfirm3Params;
 virDomainMigrateFinish;

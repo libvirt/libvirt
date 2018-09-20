@@ -335,6 +335,7 @@ tests += [
   { 'name': 'virtypedparamtest' },
   { 'name': 'viruritest' },
   { 'name': 'vshtabletest', 'link_with': [ libvirt_shell_lib ] },
+  { 'name': 'virmigtest' },
 ]
 
 if host_machine.system() == 'linux'

@@ -3269,8 +3269,7 @@ virDomainMigrateVersion3Params(virDomainPtr domain,
                                         params, nparams, true, flags);
 }
 
-
-static int
+int
 virDomainMigrateCheckNotLocal(const char *dconnuri)
 {
     g_autoptr(virURI) tempuri = NULL;
