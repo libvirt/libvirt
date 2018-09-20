@@ -110,9 +110,11 @@ mymain(void)
     DO_TEST_FULL("caches", VIR_ARCH_X86_64, true, true);
 
     DO_TEST_FULL("resctrl", VIR_ARCH_X86_64, true, true);
+    DO_TEST_FULL("resctrl-cmt", VIR_ARCH_X86_64, true, true);
     DO_TEST_FULL("resctrl-cdp", VIR_ARCH_X86_64, true, true);
     DO_TEST_FULL("resctrl-skx", VIR_ARCH_X86_64, true, true);
     DO_TEST_FULL("resctrl-skx-twocaches", VIR_ARCH_X86_64, true, true);
+    DO_TEST_FULL("resctrl-fake-feature", VIR_ARCH_X86_64, true, true);
 
     return ret;
 }

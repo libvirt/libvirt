@@ -243,10 +243,12 @@ virCapsDispose(void *object)
 
     for (i = 0; i < caps->host.cache.nbanks; i++)
         virCapsHostCacheBankFree(caps->host.cache.banks[i]);
+    virResctrlInfoMonFree(caps->host.cache.monitor);
     VIR_FREE(caps->host.cache.banks);
 
     for (i = 0; i < caps->host.memBW.nnodes; i++)
         virCapsHostMemBWNodeFree(caps->host.memBW.nodes[i]);
+    virResctrlInfoMonFree(caps->host.memBW.monitor);
     VIR_FREE(caps->host.memBW.nodes);
 
     VIR_FREE(caps->host.netprefix);
@@ -862,6 +864,50 @@ virCapabilitiesFormatNUMATopology(virBufferPtr buf,
     return 0;
 }
 
+
+static int
+virCapabilitiesFormatResctrlMonitor(virBufferPtr buf,
+                                    virResctrlInfoMonPtr monitor)
+{
+    size_t i = 0;
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+
+    /* monitor not supported, no capability */
+    if (!monitor)
+        return 0;
+
+    /* no feature found in monitor means no capability, return */
+    if (monitor->nfeatures == 0)
+        return 0;
+
+    virBufferAddLit(buf, "<monitor ");
+
+    /* CMT might not enabled, if enabled show related attributes. */
+    if (monitor->type == VIR_RESCTRL_MONITOR_TYPE_CACHE)
+        virBufferAsprintf(buf,
+                          "level='%u' reuseThreshold='%u' ",
+                          monitor->cache_level,
+                          monitor->cache_reuse_threshold);
+    virBufferAsprintf(buf,
+                      "maxMonitors='%u'>\n",
+                      monitor->max_monitor);
+
+    virBufferSetChildIndent(&childrenBuf, buf);
+    for (i = 0; i < monitor->nfeatures; i++) {
+        virBufferAsprintf(&childrenBuf,
+                          "<feature name='%s'/>\n",
+                          monitor->features[i]);
+    }
+
+    if (virBufferCheckError(&childrenBuf) < 0)
+        return -1;
+
+    virBufferAddBuffer(buf, &childrenBuf);
+    virBufferAddLit(buf, "</monitor>\n");
+
+    return 0;
+}
+
 static int
 virCapabilitiesFormatCaches(virBufferPtr buf,
                             virCapsHostCachePtr cache)
@@ -949,6 +995,9 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
         }
     }
 
+    if (virCapabilitiesFormatResctrlMonitor(buf, cache->monitor) < 0)
+        return -1;
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</cache>\n");
 
@@ -999,6 +1048,9 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
             virBufferAddLit(buf, "/>\n");
         }
     }
+
+    if (virCapabilitiesFormatResctrlMonitor(buf, memBW->monitor) < 0)
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</memory_bandwidth>\n");
@@ -1659,6 +1711,8 @@ virCapabilitiesInitResctrlMemory(virCapsPtr caps)
     virCapsHostMemBWNodePtr node = NULL;
     size_t i = 0;
     int ret = -1;
+    const virResctrlMonitorType montype = VIR_RESCTRL_MONITOR_TYPE_MEMBW;
+    const char *prefix = virResctrlMonitorPrefixTypeToString(montype);
 
     for (i = 0; i < caps->host.cache.nbanks; i++) {
         virCapsHostCacheBankPtr bank = caps->host.cache.banks[i];
@@ -1680,6 +1734,10 @@ virCapabilitiesInitResctrlMemory(virCapsPtr caps)
         node = NULL;
     }
 
+    if (virResctrlInfoGetMonitorPrefix(caps->host.resctrl, prefix,
+                                       &caps->host.memBW.monitor) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     virCapsHostMemBWNodeFree(node);
@@ -1699,6 +1757,8 @@ virCapabilitiesInitCaches(virCapsPtr caps)
     char *type = NULL;
     struct dirent *ent = NULL;
     virCapsHostCacheBankPtr bank = NULL;
+    const virResctrlMonitorType montype = VIR_RESCTRL_MONITOR_TYPE_CACHE;
+    const char *prefix = virResctrlMonitorPrefixTypeToString(montype);
 
     /* Minimum level to expose in capabilities.  Can be lowered or removed (with
      * the appropriate code below), but should not be increased, because we'd
@@ -1817,6 +1877,10 @@ virCapabilitiesInitCaches(virCapsPtr caps)
           sizeof(*caps->host.cache.banks), virCapsHostCacheBankSorter);
 
     if (virCapabilitiesInitResctrlMemory(caps) < 0)
+        goto cleanup;
+
+    if (virResctrlInfoGetMonitorPrefix(caps->host.resctrl, prefix,
+                                       &caps->host.cache.monitor) < 0)
         goto cleanup;
 
     ret = 0;

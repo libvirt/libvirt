@@ -50,6 +50,8 @@
       </bank>
       <monitor level='3' reuseThreshold='270336' maxMonitors='176'>
         <feature name='llc_occupancy'/>
+        <feature name='llc_new_feature'/>
+        <feature name='llc_unknown_feature'/>
       </monitor>
     </cache>
     <memory_bandwidth>
@@ -62,6 +64,8 @@
       <monitor maxMonitors='176'>
         <feature name='mbm_total_bytes'/>
         <feature name='mbm_local_bytes'/>
+        <feature name='mbm_new_feature'/>
+        <feature name='mbm_unknown_feature'/>
       </monitor>
     </memory_bandwidth>
   </host>
