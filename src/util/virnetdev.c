@@ -2161,7 +2161,7 @@ virNetDevReadNetConfig(const char *linkdev, int vf,
     }
 
     /* we won't need the file again */
-    ignore_value(unlink(filePath));
+    unlink(filePath);
 
     ret = 0;
  cleanup:

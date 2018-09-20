@@ -4304,7 +4304,7 @@ virQEMUCapsInitQMPCommandAbort(virQEMUCapsInitQMPCommandPtr cmd)
     cmd->cmd = NULL;
 
     if (cmd->monpath)
-        ignore_value(unlink(cmd->monpath));
+        unlink(cmd->monpath);
 
     virDomainObjEndAPI(&cmd->vm);
 

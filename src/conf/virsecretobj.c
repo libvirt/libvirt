@@ -666,7 +666,7 @@ virSecretObjDeleteData(virSecretObjPtr obj)
 {
     /* The configFile will already be removed, so secret won't be
      * loaded again if this fails */
-    (void)unlink(obj->base64File);
+    unlink(obj->base64File);
 }
 
 

@@ -84,7 +84,7 @@ storagePoolRefreshFailCleanup(virStorageBackendPtr backend,
     virErrorPtr orig_err = virSaveLastError();
 
     if (stateFile)
-        ignore_value(unlink(stateFile));
+        unlink(stateFile);
     if (backend->stopPool)
         backend->stopPool(obj);
     if (orig_err) {
@@ -142,7 +142,7 @@ storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to initialize storage pool '%s': %s"),
                        def->name, virGetLastErrorMessage());
-        ignore_value(unlink(stateFile));
+        unlink(stateFile);
         active = false;
     }
 

@@ -1923,7 +1923,7 @@ virNWFilterSnoopLeaseFileRefresh(void)
     if (rename(TMPLEASEFILE, LEASEFILE) < 0) {
         virReportSystemError(errno, _("rename(\"%s\", \"%s\")"),
                              TMPLEASEFILE, LEASEFILE);
-        ignore_value(unlink(TMPLEASEFILE));
+        unlink(TMPLEASEFILE);
     }
     virAtomicIntSet(&virNWFilterSnoopState.wLeases, 0);
 

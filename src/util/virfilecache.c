@@ -161,7 +161,7 @@ virFileCacheLoad(virFileCachePtr cache,
 
     if (!cache->handlers.isValid(loadData, cache->priv)) {
         VIR_DEBUG("Outdated cached capabilities '%s' for '%s'", file, name);
-        ignore_value(unlink(file));
+        unlink(file);
         ret = 0;
         goto cleanup;
     }
