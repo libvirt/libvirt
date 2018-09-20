@@ -2921,8 +2921,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
             }
         }
 
-        priv->qemuCaps = qemuCaps;
-        qemuCaps = NULL;
+        VIR_STEAL_PTR(priv->qemuCaps, qemuCaps);
     }
     VIR_FREE(nodes);
 
