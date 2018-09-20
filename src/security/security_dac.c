@@ -141,6 +141,7 @@ virSecurityDACChownListFree(void *opaque)
         VIR_FREE(list->items[i]);
     }
     VIR_FREE(list->items);
+    virObjectUnref(list->manager);
     VIR_FREE(list);
 }
 
@@ -511,12 +512,12 @@ virSecurityDACTransactionStart(virSecurityManagerPtr mgr)
     if (VIR_ALLOC(list) < 0)
         return -1;
 
-    list->manager = mgr;
+    list->manager = virObjectRef(mgr);
 
     if (virThreadLocalSet(&chownList, list) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to set thread local variable"));
-        VIR_FREE(list);
+        virSecurityDACChownListFree(list);
         return -1;
     }
 
