@@ -166,6 +166,13 @@ struct _virCapsHostMemBWNode {
     virResctrlInfoMemBWPerNode control;
 };
 
+typedef struct _virCapsHostMemBW virCapsHostMemBW;
+typedef virCapsHostMemBW *virCapsHostMemBWPtr;
+struct _virCapsHostMemBW {
+    size_t nnodes;
+    virCapsHostMemBWNodePtr *nodes;
+};
+
 typedef struct _virCapsHost virCapsHost;
 typedef virCapsHost *virCapsHostPtr;
 struct _virCapsHost {
@@ -189,8 +196,7 @@ struct _virCapsHost {
 
     virCapsHostCache cache;
 
-    size_t nnodes;
-    virCapsHostMemBWNodePtr *nodes;
+    virCapsHostMemBW memBW;
 
     size_t nsecModels;
     virCapsHostSecModelPtr secModels;

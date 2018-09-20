@@ -245,9 +245,9 @@ virCapsDispose(void *object)
         virCapsHostCacheBankFree(caps->host.cache.banks[i]);
     VIR_FREE(caps->host.cache.banks);
 
-    for (i = 0; i < caps->host.nnodes; i++)
-        virCapsHostMemBWNodeFree(caps->host.nodes[i]);
-    VIR_FREE(caps->host.nodes);
+    for (i = 0; i < caps->host.memBW.nnodes; i++)
+        virCapsHostMemBWNodeFree(caps->host.memBW.nodes[i]);
+    VIR_FREE(caps->host.memBW.nodes);
 
     VIR_FREE(caps->host.netprefix);
     VIR_FREE(caps->host.pagesSize);
@@ -957,20 +957,19 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 
 static int
 virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
-                                     size_t nnodes,
-                                     virCapsHostMemBWNodePtr *nodes)
+                                     virCapsHostMemBWPtr memBW)
 {
     size_t i = 0;
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
 
-    if (!nnodes)
+    if (!memBW->nnodes)
         return 0;
 
     virBufferAddLit(buf, "<memory_bandwidth>\n");
     virBufferAdjustIndent(buf, 2);
 
-    for (i = 0; i < nnodes; i++) {
-        virCapsHostMemBWNodePtr node = nodes[i];
+    for (i = 0; i < memBW->nnodes; i++) {
+        virCapsHostMemBWNodePtr node = memBW->nodes[i];
         virResctrlInfoMemBWPerNodePtr control = &node->control;
         char *cpus_str = virBitmapFormat(node->cpus);
 
@@ -1109,8 +1108,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     if (virCapabilitiesFormatCaches(&buf, &caps->host.cache) < 0)
         goto error;
 
-    if (virCapabilitiesFormatMemoryBandwidth(&buf, caps->host.nnodes,
-                                             caps->host.nodes) < 0)
+    if (virCapabilitiesFormatMemoryBandwidth(&buf, &caps->host.memBW) < 0)
         goto error;
 
     for (i = 0; i < caps->host.nsecModels; i++) {
@@ -1673,8 +1671,8 @@ virCapabilitiesInitResctrlMemory(virCapsPtr caps)
             if (!(node->cpus = virBitmapNewCopy(bank->cpus)))
                 goto cleanup;
 
-            if (VIR_APPEND_ELEMENT(caps->host.nodes,
-                                   caps->host.nnodes, node) < 0) {
+            if (VIR_APPEND_ELEMENT(caps->host.memBW.nodes,
+                                   caps->host.memBW.nnodes, node) < 0) {
                 goto cleanup;
             }
         }
