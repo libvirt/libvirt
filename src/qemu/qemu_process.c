@@ -5298,10 +5298,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
     }
 
     VIR_DEBUG("Determining emulator version");
-    virObjectUnref(priv->qemuCaps);
-    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      vm->def->emulator,
-                                                      vm->def->os.machine)))
+    if (qemuDomainUpdateQEMUCaps(vm, driver->qemuCapsCache) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_STANDALONE)
@@ -7403,10 +7400,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto error;
 
     VIR_DEBUG("Determining emulator version");
-    virObjectUnref(priv->qemuCaps);
-    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      vm->def->emulator,
-                                                      vm->def->os.machine)))
+    if (qemuDomainUpdateQEMUCaps(vm, driver->qemuCapsCache) < 0)
         goto error;
 
     VIR_DEBUG("Preparing monitor state");
@@ -7869,9 +7863,7 @@ qemuProcessReconnect(void *opaque)
      * caps in the domain status, so re-query them
      */
     if (!priv->qemuCaps &&
-        !(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      obj->def->emulator,
-                                                      obj->def->os.machine)))
+        (qemuDomainUpdateQEMUCaps(obj, driver->qemuCapsCache) < 0))
         goto error;
 
     /* In case the domain shutdown while we were not running,

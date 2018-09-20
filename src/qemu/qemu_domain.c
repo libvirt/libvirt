@@ -13122,6 +13122,31 @@ qemuDomainFixupCPUs(virDomainObjPtr vm,
 }
 
 
+/**
+ * qemuDomainUpdateQEMUCaps:
+ * @vm: domain object
+ * @qemuCapsCache: cache of QEMU capabilities
+ *
+ * This function updates the used QEMU capabilities of @vm by querying
+ * the QEMU capabilities cache.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+qemuDomainUpdateQEMUCaps(virDomainObjPtr vm,
+                         virFileCachePtr qemuCapsCache)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    virObjectUnref(priv->qemuCaps);
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(qemuCapsCache,
+                                                      vm->def->emulator,
+                                                      vm->def->os.machine)))
+        return -1;
+    return 0;
+}
+
+
 char *
 qemuDomainGetMachineName(virDomainObjPtr vm)
 {
