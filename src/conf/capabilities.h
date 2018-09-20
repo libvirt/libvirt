@@ -151,6 +151,13 @@ struct _virCapsHostCacheBank {
     virResctrlInfoPerCachePtr *controls;
 };
 
+typedef struct _virCapsHostCache virCapsHostCache;
+typedef virCapsHostCache *virCapsHostCachePtr;
+struct _virCapsHostCache {
+    size_t nbanks;
+    virCapsHostCacheBankPtr *banks;
+};
+
 typedef struct _virCapsHostMemBWNode virCapsHostMemBWNode;
 typedef virCapsHostMemBWNode *virCapsHostMemBWNodePtr;
 struct _virCapsHostMemBWNode {
@@ -180,8 +187,7 @@ struct _virCapsHost {
 
     virResctrlInfoPtr resctrl;
 
-    size_t ncaches;
-    virCapsHostCacheBankPtr *caches;
+    virCapsHostCache cache;
 
     size_t nnodes;
     virCapsHostMemBWNodePtr *nodes;
