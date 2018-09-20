@@ -768,11 +768,13 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
 static int
 xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
 {
-    virConfValuePtr value = NULL;
+    VIR_AUTOPTR(virString) serials = NULL;
     virDomainChrDefPtr chr = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         VIR_AUTOFREE(char *) parallel = NULL;
+        int rc;
+
         if (xenConfigGetString(conf, "parallel", &parallel, NULL) < 0)
             goto cleanup;
         if (parallel && STRNEQ(parallel, "none") &&
@@ -790,8 +792,8 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
         }
 
         /* Try to get the list of values to support multiple serial ports */
-        value = virConfGetValue(conf, "serial");
-        if (value && value->type == VIR_CONF_LIST) {
+        if ((rc = virConfGetValueStringList(conf, "serial", false, &serials)) == 1) {
+            virString *entries;
             int portnum = -1;
 
             if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
@@ -800,18 +802,12 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
                 goto cleanup;
             }
 
-            value = value->list;
-            while (value) {
-                char *port = NULL;
+            for (entries = serials; *entries; entries++) {
+                virString port = *entries;
 
-                if ((value->type != VIR_CONF_STRING) || (value->str == NULL))
-                    goto cleanup;
-                port = value->str;
                 portnum++;
-                if (STREQ(port, "none")) {
-                    value = value->next;
+                if (STREQ(port, "none"))
                     continue;
-                }
 
                 if (!(chr = xenParseSxprChar(port, NULL)))
                     goto cleanup;
@@ -819,11 +815,13 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
                 chr->target.port = portnum;
                 if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0)
                     goto cleanup;
-
-                value = value->next;
             }
         } else {
             VIR_AUTOFREE(char *) serial = NULL;
+
+            if (xenHandleConfGetValueStringListErrors(rc) < 0)
+                goto cleanup;
+
             /* If domain is not using multiple serial ports we parse data old way */
             if (xenConfigGetString(conf, "serial", &serial, NULL) < 0)
                 goto cleanup;
