@@ -83,6 +83,9 @@ typedef virResctrlInfoPerLevel *virResctrlInfoPerLevelPtr;
 typedef struct _virResctrlInfoMemBW virResctrlInfoMemBW;
 typedef virResctrlInfoMemBW *virResctrlInfoMemBWPtr;
 
+typedef struct _virResctrlInfoMongrp virResctrlInfoMongrp;
+typedef virResctrlInfoMongrp *virResctrlInfoMongrpPtr;
+
 typedef struct _virResctrlAllocPerType virResctrlAllocPerType;
 typedef virResctrlAllocPerType *virResctrlAllocPerTypePtr;
 
@@ -139,6 +142,28 @@ struct _virResctrlInfoMemBW {
     unsigned int max_id;
 };
 
+struct _virResctrlInfoMongrp {
+    /* Maximum number of simultaneous monitors */
+    unsigned int max_monitor;
+    /* null-terminal string list for monitor features */
+    char **features;
+    /* Number of monitor features */
+    size_t nfeatures;
+
+    /* Last level cache related information */
+
+    /* This adjustable value affects the final reuse of resources used by
+     * monitor. After the action of removing a monitor, the kernel may not
+     * release all hardware resources that monitor used immediately if the
+     * cache occupancy value associated with 'removed' monitor is above this
+     * threshold. Once the cache occupancy is below this threshold, the
+     * underlying hardware resource will be reclaimed and be put into the
+     * resource pool for next reusing.*/
+    unsigned int cache_reuse_threshold;
+    /* The cache 'level' that has the monitor capability */
+    unsigned int cache_level;
+};
+
 struct _virResctrlInfo {
     virObject parent;
 
@@ -146,6 +171,8 @@ struct _virResctrlInfo {
     size_t nlevels;
 
     virResctrlInfoMemBWPtr membw_info;
+
+    virResctrlInfoMongrpPtr monitor_info;
 };
 
 
@@ -171,8 +198,12 @@ virResctrlInfoDispose(void *obj)
         VIR_FREE(level);
     }
 
+    if (resctrl->monitor_info)
+        virStringListFree(resctrl->monitor_info->features);
+
     VIR_FREE(resctrl->membw_info);
     VIR_FREE(resctrl->levels);
+    VIR_FREE(resctrl->monitor_info);
 }
 
 
@@ -555,6 +586,94 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
 }
 
 
+/*
+ * Retrieve monitor capability from the resource control file system.
+ *
+ * The monitor capability is exposed through "SYSFS_RESCTRL_PATH/info/L3_MON"
+ * directory under the resource control file system. The monitor capability is
+ * parsed by reading the interface files and stored in the structure
+ * 'virResctrlInfoMongrp'.
+ *
+ * Not all host supports the resource monitor, leave the pointer
+ * @resctrl->monitor_info empty if not supported.
+ */
+static int
+virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
+{
+    int ret = -1;
+    int rv = -1;
+    char *featurestr = NULL;
+    char **features = NULL;
+    size_t nfeatures = 0;
+    virResctrlInfoMongrpPtr info_monitor = NULL;
+
+    if (VIR_ALLOC(info_monitor) < 0)
+        return -1;
+
+    /* For now, monitor only exists in level 3 cache */
+    info_monitor->cache_level = 3;
+
+    rv = virFileReadValueUint(&info_monitor->max_monitor,
+                              SYSFS_RESCTRL_PATH "/info/L3_MON/num_rmids");
+    if (rv == -2) {
+        /* The file doesn't exist, so it's unusable for us, probably resource
+         * monitor unsupported */
+        VIR_INFO("The file '" SYSFS_RESCTRL_PATH "/info/L3_MON/num_rmids' "
+                 "does not exist");
+        ret = 0;
+        virResetLastError();
+        goto cleanup;
+    } else if (rv < 0) {
+        /* Other failures are fatal, so just quit */
+        goto cleanup;
+    }
+
+    rv = virFileReadValueUint(&info_monitor->cache_reuse_threshold,
+                              SYSFS_RESCTRL_PATH
+                              "/info/L3_MON/max_threshold_occupancy");
+    if (rv == -2) {
+        /* If CMT is not supported, then 'max_threshold_occupancy' file
+         * will not exist. */
+        VIR_DEBUG("File '" SYSFS_RESCTRL_PATH
+                  "/info/L3_MON/max_threshold_occupancy' does not exist");
+        virResetLastError();
+    } else if (rv < 0) {
+        goto cleanup;
+    }
+
+    rv = virFileReadValueString(&featurestr,
+                                SYSFS_RESCTRL_PATH
+                                "/info/L3_MON/mon_features");
+    if (rv == -2)
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot get mon_features from resctrl"));
+    if (rv < 0)
+        goto cleanup;
+
+    if (!*featurestr) {
+        /* If no feature found in "/info/L3_MON/mon_features",
+         * some error happens */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Get empty feature list from resctrl"));
+        goto cleanup;
+    }
+
+    features = virStringSplitCount(featurestr, "\n", 0, &nfeatures);
+    VIR_DEBUG("Resctrl supported %ld monitoring features", nfeatures);
+
+    info_monitor->nfeatures = nfeatures;
+    VIR_STEAL_PTR(info_monitor->features, features);
+    VIR_STEAL_PTR(resctrl->monitor_info, info_monitor);
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(featurestr);
+    virStringListFree(features);
+    VIR_FREE(info_monitor);
+    return ret;
+}
+
+
 static int
 virResctrlGetInfo(virResctrlInfoPtr resctrl)
 {
@@ -570,6 +689,10 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
         goto cleanup;
 
     ret = virResctrlGetCacheInfo(resctrl, dirp);
+    if (ret < 0)
+        goto cleanup;
+
+    ret = virResctrlGetMonitorInfo(resctrl);
     if (ret < 0)
         goto cleanup;
 
@@ -611,6 +734,9 @@ virResctrlInfoIsEmpty(virResctrlInfoPtr resctrl)
         return true;
 
     if (resctrl->membw_info)
+        return false;
+
+    if (resctrl->monitor_info)
         return false;
 
     for (i = 0; i < resctrl->nlevels; i++) {
