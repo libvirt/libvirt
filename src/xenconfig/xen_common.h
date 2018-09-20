@@ -33,7 +33,7 @@
 
 int xenConfigGetString(virConfPtr conf,
                        const char *name,
-                       const char **value,
+                       char **value,
                        const char *def);
 
 int xenConfigGetBool(virConfPtr conf, const char *name, int *value, int def);

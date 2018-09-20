@@ -228,26 +228,23 @@ xenConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
 int
 xenConfigGetString(virConfPtr conf,
                    const char *name,
-                   const char **value,
+                   char **value,
                    const char *def)
 {
-    virConfValuePtr val;
+    char *string = NULL;
+    int rc;
 
     *value = NULL;
-    if (!(val = virConfGetValue(conf, name))) {
-        *value = def;
-        return 0;
+    if ((rc = virConfGetValueString(conf, name, &string)) < 0)
+        return -1;
+
+    if (rc == 0 || !string) {
+        if (VIR_STRDUP(*value, def) < 0)
+            return -1;
+    } else {
+        *value = string;
     }
 
-    if (val->type != VIR_CONF_STRING) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was malformed"), name);
-        return -1;
-    }
-    if (!val->str)
-        *value = def;
-    else
-        *value = val->str;
     return 0;
 }
 
@@ -345,32 +342,34 @@ xenParseTimeOffset(virConfPtr conf, virDomainDefPtr def)
 static int
 xenParseEventsActions(virConfPtr conf, virDomainDefPtr def)
 {
-    const char *str = NULL;
+    VIR_AUTOFREE(char *) on_poweroff = NULL;
+    VIR_AUTOFREE(char *) on_reboot = NULL;
+    VIR_AUTOFREE(char *) on_crash = NULL;
 
-    if (xenConfigGetString(conf, "on_poweroff", &str, "destroy") < 0)
+    if (xenConfigGetString(conf, "on_poweroff", &on_poweroff, "destroy") < 0)
         return -1;
 
-    if ((def->onPoweroff = virDomainLifecycleActionTypeFromString(str)) < 0) {
+    if ((def->onPoweroff = virDomainLifecycleActionTypeFromString(on_poweroff)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_poweroff"), str);
+                       _("unexpected value %s for on_poweroff"), on_poweroff);
         return -1;
     }
 
-    if (xenConfigGetString(conf, "on_reboot", &str, "restart") < 0)
+    if (xenConfigGetString(conf, "on_reboot", &on_reboot, "restart") < 0)
         return -1;
 
-    if ((def->onReboot = virDomainLifecycleActionTypeFromString(str)) < 0) {
+    if ((def->onReboot = virDomainLifecycleActionTypeFromString(on_reboot)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_reboot"), str);
+                       _("unexpected value %s for on_reboot"), on_reboot);
         return -1;
     }
 
-    if (xenConfigGetString(conf, "on_crash", &str, "restart") < 0)
+    if (xenConfigGetString(conf, "on_crash", &on_crash, "restart") < 0)
         return -1;
 
-    if ((def->onCrash = virDomainLifecycleActionTypeFromString(str)) < 0) {
+    if ((def->onCrash = virDomainLifecycleActionTypeFromString(on_crash)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected value %s for on_crash"), str);
+                       _("unexpected value %s for on_crash"), on_crash);
         return -1;
     }
 
@@ -488,7 +487,8 @@ xenParseCPUFeatures(virConfPtr conf,
                     virDomainXMLOptionPtr xmlopt)
 {
     unsigned long count = 0;
-    const char *str = NULL;
+    VIR_AUTOFREE(char *) cpus = NULL;
+    VIR_AUTOFREE(char *) tsc_mode = NULL;
     int val = 0;
     virDomainTimerDefPtr timer;
 
@@ -509,16 +509,16 @@ xenParseCPUFeatures(virConfPtr conf,
             return -1;
     }
 
-    if (xenConfigGetString(conf, "cpus", &str, NULL) < 0)
+    if (xenConfigGetString(conf, "cpus", &cpus, NULL) < 0)
         return -1;
 
-    if (str && (virBitmapParse(str, &def->cpumask, 4096) < 0))
+    if (cpus && (virBitmapParse(cpus, &def->cpumask, 4096) < 0))
         return -1;
 
-    if (xenConfigGetString(conf, "tsc_mode", &str, NULL) < 0)
+    if (xenConfigGetString(conf, "tsc_mode", &tsc_mode, NULL) < 0)
         return -1;
 
-    if (str) {
+    if (tsc_mode) {
         if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0 ||
             VIR_ALLOC(timer) < 0)
             return -1;
@@ -528,11 +528,11 @@ xenParseCPUFeatures(virConfPtr conf,
         timer->tickpolicy = -1;
         timer->mode = VIR_DOMAIN_TIMER_MODE_AUTO;
         timer->track = -1;
-        if (STREQ_NULLABLE(str, "always_emulate"))
+        if (STREQ_NULLABLE(tsc_mode, "always_emulate"))
             timer->mode = VIR_DOMAIN_TIMER_MODE_EMULATE;
-        else if (STREQ_NULLABLE(str, "native"))
+        else if (STREQ_NULLABLE(tsc_mode, "native"))
             timer->mode = VIR_DOMAIN_TIMER_MODE_NATIVE;
-        else if (STREQ_NULLABLE(str, "native_paravirt"))
+        else if (STREQ_NULLABLE(tsc_mode, "native_paravirt"))
             timer->mode = VIR_DOMAIN_TIMER_MODE_PARAVIRT;
 
         def->clock.timers[def->clock.ntimers - 1] = timer;
@@ -746,15 +746,15 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
 static int
 xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
 {
-    const char *str;
     virConfValuePtr value = NULL;
     virDomainChrDefPtr chr = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        if (xenConfigGetString(conf, "parallel", &str, NULL) < 0)
+        VIR_AUTOFREE(char *) parallel = NULL;
+        if (xenConfigGetString(conf, "parallel", &parallel, NULL) < 0)
             goto cleanup;
-        if (str && STRNEQ(str, "none") &&
-            !(chr = xenParseSxprChar(str, NULL)))
+        if (parallel && STRNEQ(parallel, "none") &&
+            !(chr = xenParseSxprChar(parallel, NULL)))
             goto cleanup;
         if (chr) {
             if (VIR_ALLOC_N(def->parallels, 1) < 0)
@@ -801,11 +801,12 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
                 value = value->next;
             }
         } else {
+            VIR_AUTOFREE(char *) serial = NULL;
             /* If domain is not using multiple serial ports we parse data old way */
-            if (xenConfigGetString(conf, "serial", &str, NULL) < 0)
+            if (xenConfigGetString(conf, "serial", &serial, NULL) < 0)
                 goto cleanup;
-            if (str && STRNEQ(str, "none") &&
-                !(chr = xenParseSxprChar(str, NULL)))
+            if (serial && STRNEQ(serial, "none") &&
+                !(chr = xenParseSxprChar(serial, NULL)))
                 goto cleanup;
             if (chr) {
                 if (VIR_ALLOC_N(def->serials, 1) < 0)
@@ -1049,7 +1050,7 @@ xenParseVifList(virConfPtr conf, virDomainDefPtr def, const char *vif_typename)
 static int
 xenParseEmulatedDevices(virConfPtr conf, virDomainDefPtr def)
 {
-    const char *str;
+    VIR_AUTOFREE(char *) str = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (xenConfigGetString(conf, "soundhw", &str, NULL) < 0)
@@ -1068,7 +1069,7 @@ static int
 xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 {
     virCapsDomainDataPtr capsdata = NULL;
-    const char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     int hvm = 0, ret = -1;
 
     if (xenConfigCopyString(conf, "name", &def->name) < 0)
