@@ -145,10 +145,13 @@ xenConfigCopyStringInternal(virConfPtr conf,
                             char **value,
                             int allowMissing)
 {
-    virConfValuePtr val;
+    int rc;
 
     *value = NULL;
-    if (!(val = virConfGetValue(conf, name))) {
+    if ((rc = virConfGetValueString(conf, name, value)) < 0)
+        return -1;
+
+    if (rc == 0) {
         if (allowMissing)
             return 0;
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -156,20 +159,7 @@ xenConfigCopyStringInternal(virConfPtr conf,
         return -1;
     }
 
-    if (val->type != VIR_CONF_STRING) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was not a string"), name);
-        return -1;
-    }
-    if (!val->str) {
-        if (allowMissing)
-            return 0;
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was missing"), name);
-        return -1;
-    }
-
-    return VIR_STRDUP(*value, val->str);
+    return 1;
 }
 
 
