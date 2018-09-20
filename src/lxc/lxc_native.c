@@ -198,7 +198,7 @@ lxcSetRootfs(virDomainDefPtr def,
              virConfPtr properties)
 {
     int type = VIR_DOMAIN_FS_TYPE_MOUNT;
-    char *value = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
     if (virConfGetValueString(properties, "lxc.rootfs", &value) <= 0)
         return -1;
@@ -679,7 +679,7 @@ lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
 static int
 lxcCreateConsoles(virDomainDefPtr def, virConfPtr properties)
 {
-    char *value = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     int nbttys = 0;
     virDomainChrDefPtr console;
     size_t i;
@@ -756,7 +756,7 @@ lxcIdmapWalkCallback(const char *name, virConfValuePtr value, void *data)
 static int
 lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
 {
-    char *value = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     unsigned long long size = 0;
 
     if (virConfGetValueString(properties,
@@ -767,6 +767,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
         size = size / 1024;
         virDomainDefSetMemoryTotal(def, size);
         def->mem.hard_limit = virMemoryLimitTruncate(size);
+        VIR_FREE(value);
     }
 
     if (virConfGetValueString(properties,
@@ -775,6 +776,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
         if (lxcConvertSize(value, &size) < 0)
             return -1;
         def->mem.soft_limit = virMemoryLimitTruncate(size / 1024);
+        VIR_FREE(value);
     }
 
     if (virConfGetValueString(properties,
@@ -790,23 +792,25 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
 static int
 lxcSetCpuTune(virDomainDefPtr def, virConfPtr properties)
 {
-    char *value = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpu.shares",
                               &value) > 0) {
         if (virStrToLong_ull(value, NULL, 10, &def->cputune.shares) < 0)
             goto error;
         def->cputune.sharesSpecified = true;
+        VIR_FREE(value);
     }
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpu.cfs_quota_us",
                               &value) > 0) {
         if (virStrToLong_ll(value, NULL, 10, &def->cputune.quota) < 0)
             goto error;
+        VIR_FREE(value);
     }
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpu.cfs_period_us",
-                               &value) > 0) {
+                              &value) > 0) {
         if (virStrToLong_ull(value, NULL, 10, &def->cputune.period) < 0)
             goto error;
     }
@@ -822,7 +826,7 @@ lxcSetCpuTune(virDomainDefPtr def, virConfPtr properties)
 static int
 lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
 {
-    char *value = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     virBitmapPtr nodeset = NULL;
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpuset.cpus",
@@ -830,10 +834,11 @@ lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
         if (virBitmapParse(value, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+        VIR_FREE(value);
     }
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpuset.mems",
-                               &value) > 0) {
+                              &value) > 0) {
         if (virBitmapParse(value, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
         if (virDomainNumatuneSet(def->numa,
@@ -943,7 +948,7 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
 static int
 lxcSetBlkioTune(virDomainDefPtr def, virConfPtr properties)
 {
-    char *value = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
     if (virConfGetValueString(properties, "lxc.cgroup.blkio.weight",
                               &value) > 0) {
@@ -963,7 +968,7 @@ lxcSetBlkioTune(virDomainDefPtr def, virConfPtr properties)
 static void
 lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
 {
-    char *value = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     char **toDrop = NULL;
     const char *capString;
     size_t i;
@@ -990,7 +995,7 @@ lxcParseConfigString(const char *config,
 {
     virDomainDefPtr vmdef = NULL;
     virConfPtr properties = NULL;
-    char *value = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
     if (!(properties = virConfReadString(config, VIR_CONF_FLAG_LXC_FORMAT)))
         return NULL;
@@ -1030,6 +1035,7 @@ lxcParseConfigString(const char *config,
         else if (arch == VIR_ARCH_NONE && STREQ(value, "amd64"))
             arch = VIR_ARCH_X86_64;
         vmdef->os.arch = arch;
+        VIR_FREE(value);
     }
 
     if (VIR_STRDUP(vmdef->os.init, "/sbin/init") < 0)
