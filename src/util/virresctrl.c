@@ -676,7 +676,7 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
     }
 
     features = virStringSplitCount(featurestr, "\n", 0, &nfeatures);
-    VIR_DEBUG("Resctrl supported %ld monitoring features", nfeatures);
+    VIR_DEBUG("Resctrl supported %zd monitoring features", nfeatures);
 
     info_monitor->nfeatures = nfeatures;
     VIR_STEAL_PTR(info_monitor->features, features);
