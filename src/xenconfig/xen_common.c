@@ -615,7 +615,6 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
     int val;
     char *listenAddr = NULL;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
-    virConfValuePtr list;
     virDomainGraphicsDefPtr graphics = NULL;
 
     if (hvm) {
@@ -671,17 +670,17 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
     }
 
     if (!hvm && def->graphics == NULL) { /* New PV guests use this format */
-        list = virConfGetValue(conf, "vfb");
-        if (list && list->type == VIR_CONF_LIST &&
-            list->list && list->list->type == VIR_CONF_STRING &&
-            list->list->str) {
+        VIR_AUTOPTR(virString) vfbs = NULL;
+        int rc;
+
+        if ((rc = virConfGetValueStringList(conf, "vfb", false, &vfbs)) == 1) {
             char vfb[MAX_VFB];
             char *key = vfb;
 
-            if (virStrcpyStatic(vfb, list->list->str) < 0) {
+            if (virStrcpyStatic(vfb, *vfbs) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("VFB %s too big for destination"),
-                               list->list->str);
+                               *vfbs);
                 goto cleanup;
             }
 
@@ -751,6 +750,9 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
             def->graphics[0] = graphics;
             def->ngraphics = 1;
             graphics = NULL;
+        } else {
+            if (xenHandleConfGetValueStringListErrors(rc) < 0)
+                goto cleanup;
         }
     }
 
