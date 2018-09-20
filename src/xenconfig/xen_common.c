@@ -183,7 +183,8 @@ xenConfigCopyStringOpt(virConfPtr conf, const char *name, char **value)
 static int
 xenConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
 {
-    virConfValuePtr val;
+    VIR_AUTOFREE(char *) string = NULL;
+    int rc;
 
     if (!uuid || !name || !conf) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -191,7 +192,11 @@ xenConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
         return -1;
     }
 
-    if (!(val = virConfGetValue(conf, name))) {
+
+    if ((rc = virConfGetValueString(conf, name, &string)) < 0)
+        return -1;
+
+    if (rc == 0) {
         if (virUUIDGenerate(uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Failed to generate UUID"));
@@ -201,21 +206,15 @@ xenConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
         }
     }
 
-    if (val->type != VIR_CONF_STRING) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("config value %s not a string"), name);
-        return -1;
-    }
-
-    if (!val->str) {
+    if (!string) {
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("%s can't be empty"), name);
         return -1;
     }
 
-    if (virUUIDParse(val->str, uuid) < 0) {
+    if (virUUIDParse(string, uuid) < 0) {
         virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("%s not parseable"), val->str);
+                       _("%s not parseable"), string);
         return -1;
     }
 
