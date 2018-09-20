@@ -455,20 +455,40 @@ xenParsePCI(char *entry)
 
 
 static int
+xenHandleConfGetValueStringListErrors(int ret)
+{
+    if (ret < 0) {
+        /* It means virConfGetValueStringList() didn't fail because the
+         * cval->type switch fell through - since we're passing
+         * @compatString == false - assumes failures for memory allocation
+         * and VIR_CONF_LIST traversal failure should cause -1 to be
+         * returned to the caller with the error message set. */
+        if (virGetLastErrorCode() != VIR_ERR_INTERNAL_ERROR)
+            return -1;
+
+        /* If we did fall through the switch, then ignore and clear the
+         * last error. */
+        virResetLastError();
+    }
+    return 0;
+}
+
+
+static int
 xenParsePCIList(virConfPtr conf, virDomainDefPtr def)
 {
-    virConfValuePtr list = virConfGetValue(conf, "pci");
+    VIR_AUTOPTR(virString) pcis = NULL;
+    virString *entries = NULL;
+    int rc;
 
-    if (!list || list->type != VIR_CONF_LIST)
-        return 0;
+    if ((rc = virConfGetValueStringList(conf, "pci", false, &pcis)) <= 0)
+        return xenHandleConfGetValueStringListErrors(rc);
 
-    for (list = list->list; list; list = list->next) {
+    for (entries = pcis; *entries; entries++) {
+        virString entry = *entries;
         virDomainHostdevDefPtr hostdev;
 
-        if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
-            continue;
-
-        if (!(hostdev = xenParsePCI(list->str)))
+        if (!(hostdev = xenParsePCI(entry)))
             return -1;
 
         if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
