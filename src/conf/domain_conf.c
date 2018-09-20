@@ -15089,10 +15089,10 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vgamem = NULL;
     char *primary = NULL;
 
-    ctxt->node = node;
-
     if (!(def = virDomainVideoDefNew()))
         return NULL;
+
+    ctxt->node = node;
 
     cur = node->children;
     while (cur != NULL) {
@@ -15830,10 +15830,10 @@ virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
     virDomainMemoryDefPtr def;
     int val;
 
-    ctxt->node = memdevNode;
-
     if (VIR_ALLOC(def) < 0)
         return NULL;
+
+    ctxt->node = memdevNode;
 
     if (!(tmp = virXMLPropString(memdevNode, "model"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
