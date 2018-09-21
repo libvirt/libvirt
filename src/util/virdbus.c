@@ -198,8 +198,10 @@ static void virDBusWatchCallback(int fdatch ATTRIBUTE_UNUSED,
 
     (void)dbus_watch_handle(watch, dbus_flags);
 
+    dbus_connection_ref(info->bus);
     while (dbus_connection_dispatch(info->bus) == DBUS_DISPATCH_DATA_REMAINS)
         /* keep dispatching while data remains */;
+    dbus_connection_unref(info->bus);
 }
 
 
