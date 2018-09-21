@@ -693,6 +693,7 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     int ninterfaces;
     xmlNodePtr *interfaces = NULL;
     size_t i;
+    vshTablePtr table = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -704,16 +705,17 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     if (ninterfaces < 0)
         goto cleanup;
 
-    vshPrintExtra(ctl, "%-10s %-10s %-10s %-11s %s\n", _("Interface"),
-                  _("Type"), _("Source"), _("Model"), _("MAC"));
-    vshPrintExtra(ctl, "-------------------------------------------------------\n");
+    table = vshTableNew(_("Interface"), _("Type"),
+                        _("Source"), _("Model"), _("MAC"), NULL);
+    if (!table)
+        goto cleanup;
 
     for (i = 0; i < ninterfaces; i++) {
-        char *type = NULL;
-        char *source = NULL;
-        char *target = NULL;
-        char *model = NULL;
-        char *mac = NULL;
+        VIR_AUTOFREE(char *) type = NULL;
+        VIR_AUTOFREE(char *) source = NULL;
+        VIR_AUTOFREE(char *) target = NULL;
+        VIR_AUTOFREE(char *) model = NULL;
+        VIR_AUTOFREE(char *) mac = NULL;
 
         ctxt->node = interfaces[i];
         type = virXPathString("string(./@type)", ctxt);
@@ -728,23 +730,22 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
         model = virXPathString("string(./model/@type)", ctxt);
         mac = virXPathString("string(./mac/@address)", ctxt);
 
-        vshPrint(ctl, "%-10s %-10s %-10s %-11s %-10s\n",
-                 target ? target : "-",
-                 type,
-                 source ? source : "-",
-                 model ? model : "-",
-                 mac ? mac : "-");
-
-        VIR_FREE(type);
-        VIR_FREE(source);
-        VIR_FREE(target);
-        VIR_FREE(model);
-        VIR_FREE(mac);
+        if (vshTableRowAppend(table,
+                              target ? target : "-",
+                              type,
+                              source ? source : "-",
+                              model ? model : "-",
+                              mac ? mac : "-",
+                              NULL) < 0)
+            goto cleanup;
     }
+
+    vshTablePrintToStdout(table, ctl);
 
     ret = true;
 
  cleanup:
+    vshTableFree(table);
     VIR_FREE(interfaces);
     xmlFreeDoc(xmldoc);
     xmlXPathFreeContext(ctxt);
