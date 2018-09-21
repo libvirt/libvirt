@@ -48,6 +48,7 @@
 #include "virutil.h"
 #include "virxml.h"
 #include "virstring.h"
+#include "vsh-table.h"
 
 virInterfacePtr
 virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
@@ -356,6 +357,8 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     unsigned int flags = VIR_CONNECT_LIST_INTERFACES_ACTIVE;
     virshInterfaceListPtr list = NULL;
     size_t i;
+    bool ret = false;
+    vshTablePtr table = NULL;
 
     if (inactive)
         flags = VIR_CONNECT_LIST_INTERFACES_INACTIVE;
@@ -366,21 +369,29 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (!(list = virshInterfaceListCollect(ctl, flags)))
         return false;
 
-    vshPrintExtra(ctl, " %-20s %-10s %s\n", _("Name"), _("State"),
-                  _("MAC Address"));
-    vshPrintExtra(ctl, "---------------------------------------------------\n");
+    table = vshTableNew(_("Name"), _("State"), _("MAC Address"), NULL);
+    if (!table)
+        goto cleanup;
 
     for (i = 0; i < list->nifaces; i++) {
         virInterfacePtr iface = list->ifaces[i];
 
-        vshPrint(ctl, " %-20s %-10s %s\n",
-                 virInterfaceGetName(iface),
-                 virInterfaceIsActive(iface) ? _("active") : _("inactive"),
-                 virInterfaceGetMACString(iface));
+        if (vshTableRowAppend(table,
+                              virInterfaceGetName(iface),
+                              virInterfaceIsActive(iface) ? _("active")
+                              : _("inactive"),
+                              virInterfaceGetMACString(iface),
+                              NULL) < 0)
+            goto cleanup;
     }
 
+    vshTablePrintToStdout(table, ctl);
+
+    ret = true;
+ cleanup:
+    vshTableFree(table);
     virshInterfaceListFree(list);
-    return true;
+    return ret;
 }
 
 /*
