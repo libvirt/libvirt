@@ -41,6 +41,7 @@
 #include "virstring.h"
 #include "virxml.h"
 #include "conf/snapshot_conf.h"
+#include "vsh-table.h"
 
 /* Helper for snapshot-create and snapshot-create-as */
 static bool
@@ -1487,6 +1488,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     char *parent_snap = NULL;
     virDomainSnapshotPtr start = NULL;
     virshSnapshotListPtr snaplist = NULL;
+    vshTablePtr table = NULL;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(tree, name);
     VSH_EXCLUSIVE_OPTIONS_VAR(parent, roots);
@@ -1547,15 +1549,12 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
     if (!tree && !name) {
         if (parent)
-            vshPrintExtra(ctl, " %-20s %-25s %-15s %s",
-                          _("Name"), _("Creation Time"), _("State"),
-                          _("Parent"));
+            table = vshTableNew(_("Name"), _("Creation Time"), _("State"), _("Parent"), NULL);
         else
-            vshPrintExtra(ctl, " %-20s %-25s %s",
-                          _("Name"), _("Creation Time"), _("State"));
-        vshPrintExtra(ctl, "\n"
-                           "------------------------------"
-                           "------------------------------\n");
+            table = vshTableNew(_("Name"), _("Creation Time"), _("State"), NULL);
+
+        if (!table)
+            goto cleanup;
     }
 
     if (tree) {
@@ -1614,12 +1613,19 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z",
                  &time_info);
 
-        if (parent)
-            vshPrint(ctl, " %-20s %-25s %-15s %s\n",
-                     snap_name, timestr, state, parent_snap);
-        else
-            vshPrint(ctl, " %-20s %-25s %s\n", snap_name, timestr, state);
+        if (parent) {
+            if (vshTableRowAppend(table, snap_name, timestr, state, parent_snap,
+                                  NULL) < 0)
+                goto cleanup;
+        } else {
+            if (vshTableRowAppend(table, snap_name, timestr, state,
+                                  NULL) < 0)
+                goto cleanup;
+        }
     }
+
+    if (table)
+        vshTablePrintToStdout(table, ctl);
 
     ret = true;
 
@@ -1633,6 +1639,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     xmlFreeDoc(xml);
     VIR_FREE(doc);
     virshDomainFree(dom);
+    vshTableFree(table);
 
     return ret;
 }
