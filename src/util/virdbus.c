@@ -144,6 +144,7 @@ void virDBusCloseSystemBus(void)
 {
     if (systembus && !sharedBus) {
         dbus_connection_close(systembus);
+        dbus_connection_unref(systembus);
         systembus = NULL;
     }
 }
