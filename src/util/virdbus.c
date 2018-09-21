@@ -197,7 +197,8 @@ static void virDBusWatchCallback(int fdatch ATTRIBUTE_UNUSED,
     if (events & VIR_EVENT_HANDLE_HANGUP)
         dbus_flags |= DBUS_WATCH_HANGUP;
 
-    (void)dbus_watch_handle(watch, dbus_flags);
+    if (dbus_watch_handle(watch, dbus_flags) == FALSE)
+        VIR_DEBUG("dbus_watch_handle() returned FALSE");
 
     dbus_connection_ref(info->bus);
     while (dbus_connection_dispatch(info->bus) == DBUS_DISPATCH_DATA_REMAINS)
