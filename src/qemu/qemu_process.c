@@ -7783,6 +7783,9 @@ qemuProcessReconnect(void *opaque)
      * allowReboot in status XML and we need to initialize it. */
     qemuProcessPrepareAllowReboot(obj);
 
+    if (qemuHostdevUpdateActiveDomainDevices(driver, obj->def) < 0)
+        goto error;
+
     if (priv->qemuCaps &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS))
         retry = false;
@@ -7792,9 +7795,6 @@ qemuProcessReconnect(void *opaque)
 
     /* XXX check PID liveliness & EXE path */
     if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, retry, NULL) < 0)
-        goto error;
-
-    if (qemuHostdevUpdateActiveDomainDevices(driver, obj->def) < 0)
         goto error;
 
     priv->machineName = qemuDomainGetMachineName(obj);
