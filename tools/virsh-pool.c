@@ -33,6 +33,7 @@
 #include "conf/storage_conf.h"
 #include "virstring.h"
 #include "virtime.h"
+#include "vsh-table.h"
 
 #define VIRSH_COMMON_OPT_POOL_FULL(cflags) \
     VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"), cflags)
@@ -1113,10 +1114,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     virStoragePoolInfo info;
     size_t i;
     bool ret = false;
-    size_t stringLength = 0, nameStrLength = 0;
-    size_t autostartStrLength = 0, persistStrLength = 0;
-    size_t stateStrLength = 0, capStrLength = 0;
-    size_t allocStrLength = 0, availStrLength = 0;
     struct poolInfoText {
         char *state;
         char *autostart;
@@ -1133,7 +1130,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     bool inactive, all;
     bool uuid = false;
     bool name = false;
-    char *outputStr = NULL;
+    vshTablePtr table = NULL;
 
     inactive = vshCommandOptBool(cmd, "inactive");
     all = vshCommandOptBool(cmd, "all");
@@ -1260,11 +1257,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             else
                 poolInfoTexts[i].persistent = vshStrdup(ctl, persistent ?
                                                          _("yes") : _("no"));
-
-            /* Keep the length of persistent string if longest so far */
-            stringLength = strlen(poolInfoTexts[i].persistent);
-            if (stringLength > persistStrLength)
-                persistStrLength = stringLength;
         }
 
         /* Collect further extended information about the pool */
@@ -1310,21 +1302,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     poolInfoTexts[i].allocation = vshStrdup(ctl, _("-"));
                     poolInfoTexts[i].available = vshStrdup(ctl, _("-"));
                 }
-
-                /* Keep the length of capacity string if longest so far */
-                stringLength = strlen(poolInfoTexts[i].capacity);
-                if (stringLength > capStrLength)
-                    capStrLength = stringLength;
-
-                /* Keep the length of allocation string if longest so far */
-                stringLength = strlen(poolInfoTexts[i].allocation);
-                if (stringLength > allocStrLength)
-                    allocStrLength = stringLength;
-
-                /* Keep the length of available string if longest so far */
-                stringLength = strlen(poolInfoTexts[i].available);
-                if (stringLength > availStrLength)
-                    availStrLength = stringLength;
             } else {
                 /* --details option was not specified, only active/inactive
                  * state strings are used */
@@ -1334,21 +1311,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     poolInfoTexts[i].state = vshStrdup(ctl, _("inactive"));
            }
         }
-
-        /* Keep the length of name string if longest so far */
-        stringLength = strlen(virStoragePoolGetName(list->pools[i]));
-        if (stringLength > nameStrLength)
-            nameStrLength = stringLength;
-
-        /* Keep the length of state string if longest so far */
-        stringLength = strlen(poolInfoTexts[i].state);
-        if (stringLength > stateStrLength)
-            stateStrLength = stringLength;
-
-        /* Keep the length of autostart string if longest so far */
-        stringLength = strlen(poolInfoTexts[i].autostart);
-        if (stringLength > autostartStrLength)
-            autostartStrLength = stringLength;
     }
 
     /* If the --details option wasn't selected, we output the pool
@@ -1376,18 +1338,22 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
 
         /* Output old style header */
-        vshPrintExtra(ctl, " %-20s %-10s %-10s\n", _("Name"), _("State"),
-                      _("Autostart"));
-        vshPrintExtra(ctl, "-------------------------------------------\n");
+        table = vshTableNew(_("Name"), _("State"), _("Autostart"), NULL);
+        if (!table)
+            goto cleanup;
 
         /* Output old style pool info */
         for (i = 0; i < list->npools; i++) {
             const char *name_str = virStoragePoolGetName(list->pools[i]);
-            vshPrint(ctl, " %-20s %-10s %-10s\n",
-                 name_str,
-                 poolInfoTexts[i].state,
-                 poolInfoTexts[i].autostart);
+            if (vshTableRowAppend(table,
+                                  name_str,
+                                  poolInfoTexts[i].state,
+                                  poolInfoTexts[i].autostart,
+                                  NULL) < 0)
+                goto cleanup;
         }
+
+        vshTablePrintToStdout(table, ctl);
 
         /* Cleanup and return */
         ret = true;
@@ -1396,99 +1362,33 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     /* We only get here if the --details option was selected. */
 
-    /* Use the length of name header string if it's longest */
-    stringLength = strlen(_("Name"));
-    if (stringLength > nameStrLength)
-        nameStrLength = stringLength;
-
-    /* Use the length of state header string if it's longest */
-    stringLength = strlen(_("State"));
-    if (stringLength > stateStrLength)
-        stateStrLength = stringLength;
-
-    /* Use the length of autostart header string if it's longest */
-    stringLength = strlen(_("Autostart"));
-    if (stringLength > autostartStrLength)
-        autostartStrLength = stringLength;
-
-    /* Use the length of persistent header string if it's longest */
-    stringLength = strlen(_("Persistent"));
-    if (stringLength > persistStrLength)
-        persistStrLength = stringLength;
-
-    /* Use the length of capacity header string if it's longest */
-    stringLength = strlen(_("Capacity"));
-    if (stringLength > capStrLength)
-        capStrLength = stringLength;
-
-    /* Use the length of allocation header string if it's longest */
-    stringLength = strlen(_("Allocation"));
-    if (stringLength > allocStrLength)
-        allocStrLength = stringLength;
-
-    /* Use the length of available header string if it's longest */
-    stringLength = strlen(_("Available"));
-    if (stringLength > availStrLength)
-        availStrLength = stringLength;
-
-    /* Display the string lengths for debugging. */
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest name string = %lu chars\n",
-             (unsigned long) nameStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest state string = %lu chars\n",
-             (unsigned long) stateStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest autostart string = %lu chars\n",
-             (unsigned long) autostartStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest persistent string = %lu chars\n",
-             (unsigned long) persistStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest capacity string = %lu chars\n",
-             (unsigned long) capStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest allocation string = %lu chars\n",
-             (unsigned long) allocStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest available string = %lu chars\n",
-             (unsigned long) availStrLength);
-
-    /* Create the output template.  Each column is sized according to
-     * the longest string.
-     */
-    if (virAsprintf(&outputStr,
-                    " %%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
-                    (unsigned long) nameStrLength,
-                    (unsigned long) stateStrLength,
-                    (unsigned long) autostartStrLength,
-                    (unsigned long) persistStrLength,
-                    (unsigned long) capStrLength,
-                    (unsigned long) allocStrLength,
-                    (unsigned long) availStrLength) < 0)
+    /* Insert the header into table */
+    table = vshTableNew(_("Name"), _("State"), _("Autostart"), _("Persistent"),
+                        _("Capacity"), _("Allocation"), _("Available"), NULL);
+    if (!table)
         goto cleanup;
 
-    /* Display the header */
-    vshPrintExtra(ctl, outputStr, _("Name"), _("State"), _("Autostart"),
-                  _("Persistent"), _("Capacity"), _("Allocation"),
-                  _("Available"));
-    for (i = nameStrLength + stateStrLength + autostartStrLength
-                           + persistStrLength + capStrLength
-                           + allocStrLength + availStrLength
-                           + 14; i > 0; i--)
-        vshPrintExtra(ctl, "-");
-    vshPrintExtra(ctl, "\n");
-
-    /* Display the pool info rows */
+    /* Insert the pool info rows into table*/
     for (i = 0; i < list->npools; i++) {
-        vshPrint(ctl, outputStr,
-                 virStoragePoolGetName(list->pools[i]),
-                 poolInfoTexts[i].state,
-                 poolInfoTexts[i].autostart,
-                 poolInfoTexts[i].persistent,
-                 poolInfoTexts[i].capacity,
-                 poolInfoTexts[i].allocation,
-                 poolInfoTexts[i].available);
+        if (vshTableRowAppend(table,
+                              virStoragePoolGetName(list->pools[i]),
+                              poolInfoTexts[i].state,
+                              poolInfoTexts[i].autostart,
+                              poolInfoTexts[i].persistent,
+                              poolInfoTexts[i].capacity,
+                              poolInfoTexts[i].allocation,
+                              poolInfoTexts[i].available,
+                              NULL) < 0)
+            goto cleanup;
     }
+
+    vshTablePrintToStdout(table, ctl);
 
     /* Cleanup and return */
     ret = true;
 
  cleanup:
-    VIR_FREE(outputStr);
+    vshTableFree(table);
     if (list && list->npools) {
         for (i = 0; i < list->npools; i++) {
             VIR_FREE(poolInfoTexts[i].state);
