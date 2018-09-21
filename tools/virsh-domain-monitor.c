@@ -406,33 +406,23 @@ static const vshCmdOptDef opts_domblkinfo[] = {
     {.name = NULL}
 };
 
-static void
-cmdDomblkinfoPrint(vshControl *ctl,
+static bool
+cmdDomblkinfoGet(vshControl *ctl,
                    const virDomainBlockInfo *info,
-                   const char *device,
-                   bool human, bool title)
+                   char **cap,
+                   char **alloc,
+                   char **phy,
+                   bool human)
 {
-    char *cap = NULL;
-    char *alloc = NULL;
-    char *phy = NULL;
-
-    if (title) {
-        vshPrintExtra(ctl, "%-10s %-15s %-15s %-15s\n", _("Target"),
-                      _("Capacity"), _("Allocation"), _("Physical"));
-        vshPrintExtra(ctl, "-----------------------------"
-                      "------------------------\n");
-        return;
-    }
-
     if (info->capacity == 0 && info->allocation == 0 && info->physical == 0) {
-        cap = vshStrdup(ctl, "-");
-        alloc = vshStrdup(ctl, "-");
-        phy = vshStrdup(ctl, "-");
+        *cap = vshStrdup(ctl, "-");
+        *alloc = vshStrdup(ctl, "-");
+        *phy = vshStrdup(ctl, "-");
     } else if (!human) {
-        if (virAsprintf(&cap, "%llu", info->capacity) < 0 ||
-            virAsprintf(&alloc, "%llu", info->allocation) < 0 ||
-            virAsprintf(&phy, "%llu", info->physical) < 0)
-            goto cleanup;
+        if (virAsprintf(cap, "%llu", info->capacity) < 0 ||
+            virAsprintf(alloc, "%llu", info->allocation) < 0 ||
+            virAsprintf(phy, "%llu", info->physical) < 0)
+            return false;
     } else {
         double val_cap, val_alloc, val_phy;
         const char *unit_cap, *unit_alloc, *unit_phy;
@@ -441,24 +431,13 @@ cmdDomblkinfoPrint(vshControl *ctl,
         val_alloc = vshPrettyCapacity(info->allocation, &unit_alloc);
         val_phy = vshPrettyCapacity(info->physical, &unit_phy);
 
-        if (virAsprintf(&cap, "%.3lf %s", val_cap, unit_cap) < 0 ||
-            virAsprintf(&alloc, "%.3lf %s", val_alloc, unit_alloc) < 0 ||
-            virAsprintf(&phy, "%.3lf %s", val_phy, unit_phy) < 0)
-            goto cleanup;
+        if (virAsprintf(cap, "%.3lf %s", val_cap, unit_cap) < 0 ||
+            virAsprintf(alloc, "%.3lf %s", val_alloc, unit_alloc) < 0 ||
+            virAsprintf(phy, "%.3lf %s", val_phy, unit_phy) < 0)
+            return false;
     }
 
-    if (device) {
-        vshPrint(ctl, "%-10s %-15s %-15s %-15s\n", device, cap, alloc, phy);
-    } else {
-        vshPrint(ctl, "%-15s %s\n", _("Capacity:"), cap);
-        vshPrint(ctl, "%-15s %s\n", _("Allocation:"), alloc);
-        vshPrint(ctl, "%-15s %s\n", _("Physical:"), phy);
-    }
-
- cleanup:
-    VIR_FREE(cap);
-    VIR_FREE(alloc);
-    VIR_FREE(phy);
+    return true;
 }
 
 
@@ -478,6 +457,9 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     xmlNodePtr *disks = NULL;
     char *target = NULL;
     char *protocol = NULL;
+    char *cap = NULL;
+    char *alloc = NULL;
+    char *phy = NULL;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -502,7 +484,10 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         /* print the title */
-        cmdDomblkinfoPrint(ctl, NULL, NULL, false, true);
+        vshPrintExtra(ctl, "%-10s %-15s %-15s %-15s\n", _("Target"),
+                      _("Capacity"), _("Allocation"), _("Physical"));
+        vshPrintExtra(ctl, "-----------------------------"
+                      "------------------------\n");
 
         for (i = 0; i < ndisks; i++) {
             ctxt->node = disks[i];
@@ -525,7 +510,9 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
                 }
             }
 
-            cmdDomblkinfoPrint(ctl, &info, target, human, false);
+            if (!cmdDomblkinfoGet(ctl, &info, &cap, &alloc, &phy, human))
+                goto cleanup;
+            vshPrint(ctl, "%-10s %-15s %-15s %-15s\n", target, cap, alloc, phy);
 
             VIR_FREE(target);
             VIR_FREE(protocol);
@@ -534,12 +521,19 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
         if (virDomainGetBlockInfo(dom, device, &info, 0) < 0)
             goto cleanup;
 
-        cmdDomblkinfoPrint(ctl, &info, NULL, human, false);
+        if (!cmdDomblkinfoGet(ctl, &info, &cap, &alloc, &phy, human))
+            goto cleanup;
+        vshPrint(ctl, "%-15s %s\n", _("Capacity:"), cap);
+        vshPrint(ctl, "%-15s %s\n", _("Allocation:"), alloc);
+        vshPrint(ctl, "%-15s %s\n", _("Physical:"), phy);
     }
 
     ret = true;
 
  cleanup:
+    VIR_FREE(cap);
+    VIR_FREE(alloc);
+    VIR_FREE(phy);
     virshDomainFree(dom);
     VIR_FREE(target);
     VIR_FREE(protocol);
