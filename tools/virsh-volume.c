@@ -42,6 +42,7 @@
 #include "virsh-pool.h"
 #include "virxml.h"
 #include "virstring.h"
+#include "vsh-table.h"
 
 #define VIRSH_COMMON_OPT_POOL_FULL \
     VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"), \
@@ -1382,16 +1383,11 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     virStorageVolInfo volumeInfo;
     virStoragePoolPtr pool;
-    char *outputStr = NULL;
     const char *unit;
     double val;
     bool details = vshCommandOptBool(cmd, "details");
     size_t i;
     bool ret = false;
-    int stringLength = 0;
-    size_t allocStrLength = 0, capStrLength = 0;
-    size_t nameStrLength = 0, pathStrLength = 0;
-    size_t typeStrLength = 0;
     struct volInfoText {
         char *allocation;
         char *capacity;
@@ -1400,6 +1396,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     };
     struct volInfoText *volInfoTexts = NULL;
     virshStorageVolListPtr list = NULL;
+    vshTablePtr table = NULL;
 
     /* Look up the pool information given to us by the user */
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
@@ -1446,36 +1443,6 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                                 "%.2lf %s", val, unit) < 0)
                     goto cleanup;
             }
-
-            /* Remember the largest length for each output string.
-             * This lets us displaying header and volume information rows
-             * using a single, properly sized, printf style output string.
-             */
-
-            /* Keep the length of name string if longest so far */
-            stringLength = strlen(virStorageVolGetName(list->vols[i]));
-            if (stringLength > nameStrLength)
-                nameStrLength = stringLength;
-
-            /* Keep the length of path string if longest so far */
-            stringLength = strlen(volInfoTexts[i].path);
-            if (stringLength > pathStrLength)
-                pathStrLength = stringLength;
-
-            /* Keep the length of type string if longest so far */
-            stringLength = strlen(volInfoTexts[i].type);
-            if (stringLength > typeStrLength)
-                typeStrLength = stringLength;
-
-            /* Keep the length of capacity string if longest so far */
-            stringLength = strlen(volInfoTexts[i].capacity);
-            if (stringLength > capStrLength)
-                capStrLength = stringLength;
-
-            /* Keep the length of allocation string if longest so far */
-            stringLength = strlen(volInfoTexts[i].allocation);
-            if (stringLength > allocStrLength)
-                allocStrLength = stringLength;
         }
     }
 
@@ -1487,13 +1454,19 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Output basic info then return if --details option not selected */
     if (!details) {
         /* The old output format */
-        vshPrintExtra(ctl, " %-20s %-40s\n", _("Name"), _("Path"));
-        vshPrintExtra(ctl, "---------------------------------------"
-                           "---------------------------------------\n");
+        table = vshTableNew(_("Name"), _("Path"), NULL);
+        if (!table)
+            goto cleanup;
+
         for (i = 0; i < list->nvols; i++) {
-            vshPrint(ctl, " %-20s %-40s\n", virStorageVolGetName(list->vols[i]),
-                     volInfoTexts[i].path);
+            if (vshTableRowAppend(table,
+                                  virStorageVolGetName(list->vols[i]),
+                                  volInfoTexts[i].path,
+                                  NULL) < 0)
+                goto cleanup;
         }
+
+        vshTablePrintToStdout(table, ctl);
 
         /* Cleanup and return */
         ret = true;
@@ -1502,75 +1475,30 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     /* We only get here if the --details option was selected. */
 
-    /* Use the length of name header string if it's longest */
-    stringLength = strlen(_("Name"));
-    if (stringLength > nameStrLength)
-        nameStrLength = stringLength;
-
-    /* Use the length of path header string if it's longest */
-    stringLength = strlen(_("Path"));
-    if (stringLength > pathStrLength)
-        pathStrLength = stringLength;
-
-    /* Use the length of type header string if it's longest */
-    stringLength = strlen(_("Type"));
-    if (stringLength > typeStrLength)
-        typeStrLength = stringLength;
-
-    /* Use the length of capacity header string if it's longest */
-    stringLength = strlen(_("Capacity"));
-    if (stringLength > capStrLength)
-        capStrLength = stringLength;
-
-    /* Use the length of allocation header string if it's longest */
-    stringLength = strlen(_("Allocation"));
-    if (stringLength > allocStrLength)
-        allocStrLength = stringLength;
-
-    /* Display the string lengths for debugging */
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest name string = %zu chars\n", nameStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest path string = %zu chars\n", pathStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest type string = %zu chars\n", typeStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest capacity string = %zu chars\n", capStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest allocation string = %zu chars\n", allocStrLength);
-
-    if (virAsprintf(&outputStr,
-                    " %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus\n",
-                    (unsigned long) nameStrLength,
-                    (unsigned long) pathStrLength,
-                    (unsigned long) typeStrLength,
-                    (unsigned long) capStrLength,
-                    (unsigned long) allocStrLength) < 0)
+    /* Insert the header into table */
+    table = vshTableNew(_("Name"), _("Path"), _("Type"), _("Capacity"), _("Allocation"), NULL);
+    if (!table)
         goto cleanup;
 
-    /* Display the header */
-    vshPrintExtra(ctl, outputStr, _("Name"), _("Path"), _("Type"),
-                  _("Capacity"), _("Allocation"));
-    for (i = nameStrLength + pathStrLength + typeStrLength
-                           + capStrLength + allocStrLength
-                           + 10; i > 0; i--)
-        vshPrintExtra(ctl, "-");
-    vshPrintExtra(ctl, "\n");
-
-    /* Display the volume info rows */
+    /* Insert the volume info rows into table */
     for (i = 0; i < list->nvols; i++) {
-        vshPrint(ctl, outputStr,
-                 virStorageVolGetName(list->vols[i]),
-                 volInfoTexts[i].path,
-                 volInfoTexts[i].type,
-                 volInfoTexts[i].capacity,
-                 volInfoTexts[i].allocation);
+        if (vshTableRowAppend(table,
+                              virStorageVolGetName(list->vols[i]),
+                              volInfoTexts[i].path,
+                              volInfoTexts[i].type,
+                              volInfoTexts[i].capacity,
+                              volInfoTexts[i].allocation,
+                              NULL) < 0)
+            goto cleanup;
     }
+
+    vshTablePrintToStdout(table, ctl);
 
     /* Cleanup and return */
     ret = true;
 
  cleanup:
+    vshTableFree(table);
 
     /* Safely free the memory allocated in this function */
     if (list && list->nvols) {
@@ -1584,7 +1512,6 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
 
     /* Cleanup remaining memory */
-    VIR_FREE(outputStr);
     VIR_FREE(volInfoTexts);
     virStoragePoolFree(pool);
     virshStorageVolListFree(list);
