@@ -39,6 +39,7 @@
 #include "virgettext.h"
 #include "virtime.h"
 #include "virt-admin-completer.h"
+#include "vsh-table.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO
@@ -381,6 +382,7 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     char *uri = NULL;
     virAdmServerPtr *srvs = NULL;
     vshAdmControlPtr priv = ctl->privData;
+    vshTablePtr table = NULL;
 
     /* Obtain a list of available servers on the daemon */
     if ((nsrvs = virAdmConnectListServers(priv->conn, &srvs, 0)) < 0) {
@@ -390,13 +392,27 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, " %-5s %-15s\n", "Id", "Name");
-    vshPrintExtra(ctl, "---------------\n");
-    for (i = 0; i < nsrvs; i++)
-        vshPrint(ctl, " %-5zu %-15s\n", i, virAdmServerGetName(srvs[i]));
+    table = vshTableNew(_("Id"), _("Name"), NULL);
+    if (!table)
+        goto cleanup;
+
+    for (i = 0; i < nsrvs; i++) {
+        VIR_AUTOFREE(char *) idStr = NULL;
+        if (virAsprintf(&idStr, "%lu", i) < 0)
+            goto cleanup;
+
+        if (vshTableRowAppend(table,
+                              idStr,
+                              virAdmServerGetName(srvs[i]),
+                              NULL) < 0)
+            goto cleanup;
+    }
+
+    vshTablePrintToStdout(table, ctl);
 
     ret = true;
  cleanup:
+    vshTableFree(table);
     if (srvs) {
         for (i = 0; i < nsrvs; i++)
             virAdmServerFree(srvs[i]);
@@ -612,10 +628,10 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
     const char *srvname = NULL;
     unsigned long long id;
     virClientTransport transport;
-    char *timestr = NULL;
     virAdmServerPtr srv = NULL;
     virAdmClientPtr *clts = NULL;
     vshAdmControlPtr priv = ctl->privData;
+    vshTablePtr table = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
         return false;
@@ -630,12 +646,13 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, " %-5s %-15s %-15s\n%s\n", _("Id"), _("Transport"),
-                  _("Connected since"),
-                  "-------------------------"
-                  "-------------------------");
+    table = vshTableNew(_("Id"), _("Transport"), _("Connected sice"), NULL);
+    if (!table)
+        goto cleanup;
 
     for (i = 0; i < nclts; i++) {
+        VIR_AUTOFREE(char *) timestr = NULL;
+        VIR_AUTOFREE(char *) idStr = NULL;
         virAdmClientPtr client = clts[i];
         id = virAdmClientGetID(client);
         transport = virAdmClientGetTransport(client);
@@ -643,14 +660,20 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
                              &timestr) < 0)
             goto cleanup;
 
-        vshPrint(ctl, " %-5llu %-15s %-15s\n",
-                 id, vshAdmClientTransportToString(transport), timestr);
-        VIR_FREE(timestr);
+        if (virAsprintf(&idStr, "%llu", id) < 0)
+            goto cleanup;
+        if (vshTableRowAppend(table, idStr,
+                              vshAdmClientTransportToString(transport),
+                              timestr, NULL) < 0)
+            goto cleanup;
     }
+
+    vshTablePrintToStdout(table, ctl);
 
     ret = true;
 
  cleanup:
+    vshTableFree(table);
     if (clts) {
         for (i = 0; i < nclts; i++)
             virAdmClientFree(clts[i]);
