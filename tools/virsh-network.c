@@ -33,6 +33,7 @@
 #include "virstring.h"
 #include "virtime.h"
 #include "conf/network_conf.h"
+#include "vsh-table.h"
 
 #define VIRSH_COMMON_OPT_NETWORK(_helpstr, cflags) \
     {.name = "network", \
@@ -677,6 +678,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     bool optUUID = vshCommandOptBool(cmd, "uuid");
     char uuid[VIR_UUID_STRING_BUFLEN];
     unsigned int flags = VIR_CONNECT_LIST_NETWORKS_ACTIVE;
+    vshTablePtr table = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags = VIR_CONNECT_LIST_NETWORKS_INACTIVE;
@@ -705,10 +707,10 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return false;
 
     if (optTable) {
-        vshPrintExtra(ctl, " %-20s %-10s %-13s %s\n", _("Name"), _("State"),
-                      _("Autostart"), _("Persistent"));
-        vshPrintExtra(ctl,
-                      "----------------------------------------------------------\n");
+        table = vshTableNew(_("Name"), _("State"), _("Autostart"),
+                            _("Persistent"), NULL);
+        if (!table)
+            goto cleanup;
     }
 
     for (i = 0; i < list->nnets; i++) {
@@ -722,11 +724,15 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             else
                 autostartStr = is_autostart ? _("yes") : _("no");
 
-            vshPrint(ctl, " %-20s %-10s %-13s %s\n",
-                     virNetworkGetName(network),
-                     virNetworkIsActive(network) ? _("active") : _("inactive"),
-                     autostartStr,
-                     virNetworkIsPersistent(network) ? _("yes") : _("no"));
+            if (vshTableRowAppend(table,
+                                  virNetworkGetName(network),
+                                  virNetworkIsActive(network) ?
+                                  _("active") : _("inactive"),
+                                  autostartStr,
+                                  virNetworkIsPersistent(network) ?
+                                  _("yes") : _("no"),
+                                  NULL) < 0)
+                goto cleanup;
         } else if (optUUID) {
             if (virNetworkGetUUIDString(network, uuid) < 0) {
                 vshError(ctl, "%s", _("Failed to get network's UUID"));
@@ -738,8 +744,12 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
     }
 
+    if (optTable)
+        vshTablePrintToStdout(table, ctl);
+
     ret = true;
  cleanup:
+    vshTableFree(table);
     virshNetworkListFree(list);
     return ret;
 }
@@ -1351,6 +1361,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     unsigned int flags = 0;
     virNetworkPtr network = NULL;
+    vshTablePtr table = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
         return false;
@@ -1366,15 +1377,15 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     /* Sort the list according to MAC Address/IAID */
     qsort(leases, nleases, sizeof(*leases), virshNetworkDHCPLeaseSorter);
 
-    vshPrintExtra(ctl, " %-20s %-18s %-9s %-25s %-15s %s\n%s%s\n",
-                  _("Expiry Time"), _("MAC address"), _("Protocol"),
-                  _("IP address"), _("Hostname"), _("Client ID or DUID"),
-                  "----------------------------------------------------------",
-                  "---------------------------------------------------------");
+    table = vshTableNew(_("Expiry Time"), _("MAC address"), _("Protocol"),
+                        _("IP address"), _("Hostname"), _("Client ID or DUID"),
+                        NULL);
+    if (!table)
+        goto cleanup;
 
     for (i = 0; i < nleases; i++) {
         const char *typestr = NULL;
-        char *cidr_format = NULL;
+        VIR_AUTOFREE(char *) cidr_format = NULL;
         virNetworkDHCPLeasePtr lease = leases[i];
         time_t expirytime_tmp = lease->expirytime;
         struct tm ts;
@@ -1390,17 +1401,23 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
         ignore_value(virAsprintf(&cidr_format, "%s/%d",
                                  lease->ipaddr, lease->prefix));
 
-        vshPrint(ctl, " %-20s %-18s %-9s %-25s %-15s %s\n",
-                 expirytime, EMPTYSTR(lease->mac),
-                 EMPTYSTR(typestr), cidr_format,
-                 EMPTYSTR(lease->hostname), EMPTYSTR(lease->clientid));
-
-        VIR_FREE(cidr_format);
+        if (vshTableRowAppend(table,
+                              expirytime,
+                              EMPTYSTR(lease->mac),
+                              EMPTYSTR(typestr),
+                              EMPTYSTR(cidr_format),
+                              EMPTYSTR(lease->hostname),
+                              EMPTYSTR(lease->clientid),
+                              NULL) < 0)
+            goto cleanup;
     }
+
+    vshTablePrintToStdout(table, ctl);
 
     ret = true;
 
  cleanup:
+    vshTableFree(table);
     if (leases) {
         for (i = 0; i < nleases; i++)
             virNetworkDHCPLeaseFree(leases[i]);
