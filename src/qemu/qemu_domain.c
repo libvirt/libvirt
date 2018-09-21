@@ -8344,22 +8344,12 @@ qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
 }
 
 
-/**
- * qemuDomainRemoveInactive:
- *
- * The caller must hold a lock to the vm.
- */
-void
-qemuDomainRemoveInactive(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm)
+static void
+qemuDomainRemoveInactiveCommon(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm)
 {
     char *snapDir;
     virQEMUDriverConfigPtr cfg;
-
-    if (vm->persistent) {
-        /* Short-circuit, we don't want to remove a persistent domain */
-        return;
-    }
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -8379,9 +8369,27 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
     }
     qemuExtDevicesCleanupHost(driver, vm->def);
 
-    virDomainObjListRemove(driver->domains, vm);
-
     virObjectUnref(cfg);
+}
+
+
+/**
+ * qemuDomainRemoveInactive:
+ *
+ * The caller must hold a lock to the vm.
+ */
+void
+qemuDomainRemoveInactive(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm)
+{
+    if (vm->persistent) {
+        /* Short-circuit, we don't want to remove a persistent domain */
+        return;
+    }
+
+    qemuDomainRemoveInactiveCommon(driver, vm);
+
+    virDomainObjListRemove(driver->domains, vm);
 }
 
 
