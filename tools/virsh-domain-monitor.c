@@ -589,6 +589,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     char *device = NULL;
     char *target = NULL;
     char *source = NULL;
+    vshTablePtr table = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -603,12 +604,12 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (details)
-        vshPrintExtra(ctl, "%-10s %-10s %-10s %s\n", _("Type"),
-                      _("Device"), _("Target"), _("Source"));
+        table = vshTableNew(_("Type"), _("Device"), _("Target"), _("Source"), NULL);
     else
-        vshPrintExtra(ctl, "%-10s %s\n", _("Target"), _("Source"));
+        table = vshTableNew(_("Target"), _("Source"), NULL);
 
-    vshPrintExtra(ctl, "------------------------------------------------\n");
+    if (!table)
+        goto cleanup;
 
     for (i = 0; i < ndisks; i++) {
         ctxt->node = disks[i];
@@ -633,10 +634,13 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
                                 "|./source/@name"
                                 "|./source/@volume)", ctxt);
         if (details) {
-            vshPrint(ctl, "%-10s %-10s %-10s %s\n", type, device,
-                     target, source ? source : "-");
+            if (vshTableRowAppend(table, type, device, target,
+                                  source ? source : "-", NULL) < 0)
+                goto cleanup;
         } else {
-            vshPrint(ctl, "%-10s %s\n", target, source ? source : "-");
+            if (vshTableRowAppend(table, target,
+                                  source ? source : "-", NULL) < 0)
+                goto cleanup;
         }
 
         VIR_FREE(source);
@@ -645,9 +649,12 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(type);
     }
 
+    vshTablePrintToStdout(table, ctl);
+
     ret = true;
 
  cleanup:
+    vshTableFree(table);
     VIR_FREE(source);
     VIR_FREE(target);
     VIR_FREE(device);
