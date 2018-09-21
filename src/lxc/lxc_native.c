@@ -763,7 +763,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
                               "lxc.cgroup.memory.limit_in_bytes",
                               &value) > 0) {
         if (lxcConvertSize(value, &size) < 0)
-            goto error;
+            return -1;
         size = size / 1024;
         virDomainDefSetMemoryTotal(def, size);
         def->mem.hard_limit = virMemoryLimitTruncate(size);
@@ -773,7 +773,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
                               "lxc.cgroup.memory.soft_limit_in_bytes",
                               &value) > 0) {
         if (lxcConvertSize(value, &size) < 0)
-            goto error;
+            return -1;
         def->mem.soft_limit = virMemoryLimitTruncate(size / 1024);
     }
 
@@ -781,16 +781,10 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
                               "lxc.cgroup.memory.memsw.limit_in_bytes",
                               &value) > 0) {
         if (lxcConvertSize(value, &size) < 0)
-            goto error;
+            return -1;
         def->mem.swap_hard_limit = virMemoryLimitTruncate(size / 1024);
     }
     return 0;
-
- error:
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("failed to parse integer: '%s'"), value);
-    return -1;
-
 }
 
 static int
