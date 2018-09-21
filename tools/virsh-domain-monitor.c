@@ -460,6 +460,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     char *cap = NULL;
     char *alloc = NULL;
     char *phy = NULL;
+    vshTablePtr table = NULL;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -483,11 +484,10 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
         if (ndisks < 0)
             goto cleanup;
 
-        /* print the title */
-        vshPrintExtra(ctl, "%-10s %-15s %-15s %-15s\n", _("Target"),
-                      _("Capacity"), _("Allocation"), _("Physical"));
-        vshPrintExtra(ctl, "-----------------------------"
-                      "------------------------\n");
+        /* title */
+        table = vshTableNew(_("Target"), _("Capacity"), _("Allocation"), _("Physical"), NULL);
+        if (!table)
+            goto cleanup;
 
         for (i = 0; i < ndisks; i++) {
             ctxt->node = disks[i];
@@ -512,11 +512,15 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
 
             if (!cmdDomblkinfoGet(ctl, &info, &cap, &alloc, &phy, human))
                 goto cleanup;
-            vshPrint(ctl, "%-10s %-15s %-15s %-15s\n", target, cap, alloc, phy);
+            if (vshTableRowAppend(table, target, cap, alloc, phy, NULL) < 0)
+                goto cleanup;
 
             VIR_FREE(target);
             VIR_FREE(protocol);
         }
+
+        vshTablePrintToStdout(table, ctl);
+
     } else {
         if (virDomainGetBlockInfo(dom, device, &info, 0) < 0)
             goto cleanup;
@@ -531,6 +535,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
+    vshTableFree(table);
     VIR_FREE(cap);
     VIR_FREE(alloc);
     VIR_FREE(phy);
