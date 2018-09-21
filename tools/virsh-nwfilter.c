@@ -31,6 +31,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virutil.h"
+#include "vsh-table.h"
 
 virNWFilterPtr
 virshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
@@ -359,26 +360,35 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
+    bool ret = false;
     virshNWFilterListPtr list = NULL;
+    vshTablePtr table = NULL;
 
     if (!(list = virshNWFilterListCollect(ctl, 0)))
         return false;
 
-    vshPrintExtra(ctl, " %-36s  %-20s \n", _("UUID"), _("Name"));
-    vshPrintExtra(ctl, "---------------------------------"
-                       "---------------------------------\n");
+    table = vshTableNew(_("UUID"), _("Name"), NULL);
+    if (!table)
+        goto cleanup;
 
     for (i = 0; i < list->nfilters; i++) {
         virNWFilterPtr nwfilter = list->filters[i];
 
         virNWFilterGetUUIDString(nwfilter, uuid);
-        vshPrint(ctl, " %-36s  %-20s\n",
-                 uuid,
-                 virNWFilterGetName(nwfilter));
+        if (vshTableRowAppend(table,
+                              uuid,
+                              virNWFilterGetName(nwfilter),
+                              NULL) < 0)
+            goto cleanup;
     }
 
+    vshTablePrintToStdout(table, ctl);
+
+    ret = true;
+ cleanup:
+    vshTableFree(table);
     virshNWFilterListFree(list);
-    return true;
+    return ret;
 }
 
 /*
@@ -714,25 +724,34 @@ static bool
 cmdNWFilterBindingList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     size_t i;
+    bool ret = false;
     virshNWFilterBindingListPtr list = NULL;
+    vshTablePtr table = NULL;
 
     if (!(list = virshNWFilterBindingListCollect(ctl, 0)))
         return false;
 
-    vshPrintExtra(ctl, " %-20s  %-20s \n", _("Port Dev"), _("Filter"));
-    vshPrintExtra(ctl, "---------------------------------"
-                       "---------------------------------\n");
+    table = vshTableNew(_("Port Dev"), _("Filter"), NULL);
+    if (!table)
+        goto cleanup;
 
     for (i = 0; i < list->nbindings; i++) {
         virNWFilterBindingPtr binding = list->bindings[i];
 
-        vshPrint(ctl, " %-20s  %-20s\n",
-                 virNWFilterBindingGetPortDev(binding),
-                 virNWFilterBindingGetFilterName(binding));
+        if (vshTableRowAppend(table,
+                              virNWFilterBindingGetPortDev(binding),
+                              virNWFilterBindingGetFilterName(binding),
+                              NULL) < 0)
+            goto cleanup;
     }
 
+    vshTablePrintToStdout(table, ctl);
+
+    ret = true;
+ cleanup:
+    vshTableFree(table);
     virshNWFilterBindingListFree(list);
-    return true;
+    return ret;
 }
 
 
