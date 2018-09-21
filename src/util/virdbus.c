@@ -236,7 +236,7 @@ static dbus_bool_t virDBusAddWatch(DBusWatch *watch,
     struct virDBusWatch *info;
 
     if (VIR_ALLOC(info) < 0)
-        return 0;
+        return FALSE;
 
     if (dbus_watch_get_enabled(watch))
         flags = virDBusTranslateWatchFlags(dbus_watch_get_flags(watch));
@@ -253,10 +253,10 @@ static dbus_bool_t virDBusAddWatch(DBusWatch *watch,
                                     watch, NULL);
     if (info->watch < 0) {
         dbus_watch_set_data(watch, NULL, NULL);
-        return 0;
+        return FALSE;
     }
 
-    return 1;
+    return TRUE;
 }
 
 
