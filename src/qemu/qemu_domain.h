@@ -704,6 +704,9 @@ void qemuDomainRemoveInactive(virQEMUDriverPtr driver,
 void qemuDomainRemoveInactiveJob(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm);
 
+void qemuDomainRemoveInactiveJobLocked(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm);
+
 void qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              bool value);

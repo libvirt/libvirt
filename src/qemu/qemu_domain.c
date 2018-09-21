@@ -8394,6 +8394,28 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
 
 
 /**
+ * qemuDomainRemoveInactiveLocked:
+ *
+ * The caller must hold a lock to the vm and must hold the
+ * lock on driver->domains in order to call the remove obj
+ * from locked list method.
+ */
+static void
+qemuDomainRemoveInactiveLocked(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm)
+{
+    if (vm->persistent) {
+        /* Short-circuit, we don't want to remove a persistent domain */
+        return;
+    }
+
+    qemuDomainRemoveInactiveCommon(driver, vm);
+
+    virDomainObjListRemoveLocked(driver->domains, vm);
+}
+
+
+/**
  * qemuDomainRemoveInactiveJob:
  *
  * Just like qemuDomainRemoveInactive but it tries to grab a
@@ -8410,6 +8432,27 @@ qemuDomainRemoveInactiveJob(virQEMUDriverPtr driver,
     haveJob = qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) >= 0;
 
     qemuDomainRemoveInactive(driver, vm);
+
+    if (haveJob)
+        qemuDomainObjEndJob(driver, vm);
+}
+
+
+/**
+ * qemuDomainRemoveInactiveJobLocked:
+ *
+ * Similar to qemuDomainRemoveInactiveJob, except that the caller must
+ * also hold the lock @driver->domains
+ */
+void
+qemuDomainRemoveInactiveJobLocked(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm)
+{
+    bool haveJob;
+
+    haveJob = qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) >= 0;
+
+    qemuDomainRemoveInactiveLocked(driver, vm);
 
     if (haveJob)
         qemuDomainObjEndJob(driver, vm);
