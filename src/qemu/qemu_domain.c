@@ -3380,6 +3380,8 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     case VIR_ARCH_RISCV32:
     case VIR_ARCH_RISCV64:
         addDefaultUSB = false;
+        if (qemuDomainIsRISCVVirt(def))
+            addPCIeRoot = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX);
         break;
 
     case VIR_ARCH_S390:

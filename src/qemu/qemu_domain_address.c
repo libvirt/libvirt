@@ -2369,7 +2369,8 @@ qemuDomainSupportsPCI(virDomainDefPtr def,
     if (STREQ(def->os.machine, "versatilepb"))
         return true;
 
-    if (qemuDomainIsARMVirt(def) &&
+    if ((qemuDomainIsARMVirt(def) ||
+         qemuDomainIsRISCVVirt(def)) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX))
         return true;
 

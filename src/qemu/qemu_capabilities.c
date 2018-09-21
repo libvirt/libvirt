@@ -1732,11 +1732,12 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
     if (ARCH_IS_S390(def->os.arch))
         return true;
 
-    /* If ARM 'virt' supports PCI, it supports multibus.
-     * No extra conditions here for simplicity.
-     */
-    if (qemuDomainIsARMVirt(def))
+    /* If the virt machine, both on ARM and RISC-V, supports PCI,
+     * then it also supports multibus */
+    if (qemuDomainIsARMVirt(def) ||
+        qemuDomainIsRISCVVirt(def)) {
         return true;
+    }
 
     return false;
 }
