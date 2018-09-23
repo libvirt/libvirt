@@ -393,6 +393,7 @@ table.acl {
 
 table.acl tr, table.acl td {
     padding: 0.3em;
+    border: 1px solid #ccc;
 }
 
 table.acl thead {

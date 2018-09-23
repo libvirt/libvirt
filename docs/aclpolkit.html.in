@@ -287,6 +287,123 @@
       </tbody>
     </table>
 
+    <h2><a id="connect_driver">Hypervisor Driver connect_driver</a></h2>
+    <p>
+      The <code>connect_driver</code> parameter describes the
+      client's <a href="remote.html">remote Connection Driver</a>
+      name based on the <a href="uri.html">URI</a> used for the
+      connection.
+    </p>
+    <p>
+      <span class="since">Since 4.1.0</span>, when calling an API
+      outside the scope of the primary connection driver, the
+      primary driver will attempt to open a secondary connection
+      to the specific API driver in order to process the API. For
+      example, when hypervisor domain processing needs to make an
+      API call within the storage driver or the network filter driver
+      an attempt to open a connection to the "storage" or "nwfilter"
+      driver will be made. Similarly, a "storage" primary connection
+      may need to create a connection to the "secret" driver in order
+      to process secrets for the API. If successful, then calls to
+      those API's will occur in the <code>connect_driver</code> context
+      of the secondary connection driver rather than in the context of
+      the primary driver. This affects the <code>connect_driver</code>
+      returned from rule generation from the <code>action.loookup</code>
+      function. The following table provides a list of the various
+      connection drivers and the <code>connect_driver</code> name
+      used by each regardless of primary or secondary connection.
+      The access denied error message from libvirt will list the
+      connection driver by name that denied the access.
+    </p>
+
+    <h3><a id="object_connect_driver">Connection Driver Name</a></h3>
+    <table class="acl">
+      <thead>
+        <tr>
+          <th>Connection Driver</th>
+          <th><code>connect_driver</code> name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>bhyve</td>
+          <td>bhyve</td>
+        </tr>
+        <tr>
+          <td>esx</td>
+          <td>ESX</td>
+        </tr>
+        <tr>
+          <td>hyperv</td>
+          <td>Hyper-V</td>
+        </tr>
+        <tr>
+          <td>interface</td>
+          <td>interface</td>
+        </tr>
+        <tr>
+          <td>libxl</td>
+          <td>xenlight</td>
+        </tr>
+        <tr>
+          <td>lxc</td>
+          <td>LXC</td>
+        </tr>
+        <tr>
+          <td>network</td>
+          <td>network</td>
+        </tr>
+        <tr>
+          <td>nodedev</td>
+          <td>nodedev</td>
+        </tr>
+        <tr>
+          <td>nwfilter</td>
+          <td>NWFilter</td>
+        </tr>
+        <tr>
+          <td>openvz</td>
+          <td>OPENVZ</td>
+        </tr>
+        <tr>
+          <td>phyp</td>
+          <td>PHYP</td>
+        </tr>
+        <tr>
+          <td>qemu</td>
+          <td>QEMU</td>
+        </tr>
+        <tr>
+          <td>secret</td>
+          <td>secret</td>
+        </tr>
+        <tr>
+          <td>storage</td>
+          <td>storage</td>
+        </tr>
+        <tr>
+          <td>uml</td>
+          <td>UML</td>
+        </tr>
+        <tr>
+          <td>vbox</td>
+          <td>VBOX</td>
+        </tr>
+        <tr>
+          <td>vmware</td>
+          <td>VMWARE</td>
+        </tr>
+        <tr>
+          <td>vz</td>
+          <td>vz</td>
+        </tr>
+        <tr>
+          <td>xenapi</td>
+          <td>XenAPI</td>
+        </tr>
+      </tbody>
+    </table>
+
 
     <h2><a id="user">User identity attributes</a></h2>
 
