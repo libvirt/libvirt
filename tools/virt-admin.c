@@ -398,7 +398,7 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     for (i = 0; i < nsrvs; i++) {
         VIR_AUTOFREE(char *) idStr = NULL;
-        if (virAsprintf(&idStr, "%lu", i) < 0)
+        if (virAsprintf(&idStr, "%zu", i) < 0)
             goto cleanup;
 
         if (vshTableRowAppend(table,

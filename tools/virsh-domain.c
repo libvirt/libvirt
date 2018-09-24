@@ -6949,7 +6949,7 @@ virshVcpuPinQuery(vshControl *ctl,
             if (!(pinInfo = virBitmapDataFormat(cpumap, cpumaplen)))
                 goto cleanup;
 
-            if (virAsprintf(&vcpuStr, "%lu", i) < 0)
+            if (virAsprintf(&vcpuStr, "%zu", i) < 0)
                 goto cleanup;
 
             if (vshTableRowAppend(table, vcpuStr, pinInfo, NULL) < 0)
