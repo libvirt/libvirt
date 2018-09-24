@@ -494,7 +494,7 @@ virCgroupGetValueStr(virCgroupPtr group,
 }
 
 
-static int
+int
 virCgroupGetValueForBlkDev(virCgroupPtr group,
                            int controller,
                            const char *key,
@@ -1497,19 +1497,7 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
                               const char *path,
                               unsigned int weight)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) blkstr = NULL;
-
-    if (!(blkstr = virCgroupGetBlockDevString(path)))
-        return -1;
-
-    if (virAsprintf(&str, "%s%d", blkstr, weight) < 0)
-        return -1;
-
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_BLKIO,
-                                "blkio.weight_device",
-                                str);
+    VIR_CGROUP_BACKEND_CALL(group, setBlkioDeviceWeight, -1, path, weight);
 }
 
 /**
@@ -1661,25 +1649,7 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group,
                               const char *path,
                               unsigned int *weight)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "blkio.weight_device",
-                                   path,
-                                   &str) < 0)
-        return -1;
-
-    if (!str) {
-        *weight = 0;
-    } else if (virStrToLong_ui(str, NULL, 10, weight) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
-                       str);
-        return -1;
-    }
-
-    return 0;
+    VIR_CGROUP_BACKEND_CALL(group, getBlkioDeviceWeight, -1, path, weight);
 }
 
 

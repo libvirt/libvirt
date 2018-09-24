@@ -82,6 +82,12 @@ int virCgroupPartitionEscape(char **path);
 
 char *virCgroupGetBlockDevString(const char *path);
 
+int virCgroupGetValueForBlkDev(virCgroupPtr group,
+                               int controller,
+                               const char *key,
+                               const char *path,
+                               char **value);
+
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,
