@@ -1329,6 +1329,54 @@ virCgroupV1GetBlkioDeviceReadBps(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV1SetBlkioDeviceWriteBps(virCgroupPtr group,
+                                  const char *path,
+                                  unsigned long long wbps)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) blkstr = NULL;
+
+    if (!(blkstr = virCgroupGetBlockDevString(path)))
+        return -1;
+
+    if (virAsprintf(&str, "%s%llu", blkstr, wbps) < 0)
+        return -1;
+
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_BLKIO,
+                                "blkio.throttle.write_bps_device",
+                                str);
+}
+
+
+static int
+virCgroupV1GetBlkioDeviceWriteBps(virCgroupPtr group,
+                                  const char *path,
+                                  unsigned long long *wbps)
+{
+    VIR_AUTOFREE(char *) str = NULL;
+
+    if (virCgroupGetValueForBlkDev(group,
+                                   VIR_CGROUP_CONTROLLER_BLKIO,
+                                   "blkio.throttle.write_bps_device",
+                                   path,
+                                   &str) < 0)
+        return -1;
+
+    if (!str) {
+        *wbps = 0;
+    } else if (virStrToLong_ull(str, NULL, 10, wbps) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to parse '%s' as an integer"),
+                       str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -1363,6 +1411,8 @@ virCgroupBackend virCgroupV1Backend = {
     .getBlkioDeviceWriteIops = virCgroupV1GetBlkioDeviceWriteIops,
     .setBlkioDeviceReadBps = virCgroupV1SetBlkioDeviceReadBps,
     .getBlkioDeviceReadBps = virCgroupV1GetBlkioDeviceReadBps,
+    .setBlkioDeviceWriteBps = virCgroupV1SetBlkioDeviceWriteBps,
+    .getBlkioDeviceWriteBps = virCgroupV1GetBlkioDeviceWriteBps,
 };
 
 
