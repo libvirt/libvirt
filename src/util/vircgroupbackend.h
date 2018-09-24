@@ -69,6 +69,10 @@ typedef int
 typedef char *
 (*virCgroupStealPlacementCB)(virCgroupPtr group);
 
+typedef int
+(*virCgroupDetectControllersCB)(virCgroupPtr group,
+                                int controllers);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -81,6 +85,7 @@ struct _virCgroupBackend {
     virCgroupDetectPlacementCB detectPlacement;
     virCgroupValidatePlacementCB validatePlacement;
     virCgroupStealPlacementCB stealPlacement;
+    virCgroupDetectControllersCB detectControllers;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;

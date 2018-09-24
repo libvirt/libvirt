@@ -346,70 +346,6 @@ virCgroupDetectPlacement(virCgroupPtr group,
 
 
 static int
-virCgroupDetectControllers(virCgroupPtr group,
-                           int controllers)
-{
-    size_t i;
-    size_t j;
-
-    if (controllers >= 0) {
-        VIR_DEBUG("Filtering controllers %d", controllers);
-        /* First mark requested but non-existing controllers to be ignored */
-        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-            if (((1 << i) & controllers)) {
-                /* Remove non-existent controllers  */
-                if (!group->controllers[i].mountPoint) {
-                    VIR_DEBUG("Requested controller '%s' not mounted, ignoring",
-                              virCgroupControllerTypeToString(i));
-                    controllers &= ~(1 << i);
-                }
-            }
-        }
-        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-            VIR_DEBUG("Controller '%s' wanted=%s, mount='%s'",
-                      virCgroupControllerTypeToString(i),
-                      (1 << i) & controllers ? "yes" : "no",
-                      NULLSTR(group->controllers[i].mountPoint));
-            if (!((1 << i) & controllers) &&
-                group->controllers[i].mountPoint) {
-                /* Check whether a request to disable a controller
-                 * clashes with co-mounting of controllers */
-                for (j = 0; j < VIR_CGROUP_CONTROLLER_LAST; j++) {
-                    if (j == i)
-                        continue;
-                    if (!((1 << j) & controllers))
-                        continue;
-
-                    if (STREQ_NULLABLE(group->controllers[i].mountPoint,
-                                       group->controllers[j].mountPoint)) {
-                        virReportSystemError(EINVAL,
-                                             _("Controller '%s' is not wanted, but '%s' is co-mounted"),
-                                             virCgroupControllerTypeToString(i),
-                                             virCgroupControllerTypeToString(j));
-                        return -1;
-                    }
-                }
-                VIR_FREE(group->controllers[i].mountPoint);
-            }
-        }
-    } else {
-        VIR_DEBUG("Auto-detecting controllers");
-        controllers = 0;
-        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-            VIR_DEBUG("Controller '%s' present=%s",
-                      virCgroupControllerTypeToString(i),
-                      group->controllers[i].mountPoint ? "yes" : "no");
-            if (group->controllers[i].mountPoint == NULL)
-                continue;
-            controllers |= (1 << i);
-        }
-    }
-
-    return controllers;
-}
-
-
-static int
 virCgroupDetect(virCgroupPtr group,
                 pid_t pid,
                 int controllers,
@@ -447,7 +383,7 @@ virCgroupDetect(virCgroupPtr group,
             return -1;
     }
 
-    rc = virCgroupDetectControllers(group, controllers);
+    rc = group->backend->detectControllers(group, controllers);
     if (rc < 0)
         return -1;
 
