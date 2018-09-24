@@ -175,6 +175,8 @@ testCgroupDetectMounts(const void *args)
                           virCgroupControllerTypeToString(i),
                           NULLSTR(group->legacy[i].mountPoint));
     }
+    virBufferAsprintf(&buf, "%-12s %s\n",
+                      "unified", NULLSTR(group->unified.mountPoint));
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
