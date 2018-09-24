@@ -1,0 +1,7 @@
+#subsys_name    hierarchy       num_cgroups     enabled
+cpuset   6   1  1
+cpu      6   1  1
+cpuacct  6   1  1
+memory   6   1  1
+devices  6   1  1
+blkio    6   1  1

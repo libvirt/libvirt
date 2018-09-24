@@ -79,85 +79,6 @@ const char *fakedevicedir1 = FAKEDEVDIR1;
  * of files beneath it
  */
 
-/*
- * Intentionally missing the 'devices' mount.
- * Co-mounting cpu & cpuacct controllers
- * An anonymous controller for systemd
- */
-const char *procmounts =
-    "rootfs / rootfs rw 0 0\n"
-    "tmpfs /run tmpfs rw,seclabel,nosuid,nodev,mode=755 0 0\n"
-    "tmpfs /not/really/sys/fs/cgroup tmpfs rw,seclabel,nosuid,nodev,noexec,mode=755 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/cpuset cgroup rw,nosuid,nodev,noexec,relatime,cpuset 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/cpu,cpuacct cgroup rw,nosuid,nodev,noexec,relatime,cpuacct,cpu 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/freezer cgroup rw,nosuid,nodev,noexec,relatime,freezer 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/blkio cgroup rw,nosuid,nodev,noexec,relatime,blkio 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/memory cgroup rw,nosuid,nodev,noexec,relatime,memory 0 0\n"
-    "/dev/sda1 /boot ext4 rw,seclabel,relatime,data=ordered 0 0\n"
-    "tmpfs /tmp tmpfs rw,seclabel,relatime,size=1024000k 0 0\n";
-
-const char *procselfcgroups =
-    "115:memory:/\n"
-    "8:blkio:/\n"
-    "6:freezer:/\n"
-    "3:cpuacct,cpu:/system\n"
-    "2:cpuset:/\n"
-    "1:name=systemd:/user/berrange/123\n";
-
-const char *proccgroups =
-    "#subsys_name    hierarchy       num_cgroups     enabled\n"
-    "cpuset  2       4       1\n"
-    "cpu     3       48      1\n"
-    "cpuacct 3       48      1\n"
-    "memory  4       4       1\n"
-    "devices 5       4       1\n"
-    "freezer 6       4       1\n"
-    "blkio   8       4       1\n";
-
-
-const char *procmountsallinone =
-    "rootfs / rootfs rw 0 0\n"
-    "sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0\n"
-    "proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0\n"
-    "udev /dev devtmpfs rw,relatime,size=16458560k,nr_inodes=4114640,mode=755 0 0\n"
-    "devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0\n"
-    "nfsd /proc/fs/nfsd nfsd rw,relatime 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup cgroup rw,relatime,blkio,devices,memory,cpuacct,cpu,cpuset 0 0\n";
-
-const char *procselfcgroupsallinone =
-    "6:blkio,devices,memory,cpuacct,cpu,cpuset:/";
-
-const char *proccgroupsallinone =
-    "#subsys_name    hierarchy       num_cgroups     enabled\n"
-    "cpuset   6   1  1\n"
-    "cpu      6   1  1\n"
-    "cpuacct  6   1  1\n"
-    "memory   6   1  1\n"
-    "devices  6   1  1\n"
-    "blkio    6   1  1\n";
-
-const char *procmountslogind =
-    "none /not/really/sys/fs/cgroup tmpfs rw,rootcontext=system_u:object_r:sysfs_t:s0,seclabel,relatime,size=4k,mode=755 0 0\n"
-    "systemd /not/really/sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,name=systemd 0 0\n";
-
-const char *procselfcgroupslogind =
-    "1:name=systemd:/\n";
-
-const char *proccgroupslogind =
-    "#subsys_name    hierarchy       num_cgroups     enabled\n"
-    "cpuset    0  1  1\n"
-    "cpu       0  1  1\n"
-    "cpuacct   0  1  1\n"
-    "memory    0  1  0\n"
-    "devices   0  1  1\n"
-    "freezer   0  1  1\n"
-    "net_cls   0  1  1\n"
-    "blkio     0  1  1\n"
-    "perf_event  0  1  1\n";
-
-
-
 static int make_file(const char *path,
                      const char *name,
                      const char *value)
@@ -377,29 +298,16 @@ static void init_sysfs(void)
 
 FILE *fopen(const char *path, const char *mode)
 {
-    const char *mock;
-    bool allinone = false, logind = false;
-    init_syms();
+    char *filepath = NULL;
+    const char *type = NULL;
+    FILE *rc = NULL;
+    const char *filename = getenv("VIR_CGROUP_MOCK_FILENAME");
 
-    mock = getenv("VIR_CGROUP_MOCK_MODE");
-    if (mock) {
-        if (STREQ(mock, "allinone"))
-            allinone = true;
-        else if (STREQ(mock, "logind"))
-            logind = true;
-    }
+    init_syms();
 
     if (STREQ(path, "/proc/mounts")) {
         if (STREQ(mode, "r")) {
-            if (allinone)
-                return fmemopen((void *)procmountsallinone,
-                                strlen(procmountsallinone) + 1, mode);
-            else if (logind)
-                return fmemopen((void *)procmountslogind,
-                                strlen(procmountslogind) + 1, mode);
-            else
-                return fmemopen((void *)procmounts,
-                                strlen(procmounts) + 1, mode);
+            type = "mounts";
         } else {
             errno = EACCES;
             return NULL;
@@ -407,15 +315,7 @@ FILE *fopen(const char *path, const char *mode)
     }
     if (STREQ(path, "/proc/cgroups")) {
         if (STREQ(mode, "r")) {
-            if (allinone)
-                return fmemopen((void *)proccgroupsallinone,
-                                strlen(proccgroupsallinone) + 1, mode);
-            else if (logind)
-                return fmemopen((void *)proccgroupslogind,
-                                strlen(proccgroupslogind) + 1, mode);
-            else
-                return fmemopen((void *)proccgroups,
-                                strlen(proccgroups) + 1, mode);
+            type = "cgroups";
         } else {
             errno = EACCES;
             return NULL;
@@ -423,19 +323,23 @@ FILE *fopen(const char *path, const char *mode)
     }
     if (STREQ(path, "/proc/self/cgroup")) {
         if (STREQ(mode, "r")) {
-            if (allinone)
-                return fmemopen((void *)procselfcgroupsallinone,
-                                strlen(procselfcgroupsallinone) + 1, mode);
-            else if (logind)
-                return fmemopen((void *)procselfcgroupslogind,
-                                strlen(procselfcgroupslogind) + 1, mode);
-            else
-                return fmemopen((void *)procselfcgroups,
-                                strlen(procselfcgroups) + 1, mode);
+            type = "self.cgroup";
         } else {
             errno = EACCES;
             return NULL;
         }
+    }
+
+    if (type) {
+        if (!filename)
+            abort();
+        if (virAsprintfQuiet(&filepath, "%s/vircgroupdata/%s.%s",
+                             abs_srcdir, filename, type) < 0) {
+            abort();
+        }
+        rc = real_fopen(filepath, mode);
+        free(filepath);
+        return rc;
     }
 
     return real_fopen(path, mode);

@@ -889,6 +889,7 @@ mymain(void)
     DETECT_MOUNTS("no-cgroups");
     DETECT_MOUNTS("kubevirt");
 
+    setenv("VIR_CGROUP_MOCK_FILENAME", "systemd", 1);
     if (virTestRun("New cgroup for self", testCgroupNewForSelf, NULL) < 0)
         ret = -1;
 
@@ -924,20 +925,21 @@ mymain(void)
 
     if (virTestRun("virCgroupGetPercpuStats works", testCgroupGetPercpuStats, NULL) < 0)
         ret = -1;
+    unsetenv("VIR_CGROUP_MOCK_FILENAME");
 
-    setenv("VIR_CGROUP_MOCK_MODE", "allinone", 1);
+    setenv("VIR_CGROUP_MOCK_FILENAME", "all-in-one", 1);
     if (virTestRun("New cgroup for self (allinone)", testCgroupNewForSelfAllInOne, NULL) < 0)
         ret = -1;
     if (virTestRun("Cgroup available", testCgroupAvailable, (void*)0x1) < 0)
         ret = -1;
-    unsetenv("VIR_CGROUP_MOCK_MODE");
+    unsetenv("VIR_CGROUP_MOCK_FILENAME");
 
-    setenv("VIR_CGROUP_MOCK_MODE", "logind", 1);
+    setenv("VIR_CGROUP_MOCK_FILENAME", "logind", 1);
     if (virTestRun("New cgroup for self (logind)", testCgroupNewForSelfLogind, NULL) < 0)
         ret = -1;
     if (virTestRun("Cgroup available", testCgroupAvailable, (void*)0x0) < 0)
         ret = -1;
-    unsetenv("VIR_CGROUP_MOCK_MODE");
+    unsetenv("VIR_CGROUP_MOCK_FILENAME");
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
