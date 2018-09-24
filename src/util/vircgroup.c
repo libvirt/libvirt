@@ -1160,6 +1160,10 @@ typedef enum {
     /* Same as VIR_CGROUP_TASK_PROCESS but it also adds the task to systemd
      * named controller. */
     VIR_CGROUP_TASK_SYSTEMD = 1 << 1,
+
+    /* Moves only specific thread into cgroup except to systemd
+     * named controller. */
+    VIR_CGROUP_TASK_THREAD = 1 << 2,
 } virCgroupTaskFlags;
 
 
@@ -1226,6 +1230,24 @@ virCgroupAddMachineProcess(virCgroupPtr group, pid_t pid)
     return virCgroupAddTaskInternal(group, pid,
                                     VIR_CGROUP_TASK_PROCESS |
                                     VIR_CGROUP_TASK_SYSTEMD);
+}
+
+/**
+ * virCgroupAddThread:
+ *
+ * @group: The cgroup to add a thread to
+ * @pid: The pid of the thread to add
+ *
+ * Will add the thread to all controllers, except the
+ * systemd unit controller.
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupAddThread(virCgroupPtr group,
+                   pid_t pid)
+{
+    return virCgroupAddTaskInternal(group, pid, VIR_CGROUP_TASK_THREAD);
 }
 
 
@@ -4222,6 +4244,16 @@ virCgroupAddProcess(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupAddMachineProcess(virCgroupPtr group ATTRIBUTE_UNUSED,
                            pid_t pid ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupAddThread(virCgroupPtr group ATTRIBUTE_UNUSED,
+                   pid_t pid ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));

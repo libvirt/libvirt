@@ -1500,6 +1500,7 @@ virBufferVasprintf;
 # util/vircgroup.h
 virCgroupAddMachineProcess;
 virCgroupAddProcess;
+virCgroupAddThread;
 virCgroupAllowAllDevices;
 virCgroupAllowDevice;
 virCgroupAllowDevicePath;

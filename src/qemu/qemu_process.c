@@ -2549,7 +2549,7 @@ qemuProcessSetupPid(virDomainObjPtr vm,
             goto cleanup;
 
         /* Move the thread to the sub dir */
-        if (virCgroupAddProcess(cgroup, pid) < 0)
+        if (virCgroupAddThread(cgroup, pid) < 0)
             goto cleanup;
 
     }

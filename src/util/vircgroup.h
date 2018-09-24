@@ -120,6 +120,7 @@ int virCgroupPathOfController(virCgroupPtr group,
 
 int virCgroupAddProcess(virCgroupPtr group, pid_t pid);
 int virCgroupAddMachineProcess(virCgroupPtr group, pid_t pid);
+int virCgroupAddThread(virCgroupPtr group, pid_t pid);
 
 int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight);
 int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight);
