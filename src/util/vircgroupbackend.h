@@ -190,6 +190,16 @@ typedef int
                                       const char *path,
                                       unsigned int *wiops);
 
+typedef int
+(*virCgroupSetBlkioDeviceReadBpsCB)(virCgroupPtr group,
+                                    const char *path,
+                                    unsigned long long rbps);
+
+typedef int
+(*virCgroupGetBlkioDeviceReadBpsCB)(virCgroupPtr group,
+                                    const char *path,
+                                    unsigned long long *rbps);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -224,6 +234,8 @@ struct _virCgroupBackend {
     virCgroupGetBlkioDeviceReadIopsCB getBlkioDeviceReadIops;
     virCgroupSetBlkioDeviceWriteIopsCB setBlkioDeviceWriteIops;
     virCgroupGetBlkioDeviceWriteIopsCB getBlkioDeviceWriteIops;
+    virCgroupSetBlkioDeviceReadBpsCB setBlkioDeviceReadBps;
+    virCgroupGetBlkioDeviceReadBpsCB getBlkioDeviceReadBps;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
