@@ -830,10 +830,10 @@ static int testCgroupGetBlkioIoDeviceServiced(const void *args ATTRIBUTE_UNUSED)
 
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
-static int
-mymain(void)
+static char *
+initFakeFS(const char *mode,
+           const char *filename)
 {
-    int ret = 0;
     char *fakerootdir;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
@@ -847,6 +847,33 @@ mymain(void)
     }
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
+
+    if (mode)
+        setenv("VIR_CGROUP_MOCK_MODE", mode, 1);
+
+    if (filename)
+        setenv("VIR_CGROUP_MOCK_FILENAME", filename, 1);
+
+    return fakerootdir;
+}
+
+static void
+cleanupFakeFS(char *fakerootdir)
+{
+    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
+        virFileDeleteTree(fakerootdir);
+
+    VIR_FREE(fakerootdir);
+    unsetenv("LIBVIRT_FAKE_ROOT_DIR");
+    unsetenv("VIR_CGROUP_MOCK_MODE");
+    unsetenv("VIR_CGROUP_MOCK_FILENAME");
+}
+
+static int
+mymain(void)
+{
+    int ret = 0;
+    char *fakerootdir;
 
 # define DETECT_MOUNTS_FULL(file, fail) \
     do { \
@@ -871,7 +898,7 @@ mymain(void)
     DETECT_MOUNTS_FAIL("no-cgroups");
     DETECT_MOUNTS("kubevirt");
 
-    setenv("VIR_CGROUP_MOCK_FILENAME", "systemd", 1);
+    fakerootdir = initFakeFS(NULL, "systemd");
     if (virTestRun("New cgroup for self", testCgroupNewForSelf, NULL) < 0)
         ret = -1;
 
@@ -907,26 +934,23 @@ mymain(void)
 
     if (virTestRun("virCgroupGetPercpuStats works", testCgroupGetPercpuStats, NULL) < 0)
         ret = -1;
-    unsetenv("VIR_CGROUP_MOCK_FILENAME");
+    cleanupFakeFS(fakerootdir);
 
-    setenv("VIR_CGROUP_MOCK_FILENAME", "all-in-one", 1);
+    fakerootdir = initFakeFS(NULL, "all-in-one");
     if (virTestRun("New cgroup for self (allinone)", testCgroupNewForSelfAllInOne, NULL) < 0)
         ret = -1;
     if (virTestRun("Cgroup available", testCgroupAvailable, (void*)0x1) < 0)
         ret = -1;
-    unsetenv("VIR_CGROUP_MOCK_FILENAME");
+    cleanupFakeFS(fakerootdir);
 
-    setenv("VIR_CGROUP_MOCK_FILENAME", "logind", 1);
+    fakerootdir = initFakeFS(NULL, "logind");
     if (virTestRun("New cgroup for self (logind)", testCgroupNewForSelfLogind, NULL) < 0)
         ret = -1;
     if (virTestRun("Cgroup available", testCgroupAvailable, (void*)0x0) < 0)
         ret = -1;
-    unsetenv("VIR_CGROUP_MOCK_FILENAME");
+    cleanupFakeFS(fakerootdir);
 
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakerootdir);
 
-    VIR_FREE(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
