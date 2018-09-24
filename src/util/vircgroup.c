@@ -1381,19 +1381,7 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
                                 const char *path,
                                 unsigned int riops)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) blkstr = NULL;
-
-    if (!(blkstr = virCgroupGetBlockDevString(path)))
-        return -1;
-
-    if (virAsprintf(&str, "%s%u", blkstr, riops) < 0)
-        return -1;
-
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_BLKIO,
-                                "blkio.throttle.read_iops_device",
-                                str);
+    VIR_CGROUP_BACKEND_CALL(group, setBlkioDeviceReadIops, -1, path, riops);
 }
 
 
@@ -1513,25 +1501,7 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group,
                                 const char *path,
                                 unsigned int *riops)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "blkio.throttle.read_iops_device",
-                                   path,
-                                   &str) < 0)
-        return -1;
-
-    if (!str) {
-        *riops = 0;
-    } else if (virStrToLong_ui(str, NULL, 10, riops) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to parse '%s' as an integer"),
-                       str);
-        return -1;
-    }
-
-    return 0;
+    VIR_CGROUP_BACKEND_CALL(group, getBlkioDeviceReadIops, -1, path, riops);
 }
 
 /**

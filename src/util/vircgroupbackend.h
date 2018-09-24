@@ -170,6 +170,16 @@ typedef int
                                    const char *path,
                                    unsigned int *weight);
 
+typedef int
+(*virCgroupSetBlkioDeviceReadIopsCB)(virCgroupPtr group,
+                                     const char *path,
+                                     unsigned int riops);
+
+typedef int
+(*virCgroupGetBlkioDeviceReadIopsCB)(virCgroupPtr group,
+                                     const char *path,
+                                     unsigned int *riops);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -200,6 +210,8 @@ struct _virCgroupBackend {
     virCgroupGetBlkioIoDeviceServicedCB getBlkioIoDeviceServiced;
     virCgroupSetBlkioDeviceWeightCB setBlkioDeviceWeight;
     virCgroupGetBlkioDeviceWeightCB getBlkioDeviceWeight;
+    virCgroupSetBlkioDeviceReadIopsCB setBlkioDeviceReadIops;
+    virCgroupGetBlkioDeviceReadIopsCB getBlkioDeviceReadIops;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
