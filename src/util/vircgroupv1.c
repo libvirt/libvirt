@@ -126,10 +126,10 @@ virCgroupV1ValidateMachineGroup(virCgroupPtr group,
         if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
             continue;
 
-        if (!group->controllers[i].placement)
+        if (!group->legacy[i].placement)
             continue;
 
-        tmp = strrchr(group->controllers[i].placement, '/');
+        tmp = strrchr(group->legacy[i].placement, '/');
         if (!tmp)
             return false;
 
@@ -138,7 +138,7 @@ virCgroupV1ValidateMachineGroup(virCgroupPtr group,
             i == VIR_CGROUP_CONTROLLER_CPUSET) {
             if (STREQ(tmp, "/emulator"))
                 *tmp = '\0';
-            tmp = strrchr(group->controllers[i].placement, '/');
+            tmp = strrchr(group->legacy[i].placement, '/');
             if (!tmp)
                 return false;
         }
@@ -170,15 +170,15 @@ virCgroupV1CopyMounts(virCgroupPtr group,
 {
     size_t i;
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!parent->controllers[i].mountPoint)
+        if (!parent->legacy[i].mountPoint)
             continue;
 
-        if (VIR_STRDUP(group->controllers[i].mountPoint,
-                       parent->controllers[i].mountPoint) < 0)
+        if (VIR_STRDUP(group->legacy[i].mountPoint,
+                       parent->legacy[i].mountPoint) < 0)
             return -1;
 
-        if (VIR_STRDUP(group->controllers[i].linkPoint,
-                       parent->controllers[i].linkPoint) < 0)
+        if (VIR_STRDUP(group->legacy[i].linkPoint,
+                       parent->legacy[i].linkPoint) < 0)
             return -1;
     }
     return 0;
@@ -192,14 +192,14 @@ virCgroupV1CopyPlacement(virCgroupPtr group,
 {
     size_t i;
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!group->controllers[i].mountPoint)
+        if (!group->legacy[i].mountPoint)
             continue;
 
         if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
             continue;
 
         if (path[0] == '/') {
-            if (VIR_STRDUP(group->controllers[i].placement, path) < 0)
+            if (VIR_STRDUP(group->legacy[i].placement, path) < 0)
                 return -1;
         } else {
             /*
@@ -207,10 +207,10 @@ virCgroupV1CopyPlacement(virCgroupPtr group,
              * parent == "/libvirt.service" + path == "" => "/libvirt.service"
              * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
              */
-            if (virAsprintf(&group->controllers[i].placement,
+            if (virAsprintf(&group->legacy[i].placement,
                             "%s%s%s",
-                            parent->controllers[i].placement,
-                            (STREQ(parent->controllers[i].placement, "/") ||
+                            parent->legacy[i].placement,
+                            (STREQ(parent->legacy[i].placement, "/") ||
                              STREQ(path, "") ? "" : "/"),
                             path) < 0)
                 return -1;
@@ -319,7 +319,7 @@ virCgroupV1DetectMounts(virCgroupPtr group,
              * once. We need to save the results of the last one,
              * and we need to be careful to release the memory used
              * by previous processing. */
-            virCgroupV1ControllerPtr controller = &group->controllers[i];
+            virCgroupV1ControllerPtr controller = &group->legacy[i];
 
             VIR_FREE(controller->mountPoint);
             VIR_FREE(controller->linkPoint);
@@ -349,19 +349,19 @@ virCgroupV1DetectPlacement(virCgroupPtr group,
         const char *typestr = virCgroupV1ControllerTypeToString(i);
 
         if (virCgroupV1MountOptsMatchController(controllers, typestr) &&
-            group->controllers[i].mountPoint != NULL &&
-            group->controllers[i].placement == NULL) {
+            group->legacy[i].mountPoint != NULL &&
+            group->legacy[i].placement == NULL) {
             /*
              * selfpath == "/" + path="" -> "/"
              * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
              * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
              */
             if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
-                if (VIR_STRDUP(group->controllers[i].placement,
+                if (VIR_STRDUP(group->legacy[i].placement,
                                selfpath) < 0)
                     return -1;
             } else {
-                if (virAsprintf(&group->controllers[i].placement,
+                if (virAsprintf(&group->legacy[i].placement,
                                 "%s%s%s", selfpath,
                                 (STREQ(selfpath, "/") ||
                                  STREQ(path, "") ? "" : "/"),
@@ -382,22 +382,22 @@ virCgroupV1ValidatePlacement(virCgroupPtr group,
     size_t i;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!group->controllers[i].mountPoint)
+        if (!group->legacy[i].mountPoint)
             continue;
 
-        if (!group->controllers[i].placement) {
+        if (!group->legacy[i].placement) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Could not find placement for v1 controller %s at %s"),
                            virCgroupV1ControllerTypeToString(i),
-                           group->controllers[i].placement);
+                           group->legacy[i].placement);
             return -1;
         }
 
         VIR_DEBUG("Detected mount/mapping %zu:%s at %s in %s for pid %lld",
                   i,
                   virCgroupV1ControllerTypeToString(i),
-                  group->controllers[i].mountPoint,
-                  group->controllers[i].placement,
+                  group->legacy[i].mountPoint,
+                  group->legacy[i].placement,
                   (long long) pid);
     }
 
@@ -410,7 +410,7 @@ virCgroupV1StealPlacement(virCgroupPtr group)
 {
     char *ret = NULL;
 
-    VIR_STEAL_PTR(ret, group->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement);
+    VIR_STEAL_PTR(ret, group->legacy[VIR_CGROUP_CONTROLLER_SYSTEMD].placement);
 
     return ret;
 }
@@ -429,7 +429,7 @@ virCgroupV1DetectControllers(virCgroupPtr group,
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             if (((1 << i) & controllers)) {
                 /* Remove non-existent controllers  */
-                if (!group->controllers[i].mountPoint) {
+                if (!group->legacy[i].mountPoint) {
                     VIR_DEBUG("Requested controller '%s' not mounted, ignoring",
                               virCgroupV1ControllerTypeToString(i));
                     controllers &= ~(1 << i);
@@ -440,9 +440,9 @@ virCgroupV1DetectControllers(virCgroupPtr group,
             VIR_DEBUG("Controller '%s' wanted=%s, mount='%s'",
                       virCgroupV1ControllerTypeToString(i),
                       (1 << i) & controllers ? "yes" : "no",
-                      NULLSTR(group->controllers[i].mountPoint));
+                      NULLSTR(group->legacy[i].mountPoint));
             if (!((1 << i) & controllers) &&
-                group->controllers[i].mountPoint) {
+                group->legacy[i].mountPoint) {
                 /* Check whether a request to disable a controller
                  * clashes with co-mounting of controllers */
                 for (j = 0; j < VIR_CGROUP_CONTROLLER_LAST; j++) {
@@ -451,8 +451,8 @@ virCgroupV1DetectControllers(virCgroupPtr group,
                     if (!((1 << j) & controllers))
                         continue;
 
-                    if (STREQ_NULLABLE(group->controllers[i].mountPoint,
-                                       group->controllers[j].mountPoint)) {
+                    if (STREQ_NULLABLE(group->legacy[i].mountPoint,
+                                       group->legacy[j].mountPoint)) {
                         virReportSystemError(EINVAL,
                                              _("V1 controller '%s' is not wanted, but '%s' is co-mounted"),
                                              virCgroupV1ControllerTypeToString(i),
@@ -460,7 +460,7 @@ virCgroupV1DetectControllers(virCgroupPtr group,
                         return -1;
                     }
                 }
-                VIR_FREE(group->controllers[i].mountPoint);
+                VIR_FREE(group->legacy[i].mountPoint);
             }
         }
     } else {
@@ -469,8 +469,8 @@ virCgroupV1DetectControllers(virCgroupPtr group,
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             VIR_DEBUG("Controller '%s' present=%s",
                       virCgroupV1ControllerTypeToString(i),
-                      group->controllers[i].mountPoint ? "yes" : "no");
-            if (group->controllers[i].mountPoint == NULL)
+                      group->legacy[i].mountPoint ? "yes" : "no");
+            if (group->legacy[i].mountPoint == NULL)
                 continue;
             controllers |= (1 << i);
         }
@@ -484,7 +484,7 @@ static bool
 virCgroupV1HasController(virCgroupPtr group,
                          int controller)
 {
-    return group->controllers[controller].mountPoint != NULL;
+    return group->legacy[controller].mountPoint != NULL;
 }
 
 
@@ -498,9 +498,9 @@ virCgroupV1GetAnyController(virCgroupPtr group)
          * of '/' to avoid doing bad stuff to the root
          * cgroup
          */
-        if (group->controllers[i].mountPoint &&
-            group->controllers[i].placement &&
-            STRNEQ(group->controllers[i].placement, "/")) {
+        if (group->legacy[i].mountPoint &&
+            group->legacy[i].placement &&
+            STRNEQ(group->legacy[i].placement, "/")) {
             return i;
         }
     }
@@ -515,14 +515,14 @@ virCgroupV1PathOfController(virCgroupPtr group,
                             const char *key,
                             char **path)
 {
-    if (group->controllers[controller].mountPoint == NULL) {
+    if (group->legacy[controller].mountPoint == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("v1 controller '%s' is not mounted"),
                        virCgroupV1ControllerTypeToString(controller));
         return -1;
     }
 
-    if (group->controllers[controller].placement == NULL) {
+    if (group->legacy[controller].placement == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("v1 controller '%s' is not enabled for group"),
                        virCgroupV1ControllerTypeToString(controller));
@@ -530,8 +530,8 @@ virCgroupV1PathOfController(virCgroupPtr group,
     }
 
     if (virAsprintf(path, "%s%s/%s",
-                    group->controllers[controller].mountPoint,
-                    group->controllers[controller].placement,
+                    group->legacy[controller].mountPoint,
+                    group->legacy[controller].placement,
                     key ? key : "") < 0)
         return -1;
 
@@ -617,7 +617,7 @@ virCgroupV1MakeGroup(virCgroupPtr parent,
         }
 
         /* Skip over controllers that aren't mounted */
-        if (!group->controllers[i].mountPoint) {
+        if (!group->legacy[i].mountPoint) {
             VIR_DEBUG("Skipping unmounted controller %s",
                       virCgroupV1ControllerTypeToString(i));
             continue;
@@ -638,7 +638,7 @@ virCgroupV1MakeGroup(virCgroupPtr parent,
                  * treat blkio as unmounted if mkdir fails. */
                 if (i == VIR_CGROUP_CONTROLLER_BLKIO) {
                     VIR_DEBUG("Ignoring mkdir failure with blkio controller. Kernel probably too old");
-                    VIR_FREE(group->controllers[i].mountPoint);
+                    VIR_FREE(group->legacy[i].mountPoint);
                     continue;
                 } else {
                     virReportSystemError(errno,
@@ -648,7 +648,7 @@ virCgroupV1MakeGroup(virCgroupPtr parent,
                 }
             }
             if (i == VIR_CGROUP_CONTROLLER_CPUSET &&
-                group->controllers[i].mountPoint != NULL &&
+                group->legacy[i].mountPoint != NULL &&
                 virCgroupV1CpuSetInherit(parent, group) < 0) {
                 return -1;
             }
@@ -658,7 +658,7 @@ virCgroupV1MakeGroup(virCgroupPtr parent,
              */
             if ((flags & VIR_CGROUP_MEM_HIERACHY) &&
                 i == VIR_CGROUP_CONTROLLER_MEMORY &&
-                group->controllers[i].mountPoint != NULL &&
+                group->legacy[i].mountPoint != NULL &&
                 virCgroupV1SetMemoryUseHierarchy(group) < 0) {
                 return -1;
             }
@@ -681,7 +681,7 @@ virCgroupV1Remove(virCgroupPtr group)
         VIR_AUTOFREE(char *) grppath = NULL;
 
         /* Skip over controllers not mounted */
-        if (!group->controllers[i].mountPoint)
+        if (!group->legacy[i].mountPoint)
             continue;
 
         /* We must never rmdir() in systemd's hierarchy */
@@ -690,7 +690,7 @@ virCgroupV1Remove(virCgroupPtr group)
 
         /* Don't delete the root group, if we accidentally
            ended up in it for some reason */
-        if (STREQ(group->controllers[i].placement, "/"))
+        if (STREQ(group->legacy[i].placement, "/"))
             continue;
 
         if (virCgroupV1PathOfController(group,
@@ -718,7 +718,7 @@ virCgroupV1AddTask(virCgroupPtr group,
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         /* Skip over controllers not mounted */
-        if (!group->controllers[i].mountPoint)
+        if (!group->legacy[i].mountPoint)
             continue;
 
         /* We must never add tasks in systemd's hierarchy
@@ -765,17 +765,17 @@ virCgroupV1IdentifyRoot(virCgroupPtr group)
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         char *tmp;
-        if (!group->controllers[i].mountPoint)
+        if (!group->legacy[i].mountPoint)
             continue;
-        if (!(tmp = strrchr(group->controllers[i].mountPoint, '/'))) {
+        if (!(tmp = strrchr(group->legacy[i].mountPoint, '/'))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Could not find directory separator in %s"),
-                           group->controllers[i].mountPoint);
+                           group->legacy[i].mountPoint);
             return NULL;
         }
 
-        if (VIR_STRNDUP(ret, group->controllers[i].mountPoint,
-                        tmp - group->controllers[i].mountPoint) < 0)
+        if (VIR_STRNDUP(ret, group->legacy[i].mountPoint,
+                        tmp - group->legacy[i].mountPoint) < 0)
             return NULL;
         return ret;
     }
@@ -819,44 +819,44 @@ virCgroupV1BindMount(virCgroupPtr group,
     }
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!group->controllers[i].mountPoint)
+        if (!group->legacy[i].mountPoint)
             continue;
 
-        if (!virFileExists(group->controllers[i].mountPoint)) {
+        if (!virFileExists(group->legacy[i].mountPoint)) {
             VIR_AUTOFREE(char *) src = NULL;
             if (virAsprintf(&src, "%s%s",
                             oldroot,
-                            group->controllers[i].mountPoint) < 0)
+                            group->legacy[i].mountPoint) < 0)
                 return -1;
 
             VIR_DEBUG("Create mount point '%s'",
-                      group->controllers[i].mountPoint);
-            if (virFileMakePath(group->controllers[i].mountPoint) < 0) {
+                      group->legacy[i].mountPoint);
+            if (virFileMakePath(group->legacy[i].mountPoint) < 0) {
                 virReportSystemError(errno,
                                      _("Unable to create directory %s"),
-                                     group->controllers[i].mountPoint);
+                                     group->legacy[i].mountPoint);
                 return -1;
             }
 
-            if (mount(src, group->controllers[i].mountPoint, "none", MS_BIND,
+            if (mount(src, group->legacy[i].mountPoint, "none", MS_BIND,
                       NULL) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to bind cgroup '%s' on '%s'"),
-                                     src, group->controllers[i].mountPoint);
+                                     src, group->legacy[i].mountPoint);
                 return -1;
             }
         }
 
-        if (group->controllers[i].linkPoint) {
+        if (group->legacy[i].linkPoint) {
             VIR_DEBUG("Link mount point '%s' to '%s'",
-                      group->controllers[i].mountPoint,
-                      group->controllers[i].linkPoint);
-            if (symlink(group->controllers[i].mountPoint,
-                        group->controllers[i].linkPoint) < 0) {
+                      group->legacy[i].mountPoint,
+                      group->legacy[i].linkPoint);
+            if (symlink(group->legacy[i].mountPoint,
+                        group->legacy[i].linkPoint) < 0) {
                 virReportSystemError(errno,
                                      _("Unable to symlink directory %s to %s"),
-                                     group->controllers[i].mountPoint,
-                                     group->controllers[i].linkPoint);
+                                     group->legacy[i].mountPoint,
+                                     group->legacy[i].linkPoint);
                 return -1;
             }
         }
@@ -884,11 +884,11 @@ virCgroupV1SetOwner(virCgroupPtr cgroup,
         if (!((1 << i) & controllers))
             continue;
 
-        if (!cgroup->controllers[i].mountPoint)
+        if (!cgroup->legacy[i].mountPoint)
             continue;
 
-        if (virAsprintf(&base, "%s%s", cgroup->controllers[i].mountPoint,
-                        cgroup->controllers[i].placement) < 0)
+        if (virAsprintf(&base, "%s%s", cgroup->legacy[i].mountPoint,
+                        cgroup->legacy[i].placement) < 0)
             goto cleanup;
 
         if (virDirOpen(&dh, base) < 0)

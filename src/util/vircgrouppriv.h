@@ -50,7 +50,7 @@ struct _virCgroup {
 
     virCgroupBackendPtr backend;
 
-    virCgroupV1Controller controllers[VIR_CGROUP_CONTROLLER_LAST];
+    virCgroupV1Controller legacy[VIR_CGROUP_CONTROLLER_LAST];
 };
 
 int virCgroupSetValueStr(virCgroupPtr group,

@@ -55,25 +55,25 @@ static int validateCgroup(virCgroupPtr cgroup,
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (STRNEQ_NULLABLE(expectMountPoint[i],
-                            cgroup->controllers[i].mountPoint)) {
+                            cgroup->legacy[i].mountPoint)) {
             fprintf(stderr, "Wrong mount '%s', expected '%s' for '%s'\n",
-                    cgroup->controllers[i].mountPoint,
+                    cgroup->legacy[i].mountPoint,
                     expectMountPoint[i],
                     virCgroupControllerTypeToString(i));
             return -1;
         }
         if (STRNEQ_NULLABLE(expectLinkPoint[i],
-                            cgroup->controllers[i].linkPoint)) {
+                            cgroup->legacy[i].linkPoint)) {
             fprintf(stderr, "Wrong link '%s', expected '%s' for '%s'\n",
-                    cgroup->controllers[i].linkPoint,
+                    cgroup->legacy[i].linkPoint,
                     expectLinkPoint[i],
                     virCgroupControllerTypeToString(i));
             return -1;
         }
         if (STRNEQ_NULLABLE(expectPlacement[i],
-                            cgroup->controllers[i].placement)) {
+                            cgroup->legacy[i].placement)) {
             fprintf(stderr, "Wrong placement '%s', expected '%s' for '%s'\n",
-                    cgroup->controllers[i].placement,
+                    cgroup->legacy[i].placement,
                     expectPlacement[i],
                     virCgroupControllerTypeToString(i));
             return -1;
@@ -173,7 +173,7 @@ testCgroupDetectMounts(const void *args)
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         virBufferAsprintf(&buf, "%-12s %s\n",
                           virCgroupControllerTypeToString(i),
-                          NULLSTR(group->controllers[i].mountPoint));
+                          NULLSTR(group->legacy[i].mountPoint));
     }
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;

@@ -1242,9 +1242,9 @@ virCgroupFree(virCgroupPtr *group)
         return;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        VIR_FREE((*group)->controllers[i].mountPoint);
-        VIR_FREE((*group)->controllers[i].linkPoint);
-        VIR_FREE((*group)->controllers[i].placement);
+        VIR_FREE((*group)->legacy[i].mountPoint);
+        VIR_FREE((*group)->legacy[i].linkPoint);
+        VIR_FREE((*group)->legacy[i].placement);
     }
 
     VIR_FREE((*group)->path);
