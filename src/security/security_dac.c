@@ -216,7 +216,8 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
     for (i = 0; i < list->nItems; i++) {
         const char *p = list->items[i]->path;
 
-        if (virFileIsDir(p))
+        if (!p ||
+            virFileIsDir(p))
             continue;
 
         VIR_APPEND_ELEMENT_COPY_INPLACE(paths, npaths, p);
