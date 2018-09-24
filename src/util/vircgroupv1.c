@@ -705,6 +705,36 @@ virCgroupV1Remove(virCgroupPtr group)
 }
 
 
+static int
+virCgroupV1AddTask(virCgroupPtr group,
+                   pid_t pid,
+                   unsigned int flags)
+{
+    int ret = -1;
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        /* Skip over controllers not mounted */
+        if (!group->controllers[i].mountPoint)
+            continue;
+
+        /* We must never add tasks in systemd's hierarchy
+         * unless we're intentionally trying to move a
+         * task into a systemd machine scope */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD &&
+            !(flags & VIR_CGROUP_TASK_SYSTEMD))
+            continue;
+
+        if (virCgroupSetValueI64(group, i, "tasks", pid) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 virCgroupBackend virCgroupV1Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V1,
 
@@ -722,6 +752,7 @@ virCgroupBackend virCgroupV1Backend = {
     .pathOfController = virCgroupV1PathOfController,
     .makeGroup = virCgroupV1MakeGroup,
     .remove = virCgroupV1Remove,
+    .addTask = virCgroupV1AddTask,
 };
 
 

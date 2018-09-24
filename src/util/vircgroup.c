@@ -540,7 +540,7 @@ virCgroupSetValueU64(virCgroupPtr group,
 }
 
 
-static int
+int
 virCgroupSetValueI64(virCgroupPtr group,
                      int controller,
                      const char *key,
@@ -668,50 +668,6 @@ virCgroupNew(pid_t pid,
 }
 
 
-typedef enum {
-    /* Adds a whole process with all threads to specific cgroup except
-     * to systemd named controller. */
-    VIR_CGROUP_TASK_PROCESS = 1 << 0,
-
-    /* Same as VIR_CGROUP_TASK_PROCESS but it also adds the task to systemd
-     * named controller. */
-    VIR_CGROUP_TASK_SYSTEMD = 1 << 1,
-
-    /* Moves only specific thread into cgroup except to systemd
-     * named controller. */
-    VIR_CGROUP_TASK_THREAD = 1 << 2,
-} virCgroupTaskFlags;
-
-
-static int
-virCgroupAddTaskInternal(virCgroupPtr group,
-                         pid_t pid,
-                         unsigned int flags)
-{
-    int ret = -1;
-    size_t i;
-
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        /* Skip over controllers not mounted */
-        if (!group->controllers[i].mountPoint)
-            continue;
-
-        /* We must never add tasks in systemd's hierarchy
-         * unless we're intentionally trying to move a
-         * task into a systemd machine scope */
-        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD &&
-            !(flags & VIR_CGROUP_TASK_SYSTEMD))
-            continue;
-
-        if (virCgroupSetValueI64(group, i, "tasks", pid) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    return ret;
-}
-
 /**
  * virCgroupAddProcess:
  *
@@ -726,7 +682,7 @@ virCgroupAddTaskInternal(virCgroupPtr group,
 int
 virCgroupAddProcess(virCgroupPtr group, pid_t pid)
 {
-    return virCgroupAddTaskInternal(group, pid, VIR_CGROUP_TASK_PROCESS);
+    return group->backend->addTask(group, pid, VIR_CGROUP_TASK_PROCESS);
 }
 
 /**
@@ -743,9 +699,9 @@ virCgroupAddProcess(virCgroupPtr group, pid_t pid)
 int
 virCgroupAddMachineProcess(virCgroupPtr group, pid_t pid)
 {
-    return virCgroupAddTaskInternal(group, pid,
-                                    VIR_CGROUP_TASK_PROCESS |
-                                    VIR_CGROUP_TASK_SYSTEMD);
+    return group->backend->addTask(group, pid,
+                                   VIR_CGROUP_TASK_PROCESS |
+                                   VIR_CGROUP_TASK_SYSTEMD);
 }
 
 /**
@@ -763,7 +719,7 @@ int
 virCgroupAddThread(virCgroupPtr group,
                    pid_t pid)
 {
-    return virCgroupAddTaskInternal(group, pid, VIR_CGROUP_TASK_THREAD);
+    return group->backend->addTask(group, pid, VIR_CGROUP_TASK_THREAD);
 }
 
 

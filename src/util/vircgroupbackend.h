@@ -36,6 +36,20 @@ typedef enum {
 } virCgroupBackendFlags;
 
 typedef enum {
+    /* Adds a whole process with all threads to specific cgroup except
+     * to systemd named controller. */
+    VIR_CGROUP_TASK_PROCESS = 1 << 0,
+
+    /* Same as VIR_CGROUP_TASK_PROCESS but it also adds the task to systemd
+     * named controller. */
+    VIR_CGROUP_TASK_SYSTEMD = 1 << 1,
+
+    /* Moves only specific thread into cgroup except to systemd
+     * named controller. */
+    VIR_CGROUP_TASK_THREAD = 1 << 2,
+} virCgroupBackendTaskFlags;
+
+typedef enum {
     VIR_CGROUP_BACKEND_TYPE_V1 = 0,
     VIR_CGROUP_BACKEND_TYPE_LAST,
 } virCgroupBackendType;
@@ -103,6 +117,11 @@ typedef int
 typedef int
 (*virCgroupRemoveCB)(virCgroupPtr group);
 
+typedef int
+(*virCgroupAddTaskCB)(virCgroupPtr group,
+                      pid_t pid,
+                      unsigned int flags);
+
 struct _virCgroupBackend {
     virCgroupBackendType type;
 
@@ -121,6 +140,7 @@ struct _virCgroupBackend {
     virCgroupPathOfControllerCB pathOfController;
     virCgroupMakeGroupCB makeGroup;
     virCgroupRemoveCB remove;
+    virCgroupAddTaskCB addTask;
 };
 typedef struct _virCgroupBackend virCgroupBackend;
 typedef virCgroupBackend *virCgroupBackendPtr;
