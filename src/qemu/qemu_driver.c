@@ -20932,9 +20932,6 @@ qemuARPGetInterfaces(virDomainObjPtr vm,
         goto cleanup;
 
     for (i = 0; i < vm->def->nnets; i++) {
-        if (vm->def->nets[i]->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-            continue;
-
         virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
         for (j = 0; j < table->n; j++) {
             virArpTableEntry entry = table->t[j];
