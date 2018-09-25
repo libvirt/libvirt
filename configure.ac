@@ -360,7 +360,6 @@ AC_CHECK_HEADERS([\
   net/ethernet.h \
   netinet/tcp.h \
   pwd.h \
-  regex.h \
   stdarg.h \
   syslog.h \
   sys/mount.h \
