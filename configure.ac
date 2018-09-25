@@ -363,7 +363,6 @@ AC_CHECK_HEADERS([\
   stdarg.h \
   syslog.h \
   sys/mount.h \
-  sys/poll.h \
   sys/syscall.h \
   sys/sysctl.h \
   sys/ucred.h \
