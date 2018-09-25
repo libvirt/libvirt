@@ -75,6 +75,7 @@ EXTRA_DIST = \
 	virt-login-shell.conf \
 	virsh-edit.c \
 	bash-completion/vsh \
+	libvirt_recover_xattrs.sh \
 	$(PODFILES) \
 	$(MANINFILES) \
 	$(NULL)
