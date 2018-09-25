@@ -229,7 +229,6 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
     for (i = 0; i < list->nItems; i++) {
         virSecurityDACChownItemPtr item = list->items[i];
 
-        /* TODO Implement rollback */
         if (!item->restore) {
             rv = virSecurityDACSetOwnership(list->manager,
                                             item->src,
@@ -244,6 +243,19 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
 
         if (rv < 0)
             break;
+    }
+
+    for (; rv < 0 && i > 0; i--) {
+        virSecurityDACChownItemPtr item = list->items[i - 1];
+
+        if (!item->restore) {
+            virSecurityDACRestoreFileLabelInternal(list->manager,
+                                                   item->src,
+                                                   item->path);
+        } else {
+            VIR_WARN("Ignoring failed restore attempt on %s",
+                     NULLSTR(item->src ? item->src->path : item->path));
+        }
     }
 
     if (list->lock)
