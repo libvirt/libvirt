@@ -1065,10 +1065,10 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
 }
 
 
-int
-qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virDomainDeviceDefPtr dev)
+static int
+qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       virDomainDeviceDefPtr dev)
 {
     size_t i;
     virDomainDiskDefPtr disk = dev->data.disk;
@@ -1158,6 +1158,25 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
     if (ret != 0)
         ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
     return ret;
+}
+
+
+/**
+ * qemuDomainAttachDeviceDiskLive:
+ * @driver: qemu driver struct
+ * @vm: domain object
+ * @dev: device to attach (expected type is DISK)
+ *
+ * Attach a new disk or in case of cdroms/floppies change the media in the drive.
+ * This function handles all the necessary steps to attach a new storage source
+ * to the VM.
+ */
+int
+qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainDeviceDefPtr dev)
+{
+    return qemuDomainAttachDeviceDiskLiveInternal(driver, vm, dev);
 }
 
 
