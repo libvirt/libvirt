@@ -81,6 +81,7 @@ struct _virSecuritySELinuxContextItem {
     char *path;
     char *tcon;
     bool optional;
+    bool restore;
 };
 
 typedef struct _virSecuritySELinuxContextList virSecuritySELinuxContextList;
@@ -119,7 +120,8 @@ static int
 virSecuritySELinuxContextListAppend(virSecuritySELinuxContextListPtr list,
                                     const char *path,
                                     const char *tcon,
-                                    bool optional)
+                                    bool optional,
+                                    bool restore)
 {
     int ret = -1;
     virSecuritySELinuxContextItemPtr item = NULL;
@@ -131,6 +133,7 @@ virSecuritySELinuxContextListAppend(virSecuritySELinuxContextListPtr list,
         goto cleanup;
 
     item->optional = optional;
+    item->restore = restore;
 
     if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0)
         goto cleanup;
@@ -174,7 +177,8 @@ virSecuritySELinuxContextListFree(void *opaque)
 static int
 virSecuritySELinuxTransactionAppend(const char *path,
                                     const char *tcon,
-                                    bool optional)
+                                    bool optional,
+                                    bool restore)
 {
     virSecuritySELinuxContextListPtr list;
 
@@ -182,7 +186,7 @@ virSecuritySELinuxTransactionAppend(const char *path,
     if (!list)
         return 0;
 
-    if (virSecuritySELinuxContextListAppend(list, path, tcon, optional) < 0)
+    if (virSecuritySELinuxContextListAppend(list, path, tcon, optional, restore) < 0)
         return -1;
 
     return 1;
@@ -193,6 +197,11 @@ static int virSecuritySELinuxSetFileconHelper(const char *path,
                                               const char *tcon,
                                               bool optional,
                                               bool privileged);
+
+
+static int virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
+                                              const char *path);
+
 
 /**
  * virSecuritySELinuxTransactionRun:
@@ -238,13 +247,18 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
         virSecuritySELinuxContextItemPtr item = list->items[i];
 
         /* TODO Implement rollback */
-        if (virSecuritySELinuxSetFileconHelper(item->path,
-                                               item->tcon,
-                                               item->optional,
-                                               privileged) < 0) {
-            rv = -1;
-            break;
+        if (!item->restore) {
+            rv = virSecuritySELinuxSetFileconHelper(item->path,
+                                                    item->tcon,
+                                                    item->optional,
+                                                    privileged);
+        } else {
+            rv = virSecuritySELinuxRestoreFileLabel(list->manager,
+                                                    item->path);
         }
+
+        if (rv < 0)
+            break;
     }
 
     if (list->lock)
@@ -1261,7 +1275,7 @@ virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
 {
     int rc;
 
-    if ((rc = virSecuritySELinuxTransactionAppend(path, tcon, optional)) < 0)
+    if ((rc = virSecuritySELinuxTransactionAppend(path, tcon, optional, false)) < 0)
         return -1;
     else if (rc > 0)
         return 0;
@@ -1383,7 +1397,7 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
         goto cleanup;
     }
 
-    if ((rc = virSecuritySELinuxTransactionAppend(path, fcon, false)) < 0)
+    if ((rc = virSecuritySELinuxTransactionAppend(path, fcon, false, true)) < 0)
         return -1;
     else if (rc > 0)
         return 0;
