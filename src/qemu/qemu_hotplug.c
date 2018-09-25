@@ -722,7 +722,7 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
  *
  * Returns 0 on success, -1 on error and reports libvirt error
  */
-static int
+int
 qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDiskDefPtr disk,
@@ -1049,22 +1049,10 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
 }
 
 
-/**
- * qemuDomainAttachDeviceDiskLive:
- * @driver: qemu driver struct
- * @vm: domain object
- * @dev: device to attach (expected type is DISK)
- * @forceMediaChange: Forcibly open the drive if changing media
- *
- * Attach a new disk or in case of cdroms/floppies change the media in the drive.
- * This function handles all the necessary steps to attach a new storage source
- * to the VM. If @forceMediaChange is true the drive is opened forcibly.
- */
 int
 qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainDeviceDefPtr dev,
-                               bool forceMediaChange)
+                               virDomainDeviceDefPtr dev)
 {
     size_t i;
     virDomainDiskDefPtr disk = dev->data.disk;
@@ -1098,7 +1086,7 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
         }
 
         if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
-                                           disk->src, forceMediaChange) < 0)
+                                           disk->src, false) < 0)
             goto cleanup;
 
         disk->src = NULL;

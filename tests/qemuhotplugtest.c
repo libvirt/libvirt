@@ -120,7 +120,7 @@ testQemuHotplugAttach(virDomainObjPtr vm,
         /* conn in only used for storage pool and secrets lookup so as long
          * as we don't use any of them, passing NULL should be safe
          */
-        ret = qemuDomainAttachDeviceDiskLive(&driver, vm, dev, false);
+        ret = qemuDomainAttachDeviceDiskLive(&driver, vm, dev);
         break;
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainAttachChrDevice(&driver, vm, dev->data.chr);
