@@ -1664,11 +1664,11 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
     VIR_DEBUG("Restoring security label on %s migrated=%d",
               def->name, migrated);
 
-    for (i = 0; i < def->nhostdevs; i++) {
-        if (virSecurityDACRestoreHostdevLabel(mgr,
-                                              def,
-                                              def->hostdevs[i],
-                                              NULL) < 0)
+    for (i = 0; i < def->ndisks; i++) {
+        if (virSecurityDACRestoreImageLabelInt(mgr,
+                                               def,
+                                               def->disks[i]->src,
+                                               migrated) < 0)
             rc = -1;
     }
 
@@ -1682,11 +1682,11 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
             rc = -1;
     }
 
-    for (i = 0; i < def->ndisks; i++) {
-        if (virSecurityDACRestoreImageLabelInt(mgr,
-                                               def,
-                                               def->disks[i]->src,
-                                               migrated) < 0)
+    for (i = 0; i < def->nhostdevs; i++) {
+        if (virSecurityDACRestoreHostdevLabel(mgr,
+                                              def,
+                                              def->hostdevs[i],
+                                              NULL) < 0)
             rc = -1;
     }
 
