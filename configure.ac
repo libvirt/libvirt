@@ -353,23 +353,23 @@ AC_CHECK_FUNCS_ONCE([\
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([\
-  pwd.h \
-  regex.h \
-  sys/un.h \
-  sys/poll.h \
-  syslog.h \
-  mntent.h \
-  net/ethernet.h \
-  linux/magic.h \
-  sys/un.h \
-  sys/syscall.h \
-  sys/sysctl.h \
-  netinet/tcp.h \
   ifaddrs.h \
   libtasn1.h \
-  sys/ucred.h \
-  sys/mount.h \
+  linux/magic.h \
+  mntent.h \
+  net/ethernet.h \
+  netinet/tcp.h \
+  pwd.h \
+  regex.h \
   stdarg.h \
+  syslog.h \
+  sys/mount.h \
+  sys/poll.h \
+  sys/syscall.h \
+  sys/sysctl.h \
+  sys/ucred.h \
+  sys/un.h \
+  sys/un.h \
   ])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
