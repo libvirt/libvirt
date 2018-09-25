@@ -1113,52 +1113,42 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriverPtr driver,
     if (qemuDomainDetermineDiskChain(driver, vm, disk, true) < 0)
         goto cleanup;
 
-    switch ((virDomainDiskDevice) disk->device)  {
-    case VIR_DOMAIN_DISK_DEVICE_DISK:
-    case VIR_DOMAIN_DISK_DEVICE_LUN:
-        for (i = 0; i < vm->def->ndisks; i++) {
-            if (virDomainDiskDefCheckDuplicateInfo(vm->def->disks[i], disk) < 0)
-                goto cleanup;
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (virDomainDiskDefCheckDuplicateInfo(vm->def->disks[i], disk) < 0)
+            goto cleanup;
+    }
+
+    switch ((virDomainDiskBus) disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_USB:
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk device='lun' is not supported for usb bus"));
+            break;
         }
-
-        switch ((virDomainDiskBus) disk->bus) {
-        case VIR_DOMAIN_DISK_BUS_USB:
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("disk device='lun' is not supported for usb bus"));
-                break;
-            }
-            ret = qemuDomainAttachUSBMassStorageDevice(driver, vm, disk);
-            break;
-
-        case VIR_DOMAIN_DISK_BUS_VIRTIO:
-            ret = qemuDomainAttachVirtioDiskDevice(driver, vm, disk);
-            break;
-
-        case VIR_DOMAIN_DISK_BUS_SCSI:
-            ret = qemuDomainAttachSCSIDisk(driver, vm, disk);
-            break;
-
-        case VIR_DOMAIN_DISK_BUS_IDE:
-        case VIR_DOMAIN_DISK_BUS_FDC:
-        case VIR_DOMAIN_DISK_BUS_XEN:
-        case VIR_DOMAIN_DISK_BUS_UML:
-        case VIR_DOMAIN_DISK_BUS_SATA:
-        case VIR_DOMAIN_DISK_BUS_SD:
-            /* Note that SD card hotplug support should be added only once
-             * they support '-device' (don't require -drive only).
-             * See also: qemuDiskBusNeedsDriveArg */
-        case VIR_DOMAIN_DISK_BUS_LAST:
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("disk bus '%s' cannot be hotplugged."),
-                           virDomainDiskBusTypeToString(disk->bus));
-        }
+        ret = qemuDomainAttachUSBMassStorageDevice(driver, vm, disk);
         break;
 
-    case VIR_DOMAIN_DISK_DEVICE_CDROM:
-    case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-    case VIR_DOMAIN_DISK_DEVICE_LAST:
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        ret = qemuDomainAttachVirtioDiskDevice(driver, vm, disk);
         break;
+
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        ret = qemuDomainAttachSCSIDisk(driver, vm, disk);
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_IDE:
+    case VIR_DOMAIN_DISK_BUS_FDC:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_UML:
+    case VIR_DOMAIN_DISK_BUS_SATA:
+    case VIR_DOMAIN_DISK_BUS_SD:
+        /* Note that SD card hotplug support should be added only once
+         * they support '-device' (don't require -drive only).
+         * See also: qemuDiskBusNeedsDriveArg */
+    case VIR_DOMAIN_DISK_BUS_LAST:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("disk bus '%s' cannot be hotplugged."),
+                       virDomainDiskBusTypeToString(disk->bus));
     }
 
  cleanup:
