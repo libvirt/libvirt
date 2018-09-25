@@ -339,6 +339,11 @@ char *qemuGetSharedDeviceKey(const char *disk_path)
 
 void qemuSharedDeviceEntryFree(void *payload, const void *name);
 
+int qemuAddSharedDisk(virQEMUDriverPtr driver,
+                      virDomainDiskDefPtr disk,
+                      const char *name)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
 int qemuAddSharedDevice(virQEMUDriverPtr driver,
                         virDomainDeviceDefPtr dev,
                         const char *name)

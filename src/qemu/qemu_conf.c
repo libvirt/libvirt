@@ -1400,7 +1400,7 @@ qemuSharedDeviceEntryInsert(virQEMUDriverPtr driver,
  * records all the domains that use the shared device if the entry
  * already exists, otherwise add a new entry.
  */
-static int
+int
 qemuAddSharedDisk(virQEMUDriverPtr driver,
                   virDomainDiskDefPtr disk,
                   const char *name)
