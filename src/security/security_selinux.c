@@ -272,7 +272,6 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
     for (i = 0; i < list->nItems; i++) {
         virSecuritySELinuxContextItemPtr item = list->items[i];
 
-        /* TODO Implement rollback */
         if (!item->restore) {
             rv = virSecuritySELinuxSetFileconHelper(list->manager,
                                                     item->path,
@@ -287,6 +286,18 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
 
         if (rv < 0)
             break;
+    }
+
+    for (; rv < 0 && i > 0; i--) {
+        virSecuritySELinuxContextItemPtr item = list->items[i - 1];
+
+        if (!item->restore) {
+            virSecuritySELinuxRestoreFileLabel(list->manager,
+                                               item->path,
+                                               list->lock);
+        } else {
+            VIR_WARN("Ignoring failed restore attempt on %s", item->path);
+        }
     }
 
     if (list->lock)
