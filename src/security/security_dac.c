@@ -1719,6 +1719,22 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
         virSecurityDACRestoreFileLabel(mgr, def->os.loader->nvram) < 0)
         rc = -1;
 
+    if (def->os.kernel &&
+        virSecurityDACRestoreFileLabel(mgr, def->os.kernel) < 0)
+        rc = -1;
+
+    if (def->os.initrd &&
+        virSecurityDACRestoreFileLabel(mgr, def->os.initrd) < 0)
+        rc = -1;
+
+    if (def->os.dtb &&
+        virSecurityDACRestoreFileLabel(mgr, def->os.dtb) < 0)
+        rc = -1;
+
+    if (def->os.slic_table &&
+        virSecurityDACRestoreFileLabel(mgr, def->os.slic_table) < 0)
+        rc = -1;
+
     return rc;
 }
 
