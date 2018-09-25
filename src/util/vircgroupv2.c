@@ -165,6 +165,21 @@ virCgroupV2CopyPlacement(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2DetectMounts(virCgroupPtr group,
+                        const char *mntType,
+                        const char *mntOpts ATTRIBUTE_UNUSED,
+                        const char *mntDir)
+{
+    if (STRNEQ(mntType, "cgroup2"))
+        return 0;
+
+    VIR_FREE(group->unified.mountPoint);
+
+    return VIR_STRDUP(group->unified.mountPoint, mntDir);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -172,6 +187,7 @@ virCgroupBackend virCgroupV2Backend = {
     .validateMachineGroup = virCgroupV2ValidateMachineGroup,
     .copyMounts = virCgroupV2CopyMounts,
     .copyPlacement = virCgroupV2CopyPlacement,
+    .detectMounts = virCgroupV2DetectMounts,
 };
 
 
