@@ -32,6 +32,7 @@
 #include "vircgroup.h"
 #include "vircgroupbackend.h"
 #include "vircgroupv2.h"
+#include "virerror.h"
 #include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
@@ -230,6 +231,73 @@ virCgroupV2StealPlacement(virCgroupPtr group)
 }
 
 
+static int
+virCgroupV2ParseControllersFile(virCgroupPtr group)
+{
+    int rc;
+    VIR_AUTOFREE(char *) contStr = NULL;
+    VIR_AUTOFREE(char *) contFile = NULL;
+    char **contList = NULL;
+    char **tmp;
+
+    if (virAsprintf(&contFile, "%s/cgroup.controllers",
+                    group->unified.mountPoint) < 0)
+        return -1;
+
+    rc = virFileReadAll(contFile, 1024 * 1024, &contStr);
+    if (rc < 0) {
+        virReportSystemError(errno, _("Unable to read from '%s'"), contFile);
+        return -1;
+    }
+
+    virTrimSpaces(contStr, NULL);
+
+    contList = virStringSplit(contStr, " ", 20);
+    if (!contList)
+        return -1;
+
+    tmp = contList;
+
+    while (*tmp) {
+        int type = virCgroupV2ControllerTypeFromString(*tmp);
+
+        if (type >= 0)
+            group->unified.controllers |= 1 << type;
+
+        tmp++;
+    }
+
+    virStringListFree(contList);
+
+    return 0;
+}
+
+
+static int
+virCgroupV2DetectControllers(virCgroupPtr group,
+                             int controllers)
+{
+    size_t i;
+
+    if (virCgroupV2ParseControllersFile(group) < 0)
+        return -1;
+
+    /* In cgroup v2 there is no cpuacct controller, the cpu.stat file always
+     * exists with usage stats. */
+    group->unified.controllers |= 1 << VIR_CGROUP_CONTROLLER_CPUACCT;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++)
+        VIR_DEBUG("Controller '%s' present=%s",
+                  virCgroupV2ControllerTypeToString(i),
+                  (group->unified.controllers & 1 << i) ? "yes" : "no");
+
+    if (controllers >= 0)
+        return controllers & group->unified.controllers;
+    else
+        return group->unified.controllers;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -241,6 +309,7 @@ virCgroupBackend virCgroupV2Backend = {
     .detectPlacement = virCgroupV2DetectPlacement,
     .validatePlacement = virCgroupV2ValidatePlacement,
     .stealPlacement = virCgroupV2StealPlacement,
+    .detectControllers = virCgroupV2DetectControllers,
 };
 
 
