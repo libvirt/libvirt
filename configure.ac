@@ -369,7 +369,6 @@ AC_CHECK_HEADERS([\
   sys/sysctl.h \
   sys/ucred.h \
   sys/un.h \
-  sys/un.h \
   ])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
