@@ -218,10 +218,10 @@ virSecuritySELinuxRecallLabel(const char *path,
 }
 
 
-static int virSecuritySELinuxSetFileconHelper(const char *path,
+static int virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
+                                              const char *path,
                                               const char *tcon,
                                               bool optional,
-                                              bool privileged,
                                               bool remember);
 
 
@@ -248,7 +248,6 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
 {
     virSecuritySELinuxContextListPtr list = opaque;
     virSecurityManagerMetadataLockStatePtr state;
-    bool privileged = virSecurityManagerGetPrivileged(list->manager);
     const char **paths = NULL;
     size_t npaths = 0;
     size_t i;
@@ -275,10 +274,10 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
 
         /* TODO Implement rollback */
         if (!item->restore) {
-            rv = virSecuritySELinuxSetFileconHelper(item->path,
+            rv = virSecuritySELinuxSetFileconHelper(list->manager,
+                                                    item->path,
                                                     item->tcon,
                                                     item->optional,
-                                                    privileged,
                                                     list->lock);
         } else {
             rv = virSecuritySELinuxRestoreFileLabel(list->manager,
@@ -1299,9 +1298,13 @@ virSecuritySELinuxSetFileconImpl(const char *path, const char *tcon,
 
 
 static int
-virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
-                                   bool optional, bool privileged, bool remember)
+virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
+                                   const char *path,
+                                   const char *tcon,
+                                   bool optional,
+                                   bool remember)
 {
+    bool privileged = virSecurityManagerGetPrivileged(mgr);
     security_context_t econ = NULL;
     int refcount;
     int rc;
@@ -1341,8 +1344,23 @@ virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
         }
     }
 
-    if (virSecuritySELinuxSetFileconImpl(path, tcon, optional, privileged) < 0)
+    if (virSecuritySELinuxSetFileconImpl(path, tcon, optional, privileged) < 0) {
+        virErrorPtr origerr;
+
+        virErrorPreserveLast(&origerr);
+        /* Try to restore the label. This is done so that XATTRs
+         * are left in the same state as when the control entered
+         * this function. However, if our attempt fails, there's
+         * not much we can do. XATTRs refcounting is fubar'ed and
+         * the only option we have is warn users. */
+        if (virSecuritySELinuxRestoreFileLabel(mgr, path, remember) < 0)
+            VIR_WARN("Unable to restore label on '%s'. "
+                     "XATTRs might have been left in inconsistent state.",
+                     path);
+
+        virErrorRestore(&origerr);
         goto cleanup;
+    }
 
     ret = 0;
  cleanup:
@@ -1355,16 +1373,14 @@ static int
 virSecuritySELinuxSetFileconOptional(virSecurityManagerPtr mgr,
                                      const char *path, const char *tcon)
 {
-    bool privileged = virSecurityManagerGetPrivileged(mgr);
-    return virSecuritySELinuxSetFileconHelper(path, tcon, true, privileged, false);
+    return virSecuritySELinuxSetFileconHelper(mgr, path, tcon, true, false);
 }
 
 static int
 virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
                              const char *path, const char *tcon)
 {
-    bool privileged = virSecurityManagerGetPrivileged(mgr);
-    return virSecuritySELinuxSetFileconHelper(path, tcon, false, privileged, false);
+    return virSecuritySELinuxSetFileconHelper(mgr, path, tcon, false, false);
 }
 
 static int
