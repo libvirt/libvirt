@@ -139,12 +139,39 @@ virCgroupV2CopyMounts(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2CopyPlacement(virCgroupPtr group,
+                         const char *path,
+                         virCgroupPtr parent)
+{
+    if (path[0] == '/') {
+        if (VIR_STRDUP(group->unified.placement, path) < 0)
+            return -1;
+    } else {
+        /*
+         * parent == "/" + path="" => "/"
+         * parent == "/libvirt.service" + path == "" => "/libvirt.service"
+         * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
+         */
+        if (virAsprintf(&group->unified.placement, "%s%s%s",
+                        parent->unified.placement,
+                        (STREQ(parent->unified.placement, "/") ||
+                         STREQ(path, "") ? "" : "/"),
+                        path) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
     .available = virCgroupV2Available,
     .validateMachineGroup = virCgroupV2ValidateMachineGroup,
     .copyMounts = virCgroupV2CopyMounts,
+    .copyPlacement = virCgroupV2CopyPlacement,
 };
 
 
