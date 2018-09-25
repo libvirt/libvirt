@@ -334,7 +334,6 @@ AC_CHECK_FUNCS_ONCE([\
   getrlimit \
   getuid \
   if_indextoname \
-  kill \
   mmap \
   newlocale \
   posix_fallocate \
