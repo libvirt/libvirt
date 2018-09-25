@@ -932,14 +932,6 @@ virSecurityDACRestoreImageLabelInt(virSecurityManagerPtr mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    /* Don't restore labels on readoly/shared disks, because other VMs may
-     * still be accessing these. Alternatively we could iterate over all
-     * running domains and try to figure out if it is in use, but this would
-     * not work for clustered filesystems, since we can't see running VMs using
-     * the file on other nodes. Safest bet is thus to skip the restore step. */
-    if (src->readonly || src->shared)
-        return 0;
-
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
     if (secdef && !secdef->relabel)
         return 0;
