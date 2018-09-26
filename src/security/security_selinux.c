@@ -156,6 +156,7 @@ virSecuritySELinuxContextListFree(void *opaque)
     for (i = 0; i < list->nItems; i++)
         virSecuritySELinuxContextItemFree(list->items[i]);
 
+    VIR_FREE(list->items);
     VIR_FREE(list);
 }
 
