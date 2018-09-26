@@ -328,6 +328,7 @@ AC_CHECK_FUNCS_ONCE([\
   geteuid \
   getgid \
   getgrnam_r \
+  getifaddrs \
   getmntent_r \
   getpwuid_r \
   getrlimit \
@@ -341,13 +342,12 @@ AC_CHECK_FUNCS_ONCE([\
   prlimit \
   regexec \
   sched_getaffinity \
+  sched_setscheduler \
   setgroups \
   setns \
   setrlimit \
   symlink \
   sysctlbyname \
-  getifaddrs \
-  sched_setscheduler \
   unshare \
   ])
 
