@@ -212,6 +212,9 @@ mymain(void)
 # ifdef LIBXL_HAVE_BUILDINFO_NESTED_HVM
     DO_TEST("vnuma-hvm");
     DO_TEST("fullvirt-cpuid");
+# else
+    DO_TEST("vnuma-hvm-legacy-nest");
+    DO_TEST("fullvirt-cpuid-legacy-nest");
 # endif
 
 
