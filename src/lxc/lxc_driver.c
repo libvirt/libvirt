@@ -2388,7 +2388,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
     /* We don't return strings, and thus trivially support this flag.  */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
-    if (!params && !*nparams) {
+    if (!*nparams) {
         *nparams = LXC_NB_DOMAIN_BLOCK_STAT_PARAM;
         return 0;
     }
