@@ -66,11 +66,6 @@ VIR_LOG_INIT("util.cgroup");
 #define CGROUP_NB_TOTAL_CPU_STAT_PARAM 3
 #define CGROUP_NB_PER_CPU_STAT_PARAM   1
 
-#if defined(__linux__) && defined(HAVE_GETMNTENT_R) && \
-    defined(_DIRENT_HAVE_D_TYPE) && defined(_SC_CLK_TCK)
-# define VIR_CGROUP_SUPPORTED
-#endif
-
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
               "freezer", "blkio", "net_cls", "perf_event",
@@ -115,7 +110,7 @@ virCgroupGetDevicePermsString(int perms)
 }
 
 
-#ifdef VIR_CGROUP_SUPPORTED
+#ifdef __linux__
 bool
 virCgroupAvailable(void)
 {
@@ -2639,7 +2634,7 @@ virCgroupControllerAvailable(int controller)
     return ret;
 }
 
-#else /* !VIR_CGROUP_SUPPORTED */
+#else /* !__linux__ */
 
 bool
 virCgroupAvailable(void)
@@ -3400,7 +3395,7 @@ virCgroupControllerAvailable(int controller ATTRIBUTE_UNUSED)
 {
     return false;
 }
-#endif /* !VIR_CGROUP_SUPPORTED */
+#endif /* !__linux__ */
 
 
 int
