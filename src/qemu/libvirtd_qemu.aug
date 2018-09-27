@@ -98,7 +98,6 @@ module Libvirtd_qemu =
                  | bool_entry "relaxed_acs_check"
                  | bool_entry "allow_disk_format_probing"
                  | str_entry "lock_manager"
-                 | str_entry "metadata_lock_manager"
 
    let rpc_entry = int_entry "max_queued"
                  | int_entry "keepalive_interval"

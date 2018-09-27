@@ -81,7 +81,6 @@ module Test_libvirtd_qemu =
 { "mac_filter" = "1" }
 { "relaxed_acs_check" = "1" }
 { "lock_manager" = "lockd" }
-{ "metadata_lock_manager" = "lockd" }
 { "max_queued" = "0" }
 { "keepalive_interval" = "5" }
 { "keepalive_count" = "5" }
