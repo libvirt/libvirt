@@ -105,20 +105,6 @@
     %define with_numactl 0
 %endif
 
-# libgfapi is built only on x86_64 on rhel
-%ifnarch x86_64
-    %if 0%{?rhel}
-        %define with_storage_gluster 0
-    %endif
-%endif
-
-# librados and librbd are built only on x86_64 on rhel
-%ifnarch x86_64
-    %if 0%{?rhel}
-        %define with_storage_rbd 0
-    %endif
-%endif
-
 # zfs-fuse is not available on some architectures
 %ifarch s390 s390x aarch64
     %define with_storage_zfs 0
