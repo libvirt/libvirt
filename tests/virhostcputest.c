@@ -72,7 +72,6 @@ linuxTestCompareFiles(const char *cpuinfofile,
     return ret;
 }
 
-# define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / sysconf(_SC_CLK_TCK))
 
 static int
 linuxCPUStatsToBuf(virBufferPtr buf,
@@ -81,6 +80,15 @@ linuxCPUStatsToBuf(virBufferPtr buf,
                    size_t nparams)
 {
     size_t i = 0;
+    unsigned long long tick_to_nsec;
+    long long sc_clk_tck;
+
+    if ((sc_clk_tck = sysconf(_SC_CLK_TCK)) < 0) {
+        fprintf(stderr, "sysconf(_SC_CLK_TCK) fails : %s\n",
+                strerror(errno));
+        return -1;
+    }
+    tick_to_nsec = (1000ull * 1000ull * 1000ull) / sc_clk_tck;
 
     if (cpu < 0)
         virBufferAddLit(buf, "cpu:\n");
@@ -89,7 +97,7 @@ linuxCPUStatsToBuf(virBufferPtr buf,
 
     for (i = 0; i < nparams; i++)
         virBufferAsprintf(buf, "%s: %llu\n", param[i].field,
-                          param[i].value / TICK_TO_NSEC);
+                          param[i].value / tick_to_nsec);
 
     virBufferAddChar(buf, '\n');
     return 0;
