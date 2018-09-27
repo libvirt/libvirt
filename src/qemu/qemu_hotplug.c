@@ -730,9 +730,16 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                virStorageSourcePtr newsrc,
                                bool force)
 {
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virStorageSourcePtr oldsrc = disk->src;
     int ret = -1;
     int rc;
+
+    disk->src = newsrc;
+
+    if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
+        goto cleanup;
 
     if (qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, false) < 0)
         goto cleanup;
@@ -741,11 +748,11 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        rc = qemuDomainChangeMediaBlockdev(driver, vm, disk, disk->src, newsrc, force);
+        rc = qemuDomainChangeMediaBlockdev(driver, vm, disk, oldsrc, newsrc, force);
     else
         rc = qemuDomainChangeMediaLegacy(driver, vm, disk, newsrc, force);
 
-    virDomainAuditDisk(vm, disk->src, newsrc, "update", rc >= 0);
+    virDomainAuditDisk(vm, oldsrc, newsrc, "update", rc >= 0);
 
     if (rc < 0) {
         ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, true));
@@ -753,17 +760,24 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     }
 
     /* remove the old source from shared device list */
+    disk->src = oldsrc;
     ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
-    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
+    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, oldsrc, true));
 
-    virStorageSourceFree(disk->src);
-    VIR_STEAL_PTR(disk->src, newsrc);
+    /* media was changed, so we can remove the old media definition now */
+    virStorageSourceFree(oldsrc);
+    oldsrc = NULL;
+    disk->src = newsrc;
 
     ignore_value(qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE));
 
     ret = 0;
 
  cleanup:
+    if (oldsrc)
+        disk->src = oldsrc;
+
+    virObjectUnref(cfg);
     return ret;
 }
 
