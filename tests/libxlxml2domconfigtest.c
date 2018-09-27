@@ -62,13 +62,13 @@ testCompareXMLToDomConfig(const char *xmlfile,
     char *tempjson = NULL;
     char *expectjson = NULL;
 
-    libxl_domain_config_init(&actualconfig);
-    libxl_domain_config_init(&expectconfig);
-
     if (!(cfg = libxlDriverConfigNew()))
-        goto cleanup;
+        return -1;
 
     cfg->caps = caps;
+
+    libxl_domain_config_init(&actualconfig);
+    libxl_domain_config_init(&expectconfig);
 
     if (!(log = (xentoollog_logger *)xtl_createlogger_stdiostream(stderr, XTL_DEBUG, 0)))
         goto cleanup;
@@ -135,8 +135,7 @@ testCompareXMLToDomConfig(const char *xmlfile,
     libxl_domain_config_dispose(&actualconfig);
     libxl_domain_config_dispose(&expectconfig);
     xtl_logger_destroy(log);
-    if (cfg)
-        cfg->caps = NULL;
+    cfg->caps = NULL;
     virObjectUnref(cfg);
     return ret;
 }
