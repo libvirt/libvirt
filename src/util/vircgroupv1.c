@@ -20,13 +20,11 @@
  */
 #include <config.h>
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+#ifdef __linux__
 # include <mntent.h>
-#endif
-#include <sys/stat.h>
-#if defined HAVE_SYS_MOUNT_H
+# include <sys/stat.h>
 # include <sys/mount.h>
-#endif
+#endif /* __linux__ */
 
 #include "internal.h"
 
@@ -54,6 +52,8 @@ VIR_ENUM_IMPL(virCgroupV1Controller, VIR_CGROUP_CONTROLLER_LAST,
               "freezer", "blkio", "net_cls", "perf_event",
               "name=systemd");
 
+
+#ifdef __linux__
 
 /* We're looking for at least one 'cgroup' fs mount,
  * which is *not* a named mount. */
@@ -2099,3 +2099,13 @@ virCgroupV1Register(void)
 {
     virCgroupBackendRegister(&virCgroupV1Backend);
 }
+
+#else /* !__linux__ */
+
+void
+virCgroupV1Register(void)
+{
+    VIR_INFO("Control groups not supported on this platform");
+}
+
+#endif /* !__linux__ */
