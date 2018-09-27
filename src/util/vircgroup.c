@@ -23,24 +23,23 @@
  */
 #include <config.h>
 
-#if defined HAVE_MNTENT_H && defined HAVE_SYS_MOUNT_H \
-    && defined HAVE_GETMNTENT_R
+#ifdef __linux__
 # include <mntent.h>
 # include <sys/mount.h>
-#endif
-#include <fcntl.h>
-#include <sys/stat.h>
+# include <fcntl.h>
+# include <sys/stat.h>
 
-#ifdef MAJOR_IN_MKDEV
-# include <sys/mkdev.h>
-#elif MAJOR_IN_SYSMACROS
-# include <sys/sysmacros.h>
-#endif
+# ifdef MAJOR_IN_MKDEV
+#  include <sys/mkdev.h>
+# elif MAJOR_IN_SYSMACROS
+#  include <sys/sysmacros.h>
+# endif
 
-#include <sys/types.h>
-#include <signal.h>
-#include <dirent.h>
-#include <unistd.h>
+# include <sys/types.h>
+# include <signal.h>
+# include <dirent.h>
+# include <unistd.h>
+#endif /* __linux__ */
 
 #define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
 #include "vircgrouppriv.h"
