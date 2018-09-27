@@ -1055,7 +1055,6 @@ virCgroupNewMachineSystemd(const char *name,
     int rv;
     virCgroupPtr init;
     VIR_AUTOFREE(char *) path = NULL;
-    virErrorPtr saved = NULL;
 
     VIR_DEBUG("Trying to setup machine '%s' via systemd", name);
     if ((rv = virSystemdCreateMachine(name,
@@ -1088,24 +1087,20 @@ virCgroupNewMachineSystemd(const char *name,
 
     if (virCgroupEnableMissingControllers(path, pidleader,
                                           controllers, group) < 0) {
-        goto error;
+        return -1;
     }
 
-    if (virCgroupAddProcess(*group, pidleader) < 0)
-        goto error;
+    if (virCgroupAddProcess(*group, pidleader) < 0) {
+        virErrorPtr saved = virSaveLastError();
+        virCgroupRemove(*group);
+        virCgroupFree(group);
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
+    }
 
     return 0;
-
- error:
-    saved = virSaveLastError();
-    virCgroupRemove(*group);
-    virCgroupFree(group);
-    if (saved) {
-        virSetError(saved);
-        virFreeError(saved);
-    }
-
-    return -1;
 }
 
 
