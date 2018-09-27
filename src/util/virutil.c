@@ -491,6 +491,10 @@ virFormatIntDecimal(char *buf, size_t buflen, int val)
  *
  * Similar to vshPrettyCapacity, but operates on integers and not doubles
  *
+ * NB: Since using unsigned long long, we are limited to at most a "PiB"
+ *     to make pretty. This is because a PiB is 1152921504606846976 bytes,
+ *     but that value * 1024 > ULLONG_MAX value 18446744073709551615 bytes.
+ *
  * Returns shortened value that can be used with @unit.
  */
 unsigned long long
@@ -524,12 +528,7 @@ virFormatIntPretty(unsigned long long val,
         return val / (limit / 1024);
     }
     limit *= 1024;
-    if (val % limit) {
-        *unit = "PiB";
-        return val / (limit / 1024);
-    }
-    limit *= 1024;
-    *unit = "EiB";
+    *unit = "PiB";
     return val / (limit / 1024);
 }
 
