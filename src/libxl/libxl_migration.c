@@ -793,7 +793,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
         if (virNetSocketAddIOCallback(socks[i],
                                       VIR_EVENT_HANDLE_READABLE,
                                       libxlMigrateDstReceive,
-                                      args,
+                                      virObjectRef(args),
                                       NULL) < 0)
             continue;
 
@@ -815,7 +815,6 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
         virObjectUnref(socks[i]);
     }
     VIR_FREE(socks);
-    virObjectUnref(args);
     if (priv) {
         virPortAllocatorRelease(priv->migrationPort);
         priv->migrationPort = 0;
@@ -831,6 +830,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
         VIR_FREE(hostname);
     else
         virURIFree(uri);
+    virObjectUnref(args);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
