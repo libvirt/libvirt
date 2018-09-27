@@ -875,12 +875,12 @@ static int test21(const void *unused ATTRIBUTE_UNUSED)
     if (virTestGetVerbose())
         printf("STDOUT:%s\nSTDERR:%s\n", NULLSTR(outbuf), NULLSTR(errbuf));
 
-    if (STRNEQ(outbuf, outbufExpected)) {
+    if (STRNEQ_NULLABLE(outbuf, outbufExpected)) {
         virTestDifference(stderr, outbufExpected, outbuf);
         goto cleanup;
     }
 
-    if (STRNEQ(errbuf, errbufExpected)) {
+    if (STRNEQ_NULLABLE(errbuf, errbufExpected)) {
         virTestDifference(stderr, errbufExpected, errbuf);
         goto cleanup;
     }
