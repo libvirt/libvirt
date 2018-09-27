@@ -3458,6 +3458,76 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 # ifndef HUGETLBFS_MAGIC
 #  define HUGETLBFS_MAGIC 0x958458f6
 # endif
+# ifndef FUSE_SUPER_MAGIC
+#  define FUSE_SUPER_MAGIC 0x65735546
+# endif
+
+# define PROC_MOUNTS "/proc/mounts"
+
+static int
+virFileIsSharedFixFUSE(const char *path,
+                       long *f_type)
+{
+    char *dirpath = NULL;
+    const char **mounts = NULL;
+    size_t nmounts = 0;
+    char *p;
+    FILE *f = NULL;
+    struct mntent mb;
+    char mntbuf[1024];
+    int ret = -1;
+
+    if (VIR_STRDUP(dirpath, path) < 0)
+        return -1;
+
+    if (!(f = setmntent(PROC_MOUNTS, "r"))) {
+        virReportSystemError(errno,
+                             _("Unable to open %s"),
+                             PROC_MOUNTS);
+        goto cleanup;
+    }
+
+    while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
+        if (STRNEQ("fuse.glusterfs", mb.mnt_type))
+            continue;
+
+        if (VIR_APPEND_ELEMENT_COPY(mounts, nmounts, mb.mnt_dir) < 0)
+            goto cleanup;
+    }
+
+    /* Add NULL sentinel so that this is a virStringList */
+    if (VIR_REALLOC_N(mounts, nmounts + 1) < 0)
+        goto cleanup;
+    mounts[nmounts] = NULL;
+
+    do {
+        if ((p = strrchr(dirpath, '/')) == NULL) {
+            virReportSystemError(EINVAL,
+                                 _("Invalid relative path '%s'"), path);
+            goto cleanup;
+        }
+
+        if (p == dirpath)
+            *(p+1) = '\0';
+        else
+            *p = '\0';
+
+        if (virStringListHasString(mounts, dirpath)) {
+            VIR_DEBUG("Found gluster FUSE mountpoint=%s for path=%s. "
+                      "Fixing shared FS type", dirpath, path);
+            *f_type = GFS2_MAGIC;
+            break;
+        }
+    } while (p != dirpath);
+
+    ret = 0;
+ cleanup:
+    endmntent(f);
+    VIR_FREE(mounts);
+    VIR_FREE(dirpath);
+    return ret;
+}
+
 
 int
 virFileIsSharedFSType(const char *path,
@@ -3501,6 +3571,11 @@ virFileIsSharedFSType(const char *path,
                              _("cannot determine filesystem for '%s'"),
                              path);
         return -1;
+    }
+
+    if (sb.f_type == FUSE_SUPER_MAGIC) {
+        VIR_DEBUG("Found FUSE mount for path=%s. Trying to fix it", path);
+        virFileIsSharedFixFUSE(path, (long *) &sb.f_type);
     }
 
     VIR_DEBUG("Check if path %s with FS magic %lld is shared",
@@ -3593,8 +3668,6 @@ virFileGetDefaultHugepageSize(unsigned long long *size)
 
     return 0;
 }
-
-# define PROC_MOUNTS "/proc/mounts"
 
 int
 virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
