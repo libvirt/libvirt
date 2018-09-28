@@ -21,6 +21,7 @@
 
 #ifdef __linux__
 # include <mntent.h>
+# include <sys/mount.h>
 #endif /* __linux__ */
 
 #include "internal.h"
@@ -461,6 +462,38 @@ virCgroupV2HasEmptyTasks(virCgroupPtr cgroup,
 }
 
 
+static int
+virCgroupV2BindMount(virCgroupPtr group,
+                     const char *oldroot,
+                     const char *mountopts)
+{
+    VIR_AUTOFREE(char *) opts = NULL;
+    VIR_AUTOFREE(char *) src = NULL;
+
+    VIR_DEBUG("Mounting cgroups at '%s'", group->unified.mountPoint);
+
+    if (virFileMakePath(group->unified.mountPoint) < 0) {
+        virReportSystemError(errno, _("Unable to create directory %s"),
+                             group->unified.mountPoint);
+        return -1;
+    }
+
+    if (virAsprintf(&opts, "mode=755,size=65536%s", mountopts) < 0)
+        return -1;
+
+    if (virAsprintf(&src, "%s%s", oldroot, group->unified.mountPoint) < 0)
+        return -1;
+
+    if (mount(src, group->unified.mountPoint, "none", MS_BIND, NULL) < 0) {
+        virReportSystemError(errno, _("Failed to bind cgroup '%s' on '%s'"),
+                             src, group->unified.mountPoint);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -480,6 +513,7 @@ virCgroupBackend virCgroupV2Backend = {
     .remove = virCgroupV2Remove,
     .addTask = virCgroupV2AddTask,
     .hasEmptyTasks = virCgroupV2HasEmptyTasks,
+    .bindMount = virCgroupV2BindMount,
 };
 
 
