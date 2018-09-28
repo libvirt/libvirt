@@ -1193,6 +1193,13 @@ static virDrvOpenStatus umlConnectOpen(virConnectPtr conn,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
+    /* URI was good, but driver isn't active */
+    if (uml_driver == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("uml state driver is not active"));
+        return VIR_DRV_OPEN_ERROR;
+    }
+
     /* Check path and tell them correct path if they made a mistake */
     if (uml_driver->privileged) {
         if (STRNEQ(conn->uri->path, "/system") &&
@@ -1209,13 +1216,6 @@ static virDrvOpenStatus umlConnectOpen(virConnectPtr conn,
                            conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
-    }
-
-    /* URI was good, but driver isn't active */
-    if (uml_driver == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("uml state driver is not active"));
-        return VIR_DRV_OPEN_ERROR;
     }
 
     if (virConnectOpenEnsureACL(conn) < 0)
