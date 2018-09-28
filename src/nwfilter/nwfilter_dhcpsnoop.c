@@ -846,7 +846,6 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
     int ret = 0;
     virNWFilterSnoopIPLeasePtr ipl;
     char *ipstr = NULL;
-    int ipAddrLeft = 0;
 
     /* protect req->start, req->ifname and the lease */
     virNWFilterSnoopReqLock(req);
@@ -867,13 +866,13 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
     if (update_leasefile)
         virNWFilterSnoopLeaseFileSave(ipl);
 
-    if (req->binding)
-        ipAddrLeft = virNWFilterIPAddrMapDelIPAddr(req->binding->portdevname, ipstr);
-
     if (!req->threadkey || !instantiate)
         goto skip_instantiate;
 
-    if (ipAddrLeft) {
+    /* Assumes that req->binding is valid since req->threadkey
+     * is only generated after req->binding is filled in during
+     * virNWFilterDHCPSnoopReq processing */
+    if ((virNWFilterIPAddrMapDelIPAddr(req->binding->portdevname, ipstr)) > 0) {
         ret = virNWFilterInstantiateFilterLate(req->driver,
                                                req->binding,
                                                req->ifindex);
