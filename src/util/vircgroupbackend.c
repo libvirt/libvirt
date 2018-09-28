@@ -20,6 +20,9 @@
 #include <config.h>
 
 #include "vircgroupbackend.h"
+#define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
+#include "vircgrouppriv.h"
+#undef __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
 #include "vircgroupv1.h"
 #include "vircgroupv2.h"
 #include "virerror.h"
@@ -66,4 +69,21 @@ virCgroupBackendGetAll(void)
         return NULL;
     }
     return virCgroupBackends;
+}
+
+
+virCgroupBackendPtr
+virCgroupBackendForController(virCgroupPtr group,
+                              unsigned int controller)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->hasController(group, controller)) {
+            return group->backends[i];
+        }
+    }
+
+    return NULL;
 }

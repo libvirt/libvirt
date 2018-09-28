@@ -56,7 +56,7 @@ typedef virCgroupV2Controller *virCgroupV2ControllerPtr;
 struct _virCgroup {
     char *path;
 
-    virCgroupBackendPtr backend;
+    virCgroupBackendPtr backends[VIR_CGROUP_BACKEND_TYPE_LAST];
 
     virCgroupV1Controller legacy[VIR_CGROUP_CONTROLLER_LAST];
     virCgroupV2Controller unified;

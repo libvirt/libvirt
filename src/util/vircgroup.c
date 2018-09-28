@@ -228,6 +228,7 @@ virCgroupDetectMounts(virCgroupPtr group)
     struct mntent entry;
     char buf[CGROUP_MAX_VAL];
     int ret = -1;
+    size_t i;
 
     mounts = fopen("/proc/mounts", "r");
     if (mounts == NULL) {
@@ -236,11 +237,14 @@ virCgroupDetectMounts(virCgroupPtr group)
     }
 
     while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
-        if (group->backend->detectMounts(group,
-                                         entry.mnt_type,
-                                         entry.mnt_opts,
-                                         entry.mnt_dir) < 0) {
-            goto cleanup;
+        for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+            if (group->backends[i] &&
+                group->backends[i]->detectMounts(group,
+                                                 entry.mnt_type,
+                                                 entry.mnt_opts,
+                                                 entry.mnt_dir) < 0) {
+                goto cleanup;
+            }
         }
     }
 
@@ -303,6 +307,7 @@ virCgroupDetectPlacement(virCgroupPtr group,
     }
 
     while (fgets(line, sizeof(line), mapping) != NULL) {
+        size_t i;
         char *controllers = strchr(line, ':');
         char *selfpath = controllers ? strchr(controllers + 1, ':') : NULL;
         char *nl = selfpath ? strchr(selfpath, '\n') : NULL;
@@ -317,9 +322,12 @@ virCgroupDetectPlacement(virCgroupPtr group,
         controllers++;
         selfpath++;
 
-        if (group->backend->detectPlacement(group, path, controllers,
-                                            selfpath) < 0) {
-            goto cleanup;
+        for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+            if (group->backends[i] &&
+                group->backends[i]->detectPlacement(group, path, controllers,
+                                                    selfpath) < 0) {
+                goto cleanup;
+            }
         }
     }
 
@@ -338,8 +346,9 @@ virCgroupDetect(virCgroupPtr group,
                 const char *path,
                 virCgroupPtr parent)
 {
-    int rc;
     size_t i;
+    bool backendAvailable = false;
+    int controllersAvailable = 0;
     virCgroupBackendPtr *backends = virCgroupBackendGetAll();
 
     VIR_DEBUG("group=%p controllers=%d path=%s parent=%p",
@@ -350,31 +359,40 @@ virCgroupDetect(virCgroupPtr group,
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (backends[i] && backends[i]->available()) {
-            group->backend = backends[i];
-            break;
+            group->backends[i] = backends[i];
+            backendAvailable = true;
         }
     }
 
-    if (!group->backend) {
+    if (!backendAvailable) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no cgroup backend available"));
         return -1;
     }
 
     if (parent) {
-        if (group->backend->copyMounts(group, parent) < 0)
-            return -1;
+        for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+            if (group->backends[i] &&
+                group->backends[i]->copyMounts(group, parent) < 0) {
+                return -1;
+            }
+        }
     } else {
         if (virCgroupDetectMounts(group) < 0)
             return -1;
     }
 
-    rc = group->backend->detectControllers(group, controllers);
-    if (rc < 0)
-        return -1;
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i]) {
+            int rc = group->backends[i]->detectControllers(group, controllers);
+            if (rc < 0)
+                return -1;
+            controllersAvailable |= rc;
+        }
+    }
 
     /* Check that at least 1 controller is available */
-    if (rc == 0) {
+    if (controllersAvailable == 0) {
         virReportSystemError(ENXIO, "%s",
                              _("At least one cgroup controller is required"));
         return -1;
@@ -383,17 +401,26 @@ virCgroupDetect(virCgroupPtr group,
     /* In some cases we can copy part of the placement info
      * based on the parent cgroup...
      */
-    if ((parent || path[0] == '/') &&
-        group->backend->copyPlacement(group, path, parent) < 0)
-        return -1;
+    if (parent || path[0] == '/') {
+        for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+            if (group->backends[i] &&
+                group->backends[i]->copyPlacement(group, path, parent) < 0) {
+                return -1;
+            }
+        }
+    }
 
     /* ... but use /proc/cgroups to fill in the rest */
     if (virCgroupDetectPlacement(group, pid, path) < 0)
         return -1;
 
     /* Check that for every mounted controller, we found our placement */
-    if (group->backend->validatePlacement(group, pid) < 0)
-        return -1;
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->validatePlacement(group, pid) < 0) {
+            return -1;
+        }
+    }
 
     return 0;
 }
@@ -599,9 +626,14 @@ virCgroupMakeGroup(virCgroupPtr parent,
                    bool create,
                    unsigned int flags)
 {
-    if (group->backend->makeGroup(parent, group, create, flags) < 0) {
-        virCgroupRemove(group);
-        return -1;
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->makeGroup(parent, group, create, flags) < 0) {
+            virCgroupRemove(group);
+            return -1;
+        }
     }
 
     return 0;
@@ -662,6 +694,24 @@ virCgroupNew(pid_t pid,
 }
 
 
+static int
+virCgroupAddTaskInternal(virCgroupPtr group,
+                         pid_t pid,
+                         unsigned int flags)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->addTask(group, pid, flags) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * virCgroupAddProcess:
  *
@@ -676,7 +726,7 @@ virCgroupNew(pid_t pid,
 int
 virCgroupAddProcess(virCgroupPtr group, pid_t pid)
 {
-    return group->backend->addTask(group, pid, VIR_CGROUP_TASK_PROCESS);
+    return virCgroupAddTaskInternal(group, pid, VIR_CGROUP_TASK_PROCESS);
 }
 
 /**
@@ -693,9 +743,9 @@ virCgroupAddProcess(virCgroupPtr group, pid_t pid)
 int
 virCgroupAddMachineProcess(virCgroupPtr group, pid_t pid)
 {
-    return group->backend->addTask(group, pid,
-                                   VIR_CGROUP_TASK_PROCESS |
-                                   VIR_CGROUP_TASK_SYSTEMD);
+    return virCgroupAddTaskInternal(group, pid,
+                                    VIR_CGROUP_TASK_PROCESS |
+                                    VIR_CGROUP_TASK_SYSTEMD);
 }
 
 /**
@@ -713,7 +763,7 @@ int
 virCgroupAddThread(virCgroupPtr group,
                    pid_t pid)
 {
-    return group->backend->addTask(group, pid, VIR_CGROUP_TASK_THREAD);
+    return virCgroupAddTaskInternal(group, pid, VIR_CGROUP_TASK_THREAD);
 }
 
 
@@ -967,17 +1017,24 @@ virCgroupNewDetectMachine(const char *name,
                           char *machinename,
                           virCgroupPtr *group)
 {
+    size_t i;
+
     if (virCgroupNewDetect(pid, controllers, group) < 0) {
         if (virCgroupNewIgnoreError())
             return 0;
         return -1;
     }
 
-    if (!(*group)->backend->validateMachineGroup(*group, name, drivername, machinename)) {
-        VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
-                  name, drivername);
-        virCgroupFree(group);
-        return 0;
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if ((*group)->backends[i] &&
+            !(*group)->backends[i]->validateMachineGroup(*group, name,
+                                                         drivername,
+                                                         machinename)) {
+            VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
+                      name, drivername);
+            virCgroupFree(group);
+            return 0;
+        }
     }
 
     return 0;
@@ -1055,6 +1112,7 @@ virCgroupNewMachineSystemd(const char *name,
     int rv;
     virCgroupPtr init;
     VIR_AUTOFREE(char *) path = NULL;
+    size_t i;
 
     VIR_DEBUG("Trying to setup machine '%s' via systemd", name);
     if ((rv = virSystemdCreateMachine(name,
@@ -1077,7 +1135,12 @@ virCgroupNewMachineSystemd(const char *name,
                            &init) < 0)
         return -1;
 
-    path = init->backend->stealPlacement(init);
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (init->backends[i] &&
+            (path = init->backends[i]->stealPlacement(init))) {
+            break;
+        }
+    }
     virCgroupFree(&init);
 
     if (!path || STREQ(path, "/") || path[0] != '/') {
@@ -1256,12 +1319,21 @@ virCgroupFree(virCgroupPtr *group)
 bool
 virCgroupHasController(virCgroupPtr cgroup, int controller)
 {
+    size_t i;
+
     if (!cgroup)
         return false;
     if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
         return false;
 
-    return cgroup->backend->hasController(cgroup, controller);
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (cgroup->backends[i] &&
+            cgroup->backends[i]->hasController(cgroup, controller)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
@@ -1277,7 +1349,8 @@ virCgroupPathOfController(virCgroupPtr group,
         return -1;
     }
 
-    return group->backend->pathOfController(group, controller, key, path);
+    VIR_CGROUP_BACKEND_CALL(group, controller, pathOfController, -1,
+                            controller, key, path);
 }
 
 
@@ -1299,7 +1372,8 @@ virCgroupGetBlkioIoServiced(virCgroupPtr group,
                             long long *requests_read,
                             long long *requests_write)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getBlkioIoServiced, -1,
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            getBlkioIoServiced, -1,
                             bytes_read, bytes_write,
                             requests_read, requests_write);
 }
@@ -1325,7 +1399,8 @@ virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
                                   long long *requests_read,
                                   long long *requests_write)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getBlkioIoDeviceServiced, -1,
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            getBlkioIoDeviceServiced, -1,
                             path, bytes_read, bytes_write,
                             requests_read, requests_write);
 }
@@ -1342,7 +1417,8 @@ virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
 int
 virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setBlkioWeight, -1, weight);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            setBlkioWeight, -1, weight);
 }
 
 
@@ -1357,7 +1433,8 @@ virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight)
 int
 virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getBlkioWeight, -1, weight);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            getBlkioWeight, -1, weight);
 }
 
 /**
@@ -1373,7 +1450,8 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
                                 const char *path,
                                 unsigned int riops)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setBlkioDeviceReadIops, -1, path, riops);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            setBlkioDeviceReadIops, -1, path, riops);
 }
 
 
@@ -1390,7 +1468,8 @@ virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
                                  const char *path,
                                  unsigned int wiops)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setBlkioDeviceWriteIops, -1, path, wiops);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            setBlkioDeviceWriteIops, -1, path, wiops);
 }
 
 
@@ -1407,7 +1486,8 @@ virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
                                const char *path,
                                unsigned long long rbps)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setBlkioDeviceReadBps, -1, path, rbps);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            setBlkioDeviceReadBps, -1, path, rbps);
 }
 
 /**
@@ -1423,7 +1503,8 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
                                 const char *path,
                                 unsigned long long wbps)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setBlkioDeviceWriteBps, -1, path, wbps);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            setBlkioDeviceWriteBps, -1, path, wbps);
 }
 
 
@@ -1441,7 +1522,8 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
                               const char *path,
                               unsigned int weight)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setBlkioDeviceWeight, -1, path, weight);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            setBlkioDeviceWeight, -1, path, weight);
 }
 
 /**
@@ -1457,7 +1539,8 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group,
                                 const char *path,
                                 unsigned int *riops)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getBlkioDeviceReadIops, -1, path, riops);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            getBlkioDeviceReadIops, -1, path, riops);
 }
 
 /**
@@ -1473,7 +1556,8 @@ virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group,
                                  const char *path,
                                  unsigned int *wiops)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getBlkioDeviceWriteIops, -1, path, wiops);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            getBlkioDeviceWriteIops, -1, path, wiops);
 }
 
 /**
@@ -1489,7 +1573,8 @@ virCgroupGetBlkioDeviceReadBps(virCgroupPtr group,
                                const char *path,
                                unsigned long long *rbps)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getBlkioDeviceReadBps, -1, path, rbps);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            getBlkioDeviceReadBps, -1, path, rbps);
 }
 
 /**
@@ -1505,7 +1590,8 @@ virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group,
                                 const char *path,
                                 unsigned long long *wbps)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getBlkioDeviceWriteBps, -1, path, wbps);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            getBlkioDeviceWriteBps, -1, path, wbps);
 }
 
 /**
@@ -1521,7 +1607,8 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group,
                               const char *path,
                               unsigned int *weight)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getBlkioDeviceWeight, -1, path, weight);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                            getBlkioDeviceWeight, -1, path, weight);
 }
 
 
@@ -1536,7 +1623,8 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group,
 int
 virCgroupSetMemory(virCgroupPtr group, unsigned long long kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setMemory, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            setMemory, -1, kb);
 }
 
 
@@ -1562,7 +1650,8 @@ virCgroupGetMemoryStat(virCgroupPtr group,
                        unsigned long long *inactiveFile,
                        unsigned long long *unevictable)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getMemoryStat, -1, cache,
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            getMemoryStat, -1, cache,
                             activeAnon, inactiveAnon,
                             activeFile, inactiveFile,
                             unevictable);
@@ -1580,7 +1669,8 @@ virCgroupGetMemoryStat(virCgroupPtr group,
 int
 virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getMemoryUsage, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            getMemoryUsage, -1, kb);
 }
 
 
@@ -1595,7 +1685,8 @@ virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
 int
 virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setMemoryHardLimit, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            setMemoryHardLimit, -1, kb);
 }
 
 
@@ -1610,7 +1701,8 @@ virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb)
 int
 virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getMemoryHardLimit, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            getMemoryHardLimit, -1, kb);
 }
 
 
@@ -1625,7 +1717,8 @@ virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setMemorySoftLimit, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            setMemorySoftLimit, -1, kb);
 }
 
 
@@ -1640,7 +1733,8 @@ virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb)
 int
 virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getMemorySoftLimit, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            getMemorySoftLimit, -1, kb);
 }
 
 
@@ -1655,7 +1749,8 @@ virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupSetMemSwapHardLimit(virCgroupPtr group, unsigned long long kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setMemSwapHardLimit, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            setMemSwapHardLimit, -1, kb);
 }
 
 
@@ -1670,7 +1765,8 @@ virCgroupSetMemSwapHardLimit(virCgroupPtr group, unsigned long long kb)
 int
 virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getMemSwapHardLimit, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            getMemSwapHardLimit, -1, kb);
 }
 
 
@@ -1685,7 +1781,8 @@ virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getMemSwapUsage, -1, kb);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+                            getMemSwapUsage, -1, kb);
 }
 
 
@@ -1700,7 +1797,8 @@ virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setCpusetMems, -1, mems);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+                            setCpusetMems, -1, mems);
 }
 
 
@@ -1715,7 +1813,8 @@ virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
 int
 virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpusetMems, -1, mems);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+                            getCpusetMems, -1, mems);
 }
 
 
@@ -1730,7 +1829,8 @@ virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
 int
 virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setCpusetMemoryMigrate, -1, migrate);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+                            setCpusetMemoryMigrate, -1, migrate);
 }
 
 
@@ -1745,7 +1845,8 @@ virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate)
 int
 virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpusetMemoryMigrate, -1, migrate);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+                            getCpusetMemoryMigrate, -1, migrate);
 }
 
 
@@ -1760,7 +1861,8 @@ virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
 int
 virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setCpusetCpus, -1, cpus);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+                            setCpusetCpus, -1, cpus);
 }
 
 
@@ -1775,7 +1877,8 @@ virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
 int
 virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpusetCpus, -1, cpus);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+                            getCpusetCpus, -1, cpus);
 }
 
 
@@ -1789,7 +1892,8 @@ virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
 int
 virCgroupDenyAllDevices(virCgroupPtr group)
 {
-    VIR_CGROUP_BACKEND_CALL(group, denyAllDevices, -1);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+                            denyAllDevices, -1);
 }
 
 /**
@@ -1809,7 +1913,8 @@ virCgroupDenyAllDevices(virCgroupPtr group)
 int
 virCgroupAllowAllDevices(virCgroupPtr group, int perms)
 {
-    VIR_CGROUP_BACKEND_CALL(group, allowAllDevices, -1, perms);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+                            allowAllDevices, -1, perms);
 }
 
 
@@ -1828,7 +1933,8 @@ int
 virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
                      int perms)
 {
-    VIR_CGROUP_BACKEND_CALL(group, allowDevice, -1, type, major, minor, perms);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+                            allowDevice, -1, type, major, minor, perms);
 }
 
 
@@ -1867,7 +1973,8 @@ virCgroupAllowDevicePath(virCgroupPtr group,
     if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode))
         return 1;
 
-    VIR_CGROUP_BACKEND_CALL(group, allowDevice, -1,
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+                            allowDevice, -1,
                             S_ISCHR(sb.st_mode) ? 'c' : 'b',
                             major(sb.st_rdev),
                             minor(sb.st_rdev),
@@ -1890,7 +1997,8 @@ int
 virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
                     int perms)
 {
-    VIR_CGROUP_BACKEND_CALL(group, denyDevice, -1, type, major, minor, perms);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+                            denyDevice, -1, type, major, minor, perms);
 }
 
 
@@ -1929,7 +2037,8 @@ virCgroupDenyDevicePath(virCgroupPtr group,
     if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode))
         return 1;
 
-    VIR_CGROUP_BACKEND_CALL(group, denyDevice, -1,
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+                            denyDevice, -1,
                             S_ISCHR(sb.st_mode) ? 'c' : 'b',
                             major(sb.st_rdev),
                             minor(sb.st_rdev),
@@ -2172,14 +2281,16 @@ virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
 int
 virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setCpuShares, -1, shares);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+                            setCpuShares, -1, shares);
 }
 
 
 int
 virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpuShares, -1, shares);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+                            getCpuShares, -1, shares);
 }
 
 
@@ -2194,7 +2305,8 @@ virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
 int
 virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setCpuCfsPeriod, -1, cfs_period);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+                            setCpuCfsPeriod, -1, cfs_period);
 }
 
 
@@ -2209,7 +2321,8 @@ virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
 int
 virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpuCfsPeriod, -1, cfs_period);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+                            getCpuCfsPeriod, -1, cfs_period);
 }
 
 
@@ -2225,14 +2338,16 @@ virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
 int
 virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setCpuCfsQuota, -1, cfs_quota);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+                            setCpuCfsQuota, -1, cfs_quota);
 }
 
 
 int
 virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpuacctPercpuUsage, -1, usage);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                            getCpuacctPercpuUsage, -1, usage);
 }
 
 
@@ -2299,7 +2414,16 @@ virCgroupRemoveRecursively(char *grppath)
 int
 virCgroupRemove(virCgroupPtr group)
 {
-    return group->backend->remove(group);
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->remove(group) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 
@@ -2308,11 +2432,16 @@ virCgroupPathOfAnyController(virCgroupPtr group,
                              const char *name,
                              char **keypath)
 {
+    size_t i;
     int controller;
 
-    controller = group->backend->getAnyController(group);
-    if (controller >= 0)
-        return virCgroupPathOfController(group, controller, name, keypath);
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i]) {
+            controller = group->backends[i]->getAnyController(group);
+            if (controller >= 0)
+                return virCgroupPathOfController(group, controller, name, keypath);
+        }
+    }
 
     virReportSystemError(ENOSYS, "%s",
                          _("No controllers are mounted"));
@@ -2548,14 +2677,16 @@ virCgroupKillPainfully(virCgroupPtr group)
 int
 virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpuCfsQuota, -1, cfs_quota);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+                            getCpuCfsQuota, -1, cfs_quota);
 }
 
 
 int
 virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpuacctUsage, -1, usage);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                            getCpuacctUsage, -1, usage);
 }
 
 
@@ -2563,21 +2694,24 @@ int
 virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
                         unsigned long long *sys)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getCpuacctStat, -1, user, sys);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                            getCpuacctStat, -1, user, sys);
 }
 
 
 int
 virCgroupSetFreezerState(virCgroupPtr group, const char *state)
 {
-    VIR_CGROUP_BACKEND_CALL(group, setFreezerState, -1, state);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_FREEZER,
+                            setFreezerState, -1, state);
 }
 
 
 int
 virCgroupGetFreezerState(virCgroupPtr group, char **state)
 {
-    VIR_CGROUP_BACKEND_CALL(group, getFreezerState, -1, state);
+    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_FREEZER,
+                            getFreezerState, -1, state);
 }
 
 
@@ -2585,7 +2719,16 @@ int
 virCgroupBindMount(virCgroupPtr group, const char *oldroot,
                    const char *mountopts)
 {
-    return group->backend->bindMount(group, oldroot, mountopts);
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->bindMount(group, oldroot, mountopts) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 
@@ -2594,7 +2737,16 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
                       gid_t gid,
                       int controllers)
 {
-    return cgroup->backend->setOwner(cgroup, uid, gid, controllers);
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (cgroup->backends[i] &&
+            cgroup->backends[i]->setOwner(cgroup, uid, gid, controllers) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 
@@ -2608,13 +2760,24 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
 bool
 virCgroupSupportsCpuBW(virCgroupPtr cgroup)
 {
-    VIR_CGROUP_BACKEND_CALL(cgroup, supportsCpuBW, false);
+    VIR_CGROUP_BACKEND_CALL(cgroup, VIR_CGROUP_CONTROLLER_CPU,
+                            supportsCpuBW, false);
 }
 
 int
 virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller)
 {
-    return cgroup->backend->hasEmptyTasks(cgroup, controller);
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (cgroup->backends[i]) {
+            int rc = cgroup->backends[i]->hasEmptyTasks(cgroup, controller);
+            if (rc <= 0)
+                return rc;
+        }
+    }
+
+    return 1;
 }
 
 bool
