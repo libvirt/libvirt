@@ -24,12 +24,10 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <sys/utsname.h>
-#ifdef HAVE_MNTENT_H
-# include <mntent.h>
-#endif /* HAVE_MNTENT_H */
 #include <sys/stat.h>
 
 #include "viralloc.h"
+#include "vircgroup.h"
 #include "virfile.h"
 #include "virt-host-validate-common.h"
 #include "virstring.h"
@@ -288,152 +286,50 @@ int virHostValidateLinuxKernel(const char *hvname,
     }
 }
 
-
-static int virHostValidateCGroupSupport(const char *hvname,
-                                        const char *cg_name,
-                                        virHostValidateLevel level,
-                                        const char *config_name)
+#ifdef __linux__
+int virHostValidateCGroupControllers(const char *hvname,
+                                     int controllers,
+                                     virHostValidateLevel level)
 {
-    virHostMsgCheck(hvname, "for cgroup '%s' controller support", cg_name);
-    FILE *fp = fopen("/proc/self/cgroup", "r");
-    size_t len = 0;
-    char *line = NULL;
-    ssize_t ret;
-    bool matched = false;
+    virCgroupPtr group = NULL;
+    int ret = 0;
+    size_t i;
 
-    if (!fp)
-        goto error;
+    if (virCgroupNewSelf(&group) < 0)
+        return -1;
 
-    while ((ret = getline(&line, &len, fp)) >= 0 && !matched) {
-        char **cgroups;
-        char *start;
-        char *end;
-        size_t ncgroups;
-        size_t i;
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        int flag = 1 << i;
+        const char *cg_name = virCgroupControllerTypeToString(i);
 
-        /* Each line in this file looks like
-         *
-         *   4:cpu,cpuacct:/machine.slice/machine-qemu\x2dtest.scope/emulator
-         *
-         * Since multiple cgroups can be part of the same line and some cgroup
-         * names can appear as part of other cgroup names (eg. 'cpu' is a
-         * prefix for both 'cpuacct' and 'cpuset'), it's not enough to simply
-         * check whether the cgroup name is present somewhere inside the file.
-         *
-         * Moreover, there's nothing stopping the cgroup name from appearing
-         * in an unrelated mount point name as well */
-
-        /* Look for the first colon.
-         * The part we're interested in starts right after it */
-        if (!(start = strchr(line, ':')))
-            continue;
-        start++;
-
-        /* Look for the second colon.
-         * The part we're interested in ends exactly there */
-        if (!(end = strchr(start, ':')))
-            continue;
-        *end = '\0';
-
-        if (!(cgroups = virStringSplitCount(start, ",", 0, &ncgroups)))
+        if (!(controllers & flag))
             continue;
 
-        /* Look for the matching cgroup */
-        for (i = 0; i < ncgroups; i++) {
-            if (STREQ(cgroups[i], cg_name))
-                matched = true;
+        virHostMsgCheck(hvname, "for cgroup '%s' controller support", cg_name);
+
+        if (!virCgroupHasController(group, i)) {
+            ret = -1;
+            virHostMsgFail(level, "Enable '%s' in kernel Kconfig file or "
+                           "mount/enable cgroup controller in your system",
+                           cg_name);
+        } else {
+            virHostMsgPass();
         }
-
-        virStringListFreeCount(cgroups, ncgroups);
     }
 
-    VIR_FREE(line);
-    VIR_FORCE_FCLOSE(fp);
-    if (!matched)
-        goto error;
+    virCgroupFree(&group);
 
-    virHostMsgPass();
-    return 0;
-
- error:
-    VIR_FREE(line);
-    virHostMsgFail(level, "Enable CONFIG_%s in kernel Kconfig file", config_name);
-    return -1;
+    return ret;
 }
-
-#ifdef HAVE_MNTENT_H
-static int virHostValidateCGroupMount(const char *hvname,
-                                      const char *cg_name,
-                                      virHostValidateLevel level)
+#else /*  !__linux__ */
+int virHostValidateCGroupControllers(const char *hvname,
+                                     int controllers,
+                                     virHostValidateLevel level)
 {
-    virHostMsgCheck(hvname, "for cgroup '%s' controller mount-point", cg_name);
-    FILE *fp = setmntent("/proc/mounts", "r");
-    struct mntent ent;
-    char mntbuf[1024];
-    bool matched = false;
-
-    if (!fp)
-        goto error;
-
-    while (getmntent_r(fp, &ent, mntbuf, sizeof(mntbuf)) && !matched) {
-        char **opts;
-        size_t nopts;
-        size_t i;
-
-        /* Ignore non-cgroup mounts */
-        if (STRNEQ(ent.mnt_type, "cgroup"))
-            continue;
-
-        if (!(opts = virStringSplitCount(ent.mnt_opts, ",", 0, &nopts)))
-            continue;
-
-        /* Look for a mount option matching the cgroup name */
-        for (i = 0; i < nopts; i++) {
-            if (STREQ(opts[i], cg_name))
-                matched = true;
-        }
-
-        virStringListFreeCount(opts, nopts);
-    }
-    endmntent(fp);
-    if (!matched)
-        goto error;
-
-    virHostMsgPass();
-    return 0;
-
- error:
-    virHostMsgFail(level, "Mount '%s' cgroup controller (suggested at /sys/fs/cgroup/%s)",
-                   cg_name, cg_name);
-    return -1;
-}
-#else /* ! HAVE_MNTENT_H */
-static int virHostValidateCGroupMount(const char *hvname,
-                                      const char *cg_name,
-                                      virHostValidateLevel level)
-{
-    virHostMsgCheck(hvname, "for cgroup '%s' controller mount-point", cg_name);
     virHostMsgFail(level, "%s", "This platform does not support cgroups");
     return -1;
 }
-#endif /* ! HAVE_MNTENT_H */
-
-int virHostValidateCGroupController(const char *hvname,
-                                    const char *cg_name,
-                                    virHostValidateLevel level,
-                                    const char *config_name)
-{
-    if (virHostValidateCGroupSupport(hvname,
-                                     cg_name,
-                                     level,
-                                     config_name) < 0)
-        return -1;
-    if (virHostValidateCGroupMount(hvname,
-                                   cg_name,
-                                   level) < 0)
-        return -1;
-    return 0;
-}
+#endif /* !__linux__ */
 
 int virHostValidateIOMMU(const char *hvname,
                          virHostValidateLevel level)

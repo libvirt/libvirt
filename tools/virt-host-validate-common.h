@@ -77,10 +77,9 @@ int virHostValidateNamespace(const char *hvname,
                              virHostValidateLevel level,
                              const char *hint);
 
-int virHostValidateCGroupController(const char *hvname,
-                                    const char *cg_name,
-                                    virHostValidateLevel level,
-                                    const char *config_name);
+int virHostValidateCGroupControllers(const char *hvname,
+                                     int controllers,
+                                     virHostValidateLevel level);
 
 int virHostValidateIOMMU(const char *hvname,
                          virHostValidateLevel level);

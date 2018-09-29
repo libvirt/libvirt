@@ -26,6 +26,7 @@
 #include "virt-host-validate-common.h"
 #include "virarch.h"
 #include "virbitmap.h"
+#include "vircgroup.h"
 
 int virHostValidateQEMU(void)
 {
@@ -96,35 +97,16 @@ int virHostValidateQEMU(void)
                                     _("Load the 'tun' module to enable networking for QEMU guests")) < 0)
         ret = -1;
 
-    if (virHostValidateCGroupController("QEMU", "memory",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "MEMCG") < 0)
+    if (virHostValidateCGroupControllers("QEMU",
+                                         (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
+                                         (1 << VIR_CGROUP_CONTROLLER_CPU) |
+                                         (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+                                         (1 << VIR_CGROUP_CONTROLLER_CPUSET) |
+                                         (1 << VIR_CGROUP_CONTROLLER_DEVICES) |
+                                         (1 << VIR_CGROUP_CONTROLLER_BLKIO),
+                                         VIR_HOST_VALIDATE_WARN) < 0) {
         ret = -1;
-
-    if (virHostValidateCGroupController("QEMU", "cpu",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "CGROUP_CPU") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("QEMU", "cpuacct",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "CGROUP_CPUACCT") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("QEMU", "cpuset",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "CPUSETS") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("QEMU", "devices",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "CGROUP_DEVICES") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("QEMU", "blkio",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "BLK_CGROUP") < 0)
-        ret = -1;
+    }
 
     if (virHostValidateIOMMU("QEMU",
                              VIR_HOST_VALIDATE_WARN) < 0)

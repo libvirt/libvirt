@@ -23,6 +23,7 @@
 
 #include "virt-host-validate-lxc.h"
 #include "virt-host-validate-common.h"
+#include "vircgroup.h"
 
 int virHostValidateLXC(void)
 {
@@ -63,35 +64,16 @@ int virHostValidateLXC(void)
                                  _("User namespace support is recommended")) < 0)
         ret = -1;
 
-    if (virHostValidateCGroupController("LXC", "memory",
-                                        VIR_HOST_VALIDATE_FAIL,
-                                        "MEMCG") < 0)
+    if (virHostValidateCGroupControllers("LXC",
+                                         (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
+                                         (1 << VIR_CGROUP_CONTROLLER_CPU) |
+                                         (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+                                         (1 << VIR_CGROUP_CONTROLLER_CPUSET) |
+                                         (1 << VIR_CGROUP_CONTROLLER_DEVICES) |
+                                         (1 << VIR_CGROUP_CONTROLLER_BLKIO),
+                                         VIR_HOST_VALIDATE_FAIL) < 0) {
         ret = -1;
-
-    if (virHostValidateCGroupController("LXC", "cpu",
-                                        VIR_HOST_VALIDATE_FAIL,
-                                        "CGROUP_CPU") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("LXC", "cpuacct",
-                                        VIR_HOST_VALIDATE_FAIL,
-                                        "CGROUP_CPUACCT") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("LXC", "cpuset",
-                                        VIR_HOST_VALIDATE_FAIL,
-                                        "CPUSETS") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("LXC", "devices",
-                                        VIR_HOST_VALIDATE_FAIL,
-                                        "CGROUP_DEVICE") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("LXC", "blkio",
-                                        VIR_HOST_VALIDATE_FAIL,
-                                        "BLK_CGROUP") < 0)
-        ret = -1;
+    }
 
 #if WITH_FUSE
     if (virHostValidateDeviceExists("LXC", "/sys/fs/fuse/connections",
