@@ -70,6 +70,7 @@ int virHostValidateLXC(void)
                                          (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
                                          (1 << VIR_CGROUP_CONTROLLER_CPUSET) |
                                          (1 << VIR_CGROUP_CONTROLLER_DEVICES) |
+                                         (1 << VIR_CGROUP_CONTROLLER_FREEZER) |
                                          (1 << VIR_CGROUP_CONTROLLER_BLKIO),
                                          VIR_HOST_VALIDATE_FAIL) < 0) {
         ret = -1;
