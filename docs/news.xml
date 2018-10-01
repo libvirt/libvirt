@@ -55,6 +55,15 @@
           Drop support for these older versions and require Xen >= 4.6.
         </description>
       </change>
+      <change>
+        <summary>
+          nwfilter: Disallow binding creation in session mode
+        </summary>
+        <description>
+          Ensure that a filter binding creation is not attempted in session
+          mode and generates a proper error message.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
@@ -68,8 +77,46 @@
           Guest Agent.
         </description>
       </change>
+      <change>
+        <summary>
+          virsh: Implement vsh-table in virsh and virsh-admin
+        </summary>
+        <description>
+          The new API fixes problems with table-alignment, making the tables
+          more readable and deals with unicode.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          storage: Allow inputvol to be encrypted
+        </summary>
+        <description>
+          When creating a storage volume based on another volume, the base
+          input volume is allowed to be encrypted.
+        </description>
+      </change>
+      <change>
+        <summary>
+          virsh: Require explicit --domain for domxml-to-native
+        </summary>
+        <description>
+          The --domain option for domxml-to-native virsh command has always
+          been documented as required, but commit v4.3.0-127-gd86531daf2
+          accidentally made it optional.
+        </description>
+      </change>
+      <change>
+        <summary>
+          lxc_monitor: Avoid AB / BA lock race
+        </summary>
+        <description>
+          A deadlock situation could occur when autostarting a LXC domain
+          'guest' due to two threads attempting to take opposing locks while
+          holding opposing locks (AB BA problem).
+        </description>
+      </change>
     </section>
   </release>
   <release version="v4.7.0" date="2018-09-03">
