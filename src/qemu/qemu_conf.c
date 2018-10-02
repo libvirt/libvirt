@@ -426,7 +426,6 @@ static void virQEMUDriverConfigDispose(void *obj)
     virStringListFree(cfg->securityDriverNames);
 
     VIR_FREE(cfg->lockManagerName);
-    VIR_FREE(cfg->metadataLockManagerName);
 
     virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
 
