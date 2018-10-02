@@ -788,10 +788,8 @@ sc_prohibit_cross_inclusion:
 	  case $$dir in \
 	    util/) safe="util";; \
 	    access/ | conf/) safe="($$dir|conf|util)";; \
-	    cpu/| network/| node_device/| rpc/| storage/) \
+	    cpu/| network/| node_device/| rpc/| security/| storage/) \
 	      safe="($$dir|util|conf|storage)";; \
-	    security/) \
-	      safe="($$dir|util|conf|storage|locking)";; \
 	    xenapi/ | xenconfig/ ) safe="($$dir|util|conf|xen|cpu)";; \
 	    *) safe="($$dir|$(mid_dirs)|util)";; \
 	  esac; \

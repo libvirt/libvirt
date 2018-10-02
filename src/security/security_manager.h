@@ -45,7 +45,6 @@ typedef enum {
 
 virSecurityManagerPtr virSecurityManagerNew(const char *name,
                                             const char *virtDriver,
-                                            const char *lockManagerPluginName,
                                             unsigned int flags);
 
 virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary);
@@ -71,7 +70,6 @@ virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
                                                uid_t user,
                                                gid_t group,
                                                unsigned int flags,
-                                               const char *lockManagerPluginName,
                                                virSecurityManagerDACChownCallback chownCallback);
 
 int virSecurityManagerPreFork(virSecurityManagerPtr mgr);
