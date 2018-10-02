@@ -21,6 +21,10 @@
  */
 #include <config.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "security_driver.h"
 #include "security_stack.h"
 #include "security_dac.h"
@@ -30,13 +34,10 @@
 #include "virlog.h"
 #include "locking/lock_manager.h"
 #include "virfile.h"
-#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
 VIR_LOG_INIT("security.security_manager");
-
-virMutex lockManagerMutex = VIR_MUTEX_INITIALIZER;
 
 struct _virSecurityManager {
     virObjectLockable parent;
@@ -47,10 +48,6 @@ struct _virSecurityManager {
     void *privateData;
 
     virLockManagerPluginPtr lockPlugin;
-    /* This is a FD that represents a connection to virtlockd so
-     * that connection is kept open in between MetdataLock() and
-     * MetadataUnlock() calls. */
-    int clientfd;
 };
 
 static virClassPtr virSecurityManagerClass;
@@ -66,7 +63,6 @@ void virSecurityManagerDispose(void *obj)
         mgr->drv->close(mgr);
 
     virObjectUnref(mgr->lockPlugin);
-    VIR_FORCE_CLOSE(mgr->clientfd);
 
     VIR_FREE(mgr->privateData);
 }
@@ -119,7 +115,6 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
     mgr->flags = flags;
     mgr->virtDriver = virtDriver;
     VIR_STEAL_PTR(mgr->privateData, privateData);
-    mgr->clientfd = -1;
 
     if (drv->open(mgr) < 0)
         goto error;
@@ -1281,129 +1276,153 @@ virSecurityManagerRestoreTPMLabels(virSecurityManagerPtr mgr,
 }
 
 
-static virLockManagerPtr
-virSecurityManagerNewLockManager(virSecurityManagerPtr mgr,
-                                 const char * const *paths,
-                                 size_t npaths)
+struct _virSecurityManagerMetadataLockState {
+    size_t nfds;
+    int *fds;
+};
+
+
+static int
+cmpstringp(const void *p1, const void *p2)
 {
-    virLockManagerPtr lock;
-    virLockManagerParam params[] = {
-        { .type = VIR_LOCK_MANAGER_PARAM_TYPE_UUID,
-            .key = "uuid",
-        },
-        { .type = VIR_LOCK_MANAGER_PARAM_TYPE_STRING,
-            .key = "name",
-            .value = { .cstr = "libvirtd-sec" },
-        },
-        { .type = VIR_LOCK_MANAGER_PARAM_TYPE_UINT,
-            .key = "pid",
-            .value = { .iv = getpid() },
-        },
-    };
-    const unsigned int flags = 0;
-    size_t i;
+    const char *s1 = *(char * const *) p1;
+    const char *s2 = *(char * const *) p2;
 
-    if (virGetHostUUID(params[0].value.uuid) < 0)
-        return NULL;
+    if (!s1 && !s2)
+        return 0;
 
-    if (!(lock = virLockManagerNew(virLockManagerPluginGetDriver(mgr->lockPlugin),
-                                   VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON,
-                                   ARRAY_CARDINALITY(params),
-                                   params,
-                                   flags)))
-        return NULL;
+    if (!s1 || !s2)
+        return s2 ? -1 : 1;
 
-    for (i = 0; i < npaths; i++) {
-        if (virLockManagerAddResource(lock,
-                                      VIR_LOCK_MANAGER_RESOURCE_TYPE_METADATA,
-                                      paths[i], 0, NULL, 0) < 0)
-            goto error;
-    }
-
-    return lock;
- error:
-    virLockManagerFree(lock);
-    return NULL;
+    /* from man 3 qsort */
+    return strcmp(s1, s2);
 }
 
+#define METADATA_OFFSET 1
+#define METADATA_LEN 1
 
-/* How many seconds should we try to acquire the lock before
- * giving up. */
-#define LOCK_ACQUIRE_TIMEOUT 60
-
-int
-virSecurityManagerMetadataLock(virSecurityManagerPtr mgr,
-                               const char * const *paths,
+/**
+ * virSecurityManagerMetadataLock:
+ * @mgr: security manager object
+ * @paths: paths to lock
+ * @npaths: number of items in @paths array
+ *
+ * Lock passed @paths for metadata change. The returned state
+ * should be passed to virSecurityManagerMetadataUnlock.
+ *
+ * NOTE: this function is not thread safe (because of usage of
+ * POSIX locks).
+ *
+ * Returns: state on success,
+ *          NULL on failure.
+ */
+virSecurityManagerMetadataLockStatePtr
+virSecurityManagerMetadataLock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                               const char **paths,
                                size_t npaths)
 {
-    virLockManagerPtr lock;
-    virTimeBackOffVar timebackoff;
-    int fd = -1;
-    int rv = -1;
-    int ret = -1;
+    size_t i = 0;
+    size_t nfds = 0;
+    int *fds = NULL;
+    virSecurityManagerMetadataLockStatePtr ret = NULL;
 
-    virMutexLock(&lockManagerMutex);
+    if (VIR_ALLOC_N(fds, npaths) < 0)
+        return NULL;
 
-    if (!(lock = virSecurityManagerNewLockManager(mgr, paths, npaths)))
-        goto cleanup;
+    /* Sort paths to lock in order to avoid deadlocks. */
+    qsort(paths, npaths, sizeof(*paths), cmpstringp);
 
-    if (virTimeBackOffStart(&timebackoff, 1, LOCK_ACQUIRE_TIMEOUT * 1000) < 0)
-        goto cleanup;
-    while (virTimeBackOffWait(&timebackoff)) {
-        rv = virLockManagerAcquire(lock, NULL,
-                                   VIR_LOCK_MANAGER_ACQUIRE_ROLLBACK,
-                                   VIR_DOMAIN_LOCK_FAILURE_DEFAULT, &fd);
+    for (i = 0; i < npaths; i++) {
+        const char *p = paths[i];
+        struct stat sb;
+        int retries = 10 * 1000;
+        int fd;
 
-        if (rv >= 0)
-            break;
-
-        if (virGetLastErrorCode() == VIR_ERR_RESOURCE_BUSY)
+        if (!p || stat(p, &sb) < 0)
             continue;
 
-        goto cleanup;
+        if (S_ISDIR(sb.st_mode)) {
+            /* Directories can't be locked */
+            continue;
+        }
+
+        if ((fd = open(p, O_RDWR)) < 0) {
+            if (S_ISSOCK(sb.st_mode)) {
+                /* Sockets can be opened only if there exists the
+                 * other side that listens. */
+                continue;
+            }
+
+            virReportSystemError(errno,
+                                 _("unable to open %s"),
+                                 p);
+            goto cleanup;
+        }
+
+        do {
+            if (virFileLock(fd, false,
+                            METADATA_OFFSET, METADATA_LEN, false) < 0) {
+                if (retries && (errno == EACCES || errno == EAGAIN)) {
+                    /* File is locked. Try again. */
+                    retries--;
+                    usleep(1000);
+                    continue;
+                } else {
+                    virReportSystemError(errno,
+                                         _("unable to lock %s for metadata change"),
+                                         p);
+                    VIR_FORCE_CLOSE(fd);
+                    goto cleanup;
+                }
+            }
+
+            break;
+        } while (1);
+
+        VIR_APPEND_ELEMENT_COPY_INPLACE(fds, nfds, fd);
     }
 
-    if (rv < 0)
+    if (VIR_ALLOC(ret) < 0)
         goto cleanup;
 
-    mgr->clientfd = fd;
-    fd = -1;
+    VIR_STEAL_PTR(ret->fds, fds);
+    ret->nfds = nfds;
+    nfds = 0;
 
-    ret = 0;
  cleanup:
-    virLockManagerFree(lock);
-    VIR_FORCE_CLOSE(fd);
-    if (ret < 0)
-        virMutexUnlock(&lockManagerMutex);
+    for (i = nfds; i > 0; i--)
+        VIR_FORCE_CLOSE(fds[i - 1]);
+    VIR_FREE(fds);
     return ret;
 }
 
 
-int
-virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr,
-                                 const char * const *paths,
-                                 size_t npaths)
+void
+virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                 virSecurityManagerMetadataLockStatePtr *state)
 {
-    virLockManagerPtr lock;
-    int fd;
-    int ret = -1;
+    size_t i;
 
-    /* lockManagerMutex acquired from previous
-     * virSecurityManagerMetadataLock() call. */
+    if (!state)
+        return;
 
-    fd = mgr->clientfd;
-    mgr->clientfd = -1;
+    for (i = 0; i < (*state)->nfds; i++) {
+        char ebuf[1024];
+        int fd = (*state)->fds[i];
 
-    if (!(lock = virSecurityManagerNewLockManager(mgr, paths, npaths)))
-        goto cleanup;
+        /* Technically, unlock is not needed because it will
+         * happen on VIR_CLOSE() anyway. But let's play it nice. */
+        if (virFileUnlock(fd, METADATA_OFFSET, METADATA_LEN) < 0) {
+            VIR_WARN("Unable to unlock fd %d: %s",
+                     fd, virStrerror(errno, ebuf, sizeof(ebuf)));
+        }
 
-    if (virLockManagerRelease(lock, NULL, 0) < 0)
-        goto cleanup;
+        if (VIR_CLOSE(fd) < 0) {
+            VIR_WARN("Unable to close fd %d: %s",
+                     fd, virStrerror(errno, ebuf, sizeof(ebuf)));
+        }
+    }
 
-    ret = 0;
- cleanup:
-    virLockManagerFree(lock);
-    VIR_FORCE_CLOSE(fd);
-    virMutexUnlock(&lockManagerMutex);
-    return ret;
+    VIR_FREE((*state)->fds);
+    VIR_FREE(*state);
 }
