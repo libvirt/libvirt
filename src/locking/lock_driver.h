@@ -51,8 +51,6 @@ typedef enum {
     VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK = 0,
     /* A lease against an arbitrary resource */
     VIR_LOCK_MANAGER_RESOURCE_TYPE_LEASE = 1,
-    /* The resource to be locked is a metadata */
-    VIR_LOCK_MANAGER_RESOURCE_TYPE_METADATA = 2,
 } virLockManagerResourceType;
 
 typedef enum {

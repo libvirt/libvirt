@@ -563,7 +563,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
     virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
     char *newName = NULL;
     char *newLockspace = NULL;
-    int newFlags = 0;
+    bool autoCreate = false;
     int ret = -1;
 
     virCheckFlags(VIR_LOCK_MANAGER_RESOURCE_READONLY |
@@ -575,7 +575,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
     switch (priv->type) {
     case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
 
-        switch ((virLockManagerResourceType) type) {
+        switch (type) {
         case VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK:
             if (params || nparams) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -602,7 +602,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                     VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
                     if (VIR_STRDUP(newLockspace, driver->lvmLockSpaceDir) < 0)
                         goto cleanup;
-                    newFlags |= VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE;
+                    autoCreate = true;
                     break;
                 }
                 virResetLastError();
@@ -619,7 +619,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                     VIR_DEBUG("Got an SCSI ID %s for %s", newName, name);
                     if (VIR_STRDUP(newLockspace, driver->scsiLockSpaceDir) < 0)
                         goto cleanup;
-                    newFlags |= VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE;
+                    autoCreate = true;
                     break;
                 }
                 virResetLastError();
@@ -631,7 +631,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                     goto cleanup;
                 if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &newName) < 0)
                     goto cleanup;
-                newFlags |= VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE;
+                autoCreate = true;
                 VIR_DEBUG("Using indirect lease %s for %s", newName, name);
             } else {
                 if (VIR_STRDUP(newLockspace, "") < 0)
@@ -676,8 +676,6 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                 goto cleanup;
 
         }   break;
-
-        case VIR_LOCK_MANAGER_RESOURCE_TYPE_METADATA:
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown lock manager object type %d for domain lock object"),
@@ -687,29 +685,6 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         break;
 
     case VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON:
-        switch ((virLockManagerResourceType) type) {
-        case VIR_LOCK_MANAGER_RESOURCE_TYPE_METADATA:
-            if (params || nparams) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unexpected parameters for metadata resource"));
-                goto cleanup;
-            }
-            if (VIR_STRDUP(newLockspace, "") < 0 ||
-                VIR_STRDUP(newName, name) < 0)
-                goto cleanup;
-            newFlags |= VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_METADATA;
-            break;
-
-        case VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK:
-        case VIR_LOCK_MANAGER_RESOURCE_TYPE_LEASE:
-        default:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown lock manager object type %d for daemon lock object"),
-                           type);
-            goto cleanup;
-        }
-        break;
-
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown lock manager object type %d"),
@@ -717,15 +692,19 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         goto cleanup;
     }
 
-    if (flags & VIR_LOCK_MANAGER_RESOURCE_SHARED)
-        newFlags |= VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED;
-
     if (VIR_EXPAND_N(priv->resources, priv->nresources, 1) < 0)
         goto cleanup;
 
     VIR_STEAL_PTR(priv->resources[priv->nresources-1].lockspace, newLockspace);
     VIR_STEAL_PTR(priv->resources[priv->nresources-1].name, newName);
-    priv->resources[priv->nresources-1].flags = newFlags;
+
+    if (flags & VIR_LOCK_MANAGER_RESOURCE_SHARED)
+        priv->resources[priv->nresources-1].flags |=
+            VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED;
+
+    if (autoCreate)
+        priv->resources[priv->nresources-1].flags |=
+            VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE;
 
     ret = 0;
  cleanup:

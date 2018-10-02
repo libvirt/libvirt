@@ -811,7 +811,7 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
     if (flags & VIR_LOCK_MANAGER_RESOURCE_READONLY)
         return 0;
 
-    switch ((virLockManagerResourceType) type) {
+    switch (type) {
     case VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK:
         if (driver->autoDiskLease) {
             if (virLockManagerSanlockAddDisk(driver, lock, name, nparams, params,
@@ -835,7 +835,6 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
             return -1;
         break;
 
-    case VIR_LOCK_MANAGER_RESOURCE_TYPE_METADATA:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown lock manager object type %d for domain lock object"),
