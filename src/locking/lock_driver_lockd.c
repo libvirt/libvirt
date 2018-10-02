@@ -56,21 +56,10 @@ struct _virLockManagerLockDaemonResource {
 };
 
 struct _virLockManagerLockDaemonPrivate {
-    virLockManagerObjectType type;
-    union {
-        struct {
-            unsigned char uuid[VIR_UUID_BUFLEN];
-            char *name;
-            int id;
-            pid_t pid;
-        } dom;
-
-        struct {
-            unsigned char uuid[VIR_UUID_BUFLEN];
-            char *name;
-            pid_t pid;
-        } daemon;
-    } t;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    char *name;
+    int id;
+    pid_t pid;
 
     size_t nresources;
     virLockManagerLockDaemonResourcePtr resources;
@@ -167,30 +156,10 @@ virLockManagerLockDaemonConnectionRegister(virLockManagerPtr lock,
     memset(&args, 0, sizeof(args));
 
     args.flags = 0;
-
-    switch (priv->type) {
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
-        memcpy(args.owner.uuid, priv->t.dom.uuid, VIR_UUID_BUFLEN);
-        args.owner.name = priv->t.dom.name;
-        args.owner.id = priv->t.dom.id;
-        args.owner.pid = priv->t.dom.pid;
-        break;
-
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON:
-        memcpy(args.owner.uuid, priv->t.daemon.uuid, VIR_UUID_BUFLEN);
-        args.owner.name = priv->t.daemon.name;
-        args.owner.pid = priv->t.daemon.pid;
-        /* This one should not be needed. However, virtlockd
-         * checks for ID because not every domain has a PID. */
-        args.owner.id = priv->t.daemon.pid;
-        break;
-
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown lock manager object type %d"),
-                       priv->type);
-        return -1;
-    }
+    memcpy(args.owner.uuid, priv->uuid, VIR_UUID_BUFLEN);
+    args.owner.name = priv->name;
+    args.owner.id = priv->id;
+    args.owner.pid = priv->pid;
 
     if (virNetClientProgramCall(program,
                                 client,
@@ -422,18 +391,7 @@ virLockManagerLockDaemonPrivateFree(virLockManagerLockDaemonPrivatePtr priv)
     }
     VIR_FREE(priv->resources);
 
-    switch (priv->type) {
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
-        VIR_FREE(priv->t.dom.name);
-        break;
-
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON:
-        VIR_FREE(priv->t.daemon.name);
-        break;
-
-    default:
-        break;
-    }
+    VIR_FREE(priv->name);
     VIR_FREE(priv);
 }
 
@@ -462,78 +420,42 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
     if (VIR_ALLOC(priv) < 0)
         return -1;
 
-    priv->type = type;
-
-    switch ((virLockManagerObjectType) type) {
+    switch (type) {
     case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
         for (i = 0; i < nparams; i++) {
             if (STREQ(params[i].key, "uuid")) {
-                memcpy(priv->t.dom.uuid, params[i].value.uuid, VIR_UUID_BUFLEN);
+                memcpy(priv->uuid, params[i].value.uuid, VIR_UUID_BUFLEN);
             } else if (STREQ(params[i].key, "name")) {
-                if (VIR_STRDUP(priv->t.dom.name, params[i].value.str) < 0)
+                if (VIR_STRDUP(priv->name, params[i].value.str) < 0)
                     goto cleanup;
             } else if (STREQ(params[i].key, "id")) {
-                priv->t.dom.id = params[i].value.iv;
+                priv->id = params[i].value.iv;
             } else if (STREQ(params[i].key, "pid")) {
-                priv->t.dom.pid = params[i].value.iv;
+                priv->pid = params[i].value.iv;
             } else if (STREQ(params[i].key, "uri")) {
                 /* ignored */
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected parameter %s for domain object"),
+                               _("Unexpected parameter %s for object"),
                                params[i].key);
                 goto cleanup;
             }
         }
-        if (priv->t.dom.id == 0) {
+        if (priv->id == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing ID parameter for domain object"));
             goto cleanup;
         }
-        if (priv->t.dom.pid == 0)
+        if (priv->pid == 0)
             VIR_DEBUG("Missing PID parameter for domain object");
-        if (!priv->t.dom.name) {
+        if (!priv->name) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing name parameter for domain object"));
             goto cleanup;
         }
-        if (!virUUIDIsValid(priv->t.dom.uuid)) {
+        if (!virUUIDIsValid(priv->uuid)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing UUID parameter for domain object"));
-            goto cleanup;
-        }
-        break;
-
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON:
-        for (i = 0; i < nparams; i++) {
-            if (STREQ(params[i].key, "uuid")) {
-                memcpy(priv->t.daemon.uuid, params[i].value.uuid, VIR_UUID_BUFLEN);
-            } else if (STREQ(params[i].key, "name")) {
-                if (VIR_STRDUP(priv->t.daemon.name, params[i].value.str) < 0)
-                    goto cleanup;
-            } else if (STREQ(params[i].key, "pid")) {
-                priv->t.daemon.pid = params[i].value.iv;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected parameter %s for daemon object"),
-                               params[i].key);
-                goto cleanup;
-            }
-        }
-
-        if (!virUUIDIsValid(priv->t.daemon.uuid)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing UUID parameter for daemon object"));
-            goto cleanup;
-        }
-        if (!priv->t.daemon.name) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing name parameter for daemon object"));
-            goto cleanup;
-        }
-        if (priv->t.daemon.pid == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing PID parameter for daemon object"));
             goto cleanup;
         }
         break;
@@ -572,119 +494,107 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
     if (flags & VIR_LOCK_MANAGER_RESOURCE_READONLY)
         return 0;
 
-    switch (priv->type) {
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
+    switch (type) {
+    case VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK:
+        if (params || nparams) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unexpected parameters for disk resource"));
+            goto cleanup;
+        }
+        if (!driver->autoDiskLease) {
+            if (!(flags & (VIR_LOCK_MANAGER_RESOURCE_SHARED |
+                           VIR_LOCK_MANAGER_RESOURCE_READONLY)))
+                priv->hasRWDisks = true;
+            return 0;
+        }
 
-        switch (type) {
-        case VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK:
-            if (params || nparams) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unexpected parameters for disk resource"));
+        /* XXX we should somehow pass in TYPE=BLOCK info
+         * from the domain_lock code, instead of assuming /dev
+         */
+        if (STRPREFIX(name, "/dev") &&
+            driver->lvmLockSpaceDir) {
+            VIR_DEBUG("Trying to find an LVM UUID for %s", name);
+            if (virStorageFileGetLVMKey(name, &newName) < 0)
                 goto cleanup;
-            }
-            if (!driver->autoDiskLease) {
-                if (!(flags & (VIR_LOCK_MANAGER_RESOURCE_SHARED |
-                               VIR_LOCK_MANAGER_RESOURCE_READONLY)))
-                    priv->hasRWDisks = true;
-                return 0;
-            }
 
-            /* XXX we should somehow pass in TYPE=BLOCK info
-             * from the domain_lock code, instead of assuming /dev
-             */
-            if (STRPREFIX(name, "/dev") &&
-                driver->lvmLockSpaceDir) {
-                VIR_DEBUG("Trying to find an LVM UUID for %s", name);
-                if (virStorageFileGetLVMKey(name, &newName) < 0)
-                    goto cleanup;
-
-                if (newName) {
-                    VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
-                    if (VIR_STRDUP(newLockspace, driver->lvmLockSpaceDir) < 0)
-                        goto cleanup;
-                    autoCreate = true;
-                    break;
-                }
-                virResetLastError();
-                /* Fallback to generic non-block code */
-            }
-
-            if (STRPREFIX(name, "/dev") &&
-                driver->scsiLockSpaceDir) {
-                VIR_DEBUG("Trying to find an SCSI ID for %s", name);
-                if (virStorageFileGetSCSIKey(name, &newName) < 0)
-                    goto cleanup;
-
-                if (newName) {
-                    VIR_DEBUG("Got an SCSI ID %s for %s", newName, name);
-                    if (VIR_STRDUP(newLockspace, driver->scsiLockSpaceDir) < 0)
-                        goto cleanup;
-                    autoCreate = true;
-                    break;
-                }
-                virResetLastError();
-                /* Fallback to generic non-block code */
-            }
-
-            if (driver->fileLockSpaceDir) {
-                if (VIR_STRDUP(newLockspace, driver->fileLockSpaceDir) < 0)
-                    goto cleanup;
-                if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &newName) < 0)
+            if (newName) {
+                VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
+                if (VIR_STRDUP(newLockspace, driver->lvmLockSpaceDir) < 0)
                     goto cleanup;
                 autoCreate = true;
-                VIR_DEBUG("Using indirect lease %s for %s", newName, name);
-            } else {
-                if (VIR_STRDUP(newLockspace, "") < 0)
-                    goto cleanup;
-                if (VIR_STRDUP(newName, name) < 0)
-                    goto cleanup;
-                VIR_DEBUG("Using direct lease for %s", name);
+                break;
             }
+            virResetLastError();
+            /* Fallback to generic non-block code */
+        }
 
-            break;
-        case VIR_LOCK_MANAGER_RESOURCE_TYPE_LEASE: {
-            size_t i;
-            char *path = NULL;
-            char *lockspace = NULL;
-            for (i = 0; i < nparams; i++) {
-                if (STREQ(params[i].key, "offset")) {
-                    if (params[i].value.ul != 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("Offset must be zero for this lock manager"));
-                        goto cleanup;
-                    }
-                } else if (STREQ(params[i].key, "lockspace")) {
-                    lockspace = params[i].value.str;
-                } else if (STREQ(params[i].key, "path")) {
-                    path = params[i].value.str;
-                } else {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Unexpected parameter %s for lease resource"),
-                                   params[i].key);
-                    goto cleanup;
-                }
-            }
-            if (!path || !lockspace) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing path or lockspace for lease resource"));
+        if (STRPREFIX(name, "/dev") &&
+            driver->scsiLockSpaceDir) {
+            VIR_DEBUG("Trying to find an SCSI ID for %s", name);
+            if (virStorageFileGetSCSIKey(name, &newName) < 0)
                 goto cleanup;
+
+            if (newName) {
+                VIR_DEBUG("Got an SCSI ID %s for %s", newName, name);
+                if (VIR_STRDUP(newLockspace, driver->scsiLockSpaceDir) < 0)
+                    goto cleanup;
+                autoCreate = true;
+                break;
             }
-            if (virAsprintf(&newLockspace, "%s/%s",
-                            path, lockspace) < 0)
+            virResetLastError();
+            /* Fallback to generic non-block code */
+        }
+
+        if (driver->fileLockSpaceDir) {
+            if (VIR_STRDUP(newLockspace, driver->fileLockSpaceDir) < 0)
+                goto cleanup;
+            if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &newName) < 0)
+                goto cleanup;
+            autoCreate = true;
+            VIR_DEBUG("Using indirect lease %s for %s", newName, name);
+        } else {
+            if (VIR_STRDUP(newLockspace, "") < 0)
                 goto cleanup;
             if (VIR_STRDUP(newName, name) < 0)
                 goto cleanup;
+            VIR_DEBUG("Using direct lease for %s", name);
+        }
 
-        }   break;
-        default:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown lock manager object type %d for domain lock object"),
-                           type);
+        break;
+    case VIR_LOCK_MANAGER_RESOURCE_TYPE_LEASE: {
+        size_t i;
+        char *path = NULL;
+        char *lockspace = NULL;
+        for (i = 0; i < nparams; i++) {
+            if (STREQ(params[i].key, "offset")) {
+                if (params[i].value.ul != 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("Offset must be zero for this lock manager"));
+                    goto cleanup;
+                }
+            } else if (STREQ(params[i].key, "lockspace")) {
+                lockspace = params[i].value.str;
+            } else if (STREQ(params[i].key, "path")) {
+                path = params[i].value.str;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unexpected parameter %s for lease resource"),
+                               params[i].key);
+                goto cleanup;
+            }
+        }
+        if (!path || !lockspace) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing path or lockspace for lease resource"));
             goto cleanup;
         }
-        break;
+        if (virAsprintf(&newLockspace, "%s/%s",
+                        path, lockspace) < 0)
+            goto cleanup;
+        if (VIR_STRDUP(newName, name) < 0)
+            goto cleanup;
 
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON:
+    }   break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown lock manager object type %d"),
@@ -729,8 +639,7 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
     virCheckFlags(VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY |
                   VIR_LOCK_MANAGER_ACQUIRE_RESTRICT, -1);
 
-    if (priv->type == VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN &&
-        priv->nresources == 0 &&
+    if (priv->nresources == 0 &&
         priv->hasRWDisks &&
         driver->requireLeaseForDisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

@@ -509,32 +509,21 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
 
     priv->flags = flags;
 
-    switch ((virLockManagerObjectType) type) {
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
-        for (i = 0; i < nparams; i++) {
-            param = &params[i];
+    for (i = 0; i < nparams; i++) {
+        param = &params[i];
 
-            if (STREQ(param->key, "uuid")) {
-                memcpy(priv->vm_uuid, param->value.uuid, 16);
-            } else if (STREQ(param->key, "name")) {
-                if (VIR_STRDUP(priv->vm_name, param->value.str) < 0)
-                    goto error;
-            } else if (STREQ(param->key, "pid")) {
-                priv->vm_pid = param->value.iv;
-            } else if (STREQ(param->key, "id")) {
-                priv->vm_id = param->value.ui;
-            } else if (STREQ(param->key, "uri")) {
-                priv->vm_uri = param->value.cstr;
-            }
+        if (STREQ(param->key, "uuid")) {
+            memcpy(priv->vm_uuid, param->value.uuid, 16);
+        } else if (STREQ(param->key, "name")) {
+            if (VIR_STRDUP(priv->vm_name, param->value.str) < 0)
+                goto error;
+        } else if (STREQ(param->key, "pid")) {
+            priv->vm_pid = param->value.iv;
+        } else if (STREQ(param->key, "id")) {
+            priv->vm_id = param->value.ui;
+        } else if (STREQ(param->key, "uri")) {
+            priv->vm_uri = param->value.cstr;
         }
-        break;
-
-    case VIR_LOCK_MANAGER_OBJECT_TYPE_DAEMON:
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown lock manager object type %d"),
-                       type);
-        goto error;
     }
 
     /* Sanlock needs process registration, but the only way how to probe
