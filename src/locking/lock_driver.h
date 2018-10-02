@@ -67,10 +67,6 @@ typedef enum {
     VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY = (1 << 0),
     /* Prevent further lock/unlock calls from this process */
     VIR_LOCK_MANAGER_ACQUIRE_RESTRICT = (1 << 1),
-    /* Used when acquiring more resources in which one of them
-     * can't be acquired, perform a rollback and release all
-     * resources acquired so far. */
-    VIR_LOCK_MANAGER_ACQUIRE_ROLLBACK = (1 << 2),
 } virLockManagerAcquireFlags;
 
 typedef enum {

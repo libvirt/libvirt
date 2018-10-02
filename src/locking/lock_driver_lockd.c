@@ -735,34 +735,6 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 }
 
 
-static int virLockManagerLockDaemonReleaseImpl(virNetClientPtr client,
-                                               virNetClientProgramPtr program,
-                                               int counter,
-                                               virLockManagerLockDaemonResourcePtr res)
-{
-    virLockSpaceProtocolReleaseResourceArgs args;
-
-    memset(&args, 0, sizeof(args));
-
-    args.path = res->lockspace;
-    args.name = res->name;
-    args.flags = res->flags;
-
-    args.flags &=
-        ~(VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED |
-          VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE |
-          VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_METADATA);
-
-    return virNetClientProgramCall(program,
-                                   client,
-                                   counter,
-                                   VIR_LOCK_SPACE_PROTOCOL_PROC_RELEASE_RESOURCE,
-                                   0, NULL, NULL, NULL,
-                                   (xdrproc_t)xdr_virLockSpaceProtocolReleaseResourceArgs, &args,
-                                   (xdrproc_t)xdr_void, NULL);
-}
-
-
 static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
                                            const char *state ATTRIBUTE_UNUSED,
                                            unsigned int flags,
@@ -773,13 +745,10 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
     virNetClientProgramPtr program = NULL;
     int counter = 0;
     int rv = -1;
-    ssize_t i;
-    ssize_t lastGood = -1;
     virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
 
     virCheckFlags(VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY |
-                  VIR_LOCK_MANAGER_ACQUIRE_RESTRICT |
-                  VIR_LOCK_MANAGER_ACQUIRE_ROLLBACK, -1);
+                  VIR_LOCK_MANAGER_ACQUIRE_RESTRICT, -1);
 
     if (priv->type == VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN &&
         priv->nresources == 0 &&
@@ -798,6 +767,7 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
         goto cleanup;
 
     if (!(flags & VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY)) {
+        size_t i;
         for (i = 0; i < priv->nresources; i++) {
             virLockSpaceProtocolAcquireResourceArgs args;
 
@@ -815,7 +785,6 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
                                         (xdrproc_t)xdr_virLockSpaceProtocolAcquireResourceArgs, &args,
                                         (xdrproc_t)xdr_void, NULL) < 0)
                 goto cleanup;
-            lastGood = i;
         }
     }
 
@@ -826,28 +795,8 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
     rv = 0;
 
  cleanup:
-    if (rv < 0) {
-        int saved_errno = errno;
-        virErrorPtr origerr;
-
-        virErrorPreserveLast(&origerr);
-        if (fd)
-            VIR_FORCE_CLOSE(*fd);
-
-        if (flags & VIR_LOCK_MANAGER_ACQUIRE_ROLLBACK) {
-            for (i = lastGood; i >= 0; i--) {
-                virLockManagerLockDaemonResourcePtr res = &priv->resources[i];
-
-                if (virLockManagerLockDaemonReleaseImpl(client, program,
-                                                        counter++, res) < 0)
-                    VIR_WARN("Unable to release resource lockspace=%s name=%s",
-                             res->lockspace, res->name);
-            }
-        }
-
-        virErrorRestore(&origerr);
-        errno = saved_errno;
-    }
+    if (rv != 0 && fd)
+        VIR_FORCE_CLOSE(*fd);
     virNetClientClose(client);
     virObjectUnref(client);
     virObjectUnref(program);
@@ -875,10 +824,27 @@ static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
         goto cleanup;
 
     for (i = 0; i < priv->nresources; i++) {
-        virLockManagerLockDaemonResourcePtr res = &priv->resources[i];
+        virLockSpaceProtocolReleaseResourceArgs args;
 
-        if (virLockManagerLockDaemonReleaseImpl(client, program,
-                                                counter++, res) < 0)
+        memset(&args, 0, sizeof(args));
+
+        if (priv->resources[i].lockspace)
+            args.path = priv->resources[i].lockspace;
+        args.name = priv->resources[i].name;
+        args.flags = priv->resources[i].flags;
+
+        args.flags &=
+            ~(VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED |
+              VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE |
+              VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_METADATA);
+
+        if (virNetClientProgramCall(program,
+                                    client,
+                                    counter++,
+                                    VIR_LOCK_SPACE_PROTOCOL_PROC_RELEASE_RESOURCE,
+                                    0, NULL, NULL, NULL,
+                                    (xdrproc_t)xdr_virLockSpaceProtocolReleaseResourceArgs, &args,
+                                    (xdrproc_t)xdr_void, NULL) < 0)
             goto cleanup;
     }
 
