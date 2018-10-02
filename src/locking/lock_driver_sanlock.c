@@ -446,10 +446,8 @@ static int virLockManagerSanlockInit(unsigned int version,
         goto error;
     }
 
-    if (configFile &&
-        virLockManagerSanlockLoadConfig(driver, configFile) < 0) {
+    if (virLockManagerSanlockLoadConfig(driver, configFile) < 0)
         goto error;
-    }
 
     if (driver->autoDiskLease && !driver->hostID) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

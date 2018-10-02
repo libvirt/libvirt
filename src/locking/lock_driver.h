@@ -124,16 +124,12 @@ struct _virLockManagerParam {
 /**
  * virLockDriverInit:
  * @version: the libvirt requested plugin ABI version
- * @configFile: path to config file
  * @flags: the libvirt requested plugin optional extras
  *
  * Allow the plugin to validate the libvirt requested
  * plugin version / flags. This allows the plugin impl
  * to block its use in versions of libvirtd which are
  * too old to support key features.
- *
- * The @configFile variable points to config file that the driver
- * should load. If NULL, no config file should be loaded.
  *
  * NB: A plugin may be loaded multiple times, for different
  * libvirt drivers (eg QEMU, LXC, UML)
