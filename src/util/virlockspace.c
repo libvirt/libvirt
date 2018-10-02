@@ -115,10 +115,8 @@ static void virLockSpaceResourceFree(virLockSpaceResourcePtr res)
 static virLockSpaceResourcePtr
 virLockSpaceResourceNew(virLockSpacePtr lockspace,
                         const char *resname,
-                        pid_t owner,
-                        off_t start,
-                        off_t len,
-                        unsigned int flags)
+                        unsigned int flags,
+                        pid_t owner)
 {
     virLockSpaceResourcePtr res;
     bool shared = !!(flags & VIR_LOCK_SPACE_ACQUIRE_SHARED);
@@ -159,7 +157,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
                 goto error;
             }
 
-            if (virFileLock(res->fd, shared, start, len, false) < 0) {
+            if (virFileLock(res->fd, shared, 0, 1, false) < 0) {
                 if (errno == EACCES || errno == EAGAIN) {
                     virReportError(VIR_ERR_RESOURCE_BUSY,
                                    _("Lockspace resource '%s' is locked"),
@@ -206,7 +204,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
             goto error;
         }
 
-        if (virFileLock(res->fd, shared, start, len, false) < 0) {
+        if (virFileLock(res->fd, shared, 0, 1, false) < 0) {
             if (errno == EACCES || errno == EAGAIN) {
                 virReportError(VIR_ERR_RESOURCE_BUSY,
                                _("Lockspace resource '%s' is locked"),
@@ -614,8 +612,6 @@ int virLockSpaceDeleteResource(virLockSpacePtr lockspace,
 int virLockSpaceAcquireResource(virLockSpacePtr lockspace,
                                 const char *resname,
                                 pid_t owner,
-                                off_t start,
-                                off_t len,
                                 unsigned int flags)
 {
     int ret = -1;
@@ -645,8 +641,7 @@ int virLockSpaceAcquireResource(virLockSpacePtr lockspace,
         goto cleanup;
     }
 
-    if (!(res = virLockSpaceResourceNew(lockspace, resname,
-                                        owner, start, len, flags)))
+    if (!(res = virLockSpaceResourceNew(lockspace, resname, flags, owner)))
         goto cleanup;
 
     if (virHashAddEntry(lockspace->resources, resname, res) < 0) {

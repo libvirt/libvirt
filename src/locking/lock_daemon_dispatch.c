@@ -50,8 +50,6 @@ virLockSpaceProtocolDispatchAcquireResource(virNetServerPtr server ATTRIBUTE_UNU
         virNetServerClientGetPrivateData(client);
     virLockSpacePtr lockspace;
     unsigned int newFlags;
-    off_t start = 0;
-    off_t len = 1;
 
     virMutexLock(&priv->lock);
 
@@ -86,7 +84,6 @@ virLockSpaceProtocolDispatchAcquireResource(virNetServerPtr server ATTRIBUTE_UNU
     if (virLockSpaceAcquireResource(lockspace,
                                     args->name,
                                     priv->ownerPid,
-                                    start, len,
                                     newFlags) < 0)
         goto cleanup;
 
