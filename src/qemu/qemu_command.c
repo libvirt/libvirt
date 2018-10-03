@@ -5067,6 +5067,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                        virQEMUCapsPtr qemuCaps,
                        unsigned int flags)
 {
+    qemuDomainChrSourcePrivatePtr chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
     char *charAlias = NULL;
@@ -5160,8 +5161,6 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         qemuBuildChrChardevReconnectStr(&buf, &dev->data.tcp.reconnect);
 
         if (dev->data.tcp.haveTLS == VIR_TRISTATE_BOOL_YES) {
-            qemuDomainChrSourcePrivatePtr chrSourcePriv =
-                QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
             char *objalias = NULL;
             const char *tlsCertEncSecAlias = NULL;
 
