@@ -5195,6 +5195,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
+        virBufferAsprintf(&buf, "socket,id=%s", charAlias);
         if (dev->data.nix.listen &&
             (flags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
@@ -5208,11 +5209,11 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
             if (fd < 0)
                 goto cleanup;
 
-            virBufferAsprintf(&buf, "socket,id=%s,fd=%d", charAlias, fd);
+            virBufferAsprintf(&buf, ",fd=%d", fd);
 
             virCommandPassFD(cmd, fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         } else {
-            virBufferAsprintf(&buf, "socket,id=%s,path=", charAlias);
+            virBufferAddLit(&buf, ",path=");
             virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
         }
         if (dev->data.nix.listen) {
