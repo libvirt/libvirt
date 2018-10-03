@@ -2668,6 +2668,22 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManagerPtr mgr,
         virSecuritySELinuxRestoreFileLabel(mgr, def->os.loader->nvram, false) < 0)
         rc = -1;
 
+    if (def->os.kernel &&
+        virSecuritySELinuxRestoreFileLabel(mgr, def->os.kernel, false) < 0)
+        rc = -1;
+
+    if (def->os.initrd &&
+        virSecuritySELinuxRestoreFileLabel(mgr, def->os.initrd, false) < 0)
+        rc = -1;
+
+    if (def->os.dtb &&
+        virSecuritySELinuxRestoreFileLabel(mgr, def->os.dtb, false) < 0)
+        rc = -1;
+
+    if (def->os.slic_table &&
+        virSecuritySELinuxRestoreFileLabel(mgr, def->os.slic_table, false) < 0)
+        rc = -1;
+
     return rc;
 }
 
