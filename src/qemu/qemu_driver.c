@@ -5900,6 +5900,35 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
     goto cleanup;
 }
 
+
+static int
+qemuDomainHotplugModIOThread(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             qemuMonitorIOThreadInfo iothread)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rc;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_IOTHREAD_POLLING)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("IOThreads polling is not supported for this QEMU"));
+        return -1;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorSetIOThread(priv->mon, &iothread);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    if (rc < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
@@ -6016,9 +6045,106 @@ qemuDomainDelIOThreadCheck(virDomainDefPtr def,
     return 0;
 }
 
+
+/**
+ * @params: Pointer to params list
+ * @nparams: Number of params to be parsed
+ * @iothread: Buffer to store the values
+ *
+ * The following is a description of each value parsed:
+ *
+ *  - "poll-max-ns" for each IOThread is the maximum time in nanoseconds
+ *    to allow each polling interval to occur. A polling interval is a
+ *    period of time allowed for a thread to process data before it returns
+ *    the CPU quantum back to the host. A value set too small will not allow
+ *    the IOThread to run long enough on a CPU to process data. A value set
+ *    too high will consume too much CPU time per IOThread failing to allow
+ *    other threads running on the CPU to get time. A value of 0 (zero) will
+ *    disable the polling.
+ *
+ * - "poll-grow" - factor to grow the current polling time when deemed
+ *   necessary. If a 0 (zero) value is provided, QEMU currently doubles
+ *   its polling interval unless the current value is greater than the
+ *   poll-max-ns.
+ *
+ * - "poll-shrink" - divisor to reduced the current polling time when deemed
+ *   necessary. If a 0 (zero) value is provided, QEMU resets the polling
+ *   interval to 0 (zero) allowing the poll-grow to manipulate the time.
+ *
+ * QEMU keeps track of the polling time elapsed and may grow or shrink the
+ * its polling interval based upon its heuristic algorithm. It is possible
+ * that calculations determine that it has found a "sweet spot" and no
+ * ajustments are made. The polling time value is not available.
+ *
+ * Returns 0 on success, -1 on failure with error set.
+ */
+static int
+qemuDomainIOThreadParseParams(virTypedParameterPtr params,
+                              int nparams,
+                              qemuMonitorIOThreadInfoPtr iothread)
+{
+    int rc;
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_IOTHREAD_POLL_GROW,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
+        return -1;
+
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
+                                      &iothread->poll_max_ns)) < 0)
+        return -1;
+    if (rc == 1)
+        iothread->set_poll_max_ns = true;
+
+    if ((rc = virTypedParamsGetUInt(params, nparams,
+                                    VIR_DOMAIN_IOTHREAD_POLL_GROW,
+                                    &iothread->poll_grow)) < 0)
+        return -1;
+    if (rc == 1)
+        iothread->set_poll_grow = true;
+
+    if ((rc = virTypedParamsGetUInt(params, nparams,
+                                    VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
+                                    &iothread->poll_shrink)) < 0)
+        return -1;
+    if (rc == 1)
+        iothread->set_poll_shrink = true;
+
+    if (iothread->set_poll_max_ns && iothread->poll_max_ns > INT_MAX) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("poll-max-ns (%llu) must be less than or equal to %d"),
+                       iothread->poll_max_ns, INT_MAX);
+        return -1;
+    }
+
+    if (iothread->set_poll_grow && iothread->poll_grow > INT_MAX) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("poll-grow (%u) must be less than or equal to %d"),
+                         iothread->poll_grow, INT_MAX);
+        return -1;
+    }
+
+    if (iothread->set_poll_shrink && iothread->poll_shrink > INT_MAX) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("poll-shrink (%u) must be less than or equal to %d"),
+                       iothread->poll_shrink, INT_MAX);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 typedef enum {
     VIR_DOMAIN_IOTHREAD_ACTION_ADD,
     VIR_DOMAIN_IOTHREAD_ACTION_DEL,
+    VIR_DOMAIN_IOTHREAD_ACTION_MOD,
 } virDomainIOThreadAction;
 
 static int
@@ -6069,6 +6195,20 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
                 goto endjob;
 
             break;
+
+        case VIR_DOMAIN_IOTHREAD_ACTION_MOD:
+            if (!(virDomainIOThreadIDFind(def, iothread.iothread_id))) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("cannot find IOThread '%u' in iothreadids"),
+                               iothread.iothread_id);
+                goto endjob;
+            }
+
+            if (qemuDomainHotplugModIOThread(driver, vm, iothread) < 0)
+                goto endjob;
+
+            break;
+
         }
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
@@ -6091,6 +6231,14 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
                 goto endjob;
 
             virDomainIOThreadIDDel(persistentDef, iothread.iothread_id);
+
+            break;
+
+        case VIR_DOMAIN_IOTHREAD_ACTION_MOD:
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("configuring persistent polling values is "
+                             "not supported"));
+            goto endjob;
 
             break;
         }
@@ -6178,6 +6326,58 @@ qemuDomainDelIOThread(virDomainPtr dom,
     virDomainObjEndAPI(&vm);
     return ret;
 }
+
+
+/**
+ * @dom: Domain to set IOThread params
+ * @iothread_id: IOThread 'id' that will be modified
+ * @params: List of parameters to change
+ * @nparams: Number of parameters in the list
+ * @flags: Flags for the set (only supports live alteration)
+ *
+ * Alter the specified @iothread_id with the values provided.
+ *
+ * Returs 0 on success, -1 on failure
+ */
+static int
+qemuDomainSetIOThreadParams(virDomainPtr dom,
+                            unsigned int iothread_id,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    qemuMonitorIOThreadInfo iothread = {0};
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
+
+    if (iothread_id == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid value of 0 for iothread_id"));
+        goto cleanup;
+    }
+
+    iothread.iothread_id = iothread_id;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainSetIOThreadParamsEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (qemuDomainIOThreadParseParams(params, nparams, &iothread) < 0)
+        goto cleanup;
+
+    ret = qemuDomainChgIOThread(driver, vm, iothread,
+                                VIR_DOMAIN_IOTHREAD_ACTION_MOD, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 
 static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
 {
@@ -21971,6 +22171,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainPinIOThread = qemuDomainPinIOThread, /* 1.2.14 */
     .domainAddIOThread = qemuDomainAddIOThread, /* 1.2.15 */
     .domainDelIOThread = qemuDomainDelIOThread, /* 1.2.15 */
+    .domainSetIOThreadParams = qemuDomainSetIOThreadParams, /* 4.10.0 */
     .domainGetSecurityLabel = qemuDomainGetSecurityLabel, /* 0.6.1 */
     .domainGetSecurityLabelList = qemuDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = qemuNodeGetSecurityModel, /* 0.6.1 */
