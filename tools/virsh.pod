@@ -975,7 +975,8 @@ or unique source names printed by this command.
 
 =item B<domstats> [I<--raw>] [I<--enforce>] [I<--backing>] [I<--nowait>]
 [I<--state>] [I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>]
-[I<--block>] [I<--perf>] [[I<--list-active>] [I<--list-inactive>]
+[I<--block>] [I<--perf>] [I<--iothread>]
+[[I<--list-active>] [I<--list-inactive>]
 [I<--list-persistent>] [I<--list-transient>] [I<--list-running>]
 [I<--list-paused>] [I<--list-shutoff>] [I<--list-other>]] | [I<domain> ...]
 
@@ -993,7 +994,7 @@ behavior use the I<--raw> flag.
 The individual statistics groups are selectable via specific flags. By
 default all supported statistics groups are returned. Supported
 statistics groups flags are: I<--state>, I<--cpu-total>, I<--balloon>,
-I<--vcpu>, I<--interface>, I<--block>, I<--perf>.
+I<--vcpu>, I<--interface>, I<--block>, I<--perf>, I<--iothread>.
 
 Note that - depending on the hypervisor type and version or the domain state
 - not all of the following statistics may be returned.
@@ -1125,6 +1126,27 @@ Information listed includes:
  "block.<num>.threshold" - threshold (in bytes) for delivering the
                            VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD event
                            See domblkthreshold.
+
+I<--iothread> returns information about IOThreads on the running guest
+if supported by the hypervisor.
+
+The "poll-max-ns" for each thread is the maximum nanoseconds to allow
+each polling interval to occur. A polling interval is a period of time
+allowed for a thread to process data before being the guest gives up
+its CPU quantum back to the host. A value set too small will not allow
+the IOThread to run long enough on a CPU to process data. A value set
+too high will consume too much CPU time per IOThread failing to allow
+other threads running on the CPU to get time. The polling interval is
+not available for statistical purposes.
+
+ "iothread.<id>.poll-max-ns" - maximum polling time in nanoseconds used
+                               by the <id> IOThread. A value of 0 (zero)
+                               indicates polling is disabled.
+ "iothread.<id>.poll-grow" - polling time grow value. A value of 0 (zero)
+                             indicates growth is managed by the hypervisor.
+ "iothread.<id>.poll-shrink" - polling time shrink value. A value of
+                               0 (zero) indicates shrink is managed by
+                               the hypervisor.
 
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag I<--enforce>

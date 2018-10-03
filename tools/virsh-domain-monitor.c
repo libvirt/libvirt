@@ -2067,6 +2067,10 @@ static const vshCmdOptDef opts_domstats[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report domain perf event statistics"),
     },
+    {.name = "iothread",
+     .type = VSH_OT_BOOL,
+     .help = N_("report domain IOThread information"),
+    },
     {.name = "list-active",
      .type = VSH_OT_BOOL,
      .help = N_("list only active domains"),
@@ -2179,6 +2183,9 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "perf"))
         stats |= VIR_DOMAIN_STATS_PERF;
+
+    if (vshCommandOptBool(cmd, "iothread"))
+        stats |= VIR_DOMAIN_STATS_IOTHREAD;
 
     if (vshCommandOptBool(cmd, "list-active"))
         flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE;
