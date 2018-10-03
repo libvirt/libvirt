@@ -256,6 +256,9 @@ const REMOTE_DOMAIN_IP_ADDR_MAX = 2048;
 /* Upper limit on number of guest vcpu information entries */
 const REMOTE_DOMAIN_GUEST_VCPU_PARAMS_MAX = 64;
 
+/* Upper limit on number of IOThread parameter set entries */
+const REMOTE_DOMAIN_IOTHREAD_PARAMS_MAX = 64;
+
 /* Upper limit on number of SEV parameters */
 const REMOTE_NODE_SEV_INFO_MAX = 64;
 
@@ -1246,6 +1249,13 @@ struct remote_domain_add_iothread_args {
 struct remote_domain_del_iothread_args {
     remote_nonnull_domain dom;
     unsigned int iothread_id;
+    unsigned int flags;
+};
+
+struct remote_domain_set_iothread_params_args {
+    remote_nonnull_domain dom;
+    unsigned int iothread_id;
+    remote_typed_param params<REMOTE_DOMAIN_IOTHREAD_PARAMS_MAX>;
     unsigned int flags;
 };
 
@@ -6312,5 +6322,14 @@ enum remote_procedure {
      * @acl: connect:search_nwfilter_bindings
      * @aclfilter: nwfilter_binding:getattr
      */
-    REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401
+    REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_SET_IOTHREAD_PARAMS = 402
+
 };

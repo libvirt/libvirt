@@ -7813,6 +7813,76 @@ virDomainDelIOThread(virDomainPtr domain,
 
 
 /**
+ * virDomainSetIOThreadParams:
+ * @domain: a domain object
+ * @iothread_id: the specific IOThread ID value to add
+ * @params: pointer to IOThread parameter objects
+ * @nparams: number of IOThread parameters
+ * @flags: bitwise-OR of virDomainModificationImpact and virTypedParameterFlags
+ *
+ * Dynamically set IOThread parameters to the domain. It is left up to
+ * the underlying virtual hypervisor to determine the valid range for an
+ * @iothread_id, determining whether the @iothread_id already exists, and
+ * determining the validity of the provided param values.
+ *
+ * See VIR_DOMAIN_IOTHREAD_* for detailed description of accepted IOThread
+ * parameters.
+ *
+ * Since the purpose of this API is to dynamically modify the IOThread
+ * @flags should only include the VIR_DOMAIN_AFFECT_CURRENT and/or
+ * VIR_DOMAIN_AFFECT_LIVE virDomainMemoryModFlags. Setting other flags
+ * may cause errors from the hypervisor.
+ *
+ * Note that this call can fail if the underlying virtualization hypervisor
+ * does not support it or does not support setting the provided values.
+ *
+ * This function requires privileged access to the hypervisor.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainSetIOThreadParams(virDomainPtr domain,
+                           unsigned int iothread_id,
+                           virTypedParameterPtr params,
+                           int nparams,
+                           unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "iothread_id=%u, params=%p, nparams=%d, flags=0x%x",
+                     iothread_id, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonNullArgGoto(params, error);
+    virCheckPositiveArgGoto(nparams, error);
+
+    if (virTypedParameterValidateSet(conn, params, nparams) < 0)
+        goto error;
+
+    if (conn->driver->domainSetIOThreadParams) {
+        int ret;
+        ret = conn->driver->domainSetIOThreadParams(domain, iothread_id,
+                                                    params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainGetSecurityLabel:
  * @domain: a domain object
  * @seclabel: pointer to a virSecurityLabel structure

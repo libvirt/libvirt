@@ -866,6 +866,15 @@ struct remote_domain_del_iothread_args {
         u_int                      iothread_id;
         u_int                      flags;
 };
+struct remote_domain_set_iothread_params_args {
+        remote_nonnull_domain      dom;
+        u_int                      iothread_id;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
 struct remote_domain_get_security_label_args {
         remote_nonnull_domain      dom;
 };
@@ -3368,4 +3377,5 @@ enum remote_procedure {
         REMOTE_PROC_NWFILTER_BINDING_CREATE_XML = 399,
         REMOTE_PROC_NWFILTER_BINDING_DELETE = 400,
         REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401,
+        REMOTE_PROC_DOMAIN_SET_IOTHREAD_PARAMS = 402,
 };
