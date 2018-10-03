@@ -27,6 +27,8 @@ cpumap_DATA = \
 	cpu_map/x86_Haswell-IBRS.xml \
 	cpu_map/x86_Haswell-noTSX.xml \
 	cpu_map/x86_Haswell-noTSX-IBRS.xml \
+	cpu_map/x86_Icelake-Client.xml \
+	cpu_map/x86_Icelake-Server.xml \
 	cpu_map/x86_IvyBridge.xml \
 	cpu_map/x86_IvyBridge-IBRS.xml \
 	cpu_map/x86_kvm32.xml \
