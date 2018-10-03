@@ -287,7 +287,7 @@ qemuSecurityChownCallback(const virStorageSource *src,
         return rv;
 
     if (virStorageSourceIsLocalStorage(src)) {
-        /* use direct chmod for local files so that the file doesn't
+        /* use direct chown for local files so that the file doesn't
          * need to be initialized */
         if (!src->path)
             return 0;
