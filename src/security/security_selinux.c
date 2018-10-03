@@ -2616,8 +2616,11 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManagerPtr mgr,
     if (!secdef || !secdef->relabel || data->skipAllLabel)
         return 0;
 
-    if (def->tpm) {
-        if (virSecuritySELinuxRestoreTPMFileLabelInt(mgr, def, def->tpm) < 0)
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr disk = def->disks[i];
+
+        if (virSecuritySELinuxRestoreImageLabelInt(mgr, def, disk->src,
+                                                   migrated) < 0)
             rc = -1;
     }
 
@@ -2639,11 +2642,8 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManagerPtr mgr,
             return -1;
     }
 
-    for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDefPtr disk = def->disks[i];
-
-        if (virSecuritySELinuxRestoreImageLabelInt(mgr, def, disk->src,
-                                                   migrated) < 0)
+    if (def->tpm) {
+        if (virSecuritySELinuxRestoreTPMFileLabelInt(mgr, def, def->tpm) < 0)
             rc = -1;
     }
 
