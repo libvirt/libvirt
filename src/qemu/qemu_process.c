@@ -5982,7 +5982,7 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (!(priv->monConfig = virDomainChrSourceDefNew(NULL)))
+    if (!(priv->monConfig = virDomainChrSourceDefNew(driver->xmlopt)))
         goto cleanup;
 
     VIR_DEBUG("Preparing monitor state");
