@@ -20444,6 +20444,86 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
 #undef QEMU_ADD_NAME_PARAM
 
+#define QEMU_ADD_IOTHREAD_PARAM_UI(record, maxparams, id, name, value) \
+    do { \
+        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
+                 "iothread.%u.%s", id, name); \
+        if (virTypedParamsAddUInt(&(record)->params, \
+                                  &(record)->nparams, \
+                                  maxparams, \
+                                  param_name, \
+                                  value) < 0) \
+            goto cleanup; \
+    } while (0)
+
+#define QEMU_ADD_IOTHREAD_PARAM_ULL(record, maxparams, id, name, value) \
+do { \
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
+    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
+             "iothread.%u.%s", id, name); \
+    if (virTypedParamsAddULLong(&(record)->params, \
+                                &(record)->nparams, \
+                                maxparams, \
+                                param_name, \
+                                value) < 0) \
+        goto cleanup; \
+} while (0)
+
+static int
+qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
+                           virDomainObjPtr dom,
+                           virDomainStatsRecordPtr record,
+                           int *maxparams,
+                           unsigned int privflags ATTRIBUTE_UNUSED)
+{
+    size_t i;
+    qemuMonitorIOThreadInfoPtr *iothreads = NULL;
+    int niothreads;
+    int ret = -1;
+
+    if (!virDomainObjIsActive(dom))
+        return 0;
+
+    if ((niothreads = qemuDomainGetIOThreadsMon(driver, dom, &iothreads)) < 0)
+        return -1;
+
+    if (niothreads == 0)
+        return 0;
+
+    QEMU_ADD_COUNT_PARAM(record, maxparams, "iothread", niothreads);
+
+    for (i = 0; i < niothreads; i++) {
+        if (iothreads[i]->poll_valid) {
+            QEMU_ADD_IOTHREAD_PARAM_ULL(record, maxparams,
+                                        iothreads[i]->iothread_id,
+                                        "poll-max-ns",
+                                        iothreads[i]->poll_max_ns);
+            QEMU_ADD_IOTHREAD_PARAM_UI(record, maxparams,
+                                       iothreads[i]->iothread_id,
+                                       "poll-grow",
+                                       iothreads[i]->poll_grow);
+            QEMU_ADD_IOTHREAD_PARAM_UI(record, maxparams,
+                                       iothreads[i]->iothread_id,
+                                       "poll-shrink",
+                                       iothreads[i]->poll_shrink);
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    for (i = 0; i < niothreads; i++)
+        VIR_FREE(iothreads[i]);
+    VIR_FREE(iothreads);
+
+    return ret;
+}
+
+#undef QEMU_ADD_IOTHREAD_PARAM_UI
+
+#undef QEMU_ADD_IOTHREAD_PARAM_ULL
+
 #undef QEMU_ADD_COUNT_PARAM
 
 static int
@@ -20518,6 +20598,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false },
     { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true },
     { qemuDomainGetStatsPerf, VIR_DOMAIN_STATS_PERF, false },
+    { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true },
     { NULL, 0, false }
 };
 

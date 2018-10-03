@@ -11499,6 +11499,44 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                               long long. It is produced by the
  *                               emulation_faults perf event
  *
+ * VIR_DOMAIN_STATS_IOTHREAD:
+ *     Return IOThread statistics if available. IOThread polling is a
+ *     timing mechanism that allows the hypervisor to generate a longer
+ *     period of time in which the guest will perform operations on the
+ *     CPU being used by the IOThread. The higher the value for poll-max-ns
+ *     the longer the guest will keep the CPU. This may affect other host
+ *     threads using the CPU. The poll-grow and poll-shrink values allow
+ *     the hypervisor to generate a mechanism to add or remove polling time
+ *     within the confines of 0 and poll-max-ns. For QEMU, the poll-grow is
+ *     multiplied by the polling interval, while poll-shrink is used as a
+ *     divisor. When not provided, QEMU may double the polling time until
+ *     poll-max-ns is reached. When poll-shrink is 0 (zero) QEMU may reset
+ *     the polling interval to 0 until it finds its "sweet spot". Setting
+ *     poll-grow too large may cause frequent fluctution of the time; however,
+ *     this can be tempered by a high poll-shrink to reduce the polling
+ *     interval. For example, a poll-grow of 3 will triple the polling time
+ *     which could quickly exceed poll-max-ns; however, a poll-shrink of
+ *     10 would cut that polling time more gradually.
+ *
+ *     The typed parameter keys are in this format:
+ *
+ *     "iothread.cnt" - maximum number of IOThreads in the subsequent list
+ *                      as unsigned int. Each IOThread in the list will
+ *                      will use it's iothread_id value as the <id>. There
+ *                      may be fewer <id> entries than the iothread.cnt
+ *                      value if the polling values are not supported.
+ *     "iothread.<id>.poll-max-ns" - maximum polling time in ns as an unsigned
+ *                                   long long. A 0 (zero) means polling is
+ *                                   disabled.
+ *     "iothread.<id>.poll-grow" - polling time factor as an unsigned int.
+ *                                 A 0 (zero) indicates to allow the underlying
+ *                                 hypervisor to choose how to grow the
+ *                                 polling time.
+ *     "iothread.<id>.poll-shrink" - polling time divisor as an unsigned int.
+ *                                 A 0 (zero) indicates to allow the underlying
+ *                                 hypervisor to choose how to shrink the
+ *                                 polling time.
+ *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not
  * applicable for the current state of the guest domain, or their retrieval
