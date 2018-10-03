@@ -5034,6 +5034,12 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
         goto error;
     }
 
+    /* We run QEMU with umask 0002. Compensate for the umask
+     * libvirtd might be running under to get the same permission
+     * QEMU would have. */
+    if (virFileUpdatePerm(dev->data.nix.path, 0002, 0664) < 0)
+        goto error;
+
     return fd;
 
  error:
