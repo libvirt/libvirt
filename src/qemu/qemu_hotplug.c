@@ -625,6 +625,7 @@ qemuHotplugDiskSourceRemove(qemuMonitorPtr mon,
  * @driver: qemu driver structure
  * @vm: domain definition
  * @disk: disk definition to change the source of
+ * @oldsrc: old source definition
  * @newsrc: new disk source to change to
  * @force: force the change of media
  *
@@ -639,6 +640,7 @@ static int
 qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainDiskDefPtr disk,
+                              virStorageSourcePtr oldsrc,
                               virStorageSourcePtr newsrc,
                               bool force)
 {
@@ -646,19 +648,17 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuHotplugDiskSourceDataPtr newbackend = NULL;
     qemuHotplugDiskSourceDataPtr oldbackend = NULL;
-    virStorageSourcePtr oldsrc = disk->src;
     char *nodename = NULL;
     int rc;
     int ret = -1;
 
-    if (!virStorageSourceIsEmpty(disk->src) &&
-        !(oldbackend = qemuHotplugDiskSourceRemovePrepare(disk, disk->src,
+    if (!virStorageSourceIsEmpty(oldsrc) &&
+        !(oldbackend = qemuHotplugDiskSourceRemovePrepare(disk, oldsrc,
                                                           priv->qemuCaps)))
         goto cleanup;
 
-    disk->src = newsrc;
-    if (!virStorageSourceIsEmpty(disk->src)) {
-        if (!(newbackend = qemuHotplugDiskSourceAttachPrepare(disk, disk->src,
+    if (!virStorageSourceIsEmpty(newsrc)) {
+        if (!(newbackend = qemuHotplugDiskSourceAttachPrepare(disk, newsrc,
                                                               priv->qemuCaps)))
             goto cleanup;
 
@@ -704,8 +704,6 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
     qemuHotplugDiskSourceDataFree(newbackend);
     qemuHotplugDiskSourceDataFree(oldbackend);
     VIR_FREE(nodename);
-    /* caller handles correct exchange of sources */
-    disk->src = oldsrc;
     return ret;
 }
 
@@ -743,7 +741,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        rc = qemuDomainChangeMediaBlockdev(driver, vm, disk, newsrc, force);
+        rc = qemuDomainChangeMediaBlockdev(driver, vm, disk, disk->src, newsrc, force);
     else
         rc = qemuDomainChangeMediaLegacy(driver, vm, disk, newsrc, force);
 
