@@ -1471,6 +1471,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_SERIAL);
 
     DO_TEST("channel-guestfwd", NONE);
+    DO_TEST_CAPS_VER("channel-unix-guestfwd", "2.5.0");
+    DO_TEST_CAPS_LATEST("channel-unix-guestfwd");
     DO_TEST("channel-virtio", NONE);
     DO_TEST("channel-virtio-state", NONE);
     DO_TEST("channel-virtio-auto", NONE);
