@@ -458,6 +458,7 @@ qemuHotplugRemoveStorageSourcePrepareData(virStorageSourcePtr src,
 
 static qemuHotplugDiskSourceDataPtr
 qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
+                                   virStorageSourcePtr src,
                                    virQEMUCapsPtr qemuCaps)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
@@ -474,7 +475,7 @@ qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
         if (VIR_STRDUP(data->corAlias, diskPriv->nodeCopyOnRead) < 0)
             goto cleanup;
 
-        for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
             if (!(backend = qemuHotplugRemoveStorageSourcePrepareData(n, NULL)))
                 goto cleanup;
 
@@ -485,7 +486,7 @@ qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
         if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
             goto cleanup;
 
-        if (!(backend = qemuHotplugRemoveStorageSourcePrepareData(disk->src,
+        if (!(backend = qemuHotplugRemoveStorageSourcePrepareData(src,
                                                                   drivealias)))
             goto cleanup;
 
@@ -505,6 +506,7 @@ qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
 /**
  * qemuHotplugDiskSourceAttachPrepare:
  * @disk: disk to generate attachment data for
+ * @src: disk source to prepare attachment
  * @qemuCaps: capabilities of the qemu process
  *
  * Prepares and returns qemuHotplugDiskSourceData structure filled with all data
@@ -512,11 +514,13 @@ qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
  */
 static qemuHotplugDiskSourceDataPtr
 qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
+                                   virStorageSourcePtr src,
                                    virQEMUCapsPtr qemuCaps)
 {
     qemuBlockStorageSourceAttachDataPtr backend = NULL;
     qemuHotplugDiskSourceDataPtr data;
     qemuHotplugDiskSourceDataPtr ret = NULL;
+    virStorageSourcePtr savesrc = NULL;
     virStorageSourcePtr n;
 
     if (VIR_ALLOC(data) < 0)
@@ -527,7 +531,7 @@ qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
             !(data->corProps = qemuBlockStorageGetCopyOnReadProps(disk)))
             goto cleanup;
 
-        for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
             if (!(backend = qemuBlockStorageSourceAttachPrepareBlockdev(n)))
                 goto cleanup;
 
@@ -538,10 +542,15 @@ qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
                 goto cleanup;
         }
     } else {
+        VIR_STEAL_PTR(savesrc, disk->src);
+        disk->src = src;
+
         if (!(backend = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
             goto cleanup;
 
-        if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, backend, qemuCaps) < 0)
+        VIR_STEAL_PTR(disk->src, savesrc);
+
+        if (qemuBuildStorageSourceAttachPrepareCommon(src, backend, qemuCaps) < 0)
             goto cleanup;
 
         if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
@@ -551,6 +560,9 @@ qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
     VIR_STEAL_PTR(ret, data);
 
  cleanup:
+    if (savesrc)
+        VIR_STEAL_PTR(disk->src, savesrc);
+
     qemuBlockStorageSourceAttachDataFree(backend);
     qemuHotplugDiskSourceDataFree(data);
     return ret;
@@ -640,12 +652,13 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
     int ret = -1;
 
     if (!virStorageSourceIsEmpty(disk->src) &&
-        !(oldbackend = qemuHotplugDiskSourceRemovePrepare(disk, priv->qemuCaps)))
+        !(oldbackend = qemuHotplugDiskSourceRemovePrepare(disk, disk->src,
+                                                          priv->qemuCaps)))
         goto cleanup;
 
     disk->src = newsrc;
     if (!virStorageSourceIsEmpty(disk->src)) {
-        if (!(newbackend = qemuHotplugDiskSourceAttachPrepare(disk,
+        if (!(newbackend = qemuHotplugDiskSourceAttachPrepare(disk, disk->src,
                                                               priv->qemuCaps)))
             goto cleanup;
 
@@ -782,7 +795,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto error;
 
-    if (!(diskdata = qemuHotplugDiskSourceAttachPrepare(disk, priv->qemuCaps)))
+    if (!(diskdata = qemuHotplugDiskSourceAttachPrepare(disk, disk->src,
+                                                        priv->qemuCaps)))
         goto error;
 
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, 0, priv->qemuCaps)))
@@ -4159,7 +4173,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
 
-    if (!(diskbackend = qemuHotplugDiskSourceRemovePrepare(disk, priv->qemuCaps)))
+    if (!(diskbackend = qemuHotplugDiskSourceRemovePrepare(disk, disk->src,
+                                                           priv->qemuCaps)))
         return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
