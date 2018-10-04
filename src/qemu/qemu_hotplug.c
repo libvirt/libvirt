@@ -250,14 +250,9 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
         if (qemuGetDriveSourceString(newsrc, NULL, &sourcestr) < 0)
             goto cleanup;
 
-        if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR) {
-            if (newsrc->format > 0) {
-                format = virStorageFileFormatTypeToString(newsrc->format);
-            } else {
-                if (disk->src->format > 0)
-                    format = virStorageFileFormatTypeToString(disk->src->format);
-            }
-        }
+        if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR)
+            format = virStorageFileFormatTypeToString(newsrc->format);
+
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorChangeMedia(priv->mon,
                                     driveAlias,
