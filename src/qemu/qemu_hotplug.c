@@ -210,8 +210,6 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
     char *driveAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-    qemuDomainSecretInfoPtr secinfo = NULL;
     const char *format = NULL;
     char *sourcestr = NULL;
 
@@ -220,9 +218,6 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
                        _("missing disk device alias name for %s"), disk->dst);
         goto cleanup;
     }
-
-    if (srcPriv)
-        secinfo = srcPriv->secinfo;
 
     if (!(driveAlias = qemuAliasDiskDriveFromDisk(disk)))
         goto cleanup;
@@ -252,7 +247,7 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
     }
 
     if (!virStorageSourceIsEmpty(newsrc)) {
-        if (qemuGetDriveSourceString(newsrc, secinfo, &sourcestr) < 0)
+        if (qemuGetDriveSourceString(newsrc, NULL, &sourcestr) < 0)
             goto cleanup;
 
         if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR) {
