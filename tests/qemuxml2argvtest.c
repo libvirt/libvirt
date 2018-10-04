@@ -1486,6 +1486,8 @@ mymain(void)
     DO_TEST("console-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_CAPS_VER("console-virtio-unix", "2.5.0");
+    DO_TEST_CAPS_LATEST("console-virtio-unix");
     DO_TEST("console-sclp",
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_SCLPCONSOLE);
