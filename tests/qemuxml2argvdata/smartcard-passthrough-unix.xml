@@ -1,0 +1,19 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <smartcard mode='passthrough' type='unix'>
+      <source mode='bind' path='/tmp/smartcard.sock'/>
+      <protocol type='raw'/>
+    </smartcard>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

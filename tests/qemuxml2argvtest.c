@@ -1504,6 +1504,8 @@ mymain(void)
             QEMU_CAPS_CCID_PASSTHRU);
     DO_TEST("smartcard-controller",
             QEMU_CAPS_CCID_EMULATED);
+    DO_TEST_CAPS_VER("smartcard-passthrough-unix", "2.5.0");
+    DO_TEST_CAPS_LATEST("smartcard-passthrough-unix");
 
     DO_TEST("chardev-reconnect",
             QEMU_CAPS_CHARDEV_RECONNECT,
