@@ -6024,7 +6024,7 @@ typedef enum {
 static int
 qemuDomainChgIOThread(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
-                      unsigned int iothread_id,
+                      qemuMonitorIOThreadInfo iothread,
                       virDomainIOThreadAction action,
                       unsigned int flags)
 {
@@ -6053,19 +6053,19 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
 
         switch (action) {
         case VIR_DOMAIN_IOTHREAD_ACTION_ADD:
-            if (qemuDomainAddIOThreadCheck(def, iothread_id) < 0)
+            if (qemuDomainAddIOThreadCheck(def, iothread.iothread_id) < 0)
                 goto endjob;
 
-            if (qemuDomainHotplugAddIOThread(driver, vm, iothread_id) < 0)
+            if (qemuDomainHotplugAddIOThread(driver, vm, iothread.iothread_id) < 0)
                 goto endjob;
 
             break;
 
         case VIR_DOMAIN_IOTHREAD_ACTION_DEL:
-            if (qemuDomainDelIOThreadCheck(def, iothread_id) < 0)
+            if (qemuDomainDelIOThreadCheck(def, iothread.iothread_id) < 0)
                 goto endjob;
 
-            if (qemuDomainHotplugDelIOThread(driver, vm, iothread_id) < 0)
+            if (qemuDomainHotplugDelIOThread(driver, vm, iothread.iothread_id) < 0)
                 goto endjob;
 
             break;
@@ -6078,19 +6078,19 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
     if (persistentDef) {
         switch (action) {
         case VIR_DOMAIN_IOTHREAD_ACTION_ADD:
-            if (qemuDomainAddIOThreadCheck(persistentDef, iothread_id) < 0)
+            if (qemuDomainAddIOThreadCheck(persistentDef, iothread.iothread_id) < 0)
                 goto endjob;
 
-            if (!virDomainIOThreadIDAdd(persistentDef, iothread_id))
+            if (!virDomainIOThreadIDAdd(persistentDef, iothread.iothread_id))
                 goto endjob;
 
             break;
 
         case VIR_DOMAIN_IOTHREAD_ACTION_DEL:
-            if (qemuDomainDelIOThreadCheck(persistentDef, iothread_id) < 0)
+            if (qemuDomainDelIOThreadCheck(persistentDef, iothread.iothread_id) < 0)
                 goto endjob;
 
-            virDomainIOThreadIDDel(persistentDef, iothread_id);
+            virDomainIOThreadIDDel(persistentDef, iothread.iothread_id);
 
             break;
         }
@@ -6117,6 +6117,7 @@ qemuDomainAddIOThread(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
+    qemuMonitorIOThreadInfo iothread = {0};
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -6134,7 +6135,8 @@ qemuDomainAddIOThread(virDomainPtr dom,
     if (virDomainAddIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    ret = qemuDomainChgIOThread(driver, vm, iothread_id,
+    iothread.iothread_id = iothread_id;
+    ret = qemuDomainChgIOThread(driver, vm, iothread,
                                 VIR_DOMAIN_IOTHREAD_ACTION_ADD, flags);
 
  cleanup:
@@ -6150,6 +6152,7 @@ qemuDomainDelIOThread(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
+    qemuMonitorIOThreadInfo iothread = {0};
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -6167,7 +6170,8 @@ qemuDomainDelIOThread(virDomainPtr dom,
     if (virDomainDelIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
            goto cleanup;
 
-    ret = qemuDomainChgIOThread(driver, vm, iothread_id,
+    iothread.iothread_id = iothread_id;
+    ret = qemuDomainChgIOThread(driver, vm, iothread,
                                 VIR_DOMAIN_IOTHREAD_ACTION_DEL, flags);
 
  cleanup:
