@@ -114,6 +114,7 @@
   <flag name='vhost-vsock'/>
   <flag name='egl-headless'/>
   <flag name='zpci'/>
+  <flag name='iothread.poll-max-ns'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>306247</microcodeVersion>

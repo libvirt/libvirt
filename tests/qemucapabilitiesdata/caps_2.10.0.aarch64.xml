@@ -151,6 +151,7 @@
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='egl-headless'/>
+  <flag name='iothread.poll-max-ns'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>305067</microcodeVersion>

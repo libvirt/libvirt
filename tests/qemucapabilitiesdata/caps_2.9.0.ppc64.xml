@@ -142,6 +142,7 @@
   <flag name='hda-output'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
+  <flag name='iothread.poll-max-ns'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>349056</microcodeVersion>

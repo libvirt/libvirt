@@ -192,6 +192,7 @@
   <flag name='vhost-vsock'/>
   <flag name='mch'/>
   <flag name='egl-headless'/>
+  <flag name='iothread.poll-max-ns'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>364386</microcodeVersion>

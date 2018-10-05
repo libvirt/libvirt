@@ -133,6 +133,7 @@
   <flag name='zpci'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='iothread.poll-max-ns'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>388416</microcodeVersion>
