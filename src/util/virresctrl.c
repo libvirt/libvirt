@@ -638,7 +638,6 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
         VIR_INFO("The file '" SYSFS_RESCTRL_PATH "/info/L3_MON/num_rmids' "
                  "does not exist");
         ret = 0;
-        virResetLastError();
         goto cleanup;
     } else if (rv < 0) {
         /* Other failures are fatal, so just quit */
@@ -653,7 +652,6 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
          * will not exist. */
         VIR_DEBUG("File '" SYSFS_RESCTRL_PATH
                   "/info/L3_MON/max_threshold_occupancy' does not exist");
-        virResetLastError();
     } else if (rv < 0) {
         goto cleanup;
     }
