@@ -1732,6 +1732,27 @@ If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified or I<--live> and I<--config> are not specified,
 affect the current guest state.
 
+=item B<iothreadset> I<domain> I<iothread_id>
+[[I<--poll-max-ns> B<ns>] [I<--poll-grow> B<factor>]
+[I<--poll-shrink> B<divisor>]]
+[[I<--config>] [I<--live>] | [I<--current>]]
+
+Modifies an existing iothread of the domain using the specified
+I<iothread_id>. The I<--poll-max-ns> provides the maximum polling
+interval to be allowed for an IOThread in ns. If a 0 (zero) is provided,
+then polling for the IOThread is disabled.  The I<--poll-grow> is the
+factor by which the current polling time will be adjusted in order to
+reach the maximum polling time. If a 0 (zero) is provided, then the
+default factor will be used. The I<--poll-shrink> is the quotient
+by which the current polling time will be reduced in order to get
+below the maximum polling interval. If a 0 (zero) is provided, then
+the default quotient will be used.
+
+If I<--live> is specified, affect a running guest. If the guest is not
+running an error is returned.
+If I<--current> is specified or I<--live> is not specified, then handle
+as if I<--live> was specified.
+
 =item B<iothreaddel> I<domain> I<iothread_id>
 [[I<--config>] [I<--live>] | [I<--current>]]
 

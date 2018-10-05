@@ -7734,6 +7734,110 @@ cmdIOThreadAdd(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+
+ /*
+ * "iothreadset" command
+ */
+static const vshCmdInfo info_iothreadset[] = {
+    {.name = "help",
+     .data = N_("modifies an existing IOThread of the guest domain")
+    },
+    {.name = "desc",
+     .data = N_("Modifies an existing IOThread of the guest domain.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_iothreadset[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "id",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("iothread id of existing IOThread")
+    },
+    {.name = "poll-max-ns",
+     .type = VSH_OT_INT,
+     .help = N_("set the maximum IOThread polling time in ns")
+    },
+    {.name = "poll-grow",
+     .type = VSH_OT_INT,
+     .help = N_("set the value to increase the IOThread polling time")
+    },
+    {.name = "poll-shrink",
+     .type = VSH_OT_INT,
+     .help = N_("set the value for reduction of the IOThread polling time ")
+    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
+    VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = NULL}
+};
+
+static bool
+cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int id = 0;
+    bool ret = false;
+    bool live = vshCommandOptBool(cmd, "live");
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
+    unsigned long long poll_max;
+    unsigned int poll_val;
+    int rc;
+
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptInt(ctl, cmd, "id", &id) < 0)
+        goto cleanup;
+    if (id <= 0) {
+        vshError(ctl, _("Invalid IOThread id value: '%d'"), id);
+        goto cleanup;
+    }
+
+    poll_val = 0;
+    if ((rc = vshCommandOptULongLong(ctl, cmd, "poll-max-ns", &poll_max)) < 0)
+        goto cleanup;
+    if (rc > 0 && virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                          VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
+                                          poll_max) < 0)
+        goto save_error;
+
+#define VSH_IOTHREAD_SET_UINT_PARAMS(opt, param) \
+    poll_val = 0; \
+    if ((rc = vshCommandOptUInt(ctl, cmd, opt, &poll_val)) < 0) \
+        goto cleanup; \
+    if (rc > 0 && \
+        virTypedParamsAddUInt(&params, &nparams, &maxparams, \
+                              param, poll_val) < 0) \
+        goto save_error;
+
+    VSH_IOTHREAD_SET_UINT_PARAMS("poll-grow", VIR_DOMAIN_IOTHREAD_POLL_GROW)
+    VSH_IOTHREAD_SET_UINT_PARAMS("poll-shrink", VIR_DOMAIN_IOTHREAD_POLL_SHRINK)
+
+#undef VSH_IOTHREAD_SET_UINT_PARAMS
+
+    if (virDomainSetIOThreadParams(dom, id, params, nparams, flags) < 0)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    virshDomainFree(dom);
+    return ret;
+
+ save_error:
+    vshSaveLibvirtError();
+    goto cleanup;
+}
+
+
 /*
  * "iothreaddel" command
  */
@@ -14147,6 +14251,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdIOThreadAdd,
      .opts = opts_iothreadadd,
      .info = info_iothreadadd,
+     .flags = 0
+    },
+    {.name = "iothreadset",
+     .handler = cmdIOThreadSet,
+     .opts = opts_iothreadset,
+     .info = info_iothreadset,
      .flags = 0
     },
     {.name = "iothreaddel",
