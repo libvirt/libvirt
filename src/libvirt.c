@@ -230,8 +230,8 @@ virWinsockInit(void)
     WSADATA winsock_data;
 
     /* http://msdn2.microsoft.com/en-us/library/ms742213.aspx */
-    winsock_version = MAKEWORD (2, 2);
-    err = WSAStartup (winsock_version, &winsock_data);
+    winsock_version = MAKEWORD(2, 2);
+    err = WSAStartup(winsock_version, &winsock_data);
     return err == 0 ? 0 : -1;
 }
 #endif

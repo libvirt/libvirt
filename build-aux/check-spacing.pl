@@ -45,9 +45,6 @@ foreach my $file (@ARGV) {
         # Kill any quoted strings
         $data =~ s,"(?:[^\\\"]|\\.)*","XXX",g;
 
-        # Kill any C++ style comments
-        $data =~ s,//.*$,//,;
-
         next if $data =~ /^#/;
 
         # Kill contents of multi-line comments
