@@ -27,6 +27,6 @@ server,nowait \
 -usb \
 -drive file=/arm.raw,format=raw,if=sd,index=0 \
 -netdev user,id=hostnet0 \
--net nic,macaddr=52:54:00:09:a4:37,netdev=hostnet0,model=lan9118,name=net0 \
+-net nic,macaddr=52:54:00:09:a4:37,netdev=hostnet0,model=lan9118,id=net0 \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0

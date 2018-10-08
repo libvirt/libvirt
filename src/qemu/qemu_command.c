@@ -3516,7 +3516,7 @@ qemuBuildLegacyNicStr(virDomainNetDefPtr net)
                              net->info.alias,
                              (net->model ? ",model=" : ""),
                              (net->model ? net->model : ""),
-                             (net->info.alias ? ",name=" : ""),
+                             (net->info.alias ? ",id=" : ""),
                              (net->info.alias ? net->info.alias : "")));
     return str;
 }
