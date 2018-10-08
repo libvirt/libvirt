@@ -779,7 +779,8 @@ VIR_ENUM_IMPL(virDomainShutoffReason, VIR_DOMAIN_SHUTOFF_LAST,
               "migrated",
               "saved",
               "failed",
-              "from snapshot")
+              "from snapshot",
+              "daemon")
 
 VIR_ENUM_IMPL(virDomainCrashedReason, VIR_DOMAIN_CRASHED_LAST,
               "unknown",

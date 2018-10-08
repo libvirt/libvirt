@@ -212,7 +212,8 @@ VIR_ENUM_IMPL(virshDomainShutoffReason,
               N_("migrated"),
               N_("saved"),
               N_("failed"),
-              N_("from snapshot"))
+              N_("from snapshot"),
+              N_("daemon"))
 
 VIR_ENUM_DECL(virshDomainCrashedReason)
 VIR_ENUM_IMPL(virshDomainCrashedReason,

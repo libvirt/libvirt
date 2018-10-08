@@ -7978,10 +7978,14 @@ qemuProcessReconnect(void *opaque)
          *
          * If we cannot get to the monitor when the QEMU command
          * line used -no-shutdown, then we can safely say that the
-         * domain crashed; otherwise, we don't really know. */
+         * domain crashed; otherwise, if the monitor was started,
+         * then we can blame ourselves, else we failed before the
+         * monitor started so we don't really know. */
         if (!priv->mon && tryMonReconn &&
             qemuDomainIsUsingNoShutdown(priv))
             state = VIR_DOMAIN_SHUTOFF_CRASHED;
+        else if (priv->mon)
+            state = VIR_DOMAIN_SHUTOFF_DAEMON;
         else
             state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
 

@@ -145,6 +145,8 @@ typedef enum {
     VIR_DOMAIN_SHUTOFF_FAILED = 6,      /* domain failed to start */
     VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT = 7, /* restored from a snapshot which was
                                            * taken while domain was shutoff */
+    VIR_DOMAIN_SHUTOFF_DAEMON = 8,      /* daemon decides to kill domain
+                                           during reconnection processing */
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_SHUTOFF_LAST
 # endif
