@@ -322,8 +322,8 @@ int virHostValidateCGroupControllers(const char *hvname,
     return ret;
 }
 #else /*  !__linux__ */
-int virHostValidateCGroupControllers(const char *hvname,
-                                     int controllers,
+int virHostValidateCGroupControllers(const char *hvname ATTRIBUTE_UNUSED,
+                                     int controllers ATTRIBUTE_UNUSED,
                                      virHostValidateLevel level)
 {
     virHostMsgFail(level, "%s", "This platform does not support cgroups");
