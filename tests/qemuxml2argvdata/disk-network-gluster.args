@@ -26,7 +26,7 @@ if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
 id=virtio-disk0,bootindex=1 \
 -drive 'file=gluster+unix:///Volume2/Image?socket=/path/to/sock,file.debug=4,\
-format=raw,if=none,id=drive-virtio-disk1' \
+if=none,id=drive-virtio-disk1' \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,\
 id=virtio-disk1 \
 -drive file.driver=gluster,file.volume=Volume3,file.path=Image.qcow2,\

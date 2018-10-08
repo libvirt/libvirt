@@ -22,7 +22,7 @@
       <target dev='vda' bus='virtio'/>
     </disk>
     <disk type='network' device='disk'>
-      <driver name='qemu' type='raw'/>
+      <driver name='qemu'/>
       <source protocol='gluster' name='Volume2/Image'>
         <host transport='unix' socket='/path/to/sock'/>
       </source>

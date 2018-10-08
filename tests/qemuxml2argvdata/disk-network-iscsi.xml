@@ -29,7 +29,7 @@
       <target dev='vdb' bus='virtio'/>
     </disk>
     <disk type='network' device='disk'>
-      <driver name='qemu' type='raw'/>
+      <driver name='qemu'/>
       <auth username='myname'>
         <secret type='iscsi' usage='mycluster_myname'/>
       </auth>

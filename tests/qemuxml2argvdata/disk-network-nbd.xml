@@ -22,7 +22,7 @@
       <target dev='vda' bus='virtio'/>
     </disk>
     <disk type='network' device='disk'>
-      <driver name='qemu' type='raw'/>
+      <driver name='qemu'/>
       <source protocol='nbd' name='bar'>
         <host name='example.org' port='6000'/>
       </source>

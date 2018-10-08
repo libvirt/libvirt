@@ -27,8 +27,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -drive file=nbd:example.org:6000,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=drive-virtio-disk0,\
 id=virtio-disk0,bootindex=1 \
--drive file=nbd:example.org:6000:exportname=bar,format=raw,if=none,\
-id=drive-virtio-disk1 \
+-drive file=nbd:example.org:6000:exportname=bar,if=none,id=drive-virtio-disk1 \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,\
 id=virtio-disk1 \
 -drive 'file=nbd://[::1]:6000,format=raw,if=none,id=drive-virtio-disk2' \

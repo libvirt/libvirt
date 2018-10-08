@@ -40,7 +40,7 @@ data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -drive file.driver=iscsi,file.portal=example.org:6000,\
 file.target=iqn.1992-01.com.example:storage,file.lun=1,file.transport=tcp,\
-file.user=myname,file.password-secret=virtio-disk2-secret0,format=raw,if=none,\
+file.user=myname,file.password-secret=virtio-disk2-secret0,if=none,\
 id=drive-virtio-disk2 \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=drive-virtio-disk2,\
 id=virtio-disk2 \
