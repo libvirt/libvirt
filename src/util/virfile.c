@@ -3468,17 +3468,13 @@ static int
 virFileIsSharedFixFUSE(const char *path,
                        long long *f_type)
 {
-    char *dirpath = NULL;
-    const char **mounts = NULL;
-    size_t nmounts = 0;
-    char *p;
     FILE *f = NULL;
     struct mntent mb;
     char mntbuf[1024];
+    char *mntDir = NULL;
+    char *mntType = NULL;
+    size_t maxMatching = 0;
     int ret = -1;
-
-    if (VIR_STRDUP(dirpath, path) < 0)
-        return -1;
 
     if (!(f = setmntent(PROC_MOUNTS, "r"))) {
         virReportSystemError(errno,
@@ -3488,43 +3484,36 @@ virFileIsSharedFixFUSE(const char *path,
     }
 
     while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
-        if (STRNEQ("fuse.glusterfs", mb.mnt_type))
+        const char *p;
+        size_t len = strlen(mb.mnt_dir);
+
+        if (!(p = STRSKIP(path, mb.mnt_dir)))
             continue;
 
-        if (VIR_APPEND_ELEMENT_COPY(mounts, nmounts, mb.mnt_dir) < 0)
-            goto cleanup;
+        if (*(p - 1) != '/' && *p != '/' && *p != '\0')
+            continue;
+
+        if (len > maxMatching) {
+            maxMatching = len;
+            VIR_FREE(mntType);
+            VIR_FREE(mntDir);
+            if (VIR_STRDUP(mntDir, mb.mnt_dir) < 0 ||
+                VIR_STRDUP(mntType, mb.mnt_type) < 0)
+                goto cleanup;
+        }
     }
 
-    /* Add NULL sentinel so that this is a virStringList */
-    if (VIR_REALLOC_N(mounts, nmounts + 1) < 0)
-        goto cleanup;
-    mounts[nmounts] = NULL;
-
-    do {
-        if ((p = strrchr(dirpath, '/')) == NULL) {
-            virReportSystemError(EINVAL,
-                                 _("Invalid relative path '%s'"), path);
-            goto cleanup;
-        }
-
-        if (p == dirpath)
-            *(p+1) = '\0';
-        else
-            *p = '\0';
-
-        if (virStringListHasString(mounts, dirpath)) {
-            VIR_DEBUG("Found gluster FUSE mountpoint=%s for path=%s. "
-                      "Fixing shared FS type", dirpath, path);
-            *f_type = GFS2_MAGIC;
-            break;
-        }
-    } while (p != dirpath);
+    if (STREQ_NULLABLE(mntType, "fuse.glusterfs")) {
+        VIR_DEBUG("Found gluster FUSE mountpoint=%s for path=%s. "
+                  "Fixing shared FS type", mntDir, path);
+        *f_type = GFS2_MAGIC;
+    }
 
     ret = 0;
  cleanup:
+    VIR_FREE(mntType);
+    VIR_FREE(mntDir);
     endmntent(f);
-    VIR_FREE(mounts);
-    VIR_FREE(dirpath);
     return ret;
 }
 

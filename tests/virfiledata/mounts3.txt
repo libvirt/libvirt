@@ -31,3 +31,5 @@ hugetlbfs /hugepages2M hugetlbfs rw,relatime,mode=1777,pagesize=2M 0 0
 none /run/user/1000 tmpfs rw,relatime,mode=700,uid=1000 0 0
 host:/nfs /nfs nfs4 rw,relatime,vers=4.1,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp6,timeo=600,retrans=2,sec=sys,clientaddr=::,local_lock=none,addr=:: 0 0
 dev /nfs/blah devtmpfs rw,nosuid,relatime,size=10240k,nr_inodes=4093060,mode=755 0 0
+host:/gv0 /gluster fuse.glusterfs rw 0 0
+root@host:/tmp/mkdir /gluster/sshfs fuse.sshfs rw 0 0
