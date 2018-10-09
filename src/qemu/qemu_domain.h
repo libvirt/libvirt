@@ -810,6 +810,11 @@ int qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
                                        bool readonly,
                                        bool newSource);
 
+int qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
+                                           virStorageSourcePtr src,
+                                           qemuDomainObjPrivatePtr priv,
+                                           virQEMUDriverConfigPtr cfg);
+
 int qemuDomainCleanupAdd(virDomainObjPtr vm,
                          qemuDomainCleanupCallback cb);
 void qemuDomainCleanupRemove(virDomainObjPtr vm,
