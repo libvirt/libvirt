@@ -388,6 +388,7 @@ mymain(void)
     } while (0)
 
     if (holesSupported()) {
+        virTestCounterReset("testFileInData ");
         DO_TEST_IN_DATA(true, 4, 4, 4);
         DO_TEST_IN_DATA(false, 4, 4, 4);
         DO_TEST_IN_DATA(true, 8, 8, 8);
