@@ -13988,3 +13988,37 @@ qemuDomainNVRAMPathGenerate(virQEMUDriverConfigPtr cfg,
 
     return 0;
 }
+
+
+virDomainEventSuspendedDetailType
+qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason)
+{
+    switch (reason) {
+    case VIR_DOMAIN_PAUSED_MIGRATION:
+        return VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
+
+    case VIR_DOMAIN_PAUSED_FROM_SNAPSHOT:
+        return VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
+
+    case VIR_DOMAIN_PAUSED_POSTCOPY_FAILED:
+        return VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED;
+
+    case VIR_DOMAIN_PAUSED_POSTCOPY:
+        return VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY;
+
+    case VIR_DOMAIN_PAUSED_UNKNOWN:
+    case VIR_DOMAIN_PAUSED_USER:
+    case VIR_DOMAIN_PAUSED_SAVE:
+    case VIR_DOMAIN_PAUSED_DUMP:
+    case VIR_DOMAIN_PAUSED_IOERROR:
+    case VIR_DOMAIN_PAUSED_WATCHDOG:
+    case VIR_DOMAIN_PAUSED_SHUTTING_DOWN:
+    case VIR_DOMAIN_PAUSED_SNAPSHOT:
+    case VIR_DOMAIN_PAUSED_CRASHED:
+    case VIR_DOMAIN_PAUSED_STARTING_UP:
+    case VIR_DOMAIN_PAUSED_LAST:
+        break;
+    }
+
+    return VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
+}

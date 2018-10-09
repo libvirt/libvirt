@@ -1118,4 +1118,7 @@ int
 qemuDomainNVRAMPathGenerate(virQEMUDriverConfigPtr cfg,
                             virDomainDefPtr def);
 
+virDomainEventSuspendedDetailType
+qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason);
+
 #endif /* LIBVIRT_QEMU_DOMAIN_H */
