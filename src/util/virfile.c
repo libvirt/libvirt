@@ -3534,7 +3534,7 @@ virFileIsSharedFSType(const char *path,
                       int fstypes)
 {
     VIR_AUTOFREE(char *) dirpath = NULL;
-    char *p;
+    char *p = NULL;
     struct statfs sb;
     int statfs_ret;
     long long f_type = 0;
@@ -3542,8 +3542,9 @@ virFileIsSharedFSType(const char *path,
     if (VIR_STRDUP(dirpath, path) < 0)
         return -1;
 
-    do {
+    statfs_ret = statfs(dirpath, &sb);
 
+    while ((statfs_ret < 0) && (p != dirpath)) {
         /* Try less and less of the path until we get to a
          * directory we can stat. Even if we don't have 'x'
          * permission on any directory in the path on the NFS
@@ -3564,8 +3565,7 @@ virFileIsSharedFSType(const char *path,
             *p = '\0';
 
         statfs_ret = statfs(dirpath, &sb);
-
-    } while ((statfs_ret < 0) && (p != dirpath));
+    }
 
     if (statfs_ret < 0) {
         virReportSystemError(errno,
