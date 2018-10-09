@@ -371,6 +371,10 @@ struct _qemuDomainObjPrivate {
      * RESUME event handler to use it */
     virDomainRunningReason runningReason;
 
+    /* qemuProcessStopCPUs stores the reason for pausing vCPUs here for the
+     * STOP event handler to use it */
+    virDomainPausedReason pausedReason;
+
     /* true if libvirt remembers the original owner for files */
     bool rememberOwner;
 
