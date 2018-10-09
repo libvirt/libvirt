@@ -242,6 +242,7 @@ test_libraries += virusbmock.la \
 	virnetdevbandwidthmock.la \
 	virnumamock.la \
 	virtestmock.la \
+	virfilemock.la \
 	$(NULL)
 endif WITH_LINUX
 
@@ -1170,9 +1171,13 @@ virresctrltest_SOURCES = \
 	virresctrltest.c testutils.h testutils.c virfilewrapper.h virfilewrapper.c
 virresctrltest_LDADD = $(LDADDS)
 
+virfilemock_la_SOURCES = \
+	virfilemock.c
+virfilemock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virfilemock_la_LIBADD = $(MOCKLIBS_LIBS)
 else ! WITH_LINUX
 EXTRA_DIST += vircaps2xmltest.c virnumamock.c virfilewrapper.c \
-			  virfilewrapper.h virresctrltest.c
+			  virfilewrapper.h virresctrltest.c virfilemock.c
 endif ! WITH_LINUX
 
 if WITH_NSS

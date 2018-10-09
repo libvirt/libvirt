@@ -30,6 +30,7 @@
 # include <linux/falloc.h>
 #endif
 
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int testFileCheckMounts(const char *prefix,
@@ -309,6 +310,48 @@ testFileInData(const void *opaque)
 }
 
 
+struct testFileIsSharedFSType {
+    const char *mtabFile;
+    const char *filename;
+    const bool expected;
+};
+
+static int
+testFileIsSharedFSType(const void *opaque ATTRIBUTE_UNUSED)
+{
+#ifndef __linux__
+    return EXIT_AM_SKIP;
+#else
+    const struct testFileIsSharedFSType *data = opaque;
+    char *mtabFile = NULL;
+    bool actual;
+    int ret = -1;
+
+    if (virAsprintf(&mtabFile, abs_srcdir "/virfiledata/%s", data->mtabFile) < 0)
+        return -1;
+
+    if (setenv("LIBVIRT_MTAB", mtabFile, 1) < 0) {
+        fprintf(stderr, "Unable to set env variable\n");
+        goto cleanup;
+    }
+
+    actual = virFileIsSharedFS(data->filename);
+
+    if (actual != data->expected) {
+        fprintf(stderr, "Unexpected FS type. Expected %d got %d\n",
+                data->expected, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(mtabFile);
+    unsetenv("LIBVIRT_MTAB");
+    return ret;
+#endif
+}
+
+
 static int
 mymain(void)
 {
@@ -396,7 +439,24 @@ mymain(void)
         DO_TEST_IN_DATA(true, 8, 16, 32, 64, 128, 256, 512);
         DO_TEST_IN_DATA(false, 8, 16, 32, 64, 128, 256, 512);
     }
+
+#define DO_TEST_FILE_IS_SHARED_FS_TYPE(mtab, file, exp) \
+    do { \
+        struct testFileIsSharedFSType data = { \
+            .mtabFile = mtab, .filename = file, .expected = exp \
+        }; \
+        if (virTestRun(virTestCounterNext(), testFileIsSharedFSType, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    virTestCounterReset("testFileIsSharedFSType ");
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts1.txt", "/boot/vmlinuz", false);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts2.txt", "/run/user/501/gvfs/some/file", false);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/nfs/file", true);
+    /* TODO Detect bind mounts */
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/nfs/blah", true);
+
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virfilemock.so")
