@@ -13462,10 +13462,10 @@ qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
                                              src->nodeformat) < 0)
         return -1;
 
-    if (qemuDomainPrepareStorageSourcePR(disk->src, priv, src->nodestorage) < 0)
+    if (qemuDomainPrepareStorageSourcePR(src, priv, src->nodestorage) < 0)
         return -1;
 
-    if (qemuDomainPrepareStorageSourceTLS(disk->src, cfg, src->nodestorage,
+    if (qemuDomainPrepareStorageSourceTLS(src, cfg, src->nodestorage,
                                           priv->qemuCaps) < 0)
         return -1;
 
