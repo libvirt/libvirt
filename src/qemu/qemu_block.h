@@ -107,6 +107,10 @@ VIR_DEFINE_AUTOPTR_FUNC(qemuBlockStorageSourceAttachData,
 qemuBlockStorageSourceAttachDataPtr
 qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src);
 
+qemuBlockStorageSourceAttachDataPtr
+qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
+                                    char *driveAlias);
+
 int
 qemuBlockStorageSourceAttachApply(qemuMonitorPtr mon,
                                   qemuBlockStorageSourceAttachDataPtr data);
