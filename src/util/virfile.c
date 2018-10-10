@@ -3466,7 +3466,7 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 
 static int
 virFileIsSharedFixFUSE(const char *path,
-                       long *f_type)
+                       long long *f_type)
 {
     char *dirpath = NULL;
     const char **mounts = NULL;
@@ -3537,6 +3537,7 @@ virFileIsSharedFSType(const char *path,
     char *p;
     struct statfs sb;
     int statfs_ret;
+    long long f_type = 0;
 
     if (VIR_STRDUP(dirpath, path) < 0)
         return -1;
@@ -3573,32 +3574,34 @@ virFileIsSharedFSType(const char *path,
         return -1;
     }
 
-    if (sb.f_type == FUSE_SUPER_MAGIC) {
+    f_type = sb.f_type;
+
+    if (f_type == FUSE_SUPER_MAGIC) {
         VIR_DEBUG("Found FUSE mount for path=%s. Trying to fix it", path);
-        virFileIsSharedFixFUSE(path, (long *) &sb.f_type);
+        virFileIsSharedFixFUSE(path, &f_type);
     }
 
     VIR_DEBUG("Check if path %s with FS magic %lld is shared",
-              path, (long long int)sb.f_type);
+              path, f_type);
 
     if ((fstypes & VIR_FILE_SHFS_NFS) &&
-        (sb.f_type == NFS_SUPER_MAGIC))
+        (f_type == NFS_SUPER_MAGIC))
         return 1;
 
     if ((fstypes & VIR_FILE_SHFS_GFS2) &&
-        (sb.f_type == GFS2_MAGIC))
+        (f_type == GFS2_MAGIC))
         return 1;
     if ((fstypes & VIR_FILE_SHFS_OCFS) &&
-        (sb.f_type == OCFS2_SUPER_MAGIC))
+        (f_type == OCFS2_SUPER_MAGIC))
         return 1;
     if ((fstypes & VIR_FILE_SHFS_AFS) &&
-        (sb.f_type == AFS_FS_MAGIC))
+        (f_type == AFS_FS_MAGIC))
         return 1;
     if ((fstypes & VIR_FILE_SHFS_SMB) &&
-        (sb.f_type == SMB_SUPER_MAGIC))
+        (f_type == SMB_SUPER_MAGIC))
         return 1;
     if ((fstypes & VIR_FILE_SHFS_CIFS) &&
-        (sb.f_type == CIFS_SUPER_MAGIC))
+        (f_type == CIFS_SUPER_MAGIC))
         return 1;
 
     return 0;
