@@ -104,7 +104,7 @@ while (<RPCGEN>) {
         if (keys %uses >= 1) {
             my $i = 1;
 
-            foreach (keys %uses) {
+            foreach (sort(keys %uses)) {
                 $i = $uses{$_};
                 unshift @function,
                 ("        char **objp_cpp$i = (char **) (void *) &$_;\n");
