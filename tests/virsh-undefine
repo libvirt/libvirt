@@ -30,34 +30,46 @@ fail=0
 # connection is opened to the test driver, it starts life with a new
 # persistent running domain named 'test' with a different uuid, so
 # testing this command requires batch mode use of virsh.
-$abs_top_builddir/tools/virsh -q -c test:///default \
+$abs_top_builddir/tools/virsh -c test:///default \
     'dominfo test; undefine test; dominfo test' > out1 2>&1
 test $? = 0 || fail=1
 sed '/^Persistent/n; /:/d' < out1 > out
 cat <<\EOF > exp || fail=1
 Persistent:     yes
+
+Domain test has been undefined
+
 Persistent:     no
+
 EOF
 compare exp out || fail=1
 
 # A similar diagnostic when specifying a domain ID
-$abs_top_builddir/tools/virsh -q -c test:///default \
+$abs_top_builddir/tools/virsh -c test:///default \
     'dominfo 1; undefine 1; dominfo 1' > out1 2>&1
 test $? = 0 || fail=1
 sed '/^Persistent/n; /:/d' < out1 > out
 cat <<\EOF > exp || fail=1
 Persistent:     yes
+
+Domain 1 has been undefined
+
 Persistent:     no
+
 EOF
 compare exp out || fail=1
 
 # Succeed, now: first shut down, then undefine, both via name.
-$abs_top_builddir/tools/virsh -q -c test:///default \
+$abs_top_builddir/tools/virsh -c test:///default \
     'shutdown test; undefine test; dominfo test' > out 2>&1
 test $? = 1 || fail=1
 cat <<\EOF > expout || fail=1
+Domain test is being shutdown
+
+Domain test has been undefined
+
 error: failed to get domain 'test'
-error: Domain not found
+
 EOF
 compare expout out || fail=1
 

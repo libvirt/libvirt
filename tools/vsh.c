@@ -276,6 +276,7 @@ vshResetLibvirtError(void)
 {
     virFreeError(last_error);
     last_error = NULL;
+    virResetLastError();
 }
 
 /*
