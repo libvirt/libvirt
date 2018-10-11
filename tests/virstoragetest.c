@@ -1303,6 +1303,14 @@ mymain(void)
 
     TEST_BACKING_PARSE("path", "<source file='path'/>\n");
     TEST_BACKING_PARSE("://", NULL);
+    TEST_BACKING_PARSE("http://example.com",
+                       "<source protocol='http' name=''>\n"
+                       "  <host name='example.com' port='80'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("http://example.com/",
+                       "<source protocol='http' name=''>\n"
+                       "  <host name='example.com' port='80'/>\n"
+                       "</source>\n");
     TEST_BACKING_PARSE("http://example.com/file",
                        "<source protocol='http' name='file'>\n"
                        "  <host name='example.com' port='80'/>\n"
@@ -1314,6 +1322,18 @@ mymain(void)
     TEST_BACKING_PARSE("nbd:example.org:6000:exportname=blah",
                        "<source protocol='nbd' name='blah'>\n"
                        "  <host name='example.org' port='6000'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd://example.org:1234",
+                       "<source protocol='nbd'>\n"
+                       "  <host name='example.org' port='1234'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd://example.org:1234/",
+                       "<source protocol='nbd'>\n"
+                       "  <host name='example.org' port='1234'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd://example.org:1234/exportname",
+                       "<source protocol='nbd' name='exportname'>\n"
+                       "  <host name='example.org' port='1234'/>\n"
                        "</source>\n");
 
 #ifdef WITH_YAJL

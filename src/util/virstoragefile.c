@@ -2579,6 +2579,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
                                 const char *uristr)
 {
     virURIPtr uri = NULL;
+    const char *path = NULL;
     char **scheme = NULL;
     int ret = -1;
 
@@ -2621,10 +2622,23 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
     /* XXX We currently don't support auth, so don't bother parsing it */
 
-    /* possibly skip the leading slash */
-    if (uri->path &&
-        VIR_STRDUP(src->path,
-                   *uri->path == '/' ? uri->path + 1 : uri->path) < 0)
+    /* uri->path is NULL if the URI does not contain slash after host:
+     * transport://host:port */
+    if (uri->path)
+        path = uri->path;
+    else
+        path = "";
+
+    /* possibly skip the leading slash  */
+    if (path[0] == '/')
+        path++;
+
+    /* NBD allows empty export name (path) */
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_NBD &&
+        path[0] == '\0')
+        path = NULL;
+
+    if (VIR_STRDUP(src->path, path) < 0)
         goto cleanup;
 
     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
