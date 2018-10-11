@@ -460,4 +460,8 @@ mymain(void)
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
+#ifdef __linux__
 VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virfilemock.so")
+#else
+VIR_TEST_MAIN(mymain)
+#endif
