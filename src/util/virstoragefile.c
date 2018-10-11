@@ -2576,16 +2576,16 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
 
 static int
 virStorageSourceParseBackingURI(virStorageSourcePtr src,
-                                const char *path)
+                                const char *uristr)
 {
     virURIPtr uri = NULL;
     char **scheme = NULL;
     int ret = -1;
 
-    if (!(uri = virURIParse(path))) {
+    if (!(uri = virURIParse(uristr))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to parse backing file location '%s'"),
-                       path);
+                       uristr);
         goto cleanup;
     }
 
