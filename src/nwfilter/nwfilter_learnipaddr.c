@@ -483,6 +483,12 @@ learnIPAddressThread(void *arg)
     while (req->status == 0 && vmaddr == 0) {
         int n = poll(fds, ARRAY_CARDINALITY(fds), PKT_TIMEOUT_MS);
 
+        if (threadsTerminate || req->terminate) {
+            req->status = ECANCELED;
+            showError = false;
+            break;
+        }
+
         if (n < 0) {
             if (errno == EAGAIN || errno == EINTR)
                 continue;
@@ -492,15 +498,8 @@ learnIPAddressThread(void *arg)
             break;
         }
 
-        if (n == 0) {
-            if (threadsTerminate || req->terminate) {
-                VIR_DEBUG("Terminate request seen, cancelling pcap");
-                req->status = ECANCELED;
-                showError = false;
-                break;
-            }
+        if (n == 0)
             continue;
-        }
 
         if (fds[0].revents & (POLLHUP | POLLERR)) {
             VIR_DEBUG("Error from FD probably dev deleted");
@@ -512,13 +511,6 @@ learnIPAddressThread(void *arg)
         packet = pcap_next(handle, &header);
 
         if (!packet) {
-            /* Already handled with poll, but lets be sure */
-            if (threadsTerminate || req->terminate) {
-                req->status = ECANCELED;
-                showError = false;
-                break;
-            }
-
             /* Again, already handled above, but lets be sure */
             if (virNetDevValidateConfig(req->binding->portdevname, NULL, req->ifindex) <= 0) {
                 virResetLastError();
