@@ -530,6 +530,9 @@ static void qemuAgentUpdateWatch(qemuAgentPtr mon)
         VIR_EVENT_HANDLE_HANGUP |
         VIR_EVENT_HANDLE_ERROR;
 
+    if (!mon->watch)
+        return;
+
     if (mon->lastError.code == VIR_ERR_OK) {
         events |= VIR_EVENT_HANDLE_READABLE;
 
@@ -554,6 +557,12 @@ qemuAgentIO(int watch, int fd, int events, void *opaque)
 #if DEBUG_IO
     VIR_DEBUG("Agent %p I/O on watch %d fd %d events %d", mon, watch, fd, events);
 #endif
+
+    if (mon->fd == -1 || mon->watch == 0) {
+        virObjectUnlock(mon);
+        virObjectUnref(mon);
+        return;
+    }
 
     if (mon->fd != fd || mon->watch != watch) {
         if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
@@ -788,8 +797,10 @@ void qemuAgentClose(qemuAgentPtr mon)
     virObjectLock(mon);
 
     if (mon->fd >= 0) {
-        if (mon->watch)
+        if (mon->watch) {
             virEventRemoveHandle(mon->watch);
+            mon->watch = 0;
+        }
         VIR_FORCE_CLOSE(mon->fd);
     }
 
