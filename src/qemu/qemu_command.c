@@ -4841,7 +4841,7 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
     } else {
         if (!(source = qemuBuildSCSIHostHostdevDrvStr(dev)))
             goto error;
-        virBufferAsprintf(&buf, "file=/dev/%s,if=none", source);
+        virBufferAsprintf(&buf, "file=/dev/%s,if=none,format=raw", source);
     }
     VIR_FREE(source);
 
