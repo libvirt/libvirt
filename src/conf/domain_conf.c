@@ -18833,7 +18833,7 @@ virDomainResctrlVcpuMatch(virDomainDefPtr def,
          * Just updating memory allocation information of that group
          */
         if (virBitmapEqual(def->resctrls[i]->vcpus, vcpus)) {
-            *alloc = def->resctrls[i]->alloc;
+            *alloc = virObjectRef(def->resctrls[i]->alloc);
             break;
         }
         if (virBitmapOverlaps(def->resctrls[i]->vcpus, vcpus)) {
@@ -19219,8 +19219,6 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
         if (!alloc)
             goto cleanup;
         new_alloc = true;
-    } else {
-        alloc = virObjectRef(alloc);
     }
 
     for (i = 0; i < n; i++) {
