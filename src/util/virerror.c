@@ -1442,9 +1442,9 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_ACCESS_DENIED:
             if (info == NULL)
-                errmsg = _("access denied");
+                errmsg = _("access denied from '%s'");
             else
-                errmsg = _("access denied: %s");
+                errmsg = _("access denied from '%s': %s");
             break;
         case VIR_ERR_DBUS_SERVICE:
             if (info == NULL)

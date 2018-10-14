@@ -2199,7 +2199,7 @@ elsif ($mode eq "client") {
                     print "        virObjectUnref(mgr);\n";
                     if ($action eq "Ensure") {
                         print "        if (rv == 0)\n";
-                        print "            virReportError(VIR_ERR_ACCESS_DENIED, NULL);\n";
+                        print "            virReportError(VIR_ERR_ACCESS_DENIED, conn->driver->name, NULL);\n";
                         print "        return $fail;\n";
                     } else {
                         print "        virResetLastError();\n";
