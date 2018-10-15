@@ -264,6 +264,9 @@ nwfilterStateInitialize(bool privileged,
     if (virNWFilterBindingObjListLoadAllConfigs(driver->bindings, driver->bindingDir) < 0)
         goto error;
 
+    if (virNWFilterBuildAll(driver, false) < 0)
+        goto error;
+
     nwfilterDriverUnlock();
 
     return 0;
