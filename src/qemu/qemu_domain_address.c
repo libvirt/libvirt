@@ -460,19 +460,23 @@ qemuDomainHasVirtioMMIODevices(virDomainDefPtr def)
 
 
 static void
-qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
-                                       virQEMUCapsPtr qemuCaps)
+qemuDomainAssignVirtioMMIOAddresses(virDomainDefPtr def,
+                                    virQEMUCapsPtr qemuCaps)
 {
     if (def->os.arch != VIR_ARCH_ARMV6L &&
         def->os.arch != VIR_ARCH_ARMV7L &&
-        def->os.arch != VIR_ARCH_AARCH64)
+        def->os.arch != VIR_ARCH_AARCH64 &&
+        !ARCH_IS_RISCV(def->os.arch)) {
         return;
+    }
 
     if (!(STRPREFIX(def->os.machine, "vexpress-") ||
-          qemuDomainIsARMVirt(def)))
+          qemuDomainIsARMVirt(def) ||
+          qemuDomainIsRISCVVirt(def))) {
         return;
+    }
 
-    /* We use virtio-mmio by default on mach-virt guests only if they already
+    /* We use virtio-mmio by default on virt guests only if they already
      * have at least one virtio-mmio device: in all other cases, assuming
      * the QEMU binary supports all necessary capabilities (PCIe Root plus
      * some kind of PCIe Root Port), we prefer virtio-pci */
@@ -486,30 +490,6 @@ qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
         qemuDomainPrimeVirtioDeviceAddresses(def,
                                              VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO);
     }
-}
-
-
-static void
-qemuDomainAssignRISCVVirtioMMIOAddresses(virDomainDefPtr def,
-                                         virQEMUCapsPtr qemuCaps)
-{
-    if (!qemuDomainIsRISCVVirt(def))
-        return;
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MMIO)) {
-        qemuDomainPrimeVirtioDeviceAddresses(def,
-                                             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO);
-    }
-}
-
-
-static void
-qemuDomainAssignVirtioMMIOAddresses(virDomainDefPtr def,
-                                    virQEMUCapsPtr qemuCaps)
-{
-    qemuDomainAssignARMVirtioMMIOAddresses(def, qemuCaps);
-
-    qemuDomainAssignRISCVVirtioMMIOAddresses(def, qemuCaps);
 }
 
 
