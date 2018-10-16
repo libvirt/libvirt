@@ -93,6 +93,22 @@ int virProcessRunInMountNamespace(pid_t pid,
                                   virProcessNamespaceCallback cb,
                                   void *opaque);
 
+/**
+ * virProcessForkCallback:
+ * @ppid: parent's pid
+ * @opaque: opaque data
+ *
+ * Callback to run in fork()-ed process.
+ *
+ * Returns: 0 on success,
+ *         -1 on error (treated as EXIT_CANCELED)
+ */
+typedef int (*virProcessForkCallback)(pid_t ppid,
+                                      void *opaque);
+
+int virProcessRunInFork(virProcessForkCallback cb,
+                        void *opaque);
+
 int virProcessSetupPrivateMountNS(void);
 
 int virProcessSetScheduler(pid_t pid,
