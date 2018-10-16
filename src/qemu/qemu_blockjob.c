@@ -71,45 +71,6 @@ qemuBlockJobEmitEvents(virQEMUDriverPtr driver,
 
 
 /**
- * qemuBlockJobUpdate:
- * @vm: domain
- * @disk: domain disk
- * @error: error (output parameter)
- *
- * Update disk's mirror state in response to a block job event stored in
- * blockJobStatus by qemuProcessHandleBlockJob event handler.
- *
- * Returns the block job event processed or -1 if there was no pending event.
- */
-int
-qemuBlockJobUpdate(virDomainObjPtr vm,
-                   qemuDomainAsyncJob asyncJob,
-                   virDomainDiskDefPtr disk,
-                   char **error)
-{
-    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int status = diskPriv->blockJobStatus;
-
-    if (error)
-        *error = NULL;
-
-    if (status != -1) {
-        qemuBlockJobEventProcess(priv->driver, vm, disk, asyncJob,
-                                 diskPriv->blockJobType,
-                                 diskPriv->blockJobStatus);
-        diskPriv->blockJobStatus = -1;
-        if (error)
-            VIR_STEAL_PTR(*error, diskPriv->blockJobError);
-        else
-            VIR_FREE(diskPriv->blockJobError);
-    }
-
-    return status;
-}
-
-
-/**
  * qemuBlockJobEventProcess:
  * @driver: qemu driver
  * @vm: domain
@@ -121,7 +82,7 @@ qemuBlockJobUpdate(virDomainObjPtr vm,
  * from QEMU. For mirror state's that must survive libvirt
  * restart, also update the domain's status XML.
  */
-void
+static void
 qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virDomainDiskDefPtr disk,
@@ -233,6 +194,45 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
     }
 
     virObjectUnref(cfg);
+}
+
+
+/**
+ * qemuBlockJobUpdate:
+ * @vm: domain
+ * @disk: domain disk
+ * @error: error (output parameter)
+ *
+ * Update disk's mirror state in response to a block job event stored in
+ * blockJobStatus by qemuProcessHandleBlockJob event handler.
+ *
+ * Returns the block job event processed or -1 if there was no pending event.
+ */
+int
+qemuBlockJobUpdate(virDomainObjPtr vm,
+                   qemuDomainAsyncJob asyncJob,
+                   virDomainDiskDefPtr disk,
+                   char **error)
+{
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int status = diskPriv->blockJobStatus;
+
+    if (error)
+        *error = NULL;
+
+    if (status != -1) {
+        qemuBlockJobEventProcess(priv->driver, vm, disk, asyncJob,
+                                 diskPriv->blockJobType,
+                                 diskPriv->blockJobStatus);
+        diskPriv->blockJobStatus = -1;
+        if (error)
+            VIR_STEAL_PTR(*error, diskPriv->blockJobError);
+        else
+            VIR_FREE(diskPriv->blockJobError);
+    }
+
+    return status;
 }
 
 

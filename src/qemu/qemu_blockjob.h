@@ -30,12 +30,6 @@ int qemuBlockJobUpdate(virDomainObjPtr vm,
                        qemuDomainAsyncJob asyncJob,
                        virDomainDiskDefPtr disk,
                        char **error);
-void qemuBlockJobEventProcess(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virDomainDiskDefPtr disk,
-                              qemuDomainAsyncJob asyncJob,
-                              int type,
-                              int status);
 
 void qemuBlockJobSyncBegin(virDomainDiskDefPtr disk);
 void qemuBlockJobSyncEnd(virDomainObjPtr vm,
