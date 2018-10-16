@@ -1073,16 +1073,22 @@ int virProcessGetStartTime(pid_t pid,
 #endif
 
 
-static int virProcessNamespaceHelper(int errfd,
-                                     pid_t pid,
-                                     virProcessNamespaceCallback cb,
+typedef struct _virProcessNamespaceHelperData virProcessNamespaceHelperData;
+struct _virProcessNamespaceHelperData {
+    pid_t pid;
+    virProcessNamespaceCallback cb;
+    void *opaque;
+};
+
+static int virProcessNamespaceHelper(pid_t pid ATTRIBUTE_UNUSED,
                                      void *opaque)
 {
+    virProcessNamespaceHelperData *data = opaque;
     int fd = -1;
     int ret = -1;
     VIR_AUTOFREE(char *) path = NULL;
 
-    if (virAsprintf(&path, "/proc/%lld/ns/mnt", (long long) pid) < 0)
+    if (virAsprintf(&path, "/proc/%lld/ns/mnt", (long long) data->pid) < 0)
         goto cleanup;
 
     if ((fd = open(path, O_RDONLY)) < 0) {
@@ -1097,16 +1103,9 @@ static int virProcessNamespaceHelper(int errfd,
         goto cleanup;
     }
 
-    ret = cb(pid, opaque);
+    ret = data->cb(data->pid, data->opaque);
 
  cleanup:
-    if (ret < 0) {
-        virErrorPtr err = virGetLastError();
-        if (err) {
-            size_t len = strlen(err->message) + 1;
-            ignore_value(safewrite(errfd, err->message, len));
-        }
-    }
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -1122,46 +1121,9 @@ virProcessRunInMountNamespace(pid_t pid,
                               virProcessNamespaceCallback cb,
                               void *opaque)
 {
-    int ret = -1;
-    pid_t child = -1;
-    int errfd[2] = { -1, -1 };
+    virProcessNamespaceHelperData data = {.pid = pid, .cb = cb, .opaque = opaque};
 
-    if (pipe2(errfd, O_CLOEXEC) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot create pipe for child"));
-        return -1;
-    }
-
-    if ((child = virFork()) < 0)
-        goto cleanup;
-
-    if (child == 0) {
-        VIR_FORCE_CLOSE(errfd[0]);
-        ret = virProcessNamespaceHelper(errfd[1], pid,
-                                        cb, opaque);
-        VIR_FORCE_CLOSE(errfd[1]);
-        _exit(ret < 0 ? EXIT_CANCELED : ret);
-    } else {
-        int status;
-        VIR_AUTOFREE(char *) buf = NULL;
-
-        VIR_FORCE_CLOSE(errfd[1]);
-        ignore_value(virFileReadHeaderFD(errfd[0], 1024, &buf));
-        ret = virProcessWait(child, &status, false);
-        if (!ret) {
-            ret = status == EXIT_CANCELED ? -1 : status;
-            if (ret) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("child reported: %s"),
-                               NULLSTR(buf));
-            }
-        }
-    }
-
- cleanup:
-    VIR_FORCE_CLOSE(errfd[0]);
-    VIR_FORCE_CLOSE(errfd[1]);
-    return ret;
+    return virProcessRunInFork(virProcessNamespaceHelper, &data);
 }
 
 
