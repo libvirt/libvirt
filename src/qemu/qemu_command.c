@@ -6415,11 +6415,7 @@ qemuBuildPMCommandLine(virCommandPtr cmd,
     if (priv->allowReboot == VIR_TRISTATE_BOOL_NO)
         virCommandAddArg(cmd, "-no-reboot");
 
-    /* If JSON monitor is enabled, we can receive an event
-     * when QEMU stops. If we use no-shutdown, then we can
-     * watch for this event and do a soft/warm reboot.
-     */
-    if (priv->monJSON && priv->allowReboot == VIR_TRISTATE_BOOL_YES)
+    if (qemuDomainIsUsingNoShutdown(priv))
         virCommandAddArg(cmd, "-no-shutdown");
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {

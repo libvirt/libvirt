@@ -7988,11 +7988,16 @@ qemuProcessReconnect(void *opaque)
     if (virDomainObjIsActive(obj)) {
         /* We can't get the monitor back, so must kill the VM
          * to remove danger of it ending up running twice if
-         * user tries to start it again later
-         * If we couldn't get the monitor since QEMU supports
-         * no-shutdown, we can safely say that the domain
-         * crashed ... */
-        state = VIR_DOMAIN_SHUTOFF_CRASHED;
+         * user tries to start it again later.
+         *
+         * If we cannot get to the monitor when the QEMU command
+         * line used -no-shutdown, then we can safely say that the
+         * domain crashed; otherwise, we don't really know. */
+        if (qemuDomainIsUsingNoShutdown(priv))
+            state = VIR_DOMAIN_SHUTOFF_CRASHED;
+        else
+            state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
+
         /* If BeginJob failed, we jumped here without a job, let's hope another
          * thread didn't have a chance to start playing with the domain yet
          * (it's all we can do anyway).
