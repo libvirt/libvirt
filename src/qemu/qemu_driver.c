@@ -4717,6 +4717,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
                      int status)
 {
     virDomainDiskDefPtr disk;
+    qemuDomainDiskPrivatePtr diskPriv;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         return;
@@ -4726,8 +4727,17 @@ processBlockJobEvent(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if ((disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL)))
-        qemuBlockJobEventProcess(driver, vm, disk, QEMU_ASYNC_JOB_NONE, type, status);
+    if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL))) {
+        VIR_DEBUG("disk %s not found", diskAlias);
+        goto endjob;
+    }
+
+    diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+    diskPriv->blockJobType = type;
+    diskPriv->blockJobStatus = status;
+
+    qemuBlockJobUpdate(vm, QEMU_ASYNC_JOB_NONE, disk, NULL);
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
