@@ -129,6 +129,39 @@ MASQUERADE all  --  *      *       192.168.122.0/24    !192.168.122.0/24</pre>
       </li>
     </ul>
 
+    <h3><a id="fw-firewalld-and-virtual-network-driver">firewalld and the virtual network driver</a>
+    </h3>
+    <p>
+      If <a href="https://firewalld.org">firewalld</a> is active on
+      the host, libvirt will attempt to place the bridge interface of
+      a libvirt virtual network into the firewalld zone named
+      "libvirt" (thus making all guest->host traffic on that network
+      subject to the rules of the "libvirt" zone). This is done
+      because, if firewalld is using its nftables backend (available
+      since firewalld 0.6.0) the default firewalld zone (which would
+      be used if libvirt didn't explicitly set the zone) prevents
+      forwarding traffic from guests through the bridge, as well as
+      preventing DHCP, DNS, and most other traffic from guests to
+      host. The zone named "libvirt" is installed into the firewalld
+      configuration by libvirt (not by firewalld), and allows
+      forwarded traffic through the bridge as well as DHCP, DNS, TFTP,
+      and SSH traffic to the host - depending on firewalld's backend
+      this will be implemented via either iptables or nftables
+      rules. libvirt's own rules outlined above will *always* be
+      iptables rules regardless of which backend is in use by
+      firewalld.
+    </p>
+    <p>
+      NB: Prior to libvirt 5.1.0, the firewalld "libvirt" zone did not
+      exist, and prior to firewalld 0.7.0 a feature crucial to making
+      the "libvirt" zone operate properly (rich rule priority
+      settings) was not implemented in firewalld. In cases where one
+      or the other of the two packages is missing the necessary
+      functionality, it's still possible to have functional guest
+      networking by setting the firewalld backend to "iptables" (in
+      firewalld prior to 0.6.0, this was the only backend available).
+    </p>
+
     <h3><a id="fw-network-filter-driver">The network filter driver</a>
     </h3>
     <p>This driver provides a fully configurable network filtering capability
