@@ -86,7 +86,7 @@ static void
 qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virDomainDiskDefPtr disk,
-                         qemuDomainAsyncJob asyncJob,
+                         int asyncJob,
                          int type,
                          int status)
 {
@@ -210,7 +210,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
  */
 int
 qemuBlockJobUpdateDisk(virDomainObjPtr vm,
-                       qemuDomainAsyncJob asyncJob,
+                       int asyncJob,
                        virDomainDiskDefPtr disk,
                        char **error)
 {
@@ -270,7 +270,7 @@ qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk)
  */
 void
 qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
-                        qemuDomainAsyncJob asyncJob,
+                        int asyncJob,
                         virDomainDiskDefPtr disk)
 {
     VIR_DEBUG("disk=%s", disk->dst);
