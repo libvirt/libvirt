@@ -198,7 +198,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
 
 
 /**
- * qemuBlockJobUpdate:
+ * qemuBlockJobUpdateDisk:
  * @vm: domain
  * @disk: domain disk
  * @error: error (output parameter)
@@ -209,10 +209,10 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
  * Returns the block job event processed or -1 if there was no pending event.
  */
 int
-qemuBlockJobUpdate(virDomainObjPtr vm,
-                   qemuDomainAsyncJob asyncJob,
-                   virDomainDiskDefPtr disk,
-                   char **error)
+qemuBlockJobUpdateDisk(virDomainObjPtr vm,
+                       qemuDomainAsyncJob asyncJob,
+                       virDomainDiskDefPtr disk,
+                       char **error)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -237,20 +237,20 @@ qemuBlockJobUpdate(virDomainObjPtr vm,
 
 
 /**
- * qemuBlockJobSyncBegin:
+ * qemuBlockJobSyncBeginDisk:
  * @disk: domain disk
  *
  * Begin a new synchronous block job for @disk. The synchronous
- * block job is ended by a call to qemuBlockJobSyncEnd, or by
+ * block job is ended by a call to qemuBlockJobSyncEndDisk, or by
  * the guest quitting.
  *
  * During a synchronous block job, a block job event for @disk
  * will not be processed asynchronously. Instead, it will be
- * processed only when qemuBlockJobUpdate or qemuBlockJobSyncEnd
+ * processed only when qemuBlockJobUpdateDisk or qemuBlockJobSyncEndDisk
  * is called.
  */
 void
-qemuBlockJobSyncBegin(virDomainDiskDefPtr disk)
+qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
@@ -261,7 +261,7 @@ qemuBlockJobSyncBegin(virDomainDiskDefPtr disk)
 
 
 /**
- * qemuBlockJobSyncEnd:
+ * qemuBlockJobSyncEndDisk:
  * @vm: domain
  * @disk: domain disk
  *
@@ -269,11 +269,11 @@ qemuBlockJobSyncBegin(virDomainDiskDefPtr disk)
  * for the disk is processed.
  */
 void
-qemuBlockJobSyncEnd(virDomainObjPtr vm,
-                    qemuDomainAsyncJob asyncJob,
-                    virDomainDiskDefPtr disk)
+qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
+                        qemuDomainAsyncJob asyncJob,
+                        virDomainDiskDefPtr disk)
 {
     VIR_DEBUG("disk=%s", disk->dst);
-    qemuBlockJobUpdate(vm, asyncJob, disk, NULL);
+    qemuBlockJobUpdateDisk(vm, asyncJob, disk, NULL);
     QEMU_DOMAIN_DISK_PRIVATE(disk)->blockJobSync = false;
 }

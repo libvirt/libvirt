@@ -26,14 +26,14 @@
 # include "qemu_conf.h"
 # include "qemu_domain.h"
 
-int qemuBlockJobUpdate(virDomainObjPtr vm,
-                       qemuDomainAsyncJob asyncJob,
-                       virDomainDiskDefPtr disk,
-                       char **error);
+int qemuBlockJobUpdateDisk(virDomainObjPtr vm,
+                           qemuDomainAsyncJob asyncJob,
+                           virDomainDiskDefPtr disk,
+                           char **error);
 
-void qemuBlockJobSyncBegin(virDomainDiskDefPtr disk);
-void qemuBlockJobSyncEnd(virDomainObjPtr vm,
-                         qemuDomainAsyncJob asyncJob,
-                         virDomainDiskDefPtr disk);
+void qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk);
+void qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
+                             qemuDomainAsyncJob asyncJob,
+                             virDomainDiskDefPtr disk);
 
 #endif /* LIBVIRT_QEMU_BLOCKJOB_H */
