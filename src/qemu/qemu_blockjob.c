@@ -82,7 +82,7 @@ qemuBlockJobEmitEvents(virQEMUDriverPtr driver,
 
 
 /**
- * qemuBlockJobEventProcess:
+ * qemuBlockJobEventProcessLegacy:
  * @driver: qemu driver
  * @vm: domain
  * @disk: domain disk
@@ -94,12 +94,12 @@ qemuBlockJobEmitEvents(virQEMUDriverPtr driver,
  * restart, also update the domain's status XML.
  */
 static void
-qemuBlockJobEventProcess(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
-                         virDomainDiskDefPtr disk,
-                         int asyncJob,
-                         int type,
-                         int status)
+qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainDiskDefPtr disk,
+                               int asyncJob,
+                               int type,
+                               int status)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainDiskDefPtr persistDisk = NULL;
@@ -233,8 +233,8 @@ qemuBlockJobUpdateDisk(virDomainObjPtr vm,
         *error = NULL;
 
     if (status != -1) {
-        qemuBlockJobEventProcess(priv->driver, vm, disk, asyncJob,
-                                 job->type, status);
+        qemuBlockJobEventProcessLegacy(priv->driver, vm, disk, asyncJob,
+                                       job->type, status);
         job->status = -1;
         if (error)
             VIR_STEAL_PTR(*error, job->errmsg);
