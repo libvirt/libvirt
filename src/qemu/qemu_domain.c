@@ -1063,6 +1063,11 @@ qemuDomainDiskPrivateNew(void)
     if (!(priv = virObjectNew(qemuDomainDiskPrivateClass)))
         return NULL;
 
+    if (VIR_ALLOC(priv->blockjob) < 0) {
+        virObjectUnref(priv);
+        priv = NULL;
+    }
+
     return (virObjectPtr) priv;
 }
 
@@ -1071,10 +1076,10 @@ qemuDomainDiskPrivateDispose(void *obj)
 {
     qemuDomainDiskPrivatePtr priv = obj;
 
-    VIR_FREE(priv->blockJobError);
     virStorageSourceFree(priv->migrSource);
     VIR_FREE(priv->qomName);
     VIR_FREE(priv->nodeCopyOnRead);
+    qemuBlockJobDataFree(priv->blockjob);
 }
 
 static virClassPtr qemuDomainStorageSourcePrivateClass;
@@ -9248,7 +9253,8 @@ qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk)
         return true;
     }
 
-    if (diskPriv->blockjob) {
+    if (diskPriv->blockjob &&
+        diskPriv->blockjob->started) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk '%s' already in active block job"),
                        disk->dst);
@@ -9277,7 +9283,7 @@ qemuDomainHasBlockjob(virDomainObjPtr vm,
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-        if (!copy_only && diskPriv->blockjob)
+        if (!copy_only && diskPriv->blockjob && diskPriv->blockjob->started)
             return true;
 
         if (disk->mirror && disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)

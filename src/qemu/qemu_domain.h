@@ -30,6 +30,7 @@
 # include "snapshot_conf.h"
 # include "qemu_monitor.h"
 # include "qemu_agent.h"
+# include "qemu_blockjob.h"
 # include "qemu_conf.h"
 # include "qemu_capabilities.h"
 # include "qemu_migration_params.h"
@@ -389,13 +390,7 @@ struct _qemuDomainDiskPrivate {
     /* ideally we want a smarter way to interlock block jobs on single qemu disk
      * in the future, but for now we just disallow any concurrent job on a
      * single disk */
-    bool blockjob;
-
-    /* for some synchronous block jobs, we need to notify the owner */
-    int blockJobType;   /* type of the block job from the event */
-    int blockJobStatus; /* status of the finished block job */
-    char *blockJobError; /* block job completed event error */
-    bool blockJobSync; /* the block job needs synchronized termination */
+    qemuBlockJobDataPtr blockjob;
 
     bool migrating; /* the disk is being migrated */
     virStorageSourcePtr migrSource; /* disk source object used for NBD migration */

@@ -4717,7 +4717,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
                      int status)
 {
     virDomainDiskDefPtr disk;
-    qemuDomainDiskPrivatePtr diskPriv;
+    qemuBlockJobDataPtr job;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         return;
@@ -4732,10 +4732,10 @@ processBlockJobEvent(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
 
-    diskPriv->blockJobType = type;
-    diskPriv->blockJobStatus = status;
+    job->type = type;
+    job->status = status;
 
     qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk, NULL);
 
@@ -17342,7 +17342,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     if (ret < 0)
         goto endjob;
 
-    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = true;
+    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob->started = true;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -17449,7 +17449,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     if (!async) {
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk, NULL);
-        while (diskPriv->blockjob) {
+        while (diskPriv->blockjob->started) {
             if (virDomainObjWait(vm) < 0) {
                 ret = -1;
                 goto endjob;
@@ -17873,7 +17873,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     disk->mirror = mirror;
     mirror = NULL;
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
-    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = true;
+    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob->started = true;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -18273,7 +18273,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     }
 
     if (ret == 0) {
-        QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = true;
+        QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob->started = true;
         mirror = NULL;
     } else {
         disk->mirror = NULL;

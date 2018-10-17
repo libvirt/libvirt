@@ -42,6 +42,17 @@
 VIR_LOG_INIT("qemu.qemu_blockjob");
 
 
+void
+qemuBlockJobDataFree(qemuBlockJobDataPtr job)
+{
+    if (!job)
+        return;
+
+    VIR_FREE(job->errmsg);
+    VIR_FREE(job);
+}
+
+
 /**
  * qemuBlockJobEmitEvents:
  *
@@ -161,7 +172,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         virStorageSourceBackingStoreClear(disk->src);
         ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk, true));
         ignore_value(qemuBlockNodeNamesDetect(driver, vm, asyncJob));
-        diskPriv->blockjob = false;
+        diskPriv->blockjob->started = false;
         break;
 
     case VIR_DOMAIN_BLOCK_JOB_READY:
@@ -177,7 +188,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         }
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-        diskPriv->blockjob = false;
+        diskPriv->blockjob->started = false;
         break;
 
     case VIR_DOMAIN_BLOCK_JOB_LAST:
@@ -214,22 +225,21 @@ qemuBlockJobUpdateDisk(virDomainObjPtr vm,
                        virDomainDiskDefPtr disk,
                        char **error)
 {
-    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int status = diskPriv->blockJobStatus;
+    int status = job->status;
 
     if (error)
         *error = NULL;
 
     if (status != -1) {
         qemuBlockJobEventProcess(priv->driver, vm, disk, asyncJob,
-                                 diskPriv->blockJobType,
-                                 diskPriv->blockJobStatus);
-        diskPriv->blockJobStatus = -1;
+                                 job->type, status);
+        job->status = -1;
         if (error)
-            VIR_STEAL_PTR(*error, diskPriv->blockJobError);
+            VIR_STEAL_PTR(*error, job->errmsg);
         else
-            VIR_FREE(diskPriv->blockJobError);
+            VIR_FREE(job->errmsg);
     }
 
     return status;
@@ -252,11 +262,11 @@ qemuBlockJobUpdateDisk(virDomainObjPtr vm,
 void
 qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk)
 {
-    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
 
     VIR_DEBUG("disk=%s", disk->dst);
-    diskPriv->blockJobSync = true;
-    diskPriv->blockJobStatus = -1;
+    job->synchronous = true;
+    job->status = -1;
 }
 
 
@@ -275,5 +285,5 @@ qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
 {
     VIR_DEBUG("disk=%s", disk->dst);
     qemuBlockJobUpdateDisk(vm, asyncJob, disk, NULL);
-    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockJobSync = false;
+    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob->synchronous = false;
 }

@@ -25,6 +25,21 @@
 # include "internal.h"
 # include "qemu_conf.h"
 
+
+typedef struct _qemuBlockJobData qemuBlockJobData;
+typedef qemuBlockJobData *qemuBlockJobDataPtr;
+
+struct _qemuBlockJobData {
+    bool started;
+    int type;
+    int status;
+    char *errmsg;
+    bool synchronous; /* API call is waiting for this job */
+};
+
+void
+qemuBlockJobDataFree(qemuBlockJobDataPtr job);
+
 int qemuBlockJobUpdateDisk(virDomainObjPtr vm,
                            int asyncJob,
                            virDomainDiskDefPtr disk,

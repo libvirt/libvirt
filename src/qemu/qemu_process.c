@@ -927,7 +927,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverPtr driver = opaque;
     struct qemuProcessEvent *processEvent = NULL;
     virDomainDiskDefPtr disk;
-    qemuDomainDiskPrivatePtr diskPriv;
+    qemuBlockJobDataPtr job;
     char *data = NULL;
 
     virObjectLock(vm);
@@ -937,14 +937,15 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL)))
         goto error;
-    diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-    if (diskPriv->blockJobSync) {
+    job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
+
+    if (job->synchronous) {
         /* We have a SYNC API waiting for this event, dispatch it back */
-        diskPriv->blockJobType = type;
-        diskPriv->blockJobStatus = status;
-        VIR_FREE(diskPriv->blockJobError);
-        ignore_value(VIR_STRDUP_QUIET(diskPriv->blockJobError, error));
+        job->type = type;
+        job->status = status;
+        VIR_FREE(job->errmsg);
+        ignore_value(VIR_STRDUP_QUIET(job->errmsg, error));
         virDomainObjBroadcast(vm);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
