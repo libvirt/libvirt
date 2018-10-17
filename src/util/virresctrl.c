@@ -259,7 +259,7 @@ virResctrlInfoMonFree(virResctrlInfoMonPtr mon)
  * all of them.  While doing that we store the bitmask in a sparse array of
  * virBitmaps named `masks` indexed the same way as `sizes`.  The upper bounds
  * of the sparse arrays are stored in nmasks or nsizes, respectively.
- + *
+ *
  * =====Memory Bandwidth allocation technology (MBA)=====
  *
  * The memory bandwidth allocation support in virResctrlAlloc works in the
