@@ -158,9 +158,9 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT) {
             connectStr = "pcie-root-port";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT) {
-            connectStr = "pci-switch-upstream-port";
+            connectStr = "pcie-switch-upstream-port";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT) {
-            connectStr = "pci-switch-downstream-port";
+            connectStr = "pcie-switch-downstream-port";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE) {
             connectStr = "dmi-to-pci-bridge";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE) {
