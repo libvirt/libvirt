@@ -936,7 +936,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
               diskAlias, vm, vm->def->name, type, status);
 
     if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL)))
-        goto error;
+        goto cleanup;
 
     job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
 
@@ -950,11 +950,11 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
         if (VIR_ALLOC(processEvent) < 0)
-            goto error;
+            goto cleanup;
 
         processEvent->eventType = QEMU_PROCESS_EVENT_BLOCK_JOB;
         if (VIR_STRDUP(data, diskAlias) < 0)
-            goto error;
+            goto cleanup;
         processEvent->data = data;
         processEvent->vm = virObjectRef(vm);
         processEvent->action = type;
@@ -962,16 +962,16 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
         if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
             ignore_value(virObjectUnref(vm));
-            goto error;
+            goto cleanup;
         }
+
+        processEvent = NULL;
     }
 
  cleanup:
+    qemuProcessEventFree(processEvent);
     virObjectUnlock(vm);
     return 0;
- error:
-    qemuProcessEventFree(processEvent);
-    goto cleanup;
 }
 
 
