@@ -74,7 +74,6 @@ struct _qemuBlockJobData {
     int newstate; /* virConnectDomainEventBlockJobStatus - new state to be processed */
 };
 
-qemuBlockJobDataPtr qemuBlockJobDataNew(void);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskNew(virDomainDiskDefPtr disk,

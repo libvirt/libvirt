@@ -1063,11 +1063,6 @@ qemuDomainDiskPrivateNew(void)
     if (!(priv = virObjectNew(qemuDomainDiskPrivateClass)))
         return NULL;
 
-    if (!(priv->blockjob = qemuBlockJobDataNew())) {
-        virObjectUnref(priv);
-        priv = NULL;
-    }
-
     return (virObjectPtr) priv;
 }
 
