@@ -81,6 +81,70 @@ qemuBlockJobEmitEvents(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        virDomainDiskDefPtr disk,
+                                        int asyncJob)
+{
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    virDomainDiskDefPtr persistDisk = NULL;
+
+    if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
+        if (vm->newDef) {
+            virStorageSourcePtr copy = NULL;
+
+            if ((persistDisk = virDomainDiskByName(vm->newDef,
+                                                   disk->dst, false))) {
+                copy = virStorageSourceCopy(disk->mirror, false);
+                if (!copy ||
+                    virStorageSourceInitChainElement(copy,
+                                                     persistDisk->src,
+                                                     true) < 0) {
+                    VIR_WARN("Unable to update persistent definition "
+                             "on vm %s after block job",
+                             vm->def->name);
+                    virStorageSourceFree(copy);
+                    copy = NULL;
+                    persistDisk = NULL;
+                }
+            }
+            if (copy) {
+                virStorageSourceFree(persistDisk->src);
+                persistDisk->src = copy;
+            }
+        }
+
+        /* XXX We want to revoke security labels as well as audit that
+         * revocation, before dropping the original source.  But it gets
+         * tricky if both source and mirror share common backing files (we
+         * want to only revoke the non-shared portion of the chain); so for
+         * now, we leak the access to the original.  */
+        virDomainLockImageDetach(driver->lockManager, vm, disk->src);
+        virStorageSourceFree(disk->src);
+        disk->src = disk->mirror;
+    } else {
+        if (disk->mirror) {
+            virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
+            virStorageSourceFree(disk->mirror);
+        }
+    }
+
+    /* Recompute the cached backing chain to match our
+     * updates.  Better would be storing the chain ourselves
+     * rather than reprobing, but we haven't quite completed
+     * that conversion to use our XML tracking. */
+    disk->mirror = NULL;
+    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+    disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+    disk->src->id = 0;
+    virStorageSourceBackingStoreClear(disk->src);
+    ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk, true));
+    ignore_value(qemuBlockNodeNamesDetect(driver, vm, asyncJob));
+    diskPriv->blockjob->started = false;
+}
+
+
 /**
  * qemuBlockJobEventProcessLegacy:
  * @driver: qemu driver
@@ -102,7 +166,6 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
                                int status)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virDomainDiskDefPtr persistDisk = NULL;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
     VIR_DEBUG("disk=%s, mirrorState=%s, type=%d, status=%d",
@@ -121,58 +184,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
      * to match.  */
     switch ((virConnectDomainEventBlockJobStatus) status) {
     case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
-        if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
-            if (vm->newDef) {
-                virStorageSourcePtr copy = NULL;
-
-                if ((persistDisk = virDomainDiskByName(vm->newDef,
-                                                       disk->dst, false))) {
-                    copy = virStorageSourceCopy(disk->mirror, false);
-                    if (!copy ||
-                        virStorageSourceInitChainElement(copy,
-                                                         persistDisk->src,
-                                                         true) < 0) {
-                        VIR_WARN("Unable to update persistent definition "
-                                 "on vm %s after block job",
-                                 vm->def->name);
-                        virStorageSourceFree(copy);
-                        copy = NULL;
-                        persistDisk = NULL;
-                    }
-                }
-                if (copy) {
-                    virStorageSourceFree(persistDisk->src);
-                    persistDisk->src = copy;
-                }
-            }
-
-            /* XXX We want to revoke security labels as well as audit that
-             * revocation, before dropping the original source.  But it gets
-             * tricky if both source and mirror share common backing files (we
-             * want to only revoke the non-shared portion of the chain); so for
-             * now, we leak the access to the original.  */
-            virDomainLockImageDetach(driver->lockManager, vm, disk->src);
-            virStorageSourceFree(disk->src);
-            disk->src = disk->mirror;
-        } else {
-            if (disk->mirror) {
-                virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
-                virStorageSourceFree(disk->mirror);
-            }
-        }
-
-        /* Recompute the cached backing chain to match our
-         * updates.  Better would be storing the chain ourselves
-         * rather than reprobing, but we haven't quite completed
-         * that conversion to use our XML tracking. */
-        disk->mirror = NULL;
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-        disk->src->id = 0;
-        virStorageSourceBackingStoreClear(disk->src);
-        ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk, true));
-        ignore_value(qemuBlockNodeNamesDetect(driver, vm, asyncJob));
-        diskPriv->blockjob->started = false;
+        qemuBlockJobEventProcessLegacyCompleted(driver, vm, disk, asyncJob);
         break;
 
     case VIR_DOMAIN_BLOCK_JOB_READY:
