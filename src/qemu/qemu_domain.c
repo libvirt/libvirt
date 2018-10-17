@@ -10605,15 +10605,18 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
     qemuDomainVcpuPrivatePtr vcpupriv;
     qemuMonitorCPUInfoPtr info = NULL;
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
-    size_t i;
+    size_t i, j;
     bool hotplug;
     bool fast;
+    bool validTIDs = true;
     int rc;
     int ret = -1;
 
     hotplug = qemuDomainSupportsNewVcpuHotplug(vm);
     fast = virQEMUCapsGet(QEMU_DOMAIN_PRIVATE(vm)->qemuCaps,
                           QEMU_CAPS_QUERY_CPUS_FAST);
+
+    VIR_DEBUG("Maxvcpus %zu hotplug %d fast query %d", maxvcpus, hotplug, fast);
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
@@ -10627,39 +10630,57 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
     if (rc < 0)
         goto cleanup;
 
+    /*
+     * The query-cpus[-fast] commands return information
+     * about the vCPUs, including the OS level PID that
+     * is executing the vCPU.
+     *
+     * For KVM there is always a 1-1 mapping between
+     * vCPUs and host OS PIDs.
+     *
+     * For TCG things are a little more complicated.
+     *
+     *  - In some cases the vCPUs will all have the same
+     *    PID as the main emulator thread.
+     *  - In some cases the first vCPU will have a distinct
+     *    PID, but other vCPUs will share the emulator thread
+     *
+     * For MTTCG, things work the same as KVM, with each
+     * vCPU getting its own PID.
+     *
+     * We use the Host OS PIDs for doing vCPU pinning
+     * and reporting. The TCG data reporting will result
+     * in bad behaviour such as pinning the wrong PID.
+     * We must thus detect and discard bogus PID info
+     * from TCG, while still honouring the modern MTTCG
+     * impl which we can support.
+     */
+    for (i = 0; i < maxvcpus && validTIDs; i++) {
+        if (info[i].tid == vm->pid) {
+            VIR_DEBUG("vCPU[%zu] PID %llu duplicates process",
+                      i, (unsigned long long)info[i].tid);
+            validTIDs = false;
+        }
+
+        for (j = 0; j < i; j++) {
+            if (info[i].tid == info[j].tid) {
+                VIR_DEBUG("vCPU[%zu] PID %llu duplicates vCPU[%zu]",
+                          i, (unsigned long long)info[i].tid, j);
+                validTIDs = false;
+            }
+        }
+
+        if (validTIDs)
+            VIR_DEBUG("vCPU[%zu] PID %llu is valid",
+                      i, (unsigned long long)info[i].tid);
+    }
+
+    VIR_DEBUG("Extracting vCPU information validTIDs=%d", validTIDs);
     for (i = 0; i < maxvcpus; i++) {
         vcpu = virDomainDefGetVcpu(vm->def, i);
         vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
 
-        /*
-         * Current QEMU *can* report info about host threads mapped
-         * to vCPUs, but it is not in a manner we can correctly
-         * deal with. The TCG CPU emulation does have a separate vCPU
-         * thread, but it runs every vCPU in that same thread. So it
-         * is impossible to setup different affinity per thread.
-         *
-         * What's more the 'query-cpus[-fast]' command returns bizarre
-         * data for the threads. It gives the TCG thread for the
-         * vCPU 0, but for vCPUs 1-> N, it actually replies with
-         * the main process thread ID.
-         *
-         * The result is that when we try to set affinity for
-         * vCPU 1, it will actually change the affinity of the
-         * emulator thread :-( When you try to set affinity for
-         * vCPUs 2, 3.... it will fail if the affinity was
-         * different from vCPU 1.
-         *
-         * We *could* allow vcpu pinning with TCG, if we made the
-         * restriction that all vCPUs had the same mask. This would
-         * at least let us separate emulator from vCPUs threads, as
-         * we do for KVM. It would need some changes to our cgroups
-         * CPU layout though, and error reporting for the config
-         * restrictions.
-         *
-         * Just disable CPU pinning with TCG until someone wants
-         * to try to do this hard work.
-         */
-        if (vm->def->virtType != VIR_DOMAIN_VIRT_QEMU)
+        if (validTIDs)
             vcpupriv->tid = info[i].tid;
 
         vcpupriv->socket_id = info[i].socket_id;
