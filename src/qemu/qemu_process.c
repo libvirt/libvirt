@@ -7899,6 +7899,9 @@ qemuProcessReconnect(void *opaque)
 
     qemuDomainVcpuPersistOrder(obj->def);
 
+    if (qemuProcessDetectIOThreadPIDs(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
+        goto error;
+
     if (qemuSecurityReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
         goto error;
 
