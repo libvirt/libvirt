@@ -28,11 +28,14 @@
 #endif
 
 #include "virmock.h"
+#include "virstring.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static FILE *(*real_setmntent)(const char *filename, const char *type);
 static int (*real_statfs)(const char *path, struct statfs *buf);
+static char *(*real_canonicalize_file_name)(const char *path);
 
 
 static void
@@ -43,6 +46,7 @@ init_syms(void)
 
     VIR_MOCK_REAL_INIT(setmntent);
     VIR_MOCK_REAL_INIT(statfs);
+    VIR_MOCK_REAL_INIT(canonicalize_file_name);
 }
 
 
@@ -94,6 +98,7 @@ statfs_mock(const char *mtab,
     FILE *f;
     struct mntent mb;
     char mntbuf[1024];
+    char *canonPath = NULL;
     int ret = -1;
 
     if (!(f = real_setmntent(mtab, "r"))) {
@@ -101,10 +106,16 @@ statfs_mock(const char *mtab,
         return -1;
     }
 
+    /* We don't need to do this in callers because real statfs(2)
+     * does that for us. However, in mocked implementation we
+     * need to do this. */
+    if (!(canonPath = canonicalize_file_name(path)))
+        return -1;
+
     while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
         int ftype;
 
-        if (STRNEQ(mb.mnt_dir, path))
+        if (STRNEQ(mb.mnt_dir, canonPath))
             continue;
 
         if (STREQ(mb.mnt_type, "nfs") ||
@@ -136,6 +147,7 @@ statfs_mock(const char *mtab,
     }
 
     endmntent(f);
+    VIR_FREE(canonPath);
     return ret;
 }
 
@@ -151,4 +163,23 @@ statfs(const char *path, struct statfs *buf)
         return statfs_mock(mtab, path, buf);
 
     return real_statfs(path, buf);
+}
+
+
+char *
+canonicalize_file_name(const char *path)
+{
+    if (getenv("LIBVIRT_MTAB")) {
+        const char *p;
+        char *ret;
+
+        if ((p = STRSKIP(path, "/some/symlink")))
+            ignore_value(virAsprintfQuiet(&ret, "/gluster%s", p));
+        else
+            ignore_value(VIR_STRDUP_QUIET(ret, path));
+
+        return ret;
+    }
+
+    return real_canonicalize_file_name(path);
 }

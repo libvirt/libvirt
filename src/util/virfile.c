@@ -3473,8 +3473,18 @@ virFileIsSharedFixFUSE(const char *path,
     char mntbuf[1024];
     char *mntDir = NULL;
     char *mntType = NULL;
+    char *canonPath = NULL;
     size_t maxMatching = 0;
     int ret = -1;
+
+    if (!(canonPath = virFileCanonicalizePath(path))) {
+        virReportSystemError(errno,
+                             _("unable to canonicalize %s"),
+                             path);
+        return -1;
+    }
+
+    VIR_DEBUG("Path canonicalization: %s->%s", path, canonPath);
 
     if (!(f = setmntent(PROC_MOUNTS, "r"))) {
         virReportSystemError(errno,
@@ -3487,7 +3497,7 @@ virFileIsSharedFixFUSE(const char *path,
         const char *p;
         size_t len = strlen(mb.mnt_dir);
 
-        if (!(p = STRSKIP(path, mb.mnt_dir)))
+        if (!(p = STRSKIP(canonPath, mb.mnt_dir)))
             continue;
 
         if (*(p - 1) != '/' && *p != '/' && *p != '\0')
@@ -3505,12 +3515,13 @@ virFileIsSharedFixFUSE(const char *path,
 
     if (STREQ_NULLABLE(mntType, "fuse.glusterfs")) {
         VIR_DEBUG("Found gluster FUSE mountpoint=%s for path=%s. "
-                  "Fixing shared FS type", mntDir, path);
+                  "Fixing shared FS type", mntDir, canonPath);
         *f_type = GFS2_MAGIC;
     }
 
     ret = 0;
  cleanup:
+    VIR_FREE(canonPath);
     VIR_FREE(mntType);
     VIR_FREE(mntDir);
     endmntent(f);

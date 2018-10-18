@@ -1229,7 +1229,7 @@ exclude_file_name_regexp--sc_prohibit_select = \
 	^cfg\.mk$$
 
 exclude_file_name_regexp--sc_prohibit_canonicalize_file_name = \
-  ^cfg\.mk$$
+  ^(cfg\.mk|tests/virfilemock\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
   ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c)$$
