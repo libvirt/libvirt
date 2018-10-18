@@ -977,6 +977,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
 
         VIR_FREE(diskAlias);
         diskPriv->migrating = true;
+        diskPriv->blockjob->started = true;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
