@@ -20,7 +20,8 @@ Element and attribute overview
 
 The root element required for all virtual machines is named ``domain``. It has
 two attributes, the ``type`` specifies the hypervisor used for running the
-domain. The allowed values are driver specific, but include "xen", "kvm", "qemu"
+domain. The allowed values are driver specific, but include "xen", "kvm",
+"hvf" (:since:`since 8.0.0 and QEMU 2.12`), "qemu"
 and "lxc". The second attribute is ``id`` which is a unique integer identifier
 for the running guest machine. Inactive machines have no id value.
 

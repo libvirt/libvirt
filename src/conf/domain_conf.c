@@ -125,6 +125,7 @@ VIR_ENUM_IMPL(virDomainVirt,
               "parallels",
               "bhyve",
               "vz",
+              "hvf",
 );
 
 VIR_ENUM_IMPL(virDomainOS,

@@ -230,6 +230,7 @@
         <value>phyp</value> <!-- NOT USED ANYMORE -->
         <value>vz</value>
         <value>bhyve</value>
+        <value>hvf</value>
       </choice>
     </attribute>
   </define>

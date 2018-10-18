@@ -7216,6 +7216,10 @@ qemuBuildAccelCommandLine(virCommand *cmd,
         }
         break;
 
+    case VIR_DOMAIN_VIRT_HVF:
+        virBufferAddLit(&buf, "hvf");
+        break;
+
     case VIR_DOMAIN_VIRT_KQEMU:
     case VIR_DOMAIN_VIRT_XEN:
     case VIR_DOMAIN_VIRT_LXC:
