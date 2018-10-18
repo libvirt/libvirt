@@ -4616,8 +4616,9 @@
           <dd>For mediated devices (<span class="since">Since 3.2.0</span>)
           the <code>model</code> attribute specifies the device API which
           determines how the host's vfio driver will expose the device to the
-          guest. Currently, <code>model='vfio-pci'</code> and
+          guest. Currently, <code>model='vfio-pci'</code>,
           <code>model='vfio-ccw'</code> (<span class="since">Since 4.4.0</span>)
+          and <code>model='vfio-ap'</code> (<span class="since">Since 4.9.0</span>)
           is supported. <a href="drvnodedev.html#MDEV">MDEV</a> section
           provides more information about mediated devices as well as how to
           create mediated devices on the host.

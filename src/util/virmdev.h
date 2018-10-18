@@ -27,6 +27,7 @@
 typedef enum {
     VIR_MDEV_MODEL_TYPE_VFIO_PCI = 0,
     VIR_MDEV_MODEL_TYPE_VFIO_CCW = 1,
+    VIR_MDEV_MODEL_TYPE_VFIO_AP  = 2,
 
     VIR_MDEV_MODEL_TYPE_LAST
 } virMediatedDeviceModelType;

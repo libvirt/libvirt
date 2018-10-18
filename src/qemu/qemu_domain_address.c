@@ -294,6 +294,10 @@ qemuDomainPrimeVfioDeviceAddresses(virDomainDefPtr def,
             subsys->u.mdev.model == VIR_MDEV_MODEL_TYPE_VFIO_CCW &&
             def->hostdevs[i]->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             def->hostdevs[i]->info->type = type;
+
+        if (virHostdevIsMdevDevice(def->hostdevs[i]) &&
+            subsys->u.mdev.model == VIR_MDEV_MODEL_TYPE_VFIO_AP)
+            def->hostdevs[i]->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     }
 }
 

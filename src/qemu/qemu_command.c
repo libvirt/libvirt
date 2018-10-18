@@ -5476,6 +5476,14 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                     return -1;
                 }
                 break;
+            case VIR_MDEV_MODEL_TYPE_VFIO_AP:
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_AP)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("VFIO AP device assignment is not "
+                                     "supported by this version of QEMU"));
+                    return -1;
+                }
+                break;
             case VIR_MDEV_MODEL_TYPE_LAST:
             default:
                 virReportEnumRangeError(virMediatedDeviceModelType,
