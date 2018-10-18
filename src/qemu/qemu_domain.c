@@ -8249,7 +8249,7 @@ int
 qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainSnapshotObjPtr snap,
-                          bool update_current,
+                          bool update_parent,
                           bool metadata_only)
 {
     char *snapFile = NULL;
@@ -8278,7 +8278,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (snap == vm->current_snapshot) {
-        if (update_current && snap->def->parent) {
+        if (update_parent && snap->def->parent) {
             parentsnap = virDomainSnapshotFindByName(vm->snapshots,
                                                      snap->def->parent);
             if (!parentsnap) {
@@ -8301,6 +8301,8 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
 
     if (unlink(snapFile) < 0)
         VIR_WARN("Failed to unlink %s", snapFile);
+    if (update_parent)
+        virDomainSnapshotDropParent(snap);
     virDomainSnapshotObjListRemove(vm->snapshots, snap);
 
     ret = 0;
