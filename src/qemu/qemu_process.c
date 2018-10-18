@@ -7818,6 +7818,70 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessRefreshLegacyBlockjob(void *payload,
+                                 const void *name,
+                                 void *opaque)
+{
+    const char *jobname = name;
+    virDomainObjPtr vm = opaque;
+    qemuMonitorBlockJobInfoPtr info = payload;
+    virDomainDiskDefPtr disk;
+    qemuDomainDiskPrivatePtr diskPriv;
+    qemuBlockJobDataPtr job;
+
+    if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, jobname, jobname))) {
+        VIR_DEBUG("could not find disk for block job '%s'", jobname);
+        return 0;
+    }
+
+    diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    job = diskPriv->blockjob;
+
+    if (disk->mirror) {
+        if (info->ready == 1 ||
+            (info->ready == -1 && info->end == info->cur))
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
+    }
+
+    job->started = true;
+    job->status = -1;
+
+    return 0;
+}
+
+
+static int
+qemuProcessRefreshLegacyBlockjobs(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm)
+{
+    virHashTablePtr blockJobs = NULL;
+    int ret = -1;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    blockJobs = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm));
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockJobs)
+        goto cleanup;
+
+    if (virHashForEach(blockJobs, qemuProcessRefreshLegacyBlockjob, vm) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virHashFree(blockJobs);
+    return ret;
+}
+
+
+static int
+qemuProcessRefreshBlockjobs(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm)
+{
+    return qemuProcessRefreshLegacyBlockjobs(driver, vm);
+}
+
+
 struct qemuProcessReconnectData {
     virQEMUDriverPtr driver;
     virDomainObjPtr obj;
@@ -8019,6 +8083,9 @@ qemuProcessReconnect(void *opaque)
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
         qemuBlockNodeNamesDetect(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
+        goto error;
+
+    if (qemuProcessRefreshBlockjobs(driver, obj) < 0)
         goto error;
 
     if (qemuRefreshVirtioChannelState(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
