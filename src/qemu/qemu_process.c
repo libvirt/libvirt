@@ -5267,7 +5267,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
                 bool migration,
                 unsigned int flags)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int stopFlags;
@@ -5347,7 +5346,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
 
  cleanup:
     virCPUDefFree(origCPU);
-    virObjectUnref(cfg);
     virObjectUnref(caps);
     return ret;
 
