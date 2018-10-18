@@ -35,6 +35,15 @@
 <libvirt>
   <release version="v4.9.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Add vfio AP support
+        </summary>
+        <description>
+          The QEMU driver now has support to passthrough adjunct processors
+          into QEMU guests on S390.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
