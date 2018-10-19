@@ -55,6 +55,19 @@
           guests.
         </description>
       </change>
+      <change>
+        <summary>
+          Support changing IOThread polling parameters for a live guest
+        </summary>
+        <description>
+          Introduced virDomainSetIOThreadParams which allows dynamically
+          setting the IOThread polling parameters used by QEMU to manage
+          the thread polling interval and the algorithm for growth or
+          shrink of the polling time. The values only affect a running
+          guest with IOThreads. The guest's IOThread polling values can
+          be viewed via the domain statistics.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
