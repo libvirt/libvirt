@@ -360,7 +360,8 @@ qemuBlockJobUpdateDisk(virDomainObjPtr vm,
 
 
 /**
- * qemuBlockJobSyncBeginDisk:
+ * qemuBlockJobSyncBegin:
+ * @job: block job data
  * @disk: domain disk
  *
  * Begin a new synchronous block job for @disk. The synchronous
@@ -373,11 +374,14 @@ qemuBlockJobUpdateDisk(virDomainObjPtr vm,
  * is called.
  */
 void
-qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk)
+qemuBlockJobSyncBegin(qemuBlockJobDataPtr job)
 {
-    qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
+    const char *diskdst = NULL;
 
-    VIR_DEBUG("disk=%s", disk->dst);
+    if (job->disk)
+        diskdst = job->disk->dst;
+
+    VIR_DEBUG("disk=%s", NULLSTR(diskdst));
     job->synchronous = true;
     job->newstate = -1;
 }

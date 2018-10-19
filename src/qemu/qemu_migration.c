@@ -911,7 +911,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
     if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_COPY)))
         goto cleanup;
 
-    qemuBlockJobSyncBeginDisk(disk);
+    qemuBlockJobSyncBegin(job);
 
     if (flags & VIR_MIGRATE_TLS) {
         rc = qemuMigrationSrcNBDStorageCopyBlockdev(driver, vm,
@@ -5392,16 +5392,19 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuBlockJobDataPtr job;
 
-        if (!diskPriv->blockjob->started)
+        if (!(job = qemuBlockJobDiskGetJob(disk)) ||
+            !job->started)
             diskPriv->migrating = false;
 
         if (diskPriv->migrating) {
-            qemuBlockJobSyncBeginDisk(disk);
+            qemuBlockJobSyncBegin(job);
             storage = true;
         }
-    }
 
+        virObjectUnref(job);
+    }
 
     if (storage &&
         qemuMigrationSrcNBDCopyCancel(driver, vm, false,

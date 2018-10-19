@@ -80,7 +80,7 @@ int qemuBlockJobUpdateDisk(virDomainObjPtr vm,
                            virDomainDiskDefPtr disk,
                            char **error);
 
-void qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk);
+void qemuBlockJobSyncBegin(qemuBlockJobDataPtr job);
 void qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
                              int asyncJob,
                              virDomainDiskDefPtr disk);
