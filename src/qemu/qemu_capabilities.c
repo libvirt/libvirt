@@ -1085,6 +1085,10 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
         virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
                                       NULL, NULL, 0, NULL);
     }
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_HVF)) {
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_HVF,
+                                      NULL, NULL, 0, NULL);
+    }
 
     if ((ARCH_IS_X86(guestarch) || guestarch == VIR_ARCH_AARCH64))
         virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_ACPI,
