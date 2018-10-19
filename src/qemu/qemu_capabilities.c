@@ -657,6 +657,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 420 */
               "device.json+hotplug", /* QEMU_CAPS_DEVICE_JSON */
+              "hvf", /* QEMU_CAPS_HVF */
     );
 
 
