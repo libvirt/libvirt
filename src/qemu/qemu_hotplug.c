@@ -5964,7 +5964,7 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
     if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %s"),
-                       dev->data.disk->dst);
+                       detach->ifname);
         goto cleanup;
     }
 
