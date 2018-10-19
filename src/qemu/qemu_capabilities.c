@@ -839,6 +839,13 @@ virQEMUCapsFindTarget(virArch hostarch,
 }
 
 
+static bool
+virQEMUCapsTypeIsAccelerated(virDomainVirtType type)
+{
+    return type != VIR_DOMAIN_VIRT_QEMU;
+}
+
+
 static const char *
 virQEMUCapsAccelStr(virDomainVirtType type)
 {
@@ -2339,7 +2346,7 @@ virQEMUCapsIsCPUModeSupported(virQEMUCaps *qemuCaps,
 
     switch (mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
-        return type == VIR_DOMAIN_VIRT_KVM &&
+        return virQEMUCapsTypeIsAccelerated(type) &&
                virQEMUCapsGuestIsNative(hostarch, qemuCaps->arch);
 
     case VIR_CPU_MODE_HOST_MODEL:
@@ -3001,7 +3008,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
                            qemuMonitor *mon,
                            virDomainVirtType virtType)
 {
-    const char *model = virtType == VIR_DOMAIN_VIRT_KVM ? "host" : "max";
+    const char *model = virQEMUCapsTypeIsAccelerated(virtType) ? "host" : "max";
     g_autoptr(qemuMonitorCPUModelInfo) modelInfo = NULL;
     g_autoptr(qemuMonitorCPUModelInfo) nonMigratable = NULL;
     g_autoptr(GHashTable) hash = NULL;
@@ -3721,7 +3728,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
                   virArchToString(qemuCaps->arch),
                   virDomainVirtTypeToString(type));
         goto error;
-    } else if (type == VIR_DOMAIN_VIRT_KVM &&
+    } else if (virQEMUCapsTypeIsAccelerated(type) &&
                virCPUGetHostIsSupported(qemuCaps->arch)) {
         if (!(fullCPU = virQEMUCapsProbeHostCPU(qemuCaps->arch, NULL)))
             goto error;
@@ -5846,10 +5853,10 @@ virQEMUCapsCacheLookupDefault(virFileCache *cache,
     if (virttype == VIR_DOMAIN_VIRT_NONE)
         virttype = capsType;
 
-    if (virttype == VIR_DOMAIN_VIRT_KVM && capsType == VIR_DOMAIN_VIRT_QEMU) {
+    if (virQEMUCapsTypeIsAccelerated(virttype) && capsType == VIR_DOMAIN_VIRT_QEMU) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("KVM is not supported by '%s' on this host"),
-                       binary);
+                       _("the accel '%s' is not supported by '%s' on this host"),
+                       virQEMUCapsAccelStr(virttype), binary);
         return NULL;
     }
 
