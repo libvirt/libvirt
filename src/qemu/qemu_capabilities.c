@@ -56,6 +56,10 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <sys/utsname.h>
+#ifdef __APPLE__
+# include <sys/types.h>
+# include <sys/sysctl.h>
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -3192,6 +3196,42 @@ virQEMUCapsProbeQMPKVMState(virQEMUCaps *qemuCaps,
     return 0;
 }
 
+#ifdef __APPLE__
+static int
+virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps)
+{
+    int hv_support = 0;
+    size_t len = sizeof(hv_support);
+    virArch hostArch = virArchFromHost();
+
+    /* Guest and host arch need to match for hardware acceleration
+     * to be usable */
+    if (qemuCaps->arch != hostArch)
+        return 0;
+
+    /* We don't have a nice way to probe whether the QEMU binary
+     * contains HVF support, but we know that versions older than
+     * QEMU 2.12 didn't have the feature at all */
+    if (qemuCaps->version < 2012000)
+        return 0;
+
+    /* We need the OS to report Hypervisor.framework availability */
+    if (sysctlbyname("kern.hv_support", &hv_support, &len, NULL, 0) < 0)
+        return 0;
+
+    if (hv_support)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_HVF);
+
+    return 0;
+}
+#else
+static int
+virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+{
+  return 0;
+}
+#endif
+
 struct virQEMUCapsCommandLineProps {
     const char *option;
     const char *param;
@@ -5331,6 +5371,9 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
 
     /* Some capabilities may differ depending on KVM state */
     if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
+        return -1;
+
+    if (virQEMUCapsProbeHVF(qemuCaps) < 0)
         return -1;
 
     type = virQEMUCapsGetVirtType(qemuCaps);
