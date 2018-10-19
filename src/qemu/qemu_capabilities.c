@@ -846,6 +846,13 @@ virQEMUCapsTypeIsAccelerated(virDomainVirtType type)
 }
 
 
+static bool
+virQEMUCapsHaveAccel(virQEMUCaps *qemuCaps)
+{
+    return virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM);
+}
+
+
 static const char *
 virQEMUCapsAccelStr(virDomainVirtType type)
 {
@@ -5019,7 +5026,7 @@ virQEMUCapsIsValid(void *data,
         return false;
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
+    if (virQEMUCapsHaveAccel(qemuCaps)) {
         if (STRNEQ_NULLABLE(priv->hostCPUSignature, qemuCaps->hostCPUSignature)) {
             VIR_DEBUG("Outdated capabilities for '%s': host CPU changed "
                       "('%s' vs '%s')",
@@ -5053,7 +5060,9 @@ virQEMUCapsIsValid(void *data,
                       qemuCaps->binary);
             return false;
         }
+    }
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
         kvmSupportsNesting = virQEMUCapsKVMSupportsNesting();
         if (kvmSupportsNesting != qemuCaps->kvmSupportsNesting) {
             VIR_DEBUG("Outdated capabilities for '%s': kvm kernel nested "
@@ -5518,7 +5527,7 @@ virQEMUCapsInitQMP(virQEMUCaps *qemuCaps,
      * for TCG capabilities by asking the same binary again and turning KVM
      * off.
      */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
+    if (virQEMUCapsHaveAccel(qemuCaps) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_TCG) &&
         virQEMUCapsInitQMPSingle(qemuCaps, libDir, runUid, runGid, true) < 0)
         return -1;
@@ -5582,13 +5591,15 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
         virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
+    if (virQEMUCapsHaveAccel(qemuCaps)) {
         qemuCaps->hostCPUSignature = g_strdup(hostCPUSignature);
         qemuCaps->microcodeVersion = microcodeVersion;
         qemuCaps->cpuData = virCPUDataNewCopy(cpuData);
 
         qemuCaps->kernelVersion = g_strdup(kernelVersion);
+    }
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
         qemuCaps->kvmSupportsNesting = virQEMUCapsKVMSupportsNesting();
 
         qemuCaps->kvmSupportsSecureGuest = virQEMUCapsKVMSupportsSecureGuest();
