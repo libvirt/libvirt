@@ -27,7 +27,7 @@
 # include "virutil.h"
 
 
-char *virNumaGetAutoPlacementAdvice(unsigned short vcups,
+char *virNumaGetAutoPlacementAdvice(unsigned short vcpus,
                                     unsigned long long balloon);
 
 int virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
