@@ -3264,6 +3264,10 @@ struct _virQEMUCapsCachePriv {
     virArch hostArch;
     unsigned int microcodeVersion;
     char *kernelVersion;
+
+    /* cache whether /dev/kvm is usable as runUid:runGuid */
+    virTristateBool kvmUsable;
+    time_t kvmCtime;
 };
 typedef struct _virQEMUCapsCachePriv virQEMUCapsCachePriv;
 typedef virQEMUCapsCachePriv *virQEMUCapsCachePrivPtr;
@@ -3891,6 +3895,54 @@ virQEMUCapsKVMSupportsNesting(void)
 }
 
 
+/* Determine whether '/dev/kvm' is usable as QEMU user:QEMU group. */
+static bool
+virQEMUCapsKVMUsable(virQEMUCapsCachePrivPtr priv)
+{
+    struct stat sb;
+    static const char *kvm_device = "/dev/kvm";
+    virTristateBool value;
+    virTristateBool cached_value = priv->kvmUsable;
+    time_t kvm_ctime;
+    time_t cached_kvm_ctime = priv->kvmCtime;
+
+    if (stat(kvm_device, &sb) < 0) {
+        if (errno != ENOENT) {
+            virReportSystemError(errno,
+                                 _("Failed to stat %s"), kvm_device);
+        }
+        return false;
+    }
+    kvm_ctime = sb.st_ctime;
+
+    if (kvm_ctime != cached_kvm_ctime) {
+        VIR_DEBUG("%s has changed (%lld vs %lld)", kvm_device,
+                  (long long)kvm_ctime, (long long)cached_kvm_ctime);
+        cached_value = VIR_TRISTATE_BOOL_ABSENT;
+    }
+
+    if (cached_value != VIR_TRISTATE_BOOL_ABSENT)
+        return cached_value == VIR_TRISTATE_BOOL_YES;
+
+    if (virFileAccessibleAs(kvm_device, R_OK | W_OK,
+                            priv->runUid, priv->runGid) == 0) {
+        value = VIR_TRISTATE_BOOL_YES;
+    } else {
+        value = VIR_TRISTATE_BOOL_NO;
+    }
+
+    /* There is a race window between 'stat' and
+     * 'virFileAccessibleAs'. However, since we're only interested in
+     * detecting changes *after* the virFileAccessibleAs check, we can
+     * neglect this here.
+     */
+    priv->kvmCtime = kvm_ctime;
+    priv->kvmUsable = value;
+
+    return value == VIR_TRISTATE_BOOL_YES;
+}
+
+
 static bool
 virQEMUCapsIsValid(void *data,
                    void *privData)
@@ -3940,8 +3992,7 @@ virQEMUCapsIsValid(void *data,
         return true;
     }
 
-    kvmUsable = virFileAccessibleAs("/dev/kvm", R_OK | W_OK,
-                                    priv->runUid, priv->runGid) == 0;
+    kvmUsable = virQEMUCapsKVMUsable(priv);
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
         kvmUsable) {
@@ -4763,6 +4814,7 @@ virQEMUCapsCacheNew(const char *libDir,
     priv->runUid = runUid;
     priv->runGid = runGid;
     priv->microcodeVersion = microcodeVersion;
+    priv->kvmUsable = VIR_TRISTATE_BOOL_ABSENT;
 
     if (uname(&uts) == 0 &&
         virAsprintf(&priv->kernelVersion, "%s %s", uts.release, uts.version) < 0)
