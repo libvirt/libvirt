@@ -471,8 +471,10 @@ libxlDomainShutdownThread(void *opaque)
     virObjectEventPtr dom_event = NULL;
     libxl_shutdown_reason xl_reason = ev->u.domain_shutdown.shutdown_reason;
     libxlDriverConfigPtr cfg;
+    libxl_domain_config d_config;
 
     cfg = libxlDriverConfigGet(driver);
+    libxl_domain_config_init(&d_config);
 
     vm = virDomainObjListFindByID(driver->domains, ev->domid);
     if (!vm) {
@@ -563,6 +565,34 @@ libxlDomainShutdownThread(void *opaque)
          * Similar to the xl implementation, ignore SUSPEND.  Any actions needed
          * after calling libxl_domain_suspend() are handled by it's callers.
          */
+#ifdef LIBXL_HAVE_SOFT_RESET
+    } else if (xl_reason == LIBXL_SHUTDOWN_REASON_SOFT_RESET) {
+        libxlDomainObjPrivatePtr priv = vm->privateData;
+
+        if (libxl_retrieve_domain_configuration(cfg->ctx, vm->def->id,
+                                                &d_config) != 0) {
+            VIR_ERROR(_("Failed to retrieve config for VM '%s'. "
+                        "Unable to perform soft reset. Destroying VM"),
+                      vm->def->name);
+            libxlDomainShutdownHandleDestroy(driver, vm);
+            goto endjob;
+        }
+
+        if (priv->deathW) {
+            libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
+            priv->deathW = NULL;
+        }
+
+        if (libxl_domain_soft_reset(cfg->ctx, &d_config, vm->def->id,
+                                    NULL, NULL) != 0) {
+            VIR_ERROR(_("Failed to soft reset VM '%s'. Destroying VM"),
+                      vm->def->name);
+            libxlDomainShutdownHandleDestroy(driver, vm);
+            goto endjob;
+        }
+        libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW);
+        libxl_domain_unpause(cfg->ctx, vm->def->id);
+#endif
     } else {
         VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
     }
