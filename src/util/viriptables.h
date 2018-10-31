@@ -24,6 +24,8 @@
 # include "virsocketaddr.h"
 # include "virfirewall.h"
 
+int              iptablesSetupPrivateChains      (void);
+
 void             iptablesAddTcpInput             (virFirewallPtr fw,
                                                   virFirewallLayer layer,
                                                   const char *iface,

@@ -36,6 +36,9 @@ VIR_LOG_INIT("network.bridge_driver_linux");
 
 int networkPreReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
 {
+    int ret = iptablesSetupPrivateChains();
+    if (ret < 0)
+        return -1;
     return 0;
 }
 

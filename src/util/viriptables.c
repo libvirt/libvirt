@@ -37,6 +37,7 @@
 #include "virthread.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virhash.h"
 
 VIR_LOG_INIT("util.iptables");
 
@@ -46,6 +47,136 @@ enum {
     ADD = 0,
     REMOVE
 };
+
+
+typedef struct {
+    const char *parent;
+    const char *child;
+} iptablesGlobalChain;
+
+typedef struct {
+    virFirewallLayer layer;
+    const char *table;
+    iptablesGlobalChain *chains;
+    size_t nchains;
+    bool *changed;
+} iptablesGlobalChainData;
+
+
+static int
+iptablesPrivateChainCreate(virFirewallPtr fw,
+                           virFirewallLayer layer,
+                           const char *const *lines,
+                           void *opaque)
+{
+    iptablesGlobalChainData *data = opaque;
+    virHashTablePtr chains = NULL;
+    virHashTablePtr links = NULL;
+    const char *const *tmp;
+    int ret = -1;
+    size_t i;
+
+    if (!(chains = virHashCreate(50, NULL)))
+        goto cleanup;
+    if (!(links = virHashCreate(50, NULL)))
+        goto cleanup;
+
+    tmp = lines;
+    while (tmp && *tmp) {
+        if (STRPREFIX(*tmp, "-N ")) { /* eg "-N LIBVIRT_INP" */
+            if (virHashUpdateEntry(chains, *tmp + 3, (void *)0x1) < 0)
+                goto cleanup;
+        } else if (STRPREFIX(*tmp, "-A ")) { /* eg "-A INPUT -j LIBVIRT_INP" */
+            char *sep = strchr(*tmp + 3, ' ');
+            if (sep) {
+                *sep = '\0';
+                if (STRPREFIX(sep + 1, "-j ")) {
+                    if (virHashUpdateEntry(links, sep + 4,
+                                           (char *)*tmp + 3) < 0)
+                        goto cleanup;
+                }
+            }
+        }
+        tmp++;
+    }
+
+    for (i = 0; i < data->nchains; i++) {
+        const char *from;
+        if (!virHashLookup(chains, data->chains[i].child)) {
+            virFirewallAddRule(fw, layer,
+                               "--table", data->table,
+                               "--new-chain", data->chains[i].child, NULL);
+            *data->changed = true;
+        }
+
+        from = virHashLookup(links, data->chains[i].child);
+        if (!from || STRNEQ(from, data->chains[i].parent))
+            virFirewallAddRule(fw, layer,
+                               "--table", data->table,
+                               "--insert", data->chains[i].parent,
+                               "--jump", data->chains[i].child, NULL);
+    }
+
+    ret = 0;
+ cleanup:
+    virHashFree(chains);
+    virHashFree(links);
+    return ret;
+}
+
+
+int
+iptablesSetupPrivateChains(void)
+{
+    virFirewallPtr fw = NULL;
+    int ret = -1;
+    iptablesGlobalChain filter_chains[] = {
+        {"INPUT", "LIBVIRT_INP"},
+        {"OUTPUT", "LIBVIRT_OUT"},
+        {"FORWARD", "LIBVIRT_FWO"},
+        {"FORWARD", "LIBVIRT_FWI"},
+        {"FORWARD", "LIBVIRT_FWX"},
+    };
+    iptablesGlobalChain natmangle_chains[] = {
+        {"POSTROUTING",  "LIBVIRT_PRT"},
+    };
+    bool changed = false;
+    iptablesGlobalChainData data[] = {
+        { VIR_FIREWALL_LAYER_IPV4, "filter",
+          filter_chains, ARRAY_CARDINALITY(filter_chains), &changed },
+        { VIR_FIREWALL_LAYER_IPV4, "nat",
+          natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
+        { VIR_FIREWALL_LAYER_IPV4, "mangle",
+          natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
+        { VIR_FIREWALL_LAYER_IPV6, "filter",
+          filter_chains, ARRAY_CARDINALITY(filter_chains), &changed },
+        { VIR_FIREWALL_LAYER_IPV6, "nat",
+          natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
+        { VIR_FIREWALL_LAYER_IPV6, "mangle",
+          natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
+    };
+    size_t i;
+
+    fw = virFirewallNew();
+
+    virFirewallStartTransaction(fw, 0);
+
+    for (i = 0; i < ARRAY_CARDINALITY(data); i++)
+        virFirewallAddRuleFull(fw, data[i].layer,
+                               false, iptablesPrivateChainCreate,
+                               &(data[i]), "--table", data[i].table,
+                               "--list-rules", NULL);
+
+    if (virFirewallApply(fw) < 0)
+        goto cleanup;
+
+    ret = changed ? 1 : 0;
+
+ cleanup:
+
+    virFirewallFree(fw);
+    return ret;
+}
 
 
 static void
