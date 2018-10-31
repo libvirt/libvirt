@@ -538,8 +538,6 @@ libxlDomainShutdownThread(void *opaque)
     }
 
  destroy:
-    virObjectEventStateQueue(driver->domainEventState, dom_event);
-    dom_event = NULL;
     libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm);
     if (!vm->persistent)
@@ -548,8 +546,6 @@ libxlDomainShutdownThread(void *opaque)
     goto endjob;
 
  restart:
-    virObjectEventStateQueue(driver->domainEventState, dom_event);
-    dom_event = NULL;
     libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm);
     if (libxlDomainStartNew(driver, vm, false) < 0) {
