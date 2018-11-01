@@ -154,7 +154,6 @@ mymain(void)
     DO_TEST("nat-no-dhcp");
     DO_TEST("nat-ipv6");
     DO_TEST("route-default");
-    DO_TEST("route-default");
 
  cleanup:
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
