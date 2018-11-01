@@ -44,6 +44,20 @@ static const char *abs_top_srcdir;
 #  error "test case not ported to this platform"
 # endif
 
+static void
+testCommandDryRun(const char *const*args ATTRIBUTE_UNUSED,
+                  const char *const*env ATTRIBUTE_UNUSED,
+                  const char *input ATTRIBUTE_UNUSED,
+                  char **output,
+                  char **error,
+                  int *status,
+                  void *opaque ATTRIBUTE_UNUSED)
+{
+    *status = 0;
+    ignore_value(VIR_STRDUP_QUIET(*output, ""));
+    ignore_value(VIR_STRDUP_QUIET(*error, ""));
+}
+
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline)
 {
@@ -53,7 +67,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virNetworkDefPtr def = NULL;
     int ret = -1;
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(&buf, testCommandDryRun, NULL);
 
     if (!(def = virNetworkDefParseFile(xml)))
         goto cleanup;
