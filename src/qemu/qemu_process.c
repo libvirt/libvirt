@@ -7757,6 +7757,7 @@ qemuProcessReconnect(void *opaque)
     bool jobStarted = false;
     virCapsPtr caps = NULL;
     bool retry = true;
+    bool tryMonReconn = false;
 
     VIR_FREE(data);
 
@@ -7796,6 +7797,8 @@ qemuProcessReconnect(void *opaque)
 
     VIR_DEBUG("Reconnect monitor to def=%p name='%s' retry=%d",
               obj, obj->def->name, retry);
+
+    tryMonReconn = true;
 
     /* XXX check PID liveliness & EXE path */
     if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, retry, NULL) < 0)
@@ -7993,7 +7996,8 @@ qemuProcessReconnect(void *opaque)
          * If we cannot get to the monitor when the QEMU command
          * line used -no-shutdown, then we can safely say that the
          * domain crashed; otherwise, we don't really know. */
-        if (qemuDomainIsUsingNoShutdown(priv))
+        if (!priv->mon && tryMonReconn &&
+            qemuDomainIsUsingNoShutdown(priv))
             state = VIR_DOMAIN_SHUTOFF_CRASHED;
         else
             state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
