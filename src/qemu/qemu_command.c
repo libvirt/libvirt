@@ -8224,34 +8224,24 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
 }
 
 static int
-qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
+qemuInterfaceVhostuserConnect(virQEMUDriverPtr driver,
                               virLogManagerPtr logManager,
                               virSecurityManagerPtr secManager,
                               virCommandPtr cmd,
                               virDomainDefPtr def,
                               virDomainNetDefPtr net,
                               virQEMUCapsPtr qemuCaps,
-                              unsigned int bootindex)
+                              char **chardev)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *chardev = NULL;
-    char *netdev = NULL;
-    unsigned int queues = net->driver.virtio.queues;
-    char *nic = NULL;
     int ret = -1;
-
-    if (!qemuDomainSupportsNicdev(def, net)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Nicdev support unavailable"));
-        goto cleanup;
-    }
 
     switch ((virDomainChrType)net->data.vhostuser->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (!(chardev = qemuBuildChrChardevStr(logManager, secManager,
-                                               cmd, cfg, def,
-                                               net->data.vhostuser,
-                                               net->info.alias, qemuCaps, 0)))
+        if (!(*chardev = qemuBuildChrChardevStr(logManager, secManager,
+                                                cmd, cfg, def,
+                                                net->data.vhostuser,
+                                                net->info.alias, qemuCaps, 0)))
             goto cleanup;
         break;
 
@@ -8274,42 +8264,9 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (queues > 1 &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("multi-queue is not supported for vhost-user "
-                         "with this QEMU binary"));
-        goto cleanup;
-    }
-
-    if (!(netdev = qemuBuildHostNetStr(net, driver,
-                                       NULL, 0, NULL, 0)))
-        goto cleanup;
-
-    if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
-                                               &net->ifname) < 0)
-        goto cleanup;
-
-    virCommandAddArg(cmd, "-chardev");
-    virCommandAddArg(cmd, chardev);
-
-    virCommandAddArg(cmd, "-netdev");
-    virCommandAddArg(cmd, netdev);
-
-    if (!(nic = qemuBuildNicDevStr(def, net, bootindex,
-                                   queues, qemuCaps))) {
-        goto cleanup;
-    }
-
-    virCommandAddArgList(cmd, "-device", nic, NULL);
-
     ret = 0;
  cleanup:
     virObjectUnref(cfg);
-    VIR_FREE(netdev);
-    VIR_FREE(chardev);
-    VIR_FREE(nic);
-
     return ret;
 }
 
@@ -8330,6 +8287,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     int ret = -1;
     char *nic = NULL;
     char *host = NULL;
+    char *chardev = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
     int *vhostfd = NULL;
@@ -8338,6 +8296,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     char **vhostfdName = NULL;
     virDomainNetType actualType = virDomainNetGetActualType(net);
     virNetDevBandwidthPtr actualBandwidth;
+    bool requireNicdev = false;
     size_t i;
 
 
@@ -8448,9 +8407,24 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        ret = qemuBuildVhostuserCommandLine(driver, logManager, secManager, cmd, def,
-                                            net, qemuCaps, bootindex);
-        goto cleanup;
+        requireNicdev = true;
+
+        if (net->driver.virtio.queues > 1 &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("multi-queue is not supported for vhost-user "
+                             "with this QEMU binary"));
+            goto cleanup;
+        }
+
+        if (qemuInterfaceVhostuserConnect(driver, logManager, secManager,
+                                          cmd, def, net, qemuCaps, &chardev) < 0)
+            goto cleanup;
+
+        if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
+                                                   &net->ifname) < 0)
+            goto cleanup;
+
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -8565,6 +8539,9 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
+    if (chardev)
+        virCommandAddArgList(cmd, "-chardev", chardev, NULL);
+
     if (!(host = qemuBuildHostNetStr(net, driver,
                                      tapfdName, tapfdSize,
                                      vhostfdName, vhostfdSize)))
@@ -8579,13 +8556,17 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
      */
     if (qemuDomainSupportsNicdev(def, net)) {
         if (!(nic = qemuBuildNicDevStr(def, net, bootindex,
-                                       vhostfdSize, qemuCaps)))
+                                       net->driver.virtio.queues, qemuCaps)))
             goto cleanup;
         virCommandAddArgList(cmd, "-device", nic, NULL);
-    } else {
+    } else if (!requireNicdev) {
         if (!(nic = qemuBuildLegacyNicStr(net)))
             goto cleanup;
         virCommandAddArgList(cmd, "-net", nic, NULL);
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Nicdev support unavailable"));
+        goto cleanup;
     }
 
     ret = 0;
@@ -8612,6 +8593,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     VIR_FREE(tapfdName);
     VIR_FREE(vhostfd);
     VIR_FREE(tapfd);
+    VIR_FREE(chardev);
     VIR_FREE(host);
     VIR_FREE(nic);
     return ret;
