@@ -37,6 +37,16 @@
     <section title="New features">
       <change>
         <summary>
+          util: Add cgroup v2 support
+        </summary>
+        <description>
+          cgroup v2 support has been implemented in libvirt, with both
+          "unified" (v2 only) and "hybrid" (v2 + v1) setups being usable;
+          existing "legacy" (v1 only) setups will keep working.
+        </description>
+      </change>
+      <change>
+        <summary>
           qemu: Add vfio AP support
         </summary>
         <description>
@@ -46,8 +56,47 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          rpc: Make 'genprotocol' output reproducible
+        </summary>
+        <description>
+          This is another step towards making libvirt builds fully
+          reproducible.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          security: Fix permissions for UNIX sockets
+        </summary>
+        <description>
+          Since 4.5.0, libvirt is using FD passing to hand sockets over to
+          QEMU, which in theory removes the need for them to be accessible by
+          the user under which the QEMU process is running; however, other
+          processes such as vdsm need to access the sockets as well, which
+          means adjusting permissions is still necessary.
+        </description>
+      </change>
+      <change>
+        <summary>
+          cpu_map: Add Icelake model definitions
+        </summary>
+        <description>
+          These CPU models will be available in the upcoming 3.1.0 QEMU
+          release.
+        </description>
+      </change>
+      <change>
+        <summary>
+          util: Properly parse URIs with missing trailing slash
+        </summary>
+        <description>
+          Some storage URIs were not parsed correctly, in which case libvirt
+          ended up emitting XML that it would then refuse to parse back.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v4.8.0" date="2018-10-01">
