@@ -8328,7 +8328,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
                               int **nicindexes)
 {
     int ret = -1;
-    char *nic = NULL, *host = NULL;
+    char *nic = NULL;
+    char *host = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
     int *vhostfd = NULL;
@@ -8595,24 +8596,24 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         virSetError(saved_err);
         virFreeError(saved_err);
     }
-    for (i = 0; tapfd && i < tapfdSize && tapfd[i] >= 0; i++) {
-        if (ret < 0)
-            VIR_FORCE_CLOSE(tapfd[i]);
-        if (tapfdName)
-            VIR_FREE(tapfdName[i]);
-    }
     for (i = 0; vhostfd && i < vhostfdSize && vhostfd[i] >= 0; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(vhostfd[i]);
         if (vhostfdName)
             VIR_FREE(vhostfdName[i]);
     }
-    VIR_FREE(tapfd);
-    VIR_FREE(vhostfd);
-    VIR_FREE(nic);
-    VIR_FREE(host);
-    VIR_FREE(tapfdName);
     VIR_FREE(vhostfdName);
+    for (i = 0; tapfd && i < tapfdSize && tapfd[i] >= 0; i++) {
+        if (ret < 0)
+            VIR_FORCE_CLOSE(tapfd[i]);
+        if (tapfdName)
+            VIR_FREE(tapfdName[i]);
+    }
+    VIR_FREE(tapfdName);
+    VIR_FREE(vhostfd);
+    VIR_FREE(tapfd);
+    VIR_FREE(host);
+    VIR_FREE(nic);
     return ret;
 }
 
