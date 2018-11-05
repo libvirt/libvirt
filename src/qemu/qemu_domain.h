@@ -372,6 +372,9 @@ struct _qemuDomainObjPrivate {
 
     /* true if libvirt remembers the original owner for files */
     bool rememberOwner;
+
+    /* true if global -mem-prealloc appears on cmd line */
+    bool memPrealloc;
 };
 
 # define QEMU_DOMAIN_PRIVATE(vm) \

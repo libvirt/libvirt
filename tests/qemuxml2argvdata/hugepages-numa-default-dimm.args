@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -mem-prealloc \
 -mem-path /dev/hugepages2M/libvirt/qemu/-1-fedora \
 -numa node,nodeid=0,cpus=0-1,mem=1024 \
--object memory-backend-file,id=memdimm0,prealloc=yes,\
+-object memory-backend-file,id=memdimm0,\
 mem-path=/dev/hugepages1G/libvirt/qemu/-1-fedora,size=1073741824,\
 host-nodes=1-3,policy=bind \
 -device pc-dimm,node=0,memdev=memdimm0,id=dimm0,slot=0 \

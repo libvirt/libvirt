@@ -1944,6 +1944,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
     VIR_FREE(priv->libDir);
     VIR_FREE(priv->channelTargetDir);
 
+    priv->memPrealloc = false;
+
     /* remove automatic pinning data */
     virBitmapFree(priv->autoNodeset);
     priv->autoNodeset = NULL;
@@ -2489,6 +2491,9 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         virBufferAsprintf(buf, "<nodename index='%llu'/>\n", priv->nodenameindex);
 
+    if (priv->memPrealloc)
+        virBufferAddLit(buf, "<memPrealloc/>\n");
+
     if (qemuDomainObjPrivateXMLFormatBlockjobs(buf, vm) < 0)
         return -1;
 
@@ -2992,6 +2997,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                        _("failed to parse node name index"));
         goto error;
     }
+
+    priv->memPrealloc = virXPathBoolean("boolean(./memPrealloc)", ctxt) == 1;
 
     return 0;
 
