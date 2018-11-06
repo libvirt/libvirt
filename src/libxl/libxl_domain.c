@@ -605,6 +605,7 @@ libxlDomainShutdownThread(void *opaque)
     virObjectEventStateQueue(driver->domainEventState, dom_event);
     libxl_event_free(cfg->ctx, ev);
     VIR_FREE(shutdown_info);
+    libxl_domain_config_dispose(&d_config);
     virObjectUnref(cfg);
 }
 
