@@ -1476,7 +1476,7 @@ virCgroupV1GetMemoryStat(virCgroupPtr group,
 
     line = stat;
 
-    while (line) {
+    while (*line) {
         char *newLine = strchr(line, '\n');
         char *valueStr = strchr(line, ' ');
         unsigned long long value;
@@ -1506,6 +1506,11 @@ virCgroupV1GetMemoryStat(virCgroupPtr group,
             inactiveFileVal = value >> 10;
         else if (STREQ(line, "unevictable"))
             unevictableVal = value >> 10;
+
+        if (newLine)
+            line = newLine + 1;
+        else
+            break;
     }
 
     *cache = cacheVal;
