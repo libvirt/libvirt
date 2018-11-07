@@ -756,7 +756,7 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
 
         if (params[i].value.ul != expected[i]) {
             fprintf(stderr,
-                    "Wrong value from virCgroupGetMemoryUsage at %zu (expected %llu)\n",
+                    "Wrong value from virCgroupGetPercpuStats at %zu (expected %llu)\n",
                     i, params[i].value.ul);
             goto cleanup;
         }
