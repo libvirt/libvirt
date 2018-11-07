@@ -3201,22 +3201,21 @@ qemuBuildMemoryBackendPropsShare(virJSONValuePtr props,
  * @backendProps: [out] constructed object
  * @alias: alias of the device
  * @cfg: qemu driver config object
- * @qemuCaps: qemu capabilities object
+ * @priv: pointer to domain private object
  * @def: domain definition object
  * @mem: memory definition object
- * @autoNodeset: fallback nodeset in case of automatic NUMA placement
  * @force: forcibly use one of the backends
  *
  * Creates a configuration object that represents memory backend of given guest
- * NUMA node (domain @def and @mem). Use @autoNodeset to fine tune the
+ * NUMA node (domain @def and @mem). Use @priv->autoNodeset to fine tune the
  * placement of the memory on the host NUMA nodes.
  *
  * By default, if no memory-backend-* object is necessary to fulfil the guest
  * configuration value of 1 is returned. This behaviour can be suppressed by
  * setting @force to true in which case 0 would be returned.
  *
- * Then, if one of the three memory-backend-* should be used, the @qemuCaps is
- * consulted to check if qemu does support it.
+ * Then, if one of the three memory-backend-* should be used, the @priv->qemuCaps
+ * is consulted to check if qemu does support it.
  *
  * Returns: 0 on success,
  *          1 on success and if there's no need to use memory-backend-*
@@ -3226,10 +3225,9 @@ int
 qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                             const char *alias,
                             virQEMUDriverConfigPtr cfg,
-                            virQEMUCapsPtr qemuCaps,
+                            qemuDomainObjPrivatePtr priv,
                             virDomainDefPtr def,
                             virDomainMemoryDefPtr mem,
-                            virBitmapPtr autoNodeset,
                             bool force)
 {
     const char *backendType = "memory-backend-file";
@@ -3379,7 +3377,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
 
         if (!mem->nvdimmPath &&
             discard == VIR_TRISTATE_BOOL_YES) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD)) {
+            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("this QEMU doesn't support memory discard"));
                 goto cleanup;
@@ -3403,7 +3401,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     if (mem->sourceNodes) {
         nodemask = mem->sourceNodes;
     } else {
-        if (virDomainNumatuneMaybeGetNodeset(def->numa, autoNodeset,
+        if (virDomainNumatuneMaybeGetNodeset(def->numa, priv->autoNodeset,
                                              &nodemask, mem->targetNode) < 0)
             goto cleanup;
     }
@@ -3431,19 +3429,19 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     } else {
         /* otherwise check the required capability */
         if (STREQ(backendType, "memory-backend-file") &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-file object"));
             goto cleanup;
         } else if (STREQ(backendType, "memory-backend-ram") &&
-                   !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+                   !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-ram object"));
             goto cleanup;
         } else if (STREQ(backendType, "memory-backend-memory") &&
-                   !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
+                   !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-memfd object"));
@@ -3486,8 +3484,8 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     mem.targetNode = cell;
     mem.info.alias = alias;
 
-    if ((rc = qemuBuildMemoryBackendProps(&props, alias, cfg, priv->qemuCaps,
-                                          def, &mem, priv->autoNodeset, false)) < 0)
+    if ((rc = qemuBuildMemoryBackendProps(&props, alias, cfg,
+                                          priv, def, &mem, false)) < 0)
         goto cleanup;
 
     if (virQEMUBuildObjectCommandlineFromJSON(buf, props) < 0)
@@ -3523,8 +3521,8 @@ qemuBuildMemoryDimmBackendStr(virBufferPtr buf,
     if (virAsprintf(&alias, "mem%s", mem->info.alias) < 0)
         goto cleanup;
 
-    if (qemuBuildMemoryBackendProps(&props, alias, cfg, priv->qemuCaps,
-                                    def, mem, priv->autoNodeset, true) < 0)
+    if (qemuBuildMemoryBackendProps(&props, alias, cfg,
+                                    priv, def, mem, true) < 0)
         goto cleanup;
 
     if (virQEMUBuildObjectCommandlineFromJSON(buf, props) < 0)
