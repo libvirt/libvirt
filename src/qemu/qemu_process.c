@@ -649,11 +649,6 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
-        if (priv->gotShutdown) {
-            VIR_DEBUG("Ignoring STOP event after SHUTDOWN");
-            goto unlock;
-        }
-
         if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
             if (priv->job.current->status ==
                         QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
@@ -690,7 +685,6 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         }
     }
 
- unlock:
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
