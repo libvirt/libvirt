@@ -867,9 +867,13 @@ static int lxcContainerSetReadOnly(void)
         }
     }
 
-    if (mounts)
-        qsort(mounts, nmounts, sizeof(mounts[0]),
-              virStringSortRevCompare);
+    if (!mounts) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    qsort(mounts, nmounts, sizeof(mounts[0]),
+          virStringSortRevCompare);
 
     for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Bind readonly %s", mounts[i]);
@@ -883,9 +887,7 @@ static int lxcContainerSetReadOnly(void)
 
     ret = 0;
  cleanup:
-    for (i = 0; i < nmounts; i++)
-        VIR_FREE(mounts[i]);
-    VIR_FREE(mounts);
+    virStringListFreeCount(mounts, nmounts);
     endmntent(procmnt);
     return ret;
 
