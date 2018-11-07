@@ -286,7 +286,6 @@ struct _qemuDomainObjPrivate {
     qemuAgentPtr agent;
     bool agentError;
 
-    bool gotShutdown;
     bool beingDestroyed;
     char *pidfile;
 

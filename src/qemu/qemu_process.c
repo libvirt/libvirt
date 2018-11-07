@@ -491,7 +491,6 @@ qemuProcessFakeReboot(void *opaque)
                            "%s", _("resume operation failed"));
         goto endjob;
     }
-    priv->gotShutdown = false;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -578,7 +577,7 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virObjectLock(vm);
 
     priv = vm->privateData;
-    if (priv->gotShutdown) {
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_SHUTDOWN) {
         VIR_DEBUG("Ignoring repeated SHUTDOWN event from domain %s",
                   vm->def->name);
         goto unlock;
@@ -587,7 +586,6 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                   vm->def->name);
         goto unlock;
     }
-    priv->gotShutdown = true;
 
     VIR_DEBUG("Transitioned guest %s to shutdown state",
               vm->def->name);
@@ -5980,7 +5978,6 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     priv->monJSON = true;
     priv->monError = false;
     priv->monStart = 0;
-    priv->gotShutdown = false;
     priv->runningReason = VIR_DOMAIN_RUNNING_UNKNOWN;
 
     VIR_DEBUG("Updating guest CPU definition");
@@ -7393,8 +7390,6 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     priv->monConfig = monConfig;
     monConfig = NULL;
     priv->monJSON = monJSON;
-
-    priv->gotShutdown = false;
 
     /* Attaching to running QEMU so we need to detect whether it was started
      * with -no-reboot. */
