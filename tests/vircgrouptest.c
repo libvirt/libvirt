@@ -802,6 +802,67 @@ static int testCgroupGetMemoryUsage(const void *args ATTRIBUTE_UNUSED)
     return ret;
 }
 
+
+static int
+testCgroupGetMemoryStat(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    int rv;
+    int ret = -1;
+    size_t i;
+
+    const unsigned long long expected_values[] = {
+        1336619008ULL,
+        67100672ULL,
+        145887232ULL,
+        661872640ULL,
+        627400704UL,
+        3690496ULL
+    };
+    const char* names[] = {
+        "cache",
+        "active_anon",
+        "inactive_anon",
+        "active_file",
+        "inactive_file",
+        "unevictable"
+    };
+    unsigned long long values[ARRAY_CARDINALITY(expected_values)];
+
+    if ((rv = virCgroupNewPartition("/virtualmachines", true,
+                                    (1 << VIR_CGROUP_CONTROLLER_MEMORY),
+                                    &cgroup)) < 0) {
+        fprintf(stderr, "Could not create /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupGetMemoryStat(cgroup, &values[0],
+                                     &values[1], &values[2],
+                                     &values[3], &values[4],
+                                     &values[5])) < 0) {
+        fprintf(stderr, "Could not retrieve GetMemoryStat for /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(expected_values); i++) {
+        /* NB: virCgroupGetMemoryStat returns a KiB scaled value */
+        if ((expected_values[i] >> 10) != values[i]) {
+            fprintf(stderr,
+                    "Wrong value (%llu) for %s from virCgroupGetMemoryStat "
+                    "(expected %llu)\n",
+                    values[i], names[i], (expected_values[i] >> 10));
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
+
 static int testCgroupGetBlkioIoServiced(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
@@ -1033,6 +1094,9 @@ mymain(void)
         ret = -1;
 
     if (virTestRun("virCgroupGetMemoryUsage works", testCgroupGetMemoryUsage, NULL) < 0)
+        ret = -1;
+
+    if (virTestRun("virCgroupGetMemoryStat works", testCgroupGetMemoryStat, NULL) < 0)
         ret = -1;
 
     if (virTestRun("virCgroupGetPercpuStats works", testCgroupGetPercpuStats, NULL) < 0)
