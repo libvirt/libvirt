@@ -107,6 +107,7 @@
   <flag name='sdl-gl'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
+  <flag name='zpci'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>267973</microcodeVersion>

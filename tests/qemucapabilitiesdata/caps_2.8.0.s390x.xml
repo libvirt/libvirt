@@ -103,6 +103,7 @@
   <flag name='virtual-css-bridge'/>
   <flag name='sdl-gl'/>
   <flag name='vhost-vsock'/>
+  <flag name='zpci'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>244554</microcodeVersion>

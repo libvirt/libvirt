@@ -120,6 +120,7 @@
   <flag name='vhost-vsock'/>
   <flag name='tpm-emulator'/>
   <flag name='egl-headless'/>
+  <flag name='zpci'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>345099</microcodeVersion>
