@@ -3965,7 +3965,15 @@
         (<span class="since">since 0.9.7, requires QEMU
         0.13</span>). <code>multifunction</code> defaults to 'off',
         but should be set to 'on' for function 0 of a slot that will
-        have multiple functions used.<br/>
+        have multiple functions used.
+        (<span class="since">Since 4.10.0</span>), PCI address extensions
+        depending on the architecture are supported. For example, PCI
+        addresses for S390 guests will have a <code>zpci</code> child
+        element, with two attributes: <code>uid</code> (a hex value
+        between 0x0001 and 0xffff, inclusive), and <code>fid</code> (a
+        hex value between 0x00000000 and 0xffffffff, inclusive) used by
+        PCI devices on S390 for User-defined Identifiers and Function
+        Identifiers.<br/>
         <span class="since">Since 1.3.5</span>, some hypervisor
         drivers may accept an <code>&lt;address type='pci'/&gt;</code>
         element with no other attributes as an explicit request to
