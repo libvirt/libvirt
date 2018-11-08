@@ -472,6 +472,7 @@ sc_prohibit_canonicalize_file_name:
 # Insist on correct types for [pug]id.
 sc_correct_id_types:
 	@prohibit='\<(int|long) *[pug]id\>' \
+	exclude='exempt from syntax-check' \
 	halt='use pid_t for pid, uid_t for uid, gid_t for gid' \
 	  $(_sc_search_regexp)
 
