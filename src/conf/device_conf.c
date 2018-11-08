@@ -28,6 +28,7 @@
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "device_conf.h"
+#include "domain_addr.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_DEVICE
@@ -212,6 +213,21 @@ virDeviceInfoPCIAddressIsPresent(const virDomainDeviceInfo *info)
 {
     return info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
            !virPCIDeviceAddressIsEmpty(&info->addr.pci);
+}
+
+
+bool
+virDeviceInfoPCIAddressExtensionIsWanted(const virDomainDeviceInfo *info)
+{
+    return (info->addr.pci.extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI) &&
+           virZPCIDeviceAddressIsEmpty(&info->addr.pci.zpci);
+}
+
+bool
+virDeviceInfoPCIAddressExtensionIsPresent(const virDomainDeviceInfo *info)
+{
+    return (info->addr.pci.extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI) &&
+           !virZPCIDeviceAddressIsEmpty(&info->addr.pci.zpci);
 }
 
 
