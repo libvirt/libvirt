@@ -2145,3 +2145,56 @@ virHostHasIOMMU(void)
     VIR_DIR_CLOSE(iommuDir);
     return ret;
 }
+
+
+/**
+ * virHostGetDRMRenderNode:
+ *
+ * Picks the first DRM render node available. Missing DRI or missing DRM render
+ * nodes in the system results in an error.
+ *
+ * Returns an absolute path to the first render node available or NULL in case
+ * of an error with the error being reported.
+ * Caller is responsible for freeing the result string.
+ *
+ */
+char *
+virHostGetDRMRenderNode(void)
+{
+    char *ret = NULL;
+    DIR *driDir = NULL;
+    const char *driPath = "/dev/dri";
+    struct dirent *ent = NULL;
+    int dirErr = 0;
+    bool have_rendernode = false;
+
+    if (virDirOpen(&driDir, driPath) < 0)
+        return NULL;
+
+    while ((dirErr = virDirRead(driDir, &ent, driPath)) > 0) {
+        if (ent->d_type != DT_CHR)
+            continue;
+
+        if (STRPREFIX(ent->d_name, "renderD")) {
+            have_rendernode = true;
+            break;
+        }
+    }
+
+    if (dirErr < 0)
+        goto cleanup;
+
+    /* even if /dev/dri exists, there might be no renderDX nodes available */
+    if (!have_rendernode) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No DRM render nodes available"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&ret, "%s/%s", driPath, ent->d_name) < 0)
+        goto cleanup;
+
+ cleanup:
+    VIR_DIR_CLOSE(driDir);
+    return ret;
+}
