@@ -2569,6 +2569,8 @@ virPCIHeaderTypeToString;
 virPCIIsVirtualFunction;
 virPCIStubDriverTypeFromString;
 virPCIStubDriverTypeToString;
+virZPCIDeviceAddressIsEmpty;
+virZPCIDeviceAddressIsValid;
 
 
 # util/virperf.h

@@ -376,6 +376,9 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-scsi-ioeventfd",
             QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST("disk-virtio-s390-zpci",
+            QEMU_CAPS_DEVICE_ZPCI,
+            QEMU_CAPS_CCW);
     DO_TEST("disk-scsi-megasas",
             QEMU_CAPS_SCSI_MEGASAS);
     DO_TEST("disk-scsi-mptsas1068",
@@ -458,6 +461,9 @@ mymain(void)
     DO_TEST("hostdev-usb-address", NONE);
     DO_TEST("hostdev-pci-address", NONE);
     DO_TEST("hostdev-vfio", NONE);
+    DO_TEST("hostdev-vfio-zpci",
+            QEMU_CAPS_DEVICE_ZPCI,
+            QEMU_CAPS_CCW);
     DO_TEST("hostdev-mdev-precreated", NONE);
     DO_TEST("hostdev-mdev-display", QEMU_CAPS_VFIO_PCI_DISPLAY);
     DO_TEST("pci-rom", NONE);

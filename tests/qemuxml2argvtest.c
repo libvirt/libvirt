@@ -1076,6 +1076,10 @@ mymain(void)
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-virtio-scsi-ccw", QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("disk-virtio-s390-zpci",
+            QEMU_CAPS_DEVICE_ZPCI,
+            QEMU_CAPS_CCW,
+            QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-order", QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-virtio-queues",
             QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
@@ -1679,6 +1683,9 @@ mymain(void)
     DO_TEST_PARSE_ERROR("hostdev-mdev-display-missing-graphics",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_VFIO_PCI_DISPLAY);
+    DO_TEST("hostdev-vfio-zpci",
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);

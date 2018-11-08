@@ -1040,6 +1040,9 @@ virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
                                                dev->isolationGroup, false) < 0)
         return -1;
 
+    addr.extFlags = dev->addr.pci.extFlags;
+    addr.zpci = dev->addr.pci.zpci;
+
     if (!addrs->dryRun) {
         dev->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
         dev->addr.pci = addr;

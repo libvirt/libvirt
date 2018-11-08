@@ -5231,6 +5231,7 @@
             <value>pci</value>
           </attribute>
           <ref name="pciaddress"/>
+          <ref name="zpciaddress"/>
         </group>
         <group>
           <attribute name="type">
