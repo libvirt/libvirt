@@ -39,6 +39,17 @@
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          Xen: Handle soft reset shutdown event
+        </summary>
+        <description>
+          The pvops Linux kernel uses soft reset to handle the crash
+          machine operation. The libxl driver now supports the soft
+          reset shutdown event, allowing proper crash handling of
+          pvops-based HVM domains.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v4.9.0" date="2018-11-04">
