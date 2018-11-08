@@ -22,11 +22,11 @@
 
 use strict;
 use warnings;
-
 my $ret = 0;
 my $incomment = 0;
 
-foreach my $file (@ARGV) {
+foreach my $file (@ARGV) 
+{
     # Per-file variables for multiline Curly Bracket (cb_) check
     my $cb_linenum = 0;
     my $cb_code = "";
@@ -40,32 +40,39 @@ foreach my $file (@ARGV) {
         my $tmpdata;
 
         # Kill any quoted , ; = or "
-        $data =~ s/'[";,=]'/'X'/g;
+        $data =~ s/'X'/g;
 
         # Kill any quoted strings
-        $data =~ s,"(?:[^\\\"]|\\.)*","XXX",g;
+        $data =~ s,g;
 
         next if $data =~ /^#/;
 
         # Kill contents of multi-line comments
         # and detect end of multi-line comments
-        if ($incomment) {
-            if ($data =~ m,\*/,) {
+        if ($incomment) 
+        {
+            if ($data =~ m,\*/,) 
+            {
                 $incomment = 0;
                 $data =~ s,^.*\*/,*/,;
-            } else {
+            }
+            else 
+            {
                 $data = "";
             }
         }
 
         # Kill single line comments, and detect
         # start of multi-line comments
-        if ($data =~ m,/\*.*\*/,) {
+        if ($data =~ m,/\*.*\*/,) 
+        {
             $data =~ s,/\*.*\*/,/* */,;
-        } elsif ($data =~ m,/\*,) {
+        } 
+        else if ($data =~ m,/\*,) 
+           {
             $incomment = 1;
-            $data =~ s,/\*.*,/*,;
-        }
+            $data =~ s,/\*.*,/,;
+            }
 
         # We need to match things like
         #
@@ -84,41 +91,48 @@ foreach my $file (@ARGV) {
         # We also don't want to spoil the $data so it can be used
         # later on.
         $tmpdata = $data;
-        while ($tmpdata =~ /(\w+)\s\((?!\*)/) {
+        while ($tmpdata =~ /(\w+)\s\((?!\*)/) 
+        {
             my $kw = $1;
 
             # Allow space after keywords only
-            if ($kw =~ /^(?:if|for|while|switch|return)$/) {
-                $tmpdata =~ s/(?:$kw\s\()/XXX(/;
-            } else {
-                print "Whitespace after non-keyword:\n";
-                print "$file:$.: $line";
+            if ($kw =~ /^(?:if |for |while |switch |return )$/) 
+            {
+                $tmpdata =~ s/(?:$kw\s\()/XXX)/;
+            } 
+            else 
+            {
+                cout<<"Whitespace after non-keyword:\n";
+                cout<<"$file:$.: $line";
                 $ret = 1;
                 last;
             }
         }
 
         # Require whitespace immediately after keywords
-        if ($data =~ /\b(?:if|for|while|switch|return)\(/) {
-            print "No whitespace after keyword:\n";
-            print "$file:$.: $line";
+        if ($data =~ /\b(?:if|for|while|switch|return)\(/)) 
+        {
+            cout<< "No whitespace after keyword:\n";
+            cout<< "$file:$.: $line";
             $ret = 1;
         }
 
         # Forbid whitespace between )( of a function typedef
-        if ($data =~ /\(\*\w+\)\s+\(/) {
-            print "Whitespace between ')' and '(':\n";
-            print "$file:$.: $line";
+        if ($data =~ /\(\*\w+\)\s+\(/) )
+        {
+            cout<< "Whitespace between ')' and '(':\n";
+            cout<< "$file:$.: $line";
             $ret = 1;
         }
 
         # Forbid whitespace following ( or prior to )
         # but allow whitespace before ) on a single line
         # (optionally followed by a semicolon)
-        if (($data =~ /\s\)/ && not $data =~ /^\s+\);?$/) ||
-            $data =~ /\((?!$)\s/) {
-            print "Whitespace after '(' or before ')':\n";
-            print "$file:$.: $line";
+        if ((($data =~ /\s\)/ && =! ($data =~ /^\s+\)?$/) ||
+            $data =~ /\((?!$)\s/))
+        {
+            cout<< "Whitespace after '(' or before ')':\n";
+            cout<< "$file:$.: $line";
             $ret = 1;
         }
 
@@ -132,41 +146,47 @@ foreach my $file (@ARGV) {
         #          errno == EINTR)
         #       ;
         #
-        if ($data =~ /\s[;,]/) {
-            unless ($data =~ /\S; ; / ||
-                    $data =~ /^\s+;/) {
-                print "Whitespace before semicolon or comma:\n";
-                print "$file:$.: $line";
+        if ($data =~ /\s[;,]/)
+        {
+            if ($data =~ /\S; ; / ||
+                    $data =~ /^\s+;/) 
+                    {
+                cout<< "Whitespace before semicolon or comma:\n";
+                cout<< "$file:$.: $line";
                 $ret = 1;
             }
         }
 
         # Require EOL, macro line continuation, or whitespace after ";".
         # Allow "for (;;)" as an exception.
-        if ($data =~ /;[^	 \\\n;)]/) {
-            print "Invalid character after semicolon:\n";
-            print "$file:$.: $line";
+        if ($data =~ /;[^	 \\\n;)]/) 
+        {
+            cout<< "Invalid character after semicolon:\n";
+            cout<< "$file:$.: $line";
             $ret = 1;
         }
 
         # Require EOL, space, or enum/struct end after comma.
-        if ($data =~ /,[^ \\\n)}]/) {
-            print "Invalid character after comma:\n";
-            print "$file:$.: $line";
+        if ($data =~ /,[^ \\\n)}]/) 
+        {
+            cout<< "Invalid character after comma:\n";
+            cout<< "$file:$.: $line";
             $ret = 1;
         }
 
         # Require spaces around assignment '=', compounds and '=='
         if ($data =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=/ ||
-            $data =~ /=[^= \\\n]/) {
-            print "Spacing around '=' or '==':\n";
-            print "$file:$.: $line";
+            $data =~ /=[^= \\\n]/) 
+        {
+            cout<< "Spacing around '=' or '==':\n";
+            cout<< "$file:$.: $line";
             $ret = 1;
         }
 
         # One line conditional statements with one line bodies should
         # not use curly brackets.
-        if ($data =~ /^\s*(if|while|for)\b.*\{$/) {
+        if ($data =~ /^\s*(if|while|for)\b.*\{$/)
+        {
             $cb_linenum = $.;
             $cb_code = $line;
             $cb_scolon = 0;
@@ -175,17 +195,19 @@ foreach my $file (@ARGV) {
         # We need to check for exactly one semicolon inside the body,
         # because empty statements (e.g. with comment only) are
         # allowed
-        if ($cb_linenum == $. - 1 && $data =~ /^[^;]*;[^;]*$/) {
+        if ($cb_linenum == $. - 1 && $data =~ /^[^;]*;[^;]*$/)
+        {
             $cb_code .= $line;
             $cb_scolon = 1;
         }
 
         if ($data =~ /^\s*}\s*$/ &&
             $cb_linenum == $. - 2 &&
-            $cb_scolon) {
+            $cb_scolon) 
+        {
 
-            print "Curly brackets around single-line body:\n";
-            print "$file:$cb_linenum-$.:\n$cb_code$line";
+            cout<< "Curly brackets around single-line body:\n";
+            cout<< "$file:$cb_linenum-$.:\n$cb_code$line";
             $ret = 1;
 
             # There _should_ be no need to reset the values; but to
@@ -199,3 +221,4 @@ foreach my $file (@ARGV) {
 }
 
 exit $ret;
+}
