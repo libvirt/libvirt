@@ -6422,6 +6422,8 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
                           unsigned int flags)
 {
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+
     if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) && info->bootIndex) {
         virBufferAsprintf(buf, "<boot order='%u'", info->bootIndex);
 
@@ -6466,13 +6468,13 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
         return;
 
-    virBufferAsprintf(buf, "<address type='%s'",
+    virBufferAsprintf(&attrBuf, " type='%s'",
                       virDomainDeviceAddressTypeToString(info->type));
 
     switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (!virPCIDeviceAddressIsEmpty(&info->addr.pci)) {
-            virBufferAsprintf(buf, " domain='0x%.4x' bus='0x%.2x' "
+            virBufferAsprintf(&attrBuf, " domain='0x%.4x' bus='0x%.2x' "
                               "slot='0x%.2x' function='0x%.1x'",
                               info->addr.pci.domain,
                               info->addr.pci.bus,
@@ -6480,13 +6482,13 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                               info->addr.pci.function);
         }
         if (info->addr.pci.multi) {
-           virBufferAsprintf(buf, " multifunction='%s'",
-                             virTristateSwitchTypeToString(info->addr.pci.multi));
+            virBufferAsprintf(&attrBuf, " multifunction='%s'",
+                              virTristateSwitchTypeToString(info->addr.pci.multi));
         }
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
-        virBufferAsprintf(buf, " controller='%d' bus='%d' target='%d' unit='%d'",
+        virBufferAsprintf(&attrBuf, " controller='%d' bus='%d' target='%d' unit='%d'",
                           info->addr.drive.controller,
                           info->addr.drive.bus,
                           info->addr.drive.target,
@@ -6494,34 +6496,34 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
-        virBufferAsprintf(buf, " controller='%d' bus='%d' port='%d'",
+        virBufferAsprintf(&attrBuf, " controller='%d' bus='%d' port='%d'",
                           info->addr.vioserial.controller,
                           info->addr.vioserial.bus,
                           info->addr.vioserial.port);
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
-        virBufferAsprintf(buf, " controller='%d' slot='%d'",
+        virBufferAsprintf(&attrBuf, " controller='%d' slot='%d'",
                           info->addr.ccid.controller,
                           info->addr.ccid.slot);
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-        virBufferAsprintf(buf, " bus='%d'", info->addr.usb.bus);
+        virBufferAsprintf(&attrBuf, " bus='%d'", info->addr.usb.bus);
         if (virDomainUSBAddressPortIsValid(info->addr.usb.port)) {
-            virBufferAddLit(buf, " port='");
-            virDomainUSBAddressPortFormatBuf(buf, info->addr.usb.port);
-            virBufferAddLit(buf, "'");
+            virBufferAddLit(&attrBuf, " port='");
+            virDomainUSBAddressPortFormatBuf(&attrBuf, info->addr.usb.port);
+            virBufferAddLit(&attrBuf, "'");
         }
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
         if (info->addr.spaprvio.has_reg)
-            virBufferAsprintf(buf, " reg='0x%llx'", info->addr.spaprvio.reg);
+            virBufferAsprintf(&attrBuf, " reg='0x%llx'", info->addr.spaprvio.reg);
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
-        virBufferAsprintf(buf, " cssid='0x%x' ssid='0x%x' devno='0x%04x'",
+        virBufferAsprintf(&attrBuf, " cssid='0x%x' ssid='0x%x' devno='0x%04x'",
                           info->addr.ccw.cssid,
                           info->addr.ccw.ssid,
                           info->addr.ccw.devno);
@@ -6532,15 +6534,15 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
         if (info->addr.isa.iobase > 0)
-            virBufferAsprintf(buf, " iobase='0x%x'", info->addr.isa.iobase);
+            virBufferAsprintf(&attrBuf, " iobase='0x%x'", info->addr.isa.iobase);
         if (info->addr.isa.irq > 0)
-            virBufferAsprintf(buf, " irq='0x%x'", info->addr.isa.irq);
+            virBufferAsprintf(&attrBuf, " irq='0x%x'", info->addr.isa.irq);
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
-        virBufferAsprintf(buf, " slot='%u'", info->addr.dimm.slot);
+        virBufferAsprintf(&attrBuf, " slot='%u'", info->addr.dimm.slot);
         if (info->addr.dimm.base)
-            virBufferAsprintf(buf, " base='0x%llx'", info->addr.dimm.base);
+            virBufferAsprintf(&attrBuf, " base='0x%llx'", info->addr.dimm.base);
 
         break;
 
@@ -6550,7 +6552,9 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         break;
     }
 
-    virBufferAddLit(buf, "/>\n");
+    virXMLFormatElement(buf, "address", &attrBuf, NULL);
+
+    virBufferFreeAndReset(&attrBuf);
 }
 
 static int
