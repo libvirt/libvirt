@@ -50,6 +50,8 @@ struct _virPCIDeviceAddress {
     unsigned int slot;
     unsigned int function;
     int multi; /* virTristateSwitch */
+    int extFlags; /* enum virPCIDeviceAddressExtensionFlags */
+    virZPCIDeviceAddress zpci;
 };
 
 typedef enum {

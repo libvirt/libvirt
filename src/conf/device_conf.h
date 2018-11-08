@@ -166,6 +166,10 @@ struct _virDomainDeviceInfo {
      * assignment, never saved and never reported.
      */
     int pciConnectFlags; /* enum virDomainPCIConnectFlags */
+    /* pciAddrExtFlags is only used internally to calculate PCI
+     * address extension flags during address assignment.
+     */
+    int pciAddrExtFlags; /* enum virDomainPCIAddressExtensionFlags */
     char *loadparm;
 
     /* PCI devices will only be automatically placed on a PCI bus

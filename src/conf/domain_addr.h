@@ -30,6 +30,11 @@
 # define VIR_PCI_ADDRESS_FUNCTION_LAST 7
 
 typedef enum {
+    VIR_PCI_ADDRESS_EXTENSION_NONE = 0, /* no extension */
+    VIR_PCI_ADDRESS_EXTENSION_ZPCI = 1 << 0, /* zPCI support */
+} virPCIDeviceAddressExtensionFlags;
+
+typedef enum {
    VIR_PCI_CONNECT_HOTPLUGGABLE = 1 << 0, /* is hotplug needed/supported */
 
    /* set for devices that can share a single slot in auto-assignment
