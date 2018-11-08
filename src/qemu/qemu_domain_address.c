@@ -1510,8 +1510,12 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
     size_t i;
     bool hasPCIeRoot = false;
     virDomainControllerModelPCI defaultModel;
+    virPCIDeviceAddressExtensionFlags extFlags = VIR_PCI_ADDRESS_EXTENSION_NONE;
 
-    if ((addrs = virDomainPCIAddressSetAlloc(nbuses)) == NULL)
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ZPCI))
+        extFlags |= VIR_PCI_ADDRESS_EXTENSION_ZPCI;
+
+    if ((addrs = virDomainPCIAddressSetAlloc(nbuses, extFlags)) == NULL)
         return NULL;
 
     addrs->dryRun = dryRun;

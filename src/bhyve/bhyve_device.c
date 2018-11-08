@@ -71,7 +71,8 @@ bhyveDomainPCIAddressSetCreate(virDomainDefPtr def, unsigned int nbuses)
 {
     virDomainPCIAddressSetPtr addrs;
 
-    if ((addrs = virDomainPCIAddressSetAlloc(nbuses)) == NULL)
+    if ((addrs = virDomainPCIAddressSetAlloc(nbuses,
+                                             VIR_PCI_ADDRESS_EXTENSION_NONE)) == NULL)
         return NULL;
 
     if (virDomainPCIAddressBusSetModel(&addrs->buses[0],
