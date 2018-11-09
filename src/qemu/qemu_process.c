@@ -6119,7 +6119,15 @@ qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
         if (!blockdev)
             virStorageSourceBackingStoreClear(disk->src);
 
-        if (qemuDomainDetermineDiskChain(driver, vm, disk, true) >= 0)
+        /*
+         * Go to applying startup policy for optional disk with nonexistent
+         * source file immediately as determining chain will surely fail
+         * and we don't want noisy error notice in logs for this case.
+         */
+        if (qemuDomainDiskIsMissingLocalOptional(disk) && cold_boot)
+            VIR_INFO("optional disk '%s' source file is missing, "
+                     "skip checking disk chain", disk->dst);
+        else if (qemuDomainDetermineDiskChain(driver, vm, disk, true) >= 0)
             continue;
 
         if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) >= 0)
