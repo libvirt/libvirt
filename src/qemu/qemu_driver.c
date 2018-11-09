@@ -20720,6 +20720,20 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
     const char *backendstoragealias;
     int ret = -1;
 
+    /*
+     * This helps to keep logs clean from error messages on getting stats
+     * for optional disk with nonexistent source file. We won't get any
+     * stats for such a disk anyway in below code.
+     */
+    if (!virDomainObjIsActive(dom) &&
+        qemuDomainDiskIsMissingLocalOptional(disk)) {
+        VIR_INFO("optional disk '%s' source file is missing, "
+                 "skip getting stats", disk->dst);
+
+        return qemuDomainGetStatsBlockExportHeader(disk, disk->src, *recordnr,
+                                                   records, nrecords);
+    }
+
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (blockdev) {
             frontendalias = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;

@@ -13704,3 +13704,12 @@ qemuDomainIsUsingNoShutdown(qemuDomainObjPrivatePtr priv)
 {
     return priv->monJSON && priv->allowReboot == VIR_TRISTATE_BOOL_YES;
 }
+
+
+bool
+qemuDomainDiskIsMissingLocalOptional(virDomainDiskDefPtr disk)
+{
+    return disk->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_OPTIONAL &&
+           virStorageSourceIsLocalStorage(disk->src) && disk->src->path &&
+           !virFileExists(disk->src->path);
+}

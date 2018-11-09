@@ -1095,4 +1095,7 @@ qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason);
 bool
 qemuDomainIsUsingNoShutdown(qemuDomainObjPrivatePtr priv);
 
+bool
+qemuDomainDiskIsMissingLocalOptional(virDomainDiskDefPtr disk);
+
 #endif /* LIBVIRT_QEMU_DOMAIN_H */
