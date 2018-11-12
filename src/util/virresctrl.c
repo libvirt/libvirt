@@ -1361,17 +1361,32 @@ virResctrlAllocForeachMemory(virResctrlAllocPtr alloc,
 }
 
 
+static int
+virResctrlSetID(char **resctrlid,
+                const char *id)
+{
+    if (!id) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("New resctrl 'id' cannot be NULL"));
+        return -1;
+    }
+
+    if (*resctrlid) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Attempt to overwrite resctrlid='%s' with id='%s'"),
+                       *resctrlid, id);
+        return -1;
+    }
+
+    return VIR_STRDUP(*resctrlid, id);
+}
+
+
 int
 virResctrlAllocSetID(virResctrlAllocPtr alloc,
                      const char *id)
 {
-    if (!id) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Resctrl allocation 'id' cannot be NULL"));
-        return -1;
-    }
-
-    return VIR_STRDUP(alloc->id, id);
+    return virResctrlSetID(&alloc->id, id);
 }
 
 
