@@ -2390,26 +2390,21 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
 }
 
 
-int
-virResctrlAllocAddPID(virResctrlAllocPtr alloc,
-                      pid_t pid)
+static int
+virResctrlAddPID(const char *path,
+                 pid_t pid)
 {
     char *tasks = NULL;
     char *pidstr = NULL;
     int ret = 0;
 
-    /* If the allocation is empty, then it is impossible to add a PID to
-     * allocation due to lacking of its 'tasks' file so just return */
-    if (virResctrlAllocIsEmpty(alloc))
-        return 0;
-
-    if (!alloc->path) {
+    if (!path) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot add pid to non-existing resctrl allocation"));
+                       _("Cannot add pid to non-existing resctrl group"));
         return -1;
     }
 
-    if (virAsprintf(&tasks, "%s/tasks", alloc->path) < 0)
+    if (virAsprintf(&tasks, "%s/tasks", path) < 0)
         return -1;
 
     if (virAsprintf(&pidstr, "%lld", (long long int) pid) < 0)
@@ -2427,6 +2422,19 @@ virResctrlAllocAddPID(virResctrlAllocPtr alloc,
     VIR_FREE(tasks);
     VIR_FREE(pidstr);
     return ret;
+}
+
+
+int
+virResctrlAllocAddPID(virResctrlAllocPtr alloc,
+                      pid_t pid)
+{
+    /* If the allocation is empty, then it is impossible to add a PID to
+     * allocation due to lacking of its 'tasks' file so just return */
+    if (virResctrlAllocIsEmpty(alloc))
+        return 0;
+
+    return virResctrlAddPID(alloc->path, pid);
 }
 
 
