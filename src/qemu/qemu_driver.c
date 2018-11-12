@@ -17138,9 +17138,8 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
                      const char *device,
                      virDomainDiskDefPtr disk)
 {
-    int ret = -1, rc;
+    int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMonitorBlockJobInfo info;
     virStorageSourcePtr oldsrc = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -17149,23 +17148,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
                        _("pivot of disk '%s' requires an active copy job"),
                        disk->dst);
         goto cleanup;
-    }
-
-    /* Probe the status, if needed.  */
-    if (!disk->mirrorState) {
-        qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorGetBlockJobInfo(priv->mon, disk->info.alias, &info);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto cleanup;
-        if (rc < 0)
-            goto cleanup;
-        if (rc == 1 &&
-            (info.ready == 1 ||
-             (info.ready == -1 &&
-              info.end == info.cur &&
-              (info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY ||
-               info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT))))
-            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
     }
 
     if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
