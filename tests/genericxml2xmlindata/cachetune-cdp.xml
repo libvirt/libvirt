@@ -8,9 +8,12 @@
     <cachetune vcpus='0-1'>
       <cache id='0' level='3' type='code' size='7680' unit='KiB'/>
       <cache id='1' level='3' type='data' size='3840' unit='KiB'/>
+      <monitor level='3' vcpus='0'/>
+      <monitor level='3' vcpus='1'/>
     </cachetune>
     <cachetune vcpus='2'>
       <cache id='1' level='3' type='code' size='6' unit='MiB'/>
+      <monitor level='3' vcpus='2'/>
     </cachetune>
     <cachetune vcpus='3'>
       <cache id='1' level='3' type='data' size='6912' unit='KiB'/>

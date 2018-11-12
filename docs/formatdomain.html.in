@@ -759,6 +759,12 @@
     &lt;cachetune vcpus='0-3'&gt;
       &lt;cache id='0' level='3' type='both' size='3' unit='MiB'/&gt;
       &lt;cache id='1' level='3' type='both' size='3' unit='MiB'/&gt;
+      &lt;monitor level='3' vcpus='1'/&gt;
+      &lt;monitor level='3' vcpus='0-3'/&gt;
+    &lt;/cachetune&gt;
+    &lt;cachetune vcpus='4-5'&gt;
+      &lt;monitor level='3' vcpus='4'/&gt;
+      &lt;monitor level='3' vcpus='5'/&gt;
     &lt;/cachetune&gt;
     &lt;memorytune vcpus='0-3'&gt;
       &lt;node id='0' bandwidth='60'/&gt;
@@ -975,6 +981,26 @@
                 (described in the <code>memory</code> element
                 for <a href="#elementsMemoryAllocation">Memory Allocation</a>)
                 in which <code>size</code> is specified, defaults to bytes.
+              </dd>
+            </dl>
+          </dd>
+          <dt><code>monitor</code><span class="since">Since 4.10.0</span></dt>
+          <dd>
+            The optional element <code>monitor</code> creates the cache
+            monitor(s) for current cache allocation and has the following
+            required attributes:
+            <dl>
+              <dt><code>level</code></dt>
+              <dd>
+                Host cache level the monitor belongs to.
+              </dd>
+              <dt><code>vcpus</code></dt>
+              <dd>
+                vCPU list the monitor applies to. A monitor's vCPU list
+                can only be the member(s) of the vCPU list of the associated
+                allocation. The default monitor has the same vCPU list as the
+                associated allocation. For non-default monitors, overlapping
+                vCPUs are not permitted.
               </dd>
             </dl>
           </dd>

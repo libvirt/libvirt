@@ -7,13 +7,7 @@
   <cputune>
     <cachetune vcpus='0-1'>
       <cache id='0' level='3' type='both' size='768' unit='KiB'/>
-      <monitor level='3' vcpus='0'/>
-      <monitor level='3' vcpus='1'/>
-      <monitor level='3' vcpus='0-1'/>
-    </cachetune>
-    <cachetune vcpus='2-3'>
       <monitor level='3' vcpus='2'/>
-      <monitor level='3' vcpus='3'/>
     </cachetune>
   </cputune>
   <os>

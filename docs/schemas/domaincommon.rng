@@ -981,6 +981,16 @@
                 </optional>
               </element>
             </zeroOrMore>
+            <zeroOrMore>
+              <element name="monitor">
+                <attribute name="level">
+                  <ref name='unsignedInt'/>
+                </attribute>
+                <attribute name="vcpus">
+                  <ref name='cpuset'/>
+                </attribute>
+              </element>
+            </zeroOrMore>
           </element>
         </zeroOrMore>
         <zeroOrMore>

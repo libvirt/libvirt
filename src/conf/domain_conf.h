@@ -2236,12 +2236,23 @@ struct _virDomainCputune {
 };
 
 
+typedef struct _virDomainResctrlMonDef virDomainResctrlMonDef;
+typedef virDomainResctrlMonDef *virDomainResctrlMonDefPtr;
+struct _virDomainResctrlMonDef {
+    virBitmapPtr vcpus;
+    virResctrlMonitorType tag;
+    virResctrlMonitorPtr instance;
+};
+
 typedef struct _virDomainResctrlDef virDomainResctrlDef;
 typedef virDomainResctrlDef *virDomainResctrlDefPtr;
 
 struct _virDomainResctrlDef {
     virBitmapPtr vcpus;
     virResctrlAllocPtr alloc;
+
+    virDomainResctrlMonDefPtr *monitors;
+    size_t nmonitors;
 };
 
 
