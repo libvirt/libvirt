@@ -975,7 +975,10 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("POST operation failed");
             break;
         case VIR_ERR_HTTP_ERROR:
-            errmsg = _("got unknown HTTP error code %d");
+            if (info != NULL)
+                errmsg = _("got unknown HTTP error code %s");
+            else
+                errmsg = _("got unknown HTTP error code");
             break;
         case VIR_ERR_UNKNOWN_HOST:
             if (info != NULL)
@@ -1002,7 +1005,10 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("could not connect to Xen Store %s");
             break;
         case VIR_ERR_XEN_CALL:
-            errmsg = _("failed Xen syscall %s");
+            if (info == NULL)
+                errmsg = _("failed Xen syscall");
+            else
+                errmsg = _("failed Xen syscall %s");
             break;
         case VIR_ERR_OS_TYPE:
             if (info == NULL)
