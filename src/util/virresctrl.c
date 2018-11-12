@@ -2266,28 +2266,50 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
 }
 
 
+static char *
+virResctrlDeterminePath(const char *parentpath,
+                        const char *prefix,
+                        const char *id)
+{
+    char *path = NULL;
+
+    if (!id) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Resctrl ID must be set before determining resctrl "
+                         "parentpath='%s' prefix='%s'"), parentpath, prefix);
+        return NULL;
+    }
+
+    if (virAsprintf(&path, "%s/%s-%s", parentpath, prefix, id) < 0)
+        return NULL;
+
+    return path;
+}
+
+
 int
 virResctrlAllocDeterminePath(virResctrlAllocPtr alloc,
                              const char *machinename)
 {
-    if (!alloc->id) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Resctrl Allocation ID must be set before creation"));
+    if (alloc->path) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Resctrl allocation path is already set to '%s'"),
+                       alloc->path);
         return -1;
     }
 
     /* If the allocation is empty, then the path will be SYSFS_RESCTRL_PATH */
     if (virResctrlAllocIsEmpty(alloc)) {
-        if (!alloc->path &&
-            VIR_STRDUP(alloc->path, SYSFS_RESCTRL_PATH) < 0)
+        if (VIR_STRDUP(alloc->path, SYSFS_RESCTRL_PATH) < 0)
             return -1;
 
         return 0;
     }
 
-    if (!alloc->path &&
-        virAsprintf(&alloc->path, "%s/%s-%s",
-                    SYSFS_RESCTRL_PATH, machinename, alloc->id) < 0)
+    alloc->path = virResctrlDeterminePath(SYSFS_RESCTRL_PATH,
+                                          machinename, alloc->id);
+
+    if (!alloc->path)
         return -1;
 
     return 0;
