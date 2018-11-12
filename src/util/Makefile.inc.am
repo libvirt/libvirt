@@ -50,6 +50,7 @@ UTIL_SOURCES = \
 	util/virendian.h \
 	util/virerror.c \
 	util/virerror.h \
+	util/virerrorpriv.h \
 	util/virevent.c \
 	util/virevent.h \
 	util/vireventpoll.c \

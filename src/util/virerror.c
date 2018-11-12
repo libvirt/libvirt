@@ -29,6 +29,10 @@
 #include "virutil.h"
 #include "virstring.h"
 
+#define LIBVIRT_VIRERRORPRIV_H_ALLOW
+#include "virerrorpriv.h"
+#undef LIBVIRT_VIRERRORPRIV_H_ALLOW
+
 VIR_LOG_INIT("util.error");
 
 virThreadLocal virLastErr;
@@ -908,7 +912,7 @@ void virRaiseErrorObject(const char *filename,
  *
  * Returns the constant string associated to @error
  */
-static const char *
+const char *
 virErrorMsg(virErrorNumber error, const char *info)
 {
     const char *errmsg = NULL;

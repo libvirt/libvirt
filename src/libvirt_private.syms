@@ -1752,6 +1752,7 @@ ebtablesRemoveForwardAllowIn;
 virDispatchError;
 virErrorCopyNew;
 virErrorInitialize;
+virErrorMsg;
 virErrorPreserveLast;
 virErrorRestore;
 virErrorSetErrnoFromLastError;
