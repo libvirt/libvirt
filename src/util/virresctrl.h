@@ -185,4 +185,13 @@ int
 virResctrlInfoGetMonitorPrefix(virResctrlInfoPtr resctrl,
                                const char *prefix,
                                virResctrlInfoMonPtr *monitor);
+
+/* Monitor-related things */
+
+typedef struct _virResctrlMonitor virResctrlMonitor;
+typedef virResctrlMonitor *virResctrlMonitorPtr;
+
+
+virResctrlMonitorPtr
+virResctrlMonitorNew(void);
 #endif /*  __VIR_RESCTRL_H__ */

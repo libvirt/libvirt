@@ -36,9 +36,9 @@ VIR_LOG_INIT("util.virresctrl")
 
 
 /* Resctrl is short for Resource Control.  It might be implemented for various
- * resources. Currently this supports cache allocation technology (aka CAT) and
- * memory bandwidth allocation (aka MBA). More resources technologies may be
- * added in the future.
+ * resources. Currently this supports cache allocation technology (aka CAT),
+ * memory bandwidth allocation (aka MBA) and cache monitoring technology (aka
+ * CMT). More resources technologies may be added in the future.
  */
 
 
@@ -105,6 +105,7 @@ typedef virResctrlAllocMemBW *virResctrlAllocMemBWPtr;
 /* Class definitions and initializations */
 static virClassPtr virResctrlInfoClass;
 static virClassPtr virResctrlAllocClass;
+static virClassPtr virResctrlMonitorClass;
 
 
 /* virResctrlInfo */
@@ -224,11 +225,16 @@ virResctrlInfoMonFree(virResctrlInfoMonPtr mon)
 }
 
 
-/* virResctrlAlloc */
+/* virResctrlAlloc and virResctrlMonitor*/
 
 /*
- * virResctrlAlloc represents one allocation (in XML under cputune/cachetune and
- * consequently a directory under /sys/fs/resctrl).  Since it can have multiple
+ * virResctrlAlloc and virResctrlMonitor are representing a resource control
+ * group (in XML under cputune/cachetune and consequently a directory under
+ * /sys/fs/resctrl). virResctrlAlloc is the data structure for resource
+ * allocation, while the virResctrlMonitor represents the resource monitoring
+ * part.
+ *
+ * virResctrlAlloc represents one allocation. Since it can have multiple
  * parts of multiple caches allocated it is represented as bunch of nested
  * sparse arrays (by sparse I mean array of pointers so that each might be NULL
  * in case there is no allocation for that particular cache allocation (level,
@@ -275,6 +281,18 @@ virResctrlInfoMonFree(virResctrlInfoMonPtr mon)
  * a sparse array to represent whether a memory bandwidth allocation happens
  * on corresponding node. The available memory controller number is collected
  * in 'virResctrlInfo'.
+ *
+ * =====Cache monitoring technology (CMT)=====
+ *
+ * Cache monitoring technology is used to perceive how many cache the process
+ * is using actually. virResctrlMonitor represents the resource control
+ * monitoring group, it is supported to monitor resource utilization
+ * information on granularity of vcpu.
+ *
+ * From a hardware perspective, cache monitoring technology (CMT), memory
+ * bandwidth technology (MBM), as well as the CAT and MBA, are all orthogonal
+ * features. The monitor will be created under the scope of default resctrl
+ * group if no specific CAT or MBA entries are provided for the guest."
  */
 struct _virResctrlAllocPerType {
     /* There could be bool saying whether this is set or not, but since everything
@@ -317,6 +335,30 @@ struct _virResctrlAlloc {
     char *id;
     /* libvirt-generated path in /sys/fs/resctrl for this particular
      * allocation */
+    char *path;
+};
+
+/*
+ * virResctrlMonitor is the data structure for resctrl monitor. Resctrl
+ * monitor represents a resctrl monitoring group, which can be used to
+ * monitor the resource utilization information for either cache or
+ * memory bandwidth.
+ */
+struct _virResctrlMonitor {
+    virObject parent;
+
+    /* Each virResctrlMonitor is associated with one specific allocation,
+     * either the root directory allocation under /sys/fs/resctrl or a
+     * specific allocation defined under the root directory.
+     * This pointer points to the allocation this monitor is associated with.
+     */
+    virResctrlAllocPtr alloc;
+    /* The monitor identifier. For a monitor has the same @path name as its
+     * @alloc, the @id will be set to the same value as it is in @alloc->id.
+     */
+    char *id;
+    /* libvirt-generated path in /sys/fs/resctrl for this particular
+     * monitor */
     char *path;
 };
 
@@ -369,6 +411,17 @@ virResctrlAllocDispose(void *obj)
 }
 
 
+static void
+virResctrlMonitorDispose(void *obj)
+{
+    virResctrlMonitorPtr monitor = obj;
+
+    virObjectUnref(monitor->alloc);
+    VIR_FREE(monitor->id);
+    VIR_FREE(monitor->path);
+}
+
+
 /* Global initialization for classes */
 static int
 virResctrlOnceInit(void)
@@ -377,6 +430,9 @@ virResctrlOnceInit(void)
         return -1;
 
     if (!VIR_CLASS_NEW(virResctrlAlloc, virClassForObject()))
+        return -1;
+
+    if (!VIR_CLASS_NEW(virResctrlMonitor, virClassForObject()))
         return -1;
 
     return 0;
@@ -2371,4 +2427,16 @@ virResctrlAllocRemove(virResctrlAllocPtr alloc)
     }
 
     return ret;
+}
+
+
+/* virResctrlMonitor-related definitions */
+
+virResctrlMonitorPtr
+virResctrlMonitorNew(void)
+{
+    if (virResctrlInitialize() < 0)
+        return NULL;
+
+    return virObjectNew(virResctrlMonitorClass);
 }
