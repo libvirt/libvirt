@@ -191,7 +191,10 @@ virResctrlInfoGetMonitorPrefix(virResctrlInfoPtr resctrl,
 typedef struct _virResctrlMonitor virResctrlMonitor;
 typedef virResctrlMonitor *virResctrlMonitorPtr;
 
-
 virResctrlMonitorPtr
 virResctrlMonitorNew(void);
+
+int
+virResctrlMonitorDeterminePath(virResctrlMonitorPtr monitor,
+                               const char *machinename);
 #endif /*  __VIR_RESCTRL_H__ */

@@ -2462,3 +2462,62 @@ virResctrlMonitorNew(void)
 
     return virObjectNew(virResctrlMonitorClass);
 }
+
+
+/*
+ * virResctrlMonitorDeterminePath
+ *
+ * @monitor: Pointer to a resctrl monitor
+ * @machinename: Name string of the VM
+ *
+ * Determines the directory path that the underlying resctrl group will be
+ * created with.
+ *
+ * A monitor represents a directory under resource control file system,
+ * its directory path could be the same path as @monitor->alloc, could be a
+ * path of directory under 'mon_groups' of @monitor->alloc, or a path of
+ * directory under '/sys/fs/resctrl/mon_groups' if @monitor->alloc is NULL.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virResctrlMonitorDeterminePath(virResctrlMonitorPtr monitor,
+                               const char *machinename)
+{
+    VIR_AUTOFREE(char *) parentpath = NULL;
+
+    if (!monitor) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid resctrl monitor"));
+        return -1;
+    }
+
+    if (!monitor->alloc) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing resctrl monitor alloc"));
+        return -1;
+    }
+
+    if (monitor->path) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Resctrl monitor path is already set to '%s'"),
+                       monitor->path);
+        return -1;
+    }
+
+    if (STREQ_NULLABLE(monitor->id, monitor->alloc->id)) {
+        if (VIR_STRDUP(monitor->path, monitor->alloc->path) < 0)
+            return -1;
+        return 0;
+    }
+
+    if (virAsprintf(&parentpath, "%s/mon_groups", monitor->alloc->path) < 0)
+        return -1;
+
+    monitor->path = virResctrlDeterminePath(parentpath, machinename,
+                                            monitor->id);
+    if (!monitor->path)
+        return -1;
+
+    return 0;
+}
