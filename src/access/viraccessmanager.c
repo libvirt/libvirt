@@ -196,11 +196,13 @@ static void virAccessManagerDispose(void *object)
  * should the admin need to debug things
  */
 static int
-virAccessManagerSanitizeError(int ret)
+virAccessManagerSanitizeError(int ret,
+                              const char *driverName)
 {
     if (ret < 0) {
         virResetLastError();
-        virAccessError(VIR_ERR_ACCESS_DENIED, NULL);
+        virAccessError(VIR_ERR_ACCESS_DENIED,
+                       _("'%s' denied access"), driverName);
     }
 
     return ret;
@@ -217,7 +219,7 @@ int virAccessManagerCheckConnect(virAccessManagerPtr manager,
     if (manager->drv->checkConnect)
         ret = manager->drv->checkConnect(manager, driverName, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 
@@ -233,7 +235,7 @@ int virAccessManagerCheckDomain(virAccessManagerPtr manager,
     if (manager->drv->checkDomain)
         ret = manager->drv->checkDomain(manager, driverName, domain, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 int virAccessManagerCheckInterface(virAccessManagerPtr manager,
@@ -248,7 +250,7 @@ int virAccessManagerCheckInterface(virAccessManagerPtr manager,
     if (manager->drv->checkInterface)
         ret = manager->drv->checkInterface(manager, driverName, iface, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 int virAccessManagerCheckNetwork(virAccessManagerPtr manager,
@@ -263,7 +265,7 @@ int virAccessManagerCheckNetwork(virAccessManagerPtr manager,
     if (manager->drv->checkNetwork)
         ret = manager->drv->checkNetwork(manager, driverName, network, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 int virAccessManagerCheckNodeDevice(virAccessManagerPtr manager,
@@ -278,7 +280,7 @@ int virAccessManagerCheckNodeDevice(virAccessManagerPtr manager,
     if (manager->drv->checkNodeDevice)
         ret = manager->drv->checkNodeDevice(manager, driverName, nodedev, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 int virAccessManagerCheckNWFilter(virAccessManagerPtr manager,
@@ -293,7 +295,7 @@ int virAccessManagerCheckNWFilter(virAccessManagerPtr manager,
     if (manager->drv->checkNWFilter)
         ret = manager->drv->checkNWFilter(manager, driverName, nwfilter, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 int virAccessManagerCheckNWFilterBinding(virAccessManagerPtr manager,
@@ -308,7 +310,7 @@ int virAccessManagerCheckNWFilterBinding(virAccessManagerPtr manager,
     if (manager->drv->checkNWFilterBinding)
         ret = manager->drv->checkNWFilterBinding(manager, driverName, binding, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 int virAccessManagerCheckSecret(virAccessManagerPtr manager,
@@ -323,7 +325,7 @@ int virAccessManagerCheckSecret(virAccessManagerPtr manager,
     if (manager->drv->checkSecret)
         ret = manager->drv->checkSecret(manager, driverName, secret, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 int virAccessManagerCheckStoragePool(virAccessManagerPtr manager,
@@ -338,7 +340,7 @@ int virAccessManagerCheckStoragePool(virAccessManagerPtr manager,
     if (manager->drv->checkStoragePool)
         ret = manager->drv->checkStoragePool(manager, driverName, pool, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
 
 int virAccessManagerCheckStorageVol(virAccessManagerPtr manager,
@@ -354,5 +356,5 @@ int virAccessManagerCheckStorageVol(virAccessManagerPtr manager,
     if (manager->drv->checkStorageVol)
         ret = manager->drv->checkStorageVol(manager, driverName, pool, vol, perm);
 
-    return virAccessManagerSanitizeError(ret);
+    return virAccessManagerSanitizeError(ret, driverName);
 }
