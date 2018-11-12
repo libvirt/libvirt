@@ -81,6 +81,7 @@
 #include "netdev_bandwidth_conf.h"
 #include "virresctrl.h"
 #include "virvsock.h"
+#include "viridentity.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -7741,6 +7742,7 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
 struct qemuProcessReconnectData {
     virQEMUDriverPtr driver;
     virDomainObjPtr obj;
+    virIdentityPtr identity;
 };
 /*
  * Open an existing VM's monitor, re-detect VCPU threads
@@ -7778,6 +7780,8 @@ qemuProcessReconnect(void *opaque)
     bool retry = true;
     bool tryMonReconn = false;
 
+    virIdentitySetCurrent(data->identity);
+    virObjectUnref(data->identity);
     VIR_FREE(data);
 
     qemuDomainObjRestoreJob(obj, &oldjob);
@@ -8015,6 +8019,7 @@ qemuProcessReconnect(void *opaque)
     virObjectUnref(cfg);
     virObjectUnref(caps);
     virNWFilterUnlockFilterUpdates();
+    virIdentitySetCurrent(NULL);
     return;
 
  error:
@@ -8062,6 +8067,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
 
     memcpy(data, src, sizeof(*data));
     data->obj = obj;
+    data->identity = virIdentityGetCurrent();
 
     virNWFilterReadLockFilterUpdates();
 
@@ -8085,6 +8091,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
 
         virDomainObjEndAPI(&obj);
         virNWFilterUnlockFilterUpdates();
+        virObjectUnref(data->identity);
         VIR_FREE(data);
         return -1;
     }
