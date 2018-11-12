@@ -2585,3 +2585,179 @@ virResctrlMonitorCreate(virResctrlMonitorPtr monitor,
     virResctrlUnlock(lockfd);
     return ret;
 }
+
+
+int
+virResctrlMonitorSetID(virResctrlMonitorPtr monitor,
+                       const char *id)
+
+{
+    return virResctrlSetID(&monitor->id, id);
+}
+
+
+const char *
+virResctrlMonitorGetID(virResctrlMonitorPtr monitor)
+{
+    return monitor->id;
+}
+
+
+void
+virResctrlMonitorSetAlloc(virResctrlMonitorPtr monitor,
+                          virResctrlAllocPtr alloc)
+{
+    monitor->alloc = virObjectRef(alloc);
+}
+
+
+int
+virResctrlMonitorRemove(virResctrlMonitorPtr monitor)
+{
+    int ret = 0;
+
+    if (!monitor->path)
+        return 0;
+
+    if (STREQ(monitor->path, monitor->alloc->path))
+        return 0;
+
+    VIR_DEBUG("Removing resctrl monitor path=%s", monitor->path);
+    if (rmdir(monitor->path) != 0 && errno != ENOENT) {
+        ret = -errno;
+        VIR_ERROR(_("Unable to remove %s (%d)"), monitor->path, errno);
+    }
+
+    return ret;
+}
+
+
+static int
+virResctrlMonitorStatsSorter(const void *a,
+                             const void *b)
+{
+    return ((virResctrlMonitorStatsPtr)a)->id
+        - ((virResctrlMonitorStatsPtr)b)->id;
+}
+
+
+/*
+ * virResctrlMonitorGetStats
+ *
+ * @monitor: The monitor that the statistic data will be retrieved from.
+ * @resource: The name for resource name. 'llc_occupancy' for cache resource.
+ * "mbm_total_bytes" and "mbm_local_bytes" for memory bandwidth resource.
+ * @stats: Array of virResctrlMonitorStatsPtr for holding cache or memory
+ * bandwidth usage data.
+ * @nstats: A size_t pointer to hold the returned array length of @stats
+ *
+ * Get cache or memory bandwidth utilization information.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
+                          const char *resource,
+                          virResctrlMonitorStatsPtr *stats,
+                          size_t *nstats)
+{
+    int rv = -1;
+    int ret = -1;
+    DIR *dirp = NULL;
+    char *datapath = NULL;
+    struct dirent *ent = NULL;
+    virResctrlMonitorStatsPtr stat = NULL;
+
+    if (!monitor) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid resctrl monitor"));
+        return -1;
+    }
+
+    if (virAsprintf(&datapath, "%s/mon_data", monitor->path) < 0)
+        return -1;
+
+    if (virDirOpen(&dirp, datapath) < 0)
+        goto cleanup;
+
+    *nstats = 0;
+    while (virDirRead(dirp, &ent, datapath) > 0) {
+        char *node_id = NULL;
+
+        if (VIR_ALLOC(stat) < 0)
+            goto cleanup;
+
+        /* Looking for directory that contains resource utilization
+         * information file. The directory name is arranged in format
+         * "mon_<node_name>_<node_id>". For example, "mon_L3_00" and
+         * "mon_L3_01" are two target directories for a two nodes system
+         * with resource utilization data file for each node respectively.
+         */
+        if (ent->d_type != DT_DIR)
+            continue;
+
+        /* Looking for directory has a prefix 'mon_L' */
+        if (!(node_id = STRSKIP(ent->d_name, "mon_L")))
+            continue;
+
+        /* Looking for directory has another '_' */
+        node_id = strchr(node_id, '_');
+        if (!node_id)
+            continue;
+
+        /* Skip the character '_' */
+        if (!(node_id = STRSKIP(node_id, "_")))
+            continue;
+
+        /* The node ID number should be here, parsing it. */
+        if (virStrToLong_uip(node_id, NULL, 0, &stat->id) < 0)
+            goto cleanup;
+
+        rv = virFileReadValueUint(&stat->val, "%s/%s/%s", datapath,
+                                  ent->d_name, resource);
+        if (rv == -2) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("File '%s/%s/%s' does not exist."),
+                           datapath, ent->d_name, resource);
+        }
+        if (rv < 0)
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(*stats, *nstats, *stat) < 0)
+            goto cleanup;
+    }
+
+    /* Sort in id's ascending order */
+    if (*nstats)
+        qsort(*stats, *nstats, sizeof(*stat), virResctrlMonitorStatsSorter);
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(datapath);
+    VIR_FREE(stat);
+    VIR_DIR_CLOSE(dirp);
+    return ret;
+}
+
+
+/*
+ * virResctrlMonitorGetCacheOccupancy
+ *
+ * @monitor: The monitor that the statistic data will be retrieved from.
+ * @stats: Array of virResctrlMonitorStatsPtr for receiving cache occupancy
+ * data. Caller is responsible to free this array.
+ * @nstats: A size_t pointer to hold the returned array length of @caches
+ *
+ * Get cache or memory bandwidth utilization information.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+
+int
+virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
+                                   virResctrlMonitorStatsPtr *stats,
+                                   size_t *nstats)
+{
+    return virResctrlMonitorGetStats(monitor, "llc_occupancy",
+                                     stats, nstats);
+}

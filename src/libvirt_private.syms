@@ -2684,7 +2684,12 @@ virResctrlInfoNew;
 virResctrlMonitorAddPID;
 virResctrlMonitorCreate;
 virResctrlMonitorDeterminePath;
+virResctrlMonitorGetCacheOccupancy;
+virResctrlMonitorGetID;
 virResctrlMonitorNew;
+virResctrlMonitorRemove;
+virResctrlMonitorSetAlloc;
+virResctrlMonitorSetID;
 
 
 # util/virrotatingfile.h
