@@ -4939,10 +4939,10 @@ networkReleaseActualDevice(virNetworkPtr net,
                            virDomainNetDefPtr iface)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
-    virDomainNetType actualType = virDomainNetGetActualType(iface);
     virNetworkObjPtr obj;
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;
+    virNetworkPortDefPtr port = NULL;
     size_t i;
     int ret = -1;
 
@@ -4951,77 +4951,50 @@ networkReleaseActualDevice(virNetworkPtr net,
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
                        net->name);
-        goto error;
+        goto cleanup;
     }
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Expected an interface for a virtual network"));
-        goto error;
+        goto cleanup;
     }
+
+    if (iface->data.network.actual == NULL) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!(port = virDomainNetDefActualToNetworkPort(dom, iface)))
+        goto cleanup;
 
     netdef = virNetworkObjGetDef(obj);
 
-    switch ((virNetworkForwardType) netdef->forward.type) {
-    case VIR_NETWORK_FORWARD_NONE:
-    case VIR_NETWORK_FORWARD_NAT:
-    case VIR_NETWORK_FORWARD_ROUTE:
-    case VIR_NETWORK_FORWARD_OPEN:
-        if (iface->data.network.actual &&
-            networkUnplugBandwidth(obj, iface->bandwidth,
-                                   &iface->data.network.actual->class_id) < 0)
-            goto error;
+    switch ((virNetworkPortPlugType)port->plugtype) {
+    case VIR_NETWORK_PORT_PLUG_TYPE_NONE:
+        VIR_DEBUG("Releasing network device with no plug type");
         break;
 
-    case VIR_NETWORK_FORWARD_BRIDGE:
-        if (iface->data.network.actual &&
-            actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-            networkUnplugBandwidth(obj, iface->bandwidth,
-                                   &iface->data.network.actual->class_id) < 0)
-            goto error;
-        break;
-    case VIR_NETWORK_FORWARD_PRIVATE:
-    case VIR_NETWORK_FORWARD_VEPA:
-    case VIR_NETWORK_FORWARD_PASSTHROUGH:
-    case VIR_NETWORK_FORWARD_HOSTDEV:
+    case VIR_NETWORK_PORT_PLUG_TYPE_NETWORK:
+    case VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE:
+        if (networkUnplugBandwidth(obj, port->bandwidth,
+                                   &port->class_id) < 0)
+            goto cleanup;
         break;
 
-    case VIR_NETWORK_FORWARD_LAST:
-    default:
-        virReportEnumRangeError(virNetworkForwardType, netdef->forward.type);
-        goto error;
-    }
-
-    if ((!iface->data.network.actual) ||
-        ((actualType != VIR_DOMAIN_NET_TYPE_DIRECT) &&
-         (actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV))) {
-        VIR_DEBUG("Nothing to release to network %s", iface->data.network.name);
-        goto success;
-    }
-
-    if (netdef->forward.nifs == 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("network '%s' uses a direct/hostdev mode, but "
-                         "has no forward dev and no interface pool"),
-                       netdef->name);
-        goto error;
-    }
-
-    if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        const char *actualDev;
-
-        actualDev = virDomainNetGetActualDirectDev(iface);
-        if (!actualDev) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("the interface uses a direct mode, "
-                             "but has no source dev"));
-            goto error;
+    case VIR_NETWORK_PORT_PLUG_TYPE_DIRECT:
+        if (netdef->forward.nifs == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network '%s' uses a direct mode, but "
+                             "has no forward dev and no interface pool"),
+                           netdef->name);
+            goto cleanup;
         }
 
         for (i = 0; i < netdef->forward.nifs; i++) {
             if (netdef->forward.ifs[i].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV &&
-                STREQ(actualDev, netdef->forward.ifs[i].device.dev)) {
+                STREQ(port->plug.direct.linkdev, netdef->forward.ifs[i].device.dev)) {
                 dev = &netdef->forward.ifs[i];
                 break;
             }
@@ -5031,23 +5004,24 @@ networkReleaseActualDevice(virNetworkPtr net,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' doesn't have dev='%s' "
                              "in use by domain"),
-                           netdef->name, actualDev);
-            goto error;
+                           netdef->name, port->plug.direct.linkdev);
+            goto cleanup;
         }
-    } else /* if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) */ {
-        virDomainHostdevDefPtr hostdev;
+        break;
 
-        hostdev = virDomainNetGetActualHostdev(iface);
-        if (!hostdev) {
+    case VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI:
+        if (netdef->forward.nifs == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("the interface uses a hostdev mode, but has no hostdev"));
-            goto error;
+                           _("network '%s' uses a hostdev mode, but "
+                             "has no forward dev and no interface pool"),
+                           netdef->name);
+            goto cleanup;
         }
 
         for (i = 0; i < netdef->forward.nifs; i++) {
             if (netdef->forward.ifs[i].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
-                virPCIDeviceAddressEqual(&hostdev->source.subsys.u.pci.addr,
+                virPCIDeviceAddressEqual(&port->plug.hostdevpci.addr,
                                          &netdef->forward.ifs[i].device.pci)) {
                 dev = &netdef->forward.ifs[i];
                 break;
@@ -5059,26 +5033,30 @@ networkReleaseActualDevice(virNetworkPtr net,
                            _("network '%s' doesn't have "
                              "PCI device %04x:%02x:%02x.%x in use by domain"),
                            netdef->name,
-                           hostdev->source.subsys.u.pci.addr.domain,
-                           hostdev->source.subsys.u.pci.addr.bus,
-                           hostdev->source.subsys.u.pci.addr.slot,
-                           hostdev->source.subsys.u.pci.addr.function);
-            goto error;
+                           port->plug.hostdevpci.addr.domain,
+                           port->plug.hostdevpci.addr.bus,
+                           port->plug.hostdevpci.addr.slot,
+                           port->plug.hostdevpci.addr.function);
+            goto cleanup;
         }
+        break;
+
+    case VIR_NETWORK_PORT_PLUG_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virNetworkPortPlugType, port->plugtype);
+        goto cleanup;
     }
 
- success:
-    virNetworkObjMacMgrDel(obj, driver->dnsmasqStateDir, dom->name, &iface->mac);
+    virNetworkObjMacMgrDel(obj, driver->dnsmasqStateDir, dom->name, &port->mac);
 
-    if (iface->data.network.actual) {
-        netdef->connections--;
-        if (dev)
-            dev->connections--;
-        /* finally we can call the 'unplugged' hook script if any */
-        networkRunHook(obj, dom, iface, VIR_HOOK_NETWORK_OP_IFACE_UNPLUGGED,
-                       VIR_HOOK_SUBOP_BEGIN);
-        networkLogAllocation(netdef, dev, &iface->mac, false);
-    }
+    netdef->connections--;
+    if (dev)
+        dev->connections--;
+    /* finally we can call the 'unplugged' hook script if any */
+    networkRunHook(obj, dom, iface, VIR_HOOK_NETWORK_OP_IFACE_UNPLUGGED,
+                   VIR_HOOK_SUBOP_BEGIN);
+    networkLogAllocation(netdef, dev, &port->mac, false);
+
     ret = 0;
  cleanup:
     virNetworkObjEndAPI(&obj);
@@ -5086,10 +5064,8 @@ networkReleaseActualDevice(virNetworkPtr net,
         virDomainActualNetDefFree(iface->data.network.actual);
         iface->data.network.actual = NULL;
     }
+    virNetworkPortDefFree(port);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
