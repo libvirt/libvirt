@@ -4564,11 +4564,11 @@ qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
 
 
 static int
-qemuDomainMdevDefValidate(const virDomainHostdevSubsysMediatedDev *mdevsrc,
-                          const virDomainDef *def,
-                          virQEMUCapsPtr qemuCaps)
+qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevSubsysMediatedDev *dev,
+                                 const virDomainDef *def,
+                                 virQEMUCapsPtr qemuCaps)
 {
-    if (mdevsrc->display == VIR_TRISTATE_SWITCH_ABSENT)
+    if (dev->display == VIR_TRISTATE_SWITCH_ABSENT)
         return 0;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_DISPLAY)) {
@@ -4578,7 +4578,7 @@ qemuDomainMdevDefValidate(const virDomainHostdevSubsysMediatedDev *mdevsrc,
         return -1;
     }
 
-    if (mdevsrc->model != VIR_MDEV_MODEL_TYPE_VFIO_PCI) {
+    if (dev->model != VIR_MDEV_MODEL_TYPE_VFIO_PCI) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("<hostdev> attribute 'display' is only supported"
                          " with model='vfio-pci'"));
@@ -4586,13 +4586,36 @@ qemuDomainMdevDefValidate(const virDomainHostdevSubsysMediatedDev *mdevsrc,
         return -1;
     }
 
-    if (mdevsrc->display == VIR_TRISTATE_SWITCH_ON) {
+    if (dev->display == VIR_TRISTATE_SWITCH_ON) {
         if (def->ngraphics == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("graphics device is needed for attribute value "
                              "'display=on' in <hostdev>"));
             return -1;
         }
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainMdevDefValidate(const virDomainHostdevSubsysMediatedDev *mdevsrc,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    switch ((virMediatedDeviceModelType) mdevsrc->model) {
+    case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
+        return qemuDomainMdevDefVFIOPCIValidate(mdevsrc, def, qemuCaps);
+    case VIR_MDEV_MODEL_TYPE_VFIO_AP:
+        break;
+    case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
+        break;
+    case VIR_MDEV_MODEL_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virMediatedDeviceModelType,
+                                mdevsrc->model);
+        return -1;
     }
 
     return 0;
