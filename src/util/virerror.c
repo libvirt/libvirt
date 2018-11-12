@@ -914,6 +914,7 @@ virErrorMsg(virErrorNumber error, const char *info)
     const char *errmsg = NULL;
 
     switch (error) {
+        case VIR_ERR_NUMBER_LAST:
         case VIR_ERR_OK:
             return NULL;
         case VIR_ERR_INTERNAL_ERROR:
