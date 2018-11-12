@@ -19699,11 +19699,9 @@ typedef enum {
 
 
 static int
-qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                      virDomainObjPtr dom,
-                      virDomainStatsRecordPtr record,
-                      int *maxparams,
-                      unsigned int privflags ATTRIBUTE_UNUSED)
+qemuDomainGetStatsCpuCgroup(virDomainObjPtr dom,
+                            virDomainStatsRecordPtr record,
+                            int *maxparams)
 {
     qemuDomainObjPrivatePtr priv = dom->privateData;
     unsigned long long cpu_time = 0;
@@ -19738,6 +19736,18 @@ qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
     return 0;
 }
+
+
+static int
+qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                      virDomainObjPtr dom,
+                      virDomainStatsRecordPtr record,
+                      int *maxparams,
+                      unsigned int privflags ATTRIBUTE_UNUSED)
+{
+    return qemuDomainGetStatsCpuCgroup(dom, record, maxparams);
+}
+
 
 static int
 qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
