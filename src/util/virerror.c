@@ -924,7 +924,10 @@ virErrorMsg(virErrorNumber error, const char *info)
               errmsg = _("internal error");
             break;
         case VIR_ERR_NO_MEMORY:
-            errmsg = _("out of memory");
+            if (info == NULL)
+                errmsg = _("out of memory");
+            else
+                errmsg = _("out of memory: %s");
             break;
         case VIR_ERR_NO_SUPPORT:
             if (info == NULL)
@@ -1017,7 +1020,10 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("unknown OS type %s");
             break;
         case VIR_ERR_NO_KERNEL:
-            errmsg = _("missing kernel information");
+            if (info == NULL)
+                errmsg = _("missing kernel information");
+            else
+                errmsg = _("missing kernel information: %s");
             break;
         case VIR_ERR_NO_ROOT:
             if (info == NULL)
@@ -1470,7 +1476,10 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("XML document failed to validate against schema: %s");
             break;
         case VIR_ERR_MIGRATE_FINISH_OK:
-            errmsg = _("migration successfully aborted");
+            if (info == NULL)
+                errmsg = _("migration successfully aborted");
+            else
+                errmsg = _("migration successfully aborted: %s");
             break;
         case VIR_ERR_NO_SERVER:
             if (info == NULL)
