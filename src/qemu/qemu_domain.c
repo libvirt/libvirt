@@ -4600,6 +4600,32 @@ qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevSubsysMediatedDev *dev,
 
 
 static int
+qemuDomainMdevDefVFIOAPValidate(const virDomainDef *def)
+{
+    size_t i;
+    bool vfioap_found = false;
+
+    /* VFIO-AP is restricted to a single mediated device only */
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+
+        if (virHostdevIsMdevDevice(hostdev) &&
+            hostdev->source.subsys.u.mdev.model == VIR_MDEV_MODEL_TYPE_VFIO_AP) {
+            if (vfioap_found) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only one hostdev of model vfio-ap is "
+                                 "supported"));
+                return -1;
+            }
+            vfioap_found = true;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainMdevDefValidate(const virDomainHostdevSubsysMediatedDev *mdevsrc,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
@@ -4608,7 +4634,7 @@ qemuDomainMdevDefValidate(const virDomainHostdevSubsysMediatedDev *mdevsrc,
     case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
         return qemuDomainMdevDefVFIOPCIValidate(mdevsrc, def, qemuCaps);
     case VIR_MDEV_MODEL_TYPE_VFIO_AP:
-        break;
+        return qemuDomainMdevDefVFIOAPValidate(def);
     case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
         break;
     case VIR_MDEV_MODEL_TYPE_LAST:

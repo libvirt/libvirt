@@ -4275,31 +4275,6 @@ virDomainDefPostParseGraphics(virDomainDef *def)
 }
 
 
-static int
-virDomainDefPostParseHostdev(virDomainDefPtr def)
-{
-    size_t i;
-    bool vfioap_found = false;
-
-    /* verify settings of hostdevs vfio-ap */
-    for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
-
-        if (virHostdevIsMdevDevice(hostdev) &&
-            hostdev->source.subsys.u.mdev.model == VIR_MDEV_MODEL_TYPE_VFIO_AP) {
-            if (vfioap_found) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Only one hostdev of model vfio-ap is "
-                                 "supported"));
-                return -1;
-            }
-            vfioap_found = true;
-        }
-    }
-    return 0;
-}
-
-
 /**
  * virDomainDriveAddressIsUsedByDisk:
  * @def: domain definition containing the disks to check
@@ -5209,9 +5184,6 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
     virXMLNodeSanitizeNamespaces(def->metadata);
 
     virDomainDefPostParseGraphics(def);
-
-    if (virDomainDefPostParseHostdev(def) < 0)
-        return -1;
 
     if (virDomainDefPostParseCPU(def) < 0)
         return -1;
