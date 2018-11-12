@@ -2546,3 +2546,27 @@ virResctrlMonitorAddPID(virResctrlMonitorPtr monitor,
 {
     return virResctrlAddPID(monitor->path, pid);
 }
+
+
+int
+virResctrlMonitorCreate(virResctrlMonitorPtr monitor,
+                        const char *machinename)
+{
+    int lockfd = -1;
+    int ret = -1;
+
+    if (!monitor)
+        return 0;
+
+    if (virResctrlMonitorDeterminePath(monitor, machinename) < 0)
+        return -1;
+
+    lockfd = virResctrlLockWrite();
+    if (lockfd < 0)
+        return -1;
+
+    ret = virResctrlCreateGroupPath(monitor->path);
+
+    virResctrlUnlock(lockfd);
+    return ret;
+}

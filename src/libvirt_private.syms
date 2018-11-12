@@ -2682,6 +2682,7 @@ virResctrlInfoGetMonitorPrefix;
 virResctrlInfoMonFree;
 virResctrlInfoNew;
 virResctrlMonitorAddPID;
+virResctrlMonitorCreate;
 virResctrlMonitorDeterminePath;
 virResctrlMonitorNew;
 
