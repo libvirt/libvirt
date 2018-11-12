@@ -956,7 +956,7 @@
             <attribute name="vcpus">
               <ref name='cpuset'/>
             </attribute>
-            <oneOrMore>
+            <zeroOrMore>
               <element name="cache">
                 <attribute name="id">
                   <ref name='unsignedInt'/>
@@ -980,7 +980,7 @@
                   </attribute>
                 </optional>
               </element>
-            </oneOrMore>
+            </zeroOrMore>
           </element>
         </zeroOrMore>
         <zeroOrMore>

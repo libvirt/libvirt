@@ -234,6 +234,11 @@ virResctrlInfoMonFree(virResctrlInfoMonPtr mon)
  * in case there is no allocation for that particular cache allocation (level,
  * cache, ...) or memory allocation for particular node).
  *
+ * Allocation corresponding to root directory, /sys/fs/sysctrl/, defines the
+ * default resource allocating policy, which is created immediately after
+ * mounting, and owns all the tasks and cpus in the system. Cache or memory
+ * bandwidth resource will be shared for tasks in this allocation.
+ *
  * =====Cache allocation technology (CAT)=====
  *
  * Since one allocation can be made for caches on different levels, the first
@@ -2215,6 +2220,15 @@ virResctrlAllocDeterminePath(virResctrlAllocPtr alloc,
         return -1;
     }
 
+    /* If the allocation is empty, then the path will be SYSFS_RESCTRL_PATH */
+    if (virResctrlAllocIsEmpty(alloc)) {
+        if (!alloc->path &&
+            VIR_STRDUP(alloc->path, SYSFS_RESCTRL_PATH) < 0)
+            return -1;
+
+        return 0;
+    }
+
     if (!alloc->path &&
         virAsprintf(&alloc->path, "%s/%s-%s",
                     SYSFS_RESCTRL_PATH, machinename, alloc->id) < 0)
@@ -2247,6 +2261,10 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
 
     if (virResctrlAllocDeterminePath(alloc, machinename) < 0)
         return -1;
+
+    /* If using the system/default path for the allocation, then we're done */
+    if (STREQ(alloc->path, SYSFS_RESCTRL_PATH))
+        return 0;
 
     if (virFileExists(alloc->path)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2302,6 +2320,11 @@ virResctrlAllocAddPID(virResctrlAllocPtr alloc,
     char *pidstr = NULL;
     int ret = 0;
 
+    /* If the allocation is empty, then it is impossible to add a PID to
+     * allocation due to lacking of its 'tasks' file so just return */
+    if (virResctrlAllocIsEmpty(alloc))
+        return 0;
+
     if (!alloc->path) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot add pid to non-existing resctrl allocation"));
@@ -2335,6 +2358,10 @@ virResctrlAllocRemove(virResctrlAllocPtr alloc)
     int ret = 0;
 
     if (!alloc->path)
+        return 0;
+
+    /* Do not destroy if path is the system/default path for the allocation */
+    if (STREQ(alloc->path, SYSFS_RESCTRL_PATH))
         return 0;
 
     VIR_DEBUG("Removing resctrl allocation %s", alloc->path);

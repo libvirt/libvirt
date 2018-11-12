@@ -943,8 +943,8 @@
         <dl>
           <dt><code>cache</code></dt>
           <dd>
-            This element controls the allocation of CPU cache and has the
-            following attributes:
+            This optional element controls the allocation of CPU cache and has
+            the following attributes:
             <dl>
               <dt><code>level</code></dt>
               <dd>
