@@ -86,6 +86,7 @@ struct _virSecurityDACChownList {
     virSecurityManagerPtr manager;
     virSecurityDACChownItemPtr *items;
     size_t nItems;
+    bool lock;
 };
 
 
@@ -210,21 +211,23 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
     int rv = 0;
     int ret = -1;
 
-    if (VIR_ALLOC_N(paths, list->nItems) < 0)
-        return -1;
+    if (list->lock) {
+        if (VIR_ALLOC_N(paths, list->nItems) < 0)
+            return -1;
 
-    for (i = 0; i < list->nItems; i++) {
-        const char *p = list->items[i]->path;
+        for (i = 0; i < list->nItems; i++) {
+            const char *p = list->items[i]->path;
 
-        if (!p ||
-            virFileIsDir(p))
-            continue;
+            if (!p ||
+                virFileIsDir(p))
+                continue;
 
-        VIR_APPEND_ELEMENT_COPY_INPLACE(paths, npaths, p);
+            VIR_APPEND_ELEMENT_COPY_INPLACE(paths, npaths, p);
+        }
+
+        if (virSecurityManagerMetadataLock(list->manager, paths, npaths) < 0)
+            goto cleanup;
     }
-
-    if (virSecurityManagerMetadataLock(list->manager, paths, npaths) < 0)
-        goto cleanup;
 
     for (i = 0; i < list->nItems; i++) {
         virSecurityDACChownItemPtr item = list->items[i];
@@ -246,7 +249,8 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
             break;
     }
 
-    if (virSecurityManagerMetadataUnlock(list->manager, paths, npaths) < 0)
+    if (list->lock &&
+        virSecurityManagerMetadataUnlock(list->manager, paths, npaths) < 0)
         goto cleanup;
 
     if (rv < 0)
@@ -529,10 +533,14 @@ virSecurityDACTransactionStart(virSecurityManagerPtr mgr)
  * virSecurityDACTransactionCommit:
  * @mgr: security manager
  * @pid: domain's PID
+ * @lock: lock and unlock paths that are relabeled
  *
  * If @pid is not -1 then enter the @pid namespace (usually @pid refers
  * to a domain) and perform all the chown()-s on the list. If @pid is -1
  * then the transaction is performed in the namespace of the caller.
+ *
+ * If @lock is true then all the paths that transaction would
+ * touch are locked before and unlocked after it is done so.
  *
  * Note that the transaction is also freed, therefore new one has to be
  * started after successful return from this function. Also it is
@@ -544,9 +552,11 @@ virSecurityDACTransactionStart(virSecurityManagerPtr mgr)
  */
 static int
 virSecurityDACTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                pid_t pid)
+                                pid_t pid,
+                                bool lock)
 {
     virSecurityDACChownListPtr list;
+    int rc;
     int ret = -1;
 
     list = virThreadLocalGet(&chownList);
@@ -562,12 +572,20 @@ virSecurityDACTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if ((pid == -1 &&
-         virSecurityDACTransactionRun(pid, list) < 0) ||
-        (pid != -1 &&
-         virProcessRunInMountNamespace(pid,
-                                       virSecurityDACTransactionRun,
-                                       list) < 0))
+    list->lock = lock;
+
+    if (pid == -1) {
+        if (lock)
+            rc = virProcessRunInFork(virSecurityDACTransactionRun, list);
+        else
+            rc = virSecurityDACTransactionRun(pid, list);
+    } else {
+        rc = virProcessRunInMountNamespace(pid,
+                                           virSecurityDACTransactionRun,
+                                           list);
+    }
+
+    if (rc < 0)
         goto cleanup;
 
     ret = 0;

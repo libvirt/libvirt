@@ -79,7 +79,8 @@ void virSecurityManagerPostFork(virSecurityManagerPtr mgr);
 
 int virSecurityManagerTransactionStart(virSecurityManagerPtr mgr);
 int virSecurityManagerTransactionCommit(virSecurityManagerPtr mgr,
-                                        pid_t pid);
+                                        pid_t pid,
+                                        bool lock);
 void virSecurityManagerTransactionAbort(virSecurityManagerPtr mgr);
 
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);

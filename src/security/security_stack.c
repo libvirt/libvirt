@@ -156,14 +156,15 @@ virSecurityStackTransactionStart(virSecurityManagerPtr mgr)
 
 static int
 virSecurityStackTransactionCommit(virSecurityManagerPtr mgr,
-                                  pid_t pid)
+                                  pid_t pid,
+                                  bool lock)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerTransactionCommit(item->securityManager, pid) < 0)
+        if (virSecurityManagerTransactionCommit(item->securityManager, pid, lock) < 0)
             rc = -1;
     }
 

@@ -53,7 +53,8 @@ typedef int (*virSecurityDriverPreFork) (virSecurityManagerPtr mgr);
 
 typedef int (*virSecurityDriverTransactionStart) (virSecurityManagerPtr mgr);
 typedef int (*virSecurityDriverTransactionCommit) (virSecurityManagerPtr mgr,
-                                                   pid_t pid);
+                                                   pid_t pid,
+                                                   bool lock);
 typedef void (*virSecurityDriverTransactionAbort) (virSecurityManagerPtr mgr);
 
 typedef int (*virSecurityDomainRestoreDiskLabel) (virSecurityManagerPtr mgr,

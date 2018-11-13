@@ -299,11 +299,15 @@ virSecurityManagerTransactionStart(virSecurityManagerPtr mgr)
  * virSecurityManagerTransactionCommit:
  * @mgr: security manager
  * @pid: domain's PID
+ * @lock: lock and unlock paths that are relabeled
  *
  * If @pid is not -1 then enter the @pid namespace (usually @pid refers
  * to a domain) and perform all the operations on the transaction list.
  * If @pid is -1 then the transaction is performed in the namespace of
  * the caller.
+ *
+ * If @lock is true then all the paths that transaction would
+ * touch are locked before and unlocked after it is done so.
  *
  * Note that the transaction is also freed, therefore new one has to be
  * started after successful return from this function. Also it is
@@ -315,13 +319,14 @@ virSecurityManagerTransactionStart(virSecurityManagerPtr mgr)
  */
 int
 virSecurityManagerTransactionCommit(virSecurityManagerPtr mgr,
-                                    pid_t pid)
+                                    pid_t pid,
+                                    bool lock)
 {
     int ret = 0;
 
     virObjectLock(mgr);
     if (mgr->drv->transactionCommit)
-        ret = mgr->drv->transactionCommit(mgr, pid);
+        ret = mgr->drv->transactionCommit(mgr, pid, lock);
     virObjectUnlock(mgr);
     return ret;
 }
