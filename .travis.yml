@@ -46,7 +46,7 @@ script:
       -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
       -e MINGW="$MINGW"
       -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
-      "libvirt/buildenv-$IMAGE"
+      "quay.io/libvirt/buildenv-$IMAGE:master"
       /bin/sh -xc "$DOCKER_CMD"
 
 git:
