@@ -453,7 +453,7 @@ qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
  * qemuSecurityStartTPMEmulator:
  *
  * @driver: the QEMU driver
- * @def: the domain definition
+ * @vm: the domain object
  * @cmd: the command to run
  * @uid: the uid to run the emulator
  * @gid: the gid to run the emulator
@@ -469,7 +469,7 @@ qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
  */
 int
 qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
-                             virDomainDefPtr def,
+                             virDomainObjPtr vm,
                              virCommandPtr cmd,
                              uid_t uid,
                              gid_t gid,
@@ -484,7 +484,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
     transactionStarted = true;
 
     if (virSecurityManagerSetTPMLabels(driver->securityManager,
-                                       def) < 0) {
+                                       vm->def) < 0) {
         virSecurityManagerTransactionAbort(driver->securityManager);
         return -1;
     }
@@ -494,7 +494,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
     transactionStarted = false;
 
     if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
-                                               def, cmd) < 0)
+                                               vm->def, cmd) < 0)
         goto cleanup;
 
     if (virSecurityManagerPreFork(driver->securityManager) < 0)
@@ -519,7 +519,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
         virSecurityManagerTransactionStart(driver->securityManager) >= 0)
         transactionStarted = true;
 
-    virSecurityManagerRestoreTPMLabels(driver->securityManager, def);
+    virSecurityManagerRestoreTPMLabels(driver->securityManager, vm->def);
 
     if (transactionStarted &&
         virSecurityManagerTransactionCommit(driver->securityManager, -1) < 0)
@@ -532,14 +532,14 @@ qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
 
 void
 qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
-                               virDomainDefPtr def)
+                               virDomainObjPtr vm)
 {
     bool transactionStarted = false;
 
     if (virSecurityManagerTransactionStart(driver->securityManager) >= 0)
         transactionStarted = true;
 
-    virSecurityManagerRestoreTPMLabels(driver->securityManager, def);
+    virSecurityManagerRestoreTPMLabels(driver->securityManager, vm->def);
 
     if (transactionStarted &&
         virSecurityManagerTransactionCommit(driver->securityManager, -1) < 0)

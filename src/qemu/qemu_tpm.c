@@ -756,7 +756,7 @@ qemuExtTPMCleanupHost(virDomainDefPtr def)
  */
 static int
 qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
-                        virDomainDefPtr def,
+                        virDomainObjPtr vm,
                         qemuDomainLogContextPtr logCtxt)
 {
     int ret = -1;
@@ -764,8 +764,8 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
     int exitstatus = 0;
     char *errbuf = NULL;
     virQEMUDriverConfigPtr cfg;
-    virDomainTPMDefPtr tpm = def->tpm;
-    char *shortName = virDomainDefGetShortName(def);
+    virDomainTPMDefPtr tpm = vm->def->tpm;
+    char *shortName = virDomainDefGetShortName(vm->def);
     int cmdret = 0, timeout, rc;
     pid_t pid;
 
@@ -777,7 +777,7 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
     /* stop any left-over TPM emulator for this VM */
     qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
 
-    if (!(cmd = qemuTPMEmulatorBuildCommand(tpm, def->name, def->uuid,
+    if (!(cmd = qemuTPMEmulatorBuildCommand(tpm, vm->def->name, vm->def->uuid,
                                             driver->privileged,
                                             cfg->swtpm_user,
                                             cfg->swtpm_group,
@@ -789,7 +789,7 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
 
     virCommandSetErrorBuffer(cmd, &errbuf);
 
-    if (qemuSecurityStartTPMEmulator(driver, def, cmd,
+    if (qemuSecurityStartTPMEmulator(driver, vm, cmd,
                                      cfg->swtpm_user, cfg->swtpm_group,
                                      &exitstatus, &cmdret) < 0)
         goto cleanup;
@@ -837,15 +837,15 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
 
 int
 qemuExtTPMStart(virQEMUDriverPtr driver,
-                virDomainDefPtr def,
+                virDomainObjPtr vm,
                 qemuDomainLogContextPtr logCtxt)
 {
     int ret = 0;
-    virDomainTPMDefPtr tpm = def->tpm;
+    virDomainTPMDefPtr tpm = vm->def->tpm;
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        ret = qemuExtTPMStartEmulator(driver, def, logCtxt);
+        ret = qemuExtTPMStartEmulator(driver, vm, logCtxt);
         break;
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -858,19 +858,19 @@ qemuExtTPMStart(virQEMUDriverPtr driver,
 
 void
 qemuExtTPMStop(virQEMUDriverPtr driver,
-               virDomainDefPtr def)
+               virDomainObjPtr vm)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     char *shortName = NULL;
 
-    switch (def->tpm->type) {
+    switch (vm->def->tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        shortName = virDomainDefGetShortName(def);
+        shortName = virDomainDefGetShortName(vm->def);
         if (!shortName)
             goto cleanup;
 
         qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
-        qemuSecurityCleanupTPMEmulator(driver, def);
+        qemuSecurityCleanupTPMEmulator(driver, vm);
         break;
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:

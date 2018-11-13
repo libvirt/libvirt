@@ -129,16 +129,16 @@ qemuExtDevicesCleanupHost(virQEMUDriverPtr driver,
 
 int
 qemuExtDevicesStart(virQEMUDriverPtr driver,
-                    virDomainDefPtr def,
+                    virDomainObjPtr vm,
                     qemuDomainLogContextPtr logCtxt)
 {
     int ret = 0;
 
-    if (qemuExtDevicesInitPaths(driver, def) < 0)
+    if (qemuExtDevicesInitPaths(driver, vm->def) < 0)
         return -1;
 
-    if (def->tpm)
-        ret = qemuExtTPMStart(driver, def, logCtxt);
+    if (vm->def->tpm)
+        ret = qemuExtTPMStart(driver, vm, logCtxt);
 
     return ret;
 }
@@ -146,13 +146,13 @@ qemuExtDevicesStart(virQEMUDriverPtr driver,
 
 void
 qemuExtDevicesStop(virQEMUDriverPtr driver,
-                   virDomainDefPtr def)
+                   virDomainObjPtr vm)
 {
-    if (qemuExtDevicesInitPaths(driver, def) < 0)
+    if (qemuExtDevicesInitPaths(driver, vm->def) < 0)
         return;
 
-    if (def->tpm)
-        qemuExtTPMStop(driver, def);
+    if (vm->def->tpm)
+        qemuExtTPMStop(driver, vm);
 }
 
 

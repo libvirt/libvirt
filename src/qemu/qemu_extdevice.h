@@ -41,13 +41,13 @@ void qemuExtDevicesCleanupHost(virQEMUDriverPtr driver,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuExtDevicesStart(virQEMUDriverPtr driver,
-                        virDomainDefPtr def,
+                        virDomainObjPtr vm,
                         qemuDomainLogContextPtr logCtxt)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
 
 void qemuExtDevicesStop(virQEMUDriverPtr driver,
-                        virDomainDefPtr def)
+                        virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 bool qemuExtDevicesHasDevice(virDomainDefPtr def);

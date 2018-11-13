@@ -84,7 +84,7 @@ int qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
                                     virDomainChrDefPtr chr);
 
 int qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
-                                 virDomainDefPtr def,
+                                 virDomainObjPtr vm,
                                  virCommandPtr cmd,
                                  uid_t uid,
                                  gid_t gid,
@@ -92,7 +92,7 @@ int qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
                                  int *cmdret);
 
 void qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
-                                    virDomainDefPtr def);
+                                    virDomainObjPtr vm);
 
 int qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,

@@ -6374,7 +6374,7 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessGenID(vm, flags) < 0)
         goto cleanup;
 
-    if (qemuExtDevicesStart(driver, vm->def, logCtxt) < 0)
+    if (qemuExtDevicesStart(driver, vm, logCtxt) < 0)
         goto cleanup;
 
     VIR_DEBUG("Building emulator command line");
@@ -6630,7 +6630,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
  cleanup:
     if (ret < 0)
-        qemuExtDevicesStop(driver, vm->def);
+        qemuExtDevicesStop(driver, vm);
     qemuDomainSecretDestroy(vm);
     virCommandFree(cmd);
     virObjectUnref(logCtxt);
@@ -7061,7 +7061,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     qemuDomainCleanupRun(driver, vm);
 
-    qemuExtDevicesStop(driver, vm->def);
+    qemuExtDevicesStop(driver, vm);
 
     /* Stop autodestroy in case guest is restarted */
     qemuProcessAutoDestroyRemove(driver, vm);
