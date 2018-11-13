@@ -1091,7 +1091,7 @@ virSecuritySELinuxTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                     pid_t pid)
 {
     virSecuritySELinuxContextListPtr list;
-    int ret = 0;
+    int ret = -1;
 
     list = virThreadLocalGet(&contextList);
     if (!list)
