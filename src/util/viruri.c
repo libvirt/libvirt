@@ -171,7 +171,16 @@ virURIParse(const char *uri)
         goto error;
     if (VIR_STRDUP(ret->server, xmluri->server) < 0)
         goto error;
-    ret->port = xmluri->port;
+    /* xmluri->port value is not defined if server was
+     * not given. Modern versions libxml2 fill port
+     * differently to old versions in this case, so
+     * don't rely on it. eg libxml2 git commit:
+     *   beb7281055dbf0ed4d041022a67c6c5cfd126f25
+     */
+    if (!ret->server || STREQ(ret->server, ""))
+        ret->port = 0;
+    else
+        ret->port = xmluri->port;
     if (VIR_STRDUP(ret->path, xmluri->path) < 0)
         goto error;
 #ifdef HAVE_XMLURI_QUERY_RAW
