@@ -1094,8 +1094,11 @@ virSecuritySELinuxTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     int ret = -1;
 
     list = virThreadLocalGet(&contextList);
-    if (!list)
-        return 0;
+    if (!list) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No transaction is set"));
+        return -1;
+    }
 
     if (virThreadLocalSet(&contextList, NULL) < 0) {
         virReportSystemError(errno, "%s",
