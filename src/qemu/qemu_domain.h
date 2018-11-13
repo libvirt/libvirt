@@ -369,6 +369,9 @@ struct _qemuDomainObjPrivate {
     /* qemuProcessStartCPUs stores the reason for starting vCPUs here for the
      * RESUME event handler to use it */
     virDomainRunningReason runningReason;
+
+    /* true if libvirt remembers the original owner for files */
+    bool rememberOwner;
 };
 
 # define QEMU_DOMAIN_PRIVATE(vm) \

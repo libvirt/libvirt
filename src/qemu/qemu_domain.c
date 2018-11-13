@@ -1963,6 +1963,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
     virBitmapFree(priv->namespaces);
     priv->namespaces = NULL;
 
+    priv->rememberOwner = false;
+
     priv->reconnectBlockjobs = VIR_TRISTATE_BOOL_ABSENT;
     priv->allowReboot = VIR_TRISTATE_BOOL_ABSENT;
 
@@ -2480,6 +2482,9 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     if (priv->chardevStdioLogd)
         virBufferAddLit(buf, "<chardevStdioLogd/>\n");
 
+    if (priv->rememberOwner)
+        virBufferAddLit(buf, "<rememberOwner/>\n");
+
     qemuDomainObjPrivateXMLFormatAllowReboot(buf, priv->allowReboot);
 
     qemuDomainObjPrivateXMLFormatPR(buf, priv);
@@ -2890,6 +2895,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         virBitmapFree(priv->namespaces);
         priv->namespaces = NULL;
     }
+
+    priv->rememberOwner = virXPathBoolean("count(./rememberOwner) > 0", ctxt);
 
     if ((n = virXPathNodeSet("./vcpus/vcpu", ctxt, &nodes)) < 0)
         goto error;
