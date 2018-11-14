@@ -1579,6 +1579,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
                 break;
 
+            case VIR_DOMAIN_HYPERV_IPI:
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }

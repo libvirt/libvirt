@@ -5779,6 +5779,11 @@
             <ref name="featurestate"/>
           </element>
         </optional>
+        <optional>
+          <element name="ipi">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

@@ -2007,6 +2007,7 @@
     &lt;frequencies state='on'/&gt;
     &lt;reenlightenment state='on'/&gt;
     &lt;tlbflush state='on'/&gt;
+    &lt;ipi state='on'/&gt;
   &lt;/hyperv&gt;
   &lt;kvm&gt;
     &lt;hidden state='on'/&gt;
@@ -2146,6 +2147,12 @@
           <td>Enable PV TLB flush support</td>
           <td>on, off</td>
           <td><span class="since">4.7.0 (QEMU 3.0)</span></td>
+        </tr>
+        <tr>
+          <td>ipi</td>
+          <td>Enable PV IPI support</td>
+          <td>on, off</td>
+          <td><span class="since">4.10.0 (QEMU 3.1)</span></td>
         </tr>
       </table>
       </dd>
