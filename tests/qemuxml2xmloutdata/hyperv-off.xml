@@ -23,6 +23,7 @@
       <frequencies state='off'/>
       <reenlightenment state='off'/>
       <tlbflush state='off'/>
+      <ipi state='off'/>
     </hyperv>
   </features>
   <clock offset='utc'/>

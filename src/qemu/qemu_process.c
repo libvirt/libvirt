@@ -3964,12 +3964,12 @@ qemuProcessVerifyHypervFeatures(virDomainDefPtr def,
         case VIR_DOMAIN_HYPERV_FREQUENCIES:
         case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
         case VIR_DOMAIN_HYPERV_TLBFLUSH:
+        case VIR_DOMAIN_HYPERV_IPI:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("host doesn't support hyperv '%s' feature"),
                            virDomainHypervTypeToString(i));
             return -1;
 
-        case VIR_DOMAIN_HYPERV_IPI:
         /* coverity[dead_error_begin] */
         case VIR_DOMAIN_HYPERV_VENDOR_ID:
         case VIR_DOMAIN_HYPERV_LAST:
