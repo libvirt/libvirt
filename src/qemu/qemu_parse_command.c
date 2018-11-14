@@ -1540,6 +1540,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
             case VIR_DOMAIN_HYPERV_TLBFLUSH:
             case VIR_DOMAIN_HYPERV_IPI:
+            case VIR_DOMAIN_HYPERV_EVMCS:
                 if (value) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("HyperV feature '%s' should not "
@@ -1580,7 +1581,6 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
                 break;
 
-            case VIR_DOMAIN_HYPERV_EVMCS:
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
