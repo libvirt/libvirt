@@ -30,6 +30,8 @@ typedef struct _qemuBlockJobData qemuBlockJobData;
 typedef qemuBlockJobData *qemuBlockJobDataPtr;
 
 struct _qemuBlockJobData {
+    virObject parent;
+
     bool started;
     int type;
     int status;
@@ -37,8 +39,7 @@ struct _qemuBlockJobData {
     bool synchronous; /* API call is waiting for this job */
 };
 
-void
-qemuBlockJobDataFree(qemuBlockJobDataPtr job);
+qemuBlockJobDataPtr qemuBlockJobDataNew(void);
 
 int qemuBlockJobUpdateDisk(virDomainObjPtr vm,
                            int asyncJob,

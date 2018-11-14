@@ -42,14 +42,37 @@
 VIR_LOG_INIT("qemu.qemu_blockjob");
 
 
-void
-qemuBlockJobDataFree(qemuBlockJobDataPtr job)
+static virClassPtr qemuBlockJobDataClass;
+
+
+static void
+qemuBlockJobDataDispose(void *obj)
 {
-    if (!job)
-        return;
+    qemuBlockJobDataPtr job = obj;
 
     VIR_FREE(job->errmsg);
-    VIR_FREE(job);
+}
+
+
+static int
+qemuBlockJobDataOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(qemuBlockJobData, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+
+VIR_ONCE_GLOBAL_INIT(qemuBlockJobData)
+
+qemuBlockJobDataPtr
+qemuBlockJobDataNew(void)
+{
+    if (qemuBlockJobDataInitialize() < 0)
+        return NULL;
+
+    return virObjectNew(qemuBlockJobDataClass);
 }
 
 
