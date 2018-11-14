@@ -2693,7 +2693,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
          * "mon_L3_01" are two target directories for a two nodes system
          * with resource utilization data file for each node respectively.
          */
-        if (ent->d_type != DT_DIR)
+        if (!virFileIsDir(ent->d_name))
             continue;
 
         /* Looking for directory has a prefix 'mon_L' */
