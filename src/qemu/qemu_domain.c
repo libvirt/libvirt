@@ -11132,9 +11132,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
     }
     ret = 0;
  cleanup:
-    for (i = 0; i < tmpNpaths; i++)
-        VIR_FREE(tmpPaths[i]);
-    VIR_FREE(tmpPaths);
+    virStringListFreeCount(tmpPaths, tmpNpaths);
     VIR_FREE(tmpPerms);
     virPCIDeviceFree(pci);
     virUSBDeviceFree(usb);
