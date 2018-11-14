@@ -3992,6 +3992,29 @@ qemuDomainDefValidateMemory(const virDomainDef *def)
 
 
 static int
+qemuDomainValidateCpuCount(const virDomainDef *def,
+                            virQEMUCapsPtr qemuCaps)
+{
+    unsigned int maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->os.machine);
+
+    if (virDomainDefGetVcpus(def) == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Domain requires at least 1 vCPU"));
+        return -1;
+    }
+
+    if (maxCpus > 0 && virDomainDefGetVcpusMax(def) > maxCpus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Maximum CPUs greater than specified machine "
+                         "type limit %u"), maxCpus);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefValidate(const virDomainDef *def,
                       virCapsPtr caps ATTRIBUTE_UNUSED,
                       void *opaque)
@@ -4085,7 +4108,7 @@ qemuDomainDefValidate(const virDomainDef *def,
         }
     }
 
-    if (qemuProcessValidateCpuCount(def, qemuCaps) < 0)
+    if (qemuDomainValidateCpuCount(def, qemuCaps) < 0)
         goto cleanup;
 
     if (ARCH_IS_X86(def->os.arch) &&
