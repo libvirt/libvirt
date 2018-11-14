@@ -222,7 +222,7 @@ unsigned long long virMemoryMaxValue(bool ulong) ATTRIBUTE_NOINLINE;
 
 bool virHostHasIOMMU(void);
 
-char *virHostGetDRMRenderNode(void);
+char *virHostGetDRMRenderNode(void) ATTRIBUTE_NOINLINE;
 
 /**
  * VIR_ASSIGN_IS_OVERFLOW:

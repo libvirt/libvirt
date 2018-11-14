@@ -184,6 +184,15 @@ virNetDevRunEthernetScript(const char *ifname ATTRIBUTE_UNUSED,
     return 0;
 }
 
+char *
+virHostGetDRMRenderNode(void)
+{
+    char *dst = NULL;
+
+    ignore_value(VIR_STRDUP(dst, "/dev/dri/foo"));
+    return dst;
+}
+
 static void (*real_virCommandPassFD)(virCommandPtr cmd, int fd, unsigned int flags);
 
 static const int testCommandPassSafeFDs[] = { 1730, 1731 };

@@ -4785,8 +4785,27 @@ qemuProcessGraphicsSetupListen(virQEMUDriverPtr driver,
 
 
 static int
+qemuProcessGraphicsSetupRenderNode(virDomainGraphicsDefPtr graphics,
+                                   virQEMUCapsPtr qemuCaps)
+{
+    if (!virDomainGraphicsNeedsAutoRenderNode(graphics))
+        return 0;
+
+    /* Don't bother picking a DRM node if QEMU doesn't support it. */
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_RENDERNODE))
+        return 0;
+
+    if (!(graphics->data.spice.rendernode = virHostGetDRMRenderNode()))
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuProcessSetupGraphics(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
+                         virQEMUCapsPtr qemuCaps,
                          unsigned int flags)
 {
     virDomainGraphicsDefPtr graphics;
@@ -4796,6 +4815,9 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ngraphics; i++) {
         graphics = vm->def->graphics[i];
+
+        if (qemuProcessGraphicsSetupRenderNode(graphics, qemuCaps) < 0)
+            goto cleanup;
 
         if (qemuProcessGraphicsSetupListen(driver, graphics, vm) < 0)
             goto cleanup;
@@ -5953,7 +5975,7 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
         goto cleanup;
 
     VIR_DEBUG("Setting graphics devices");
-    if (qemuProcessSetupGraphics(driver, vm, flags) < 0)
+    if (qemuProcessSetupGraphics(driver, vm, priv->qemuCaps, flags) < 0)
         goto cleanup;
 
     VIR_DEBUG("Create domain masterKey");

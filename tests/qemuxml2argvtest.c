@@ -1351,6 +1351,7 @@ mymain(void)
                     QEMU_CAPS_SPICE,
                     QEMU_CAPS_EGL_HEADLESS,
                     QEMU_CAPS_DEVICE_QXL);
+    DO_TEST_CAPS_LATEST("graphics-spice-gl-auto-rendernode");
 
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);
