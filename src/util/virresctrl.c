@@ -2684,9 +2684,6 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     while (virDirRead(dirp, &ent, datapath) > 0) {
         char *node_id = NULL;
 
-        if (VIR_ALLOC(stat) < 0)
-            goto cleanup;
-
         /* Looking for directory that contains resource utilization
          * information file. The directory name is arranged in format
          * "mon_<node_name>_<node_id>". For example, "mon_L3_00" and
@@ -2708,6 +2705,9 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
         /* Skip the character '_' */
         if (!(node_id = STRSKIP(node_id, "_")))
             continue;
+
+        if (VIR_ALLOC(stat) < 0)
+            goto cleanup;
 
         /* The node ID number should be here, parsing it. */
         if (virStrToLong_uip(node_id, NULL, 0, &stat->id) < 0)
