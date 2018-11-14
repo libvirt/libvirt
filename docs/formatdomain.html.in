@@ -2078,7 +2078,7 @@
         <tr>
           <td>relaxed</td>
           <td>Relax constraints on timers</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">1.0.0 (QEMU 2.0)</span></td>
         </tr>
         <tr>
@@ -2096,31 +2096,31 @@
         <tr>
           <td>vpindex</td>
           <td>Virtual processor index</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
         </tr>
         <tr>
           <td>runtime</td>
           <td>Processor time spent on running guest code and on behalf of guest code</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
         </tr>
         <tr>
           <td>synic</td>
           <td>Enable Synthetic Interrupt Controller (SyNIC)</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">1.3.3 (QEMU 2.6)</span></td>
         </tr>
         <tr>
           <td>stimer</td>
           <td>Enable SyNIC timers</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">1.3.3 (QEMU 2.6)</span></td>
         </tr>
         <tr>
           <td>reset</td>
           <td>Enable hypervisor reset</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
         </tr>
         <tr>
@@ -2132,19 +2132,19 @@
         <tr>
           <td>frequencies</td>
           <td>Expose frequency MSRs</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">4.7.0 (QEMU 2.12)</span></td>
         </tr>
         <tr>
           <td>reenlightenment</td>
           <td>Enable re-enlightenment notification on migration</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">4.7.0 (QEMU 3.0)</span></td>
         </tr>
         <tr>
           <td>tlbflush</td>
           <td>Enable PV TLB flush support</td>
-          <td> on, off</td>
+          <td>on, off</td>
           <td><span class="since">4.7.0 (QEMU 3.0)</span></td>
         </tr>
       </table>
