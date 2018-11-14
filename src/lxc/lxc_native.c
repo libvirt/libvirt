@@ -200,8 +200,13 @@ lxcSetRootfs(virDomainDefPtr def,
     int type = VIR_DOMAIN_FS_TYPE_MOUNT;
     VIR_AUTOFREE(char *) value = NULL;
 
-    if (virConfGetValueString(properties, "lxc.rootfs", &value) <= 0)
-        return -1;
+    if (virConfGetValueString(properties, "lxc.rootfs.path", &value) <= 0) {
+        virResetLastError();
+
+        /* Check for pre LXC 3.0 legacy key */
+        if (virConfGetValueString(properties, "lxc.rootfs", &value) <= 0)
+            return -1;
+    }
 
     if (STRPREFIX(value, "/dev/"))
         type = VIR_DOMAIN_FS_TYPE_BLOCK;
@@ -684,8 +689,13 @@ lxcCreateConsoles(virDomainDefPtr def, virConfPtr properties)
     virDomainChrDefPtr console;
     size_t i;
 
-    if (virConfGetValueString(properties, "lxc.tty", &value) <= 0)
-        return 0;
+    if (virConfGetValueString(properties, "lxc.tty.max", &value) <= 0) {
+        virResetLastError();
+
+        /* Check for pre LXC 3.0 legacy key */
+        if (virConfGetValueString(properties, "lxc.tty", &value) <= 0)
+            return 0;
+    }
 
     if (virStrToLong_i(value, NULL, 10, &nbttys) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("failed to parse int: '%s'"),
@@ -724,13 +734,16 @@ lxcIdmapWalkCallback(const char *name, virConfValuePtr value, void *data)
     char type;
     unsigned long start, target, count;
 
-    if (STRNEQ(name, "lxc.id_map") || !value->str)
-        return 0;
+    /* LXC 3.0 uses "lxc.idmap", while legacy used "lxc.id_map" */
+    if (STRNEQ(name, "lxc.idmap") || !value->str) {
+        if (!value->str || STRNEQ(name, "lxc.id_map"))
+            return 0;
+    }
 
     if (sscanf(value->str, "%c %lu %lu %lu", &type,
                &target, &start, &count) != 4) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid lxc.id_map: '%s'"),
-                       value->str);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid %s: '%s'"),
+                       name, value->str);
         return -1;
     }
 
@@ -1041,19 +1054,30 @@ lxcParseConfigString(const char *config,
     if (VIR_STRDUP(vmdef->os.init, "/sbin/init") < 0)
         goto error;
 
-    if (virConfGetValueString(properties, "lxc.utsname", &value) <= 0 ||
-        VIR_STRDUP(vmdef->name, value) < 0)
+    if (virConfGetValueString(properties, "lxc.uts.name", &value) <= 0) {
+        virResetLastError();
+
+        /* Check for pre LXC 3.0 legacy key */
+        if (virConfGetValueString(properties, "lxc.utsname", &value) <= 0)
+            goto error;
+    }
+
+    if (VIR_STRDUP(vmdef->name, value) < 0)
         goto error;
+
     if (!vmdef->name && (VIR_STRDUP(vmdef->name, "unnamed") < 0))
         goto error;
 
     if (lxcSetRootfs(vmdef, properties) < 0)
         goto error;
 
-    /* Look for fstab: we shouldn't have it */
-    if (virConfGetValue(properties, "lxc.mount")) {
+    /* LXC 3.0 uses "lxc.mount.fstab", while legacy used just "lxc.mount".
+     * In either case, generate the error to use "lxc.mount.entry" instead */
+    if (virConfGetValue(properties, "lxc.mount.fstab") ||
+        virConfGetValue(properties, "lxc.mount")) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("lxc.mount found, use lxc.mount.entry lines instead"));
+                       _("lxc.mount.fstab or lxc.mount found, use "
+                         "lxc.mount.entry lines instead"));
         goto error;
     }
 
@@ -1069,7 +1093,7 @@ lxcParseConfigString(const char *config,
     if (lxcCreateConsoles(vmdef, properties) < 0)
         goto error;
 
-    /* lxc.id_map */
+    /* lxc.idmap or legacy lxc.id_map */
     if (virConfWalk(properties, lxcIdmapWalkCallback, vmdef) < 0)
         goto error;
 
