@@ -5153,21 +5153,9 @@ qemuProcessStartValidateDisks(virDomainObjPtr vm,
 static int
 qemuProcessStartValidateXML(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            virQEMUCapsPtr qemuCaps,
                             virCapsPtr caps,
                             unsigned int flags)
 {
-    /* The bits we validate here are XML configs that we previously
-     * accepted. We reject them at VM startup time rather than parse
-     * time so that pre-existing VMs aren't rejected and dropped from
-     * the VM list when libvirt is updated.
-     *
-     * If back compat isn't a concern, XML validation should probably
-     * be done at parse time.
-     */
-    if (qemuProcessValidateCpuCount(vm->def, qemuCaps) < 0)
-        return -1;
-
     /* checks below should not be executed when starting a qemu process for a
      * VM that was running before (migration, snapshots, save). It's more
      * important to start such VM than keep the configuration clean */
@@ -5217,7 +5205,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 
     }
 
-    if (qemuProcessStartValidateXML(driver, vm, qemuCaps, caps, flags) < 0)
+    if (qemuProcessStartValidateXML(driver, vm, caps, flags) < 0)
         return -1;
 
     if (qemuProcessStartValidateGraphics(vm) < 0)

@@ -4085,6 +4085,9 @@ qemuDomainDefValidate(const virDomainDef *def,
         }
     }
 
+    if (qemuProcessValidateCpuCount(def, qemuCaps) < 0)
+        goto cleanup;
+
     if (ARCH_IS_X86(def->os.arch) &&
         virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM) {
         if (!qemuDomainIsQ35(def)) {
