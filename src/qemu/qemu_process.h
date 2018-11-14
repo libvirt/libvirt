@@ -47,6 +47,9 @@ int qemuProcessDestroyMemoryBackingPath(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         virDomainMemoryDefPtr mem);
 
+int qemuProcessValidateCpuCount(const virDomainDef *def,
+                                virQEMUCapsPtr qemuCaps);
+
 void qemuProcessReconnectAll(virQEMUDriverPtr driver);
 
 typedef struct _qemuProcessIncomingDef qemuProcessIncomingDef;

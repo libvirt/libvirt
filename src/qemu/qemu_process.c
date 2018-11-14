@@ -3898,9 +3898,9 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuValidateCpuCount(virDomainDefPtr def,
-                     virQEMUCapsPtr qemuCaps)
+int
+qemuProcessValidateCpuCount(const virDomainDef *def,
+                            virQEMUCapsPtr qemuCaps)
 {
     unsigned int maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->os.machine);
 
@@ -5165,7 +5165,7 @@ qemuProcessStartValidateXML(virQEMUDriverPtr driver,
      * If back compat isn't a concern, XML validation should probably
      * be done at parse time.
      */
-    if (qemuValidateCpuCount(vm->def, qemuCaps) < 0)
+    if (qemuProcessValidateCpuCount(vm->def, qemuCaps) < 0)
         return -1;
 
     /* checks below should not be executed when starting a qemu process for a
