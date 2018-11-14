@@ -1288,8 +1288,7 @@ static virNetMessagePtr virNetServerClientDispatchRead(virNetServerClientPtr cli
                 if (ret < 0) {
                     virNetMessageFree(msg);
                     msg = NULL;
-                    if (ret < 0)
-                        client->wantClose = true;
+                    client->wantClose = true;
                     break;
                 }
                 if (ret > 0) {
