@@ -2008,6 +2008,7 @@
     &lt;reenlightenment state='on'/&gt;
     &lt;tlbflush state='on'/&gt;
     &lt;ipi state='on'/&gt;
+    &lt;evmcs state='on'/&gt;
   &lt;/hyperv&gt;
   &lt;kvm&gt;
     &lt;hidden state='on'/&gt;
@@ -2151,6 +2152,12 @@
         <tr>
           <td>ipi</td>
           <td>Enable PV IPI support</td>
+          <td>on, off</td>
+          <td><span class="since">4.10.0 (QEMU 3.1)</span></td>
+        </tr>
+        <tr>
+          <td>evmcs</td>
+          <td>Enable Enlightened VMCS</td>
           <td>on, off</td>
           <td><span class="since">4.10.0 (QEMU 3.1)</span></td>
         </tr>

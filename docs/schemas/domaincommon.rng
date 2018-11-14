@@ -5784,6 +5784,11 @@
             <ref name="featurestate"/>
           </element>
         </optional>
+        <optional>
+          <element name="evmcs">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

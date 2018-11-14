@@ -1580,6 +1580,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
                 break;
 
+            case VIR_DOMAIN_HYPERV_EVMCS:
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }

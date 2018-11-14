@@ -6900,6 +6900,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
                                       def->hyperv_vendor_id);
                 break;
 
+            case VIR_DOMAIN_HYPERV_EVMCS:
             /* coverity[dead_error_begin] */
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
