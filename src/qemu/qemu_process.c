@@ -5127,23 +5127,6 @@ qemuProcessStartValidateDisks(virDomainObjPtr vm,
 }
 
 
-static int
-qemuProcessStartValidateXML(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            virCapsPtr caps,
-                            unsigned int flags)
-{
-    /* checks below should not be executed when starting a qemu process for a
-     * VM that was running before (migration, snapshots, save). It's more
-     * important to start such VM than keep the configuration clean */
-    if ((flags & VIR_QEMU_PROCESS_START_NEW) &&
-        virDomainDefValidate(vm->def, caps, 0, driver->xmlopt) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 /**
  * qemuProcessStartValidate:
  * @vm: domain object
@@ -5182,7 +5165,11 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 
     }
 
-    if (qemuProcessStartValidateXML(driver, vm, caps, flags) < 0)
+    /* Checks below should not be executed when starting a qemu process for a
+     * VM that was running before (migration, snapshots, save). It's more
+     * important to start such VM than keep the configuration clean */
+    if ((flags & VIR_QEMU_PROCESS_START_NEW) &&
+        virDomainDefValidate(vm->def, caps, 0, driver->xmlopt) < 0)
         return -1;
 
     if (qemuProcessStartValidateGraphics(vm) < 0)
