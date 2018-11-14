@@ -35,6 +35,15 @@
 <libvirt>
   <release version="v4.10.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Add Hyper-V PV IPI and Enlightened VMCS support
+        </summary>
+        <description>
+          The QEMU driver now has support for Hyper-V PV IPI and Enlightened VMCS
+          for Windows and Hyper-V guests.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
