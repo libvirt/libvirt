@@ -160,6 +160,7 @@
   <flag name='machine.pseries.cap-htm'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
+  <flag name='memory-backend-memfd'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>444131</microcodeVersion>

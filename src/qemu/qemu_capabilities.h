@@ -494,6 +494,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_BLOCKDEV, /* -blockdev and blockdev-add are supported */
     QEMU_CAPS_DEVICE_VFIO_AP, /* -device vfio-ap */
     QEMU_CAPS_DEVICE_ZPCI, /* -device zpci */
+    QEMU_CAPS_OBJECT_MEMORY_MEMFD, /* -object memory-backend-memfd */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

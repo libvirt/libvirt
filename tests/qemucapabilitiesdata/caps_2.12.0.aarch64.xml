@@ -162,6 +162,7 @@
   <flag name='tpm-emulator'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
+  <flag name='memory-backend-memfd'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>344910</microcodeVersion>

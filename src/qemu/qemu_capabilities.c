@@ -510,6 +510,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "blockdev",
               "vfio-ap",
               "zpci",
+              "memory-backend-memfd",
     );
 
 
@@ -1096,6 +1097,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "sev-guest", QEMU_CAPS_SEV_GUEST },
     { "vfio-ap", QEMU_CAPS_DEVICE_VFIO_AP },
     { "zpci", QEMU_CAPS_DEVICE_ZPCI },
+    { "memory-backend-memfd", QEMU_CAPS_OBJECT_MEMORY_MEMFD },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

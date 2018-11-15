@@ -129,6 +129,7 @@
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='zpci'/>
+  <flag name='memory-backend-memfd'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>374287</microcodeVersion>
