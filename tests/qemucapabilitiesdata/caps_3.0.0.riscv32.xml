@@ -101,6 +101,7 @@
   <flag name='tpm-emulator'/>
   <flag name='egl-headless'/>
   <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

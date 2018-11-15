@@ -206,9 +206,10 @@
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>425157</microcodeVersion>
+  <microcodeVersion>425972</microcodeVersion>
   <package>v3.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

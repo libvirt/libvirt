@@ -496,6 +496,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_ZPCI, /* -device zpci */
     QEMU_CAPS_OBJECT_MEMORY_MEMFD, /* -object memory-backend-memfd */
 
+    /* 320 */
+    QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB, /* -object memory-backend-memfd.hugetlb */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

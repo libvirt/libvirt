@@ -163,9 +163,10 @@
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>344910</microcodeVersion>
+  <microcodeVersion>345725</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>

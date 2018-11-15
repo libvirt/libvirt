@@ -130,9 +130,10 @@
   <flag name='vfio-pci.display'/>
   <flag name='zpci'/>
   <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>374287</microcodeVersion>
+  <microcodeVersion>375102</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='z14-base' migratability='no'>

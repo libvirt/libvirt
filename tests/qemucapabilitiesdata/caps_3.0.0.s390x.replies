@@ -3978,13 +3978,71 @@
 {
   "execute": "qom-list-properties",
   "arguments": {
-    "typename": "spapr-machine"
+    "typename": "memory-backend-memfd"
   },
   "id": "libvirt-32"
 }
 
 {
-  "id": "libvirt-32",
+  "return": [
+    {
+      "name": "policy",
+      "type": "HostMemPolicy"
+    },
+    {
+      "name": "share",
+      "type": "bool"
+    },
+    {
+      "name": "host-nodes",
+      "type": "int"
+    },
+    {
+      "name": "prealloc",
+      "type": "bool"
+    },
+    {
+      "name": "dump",
+      "type": "bool"
+    },
+    {
+      "name": "size",
+      "type": "int"
+    },
+    {
+      "name": "merge",
+      "type": "bool"
+    },
+    {
+      "name": "seal",
+      "type": "bool"
+    },
+    {
+      "name": "hugetlbsize",
+      "type": "int"
+    },
+    {
+      "name": "hugetlb",
+      "type": "bool"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "spapr-machine"
+  },
+  "id": "libvirt-33"
+}
+
+{
+  "id": "libvirt-33",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Class 'spapr-machine' not found"
@@ -3993,7 +4051,7 @@
 
 {
   "execute": "query-machines",
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -4056,12 +4114,12 @@
       "cpu-max": 248
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -4612,35 +4670,35 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
     "emulator"
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -5800,12 +5858,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -5875,12 +5933,12 @@
       "capability": "late-block-activate"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -17555,7 +17613,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -17566,7 +17624,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -17608,7 +17666,7 @@
       }
     }
   },
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -17622,11 +17680,11 @@
       }
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
-  "id": "libvirt-41",
+  "id": "libvirt-42",
   "error": {
     "class": "GenericError",
     "desc": "Property '.migratable' not found"

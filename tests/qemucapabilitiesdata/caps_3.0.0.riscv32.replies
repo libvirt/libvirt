@@ -1734,13 +1734,71 @@
 {
   "execute": "qom-list-properties",
   "arguments": {
-    "typename": "spapr-machine"
+    "typename": "memory-backend-memfd"
   },
   "id": "libvirt-27"
 }
 
 {
-  "id": "libvirt-27",
+  "return": [
+    {
+      "name": "policy",
+      "type": "HostMemPolicy"
+    },
+    {
+      "name": "share",
+      "type": "bool"
+    },
+    {
+      "name": "host-nodes",
+      "type": "int"
+    },
+    {
+      "name": "prealloc",
+      "type": "bool"
+    },
+    {
+      "name": "dump",
+      "type": "bool"
+    },
+    {
+      "name": "size",
+      "type": "int"
+    },
+    {
+      "name": "merge",
+      "type": "bool"
+    },
+    {
+      "name": "seal",
+      "type": "bool"
+    },
+    {
+      "name": "hugetlbsize",
+      "type": "int"
+    },
+    {
+      "name": "hugetlb",
+      "type": "bool"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    }
+  ],
+  "id": "libvirt-27"
+}
+
+{
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "spapr-machine"
+  },
+  "id": "libvirt-28"
+}
+
+{
+  "id": "libvirt-28",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Class 'spapr-machine' not found"
@@ -1749,7 +1807,7 @@
 
 {
   "execute": "query-machines",
-  "id": "libvirt-28"
+  "id": "libvirt-29"
 }
 
 {
@@ -1786,23 +1844,23 @@
       "cpu-max": 1
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-29"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-29"
+  "id": "libvirt-30"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-30"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-30"
+  "id": "libvirt-31"
 }
 
 {
@@ -1810,12 +1868,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-31"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -2940,12 +2998,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -3015,12 +3073,12 @@
       "capability": "late-block-activate"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -14695,5 +14753,5 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
