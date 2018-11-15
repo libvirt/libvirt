@@ -703,6 +703,7 @@ struct _qemuMonitorMigrationStats {
     unsigned long long ram_dirty_rate;
     unsigned long long ram_page_size;
     unsigned long long ram_iteration;
+    unsigned long long ram_postcopy_reqs;
 
     unsigned long long disk_transferred;
     unsigned long long disk_remaining;

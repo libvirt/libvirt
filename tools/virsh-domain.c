@@ -6233,6 +6233,14 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         } else if (rc) {
             vshPrint(ctl, "%-17s %-12llu\n", _("Iteration:"), value);
         }
+
+        if ((rc = virTypedParamsGetULLong(params, nparams,
+                                          VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS,
+                                          &value)) < 0) {
+            goto save_error;
+        } else if (rc) {
+            vshPrint(ctl, "%-17s %-12llu\n", _("Postcopy requests:"), value);
+        }
     }
 
     if (info.fileTotal || info.fileRemaining || info.fileProcessed) {

@@ -3423,6 +3423,16 @@ typedef enum {
 # define VIR_DOMAIN_JOB_MEMORY_ITERATION         "memory_iteration"
 
 /**
+ * VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS:
+ *
+ * virDomainGetJobStats field: number page requests received from the
+ * destination host during post-copy migration, as VIR_TYPED_PARAM_ULLONG.
+ * This counter is incremented whenever the migrated domain tries to access
+ * a memory page which has not been transferred from the source host yet.
+ */
+# define VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS     "memory_postcopy_requests"
+
+/**
  * VIR_DOMAIN_JOB_DISK_TOTAL:
  *
  * virDomainGetJobStats field: as VIR_DOMAIN_JOB_DATA_TOTAL but only

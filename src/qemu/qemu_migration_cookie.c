@@ -703,6 +703,9 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_MEMORY_ITERATION,
                       stats->ram_iteration);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS,
+                      stats->ram_postcopy_reqs);
 
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_MEMORY_PAGE_SIZE,
@@ -1102,6 +1105,8 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
                       ctxt, &stats->ram_dirty_rate);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_ITERATION "[1])",
                       ctxt, &stats->ram_iteration);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS "[1])",
+                      ctxt, &stats->ram_postcopy_reqs);
 
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_PAGE_SIZE "[1])",
                       ctxt, &stats->ram_page_size);

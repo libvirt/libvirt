@@ -607,7 +607,10 @@ qemuDomainMigrationJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                                 stats->ram_dirty_rate) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_MEMORY_ITERATION,
-                                stats->ram_iteration) < 0)
+                                stats->ram_iteration) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS,
+                                stats->ram_postcopy_reqs) < 0)
         goto error;
 
     if (stats->ram_page_size > 0 &&
