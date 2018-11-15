@@ -1543,9 +1543,13 @@ static int
 qemuProcessHandleMigrationStatus(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                  virDomainObjPtr vm,
                                  int status,
-                                 void *opaque ATTRIBUTE_UNUSED)
+                                 void *opaque)
 {
     qemuDomainObjPrivatePtr priv;
+    virQEMUDriverPtr driver = opaque;
+    virObjectEventPtr event = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int reason;
 
     virObjectLock(vm);
 
@@ -1562,8 +1566,28 @@ qemuProcessHandleMigrationStatus(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     priv->job.current->stats.mig.status = status;
     virDomainObjBroadcast(vm);
 
+    if (status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY &&
+        virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
+        reason == VIR_DOMAIN_PAUSED_MIGRATION) {
+        VIR_DEBUG("Correcting paused state reason for domain %s to %s",
+                  vm->def->name,
+                  virDomainPausedReasonTypeToString(VIR_DOMAIN_PAUSED_POSTCOPY));
+
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_POSTCOPY);
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY);
+
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
+            VIR_WARN("Unable to save status on vm %s after state change",
+                     vm->def->name);
+        }
+    }
+
  cleanup:
     virObjectUnlock(vm);
+    virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectUnref(cfg);
     return 0;
 }
 
