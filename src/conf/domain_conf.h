@@ -1659,6 +1659,9 @@ struct _virDomainGraphicsDef {
             virTristateBool gl;
             char *rendernode;
         } spice;
+        struct {
+            char *rendernode;
+        } egl_headless;
     } data;
     /* nListens, listens, and *port are only useful if type is vnc,
      * rdp, or spice. They've been extracted from the union only to
