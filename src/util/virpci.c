@@ -2561,7 +2561,6 @@ virPCIDeviceAddressParse(char *address,
     return ret;
 }
 
-#ifdef __linux__
 
 bool
 virZPCIDeviceAddressIsValid(virZPCIDeviceAddressPtr zpci)
@@ -2588,6 +2587,7 @@ virZPCIDeviceAddressIsEmpty(const virZPCIDeviceAddress *addr)
     return !(addr->uid || addr->fid);
 }
 
+#ifdef __linux__
 
 /*
  * returns true if equal
