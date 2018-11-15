@@ -24,7 +24,7 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -spice port=0,seamless-migration=on \
--display egl-headless \
+-display egl-headless,rendernode=/dev/dri/foo \
 -device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,\
 vram64_size_mb=0,vgamem_mb=16,max_outputs=1,bus=pci.0,addr=0x2 \
 -device vfio-pci,id=hostdev0,\
