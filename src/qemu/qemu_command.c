@@ -3176,6 +3176,26 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
 }
 
 
+static int
+qemuBuildMemoryBackendPropsShare(virJSONValuePtr props,
+                                 virDomainMemoryAccess memAccess)
+{
+    switch (memAccess) {
+    case VIR_DOMAIN_MEMORY_ACCESS_SHARED:
+        return virJSONValueObjectAdd(props, "b:share", true, NULL);
+
+    case VIR_DOMAIN_MEMORY_ACCESS_PRIVATE:
+        return virJSONValueObjectAdd(props, "b:share", false, NULL);
+
+    case VIR_DOMAIN_MEMORY_ACCESS_DEFAULT:
+    case VIR_DOMAIN_MEMORY_ACCESS_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuBuildMemoryBackendProps:
  * @backendProps: [out] constructed object
@@ -3195,7 +3215,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
  * configuration value of 1 is returned. This behaviour can be suppressed by
  * setting @force to true in which case 0 would be returned.
  *
- * Then, if one of the two memory-backend-* should be used, the @qemuCaps is
+ * Then, if one of the three memory-backend-* should be used, the @qemuCaps is
  * consulted to check if qemu does support it.
  *
  * Returns: 0 on success,
@@ -3321,7 +3341,19 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     if (!(props = virJSONValueNewObject()))
         return -1;
 
-    if (useHugepage || mem->nvdimmPath || memAccess ||
+    if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
+        backendType = "memory-backend-memfd";
+
+        if (useHugepage &&
+            (virJSONValueObjectAdd(props, "b:hugetlb", useHugepage, NULL) < 0 ||
+             virJSONValueObjectAdd(props, "U:hugetlbsize", pagesize << 10, NULL) < 0)) {
+            goto cleanup;
+        }
+
+        if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
+            goto cleanup;
+
+    } else if (useHugepage || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
 
         if (mem->nvdimmPath) {
@@ -3359,21 +3391,8 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                 goto cleanup;
         }
 
-        switch (memAccess) {
-        case VIR_DOMAIN_MEMORY_ACCESS_SHARED:
-            if (virJSONValueObjectAdd(props, "b:share", true, NULL) < 0)
-                goto cleanup;
-            break;
-
-        case VIR_DOMAIN_MEMORY_ACCESS_PRIVATE:
-            if (virJSONValueObjectAdd(props, "b:share", false, NULL) < 0)
-                goto cleanup;
-            break;
-
-        case VIR_DOMAIN_MEMORY_ACCESS_DEFAULT:
-        case VIR_DOMAIN_MEMORY_ACCESS_LAST:
-            break;
-        }
+        if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
+            goto cleanup;
     } else {
         backendType = "memory-backend-ram";
     }
@@ -3403,7 +3422,9 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     if (!needHugepage && !mem->sourceNodes && !nodeSpecified &&
         !mem->nvdimmPath &&
         memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
-        def->mem.source != VIR_DOMAIN_MEMORY_SOURCE_FILE && !force) {
+        def->mem.source != VIR_DOMAIN_MEMORY_SOURCE_FILE &&
+        def->mem.source != VIR_DOMAIN_MEMORY_SOURCE_MEMFD &&
+        !force) {
         /* report back that using the new backend is not necessary
          * to achieve the desired configuration */
         ret = 1;
@@ -3420,6 +3441,12 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-ram object"));
+            goto cleanup;
+        } else if (STREQ(backendType, "memory-backend-memory") &&
+                   !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the "
+                             "memory-backend-memfd object"));
             goto cleanup;
         }
 
@@ -7654,7 +7681,8 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
     if (virDomainNumatuneHasPerNodeBinding(def->numa) &&
         !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE))) {
+          virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE) ||
+          virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Per-node memory binding is not supported "
                          "with this QEMU"));
@@ -7680,7 +7708,8 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
      * need to check which approach to use */
     for (i = 0; i < ncells; i++) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE) ||
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
 
             if ((rc = qemuBuildMemoryCellBackendStr(def, cfg, i, priv,
                                                     &nodeBackends[i])) < 0)

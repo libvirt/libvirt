@@ -655,6 +655,7 @@
                   <choice>
                     <value>file</value>
                     <value>anonymous</value>
+                    <value>memfd</value>
                   </choice>
                 </attribute>
               </element>

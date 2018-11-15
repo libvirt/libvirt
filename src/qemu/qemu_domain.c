@@ -3952,7 +3952,8 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
 
 
 static int
-qemuDomainDefValidateMemory(const virDomainDef *def)
+qemuDomainDefValidateMemory(const virDomainDef *def,
+                            virQEMUCapsPtr qemuCaps)
 {
     const long system_page_size = virGetSystemPageSizeKB();
     const virDomainMemtune *mem = &def->mem;
@@ -3971,6 +3972,13 @@ qemuDomainDefValidateMemory(const virDomainDef *def)
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("hugepages are not allowed with anonymous "
                          "memory source"));
+        return -1;
+    }
+
+    if (mem->source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("hugepages is not support with memfd memory source"));
         return -1;
     }
 
@@ -4139,7 +4147,7 @@ qemuDomainDefValidate(const virDomainDef *def,
     if (qemuDomainDefValidateFeatures(def, qemuCaps) < 0)
         goto cleanup;
 
-    if (qemuDomainDefValidateMemory(def) < 0)
+    if (qemuDomainDefValidateMemory(def, qemuCaps) < 0)
         goto cleanup;
 
     ret = 0;
