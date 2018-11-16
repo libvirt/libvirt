@@ -24353,13 +24353,14 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *model = NULL;
     const char *modelName = NULL;
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected controller type %d"), def->type);
-        return -1;
+        goto cleanup;
     }
 
     if (def->model != -1) {
@@ -24368,7 +24369,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
         if (!model) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected model type %d"), def->model);
-            return -1;
+            goto cleanup;
         }
     }
 
@@ -24432,7 +24433,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected model name value %d"),
                                def->opts.pciopts.modelName);
-                return -1;
+                goto cleanup;
             }
             virBufferAsprintf(&childBuf, "<model name='%s'/>\n", modelName);
         }
@@ -24483,7 +24484,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     if (virBufferCheckError(&childBuf) < 0)
-        return -1;
+        goto cleanup;
 
     if (virBufferUse(&childBuf)) {
         virBufferAddLit(buf, ">\n");
@@ -24492,6 +24493,11 @@ virDomainControllerDefFormat(virBufferPtr buf,
     } else {
         virBufferAddLit(buf, "/>\n");
     }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childBuf);
 
     return 0;
 }
@@ -24523,17 +24529,18 @@ virDomainFSDefFormat(virBufferPtr buf,
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(def->wrpolicy);
     const char *src = def->src->path;
     virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected filesystem type %d"), def->type);
-        return -1;
+        goto cleanup;
     }
 
    if (!accessmode) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected accessmode %d"), def->accessmode);
-        return -1;
+        goto cleanup;
     }
 
 
@@ -24557,7 +24564,7 @@ virDomainFSDefFormat(virBufferPtr buf,
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
     if (virBufferCheckError(&driverBuf) < 0)
-        return -1;
+        goto cleanup;
 
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");
@@ -24617,7 +24624,13 @@ virDomainFSDefFormat(virBufferPtr buf,
     }
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</filesystem>\n");
-    return 0;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&driverBuf);
+
+    return ret;
 }
 
 
@@ -25847,13 +25860,14 @@ virDomainSoundDefFormat(virBufferPtr buf,
     const char *model = virDomainSoundModelTypeToString(def->model);
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
+    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected sound model %d"), def->model);
-        return -1;
+        goto cleanup;
     }
 
     for (i = 0; i < def->ncodecs; i++)
@@ -25862,7 +25876,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     if (virBufferCheckError(&childBuf) < 0)
-        return -1;
+        goto cleanup;
 
     virBufferAsprintf(buf, "<sound model='%s'",  model);
     if (virBufferUse(&childBuf)) {
@@ -25872,6 +25886,11 @@ virDomainSoundDefFormat(virBufferPtr buf,
     } else {
         virBufferAddLit(buf, "/>\n");
     }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childBuf);
 
     return 0;
 }
@@ -25884,11 +25903,12 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
 {
     const char *model = virDomainMemballoonModelTypeToString(def->model);
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected memballoon model %d"), def->model);
-        return -1;
+        goto cleanup;
     }
 
     virBufferAsprintf(buf, "<memballoon model='%s'", model);
@@ -25909,10 +25929,9 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
 
         virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
-        if (virBufferCheckError(&driverBuf) < 0) {
-            virBufferFreeAndReset(&childrenBuf);
-            return -1;
-        }
+        if (virBufferCheckError(&driverBuf) < 0)
+            goto cleanup;
+
         if (virBufferUse(&driverBuf)) {
             virBufferAddLit(&childrenBuf, "<driver");
             virBufferAddBuffer(&childrenBuf, &driverBuf);
@@ -25921,7 +25940,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     }
 
     if (virBufferCheckError(&childrenBuf) < 0)
-        return -1;
+        goto cleanup;
 
     if (!virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "/>\n");
@@ -25930,6 +25949,11 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
         virBufferAddBuffer(buf, &childrenBuf);
         virBufferAddLit(buf, "</memballoon>\n");
     }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childrenBuf);
 
     return 0;
 }
@@ -25958,25 +25982,26 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
     const char *model = virDomainWatchdogModelTypeToString(def->model);
     const char *action = virDomainWatchdogActionTypeToString(def->action);
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected watchdog model %d"), def->model);
-        return -1;
+        goto cleanup;
     }
 
     if (!action) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected watchdog action %d"), def->action);
-        return -1;
+        goto cleanup;
     }
 
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     if (virBufferCheckError(&childBuf) < 0)
-        return -1;
+        goto cleanup;
 
     virBufferAsprintf(buf, "<watchdog model='%s' action='%s'",
                       model, action);
@@ -25989,13 +26014,19 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childBuf);
+
+    return ret;
 }
 
 static int virDomainPanicDefFormat(virBufferPtr buf,
                                    virDomainPanicDefPtr def)
 {
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     virBufferAddLit(buf, "<panic");
 
@@ -26007,7 +26038,7 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
     virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0);
 
     if (virBufferCheckError(&childrenBuf) < 0)
-        return -1;
+        goto cleanup;
 
     if (virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, ">\n");
@@ -26016,8 +26047,13 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
     } else {
         virBufferAddLit(buf, "/>\n");
     }
+
+    ret = 0;
+
+ cleanup:
     virBufferFreeAndReset(&childrenBuf);
-    return 0;
+
+    return ret;
 }
 
 static int
@@ -26067,6 +26103,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
     const char *model = virDomainRNGModelTypeToString(def->model);
     const char *backend = virDomainRNGBackendTypeToString(def->backend);
     virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     virBufferAsprintf(buf, "<rng model='%s'>\n", model);
     virBufferAdjustIndent(buf, 2);
@@ -26085,11 +26122,11 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
         if (virDomainChrAttrsDefFormat(buf, def->source.chardev, false) < 0)
-            return -1;
+            goto cleanup;
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         if (virDomainChrSourceDefFormat(buf, def->source.chardev, flags) < 0)
-            return -1;
+            goto cleanup;
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</backend>\n");
 
@@ -26099,7 +26136,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
     if (virBufferCheckError(&driverBuf) < 0)
-        return -1;
+        goto cleanup;
 
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");
@@ -26111,7 +26148,13 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</rng>\n");
-    return 0;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&driverBuf);
+
+    return ret;
 }
 
 void
@@ -26258,18 +26301,19 @@ virDomainVideoDefFormat(virBufferPtr buf,
 {
     const char *model = virDomainVideoTypeToString(def->type);
     virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected video model %d"), def->type);
-        return -1;
+        goto cleanup;
     }
 
     virBufferAddLit(buf, "<video>\n");
     virBufferAdjustIndent(buf, 2);
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
     if (virBufferCheckError(&driverBuf) < 0)
-        return -1;
+        goto cleanup;
     if (virBufferUse(&driverBuf) || (def->driver && def->driver->vgaconf)) {
         virBufferAddLit(buf, "<driver");
         if (virBufferUse(&driverBuf))
@@ -26308,7 +26352,13 @@ virDomainVideoDefFormat(virBufferPtr buf,
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</video>\n");
-    return 0;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&driverBuf);
+
+    return ret;
 }
 
 static int
@@ -26320,6 +26370,7 @@ virDomainInputDefFormat(virBufferPtr buf,
     const char *bus = virDomainInputBusTypeToString(def->bus);
     virBuffer childbuf = VIR_BUFFER_INITIALIZER;
     virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     /* don't format keyboard into migratable XML for backward compatibility */
     if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
@@ -26331,12 +26382,12 @@ virDomainInputDefFormat(virBufferPtr buf,
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected input type %d"), def->type);
-        return -1;
+        goto cleanup;
     }
     if (!bus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected input bus type %d"), def->bus);
-        return -1;
+        goto cleanup;
     }
 
     virBufferAsprintf(buf, "<input type='%s' bus='%s'",
@@ -26345,7 +26396,7 @@ virDomainInputDefFormat(virBufferPtr buf,
     virBufferSetChildIndent(&childbuf, buf);
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
     if (virBufferCheckError(&driverBuf) < 0)
-        return -1;
+        goto cleanup;
 
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(&childbuf, "<driver");
@@ -26356,7 +26407,7 @@ virDomainInputDefFormat(virBufferPtr buf,
     virDomainDeviceInfoFormat(&childbuf, &def->info, flags);
 
     if (virBufferCheckError(&childbuf) < 0)
-        return -1;
+        goto cleanup;
 
     if (!virBufferUse(&childbuf)) {
         virBufferAddLit(buf, "/>\n");
@@ -26366,7 +26417,13 @@ virDomainInputDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</input>\n");
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childbuf);
+    virBufferFreeAndReset(&driverBuf);
+
+    return ret;
 }
 
 
@@ -27028,19 +27085,20 @@ virDomainHubDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainHubTypeToString(def->type);
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected hub type %d"), def->type);
-        return -1;
+        goto cleanup;
     }
 
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     if (virBufferCheckError(&childBuf) < 0)
-        return -1;
+        goto cleanup;
 
     virBufferAsprintf(buf, "<hub type='%s'", type);
     if (virBufferUse(&childBuf)) {
@@ -27051,7 +27109,12 @@ virDomainHubDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childBuf);
+
+    return ret;
 }
 
 
