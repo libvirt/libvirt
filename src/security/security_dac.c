@@ -1492,10 +1492,15 @@ virSecurityDACSetGraphicsLabel(virSecurityManagerPtr mgr,
                                virDomainGraphicsDefPtr gfx)
 
 {
+    const char *rendernode = virDomainGraphicsGetRenderNode(gfx);
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr seclabel;
     uid_t user;
     gid_t group;
+
+    /* There's nothing to relabel */
+    if (!rendernode)
+        return 0;
 
     /* Skip chowning the shared render file if namespaces are disabled */
     if (!priv->mountNamespace)
@@ -1508,14 +1513,8 @@ virSecurityDACSetGraphicsLabel(virSecurityManagerPtr mgr,
     if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
         return -1;
 
-    if (gfx->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-        gfx->data.spice.gl == VIR_TRISTATE_BOOL_YES &&
-        gfx->data.spice.rendernode) {
-        if (virSecurityDACSetOwnership(mgr, NULL,
-                                       gfx->data.spice.rendernode,
-                                       user, group) < 0)
-            return -1;
-    }
+    if (virSecurityDACSetOwnership(mgr, NULL, rendernode, user, group) < 0)
+        return -1;
 
     return 0;
 }
