@@ -48,6 +48,16 @@
 <libvirt>
   <release version="v5.0.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          Xen: Add support for openvswitch
+        </summary>
+        <description>
+          The libxl driver now supports virtual interfaces that connect to
+          an openvswitch bridge, including interfaces with VLAN tagging and
+          trunking configuration.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
