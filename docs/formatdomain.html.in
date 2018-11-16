@@ -2836,7 +2836,6 @@
     &lt;/source&gt;
     &lt;target dev='sdb' bus='scsi'/&gt;
   &lt;/disk&gt;
-  &lt;/disk&gt;
   &lt;disk type='network' device='lun'&gt;
     &lt;driver name='qemu' type='raw'/&gt;
     &lt;source protocol='iscsi' name='iqn.2013-07.com.example:iscsi-nopool/0'&gt;
@@ -5217,7 +5216,6 @@
     &lt;virtualport&gt;
       &lt;parameters instanceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/&gt;
     &lt;/virtualport&gt;
-
   &lt;/interface&gt;
 &lt;/devices&gt;
 ...</pre>
@@ -5710,8 +5708,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;host csum='off' gso='off' tso4='off' tso6='off' ecn='off' ufo='off' mrg_rxbuf='off'/&gt;
       &lt;guest csum='off' tso4='off' tso6='off' ecn='off' ufo='off'/&gt;
     &lt;/driver&gt;
-    </b>
-  &lt;/interface&gt;
+    </b>&lt;/interface&gt;
 &lt;/devices&gt;
 ...</pre>
 
@@ -6213,7 +6210,7 @@ qemu-kvm -net nic,model=? /dev/null
     <b>&lt;route family='ipv4' address='192.168.122.0' prefix='24' gateway='192.168.122.1'/&gt;</b>
     <b>&lt;route family='ipv4' address='192.168.122.8' gateway='192.168.122.1'/&gt;</b>
   &lt;/hostdev&gt;
-
+  ...
 &lt;/devices&gt;
 ...
 </pre>
