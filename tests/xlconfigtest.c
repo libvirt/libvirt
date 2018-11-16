@@ -250,6 +250,8 @@ mymain(void)
         DO_TEST_FORMAT(name, true); \
     } while (0)
 
+    DO_TEST("fullvirt-ovswitch-tagged");
+    DO_TEST("fullvirt-ovswitch-trunked");
     DO_TEST_REPLACE_VARS("fullvirt-ovmf");
     DO_TEST("paravirt-maxvcpus");
     DO_TEST("new-disk");

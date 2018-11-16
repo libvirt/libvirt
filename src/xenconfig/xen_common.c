@@ -856,6 +856,80 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
 }
 
 
+static int
+xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
+{
+    char *vlanstr;
+    unsigned int tag;
+
+    if ((vlanstr = strchr(bridge, '.'))) {
+        /* 'bridge' string contains a bridge name and single vlan tag */
+        if (VIR_STRNDUP(net->data.bridge.brname, bridge, vlanstr - bridge) < 0)
+            return -1;
+
+        vlanstr++;
+        if (virStrToLong_ui(vlanstr, NULL, 10, &tag) < 0)
+            return -1;
+
+        if (VIR_ALLOC_N(net->vlan.tag, 1) < 0)
+            return -1;
+
+        net->vlan.tag[0] = tag;
+        net->vlan.nTags = 1;
+
+        if (VIR_ALLOC(net->virtPortProfile) < 0)
+            return -1;
+
+        net->virtPortProfile->virtPortType = VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH;
+        return 0;
+    } else if ((vlanstr = strchr(bridge, ':'))) {
+        /* 'bridge' string contains a bridge name and one or more vlan trunks */
+        size_t i;
+        size_t nvlans = 0;
+        char **vlanstr_list = virStringSplit(bridge, ":", 0);
+
+        if (!vlanstr_list)
+            return -1;
+
+        if (VIR_STRDUP(net->data.bridge.brname, vlanstr_list[0]) < 0) {
+            virStringListFree(vlanstr_list);
+            return -1;
+        }
+
+        for (i = 1; vlanstr_list[i]; i++)
+            nvlans++;
+
+        if (VIR_ALLOC_N(net->vlan.tag, nvlans) < 0) {
+            virStringListFree(vlanstr_list);
+            return -1;
+        }
+
+        for (i = 1; i <= nvlans; i++) {
+            if (virStrToLong_ui(vlanstr_list[i], NULL, 10, &tag) < 0) {
+                virStringListFree(vlanstr_list);
+                return -1;
+            }
+            net->vlan.tag[i - 1] = tag;
+        }
+        net->vlan.nTags = nvlans;
+        net->vlan.trunk = true;
+        virStringListFree(vlanstr_list);
+
+        if (VIR_ALLOC(net->virtPortProfile) < 0)
+            return -1;
+
+        net->virtPortProfile->virtPortType = VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH;
+        return 0;
+    } else {
+        /* 'bridge' string only contains the bridge name */
+        if (VIR_STRDUP(net->data.bridge.brname, bridge) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static virDomainNetDefPtr
 xenParseVif(char *entry, const char *vif_typename)
 {
@@ -974,8 +1048,8 @@ xenParseVif(char *entry, const char *vif_typename)
         net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
     }
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        if (bridge[0] && VIR_STRDUP(net->data.bridge.brname, bridge) < 0)
+    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE && bridge[0]) {
+        if (xenParseVifBridge(net, bridge) < 0)
             goto cleanup;
     }
     if (ip[0]) {
@@ -1264,14 +1338,41 @@ xenFormatNet(virConnectPtr conn,
 
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    {
+        virNetDevVPortProfilePtr port_profile = virDomainNetGetActualVirtPortProfile(net);
+        virNetDevVlanPtr virt_vlan = virDomainNetGetActualVlan(net);
+        const char *script = net->script;
+        size_t i;
+
         virBufferAsprintf(&buf, ",bridge=%s", net->data.bridge.brname);
+        if (port_profile &&
+            port_profile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+            if (!script)
+                script = "vif-openvswitch";
+            /*
+             * libxl_device_nic->bridge supports an extended format for
+             * specifying VLAN tags and trunks
+             *
+             * BRIDGE_NAME[.VLAN][:TRUNK:TRUNK]
+             */
+            if (virt_vlan && virt_vlan->nTags > 0) {
+                if (virt_vlan->trunk) {
+                    for (i = 0; i < virt_vlan->nTags; i++)
+                        virBufferAsprintf(&buf, ":%d", virt_vlan->tag[i]);
+                } else {
+                    virBufferAsprintf(&buf, ".%d", virt_vlan->tag[0]);
+                }
+            }
+        }
+
         if (net->guestIP.nips > 0) {
             char *ipStr = xenMakeIPList(&net->guestIP);
             virBufferAsprintf(&buf, ",ip=%s", ipStr);
             VIR_FREE(ipStr);
         }
-        virBufferAsprintf(&buf, ",script=%s", DEFAULT_VIF_SCRIPT);
-        break;
+        virBufferAsprintf(&buf, ",script=%s", script ? script : DEFAULT_VIF_SCRIPT);
+    }
+    break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (net->script)
