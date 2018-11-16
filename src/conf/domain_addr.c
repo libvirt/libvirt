@@ -940,15 +940,21 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                                          addrStr, flags, true))
             goto cleanup;
 
-        ret = virDomainPCIAddressReserveAddrInternal(addrs, &dev->addr.pci,
-                                                     flags, dev->isolationGroup,
-                                                     true);
+        if (virDomainPCIAddressReserveAddrInternal(addrs, &dev->addr.pci,
+                                                   flags, dev->isolationGroup,
+                                                   true) < 0) {
+            goto cleanup;
+        }
     } else {
-        ret = virDomainPCIAddressReserveNextAddr(addrs, dev, flags, -1);
+        if (virDomainPCIAddressReserveNextAddr(addrs, dev, flags, -1) < 0)
+            goto cleanup;
     }
 
     dev->addr.pci.extFlags = dev->pciAddrExtFlags;
-    ret = virDomainPCIAddressExtensionEnsureAddr(addrs, &dev->addr.pci);
+    if (virDomainPCIAddressExtensionEnsureAddr(addrs, &dev->addr.pci) < 0)
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(addrStr);
