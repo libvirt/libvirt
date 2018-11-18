@@ -1,12 +1,17 @@
 .. role:: since
 .. role:: removed
 
-==========================
-KVM/QEMU hypervisor driver
-==========================
+==============================
+QEMU/KVM/HVF hypervisor driver
+==============================
 
 The libvirt KVM/QEMU driver can manage any QEMU emulator from version 2.11.0 or
 later.
+
+It supports multiple QEMU accelerators: software
+emulation also known as TCG, hardware-assisted virtualization on Linux
+with KVM and hardware-assisted virtualization on macOS with
+Hypervisor.framework (:since:`since 8.1.0`).
 
 .. contents::
 
@@ -15,6 +20,7 @@ Project Links
 
 -  The `KVM <https://www.linux-kvm.org/>`__ Linux hypervisor
 -  The `QEMU <https://wiki.qemu.org/Index.html>`__ emulator
+-  `Hypervisor.framework`<https://developer.apple.com/documentation/hypervisor>__` reference
 
 Deployment pre-requisites
 -------------------------
@@ -27,6 +33,9 @@ Deployment pre-requisites
 -  **KVM hypervisor**: The driver will probe ``/usr/bin`` for the presence of
    ``qemu-kvm`` and ``/dev/kvm`` device node. If both are found, then KVM fully
    virtualized, hardware accelerated guests will be available.
+-  **Hypervisor.framework (HVF)**: The driver will probe ``sysctl`` for the
+   presence of ``Hypervisor.framework``. If it is found and QEMU is newer than
+   2.12, then it will be possible to create hardware accelerated guests.
 
 Connections to QEMU driver
 --------------------------
@@ -632,5 +641,38 @@ KVM hardware accelerated guest on i686
          <mac address='24:42:53:21:52:45'/>
        </interface>
        <graphics type='vnc' port='-1' keymap='de'/>
+     </devices>
+   </domain>
+
+HVF hardware accelerated guest on x86_64
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   <domain type='hvf'>
+     <name>hvf-demo</name>
+     <uuid>4dea24b3-1d52-d8f3-2516-782e98a23fa0</uuid>
+     <memory>131072</memory>
+     <vcpu>1</vcpu>
+     <os>
+       <type arch="x86_64">hvm</type>
+     </os>
+     <features>
+       <acpi/>
+     </features>
+     <clock sync="localtime"/>
+     <devices>
+       <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
+       <controller type='scsi' index='0' model='virtio-scsi'/>
+       <disk type='volume' device='disk'>
+         <driver name='qemu' type='qcow2'/>
+         <source pool='default' volume='myos'/>
+         <target bus='scsi' dev='sda'/>
+       </disk>
+       <interface type='user'>
+         <mac address='24:42:53:21:52:45'/>
+         <model type='virtio'/>
+       </interface>
+       <graphics type='vnc' port='-1'/>
      </devices>
    </domain>

@@ -21,6 +21,7 @@
         <li>is accessible from C, Python, Perl, Go and more</li>
         <li>is licensed under open source licenses</li>
         <li>supports <a href="drvqemu.html">KVM</a>,
+          <a href="drvqemu.html">Hypervisor.framework</a>,
           <a href="drvqemu.html">QEMU</a>, <a href="drvxen.html">Xen</a>,
           <a href="drvvirtuozzo.html">Virtuozzo</a>,
           <a href="drvesx.html">VMWare ESX</a>,
