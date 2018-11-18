@@ -24512,7 +24512,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
  cleanup:
     virBufferFreeAndReset(&childBuf);
 
-    return 0;
+    return ret;
 }
 
 
@@ -25912,7 +25912,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
  cleanup:
     virBufferFreeAndReset(&childBuf);
 
-    return 0;
+    return ret;
 }
 
 
@@ -25976,7 +25976,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
  cleanup:
     virBufferFreeAndReset(&childrenBuf);
 
-    return 0;
+    return ret;
 }
 
 static int
