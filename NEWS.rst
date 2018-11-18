@@ -17,6 +17,11 @@ v8.1.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add hvf domain type for Hypervisor.framework
+
+    It works on Intel machines as well as recent machines powered by Apple
+    Silicon. QEMU 6.2.0 is needed for Apple Silicon support.
+
 * **Improvements**
 
   * packaging: sysconfig files no longer installed
