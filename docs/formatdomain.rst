@@ -21,7 +21,7 @@ Element and attribute overview
 The root element required for all virtual machines is named ``domain``. It has
 two attributes, the ``type`` specifies the hypervisor used for running the
 domain. The allowed values are driver specific, but include "xen", "kvm",
-"hvf" (:since:`since 8.0.0 and QEMU 2.12`), "qemu"
+"hvf" (:since:`since 8.1.0 and QEMU 2.12`), "qemu"
 and "lxc". The second attribute is ``id`` which is a unique integer identifier
 for the running guest machine. Inactive machines have no id value.
 
@@ -1452,7 +1452,8 @@ In case no restrictions need to be put on CPU model and its features, a simpler
       :since:`Since 7.1.0` with the QEMU driver.
 
    Both ``host-model`` and ``host-passthrough`` modes make sense when a domain
-   can run directly on the host CPUs (for example, domains with type ``kvm``).
+   can run directly on the host CPUs (for example, domains with type ``kvm``
+   or ``hvf``).
    The actual host CPU is irrelevant for domains with emulated virtual CPUs
    (such as domains with type ``qemu``). However, for backward compatibility
    ``host-model`` may be implemented even for domains running on emulated CPUs
@@ -1776,7 +1777,7 @@ Each of these states allow for the same four possible actions.
    The domain will be terminated and then restarted with a new name. (Only
    supported by the libxl hypervisor driver.)
 
-QEMU/KVM supports the ``on_poweroff`` and ``on_reboot`` events handling the
+QEMU/KVM/HVF supports the ``on_poweroff`` and ``on_reboot`` events handling the
 ``destroy`` and ``restart`` actions, but the combination of ``on_poweroff`` set
 to ``restart`` and ``on_reboot`` set to ``destroy`` is forbidden.
 
@@ -1911,8 +1912,8 @@ are:
    Physical address extension mode allows 32-bit guests to address more than 4
    GB of memory.
 ``acpi``
-   ACPI is useful for power management, for example, with KVM guests it is
-   required for graceful shutdown to work.
+   ACPI is useful for power management, for example, with KVM or HVF guests it
+   is required for graceful shutdown to work.
 ``apic``
    APIC allows the use of programmable IRQ management. :since:`Since 0.10.2
    (QEMU only)` there is an optional attribute ``eoi`` with values ``on`` and
@@ -6221,14 +6222,16 @@ A video device.
 
    You can provide the amount of video memory in kibibytes (blocks of 1024
    bytes) using ``vram``. This is supported only for guest type of "vz", "qemu",
-   "vbox", "vmx" and "xen". If no value is provided the default is used. If the
+   "kvm", "hvf", "vbox", "vmx" and "xen".
+   If no value is provided the default is used. If the
    size is not a power of two it will be rounded to closest one.
 
    The number of screen can be set using ``heads``. This is supported only for
-   guests type of "vz", "kvm", "vbox" and "vmx".
+   guests type of "vz", "kvm", "hvf", "vbox" and "vmx".
 
-   For guest type of "kvm" or "qemu" and model type "qxl" there are optional
-   attributes. Attribute ``ram`` ( :since:`since 1.0.2` ) specifies the size of
+   For guest type of "kvm", "hvf" or "qemu" and model type "qxl" there are
+   optional attributes.
+   Attribute ``ram`` ( :since:`since 1.0.2` ) specifies the size of
    the primary bar, while the attribute ``vram`` specifies the secondary bar
    size. If ``ram`` or ``vram`` are not supplied a default value is used. The
    ``ram`` should also be rounded to power of two as ``vram``. There is also
