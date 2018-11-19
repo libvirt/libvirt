@@ -1133,7 +1133,7 @@ virGetGroupID(const char *group, gid_t *gid)
 /* Silently checks if User @name exists.
  * Returns if the user exists and fallbacks to false on error.
  */
-int
+bool
 virDoesUserExist(const char *name)
 {
     return virGetUserIDByName(name, NULL, true) == 0;
@@ -1142,7 +1142,7 @@ virDoesUserExist(const char *name)
 /* Silently checks if Group @name exists.
  * Returns if the group exists and fallbacks to false on error.
  */
-int
+bool
 virDoesGroupExist(const char *name)
 {
     return virGetGroupIDByName(name, NULL, true) == 0;
@@ -1243,16 +1243,16 @@ virGetGroupList(uid_t uid ATTRIBUTE_UNUSED, gid_t gid ATTRIBUTE_UNUSED,
     return 0;
 }
 
-int
+bool
 virDoesUserExist(const char *name ATTRIBUTE_UNUSED)
 {
-    return 0;
+    return false;
 }
 
-int
+bool
 virDoesGroupExist(const char *name ATTRIBUTE_UNUSED)
 {
-    return 0;
+    return false;
 }
 
 # ifdef WIN32
