@@ -76,6 +76,87 @@ qemuBlockJobDataNew(void)
 }
 
 
+static void
+qemuBlockJobDataReset(qemuBlockJobDataPtr job)
+{
+    job->started = false;
+    job->type = -1;
+    job->newstate = -1;
+    VIR_FREE(job->errmsg);
+    job->synchronous = false;
+}
+
+
+/**
+ * qemuBlockJobDiskNew:
+ * @disk: disk definition
+ *
+ * Start/associate a new blockjob with @disk.
+ *
+ * Returns 0 on success and -1 on failure.
+ */
+qemuBlockJobDataPtr
+qemuBlockJobDiskNew(virDomainDiskDefPtr disk)
+{
+    qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
+
+    qemuBlockJobDataReset(job);
+    return virObjectRef(job);
+}
+
+
+/**
+ * qemuBlockJobDiskGetJob:
+ * @disk: disk definition
+ *
+ * Get a reference to the block job data object associated with @disk.
+ */
+qemuBlockJobDataPtr
+qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)
+{
+    qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
+
+    if (!job)
+        return NULL;
+
+    return virObjectRef(job);
+}
+
+
+/**
+ * qemuBlockJobStarted:
+ * @job: job data
+ *
+ * Mark @job as started in qemu.
+ */
+void
+qemuBlockJobStarted(qemuBlockJobDataPtr job)
+{
+    job->started = true;
+}
+
+
+/**
+ * qemuBlockJobStartupFinalize:
+ * @job: job being started
+ *
+ * Cancels and clears the job private data if the job was not started with
+ * qemu (see qemuBlockJobStarted) or just clears up the local reference
+ * to @job if it was started.
+ */
+void
+qemuBlockJobStartupFinalize(qemuBlockJobDataPtr job)
+{
+    if (!job)
+        return;
+
+    if (!job->started)
+        qemuBlockJobDataReset(job);
+
+    virObjectUnref(job);
+}
+
+
 /**
  * qemuBlockJobEmitEvents:
  *

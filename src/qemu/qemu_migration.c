@@ -902,11 +902,15 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
                                   unsigned int flags)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuBlockJobDataPtr job = NULL;
     char *diskAlias = NULL;
     int rc;
     int ret = -1;
 
     if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
+        goto cleanup;
+
+    if (!(job = qemuBlockJobDiskNew(disk)))
         goto cleanup;
 
     qemuBlockJobSyncBeginDisk(disk);
@@ -931,11 +935,12 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
     }
 
     diskPriv->migrating = true;
-    diskPriv->blockjob->started = true;
+    qemuBlockJobStarted(job);
 
     ret = 0;
 
  cleanup:
+    qemuBlockJobStartupFinalize(job);
     VIR_FREE(diskAlias);
     return ret;
 }

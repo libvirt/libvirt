@@ -42,6 +42,21 @@ struct _qemuBlockJobData {
 
 qemuBlockJobDataPtr qemuBlockJobDataNew(void);
 
+qemuBlockJobDataPtr
+qemuBlockJobDiskNew(virDomainDiskDefPtr disk)
+    ATTRIBUTE_NONNULL(1);
+
+qemuBlockJobDataPtr
+qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)
+    ATTRIBUTE_NONNULL(1);
+
+void
+qemuBlockJobStarted(qemuBlockJobDataPtr job)
+    ATTRIBUTE_NONNULL(1);
+
+void
+qemuBlockJobStartupFinalize(qemuBlockJobDataPtr job);
+
 int qemuBlockJobUpdateDisk(virDomainObjPtr vm,
                            int asyncJob,
                            virDomainDiskDefPtr disk,
@@ -51,5 +66,9 @@ void qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk);
 void qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
                              int asyncJob,
                              virDomainDiskDefPtr disk);
+
+qemuBlockJobDataPtr
+qemuBlockJobGetByDisk(virDomainDiskDefPtr disk)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* LIBVIRT_QEMU_BLOCKJOB_H */

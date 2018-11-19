@@ -4717,7 +4717,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
                      int status)
 {
     virDomainDiskDefPtr disk;
-    qemuBlockJobDataPtr job;
+    qemuBlockJobDataPtr job = NULL;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         return;
@@ -4732,7 +4732,11 @@ processBlockJobEvent(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
+    if (!(job = qemuBlockJobDiskGetJob(disk))) {
+        if (!(job = qemuBlockJobDiskNew(disk)))
+            goto endjob;
+        qemuBlockJobStarted(job);
+    }
 
     job->type = type;
     job->newstate = status;
@@ -4740,6 +4744,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk, NULL);
 
  endjob:
+    qemuBlockJobStartupFinalize(job);
     qemuDomainObjEndJob(driver, vm);
 }
 
@@ -17245,6 +17250,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     char *basePath = NULL;
     char *backingPath = NULL;
     unsigned long long speed = bandwidth;
+    qemuBlockJobDataPtr job = NULL;
     int ret = -1;
 
     if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE && !base) {
@@ -17311,6 +17317,9 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         speed <<= 20;
     }
 
+    if (!(job = qemuBlockJobDiskNew(disk)))
+        goto endjob;
+
     qemuDomainObjEnterMonitor(driver, vm);
     if (baseSource)
         basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
@@ -17324,7 +17333,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     if (ret < 0)
         goto endjob;
 
-    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob->started = true;
+    qemuBlockJobStarted(job);
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -17334,6 +17343,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    qemuBlockJobStartupFinalize(job);
     virObjectUnref(cfg);
     VIR_FREE(basePath);
     VIR_FREE(backingPath);
@@ -17711,6 +17721,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     const char *format = NULL;
     virErrorPtr monitor_error = NULL;
     bool reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
+    qemuBlockJobDataPtr job = NULL;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
@@ -17834,6 +17845,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
     }
 
+    if (!(job = qemuBlockJobDiskNew(disk)))
+        goto endjob;
+
     /* Actually start the mirroring */
     qemuDomainObjEnterMonitor(driver, vm);
     /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
@@ -17850,12 +17864,12 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
 
     /* Update vm in place to match changes.  */
+    qemuBlockJobStarted(job);
     need_unlink = false;
     virStorageFileDeinit(mirror);
     disk->mirror = mirror;
     mirror = NULL;
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
-    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob->started = true;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -17870,6 +17884,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         virSetError(monitor_error);
         virFreeError(monitor_error);
     }
+    qemuBlockJobStartupFinalize(job);
 
  cleanup:
     VIR_FREE(device);
@@ -18080,6 +18095,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     char *backingPath = NULL;
     virStorageSourcePtr mirror = NULL;
     unsigned long long speed = bandwidth;
+    qemuBlockJobDataPtr job = NULL;
 
     /* XXX Add support for COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
@@ -18240,6 +18256,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
         disk->mirror = mirror;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
     }
+
+    if (!(job = qemuBlockJobDiskNew(disk)))
+        goto endjob;
+
     qemuDomainObjEnterMonitor(driver, vm);
     basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
                                          baseSource);
@@ -18255,7 +18275,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     }
 
     if (ret == 0) {
-        QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob->started = true;
+        qemuBlockJobStarted(job);
         mirror = NULL;
     } else {
         disk->mirror = NULL;
@@ -18280,6 +18300,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
         }
     }
     virStorageSourceFree(mirror);
+    qemuBlockJobStartupFinalize(job);
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
