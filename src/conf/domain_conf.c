@@ -11172,8 +11172,10 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
                                               hostdev, flags) < 0) {
             goto error;
         }
-    } else if (actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+    } else if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+               actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         VIR_AUTOFREE(char *) class_id = NULL;
+        xmlNodePtr sourceNode;
 
         class_id = virXPathString("string(./class/@id)", ctxt);
         if (class_id &&
@@ -11183,10 +11185,8 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
                            class_id);
             goto error;
         }
-    }
-    if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-        actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        xmlNodePtr sourceNode = virXPathNode("./source", ctxt);
+
+        sourceNode = virXPathNode("./source", ctxt);
         if (sourceNode) {
             char *brname = virXMLPropString(sourceNode, "bridge");
 
