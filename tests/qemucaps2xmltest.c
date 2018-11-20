@@ -208,6 +208,7 @@ mymain(void)
     DO_TEST("ppc64", "caps_2.10.0");
     DO_TEST("ppc64", "caps_2.12.0");
     DO_TEST("ppc64", "caps_3.0.0");
+    DO_TEST("ppc64", "caps_3.1.0");
     DO_TEST("s390x", "caps_2.7.0");
     DO_TEST("s390x", "caps_2.8.0");
     DO_TEST("s390x", "caps_2.9.0");
