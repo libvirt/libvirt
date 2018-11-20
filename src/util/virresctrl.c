@@ -2665,6 +2665,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     int ret = -1;
     DIR *dirp = NULL;
     char *datapath = NULL;
+    char *filepath = NULL;
     struct dirent *ent = NULL;
     virResctrlMonitorStatsPtr stat = NULL;
 
@@ -2684,13 +2685,18 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     while (virDirRead(dirp, &ent, datapath) > 0) {
         char *node_id = NULL;
 
+        VIR_FREE(filepath);
+
         /* Looking for directory that contains resource utilization
          * information file. The directory name is arranged in format
          * "mon_<node_name>_<node_id>". For example, "mon_L3_00" and
          * "mon_L3_01" are two target directories for a two nodes system
          * with resource utilization data file for each node respectively.
          */
-        if (!virFileIsDir(ent->d_name))
+        if (virAsprintf(&filepath, "%s/%s", datapath, ent->d_name) < 0)
+            goto cleanup;
+
+        if (!virFileIsDir(filepath))
             continue;
 
         /* Looking for directory has a prefix 'mon_L' */
@@ -2734,6 +2740,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     ret = 0;
  cleanup:
     VIR_FREE(datapath);
+    VIR_FREE(filepath);
     VIR_FREE(stat);
     VIR_DIR_CLOSE(dirp);
     return ret;
