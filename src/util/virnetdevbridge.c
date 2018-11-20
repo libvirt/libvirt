@@ -28,6 +28,7 @@
 #include "virutil.h"
 #include "virfile.h"
 #include "viralloc.h"
+#include "virlog.h"
 #include "intprops.h"
 #include "virstring.h"
 
@@ -74,6 +75,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.netdevbridge");
 
 #if defined(HAVE_BSD_BRIDGE_MGMT)
 static int virNetDevBridgeCmd(const char *brname,
@@ -113,6 +115,8 @@ static int virNetDevBridgeCmd(const char *brname,
  * or by  ioctl on older kernels. Perhaps we could just use
  * ioctl for every kernel, but its not clear what the long
  * term lifespan of the ioctl interface is...
+ * Fall back to ioctl if sysfs interface is not available or
+ * failing (e.g. due to container isolation).
  */
 static int virNetDevBridgeSet(const char *brname,
                               const char *paramname,  /* sysfs param name */
@@ -128,29 +132,29 @@ static int virNetDevBridgeSet(const char *brname,
     if (virFileExists(path)) {
         char valuestr[INT_BUFSIZE_BOUND(value)];
         snprintf(valuestr, sizeof(valuestr), "%lu", value);
-        if (virFileWriteStr(path, valuestr, 0) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to set bridge %s %s"), brname, paramname);
-            return -1;
-        }
+        if (virFileWriteStr(path, valuestr, 0) >= 0)
+            return 0;
+        VIR_DEBUG("Unable to set bridge %s %s via sysfs", brname, paramname);
+    }
+
+    unsigned long paramid;
+    if (STREQ(paramname, "stp_state")) {
+        paramid = BRCTL_SET_BRIDGE_STP_STATE;
+    } else if (STREQ(paramname, "forward_delay")) {
+        paramid = BRCTL_SET_BRIDGE_FORWARD_DELAY;
     } else {
-        unsigned long paramid;
-        if (STREQ(paramname, "stp_state")) {
-            paramid = BRCTL_SET_BRIDGE_STP_STATE;
-        } else if (STREQ(paramname, "forward_delay")) {
-            paramid = BRCTL_SET_BRIDGE_FORWARD_DELAY;
-        } else {
-            virReportSystemError(EINVAL,
-                                 _("Unable to set bridge %s %s"), brname, paramname);
-            return -1;
-        }
-        unsigned long args[] = { paramid, value, 0, 0 };
-        ifr->ifr_data = (char*)&args;
-        if (ioctl(fd, SIOCDEVPRIVATE, ifr) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to set bridge %s %s"), brname, paramname);
-            return -1;
-        }
+        virReportSystemError(EINVAL,
+                             _("Unable to set bridge %s %s via ioctl"),
+                             brname, paramname);
+        return -1;
+    }
+    unsigned long args[] = { paramid, value, 0, 0 };
+    ifr->ifr_data = (char*)&args;
+    if (ioctl(fd, SIOCDEVPRIVATE, ifr) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to set bridge %s %s via ioctl"),
+                             brname, paramname);
+        return -1;
     }
 
     return 0;
