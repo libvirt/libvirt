@@ -3890,6 +3890,7 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
 
         case VIR_DOMAIN_FEATURE_HPT:
         case VIR_DOMAIN_FEATURE_HTM:
+        case VIR_DOMAIN_FEATURE_NESTED_HV:
             if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
                 !qemuDomainIsPSeries(def)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

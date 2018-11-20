@@ -4978,6 +4978,11 @@
               <ref name="featurestate"/>
             </element>
           </optional>
+          <optional>
+            <element name="nested-hv">
+              <ref name="featurestate"/>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>

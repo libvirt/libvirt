@@ -11,6 +11,7 @@
       <maxpagesize unit='GiB'>1</maxpagesize>
     </hpt>
     <htm state='on'/>
+    <nested-hv state='off'/>
   </features>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>

@@ -2295,6 +2295,18 @@
           defined, the hypervisor default will be used.
           <span class="since">Since 4.6.0</span> (QEMU/KVM only)
       </dd>
+      <dt><code>nested-hv</code></dt>
+      <dd>Configure nested HV availability for pSeries guests. This needs to
+          be enabled from the host (L0) in order to be effective; having HV
+          support in the (L1) guest is very desiderable if it's planned to
+          run nested (L2) guests inside it, because it will result in those
+          nested guests having much better performance than they would when
+          using KVM PR or TCG.
+          Possible values for the <code>state</code> attribute are
+          <code>on</code> and <code>off</code>. If the attribute is not
+          defined, the hypervisor default will be used.
+          <span class="since">Since 4.10.0</span> (QEMU/KVM only)
+      </dd>
     </dl>
 
     <h3><a id="elementsTime">Time keeping</a></h3>
