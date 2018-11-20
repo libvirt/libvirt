@@ -515,6 +515,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               /* 320 */
               "memory-backend-memfd.hugetlb",
               "iothread.poll-max-ns",
+              "machine.pseries.cap-nested-hv",
     );
 
 
@@ -1372,6 +1373,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSPAPRMachine[] = {
     { "cap-hpt-max-page-size", QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE },
     { "cap-htm", QEMU_CAPS_MACHINE_PSERIES_CAP_HTM },
+    { "cap-nested-hv", QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV },
 };
 
 static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
