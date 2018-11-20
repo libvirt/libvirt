@@ -106,6 +106,7 @@ docs_rst_files = [
   'hacking',
   'libvirt-go',
   'libvirt-go-xml',
+  'macos',
   'migration',
   'newreposetup',
   'pci-addresses',

@@ -16,6 +16,9 @@
         <dt><a href="windows.html">Windows</a></dt>
         <dd>Downloads for Windows</dd>
 
+        <dt><a href="macos.html">macOS</a></dt>
+        <dd>Working with libvirt on macOS</dd>
+
         <dt><a href="migration.html">Migration</a></dt>
         <dd>Migrating guests between machines</dd>
 
