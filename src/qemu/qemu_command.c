@@ -7468,6 +7468,26 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         virBufferAsprintf(&buf, ",cap-htm=%s", str);
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_NESTED_HV] != VIR_TRISTATE_SWITCH_ABSENT) {
+        const char *str;
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Nested HV configuration is not supported by "
+                             "this QEMU binary"));
+            goto cleanup;
+        }
+
+        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_NESTED_HV]);
+        if (!str) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid setting for nested HV state"));
+            goto cleanup;
+        }
+
+        virBufferAsprintf(&buf, ",cap-nested-hv=%s", str);
+    }
+
     if (cpu && cpu->model &&
         cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
         qemuDomainIsPSeries(def) &&
