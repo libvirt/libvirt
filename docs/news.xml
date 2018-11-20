@@ -90,6 +90,16 @@
           virConnectGetAllDomainStats API.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for nested HV for pSeries guests
+        </summary>
+        <description>
+          Nested HV support makes it possible to run nested (L2) guests
+          with minimal performance penalty when compared to regular (L1)
+          guests on ppc64 hardware.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
