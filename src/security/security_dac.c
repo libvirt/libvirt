@@ -182,11 +182,13 @@ static int virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
                                       const virStorageSource *src,
                                       const char *path,
                                       uid_t uid,
-                                      gid_t gid);
+                                      gid_t gid,
+                                      bool remember);
 
 static int virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
                                                   const virStorageSource *src,
-                                                  const char *path);
+                                                  const char *path,
+                                                  bool recall);
 /**
  * virSecurityDACTransactionRun:
  * @pid: process pid
@@ -234,11 +236,13 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
                                             item->src,
                                             item->path,
                                             item->uid,
-                                            item->gid);
+                                            item->gid,
+                                            list->lock);
         } else {
             rv = virSecurityDACRestoreFileLabelInternal(list->manager,
                                                         item->src,
-                                                        item->path);
+                                                        item->path,
+                                                        list->lock);
         }
 
         if (rv < 0)
@@ -251,7 +255,8 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
         if (!item->restore) {
             virSecurityDACRestoreFileLabelInternal(list->manager,
                                                    item->src,
-                                                   item->path);
+                                                   item->path,
+                                                   list->lock);
         } else {
             VIR_WARN("Ignoring failed restore attempt on %s",
                      NULLSTR(item->src ? item->src->path : item->path));
@@ -699,7 +704,8 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
                            const virStorageSource *src,
                            const char *path,
                            uid_t uid,
-                           gid_t gid)
+                           gid_t gid,
+                           bool remember)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     struct stat sb;
@@ -717,7 +723,7 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
     else if (rc > 0)
         return 0;
 
-    if (path) {
+    if (remember && path) {
         if (stat(path, &sb) < 0) {
             virReportSystemError(errno, _("unable to stat: %s"), path);
             return -1;
@@ -739,7 +745,7 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
          * this function. However, if our attempt fails, there's
          * not much we can do. XATTRs refcounting is fubar'ed and
          * the only option we have is warn users. */
-        if (virSecurityDACRestoreFileLabelInternal(mgr, src, path) < 0)
+        if (virSecurityDACRestoreFileLabelInternal(mgr, src, path, remember) < 0)
             VIR_WARN("Unable to restore label on '%s'. "
                      "XATTRs might have been left in inconsistent state.",
                      NULLSTR(src ? src->path : path));
@@ -755,7 +761,8 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
 static int
 virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
                                        const virStorageSource *src,
-                                       const char *path)
+                                       const char *path,
+                                       bool recall)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     int rv;
@@ -774,7 +781,7 @@ virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
     else if (rv > 0)
         return 0;
 
-    if (path) {
+    if (recall && path) {
         rv = virSecurityDACRecallLabel(priv, path, &uid, &gid);
         if (rv < 0)
             return -1;
@@ -793,7 +800,7 @@ static int
 virSecurityDACRestoreFileLabel(virSecurityManagerPtr mgr,
                                const char *path)
 {
-    return virSecurityDACRestoreFileLabelInternal(mgr, NULL, path);
+    return virSecurityDACRestoreFileLabelInternal(mgr, NULL, path, false);
 }
 
 
@@ -840,7 +847,7 @@ virSecurityDACSetImageLabelInternal(virSecurityManagerPtr mgr,
             return -1;
     }
 
-    return virSecurityDACSetOwnership(mgr, src, NULL, user, group);
+    return virSecurityDACSetOwnership(mgr, src, NULL, user, group, false);
 }
 
 
@@ -920,7 +927,7 @@ virSecurityDACRestoreImageLabelInt(virSecurityManagerPtr mgr,
         }
     }
 
-    return virSecurityDACRestoreFileLabelInternal(mgr, src, NULL);
+    return virSecurityDACRestoreFileLabelInternal(mgr, src, NULL, false);
 }
 
 
@@ -956,7 +963,7 @@ virSecurityDACSetHostdevLabelHelper(const char *file,
     if (virSecurityDACGetIds(secdef, priv, &user, &group, NULL, NULL) < 0)
         return -1;
 
-    return virSecurityDACSetOwnership(mgr, NULL, file, user, group);
+    return virSecurityDACSetOwnership(mgr, NULL, file, user, group, false);
 }
 
 
@@ -1332,7 +1339,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
     case VIR_DOMAIN_CHR_TYPE_FILE:
         ret = virSecurityDACSetOwnership(mgr, NULL,
                                          dev_source->data.file.path,
-                                         user, group);
+                                         user, group, false);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -1340,12 +1347,12 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
             virAsprintf(&out, "%s.out", dev_source->data.file.path) < 0)
             goto done;
         if (virFileExists(in) && virFileExists(out)) {
-            if (virSecurityDACSetOwnership(mgr, NULL, in, user, group) < 0 ||
-                virSecurityDACSetOwnership(mgr, NULL, out, user, group) < 0)
+            if (virSecurityDACSetOwnership(mgr, NULL, in, user, group, false) < 0 ||
+                virSecurityDACSetOwnership(mgr, NULL, out, user, group, false) < 0)
                 goto done;
         } else if (virSecurityDACSetOwnership(mgr, NULL,
                                               dev_source->data.file.path,
-                                              user, group) < 0) {
+                                              user, group, false) < 0) {
             goto done;
         }
         ret = 0;
@@ -1360,7 +1367,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
              * and passed via FD */
             if (virSecurityDACSetOwnership(mgr, NULL,
                                            dev_source->data.nix.path,
-                                           user, group) < 0)
+                                           user, group, false) < 0)
                 goto done;
         }
         ret = 0;
@@ -1543,7 +1550,7 @@ virSecurityDACSetGraphicsLabel(virSecurityManagerPtr mgr,
     if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
         return -1;
 
-    if (virSecurityDACSetOwnership(mgr, NULL, rendernode, user, group) < 0)
+    if (virSecurityDACSetOwnership(mgr, NULL, rendernode, user, group, false) < 0)
         return -1;
 
     return 0;
@@ -1584,7 +1591,9 @@ virSecurityDACSetInputLabel(virSecurityManagerPtr mgr,
         if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
             return -1;
 
-        ret = virSecurityDACSetOwnership(mgr, NULL, input->source.evdev, user, group);
+        ret = virSecurityDACSetOwnership(mgr, NULL,
+                                         input->source.evdev,
+                                         user, group, false);
         break;
 
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
@@ -1772,7 +1781,9 @@ virSecurityDACSetMemoryLabel(virSecurityManagerPtr mgr,
         if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
             return -1;
 
-        ret = virSecurityDACSetOwnership(mgr, NULL, mem->nvdimmPath, user, group);
+        ret = virSecurityDACSetOwnership(mgr, NULL,
+                                         mem->nvdimmPath,
+                                         user, group, false);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
@@ -1861,27 +1872,32 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
 
     if (def->os.loader && def->os.loader->nvram &&
         virSecurityDACSetOwnership(mgr, NULL,
-                                   def->os.loader->nvram, user, group) < 0)
+                                   def->os.loader->nvram,
+                                   user, group, false) < 0)
         return -1;
 
     if (def->os.kernel &&
         virSecurityDACSetOwnership(mgr, NULL,
-                                   def->os.kernel, user, group) < 0)
+                                   def->os.kernel,
+                                   user, group, false) < 0)
         return -1;
 
     if (def->os.initrd &&
         virSecurityDACSetOwnership(mgr, NULL,
-                                   def->os.initrd, user, group) < 0)
+                                   def->os.initrd,
+                                   user, group, false) < 0)
         return -1;
 
     if (def->os.dtb &&
         virSecurityDACSetOwnership(mgr, NULL,
-                                   def->os.dtb, user, group) < 0)
+                                   def->os.dtb,
+                                   user, group, false) < 0)
         return -1;
 
     if (def->os.slic_table &&
         virSecurityDACSetOwnership(mgr, NULL,
-                                   def->os.slic_table, user, group) < 0)
+                                   def->os.slic_table,
+                                   user, group, false) < 0)
         return -1;
 
     return 0;
@@ -1903,7 +1919,7 @@ virSecurityDACSetSavedStateLabel(virSecurityManagerPtr mgr,
     if (virSecurityDACGetImageIds(secdef, priv, &user, &group) < 0)
         return -1;
 
-    return virSecurityDACSetOwnership(mgr, NULL, savefile, user, group);
+    return virSecurityDACSetOwnership(mgr, NULL, savefile, user, group, false);
 }
 
 
@@ -2223,7 +2239,7 @@ virSecurityDACDomainSetPathLabel(virSecurityManagerPtr mgr,
     if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
         return -1;
 
-    return virSecurityDACSetOwnership(mgr, NULL, path, user, group);
+    return virSecurityDACSetOwnership(mgr, NULL, path, user, group, false);
 }
 
 virSecurityDriver virSecurityDriverDAC = {
