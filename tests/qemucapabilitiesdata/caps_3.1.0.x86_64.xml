@@ -208,6 +208,7 @@
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
+  <flag name='egl-headless.rendernode'/>
   <version>3000092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>440395</microcodeVersion>

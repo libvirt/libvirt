@@ -516,6 +516,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "memory-backend-memfd.hugetlb",
               "iothread.poll-max-ns",
               "machine.pseries.cap-nested-hv",
+              "egl-headless.rendernode"
     );
 
 
@@ -1249,6 +1250,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "screendump/arg-type/device", QEMU_CAPS_SCREENDUMP_DEVICE },
     { "block-commit/arg-type/*top",  QEMU_CAPS_ACTIVE_COMMIT },
     { "query-iothreads/ret-type/poll-max-ns", QEMU_CAPS_IOTHREAD_POLLING },
+    { "query-display-options/ret-type/+egl-headless/rendernode", QEMU_CAPS_EGL_HEADLESS_RENDERNODE },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;
