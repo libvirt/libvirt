@@ -99,6 +99,7 @@ qemuBlockJobDataPtr
 qemuBlockJobDiskNew(virDomainDiskDefPtr disk)
 {
     qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
+    job->disk = disk;
 
     qemuBlockJobDataReset(job);
     return virObjectRef(job);
