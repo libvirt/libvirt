@@ -2282,6 +2282,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
 {
     virDomainObjPtr vm = NULL;
     virObjectEventPtr event = NULL;
+    virErrorPtr origErr;
     int ret = -1;
     int dataFD[2] = { -1, -1 };
     qemuDomainObjPrivatePtr priv = NULL;
@@ -2595,6 +2596,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    virErrorPreserveLast(&origErr);
     VIR_FREE(tlsAlias);
     qemuProcessIncomingDefFree(incoming);
     VIR_FREE(xmlout);
@@ -2618,6 +2620,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     qemuMigrationCookieFree(mig);
     virObjectUnref(caps);
     virNWFilterUnlockFilterUpdates();
+    virErrorRestore(&origErr);
     return ret;
 
  stopjob:
