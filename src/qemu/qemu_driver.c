@@ -4735,7 +4735,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
 
     job->type = type;
-    job->status = status;
+    job->newstate = status;
 
     qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk, NULL);
 

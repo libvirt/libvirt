@@ -262,22 +262,22 @@ qemuBlockJobUpdateDisk(virDomainObjPtr vm,
 {
     qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int status = job->status;
+    int state = job->newstate;
 
     if (error)
         *error = NULL;
 
-    if (status != -1) {
+    if (state != -1) {
         qemuBlockJobEventProcessLegacy(priv->driver, vm, disk, asyncJob,
-                                       job->type, status);
-        job->status = -1;
+                                       job->type, state);
+        job->newstate = -1;
         if (error)
             VIR_STEAL_PTR(*error, job->errmsg);
         else
             VIR_FREE(job->errmsg);
     }
 
-    return status;
+    return state;
 }
 
 
@@ -301,7 +301,7 @@ qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk)
 
     VIR_DEBUG("disk=%s", disk->dst);
     job->synchronous = true;
-    job->status = -1;
+    job->newstate = -1;
 }
 
 

@@ -943,7 +943,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (job->synchronous) {
         /* We have a SYNC API waiting for this event, dispatch it back */
         job->type = type;
-        job->status = status;
+        job->newstate = status;
         VIR_FREE(job->errmsg);
         ignore_value(VIR_STRDUP_QUIET(job->errmsg, error));
         virDomainObjBroadcast(vm);
@@ -7845,7 +7845,7 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
     }
 
     job->started = true;
-    job->status = -1;
+    job->newstate = -1;
 
     return 0;
 }
