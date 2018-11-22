@@ -2395,6 +2395,20 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         }
     }
 
+    /* Parse cookie earlier than adding the domain onto the
+     * domain list. Parsing/validation may fail and there's no
+     * point in having the domain in the list at that point. */
+    if (!(mig = qemuMigrationEatCookie(driver, *def, origname, NULL,
+                                       cookiein, cookieinlen,
+                                       QEMU_MIGRATION_COOKIE_LOCKSTATE |
+                                       QEMU_MIGRATION_COOKIE_NBD |
+                                       QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG |
+                                       QEMU_MIGRATION_COOKIE_CPU_HOTPLUG |
+                                       QEMU_MIGRATION_COOKIE_CPU |
+                                       QEMU_MIGRATION_COOKIE_ALLOW_REBOOT |
+                                       QEMU_MIGRATION_COOKIE_CAPS)))
+        goto cleanup;
+
     if (!(vm = virDomainObjListAdd(driver->domains, *def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
@@ -2411,17 +2425,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         /* Domain XML has been altered by a hook script. */
         priv->hookRun = true;
     }
-
-    if (!(mig = qemuMigrationEatCookie(driver, vm->def, origname, priv,
-                                       cookiein, cookieinlen,
-                                       QEMU_MIGRATION_COOKIE_LOCKSTATE |
-                                       QEMU_MIGRATION_COOKIE_NBD |
-                                       QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG |
-                                       QEMU_MIGRATION_COOKIE_CPU_HOTPLUG |
-                                       QEMU_MIGRATION_COOKIE_CPU |
-                                       QEMU_MIGRATION_COOKIE_ALLOW_REBOOT |
-                                       QEMU_MIGRATION_COOKIE_CAPS)))
-        goto cleanup;
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
         !virMemoryLimitIsSet(vm->def->mem.hard_limit)) {
