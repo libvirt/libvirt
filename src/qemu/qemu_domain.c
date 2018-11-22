@@ -11875,11 +11875,9 @@ qemuDomainSetupGraphics(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                         virDomainGraphicsDefPtr gfx,
                         const struct qemuDomainCreateDeviceData *data)
 {
-    const char *rendernode = gfx->data.spice.rendernode;
+    const char *rendernode = virDomainGraphicsGetRenderNode(gfx);
 
-    if (gfx->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE ||
-        gfx->data.spice.gl != VIR_TRISTATE_BOOL_YES ||
-        !rendernode)
+    if (!rendernode)
         return 0;
 
     return qemuDomainCreateDevice(rendernode, data, false);
