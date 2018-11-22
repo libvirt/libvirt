@@ -1130,13 +1130,20 @@ vshExtractCPUDefXMLs(vshControl *ctl,
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr *nodes = NULL;
+    char *doc;
     size_t i;
     int n;
 
     if (virFileReadAll(xmlFile, VSH_MAX_XML_FILE, &buffer) < 0)
         goto error;
 
-    if (virAsprintf(&xmlStr, "<container>%s</container>", buffer) < 0)
+    /* Strip possible XML declaration */
+    if (STRPREFIX(buffer, "<?xml") && (doc = strstr(buffer, "?>")))
+        doc += 2;
+    else
+        doc = buffer;
+
+    if (virAsprintf(&xmlStr, "<container>%s</container>", doc) < 0)
         goto error;
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, xmlFile, &ctxt)))
