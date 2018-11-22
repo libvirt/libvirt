@@ -160,7 +160,9 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
 qemuMigrationCookiePtr
 qemuMigrationEatCookie(virQEMUDriverPtr driver,
-                       virDomainObjPtr dom,
+                       const virDomainDef *def,
+                       const char *origname,
+                       qemuDomainObjPrivatePtr priv,
                        const char *cookiein,
                        int cookieinlen,
                        unsigned int flags);

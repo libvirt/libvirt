@@ -2041,7 +2041,8 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
     if (!(flags & VIR_MIGRATE_OFFLINE))
         cookieFlags |= QEMU_MIGRATION_COOKIE_CAPS;
 
-    if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
+    if (!(mig = qemuMigrationEatCookie(driver, vm->def,
+                                       priv->origname, priv, NULL, 0, 0)))
         goto cleanup;
 
     if (qemuMigrationBakeCookie(mig, driver, vm,
@@ -2411,7 +2412,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         priv->hookRun = true;
     }
 
-    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
+    if (!(mig = qemuMigrationEatCookie(driver, vm->def, origname, priv,
+                                       cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_LOCKSTATE |
                                        QEMU_MIGRATION_COOKIE_NBD |
                                        QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG |
@@ -2922,7 +2924,8 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
                              ? QEMU_MIGRATION_PHASE_CONFIRM3
                              : QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED);
 
-    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
+    if (!(mig = qemuMigrationEatCookie(driver, vm->def, priv->origname, priv,
+                                       cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_STATS)))
         goto cleanup;
 
@@ -3427,7 +3430,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         }
     }
 
-    mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
+    mig = qemuMigrationEatCookie(driver, vm->def, priv->origname, priv,
+                                 cookiein, cookieinlen,
                                  cookieFlags |
                                  QEMU_MIGRATION_COOKIE_GRAPHICS |
                                  QEMU_MIGRATION_COOKIE_CAPS);
@@ -4948,8 +4952,8 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
      * even though VIR_MIGRATE_PERSIST_DEST was not used. */
     cookie_flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
 
-    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein,
-                                       cookieinlen, cookie_flags)))
+    if (!(mig = qemuMigrationEatCookie(driver, vm->def, priv->origname, priv,
+                                       cookiein, cookieinlen, cookie_flags)))
         goto endjob;
 
     if (flags & VIR_MIGRATE_OFFLINE) {

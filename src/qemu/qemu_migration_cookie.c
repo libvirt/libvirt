@@ -279,22 +279,22 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static qemuMigrationCookiePtr
-qemuMigrationCookieNew(virDomainObjPtr dom)
+qemuMigrationCookieNew(const virDomainDef *def,
+                       const char *origname)
 {
-    qemuDomainObjPrivatePtr priv = dom->privateData;
     qemuMigrationCookiePtr mig = NULL;
     const char *name;
 
     if (VIR_ALLOC(mig) < 0)
         goto error;
 
-    if (priv->origname)
-        name = priv->origname;
+    if (origname)
+        name = origname;
     else
-        name = dom->def->name;
+        name = def->name;
     if (VIR_STRDUP(mig->name, name) < 0)
         goto error;
-    memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
+    memcpy(mig->uuid, def->uuid, VIR_UUID_BUFLEN);
 
     if (!(mig->localHostname = virGetHostname()))
         goto error;
@@ -1472,12 +1472,13 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
 qemuMigrationCookiePtr
 qemuMigrationEatCookie(virQEMUDriverPtr driver,
-                       virDomainObjPtr dom,
+                       const virDomainDef *def,
+                       const char *origname,
+                       qemuDomainObjPrivatePtr priv,
                        const char *cookiein,
                        int cookieinlen,
                        unsigned int flags)
 {
-    qemuDomainObjPrivatePtr priv = dom->privateData;
     qemuMigrationCookiePtr mig = NULL;
 
     /* Parse & validate incoming cookie (if any) */
@@ -1490,7 +1491,7 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
 
     VIR_DEBUG("cookielen=%d cookie='%s'", cookieinlen, NULLSTR(cookiein));
 
-    if (!(mig = qemuMigrationCookieNew(dom)))
+    if (!(mig = qemuMigrationCookieNew(def, origname)))
         return NULL;
 
     if (cookiein && cookieinlen &&
@@ -1502,9 +1503,9 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
 
     if (flags & QEMU_MIGRATION_COOKIE_PERSISTENT &&
         mig->persistent &&
-        STRNEQ(dom->def->name, mig->persistent->name)) {
+        STRNEQ(def->name, mig->persistent->name)) {
         VIR_FREE(mig->persistent->name);
-        if (VIR_STRDUP(mig->persistent->name, dom->def->name) < 0)
+        if (VIR_STRDUP(mig->persistent->name, def->name) < 0)
             goto error;
     }
 
