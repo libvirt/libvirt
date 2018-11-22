@@ -392,7 +392,9 @@ qemuBlockJobSyncBeginDisk(virDomainDiskDefPtr disk)
  * @disk: domain disk
  *
  * End a synchronous block job for @disk. Any pending block job event
- * for the disk is processed.
+ * for the disk is processed. Note that it's not necessary to call this function
+ * in case the block job was not started successfully if
+ * qemuBlockJobStartupFinalize will be called.
  */
 void
 qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
