@@ -890,6 +890,57 @@ qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  virDomainDiskDefPtr disk,
+                                  const char *host,
+                                  int port,
+                                  unsigned long long mirror_speed,
+                                  unsigned int mirror_flags,
+                                  const char *tlsAlias,
+                                  unsigned int flags)
+{
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    char *diskAlias = NULL;
+    int rc;
+    int ret = -1;
+
+    if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
+        goto cleanup;
+
+    qemuBlockJobSyncBeginDisk(disk);
+
+    if (flags & VIR_MIGRATE_TLS) {
+        rc = qemuMigrationSrcNBDStorageCopyBlockdev(driver, vm,
+                                                    disk, diskAlias,
+                                                    host, port,
+                                                    mirror_speed,
+                                                    mirror_flags,
+                                                    tlsAlias);
+    } else {
+        rc = qemuMigrationSrcNBDStorageCopyDriveMirror(driver, vm, diskAlias,
+                                                       host, port,
+                                                       mirror_speed,
+                                                       mirror_flags);
+    }
+
+    if (rc < 0) {
+        qemuBlockJobSyncEndDisk(vm, QEMU_ASYNC_JOB_MIGRATION_OUT, disk);
+        goto cleanup;
+    }
+
+    diskPriv->migrating = true;
+    diskPriv->blockjob->started = true;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(diskAlias);
+    return ret;
+}
+
+
 /**
  * qemuMigrationSrcNBDStorageCopy:
  * @driver: qemu driver
@@ -926,7 +977,6 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     int ret = -1;
     int port;
     size_t i;
-    char *diskAlias = NULL;
     unsigned long long mirror_speed = speed;
     unsigned int mirror_flags = VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
     int rv;
@@ -951,40 +1001,15 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        int rc;
 
         /* check whether disk should be migrated */
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
             continue;
 
-        if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
+        if (qemuMigrationSrcNBDStorageCopyOne(driver, vm, disk, host, port,
+                                              mirror_speed, mirror_flags,
+                                              tlsAlias, flags) < 0)
             goto cleanup;
-
-        qemuBlockJobSyncBeginDisk(disk);
-
-        if (flags & VIR_MIGRATE_TLS) {
-            rc = qemuMigrationSrcNBDStorageCopyBlockdev(driver, vm,
-                                                        disk, diskAlias,
-                                                        host, port,
-                                                        mirror_speed,
-                                                        mirror_flags,
-                                                        tlsAlias);
-        } else {
-            rc = qemuMigrationSrcNBDStorageCopyDriveMirror(driver, vm, diskAlias,
-                                                           host, port,
-                                                           mirror_speed,
-                                                           mirror_flags);
-        }
-
-        if (rc < 0) {
-            qemuBlockJobSyncEndDisk(vm, QEMU_ASYNC_JOB_MIGRATION_OUT, disk);
-            goto cleanup;
-        }
-
-        VIR_FREE(diskAlias);
-        diskPriv->migrating = true;
-        diskPriv->blockjob->started = true;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
@@ -1024,7 +1049,6 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
 
  cleanup:
     virObjectUnref(cfg);
-    VIR_FREE(diskAlias);
     return ret;
 }
 
