@@ -3044,7 +3044,7 @@ qemuMigrationSrcConfirm(virQEMUDriverPtr driver,
 
     qemuMigrationJobFinish(driver, vm);
     if (!virDomainObjIsActive(vm)) {
-        if (flags & VIR_MIGRATE_UNDEFINE_SOURCE) {
+        if (!cancelled && ret == 0 && flags & VIR_MIGRATE_UNDEFINE_SOURCE) {
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
             vm->persistent = 0;
         }
