@@ -908,7 +908,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
     if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
         goto cleanup;
 
-    if (!(job = qemuBlockJobDiskNew(disk)))
+    if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_COPY)))
         goto cleanup;
 
     qemuBlockJobSyncBeginDisk(disk);

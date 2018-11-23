@@ -4733,12 +4733,11 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     }
 
     if (!(job = qemuBlockJobDiskGetJob(disk))) {
-        if (!(job = qemuBlockJobDiskNew(disk)))
+        if (!(job = qemuBlockJobDiskNew(disk, type)))
             goto endjob;
         qemuBlockJobStarted(job);
     }
 
-    job->type = type;
     job->newstate = status;
 
     qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk, NULL);
@@ -17317,7 +17316,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         speed <<= 20;
     }
 
-    if (!(job = qemuBlockJobDiskNew(disk)))
+    if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_PULL)))
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -17845,7 +17844,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
     }
 
-    if (!(job = qemuBlockJobDiskNew(disk)))
+    if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_COPY)))
         goto endjob;
 
     /* Actually start the mirroring */
@@ -18096,6 +18095,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     virStorageSourcePtr mirror = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
+    qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
 
     /* XXX Add support for COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
@@ -18255,9 +18255,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirror = mirror;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
+        jobtype = QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
     }
 
-    if (!(job = qemuBlockJobDiskNew(disk)))
+    if (!(job = qemuBlockJobDiskNew(disk, jobtype)))
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);

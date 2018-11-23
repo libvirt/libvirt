@@ -942,7 +942,6 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (job && job->synchronous) {
         /* We have a SYNC API waiting for this event, dispatch it back */
-        job->type = type;
         job->newstate = status;
         VIR_FREE(job->errmsg);
         ignore_value(VIR_STRDUP_QUIET(job->errmsg, error));
@@ -7829,13 +7828,18 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
     qemuMonitorBlockJobInfoPtr info = payload;
     virDomainDiskDefPtr disk;
     qemuBlockJobDataPtr job;
+    qemuBlockJobType jobtype = info->type;
 
     if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, jobname, jobname))) {
         VIR_DEBUG("could not find disk for block job '%s'", jobname);
         return 0;
     }
 
-    if (!(job = qemuBlockJobDiskNew(disk)))
+    if (jobtype == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
+        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
+        jobtype = disk->mirrorJob;
+
+    if (!(job = qemuBlockJobDiskNew(disk, jobtype)))
         return -1;
 
     qemuBlockJobStarted(job);

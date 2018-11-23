@@ -25,6 +25,21 @@
 # include "internal.h"
 # include "qemu_conf.h"
 
+/**
+ * This enum has to map all known block job types from enum virDomainBlockJobType
+ * to the same values. All internal blockjobs can be mapped after and don't
+ * need to have stable values.
+ */
+typedef enum {
+    QEMU_BLOCKJOB_TYPE_NONE = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN,
+    QEMU_BLOCKJOB_TYPE_PULL = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL,
+    QEMU_BLOCKJOB_TYPE_COPY = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY,
+    QEMU_BLOCKJOB_TYPE_COMMIT = VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT,
+    QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT,
+    QEMU_BLOCKJOB_TYPE_INTERNAL,
+    QEMU_BLOCKJOB_TYPE_LAST
+} qemuBlockJobType;
+verify((int)QEMU_BLOCKJOB_TYPE_INTERNAL == VIR_DOMAIN_BLOCK_JOB_TYPE_LAST);
 
 typedef struct _qemuBlockJobData qemuBlockJobData;
 typedef qemuBlockJobData *qemuBlockJobDataPtr;
@@ -35,7 +50,7 @@ struct _qemuBlockJobData {
     virDomainDiskDefPtr disk; /* may be NULL, if blockjob does not correspond to any disk */
 
     bool started;
-    int type;
+    int type; /* qemuBlockJobType */
     char *errmsg;
     bool synchronous; /* API call is waiting for this job */
 
@@ -45,7 +60,8 @@ struct _qemuBlockJobData {
 qemuBlockJobDataPtr qemuBlockJobDataNew(void);
 
 qemuBlockJobDataPtr
-qemuBlockJobDiskNew(virDomainDiskDefPtr disk)
+qemuBlockJobDiskNew(virDomainDiskDefPtr disk,
+                    qemuBlockJobType type)
     ATTRIBUTE_NONNULL(1);
 
 qemuBlockJobDataPtr

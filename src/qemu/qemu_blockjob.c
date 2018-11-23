@@ -96,12 +96,16 @@ qemuBlockJobDataReset(qemuBlockJobDataPtr job)
  * Returns 0 on success and -1 on failure.
  */
 qemuBlockJobDataPtr
-qemuBlockJobDiskNew(virDomainDiskDefPtr disk)
+qemuBlockJobDiskNew(virDomainDiskDefPtr disk,
+                    qemuBlockJobType type)
 {
     qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
     job->disk = disk;
 
     qemuBlockJobDataReset(job);
+
+    job->type = type;
+
     return virObjectRef(job);
 }
 
@@ -278,10 +282,6 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
               NULLSTR(virDomainDiskMirrorStateTypeToString(disk->mirrorState)),
               type,
               status);
-
-    if (type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
-        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
-        type = disk->mirrorJob;
 
     qemuBlockJobEmitEvents(driver, vm, disk, type, status);
 
