@@ -258,9 +258,7 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
  * qemuBlockJobEventProcessLegacy:
  * @driver: qemu driver
  * @vm: domain
- * @disk: domain disk
- * @type: block job type
- * @status: block job status
+ * @job: job to process events for
  *
  * Update disk's mirror state in response to a block job event
  * from QEMU. For mirror state's that must survive libvirt
@@ -269,25 +267,24 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
 static void
 qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainDiskDefPtr disk,
-                               int asyncJob,
-                               int type,
-                               int status)
+                               qemuBlockJobDataPtr job,
+                               int asyncJob)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virDomainDiskDefPtr disk = job->disk;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-    VIR_DEBUG("disk=%s, mirrorState=%s, type=%d, status=%d",
+    VIR_DEBUG("disk=%s, mirrorState=%s, type=%d, newstate=%d",
               disk->dst,
               NULLSTR(virDomainDiskMirrorStateTypeToString(disk->mirrorState)),
-              type,
-              status);
+              job->type,
+              job->newstate);
 
-    qemuBlockJobEmitEvents(driver, vm, disk, type, status);
+    qemuBlockJobEmitEvents(driver, vm, disk, job->type, job->newstate);
 
     /* If we completed a block pull or commit, then update the XML
      * to match.  */
-    switch ((virConnectDomainEventBlockJobStatus) status) {
+    switch ((virConnectDomainEventBlockJobStatus) job->newstate) {
     case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
         qemuBlockJobEventProcessLegacyCompleted(driver, vm, disk, asyncJob);
         break;
@@ -315,7 +312,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after block job", vm->def->name);
 
-    if (status == VIR_DOMAIN_BLOCK_JOB_COMPLETED && vm->newDef) {
+    if (job->newstate == VIR_DOMAIN_BLOCK_JOB_COMPLETED && vm->newDef) {
         if (virDomainSaveConfig(cfg->configDir, driver->caps, vm->newDef) < 0)
             VIR_WARN("Unable to update persistent definition on vm %s "
                      "after block job", vm->def->name);
@@ -350,8 +347,7 @@ qemuBlockJobUpdateDisk(virDomainObjPtr vm,
         *error = NULL;
 
     if (state != -1) {
-        qemuBlockJobEventProcessLegacy(priv->driver, vm, disk, asyncJob,
-                                       job->type, state);
+        qemuBlockJobEventProcessLegacy(priv->driver, vm, job, asyncJob);
         job->newstate = -1;
         if (error)
             VIR_STEAL_PTR(*error, job->errmsg);
