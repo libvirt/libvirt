@@ -376,18 +376,6 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     b_info->max_memkb = virDomainDefGetMemoryInitial(def);
     b_info->target_memkb = def->mem.cur_balloon;
     if (hvm) {
-        char bootorder[VIR_DOMAIN_BOOT_LAST + 1];
-
-        libxl_defbool_set(&b_info->u.hvm.pae,
-                          def->features[VIR_DOMAIN_FEATURE_PAE] ==
-                          VIR_TRISTATE_SWITCH_ON);
-        libxl_defbool_set(&b_info->u.hvm.apic,
-                          def->features[VIR_DOMAIN_FEATURE_APIC] ==
-                          VIR_TRISTATE_SWITCH_ON);
-        libxl_defbool_set(&b_info->u.hvm.acpi,
-                          def->features[VIR_DOMAIN_FEATURE_ACPI] ==
-                          VIR_TRISTATE_SWITCH_ON);
-
         if (caps &&
             def->cpu && def->cpu->mode == (VIR_CPU_MODE_HOST_PASSTHROUGH)) {
             bool hasHwVirt = false;
@@ -474,6 +462,20 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                      "mode=host-passthrough to avoid risk of changed guest "
                      "semantics when mode=custom is supported in the future");
         }
+    }
+
+    if (hvm) {
+        char bootorder[VIR_DOMAIN_BOOT_LAST + 1];
+
+        libxl_defbool_set(&b_info->u.hvm.pae,
+                          def->features[VIR_DOMAIN_FEATURE_PAE] ==
+                          VIR_TRISTATE_SWITCH_ON);
+        libxl_defbool_set(&b_info->u.hvm.apic,
+                          def->features[VIR_DOMAIN_FEATURE_APIC] ==
+                          VIR_TRISTATE_SWITCH_ON);
+        libxl_defbool_set(&b_info->u.hvm.acpi,
+                          def->features[VIR_DOMAIN_FEATURE_ACPI] ==
+                          VIR_TRISTATE_SWITCH_ON);
 
         if (def->nsounds > 0) {
             /*
