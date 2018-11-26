@@ -229,6 +229,6 @@ virResctrlMonitorRemove(virResctrlMonitorPtr monitor);
 
 int
 virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
-                                   virResctrlMonitorStatsPtr *caches,
-                                   size_t *ncaches);
+                                   virResctrlMonitorStatsPtr **stats,
+                                   size_t *nstats);
 #endif /*  __VIR_RESCTRL_H__ */

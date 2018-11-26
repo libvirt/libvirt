@@ -2647,8 +2647,8 @@ virResctrlMonitorStatsSorter(const void *a,
  * @monitor: The monitor that the statistic data will be retrieved from.
  * @resource: The name for resource name. 'llc_occupancy' for cache resource.
  * "mbm_total_bytes" and "mbm_local_bytes" for memory bandwidth resource.
- * @stats: Array of virResctrlMonitorStatsPtr for holding cache or memory
- * bandwidth usage data.
+ * @stats: Pointer of of virResctrlMonitorStatsPtr array for holding cache or
+ * memory bandwidth usage data.
  * @nstats: A size_t pointer to hold the returned array length of @stats
  *
  * Get cache or memory bandwidth utilization information.
@@ -2658,7 +2658,7 @@ virResctrlMonitorStatsSorter(const void *a,
 static int
 virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
                           const char *resource,
-                          virResctrlMonitorStatsPtr *stats,
+                          virResctrlMonitorStatsPtr **stats,
                           size_t *nstats)
 {
     int rv = -1;
@@ -2729,7 +2729,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
         if (rv < 0)
             goto cleanup;
 
-        if (VIR_APPEND_ELEMENT(*stats, *nstats, *stat) < 0)
+        if (VIR_APPEND_ELEMENT(*stats, *nstats, stat) < 0)
             goto cleanup;
     }
 
@@ -2762,7 +2762,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
 
 int
 virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
-                                   virResctrlMonitorStatsPtr *stats,
+                                   virResctrlMonitorStatsPtr **stats,
                                    size_t *nstats)
 {
     return virResctrlMonitorGetStats(monitor, "llc_occupancy",
