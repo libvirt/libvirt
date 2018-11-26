@@ -78,6 +78,18 @@
           <code>&lt;os&gt;&lt;type&gt;xenpvh&lt;/type&gt;&lt;/os&gt;</code>
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Added support for CMT (Cache Monitoring Technology)
+        </summary>
+        <description>
+          Introduced cache monitoring using the <code>monitor</code>
+          element in <code>cachetune</code> for vCPU threads. Added
+          interfaces to get and display the cache utilization statistics
+          through the command 'virsh domstats' via the
+          virConnectGetAllDomainStats API.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
