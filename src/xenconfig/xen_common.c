@@ -1098,9 +1098,21 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     if (xenConfigGetUUID(conf, "uuid", def->uuid) < 0)
         goto out;
 
-    if ((xenConfigGetString(conf, "builder", &str, "linux") == 0) &&
-        STREQ(str, "hvm"))
-        hvm = 1;
+    if (xenConfigGetString(conf, "type", &str, NULL) == 0 && str) {
+        if (STREQ(str, "pv")) {
+            hvm = 0;
+        } else if (STREQ(str, "hvm")) {
+            hvm = 1;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("type %s is not supported"), str);
+            return -1;
+        }
+    } else {
+        if ((xenConfigGetString(conf, "builder", &str, "linux") == 0) &&
+            STREQ(str, "hvm"))
+            hvm = 1;
+    }
 
     def->os.type = (hvm ? VIR_DOMAIN_OSTYPE_HVM : VIR_DOMAIN_OSTYPE_XEN);
 
