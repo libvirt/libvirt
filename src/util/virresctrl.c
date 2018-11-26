@@ -2747,6 +2747,22 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
 }
 
 
+void
+virResctrlMonitorFreeStats(virResctrlMonitorStatsPtr *stats,
+                           size_t nstats)
+{
+    size_t i = 0;
+
+    if (!stats)
+        return;
+
+    for (i = 0; i < nstats; i++)
+        VIR_FREE(stats[i]);
+
+    VIR_FREE(stats);
+}
+
+
 /*
  * virResctrlMonitorGetCacheOccupancy
  *

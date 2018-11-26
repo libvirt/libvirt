@@ -2692,6 +2692,7 @@ virResctrlInfoNew;
 virResctrlMonitorAddPID;
 virResctrlMonitorCreate;
 virResctrlMonitorDeterminePath;
+virResctrlMonitorFreeStats;
 virResctrlMonitorGetCacheOccupancy;
 virResctrlMonitorGetID;
 virResctrlMonitorNew;

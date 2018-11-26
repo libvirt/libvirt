@@ -231,4 +231,8 @@ int
 virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
                                    virResctrlMonitorStatsPtr **stats,
                                    size_t *nstats);
+
+void
+virResctrlMonitorFreeStats(virResctrlMonitorStatsPtr *stats,
+                           size_t nstats);
 #endif /*  __VIR_RESCTRL_H__ */
