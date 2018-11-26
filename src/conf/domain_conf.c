@@ -30933,3 +30933,46 @@ virDomainGraphicsDefHasOpenGL(const virDomainDef *def)
 
     return false;
 }
+
+
+bool
+virDomainGraphicsSupportsRenderNode(const virDomainGraphicsDef *graphics)
+{
+    return graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE;
+}
+
+
+const char *
+virDomainGraphicsGetRenderNode(const virDomainGraphicsDef *graphics)
+{
+    const char *ret = NULL;
+
+    switch (graphics->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        if (graphics->data.spice.gl == VIR_TRISTATE_BOOL_YES)
+            ret = graphics->data.spice.rendernode;
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        break;
+    }
+
+    return ret;
+}
+
+
+bool
+virDomainGraphicsNeedsAutoRenderNode(const virDomainGraphicsDef *graphics)
+{
+    if (!virDomainGraphicsSupportsRenderNode(graphics))
+        return false;
+
+    if (virDomainGraphicsGetRenderNode(graphics))
+        return false;
+
+    return true;
+}
