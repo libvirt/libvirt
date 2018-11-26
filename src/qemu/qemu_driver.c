@@ -19929,6 +19929,175 @@ typedef enum {
 #define HAVE_JOB(flags) ((flags) & QEMU_DOMAIN_STATS_HAVE_JOB)
 
 
+typedef struct _virQEMUResctrlMonData virQEMUResctrlMonData;
+typedef virQEMUResctrlMonData *virQEMUResctrlMonDataPtr;
+struct _virQEMUResctrlMonData {
+    char *name;
+    char *vcpus;
+    virResctrlMonitorStatsPtr *stats;
+    size_t nstats;
+};
+
+
+static void
+qemuDomainFreeResctrlMonData(virQEMUResctrlMonDataPtr resdata)
+{
+    VIR_FREE(resdata->name);
+    VIR_FREE(resdata->vcpus);
+    virResctrlMonitorFreeStats(resdata->stats, resdata->nstats);
+    VIR_FREE(resdata);
+}
+
+
+/**
+ * qemuDomainGetResctrlMonData:
+ * @dom: Pointer for the domain that the resctrl monitors reside in
+ * @resdata: Pointer of virQEMUResctrlMonDataPtr pointer for receiving the
+ *            virQEMUResctrlMonDataPtr array. Caller is responsible for
+ *            freeing the array.
+ * @nresdata: Pointer of size_t to report the size virQEMUResctrlMonDataPtr
+ *            array to caller. If *@nresdata is not 0, even if function
+ *            returns an error, the caller is also required to call
+ *            qemuDomainFreeResctrlMonData to free each element in the
+ *            *@resdata array and then the array itself.
+ * @tag: Could be VIR_RESCTRL_MONITOR_TYPE_CACHE for getting cache statistics
+ *       from @dom cache monitors. VIR_RESCTRL_MONITOR_TYPE_MEMBW for
+ *       getting memory bandwidth statistics from memory bandwidth monitors.
+ *
+ * Get cache or memory bandwidth statistics from @dom monitors.
+ *
+ * Returns -1 on failure, or 0 on success.
+ */
+static int
+qemuDomainGetResctrlMonData(virDomainObjPtr dom,
+                            virQEMUResctrlMonDataPtr **resdata,
+                            size_t *nresdata,
+                            virResctrlMonitorType tag)
+{
+    virDomainResctrlDefPtr resctrl = NULL;
+    virQEMUResctrlMonDataPtr res = NULL;
+    size_t i = 0;
+    size_t j = 0;
+
+    for (i = 0; i < dom->def->nresctrls; i++) {
+        resctrl = dom->def->resctrls[i];
+
+        for (j = 0; j < resctrl->nmonitors; j++) {
+            virDomainResctrlMonDefPtr domresmon = NULL;
+            virResctrlMonitorPtr monitor = NULL;
+
+            domresmon = resctrl->monitors[j];
+            monitor = domresmon->instance;
+
+            if (domresmon->tag != tag)
+                continue;
+
+            if (VIR_ALLOC(res) < 0)
+                return -1;
+
+            /* If virBitmapFormat successfully returns an vcpu string, then
+             * res.vcpus is assigned with an memory space holding it,
+             * let this newly allocated memory buffer to be freed along with
+             * the free of 'res' */
+            if (!(res->vcpus = virBitmapFormat(domresmon->vcpus)))
+                goto error;
+
+            if (VIR_STRDUP(res->name, virResctrlMonitorGetID(monitor)) < 0)
+                goto error;
+
+            if (virResctrlMonitorGetCacheOccupancy(monitor,
+                                                   &res->stats,
+                                                   &res->nstats) < 0)
+                goto error;
+
+            if (VIR_APPEND_ELEMENT(*resdata, *nresdata, res) < 0)
+                goto error;
+        }
+    }
+
+    return 0;
+
+ error:
+    qemuDomainFreeResctrlMonData(res);
+    return -1;
+}
+
+
+static int
+qemuDomainGetStatsCpuCache(virDomainObjPtr dom,
+                           virDomainStatsRecordPtr record,
+                           int *maxparams)
+{
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+    virQEMUResctrlMonDataPtr *resdata = NULL;
+    size_t nresdata = 0;
+    size_t i = 0;
+    size_t j = 0;
+    int ret = -1;
+
+    if (!virDomainObjIsActive(dom))
+        return 0;
+
+    if (qemuDomainGetResctrlMonData(dom, &resdata, &nresdata,
+                                    VIR_RESCTRL_MONITOR_TYPE_CACHE) < 0)
+        goto cleanup;
+
+    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+             "cpu.cache.monitor.count");
+    if (virTypedParamsAddUInt(&record->params, &record->nparams,
+                              maxparams, param_name, nresdata) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nresdata; i++) {
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "cpu.cache.monitor.%zu.name", i);
+        if (virTypedParamsAddString(&record->params,
+                                    &record->nparams,
+                                    maxparams,
+                                    param_name,
+                                    resdata[i]->name) < 0)
+            goto cleanup;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "cpu.cache.monitor.%zu.vcpus", i);
+        if (virTypedParamsAddString(&record->params, &record->nparams,
+                                    maxparams, param_name,
+                                    resdata[i]->vcpus) < 0)
+            goto cleanup;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "cpu.cache.monitor.%zu.bank.count", i);
+        if (virTypedParamsAddUInt(&record->params, &record->nparams,
+                                  maxparams, param_name,
+                                  resdata[i]->nstats) < 0)
+            goto cleanup;
+
+        for (j = 0; j < resdata[i]->nstats; j++) {
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "cpu.cache.monitor.%zu.bank.%zu.id", i, j);
+            if (virTypedParamsAddUInt(&record->params, &record->nparams,
+                                      maxparams, param_name,
+                                      resdata[i]->stats[j]->id) < 0)
+                goto cleanup;
+
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "cpu.cache.monitor.%zu.bank.%zu.bytes", i, j);
+            if (virTypedParamsAddUInt(&record->params, &record->nparams,
+                                      maxparams, param_name,
+                                      resdata[i]->stats[j]->val) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    for (i = 0; i < nresdata; i++)
+        qemuDomainFreeResctrlMonData(resdata[i]);
+    VIR_FREE(resdata);
+    return ret;
+}
+
+
 static int
 qemuDomainGetStatsCpuCgroup(virDomainObjPtr dom,
                             virDomainStatsRecordPtr record,
@@ -19976,7 +20145,13 @@ qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                       int *maxparams,
                       unsigned int privflags ATTRIBUTE_UNUSED)
 {
-    return qemuDomainGetStatsCpuCgroup(dom, record, maxparams);
+    if (qemuDomainGetStatsCpuCgroup(dom, record, maxparams) < 0)
+        return -1;
+
+    if (qemuDomainGetStatsCpuCache(dom, record, maxparams) < 0)
+        return -1;
+
+    return 0;
 }
 
 
