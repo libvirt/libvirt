@@ -133,8 +133,19 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
 
     libxl_domain_create_info_init(c_info);
 
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
+        def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
+#ifdef HAVE_XEN_PVH
+        c_info->type = def->os.type == VIR_DOMAIN_OSTYPE_HVM ?
+            LIBXL_DOMAIN_TYPE_HVM : LIBXL_DOMAIN_TYPE_PVH;
+#else
+        if (def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                    _("PVH guest os type not supported"));
+            return -1;
+        }
         c_info->type = LIBXL_DOMAIN_TYPE_HVM;
+#endif
         switch ((virTristateSwitch) def->features[VIR_DOMAIN_FEATURE_HAP]) {
         case VIR_TRISTATE_SWITCH_OFF:
             libxl_defbool_set(&c_info->hap, false);
@@ -276,16 +287,26 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     virDomainClockDef clock = def->clock;
     libxl_ctx *ctx = cfg->ctx;
     libxl_domain_build_info *b_info = &d_config->b_info;
-    int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
+    bool hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
+    bool pvh = def->os.type == VIR_DOMAIN_OSTYPE_XENPVH;
     size_t i;
     size_t nusbdevice = 0;
 
     libxl_domain_build_info_init(b_info);
 
-    if (hvm)
+    if (hvm) {
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_HVM);
-    else
+    } else if (pvh) {
+#ifdef HAVE_XEN_PVH
+        libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_PVH);
+#else
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                _("PVH guest os type not supported"));
+        return -1;
+#endif
+    } else {
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_PV);
+    }
 
     b_info->max_vcpus = virDomainDefGetVcpusMax(def);
     if (libxl_cpu_bitmap_alloc(ctx, &b_info->avail_vcpus, b_info->max_vcpus))
@@ -375,7 +396,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     def->mem.cur_balloon = VIR_ROUND_UP(def->mem.cur_balloon, 1024);
     b_info->max_memkb = virDomainDefGetMemoryInitial(def);
     b_info->target_memkb = def->mem.cur_balloon;
-    if (hvm) {
+    if (hvm || pvh) {
         if (caps &&
             def->cpu && def->cpu->mode == (VIR_CPU_MODE_HOST_PASSTHROUGH)) {
             bool hasHwVirt = false;
@@ -645,6 +666,22 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1) < 0) {
             VIR_DISPOSE_N(b_info->u.hvm.usbdevice_list, nusbdevice);
             return -1;
+        }
+#endif
+    } else if (pvh) {
+        if (VIR_STRDUP(b_info->cmdline, def->os.cmdline) < 0)
+            return -1;
+        if (VIR_STRDUP(b_info->kernel, def->os.kernel) < 0)
+            return -1;
+        if (VIR_STRDUP(b_info->ramdisk, def->os.initrd) < 0)
+            return -1;
+#ifdef LIBXL_HAVE_BUILDINFO_BOOTLOADER
+        if (VIR_STRDUP(b_info->bootloader, def->os.bootloader) < 0)
+            return -1;
+        if (def->os.bootloaderArgs) {
+            if (!(b_info->bootloader_args =
+                  virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
+                return -1;
         }
 #endif
     } else {
@@ -1226,11 +1263,12 @@ libxlMakeNic(virDomainDefPtr def,
      * hvm guest").
      */
     if (l_nic->model) {
-        if (def->os.type == VIR_DOMAIN_OSTYPE_XEN &&
+        if ((def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+            def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) &&
             STRNEQ(l_nic->model, "netfront")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("only model 'netfront' is supported for "
-                             "Xen PV domains"));
+                             "Xen PV(H) domains"));
             return -1;
         }
         if (VIR_STRDUP(x_nic->model, l_nic->model) < 0)

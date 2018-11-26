@@ -74,10 +74,13 @@
         is able to run. Possible values are:
         <dl>
           <dt><code>xen</code></dt>
-          <dd>for XEN</dd>
+          <dd>for XEN PV</dd>
 
           <dt><code>linux</code></dt>
           <dd>legacy alias for <code>xen</code></dd>
+
+          <dt><code>xenpvh</code></dt>
+          <dd>for XEN PVH</dd>
 
           <dt><code>hvm</code></dt>
           <dd>Unmodified operating system</dd>
@@ -104,8 +107,8 @@
             <dt><code>machine</code></dt><dd>Machine type, for use in
               <a href="formatdomain.html#attributeOSTypeMachine">machine</a>
               attribute of os/type element in domain XML. For example Xen
-              supports <code>xenfv</code> for HVM or <code>xenpv</code> for
-              PV.</dd>
+              supports <code>xenfv</code> for HVM, <code>xenpv</code> for
+              PV, or <code>xenpvh</code> for PVH.</dd>
             <dt><code>domain</code></dt><dd>The <code>type</code> attribute of
               this element specifies the type of hypervisor required to run the
               domain. Use in <a href="formatdomain.html#attributeDomainType">type</a>

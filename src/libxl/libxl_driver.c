@@ -6398,9 +6398,11 @@ libxlConnectGetDomainCapabilities(virConnectPtr conn,
         emulatorbin = "/usr/bin/qemu-system-x86_64";
 
     if (machine) {
-        if (STRNEQ(machine, "xenpv") && STRNEQ(machine, "xenfv")) {
+        if (STRNEQ(machine, "xenpv") &&
+            STRNEQ(machine, "xenpvh") &&
+            STRNEQ(machine, "xenfv")) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Xen only supports 'xenpv' and 'xenfv' machines"));
+                           _("Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"));
             goto cleanup;
         }
     } else {

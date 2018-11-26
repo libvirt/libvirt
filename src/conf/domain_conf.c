@@ -126,7 +126,8 @@ VIR_ENUM_IMPL(virDomainOS, VIR_DOMAIN_OSTYPE_LAST,
               "xen",
               "linux",
               "exe",
-              "uml")
+              "uml",
+              "xenpvh")
 
 VIR_ENUM_IMPL(virDomainBoot, VIR_DOMAIN_BOOT_LAST,
               "fd",
@@ -12932,7 +12933,8 @@ virDomainInputDefParseXML(virDomainXMLOptionPtr xmlopt,
                                bus);
                 goto error;
             }
-        } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN) {
+        } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+                   dom->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
             if (def->bus != VIR_DOMAIN_INPUT_BUS_XEN) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported input bus %s"),
@@ -12981,7 +12983,8 @@ virDomainInputDefParseXML(virDomainXMLOptionPtr xmlopt,
             } else {
                 def->bus = VIR_DOMAIN_INPUT_BUS_USB;
             }
-        } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN) {
+        } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+                   dom->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
             def->bus = VIR_DOMAIN_INPUT_BUS_XEN;
         } else {
             if ((dom->virtType == VIR_DOMAIN_VIRT_VZ ||
@@ -18770,6 +18773,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
     }
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+        def->os.type == VIR_DOMAIN_OSTYPE_XENPVH ||
         def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
         def->os.type == VIR_DOMAIN_OSTYPE_UML) {
         xmlNodePtr loader_node;

@@ -341,12 +341,14 @@
           <choice>
             <value>xenpv</value>
             <value>xenfv</value>
+            <value>xenpvh</value>
           </choice>
         </attribute>
       </optional>
       <choice>
         <value>xen</value>
         <value>linux</value>
+        <value>xenpvh</value>
       </choice>
     </element>
   </define>

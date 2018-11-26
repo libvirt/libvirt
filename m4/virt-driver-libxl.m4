@@ -75,6 +75,9 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
     ])
   fi
 
+  dnl Check if Xen has support for PVH
+  AC_CHECK_DECL(LIBXL_DOMAIN_TYPE_PVH, [AC_DEFINE([HAVE_XEN_PVH], [1], [Define to 1 if Xen has PVH support.])], [], [#include <libxl.h>])
+
   AC_SUBST([LIBXL_CFLAGS])
   AC_SUBST([LIBXL_LIBS])
 ])

@@ -57,6 +57,7 @@ struct guest_arch {
     virArch arch;
     int bits;
     int hvm;
+    int pvh;
     int pae;
     int nonpae;
     int ia64_be;
@@ -491,20 +492,44 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
                 guest_archs[i].nonpae = nonpae;
             if (ia64_be)
                 guest_archs[i].ia64_be = ia64_be;
+
+            /*
+             * Xen 4.10 introduced support for the PVH guest type, which
+             * requires hardware virtualization support similar to the
+             * HVM guest type. Add a PVH guest type for each new HVM
+             * guest type.
+             */
+#ifdef HAVE_XEN_PVH
+            if (hvm && i == nr_guest_archs-1) {
+                /* Ensure we have not exhausted the guest_archs array */
+                if (nr_guest_archs >= ARRAY_CARDINALITY(guest_archs))
+                    continue;
+                i = nr_guest_archs;
+                nr_guest_archs++;
+
+                guest_archs[i].arch = arch;
+                guest_archs[i].hvm = 0;
+                guest_archs[i].pvh = 1;
+            }
+#endif
         }
     }
     regfree(&regex);
 
     for (i = 0; i < nr_guest_archs; ++i) {
         virCapsGuestPtr guest;
-        char const *const xen_machines[] = {guest_archs[i].hvm ? "xenfv" : "xenpv"};
+        char const *const xen_machines[] = {
+            guest_archs[i].hvm ? "xenfv" :
+                (guest_archs[i].pvh ? "xenpvh" : "xenpv")};
         virCapsGuestMachinePtr *machines;
 
         if ((machines = virCapabilitiesAllocMachines(xen_machines, 1)) == NULL)
             return -1;
 
         if ((guest = virCapabilitiesAddGuest(caps,
-                                             guest_archs[i].hvm ? VIR_DOMAIN_OSTYPE_HVM : VIR_DOMAIN_OSTYPE_XEN,
+                                             guest_archs[i].hvm ? VIR_DOMAIN_OSTYPE_HVM :
+                                                (guest_archs[i].pvh ? VIR_DOMAIN_OSTYPE_XENPVH :
+                                                 VIR_DOMAIN_OSTYPE_XEN),
                                              guest_archs[i].arch,
                                              LIBXL_EXECBIN_DIR "/qemu-system-i386",
                                              (guest_archs[i].hvm ?
@@ -557,7 +582,9 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
                                                1,
                                                0) == NULL)
                 return -1;
+        }
 
+        if (guest_archs[i].hvm || guest_archs[i].pvh) {
             if (virCapabilitiesAddGuestFeature(guest,
                                                "hap",
                                                1,
@@ -580,7 +607,7 @@ libxlMakeDomainOSCaps(const char *machine,
 
     os->supported = true;
 
-    if (STREQ(machine, "xenpv"))
+    if (STREQ(machine, "xenpv") || STREQ(machine, "xenpvh"))
         return 0;
 
     capsLoader->supported = true;
@@ -734,9 +761,12 @@ libxlMakeDomainCapabilities(virDomainCapsPtr domCaps,
     if (libxlMakeDomainOSCaps(domCaps->machine, os, firmwares, nfirmwares) < 0 ||
         libxlMakeDomainDeviceDiskCaps(disk) < 0 ||
         libxlMakeDomainDeviceGraphicsCaps(graphics) < 0 ||
-        libxlMakeDomainDeviceVideoCaps(video) < 0 ||
+        libxlMakeDomainDeviceVideoCaps(video) < 0)
+        return -1;
+    if (STRNEQ(domCaps->machine, "xenpvh") &&
         libxlMakeDomainDeviceHostdevCaps(hostdev) < 0)
         return -1;
+
     return 0;
 }
 
