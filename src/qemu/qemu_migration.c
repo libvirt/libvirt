@@ -463,6 +463,21 @@ qemuMigrationDstStopNBDServer(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuMigrationNBDReportMirrorError(virDomainDiskDefPtr disk,
+                                  const char *errmsg)
+{
+    if (errmsg) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("migration of disk %s failed: %s"),
+                       disk->dst, errmsg);
+    } else {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("migration of disk %s failed"), disk->dst);
+    }
+}
+
+
 /**
  * qemuMigrationSrcNBDStorageCopyReady:
  * @vm: domain
@@ -492,15 +507,7 @@ qemuMigrationSrcNBDStorageCopyReady(virDomainObjPtr vm,
 
         status = qemuBlockJobUpdateDisk(vm, asyncJob, disk, &error);
         if (status == VIR_DOMAIN_BLOCK_JOB_FAILED) {
-            if (error) {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("migration of disk %s failed: %s"),
-                               disk->dst, error);
-                VIR_FREE(error);
-            } else {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("migration of disk %s failed"), disk->dst);
-            }
+            qemuMigrationNBDReportMirrorError(disk, error);
             return -1;
         }
         VIR_FREE(error);
@@ -553,14 +560,7 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
         switch (status) {
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
             if (check) {
-                if (error) {
-                    virReportError(VIR_ERR_OPERATION_FAILED,
-                                   _("migration of disk %s failed: %s"),
-                                   disk->dst, error);
-                } else {
-                    virReportError(VIR_ERR_OPERATION_FAILED,
-                                   _("migration of disk %s failed"), disk->dst);
-                }
+                qemuMigrationNBDReportMirrorError(disk, error);
                 failed = true;
             }
             ATTRIBUTE_FALLTHROUGH;
@@ -635,14 +635,7 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         if (failNoJob) {
-            if (error) {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("migration of disk %s failed: %s"),
-                               disk->dst, error);
-            } else {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("migration of disk %s failed"), disk->dst);
-            }
+            qemuMigrationNBDReportMirrorError(disk, error);
             goto cleanup;
         }
         ATTRIBUTE_FALLTHROUGH;
