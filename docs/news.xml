@@ -68,6 +68,16 @@
           be viewed via the domain statistics.
         </description>
       </change>
+      <change>
+        <summary>
+          Xen: Add support for PVH
+        </summary>
+        <description>
+          The libxl driver now supports Xen's PVH virtual machine type.
+          PVH machines are enabled with the new "xenpvh" OS type, e.g.
+          <code>&lt;os&gt;&lt;type&gt;xenpvh&lt;/type&gt;&lt;/os&gt;</code>
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
