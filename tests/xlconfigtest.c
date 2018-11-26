@@ -281,6 +281,7 @@ mymain(void)
     DO_TEST("rbd-multihost-noauth");
     DO_TEST_FORMAT("paravirt-type", false);
     DO_TEST_FORMAT("fullvirt-type", false);
+    DO_TEST("pvh-type");
 
 #ifdef LIBXL_HAVE_DEVICE_CHANNEL
     DO_TEST("channel-pty");

@@ -1090,7 +1090,7 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 {
     virCapsDomainDataPtr capsdata = NULL;
     VIR_AUTOFREE(char *) str = NULL;
-    int hvm = 0, ret = -1;
+    int ret = -1;
 
     if (xenConfigCopyString(conf, "name", &def->name) < 0)
         goto out;
@@ -1098,11 +1098,15 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     if (xenConfigGetUUID(conf, "uuid", def->uuid) < 0)
         goto out;
 
+    def->os.type = VIR_DOMAIN_OSTYPE_XEN;
+
     if (xenConfigGetString(conf, "type", &str, NULL) == 0 && str) {
         if (STREQ(str, "pv")) {
-            hvm = 0;
+            def->os.type = VIR_DOMAIN_OSTYPE_XEN;
+        } else if (STREQ(str, "pvh")) {
+            def->os.type = VIR_DOMAIN_OSTYPE_XENPVH;
         } else if (STREQ(str, "hvm")) {
-            hvm = 1;
+            def->os.type = VIR_DOMAIN_OSTYPE_HVM;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("type %s is not supported"), str);
@@ -1110,11 +1114,10 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
         }
     } else {
         if ((xenConfigGetString(conf, "builder", &str, "linux") == 0) &&
-            STREQ(str, "hvm"))
-            hvm = 1;
+            STREQ(str, "hvm")) {
+            def->os.type = VIR_DOMAIN_OSTYPE_HVM;
+        }
     }
-
-    def->os.type = (hvm ? VIR_DOMAIN_OSTYPE_HVM : VIR_DOMAIN_OSTYPE_XEN);
 
     if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
             VIR_ARCH_NONE, def->virtType, NULL, NULL)))

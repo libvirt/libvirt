@@ -17,7 +17,10 @@ testXLInitCaps(void)
         "xenfv"
     };
     static const char *const xen_machines[] = {
-        "xenpv"
+        "xenpv",
+    };
+    static const char *const pvh_machines[] = {
+        "xenpvh",
     };
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
@@ -44,6 +47,21 @@ testXLInitCaps(void)
         goto cleanup;
 
     if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XEN,
+                                         VIR_ARCH_X86_64,
+                                         "/usr/lib/xen/bin/qemu-system-i386",
+                                         NULL,
+                                         nmachines, machines)) == NULL)
+        goto cleanup;
+    machines = NULL;
+
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN, NULL,
+                                      NULL, 0, NULL) == NULL)
+        goto cleanup;
+    nmachines = ARRAY_CARDINALITY(pvh_machines);
+    if ((machines = virCapabilitiesAllocMachines(pvh_machines, nmachines)) == NULL)
+        goto cleanup;
+
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XENPVH,
                                          VIR_ARCH_X86_64,
                                          "/usr/lib/xen/bin/qemu-system-i386",
                                          NULL,
