@@ -203,6 +203,9 @@ mymain(void)
 
     DO_TEST("basic-pv");
     DO_TEST("basic-hvm");
+# ifdef HAVE_XEN_PVH
+    DO_TEST("basic-pvh");
+# endif
     DO_TEST("cpu-shares-hvm");
     DO_TEST("variable-clock-hvm");
     DO_TEST("moredevs-hvm");
