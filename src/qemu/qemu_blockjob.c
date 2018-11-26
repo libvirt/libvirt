@@ -286,6 +286,9 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
               job->state,
               job->newstate);
 
+    if (job->newstate == -1)
+        return;
+
     qemuBlockJobEmitEvents(driver, vm, disk, job->type, job->newstate);
 
     /* If we completed a block pull or commit, then update the XML
@@ -315,6 +318,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
     }
 
     job->state = job->newstate;
+    job->newstate = -1;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after block job", vm->def->name);
@@ -347,14 +351,13 @@ qemuBlockJobUpdateDisk(virDomainObjPtr vm,
 {
     qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int state = job->newstate;
 
-    if (state != -1) {
-        qemuBlockJobEventProcessLegacy(priv->driver, vm, job, asyncJob);
-        job->newstate = -1;
-    }
+    if (job->newstate == -1)
+        return -1;
 
-    return state;
+    qemuBlockJobEventProcessLegacy(priv->driver, vm, job, asyncJob);
+
+    return job->state;
 }
 
 
