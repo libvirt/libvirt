@@ -96,9 +96,9 @@ static int testCompareListDefault(const void *data ATTRIBUTE_UNUSED)
 {
     const char *const argv[] = { VIRSH_DEFAULT, "list", NULL };
     const char *exp = "\
- Id   Name   State    \n\
+ Id   Name   State\n\
 ----------------------\n\
- 1    test   running  \n\
+ 1    test   running\n\
 \n";
     return testCompareOutputLit(exp, NULL, argv);
 }
@@ -107,10 +107,10 @@ static int testCompareListCustom(const void *data ATTRIBUTE_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "list", NULL };
     const char *exp = "\
- Id   Name   State    \n\
+ Id   Name   State\n\
 ----------------------\n\
- 1    fv0    running  \n\
- 2    fc4    running  \n\
+ 1    fv0    running\n\
+ 2    fc4    running\n\
 \n";
     return testCompareOutputLit(exp, NULL, argv);
 }

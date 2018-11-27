@@ -43,13 +43,13 @@ testVshTableHeader(const void *opaque ATTRIBUTE_UNUSED)
     int ret = 0;
     char *act = NULL;
     const char *exp =
-" 1   fedora28   running  \n"
-" 2   rhel7.5    running  \n";
+" 1   fedora28   running\n"
+" 2   rhel7.5    running\n";
     const char *exp2 =
-" Id   Name       State    \n"
+" Id   Name       State\n"
 "--------------------------\n"
-" 1    fedora28   running  \n"
-" 2    rhel7.5    running  \n";
+" 1    fedora28   running\n"
+" 2    rhel7.5    running\n";
 
     vshTablePtr table = vshTableNew("Id", "Name", "State",
                                     NULL); //to ask about return
@@ -118,10 +118,10 @@ testUnicode(const void *opaque ATTRIBUTE_UNUSED)
     char *act = NULL;
 
     const char *exp =
-" Id   名稱                  государство  \n"
+" Id   名稱                  государство\n"
 "-----------------------------------------\n"
-" 1    fedora28              running      \n"
-" 2    つへソrhel7.5つへソ   running      \n";
+" 1    fedora28              running\n"
+" 2    つへソrhel7.5つへソ   running\n";
     vshTablePtr table;
 
     table = vshTableNew("Id", "名稱", "государство", NULL);
@@ -150,10 +150,10 @@ testUnicodeArabic(const void *opaque ATTRIBUTE_UNUSED)
     char *act = NULL;
 
     const char *exp =
-" ﻡﺍ ﻢﻣﺍ ﻕﺎﺌﻣﺓ   ﺓ ﺎﻠﺼﻋ                                                 ﺍﻸﺜﻧﺎﻧ              \n"
+" ﻡﺍ ﻢﻣﺍ ﻕﺎﺌﻣﺓ   ﺓ ﺎﻠﺼﻋ                                                 ﺍﻸﺜﻧﺎﻧ\n"
 "-------------------------------------------------------------------------------------------\n"
-" 1              ﻉﺪﻴﻟ ﺎﻠﺜﻘﻴﻟ ﻕﺎﻣ ﻊﻧ, ٣٠ ﻎﻴﻨﻳﺍ ﻮﺘﻧﺎﻤﺗ ﺎﻠﺛﺎﻠﺛ، ﺄﺳﺭ, ﺩﻮﻟ   ﺩﻮﻟ. ﺄﻣﺎﻣ ﺍ ﺎﻧ ﻲﻜﻧ  \n"
-" ﺺﻔﺣﺓ           ﺖﻜﺘﻴﻛﺍً ﻊﻟ, ﺎﻠﺠﻧﻭﺩ ﻭﺎﻠﻌﺗﺍﺩ                              ﺵﺭ                  \n";
+" 1              ﻉﺪﻴﻟ ﺎﻠﺜﻘﻴﻟ ﻕﺎﻣ ﻊﻧ, ٣٠ ﻎﻴﻨﻳﺍ ﻮﺘﻧﺎﻤﺗ ﺎﻠﺛﺎﻠﺛ، ﺄﺳﺭ, ﺩﻮﻟ   ﺩﻮﻟ. ﺄﻣﺎﻣ ﺍ ﺎﻧ ﻲﻜﻧ\n"
+" ﺺﻔﺣﺓ           ﺖﻜﺘﻴﻛﺍً ﻊﻟ, ﺎﻠﺠﻧﻭﺩ ﻭﺎﻠﻌﺗﺍﺩ                              ﺵﺭ\n";
     vshTablePtr table;
     wchar_t wc;
 
@@ -192,10 +192,10 @@ testUnicodeZeroWidthChar(const void *opaque ATTRIBUTE_UNUSED)
     int ret = 0;
     vshTablePtr table = NULL;
     const char *exp =
-" I\u200Bd   Name       \u200BStatus   \n"
+" I\u200Bd   Name       \u200BStatus\n"
 "--------------------------\n"
-" 1\u200B    fedora28   run\u200Bning  \n"
-" 2    rhel7.5    running  \n";
+" 1\u200B    fedora28   run\u200Bning\n"
+" 2    rhel7.5    running\n";
     char *act = NULL;
     wchar_t wc;
 
@@ -229,10 +229,10 @@ testUnicodeCombiningChar(const void *opaque ATTRIBUTE_UNUSED)
     int ret = 0;
     vshTablePtr table = NULL;
     const char *exp =
-" Id   Náme       Ⓢtatus   \n"
+" Id   Náme       Ⓢtatus\n"
 "--------------------------\n"
-" 1    fědora28   running  \n"
-" 2    rhel       running  \n";
+" 1    fědora28   running\n"
+" 2    rhel       running\n";
     char *act = NULL;
 
     table = vshTableNew("Id", "Náme", "Ⓢtatus", NULL);
@@ -258,10 +258,10 @@ testUnicodeNonPrintableChar(const void *opaque ATTRIBUTE_UNUSED)
     int ret = 0;
     vshTablePtr table = NULL;
     const char *exp =
-" I\\x09d   Name           Status   \n"
+" I\\x09d   Name           Status\n"
 "----------------------------------\n"
-" 1        f\\x07edora28   running  \n"
-" 2        rhel7.5        running  \n";
+" 1        f\\x07edora28   running\n"
+" 2        rhel7.5        running\n";
     char *act = NULL;
 
     table = vshTableNew("I\td", "Name", "Status", NULL);
@@ -288,20 +288,20 @@ testNTables(const void *opaque ATTRIBUTE_UNUSED)
     vshTablePtr table2 = NULL;
     vshTablePtr table3 = NULL;
     const char *exp1 =
-" Id   Name       Status   \n"
+" Id   Name       Status\n"
 "--------------------------\n"
-" 1    fedora28   running  \n"
-" 2    rhel7.5    running  \n";
+" 1    fedora28   running\n"
+" 2    rhel7.5    running\n";
     const char *exp2 =
-" Id   Name   Status  \n"
+" Id   Name   Status\n"
 "---------------------\n";
     const char *exp3 =
-" Id  \n"
+" Id\n"
 "-----\n"
-" 1   \n"
-" 2   \n"
-" 3   \n"
-" 4   \n";
+" 1\n"
+" 2\n"
+" 3\n"
+" 4\n";
     char *act1 = NULL;
     char *act2 = NULL;
     char *act3 = NULL;
