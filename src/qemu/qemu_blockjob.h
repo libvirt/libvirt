@@ -96,9 +96,9 @@ qemuBlockJobIsRunning(qemuBlockJobDataPtr job)
 void
 qemuBlockJobStartupFinalize(qemuBlockJobDataPtr job);
 
-int qemuBlockJobUpdateDisk(virDomainObjPtr vm,
-                           int asyncJob,
-                           virDomainDiskDefPtr disk);
+int qemuBlockJobUpdate(virDomainObjPtr vm,
+                       qemuBlockJobDataPtr job,
+                       int asyncJob);
 
 void qemuBlockJobSyncBegin(qemuBlockJobDataPtr job);
 void qemuBlockJobSyncEndDisk(virDomainObjPtr vm,

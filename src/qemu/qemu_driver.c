@@ -4740,7 +4740,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
 
     job->newstate = status;
 
-    qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk);
+    qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
 
  endjob:
     qemuBlockJobStartupFinalize(job);
@@ -17445,13 +17445,13 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
      * do the waiting while still holding the VM job, to prevent newly
      * scheduled block jobs from confusing us. */
     if (!async) {
-        qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk);
+        qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
         while (qemuBlockJobIsRunning(job)) {
             if (virDomainObjWait(vm) < 0) {
                 ret = -1;
                 goto endjob;
             }
-            qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk);
+            qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
         }
     }
 
