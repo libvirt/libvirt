@@ -388,12 +388,12 @@ qemuBlockJobUpdate(virDomainObjPtr vm,
  * @disk: domain disk
  *
  * Begin a new synchronous block job for @disk. The synchronous
- * block job is ended by a call to qemuBlockJobSyncEndDisk, or by
+ * block job is ended by a call to qemuBlockJobSyncEnd, or by
  * the guest quitting.
  *
  * During a synchronous block job, a block job event for @disk
  * will not be processed asynchronously. Instead, it will be
- * processed only when qemuBlockJobUpdate or qemuBlockJobSyncEndDisk
+ * processed only when qemuBlockJobUpdate or qemuBlockJobSyncEnd
  * is called.
  */
 void
@@ -411,7 +411,7 @@ qemuBlockJobSyncBegin(qemuBlockJobDataPtr job)
 
 
 /**
- * qemuBlockJobSyncEndDisk:
+ * qemuBlockJobSyncEnd:
  * @vm: domain
  * @disk: domain disk
  *
@@ -421,16 +421,16 @@ qemuBlockJobSyncBegin(qemuBlockJobDataPtr job)
  * qemuBlockJobStartupFinalize will be called.
  */
 void
-qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
-                        int asyncJob,
-                        virDomainDiskDefPtr disk)
+qemuBlockJobSyncEnd(virDomainObjPtr vm,
+                    qemuBlockJobDataPtr job,
+                    int asyncJob)
 {
-    qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
+    const char *diskdst = NULL;
 
-    if (!job)
-        return;
+    if (job->disk)
+        diskdst = job->disk->dst;
 
-    VIR_DEBUG("disk=%s", disk->dst);
+    VIR_DEBUG("disk=%s", NULLSTR(diskdst));
     qemuBlockJobUpdate(vm, job, asyncJob);
     job->synchronous = false;
 }

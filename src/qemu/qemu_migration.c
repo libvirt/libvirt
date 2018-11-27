@@ -723,7 +723,7 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
                     err = virSaveLastError();
                 failed = true;
             }
-            qemuBlockJobSyncEndDisk(vm, asyncJob, disk);
+            qemuBlockJobSyncEnd(vm, job, asyncJob);
             diskPriv->migrating = false;
         }
 

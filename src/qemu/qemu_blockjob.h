@@ -100,9 +100,9 @@ int qemuBlockJobUpdate(virDomainObjPtr vm,
                        int asyncJob);
 
 void qemuBlockJobSyncBegin(qemuBlockJobDataPtr job);
-void qemuBlockJobSyncEndDisk(virDomainObjPtr vm,
-                             int asyncJob,
-                             virDomainDiskDefPtr disk);
+void qemuBlockJobSyncEnd(virDomainObjPtr vm,
+                         qemuBlockJobDataPtr job,
+                         int asyncJob);
 
 qemuBlockJobDataPtr
 qemuBlockJobGetByDisk(virDomainDiskDefPtr disk)

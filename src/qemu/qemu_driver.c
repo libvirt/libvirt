@@ -17456,8 +17456,8 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     }
 
  endjob:
-    if (disk)
-        qemuBlockJobSyncEndDisk(vm, QEMU_ASYNC_JOB_NONE, disk);
+    if (job && !async)
+        qemuBlockJobSyncEnd(vm, job, QEMU_ASYNC_JOB_NONE);
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
