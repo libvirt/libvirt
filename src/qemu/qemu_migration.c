@@ -577,7 +577,6 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
             ATTRIBUTE_FALLTHROUGH;
         case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
-            qemuBlockJobSyncEndDisk(vm, asyncJob, disk);
             diskPriv->migrating = false;
             break;
 
