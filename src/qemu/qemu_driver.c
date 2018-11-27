@@ -21100,6 +21100,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
                              unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
+    virErrorPtr orig_err = NULL;
     virDomainObjPtr *vms = NULL;
     virDomainObjPtr vm;
     size_t nvms;
@@ -21190,8 +21191,10 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     ret = nstats;
 
  cleanup:
+    virErrorPreserveLast(&orig_err);
     virDomainStatsRecordListFree(tmpstats);
     virObjectListFreeCount(vms, nvms);
+    virErrorRestore(&orig_err);
 
     return ret;
 }
