@@ -3418,9 +3418,20 @@
             </attribute>
           </optional>
         </group>
-        <attribute name="type">
-          <value>egl-headless</value>
-        </attribute>
+        <group>
+          <attribute name="type">
+            <value>egl-headless</value>
+          </attribute>
+          <optional>
+            <element name="gl">
+              <optional>
+                <attribute name="rendernode">
+                  <ref name="absFilePath"/>
+                </attribute>
+              </optional>
+            </element>
+          </optional>
+        </group>
       </choice>
     </element>
   </define>

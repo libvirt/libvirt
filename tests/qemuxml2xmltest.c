@@ -413,6 +413,8 @@ mymain(void)
     cfg->spiceAutoUnixSocket = false;
     DO_TEST("graphics-spice-egl-headless", NONE);
 
+    DO_TEST("graphics-egl-headless-rendernode", NONE);
+
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);
     DO_TEST("misc-acpi", NONE);

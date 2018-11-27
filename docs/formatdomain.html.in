@@ -6704,12 +6704,17 @@ qemu-kvm -net nic,model=? /dev/null
               the other types, for practical reasons it should be paired with
               either <code>vnc</code> or <code>spice</code> graphics types.
               This display type is only supported by QEMU domains
-              (needs QEMU <span class="since">2.10</span> or newer) and doesn't
-              accept any attributes.
+              (needs QEMU <span class="since">2.10</span> or newer).
+              <span class="Since">5.0.0</span> this element accepts a
+              <code>&lt;gl/&gt;</code> sub-element with an optional attribute
+              <code>rendernode</code> which can be used to specify an absolute
+              path to a host's DRI device to be used for OpenGL rendering.
             </p>
             <pre>
 &lt;graphics type='spice' autoport='yes'/&gt;
-&lt;graphics type='egl-headless'/&gt;
+&lt;graphics type='egl-headless'&gt;
+  &lt;gl rendernode='/dev/dri/renderD128'/&gt;
+&lt;/graphics&gt;
             </pre>
           </dd>
         </dl>

@@ -14074,6 +14074,24 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
 }
 
 
+static int
+virDomainGraphicsDefParseXMLEGLHeadless(virDomainGraphicsDefPtr def,
+                                        xmlNodePtr node,
+                                        xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr save = ctxt->node;
+    xmlNodePtr glNode;
+
+    ctxt->node = node;
+
+    if ((glNode = virXPathNode("./gl", ctxt)))
+        def->data.egl_headless.rendernode = virXMLPropString(glNode,
+                                                             "rendernode");
+    ctxt->node = save;
+    return 0;
+}
+
+
 /* Parse the XML definition for a graphics device */
 static virDomainGraphicsDefPtr
 virDomainGraphicsDefParseXML(xmlNodePtr node,
@@ -14123,6 +14141,9 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        if (virDomainGraphicsDefParseXMLEGLHeadless(def, node, ctxt) < 0)
+            goto error;
+        break;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
     }
@@ -26852,6 +26873,20 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        if (!def->data.egl_headless.rendernode)
+            break;
+
+        if (!children) {
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            children = true;
+        }
+
+        virBufferAddLit(buf, "<gl");
+        virBufferEscapeString(buf, " rendernode='%s'",
+                              def->data.egl_headless.rendernode);
+        virBufferAddLit(buf, "/>\n");
+        break;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
     }
@@ -30938,7 +30973,13 @@ virDomainGraphicsDefHasOpenGL(const virDomainDef *def)
 bool
 virDomainGraphicsSupportsRenderNode(const virDomainGraphicsDef *graphics)
 {
-    return graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE;
+    bool ret = false;
+
+    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE ||
+        graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS)
+        ret = true;
+
+    return ret;
 }
 
 
@@ -30953,6 +30994,8 @@ virDomainGraphicsGetRenderNode(const virDomainGraphicsDef *graphics)
             ret = graphics->data.spice.rendernode;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        ret = graphics->data.egl_headless.rendernode;
+        break;
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
