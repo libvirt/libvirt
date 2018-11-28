@@ -6,13 +6,14 @@
 # Cheng-Chia Tseng <pswo10680@gmail.com>, 2012.
 # Chester Cheng <ccheng@redhat.com>, 2006, 2007.
 # Daniel  <veillard@redhat.com>, 2011.
+# Cheng-Chia Tseng <pswo10680@gmail.com>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
-"PO-Revision-Date: 2015-03-17 01:56+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"PO-Revision-Date: 2018-09-10 04:24+0000\n"
+"Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/libvirt/"
 "language/zh_TW/)\n"
 "Language: zh_TW\n"
@@ -20,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -97,10 +98,10 @@ msgid "Cannot extract running %s hypervisor version\n"
 msgstr "無法解開執行中 %s hypervisor 的版本\n"
 
 msgid "Change the current memory allocation in the guest domain."
-msgstr "改變客座區域中，目前的記憶體分配。"
+msgstr "改變客端區域中，目前的記憶體分配。"
 
 msgid "Change the maximum memory allocation limit in the guest domain."
-msgstr "改變客座區域的最大記憶體分配限制。"
+msgstr "改變客端區域的最大記憶體分配限制。"
 
 msgid "Configure a domain to be automatically started at boot."
 msgstr "將區域設定為開機時自動啟動。"
@@ -121,6 +122,10 @@ msgstr "傾印一個區域的核心。"
 msgid "Core(s) per socket:"
 msgstr "每個插槽的核心："
 
+#, c-format
+msgid "Could not destroy domain: %s"
+msgstr "無法消止區域：%s"
+
 msgid "Create a domain."
 msgstr "建立區域。"
 
@@ -129,6 +134,18 @@ msgstr "建立網路。"
 
 msgid "Define a domain."
 msgstr "定義區域。"
+
+msgid ""
+"Destroy a device on the node.  Note that this command destroys devices on "
+"the physical host"
+msgstr "消止節點上的裝置。請注意到這個指令會消止實體主機上的裝置"
+
+msgid "Destroyed"
+msgstr "已強制關閉"
+
+#, c-format
+msgid "Destroyed node device '%s'\n"
+msgstr "已消止「%s」節點裝置\n"
 
 msgid "Display the system version information."
 msgstr "顯示系統版本的資訊。"
@@ -143,7 +160,7 @@ msgstr "區域 %s 定義自 %s\n"
 
 #, c-format
 msgid "Domain %s destroyed\n"
-msgstr "區域 %s 已經刪除\n"
+msgstr " %s 區域已強制關閉\n"
 
 #, c-format
 msgid "Domain %s has been undefined\n"
@@ -168,6 +185,9 @@ msgstr "區域 %s 已開啟\n"
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "區域 %s 已經暫停\n"
+
+msgid "Domain autodestroy requires a connection handle"
+msgstr "區域自動消止需要連線處理"
 
 msgid "Domain is already active"
 msgstr "區域已經啟動"
@@ -200,12 +220,32 @@ msgid "Failed to define network from %s"
 msgstr "無法從 %s 定義網路"
 
 #, c-format
+msgid "Failed to destroy bridge interface %s"
+msgstr "無法消止 %s 橋接介面"
+
+#, c-format
 msgid "Failed to destroy domain %s"
-msgstr "無法刪除區域 %s"
+msgstr "無法讓 %s 區域強制關閉"
+
+#, c-format
+msgid "Failed to destroy domain '%d'"
+msgstr "無法消止區域「%d」"
+
+#, c-format
+msgid "Failed to destroy interface %s"
+msgstr "無法消止 %s 介面"
 
 #, c-format
 msgid "Failed to destroy network %s"
-msgstr "無法刪除網路 %s"
+msgstr "無法消止 %s 網路"
+
+#, c-format
+msgid "Failed to destroy node device '%s'"
+msgstr "無法消止「%s」節點裝置"
+
+#, c-format
+msgid "Failed to destroy pool %s"
+msgstr "無法消止 %s 集池"
 
 msgid "Failed to list active domains"
 msgstr "無法列出運作中的區域"
@@ -272,6 +312,10 @@ msgstr "Id"
 msgid "Id:"
 msgstr "Id:"
 
+#, c-format
+msgid "Interface %s destroyed\n"
+msgstr "已消止 %s 介面\n"
+
 msgid "Max memory:"
 msgstr "最大記憶體："
 
@@ -297,7 +341,7 @@ msgstr "網路 %s 定義自 %s\n"
 
 #, c-format
 msgid "Network %s destroyed\n"
-msgstr "網路 %s 已經刪除\n"
+msgstr "已經消止 %s 網路\n"
 
 #, c-format
 msgid "Network %s has been undefined\n"
@@ -325,6 +369,10 @@ msgstr "POST 操作失敗：%s"
 
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "讓區域 VCPU 符合主機的實際處理器。"
+
+#, c-format
+msgid "Pool %s destroyed\n"
+msgstr "%s 集池已消止\n"
 
 msgid "Restore a domain."
 msgstr "回復區域。"
@@ -360,6 +408,17 @@ msgstr "在目標區域執行關機。"
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "執行 hypervisor：%s %d.%d.%d\n"
 
+msgid ""
+"Save and destroy a running domain, so it can be restarted from\n"
+"    the same state at a later time.  When the virsh 'start'\n"
+"    command is next run for the domain, it will automatically\n"
+"    be started from this saved state."
+msgstr ""
+"儲存並消止區域，讓它可以在之後以\n"
+"    相同狀態重新啟動。當該區域下次\n"
+"    執行 virsh 'start' 指令時，它會自動\n"
+"    以這個儲存的狀態啟動。"
+
 msgid "Start a network."
 msgstr "啟動一個網路。"
 
@@ -386,6 +445,10 @@ msgstr ""
 
 msgid "UUID:"
 msgstr "UUID："
+
+#, c-format
+msgid "Unable to destroy Storage Pool: %s"
+msgstr "無法消止儲藏集池：%s"
 
 msgid "Unable to initialize certificate"
 msgstr "無法初始化憑證"
@@ -417,11 +480,17 @@ msgstr "啟用"
 msgid "authentication required"
 msgstr "需要通過認證"
 
+msgid "automatically destroy the guest when virsh disconnects"
+msgstr "virsh 中斷連線時自動消止客端"
+
 msgid "autostart a domain"
 msgstr "自動啟動一個區域"
 
 msgid "autostart a network"
 msgstr "自動啟動網路"
+
+msgid "cannot abort incoming migration; use virDomainDestroy instead"
+msgstr "無法中止移入的遷移；請改用 virDomainDestroy"
 
 msgid "cannot initialize condition variable"
 msgstr "無法初始化條件變數"
@@ -467,7 +536,7 @@ msgid "configuration file syntax error: %s"
 msgstr "設定檔語法錯誤：%s"
 
 msgid "connect to the guest console"
-msgstr "連接客座端主控台"
+msgstr "連接客端主控台"
 
 msgid "convert a domain id or UUID to domain name"
 msgstr "將區域 id 或 UUID 轉為區域名稱"
@@ -510,6 +579,24 @@ msgstr "從 XML 檔案建立網路"
 msgid "define (but don't start) a domain from an XML file"
 msgstr "從 XML 檔案定義（但不啟動）區域"
 
+msgid "destroy (stop) a device on the node"
+msgstr "消止（停止）節點上的裝置"
+
+msgid "destroy (stop) a domain"
+msgstr "消止（停止）區域"
+
+msgid "destroy (stop) a network"
+msgstr "消止（停止）網路"
+
+msgid "destroy (stop) a pool"
+msgstr "消止（停止）集池"
+
+msgid "destroy a physical host interface (disable it / \"if-down\")"
+msgstr "消止實體主機介面（停用 / \"if-down\"）"
+
+msgid "destroyed"
+msgstr "已強制關閉"
+
 msgid "disable autostarting"
 msgstr "停用自動啟動"
 
@@ -538,6 +625,9 @@ msgstr "區域的資訊不全，vbd 沒有 dev"
 msgid "domain information incomplete, vbd has no src"
 msgstr "區域的資訊不全，vbd 沒有 src"
 
+msgid "domain is marked for auto destroy"
+msgstr "區域已標記要自動消止"
+
 msgid "domain name or uuid"
 msgstr "區域名稱或 uuid"
 
@@ -549,6 +639,10 @@ msgstr "將一個區域的核心傾印到檔案中，以供分析用"
 
 msgid "error"
 msgstr "錯誤"
+
+#, c-format
+msgid "error destroying network device %s"
+msgstr "消止網路裝置 %s 時發生錯誤"
 
 msgid "error: "
 msgstr "錯誤："
@@ -574,6 +668,10 @@ msgstr "預期的是指定子"
 
 msgid "failed to connect to the hypervisor"
 msgstr "無法連上 hypervisor"
+
+#, c-format
+msgid "failed to destroy (stop) interface %s: %s%s%s"
+msgstr "無法消止（停止）%s 介面：%s%s%s"
 
 msgid "failed to get capabilities"
 msgstr "無法取得能力方面的資訊"

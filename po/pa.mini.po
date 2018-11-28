@@ -13,9 +13,9 @@
 # Jaswinder Singh <jsingh@redhat.com>, 2007,2009-2010,2012
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -246,9 +246,6 @@ msgstr " ਨੈੱਟਵਰਕਿੰਗ:"
 
 msgid " Storage:"
 msgstr " ਸਟੋਰੇਜ਼:"
-
-msgid " block_io_throttle reply was missing device list"
-msgstr " block_io_throttle ਰਿਪਲਾਈ ਵਿੱਚ ਜੰਤਰ ਸੂਚੀ ਨਹੀਂ ਹੈ"
 
 #, c-format
 msgid ""
@@ -517,9 +514,6 @@ msgstr "guest-get-vcpus ਦੇ ਜਵਾਬ ਵਿੱਚ 'logical-id' ਗੁੰ�
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus ਦੇ ਜਵਾਬ ਵਿੱਚ 'online' ਗੁੰਮ"
-
-msgid "'parent' for vHBA not specified, and cannot find one on this host"
-msgstr "vHBA ਲਈ 'parent'ਦਰਸਾਇਆ ਨਹੀਂ ਗਿਆ, ਅਤੇ ਇੱਕ ਇਸ ਮੇਜਬਾਨ ਉੱਤੇ ਨਹੀਂ ਲੱਭ ਸਕਦਾ"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'ਸਿਖ਼ਰ ਅਤੇ 'ਬਰਸਟ' ਨੂੰ 'ਔਸਤ' ਐਟਰੀਬਿਊਟ ਲੋੜੀਂਦੇ ਹਨ"
@@ -837,9 +831,6 @@ msgstr "'%s' ਨੂੰ NAT ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ। NAT 
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "ਐਟਰੀਬਿਊਟ ਮੋਡ ਸਿਰਫ ਗਿਸਟ CPU ਲਈ ਮਨਜੂਰ ਹੈ"
-
-msgid "Authentication Credentials not found"
-msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਕਰੀਡੈਂਸ਼ਲ ਨਹੀਂ ਲੱਭਿਆ"
 
 msgid "Authentication failed"
 msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ"
@@ -1295,9 +1286,6 @@ msgstr "ਬੈਲੂਨ ਯੰਤਰ ਰਾਹ ਪਤਾ ਨਹੀਂ ਕਰ ਸ
 msgid "Cannot determine free memory"
 msgstr "ਖਾਲੀ ਮੈਮੋਰੀ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-msgid "Cannot determine system clock HZ"
-msgstr "ਸਿਸਟਮ ਘੜੀ ਦੇ HZ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "ਫਲਾਪੀ %s ਨੂੰ ਸਿੱਧਾ ਜੋੜ ਨਹੀਂ ਸਕਦਾ"
@@ -1505,14 +1493,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "ਸ਼ੁਰੂਆਤ ਸਮੇਂ %s ਨੂੰ %s ਵਿੱਚ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, c-format
-msgid "Cannot parse sys stat '%s'"
-msgstr "sys stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "ਯੂਜ਼ਰ stat '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
 "on network '%s'"
@@ -1650,10 +1630,6 @@ msgstr "CURL ਮੁੱਠੇ ਦੀ ਗੈਰ-ਸ਼ੁਰੂਆਤ ਸਾਂਝੀ
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "ਜੇ ਰੀਲੇਬਲਿੰਗ ਬੰਦ ਹੋਵੇ ਤਾਂ ਲੇਬਲ ਨਹੀਂ ਦਿੱਤਾ ਜਾ ਸਕਦਾ। model=%s"
-
-#, c-format
-msgid "Cannot stat %s"
-msgstr "%s ਨੂੰ stat ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -1820,10 +1796,6 @@ msgstr "ਡੋਮੇਨ %s ਲਈ ਕਾਲਬੈਕ ਬੰਦ ਕਰੋ ਪਹ�
 msgid "Command %s too long for destination"
 msgstr "ਕਮਾਂਡ %s ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਬਹੁਤ ਲੰਬੀ ਹੈ"
 
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "ਕਮਾਂਡ '%s' ਨਹੀਂ ਲੱਭਿਆ"
-
 msgid "Commit aborted"
 msgstr "ਕਮਿੱਟ ਛੱਡਿਆ ਗਿਆ"
 
@@ -1928,26 +1900,6 @@ msgstr "ਕੰਨਟੇਨਰ ਪਰਿਭਾਸ਼ਤ ਨਹੀਂ"
 
 msgid "Control groups not supported on this platform"
 msgstr "ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਨਿਯੰਤਰਣ ਸਮੂਹ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ"
-
-#, c-format
-msgid "Controller %d out of range"
-msgstr "ਨਿਯੰਤਰਕ %d ਪਹੁੰਚ ਹੱਦ ਤੋਂ ਬਾਹਰ"
-
-#, c-format
-msgid "Controller '%s' is not enabled for group"
-msgstr "ਨਿਯੰਤਰਕ '%s' ਸਮੂਹ ਲਈ ਯੋਗ ਨਹੀਂ ਕੀਤਾ ਹੋਇਆ ਹੈ"
-
-#, c-format
-msgid "Controller '%s' is not mounted"
-msgstr "ਨਿਯੰਤਰਕ '%s' ਮਾਊਂਟ ਨਹੀਂ ਕੀਤਾ ਹੋਇਆ ਹੈ"
-
-#, c-format
-msgid "Controller '%s' is not wanted, but '%s' is co-mounted"
-msgstr "ਨਿਯੰਤਰਕ '%s' ਚਾਹੀਦਾ ਨਹੀਂ ਹੈ, ਪਰ '%s' ਸਹਿ-ਮਾਊਂਟ ਕੀਤਾ ਹੈ"
-
-#, c-format
-msgid "Controller '%s' not mounted"
-msgstr "ਨਿਯੰਤਰਕ '%s' ਮਾਊਂਟ ਨਹੀਂ ਕੀਤਾ ਹੋਇਆ"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "ਕੰਟਰੋਲਰਾਂ ਨੂੰ 'pci' ਐਡਰੈੱਸ ਕਿਸਮ ਵਰਤਣੀ ਚਾਹੀਦੀ ਹੈ"
@@ -2137,9 +2089,6 @@ msgstr "PhysicalNic ਨੂੰ ਨਾਂ '%s' ਨਾਲ ਲੱਭ ਨਹੀਂ �
 msgid "Could not find any 'network' element in status file"
 msgstr "ਹਾਲਾਤ ਫਾਈਲ ਵਿੱਚ 'ਨੈੱਟਵਰਕ' ਤੱਤ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
 
-msgid "Could not find any mounted controllers"
-msgstr "ਕੋਈ ਮਾਊਂਟ ਕੀਤਾ ਹੋਇਆ ਨਿਯੰਤਰਕ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
-
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "typefile '%s' ਨੂੰ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
@@ -2155,10 +2104,6 @@ msgstr "ਇੰਪੁੱਟ ਮਾਰਗ '%s' ਨੂੰ ਖੋਲ ਨਹੀਂ �
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "'%s' ਨਾਂ ਵਾਲਾ ਡਾਟਾਸਟੋਰ ਲੱਭ ਨਹੀਂ ਸਕਿਆ"
-
-#, c-format
-msgid "Could not find directory separator in %s"
-msgstr "%s ਵਿੱਚ ਡਾਇਰੈਕਟਰੀ ਨਿਖੇੜਨ ਵਾਲਾ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2194,10 +2139,6 @@ msgstr "'%s' ਲਈ ਅਧਾਰ HBA ਨੂੰ ਲੱਭ ਨਹੀਂ ਸਕਦ�
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "typefile '%s' ਨੂੰ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "ਕੰਟਰੋਲਰ %s ਲਈ %s ਉੱਪਰ ਸਥਾਪਨ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -2869,10 +2810,6 @@ msgstr "ਯੰਤਰ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "ਜੰਤਰ %s ਹਟਾ ਦਿੱਤਾ ਹੈ\n"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "ਜੰਤਰ %s ਵਰਤੋਂ ਅਧੀਨ ਹੈ"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -3710,10 +3647,6 @@ msgid "Failed to bind PCI device '%s' to %s"
 msgstr "PCI ਜੰਤਰ '%s' ਨੂੰ %s ਵਿੱਚ ਬਾਈਂਡ ਕਰਨ ਤੋਂ ਫੇਲ"
 
 #, c-format
-msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "cgroup '%s' ਨੂੰ '%s'ਉੱਤੇ ਬਾਈਂਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
-
-#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "ਮਾਨੀਟਰ ਡਾਇਰੈਕਟਰੀ %s ਬਣਾਉਣ ਤੋਂ ਫੇਲ: %s"
 
@@ -3864,10 +3797,6 @@ msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ: %s"
 
 msgid "Failed to create bridge node in xml document"
 msgstr "xml ਡੌਕੂਮੈਂਟ ਵਿੱਚ ਬਰਿੱਜ ਨੋਡ ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
-
-#, c-format
-msgid "Failed to create controller %s for group"
-msgstr "ਸਮੂਹ ਲਈ ਨਿਯੰਤਰਕ %s ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -4152,9 +4081,6 @@ msgstr "ਇੰਟਰਫੇਸ %s ਲਈ ਨਵਾਂ ਨਾਂ ਪੈਦਾ ਕ�
 msgid "Failed to get %s minor number"
 msgstr "%s ਛੋਟਾ ਨੰਬਰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-msgid "Failed to get PCI Config Address String"
-msgstr "PCI ਸੰਰਚਨਾ ਐਡਰੈੱਸ ਸਤਰ ਲੈਣ ਵਿੱਚ ਫੇਲ"
-
 msgid "Failed to get PCI SYSFS file"
 msgstr "PCI SYSFS ਫਇਲ ਲੈਣ ਵਿੱਚ ਫੇਲ"
 
@@ -4419,10 +4345,6 @@ msgstr "%s ਡੋਮੇਨ ਨੂੰ ਆਟੋ-ਸਟਾਰਟ ਮਾਰਕ ਕ�
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "mkdir %s ਕਰਨ ਵਿੱਚ ਫੇਲ"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "%s ਨੂੰ %s ਉੱਪਰ ਕਿਸਮ %s ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -6272,13 +6194,6 @@ msgstr "ਵੱਧੋ ਵੱਧ ਮੈਮੋਰੀ, ਸਕੇਲ ਕੀਤੇ ਪ
 msgid "Max memory:"
 msgstr "ਵੱਧੋ-ਵੱਧ ਮੈਮੋਰੀ:"
 
-msgid "Maximum CPUs greater than specified machine type limit"
-msgstr "ਵੱਧ ਤੋਂ ਵੱਧ CPU ਦਰਸਾਈ ਗਈ ਮਸ਼ੀਨ ਕਿਸਮ ਦੀ ਹੱਦ ਤੋਂ ਵੱਧ ਹਨ"
-
-#, c-format
-msgid "Memory '%llu' must be less than %llu"
-msgstr "ਮੈਮੋਰੀ '%llu' ਲਾਜਮੀ %llu ਤੋਂ ਘੱਟ ਹੋਵੇ"
-
 msgid "Memory allocation failure"
 msgstr "ਮੈਮੋਰੀ ਨਿਰਧਾਰਨ ਫੇਲ"
 
@@ -6374,10 +6289,6 @@ msgstr "ਗੈਰਮੌਜੂਦ '%s' ਵਿਸ਼ੇਸਤਾ"
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "'%s' ਵਿਸ਼ੇਸ਼ਤਾ ਗੈਰਮੌਜੂਗ ਹੈ ਜਦੋਂ ManagedEntityStatus ਦੀ ਖੋਜ ਹੋ ਰਹੀ ਸੀ"
 
-#, c-format
-msgid "Missing '/' separator in cgroup mount '%s'"
-msgstr "cgroup ਮਾਊਂਟ '%s' ਵਿੱਚ ਗੁੰਮ '/' ਨਿਖੇੜ ਕਰਨ ਵਾਲਾ"
-
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "ਗੈਰਮੌਜੂਦ 'cores' ਐਟਰੀਬਿਊਟ CPU ਟੋਪੋਲੋਜੀ ਵਿੱਚ"
 
@@ -6431,9 +6342,6 @@ msgstr "ਗੈਰਮੌਜੂਦ CPU ਵਿਸ਼ੇਸ਼ਤਾ ਨਾਂ"
 
 msgid "Missing CPU model name"
 msgstr "ਗੈਰ-ਮੌਜੂਦ CPU ਮਾਡਲ ਨਾਂ"
-
-msgid "Missing CPU vendor name"
-msgstr "ਗੈਰ-ਮੌਜੂਦ CPU ਵਿਕਰੇਤਾ ਨਾਂ"
 
 msgid "Missing ID parameter for domain object"
 msgstr "ਡੋਮੇਨ ਆਬਜੈਕਟ ਲਈ ID ਪੈਰਾਮੀਟਰ ਗੁੰਮ"
@@ -6571,9 +6479,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU ਮਾਡਲ %s ਵਿੱਚ PVR ਮੁੱਲ ਗੁੰਮ ਜਾਂ ਅਢੁਕਵਾਂ"
-
-msgid "Missing or invalid auth pointer"
-msgstr "ਇਸ ਵਿੱਚ ਗਲਤ ਡੋਮੇਨ ਇਸ਼ਾਰਾ"
 
 msgid "Missing ownerId data in JSON document"
 msgstr "JSON ਦਸਤਾਵੇਜ ਵਿੱਚੋਂ ownerId ਡਾਟਾ ਗੁੰਮ ਹੈ"
@@ -6979,9 +6884,6 @@ msgid "No args present for signature %s"
 msgstr "ਦਸਤਖਤ %s ਲਈ ਕੋਈ args ਮੌਜੂਦ ਨਹੀਂ"
 
 msgid "No authentication callback available"
-msgstr "ਕੋਈ ਪ੍ਰਮਾਣਿਕਤਾ ਕਾਲਬੈਕ ਨਹੀਂ ਦਿੱਤੀ।"
-
-msgid "No authentication callback provided."
 msgstr "ਕੋਈ ਪ੍ਰਮਾਣਿਕਤਾ ਕਾਲਬੈਕ ਨਹੀਂ ਦਿੱਤੀ।"
 
 msgid "No authentication methods and credentials provided"
@@ -8062,9 +7964,6 @@ msgstr "SCSI ਡਿਸਕ ਸੂਚੀ ('%s' ਤੋਂ ਪਾਰਸ ਕੀਤੀ
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI ਮੇਜਬਾਨ ਯੰਤਰ ਪ੍ਰਬੰਧਿਤ ਨੋਡਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
-
-msgid "SCSI passthrough is not supported by this version of qemu"
-msgstr "SCSI ਪਾਸਥਰੂਅ qemu ਦੇ ਇਸ ਸੰਸਕਰਣ ਨਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -9257,9 +9156,6 @@ msgstr "USB ਜੰਤਰ %s ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਵਿੱ�
 msgid "USB host device is missing bus/device information"
 msgstr "USB ਹੋਸਟ ਜੰਤਰ ਵਿੱਚ ਬੱਸ/ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-msgid "USB redirection booting is not supported by this version of QEMU"
-msgstr "USB ਰੀਡਾਇਰੈਕਸ਼ਨ ਬੂਟਿੰਗ QEMU ਦੇ ਇਸ ਸੰਸਕਰਣ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "USB ਰੀਡਾਇਰੈਕਸ਼ਨ ਫਿਲਟਰ QEMU ਦੇ ਇਸ ਸੰਸਕਰਣ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
@@ -9438,6 +9334,12 @@ msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਹੈਂਡਲ ਸੰਭਾਲਣ ਲ�
 msgid "Unable to create %s"
 msgstr "%s ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
 
+msgid "Unable to create JSON formatter"
+msgstr "JSON ਫਾਰਮੈਟਰ ਬਣਾਉਣ ਤੋਂ ਅਸਮਰਥ"
+
+msgid "Unable to create JSON parser"
+msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
+
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "LPAR ਬਣਾਉਣ ਤੋਂ ਫੇਲ। ਕਾਰਨ: '%s'"
@@ -9466,10 +9368,6 @@ msgstr "ਬਰਿੱਜ ਯੰਤਰ ਬਣਾਉਣ ਤੋਂ ਅਸਮਰੱ�
 #, c-format
 msgid "Unable to create device %s"
 msgstr "%s ਯੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
-
-#, c-format
-msgid "Unable to create directory %s"
-msgstr "ਡਾਇਰੈਕਟਰੀ %s ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
 msgid "Unable to create epoll fd"
 msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
@@ -9907,6 +9805,9 @@ msgstr "%s (%d) ਖੋਲਣ ਤੋਂ ਅਸਮਰਥ"
 msgid "Unable to open '%s'"
 msgstr "'%s' ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ'"
 
+msgid "Unable to open /proc/mounts"
+msgstr "/proc/mounts ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਫੇਲ"
+
 msgid "Unable to open UNIX socket"
 msgstr "ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 
@@ -10193,10 +10094,6 @@ msgstr "STP ਨੂੰ %s ਉੱਪਰ ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਸ
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "Unable to set VM logfile close-on-exec flag"
 
-#, c-format
-msgid "Unable to set bridge %s %s"
-msgstr "ਬਰਿੱਜ %s %s ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
-
 msgid "Unable to set cloexec flag"
 msgstr "cloexec ਫਲੈਗ ਸੈੱਟ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
@@ -10258,10 +10155,6 @@ msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ: %s"
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ %s"
-
-#, c-format
-msgid "Unable to symlink directory %s to %s"
-msgstr "ਜੰਤਰ %s ਨੂੰ %s ਲਈ ਮਨਜੂਰ ਕਰਨ ਤੋਂ ਫੇਲ"
 
 #, c-format
 msgid "Unable to truncate %s"
@@ -10386,9 +10279,6 @@ msgstr " ਮਾਈਗਰੇਟ: ਪੀਅਰਟੂਪੀਅਰ/ਸਿੱਧੀ �
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "ਅਣਕਿਆਸਿਆ ਡਿਸਕ sgio ਮੋਡ '%d'"
-
-msgid "Unexpected error"
-msgstr "ਅਚਾਨਕ ਗਲਤੀ"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -10867,9 +10757,6 @@ msgstr "VMX ਐਂਟਰੀ 'name' ਵਿੱਚ ਗਲਤ ਅਸਕੇਪ ਲੜ
 #, c-format
 msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr "VMX ਐਂਟਰੀ 'sched.cpu.affinity' ਵਿੱਚ ਇੱਕ %d ਸ਼ਾਮਿਲ ਹੈ, ਇਹ ਮੁੱਲ ਬਹੁਤ ਵੱਡਾ ਹੈ"
-
-msgid "VNC WebSockets are not supported with this QEMU binary"
-msgstr "VNC WebSockets ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC supports connected='keep' only"
@@ -11463,23 +11350,6 @@ msgid "booted"
 msgstr "ਚਾਲੂ ਕੀਤਾ"
 
 msgid ""
-"booting from PCI devices assigned with VFIO is not supported with this "
-"version of qemu"
-msgstr "VFIO ਨਾਲ ਨਿਰਧਾਰਤ PCI ਯੰਤਰਾਂ ਤੋਂ ਬੂਟਿੰਗ ਇਸ qemu ਸੰਸਕਰਣ ਨਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr "qemu ਦੇ ਇਸ ਵਰਜਨ ਨਾਲ PCI ਜੰਤਰ ਨਿਰਧਾਰਨ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
-msgid ""
-"booting from assigned SCSI devices is not supported with this version of qemu"
-msgstr "ਨਿਰਧਾਰਤ SCSI ਯੰਤਰਾਂ ਤੋਂ ਬੂਟ ਹੋਣਾ qemu ਦੇ ਇਸ ਸੰਸਕਰਣ ਨਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
-msgid ""
-"booting from assigned USB devices is not supported with this version of qemu"
-msgstr "ਨਿਰਧਾਰਤ USB ਯੰਤਰਾਂ ਤੋਂ ਬੂਟ ਹੋਣਾ qemu ਦੇ ਇਸ ਸੰਸਕਰਣ ਨਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
-msgid ""
 "booting from assigned devices is only supported for PCI, USB and SCSI devices"
 msgstr "ਨਿਰਧਾਰਤ ਯੰਤਰਾਂ ਤੋਂ ਬੂਟਿੰਗ ਸਿਰਫ PCI, USB ਅਤੇ SCSI ਯੰਤਰਾਂ ਲਈ ਹੀ ਸਮਰਥਿਤ ਹੈ"
 
@@ -11998,9 +11868,6 @@ msgstr "ਸੁਰੱਖਿਆ props %d (%s) ਸੈੱਟ ਨਹੀਂ ਕਰ ਸ
 msgid "cannot get the host uuid"
 msgstr "ਹੋਸਟ uuid ਲੈ ਨਹੀਂ ਸਕਿਆ"
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "MEMORY cgroup ਕੰਟਰੋਲਰ ਦਾ ਰਾਹ ਨਹੀ ਲੈ ਸਕਦਾ"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU ਪਲੇਸਮੈਂਟ ਤੇ pCPU ਟਾਈਮ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
@@ -12157,10 +12024,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s ਵਰਜਨ ਨੰਬਰ ਨੂੰ '%.*s' ਵਿੱਚ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "%s ਢਾਂਚੇ ਲਈ CPU ਮੈਪ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "CPU ਟੋਪੋਲੋਜੀ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
@@ -12250,6 +12113,10 @@ msgstr "interfaceid ਪੈਰਾਮੀਟਰ ਨੂੰ uuid ਵਾਂਗ ਪਾ�
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "ਵੀਡੀਓ ਰੈਮ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "json %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -12680,14 +12547,6 @@ msgstr "%s ਵਿੱਚ cellNum ਦਾ %d ਤੋਂ ਘੱਟ ਜਾਂ ਬਰ�
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s ਵਿੱਚ cellNum ਸਿਰਫ਼ %d ਨੂੰ ਰਿਣਾਤਮਕ ਮੁੱਲ ਵਜੋਂ ਸਵੀਕਾਰ ਕਰਦੀ ਹੈ"
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu' ਲਾਜਮੀ (1000, 1000000) ਹੱਦ ਵਿੱਚ ਹੋਵੇ"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld' ਲਾਜਮੀ (1000, %llu)ਹੱਦ ਵਿੱਚ ਹੋਵੇ"
-
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU ਕੰਟਰੋਲਕ ਮਾਊਂਟ ਨਹੀਂ ਹੋਇਆ"
 
@@ -12831,20 +12690,12 @@ msgid "config data file to import from"
 msgstr "ਸੰਰਚਨਾ ਡਾਟਾ ਫਾਇਲ ਜਿਸਤੋਂ ਅਯਾਤ ਕਰਨਾ ਹੈ"
 
 #, c-format
-msgid "config value %s not a string"
-msgstr "ਸੰਰਚਨਾ ਮੁੱਲ %s ਇੱਕ ਸਤਰ ਨਹੀਂ ਸੀ"
-
-#, c-format
 msgid "config value %s was malformed"
 msgstr "ਸੰਰਚਨਾ ਮੁੱਲ %s ਗਲਤ ਸੀ"
 
 #, c-format
 msgid "config value %s was missing"
 msgstr "ਸੰਰਚਨਾ ਮੁੱਲ %s ਗੈਰ-ਮੌਜੂਦ ਸੀ"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "ਸੰਰਚਨਾ ਮੁੱਲ %s ਇੱਸ ਸਤਰ ਨਹੀਂ ਸੀ"
 
 msgid "configuration file syntax error"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਸੰਟੈਕਸ ਗਲਤੀ"
@@ -14485,9 +14336,6 @@ msgstr "qemu ਯੰਤਰ ਸੂਚੀ ਨੂੰ ਪਾਰਸ ਕਰਨ ਵਿ�
 msgid "failed to parse value of %s"
 msgstr "%s ਦੇ ਮੁੱਲ ਨੂੰ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
-msgid "failed to parse xml document"
-msgstr "xml ਦਸਤਾਵੇਜ਼ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
-
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "ਡਿਸਕ %s ਲਈ ਜੌਬਾਂ pivot ਤੋਂ ਫੇਲ"
@@ -14557,9 +14405,6 @@ msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਅਧਿਕਾਰ ਬਣਾਉਣ ਵਿ
 
 msgid "failed to retrieve decision to accept host key"
 msgstr "ਮੇਜ਼ਬਾਨ ਨਾਂ ਪਤਾ ਕਰਨ ਲਈ ਫੇਲ"
-
-msgid "failed to retrieve password"
-msgstr "ਗੁਪਤ-ਸ਼ਬਦ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "ਨਿੱਜੀ ਚਾਬੀ ਪਾਸਫਰੇਜ਼ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ: ਕਾਲਬੈਕ ਅਸਫਲ ਹੋ ਗਈ ਹੈ"
@@ -15038,9 +14883,6 @@ msgstr "hub ਕਿਸਮ %s ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
 msgid "hypervisor connection URI"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਕੁਨੈਕਸ਼ਰ URI"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "hypervisor ਵਿੱਚ deviceboot ਨਕਸ਼ ਘੱਟਦਾ ਹੈ"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI ਭੰਡਾਰਣ ਪੂਲ ਆਇਤਨ ਬਣਾਉਣ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
@@ -16151,10 +15993,6 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr "ਮੈਮੋ(Suspend-to-RAM), ਡਿਸਕ(Suspend-to-Disk), ਹਾਈਬ੍ਰਿਡ(Hybrid-Suspend)"
 
-#, c-format
-msgid "memballoon unsupported with address type '%s'"
-msgstr "memballoon ਪਤਾ ਕਿਸਮ '%s' ਨਾਲ ਅਸਮਰਥਿਤ ਹੈ"
-
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "ਮੈਮੋਰੀ ਐਟਰੀਬਿਊਟ: [file=]name[,snapshot=type]"
 
@@ -17040,9 +16878,6 @@ msgstr "'%s' ਲਈ ਕੋਈ ਬਲਾਕ ਜੰਤਰ ਨਹੀਂ ਦਿੱ�
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "prog %d vers %d serial %d ਨਾਲ ਰਿਪਲਾਈ ਲਈ ਕੋਈ ਕਾਲ ਵੇਟਿੰਗ ਵਿੱਚ ਨਹੀਂ"
 
-msgid "no callback provided"
-msgstr "ਕੋਈ ਕਾਲਬੈਕ ਨਹੀਂ ਦਿੱਤੀ।"
-
 msgid "no client username was found"
 msgstr "ਕੋਈ ਕਲਾਂਈਟ ਯੂਜ਼ਰ-ਨਾਂ ਨਹੀਂ ਲੱਭਿਆ ਸੀ"
 
@@ -17068,10 +16903,6 @@ msgstr "ਉਪਨਾਮ %s ਨਾਲ ਕੋਈ ਵੀ ਯੰਤਰ ਨਹੀਂ 
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s ਲਈ ਕੋਈ ਡਿਸਕ ਫਾਰਮੈਟ ਨਹੀਂ ਹੈ ਅਤੇ ਪੜਤਾਲ ਅਯੋਗ ਕੀਤੀ ਹੈ"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "%s ਮਾਰਗ ਵਾਲੀ ਕੋਈ ਡਿਸਕ ਨਹੀਂ ਲੱਭੀ"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -19122,9 +18953,6 @@ msgstr "ਸਨੈਪਸ਼ਾਟ ਫਿਲਟਰ ਕਰਨ ਅਮਲ ਵਿੱਚ �
 
 msgid "unable to poll on child"
 msgstr "ਚਿਲਡ ਉੱਪਰ ਪੋਲ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
-
-msgid "unable to probe for add-fd"
-msgstr "add-fd ਲਈ ਟੋਹ ਲਾਉਣ ਤੋਂ ਅਸਮਰੱਥ"
 
 msgid "unable to read child stderr"
 msgstr "ਚਿਲਡ stderr ਪੜਨ ਤੋਂ ਅਸਮਰਥ"

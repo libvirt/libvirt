@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2018-03-10 04:16+0000\n"
 "Last-Translator: Javier Blanco <javi.deb@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -36,7 +36,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -227,9 +227,6 @@ msgstr "Red:"
 
 msgid " Storage:"
 msgstr "Almacenaje:"
-
-msgid " block_io_throttle reply was missing device list"
-msgstr "A la lista de dispositivo le falta block_io_throttle"
 
 #, c-format
 msgid ""
@@ -509,11 +506,6 @@ msgstr "'logical-id' falta en respuesta de guest-get-vcpus"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "'online' falta en respuesta de guest-get-vcpus"
-
-msgid "'parent' for vHBA not specified, and cannot find one on this host"
-msgstr ""
-"'parent' para vHBA no está especificado, y no puede encontrar uno en este "
-"host"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' y 'burst' requieren atributo 'average'"
@@ -839,9 +831,6 @@ msgstr "Intentó NAT '%s'. NAT solamente tiene soporte para IPv4."
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "El modo de atributo solo es permitido para la CPU del huésped"
-
-msgid "Authentication Credentials not found"
-msgstr "No se han encontrado credenciales de autenticación"
 
 msgid "Authentication failed"
 msgstr "Falló la autenticación"
@@ -1333,9 +1322,6 @@ msgstr "No se puede determinar ruta de dispositivo de globo"
 msgid "Cannot determine free memory"
 msgstr "No se puede determinar memoria libre"
 
-msgid "Cannot determine system clock HZ"
-msgstr "No se puede determinar el reloj del sistema HZ"
-
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "No es posible asociar directamente disquetera %s"
@@ -1547,14 +1533,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "No se puede analizar tiempo de inicio %s en %s"
 
 #, c-format
-msgid "Cannot parse sys stat '%s'"
-msgstr "No se puede analizar el estado del sistema '%s'"
-
-#, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "No se puede analizar el estatus del usuario '%s'"
-
-#, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
 "on network '%s'"
@@ -1700,10 +1678,6 @@ msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr ""
 "No se puede especificar una etiqueta si el reetiquetado es turned off. model="
 "%s"
-
-#, c-format
-msgid "Cannot stat %s"
-msgstr "No se puede obtener el estado de %s"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -1880,10 +1854,6 @@ msgstr "Close callback para dominio %s ya está registrada con otra conexión %p
 msgid "Command %s too long for destination"
 msgstr "El comando %s es demasiado extenso para el destino"
 
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "No se halló comando '%s'"
-
 msgid "Commit aborted"
 msgstr "Envío interrumpido"
 
@@ -1998,26 +1968,6 @@ msgstr "El contenedor no está definido"
 
 msgid "Control groups not supported on this platform"
 msgstr "Los grupos de control no tienen soporte  en esta plataforma"
-
-#, c-format
-msgid "Controller %d out of range"
-msgstr "El controlador %d está fuera de rango"
-
-#, c-format
-msgid "Controller '%s' is not enabled for group"
-msgstr "El controlador '%s' no está habilitado para grupo"
-
-#, c-format
-msgid "Controller '%s' is not mounted"
-msgstr "El controlador '%s' no está montado"
-
-#, c-format
-msgid "Controller '%s' is not wanted, but '%s' is co-mounted"
-msgstr "El controlador '%s' no se necesita, pero '%s' se co-montó"
-
-#, c-format
-msgid "Controller '%s' not mounted"
-msgstr "El controlador '%s' no está montado"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "Los controladores deben utilizar el tipo de dirección 'ccid'"
@@ -2211,9 +2161,6 @@ msgstr "No se encontró PhysicalNic con nombre '%s'"
 msgid "Could not find any 'network' element in status file"
 msgstr "No se pudo encontrar ningún elemento 'network' en  archivo de estatus"
 
-msgid "Could not find any mounted controllers"
-msgstr "No se pudo encontrar ningún controlador montado"
-
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "No se pudo hallar el recurso 'compute' especificado en '%s'"
@@ -2230,10 +2177,6 @@ msgstr ""
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "No se pudo encontrar un almacenamiento de datos cuyo nombre sea '%s'"
-
-#, c-format
-msgid "Could not find directory separator in %s"
-msgstr "No se pudo encontrar directorio para separador en %s"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2271,10 +2214,6 @@ msgstr "No se encontró NIC físico con dirección MAC '%s'"
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "No se encontró NIC físico con nombre '%s'"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "No es posible encontrar lugar para el controlador %s en %s "
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -2984,10 +2923,6 @@ msgstr "Dispositivo %s ya existe"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "Dispositivo %s desconectado\n"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "Dispositivo %s en uso"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -3876,10 +3811,6 @@ msgid "Failed to bind PCI device '%s' to %s"
 msgstr "Falló al asociar dispositivo PCI '%s' con %s"
 
 #, c-format
-msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "No se pudo vincular cgroup '%s' en '%s'"
-
-#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "Falló al vincular el directorio de montaje %s a %s"
 
@@ -4032,10 +3963,6 @@ msgstr "Falló al crear destino de vinculación %s"
 
 msgid "Failed to create bridge node in xml document"
 msgstr "Falló al crear nodo de puente en documento XML"
-
-#, c-format
-msgid "Failed to create controller %s for group"
-msgstr "No se pudo crear controlador %s para grupo"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -4325,9 +4252,6 @@ msgstr "No se pudo generar un nuevo nombre para la interfaz %s"
 msgid "Failed to get %s minor number"
 msgstr "Falló al obtener el número menor de %s"
 
-msgid "Failed to get PCI Config Address String"
-msgstr "Falló al obtener cadena de dirección de configuración PCI"
-
 msgid "Failed to get PCI SYSFS file"
 msgstr "Falló al obtener el archivo PCI SYSFS"
 
@@ -4600,10 +4524,6 @@ msgstr "Falló al marcar el dominio %s como iniciado automáticamente"
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "Falló al crear el directorio %s"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "No se pudo montar %s en %s tipo %s"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -6530,15 +6450,6 @@ msgstr "Memoria máxima, como  entero escalado (predeterminado Kib)"
 msgid "Max memory:"
 msgstr "Memoria máxima:"
 
-msgid "Maximum CPUs greater than specified machine type limit"
-msgstr ""
-"El número máximo de CPU es mayor que el límite de tipo de  máquina "
-"especificado"
-
-#, c-format
-msgid "Memory '%llu' must be less than %llu"
-msgstr "La memoria '%llu' debe ser menor que %llu"
-
 msgid "Memory allocation failure"
 msgstr "Falla en en alojamiento de la memoria"
 
@@ -6643,10 +6554,6 @@ msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr ""
 "No se ha encontrado la propiedad '%s' cuando se buscaba ManagedEntityStatus"
 
-#, c-format
-msgid "Missing '/' separator in cgroup mount '%s'"
-msgstr "Falta el separadro '/' en montaje de cgroup mount '%s'"
-
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "No se encuentra atributo 'cores' en la topología de CPU "
 
@@ -6700,9 +6607,6 @@ msgstr "No se encuentra nombre de funcionalidad de CPU"
 
 msgid "Missing CPU model name"
 msgstr "No se encuentra el nombre del modelo de la CPU"
-
-msgid "Missing CPU vendor name"
-msgstr "No se encuentra el nombre del vendedor de la CPU"
 
 msgid "Missing ID parameter for domain object"
 msgstr "Falta parámetro de ID para objeto de domain"
@@ -6847,9 +6751,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "Falta el valor PVR o el valor es inválido en el modelo de CPU %s"
-
-msgid "Missing or invalid auth pointer"
-msgstr "Falta o  es inválido el  apuntador auth"
 
 msgid "Missing ownerId data in JSON document"
 msgstr "Faltan datos de ownerId en documento JSON"
@@ -7288,9 +7189,6 @@ msgid "No args present for signature %s"
 msgstr "No hay argumentos presentes para firma %s"
 
 msgid "No authentication callback available"
-msgstr "No se ha suministrado una retrollamada de autenticación."
-
-msgid "No authentication callback provided."
 msgstr "No se ha suministrado una retrollamada de autenticación."
 
 msgid "No authentication methods and credentials provided"
@@ -8442,9 +8340,6 @@ msgstr "El índice de disco SCSI (analizado desde '%s') es demasiado extenso"
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "Dispositivo de host SCSI no soporta modo administrado"
-
-msgid "SCSI passthrough is not supported by this version of qemu"
-msgstr "Paso SCSI no tiene soporte para esta versión de QEMU"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -9747,11 +9642,6 @@ msgstr "El dispositivo  de USB %s  ya está en uso"
 msgid "USB host device is missing bus/device information"
 msgstr "El dispositivo de equipo USB no posee información bus/dispositivo"
 
-msgid "USB redirection booting is not supported by this version of QEMU"
-msgstr ""
-"El arranque de redirección de USB no está soportado por la versión de este "
-"QEMU"
-
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "Este QEMU no soporta filtro de redirección USB "
 
@@ -9932,6 +9822,12 @@ msgstr "No es posible copiar manejo de archivo de socket"
 msgid "Unable to create %s"
 msgstr "No se puede crear %s"
 
+msgid "Unable to create JSON formatter"
+msgstr "No se puede crear formateador de JSON"
+
+msgid "Unable to create JSON parser"
+msgstr "No  se  puede crear lector de JSON"
+
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "No es posible crear LPAR. El motivo: '%s'"
@@ -9960,10 +9856,6 @@ msgstr "No se puede crear dispositivo de puente "
 #, c-format
 msgid "Unable to create device %s"
 msgstr "No se puede crear dispositivo %s"
-
-#, c-format
-msgid "Unable to create directory %s"
-msgstr "No se  puede crear directorio %s"
 
 msgid "Unable to create epoll fd"
 msgstr "No se puede crear FD epoll"
@@ -10410,6 +10302,9 @@ msgstr "No es posible abrir %s (%d)"
 msgid "Unable to open '%s'"
 msgstr "No es posible abrir '%s'"
 
+msgid "Unable to open /proc/mounts"
+msgstr "No es posible abrir /proc/mounts"
+
 msgid "Unable to open UNIX socket"
 msgstr "Incapaz de abrir el socket UNIX"
 
@@ -10704,10 +10599,6 @@ msgid "Unable to set VM logfile close-on-exec flag"
 msgstr ""
 "No es posible establecer marca de archivo de registro de MV close-on-exec"
 
-#, c-format
-msgid "Unable to set bridge %s %s"
-msgstr "No se puede establecer puente %s %s"
-
 msgid "Unable to set cloexec flag"
 msgstr "No  se pudo establecer indicador cloexec"
 
@@ -10769,10 +10660,6 @@ msgstr "No se  puede 'stat bind' source %s"
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "No se puede 'stat bind' target %s"
-
-#, c-format
-msgid "Unable to symlink directory %s to %s"
-msgstr "No se  puede 'symlink' el directorio %s a %s"
 
 #, c-format
 msgid "Unable to truncate %s"
@@ -10902,9 +10789,6 @@ msgstr "Parámetro dconnuri inesperado con migración non-peer2peer"
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "No se esperaba modo sgio de disco '%d' "
-
-msgid "Unexpected error"
-msgstr "Error inesperado"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -11394,9 +11278,6 @@ msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr ""
 "La entrada VMX 'sched.cpu.affinity' contiene un %d, y este valor es "
 "demasiado extenso"
-
-msgid "VNC WebSockets are not supported with this QEMU binary"
-msgstr "VNC WebSockets no tienen soporte con este binario QEMU"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC solo tiene soporta para connected='keep'"
@@ -12014,31 +11895,6 @@ msgid "booted"
 msgstr "iniciado"
 
 msgid ""
-"booting from PCI devices assigned with VFIO is not supported with this "
-"version of qemu"
-msgstr ""
-"El arranque desde dispositivos PCI asignado con VFIO no tiene soporte con "
-"esta versión de QEMU"
-
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr ""
-"El arranque desde los dispositivos PCI no es compatible con la versión de "
-"qemu"
-
-msgid ""
-"booting from assigned SCSI devices is not supported with this version of qemu"
-msgstr ""
-"Arranque desde dispositivos asignados SCSI solo tiene soporte con esta "
-"versión de QEMU"
-
-msgid ""
-"booting from assigned USB devices is not supported with this version of qemu"
-msgstr ""
-"Arranque desde dispositivos USB asignados no tiene soporte con esta versión "
-"de QEMU"
-
-msgid ""
 "booting from assigned devices is only supported for PCI, USB and SCSI devices"
 msgstr ""
 "Arranque desde dispositivos asignados solo tiene soporte para dispositivos "
@@ -12583,9 +12439,6 @@ msgstr "No se  pueden obtener ayuda de seguridad %d (%s)"
 msgid "cannot get the host uuid"
 msgstr "no es posible obtener el uuid del equipo"
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "No se puede obtener ruta de controlador de MEMORY cgroup"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "no es posible obtener el lugar de vCPU ni la hora pCPU"
 
@@ -12750,10 +12603,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "No  se puede analizar el número de la versión %s en '%.*s'"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "No es posible analizar el mapa de la CPU para la arquitectura %s"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "No es posible analizar la topología '%s' de la CPU"
 
@@ -12844,6 +12693,10 @@ msgstr "No se  puede leer  parámetro interfaceid como un UUID"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "No se puede leer modo io '%s'"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "no es posible analizar json %s: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -13288,14 +13141,6 @@ msgstr "cellNum en %s debe ser menor que o igual a %d"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "cellNum en %s únicamente acepta %d como un valor negativo"
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu' debe estar en el rango (1000, 1000000)"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld' debe estar en el rango (1000, %llu)"
-
 msgid "cgroup CPU controller is not mounted"
 msgstr "No está montado el controlador de CPU cgroup "
 
@@ -13445,20 +13290,12 @@ msgid "config data file to import from"
 msgstr "configuración de datos de archivo desde donde importar"
 
 #, c-format
-msgid "config value %s not a string"
-msgstr "config value %s not a string"
-
-#, c-format
 msgid "config value %s was malformed"
 msgstr "el valor de configuración %s había sido creado erróneamente"
 
 #, c-format
 msgid "config value %s was missing"
 msgstr "no se encontraba el valor de configuración %s"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "el valor de configuración %s no era una cadena"
 
 msgid "configuration file syntax error"
 msgstr "error de sintaxis en el archivo de configuración"
@@ -15162,9 +14999,6 @@ msgstr "No se pudo analizar lista de dispositivo QEMU"
 msgid "failed to parse value of %s"
 msgstr "No se pudo leer valor de %s"
 
-msgid "failed to parse xml document"
-msgstr "Falló al intentar analizar el documento XML"
-
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "Falló al restablecer dispositivo de bloque '%s'"
@@ -15234,9 +15068,6 @@ msgstr "Falló la recuperación de credenciales"
 
 msgid "failed to retrieve decision to accept host key"
 msgstr "Falló la recuperación de decisión para aceptar clave de host"
-
-msgid "failed to retrieve password"
-msgstr "No se pudo recuperar contraseña"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
@@ -15735,9 +15566,6 @@ msgstr "Tipo de concentrador %s no tiene soporte"
 
 msgid "hypervisor connection URI"
 msgstr "conexión URI del hipervisor"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "Hipervisor carece de función deviceboot"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "Grupo de almacenaje iSCSI no soporta la creación de volumen"
@@ -16904,10 +16732,6 @@ msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr ""
 "mem(Suspender para RAM), disk(Suspender para Disk), hybrid(Suspensión Hybrid)"
 
-#, c-format
-msgid "memballoon unsupported with address type '%s'"
-msgstr "memballoon no tiene soporte con tipo de dirección '%s'"
-
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "atributos de memoria: [file=]name[,snapshot=type]"
 
@@ -17836,9 +17660,6 @@ msgstr "No se ha suministrado una ruta de dispositivo de bloque para '%s'"
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "No hay llamada esperando respuesta con prog %d vers %d serial %d"
 
-msgid "no callback provided"
-msgstr "no se ha suministrado una retrollamada"
-
 msgid "no client username was found"
 msgstr "No se ha encontrado un nombre de usuario de cliente"
 
@@ -17865,10 +17686,6 @@ msgstr "No se encontró dispositivo con alias %s"
 msgid "no disk format for %s and probing is disabled"
 msgstr ""
 "no existe un formato de disco para %s y la comprobación está deshabilitada"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "no se ha encontrado un disco con el apodo %s"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -20012,9 +19829,6 @@ msgstr "No se puede realizar filtraje de instantánea"
 
 msgid "unable to poll on child"
 msgstr "No se pudo sondear en hijo"
-
-msgid "unable to probe for add-fd"
-msgstr "No se puede sondear para add-fd"
 
 msgid "unable to read child stderr"
 msgstr "No se puede leer stderr de hijo"

@@ -7,13 +7,14 @@
 # dibalaj <dibalaj@dibalaj.cz>, 2013
 # Milan Kerslager <kerslage@linux.cz>, 2007
 # Zdenek <chmelarz@gmail.com>, 2016. #zanata
+# Pavel Borecki <pavel.borecki@gmail.com>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
-"PO-Revision-Date: 2016-09-15 06:18+0000\n"
-"Last-Translator: Zdenek <chmelarz@gmail.com>\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"PO-Revision-Date: 2018-11-27 07:08+0000\n"
+"Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
 "cs/)\n"
 "Language: cs\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -79,7 +80,7 @@ msgid " %s (help keyword '%s')\n"
 msgstr " %s (klíčové slovo nápovědy '%s')\n"
 
 msgid " Hypervisors:"
-msgstr " Hypervizoři:"
+msgstr " Hypervizory:"
 
 msgid " Miscellaneous:"
 msgstr " Různé:"
@@ -147,12 +148,24 @@ msgid "%s: initialization failed\n"
 msgstr "%s: inicializace selhala\n"
 
 #, c-format
+msgid "%s: option '%s%s' is ambiguous\n"
+msgstr "%s: volba „%s%s“ není jednoznačná\n"
+
+#, c-format
+msgid "%s: option '%s%s' is ambiguous; possibilities:"
+msgstr "%s: volba „%s%s“ není jednoznačná; možnosti:"
+
+#, c-format
 msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
 "%s: jméno dočasného souboru obsahuje nepovolené nebo speciální znaky shellu "
 "(je správně nastavená $TMPDIR?)"
+
+#, c-format
+msgid "%s: unrecognized option '%s%s'\n"
+msgstr "%s: nerozpoznaná volba „%s%s“\n"
 
 #, c-format
 msgid "%s: warning: %s%c"
@@ -181,6 +194,9 @@ msgstr "--%s <řetězec>"
 
 msgid "Active:"
 msgstr "Aktivní:"
+
+msgid "All requests done"
+msgstr "Všechny požadavky dokončeny"
 
 msgid "Allocation"
 msgstr "Alokace"
@@ -211,6 +227,10 @@ msgstr "Dostupný"
 
 msgid "Available:"
 msgstr "Dostupný:"
+
+#, c-format
+msgid "Bad $%s value."
+msgstr "Chybná hodnota $%s."
 
 msgid "Build a given pool."
 msgstr "Sestav dané úložiště."
@@ -344,6 +364,15 @@ msgstr ""
 msgid "Change the number of virtual CPUs in the guest domain."
 msgstr "Změnit počet aktivních virtuálních CPU v hostované doméně."
 
+msgid ""
+"Check that CPU and firmware supports virtualization and kvm module is loaded"
+msgstr ""
+"Zkontrolujte zda procesor a (nastavení) firmware podporují virtualizaci a je "
+"načten modul kvm"
+
+msgid "Compiled with support for:"
+msgstr "Sestaveno s podporou pro:"
+
 msgid "Compiled with support for:\n"
 msgstr "Zkompilováno s podporou pro:\n"
 
@@ -414,6 +443,9 @@ msgstr "Nelze smazat svazek: %s"
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Nepodařilo se zničit doménu: %s"
+
+msgid "Could not determine home directory"
+msgstr "Nedaří se zjistit domovskou složku"
 
 msgid "Could not find 'active' element"
 msgstr "Nepodařilo se nalézt element 'active'"
@@ -773,6 +805,9 @@ msgstr "Selhalo porovnání hostitelského CPU s %s"
 msgid "Failed to connect to %s"
 msgstr "Selhalo připojování k %s"
 
+msgid "Failed to connect to the admin server"
+msgstr "Nepodařilo se připojit ke správnímu serveru"
+
 #, c-format
 msgid "Failed to convert '%s' to int"
 msgstr "Selhala konverze '%s' na int"
@@ -922,6 +957,12 @@ msgstr "Nepodařilo se získat informace o rozhraní"
 msgid "Failed to get interface stats %s %s"
 msgstr "Nepodařilo se získat stav rozhraní %s %s"
 
+msgid "Failed to initialize libvirt"
+msgstr "libvirt se nepodařilo inicializovat"
+
+msgid "Failed to initialize mutex"
+msgstr "mutex se nepodařilo inicializovat"
+
 msgid "Failed to list active domains"
 msgstr "Nepodařilo se vypsat aktivní domény"
 
@@ -954,6 +995,9 @@ msgstr "Selhalo vypsání hesel"
 
 msgid "Failed to list storage volumes"
 msgstr "Nepodařilo se vypsat svazky na úložišti"
+
+msgid "Failed to list volumes"
+msgstr "Nepodařilo se vypsat svazky"
 
 #, c-format
 msgid "Failed to make device %s"
@@ -1147,7 +1191,7 @@ msgid ""
 "Grouped commands:\n"
 "\n"
 msgstr ""
-"Příkazy:\n"
+"Seskupené příkazy:\n"
 "\n"
 
 #, c-format
@@ -1181,6 +1225,9 @@ msgstr "Rozhraní bylo úspěšně připojeno\n"
 
 msgid "Interface detached successfully\n"
 msgstr "Rozhraní bylo úspěšně odpojeno\n"
+
+msgid "Interrupted by a signal"
+msgstr "Přerušeno signálem"
 
 msgid "Invalid CPU feature name"
 msgstr "Neplatné jméno vlastnosti CPU"
@@ -1296,9 +1343,6 @@ msgstr "Chybí jméno vlastnosti CPU"
 msgid "Missing CPU model name"
 msgstr "Chybí jméno modelu CPU"
 
-msgid "Missing CPU vendor name"
-msgstr "Chybí jméno výrobce CPU"
-
 msgid "Missing address"
 msgstr "Chybí adresa"
 
@@ -1320,6 +1364,9 @@ msgstr "Volná paměť NUMA"
 
 msgid "Name"
 msgstr "Jméno"
+
+msgid "Name or service not known"
+msgstr "Neznámý název nebo služba"
 
 msgid "Name:"
 msgstr "Jméno:"
@@ -1569,6 +1616,12 @@ msgstr "uložit stav domény do souboru"
 msgid "Renaming domains on migration not supported"
 msgstr "Přejmenování domén během migrace není podporováno"
 
+msgid "Request canceled"
+msgstr "Požadavek zrušen"
+
+msgid "Request not canceled"
+msgstr "Požadavek nebyl zrušen"
+
 #, c-format
 msgid ""
 "Requested number of virtual CPUs is greater than max allowable number of "
@@ -1701,6 +1754,9 @@ msgstr "Svazek nenalezen: %s"
 msgid "Suspend a running domain."
 msgstr "Uspat běžící doménu."
 
+msgid "System error"
+msgstr "Chyba systému"
+
 msgid "The domain is not running"
 msgstr "Doména neběží"
 
@@ -1712,6 +1768,9 @@ msgstr "Server přesměrovává z '%s'"
 msgid "The server redirects from '%s' to '%s'"
 msgstr "Server přesměrovává z '%s' na '%s'"
 
+msgid "This function is not supported on WIN32 platform"
+msgstr "Tato funkce není na platformě WIN32 podporována"
+
 msgid "This host is not managed by a vCenter"
 msgstr "Tento host není spravován vCenter"
 
@@ -1720,6 +1779,9 @@ msgstr "Vláken na jádro:"
 
 msgid "Total"
 msgstr "Celkem"
+
+msgid "Try again?"
+msgstr "Zkusit znovu?"
 
 msgid "Type"
 msgstr "Typ"
@@ -1777,6 +1839,9 @@ msgstr "Nelze zmigrovat %s na %s"
 #, c-format
 msgid "Unable to open %s"
 msgstr "Nelze otevřít %s"
+
+msgid "Unable to open /proc/mounts"
+msgstr "Nelze otevřít /proc/mounts"
 
 msgid "Unable to open UNIX socket"
 msgstr "Nelze otevřít UNIXový socket"
@@ -2095,10 +2160,6 @@ msgid "cannot open volume '%s'"
 msgstr "nelze otevřít svazek '%s'"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "nelze parsovat mapování CPU pro architekturu %s"
-
-#, c-format
 msgid "cannot parse UUID '%s'"
 msgstr "nelze parsovat UUID '%s'"
 
@@ -2116,6 +2177,10 @@ msgstr "nelze parsovat zařízení %s"
 
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "nelze parsovat parametr instanceid jako uuid"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "nelze parsovat json %s: %s"
 
 #, c-format
 msgid "cannot parse product %s"
@@ -2248,6 +2313,9 @@ msgstr "chybná syntaxe konfiguračního souboru"
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "chybná syntaxe konfiguračního souboru: %s"
+
+msgid "connect to daemon's admin server"
+msgstr "připojit se ke správnímu serveru daného procesu služby"
 
 msgid "connect to the guest console"
 msgstr "připojit se k hostované konzoli"
@@ -2495,6 +2563,9 @@ msgstr "chyba při kopírování UUID"
 msgid "error: "
 msgstr "chyba:"
 
+msgid "error: Out of memory\n"
+msgstr "chyba: došla paměť\n"
+
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "očekávaná syntaxe: --%s <%s>"
@@ -2631,9 +2702,6 @@ msgstr "chyba při parsování konfigurační souboru"
 msgid "failed to parse configuration file %s"
 msgstr "chyba při parsování konfigurační souboru %s"
 
-msgid "failed to parse xml document"
-msgstr "selhalo parsovaní xml dokumentu"
-
 msgid "failed to read XML"
 msgstr "selhalo čtení XML"
 
@@ -2709,6 +2777,9 @@ msgstr "soubor obsahující XML popis svazku"
 msgid "filter has no name"
 msgstr "filtr nemá jméno"
 
+msgid "for hardware virtualization"
+msgstr "pro hardwarovou virtualizaci"
+
 msgid "force device update"
 msgstr "vynutit aktualizaci zařízení"
 
@@ -2761,6 +2832,9 @@ msgstr "jméno rozhraní"
 
 msgid "internal error"
 msgstr "vnitřní chyba"
+
+msgid "internal use only"
+msgstr "pouze pro vnitřní použití"
 
 #, c-format
 msgid "invalid '=' after option --%s"
@@ -3378,6 +3452,12 @@ msgstr "uuid nebo jméno úložiště"
 msgid "print help"
 msgstr "vypsat nápovědu"
 
+msgid "print help for this function"
+msgstr "vypsat nápovědu k této funkci"
+
+msgid "print the admin server URI"
+msgstr "vypsat URI adresu správního serveru"
+
 msgid "print the current directory"
 msgstr "zobrazí jméno adresáře, ve kterém se právě nacházíte"
 
@@ -3519,6 +3599,9 @@ msgstr "cíl diskového zařízení"
 msgid "target type must be specified for %s device"
 msgstr "cíl musí být specifikován pro zařízení %s"
 
+msgid "tcp"
+msgstr "tcp"
+
 #, c-format
 msgid "template '%s' does not exist"
 msgstr "template '%s' neexistuje"
@@ -3534,6 +3617,9 @@ msgstr "tato doména již existuje"
 
 msgid "this network exists already"
 msgstr "tato síť již existuje"
+
+msgid "tls"
+msgstr "tls"
 
 msgid "too many drivers registered"
 msgstr "registrováno příliš mnoho ovladačů"
@@ -3618,7 +3704,7 @@ msgstr "neočekávaný typ řadiče %d"
 
 #, c-format
 msgid "unexpected data '%s'"
-msgstr "neočekávaná data '%s'"
+msgstr "neočekávaná data „%s“"
 
 #, c-format
 msgid "unexpected disk bus %d"
@@ -3714,6 +3800,10 @@ msgstr "neočekávaná akce watchdogu %d"
 msgid "unexpected watchdog model %d"
 msgstr "neočekávaný model watchdogu %d"
 
+#, c-format
+msgid "unimplemented parameter type %d"
+msgstr "neimplementovaný typ parametru %d"
+
 msgid "unknown"
 msgstr "neznámý"
 
@@ -3750,7 +3840,7 @@ msgstr "neznámý offset hodin '%s'"
 
 #, c-format
 msgid "unknown command: '%s'"
-msgstr "neznámý příkaz '%s'"
+msgstr "neznámý příkaz: „%s“"
 
 #, c-format
 msgid "unknown dhcp peerdns value %s"
@@ -3829,6 +3919,9 @@ msgstr "neznámý typ rozhraní '%s'"
 #, c-format
 msgid "unknown memory balloon model '%s'"
 msgstr "neznámý model ballon memory '%s'"
+
+msgid "unknown option"
+msgstr "neznámá volba"
 
 #, c-format
 msgid "unknown pci source type '%s'"

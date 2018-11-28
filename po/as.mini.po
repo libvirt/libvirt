@@ -13,9 +13,9 @@
 # Nilamdyuti Goswami <ngoswami@redhat.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -286,9 +286,6 @@ msgstr " নেটৱাৰ্কিং:"
 
 msgid " Storage:"
 msgstr " সংৰক্ষণ:"
-
-msgid " block_io_throttle reply was missing device list"
-msgstr "block_io_throttle উত্তৰত ডিভাইচ তালিকা নাছিল"
 
 #, c-format
 msgid ""
@@ -597,9 +594,6 @@ msgstr "guest-get-vcpus ৰ উত্তৰত 'logical-id' নাই"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus ৰ উত্তৰত 'online' নাই"
-
-msgid "'parent' for vHBA not specified, and cannot find one on this host"
-msgstr "vHBA ৰ বাবে 'parent' ধাৰ্য্য কৰা হোৱা নাই, আৰু এই হস্টত এটা পোৱা নাযায়"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' আৰু 'burst' ৰ বাবে 'average' বৈশিষ্ট্যৰ প্ৰয়োজন"
@@ -946,9 +940,6 @@ msgstr "NAT '%s' কৰাৰ চেষ্টা কৰা হৈছে। NAT �
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "বৈশিষ্ট অৱস্থা কেৱল অতিথি CPU ৰ বাবে অনুমোদিত"
-
-msgid "Authentication Credentials not found"
-msgstr "প্ৰমাণীকৰণ তথ্যসমূহ পোৱা নগল"
 
 msgid "Authentication failed"
 msgstr "অনুমোদন বিফল"
@@ -1422,9 +1413,6 @@ msgstr "বেলুন ডিভাইচ পথ নিৰ্ধাৰণ ক�
 msgid "Cannot determine free memory"
 msgstr "মুক্ত মেমৰি নিৰ্ধাৰণ কৰিব নোৱাৰি"
 
-msgid "Cannot determine system clock HZ"
-msgstr "চিস্টেম ঘড়ী HZ নিৰ্ধাৰণ কৰিব নোৱাৰি"
-
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "ফ্ল'পি %s পোনেপোনে সংযুক্ত কৰিব নোৱাৰি"
@@ -1643,14 +1631,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "%s ত আৰম্ভণি সময় %s বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
-msgid "Cannot parse sys stat '%s'"
-msgstr "sys স্টেট '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "ব্যৱহাৰকাৰী স্টেট '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
 "on network '%s'"
@@ -1797,10 +1777,6 @@ msgstr "আৰম্ভ নকৰা CURL হেণ্ডেল অংশীদ�
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "এটা লেবেল ধাৰ্য্য কৰিব নোৱাৰি যদি পুনৰলেবেলিং বন্ধ কৰা থাকে। model=%s"
-
-#, c-format
-msgid "Cannot stat %s"
-msgstr "%s স্টেট কৰিব নোৱাৰি"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -1978,10 +1954,6 @@ msgstr ""
 msgid "Command %s too long for destination"
 msgstr "গন্তব্যৰ ক্ষেত্ৰত আদেশ %s অত্যাধিক দীঘল"
 
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "কমান্ড '%s' পোৱা নগল"
-
 msgid "Commit aborted"
 msgstr "Commit বাদ দিয়া হল"
 
@@ -2092,26 +2064,6 @@ msgstr "ডোমেইন বৰ্তমানে সক্ৰিয় নহয়
 
 msgid "Control groups not supported on this platform"
 msgstr "নিয়ন্ত্ৰণ দলসমূহ এই প্লেটফৰ্মত সমৰ্থিত নহয়"
-
-#, c-format
-msgid "Controller %d out of range"
-msgstr "নিয়ন্ত্ৰক %d বিস্তাৰৰ বাহিৰ"
-
-#, c-format
-msgid "Controller '%s' is not enabled for group"
-msgstr "নিয়ন্ত্ৰক '%s' দলৰ বাবে সামৰ্থবান নহয়"
-
-#, c-format
-msgid "Controller '%s' is not mounted"
-msgstr "নিয়ন্ত্ৰক '%s' মাউণ্ট কৰা নাই"
-
-#, c-format
-msgid "Controller '%s' is not wanted, but '%s' is co-mounted"
-msgstr "নিয়ন্ত্ৰক '%s' ৰ প্ৰয়োজন নাই, কিন্তু '%s' co-mount কৰা আছে"
-
-#, c-format
-msgid "Controller '%s' not mounted"
-msgstr "নিয়ন্ত্ৰক '%s' মাউণ্টেড নহয়"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "নিয়ন্ত্ৰকসমূহে 'ccid' ঠিকনা ধৰণ ব্যৱহাৰ কৰিব লাগিব"
@@ -2306,9 +2258,6 @@ msgstr "নাম '%s' ৰ সৈতে PhysicalNic পোৱা নগল"
 msgid "Could not find any 'network' element in status file"
 msgstr "অৱস্থা ফাইলত কোনো 'network' উপাদান পোৱা নগল"
 
-msgid "Could not find any mounted controllers"
-msgstr "কোনো মাউণ্ট কৰা নিয়ন্ত্ৰক পোৱা নগল"
-
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "'%s' ত ধাৰ্য্যত সম্পদ গণনা কৰিব পৰা নগল"
@@ -2324,10 +2273,6 @@ msgstr "প্ৰকৃত পথ '%s' অন্তৰ্ভুক্ত কৰ�
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "নাম '%s' ৰ সৈতে তথ্যসংগ্ৰহ বিচাৰি পোৱা নগল"
-
-#, c-format
-msgid "Could not find directory separator in %s"
-msgstr "%s ত ডাইৰেকটৰি বিভাজক পোৱা নগল"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2363,10 +2308,6 @@ msgstr "MAC ঠিকনা '%s' ৰ সৈতে ভৌতিক NIC পোৱ�
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "নাম '%s' ৰ সৈতে ভৌতিক NIC পোৱা নগল"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "%s ত নিয়ন্ত্ৰক %s ৰ বাবে স্থাপনা বিচাৰি পোৱা নগল"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -3062,10 +3003,6 @@ msgstr "ডিভাইচ %s ইতিমধ্যে অস্তিত্ব�
 #, c-format
 msgid "Device %s detached\n"
 msgstr "ডিভাইচ %s অসংলগ্ন কৰা হল\n"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "ডিভাইচ %s ব্যৱহৃত"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -3937,10 +3874,6 @@ msgid "Failed to bind PCI device '%s' to %s"
 msgstr "PCI ডিভাইচ '%s' ক %s লৈ bind কৰিবলৈ বিফল"
 
 #, c-format
-msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "'%s' ত cgroup '%s' বাইণ্ড কৰিবলে ব্যৰ্থ"
-
-#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "মাউণ্ট ডাইৰেকটৰি %s ক %s লে বান্ধিবলে ব্যৰ্থ"
 
@@ -4097,10 +4030,6 @@ msgstr "বান্ধনী লক্ষ্য %s সৃষ্টি কৰি
 
 msgid "Failed to create bridge node in xml document"
 msgstr "xml দস্তাবেজত ব্ৰিজ ন'ড সৃষ্টি কৰিবলে ব্যৰ্থ"
-
-#, c-format
-msgid "Failed to create controller %s for group"
-msgstr "দলৰ বাবে নিয়ন্ত্ৰক %s সৃষ্টি কৰিবলে ব্যৰ্থ"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -4385,9 +4314,6 @@ msgstr "আন্তঃপৃষ্ঠ %s ৰ বাবে নতুন না�
 msgid "Failed to get %s minor number"
 msgstr "%s গৌণ সংখ্যা প্ৰাপ্ত কৰিবলে ব্যৰ্থ"
 
-msgid "Failed to get PCI Config Address String"
-msgstr "PCI সংৰূপ ঠিকনা স্ট্ৰিং প্ৰাপ্ত কৰিবলে ব্যৰ্থ"
-
 msgid "Failed to get PCI SYSFS file"
 msgstr "PCI SYSFS ফাইল প্ৰাপ্ত কৰিবলে ব্যৰ্থ"
 
@@ -4662,10 +4588,6 @@ msgstr "ডোমেইন %s স্বয়ংক্ৰিয় প্ৰাৰম�
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "mkdir %s কৰিবলৈ ব্যৰ্থযৰ্থ"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "%s ধৰণ %s ত %s মাউণ্ট কৰিবলে ব্যৰ্থ"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -6617,13 +6539,6 @@ msgstr "সৰ্বাধিক মেমৰি, স্কেইল্ড প�
 msgid "Max memory:"
 msgstr "সৰ্বোচ্চ মেমৰি:"
 
-msgid "Maximum CPUs greater than specified machine type limit"
-msgstr "ধাৰ্য্যত মেচিন ধৰণ সীমাতকৈ সৰ্বাধিক CPUs অধিক"
-
-#, c-format
-msgid "Memory '%llu' must be less than %llu"
-msgstr "মেমৰি '%llu', %llu কে কম হব লাগিব"
-
 msgid "Memory allocation failure"
 msgstr "মেমৰি বিতৰণ কৰোঁতে ব্যৰ্থ"
 
@@ -6729,10 +6644,6 @@ msgstr "'%s' বৈশিষ্ট্য সন্ধানহীন"
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "ManagedEntityStatus ৰ বাবে সন্ধান কৰোতে '%s' বৈশিষ্ট সন্ধানহীন"
 
-#, c-format
-msgid "Missing '/' separator in cgroup mount '%s'"
-msgstr "cgroup মাউণ্ট '%s' ত '/' বিভাজক নাই"
-
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU টোপোলজিত 'core' নামক গুণ অনুপস্থিত"
 
@@ -6790,9 +6701,6 @@ msgstr "CPU গুণৰ নাম অনুপস্থিত"
 
 msgid "Missing CPU model name"
 msgstr "CPU ৰ মডেলৰ নাম অনুপস্থিত"
-
-msgid "Missing CPU vendor name"
-msgstr "CPU বিক্ৰেতা নাম সন্ধানহীন"
 
 msgid "Missing ID parameter for domain object"
 msgstr "ডমেইন অবজেক্টৰ বাবে ID প্ৰাচল সন্ধানহীন"
@@ -6935,9 +6843,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU আৰ্হি %s ত সন্ধানহীন অথবা অবৈধ PVR মান"
-
-msgid "Missing or invalid auth pointer"
-msgstr "সন্ধানহীন অথবা অবৈধ auth পইন্টাৰ"
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
 msgstr "সন্ধানহীন অথবা অবৈধ scsi adapter 'unique_id' মান"
@@ -7387,9 +7292,6 @@ msgstr "স্বাক্ষৰ %s ৰ বাবে কোনো args নাই
 
 msgid "No authentication callback available"
 msgstr "কোনো প্ৰমাণীকৰণ কলবেক উপলব্ধ নাই"
-
-msgid "No authentication callback provided."
-msgstr "অনুমোদনৰ কোনো কল-বেক উপলব্ধ কৰা নহয়।"
 
 msgid "No authentication methods and credentials provided"
 msgstr "কোনো প্ৰমাণীকৰণ পদ্ধতি আৰু তথ্য প্ৰদান কৰা হোৱা নাই"
@@ -8517,9 +8419,6 @@ msgstr "SCSI ডিস্ক সূচী ('%s' ৰ পৰা বিশ্লে
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI হস্ট ডিভাইচে ব্যৱস্থাপিত অৱস্থা সমৰ্থন নকৰে"
-
-msgid "SCSI passthrough is not supported by this version of qemu"
-msgstr "qemu ৰ এই সংস্কৰণ দ্বাৰা SCSI পাছথ্ৰু সমৰ্থিত নহয়"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -9833,9 +9732,6 @@ msgstr "USB ডিভাইচ %s ইতিমধ্যে ব্যৱহৃত
 msgid "USB host device is missing bus/device information"
 msgstr "USB হোস্ট ডিভাইচত বাচ/ডিভাইচ সংক্ৰান্ত তথ্য অনুপস্থিত"
 
-msgid "USB redirection booting is not supported by this version of QEMU"
-msgstr "QEMU ৰ এই সংস্কৰণ দ্বাৰা USB পুনৰনিৰ্দেশ বুটিং সমৰ্থিত নহয়"
-
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "USB পুনৰনিৰ্দেশ ফিল্টাৰ QEMU ৰ এই সংস্কৰণ দ্বাৰা সমৰ্থিত নহয়"
 
@@ -10020,6 +9916,12 @@ msgstr "চকেট ফাইল হেণ্ডেল কপি কৰিব�
 msgid "Unable to create %s"
 msgstr "%s সৃষ্টি কৰিবলে অক্ষম"
 
+msgid "Unable to create JSON formatter"
+msgstr "JSON ফৰমেটাৰ সৃষ্টি কৰিবলে অক্ষম"
+
+msgid "Unable to create JSON parser"
+msgstr "JSON বিশ্লেষক সৃষ্টি কৰিবলে অক্ষম"
+
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "LPAR সৃষ্টি কৰিবলে অক্ষম। কাৰণ: '%s'"
@@ -10048,10 +9950,6 @@ msgstr "ব্ৰিজ ডিভাইচ সৃষ্টি কৰিবলে
 #, c-format
 msgid "Unable to create device %s"
 msgstr "ডিভাইচ %s সৃষ্টি কৰিবলে অক্ষম"
-
-#, c-format
-msgid "Unable to create directory %s"
-msgstr "ডাইৰেকটৰি %s সৃষ্টি কৰিবলে অক্ষম"
 
 msgid "Unable to create epoll fd"
 msgstr "epoll fd সৃষ্টি কৰিবলে অক্ষম"
@@ -10516,6 +10414,9 @@ msgstr "'%s' খোলিবলে অক্ষম"
 msgid "Unable to open /dev/loop-control"
 msgstr "/dev/loop-control খোলিবলৈ অক্ষম"
 
+msgid "Unable to open /proc/mounts"
+msgstr "/proc/mounts খোলিবলে অক্ষম"
+
 msgid "Unable to open UNIX socket"
 msgstr "UNIX চকেট খোলিবলে অক্ষম"
 
@@ -10806,10 +10707,6 @@ msgstr "এই প্লেটফৰ্মত %s ত STP সংহতি কৰ�
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "VM লগ ফাইলৰ close on exec ফ্লেগ %s নিৰ্ধাৰণ কৰোঁতে ব্যৰ্থ"
 
-#, c-format
-msgid "Unable to set bridge %s %s"
-msgstr "ব্ৰিজ %s %s সংহতি কৰিবলে অক্ষম"
-
 msgid "Unable to set cloexec flag"
 msgstr "cloexec ফ্লেগ সংহতি কৰিবলে অক্ষম"
 
@@ -10871,10 +10768,6 @@ msgstr "বান্ধনী উৎস %s stat কৰিবলে অক্ষ�
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "বান্ধনী লক্ষ্য %s বান্ধীবলে অক্ষম"
-
-#, c-format
-msgid "Unable to symlink directory %s to %s"
-msgstr "ডাইৰেকটৰি %s ক %s লে symlink কৰিব নোৱাৰি"
 
 #, c-format
 msgid "Unable to truncate %s"
@@ -11004,9 +10897,6 @@ msgstr "non-peer2peer প্ৰব্ৰজনৰ সৈতে অপ্ৰত�
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "অপ্ৰত্যাশিত ডিস্ক sgio অৱস্থা '%d'"
-
-msgid "Unexpected error"
-msgstr "অপ্ৰত্যাশিত ত্ৰুটি"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -11524,9 +11414,6 @@ msgstr "VMX প্ৰবিষ্টি 'name' এ অবৈধ এক্সে�
 msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr ""
 "VMX প্ৰবিষ্টি 'sched.cpu.affinity' এ এটা %d অন্তৰ্ভুক্ত কৰে, এই মান অত্যাধিক ডাঙৰ"
-
-msgid "VNC WebSockets are not supported with this QEMU binary"
-msgstr "এই QEMU বাইনাৰিৰ সৈতে VNC WebSockets সমৰ্থিত নহয়"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC এ কেৱল connected='keep' সমৰ্থণ কৰে"
@@ -12138,25 +12025,6 @@ msgid "booted"
 msgstr "বুটেড"
 
 msgid ""
-"booting from PCI devices assigned with VFIO is not supported with this "
-"version of qemu"
-msgstr ""
-"VFIO ৰ সৈতে ধাৰ্য্যত PCI ডিভাইচসমূহৰ পৰা বুট কৰাটো qemu ৰ এই সংস্কৰণৰ সৈতে সমৰ্থিত "
-"নহয়"
-
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr "qemu ৰ এই সংস্কৰণৰ সৈতে ধাৰ্য্যত PCI ডিভাইচসমূহৰ পৰা বুট কৰাটো সমৰ্থিত নহয়"
-
-msgid ""
-"booting from assigned SCSI devices is not supported with this version of qemu"
-msgstr "qemu ৰ এই সংস্কৰণৰ সৈতে ধাৰ্য্যত SCSI ডিভাইচসমূহৰ পৰা বুট কৰাটো সমৰ্থিত নহয়"
-
-msgid ""
-"booting from assigned USB devices is not supported with this version of qemu"
-msgstr "qemu ৰ এই সংস্কৰণৰ সৈতে ধাৰ্য্যত USB ডিভাইচসমূহৰ পৰা বুট কৰাটো সমৰ্থিত নহয়"
-
-msgid ""
 "booting from assigned devices is only supported for PCI, USB and SCSI devices"
 msgstr ""
 "ধাৰ্য্যত ডিভাইচসমূহৰ পৰা বুটিং কেৱল PCI, USB আৰু SCSI ডিভাইচসমূহৰ বাবে সমৰ্থিত"
@@ -12698,9 +12566,6 @@ msgstr "সুৰক্ষা props %d (%s) প্ৰাপ্ত কৰিব �
 msgid "cannot get the host uuid"
 msgstr "হস্ট uuid প্ৰাপ্ত কৰিব নোৱাৰি"
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "MEMORY cgroup নিয়ন্ত্ৰকৰ পথ প্ৰাপ্ত কৰিব নোৱাৰি"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU স্থাপনাও আৰু pCPU ৰ সময় প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ"
 
@@ -12864,10 +12729,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s সংস্কৰণ সংখ্যা বিশ্লেষণ কৰিব নোৱাৰি '%.*s'"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "%s স্থাপত্যৰ বাবে CPU মেপ বিশ্লেষণ কৰা সম্ভৱ নহয়"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "CPU ৰ টোপোলজি '%s' বিশ্লেষণ কৰিবলৈ ব্যৰ্থ"
 
@@ -12957,6 +12818,10 @@ msgstr "interfaceid প্ৰাচলক uuid হিচাপে বিশ্�
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "io অৱস্থা '%s' বিশ্লেষণ কৰিব নোৱাৰি"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "json %s বিশ্লেষণ কৰা সম্ভৱ নহয়: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -13394,14 +13259,6 @@ msgstr "%s ত cellNum %d কে কম বা সমান হব লাগি�
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s ত cellNum এ %d ক কেৱল ধনাত্মক মান হিচাপে গ্ৰহণ কৰে"
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu' বিস্তাৰ (1000, 1000000) ত হব লাগিব"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld' বিস্তাৰ (1000, %llu) ত হব লাগিব"
-
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU নিয়ন্ত্ৰক মাউণ্ট কৰা নহয়"
 
@@ -13545,20 +13402,12 @@ msgid "config data file to import from"
 msgstr "আমদানি কৰিব লগা বিন্যাস তথ্যৰ ফাইল"
 
 #, c-format
-msgid "config value %s not a string"
-msgstr "সংৰূপ মান %s এটা স্ট্ৰিং নহয়"
-
-#, c-format
 msgid "config value %s was malformed"
 msgstr "বিন্যাসৰ মান %s ভুল"
 
 #, c-format
 msgid "config value %s was missing"
 msgstr "বিন্যাসৰ মান %s নাছিল"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "বিন্যাসৰ মান %s এটা স্ট্ৰিং নাছিল"
 
 msgid "configuration file syntax error"
 msgstr "বিনেস ফাইলৰ শব্দবিনেসত ভুল"
@@ -15312,9 +15161,6 @@ msgstr "qemu ডিভাইচ তালিকা বিশ্লেষণ ক�
 msgid "failed to parse value of %s"
 msgstr "%s ৰ বাবে মান বিশ্লেষণ কৰিবলে ব্যৰ্থ"
 
-msgid "failed to parse xml document"
-msgstr "xml নথি বিশ্লেষণ কৰোঁতে ব্যৰ্থ"
-
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "ডিস্ক %s ৰ বাবে কাৰ্য্য পিভট কৰিবলে ব্যৰ্থ"
@@ -15387,9 +15233,6 @@ msgstr "তথ্যসমূহ উদ্ধাৰ কৰিবলে ব্য
 
 msgid "failed to retrieve decision to accept host key"
 msgstr "হস্ট কি' গ্ৰহণ কৰিবলে সিধান্ত উদ্ধাৰ কৰিবলে ব্যৰ্থ"
-
-msgid "failed to retrieve password"
-msgstr "পাছৱৰ্ড উদ্ধাৰ কৰিবলে ব্যৰ্থ"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "ব্যক্তিগত কি' পাচফ্ৰেইছ উদ্ধাৰ কৰিবলে ব্যৰ্থ: কলবেক ব্যৰ্থ হৈছে"
@@ -15885,9 +15728,6 @@ msgstr "hugepage আকাৰ শূন্য হব নোৱাৰিব"
 
 msgid "hypervisor connection URI"
 msgstr "হাইপাৰ ভাইসৰ সংযোগৰ URI"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "হাইপাৰজৰত ডিভাইচবুট বৈশিষ্ট্য নাই"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI সংৰক্ষণ পুলে ভলিউম সৃষ্টি সমৰ্থন নকৰে"
@@ -17121,10 +16961,6 @@ msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 
-#, c-format
-msgid "memballoon unsupported with address type '%s'"
-msgstr "ঠিকনা ধৰণ '%s' ৰ সৈতে memballoon অসমৰ্থিত"
-
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "মেমৰি বৈশিষ্ট্যসমূহ: [file=]name[,snapshot=type]"
 
@@ -18077,9 +17913,6 @@ msgstr "'%s' ৰ কাৰণে কোনো ব্ল'ক ডিভাইচ�
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "prog %d vers %d serial %d ৰ সৈতে উত্তৰৰ বাবে অপেক্ষা কৰা কোনো কল নাই"
 
-msgid "no callback provided"
-msgstr "কোনো কলবেক প্ৰদান কৰা হোৱা নাই"
-
 msgid "no client username was found"
 msgstr "গ্ৰাহকৰ ব্যৱহাৰকৰোঁতাৰ নাম পোৱা নাযায়"
 
@@ -18108,10 +17941,6 @@ msgstr "এলিয়াচ %s ৰ সৈতে কোনো ডিভাইচ �
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s ৰ বাবে কোনো ডিস্ক বিন্যাস নাই আৰু প্ৰবিং অসামৰ্থবান কৰা আছে"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "এলিয়াচ %s ৰ সৈতে কোনো ডিস্ক পোৱা নগল"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -20264,9 +20093,6 @@ msgstr "স্নেপশ্বট ফিল্টাৰিং পৰিৱে�
 
 msgid "unable to poll on child"
 msgstr "ছাইল্ডত পল কৰিবলে অক্ষম"
-
-msgid "unable to probe for add-fd"
-msgstr "add-fd ৰ বাবে প্ৰৌব কৰিবলে অক্ষম"
 
 msgid "unable to read child stderr"
 msgstr "ছাইল্ড stderr পঢ়িবলে অক্ষম"

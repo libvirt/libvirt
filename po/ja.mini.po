@@ -17,9 +17,9 @@
 # Tomoyuki KATO <tomo@dream.daynight.jp>, 2011-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -29,7 +29,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -290,9 +290,6 @@ msgstr "ネットワーク:"
 
 msgid " Storage:"
 msgstr "ストレージ:"
-
-msgid " block_io_throttle reply was missing device list"
-msgstr " block_io_throttle reply に device list がありませんでした"
 
 #, c-format
 msgid ""
@@ -617,11 +614,6 @@ msgstr "guest-get-vcpus の応答に 'logical-id' がありません"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus の応答に 'online' がありません"
-
-msgid "'parent' for vHBA not specified, and cannot find one on this host"
-msgstr ""
-"vHBA の 'parent' が指定されていません。また、このホストにおいて見つけられませ"
-"ん"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' および 'burst' は 'average' 属性が必要です"
@@ -956,9 +948,6 @@ msgstr "NAT '%s' を試行しました。NAT は IPv4 に対してのみサポ�
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "mode 属性はゲストの CPU に対してのみ許可されます。"
-
-msgid "Authentication Credentials not found"
-msgstr "認証情報が見つかりません"
 
 msgid "Authentication failed"
 msgstr "認証に失敗しました"
@@ -1445,9 +1434,6 @@ msgstr "バルーンデバイスパスがわかりませんでした"
 msgid "Cannot determine free memory"
 msgstr "空きメモリーがわかりません"
 
-msgid "Cannot determine system clock HZ"
-msgstr "システムのクロック周波数がわかりません"
-
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "フロッピー %s を直接接続できません"
@@ -1659,14 +1645,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "開始時間 %s (%s) を構文解析できません"
 
 #, c-format
-msgid "Cannot parse sys stat '%s'"
-msgstr "sys 統計情報 '%s' を構文解析できません"
-
-#, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "user 統計情報 '%s' を構文解析できません"
-
-#, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
 "on network '%s'"
@@ -1806,10 +1784,6 @@ msgstr "初期化していない CURL ハンドルを共有できません"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "再ラベルが無効にされていると、ラベルを指定できません。model=%s"
-
-#, c-format
-msgid "Cannot stat %s"
-msgstr "%s を統計できません"
 
 #, c-format
 msgid "Cannot stat '%s'"
@@ -1986,10 +1960,6 @@ msgstr ""
 msgid "Command %s too long for destination"
 msgstr "コマンド %s が宛先にとって長すぎます"
 
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "コマンド '%s' が見つかりません"
-
 msgid "Commit aborted"
 msgstr "コミットが中断されました"
 
@@ -2101,22 +2071,6 @@ msgstr "コンテナは定義されていません"
 
 msgid "Control groups not supported on this platform"
 msgstr "Control groups がこのプラットフォームにおいてサポートされません"
-
-#, c-format
-msgid "Controller %d out of range"
-msgstr "コントローラー %d が範囲外です"
-
-#, c-format
-msgid "Controller '%s' is not enabled for group"
-msgstr "コントローラー '%s' がグループに対して有効化されていません"
-
-#, c-format
-msgid "Controller '%s' is not mounted"
-msgstr "コントローラー '%s' がマウントされていません"
-
-#, c-format
-msgid "Controller '%s' not mounted"
-msgstr "コントローラー '%s' がマウントされていません"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "コントローターは 'ccid' アドレス形式を使用しなければいけません"
@@ -2306,9 +2260,6 @@ msgstr "名前 '%s' を持つ物理 NIC を見つけられませんでした"
 msgid "Could not find any 'network' element in status file"
 msgstr "状態ファイルに何も 'network' 要素が見つかりませんでした"
 
-msgid "Could not find any mounted controllers"
-msgstr "マウントされたコントローラーを何も見つけられませんでした"
-
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "'%s' に指定されているコンピュートリソースを見つけられません"
@@ -2324,10 +2275,6 @@ msgstr "絶対パス '%s' を含んでいるデータストアを見つけられ
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "名前 '%s' を持つデータストアを見つけられませんでした"
-
-#, c-format
-msgid "Could not find directory separator in %s"
-msgstr "%s にディレクトリのセパレーターを見つけられませんでした"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2363,10 +2310,6 @@ msgstr "MAC アドレス '%s' を持つ物理 NIC を見つけられませんで
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "名前 '%s' を持つ物理 NIC を見つけられませんでした"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "コントローラー %s (%s) の配置を見つけられません"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -3056,10 +2999,6 @@ msgstr "デバイス %s がすでに存在します"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "デバイス %s が切断されました\n"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "デバイス %s は使用中です"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -3936,10 +3875,6 @@ msgid "Failed to bind PCI device '%s' to %s"
 msgstr "PCI デバイス '%s' を %s にバインドするのに失敗"
 
 #, c-format
-msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "cgroup '%s' を '%s' にバインドできませんでした"
-
-#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "マウントディレクトリー %s を %s にバインドできませんでした"
 
@@ -4093,10 +4028,6 @@ msgstr "バインドターゲット %s の作成に失敗しました"
 
 msgid "Failed to create bridge node in xml document"
 msgstr "XML 文書にブリッジノードを作成できません"
-
-#, c-format
-msgid "Failed to create controller %s for group"
-msgstr "グループ用のコントローラー %s の作成に失敗しました"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -4398,9 +4329,6 @@ msgstr "インターフェース %s に対する新しい名前の生成に失�
 msgid "Failed to get %s minor number"
 msgstr "%s のマイナー番号の取得に失敗しました"
 
-msgid "Failed to get PCI Config Address String"
-msgstr "PCI の設定アドレス文字列の取得に失敗しました"
-
 msgid "Failed to get PCI SYSFS file"
 msgstr "PCI SYSFS ファイルの取得に失敗しました"
 
@@ -4687,10 +4615,6 @@ msgstr "ドメイン %s の自動起動の設定に失敗しました"
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "ディレクトリー %s の作成に失敗しました"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "%s を %s に %s 形式でマウントできませんでした"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -6654,13 +6578,6 @@ msgstr "メモリーの最大値、単位付き整数 (初期値 KiB)"
 msgid "Max memory:"
 msgstr "最大メモリー:"
 
-msgid "Maximum CPUs greater than specified machine type limit"
-msgstr "最大 CPU が指定されたマシン形式の制限値より大きいです"
-
-#, c-format
-msgid "Memory '%llu' must be less than %llu"
-msgstr "メモリ '%llu' は %llu より小さくなければいけません"
-
 msgid "Memory allocation failure"
 msgstr "メモリーの割り当てに失敗しました"
 
@@ -6772,10 +6689,6 @@ msgstr "'%s' プロパティがありません"
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "ManagedEntityStatus を検索中に '%s' プロパティがありませんでした"
 
-#, c-format
-msgid "Missing '/' separator in cgroup mount '%s'"
-msgstr "cgroup のマウント '%s' に区切り文字 '/' がありません"
-
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU トポロジーに 'cores' 属性がありません"
 
@@ -6829,9 +6742,6 @@ msgstr "CPU 機能名がありません"
 
 msgid "Missing CPU model name"
 msgstr "CPU モデル名がありません"
-
-msgid "Missing CPU vendor name"
-msgstr "CPU ベンダー名がありません"
 
 msgid "Missing ID parameter for domain object"
 msgstr "ドメインオブジェクト向けの ID パラメーターがありません"
@@ -6972,9 +6882,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU モデル %s に PVR 値が見つからないか無効です。"
-
-msgid "Missing or invalid auth pointer"
-msgstr "認証ポインターが無いか無効です"
 
 msgid "Missing ownerId data in JSON document"
 msgstr "JSON ドキュメントに ownerId データがありません"
@@ -7411,9 +7318,6 @@ msgstr "シグネチャー %s 用の引数が存在しません"
 
 msgid "No authentication callback available"
 msgstr "認証のコールバックが利用可能ではありません"
-
-msgid "No authentication callback provided."
-msgstr "認証コールバックがありません"
 
 msgid "No authentication methods and credentials provided"
 msgstr "認証方式と認証情報が指定されていません"
@@ -8572,9 +8476,6 @@ msgstr "('%s' から構文解析された) SCSI ディスクのインデック�
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI ホストデバイスが管理済みモードをサポートしません"
-
-msgid "SCSI passthrough is not supported by this version of qemu"
-msgstr "SCSI パススルーはこのバージョンの QEMU によりサポートされません"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -9851,9 +9752,6 @@ msgstr "USB デバイス %s はすでに使用中です"
 msgid "USB host device is missing bus/device information"
 msgstr "USB ホストデバイスにバス/デバイス情報がありません"
 
-msgid "USB redirection booting is not supported by this version of QEMU"
-msgstr "USB リダイレクトブートはこのバージョンの QEMU によりサポートされません"
-
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr ""
 "USB リダイレクションフィルターはこのバージョンの QEMU によりサポートされませ"
@@ -10040,6 +9938,12 @@ msgstr "ソケットのファイルハンドルをコピーできません"
 msgid "Unable to create %s"
 msgstr "%s を作成できません"
 
+msgid "Unable to create JSON formatter"
+msgstr "JSON フォーマッターを作成できません"
+
+msgid "Unable to create JSON parser"
+msgstr "JSON パーサーを作成できません"
+
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "LPAR を作成できません。理由: '%s'"
@@ -10068,10 +9972,6 @@ msgstr "ブリッジデバイスを作成できません"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "デバイス %s を作成できません"
-
-#, c-format
-msgid "Unable to create directory %s"
-msgstr "ディレクトリー %s を作成できません"
 
 msgid "Unable to create epoll fd"
 msgstr "epoll ファイルディスクリプターを作成できません"
@@ -10533,6 +10433,9 @@ msgstr "'%s' を開けません"
 msgid "Unable to open /dev/loop-control"
 msgstr "/dev/loop-control を開けません"
 
+msgid "Unable to open /proc/mounts"
+msgstr "/proc/mounts を開けません"
+
 msgid "Unable to open UNIX socket"
 msgstr "UNIX ソケットを開けません"
 
@@ -10822,10 +10725,6 @@ msgstr "このプラットフォームにおいて %s における STP を設定
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "VM ログファイルの close-on-exec フラグをセットできません"
 
-#, c-format
-msgid "Unable to set bridge %s %s"
-msgstr "ブリッジ %s %s を設定できません"
-
 msgid "Unable to set cloexec flag"
 msgstr "cloexec フラグを設定できません"
 
@@ -10887,10 +10786,6 @@ msgstr "バインドソース %s の統計を取得できません"
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "バインドターゲット %s の統計を取得できません"
-
-#, c-format
-msgid "Unable to symlink directory %s to %s"
-msgstr "ディレクトリー %s を %s にシンボリックリンクできません"
 
 #, c-format
 msgid "Unable to truncate %s"
@@ -11016,9 +10911,6 @@ msgstr "非ピアツーピアマイグレーションで予期しない dconnuri
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "予期しないディスク sgio モード '%d'"
-
-msgid "Unexpected error"
-msgstr "予期しないエラー"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -11523,9 +11415,6 @@ msgstr ""
 msgid "VNC"
 msgstr "VNC"
 
-msgid "VNC WebSockets are not supported with this QEMU binary"
-msgstr "VNC WebSockets はこの QEMU バイナリーでサポートされません"
-
 msgid "VNC supports connected='keep' only"
 msgstr "VNC は connected='keep' のみがサポートされます"
 
@@ -11990,12 +11879,6 @@ msgstr "認証が取り消されました: %s"
 msgid "authentication failed"
 msgstr "認証に失敗しました"
 
-msgid "authentication failed when asking for password"
-msgstr "の要求中に認証に失敗しました"
-
-msgid "authentication failed when asking for username"
-msgstr "ユーザー名の要求中に認証に失敗しました"
-
 msgid "authentication failed, see test XML for the correct username/password"
 msgstr ""
 "認証に失敗しました。正しいユーザー名とパスワードはテスト XML を参照してくださ"
@@ -12140,31 +12023,6 @@ msgstr "ブート順序 '%s' が複数のデバイスに使用されています
 
 msgid "booted"
 msgstr "起動済み"
-
-msgid ""
-"booting from PCI devices assigned with VFIO is not supported with this "
-"version of qemu"
-msgstr ""
-"VFIO で割り当てられた PCI デバイスからのブートはこのバージョンの QEMU でサ"
-"ポートされません"
-
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr ""
-"予約済み PCI デバイスからのブートはこのバージョンの QEMU ではサポートされませ"
-"ん"
-
-msgid ""
-"booting from assigned SCSI devices is not supported with this version of qemu"
-msgstr ""
-"予約済み SCSI デバイスからのブートはこのバージョンの QEMU ではサポートされま"
-"せん"
-
-msgid ""
-"booting from assigned USB devices is not supported with this version of qemu"
-msgstr ""
-"予約済み USB デバイスからのブートはこのバージョンの QEMU ではサポートされませ"
-"ん"
 
 msgid ""
 "booting from assigned devices is only supported for PCI, USB and SCSI devices"
@@ -12707,9 +12565,6 @@ msgstr "セキュリティプロパティ %d (%s) を取得できません"
 msgid "cannot get the host uuid"
 msgstr "ホストの UUID を取得できません"
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "MEMORY cgroup controller のパスを取得できません"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "仮想 CPU 配置と物理 CPU 時間を取得できません"
 
@@ -12874,10 +12729,6 @@ msgid "cannot parse CPU data"
 msgstr "CPU データを構文解析できません"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "%s アーキテクチャーの CPU マップを構文解析できません"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "CPU topology '%s' を構文解析できません"
 
@@ -12967,6 +12818,14 @@ msgstr "interfaceid パラメーターを UUID として構文解析できませ
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "io mode '%s' を構文解析できません"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "JSON %s を構文解析できません: %s"
+
+#, c-format
+msgid "cannot parse json %s: unterminated string/map/array"
+msgstr "JSON %s を構文解析できません: 未終了の string/map/array"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -13401,14 +13260,6 @@ msgstr "%s の cellNum は %d より小さいか同じである必要があり�
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s の cellNum は負の値として %d のみを受け付けます"
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu' は (1000, 1000000) の範囲にある必要があります"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld' は (1000, %llu) の範囲にある必要があります"
-
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU コントローラーがマウントされていません"
 
@@ -13553,20 +13404,12 @@ msgid "config data file to import from"
 msgstr "インポートする設定データファイル"
 
 #, c-format
-msgid "config value %s not a string"
-msgstr "設定値 %s が文字列ではありません"
-
-#, c-format
 msgid "config value %s was malformed"
 msgstr "設定値 %s は不正な形式です"
 
 #, c-format
 msgid "config value %s was missing"
 msgstr "設定値 %s がありませんでした"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "設定値 %s が文字列ではありませんでした"
 
 msgid "configuration file syntax error"
 msgstr "設定ファイルの構文エラー"
@@ -15319,9 +15162,6 @@ msgstr "QEMU のデバイス一覧の構文解析に失敗しました"
 msgid "failed to parse value of %s"
 msgstr "%s の値を構文解析できません"
 
-msgid "failed to parse xml document"
-msgstr "xml ドキュメントの構文解析に失敗しました"
-
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "ディスク %s のジョブの並び替えに失敗しました"
@@ -15394,9 +15234,6 @@ msgstr "認証情報の取得に失敗しました"
 
 msgid "failed to retrieve decision to accept host key"
 msgstr "ホスト鍵を受け取るかどうかの取得に失敗しました"
-
-msgid "failed to retrieve password"
-msgstr "パスワードの取得に失敗しました"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "秘密鍵のパスフレーズの取得に失敗しました: コールバックに失敗しました"
@@ -15910,9 +15747,6 @@ msgstr "ハブの形式 %s はサポートされません"
 
 msgid "hypervisor connection URI"
 msgstr "ハイパーバイザーの接続 URI"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "ハイパーバイザーがデバイスブートの機能はありません"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI ストレージプールはボリュームの作成をサポートしません"
@@ -17095,10 +16929,6 @@ msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr "mem(メモリーに), disk(ディスクに), hybrid(ハイブリッド)"
 
-#, c-format
-msgid "memballoon unsupported with address type '%s'"
-msgstr "メモリーバルーンはアドレス形式 '%s' でサポートされません"
-
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "memory 属性: [file=]name[,snapshot=type]"
 
@@ -18039,9 +17869,6 @@ msgstr ""
 "プログラム %d バージョン %d シリアル %d を持つ応答に対して待ち合わせている"
 "コールがありません"
 
-msgid "no callback provided"
-msgstr "コールバックが提供されていません"
-
 msgid "no client username was found"
 msgstr "クライアントのユーザー名が見付かりません"
 
@@ -18067,10 +17894,6 @@ msgstr "エイリアス %s を持つディスクが見つかりません"
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s のディスクフォーマットがなく、かつプローブが無効です"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "エイリアス %s を持つディスクが見つかりません"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -20192,9 +20015,6 @@ msgstr "スナップショットのフィルターを実行できません"
 
 msgid "unable to poll on child"
 msgstr "子においてポーリングできません"
-
-msgid "unable to probe for add-fd"
-msgstr "add-fd に対してプローブできません"
 
 #, c-format
 msgid "unable to read '%s'"

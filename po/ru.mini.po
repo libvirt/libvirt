@@ -16,9 +16,9 @@
 # yuliya <ypoyarko@redhat.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2016-03-31 11:42+0000\n"
 "Last-Translator: yuliya <ypoyarko@redhat.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -29,7 +29,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -383,9 +383,6 @@ msgstr "Сеть:"
 
 msgid " Storage:"
 msgstr "Пространство данных:"
-
-msgid " block_io_throttle reply was missing device list"
-msgstr " ответ block_io_throttle не содержит списка устройств"
 
 #, c-format
 msgid ""
@@ -989,9 +986,6 @@ msgstr "Попытка преобразования «%s». NAT поддержи
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "Атрибут «mode» может использоваться только с гостевыми процессорами"
 
-msgid "Authentication Credentials not found"
-msgstr "Учетные данные не найдены"
-
 msgid "Authentication failed"
 msgstr "Ошибка аутентификации"
 
@@ -1429,9 +1423,6 @@ msgstr "Не удалось определить путь к устройств�
 msgid "Cannot determine free memory"
 msgstr "Не удалось определить размер свободной памяти"
 
-msgid "Cannot determine system clock HZ"
-msgstr "Не удалось определить частоту системных часов"
-
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "Не удалось напрямую подключить дисковод %s"
@@ -1674,10 +1665,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "Не удалось выполнить разбор времени начала %s в %s"
 
 #, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "Не удалось обработать статистику пользователя «%s»"
-
-#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "Ошибка чтения %s «%s»"
 
@@ -1775,10 +1762,6 @@ msgstr ""
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "Вы не сможете определить метку, если relabel='no' и  model=%s"
-
-#, c-format
-msgid "Cannot stat %s"
-msgstr "Не удалось выполнить stat для %s"
 
 #, c-format
 msgid "Cannot stat '%s'"
@@ -1898,10 +1881,6 @@ msgstr "Дочерние:"
 msgid "Command %s too long for destination"
 msgstr "Слишком длинная команда %s для цели"
 
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "Команда «%s» не найдена"
-
 msgid "Commit aborted"
 msgstr "Операция сведения отменена"
 
@@ -1999,22 +1978,6 @@ msgstr "Контейнер не определён"
 
 msgid "Control groups not supported on this platform"
 msgstr "Платформа не поддерживает контрольные группы"
-
-#, c-format
-msgid "Controller %d out of range"
-msgstr "Контроллер %d выходит за пределы диапазона"
-
-#, c-format
-msgid "Controller '%s' is not enabled for group"
-msgstr "Контроллер «%s» для этой группы не выбран"
-
-#, c-format
-msgid "Controller '%s' is not mounted"
-msgstr "Контроллер «%s» не смонтирован"
-
-#, c-format
-msgid "Controller '%s' is not wanted, but '%s' is co-mounted"
-msgstr "Контроллер «%s» не требуется, но  «%s» уже смонтирован"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "Контроллеры должны использовать адреса «ccid»"
@@ -2213,9 +2176,6 @@ msgstr "Не удалось найти PhysicalNic «%s»"
 msgid "Could not find any 'network' element in status file"
 msgstr "Файл состояния должен содержать элемент «network»"
 
-msgid "Could not find any mounted controllers"
-msgstr "Нет смонтированных контроллеров"
-
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "Не удалось найти вычислительный ресурс, заданный в  «%s»"
@@ -2231,10 +2191,6 @@ msgstr "Не найдено хранилище данных, содержаще�
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "Хранилище данных «%s» не найдено."
-
-#, c-format
-msgid "Could not find directory separator in %s"
-msgstr "Не удалось найти разделитель каталогов в %s"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2270,10 +2226,6 @@ msgstr "Физическая сетевая карта с MAC «%s»  не на�
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "Сетевая карта «%s»  не найдена."
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "На удалось определить размещение контроллера %s в %s"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -2956,10 +2908,6 @@ msgstr "Устройство %s уже существует"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "Устройство %s отсоединено\n"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "Устройство %s занято"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -3797,10 +3745,6 @@ msgid "Failed to bind PCI device '%s' to %s"
 msgstr "Не удалось привязать PCI-устройство «%s» к %s"
 
 #, c-format
-msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "Не удалось привязать cgroup «%s» к %s"
-
-#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "Не удалось привязать каталог монтирования %s к %s"
 
@@ -3941,10 +3885,6 @@ msgstr "Не удалось создать объект конфигурации
 
 msgid "Failed to create bridge node in xml document"
 msgstr "Не удалось создать узел моста в XML"
-
-#, c-format
-msgid "Failed to create controller %s for group"
-msgstr "Не удалось создать контроллер %s для группы"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -4219,9 +4159,6 @@ msgstr "Не удалось создать новое имя для интерф
 msgid "Failed to get %s minor number"
 msgstr "Не удалось получить дополнительный номер устройства %s"
 
-msgid "Failed to get PCI Config Address String"
-msgstr "Не удалось получить строку адреса конфигурации PCI"
-
 msgid "Failed to get PCI SYSFS file"
 msgstr "Не удалось получить файл SYSFS PCI"
 
@@ -4464,10 +4401,6 @@ msgstr "Не удалось назначить автозапуск для до�
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "Не удалось выполнить mkdir %s"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "Не удалось смонтировать %s в %s (тип %s)"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -6321,18 +6254,11 @@ msgstr "максимальный объем памяти (по умолчани�
 msgid "Max memory:"
 msgstr "Макс.память:"
 
-msgid "Maximum CPUs greater than specified machine type limit"
-msgstr "Максимальное число процессоров превышает разрешенное архитектурой"
-
 msgid "Media Registry is null"
 msgstr "Реестр носителей не определен"
 
 msgid "Media registry is null"
 msgstr "Реестр носителей не определен"
-
-#, c-format
-msgid "Memory '%llu' must be less than %llu"
-msgstr "Размер памяти «%llu» должен быть меньше %llu"
 
 msgid "Memory allocation failure"
 msgstr "Ошибка распределения памяти"
@@ -6436,10 +6362,6 @@ msgstr "Свойство «%s» отсутствует"
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "При получении ManagedEntityStatus не удалось обнаружить свойство «%s»"
 
-#, c-format
-msgid "Missing '/' separator in cgroup mount '%s'"
-msgstr "Отсутствует разделитель «/» в строке монтирования cgroup «%s»"
-
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Отсутствует атрибут «cores» в топологии процессора"
 
@@ -6496,9 +6418,6 @@ msgstr "Отсутствует имя функции"
 
 msgid "Missing CPU model name"
 msgstr "Отсутствует модель процессора"
-
-msgid "Missing CPU vendor name"
-msgstr "Отсутствует имя производителя CPU"
 
 msgid "Missing ID parameter for domain object"
 msgstr "Параметр ID для объекта домена не определен"
@@ -6603,9 +6522,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "Значение PVR в модели процессора %s отсутствует или определено неверно"
-
-msgid "Missing or invalid auth pointer"
-msgstr "Указатель аутентификации отсутствует или определен неверно"
 
 msgid "Missing ownerId data in JSON document"
 msgstr "Документ JSON не содержит данных ownerId"
@@ -6995,9 +6911,6 @@ msgstr "С этим именем узла не связан ни один адр
 #, c-format
 msgid "No args present for signature %s"
 msgstr "Нет аргументов для подписи %s"
-
-msgid "No authentication callback provided."
-msgstr "Не определён обратный вызов аутентификации."
 
 msgid "No authentication methods supplied"
 msgstr "Не определены методы аутентификации"
@@ -8007,9 +7920,6 @@ msgstr "Устройство SCSI «%s»: нет доступа к %s"
 #, c-format
 msgid "SCSI disk index (parsed from '%s') is too large"
 msgstr "Слишком большой индекс диска SCSI (получен из «%s»)"
-
-msgid "SCSI passthrough is not supported by this version of qemu"
-msgstr "QEMU не поддерживает сквозное подключение SCSI"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -9139,9 +9049,6 @@ msgstr "USB-устройство %s уже используется"
 msgid "USB host device is missing bus/device information"
 msgstr "Отсутствует информация о шине/устройстве для USB-устройства"
 
-msgid "USB redirection booting is not supported by this version of QEMU"
-msgstr "Эта версия QEMU не поддерживает перезагрузку с переадресацией USB"
-
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "Эта версия QEMU не поддерживает фильтры переадресации USB"
 
@@ -9357,6 +9264,12 @@ msgstr "Не удалось создать %s"
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "Не удалось создать HardDisk, rc=%08x"
 
+msgid "Unable to create JSON formatter"
+msgstr "Ну удалось создать средство форматирования JSON"
+
+msgid "Unable to create JSON parser"
+msgstr "Не удалось создать обработчик JSON"
+
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "Не удалось создать LPAR. Причина: «%s»"
@@ -9393,10 +9306,6 @@ msgstr "Не удалось создать устройство моста"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "Не удалось создать устройство %s"
-
-#, c-format
-msgid "Unable to create directory %s"
-msgstr "Не удалось создать каталог %s"
 
 msgid "Unable to create epoll fd"
 msgstr "Не удалось создать дескриптор epoll"
@@ -9889,6 +9798,9 @@ msgstr "Не удалось открыть %s (%d)"
 msgid "Unable to open '%s'"
 msgstr "Не удалось открыть «%s»"
 
+msgid "Unable to open /proc/mounts"
+msgstr "Не удалось открыть /proc/mounts"
+
 #, c-format
 msgid "Unable to open HardDisk, rc=%08x"
 msgstr "Не удалось открыть HardDisk, rc=%08x"
@@ -10161,10 +10073,6 @@ msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "Не удалось установить флаг close-on-exec журнала виртуальной машины"
 
 #, c-format
-msgid "Unable to set bridge %s %s"
-msgstr "Не удалось установить мост %s %s"
-
-#, c-format
 msgid "Unable to set bridge %s port %s %s to %s"
 msgstr "Мост %s, порт %s: не удалось присвоить параметру %s значение %s"
 
@@ -10214,10 +10122,6 @@ msgstr "Не удалось выделить элементы из списка 
 #, c-format
 msgid "Unable to stat %s"
 msgstr "Не удалось выполнить stat для %s"
-
-#, c-format
-msgid "Unable to symlink directory %s to %s"
-msgstr "Не удалось создать символьную ссылку для %s в %s"
 
 #, c-format
 msgid "Unable to truncate %s"
@@ -10342,9 +10246,6 @@ msgstr "Получен неожиданный код подтверждения 
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "Недопустимый режим sgio: «%d»"
-
-msgid "Unexpected error"
-msgstr "Непредвиденная ошибка"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -10832,9 +10733,6 @@ msgstr "Запись VMX «name» содержит недопустимую уп
 #, c-format
 msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr "Запись VMX «sched.cpu.affinity» содержит слишком большое значение: %d."
-
-msgid "VNC WebSockets are not supported with this QEMU binary"
-msgstr "Этот QEMU не поддерживает VNC WebSocket."
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC поддерживает только connected='keep'"
@@ -11419,10 +11317,6 @@ msgid "booted"
 msgstr "загружен"
 
 msgid ""
-"booting from assigned USB devices is not supported with this version of qemu"
-msgstr "эта версия QEMU не поддерживает загрузку с назначенных устройств USB"
-
-msgid ""
 "booting from assigned devices is only supported for PCI, USB and SCSI devices"
 msgstr "загрузка допускается только с устройств PCI, USB и SCSI "
 
@@ -11889,9 +11783,6 @@ msgstr "не удалось получить идентификаторы сни
 msgid "cannot get the host uuid"
 msgstr "не удалось получить UUID хоста"
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "не удалось получить путь к контроллеру cgroup MEMORY"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr ""
 "не удалось получить информацию о распределении виртуальных процессоров и "
@@ -11994,10 +11885,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "не удалось разобрать номер версии %s в «%.*s»"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "не удалось разобрать соответствия процессора для архитектуры %s"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "не удалось разобрать топологию процессора «%s»"
 
@@ -12087,6 +11974,10 @@ msgstr "не удалось извлечь UUID из параметра «interf
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "не удалось выполнить разбор режима ввода-вывода «%s»"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "не удалось разобрать JSON %s: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -12492,14 +12383,6 @@ msgstr "cellNum в %s должно быть меньше или равно %d"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "cellNum в %s принимает только %d в качестве отрицательного значения"
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period  «%llu» должен быть в пределах диапазона (1000, 1000000)"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota  «%lld» должна быть в пределах диапазона (1000, %llu)"
-
 msgid "cgroup CPU controller is not mounted"
 msgstr "контроллер процессора для cgroup не подключен"
 
@@ -12625,20 +12508,12 @@ msgid "config data file to import from"
 msgstr "файл конфигурации для импорта"
 
 #, c-format
-msgid "config value %s not a string"
-msgstr "значение %s не является строкой"
-
-#, c-format
 msgid "config value %s was malformed"
 msgstr "значение настройки %s неверно сформировано"
 
 #, c-format
 msgid "config value %s was missing"
 msgstr "отсутствует значение настройки %s"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "значение настройки %s не является строкой"
 
 msgid "configuration file syntax error"
 msgstr "ошибка синтаксиса файла конфигурации"
@@ -14299,9 +14174,6 @@ msgstr "не удалось обработать список устройств
 msgid "failed to parse value of %s"
 msgstr "не удалось обработать значение %s"
 
-msgid "failed to parse xml document"
-msgstr "не удалось разобрать XML-документ"
-
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "не удалось переориентировать задание для диска %s"
@@ -14368,9 +14240,6 @@ msgstr "не удалось изменить размер образа RBD «%s�
 
 msgid "failed to resume domain"
 msgstr "не удалось возобновить работу домена"
-
-msgid "failed to retrieve password"
-msgstr "не удалось извлечь пароль"
 
 #, c-format
 msgid "failed to rollback transaction: %s%s%s"
@@ -14861,9 +14730,6 @@ msgstr "тип концентраторов «%s» не поддерживает
 
 msgid "hypervisor connection URI"
 msgstr "URI для подключения к гипервизору"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "гипервизор не включает функции deviceboot"
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i — отключить проверку и попытаться создать определение снова"
@@ -16937,9 +16803,6 @@ msgstr "строка доступной памяти не найдена"
 msgid "no block device path supplied for '%s'"
 msgstr "не указан путь к блочному устройству для «%s»"
 
-msgid "no callback provided"
-msgstr "не определен обратный вызов"
-
 msgid "no client username was found"
 msgstr "имя пользователя клиента не найдено"
 
@@ -16968,10 +16831,6 @@ msgstr "устройство %s не найдено"
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "для диска %s не указан формат, и автообнаружение отключено"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "%s не найден"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -19002,9 +18861,6 @@ msgstr "ошибка фильтрации снимков"
 
 msgid "unable to poll on child"
 msgstr "не удалось опросить дочерний процесс"
-
-msgid "unable to probe for add-fd"
-msgstr "функции add-fd не обнаружены"
 
 msgid "unable to read child stderr"
 msgstr "ошибка чтения из дочернего stderr"

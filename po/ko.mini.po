@@ -13,9 +13,9 @@
 # Seong-ho Cho <darkcircle.0426@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -933,14 +933,6 @@ msgstr "'%s'에서 숫자를 구문 분석할 수 없습니다 "
 #, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "소켓 주소 '%s'를 구문 분석할 수 없음: %s"
-
-#, c-format
-msgid "Cannot parse sys stat '%s'"
-msgstr "sys stat '%s'을(를) 구문 분석할 수 없음"
-
-#, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "user stat '%s'을(를) 구문 분석할 수 없음"
 
 #, c-format
 msgid "Cannot read %s '%s'"
@@ -3823,9 +3815,6 @@ msgstr "CPU 기능 이름이 빠짐"
 msgid "Missing CPU model name"
 msgstr "CPU 모델 이름이 빠져있습니다"
 
-msgid "Missing CPU vendor name"
-msgstr "CPU 벤더 이름이 누락되어 있음"
-
 msgid "Missing ID parameter for domain object"
 msgstr "도메인 개체의 ID 매개 변수가 누락되어 있음 "
 
@@ -3890,9 +3879,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU 모델 %s에 누락되어 있거나 잘못된 PVR 값 "
-
-msgid "Missing or invalid auth pointer"
-msgstr "인증 지점이 누락되어 있거나 잘못되어 있음 "
 
 msgid "Missing ownerName data in JSON document"
 msgstr "JSON 문서에서 ownerName 데이터가 누락되어 있음 "
@@ -4134,9 +4120,6 @@ msgstr "사용 가능한 UNIX 프로세스 ID가 없음"
 
 msgid "No address associated with hostname"
 msgstr "호스트 이름과 연관된 주소가 없음 "
-
-msgid "No authentication callback provided."
-msgstr "권한 설정 콜백이 제공되지 않았습니다."
 
 msgid "No bridge node in xml document"
 msgstr "xml 문서에 브리지 노드가 없습니다 "
@@ -6575,9 +6558,6 @@ msgstr "macvtap 탭상의 인터페이스 플래그를 얻을 수 었습니다"
 msgid "cannot get the host uuid"
 msgstr "호스트 uuid를 구할 수 없음 "
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "MEMORY cgroup 컨트롤러의 경로를 얻을 수 없습니다 "
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU 위치와 pCPU 시간을 얻을 수 없음"
 
@@ -6631,10 +6611,6 @@ msgstr "소켓을 열수 없음"
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "볼륨 '%s'를 열 수 없음"
-
-#, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 맵을 구문분석 할 수 없음"
 
 #, c-format
 msgid "cannot parse CPU topology '%s'"
@@ -6711,6 +6687,10 @@ msgstr "uuid로 인터페이스 ID 매개 변수를 구문 분석할 수 없음"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "io 모드 '%s'를 구문 분석할 수 없음 "
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "json %s를 구문 분석할 수 없음: %s"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -7012,14 +6992,6 @@ msgstr "원본 경로가 없는 CD-ROM 장치를 지원하지 않습니다"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s에서의 cellNum은 음수 값으로 %d 만을 허용합니다 "
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu'은 (1000에서 1000000 사이) 범위에 있어야 합니다"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld'은 (1000에서 %llu 사이) 범위에 있어야 합니다"
-
 msgid "change maximum memory limit"
 msgstr "최대 메모리 크기 제한 변경"
 
@@ -7099,10 +7071,6 @@ msgstr "설정 값 %s가 형식이 잘못됨"
 #, c-format
 msgid "config value %s was missing"
 msgstr "설정 값 %s가 빠졌습니다"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "설정 값 %s가 스트링이 아닙니다"
 
 msgid "configuration file syntax error"
 msgstr "설정 파일 구문 오류"
@@ -8025,9 +7993,6 @@ msgstr "%s 설정 파일 구문 분석 실패"
 msgid "failed to parse value of %s"
 msgstr "%s 값을 구문 분석하는데 실패"
 
-msgid "failed to parse xml document"
-msgstr "xml 문서 구문분석 실패"
-
 msgid "failed to read AppArmor template"
 msgstr "AppArmor 템플릿을 읽는데 실패"
 
@@ -8323,9 +8288,6 @@ msgstr "허브 유형 %s이 지원되지 않음 "
 
 msgid "hypervisor connection URI"
 msgstr "하이퍼바이저 연결 URI"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "하이퍼바이저에는 장치 부트 기능이 결여되어 있음 "
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI 스토리지 풀은 볼륨 생성을 지원하지 않음 "
@@ -9668,9 +9630,6 @@ msgstr "자동 시작 안함"
 #, c-format
 msgid "no block device path supplied for '%s'"
 msgstr "'%s'에 대한 블럭 장치 경로가 제공되지 않았습니다"
-
-msgid "no callback provided"
-msgstr "콜백이 제공되지 않음"
 
 msgid "no client username was found"
 msgstr "클라이언트 사용자명을 찾을 수 없습니다"

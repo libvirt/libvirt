@@ -17,9 +17,9 @@
 # sandeep shedmake <sandeep.shedmake@gmail.com>, 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -29,7 +29,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -190,9 +190,6 @@ msgstr "संजालन"
 
 msgid " Storage:"
 msgstr "भंडारण"
-
-msgid " block_io_throttle reply was missing device list"
-msgstr "block_io_throttle उत्तर डिवाइस सूची गुम "
 
 #, c-format
 msgid "%s\n"
@@ -1107,10 +1104,6 @@ msgstr "क्लाइंट सॉकेट पहचान उपलब्ध
 msgid "Command %s too long for destination"
 msgstr "कमांड %s गंतव्य के लिए काफी बड़ा है"
 
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "कमांड '% s' नहीं मिली"
-
 msgid "Completed with no error"
 msgstr "कोई त्रुटि के साथ पूरा हो गया"
 
@@ -1339,10 +1332,6 @@ msgstr "मैक पते '%s' के साथ शारीरिक एन�
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "नाम '%s' के साथ शारीरिक एनआईसी नहीं मिल सका"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "नियंत्रक %s के लिए %s पर नियुक्ति नहीं पा सका"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -1852,10 +1841,6 @@ msgstr "संजाल अंतरफलक अलग करें."
 
 msgid "Device"
 msgstr "युक्ति"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "डिवाइस %s उपयोग में है"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -2697,10 +2682,6 @@ msgstr "%s डोमेन का स्वतः आरंभन चिह्�
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "%s को mkdir करने में विफल"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "%s प्रकार %s पर %s को माउंट करने में विफल  "
 
 #, c-format
 msgid "Failed to mount %s on /proc/meminfo"
@@ -3917,9 +3898,6 @@ msgstr "गुम सीपीयू विशेषता नाम"
 msgid "Missing CPU model name"
 msgstr "अनुपस्थित CPU मॉडल नाम"
 
-msgid "Missing CPU vendor name"
-msgstr "अनुपस्थित CPU विक्रेता नाम"
-
 msgid "Missing ID parameter for domain object"
 msgstr "डोमेन ऑब्जेक्ट के लिए गुम आईडी पैरामीटर"
 
@@ -3992,9 +3970,6 @@ msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
 "network %s"
 msgstr "संजाल %s में गुम या <forward> में <nat> में <port> में अवैध 'शुरुआत' विशेषता"
-
-msgid "Missing or invalid auth pointer"
-msgstr "गुम या अवैध auth संकेतक "
 
 msgid "Missing ownerId data in JSON document"
 msgstr "JSON के दस्तावेज़ में ownerId डेटा गुम"
@@ -4258,9 +4233,6 @@ msgstr "होस्टनाम के साथ कोई पता संब�
 
 msgid "No authentication callback available"
 msgstr "कोई प्रमाणीकरण कॉलबैक नहीं उपलब्ध हैं "
-
-msgid "No authentication callback provided."
-msgstr "कोई सत्यापन कॉलबैक नहीं दिया गया."
 
 msgid "No bridge name specified"
 msgstr "कोई ब्रिज नाम निर्दिष्ट नहीं"
@@ -5947,6 +5919,9 @@ msgstr "%s को खोलने में विफल"
 msgid "Unable to open %s (%d)"
 msgstr "%s (%d) खोलने में असमर्थ"
 
+msgid "Unable to open /proc/mounts"
+msgstr "/proc/mounts को खोलने में असमर्थ"
+
 msgid "Unable to open UNIX socket"
 msgstr "UNIX सॉकेट खोलने में असमर्थ"
 
@@ -6154,9 +6129,6 @@ msgstr "गैर peer2peer माइग्रेशन के साथ अन�
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "अप्रत्याशित डिस्क sgio मोड '%d'"
-
-msgid "Unexpected error"
-msgstr "अप्रत्याशित त्रुटि"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -6829,10 +6801,6 @@ msgstr "बूल"
 msgid "boot order '%s' used for more than one device"
 msgstr "बूट क्रम '%s' एक से अधिक उपकरण के लिए उपयोग होना चाहिए"
 
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr "सौपे गए PCI युक्ति से बूटिंग qemu के इस संस्करण से समर्थित नहीं है"
-
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr "ब्रिज '%s' एक अवैध netmask या आईपी पता है"
@@ -7231,9 +7199,6 @@ msgstr "सुरक्षा प्रस्ताव %d (%s) पा नही�
 msgid "cannot get the host uuid"
 msgstr "होस्ट uuid नहीं मिल पाया "
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "मेमोरी cgroup नियंत्रक का का रास्ता नहीं मिल सकता है"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU स्थापन व pCPU समय नहीं पा सकता है"
 
@@ -7331,10 +7296,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s संस्करण संख्या का विश्लेषण नहीं कर सकता है '%.*s' में "
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "CPU मानचित्र %s ऑर्किटेक्चर के लिए  विश्लेषित नहीं कर सकता है"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "CPU टोपोलॉजी '%s' का विश्लेषण नहीं कर सकता है"
 
@@ -7409,6 +7370,10 @@ msgstr "uuid के रूप में इंटरफेस आईडी प�
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "IO मोड '%s' को विश्लेषित नहीं कर सकते"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "json %s विश्लेषित नहीं कर सकता है: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -7844,10 +7809,6 @@ msgstr "कान्फिग मान %s विरूपित था"
 #, c-format
 msgid "config value %s was missing"
 msgstr "कान्फिग मान %s गुम था"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "कॉन्फिग मान %s एक स्ट्रिंग नहीं था"
 
 msgid "configuration file syntax error"
 msgstr "विन्यास फाइल वाक्य रचना त्रुटि"
@@ -8902,9 +8863,6 @@ msgstr "%s विन्यास फाइल के विश्लेषण �
 msgid "failed to parse qemu capabilities flags"
 msgstr "qemu क्षमता वाले ध्वजों का विश्लेषण करने में विफल रहा"
 
-msgid "failed to parse xml document"
-msgstr "xml दस्तावेज़ विश्लेषण में असमर्थ"
-
 msgid "failed to read AppArmor template"
 msgstr "AppArmor प्रोफाइल टेम्पलेट पढ़ने में विफल"
 
@@ -9216,9 +9174,6 @@ msgstr "हब प्रकार %s समर्थित नहीं"
 
 msgid "hypervisor connection URI"
 msgstr "हाइपरविजर कनेक्शन URI"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "हाइपरविजर deviceboot सुविधा का अभाव है"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI भंडारण पूल मात्रा निर्माण का समर्थन नहीं करता है"
@@ -10598,9 +10553,6 @@ msgstr "'%s' के लिए कोई ब्लॉक युक्ति प�
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr " prog %d vers %d serial %d के साथ उत्तर के लिए कोई कॉल प्रतीक्षारत नहीं"
 
-msgid "no callback provided"
-msgstr "कोई कॉलबैक नहीं दिया गया"
-
 msgid "no client username was found"
 msgstr "कोई क्लाइंट उपयोक्तानाम नहीं मिला था"
 
@@ -10619,10 +10571,6 @@ msgstr "%s उपनाम के साथ कोई युक्ति नह�
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s के लिए कोई डिस्क प्रारूप नहीं और जाँच निष्क्रिय है"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "%s उपनाम के साथ कोई डिस्क नहीं मिला"
 
 #, c-format
 msgid "no disk named '%s'"

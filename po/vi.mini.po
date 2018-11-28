@@ -6,9 +6,9 @@
 # Daniel  <veillard@redhat.com>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -181,9 +181,6 @@ msgstr "Gắn thiết bị đĩa mới"
 
 msgid "Attach new network interface."
 msgstr "Gắn giao diện mạng mới"
-
-msgid "Authentication Credentials not found"
-msgstr "Uỷ nhiệm Xác thực không tìm thấy"
 
 msgid "Authentication failed"
 msgstr "Xác thực thất bại"
@@ -564,10 +561,6 @@ msgstr "Không thể tìm thiết bị khớp"
 #, c-format
 msgid "Could not find parent device for '%s'"
 msgstr "Không thể tìm thiết bị cha cho '%s'"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "Không thể tìm nơi sắp đặt cho bộ điều khiển %s tại %s"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -2523,9 +2516,6 @@ msgstr "Thiếu tên tính năng CPU"
 msgid "Missing CPU model name"
 msgstr "Thiếu tên mẫu CPU"
 
-msgid "Missing CPU vendor name"
-msgstr "Thiếu tên nhà cung cấp CPU"
-
 #, c-format
 msgid "Missing SCSI controller for index %d"
 msgstr "Thiếu bộ điều khiển SCSI cho chỉ mục %d"
@@ -2715,9 +2705,6 @@ msgstr "Không có sự thi hành bộ phân tích JSON có sẵn"
 
 msgid "No authentication callback available"
 msgstr "Không có callback xác thực có sẵn"
-
-msgid "No authentication callback provided."
-msgstr "Không có callback xác thực được cung cấp"
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -3584,6 +3571,9 @@ msgstr "Không thể mở %s"
 msgid "Unable to open %s (%d)"
 msgstr "Không thể mở %s (%d)"
 
+msgid "Unable to open /proc/mounts"
+msgstr "Không thể mở /proc/mounts"
+
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr "Không thể mở đường dẫn bộ theo dõi %s"
@@ -4312,10 +4302,6 @@ msgid "cannot open volume '%s'"
 msgstr "không thể mở ổ '%s'"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "không thể phân tích bản đồ CPU cho kiến trúc %s"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "không thể phân tích tôpô CPU '%s'"
 
@@ -4379,6 +4365,10 @@ msgstr "không thể phân tích đơn vị drive '%s'"
 
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "không thể phân tích thông số instanceid như một uuid"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "không thể phân tích json %s: %s"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -4708,10 +4698,6 @@ msgstr "giá trị cấu hình %s sai dạng thức"
 #, c-format
 msgid "config value %s was missing"
 msgstr "giá trị cấu hình %s bị thiếu"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "giá trị cấu hình %s không phải là một chuỗi"
 
 msgid "configuration file syntax error"
 msgstr "lỗi cú pháp tập tin cấu hình"
@@ -5455,9 +5441,6 @@ msgstr "phân tích tập tin cấu hình thất bại"
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "thất bại khi phân tích tập tin cấu hình %s"
-
-msgid "failed to parse xml document"
-msgstr "phân tích tài liệu xml thất bại"
 
 msgid "failed to read XML"
 msgstr "thất bại khi đọc XML"
@@ -6539,9 +6522,6 @@ msgstr "không tự khởi chạy"
 msgid "no block device path supplied for '%s'"
 msgstr "không có đường dẫn thiết bị chặn cung cấp cho '%s'"
 
-msgid "no callback provided"
-msgstr "không có callback được cung cấp"
-
 msgid "no client username was found"
 msgstr "không tìm thấy tên người dùng trình khách nào"
 
@@ -6563,10 +6543,6 @@ msgstr "không có các khả năng thiết bị cho '%s'"
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "không có định dạng đĩa cho %s và thăm dò bị tắt"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "không tìm thấy đĩa với biệt danh %s"
 
 msgid "no domain XML passed"
 msgstr "không có miền XML vượt qua"

@@ -9,9 +9,9 @@
 # Sree Ganesh <sthottem@redhat.com>, 2006
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -208,9 +208,6 @@ msgstr " నెట్వర్కింగ్:"
 
 msgid " Storage:"
 msgstr "నిల్వ:"
-
-msgid " block_io_throttle reply was missing device list"
-msgstr " block_io_throttle ప్రత్యుత్తరంకు పరికర జాబితా దొరకలేదు"
 
 #, c-format
 msgid ""
@@ -480,9 +477,6 @@ msgstr "guest-get-vcpus ప్రత్యుత్తరం నందు 'logic
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'online' దొరకలేదు"
-
-msgid "'parent' for vHBA not specified, and cannot find one on this host"
-msgstr "vHBA కొరకు 'parent' తెలుపలేదు, మరియు ఈ అతిధేయ పైన కనుగొనలేదు"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' మరియు 'burst' కు 'average' యాట్రిబ్యూట్ కావాలి"
@@ -797,9 +791,6 @@ msgstr "NAT '%s' కు యత్నించెను. NAT అనునది I
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "అతిథి CPU కు మాత్రమే యాట్రిబ్యూట్ రీతి అనుమతించబడును"
-
-msgid "Authentication Credentials not found"
-msgstr "ధృవీకరణ ఆనవాళ్ళు కనబడలేదు"
 
 msgid "Authentication failed"
 msgstr "ధృవీకరణము విఫలమైంది"
@@ -1252,9 +1243,6 @@ msgstr "బెలూన్ పరికర పాత్ నిర్ణయిం
 msgid "Cannot determine free memory"
 msgstr "ఖాళీ మెమొరీ నిర్ణయించలేదు"
 
-msgid "Cannot determine system clock HZ"
-msgstr "వ్యవస్థ క్లాక్ HZ నిర్ణయించలేదు"
-
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "ఫ్లాపి %sను నేరుగా అనుభందించలేదు"
@@ -1461,14 +1449,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "ప్రారంభ సమయం %s ను %s నందు పార్స్ చేయలేదు"
 
 #, c-format
-msgid "Cannot parse sys stat '%s'"
-msgstr "వ్యవస్థ గణాంకం '%s' పార్స్ చేయలేదు"
-
-#, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "వాడుకరి గణాంకం '%s' పార్స్ చేయలేదు"
-
-#, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
 "on network '%s'"
@@ -1605,10 +1585,6 @@ msgstr "సిద్దీకరించని CURL హాండిల్ ప�
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "రీలేబులింగ్ ఆఫ్ చేయబడితే లేబుల్‌ను తెలుపలేము. model=%s"
-
-#, c-format
-msgid "Cannot stat %s"
-msgstr "%s గణాంకం ఈయలేదు"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -1776,10 +1752,6 @@ msgstr "డొమైన్ %s కొరకు క్లోజ్ కాల్‌
 msgid "Command %s too long for destination"
 msgstr "గమ్యమునకు ఆదేశము %s మరీ పొడవైనది"
 
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "ఆదేశం '%s' కనబడలేదు"
-
 msgid "Commit aborted"
 msgstr "కమిట్ విరమించబడింది"
 
@@ -1885,26 +1857,6 @@ msgstr "కంటైనర్ నిర్వచించబడి లేదు"
 
 msgid "Control groups not supported on this platform"
 msgstr "ఈ ప్లాట్‌ఫాం పైన నియంత్రిక సమూహాలు తోడ్పాటునీయవు"
-
-#, c-format
-msgid "Controller %d out of range"
-msgstr "నియంత్రిక %d విస్తృతి బయటవుంది"
-
-#, c-format
-msgid "Controller '%s' is not enabled for group"
-msgstr "నియంత్రిక '%s' సమూహం కొరకు చేతనం కాలేదు"
-
-#, c-format
-msgid "Controller '%s' is not mounted"
-msgstr "నియంత్రిక '%s' మౌంట్ కాలేదు"
-
-#, c-format
-msgid "Controller '%s' is not wanted, but '%s' is co-mounted"
-msgstr "నియంత్రిక '%s' కావాలనుకోలేదు, అయితే '%s' తోటి-మౌంటైంది"
-
-#, c-format
-msgid "Controller '%s' not mounted"
-msgstr "నియంత్రిక '%s' మౌంట్ కాలేదు"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "నియంత్రికలు తప్పక 'ccid' చిరునామా రకం వుపయోగించాలి"
@@ -2094,9 +2046,6 @@ msgstr "PhysicalNic ను '%s' పేరుతో కనుగొనలేక �
 msgid "Could not find any 'network' element in status file"
 msgstr "స్థితి ఫైలునందు ఏ 'network' మూలకం కనుగొనలేక పోయింది"
 
-msgid "Could not find any mounted controllers"
-msgstr "మౌంటైన నియంత్రికలు కనుగొనలేక పోయింది"
-
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "'%s' నందు తెలిపిన గణించు వనరును కనుగొనలేక పోయింది"
@@ -2112,10 +2061,6 @@ msgstr "ఆబ్సొల్యూట్ పాత్ '%s' కలిపివ�
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "పేరు '%s' తో దత్తాంశకేంద్రం కనుగొనలేక పోయింది"
-
-#, c-format
-msgid "Could not find directory separator in %s"
-msgstr "%s నందు డైరెక్టరీ విచ్చేదని కనుగొనలేక పోయింది"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2151,10 +2096,6 @@ msgstr "MAC చిరునామా '%s' తో భౌతిక NIC కను�
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "భౌతిక NIC పేరు '%s' తో కనుగొనలేక పోయింది"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "నియంత్రిక %s కొరకు %s వద్ద స్థానం కనుగొనలేక పోయింది"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -2824,10 +2765,6 @@ msgstr "పరికరం %s యిప్పటికే వుంది"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "పరికరం %s వేరుచేయబడింది\n"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "పరికరం %s వుపయోగంలోవుంది"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -3657,10 +3594,6 @@ msgid "Failed to bind PCI device '%s' to %s"
 msgstr "PCI పరికరము '%s' నుండి %sకు బందనం చేయుటలో విఫలమైంది"
 
 #, c-format
-msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "cgroup '%s' ను '%s' పై బందనం చేయుటకు విఫలమైంది"
-
-#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "మౌంట్ సంచయం %s ను %s కు బందనం చేయుటకు విఫలమైంది"
 
@@ -3811,10 +3744,6 @@ msgstr "బైండ్ లక్ష్యం %s సృష్టించుట�
 
 msgid "Failed to create bridge node in xml document"
 msgstr "బ్రిడ్జ్ నోడ్‌ను xml పత్రము నందు సృష్టించుటకు విఫలమైంది"
-
-#, c-format
-msgid "Failed to create controller %s for group"
-msgstr "సమూహం కొరకు నియంత్రిక %s ను సృష్టించుటకు విఫలమైంది"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -4099,9 +4028,6 @@ msgstr "ఇంటర్ఫేస్ %s కొరకు కొత్త పేర
 msgid "Failed to get %s minor number"
 msgstr "%s మిర్రర్ సంఖ్య పొందుటకు విఫలమైంది"
 
-msgid "Failed to get PCI Config Address String"
-msgstr "PCI ఆకృతీకరణ చిరునామా స్ట్రింగ్ పొందుటకు విఫలమైంది"
-
 msgid "Failed to get PCI SYSFS file"
 msgstr "PCI SYSFS ఫైల్ పొందుటకు విఫలమైంది"
 
@@ -4366,10 +4292,6 @@ msgstr "%s డొమైన్ ను స్వయంచాలకప్రార�
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "mkdir %sకు విఫలమైంది"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "%s ను %s రకం %s పైన మౌంట్ చేయుటకు విఫలమైంది"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -6212,13 +6134,6 @@ msgstr "గరిష్ట మెమొరీ, స్కేల్‌డ్ ప�
 msgid "Max memory:"
 msgstr "గరిష్ట మెమోరీ:"
 
-msgid "Maximum CPUs greater than specified machine type limit"
-msgstr "తెలిపిన మిషన్ రకం పరిమితి కన్నా గరిష్ట CPU లు ఎక్కువగా వున్నాయి"
-
-#, c-format
-msgid "Memory '%llu' must be less than %llu"
-msgstr "మెమొరీ '%llu' తప్పక %llu కన్నా తక్కువ కావాలి"
-
 msgid "Memory allocation failure"
 msgstr "మెమొరీ కేటాయింపు వైఫల్యం"
 
@@ -6312,10 +6227,6 @@ msgstr "దొరకని '%s' లక్షణం"
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "ManagedEntityStatus స్థితి కొరకు చూచునప్పుడు '%s' లక్షణం దొరకలేదు"
 
-#, c-format
-msgid "Missing '/' separator in cgroup mount '%s'"
-msgstr "cgroup మౌంట్ '%s' నందు '/' విచ్చేదని దొరకలేదు"
-
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU టోపాలజీ నందలి తప్పిపోయిన 'cores' యాట్రిబ్యూట్"
 
@@ -6369,9 +6280,6 @@ msgstr "తప్పిపోయిన CPU సౌలభ్యపు నామమ
 
 msgid "Missing CPU model name"
 msgstr "తప్పిపోయిన CPU రీతి నామము"
-
-msgid "Missing CPU vendor name"
-msgstr "CPU అమ్మకందారు పేరు దొరకలేదు"
 
 msgid "Missing ID parameter for domain object"
 msgstr "డొమైన్ ఆబ్జక్టు కొరకు దొరకని ఐడి పారామితి"
@@ -6512,9 +6420,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU రకం %s నందు దొరకని లేదా చెల్లని PVR విలువ"
-
-msgid "Missing or invalid auth pointer"
-msgstr "దొరకని లేదా చెల్లని auth సూచకి"
 
 msgid "Missing ownerId data in JSON document"
 msgstr "JSON పత్రము నందు దొరకని యజమానిఐడి దత్తాంశం"
@@ -6923,9 +6828,6 @@ msgstr "సంతకం %s కొరకు ఆర్గుమెంట్లు 
 
 msgid "No authentication callback available"
 msgstr "ధృవీకరణ కాల్‌బాక్ అందుబాటులోలేదు"
-
-msgid "No authentication callback provided."
-msgstr "ఎటువంటి దృవీకరణ కాల్‌బాక్ అందిచబడలేదు."
 
 msgid "No authentication methods and credentials provided"
 msgstr "ఏ ధృవీకరణ పద్దతులు మరియు ఆనవాళ్ళు అందించబడలేదు"
@@ -8003,9 +7905,6 @@ msgstr "SCSI డిస్కు విషయసూచి ('%s' నుండి �
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI అతిదేయ పరికరం నిర్వాహిత రీతికు తోడ్పాటునీయదు"
-
-msgid "SCSI passthrough is not supported by this version of qemu"
-msgstr "qemu యొక్క ఈ వర్షన్ చేత SCSI పాస్‌త్రూ తోడ్పాటునీయదు"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -9185,9 +9084,6 @@ msgstr "USB పరికరం %s యిప్పటికే వుపయోగ
 msgid "USB host device is missing bus/device information"
 msgstr "USB హోస్టు పరికరము bus/device సమాచారమును తప్పిపోవుచున్నది"
 
-msgid "USB redirection booting is not supported by this version of QEMU"
-msgstr "USB రీడైరెక్షన్ బూటింగ్ అనునది ఈ QEMU వర్షన్ చేత తోడ్పాటునీయబడదు"
-
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "USB రీడైరెక్షన్ వడపోత అనునది ఈ QEMU వర్షన్ చేత తోడ్పాటునీయబడదు"
 
@@ -9366,6 +9262,12 @@ msgstr "సాకెట్ ఫైల్ సంభాలికను నకలు
 msgid "Unable to create %s"
 msgstr "%s సృష్టించలేదు"
 
+msgid "Unable to create JSON formatter"
+msgstr "JSON ఫార్మాటర్ సృష్టించలేదు"
+
+msgid "Unable to create JSON parser"
+msgstr "JSON పార్సర్ సృష్టించలేదు"
+
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "LPAR సృష్టించలేదు. కారణం: '%s'"
@@ -9394,10 +9296,6 @@ msgstr "బ్రిడ్జ్ పరికరం సృష్టించల�
 #, c-format
 msgid "Unable to create device %s"
 msgstr "పరికరం %s సృష్టించలేక పోయింది"
-
-#, c-format
-msgid "Unable to create directory %s"
-msgstr "డైరెక్టరీ %s సృష్టించలేక పోయింది"
 
 msgid "Unable to create epoll fd"
 msgstr "epoll fd సృష్టించలేదు"
@@ -9835,6 +9733,9 @@ msgstr "%s (%d) తెరువలేక పోయింది"
 msgid "Unable to open '%s'"
 msgstr "'%s' తెరువలేదు"
 
+msgid "Unable to open /proc/mounts"
+msgstr "/proc/mounts తెరువలేదు"
+
 msgid "Unable to open UNIX socket"
 msgstr "యునిక్స్ సాకెట్ తెరువలేక పోయింది"
 
@@ -10121,10 +10022,6 @@ msgstr "ఈ ప్లాట్‌ఫాం పైన %s పైన STP అమర�
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "VM లాగ్‌ఫైలు close-on-exec ఫ్లాగ్‌ను అమర్చలేక పోయింది"
 
-#, c-format
-msgid "Unable to set bridge %s %s"
-msgstr "బ్రిడ్జ్ %s %s అమర్చలేదు"
-
 msgid "Unable to set cloexec flag"
 msgstr "closexec ఫ్లాగ్ అమర్చలేదు"
 
@@ -10186,10 +10083,6 @@ msgstr "మూలం %s స్టాట్ బైండ్ చేయలేదు
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "లక్ష్యం %s స్టాట్ బైండ్‌కు చేయలేదు"
-
-#, c-format
-msgid "Unable to symlink directory %s to %s"
-msgstr "డైరెక్టరీ %s ను %s కు సిమ్‌లింక్ చేయలేదు"
 
 #, c-format
 msgid "Unable to truncate %s"
@@ -10314,9 +10207,6 @@ msgstr "non-peer2peer మైగ్రేషన్‌తో అనుకోని
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "అనుకోని డిస్కు sgio రీతి '%d'"
-
-msgid "Unexpected error"
-msgstr "అనుకోని దోషము"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -10795,9 +10685,6 @@ msgstr "VMX ప్రవేశం 'name' చెల్లని ఎస్కే�
 #, c-format
 msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr "VMX ప్రవేశం 'sched.cpu.affinity' ఒక %d కనుగొంది, ఈ విలువ మరీ పెద్దది"
-
-msgid "VNC WebSockets are not supported with this QEMU binary"
-msgstr "ఈ QEMU బైనరీ తో VNC వెబ్‌సాకెట్లు తోడ్పాటునీయవు"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC అనునది connected='keep' మాత్రమే తోడ్పాటునిచ్చును"
@@ -11386,23 +11273,6 @@ msgid "booted"
 msgstr "బూటైన"
 
 msgid ""
-"booting from PCI devices assigned with VFIO is not supported with this "
-"version of qemu"
-msgstr "qemu యొక్క ఈ వర్షన్‌తో VFIO తో అప్పగించిన PCI పరికరాలనుండి బూట్ అగుట తోడ్పాటునీయదు"
-
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr "qemu యొక్క ఈ వర్షన్‌తో అప్పగించిన PCI పరికరాలనుండి బూట్ అగుట తోడ్పాటునీయదు"
-
-msgid ""
-"booting from assigned SCSI devices is not supported with this version of qemu"
-msgstr "qemu యొక్క ఈ వర్షన్‌తో అప్పగించిన SCSI పరికరాలనుండి బూట్ అగుట తోడ్పాటునీయదు"
-
-msgid ""
-"booting from assigned USB devices is not supported with this version of qemu"
-msgstr "qemu యొక్క ఈ వర్షన్‌తో అప్పగించిన USB పరికరాలనుండి బూట్ అగుట తోడ్పాటునీయదు"
-
-msgid ""
 "booting from assigned devices is only supported for PCI, USB and SCSI devices"
 msgstr ""
 "అప్పగించిన పరికరాలనుండి బూట్ అగుట PCI, USB మరియు SCSI పరికరాలకు మాత్రమే తోడ్పాటునిచ్చును "
@@ -11922,9 +11792,6 @@ msgstr "భద్రతా props %d (%s) పొందలేదు"
 msgid "cannot get the host uuid"
 msgstr "అతిధేయ uuid పొందలేదు"
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "మెమొరీ cgroup నియంత్రిక యొక్క పాత్ పొందలేదు"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU స్థానికరణ & pCPU సమయంను పొందలేక పోయింది"
 
@@ -12081,10 +11948,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s వర్షన్ సంఖ్యను '%.*s' నందు పార్స్ చేయలేదు"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "%s ఆకృతి కొరకు CPU మాప్ పార్శ్ చేయలేము"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "CPU టోపాలజీ '%s'ను పార్శ్ చేయలేము"
 
@@ -12174,6 +12037,10 @@ msgstr "ఇంటర్ఫేస్‌ఐడి పారామితి ను 
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "io రీతి '%s' పార్స్ చేయలేదు"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "json %sను పార్శ్ చేయలేక పోయింది: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -12602,14 +12469,6 @@ msgstr "%s నందలి cellNum తప్పక %d కు సమానంగ�
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s నందలి cellNum అనునది %d ను మాత్రమే ఋణ విలువగా ఆమోదించును"
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu' తప్పక (1000, 1000000) విస్తృతి నందు వుండాలి"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld' తప్పక (1000, %llu) విస్తృతి నందు వుండాలి"
-
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU నియంత్రిక మౌంట్ కాలేదు"
 
@@ -12753,20 +12612,12 @@ msgid "config data file to import from"
 msgstr "దీనినుండి దిగుమతి చేయుటకు ఆకృతీకరణ డాటా ఫైలు"
 
 #, c-format
-msgid "config value %s not a string"
-msgstr "ఆకృతీకరణ విలువ %s స్ట్రింగ్ కాదు"
-
-#, c-format
 msgid "config value %s was malformed"
 msgstr "ఆకృతీకరణ విలువ %s తప్పుగావుంది"
 
 #, c-format
 msgid "config value %s was missing"
 msgstr "ఆకృతీకరణ విలువ %s తప్పిపోయింది"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "ఆకృతీకరణ విలువ %s స్ట్రింగు కాదు"
 
 msgid "configuration file syntax error"
 msgstr "ఆకృతీకరణ ఫైలు వాక్య దోషం"
@@ -14400,9 +14251,6 @@ msgstr "qemu పరికర జాబితా పార్స్ చేయు�
 msgid "failed to parse value of %s"
 msgstr "%s యొక్క విలువను పార్స్ చేయుటకు విఫలమైంది"
 
-msgid "failed to parse xml document"
-msgstr "xml పత్రమును పార్శ్ చేయుటలో విఫలమైంది"
-
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "డిస్కు %s కొరకు పివోట్ జాబ్ విఫలమైంది"
@@ -14472,9 +14320,6 @@ msgstr "ఆనవాళ్ళు వెలికితీయుటకు వి�
 
 msgid "failed to retrieve decision to accept host key"
 msgstr "హోస్ట్ కీను ఆమోదించు నిర్ణయాన్ని పొందుటకు విఫలమైంది"
-
-msgid "failed to retrieve password"
-msgstr "సంకేతపదం వెలికితీయుటకు విఫలమైంది"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "వ్యక్తిగత కీ సంకేతపదం పొందుటకు విఫలమైంది: కాల్‌బ్యాక్ విఫలమైంది"
@@ -14953,9 +14798,6 @@ msgstr "హబ్ రకం %s తోడ్పాటునీయదు"
 
 msgid "hypervisor connection URI"
 msgstr "అధిప్రతి అనుసంధానం URI"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "deviceboot విశేషణం లేని hypervisor"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI నిల్వ పూల్ అనునది వాల్యూమ్ సృష్టీకరణను తోడ్పాటునీయలేదు"
@@ -16066,10 +15908,6 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 
-#, c-format
-msgid "memballoon unsupported with address type '%s'"
-msgstr "memballon అనునది చిరునామా రకం '%s' తో తోడ్పాటునీయదు"
-
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "మెమొరీ ఏట్రిబ్యూట్లు: [file=]name[,snapshot=type]"
 
@@ -16952,9 +16790,6 @@ msgstr "'%s' కొరకు యెటువంటి నిరోధక పర�
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "prog %d vers %d serial %d తో ప్రత్యుత్తరమునకు కాల్ వెయిటింగ్ లేదు"
 
-msgid "no callback provided"
-msgstr "కాల్‌బాక్ అందివ్వలేదు"
-
 msgid "no client username was found"
 msgstr "ఎటువంటి కక్షిదారి వినియోగదారినామము కనబడలేదు"
 
@@ -16980,10 +16815,6 @@ msgstr "ఎలియాస్ %s తో ఏ పరికరం కనబడల�
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s కొరకు డిస్కు ఫార్మాట్ లేదు మరియు ప్రోబింగ్ అచేతనమైంది"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "ఎలియాస్ %s తో ఏ డిస్కు కనబడలేదు"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -19025,9 +18856,6 @@ msgstr "స్నాప్‌షాట్ ఫిల్టరింగ్ జర�
 
 msgid "unable to poll on child"
 msgstr "చైల్డ్ పైన పోల్ చేయలేదు"
-
-msgid "unable to probe for add-fd"
-msgstr "add-fd కొరకు ప్రోబ్ చేయలేదు"
 
 msgid "unable to read child stderr"
 msgstr "చైల్డ్ stderr చదువలేదు"

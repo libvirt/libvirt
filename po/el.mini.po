@@ -7,9 +7,9 @@
 # Pierros Papadeas <pierros@papadeas.gr>, 2009.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-27 04:41+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/fedora/language/"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #, c-format
 msgid "Bridge generation exceeded max id %d"
@@ -257,9 +257,6 @@ msgstr "η σύνδεση είναι ήδη ανοικτή"
 
 msgid "connection not open"
 msgstr "η σύνδεση δεν είναι ανοικτή"
-
-msgid "failed to parse xml document"
-msgstr "αδυναμία ερμηνείας του εγγράφου XML"
 
 msgid "interface has no name"
 msgstr "η διεπαφή/προσαρμογέας (interface) δεν έχει όνομα"

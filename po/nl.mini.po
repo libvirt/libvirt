@@ -9,9 +9,9 @@
 # Richard E. van der Luit <nippur@fedoraproject.org>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -237,9 +237,6 @@ msgstr "Koppel nieuwe netwerk interface aan."
 #, c-format
 msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 msgstr "Geprobeerd om NAT '%s'. NAT wordt alleen ondersteund voor IPv4."
-
-msgid "Authentication Credentials not found"
-msgstr "Authenticatie ligitmatie niet gevonden"
 
 msgid "Authentication failed"
 msgstr "Authenticatie mislukte"
@@ -717,10 +714,6 @@ msgstr "Kon geen overeenkomend apparaat vinden"
 #, c-format
 msgid "Could not find parent device for '%s'"
 msgstr "Kan ouder apparaat voor '%s' niet vinden"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "Kan plaatsing van controller %s op %s niet vinden"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -2856,9 +2849,6 @@ msgstr "Ontbrekende CPU eigenschap naam"
 msgid "Missing CPU model name"
 msgstr "Ontbrekende CPU model naam"
 
-msgid "Missing CPU vendor name"
-msgstr "Ontbrekende CPU leverancier naam"
-
 #, c-format
 msgid "Missing IP address in static host definition for network '%s'"
 msgstr "Ontbrekend IP adres in statische host definitie van netwerk '%s'"
@@ -3059,9 +3049,6 @@ msgstr "JSON parser implementatie is niet beschikbaar"
 
 msgid "No authentication callback available"
 msgstr "Geen authenticatie callback beschikbaar"
-
-msgid "No authentication callback provided."
-msgstr "Geen authenticatie callback opgegeven."
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -4027,6 +4014,9 @@ msgstr "Kan %s niet openen"
 msgid "Unable to open %s (%d)"
 msgstr "Kan %s (%d) niet openen"
 
+msgid "Unable to open /proc/mounts"
+msgstr "Kan /proc/mounts niet openen"
+
 msgid "Unable to open UNIX socket"
 msgstr "Kan UNIX socket niet openen"
 
@@ -4530,12 +4520,6 @@ msgstr "binding interface mist het bond element"
 msgid "bool"
 msgstr "bool"
 
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr ""
-"opstarten vanaf toegekende PCI apparaten wordt niet ondersteund door deze "
-"versie van qemu"
-
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr "brug '%s' heeft een ongeldig netmasker of IP adres"
@@ -4876,10 +4860,6 @@ msgid "cannot open volume '%s'"
 msgstr "kan volume '%s' niet openen"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "kan CPU kaart voor %s architectuur niet ontleden"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "kan CPU topologie '%s' niet ontleden"
 
@@ -4947,6 +4927,10 @@ msgstr "kan instanceid parameter niet ontleden als een uuid"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "kan parse io mode '%s' niet ontleden"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "kan json %s niet ontleden: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -5340,10 +5324,6 @@ msgstr "configuratie waarde %s is ongeldig"
 #, c-format
 msgid "config value %s was missing"
 msgstr "configuratie waarde %s ontbreekt"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "configuratie waarde %s is geen tekenreeks"
 
 msgid "configuration file syntax error"
 msgstr "syntax fout in configuratiebestand"
@@ -6231,9 +6211,6 @@ msgstr "ontleden van configuratie bestand mislukte"
 msgid "failed to parse configuration file %s"
 msgstr "ontleden van configuratie bestand %s mislukte"
 
-msgid "failed to parse xml document"
-msgstr "xml document ontleden mislukte"
-
 msgid "failed to read AppArmor template"
 msgstr "AppArmor sjabloon lezen mislukte"
 
@@ -6484,9 +6461,6 @@ msgstr ""
 
 msgid "hypervisor connection URI"
 msgstr "hypervisor verbinding URI"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "hypervisor ontbreekt deviceboot functie"
 
 msgid "idle"
 msgstr "niet-actief"
@@ -7429,9 +7403,6 @@ msgstr "niet automatisch opstarten"
 msgid "no block device path supplied for '%s'"
 msgstr "geen blok apparaat pad geleverd voor '%s'"
 
-msgid "no callback provided"
-msgstr "geen callback opgegeven"
-
 msgid "no client username was found"
 msgstr "geen cliënt gebruikersnaam gevonden"
 
@@ -7453,10 +7424,6 @@ msgstr "geen apparaat mogelijkheden voor '%s'"
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "geen schijf formaat voor %s en onderzoeken is uitgezet"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "geen schijf gevonden met elias %s"
 
 msgid "no domain XML passed"
 msgstr "geen domein XML doorgegeven"

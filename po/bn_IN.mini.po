@@ -8,9 +8,9 @@
 # runab <runab@redhat.com>, 2006-2010
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-26 07:10+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -2291,9 +2291,6 @@ msgstr "CPU বৈশিষ্ট্যের নাম অনুপস্থি
 msgid "Missing CPU model name"
 msgstr "CPU-র মডেলের নাম অনুপস্থিত"
 
-msgid "Missing CPU vendor name"
-msgstr "CPU ভেন্ডার নাম অনুপস্থিত"
-
 #, c-format
 msgid "Missing IP address in network '%s' DNS HOST record"
 msgstr "নেটওয়ার্ক '%s' DNS HOST রেকর্ডে IP ঠিকানা অনুপস্থিত"
@@ -2344,9 +2341,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU মডেল %s এ PVR মান অনুপস্থিত বা অবৈধ"
-
-msgid "Missing or invalid auth pointer"
-msgstr "auth পয়েন্টার হয় অনুপস্থিত বা অবৈধ"
 
 #, c-format
 msgid "Missing required address attribute in network '%s'"
@@ -2530,9 +2524,6 @@ msgstr "কোনো UNIX প্রক্রিয়া অাইডি উপ�
 
 msgid "No address associated with hostname"
 msgstr "হোস্টনামের সংগে কোনো ঠিকানা সংশ্লিষ্ট নেই"
-
-msgid "No authentication callback provided."
-msgstr "অনুমোদনের কোনো কল-ব্যাক উপলব্ধ করা হয়নি।"
 
 msgid "No data supplied for <initarg> element"
 msgstr "<initarg> উপাদানের জন্য কোনো ডেটা সরবরাহ করা হয়নি"
@@ -4325,10 +4316,6 @@ msgid "cannot open volume '%s'"
 msgstr "ভলিউম '%s' খুলতে ব্যর্থ"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "%s আর্কিটেকচারের জন্য CPU ম্যাপ পার্স করা সম্ভব নয়"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "CPU-র টোপোলজি '%s' পার্স করতে ব্যর্থ"
 
@@ -4399,6 +4386,10 @@ msgstr "instanceid প্যারামিটার uuid হিসাবে প
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "instanceid প্যারামিটার uuid হিসাবে পার্জ করা যাবে না"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "json %s পার্স করা সম্ভব নয়: %s"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -4740,10 +4731,6 @@ msgstr "%s কনফিগের মান ত্রুটিপূর্ণ"
 #, c-format
 msgid "config value %s was missing"
 msgstr "%s কনফিগ মান অনুপস্থিত"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "%s কনফিগের মান স্ট্রিং প্রকৃতির নয়"
 
 msgid "configuration file syntax error"
 msgstr "কনফিগারেশন ফাইলের মধ্যে সিন্টেক্স সংক্রান্ত সমস্যা"
@@ -5388,9 +5375,6 @@ msgstr "কনফিগারেশন ফাইল পার্স করতে
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "কনফিগারেশন ফাইল %s পার্স করতে ব্যর্থ"
-
-msgid "failed to parse xml document"
-msgstr "xml নথি পার্স করতে ব্যর্থ"
 
 msgid "failed to read XML"
 msgstr "XML পড়তে ব্যর্থ"
@@ -6706,9 +6690,6 @@ msgstr "স্বয়ংক্রিয় প্রারম্ভকরণ হব�
 #, c-format
 msgid "no block device path supplied for '%s'"
 msgstr "'%s'-র জন্য কোনো ব্লক ডিভাইসের পাথ উল্লিখিত হয়নি"
-
-msgid "no callback provided"
-msgstr "কোনো কলব্যাক প্রদান করা হয়নি"
 
 msgid "no client username was found"
 msgstr "ক্লায়েন্টের ব্যবহারকারীর নাম পাওয়া যায়নি"

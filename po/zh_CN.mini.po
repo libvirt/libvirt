@@ -17,9 +17,9 @@
 # Daniel Berrange <dan-zanata@berrange.com>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2018-05-04 06:13+0000\n"
 "Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -29,7 +29,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -322,9 +322,6 @@ msgstr "联网："
 
 msgid " Storage:"
 msgstr "存储："
-
-msgid " block_io_throttle reply was missing device list"
-msgstr " block_io_throttle 恢复缺少设备列表"
 
 #, c-format
 msgid ""
@@ -727,9 +724,6 @@ msgstr "guest-get-fsinfo 回复中缺少 'name' "
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus 回复中缺少 'online' "
 
-msgid "'parent' for vHBA not specified, and cannot find one on this host"
-msgstr "没有为 vHBA 指定 'parent'，且无法在这台主机中找到它。"
-
 msgid "'pci-controller' missing in guest-get-fsinfo 'disk' data"
 msgstr "guest-get-fsinfo 'disk' 数据缺少 'pci-controller'"
 
@@ -1101,9 +1095,6 @@ msgstr "尝试 NAT '%s'。只有 IPv4 支持 NAT。"
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "只有在虚拟机 CPU 中方可使用的属性模式"
-
-msgid "Authentication Credentials not found"
-msgstr "未找到认证凭据"
 
 msgid "Authentication failed"
 msgstr "验证失败"
@@ -1587,9 +1578,6 @@ msgstr "无法确定布尔值设备路径"
 msgid "Cannot determine free memory"
 msgstr "无法确定剩余内存"
 
-msgid "Cannot determine system clock HZ"
-msgstr "无法确定系统时钟 HZ"
-
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "无法直接附加软盘 %s"
@@ -1629,10 +1617,6 @@ msgstr "无法提取运行的 %s管理程序版本\n"
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr "未找到 %s - 可能没有安装该软件包"
-
-#, c-format
-msgid "Cannot find '%s' in node device database"
-msgstr "未在节点设备数据库中找到 '%s'"
 
 #, c-format
 msgid "Cannot find '%s' in path"
@@ -1809,14 +1793,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "无法在 %s 中解析启动时间 %s"
 
 #, c-format
-msgid "Cannot parse sys stat '%s'"
-msgstr "无法解析系统统计 '%s'"
-
-#, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "无法解析用户统计 '%s'"
-
-#, c-format
 msgid "Cannot parse version string '%s'"
 msgstr "无法解析版本字符串 '%s'"
 
@@ -1962,10 +1938,6 @@ msgstr "无法共享未初始化的 CURL 句柄"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "如果关闭重新标记功能则无法指定标签。model=%s"
-
-#, c-format
-msgid "Cannot stat %s"
-msgstr "无法统计 %s"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -2143,10 +2115,6 @@ msgstr "已使用另一个连接 %s 注册的域 %p 的 close 回叫"
 msgid "Command %s too long for destination"
 msgstr "对于目的地来说命令 %s 太长"
 
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "未找到命令 '%s'"
-
 msgid "Commit aborted"
 msgstr "放弃指派"
 
@@ -2251,26 +2219,6 @@ msgstr "没有定义容器"
 
 msgid "Control groups not supported on this platform"
 msgstr "这个平台不支持控制组"
-
-#, c-format
-msgid "Controller %d out of range"
-msgstr "控制器 %d 超出范围"
-
-#, c-format
-msgid "Controller '%s' is not enabled for group"
-msgstr "没有为组启用控制器 '%s'"
-
-#, c-format
-msgid "Controller '%s' is not mounted"
-msgstr "未挂载控制器 '%s'"
-
-#, c-format
-msgid "Controller '%s' is not wanted, but '%s' is co-mounted"
-msgstr "不需要控制程序 '%s'，但 '%s' 是共同挂载。"
-
-#, c-format
-msgid "Controller '%s' not mounted"
-msgstr "未挂载控制器 '%s'"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "控制器无法使用 ‘ccid’ 地址类型"
@@ -2464,9 +2412,6 @@ msgstr "无法找到名为 '%s' 的 PhysicalNic"
 msgid "Could not find any 'network' element in status file"
 msgstr "无法在状态文件中找到任何 'network' 元素"
 
-msgid "Could not find any mounted controllers"
-msgstr "未找到任何挂载的控制器"
-
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "无法找到在 '%s' 中指定的计算资源"
@@ -2482,10 +2427,6 @@ msgstr "无法找到包含绝对路径 '%s' 的数据存储"
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "无法找到名为 '%s' 的数据存储"
-
-#, c-format
-msgid "Could not find directory separator in %s"
-msgstr "无法在目录分隔符中找到 %s"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2521,10 +2462,6 @@ msgstr "无法找到 MAC 地址为 '%s' 的物理 NIC"
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "无法找到名为 '%s' 的物理 NIC"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "无法在 %s 为控制器 %s 查找位置"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -3245,10 +3182,6 @@ msgstr "设备 %s 已存在"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "已分离设备 %s\n"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "设备 %s 使用者"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -4124,10 +4057,6 @@ msgid "Failed to bind PCI device '%s' to %s"
 msgstr "将 PCI 设备 ID '%s' 绑定到 %s 失败"
 
 #, c-format
-msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "在 '%s' 中捆绑 cgroup '%s' 失败"
-
-#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "将挂载目录 %s 捆绑到 %s 失败"
 
@@ -4281,10 +4210,6 @@ msgstr "创建捆绑目标失败：%s"
 
 msgid "Failed to create bridge node in xml document"
 msgstr "在 xml 文档中生成桥接节点失败"
-
-#, c-format
-msgid "Failed to create controller %s for group"
-msgstr "为组生成控制器 %s 失败"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -4575,9 +4500,6 @@ msgstr "为接口 %s 生成新名称失败"
 msgid "Failed to get %s minor number"
 msgstr "获取 %s 监控程序数失败"
 
-msgid "Failed to get PCI Config Address String"
-msgstr "获取 PCI 配置地址字符串失败"
-
 msgid "Failed to get PCI SYSFS file"
 msgstr "获取 PCI SYSFS 文件失败"
 
@@ -4846,10 +4768,6 @@ msgstr "把域 %s标记为自动开始失败"
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "新建文件夹 %s 失败"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "将 %s 在 %s 类型 %s 中挂载失败"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -6844,13 +6762,6 @@ msgstr "最大内存，以整数计（默认 KiB）"
 msgid "Max memory:"
 msgstr "最大内存："
 
-msgid "Maximum CPUs greater than specified machine type limit"
-msgstr "CPUs 最大值超过指定的机器类型限制"
-
-#, c-format
-msgid "Memory '%llu' must be less than %llu"
-msgstr "内存 '%llu' 大小必须小于 %llu"
-
 msgid "Memory allocation failure"
 msgstr "内存分配失败"
 
@@ -6951,10 +6862,6 @@ msgstr "缺少 '%s' 属性"
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "查找 ManagedEntityStatus 时缺少 '%s' 属性"
 
-#, c-format
-msgid "Missing '/' separator in cgroup mount '%s'"
-msgstr "cgroup 挂载 '%s' 中缺少 '/' 分隔符"
-
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU 拓扑中缺少 ‘cores’ 属性"
 
@@ -7015,9 +6922,6 @@ msgstr "缺少 CPU 特性名称"
 
 msgid "Missing CPU model name"
 msgstr "缺少 CPU 型号名"
-
-msgid "Missing CPU vendor name"
-msgstr "缺少 CPU 供应商名称"
 
 msgid "Missing ID parameter for domain object"
 msgstr "域对象缺少 ID 参数"
@@ -7164,9 +7068,6 @@ msgstr ""
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU 型号 %s 中缺少或者有无效 PVR 值"
-
-msgid "Missing or invalid auth pointer"
-msgstr "缺少 auth 指示器或者指示器无效"
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
 msgstr "缺少 'unique_id' 值或者该值无效"
@@ -7619,9 +7520,6 @@ msgstr "没有为签名 %s 显示参数"
 
 msgid "No authentication callback available"
 msgstr "没有可用认证回叫"
-
-msgid "No authentication callback provided."
-msgstr "没有验证提供的回叫。"
 
 msgid "No authentication methods and credentials provided"
 msgstr "未提供认证方法及证书"
@@ -8749,9 +8647,6 @@ msgstr "SCSI 磁盘索引 (从 '%s' 中解析获得) 太大"
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI 主机设备不支持管理的模式"
-
-msgid "SCSI passthrough is not supported by this version of qemu"
-msgstr "这个版本的 qemu 不支持 SCSI 转移"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -10092,9 +9987,6 @@ msgstr "USB 设备 %s 正在使用中"
 msgid "USB host device is missing bus/device information"
 msgstr "USB 主机失败缺少  bus/device 信息"
 
-msgid "USB redirection booting is not supported by this version of QEMU"
-msgstr "QEMU 的这个版本不支持 USB 重新定向引导"
-
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "QEMU 的这个版本不支持 USB 重新定向过滤器"
 
@@ -10281,6 +10173,12 @@ msgstr "无法复制插槽文件句柄"
 msgid "Unable to create %s"
 msgstr "无法创建 %s"
 
+msgid "Unable to create JSON formatter"
+msgstr "无法生成 JSON 格式化程序"
+
+msgid "Unable to create JSON parser"
+msgstr "无法生成 JSON 解析程序"
+
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "无法生成 LPAR。原因：'%s'"
@@ -10309,10 +10207,6 @@ msgstr "无法生成桥接设备"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "无法生成设备 %s"
-
-#, c-format
-msgid "Unable to create directory %s"
-msgstr "无法生成目录 %s"
 
 #, c-format
 msgid "Unable to create directory '%s'"
@@ -10771,6 +10665,9 @@ msgstr "无法打开 %s (%d)"
 msgid "Unable to open '%s'"
 msgstr "无法打开 '%s' "
 
+msgid "Unable to open /proc/mounts"
+msgstr "无法打开 /proc/mounts"
+
 msgid "Unable to open UNIX socket"
 msgstr "无法打开 UNIX  插槽"
 
@@ -11067,10 +10964,6 @@ msgstr "无法在这个平台中为 %s 设定 STP"
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "无法为 VM 日志文件设定 close-on-exec 标签"
 
-#, c-format
-msgid "Unable to set bridge %s %s"
-msgstr "无法获取桥接 %s %s"
-
 msgid "Unable to set cloexec flag"
 msgstr "无法设定 cloexec 标签"
 
@@ -11135,10 +11028,6 @@ msgstr "无法统计源目标 %s"
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "无法统计捆绑目标 %s"
-
-#, c-format
-msgid "Unable to symlink directory %s to %s"
-msgstr "无法将目录 %s 符号链接到 %s"
 
 msgid "Unable to thaw all processes"
 msgstr "无法解冻所有进程"
@@ -11278,9 +11167,6 @@ msgstr "意外的设备类型 %d"
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "意外磁盘 sgio 模式 '%d'"
-
-msgid "Unexpected error"
-msgstr "意外错误"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -11869,9 +11755,6 @@ msgstr "VMX 条目 'sched.cpu.affinity' 包含一个 %d，这个数值太大。"
 
 msgid "VNC"
 msgstr "VNC"
-
-msgid "VNC WebSockets are not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制不支持 VNC WebSockets"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC 只支持 connected='keep' "
@@ -12471,23 +12354,6 @@ msgid "booted"
 msgstr "已引导"
 
 msgid ""
-"booting from PCI devices assigned with VFIO is not supported with this "
-"version of qemu"
-msgstr "qemu 的这个版本不支持从分配了 VFIO 的 PCI 设备中引导"
-
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr "qemu 的这个版本不支持从分配的 PCI 设备中引导"
-
-msgid ""
-"booting from assigned SCSI devices is not supported with this version of qemu"
-msgstr "这个版本的 qemu 不支持使用分配的 SCSI 设备引导"
-
-msgid ""
-"booting from assigned USB devices is not supported with this version of qemu"
-msgstr "这个版本的 qemu 不支持使用分配的 USB 设备引导"
-
-msgid ""
 "booting from assigned devices is only supported for PCI, USB and SCSI devices"
 msgstr "只有 PCI、USB、和 SCSI 设备支持从分配的设备引导"
 
@@ -13041,9 +12907,6 @@ msgstr "无法获取安全 props %d (%s)"
 msgid "cannot get the host uuid"
 msgstr "无法获得主机 uuid"
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "无法获取 MEMORY cgroup 控制器路径"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "无法获取 vCPU 布置和 pCPU 时间"
 
@@ -13213,10 +13076,6 @@ msgid "cannot parse CPU data"
 msgstr "无法解析 CPU 数据"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "无法为 %s 架构解析 CPU 映射文件"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "无法解析 CPU 拓扑 '%s'"
 
@@ -13306,6 +13165,10 @@ msgstr "无法将 interfaceid 参数解析为 uuid"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "无法解析 io 模式 '%s'"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "无法解析 json %s: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -13755,14 +13618,6 @@ msgstr "%s 中的 cellNum 必须小于等于 %d"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s 中的 cellNum 只接受负数 %d"
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu' 必须在范围 (1000, 1000000) 中"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld' 必须在范围 (1000, %llu) 中"
-
 msgid "cgroup CPU controller is not mounted"
 msgstr "未挂载 cgroup CPU 控制器"
 
@@ -13906,20 +13761,12 @@ msgid "config data file to import from"
 msgstr "从中导出的配置数据文件"
 
 #, c-format
-msgid "config value %s not a string"
-msgstr "配置值 %s 不是一个字符串"
-
-#, c-format
 msgid "config value %s was malformed"
 msgstr "config 值 %s 被破坏了"
 
 #, c-format
 msgid "config value %s was missing"
 msgstr "缺少 config 值 %s "
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "config 值 %s 不是字符串"
 
 msgid "configuration file syntax error"
 msgstr "配置文件语法错误"
@@ -15741,9 +15588,6 @@ msgstr "解析 write_bps_device '%s' 失败"
 msgid "failed to parse write_iops_device: '%s'"
 msgstr "解析 write_iops_device '%s' 失败"
 
-msgid "failed to parse xml document"
-msgstr "解析 xml 文档失败"
-
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "磁盘 %s 的 pivot 任务失败"
@@ -15816,9 +15660,6 @@ msgstr "检索证书失败"
 
 msgid "failed to retrieve decision to accept host key"
 msgstr "检索接受主机密钥决定失败"
-
-msgid "failed to retrieve password"
-msgstr "检索密码失败"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "检索私钥密码短语失败：回叫失败"
@@ -16344,9 +16185,6 @@ msgstr "hugepage 大小不能为 0"
 msgid "hypervisor connection URI"
 msgstr "管理程序连接 URI"
 
-msgid "hypervisor lacks deviceboot feature"
-msgstr "hypervisor 缺少设备引导功能"
-
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI 存储池不支持卷创建"
 
@@ -16845,10 +16683,6 @@ msgstr "无效链接状态 '%s'"
 #, c-format
 msgid "invalid logical block size '%s'"
 msgstr "无效逻辑块大小 '%s'"
-
-#, c-format
-msgid "invalid lxc.id_map: '%s'"
-msgstr "无效 lxc.id_map：'%s'"
 
 msgid "invalid mode"
 msgstr "无效模式"
@@ -17458,9 +17292,6 @@ msgstr "未注册锁拥有者详情"
 msgid "lxc state driver is not active"
 msgstr "lxc 状态驱动程序未激活"
 
-msgid "lxc.mount found, use lxc.mount.entry lines instead"
-msgstr "找到 lxc.mount，请使用 lxc.mount.entry 行替换。"
-
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() 传递无效 vm 定义"
 
@@ -17638,10 +17469,6 @@ msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
-
-#, c-format
-msgid "memballoon unsupported with address type '%s'"
-msgstr "地址类型 '%s' 不支持 memballoon"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "内存属性：[file=]name[,snapshot=type]"
@@ -18625,9 +18452,6 @@ msgstr "没有为 '%s' 提供块设备路径"
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "没有 prog %d vers %d serial %d 的调用等待回复"
 
-msgid "no callback provided"
-msgstr "没有提供任何回叫"
-
 msgid "no client username was found"
 msgstr "没有找到客户端用户名"
 
@@ -18660,10 +18484,6 @@ msgstr "没有找到别名为 %s 的设备"
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "没有可用于 %s 的磁盘格式，并禁用探测。"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "未发现别名为 %s 的磁盘"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -20851,9 +20671,6 @@ msgstr "无法执行快照过滤"
 
 msgid "unable to poll on child"
 msgstr "无法在子目录中投票"
-
-msgid "unable to probe for add-fd"
-msgstr "无法为 add-fd 进行探测"
 
 msgid "unable to read child stderr"
 msgstr "无法读取子标准输入"

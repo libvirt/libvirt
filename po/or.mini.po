@@ -9,9 +9,9 @@
 # Manoj Kumar Giri <mgiri@redhat.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -362,9 +362,6 @@ msgstr " ନେଟୱର୍କିଙ୍ଗ:"
 
 msgid " Storage:"
 msgstr "ସଂରକ୍ଷଣ ସ୍ଥାନ:"
-
-msgid " block_io_throttle reply was missing device list"
-msgstr "  block_io_throttle ଉତ୍ତରରେ ଉପକରଣ ତାଲିକା ଅନୁପସ୍ଥିତ ଅଛି"
 
 #, c-format
 msgid "%6s: Checking %-60s: "
@@ -862,9 +859,6 @@ msgstr "PCI ଠିକଣା %s ର ଦୁଇଥର ବ୍ୟବହାର ପ୍�
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "ଗୁଣଧର୍ମ ଧାରା କେବଳ ଅତିଥି CPU ପାଇଁ ଅନୁମତିପ୍ରାପ୍ତ"
 
-msgid "Authentication Credentials not found"
-msgstr "ବୈଧିକରଣ ପ୍ରମାଣପତ୍ର ମିଳିଲା ନାହିଁ"
-
 msgid "Authentication failed"
 msgstr "ପ୍ରମାଣୀକରଣ ବିଫଳ"
 
@@ -1266,9 +1260,6 @@ msgstr "ବ୍ୟାଲୁନ ଉପକରଣ ପଥ ନିର୍ଦ୍ଧାର
 msgid "Cannot determine free memory"
 msgstr "ଖାଲି ସ୍ଥାନ ନିର୍ଦ୍ଧାରଣ କରିପାରିବେ ନାହିଁ"
 
-msgid "Cannot determine system clock HZ"
-msgstr "ତନ୍ତ୍ର ଘଡ଼ି HZ କୁ ନିର୍ଦ୍ଧାରଣ କରିପାରିବେ ନାହିଁ"
-
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "ଫ୍ଲପି %sକୁ ସିଧାସଳଖ ଭାବରେ ସଂଲଗ୍ନ କରିପାରିବେ ନାହିଁ"
@@ -1504,14 +1495,6 @@ msgid "Cannot parse socket address '%s': %s"
 msgstr "ସକେଟ ଠିକଣା '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ: %s"
 
 #, c-format
-msgid "Cannot parse sys stat '%s'"
-msgstr "ତନ୍ତ୍ର ସ୍ଥିତି '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
-msgid "Cannot parse user stat '%s'"
-msgstr "ବ୍ୟବହାରକାରୀ ସ୍ଥିତି '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
 msgid "Cannot parse version string '%s'"
 msgstr "ସଂସ୍କରଣ ବାକ୍ୟଖଣ୍ଡ '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
 
@@ -1601,10 +1584,6 @@ msgstr "ଆରମ୍ଭ ହୋଇନଥିବା CURL ନିୟନ୍ତ୍ର�
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "ଏକ ନାମପଟିକୁ ଉଲ୍ଲେଖ କରିପାରିବେ ନାହିଁ ଯଦି ପୁନଃ ନାମକରଣକୁ ଅଫ କରାଯାଏ। ମଡେଲ=%s"
-
-#, c-format
-msgid "Cannot stat %s"
-msgstr "%s କୁ ଆରମ୍ଭ କରିପାରିବେ ନାହିଁ"
 
 #, c-format
 msgid "Cannot stat '%s'"
@@ -1723,10 +1702,6 @@ msgstr "ନିର୍ଭରକ:"
 #, c-format
 msgid "Command %s too long for destination"
 msgstr "ନିର୍ଦ୍ଦେଶ %s ଟି ଲକ୍ଷ୍ଯସ୍ଥଳ ପାଇଁ ଅତ୍ୟଧିକ ବଡ଼"
-
-#, c-format
-msgid "Command '%s' is not found"
-msgstr "ନିର୍ଦ୍ଦେଶ '%s' ମିଳିଲା ନାହିଁ"
 
 msgid "Commit aborted"
 msgstr "ଦାଖଲ କ୍ରିୟା ପରିତ୍ଯାଗ କରାଯାଇଛି"
@@ -1992,9 +1967,6 @@ msgstr "'%s' ନାମକ PhysicalNic କୁ ଖୋଜି ପାଇଲା ନା
 msgid "Could not find any 'network' element in status file"
 msgstr "ସ୍ଥିତି ଫାଇଲରେ କୌଣସି 'ନେଟୱର୍କ' ଉପାଦାନ ପାଇଲା ନାହିଁ"
 
-msgid "Could not find any mounted controllers"
-msgstr "କୌଣସି ସ୍ଥାପିତ ନିୟନ୍ତ୍ରକଗୁଡ଼ିକୁ ଖୋଜି ପାରିଲା ନାହିଁ"
-
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "'%s' ରେ ଉଲ୍ଲିଖିତ କୌଣସି କମ୍ପୁଟର ଉତ୍ସକୁ ପାଇଲା ନାହିଁ"
@@ -2010,10 +1982,6 @@ msgstr "ବିଶେଷ ପଥ '%s' କୁ ଧାରଣ କରିଥିବା �
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "'%s' ନାମକ ତଥ୍ୟକେନ୍ଦ୍ର ପାଇଲା ନାହିଁ"
-
-#, c-format
-msgid "Could not find directory separator in %s"
-msgstr "%s ରେ ଡିରେକ୍ଟୋରୀ ପୃଥକକାରୀକୁ ଖୋଜିପାରିଲା ନାହିଁ"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2708,10 +2676,6 @@ msgstr "ଉପକରଣ %s ପୂର୍ବରୁ ଅଛି"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "ଉପକରଣ %s ପୃଥକ ହୋଇଛି\n"
-
-#, c-format
-msgid "Device %s in use"
-msgstr "ଉପକରଣ %s ବ୍ୟବହାର ହେଉଅଛି"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -3464,10 +3428,6 @@ msgid "Failed to bind PCI device '%s' to %s"
 msgstr "PCI ଉପକରଣ '%s' କୁ %s ଥିରେ ବାନ୍ଧିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "cgroup '%s' କୁ '%s' ଉପରେ ବାନ୍ଧିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "ସ୍ଥାପନ ଡ଼ିରେକ୍ଟୋରୀ %s କୁ %s ରେ ବାନ୍ଧିବାରେ ବିଫଳ"
 
@@ -3899,9 +3859,6 @@ msgstr "ଅନ୍ତରାପୃଷ୍ଠ %s ପାଇଁ ନୂଆ ନାମ �
 msgid "Failed to get %s minor number"
 msgstr "%s ଗୌଣ ସଂଖ୍ଯାକୁ ପାଇବାରେ ବିଫଳ"
 
-msgid "Failed to get PCI Config Address String"
-msgstr "PCI ସଂରଚନା ଠିକଣା ବାକ୍ୟଖଣ୍ଡ ପାଇବାରେ ବିଫଳ"
-
 msgid "Failed to get PCI SYSFS file"
 msgstr "PCI SYSFS ଫାଇଲ ପାଇବାରେ ବିଫଳ"
 
@@ -4162,10 +4119,6 @@ msgstr "%s ପରିସରକୁ ସ୍ବୟଂଚାଳିତ ଭାବରେ 
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "mkdir %s କରିବାରେ ବିଫଳ"
-
-#, c-format
-msgid "Failed to mount %s on %s type %s"
-msgstr "%s ରେ %s ପ୍ରକାର  %s କୁ ସ୍ଥାପନ କରିବାରେ ବିଫଳ"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -5947,9 +5900,6 @@ msgstr "ଅନୁପସ୍ଥିତ CPU ବିଶେଷତା ନାମ"
 msgid "Missing CPU model name"
 msgstr "ଅନୁପସ୍ଥିତ CPU ମଡେଲ ନାମ"
 
-msgid "Missing CPU vendor name"
-msgstr "ଅନୁପସ୍ଥିତ  CPU ବିକ୍ରେତା ନାମ"
-
 msgid "Missing ID parameter for domain object"
 msgstr "ଡମେନ ବସ୍ତୁ ପାଇଁ ଅନୁପସ୍ଥିତ ID ପ୍ରାଚଳ"
 
@@ -6067,9 +6017,6 @@ msgstr "ଅନୁପସ୍ଥିତ କିମ୍ବା ଖାଲି 'hostName' �
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "CPU ମଡେଲ %s ରେ PVR ମୂଲ୍ୟ ନାହିଁ  କିମ୍ବା ଅବୈଧ ଅଟେ"
-
-msgid "Missing or invalid auth pointer"
-msgstr "ଅନୁପସ୍ଥିତ କିମ୍ବା ଅବୈଧ auth ସୂଚକ"
 
 msgid "Missing ownerId data in JSON document"
 msgstr "JSON ଦଲିଲରେ ownerId ତଥ୍ୟ ଅନୁପସ୍ଥିତ"
@@ -6468,9 +6415,6 @@ msgstr "ହସ୍ତାକ୍ଷର %s ପାଇଁ କୌଣସି ସ୍ୱତ
 
 msgid "No authentication callback available"
 msgstr "କୌଣସି ବୈଧିକରଣ ଡାକରା ଉପଲବ୍ଧ ହୋଇନାହିଁ"
-
-msgid "No authentication callback provided."
-msgstr "କୌଣସି ବୈଧିକରଣ ଡାକରା ଦିଆ ହୋଇନାହିଁ"
 
 msgid "No authentication methods supplied"
 msgstr "କୌଣସି ବୈଧିକରଣ ପଦ୍ଧତି ଦିଆଯାଇ ନାହିଁ"
@@ -7360,9 +7304,6 @@ msgstr "SCSI ଡିସ୍କ ଅନୁକ୍ରମଣିକାଟି ('%s' ର�
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI ହୋଷ୍ଟ ଉପକରଣ ପରିଚାଳିତ ଧାରାକୁ ସହାୟତା ଦେଇନଥାଏ"
-
-msgid "SCSI passthrough is not supported by this version of qemu"
-msgstr "SCSI ଯାତାୟାତ ଏହି ସଂସ୍କରଣ qemu ଦ୍ୱାରା ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -8660,6 +8601,12 @@ msgstr "%s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "ହାର୍ଡ ଡିସ୍କ ସୃଷ୍ଟି କରିବାରେ ଅସମର୍ଥ, rc=%08x"
 
+msgid "Unable to create JSON formatter"
+msgstr "JSON ଫରମାଟର୍‌ ସୃଷ୍ଟି କରିବାରେ ଅସମର୍ଥ"
+
+msgid "Unable to create JSON parser"
+msgstr "JSON ବିଶ୍ଳେଷକ ସୃଷ୍ଟି କରିବାରେ ଅସମର୍ଥ"
+
 #, c-format
 msgid "Unable to create LPAR. Reason: '%s'"
 msgstr "LPAR ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ। କାରଣ: '%s'"
@@ -8685,10 +8632,6 @@ msgstr "ବ୍ରିଜ ଉପକରଣକୁ ନିର୍ମାଣ କରିବ
 #, c-format
 msgid "Unable to create device %s"
 msgstr "ଉପକରଣ %s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ"
-
-#, c-format
-msgid "Unable to create directory %s"
-msgstr "ଡିରେକ୍ଟୋରୀ %s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ"
 
 #, c-format
 msgid "Unable to create directory '%s'"
@@ -9173,6 +9116,9 @@ msgstr "'%s' କୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
 msgid "Unable to open /dev/loop-control"
 msgstr "/dev/loop-control କୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
 
+msgid "Unable to open /proc/mounts"
+msgstr "/proc/mountsକୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
+
 #, c-format
 msgid "Unable to open HardDisk, rc=%08x"
 msgstr "ହାର୍ଡ ଡିସ୍କ ଖୋଲିବାରେ ଅସମର୍ଥ, rc=%08x"
@@ -9454,10 +9400,6 @@ msgstr "ଏହି ପ୍ଲାଟଫର୍ମରେ %s ଉପରେ STP କୁ �
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "VM ଲଗଫାଇଲ close-on-exec ଫ୍ଲାଗକୁ ବିନ୍ୟାସ କରିବାରେ ଅସମର୍ଥ"
 
-#, c-format
-msgid "Unable to set bridge %s %s"
-msgstr "ବ୍ରିଜ %s %s ସେଟ କରିବାରେ ଅସମର୍ଥ"
-
 msgid "Unable to set cloexec flag"
 msgstr "cloexec ସୂଚକ ସେଟ କରିବାରେ ଅସମର୍ଥ"
 
@@ -9516,10 +9458,6 @@ msgstr "ବନ୍ଧନ ଉତ୍ସ %s କୁ ଆରମ୍ଭ କରିବା�
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "ବନ୍ଧନ ଲକ୍ଷ୍ଯସ୍ଥଳ %s କୁ ଆରମ୍ଭ କରିବାରେ ଅସମର୍ଥ"
-
-#, c-format
-msgid "Unable to symlink directory %s to %s"
-msgstr "ଡିରେକ୍ଟୋରୀ %s କୁ %s ସହିତ symlink କରିବାରେ ଅସମର୍ଥ"
 
 #, c-format
 msgid "Unable to truncate %s"
@@ -9645,13 +9583,6 @@ msgstr "ଅପ୍ରତ୍ୟାଶିତ ଉପକରଣ ପ୍ରକାର %d"
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "ଅପ୍ରତ୍ଯାଶିତ ଡିସ୍କ sgio କ୍ୟାଶେ ଧାରା '%d'"
-
-msgid "Unexpected error"
-msgstr "ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି"
-
-#, c-format
-msgid "Unexpected error: (%s) '%s'"
-msgstr "ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: (%s) '%s'"
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -10187,9 +10118,6 @@ msgstr "VMX ନିବେଶ 'sched.cpu.affinity' ଗୋଟିଏ %d ଧାରଣ
 
 msgid "VNC"
 msgstr "VNC"
-
-msgid "VNC WebSockets are not supported with this QEMU binary"
-msgstr "VNC ୱେବ ସକେଟଗୁଡ଼ିକ ଏହି QEMU ବାଇନାରୀ ସହିତ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC ସହାୟତା ସଂଯୁକ୍ତ=କେବଳ 'keep'"
@@ -11233,9 +11161,6 @@ msgstr "ଆଶୁଚିତ୍ର id ପାଇଲା ନାହିଁ"
 msgid "cannot get the host uuid"
 msgstr "ହୋଷ୍ଟ uuid ପାଇବେ ନାହିଁ"
 
-msgid "cannot get the path of MEMORY cgroup controller"
-msgstr "ସ୍ମୃତିସ୍ଥାନ cgroup ନିୟନ୍ତ୍ରକର ପଥ ପାଇପାରିବେ ନାହିଁ"
-
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU ନିୟୋଜନ & pCPU ସମୟ ପାଇବେ ନାହିଁ"
 
@@ -11379,10 +11304,6 @@ msgid "cannot parse CPU data"
 msgstr "CPU ତଥ୍ଯକୁ ବିଶ୍ଳେଷଣ କରି ହେବ ନାହିଁ"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "%s ସଂରଚନା ପାଇଁ CPU ମ୍ୟାପକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "CPU ଟୋପୋଲଜି '%s'କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
 
@@ -11472,6 +11393,10 @@ msgstr "interfaceid ପ୍ରାଚଳକୁ uuid ଭାବରେ ବିଶ୍�
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "io ଧାରା '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "json %s କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -11907,14 +11832,6 @@ msgstr "ବିନା ଉତ୍ସ ପଥରେ cdrom ଉପକରଣ ସମର�
 msgid "cellNum in %s must be less than or equal to %d"
 msgstr "%s ରେ cellNum ନିଶ୍ଚିତ ଭାବରେ %d ରୁ କମ କିମ୍ବା ସମା ହୋଇଥିବା ଉଚିତ"
 
-#, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu' ନିଶ୍ଚିତ ଭାବରେ ଏହି ସୀମା ମଧ୍ଯରେ ରହିବା ଉଚିତ (1000, 1000000)"
-
-#, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld' ନିଶ୍ଚିତ ଭାବରେ ଏହି ସୀମା ମଧ୍ଯରେ ଥିବା ଉଚିତ (1000, %llu)"
-
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU ନିୟନ୍ତ୍ରକ ସ୍ଥାପିତ ହୋଇନାହିଁ"
 
@@ -12052,20 +11969,12 @@ msgid "config data file to import from"
 msgstr "ରୁ ଆମଦାନୀ ପାଇଁ config ତଥ୍ୟ ଫାଇଲ"
 
 #, c-format
-msgid "config value %s not a string"
-msgstr "config ମୂଲ୍ୟ %s ଟି ଗୋଟିଏ ବାକ୍ୟଖଣ୍ଡ ନଥିଲା"
-
-#, c-format
 msgid "config value %s was malformed"
 msgstr "config ମୂଲ୍ୟ %s ତ୍ରୁଟିଯୁକ୍ତ ଥିଲା"
 
 #, c-format
 msgid "config value %s was missing"
 msgstr "config ମୂଲ୍ୟ %s ଅନୁପସ୍ଥିତ ଥିଲା"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "config ମୂଲ୍ୟ %s ଟି ଗୋଟିଏ ବାକ୍ୟଖଣ୍ଡ ନଥିଲା"
 
 msgid "configuration file syntax error"
 msgstr "ବିନ୍ଯାସ ଫାଇଲ ବାକ୍ଯ ବିନ୍ଯାସ ତୃଟି"
@@ -13755,9 +13664,6 @@ msgstr "write_bps_device କୁ ବିଶ୍ଳେଷଣ କରିବାରେ �
 msgid "failed to parse write_iops_device: '%s'"
 msgstr "write_iops_device କୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ: '%s'"
 
-msgid "failed to parse xml document"
-msgstr "xml ଦଲିଲକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
-
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "ଡିସ୍କ %s ପାଇଁ କାର୍ଯ୍ୟକୁ କେନ୍ଦ୍ରିତ କରିବାରେ ବିଫଳ"
@@ -13831,9 +13737,6 @@ msgstr "ପରିଚୟ ପତ୍ର ବାହାର କରିବାରେ ବ�
 
 msgid "failed to retrieve decision to accept host key"
 msgstr "ହୋଷ୍ଟ କି ଗ୍ରହଣ କରିବା ପାଇଁ ସିଦ୍ଧାନ୍ତ କାଢ଼ିବାରେ ବିଫଳ"
-
-msgid "failed to retrieve password"
-msgstr "ପ୍ରବେଶ ସଂକେତ କାଢ଼ିବାରେ ବିଫଳ"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr "ବ୍ୟକ୍ତିଗତ କି ପ୍ରବେଶ ସଂକେତ କାଢ଼ିବାରେ ବିଫଳ: କଲବ୍ୟାକ ବିଫଳ ହୋଇଛି"
@@ -14298,9 +14201,6 @@ msgstr "hugepage ର ଆକାର ଶୂନ ହୋଇପାରିବ ନାହ�
 msgid "hypervisor connection URI"
 msgstr "ହାଇପରଭାଇଜର ସଂଯୋଗ URI"
 
-msgid "hypervisor lacks deviceboot feature"
-msgstr "ହାଇପରଭାଇଜରରେ ଉପକରଣ ବୁଟ ବିଶେଷତା ନାହିଁ"
-
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI ଭଣ୍ଡାର ପୁଲ ଆକାର ନିର୍ମାଣକୁ ସମର୍ଥନ କରେନାହିଁ"
 
@@ -14762,10 +14662,6 @@ msgstr "ଅବୈଧ ସଂଯୋଗିକୀ ସ୍ଥିତି '%s'"
 #, c-format
 msgid "invalid logical block size '%s'"
 msgstr "ଅବୈଧ ତାର୍କିକ ବ୍ଲକ ଆକାର '%s'"
-
-#, c-format
-msgid "invalid lxc.id_map: '%s'"
-msgstr "ଅବୈଧ lxc.id_map: '%s'"
 
 msgid "invalid mode"
 msgstr "ଅବୈଧ ଧାରା"
@@ -15342,9 +15238,6 @@ msgstr "ଉପକରଣ '%s' ର ଲାଇଭ ଅଦ୍ୟତନ ସହାୟତ
 
 msgid "lxc state driver is not active"
 msgstr "lxc ଅବସ୍ଥା ଡ୍ରାଇଭରଟି ସକ୍ରିୟ ନାହିଁ"
-
-msgid "lxc.mount found, use lxc.mount.entry lines instead"
-msgstr "lxc.mount ମିଳିଛି, ତାହା ପରିବର୍ତ୍ତେ lxc.mount.entry ଧାଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ"
 
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() ଅବୈଧ vm ବ୍ୟାଖ୍ୟାକୁ ପାସ କରିଲା"
@@ -16324,9 +16217,6 @@ msgstr "କୌଣସି ଉପଲବ୍ଧ ସ୍ମୃତିସ୍ଥାନ ଧ
 msgid "no block device path supplied for '%s'"
 msgstr "'%s' ପାଇଁ କୌଣସି ବ୍ଲକ ଯନ୍ତ୍ର ପଥ ଦିଆଯାଇନାହିଁ"
 
-msgid "no callback provided"
-msgstr "କୌଣସି ଡାକରା ଦିଆ ହୋଇନାହିଁ"
-
 msgid "no client username was found"
 msgstr "କୌଣସି ଗ୍ରାହକ ଚାଳକ ନାମ ମିଳୁନାହିଁ"
 
@@ -16355,10 +16245,6 @@ msgstr "ଉପନାମ %s ବିଶିଷ୍ଟ କୌଣସି ଉପକରଣ
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s ପାଇଁ କୌଣସି ଡିସ୍କ ଶୈଳୀ ନାହିଁ ଏବଂଯାଞ୍ଚ କ୍ରିୟାକୁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "ଉପନାମ  %s ସହିତ କୌଣସି ଡିସ୍କ ମିଳିଲା ନାହିଁ"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -17654,9 +17540,6 @@ msgstr "ସ୍ପାଇସ ଧାରାରେ ପଦ୍ଧତି ନଥାଏ"
 msgid "spice zlib missing compression"
 msgstr "ସ୍ପାଇସ zlib ଅନୁପସ୍ଥିତ ସଙ୍କୋଚନ"
 
-msgid "spiceport not supported in this QEMU binary"
-msgstr "spiceport ଏହି QEMU ଦ୍ୱିମିକରେ ସମର୍ଥିତ ନୁହଁ"
-
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc ଉପକରଣ ପ୍ରକାର କେବଳ virtio କୁ ସହାୟତା କରିଥାଏ"
 
@@ -18278,9 +18161,6 @@ msgstr "ଆଶୁଚିତ୍ର ଛାଣକକୁ କାର୍ଯ୍ଯକା�
 
 msgid "unable to poll on child"
 msgstr "ନିମ୍ନସ୍ତର ଉପରେ ପଲ୍‌ କରିବାରେ ଅସମର୍ଥ"
-
-msgid "unable to probe for add-fd"
-msgstr "add-fd ପାଇଁ ଯାଞ୍ଚ କରିବାରେ ଅସମର୍ଥ"
 
 #, c-format
 msgid "unable to read '%s'"

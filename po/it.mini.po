@@ -10,9 +10,9 @@
 # Silvio Pierro <perplesso82@gmail.com>, 2009
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2015-02-27 05:14+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -1712,9 +1712,6 @@ msgstr "Nome feature della CPU mancante"
 msgid "Missing CPU model name"
 msgstr "Nome modello della CPU mancante"
 
-msgid "Missing CPU vendor name"
-msgstr "Nome produttore della CPU mancante"
-
 #, c-format
 msgid "Missing IP address in static host definition for network '%s'"
 msgstr "Indirizzo IP mancante nella definizione host statico per la rete '%s'"
@@ -1877,9 +1874,6 @@ msgstr "Nessun indirizzo IP trovato per l'host '%s': %s"
 
 msgid "No authentication callback available"
 msgstr "Nessun callback per l'autenticazione disponibile"
-
-msgid "No authentication callback provided."
-msgstr "Nessun callback per l'autenticazione fornito."
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -3066,10 +3060,6 @@ msgid "cannot open volume '%s'"
 msgstr "impossibile aprire il volume '%s'"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "errore nel parsing della CPU map per l'architettura %s"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "impossibile analizzare la tipologia della CPU '%s'"
 
@@ -3408,10 +3398,6 @@ msgstr "il valore di configurazione %s era malformato"
 #, c-format
 msgid "config value %s was missing"
 msgstr "il valore di configurazione %s era mancante"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "il valore di config %s non è una stringa"
 
 msgid "configuration file syntax error"
 msgstr "errore di sintassi del file di configurazione"
@@ -3892,9 +3878,6 @@ msgstr "errore nel parsing del file di configurazione"
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "errore nel parsing del file di configurazione %s"
-
-msgid "failed to parse xml document"
-msgstr "errore nel parsing del documento xml"
 
 msgid "failed to read XML"
 msgstr "impossibile leggere XML"
@@ -4799,9 +4782,6 @@ msgstr "non avviare automaticamente"
 msgid "no block device path supplied for '%s'"
 msgstr "nessun percorso di dispositivo a blocchi fornito per '%s'"
 
-msgid "no callback provided"
-msgstr "nessun callback specificato"
-
 msgid "no client username was found"
 msgstr "nessun username client trovato"
 
@@ -4816,10 +4796,6 @@ msgstr "nessuna funzionalità del dispositivo per '%s'"
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "nessun formato disco per %s e il probing è disabilitato"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "nessun disco trovato con alias %s"
 
 msgid "no domain XML passed"
 msgstr "nessun dominio XML fornito"

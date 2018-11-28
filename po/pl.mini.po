@@ -10,9 +10,9 @@
 # Piotr Drąg <piotrdrag@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.6.0\n"
+"Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-07-31 10:44+0100\n"
+"POT-Creation-Date: 2018-11-28 16:52+0000\n"
 "PO-Revision-Date: 2016-09-16 11:27+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Zanata 4.5.0\n"
+"X-Generator: Zanata 4.6.2\n"
 
 msgid ""
 "\n"
@@ -256,9 +256,6 @@ msgstr "Podłącza nowy interfejs sieciowy."
 #, c-format
 msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 msgstr "Spróbowano NAT „%s”. NAT jest obsługiwane tylko dla IPv4."
-
-msgid "Authentication Credentials not found"
-msgstr "Nie odnaleziono danych uwierzytelnienia"
 
 msgid "Authentication failed"
 msgstr "Uwierzytelnienie się nie powiodło"
@@ -745,10 +742,6 @@ msgstr "Nie można odnaleźć pasującego urządzenia"
 #, c-format
 msgid "Could not find parent device for '%s'"
 msgstr "Nie można odnaleźć urządzenia nadrzędnego dla „%s”"
-
-#, c-format
-msgid "Could not find placement for controller %s at %s"
-msgstr "Nie można odnaleźć miejsca dla kontrolera %s w %s"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -2953,9 +2946,6 @@ msgstr "Brak nazwy funkcji procesora"
 msgid "Missing CPU model name"
 msgstr "Brak nazwy modelu procesora"
 
-msgid "Missing CPU vendor name"
-msgstr "Brak nazwy producenta procesora"
-
 #, c-format
 msgid "Missing IP address in static host definition for network '%s'"
 msgstr ""
@@ -3156,9 +3146,6 @@ msgstr "Brak dostępnej implementacji parsera JSON"
 
 msgid "No authentication callback available"
 msgstr "Brak dostępnego wywołania zwrotnego uwierzytelnienia"
-
-msgid "No authentication callback provided."
-msgstr "Nie dostarczono wywołania zwrotnego uwierzytelnienia."
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -4193,6 +4180,9 @@ msgstr "Nie można otworzyć %s"
 msgid "Unable to open %s (%d)"
 msgstr "Nie można otworzyć %s (%d)"
 
+msgid "Unable to open /proc/mounts"
+msgstr "Nie można otworzyć /proc/mounts"
+
 msgid "Unable to open UNIX socket"
 msgstr "Nie można otworzyć gniazda uniksowego"
 
@@ -4291,9 +4281,6 @@ msgstr "Nieoczekiwany monitor QEMU jest nadal aktywny podczas usuwania domeny"
 msgid "Unexpected bhyve URI path '%s', try bhyve:///system"
 msgstr ""
 "nieoczekiwana ścieżka URI bhyve „%s”, należy wypróbować bhyve:///system"
-
-msgid "Unexpected error"
-msgstr "Nieoczekiwany błąd"
 
 #, c-format
 msgid "Unix path %s too long for destination"
@@ -4746,12 +4733,6 @@ msgstr "brak elementu powiązania interfejsu powiązania"
 msgid "bool"
 msgstr "zmienna"
 
-msgid ""
-"booting from assigned PCI devices is not supported with this version of qemu"
-msgstr ""
-"uruchamianie z przydzielonych urządzeń PCI jest nieobsługiwane przez tę "
-"wersję QEMU"
-
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr "mostek „%s” ma nieprawidłową maskę sieci lub adres IP"
@@ -5125,10 +5106,6 @@ msgid "cannot open volume '%s'"
 msgstr "nie można otworzyć woluminu „%s”"
 
 #, c-format
-msgid "cannot parse CPU map for %s architecture"
-msgstr "nie można przetworzyć mapy procesora dla architektury %s"
-
-#, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "nie można przetworzyć topologii procesora „%s”"
 
@@ -5196,6 +5173,10 @@ msgstr "nie można przetworzyć parametru instanceid jako UUID"
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr "nie można przetworzyć trybu wejścia/wyjścia „%s”"
+
+#, c-format
+msgid "cannot parse json %s: %s"
+msgstr "nie można przetworzyć JSON %s: %s"
 
 #, c-format
 msgid "cannot parse nbd filename '%s'"
@@ -5603,10 +5584,6 @@ msgstr "wartość konfiguracji %s jest błędnie sformatowana"
 #, c-format
 msgid "config value %s was missing"
 msgstr "brak wartości konfiguracji %s"
-
-#, c-format
-msgid "config value %s was not a string"
-msgstr "wartość konfiguracji %s nie jest ciągiem"
 
 msgid "configuration file syntax error"
 msgstr "błąd składni pliku konfiguracji"
@@ -6516,9 +6493,6 @@ msgstr "przetworzenie pliku konfiguracji się nie powiodło"
 msgid "failed to parse configuration file %s"
 msgstr "przetworzenie pliku konfiguracji %s się nie powiodło"
 
-msgid "failed to parse xml document"
-msgstr "przetworzenie dokumentu XML się nie powiodło"
-
 msgid "failed to read AppArmor template"
 msgstr "odczytanie szablonu AppArmor się nie powiodło"
 
@@ -6775,9 +6749,6 @@ msgstr ""
 
 msgid "hypervisor connection URI"
 msgstr "adres URI połączenia z nadzorcą"
-
-msgid "hypervisor lacks deviceboot feature"
-msgstr "nadzorca nie ma funkcji uruchamiania z urządzenia"
 
 msgid "idle"
 msgstr "bezczynne"
@@ -7769,9 +7740,6 @@ msgstr "brak automatycznego uruchamiania"
 msgid "no block device path supplied for '%s'"
 msgstr "nie podano ścieżki do urządzenia blokowego dla „%s”"
 
-msgid "no callback provided"
-msgstr "nie dostarczono wywołania zwrotnego"
-
 msgid "no client username was found"
 msgstr "nie odnaleziono nazwy użytkownika klienta"
 
@@ -7793,10 +7761,6 @@ msgstr "brak możliwości urządzenia „%s”"
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "brak formatu dysku dla %s, a wykrywanie jest wyłączone"
-
-#, c-format
-msgid "no disk found with alias %s"
-msgstr "nie odnaleziono dysku z aliasem %s"
 
 msgid "no domain XML passed"
 msgstr "nie przekazano XML domeny"
