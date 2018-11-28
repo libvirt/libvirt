@@ -9885,7 +9885,7 @@ qemuDomainIsQ35(const virDomainDef *def)
 bool
 qemuDomainMachineIsQ35(const char *machine)
 {
-    return (STRPREFIX(machine, "pc-q35") ||
+    return (STRPREFIX(machine, "pc-q35-") ||
             STREQ(machine, "q35"));
 }
 
@@ -9903,7 +9903,7 @@ qemuDomainMachineIsI440FX(const char *machine)
     return (STREQ(machine, "pc") ||
             STRPREFIX(machine, "pc-0.") ||
             STRPREFIX(machine, "pc-1.") ||
-            STRPREFIX(machine, "pc-i440") ||
+            STRPREFIX(machine, "pc-i440fx-") ||
             STRPREFIX(machine, "rhel"));
 }
 
