@@ -23,8 +23,6 @@ server,nowait \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -chardev socket,id=charparallel0,path=/tmp/parport0.socket,server,nowait \
 -device isa-parallel,chardev=charparallel0,id=parallel0 \
 -chardev socket,id=charparallel1,path=/tmp/parport1.socket \
