@@ -178,6 +178,7 @@ mymain(void)
     DO_TEST("x86_64", "caps_2.11.0");
     DO_TEST("x86_64", "caps_2.12.0");
     DO_TEST("x86_64", "caps_3.0.0");
+    DO_TEST("x86_64", "caps_3.1.0");
     DO_TEST("aarch64", "caps_2.6.0");
     DO_TEST("aarch64", "caps_2.10.0");
     DO_TEST("aarch64", "caps_2.12.0");
