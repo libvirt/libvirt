@@ -9876,24 +9876,10 @@ qemuFindAgentConfig(virDomainDefPtr def)
 
 
 bool
-qemuDomainIsQ35(const virDomainDef *def)
-{
-    return qemuDomainMachineIsQ35(def->os.machine);
-}
-
-
-bool
 qemuDomainMachineIsQ35(const char *machine)
 {
     return (STRPREFIX(machine, "pc-q35-") ||
             STREQ(machine, "q35"));
-}
-
-
-bool
-qemuDomainIsI440FX(const virDomainDef *def)
-{
-    return qemuDomainMachineIsI440FX(def->os.machine);
 }
 
 
@@ -9905,6 +9891,130 @@ qemuDomainMachineIsI440FX(const char *machine)
             STRPREFIX(machine, "pc-1.") ||
             STRPREFIX(machine, "pc-i440fx-") ||
             STRPREFIX(machine, "rhel"));
+}
+
+
+bool
+qemuDomainMachineIsS390CCW(const char *machine)
+{
+    return STRPREFIX(machine, "s390-ccw");
+}
+
+
+bool
+qemuDomainMachineIsARMVirt(const char *machine,
+                           const virArch arch)
+{
+    if (arch != VIR_ARCH_ARMV6L &&
+        arch != VIR_ARCH_ARMV7L &&
+        arch != VIR_ARCH_AARCH64)
+        return false;
+
+    if (STRNEQ(machine, "virt") &&
+        !STRPREFIX(machine, "virt-"))
+        return false;
+
+    return true;
+}
+
+
+bool
+qemuDomainMachineIsRISCVVirt(const char *machine,
+                             const virArch arch)
+{
+    if (!ARCH_IS_RISCV(arch))
+        return false;
+
+    if (STRNEQ(machine, "virt") &&
+        !STRPREFIX(machine, "virt-"))
+        return false;
+
+    return true;
+}
+
+
+bool
+qemuDomainMachineIsPSeries(const char *machine,
+                           const virArch arch)
+{
+    if (!ARCH_IS_PPC64(arch))
+        return false;
+
+    if (STRNEQ(machine, "pseries") &&
+        !STRPREFIX(machine, "pseries-"))
+        return false;
+
+    return true;
+}
+
+
+bool
+qemuDomainMachineHasBuiltinIDE(const char *machine)
+{
+    return qemuDomainMachineIsI440FX(machine) ||
+        STREQ(machine, "malta") ||
+        STREQ(machine, "sun4u") ||
+        STREQ(machine, "g3beige");
+}
+
+
+bool
+qemuDomainMachineNeedsFDC(const char *machine)
+{
+    const char *p = STRSKIP(machine, "pc-q35-");
+
+    if (p) {
+        if (STRPREFIX(p, "1.") ||
+            STREQ(p, "2.0") ||
+            STREQ(p, "2.1") ||
+            STREQ(p, "2.2") ||
+            STREQ(p, "2.3"))
+            return false;
+        return true;
+    }
+    return false;
+}
+
+
+bool
+qemuDomainIsQ35(const virDomainDef *def)
+{
+    return qemuDomainMachineIsQ35(def->os.machine);
+}
+
+
+bool
+qemuDomainIsI440FX(const virDomainDef *def)
+{
+    return qemuDomainMachineIsI440FX(def->os.machine);
+}
+
+
+bool
+qemuDomainIsS390CCW(const virDomainDef *def)
+{
+    return qemuDomainMachineIsS390CCW(def->os.machine);
+}
+
+
+bool
+qemuDomainIsARMVirt(const virDomainDef *def)
+{
+    return qemuDomainMachineIsARMVirt(def->os.machine, def->os.arch);
+}
+
+
+bool
+qemuDomainIsRISCVVirt(const virDomainDef *def)
+{
+    return qemuDomainMachineIsRISCVVirt(def->os.machine, def->os.arch);
+}
+
+
+bool
+qemuDomainIsPSeries(const virDomainDef *def)
+{
+    return qemuDomainMachineIsPSeries(def->os.machine, def->os.arch);
 }
 
 
@@ -9939,109 +10049,16 @@ qemuDomainHasPCIeRoot(const virDomainDef *def)
 
 
 bool
+qemuDomainHasBuiltinIDE(const virDomainDef *def)
+{
+    return qemuDomainMachineHasBuiltinIDE(def->os.machine);
+}
+
+
+bool
 qemuDomainNeedsFDC(const virDomainDef *def)
 {
     return qemuDomainMachineNeedsFDC(def->os.machine);
-}
-
-
-bool
-qemuDomainMachineNeedsFDC(const char *machine)
-{
-    const char *p = STRSKIP(machine, "pc-q35-");
-
-    if (p) {
-        if (STRPREFIX(p, "1.") ||
-            STREQ(p, "2.0") ||
-            STREQ(p, "2.1") ||
-            STREQ(p, "2.2") ||
-            STREQ(p, "2.3"))
-            return false;
-        return true;
-    }
-    return false;
-}
-
-
-bool
-qemuDomainIsS390CCW(const virDomainDef *def)
-{
-    return qemuDomainMachineIsS390CCW(def->os.machine);
-}
-
-
-bool
-qemuDomainMachineIsS390CCW(const char *machine)
-{
-    return STRPREFIX(machine, "s390-ccw");
-}
-
-
-bool
-qemuDomainIsARMVirt(const virDomainDef *def)
-{
-    return qemuDomainMachineIsARMVirt(def->os.machine, def->os.arch);
-}
-
-
-bool
-qemuDomainMachineIsARMVirt(const char *machine,
-                           const virArch arch)
-{
-    if (arch != VIR_ARCH_ARMV6L &&
-        arch != VIR_ARCH_ARMV7L &&
-        arch != VIR_ARCH_AARCH64)
-        return false;
-
-    if (STRNEQ(machine, "virt") &&
-        !STRPREFIX(machine, "virt-"))
-        return false;
-
-    return true;
-}
-
-
-bool
-qemuDomainIsRISCVVirt(const virDomainDef *def)
-{
-    return qemuDomainMachineIsRISCVVirt(def->os.machine, def->os.arch);
-}
-
-
-bool
-qemuDomainMachineIsRISCVVirt(const char *machine,
-                             const virArch arch)
-{
-    if (!ARCH_IS_RISCV(arch))
-        return false;
-
-    if (STRNEQ(machine, "virt") &&
-        !STRPREFIX(machine, "virt-"))
-        return false;
-
-    return true;
-}
-
-
-bool
-qemuDomainIsPSeries(const virDomainDef *def)
-{
-    return qemuDomainMachineIsPSeries(def->os.machine, def->os.arch);
-}
-
-
-bool
-qemuDomainMachineIsPSeries(const char *machine,
-                           const virArch arch)
-{
-    if (!ARCH_IS_PPC64(arch))
-        return false;
-
-    if (STRNEQ(machine, "pseries") &&
-        !STRPREFIX(machine, "pseries-"))
-        return false;
-
-    return true;
 }
 
 
@@ -10236,23 +10253,6 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
     }
 
     return 0;
-}
-
-
-bool
-qemuDomainHasBuiltinIDE(const virDomainDef *def)
-{
-    return qemuDomainMachineHasBuiltinIDE(def->os.machine);
-}
-
-
-bool
-qemuDomainMachineHasBuiltinIDE(const char *machine)
-{
-    return qemuDomainMachineIsI440FX(machine) ||
-        STREQ(machine, "malta") ||
-        STREQ(machine, "sun4u") ||
-        STREQ(machine, "g3beige");
 }
 
 

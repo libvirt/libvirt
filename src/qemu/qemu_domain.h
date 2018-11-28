@@ -828,20 +828,8 @@ void qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
 
 virDomainChrDefPtr qemuFindAgentConfig(virDomainDefPtr def);
 
-bool qemuDomainIsQ35(const virDomainDef *def);
-bool qemuDomainIsI440FX(const virDomainDef *def);
-bool qemuDomainHasPCIRoot(const virDomainDef *def);
-bool qemuDomainHasPCIeRoot(const virDomainDef *def);
-bool qemuDomainNeedsFDC(const virDomainDef *def);
-bool qemuDomainIsS390CCW(const virDomainDef *def);
-bool qemuDomainIsARMVirt(const virDomainDef *def);
-bool qemuDomainIsRISCVVirt(const virDomainDef *def);
-bool qemuDomainIsPSeries(const virDomainDef *def);
-bool qemuDomainHasBuiltinIDE(const virDomainDef *def);
-
 bool qemuDomainMachineIsQ35(const char *machine);
 bool qemuDomainMachineIsI440FX(const char *machine);
-bool qemuDomainMachineNeedsFDC(const char *machine);
 bool qemuDomainMachineIsS390CCW(const char *machine);
 bool qemuDomainMachineIsARMVirt(const char *machine,
                                 const virArch arch);
@@ -850,6 +838,18 @@ bool qemuDomainMachineIsRISCVVirt(const char *machine,
 bool qemuDomainMachineIsPSeries(const char *machine,
                                 const virArch arch);
 bool qemuDomainMachineHasBuiltinIDE(const char *machine);
+bool qemuDomainMachineNeedsFDC(const char *machine);
+
+bool qemuDomainIsQ35(const virDomainDef *def);
+bool qemuDomainIsI440FX(const virDomainDef *def);
+bool qemuDomainIsS390CCW(const virDomainDef *def);
+bool qemuDomainIsARMVirt(const virDomainDef *def);
+bool qemuDomainIsRISCVVirt(const virDomainDef *def);
+bool qemuDomainIsPSeries(const virDomainDef *def);
+bool qemuDomainHasPCIRoot(const virDomainDef *def);
+bool qemuDomainHasPCIeRoot(const virDomainDef *def);
+bool qemuDomainHasBuiltinIDE(const virDomainDef *def);
+bool qemuDomainNeedsFDC(const virDomainDef *def);
 
 void qemuDomainUpdateCurrentMemorySize(virDomainObjPtr vm);
 
