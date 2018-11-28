@@ -5243,7 +5243,7 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_FDC);
     }
 
-    if (qemuDomainMachineHasBuiltinIDE(machine))
+    if (qemuDomainMachineHasBuiltinIDE(machine, qemuCaps->arch))
         VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_IDE);
 
     VIR_DOMAIN_CAPS_ENUM_SET(disk->bus,

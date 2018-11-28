@@ -828,17 +828,22 @@ void qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
 
 virDomainChrDefPtr qemuFindAgentConfig(virDomainDefPtr def);
 
-bool qemuDomainMachineIsQ35(const char *machine);
-bool qemuDomainMachineIsI440FX(const char *machine);
-bool qemuDomainMachineIsS390CCW(const char *machine);
+bool qemuDomainMachineIsQ35(const char *machine,
+                            const virArch arch);
+bool qemuDomainMachineIsI440FX(const char *machine,
+                               const virArch arch);
+bool qemuDomainMachineIsS390CCW(const char *machine,
+                                const virArch arch);
 bool qemuDomainMachineIsARMVirt(const char *machine,
                                 const virArch arch);
 bool qemuDomainMachineIsRISCVVirt(const char *machine,
                                   const virArch arch);
 bool qemuDomainMachineIsPSeries(const char *machine,
                                 const virArch arch);
-bool qemuDomainMachineHasBuiltinIDE(const char *machine);
-bool qemuDomainMachineNeedsFDC(const char *machine);
+bool qemuDomainMachineHasBuiltinIDE(const char *machine,
+                                    const virArch arch);
+bool qemuDomainMachineNeedsFDC(const char *machine,
+                               const virArch arch);
 
 bool qemuDomainIsQ35(const virDomainDef *def);
 bool qemuDomainIsI440FX(const virDomainDef *def);

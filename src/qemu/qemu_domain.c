@@ -9876,7 +9876,8 @@ qemuFindAgentConfig(virDomainDefPtr def)
 
 
 bool
-qemuDomainMachineIsQ35(const char *machine)
+qemuDomainMachineIsQ35(const char *machine,
+                       const virArch arch ATTRIBUTE_UNUSED)
 {
     return (STRPREFIX(machine, "pc-q35-") ||
             STREQ(machine, "q35"));
@@ -9884,7 +9885,8 @@ qemuDomainMachineIsQ35(const char *machine)
 
 
 bool
-qemuDomainMachineIsI440FX(const char *machine)
+qemuDomainMachineIsI440FX(const char *machine,
+                          const virArch arch ATTRIBUTE_UNUSED)
 {
     return (STREQ(machine, "pc") ||
             STRPREFIX(machine, "pc-0.") ||
@@ -9895,7 +9897,8 @@ qemuDomainMachineIsI440FX(const char *machine)
 
 
 bool
-qemuDomainMachineIsS390CCW(const char *machine)
+qemuDomainMachineIsS390CCW(const char *machine,
+                           const virArch arch ATTRIBUTE_UNUSED)
 {
     return STRPREFIX(machine, "s390-ccw");
 }
@@ -9949,9 +9952,10 @@ qemuDomainMachineIsPSeries(const char *machine,
 
 
 bool
-qemuDomainMachineHasBuiltinIDE(const char *machine)
+qemuDomainMachineHasBuiltinIDE(const char *machine,
+                               const virArch arch)
 {
-    return qemuDomainMachineIsI440FX(machine) ||
+    return qemuDomainMachineIsI440FX(machine, arch) ||
         STREQ(machine, "malta") ||
         STREQ(machine, "sun4u") ||
         STREQ(machine, "g3beige");
@@ -9959,7 +9963,8 @@ qemuDomainMachineHasBuiltinIDE(const char *machine)
 
 
 bool
-qemuDomainMachineNeedsFDC(const char *machine)
+qemuDomainMachineNeedsFDC(const char *machine,
+                          const virArch arch ATTRIBUTE_UNUSED)
 {
     const char *p = STRSKIP(machine, "pc-q35-");
 
@@ -9979,21 +9984,21 @@ qemuDomainMachineNeedsFDC(const char *machine)
 bool
 qemuDomainIsQ35(const virDomainDef *def)
 {
-    return qemuDomainMachineIsQ35(def->os.machine);
+    return qemuDomainMachineIsQ35(def->os.machine, def->os.arch);
 }
 
 
 bool
 qemuDomainIsI440FX(const virDomainDef *def)
 {
-    return qemuDomainMachineIsI440FX(def->os.machine);
+    return qemuDomainMachineIsI440FX(def->os.machine, def->os.arch);
 }
 
 
 bool
 qemuDomainIsS390CCW(const virDomainDef *def)
 {
-    return qemuDomainMachineIsS390CCW(def->os.machine);
+    return qemuDomainMachineIsS390CCW(def->os.machine, def->os.arch);
 }
 
 
@@ -10051,14 +10056,14 @@ qemuDomainHasPCIeRoot(const virDomainDef *def)
 bool
 qemuDomainHasBuiltinIDE(const virDomainDef *def)
 {
-    return qemuDomainMachineHasBuiltinIDE(def->os.machine);
+    return qemuDomainMachineHasBuiltinIDE(def->os.machine, def->os.arch);
 }
 
 
 bool
 qemuDomainNeedsFDC(const virDomainDef *def)
 {
-    return qemuDomainMachineNeedsFDC(def->os.machine);
+    return qemuDomainMachineNeedsFDC(def->os.machine, def->os.arch);
 }
 
 
