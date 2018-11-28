@@ -37,6 +37,11 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Add support for ARMv6l guests
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
