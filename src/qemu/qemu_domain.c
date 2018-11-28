@@ -3260,6 +3260,13 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
             addPCIRoot = true;
         break;
 
+    case VIR_ARCH_ARMV6L:
+        addDefaultUSB = false;
+        addDefaultMemballoon = false;
+        if (STREQ(def->os.machine, "versatilepb"))
+            addPCIRoot = true;
+        break;
+
     case VIR_ARCH_ARMV7L:
     case VIR_ARCH_AARCH64:
         addDefaultUSB = false;
@@ -3305,7 +3312,6 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         addPCIRoot = true;
         break;
 
-    case VIR_ARCH_ARMV6L:
     case VIR_ARCH_ARMV7B:
     case VIR_ARCH_CRIS:
     case VIR_ARCH_ITANIUM:
