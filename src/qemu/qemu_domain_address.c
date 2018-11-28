@@ -2356,28 +2356,6 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 }
 
 
-static bool
-qemuDomainSupportsPCI(virDomainDefPtr def,
-                      virQEMUCapsPtr qemuCaps)
-{
-    if ((def->os.arch != VIR_ARCH_ARMV6L) &&
-        (def->os.arch != VIR_ARCH_ARMV7L) &&
-        (def->os.arch != VIR_ARCH_AARCH64) &&
-        !ARCH_IS_RISCV(def->os.arch))
-        return true;
-
-    if (STREQ(def->os.machine, "versatilepb"))
-        return true;
-
-    if ((qemuDomainIsARMVirt(def) ||
-         qemuDomainIsRISCVVirt(def)) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX))
-        return true;
-
-    return false;
-}
-
-
 static void
 qemuDomainPCIControllerSetDefaultModelName(virDomainControllerDefPtr cont,
                                            virDomainDefPtr def,
