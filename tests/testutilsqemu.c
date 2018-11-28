@@ -392,7 +392,39 @@ static int testQemuAddS390Guest(virCapsPtr caps)
     return -1;
 }
 
-static int testQemuAddArmGuest(virCapsPtr caps)
+static int testQemuAddArm6Guest(virCapsPtr caps)
+{
+    static const char *machines[] = { "versatilepb" };
+    virCapsGuestMachinePtr *capsmachines = NULL;
+    virCapsGuestPtr guest;
+
+    capsmachines = virCapabilitiesAllocMachines(machines,
+                                                ARRAY_CARDINALITY(machines));
+    if (!capsmachines)
+        goto error;
+
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_ARMV6L,
+                                    QEMUBinList[TEST_UTILS_QEMU_BIN_ARM],
+                                    NULL,
+                                    ARRAY_CARDINALITY(machines),
+                                    capsmachines);
+    if (!guest)
+        goto error;
+
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
+        goto error;
+
+    return 0;
+
+ error:
+    virCapabilitiesFreeMachines(capsmachines, ARRAY_CARDINALITY(machines));
+    return -1;
+}
+
+static int testQemuAddArm7Guest(virCapsPtr caps)
 {
     static const char *machines[] = { "vexpress-a9",
                                       "vexpress-a15",
@@ -514,7 +546,10 @@ virCapsPtr testQemuCapsInit(void)
     if (testQemuAddS390Guest(caps))
         goto cleanup;
 
-    if (testQemuAddArmGuest(caps))
+    if (testQemuAddArm6Guest(caps))
+        goto cleanup;
+
+    if (testQemuAddArm7Guest(caps))
         goto cleanup;
 
     if (testQemuAddAARCH64Guest(caps))

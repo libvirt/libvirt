@@ -625,7 +625,7 @@ static const char *virQEMUCapsArchToString(virArch arch)
 {
     if (arch == VIR_ARCH_I686)
         return "i386";
-    else if (arch == VIR_ARCH_ARMV7L)
+    else if (arch == VIR_ARCH_ARMV6L || arch == VIR_ARCH_ARMV7L)
         return "arm";
     else if (arch == VIR_ARCH_OR32)
         return "or32";
@@ -2201,7 +2201,7 @@ static const char *preferredMachines[] =
 {
     NULL, /* VIR_ARCH_NONE (not a real arch :) */
     "clipper", /* VIR_ARCH_ALPHA */
-    NULL, /* VIR_ARCH_ARMV6L (no QEMU impl) */
+    "integratorcp", /* VIR_ARCH_ARMV6L */
     "integratorcp", /* VIR_ARCH_ARMV7L */
     "integratorcp", /* VIR_ARCH_ARMV7B */
 
@@ -4179,6 +4179,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     /* GIC capabilities, eg. available GIC versions */
     if ((qemuCaps->arch == VIR_ARCH_AARCH64 ||
+         qemuCaps->arch == VIR_ARCH_ARMV6L ||
          qemuCaps->arch == VIR_ARCH_ARMV7L) &&
         virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
         goto cleanup;

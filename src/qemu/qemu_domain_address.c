@@ -468,7 +468,8 @@ static void
 qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
                                        virQEMUCapsPtr qemuCaps)
 {
-    if (def->os.arch != VIR_ARCH_ARMV7L &&
+    if (def->os.arch != VIR_ARCH_ARMV6L &&
+        def->os.arch != VIR_ARCH_ARMV7L &&
         def->os.arch != VIR_ARCH_AARCH64)
         return;
 
@@ -2367,7 +2368,8 @@ static bool
 qemuDomainSupportsPCI(virDomainDefPtr def,
                       virQEMUCapsPtr qemuCaps)
 {
-    if ((def->os.arch != VIR_ARCH_ARMV7L) &&
+    if ((def->os.arch != VIR_ARCH_ARMV6L) &&
+        (def->os.arch != VIR_ARCH_ARMV7L) &&
         (def->os.arch != VIR_ARCH_AARCH64) &&
         !ARCH_IS_RISCV(def->os.arch))
         return true;

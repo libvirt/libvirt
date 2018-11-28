@@ -9223,7 +9223,9 @@ static bool
 qemuChrIsPlatformDevice(const virDomainDef *def,
                         virDomainChrDefPtr chr)
 {
-    if (def->os.arch == VIR_ARCH_ARMV7L || def->os.arch == VIR_ARCH_AARCH64) {
+    if (def->os.arch == VIR_ARCH_ARMV6L ||
+        def->os.arch == VIR_ARCH_ARMV7L ||
+        def->os.arch == VIR_ARCH_AARCH64) {
 
         /* pl011 (used on mach-virt) is a platform device */
         if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
