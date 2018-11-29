@@ -389,6 +389,9 @@ struct _qemuDomainObjPrivate {
 
     /* true if global -mem-prealloc appears on cmd line */
     bool memPrealloc;
+
+    /* running block jobs */
+    virHashTablePtr blockjobs;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \

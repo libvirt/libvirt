@@ -1975,6 +1975,9 @@ qemuDomainObjPrivateAlloc(void *opaque)
     if (!(priv->devs = virChrdevAlloc()))
         goto error;
 
+    if (!(priv->blockjobs = virHashCreate(5, virObjectFreeHashData)))
+        goto error;
+
     priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
     priv->driver = opaque;
 
@@ -2044,6 +2047,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
 
     qemuDomainObjResetJob(priv);
     qemuDomainObjResetAsyncJob(priv);
+
+    virHashRemoveAll(priv->blockjobs);
 }
 
 
@@ -2074,6 +2079,8 @@ qemuDomainObjPrivateFree(void *data)
 
     qemuDomainSecretInfoFree(&priv->migSecinfo);
     qemuDomainMasterKeyFree(priv);
+
+    virHashFree(priv->blockjobs);
 
     VIR_FREE(priv);
 }
