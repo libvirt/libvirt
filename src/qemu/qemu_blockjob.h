@@ -80,7 +80,8 @@ struct _qemuBlockJobData {
 
 
 qemuBlockJobDataPtr
-qemuBlockJobDiskNew(virDomainDiskDefPtr disk,
+qemuBlockJobDiskNew(virDomainObjPtr vm,
+                    virDomainDiskDefPtr disk,
                     qemuBlockJobType type,
                     const char *jobname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
@@ -98,7 +99,8 @@ qemuBlockJobIsRunning(qemuBlockJobDataPtr job)
     ATTRIBUTE_NONNULL(1);
 
 void
-qemuBlockJobStartupFinalize(qemuBlockJobDataPtr job);
+qemuBlockJobStartupFinalize(virDomainObjPtr vm,
+                            qemuBlockJobDataPtr job);
 
 int qemuBlockJobUpdate(virDomainObjPtr vm,
                        qemuBlockJobDataPtr job,

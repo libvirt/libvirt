@@ -4702,7 +4702,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     }
 
     if (!(job = qemuBlockJobDiskGetJob(disk))) {
-        if (!(job = qemuBlockJobDiskNew(disk, type, diskAlias)))
+        if (!(job = qemuBlockJobDiskNew(vm, disk, type, diskAlias)))
             goto endjob;
         qemuBlockJobStarted(job);
     }
@@ -4712,7 +4712,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
 
  endjob:
-    qemuBlockJobStartupFinalize(job);
+    qemuBlockJobStartupFinalize(vm, job);
     qemuDomainObjEndJob(driver, vm);
 }
 
@@ -17084,7 +17084,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         speed <<= 20;
     }
 
-    if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_PULL, device)))
+    if (!(job = qemuBlockJobDiskNew(vm, disk, QEMU_BLOCKJOB_TYPE_PULL, device)))
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -17110,7 +17110,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    qemuBlockJobStartupFinalize(job);
+    qemuBlockJobStartupFinalize(vm, job);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -17655,7 +17655,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainStorageSourceChainAccessAllow(driver, vm, mirror) < 0)
         goto endjob;
 
-    if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_COPY, device)))
+    if (!(job = qemuBlockJobDiskNew(vm, disk, QEMU_BLOCKJOB_TYPE_COPY, device)))
         goto endjob;
 
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
@@ -17691,7 +17691,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         VIR_WARN("%s", _("unable to remove just-created copy target"));
     virStorageFileDeinit(mirror);
     qemuDomainObjEndJob(driver, vm);
-    qemuBlockJobStartupFinalize(job);
+    qemuBlockJobStartupFinalize(vm, job);
 
     return ret;
 }
@@ -18042,7 +18042,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
          qemuDomainStorageSourceAccessAllow(driver, vm, top_parent, false, false) < 0))
         goto endjob;
 
-    if (!(job = qemuBlockJobDiskNew(disk, jobtype, device)))
+    if (!(job = qemuBlockJobDiskNew(vm, disk, jobtype, device)))
         goto endjob;
 
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
@@ -18089,7 +18089,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
             virFreeError(orig_err);
         }
     }
-    qemuBlockJobStartupFinalize(job);
+    qemuBlockJobStartupFinalize(vm, job);
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:

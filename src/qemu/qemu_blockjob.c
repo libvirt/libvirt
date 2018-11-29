@@ -94,8 +94,16 @@ qemuBlockJobDataNew(qemuBlockJobType type,
 
 static int
 qemuBlockJobRegister(qemuBlockJobDataPtr job,
+                     virDomainObjPtr vm,
                      virDomainDiskDefPtr disk)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (virHashAddEntry(priv->blockjobs, job->name, virObjectRef(job)) < 0) {
+        virObjectUnref(job);
+        return -1;
+    }
+
     if (disk) {
         job->disk = disk;
         QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = virObjectRef(job);
@@ -106,8 +114,10 @@ qemuBlockJobRegister(qemuBlockJobDataPtr job,
 
 
 static void
-qemuBlockJobUnregister(qemuBlockJobDataPtr job)
+qemuBlockJobUnregister(qemuBlockJobDataPtr job,
+                       virDomainObjPtr vm)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainDiskPrivatePtr diskPriv;
 
     if (job->disk) {
@@ -120,6 +130,9 @@ qemuBlockJobUnregister(qemuBlockJobDataPtr job)
 
         job->disk = NULL;
     }
+
+    /* this may remove the last reference of 'job' */
+    virHashRemoveEntry(priv->blockjobs, job->name);
 }
 
 
@@ -132,7 +145,8 @@ qemuBlockJobUnregister(qemuBlockJobDataPtr job)
  * Returns 0 on success and -1 on failure.
  */
 qemuBlockJobDataPtr
-qemuBlockJobDiskNew(virDomainDiskDefPtr disk,
+qemuBlockJobDiskNew(virDomainObjPtr vm,
+                    virDomainDiskDefPtr disk,
                     qemuBlockJobType type,
                     const char *jobname)
 {
@@ -141,7 +155,7 @@ qemuBlockJobDiskNew(virDomainDiskDefPtr disk,
     if (!(job = qemuBlockJobDataNew(type, jobname)))
         return NULL;
 
-    if (qemuBlockJobRegister(job, disk) < 0)
+    if (qemuBlockJobRegister(job, vm, disk) < 0)
         return NULL;
 
     VIR_RETURN_PTR(job);
@@ -189,13 +203,14 @@ qemuBlockJobStarted(qemuBlockJobDataPtr job)
  * to @job if it was started.
  */
 void
-qemuBlockJobStartupFinalize(qemuBlockJobDataPtr job)
+qemuBlockJobStartupFinalize(virDomainObjPtr vm,
+                            qemuBlockJobDataPtr job)
 {
     if (!job)
         return;
 
     if (job->state == QEMU_BLOCKJOB_STATE_NEW)
-        qemuBlockJobUnregister(job);
+        qemuBlockJobUnregister(job, vm);
 
     virObjectUnref(job);
 }
@@ -314,7 +329,7 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
     virStorageSourceBackingStoreClear(disk->src);
     ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true));
     ignore_value(qemuBlockNodeNamesDetect(driver, vm, asyncJob));
-    qemuBlockJobUnregister(job);
+    qemuBlockJobUnregister(job, vm);
     qemuDomainSaveConfig(vm);
 }
 
@@ -373,7 +388,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
         }
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-        qemuBlockJobUnregister(job);
+        qemuBlockJobUnregister(job, vm);
         break;
 
     case VIR_DOMAIN_BLOCK_JOB_LAST:
