@@ -57,6 +57,12 @@ VIR_ENUM_IMPL(virAccessPermNetwork,
               VIR_ACCESS_PERM_NETWORK_LAST,
               "getattr", "read", "write",
               "save", "delete", "start", "stop",
+              "search_ports",
+);
+
+VIR_ENUM_IMPL(virAccessPermNetworkPort,
+              VIR_ACCESS_PERM_NETWORK_PORT_LAST,
+              "getattr", "read", "write", "create", "delete",
 );
 
 VIR_ENUM_IMPL(virAccessPermNodeDevice,

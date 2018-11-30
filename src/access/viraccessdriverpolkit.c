@@ -238,6 +238,31 @@ virAccessDriverPolkitCheckNetwork(virAccessManagerPtr manager,
 }
 
 static int
+virAccessDriverPolkitCheckNetworkPort(virAccessManagerPtr manager,
+                                      const char *driverName,
+                                      virNetworkDefPtr network,
+                                      virNetworkPortDefPtr port,
+                                      virAccessPermNetworkPort perm)
+{
+    char uuidstr1[VIR_UUID_STRING_BUFLEN];
+    char uuidstr2[VIR_UUID_STRING_BUFLEN];
+    const char *attrs[] = {
+        "connect_driver", driverName,
+        "network_name", network->name,
+        "network_uuid", uuidstr1,
+        "port_uuid", uuidstr2,
+        NULL,
+    };
+    virUUIDFormat(network->uuid, uuidstr1);
+    virUUIDFormat(port->uuid, uuidstr2);
+
+    return virAccessDriverPolkitCheck(manager,
+                                      "network-port",
+                                      virAccessPermNetworkPortTypeToString(perm),
+                                      attrs);
+}
+
+static int
 virAccessDriverPolkitCheckNodeDevice(virAccessManagerPtr manager,
                                      const char *driverName,
                                      virNodeDeviceDefPtr nodedev,
@@ -427,6 +452,7 @@ virAccessDriver accessDriverPolkit = {
     .checkDomain = virAccessDriverPolkitCheckDomain,
     .checkInterface = virAccessDriverPolkitCheckInterface,
     .checkNetwork = virAccessDriverPolkitCheckNetwork,
+    .checkNetworkPort = virAccessDriverPolkitCheckNetworkPort,
     .checkNodeDevice = virAccessDriverPolkitCheckNodeDevice,
     .checkNWFilter = virAccessDriverPolkitCheckNWFilter,
     .checkNWFilterBinding = virAccessDriverPolkitCheckNWFilterBinding,

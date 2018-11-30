@@ -29,6 +29,7 @@
 #include "conf/secret_conf.h"
 #include "conf/interface_conf.h"
 #include "conf/virnwfilterbindingdef.h"
+#include "conf/virnetworkportdef.h"
 #include "access/viraccessperm.h"
 
 typedef struct _virAccessManager virAccessManager;
@@ -65,6 +66,11 @@ int virAccessManagerCheckNetwork(virAccessManagerPtr manager,
                                  const char *driverName,
                                  virNetworkDefPtr network,
                                  virAccessPermNetwork perm);
+int virAccessManagerCheckNetworkPort(virAccessManagerPtr manager,
+                                     const char *driverName,
+                                     virNetworkDefPtr network,
+                                     virNetworkPortDefPtr port,
+                                     virAccessPermNetworkPort perm);
 int virAccessManagerCheckNodeDevice(virAccessManagerPtr manager,
                                     const char *driverName,
                                     virNodeDeviceDefPtr nodedev,

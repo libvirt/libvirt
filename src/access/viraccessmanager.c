@@ -268,6 +268,22 @@ int virAccessManagerCheckNetwork(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
+int virAccessManagerCheckNetworkPort(virAccessManagerPtr manager,
+                                     const char *driverName,
+                                     virNetworkDefPtr network,
+                                     virNetworkPortDefPtr port,
+                                     virAccessPermNetworkPort perm)
+{
+    int ret = 0;
+    VIR_DEBUG("manager=%p(name=%s) driver=%s network=%p port=%p perm=%d",
+              manager, manager->drv->name, driverName, network, port, perm);
+
+    if (manager->drv->checkNetworkPort)
+        ret = manager->drv->checkNetworkPort(manager, driverName, network, port, perm);
+
+    return virAccessManagerSanitizeError(ret, driverName);
+}
+
 int virAccessManagerCheckNodeDevice(virAccessManagerPtr manager,
                                     const char *driverName,
                                     virNodeDeviceDefPtr nodedev,

@@ -152,6 +152,30 @@ virAccessDriverStackCheckNetwork(virAccessManagerPtr manager,
 }
 
 static int
+virAccessDriverStackCheckNetworkPort(virAccessManagerPtr manager,
+                                     const char *driverName,
+                                     virNetworkDefPtr network,
+                                     virNetworkPortDefPtr port,
+                                     virAccessPermNetworkPort perm)
+{
+    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    int ret = 1;
+    size_t i;
+
+    for (i = 0; i < priv->managersLen; i++) {
+        int rv;
+        /* We do not short-circuit on first denial - always check all drivers */
+        rv = virAccessManagerCheckNetworkPort(priv->managers[i], driverName, network, port, perm);
+        if (rv == 0 && ret != -1)
+            ret = 0;
+        else if (rv < 0)
+            ret = -1;
+    }
+
+    return ret;
+}
+
+static int
 virAccessDriverStackCheckNodeDevice(virAccessManagerPtr manager,
                                     const char *driverName,
                                     virNodeDeviceDefPtr nodedev,
@@ -298,6 +322,7 @@ virAccessDriver accessDriverStack = {
     .checkDomain = virAccessDriverStackCheckDomain,
     .checkInterface = virAccessDriverStackCheckInterface,
     .checkNetwork = virAccessDriverStackCheckNetwork,
+    .checkNetworkPort = virAccessDriverStackCheckNetworkPort,
     .checkNodeDevice = virAccessDriverStackCheckNodeDevice,
     .checkNWFilter = virAccessDriverStackCheckNWFilter,
     .checkNWFilterBinding = virAccessDriverStackCheckNWFilterBinding,
