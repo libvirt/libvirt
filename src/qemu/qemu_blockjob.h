@@ -42,6 +42,8 @@ typedef enum {
 } qemuBlockjobState;
 verify((int)QEMU_BLOCKJOB_STATE_NEW == VIR_DOMAIN_BLOCK_JOB_LAST);
 
+VIR_ENUM_DECL(qemuBlockjobState);
+
 /**
  * This enum has to map all known block job types from enum virDomainBlockJobType
  * to the same values. All internal blockjobs can be mapped after and don't
@@ -59,6 +61,8 @@ typedef enum {
     QEMU_BLOCKJOB_TYPE_LAST
 } qemuBlockJobType;
 verify((int)QEMU_BLOCKJOB_TYPE_INTERNAL == VIR_DOMAIN_BLOCK_JOB_TYPE_LAST);
+
+VIR_ENUM_DECL(qemuBlockjob);
 
 typedef struct _qemuBlockJobData qemuBlockJobData;
 typedef qemuBlockJobData *qemuBlockJobDataPtr;
