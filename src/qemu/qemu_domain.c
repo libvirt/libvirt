@@ -2234,14 +2234,11 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
 {
     virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
     bool bj = qemuDomainHasBlockjob(vm, false);
-    int ret;
 
     virBufferAsprintf(&attrBuf, " active='%s'",
                       virTristateBoolTypeToString(virTristateBoolFromBool(bj)));
 
-    ret = virXMLFormatElement(buf, "blockjobs", &attrBuf, NULL);
-    virBufferFreeAndReset(&attrBuf);
-    return ret;
+    return virXMLFormatElement(buf, "blockjobs", &attrBuf, NULL);
 }
 
 

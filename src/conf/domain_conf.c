@@ -24042,7 +24042,6 @@ virDomainDiskDefFormatIotune(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
@@ -24077,10 +24076,7 @@ virDomainDiskDefFormatIotune(virBufferPtr buf,
     FORMAT_IOTUNE(read_iops_sec_max_length);
     FORMAT_IOTUNE(write_iops_sec_max_length);
 
-    ret = virXMLFormatElement(buf, "iotune", NULL, &childBuf);
-
-    virBufferFreeAndReset(&childBuf);
-    return ret;
+    return virXMLFormatElement(buf, "iotune", NULL, &childBuf);
 }
 
 #undef FORMAT_IOTUNE
@@ -24091,7 +24087,6 @@ virDomainDiskDefFormatDriver(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
     virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
 
     virBufferEscapeString(&driverBuf, " name='%s'", virDomainDiskGetDriver(disk));
 
@@ -24143,10 +24138,7 @@ virDomainDiskDefFormatDriver(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverBuf, disk->virtio);
 
-    ret = virXMLFormatElement(buf, "driver", &driverBuf, NULL);
-
-    virBufferFreeAndReset(&driverBuf);
-    return ret;
+    return virXMLFormatElement(buf, "driver", &driverBuf, NULL);
 }
 
 
