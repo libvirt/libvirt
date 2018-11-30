@@ -40,6 +40,7 @@ virClassPtr virDomainCheckpointClass;
 virClassPtr virDomainSnapshotClass;
 virClassPtr virInterfaceClass;
 virClassPtr virNetworkClass;
+virClassPtr virNetworkPortClass;
 virClassPtr virNodeDeviceClass;
 virClassPtr virNWFilterClass;
 virClassPtr virNWFilterBindingClass;
@@ -55,6 +56,7 @@ static void virDomainCheckpointDispose(void *obj);
 static void virDomainSnapshotDispose(void *obj);
 static void virInterfaceDispose(void *obj);
 static void virNetworkDispose(void *obj);
+static void virNetworkPortDispose(void *obj);
 static void virNodeDeviceDispose(void *obj);
 static void virNWFilterDispose(void *obj);
 static void virNWFilterBindingDispose(void *obj);
@@ -92,6 +94,7 @@ virDataTypesOnceInit(void)
     DECLARE_CLASS(virDomainSnapshot);
     DECLARE_CLASS(virInterface);
     DECLARE_CLASS(virNetwork);
+    DECLARE_CLASS(virNetworkPort);
     DECLARE_CLASS(virNodeDevice);
     DECLARE_CLASS(virNWFilter);
     DECLARE_CLASS(virNWFilterBinding);
@@ -385,6 +388,63 @@ virNetworkDispose(void *obj)
 
     VIR_FREE(network->name);
     virObjectUnref(network->conn);
+}
+
+
+/**
+ * virGetNetworkPort:
+ * @net: the network object
+ * @uuid: pointer to the uuid
+ *
+ * Allocates a new network port object. When the object is no longer needed,
+ * virObjectUnref() must be called in order to not leak data.
+ *
+ * Returns a pointer to the network port object, or NULL on error.
+ */
+virNetworkPortPtr
+virGetNetworkPort(virNetworkPtr net, const unsigned char *uuid)
+{
+    virNetworkPortPtr ret = NULL;
+
+    if (virDataTypesInitialize() < 0)
+        return NULL;
+
+    virCheckNetworkGoto(net, error);
+    virCheckNonNullArgGoto(uuid, error);
+
+    if (!(ret = virObjectNew(virNetworkPortClass)))
+        goto error;
+
+    ret->net = virObjectRef(net);
+    memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
+
+    return ret;
+
+ error:
+    virObjectUnref(ret);
+    return NULL;
+}
+
+/**
+ * virNetworkPortDispose:
+ * @obj: the network port to release
+ *
+ * Unconditionally release all memory associated with a network port.
+ * The network port object must not be used once this method returns.
+ *
+ * It will also unreference the associated network object,
+ * which may also be released if its ref count hits zero.
+ */
+static void
+virNetworkPortDispose(void *obj)
+{
+    virNetworkPortPtr port = obj;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(port->uuid, uuidstr);
+    VIR_DEBUG("release network port %p %s", port, uuidstr);
+
+    virObjectUnref(port->net);
 }
 
 

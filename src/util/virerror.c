@@ -1226,6 +1226,15 @@ const virErrorMsgTuple virErrorMsgStrings[VIR_ERR_NUMBER_LAST] = {
     [VIR_ERR_NO_DOMAIN_BACKUP] = {
         N_("Domain backup job id not found"),
         N_("Domain backup job id not found: %s") },
+    [VIR_ERR_INVALID_NETWORK_PORT] = {
+        N_("Invalid network port pointer"),
+        N_("Invalid network port pointer: %s") },
+    [VIR_ERR_NETWORK_PORT_EXIST] = {
+        N_("this network port exists already"),
+        N_("network port %s exists already") },
+    [VIR_ERR_NO_NETWORK_PORT] = {
+        N_("network port not found"),
+        N_("network port not found: %s") },
 };
 
 

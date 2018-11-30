@@ -34,6 +34,7 @@ extern virClassPtr virDomainCheckpointClass;
 extern virClassPtr virDomainSnapshotClass;
 extern virClassPtr virInterfaceClass;
 extern virClassPtr virNetworkClass;
+extern virClassPtr virNetworkPortClass;
 extern virClassPtr virNodeDeviceClass;
 extern virClassPtr virNWFilterClass;
 extern virClassPtr virNWFilterBindingClass;
@@ -110,6 +111,33 @@ extern virClassPtr virAdmClientClass;
             !virObjectIsClass(_net->conn, virConnectClass)) { \
             virReportErrorHelper(VIR_FROM_NETWORK, \
                                  VIR_ERR_INVALID_NETWORK, \
+                                 __FILE__, __FUNCTION__, __LINE__, \
+                                 __FUNCTION__); \
+            goto label; \
+        } \
+    } while (0)
+
+#define virCheckNetworkPortReturn(obj, retval) \
+    do { \
+        virNetworkPortPtr _port = (obj); \
+        if (!virObjectIsClass(_port, virNetworkPortClass) || \
+            !virObjectIsClass(_port->net, virNetworkClass)) { \
+            virReportErrorHelper(VIR_FROM_NETWORK, \
+                                 VIR_ERR_INVALID_NETWORK_PORT, \
+                                 __FILE__, __FUNCTION__, __LINE__, \
+                                 __FUNCTION__); \
+            virDispatchError(NULL); \
+            return retval; \
+        } \
+    } while (0)
+
+#define virCheckNetworkPortGoto(obj, label) \
+    do { \
+        virNetworkPortPtr _port = (obj); \
+        if (!virObjectIsClass(_port, virNetworkPortClass) || \
+            !virObjectIsClass(_port->net, virNetworkClass)) { \
+            virReportErrorHelper(VIR_FROM_NETWORK, \
+                                 VIR_ERR_INVALID_NETWORK_PORT, \
                                  __FILE__, __FUNCTION__, __LINE__, \
                                  __FUNCTION__); \
             goto label; \
@@ -589,6 +617,17 @@ struct _virNetwork {
 };
 
 /**
+* _virNetworkPort:
+*
+* Internal structure associated to a network port
+*/
+struct _virNetworkPort {
+    virObject parent;
+    virNetworkPtr net;                   /* pointer back to the connection */
+    unsigned char uuid[VIR_UUID_BUFLEN]; /* the network unique identifier */
+};
+
+/**
 * _virInterface:
 *
 * Internal structure associated to a physical host interface
@@ -745,6 +784,8 @@ virDomainPtr virGetDomain(virConnectPtr conn,
 virNetworkPtr virGetNetwork(virConnectPtr conn,
                             const char *name,
                             const unsigned char *uuid);
+virNetworkPortPtr virGetNetworkPort(virNetworkPtr net,
+                                    const unsigned char *uuid);
 virInterfacePtr virGetInterface(virConnectPtr conn,
                                 const char *name,
                                 const char *mac);

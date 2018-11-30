@@ -23,6 +23,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virtypedparam.h"
 
 VIR_LOG_INIT("libvirt.network");
 
@@ -1245,4 +1246,447 @@ virNetworkDHCPLeaseFree(virNetworkDHCPLeasePtr lease)
     VIR_FREE(lease->hostname);
     VIR_FREE(lease->clientid);
     VIR_FREE(lease);
+}
+
+
+/**
+ * virNetworkPortLookupByUUID:
+ * @net: pointer to the network object
+ * @uuid: the raw UUID for the network port
+ *
+ * Try to lookup a port on the given network based on its UUID.
+ *
+ * virNetworkPortFree should be used to free the resources after the
+ * network port object is no longer needed.
+ *
+ * Returns a new network port object or NULL in case of failure.  If the
+ * network port cannot be found, then VIR_ERR_NO_NETWORK_PORT error is raised.
+ */
+virNetworkPortPtr
+virNetworkPortLookupByUUID(virNetworkPtr net,
+                           const unsigned char *uuid)
+{
+    VIR_UUID_DEBUG(net, uuid);
+
+    virResetLastError();
+
+    virCheckNetworkReturn(net, NULL);
+    virCheckNonNullArgGoto(uuid, error);
+
+    if (net->conn->networkDriver && net->conn->networkDriver->networkPortLookupByUUID) {
+        virNetworkPortPtr ret;
+        ret = net->conn->networkDriver->networkPortLookupByUUID(net, uuid);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(net->conn);
+    return NULL;
+}
+
+
+/**
+ * virNetworkPortLookupByUUIDString:
+ * @net: pointer to the network object
+ * @uuidstr: the string UUID for the port
+ *
+ * Try to lookup a port on the given network based on its UUID.
+ *
+ * Returns a new network port object or NULL in case of failure.  If the
+ * network port cannot be found, then VIR_ERR_NO_NETWORK_PORT error is raised.
+ */
+virNetworkPortPtr
+virNetworkPortLookupByUUIDString(virNetworkPtr net,
+                                 const char *uuidstr)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    VIR_DEBUG("net=%p, uuidstr=%s", net, NULLSTR(uuidstr));
+
+    virResetLastError();
+
+    virCheckNetworkReturn(net, NULL);
+    virCheckNonNullArgGoto(uuidstr, error);
+
+    if (virUUIDParse(uuidstr, uuid) < 0) {
+        virReportInvalidArg(uuidstr,
+                            _("uuidstr in %s must be a valid UUID"),
+                            __FUNCTION__);
+        goto error;
+    }
+
+    return virNetworkPortLookupByUUID(net, &uuid[0]);
+
+ error:
+    virDispatchError(net->conn);
+    return NULL;
+}
+
+
+/**
+ * virNetworkPortSetParameters:
+ * @port: a network port object
+ * @params: pointer to interface parameter objects
+ * @nparams: number of interface parameter (this value can be the same or
+ *          less than the number of parameters supported)
+ * @flags: currently unused, pass 0
+ *
+ * Change a subset or all parameters of the network port; currently this
+ * includes bandwidth parameters.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virNetworkPortSetParameters(virNetworkPortPtr port,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("port=%p, params=%p, nparams=%d, flags=0x%x", port, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, -1);
+    conn = port->net->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->networkDriver && conn->networkDriver->networkPortSetParameters) {
+        int ret;
+        ret = conn->networkDriver->networkPortSetParameters(port, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virNetworkPortGetParameters:
+ * @port: a network port object
+ * @params: pointer to pointer of interface parameter objects
+ * @nparams: pointer to received number of interface parameter
+ * @flags: currently unused, pass 0
+ *
+ * Get all interface parameters. On input, @params should be initialized
+ * to NULL. On return @params will be allocated with the size large
+ * enough to hold all parameters, and @nparams will be updated to say
+ * how many parameters are present. @params should be freed by the caller
+ * on success.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virNetworkPortGetParameters(virNetworkPortPtr port,
+                            virTypedParameterPtr *params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("port=%p, params=%p, nparams=%p, flags=0x%x", port, params, nparams, flags);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, -1);
+    conn = port->net->conn;
+
+    if (conn->networkDriver && conn->networkDriver->networkPortGetParameters) {
+        int ret;
+        ret = conn->networkDriver->networkPortGetParameters(port, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virNetworkPortCreateXML:
+ * @net: pointer to the network object
+ * @xmldesc: an XML description of the port
+ * @flags: currently unused, pass 0
+ *
+ * Create a new network port, based on an XML description
+ * similar to the one returned by virNetworkPortGetXMLDesc()
+ *
+ * virNetworkPortFree should be used to free the resources after the
+ * network port object is no longer needed.
+ *
+ * Returns a new network port object or NULL in case of failure
+ */
+virNetworkPortPtr
+virNetworkPortCreateXML(virNetworkPtr net,
+                        const char *xmldesc,
+                        unsigned int flags)
+{
+    VIR_DEBUG("net=%p, xmldesc=%s, flags=0x%x", net, NULLSTR(xmldesc), flags);
+
+    virResetLastError();
+
+    virCheckNetworkReturn(net, NULL);
+    virCheckNonNullArgGoto(xmldesc, error);
+    virCheckReadOnlyGoto(net->conn->flags, error);
+
+    if (net->conn->networkDriver && net->conn->networkDriver->networkPortCreateXML) {
+        virNetworkPortPtr ret;
+        ret = net->conn->networkDriver->networkPortCreateXML(net, xmldesc, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(net->conn);
+    return NULL;
+}
+
+/**
+ * virNetworkPortGetNetwork:
+ * @port: pointer to a network port
+ *
+ * Provides the network pointer associated with a port.  The
+ * reference counter on the connection is not increased by this
+ * call.
+ *
+ * Returns the virNetworkPtr or NULL in case of failure.
+ */
+virNetworkPtr
+virNetworkPortGetNetwork(virNetworkPortPtr port)
+{
+    VIR_DEBUG("port=%p", port);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, NULL);
+
+    return port->net;
+}
+
+
+/**
+ * virNetworkPortGetXMLDesc:
+ * @port: a network port object
+ * @flags: currently unused, pass 0
+ *
+ * Provide an XML description of the network port. The description may be reused
+ * later to recreate the port with virNetworkPortCreateXML().
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *
+virNetworkPortGetXMLDesc(virNetworkPortPtr port,
+                         unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("port=%p, flags=0x%x", port, flags);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, NULL);
+    conn = port->net->conn;
+
+    if (conn->networkDriver && conn->networkDriver->networkPortGetXMLDesc) {
+        char *ret;
+        ret = conn->networkDriver->networkPortGetXMLDesc(port, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
+ * virNetworkPortGetUUID:
+ * @port: a network port object
+ * @uuid: pointer to a VIR_UUID_BUFLEN bytes array
+ *
+ * Get the UUID for a network port
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virNetworkPortGetUUID(virNetworkPortPtr port,
+                      unsigned char *uuid)
+{
+    VIR_DEBUG("port=%p, uuid=%p", port, uuid);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, -1);
+    virCheckNonNullArgGoto(uuid, error);
+
+    memcpy(uuid, &port->uuid[0], VIR_UUID_BUFLEN);
+
+    return 0;
+
+ error:
+    virDispatchError(port->net->conn);
+    return -1;
+}
+
+
+/**
+ * virNetworkPortGetUUIDString:
+ * @port: a network port object
+ * @buf: pointer to a VIR_UUID_STRING_BUFLEN bytes array
+ *
+ * Get the UUID for a network as string. For more information about
+ * UUID see RFC4122.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virNetworkPortGetUUIDString(virNetworkPortPtr port,
+                            char *buf)
+{
+    VIR_DEBUG("port=%p, buf=%p", port, buf);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, -1);
+    virCheckNonNullArgGoto(buf, error);
+
+    virUUIDFormat(port->uuid, buf);
+    return 0;
+
+ error:
+    virDispatchError(port->net->conn);
+    return -1;
+}
+
+/**
+ * virNetworkPortDelete:
+ * @port: a port object
+ * @flags: currently unused, pass 0
+ *
+ * Delete the network port. This does not free the
+ * associated virNetworkPortPtr object. It is the
+ * caller's responsibility to ensure the port is not
+ * still in use by a virtual machine before deleting
+ * port.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNetworkPortDelete(virNetworkPortPtr port,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("port=%p, flags=0x%x", port, flags);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, -1);
+    conn = port->net->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->networkDriver && conn->networkDriver->networkPortDelete) {
+        int ret;
+        ret = conn->networkDriver->networkPortDelete(port, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virNetworkListAllPorts:
+ * @network: pointer to a network object
+ * @ports: Pointer to a variable to store the array containing network port
+ *        objects or NULL if the list is not required (just returns number
+ *        of ports).
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Collect the list of network ports, and allocate an array to store those
+ * objects.
+ *
+ * Returns the number of network ports found or -1 and sets @ports to
+ * NULL in case of error.  On success, the array stored into @ports is
+ * guaranteed to have an extra allocated element set to NULL but not included
+ * in the return count, to make iteration easier.  The caller is responsible
+ * for calling virNetworkPortFree() on each array element, then calling
+ * free() on @ports.
+ */
+int
+virNetworkListAllPorts(virNetworkPtr network,
+                       virNetworkPortPtr **ports,
+                       unsigned int flags)
+{
+    VIR_DEBUG("network=%p, ports=%p, flags=0x%x", network, ports, flags);
+
+    virResetLastError();
+
+    virCheckNetworkReturn(network, -1);
+
+    if (network->conn->networkDriver &&
+        network->conn->networkDriver->networkListAllPorts) {
+        int ret;
+        ret = network->conn->networkDriver->networkListAllPorts(network, ports, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(network->conn);
+    return -1;
+}
+
+
+/**
+ * virNetworkPortFree:
+ * @port: a network port object
+ *
+ * Free the network port object.
+ * The data structure is freed and should not be used thereafter.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNetworkPortFree(virNetworkPortPtr port)
+{
+    VIR_DEBUG("port=%p", port);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, -1);
+
+    virObjectUnref(port);
+    return 0;
 }
