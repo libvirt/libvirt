@@ -32,6 +32,7 @@
 #include "qemu_migration_params.h"
 #include "qemu_security.h"
 #include "qemu_extdevice.h"
+#include "qemu_blockjob.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -2306,16 +2307,56 @@ qemuDomainObjPrivateXMLFormatAutomaticPlacement(virBufferPtr buf,
 
 
 static int
+qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
+                                              const void *name ATTRIBUTE_UNUSED,
+                                              void *data)
+{
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    qemuBlockJobDataPtr job = payload;
+    virBufferPtr buf = data;
+    const char *state = qemuBlockjobStateTypeToString(job->state);
+    const char *newstate = NULL;
+
+    if (job->newstate != -1)
+        newstate = qemuBlockjobStateTypeToString(job->newstate);
+
+    virBufferSetChildIndent(&childBuf, buf);
+
+    virBufferEscapeString(&attrBuf, " name='%s'", job->name);
+    virBufferEscapeString(&attrBuf, " type='%s'", qemuBlockjobTypeToString(job->type));
+    virBufferEscapeString(&attrBuf, " state='%s'", state);
+    virBufferEscapeString(&attrBuf, " newstate='%s'", newstate);
+    virBufferEscapeString(&childBuf, "<errmsg>%s</errmsg>", job->errmsg);
+
+    if (job->disk)
+        virBufferEscapeString(&childBuf, "<disk dst='%s'/>\n", job->disk->dst);
+
+    return virXMLFormatElement(buf, "blockjob", &attrBuf, &childBuf);
+}
+
+
+static int
 qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
                                        virDomainObjPtr vm)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     bool bj = qemuDomainHasBlockjob(vm, false);
 
     virBufferAsprintf(&attrBuf, " active='%s'",
                       virTristateBoolTypeToString(virTristateBoolFromBool(bj)));
 
-    return virXMLFormatElement(buf, "blockjobs", &attrBuf, NULL);
+    virBufferSetChildIndent(&childBuf, buf);
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+        virHashForEach(priv->blockjobs,
+                       qemuDomainObjPrivateXMLFormatBlockjobIterator,
+                       &childBuf) < 0)
+        return -1;
+
+    return virXMLFormatElement(buf, "blockjobs", &attrBuf, &childBuf);
 }
 
 
@@ -2655,15 +2696,89 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
 
 
 static int
-qemuDomainObjPrivateXMLParseBlockjobs(qemuDomainObjPrivatePtr priv,
+qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
+                                         xmlNodePtr node,
+                                         xmlXPathContextPtr ctxt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    virDomainDiskDefPtr disk = NULL;
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    VIR_AUTOFREE(char *) name = NULL;
+    VIR_AUTOFREE(char *) typestr = NULL;
+    int type;
+    VIR_AUTOFREE(char *) statestr = NULL;
+    int state = QEMU_BLOCKJOB_STATE_FAILED;
+    VIR_AUTOFREE(char *) diskdst = NULL;
+    VIR_AUTOFREE(char *) newstatestr = NULL;
+    int newstate = -1;
+    bool invalidData = false;
+
+    ctxt->node = node;
+
+    if (!(name = virXPathString("string(./@name)", ctxt))) {
+        VIR_WARN("malformed block job data for vm '%s'", vm->def->name);
+        return 0;
+    }
+
+    /* if the job name is known we need to register such a job so that we can
+     * clean it up */
+    if (!(typestr = virXPathString("string(./@type)", ctxt)) ||
+        (type = qemuBlockjobTypeFromString(typestr)) < 0) {
+        type = QEMU_BLOCKJOB_TYPE_NONE;
+        invalidData = true;
+    }
+
+    if (!(job = qemuBlockJobDataNew(type, name)))
+        return -1;
+
+    if (!(statestr = virXPathString("string(./@state)", ctxt)) ||
+        (state = qemuBlockjobStateTypeFromString(statestr)) < 0)
+        invalidData = true;
+
+    if ((newstatestr = virXPathString("string(./@newstate)", ctxt)) &&
+        (newstate = qemuBlockjobStateTypeFromString(newstatestr)) < 0)
+        invalidData = true;
+
+    if ((diskdst = virXPathString("string(./disk/@dst)", ctxt)) &&
+        !(disk = virDomainDiskByName(vm->def, diskdst, false)))
+        invalidData = true;
+
+    job->state = state;
+    job->newstate = newstate;
+    job->errmsg = virXPathString("string(./errmsg)", ctxt);
+    job->invalidData = invalidData;
+
+    if (qemuBlockJobRegister(job, vm, disk) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuDomainObjPrivateXMLParseBlockjobs(virDomainObjPtr vm,
+                                      qemuDomainObjPrivatePtr priv,
                                       xmlXPathContextPtr ctxt)
 {
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    ssize_t nnodes = 0;
     VIR_AUTOFREE(char *) active = NULL;
     int tmp;
+    size_t i;
 
     if ((active = virXPathString("string(./blockjobs/@active)", ctxt)) &&
         (tmp = virTristateBoolTypeFromString(active)) > 0)
         priv->reconnectBlockjobs = tmp;
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if ((nnodes = virXPathNodeSet("./blockjobs/blockjob", ctxt, &nodes)) < 0)
+            return -1;
+
+        for (i = 0; i < nnodes; i++) {
+            if (qemuDomainObjPrivateXMLParseBlockjobData(vm, nodes[i], ctxt) < 0)
+                return -1;
+        }
+    }
 
     return 0;
 }
@@ -3022,7 +3137,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     qemuDomainObjPrivateXMLParsePR(ctxt, &priv->prDaemonRunning);
 
-    if (qemuDomainObjPrivateXMLParseBlockjobs(priv, ctxt) < 0)
+    if (qemuDomainObjPrivateXMLParseBlockjobs(vm, priv, ctxt) < 0)
         goto error;
 
     qemuDomainStorageIdReset(priv);
