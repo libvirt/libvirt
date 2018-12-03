@@ -4261,6 +4261,56 @@ virStorageBackendFileSystemGetPoolSource(virStoragePoolObjPtr pool)
 }
 
 
+static void
+virStorageBackendFileSystemMountNFSArgs(virCommandPtr cmd,
+                                        const char *src,
+                                        virStoragePoolDefPtr def)
+{
+    virCommandAddArgList(cmd, src, def->target.path, NULL);
+}
+
+
+static void
+virStorageBackendFileSystemMountGlusterArgs(virCommandPtr cmd,
+                                            const char *src,
+                                            virStoragePoolDefPtr def)
+{
+    const char *fmt;
+
+    fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
+    virCommandAddArgList(cmd, "-t", fmt, src, "-o", "direct-io-mode=1",
+                         def->target.path, NULL);
+}
+
+
+static void
+virStorageBackendFileSystemMountCIFSArgs(virCommandPtr cmd,
+                                         const char *src,
+                                         virStoragePoolDefPtr def)
+{
+    const char *fmt;
+
+    fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
+    virCommandAddArgList(cmd, "-t", fmt, src, def->target.path,
+                         "-o", "guest", NULL);
+}
+
+
+static void
+virStorageBackendFileSystemMountDefaultArgs(virCommandPtr cmd,
+                                            const char *src,
+                                            virStoragePoolDefPtr def)
+{
+    const char *fmt;
+
+    if (def->type == VIR_STORAGE_POOL_FS)
+        fmt = virStoragePoolFormatFileSystemTypeToString(def->source.format);
+    else
+        fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
+    virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
+}
+
+
 virCommandPtr
 virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
                                     const char *src)
@@ -4276,38 +4326,14 @@ virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
                    def->source.format == VIR_STORAGE_POOL_NETFS_CIFS);
     virCommandPtr cmd = NULL;
 
+    cmd = virCommandNew(MOUNT);
     if (netauto)
-        cmd = virCommandNewArgList(MOUNT,
-                                   src,
-                                   def->target.path,
-                                   NULL);
+        virStorageBackendFileSystemMountNFSArgs(cmd, src, def);
     else if (glusterfs)
-        cmd = virCommandNewArgList(MOUNT,
-                                   "-t",
-                                   virStoragePoolFormatFileSystemNetTypeToString(def->source.format),
-                                   src,
-                                   "-o",
-                                   "direct-io-mode=1",
-                                   def->target.path,
-                                   NULL);
+        virStorageBackendFileSystemMountGlusterArgs(cmd, src, def);
     else if (cifsfs)
-        cmd = virCommandNewArgList(MOUNT,
-                                   "-t",
-                                   virStoragePoolFormatFileSystemNetTypeToString(def->source.format),
-                                   src,
-                                   def->target.path,
-                                   "-o",
-                                   "guest",
-                                   NULL);
+        virStorageBackendFileSystemMountCIFSArgs(cmd, src, def);
     else
-        cmd = virCommandNewArgList(MOUNT,
-                                   "-t",
-                                   (def->type == VIR_STORAGE_POOL_FS ?
-                                    virStoragePoolFormatFileSystemTypeToString(def->source.format) :
-                                    virStoragePoolFormatFileSystemNetTypeToString(def->source.format)),
-                                   src,
-                                   def->target.path,
-                                   NULL);
-
+        virStorageBackendFileSystemMountDefaultArgs(cmd, src, def);
     return cmd;
 }
