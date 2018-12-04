@@ -177,4 +177,8 @@ int
 virStorageBackendZeroPartitionTable(const char *path,
                                     unsigned long long size);
 
+virCommandPtr
+virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
+                                    const char *src);
+
 #endif /* __VIR_STORAGE_UTIL_H__ */

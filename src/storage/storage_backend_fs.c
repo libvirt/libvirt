@@ -331,58 +331,6 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
 }
 
 
-static virCommandPtr
-virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
-                                    const char *src)
-{
-    /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
-     *  while plain 'mount' does. We have to craft separate argvs to
-     *  accommodate this */
-    bool netauto = (def->type == VIR_STORAGE_POOL_NETFS &&
-                    def->source.format == VIR_STORAGE_POOL_NETFS_AUTO);
-    bool glusterfs = (def->type == VIR_STORAGE_POOL_NETFS &&
-                      def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS);
-    bool cifsfs = (def->type == VIR_STORAGE_POOL_NETFS &&
-                   def->source.format == VIR_STORAGE_POOL_NETFS_CIFS);
-    virCommandPtr cmd = NULL;
-
-    if (netauto)
-        cmd = virCommandNewArgList(MOUNT,
-                                   src,
-                                   def->target.path,
-                                   NULL);
-    else if (glusterfs)
-        cmd = virCommandNewArgList(MOUNT,
-                                   "-t",
-                                   virStoragePoolFormatFileSystemNetTypeToString(def->source.format),
-                                   src,
-                                   "-o",
-                                   "direct-io-mode=1",
-                                   def->target.path,
-                                   NULL);
-    else if (cifsfs)
-        cmd = virCommandNewArgList(MOUNT,
-                                   "-t",
-                                   virStoragePoolFormatFileSystemNetTypeToString(def->source.format),
-                                   src,
-                                   def->target.path,
-                                   "-o",
-                                   "guest",
-                                   NULL);
-    else
-        cmd = virCommandNewArgList(MOUNT,
-                                   "-t",
-                                   (def->type == VIR_STORAGE_POOL_FS ?
-                                    virStoragePoolFormatFileSystemTypeToString(def->source.format) :
-                                    virStoragePoolFormatFileSystemNetTypeToString(def->source.format)),
-                                   src,
-                                   def->target.path,
-                                   NULL);
-
-    return cmd;
-}
-
-
 /**
  * @pool storage pool to mount
  *
