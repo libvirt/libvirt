@@ -464,13 +464,14 @@ qemuMigrationDstStopNBDServer(virQEMUDriverPtr driver,
 
 
 static void
-qemuMigrationNBDReportMirrorError(virDomainDiskDefPtr disk,
-                                  const char *errmsg)
+qemuMigrationNBDReportMirrorError(virDomainDiskDefPtr disk)
 {
-    if (errmsg) {
+    qemuBlockJobDataPtr job = QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob;
+
+    if (job->errmsg) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("migration of disk %s failed: %s"),
-                       disk->dst, errmsg);
+                       disk->dst, job->errmsg);
     } else {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("migration of disk %s failed"), disk->dst);
@@ -500,17 +501,15 @@ qemuMigrationSrcNBDStorageCopyReady(virDomainObjPtr vm,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        char *error = NULL;
 
         if (!diskPriv->migrating)
             continue;
 
-        status = qemuBlockJobUpdateDisk(vm, asyncJob, disk, &error);
+        status = qemuBlockJobUpdateDisk(vm, asyncJob, disk);
         if (status == VIR_DOMAIN_BLOCK_JOB_FAILED) {
-            qemuMigrationNBDReportMirrorError(disk, error);
+            qemuMigrationNBDReportMirrorError(disk);
             return -1;
         }
-        VIR_FREE(error);
 
         if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY)
             notReady++;
@@ -551,16 +550,15 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        char *error = NULL;
 
         if (!diskPriv->migrating)
             continue;
 
-        status = qemuBlockJobUpdateDisk(vm, asyncJob, disk, &error);
+        status = qemuBlockJobUpdateDisk(vm, asyncJob, disk);
         switch (status) {
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
             if (check) {
-                qemuMigrationNBDReportMirrorError(disk, error);
+                qemuMigrationNBDReportMirrorError(disk);
                 failed = true;
             }
             ATTRIBUTE_FALLTHROUGH;
@@ -576,8 +574,6 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
 
         if (status == VIR_DOMAIN_BLOCK_JOB_COMPLETED)
             completed++;
-
-        VIR_FREE(error);
     }
 
     /* Updating completed block job drops the lock thus we have to recheck
@@ -625,17 +621,16 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *diskAlias = NULL;
-    char *error = NULL;
     int ret = -1;
     int status;
     int rv;
 
-    status = qemuBlockJobUpdateDisk(vm, asyncJob, disk, &error);
+    status = qemuBlockJobUpdateDisk(vm, asyncJob, disk);
     switch (status) {
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         if (failNoJob) {
-            qemuMigrationNBDReportMirrorError(disk, error);
+            qemuMigrationNBDReportMirrorError(disk);
             goto cleanup;
         }
         ATTRIBUTE_FALLTHROUGH;
@@ -659,7 +654,6 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
 
  cleanup:
     VIR_FREE(diskAlias);
-    VIR_FREE(error);
     return ret;
 }
 
