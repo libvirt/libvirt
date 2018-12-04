@@ -4448,7 +4448,7 @@ syncNicRxFilterMultiMode(char *ifname, virNetDevRxFilterPtr guestFilter,
         guestFilter->multicast.mode == VIR_NETDEV_RX_FILTER_MODE_NORMAL)) {
         switch (guestFilter->multicast.mode) {
             case VIR_NETDEV_RX_FILTER_MODE_ALL:
-                if (virNetDevSetRcvAllMulti(ifname, true)) {
+                if (virNetDevSetRcvAllMulti(ifname, true) < 0) {
                     VIR_WARN("Couldn't set allmulticast flag to 'on' for "
                              "device %s while responding to "
                              "NIC_RX_FILTER_CHANGED", ifname);
@@ -4461,7 +4461,7 @@ syncNicRxFilterMultiMode(char *ifname, virNetDevRxFilterPtr guestFilter,
                     break;
                 }
 
-                if (virNetDevSetRcvMulti(ifname, true)) {
+                if (virNetDevSetRcvMulti(ifname, true) < 0) {
                     VIR_WARN("Couldn't set multicast flag to 'on' for "
                              "device %s while responding to "
                              "NIC_RX_FILTER_CHANGED", ifname);
@@ -4478,13 +4478,13 @@ syncNicRxFilterMultiMode(char *ifname, virNetDevRxFilterPtr guestFilter,
                 break;
 
             case VIR_NETDEV_RX_FILTER_MODE_NONE:
-                if (virNetDevSetRcvAllMulti(ifname, false)) {
+                if (virNetDevSetRcvAllMulti(ifname, false) < 0) {
                     VIR_WARN("Couldn't set allmulticast flag to 'off' for "
                              "device %s while responding to "
                              "NIC_RX_FILTER_CHANGED", ifname);
                 }
 
-                if (virNetDevSetRcvMulti(ifname, false)) {
+                if (virNetDevSetRcvMulti(ifname, false) < 0) {
                     VIR_WARN("Couldn't set multicast flag to 'off' for "
                              "device %s while responding to "
                              "NIC_RX_FILTER_CHANGED",
