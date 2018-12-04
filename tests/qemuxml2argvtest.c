@@ -77,7 +77,9 @@ static virSecretPtr
 fakeSecretLookupByUUID(virConnectPtr conn,
                        const unsigned char *uuid)
 {
-    return virGetSecret(conn, uuid, 0, "");
+    /* NB: This mocked value could be "tls" or "volume" depending on
+     * which test is being run, we'll leave at NONE (or 0) */
+    return virGetSecret(conn, uuid, VIR_SECRET_USAGE_TYPE_NONE, "");
 }
 
 static virSecretDriver fakeSecretDriver = {

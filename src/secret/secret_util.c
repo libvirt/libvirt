@@ -71,6 +71,23 @@ virSecretGetSecretString(virConnectPtr conn,
     if (!sec)
         goto cleanup;
 
+    /* NB: NONE is a byproduct of the qemuxml2argvtest test mocking
+     * for UUID lookups. Normal secret XML processing would fail if
+     * the usage type was NONE and since we have no way to set the
+     * expected usage in that environment, let's just accept NONE */
+    if (sec->usageType != VIR_SECRET_USAGE_TYPE_NONE &&
+        sec->usageType != secretUsageType) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(seclookupdef->u.uuid, uuidstr);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("secret with uuid %s is of type '%s' not "
+                         "expected '%s' type"),
+                       uuidstr, virSecretUsageTypeToString(sec->usageType),
+                       virSecretUsageTypeToString(secretUsageType));
+        goto cleanup;
+    }
+
     *secret = conn->secretDriver->secretGetValue(sec, secret_size, 0,
                                                  VIR_SECRET_GET_VALUE_INTERNAL_CALL);
 
