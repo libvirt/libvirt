@@ -2172,9 +2172,6 @@ virHostGetDRMRenderNode(void)
         return NULL;
 
     while ((dirErr = virDirRead(driDir, &ent, driPath)) > 0) {
-        if (ent->d_type != DT_CHR)
-            continue;
-
         if (STRPREFIX(ent->d_name, "renderD")) {
             have_rendernode = true;
             break;
