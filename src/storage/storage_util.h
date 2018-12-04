@@ -184,4 +184,8 @@ virCommandPtr
 virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
                                     const char *src);
 
+virCommandPtr
+virStorageBackendLogicalChangeCmd(virStoragePoolDefPtr def,
+                                  bool on);
+
 #endif /* __VIR_STORAGE_UTIL_H__ */

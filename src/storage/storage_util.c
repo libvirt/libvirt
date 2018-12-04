@@ -4337,3 +4337,14 @@ virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
         virStorageBackendFileSystemMountDefaultArgs(cmd, src, def);
     return cmd;
 }
+
+
+virCommandPtr
+virStorageBackendLogicalChangeCmd(virStoragePoolDefPtr def,
+                                  bool on)
+{
+    return virCommandNewArgList(VGCHANGE,
+                                on ? "-aly" : "-aln",
+                                def->source.name,
+                                NULL);
+}

@@ -43,8 +43,11 @@ testCompareXMLToArgvFiles(bool shouldFail,
         cmd = virStorageBackendFileSystemMountCmd(def, src);
         break;
 
-    case VIR_STORAGE_POOL_DIR:
     case VIR_STORAGE_POOL_LOGICAL:
+        cmd = virStorageBackendLogicalChangeCmd(def, true);
+        break;
+
+    case VIR_STORAGE_POOL_DIR:
     case VIR_STORAGE_POOL_DISK:
     case VIR_STORAGE_POOL_ISCSI:
     case VIR_STORAGE_POOL_ISCSI_DIRECT:
@@ -137,10 +140,10 @@ mymain(void)
     DO_TEST_FAIL("pool-dir");
     DO_TEST_FAIL("pool-dir-naming");
     DO_TEST("pool-fs");
-    DO_TEST_FAIL("pool-logical");
-    DO_TEST_FAIL("pool-logical-nopath");
-    DO_TEST_FAIL("pool-logical-create");
-    DO_TEST_FAIL("pool-logical-noname");
+    DO_TEST("pool-logical");
+    DO_TEST("pool-logical-nopath");
+    DO_TEST("pool-logical-create");
+    DO_TEST("pool-logical-noname");
     DO_TEST_FAIL("pool-disk");
     DO_TEST_FAIL("pool-disk-device-nopartsep");
     DO_TEST_FAIL("pool-iscsi");
