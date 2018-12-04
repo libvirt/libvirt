@@ -246,39 +246,6 @@ virStorageBackendFileSystemIsValid(virStoragePoolObjPtr pool)
 
 
 /**
- * virStorageBackendFileSystemGetPoolSource
- * @pool: storage pool object pointer
- *
- * Allocate/return a string representing the FS storage pool source.
- * It is up to the caller to VIR_FREE the allocated string
- */
-static char *
-virStorageBackendFileSystemGetPoolSource(virStoragePoolObjPtr pool)
-{
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    char *src = NULL;
-
-    if (def->type == VIR_STORAGE_POOL_NETFS) {
-        if (def->source.format == VIR_STORAGE_POOL_NETFS_CIFS) {
-            if (virAsprintf(&src, "//%s/%s",
-                            def->source.hosts[0].name,
-                            def->source.dir) < 0)
-                return NULL;
-        } else {
-            if (virAsprintf(&src, "%s:%s",
-                            def->source.hosts[0].name,
-                            def->source.dir) < 0)
-                return NULL;
-        }
-    } else {
-        if (VIR_STRDUP(src, def->source.devices[0].path) < 0)
-            return NULL;
-    }
-    return src;
-}
-
-
-/**
  * @pool storage pool to check for status
  *
  * Determine if a storage pool is already mounted

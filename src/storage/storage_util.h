@@ -177,6 +177,9 @@ int
 virStorageBackendZeroPartitionTable(const char *path,
                                     unsigned long long size);
 
+char *
+virStorageBackendFileSystemGetPoolSource(virStoragePoolObjPtr pool);
+
 virCommandPtr
 virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
                                     const char *src);
