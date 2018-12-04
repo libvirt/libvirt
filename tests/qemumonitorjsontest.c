@@ -2925,6 +2925,79 @@ testQAPISchemaValidate(const void *opaque)
 }
 
 
+static void
+testQueryJobsPrintJob(virBufferPtr buf,
+                      qemuMonitorJobInfoPtr job)
+{
+    virBufferAddLit(buf, "[job]\n");
+    virBufferAsprintf(buf, "id=%s\n", NULLSTR(job->id));
+    virBufferAsprintf(buf, "type=%s\n", NULLSTR(qemuMonitorJobTypeToString(job->type)));
+    virBufferAsprintf(buf, "status=%s\n", NULLSTR(qemuMonitorJobStatusTypeToString(job->status)));
+    virBufferAsprintf(buf, "error=%s\n", NULLSTR(job->error));
+    virBufferAddLit(buf, "\n");
+}
+
+
+struct testQueryJobsData {
+    const char *name;
+    virDomainXMLOptionPtr xmlopt;
+};
+
+
+static int
+testQueryJobs(const void *opaque)
+{
+    const struct testQueryJobsData *data = opaque;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(data->xmlopt);
+    VIR_AUTOFREE(char *) filenameJSON = NULL;
+    VIR_AUTOFREE(char *) fileJSON = NULL;
+    VIR_AUTOFREE(char *) filenameResult = NULL;
+    VIR_AUTOFREE(char *) actual = NULL;
+    qemuMonitorJobInfoPtr *jobs = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t njobs = 0;
+    size_t i;
+    int ret = -1;
+
+    if (virAsprintf(&filenameJSON,
+                    abs_srcdir "/qemumonitorjsondata/query-jobs-%s.json",
+                    data->name) < 0 ||
+        virAsprintf(&filenameResult,
+                    abs_srcdir "/qemumonitorjsondata/query-jobs-%s.result",
+                    data->name) < 0)
+        goto cleanup;
+
+    if (virTestLoadFile(filenameJSON, &fileJSON) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "query-jobs", fileJSON) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetJobInfo(qemuMonitorTestGetMonitor(test),
+                                  &jobs, &njobs) < 0)
+        goto cleanup;
+
+    for (i = 0; i < njobs; i++)
+        testQueryJobsPrintJob(&buf, jobs[i]);
+
+    virBufferTrim(&buf, "\n", -1);
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    actual = virBufferContentAndReset(&buf);
+
+    if (virTestCompareToFile(actual, filenameResult) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -3198,6 +3271,18 @@ mymain(void)
 
 
 #undef DO_TEST_QAPI_VALIDATE
+
+#define DO_TEST_QUERY_JOBS(name) \
+    do { \
+        struct testQueryJobsData data = { name, driver.xmlopt}; \
+        if (virTestRun("query-jobs-" name, testQueryJobs, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    DO_TEST_QUERY_JOBS("empty");
+    DO_TEST_QUERY_JOBS("create");
+
+#undef DO_TEST_QUERY_JOBS
 
  cleanup:
     VIR_FREE(metaschemastr);

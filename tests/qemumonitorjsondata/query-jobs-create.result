@@ -1,0 +1,11 @@
+[job]
+id=createjob-fail
+type=create
+status=concluded
+error=Image size must be a multiple of 512 bytes
+
+[job]
+id=createjob
+type=create
+status=concluded
+error=<null>

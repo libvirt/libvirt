@@ -319,6 +319,12 @@ int qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
                                   const char *jobname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int
+qemuMonitorJSONGetJobInfo(qemuMonitorPtr mon,
+                          qemuMonitorJobInfoPtr **jobs,
+                          size_t *njobs);
+
+
 int qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
                                     const char *jobname,
                                     unsigned long long speed)

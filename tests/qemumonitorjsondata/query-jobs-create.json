@@ -1,0 +1,20 @@
+{
+  "return": [
+    {
+      "current-progress": 1,
+      "status": "concluded",
+      "total-progress": 1,
+      "type": "create",
+      "id": "createjob-fail",
+      "error": "Image size must be a multiple of 512 bytes"
+    },
+    {
+      "current-progress": 1,
+      "status": "concluded",
+      "total-progress": 1,
+      "type": "create",
+      "id": "createjob"
+    }
+  ],
+  "id": "libvirt-24"
+}

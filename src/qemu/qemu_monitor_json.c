@@ -56,6 +56,30 @@ VIR_LOG_INIT("qemu.qemu_monitor_json");
 
 #define LINE_ENDING "\r\n"
 
+VIR_ENUM_IMPL(qemuMonitorJob,
+              QEMU_MONITOR_JOB_TYPE_LAST,
+              "",
+              "commit",
+              "stream",
+              "mirror",
+              "backup",
+              "create");
+
+VIR_ENUM_IMPL(qemuMonitorJobStatus,
+              QEMU_MONITOR_JOB_STATUS_LAST,
+              "",
+              "created",
+              "running",
+              "paused",
+              "ready",
+              "standby",
+              "waiting",
+              "pending",
+              "aborting",
+              "concluded",
+              "undefined",
+              "null");
+
 static void qemuMonitorJSONHandleShutdown(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleReset(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr data);
@@ -9043,4 +9067,75 @@ qemuMonitorJSONDeleteBitmap(qemuMonitorPtr mon,
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
+}
+
+
+static qemuMonitorJobInfoPtr
+qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)
+{
+    const char *id = virJSONValueObjectGetString(data, "id");
+    const char *type = virJSONValueObjectGetString(data, "type");
+    const char *status = virJSONValueObjectGetString(data, "status");
+    const char *errmsg = virJSONValueObjectGetString(data, "error");
+    int tmp;
+    VIR_AUTOPTR(qemuMonitorJobInfo) job = NULL;
+    qemuMonitorJobInfoPtr ret = NULL;
+
+    if (!data)
+        return NULL;
+
+    if (VIR_ALLOC(job) < 0)
+        return NULL;
+
+    if ((tmp = qemuMonitorJobTypeFromString(type)) < 0)
+        tmp = QEMU_MONITOR_JOB_TYPE_UNKNOWN;
+
+    job->type = tmp;
+
+    if ((tmp = qemuMonitorJobStatusTypeFromString(status)) < 0)
+        tmp = QEMU_MONITOR_JOB_STATUS_UNKNOWN;
+
+    job->status = tmp;
+
+    if (VIR_STRDUP(job->id, id) < 0 ||
+        VIR_STRDUP(job->error, errmsg) < 0)
+        return NULL;
+
+    VIR_STEAL_PTR(ret, job);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONGetJobInfo(qemuMonitorPtr mon,
+                          qemuMonitorJobInfoPtr **jobs,
+                          size_t *njobs)
+{
+    virJSONValuePtr data;
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    size_t i;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-jobs", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+        return -1;
+
+    data = virJSONValueObjectGetArray(reply, "return");
+
+    for (i = 0; i < virJSONValueArraySize(data); i++) {
+        qemuMonitorJobInfoPtr job = NULL;
+
+        if (!(job = qemuMonitorJSONGetJobInfoOne(virJSONValueArrayGet(data, i))))
+            return -1;
+
+        if (VIR_APPEND_ELEMENT(*jobs, *njobs, job) < 0)
+            return -1;
+    }
+
+    return 0;
 }

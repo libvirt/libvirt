@@ -4585,3 +4585,26 @@ qemuMonitorDeleteBitmap(qemuMonitorPtr mon,
 
     return qemuMonitorJSONDeleteBitmap(mon, node, bitmap);
 }
+
+
+void
+qemuMonitorJobInfoFree(qemuMonitorJobInfoPtr job)
+{
+    if (!job)
+        return;
+
+    VIR_FREE(job->id);
+    VIR_FREE(job->error);
+    VIR_FREE(job);
+}
+
+
+int
+qemuMonitorGetJobInfo(qemuMonitorPtr mon,
+                      qemuMonitorJobInfoPtr **jobs,
+                      size_t *njobs)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONGetJobInfo(mon, jobs, njobs);
+}
