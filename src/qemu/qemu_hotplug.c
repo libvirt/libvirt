@@ -4814,7 +4814,7 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     ssize_t idx;
     int ret = -1;
-    int rc;
+    int rc = 0;
 
     VIR_DEBUG("Removing RNG device %s from domain %p %s",
               rng->info.alias, vm, vm->def->name);
@@ -4828,7 +4828,17 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    rc = qemuMonitorDelObject(priv->mon, objAlias);
+    if (qemuDomainDetachExtensionDevice(priv->mon, &rng->info) < 0)
+        rc = -1;
+
+    if (rc == 0 &&
+        qemuMonitorDelObject(priv->mon, objAlias) < 0)
+        rc = -1;
+
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
+        rc == 0 &&
+        qemuMonitorDetachCharDev(priv->mon, charAlias) < 0)
+        rc = -1;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
@@ -4837,7 +4847,7 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
         rc == 0 &&
         qemuDomainDelChardevTLSObjects(driver, vm, rng->source.chardev,
                                        charAlias) < 0)
-        goto cleanup;
+        rc = -1;
 
     virDomainAuditRNG(vm, rng, NULL, "detach", rc == 0);
 
