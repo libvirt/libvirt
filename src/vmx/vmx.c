@@ -2173,7 +2173,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         goto cleanup;
     }
 
-    /* FIXME: Need to distiguish between active and inactive domains here */
+    /* FIXME: Need to distinguish between active and inactive domains here */
     if (! present/* && ! startConnected*/)
         goto ignore;
 
@@ -2571,7 +2571,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         return -1;
     }
 
-    /* FIXME: Need to distiguish between active and inactive domains here */
+    /* FIXME: Need to distinguish between active and inactive domains here */
     if (! present/* && ! startConnected*/)
         return 0;
 
@@ -2774,7 +2774,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    /* FIXME: Need to distiguish between active and inactive domains here */
+    /* FIXME: Need to distinguish between active and inactive domains here */
     if (! present/* && ! startConnected*/)
         return 0;
 
@@ -2953,7 +2953,7 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    /* FIXME: Need to distiguish between active and inactive domains here */
+    /* FIXME: Need to distinguish between active and inactive domains here */
     if (! present/* && ! startConnected*/)
         return 0;
 

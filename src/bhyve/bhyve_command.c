@@ -924,7 +924,7 @@ virBhyveGetBootDisk(virDomainDefPtr def)
             }
         }
 
-        /* If user didn't explicily specify boot priority,
+        /* If user didn't explicitly specify boot priority,
          * just return the first usable disk */
         if ((match == NULL) && (first_usable_disk_index >= 0))
             return def->disks[first_usable_disk_index];

@@ -324,7 +324,7 @@ struct _virStorageSource {
     unsigned int debugLevel;
     bool debug;
 
-    /* Libvirt currently stores the following properities in virDomainDiskDef.
+    /* Libvirt currently stores the following properties in virDomainDiskDef.
      * These instances are currently just copies from the parent definition and
      * are not mapped back to the XML */
     int iomode; /* enum virDomainDiskIo */

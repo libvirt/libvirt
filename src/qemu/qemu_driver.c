@@ -6082,7 +6082,7 @@ qemuDomainDelIOThreadCheck(virDomainDefPtr def,
  * QEMU keeps track of the polling time elapsed and may grow or shrink the
  * its polling interval based upon its heuristic algorithm. It is possible
  * that calculations determine that it has found a "sweet spot" and no
- * ajustments are made. The polling time value is not available.
+ * adjustments are made. The polling time value is not available.
  *
  * Returns 0 on success, -1 on failure with error set.
  */
@@ -14980,7 +14980,7 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
 
     /* internal snapshots + pflash based loader have the following problems:
      * - if the variable store is raw, the snapshot fails
-     * - alowing a qcow2 image as the varstore would make it eligible to receive
+     * - allowing a qcow2 image as the varstore would make it eligible to receive
      *   the vmstate dump, which would make it huge
      * - offline snapshot would not snapshot the varstore at all
      *

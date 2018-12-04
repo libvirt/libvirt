@@ -559,7 +559,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  * @ptr: pointer holding address to be cleared and freed
  * @count: count of elements in @ptr
  *
- * Clear the memory of the array of elemets pointed to by 'ptr' of 'count'
+ * Clear the memory of the array of elements pointed to by 'ptr' of 'count'
  * elements and free it. Update the pointer/count to NULL/0.
  *
  * This macro is safe to use on arguments with side effects.

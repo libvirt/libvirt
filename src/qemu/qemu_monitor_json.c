@@ -771,7 +771,7 @@ qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
     int actionID;
 
     /* Throughout here we try our best to carry on upon errors,
-       since it's imporatant to get as much info as possible out
+       since it's important to get as much info as possible out
        to the application */
 
     if ((action = virJSONValueObjectGetString(data, "action")) == NULL) {
@@ -5797,7 +5797,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
 
         if (!virJSONValueIsArray(array)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Malformed query-cmmand-line-options array"));
+                           _("Malformed query-command-line-options array"));
             goto cleanup;
         }
 
@@ -5831,7 +5831,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
 
     if (!virJSONValueIsArray(data)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed query-cmmand-line-options parameters array"));
+                       _("Malformed query-command-line-options parameters array"));
         goto cleanup;
     }
     n = virJSONValueArraySize(data);

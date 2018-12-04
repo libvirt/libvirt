@@ -417,7 +417,7 @@ typedef enum {
 
     /**
      * @desc: Access node device
-     * @message: Accesing node device requires authorization
+     * @message: Accessing node device requires authorization
      * @anonymous: 1
      */
     VIR_ACCESS_PERM_NODE_DEVICE_GETATTR,
@@ -637,7 +637,7 @@ typedef enum {
 
     /**
      * @desc: Access storage volume
-     * @message: Acceessing storage volume requires authorization
+     * @message: Accessing storage volume requires authorization
      * @anonymous: 1
      */
     VIR_ACCESS_PERM_STORAGE_VOL_GETATTR,

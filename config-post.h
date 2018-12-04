@@ -19,7 +19,7 @@
 /*
  * Since virt-login-shell will be setuid, we must do everything
  * we can to avoid linking to other libraries. Many of them do
- * unsafe things in functions marked __atttribute__((constructor)).
+ * unsafe things in functions marked __attribute__((constructor)).
  * The only way to avoid such deps is to re-compile the
  * functions with the code in question disabled, and for that we
  * must override the main config.h rules. Hence this file :-(

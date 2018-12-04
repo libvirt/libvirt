@@ -427,7 +427,7 @@ vshTablePrint(vshTablePtr table, bool header)
  * @ctl virtshell control structure
  *
  * Print table returned in string to stdout.
- * If effect on vshControl structure on priting function changes in future
+ * If effect on vshControl structure on printing function changes in future
  * (apart from quiet mode) this code may need update
  */
 void

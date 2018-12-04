@@ -2490,7 +2490,7 @@ libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
 
     /*
      * Now that any potential VFBs are defined, update the build info with
-     * the data of the primary display. Some day libxl might implicitely do
+     * the data of the primary display. Some day libxl might implicitly do
      * so but as it does not right now, better be explicit.
      */
     if (libxlMakeVideo(def, d_config) < 0)

@@ -576,7 +576,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->maxSlot = 0;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-        /* 32 slots, can only accept pcie-switch-downstrean-ports,
+        /* 32 slots, can only accept pcie-switch-downstream-ports,
          * no hotplug
          */
         bus->flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT;
@@ -673,7 +673,7 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
              * pci-bridge, but we need one for the device's PCI address
              * to make sense, it means the guest only has a PCIe topology
              * configured so far, and we need to create a traditional PCI
-             * topology to accomodate the new device.
+             * topology to accommodate the new device.
              */
             needDMIToPCIBridge = true;
             needPCIeToPCIBridge = true;

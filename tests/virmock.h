@@ -83,7 +83,7 @@
  * then lookup the same symbol name but with 'wrap_' prefixed
  * on it, and call that.
  *
- * The actual test suite should provide the implemention of
+ * The actual test suite should provide the implementation of
  * the wrap_XXXX symbol, using the VIR_MOCK_WRAP_NNN_MMM
  * macros.
  */

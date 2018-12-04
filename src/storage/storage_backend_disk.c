@@ -764,7 +764,7 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
  * name provided during create doesn't match the name read from
  * virStorageBackendDiskReadPartitions.
  *
- * For a device mapper device, device respresentation is dependant upon
+ * For a device mapper device, device representation is dependent upon
  * device mapper configuration, but the general rule of thumb is that at
  * creation if a device name ends with a number, then a partition separator
  * "p" is added to the created name; otherwise, if the device name doesn't

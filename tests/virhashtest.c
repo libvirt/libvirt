@@ -23,7 +23,7 @@ testHashInit(int size)
     if (!(hash = virHashCreate(size, NULL)))
         return NULL;
 
-    /* entires are added in reverse order so that they will be linked in
+    /* entries are added in reverse order so that they will be linked in
      * collision list in the same order as in the uuids array
      */
     for (i = ARRAY_CARDINALITY(uuids) - 1; i >= 0; i--) {

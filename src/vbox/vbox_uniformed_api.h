@@ -39,9 +39,9 @@
  * defined by vbox_CAPI_v4_0.h.
  *
  * The vbox_common.c, it is used to generate common codes for all vbox
- * versions. Bacause the same member varible's offset in a vbox struct
+ * versions. Because the same member variable's offset in a vbox struct
  * may change between different vbox versions. The vbox_common.c
- * shouldn't directly use struct's member varibles defined in
+ * shouldn't directly use struct's member variables defined in
  * vbox_CAPI_v*.h. To make things safety, we include the
  * vbox_common.h in vbox_common.c. In this case, we treat structs
  * defined by vbox as a void*. The common codes don't concern about

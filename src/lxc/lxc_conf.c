@@ -69,7 +69,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
                                    false, false)) == NULL)
         goto error;
 
-    /* Some machines have problematic NUMA toplogy causing
+    /* Some machines have problematic NUMA topology causing
      * unexpected failures. We don't want to break the lxc
      * driver in this scenario, so log errors & carry on
      */

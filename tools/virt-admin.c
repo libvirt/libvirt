@@ -646,7 +646,7 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    table = vshTableNew(_("Id"), _("Transport"), _("Connected sice"), NULL);
+    table = vshTableNew(_("Id"), _("Transport"), _("Connected since"), NULL);
     if (!table)
         goto cleanup;
 

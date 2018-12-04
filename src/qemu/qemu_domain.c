@@ -1751,7 +1751,7 @@ qemuDomainSecretDestroy(virDomainObjPtr vm)
  * @vm: Domain object
  *
  * For any objects that may require an auth/secret setup, create a
- * qemuDomainSecretInfo and save it in the approriate place within
+ * qemuDomainSecretInfo and save it in the appropriate place within
  * the private structures. This will be used by command line build
  * code in order to pass the secret along to qemu in order to provide
  * the necessary authentication data.
@@ -3980,7 +3980,7 @@ qemuDomainDefValidateMemory(const virDomainDef *def,
     if (mem->source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("hugepages is not support with memfd memory source"));
+                       _("hugepages is not supported with memfd memory source"));
         return -1;
     }
 
@@ -4847,7 +4847,7 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QCOW2_LUKS)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("LUKS encrypted QCOW2 images are not suppored by this QEMU"));
+                       _("LUKS encrypted QCOW2 images are not supported by this QEMU"));
         return -1;
     }
 

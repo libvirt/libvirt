@@ -730,7 +730,7 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
         /* If no feature found in "/info/L3_MON/mon_features",
          * some error happens */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Get empty feature list from resctrl"));
+                       _("Got empty feature list from resctrl"));
         goto cleanup;
     }
 

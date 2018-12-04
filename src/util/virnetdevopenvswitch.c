@@ -307,7 +307,7 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
 /**
  * virNetDevOpenvswitchInterfaceStats:
  * @ifname: the name of the interface
- * @stats: the retreived domain interface stat
+ * @stats: the retrieved domain interface stat
  *
  * Retrieves the OVS interfaces stats
  *

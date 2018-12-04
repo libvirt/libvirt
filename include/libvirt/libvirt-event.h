@@ -60,7 +60,7 @@ typedef void (*virEventHandleCallback)(int watch, int fd, int events, void *opaq
  * virEventAddHandleFunc:
  * @fd: file descriptor to listen on
  * @event: bitset of events on which to fire the callback
- * @cb: the callback to be called when an event occurrs
+ * @cb: the callback to be called when an event occurs
  * @opaque: user data to pass to the callback
  * @ff: the callback invoked to free opaque data blob
  *

@@ -733,7 +733,7 @@ virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
                 VIR_DEBUG("IFLA_PORT_REQUEST = %d", req);
 
                 if (req == PORT_REQUEST_DISASSOCIATE) {
-                    VIR_DEBUG("Set dissaccociated.");
+                    VIR_DEBUG("Set disassociated.");
                     indicate = true;
                 }
             }

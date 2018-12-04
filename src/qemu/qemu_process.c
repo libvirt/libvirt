@@ -2487,7 +2487,7 @@ qemuProcessSetLinkStates(virQEMUDriverPtr driver,
 /**
  * qemuProcessSetupPid:
  *
- * This function sets resource properities (affinity, cgroups,
+ * This function sets resource properties (affinity, cgroups,
  * scheduler) for any PID associated with a domain.  It should be used
  * to set up emulator PIDs as well as vCPU and I/O thread pids to
  * ensure they are all handled the same way.

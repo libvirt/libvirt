@@ -443,7 +443,7 @@ virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
     }
 
     memset(&ifa, 0, sizeof(ifa));
-    /* DAD is for IPv6 adresses only. */
+    /* DAD is for IPv6 addresses only. */
     ifa.ifa_family = AF_INET6;
     if (nlmsg_append(nlmsg, &ifa, sizeof(ifa), NLMSG_ALIGNTO) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

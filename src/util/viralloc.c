@@ -588,7 +588,7 @@ void virFree(void *ptrptr)
  * virDispose:
  * @ptrptr: pointer to pointer for address of memory to be sanitized and freed
  * @count: count of elements in the array to dispose
- * @elemet_size: size of one element
+ * @element_size: size of one element
  * @countptr: pointer to the count variable to clear (may be NULL)
  *
  * Clear and release the chunk of memory in the pointer pointed to by 'prtptr'.

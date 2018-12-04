@@ -322,7 +322,7 @@ virshConnectionUsability(vshControl *ctl, virConnectPtr conn)
     }
 
     /* The connection is considered dead only if
-     * virConnectIsAlive() successfuly says so.
+     * virConnectIsAlive() successfully says so.
      */
     vshResetLibvirtError();
 

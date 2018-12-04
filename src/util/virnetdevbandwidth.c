@@ -280,7 +280,7 @@ virNetDevBandwidthSet(const char *ifname,
          *                                                +-----------+     +-----+
          *
          * After the routing decision, when is it clear a packet is to be sent
-         * via a particular NIC, it is sent to the root qdisc (queueing
+         * via a particular NIC, it is sent to the root qdisc (queuing
          * discipline). In this case HTB (Hierarchical Token Bucket). It has
          * only one direct child class (with id 1:1) which shapes the overall
          * rate that is sent through the NIC.  This class has at least one child

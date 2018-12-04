@@ -902,7 +902,7 @@ virQEMUCapsInit(virFileCachePtr cache)
                                    true, true)) == NULL)
         goto error;
 
-    /* Some machines have problematic NUMA toplogy causing
+    /* Some machines have problematic NUMA topology causing
      * unexpected failures. We don't want to break the QEMU
      * driver in this scenario, so log errors & carry on
      */

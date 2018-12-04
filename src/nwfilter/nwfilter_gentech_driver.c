@@ -678,7 +678,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
 
         if (rc == 0 && (virNetDevValidateConfig(binding->portdevname, NULL, ifindex) <= 0)) {
             virResetLastError();
-            /* interface changed/disppeared */
+            /* interface changed/disappeared */
             techdriver->allTeardown(binding->portdevname);
             rc = -1;
         }

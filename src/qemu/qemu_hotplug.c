@@ -6647,7 +6647,7 @@ qemuDomainSetVcpusConfig(virDomainDefPtr def,
                 continue;
 
             if (vcpu->online) {
-                /* non-hotpluggable vcpus need to be clustered at the beggining,
+                /* non-hotpluggable vcpus need to be clustered at the beginning,
                  * thus we need to force vcpus to be hotpluggable when we find
                  * vcpus that are hotpluggable and online prior to the ones
                  * we are going to add */

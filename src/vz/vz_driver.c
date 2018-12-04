@@ -3354,7 +3354,7 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
     /* In this situation we have to restore domain on source. But the migration
      * is already finished. */
     if (!domain)
-        VIR_WARN("Can't provide domain '%s' after successfull migration.", name);
+        VIR_WARN("Can't provide domain '%s' after successful migration.", name);
     virDomainObjEndAPI(&dom);
     return domain;
 }

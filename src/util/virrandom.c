@@ -50,7 +50,7 @@ VIR_LOG_INIT("util.random");
 
 /**
  * virRandomBits:
- * @nbits: Number of bits of randommess required
+ * @nbits: Number of bits of randomness required
  *
  * Generate an evenly distributed random number between [0,2^nbits), where
  * @nbits must be in the range (0,64].

@@ -153,7 +153,7 @@ virModuleLoad(const char *path,
         return -1;
     } else {
         /* Since we have no dlopen(), but definition we have no
-         * loadable modules on disk, so we can resaonably
+         * loadable modules on disk, so we can reasonably
          * return '1' instead of an error.
          */
         return 1;

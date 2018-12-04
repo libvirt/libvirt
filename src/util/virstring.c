@@ -763,7 +763,7 @@ virAsprintfInternal(bool report,
  * @dest: destination buffer
  * @src: source buffer
  * @n: number of bytes to copy
- * @destbytes: number of bytes the destination can accomodate
+ * @destbytes: number of bytes the destination can accommodate
  *
  * Copies the first @n bytes of @src to @dest.
  *
@@ -772,7 +772,7 @@ virAsprintfInternal(bool report,
  *
  * @n must be a reasonable value, that is, it must not exceed either
  * the length of @src or the size of @dest. For the latter constraint,
- * the fact that @dest needs to accomodate a NULL byte in addition to
+ * the fact that @dest needs to accommodate a NULL byte in addition to
  * the bytes copied from @src must be taken into account.
  *
  * If you want to copy *all* of @src to @dest, use virStrcpy() or
@@ -806,7 +806,7 @@ virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
  *
  * @dest: destination buffer
  * @src: source buffer
- * @destbytes: number of bytes the destination can accomodate
+ * @destbytes: number of bytes the destination can accommodate
  *
  * Copies @src to @dest.
  *

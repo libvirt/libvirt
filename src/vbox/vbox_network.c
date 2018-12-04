@@ -413,7 +413,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
      * assign a name to it and it defaults to vboxnet*, for e.g:
      * vboxnet0, vboxnet1, etc. Also the UUID is assigned to it
      * automatically depending on the mac address and thus both
-     * these paramters are ignored here for now.
+     * these parameters are ignored here for now.
      *
      * If the vbox is in 2.x and the def->name not equal to vboxnet0,
      * the function call will fail and the networkInterface set to

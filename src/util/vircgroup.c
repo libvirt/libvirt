@@ -1899,7 +1899,7 @@ virCgroupDenyAllDevices(virCgroupPtr group)
 /**
  * virCgroupAllowAllDevices:
  *
- * Allows the permissiong for all devices by setting lines similar
+ * Allows the permission for all devices by setting lines similar
  * to these ones (obviously the 'm' permission is an example):
  *
  * 'b *:* m'
@@ -1950,7 +1950,7 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
  * adds that to the cgroup ACL
  *
  * Returns: 0 on success, 1 if path exists but is not a device or is not
- * accesible, or * -1 on error
+ * accessible, or * -1 on error
  */
 int
 virCgroupAllowDevicePath(virCgroupPtr group,

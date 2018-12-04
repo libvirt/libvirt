@@ -2033,7 +2033,7 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
                                      cpuentries, ncpuentries,
                                      info, maxvcpus) < 0) {
         /* Fallback to the legacy algorithm. Hotplug paths will make sure that
-         * the apropriate data is present */
+         * the appropriate data is present */
         qemuMonitorCPUInfoClear(info, maxvcpus);
         qemuMonitorGetCPUInfoLegacy(cpuentries, ncpuentries, info, maxvcpus);
     }

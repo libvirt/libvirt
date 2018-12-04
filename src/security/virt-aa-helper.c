@@ -551,7 +551,7 @@ valid_path(const char *path, const bool readonly)
             return 0;
     }
 
-    /* disallow RW acess to all paths in restricted and restriced_rw */
+    /* disallow RW access to all paths in restricted and restriced_rw */
     if ((array_starts_with(path, restricted, nropaths) == 0 ||
          array_starts_with(path, restricted_rw, nrwpaths) == 0))
         return 1;

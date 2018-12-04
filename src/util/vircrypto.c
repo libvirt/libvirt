@@ -216,9 +216,9 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
 
 
 /* virCryptoEncryptData:
- * @algorithm: algoritm desired for encryption
+ * @algorithm: algorithm desired for encryption
  * @enckey: encryption key
- * @enckeylen: encription key length
+ * @enckeylen: encryption key length
  * @iv: initialization vector
  * @ivlen: length of initialization vector
  * @data: data to encrypt

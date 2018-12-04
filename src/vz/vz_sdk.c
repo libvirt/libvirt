@@ -2601,7 +2601,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
     /* we fill only type and arch fields in vzLoadDomain for
      * hvm type and also init for containers, so we can check that all
-     * other paramenters are null and boot devices config is default */
+     * other parameters are null and boot devices config is default */
 
     if (def->os.machine != NULL || def->os.bootmenu != 0 ||
         def->os.kernel != NULL || def->os.initrd != NULL ||

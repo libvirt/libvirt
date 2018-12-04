@@ -702,7 +702,7 @@ virObjectEventStateDispatchCallbacks(virObjectEventStatePtr state,
         if (!virObjectEventDispatchMatchCallback(event, cb))
             continue;
 
-        /* Drop the lock whle dispatching, for sake of re-entrancy */
+        /* Drop the lock while dispatching, for sake of re-entrance */
         virObjectUnlock(state);
         event->dispatch(cb->conn, event, cb->cb, cb->opaque);
         virObjectLock(state);

@@ -86,7 +86,7 @@ struct _virConnectDriver {
     /*
      * NULL terminated list of supported URI schemes.
      *  - Single element { NULL } list indicates no supported schemes
-     *  - NULL list indicates wildcard supportnig all schemes
+     *  - NULL list indicates wildcard supporting all schemes
      */
     const char **uriSchemes;
     virHypervisorDriverPtr hypervisorDriver;

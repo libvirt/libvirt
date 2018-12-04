@@ -1025,7 +1025,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
  * qemuMigrationSrcIsAllowedHostdev:
  * @def: domain definition
  *
- * Checks that @def does not contain any host devices unsupported accross
+ * Checks that @def does not contain any host devices unsupported across
  * migrations. Returns true if the vm is allowed to migrate.
  */
 static bool

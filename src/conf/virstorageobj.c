@@ -1232,7 +1232,7 @@ matchFCHostToSCSIHost(virStorageAdapterFCHostPtr fchost,
     /* NB: Lack of a name means that this vHBA hasn't yet been created,
      *     which means our scsi_host cannot be using the vHBA. Furthermore,
      *     lack of a provided parent means libvirt is going to choose the
-     *     "best" fc_host capable adapter based on availabilty. That could
+     *     "best" fc_host capable adapter based on availability. That could
      *     conflict with an existing scsi_host definition, but there's no
      *     way to know that now.
      */

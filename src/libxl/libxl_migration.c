@@ -1029,7 +1029,7 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
         goto confirm;
 
     /* We don't require the destination to have P2P support
-     * as it looks to be normal migration from the receiver perpective.
+     * as it looks to be normal migration from the receiver perspective.
      */
     destflags = flags & ~(VIR_MIGRATE_PEER2PEER);
 

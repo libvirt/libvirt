@@ -1574,7 +1574,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
  * called after the monitor was entered.
  *
  * Returns 0 on success and -1 on error with a libvirt error reported. If an
- * error occured, changes which were already applied need to be rolled back by
+ * error occurred, changes which were already applied need to be rolled back by
  * calling qemuBlockStorageSourceAttachRollback.
  */
 int

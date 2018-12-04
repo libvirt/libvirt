@@ -281,7 +281,7 @@ testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
         }
         if (STRNEQ_NULLABLE(files[i].context, ctx)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "File %s context '%s' did not match epected '%s'",
+                           "File %s context '%s' did not match expected '%s'",
                            files[i].file, ctx, files[i].context);
             VIR_FREE(ctx);
             return -1;

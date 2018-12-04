@@ -36,9 +36,9 @@ class WmiClass:
     This class holds one or more instances of WmiClassVersion because with the
     Windows 2012 release, Microsoft introduced "v2" version of Msvm_* family of
     classes that need different URI for making wsman requests and also have
-    some additional/changed properties (though many of the properies are the
+    some additional/changed properties (though many of the properties are the
     same as in "v1". Therefore, this class makes sure that C code is generated
-    for each of them while avoiding name conflics, identifies common members,
+    for each of them while avoiding name conflicts, identifies common members,
     and defined *_WmiInfo structs holding info about each version so the driver
     code can make the right choices based on which Hyper-V host it's connected
     to.
@@ -54,15 +54,15 @@ class WmiClass:
         """Prepares the class for code generation
 
         Makes sure that "versioned" classes are sorted by version, identifies
-        common properies and ensures that they are aligned by name and
+        common properties and ensures that they are aligned by name and
         type in each version
         """
-        # sort vesioned classes by version in case input file did not have them
+        # sort versioned classes by version in case input file did not have them
         # in order
         self.versions = sorted(self.versions, key=lambda cls: cls.version or "")
 
-        # if there's more than one verion make sure first one has name suffixed
-        # because we'll generate "common" memeber and will be the "base" name
+        # if there's more than one version make sure first one has name suffixed
+        # because we'll generate "common" member and will be the "base" name
         if len(self.versions) > 1:
             first = self.versions[0]
             if first.version == None:
@@ -160,7 +160,7 @@ class WmiClass:
         The *_Data structs are members of hypervObject data union. Each one has
         corresponding *_TypeInfo that is used for wsman unserialization of
         response XML into the *_Data structs. If there's a "common" member, it
-        won't have corresponding *_TypeInfo becuase this is a special case only
+        won't have corresponding *_TypeInfo because this is a special case only
         used to provide a common "view" of v1, v2 etc members
         """
 
@@ -258,7 +258,7 @@ class WmiClass:
         if num_classes < 2:
             return
 
-        # count property occurences in all class versions
+        # count property occurrences in all class versions
         for cls in self.versions:
             for prop in cls.properties:
                 # consdered same if matches by name AND type
@@ -269,7 +269,7 @@ class WmiClass:
                 else:
                     property_info[key] = [prop, 1]
 
-        # isolate those that are common for all and keep track of their postions
+        # isolate those that are common for all and keep track of their positions
         pos = 0
         for key in sorted(property_info):
             info = property_info[key]
@@ -278,7 +278,7 @@ class WmiClass:
                 common[info[0].name] = [info[0], pos]
                 pos += 1
 
-        # alter each versions's property list so that common members are first
+        # alter each version's property list so that common members are first
         # and in the same order as in the common dictionary
         total = len(common)
         for cls in self.versions:
