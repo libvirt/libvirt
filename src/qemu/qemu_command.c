@@ -5763,9 +5763,11 @@ qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
 {
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
         QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
+
+    *chr = NULL;
+
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
-    *chr = NULL;
 
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
