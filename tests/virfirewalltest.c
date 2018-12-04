@@ -990,11 +990,12 @@ testFirewallQueryHook(const char *const*args,
 
 static int
 testFirewallQueryCallback(virFirewallPtr fw,
+                          virFirewallLayer layer,
                           const char *const *lines,
                           void *opaque ATTRIBUTE_UNUSED)
 {
     size_t i;
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
+    virFirewallAddRule(fw, layer,
                        "-A", "INPUT",
                        "--source-host", "!192.168.122.129",
                        "--jump", "REJECT", NULL);

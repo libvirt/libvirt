@@ -2701,6 +2701,7 @@ ebtablesCreateTmpSubChainFW(virFirewallPtr fw,
 
 static int
 ebtablesRemoveSubChainsQuery(virFirewallPtr fw,
+                             virFirewallLayer layer,
                              const char *const *lines,
                              void *opaque)
 {
@@ -2717,14 +2718,14 @@ ebtablesRemoveSubChainsQuery(virFirewallPtr fw,
             if (tmp[0] == chainprefixes[j] &&
                 tmp[1] == '-') {
                 VIR_DEBUG("Processing chain '%s'", tmp);
-                virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                virFirewallAddRuleFull(fw, layer,
                                        false, ebtablesRemoveSubChainsQuery,
                                        (void *)chainprefixes,
                                         "-t", "nat", "-L", tmp, NULL);
-                virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                virFirewallAddRuleFull(fw, layer,
                                        true, NULL, NULL,
                                        "-t", "nat", "-F", tmp, NULL);
-                virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                virFirewallAddRuleFull(fw, layer,
                                        true, NULL, NULL,
                                        "-t", "nat", "-X", tmp, NULL);
             }
@@ -2802,6 +2803,7 @@ ebtablesRenameTmpRootChainFW(virFirewallPtr fw,
 
 static int
 ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
+                                       virFirewallLayer layer,
                                        const char *const *lines,
                                        void *opaque ATTRIBUTE_UNUSED)
 {
@@ -2826,17 +2828,17 @@ ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
         else
             newchain[0] = CHAINPREFIX_HOST_OUT;
         VIR_DEBUG("Renaming chain '%s' to '%s'", tmp, newchain);
-        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+        virFirewallAddRuleFull(fw, layer,
                                false, ebtablesRenameTmpSubAndRootChainsQuery,
                                NULL,
                                "-t", "nat", "-L", tmp, NULL);
-        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+        virFirewallAddRuleFull(fw, layer,
                                true, NULL, NULL,
                                "-t", "nat", "-F", newchain, NULL);
-        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+        virFirewallAddRuleFull(fw, layer,
                                true, NULL, NULL,
                                "-t", "nat", "-X", newchain, NULL);
-        virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+        virFirewallAddRule(fw, layer,
                            "-t", "nat", "-E", tmp, newchain, NULL);
     }
 
@@ -3758,6 +3760,7 @@ ebiptablesDriverProbeCtdir(void)
 
 static int
 ebiptablesDriverProbeStateMatchQuery(virFirewallPtr fw ATTRIBUTE_UNUSED,
+                                     virFirewallLayer layer ATTRIBUTE_UNUSED,
                                      const char *const *lines,
                                      void *opaque)
 {

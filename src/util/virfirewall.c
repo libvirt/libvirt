@@ -824,7 +824,7 @@ virFirewallApplyRule(virFirewallPtr firewall,
             return -1;
 
         VIR_DEBUG("Invoking query %p with '%s'", rule->queryCB, output);
-        if (rule->queryCB(firewall, (const char *const *)lines, rule->queryOpaque) < 0)
+        if (rule->queryCB(firewall, rule->layer, (const char *const *)lines, rule->queryOpaque) < 0)
             return -1;
 
         if (firewall->err == ENOMEM) {
