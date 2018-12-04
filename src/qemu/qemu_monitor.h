@@ -230,6 +230,11 @@ typedef int (*qemuMonitorDomainBlockJobCallback)(qemuMonitorPtr mon,
                                                  int status,
                                                  const char *error,
                                                  void *opaque);
+typedef int (*qemuMonitorDomainJobStatusChangeCallback)(qemuMonitorPtr mon,
+                                                        virDomainObjPtr vm,
+                                                        const char *jobname,
+                                                        int status,
+                                                        void *opaque);
 typedef int (*qemuMonitorDomainTrayChangeCallback)(qemuMonitorPtr mon,
                                                    virDomainObjPtr vm,
                                                    const char *devAlias,
@@ -357,6 +362,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainIOErrorCallback domainIOError;
     qemuMonitorDomainGraphicsCallback domainGraphics;
     qemuMonitorDomainBlockJobCallback domainBlockJob;
+    qemuMonitorDomainJobStatusChangeCallback jobStatusChange;
     qemuMonitorDomainTrayChangeCallback domainTrayChange;
     qemuMonitorDomainPMWakeupCallback domainPMWakeup;
     qemuMonitorDomainPMSuspendCallback domainPMSuspend;
@@ -467,6 +473,9 @@ int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
                             int type,
                             int status,
                             const char *error);
+int qemuMonitorEmitJobStatusChange(qemuMonitorPtr mon,
+                                   const char *jobname,
+                                   qemuMonitorJobStatus status);
 int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
                                  unsigned long long actual);
 int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon);

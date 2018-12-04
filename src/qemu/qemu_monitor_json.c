@@ -100,6 +100,7 @@ static void qemuMonitorJSONHandlePMSuspend(qemuMonitorPtr mon, virJSONValuePtr d
 static void qemuMonitorJSONHandleBlockJobCompleted(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockJobCanceled(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockJobReady(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleJobStatusChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleGuestPanic(qemuMonitorPtr mon, virJSONValuePtr data);
@@ -132,6 +133,7 @@ static qemuEventHandler eventHandlers[] = {
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "DUMP_COMPLETED", qemuMonitorJSONHandleDumpCompleted, },
     { "GUEST_PANICKED", qemuMonitorJSONHandleGuestPanic, },
+    { "JOB_STATUS_CHANGE", qemuMonitorJSONHandleJobStatusChange, },
     { "MIGRATION", qemuMonitorJSONHandleMigrationStatus, },
     { "MIGRATION_PASS", qemuMonitorJSONHandleMigrationPass, },
     { "NIC_RX_FILTER_CHANGED", qemuMonitorJSONHandleNicRxFilterChanged, },
@@ -1171,6 +1173,30 @@ qemuMonitorJSONHandleBlockJobImpl(qemuMonitorPtr mon,
  out:
     qemuMonitorEmitBlockJob(mon, device, type, event, error);
 }
+
+
+static void
+qemuMonitorJSONHandleJobStatusChange(qemuMonitorPtr mon,
+                                     virJSONValuePtr data)
+{
+    const char *jobname = virJSONValueObjectGetString(data, "id");
+    const char *statusstr = virJSONValueObjectGetString(data, "status");
+    int status;
+
+    if (!jobname) {
+        VIR_WARN("missing job name in JOB_STATUS_CHANGE event");
+        return;
+    }
+
+    if ((status = qemuMonitorJobStatusTypeFromString(statusstr)) < 0) {
+        VIR_WARN("unknown job status '%s' for job '%s' in JOB_STATUS_CHANGE event",
+                 statusstr, jobname);
+        return;
+    }
+
+    qemuMonitorEmitJobStatusChange(mon, jobname, status);
+}
+
 
 static void
 qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon,
