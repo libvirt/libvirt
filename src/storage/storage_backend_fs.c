@@ -330,19 +330,11 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
     return ret;
 }
 
-/**
- * @pool storage pool to mount
- *
- * Ensure that a FS storage pool is mounted on its target location.
- * If already mounted, this is a no-op
- *
- * Returns 0 if successfully mounted, -1 on error
- */
-static int
-virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
+
+static virCommandPtr
+virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
+                                    const char *src)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    char *src = NULL;
     /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
      *  while plain 'mount' does. We have to craft separate argvs to
      *  accommodate this */
@@ -353,23 +345,6 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
     bool cifsfs = (def->type == VIR_STORAGE_POOL_NETFS &&
                    def->source.format == VIR_STORAGE_POOL_NETFS_CIFS);
     virCommandPtr cmd = NULL;
-    int ret = -1;
-    int rc;
-
-    if (virStorageBackendFileSystemIsValid(pool) < 0)
-        return -1;
-
-    if ((rc = virStorageBackendFileSystemIsMounted(pool)) < 0)
-        return -1;
-
-    /* Short-circuit if already mounted */
-    if (rc == 1) {
-        VIR_INFO("Target '%s' is already mounted", def->target.path);
-        return 0;
-    }
-
-    if (!(src = virStorageBackendFileSystemGetPoolSource(pool)))
-        return -1;
 
     if (netauto)
         cmd = virCommandNewArgList(MOUNT,
@@ -404,6 +379,43 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
                                    def->target.path,
                                    NULL);
 
+    return cmd;
+}
+
+
+/**
+ * @pool storage pool to mount
+ *
+ * Ensure that a FS storage pool is mounted on its target location.
+ * If already mounted, this is a no-op
+ *
+ * Returns 0 if successfully mounted, -1 on error
+ */
+static int
+virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
+{
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    char *src = NULL;
+    virCommandPtr cmd = NULL;
+    int ret = -1;
+    int rc;
+
+    if (virStorageBackendFileSystemIsValid(pool) < 0)
+        return -1;
+
+    if ((rc = virStorageBackendFileSystemIsMounted(pool)) < 0)
+        return -1;
+
+    /* Short-circuit if already mounted */
+    if (rc == 1) {
+        VIR_INFO("Target '%s' is already mounted", def->target.path);
+        return 0;
+    }
+
+    if (!(src = virStorageBackendFileSystemGetPoolSource(pool)))
+        return -1;
+
+    cmd = virStorageBackendFileSystemMountCmd(def, src);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
