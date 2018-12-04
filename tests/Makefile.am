@@ -140,6 +140,7 @@ EXTRA_DIST = \
 	storagepoolschemadata \
 	storagepoolxml2xmlin \
 	storagepoolxml2xmlout \
+	storagepoolxml2argvdata \
 	storagevolschemadata \
 	storagevolxml2argvdata \
 	storagevolxml2xmlin \
@@ -363,6 +364,7 @@ endif WITH_NWFILTER
 
 if WITH_STORAGE
 test_programs += storagevolxml2argvtest
+test_programs += storagepoolxml2argvtest
 test_programs += virstorageutiltest
 endif WITH_STORAGE
 
@@ -895,6 +897,16 @@ storagevolxml2argvtest_SOURCES = \
     storagevolxml2argvtest.c \
     testutils.c testutils.h
 storagevolxml2argvtest_LDADD = \
+	$(LIBXML_LIBS) \
+	../src/libvirt_driver_storage_impl.la \
+	../src/libvirt_conf.la \
+	../src/libvirt_util.la \
+	$(LDADDS)
+
+storagepoolxml2argvtest_SOURCES = \
+    storagepoolxml2argvtest.c \
+    testutils.c testutils.h
+storagepoolxml2argvtest_LDADD = \
 	$(LIBXML_LIBS) \
 	../src/libvirt_driver_storage_impl.la \
 	../src/libvirt_conf.la \
