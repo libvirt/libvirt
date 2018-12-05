@@ -1,63 +1,63 @@
 iptables \
 --table filter \
---insert INPUT \
+--insert LIBVIRT_INP \
 --in-interface virbr0 \
 --protocol tcp \
 --destination-port 67 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert INPUT \
+--insert LIBVIRT_INP \
 --in-interface virbr0 \
 --protocol udp \
 --destination-port 67 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert OUTPUT \
+--insert LIBVIRT_OUT \
 --out-interface virbr0 \
 --protocol udp \
 --destination-port 68 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert INPUT \
+--insert LIBVIRT_INP \
 --in-interface virbr0 \
 --protocol tcp \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert INPUT \
+--insert LIBVIRT_INP \
 --in-interface virbr0 \
 --protocol udp \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWO \
 --in-interface virbr0 \
 --jump REJECT
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWI \
 --out-interface virbr0 \
 --jump REJECT
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWX \
 --in-interface virbr0 \
 --out-interface virbr0 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWO \
 --source 192.168.122.0/24 \
 --in-interface virbr0 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWI \
 --destination 192.168.122.0/24 \
 --out-interface virbr0 \
 --match conntrack \
@@ -65,13 +65,13 @@ iptables \
 --jump ACCEPT
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.122.0/24 '!' \
 --destination 192.168.122.0/24 \
 --jump MASQUERADE
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
 -p udp '!' \
 --destination 192.168.122.0/24 \
@@ -79,7 +79,7 @@ iptables \
 --to-ports 1024-65535
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
 -p tcp '!' \
 --destination 192.168.122.0/24 \
@@ -87,25 +87,25 @@ iptables \
 --to-ports 1024-65535
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
 --destination 255.255.255.255/32 \
 --jump RETURN
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
 --destination 224.0.0.0/24 \
 --jump RETURN
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWO \
 --source 192.168.128.0/24 \
 --in-interface virbr0 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWI \
 --destination 192.168.128.0/24 \
 --out-interface virbr0 \
 --match conntrack \
@@ -113,13 +113,13 @@ iptables \
 --jump ACCEPT
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.128.0/24 '!' \
 --destination 192.168.128.0/24 \
 --jump MASQUERADE
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.128.0/24 \
 -p udp '!' \
 --destination 192.168.128.0/24 \
@@ -127,7 +127,7 @@ iptables \
 --to-ports 1024-65535
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.128.0/24 \
 -p tcp '!' \
 --destination 192.168.128.0/24 \
@@ -135,25 +135,25 @@ iptables \
 --to-ports 1024-65535
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.128.0/24 \
 --destination 255.255.255.255/32 \
 --jump RETURN
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.128.0/24 \
 --destination 224.0.0.0/24 \
 --jump RETURN
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWO \
 --source 192.168.150.0/24 \
 --in-interface virbr0 \
 --jump ACCEPT
 iptables \
 --table filter \
---insert FORWARD \
+--insert LIBVIRT_FWI \
 --destination 192.168.150.0/24 \
 --out-interface virbr0 \
 --match conntrack \
@@ -161,13 +161,13 @@ iptables \
 --jump ACCEPT
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.150.0/24 '!' \
 --destination 192.168.150.0/24 \
 --jump MASQUERADE
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.150.0/24 \
 -p udp '!' \
 --destination 192.168.150.0/24 \
@@ -175,7 +175,7 @@ iptables \
 --to-ports 1024-65535
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.150.0/24 \
 -p tcp '!' \
 --destination 192.168.150.0/24 \
@@ -183,19 +183,19 @@ iptables \
 --to-ports 1024-65535
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.150.0/24 \
 --destination 255.255.255.255/32 \
 --jump RETURN
 iptables \
 --table nat \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --source 192.168.150.0/24 \
 --destination 224.0.0.0/24 \
 --jump RETURN
 iptables \
 --table mangle \
---insert POSTROUTING \
+--insert LIBVIRT_PRT \
 --out-interface virbr0 \
 --protocol udp \
 --destination-port 68 \

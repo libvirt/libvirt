@@ -34,17 +34,35 @@ VIR_LOG_INIT("network.bridge_driver_linux");
 
 #define PROC_NET_ROUTE "/proc/net/route"
 
-int networkPreReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
+int networkPreReloadFirewallRules(bool startup)
 {
     int ret = iptablesSetupPrivateChains();
     if (ret < 0)
         return -1;
+
+    /*
+     * If this is initial startup, and we just created the
+     * top level private chains we either
+     *
+     *   - upgraded from old libvirt
+     *   - freshly booted from clean state
+     *
+     * In the first case we must delete the old rules from
+     * the built-in chains, instead of our new private chains.
+     * In the second case it doesn't matter, since no existing
+     * rules will be present. Thus we can safely just tell it
+     * to always delete from the builin chain
+     */
+    if (startup && ret == 1)
+        iptablesSetDeletePrivate(false);
+
     return 0;
 }
 
 
 void networkPostReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
 {
+    iptablesSetDeletePrivate(true);
 }
 
 

@@ -2077,6 +2077,7 @@ iptablesRemoveOutputFixUdpChecksum;
 iptablesRemoveTcpInput;
 iptablesRemoveUdpInput;
 iptablesRemoveUdpOutput;
+iptablesSetDeletePrivate;
 iptablesSetupPrivateChains;
 
 
