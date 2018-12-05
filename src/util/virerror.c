@@ -905,12 +905,14 @@ void virRaiseErrorObject(const char *filename,
 /**
  * virErrorMsg:
  * @error: the virErrorNumber
- * @info: usually the first parameter string
+ * @info: additional info string
  *
- * Internal routine to get the message associated to an error raised
- * from the library
+ * Internal routine to get the message associated to @error raised
+ * from the library.
  *
- * Returns the constant string associated to @error
+ * Returns a *printf format string which describes @error. The returned string
+ * contains exactly one '%s' modifier if @info is non-NULL, or no modifiers at
+ * all if @info is NULL. If @error is invalid NULL is returned.
  */
 const char *
 virErrorMsg(virErrorNumber error, const char *info)
