@@ -367,7 +367,9 @@ static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
     VIR_DEBUG("Getting nic indexes");
     for (i = 0; i < ctrl->def->nnets; i++) {
         int nicindex = -1;
-        switch (ctrl->def->nets[i]->type) {
+        virDomainNetType actualType = virDomainNetGetActualType(ctrl->def->nets[i]);
+
+        switch (actualType) {
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -396,11 +398,11 @@ static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported net type %s"),
-                           virDomainNetTypeToString(ctrl->def->nets[i]->type));
+                           virDomainNetTypeToString(actualType));
             goto cleanup;
         case VIR_DOMAIN_NET_TYPE_LAST:
         default:
-            virReportEnumRangeError(virDomainNetType, ctrl->def->nets[i]->type);
+            virReportEnumRangeError(virDomainNetType, actualType);
             goto cleanup;
         }
     }
