@@ -34,6 +34,17 @@ VIR_LOG_INIT("network.bridge_driver_linux");
 
 #define PROC_NET_ROUTE "/proc/net/route"
 
+int networkPreReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+void networkPostReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
+{
+}
+
+
 /* XXX: This function can be a lot more exhaustive, there are certainly
  *      other scenarios where we can ruin host network connectivity.
  * XXX: Using a proper library is preferred over parsing /proc

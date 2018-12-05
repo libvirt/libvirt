@@ -19,6 +19,17 @@
 
 #include <config.h>
 
+int networkPreReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+void networkPostReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
+{
+}
+
+
 int networkCheckRouteCollision(virNetworkDefPtr def ATTRIBUTE_UNUSED)
 {
     return 0;
