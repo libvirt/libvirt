@@ -4718,6 +4718,26 @@ processBlockJobEvent(virQEMUDriverPtr driver,
 
 
 static void
+processJobStatusChangeEvent(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            qemuBlockJobDataPtr job)
+{
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        return;
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Domain is not running");
+        goto endjob;
+    }
+
+    qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+}
+
+
+static void
 processMonitorEOFEvent(virQEMUDriverPtr driver,
                        virDomainObjPtr vm)
 {
@@ -4854,6 +4874,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
                              processEvent->data,
                              processEvent->action,
                              processEvent->status);
+        break;
+    case QEMU_PROCESS_EVENT_JOB_STATUS_CHANGE:
+        processJobStatusChangeEvent(driver, vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_MONITOR_EOF:
         processMonitorEOFEvent(driver, vm);
