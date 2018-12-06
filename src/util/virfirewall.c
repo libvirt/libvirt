@@ -838,7 +838,9 @@ virFirewallApply(virFirewallPtr firewall)
         if (virFirewallApplyGroup(firewall, i) < 0) {
             VIR_DEBUG("Rolling back groups up to %zu for %p", i, firewall);
             size_t first = i;
-            g_autoptr(virError) saved_error = virSaveLastError();
+            virErrorPtr saved_error;
+
+            virErrorPreserveLast(&saved_error);
 
             /*
              * Look at any inheritance markers to figure out
@@ -858,7 +860,7 @@ virFirewallApply(virFirewallPtr firewall)
                 virFirewallRollbackGroup(firewall, j);
             }
 
-            virSetError(saved_error);
+            virErrorRestore(&saved_error);
             VIR_DEBUG("Done rolling back groups for %p", firewall);
             goto cleanup;
         }

@@ -1168,13 +1168,12 @@ virCgroupNewMachineSystemd(const char *name,
     }
 
     if (virCgroupAddProcess(*group, pidleader) < 0) {
-        virErrorPtr saved = virSaveLastError();
+        virErrorPtr saved;
+
+        virErrorPreserveLast(&saved);
         virCgroupRemove(*group);
         virCgroupFree(group);
-        if (saved) {
-            virSetError(saved);
-            virFreeError(saved);
-        }
+        virErrorRestore(&saved);
     }
 
     return 0;
@@ -1220,13 +1219,12 @@ virCgroupNewMachineManual(const char *name,
         goto cleanup;
 
     if (virCgroupAddProcess(*group, pidleader) < 0) {
-        virErrorPtr saved = virSaveLastError();
+        virErrorPtr saved;
+
+        virErrorPreserveLast(&saved);
         virCgroupRemove(*group);
         virCgroupFree(group);
-        if (saved) {
-            virSetError(saved);
-            virFreeError(saved);
-        }
+        virErrorRestore(&saved);
     }
 
  done:
