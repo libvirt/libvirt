@@ -918,10 +918,9 @@ virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
     /* Best effort to remove the partition. Ignore any errors
      * since we could be calling this with vol->target.path == NULL
      */
-    save_err = virSaveLastError();
+    virErrorPreserveLast(&save_err);
     ignore_value(virStorageBackendDiskDeleteVol(pool, vol, 0));
-    virSetError(save_err);
-    virFreeError(save_err);
+    virErrorRestore(&save_err);
     return -1;
 }
 

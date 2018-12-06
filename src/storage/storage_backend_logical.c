@@ -969,10 +969,9 @@ virStorageBackendLogicalCreateVol(virStoragePoolObjPtr pool,
     return 0;
 
  error:
-    err = virSaveLastError();
+    virErrorPreserveLast(&err);
     virStorageBackendLogicalDeleteVol(pool, vol, 0);
-    virSetError(err);
-    virFreeError(err);
+    virErrorRestore(&err);
     return -1;
 }
 
