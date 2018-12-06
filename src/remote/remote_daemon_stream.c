@@ -229,15 +229,18 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         int ret;
         virNetMessagePtr msg;
         virNetMessageError rerr;
-        virErrorPtr origErr = virSaveLastError();
+        virErrorPtr origErr;
+
+        virErrorPreserveLast(&origErr);
 
         memset(&rerr, 0, sizeof(rerr));
         stream->closed = true;
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
         if (origErr && origErr->code != VIR_ERR_OK) {
-            virSetError(origErr);
+            virErrorRestore(&origErr);
         } else {
+            virFreeError(origErr);
             if (events & VIR_STREAM_EVENT_HANGUP)
                 virReportError(VIR_ERR_RPC,
                                "%s", _("stream had unexpected termination"));
@@ -245,7 +248,6 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
                 virReportError(VIR_ERR_RPC,
                                "%s", _("stream had I/O failure"));
         }
-        virFreeError(origErr);
 
         msg = virNetMessageNew(false);
         if (!msg) {
@@ -549,7 +551,9 @@ daemonStreamHandleWriteData(virNetServerClientPtr client,
         return 1;
     } else if (ret < 0) {
         virNetMessageError rerr;
-        virErrorPtr err = virSaveLastError();
+        virErrorPtr err;
+
+        virErrorPreserveLast(&err);
 
         memset(&rerr, 0, sizeof(rerr));
 
@@ -558,10 +562,7 @@ daemonStreamHandleWriteData(virNetServerClientPtr client,
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
 
-        if (err) {
-            virSetError(err);
-            virFreeError(err);
-        }
+        virErrorRestore(&err);
 
         return virNetServerProgramSendReplyError(stream->prog,
                                                  client,
