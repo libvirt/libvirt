@@ -1049,7 +1049,7 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
         if (uri_out) {
             if (virTypedParamsReplaceString(&params, &nparams,
                                             VIR_MIGRATE_PARAM_URI, uri_out) < 0) {
-                orig_err = virSaveLastError();
+                virErrorPreserveLast(&orig_err);
                 goto finish;
             }
         } else {
@@ -1067,7 +1067,7 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
                                              uri_out, NULL, flags);
     if (ret < 0) {
         notify_source = false;
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
     }
 
     cancelled = (ret < 0);
@@ -1094,7 +1094,7 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
      * one we need to preserve it in case confirm3 overwrites
      */
     if (!orig_err)
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
 
  confirm:
     if (notify_source) {
@@ -1119,10 +1119,7 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
         ret = -1;
     }
 
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     VIR_FREE(cookieout);
     VIR_FREE(dom_xml);
@@ -1200,15 +1197,12 @@ libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
     }
 
  cleanup:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     virObjectUnlock(vm);
     virObjectUnref(dconn);
     virObjectUnref(cfg);
     virObjectLock(vm);
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     return ret;
 }
 
