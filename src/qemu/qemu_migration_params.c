@@ -1197,7 +1197,9 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr origParams,
                          unsigned long apiFlags)
 {
-    virErrorPtr err = virSaveLastError();
+    virErrorPtr err;
+
+    virErrorPreserveLast(&err);
 
     VIR_DEBUG("Resetting migration parameters %p, flags 0x%lx",
               origParams, apiFlags);
@@ -1211,10 +1213,7 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
     qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);
 
  cleanup:
-    if (err) {
-        virSetError(err);
-        virFreeError(err);
-    }
+    virErrorRestore(&err);
 }
 
 

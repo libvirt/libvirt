@@ -8644,10 +8644,11 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     ret = 0;
  cleanup:
     if (ret < 0) {
-        virErrorPtr saved_err = virSaveLastError();
+        virErrorPtr saved_err;
+
+        virErrorPreserveLast(&saved_err);
         virDomainConfNWFilterTeardown(net);
-        virSetError(saved_err);
-        virFreeError(saved_err);
+        virErrorRestore(&saved_err);
     }
     for (i = 0; vhostfd && i < vhostfdSize; i++) {
         if (ret < 0)
@@ -8730,11 +8731,10 @@ qemuBuildNetCommandLine(virQEMUDriverPtr driver,
  error:
     /* free up any resources in the network driver
      * but don't overwrite the original error */
-    originalError = virSaveLastError();
+    virErrorPreserveLast(&originalError);
     for (i = 0; last_good_net != -1 && i <= last_good_net; i++)
         virDomainConfNWFilterTeardown(def->nets[i]);
-    virSetError(originalError);
-    virFreeError(originalError);
+    virErrorRestore(&originalError);
     return -1;
 }
 

@@ -9174,7 +9174,7 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
     /* We don't care about errors logging taint info, so
      * preserve original error, and clear any error that
      * is raised */
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
 
     if (!(timestamp = virTimeStringNow()))
         goto cleanup;
@@ -9198,10 +9198,7 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
 
  cleanup:
     VIR_FREE(timestamp);
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 }
 
 

@@ -3436,7 +3436,8 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
  endjob:
     if (ret < 0) {
         if (was_running && virDomainObjIsActive(vm)) {
-            virErrorPtr save_err = virSaveLastError();
+            virErrorPtr save_err;
+            virErrorPreserveLast(&save_err);
             if (qemuProcessStartCPUs(driver, vm,
                                      VIR_DOMAIN_RUNNING_SAVE_CANCELED,
                                      QEMU_ASYNC_JOB_SAVE) < 0) {
@@ -3446,8 +3447,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR));
             }
-            virSetError(save_err);
-            virFreeError(save_err);
+            virErrorRestore(&save_err);
         }
     }
     qemuDomainObjEndAsyncJob(driver, vm);
@@ -6729,7 +6729,9 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (!virDomainDefCheckABIStability(def, newdef_migr, driver->xmlopt)) {
-        virErrorPtr err = virSaveLastError();
+        virErrorPtr save_err;
+
+        virErrorPreserveLast(&save_err);
 
         /* Due to a bug in older version of external snapshot creation
          * code, the XML saved in the save image was not a migratable
@@ -6738,11 +6740,10 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
          * the user provided XML if the check against the migratable XML
          * fails. Snapshots created prior to v1.1.3 have this issue. */
         if (!virDomainDefCheckABIStability(def, newdef, driver->xmlopt)) {
-            virSetError(err);
-            virFreeError(err);
+            virErrorRestore(&save_err);
             goto cleanup;
         }
-        virFreeError(err);
+        virFreeError(save_err);
 
         /* use the user provided XML */
         ret = g_steal_pointer(&newdef);
@@ -6991,7 +6992,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
              * must manually kill it and ignore any error related to
              * the process
              */
-            orig_err = virSaveLastError();
+            virErrorPreserveLast(&orig_err);
             VIR_FORCE_CLOSE(intermediatefd);
             VIR_FORCE_CLOSE(*fd);
         }
@@ -7002,10 +7003,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         }
         VIR_DEBUG("Decompression binary stderr: %s", NULLSTR(errbuf));
 
-        if (orig_err) {
-            virSetError(orig_err);
-            virFreeError(orig_err);
-        }
+        virErrorRestore(&orig_err);
     }
     VIR_FORCE_CLOSE(intermediatefd);
 
@@ -14739,13 +14737,11 @@ qemuDomainSnapshotFSThaw(virQEMUDriverPtr driver G_GNUC_UNUSED,
 
     agent = qemuDomainObjEnterAgent(vm);
     if (!report)
-        err = virSaveLastError();
+        virErrorPreserveLast(&err);
     thawed = qemuAgentFSThaw(agent);
-    if (!report)
-        virSetError(err);
     qemuDomainObjExitAgent(vm, agent);
 
-    virFreeError(err);
+    virErrorRestore(&err);
 
     return thawed;
 }
@@ -18897,16 +18893,14 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
  endjob:
     if (ret < 0 && clean_access) {
-        virErrorPtr orig_err = virSaveLastError();
+        virErrorPtr orig_err;
+        virErrorPreserveLast(&orig_err);
         /* Revert access to read-only, if possible.  */
         qemuDomainStorageSourceAccessAllow(driver, vm, baseSource, true, false);
         if (top_parent && top_parent != disk->src)
             qemuDomainStorageSourceAccessAllow(driver, vm, top_parent, true, false);
 
-        if (orig_err) {
-            virSetError(orig_err);
-            virFreeError(orig_err);
-        }
+        virErrorRestore(&orig_err);
     }
     qemuBlockJobStartupFinalize(vm, job);
     qemuDomainObjEndJob(driver, vm);

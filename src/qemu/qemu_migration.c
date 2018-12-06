@@ -728,7 +728,7 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
         if (rv != 0) {
             if (rv < 0) {
                 if (!err)
-                    err = virSaveLastError();
+                    virErrorPreserveLast(&err);
                 failed = true;
             }
             qemuBlockJobSyncEnd(vm, job, asyncJob);
@@ -753,7 +753,7 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
         }
 
         if (failed && !err)
-            err = virSaveLastError();
+            virErrorPreserveLast(&err);
 
         if (virDomainObjWait(vm) < 0)
             goto cleanup;
@@ -775,10 +775,7 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
     ret = failed ? -1 : 0;
 
  cleanup:
-    if (err) {
-        virSetError(err);
-        virFreeError(err);
-    }
+    virErrorRestore(&err);
     return ret;
 }
 
@@ -3001,15 +2998,16 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
         virObjectEventStateQueue(driver->domainEventState, event);
         qemuDomainEventEmitJobCompleted(driver, vm);
     } else {
-        virErrorPtr orig_err = virSaveLastError();
+        virErrorPtr orig_err;
         int reason;
+
+        virErrorPreserveLast(&orig_err);
 
         /* cancel any outstanding NBD jobs */
         qemuMigrationSrcNBDCopyCancel(driver, vm, false,
                                       QEMU_ASYNC_JOB_MIGRATION_OUT, NULL);
 
-        virSetError(orig_err);
-        virFreeError(orig_err);
+        virErrorRestore(&orig_err);
 
         if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
             reason == VIR_DOMAIN_PAUSED_POSTCOPY)
@@ -3213,16 +3211,13 @@ static void qemuMigrationSrcIOFunc(void *arg)
     return;
 
  abrt:
-    err = virSaveLastError();
+    virErrorPreserveLast(&err);
     if (err && err->code == VIR_ERR_OK) {
         virFreeError(err);
         err = NULL;
     }
     virStreamAbort(data->st);
-    if (err) {
-        virSetError(err);
-        virFreeError(err);
-    }
+    virErrorRestore(&err);
 
  error:
     /* Let the source qemu know that the transfer cant continue anymore.
@@ -3704,15 +3699,12 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     if (events)
         priv->signalIOError = false;
 
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     return ret;
 
  error:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
 
     if (virDomainObjIsActive(vm)) {
         if (cancel &&
@@ -3967,7 +3959,7 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare2 did not set uri"));
         cancelled = true;
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
         goto finish;
     }
 
@@ -3990,7 +3982,7 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriverPtr driver,
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0)
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
 
     /* If Perform returns < 0, then we need to cancel the VM
      * startup on the destination
@@ -4023,10 +4015,7 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriverPtr driver,
 
     virObjectUnref(st);
 
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     VIR_FREE(uri_out);
     VIR_FREE(cookie);
 
@@ -4200,13 +4189,13 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
         if (useParams &&
             virTypedParamsReplaceString(&params, &nparams,
                                         VIR_MIGRATE_PARAM_URI, uri_out) < 0) {
-            orig_err = virSaveLastError();
+            virErrorPreserveLast(&orig_err);
             goto finish;
         }
     } else if (!uri && !(flags & VIR_MIGRATE_TUNNELLED)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare3 did not set uri"));
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
         goto finish;
     }
 
@@ -4239,7 +4228,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0) {
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
     } else {
         qemuMigrationJobSetPhase(driver, vm,
                                  QEMU_MIGRATION_PHASE_PERFORM3_DONE);
@@ -4331,7 +4320,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
      * one we need to preserve it in case confirm3 overwrites
      */
     if (!orig_err)
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
 
     /*
      * If cancelled, then src VM will be restarted, else
@@ -4363,10 +4352,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
 
     virObjectUnref(st);
 
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     VIR_FREE(uri_out);
     VIR_FREE(cookiein);
     VIR_FREE(cookieout);
@@ -4542,15 +4528,12 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     qemuDomainObjEnterRemote(vm);
     virConnectUnregisterCloseCallback(dconn, qemuMigrationSrcConnectionClosed);
     virObjectUnref(dconn);
     ignore_value(qemuDomainObjExitRemote(vm, false));
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     virObjectUnref(cfg);
     return ret;
 }
@@ -4639,7 +4622,7 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
 
  endjob:
     if (ret < 0)
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
 
     /* v2 proto has no confirm phase so we need to reset migration parameters
      * here
@@ -4659,10 +4642,7 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
         qemuDomainRemoveInactiveJob(driver, vm);
     }
 
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
@@ -5074,7 +5054,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
             /* Need to save the current error, in case shutting
              * down the process overwrites it
              */
-            orig_err = virSaveLastError();
+            virErrorPreserveLast(&orig_err);
 
             /*
              * In v3 protocol, the source VM is still available to
@@ -5203,10 +5183,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
     VIR_FREE(priv->origname);
     virDomainObjEndAPI(&vm);
     qemuMigrationCookieFree(mig);
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     virObjectUnref(cfg);
 
     /* Set a special error if Finish is expected to return NULL as a result of
@@ -5311,7 +5288,7 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
     if (rc < 0) {
         if (rc == -2) {
-            orig_err = virSaveLastError();
+            virErrorPreserveLast(&orig_err);
             virCommandAbort(cmd);
             if (virDomainObjIsActive(vm) &&
                 qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
@@ -5330,7 +5307,7 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
  cleanup:
     if (ret < 0 && !orig_err)
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
 
     /* Restore max migration bandwidth */
     if (virDomainObjIsActive(vm) &&
@@ -5348,10 +5325,7 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
         virCommandFree(cmd);
     }
 
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     return ret;
 }
@@ -5539,8 +5513,7 @@ qemuMigrationDstErrorReport(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Restoring saved incoming migration error for domain %s: %s",
               name, err->message);
-    virSetError(err);
-    virFreeError(err);
+    virErrorRestore(&err);
 }
 
 

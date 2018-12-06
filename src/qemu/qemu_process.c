@@ -7412,7 +7412,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     /* This method is routinely used in clean up paths. Disable error
      * reporting so we don't squash a legit error. */
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
 
     if (asyncJob != QEMU_ASYNC_JOB_NONE) {
         if (qemuDomainObjBeginNestedJob(driver, vm, asyncJob) < 0)
@@ -7705,10 +7705,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     virObjectUnref(conn);
     virObjectUnref(cfg);
 }

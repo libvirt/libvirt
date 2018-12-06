@@ -929,17 +929,17 @@ qemuMonitorClose(qemuMonitorPtr mon)
      */
     if (mon->msg) {
         if (mon->lastError.code == VIR_ERR_OK) {
-            virErrorPtr err = virSaveLastError();
+            virErrorPtr err;
+
+            virErrorPreserveLast(&err);
 
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("QEMU monitor was closed"));
             virCopyLastError(&mon->lastError);
-            if (err) {
-                virSetError(err);
-                virFreeError(err);
-            } else {
+            if (err)
+                virErrorRestore(&err);
+            else
                 virResetLastError();
-            }
         }
         mon->msg->finished = 1;
         virCondSignal(&mon->notify);
@@ -2671,17 +2671,14 @@ qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
 
     VIR_DEBUG("fdname=%s", fdname);
 
-    error = virSaveLastError();
+    virErrorPreserveLast(&error);
 
     QEMU_CHECK_MONITOR_GOTO(mon, cleanup);
 
     ret = qemuMonitorJSONCloseFileHandle(mon, fdname);
 
  cleanup:
-    if (error) {
-        virSetError(error);
-        virFreeError(error);
-    }
+    virErrorRestore(&error);
     return ret;
 }
 
