@@ -3206,7 +3206,7 @@ vzDomainMigratePerformP2P(virDomainObjPtr dom,
      */
     if (uri && virTypedParamsReplaceString(&params, &nparams,
                                            VIR_MIGRATE_PARAM_URI, uri) < 0) {
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
         goto finish;
     }
 
@@ -3216,7 +3216,7 @@ vzDomainMigratePerformP2P(virDomainObjPtr dom,
     cookieoutlen = 0;
     if (vzDomainMigratePerformStep(dom, driver, params, nparams, cookiein,
                                    cookieinlen, flags) < 0) {
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
         goto finish;
     }
 
@@ -3242,10 +3242,7 @@ vzDomainMigratePerformP2P(virDomainObjPtr dom,
     /* confirm step is NOOP thus no need to call it */
 
  done:
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     VIR_FREE(dom_xml);
     VIR_FREE(uri);
     VIR_FREE(cookiein);
