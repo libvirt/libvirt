@@ -1857,12 +1857,11 @@ static int lxcSetVcpuBWLive(virCgroupPtr cgroup, unsigned long long period,
 
  error:
     if (period) {
-        virErrorPtr saved = virSaveLastError();
+        virErrorPtr saved;
+
+        virErrorPreserveLast(&saved);
         virCgroupSetCpuCfsPeriod(cgroup, old_period);
-        if (saved) {
-            virSetError(saved);
-            virFreeError(saved);
-        }
+        virErrorRestore(&saved);
     }
 
     return -1;

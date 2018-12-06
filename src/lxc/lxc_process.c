@@ -1568,7 +1568,7 @@ int virLXCProcessStart(virConnectPtr conn,
         rc = -1;
     }
     if (rc != 0) {
-        err = virSaveLastError();
+        virErrorPreserveLast(&err);
         virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
     }
     virCommandFree(cmd);
@@ -1582,10 +1582,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virObjectUnref(cfg);
     virObjectUnref(caps);
 
-    if (err) {
-        virSetError(err);
-        virFreeError(err);
-    }
+    virErrorRestore(&err);
 
     return rc;
 }
