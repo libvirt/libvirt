@@ -30982,8 +30982,7 @@ virDomainGraphicsGetRenderNode(const virDomainGraphicsDef *graphics)
 
     switch (graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        if (graphics->data.spice.gl == VIR_TRISTATE_BOOL_YES)
-            ret = graphics->data.spice.rendernode;
+        ret = graphics->data.spice.rendernode;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         ret = graphics->data.egl_headless.rendernode;
@@ -31004,6 +31003,10 @@ bool
 virDomainGraphicsNeedsAutoRenderNode(const virDomainGraphicsDef *graphics)
 {
     if (!virDomainGraphicsSupportsRenderNode(graphics))
+        return false;
+
+    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+        graphics->data.spice.gl != VIR_TRISTATE_BOOL_YES)
         return false;
 
     if (virDomainGraphicsGetRenderNode(graphics))
