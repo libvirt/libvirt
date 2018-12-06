@@ -23563,17 +23563,14 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
     return true;
 
  error:
-    err = virSaveLastError();
+    virErrorPreserveLast(&err);
 
     strSrc = virDomainDefFormat(src, NULL, 0);
     strDst = virDomainDefFormat(dst, NULL, 0);
     VIR_DEBUG("XMLs that failed stability check were: src=\"%s\", dst=\"%s\"",
               NULLSTR(strSrc), NULLSTR(strDst));
 
-    if (err) {
-        virSetError(err);
-        virFreeError(err);
-    }
+    virErrorRestore(&err);
     return false;
 }
 
