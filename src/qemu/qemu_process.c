@@ -6041,14 +6041,15 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
 
 
 static int
-qemuProcessSEVCreateFile(const char *configDir,
+qemuProcessSEVCreateFile(virDomainObjPtr vm,
                          const char *name,
                          const char *data)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *configFile;
     int ret = -1;
 
-    if (!(configFile = virFileBuildPath(configDir, name, ".base64")))
+    if (!(configFile = virFileBuildPath(priv->libDir, name, ".base64")))
         return -1;
 
     if (virFileRewriteStr(configFile, S_IRUSR | S_IWUSR, data) < 0) {
@@ -6085,12 +6086,12 @@ qemuProcessPrepareSEVGuestInput(virDomainObjPtr vm)
     }
 
     if (sev->dh_cert) {
-        if (qemuProcessSEVCreateFile(priv->libDir, "dh_cert", sev->dh_cert) < 0)
+        if (qemuProcessSEVCreateFile(vm, "dh_cert", sev->dh_cert) < 0)
             return -1;
     }
 
     if (sev->session) {
-        if (qemuProcessSEVCreateFile(priv->libDir, "session", sev->session) < 0)
+        if (qemuProcessSEVCreateFile(vm, "session", sev->session) < 0)
             return -1;
     }
 
