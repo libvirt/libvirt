@@ -93,7 +93,7 @@ virshCatchDisconnect(virConnectPtr conn,
         virErrorPtr error;
         char *uri;
 
-        error = virSaveLastError();
+        virErrorPreserveLast(&error);
         uri = virConnectGetURI(conn);
 
         switch ((virConnectCloseReason) reason) {
@@ -114,10 +114,7 @@ virshCatchDisconnect(virConnectPtr conn,
         vshError(ctl, _(str), NULLSTR(uri));
         VIR_FREE(uri);
 
-        if (error) {
-            virSetError(error);
-            virFreeError(error);
-        }
+        virErrorRestore(&error);
         disconnected++;
         vshEventDone(ctl);
     }

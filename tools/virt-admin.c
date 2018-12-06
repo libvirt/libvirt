@@ -124,7 +124,7 @@ vshAdmCatchDisconnect(virAdmConnectPtr conn G_GNUC_UNUSED,
     if (reason == VIR_CONNECT_CLOSE_REASON_CLIENT)
         return;
 
-    error = virSaveLastError();
+    virErrorPreserveLast(&error);
     uri = virAdmConnectGetURI(conn);
 
     switch ((virConnectCloseReason) reason) {
@@ -146,10 +146,7 @@ vshAdmCatchDisconnect(virAdmConnectPtr conn G_GNUC_UNUSED,
     vshError(ctl, _(str), NULLSTR(uri));
     VIR_FREE(uri);
 
-    if (error) {
-        virSetError(error);
-        virFreeError(error);
-    }
+    virErrorRestore(&error);
 }
 
 static int
