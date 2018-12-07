@@ -5783,9 +5783,7 @@ qemuDomainDeviceDefValidateGraphics(const virDomainGraphicsDef *graphics,
     size_t i;
 
     for (i = 0; i < def->ngraphics; i++) {
-        graphics = def->graphics[i];
-
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS) {
+        if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS) {
             have_egl_headless = true;
             break;
         }
