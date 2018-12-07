@@ -28926,7 +28926,8 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
         if ((virDomainDefGetMemoryTotal(def) + sz) > def->mem.max_memory) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Attaching memory device with size '%llu' would "
-                             "exceed domain's maxMemory config"), sz);
+                             "exceed domain's maxMemory config size '%llu'"),
+                           sz, def->mem.max_memory);
             return -1;
         }
     }
