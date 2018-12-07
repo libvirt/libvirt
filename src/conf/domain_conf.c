@@ -28923,6 +28923,13 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
     if (dev->type == VIR_DOMAIN_DEVICE_MEMORY) {
         unsigned long long sz = dev->data.memory->size;
 
+        if (!virDomainDefHasMemoryHotplug(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cannot use/hotplug a memory device when domain "
+                             "'maxMemory' is not defined"));
+            return -1;
+        }
+
         if ((virDomainDefGetMemoryTotal(def) + sz) > def->mem.max_memory) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Attaching memory device with size '%llu' would "
