@@ -3705,6 +3705,7 @@ virDomainSkipBackcompatConsole(virDomainDefPtr def,
 
 enum {
     DOMAIN_DEVICE_ITERATE_ALL_CONSOLES = 1 << 0,
+    DOMAIN_DEVICE_ITERATE_GRAPHICS = 1 << 1
 } virDomainDeviceIterateFlags;
 
 /*
@@ -3868,6 +3869,17 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
         device.data.vsock = def->vsock;
         if ((rc = cb(def, &device, &def->vsock->info, opaque)) != 0)
             return rc;
+    }
+
+    /* If the flag below is set, make sure @cb can handle @info being NULL, as
+     * graphics don't have any boot info */
+    if (iteratorFlags & DOMAIN_DEVICE_ITERATE_GRAPHICS) {
+        device.type = VIR_DOMAIN_DEVICE_GRAPHICS;
+        for (i = 0; i < def->ngraphics; i++) {
+            device.data.graphics = def->graphics[i];
+            if ((rc = cb(def, &device, NULL, opaque)) != 0)
+                return rc;
+        }
     }
 
     /* Coverity is not very happy with this - all dead_error_condition */
@@ -6348,7 +6360,8 @@ virDomainDefValidate(virDomainDefPtr def,
     /* iterate the devices */
     if (virDomainDeviceInfoIterateInternal(def,
                                            virDomainDefValidateDeviceIterator,
-                                           DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
+                                           (DOMAIN_DEVICE_ITERATE_ALL_CONSOLES |
+                                            DOMAIN_DEVICE_ITERATE_GRAPHICS),
                                            &data) < 0)
         return -1;
 
