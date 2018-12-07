@@ -114,8 +114,10 @@ int virFileWrapperFdClose(virFileWrapperFdPtr dfd);
 
 void virFileWrapperFdFree(virFileWrapperFdPtr dfd);
 
-int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock);
-int virFileUnlock(int fd, off_t start, off_t len);
+int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock)
+    ATTRIBUTE_NOINLINE;
+int virFileUnlock(int fd, off_t start, off_t len)
+    ATTRIBUTE_NOINLINE;
 
 int virFileFlock(int fd, bool lock, bool shared);
 
@@ -384,13 +386,16 @@ VIR_DEFINE_AUTOPTR_FUNC(virFileWrapperFd, virFileWrapperFdFree)
 
 int virFileGetXAttr(const char *path,
                     const char *name,
-                    char **value);
+                    char **value)
+    ATTRIBUTE_NOINLINE;
 
 int virFileSetXAttr(const char *path,
                     const char *name,
-                    const char *value);
+                    const char *value)
+    ATTRIBUTE_NOINLINE;
 
 int virFileRemoveXAttr(const char *path,
-                       const char *name);
+                       const char *name)
+    ATTRIBUTE_NOINLINE;
 
 #endif /* LIBVIRT_VIRFILE_H */
