@@ -426,6 +426,168 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
+                                            virQEMUDriverPtr driver,
+                                            virDomainObjPtr vm,
+                                            qemuDomainAsyncJob asyncJob ATTRIBUTE_UNUSED)
+{
+    switch ((qemuBlockjobState) job->newstate) {
+    case QEMU_BLOCKJOB_STATE_COMPLETED:
+        switch ((qemuBlockJobType) job->type) {
+        case QEMU_BLOCKJOB_TYPE_PULL:
+        case QEMU_BLOCKJOB_TYPE_COMMIT:
+        case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+        case QEMU_BLOCKJOB_TYPE_COPY:
+        case QEMU_BLOCKJOB_TYPE_NONE:
+        case QEMU_BLOCKJOB_TYPE_INTERNAL:
+        case QEMU_BLOCKJOB_TYPE_LAST:
+        default:
+            break;
+        }
+        break;
+
+    case QEMU_BLOCKJOB_STATE_FAILED:
+    case QEMU_BLOCKJOB_STATE_CANCELLED:
+        switch ((qemuBlockJobType) job->type) {
+        case QEMU_BLOCKJOB_TYPE_PULL:
+        case QEMU_BLOCKJOB_TYPE_COMMIT:
+        case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+        case QEMU_BLOCKJOB_TYPE_COPY:
+        case QEMU_BLOCKJOB_TYPE_NONE:
+        case QEMU_BLOCKJOB_TYPE_INTERNAL:
+        case QEMU_BLOCKJOB_TYPE_LAST:
+        default:
+            break;
+        }
+        break;
+
+    /* states below are impossible in this handler */
+    case QEMU_BLOCKJOB_STATE_READY:
+    case QEMU_BLOCKJOB_STATE_NEW:
+    case QEMU_BLOCKJOB_STATE_RUNNING:
+    case QEMU_BLOCKJOB_STATE_CONCLUDED:
+    case QEMU_BLOCKJOB_STATE_LAST:
+    default:
+        break;
+    }
+
+    qemuBlockJobEmitEvents(driver, vm, job->disk, job->type, job->newstate);
+    job->state = job->newstate;
+    job->newstate = -1;
+}
+
+
+static void
+qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
+                                  virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  qemuDomainAsyncJob asyncJob)
+{
+    qemuMonitorJobInfoPtr *jobinfo = NULL;
+    size_t njobinfo = 0;
+    size_t i;
+    int rc = 0;
+    bool dismissed = false;
+    bool refreshed = false;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    /* we need to fetch the error state as the event does not propagate it */
+    if (job->newstate == QEMU_BLOCKJOB_STATE_CONCLUDED &&
+        (rc = qemuMonitorGetJobInfo(qemuDomainGetMonitor(vm), &jobinfo, &njobinfo)) == 0) {
+
+        for (i = 0; i < njobinfo; i++) {
+            if (STRNEQ_NULLABLE(job->name, jobinfo[i]->id))
+                continue;
+
+            if (VIR_STRDUP(job->errmsg, jobinfo[i]->error) < 0)
+                rc = -1;
+
+            if (job->errmsg)
+                job->newstate = QEMU_BLOCKJOB_STATE_FAILED;
+            else
+                job->newstate = QEMU_BLOCKJOB_STATE_COMPLETED;
+
+            refreshed = true;
+
+            break;
+        }
+
+        if (i == njobinfo) {
+            VIR_WARN("failed to refresh job '%s'", job->name);
+            rc = -1;
+        }
+    }
+
+    /* dismiss job in qemu */
+    if (rc >= 0) {
+        if ((rc = qemuMonitorJobDismiss(qemuDomainGetMonitor(vm), job->name)) >= 0)
+            dismissed = true;
+    }
+
+    if (job->invalidData) {
+        VIR_WARN("terminating job '%s' with invalid data", job->name);
+        goto cleanup;
+    }
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    if (refreshed)
+        qemuDomainSaveStatus(vm);
+
+    VIR_DEBUG("handling job '%s' state '%d' newstate '%d'", job->name, job->state, job->newstate);
+
+    qemuBlockJobEventProcessConcludedTransition(job, driver, vm, asyncJob);
+
+ cleanup:
+    if (dismissed) {
+        qemuBlockJobUnregister(job, vm);
+        qemuDomainSaveConfig(vm);
+    }
+
+    for (i = 0; i < njobinfo; i++)
+        qemuMonitorJobInfoFree(jobinfo[i]);
+    VIR_FREE(jobinfo);
+}
+
+
+static void
+qemuBlockJobEventProcess(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         qemuBlockJobDataPtr job,
+                         qemuDomainAsyncJob asyncJob)
+
+{
+    switch ((qemuBlockjobState) job->newstate) {
+    case QEMU_BLOCKJOB_STATE_COMPLETED:
+    case QEMU_BLOCKJOB_STATE_FAILED:
+    case QEMU_BLOCKJOB_STATE_CANCELLED:
+    case QEMU_BLOCKJOB_STATE_CONCLUDED:
+        qemuBlockJobEventProcessConcluded(job, driver, vm, asyncJob);
+        break;
+
+    case QEMU_BLOCKJOB_STATE_READY:
+        if (job->disk && job->disk->mirror) {
+            job->disk->mirrorState = VIR_DOMAIN_BLOCK_JOB_READY;
+            qemuBlockJobEmitEvents(driver, vm, job->disk, job->type, job->newstate);
+        }
+        job->state = job->newstate;
+        job->newstate = -1;
+        qemuDomainSaveStatus(vm);
+        break;
+
+    case QEMU_BLOCKJOB_STATE_NEW:
+    case QEMU_BLOCKJOB_STATE_RUNNING:
+    case QEMU_BLOCKJOB_STATE_LAST:
+    default:
+        job->newstate = -1;
+    }
+}
+
+
 /**
  * qemuBlockJobUpdate:
  * @vm: domain
@@ -447,7 +609,10 @@ qemuBlockJobUpdate(virDomainObjPtr vm,
     if (job->newstate == -1)
         return -1;
 
-    qemuBlockJobEventProcessLegacy(priv->driver, vm, job, asyncJob);
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
+        qemuBlockJobEventProcess(priv->driver, vm, job, asyncJob);
+    else
+        qemuBlockJobEventProcessLegacy(priv->driver, vm, job, asyncJob);
 
     return job->state;
 }
