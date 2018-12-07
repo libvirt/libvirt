@@ -52,7 +52,8 @@ VIR_ENUM_IMPL(qemuBlockjobState,
               "cancelled",
               "ready",
               "new",
-              "running");
+              "running",
+              "concluded");
 
 VIR_ENUM_IMPL(qemuBlockjob,
               QEMU_BLOCKJOB_TYPE_LAST,

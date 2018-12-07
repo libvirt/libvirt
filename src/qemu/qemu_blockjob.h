@@ -38,6 +38,8 @@ typedef enum {
     /* Additional enum values local to qemu */
     QEMU_BLOCKJOB_STATE_NEW,
     QEMU_BLOCKJOB_STATE_RUNNING,
+    QEMU_BLOCKJOB_STATE_CONCLUDED, /* job has finished, but it's unknown
+                                      whether it has failed or not */
     QEMU_BLOCKJOB_STATE_LAST
 } qemuBlockjobState;
 verify((int)QEMU_BLOCKJOB_STATE_NEW == VIR_DOMAIN_BLOCK_JOB_LAST);
