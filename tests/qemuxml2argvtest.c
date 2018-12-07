@@ -806,12 +806,21 @@ mymain(void)
 # define DO_TEST_CAPS_VER(name, ver) \
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
-# define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
-    DO_TEST_CAPS_INTERNAL(name, arch "-latest", NULL, 0, 0, arch, \
+# define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, flags, parseFlags) \
+    DO_TEST_CAPS_INTERNAL(name, arch "-latest", NULL, flags, parseFlags, arch, \
                           virHashLookup(capslatest, arch), true)
+
+# define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, 0, 0)
 
 # define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
+
+# define DO_TEST_CAPS_LATEST_FAILURE(name) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", FLAG_EXPECT_FAILURE, 0)
+
+# define DO_TEST_CAPS_LATEST_PARSE_ERROR(name) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", FLAG_EXPECT_PARSE_ERROR, 0)
 
 /**
  * The following test macros should be used only in cases when the tests require
