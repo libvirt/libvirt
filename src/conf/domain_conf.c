@@ -3703,10 +3703,18 @@ virDomainSkipBackcompatConsole(virDomainDefPtr def,
 }
 
 
+enum {
+    DOMAIN_DEVICE_ITERATE_ALL_CONSOLES = 1 << 0,
+} virDomainDeviceIterateFlags;
+
+/*
+ * Iterates over domain devices calling @cb on each device. The default
+ * behaviour can be altered with virDomainDeviceIterateFlags.
+ */
 static int
 virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
                                    virDomainDeviceInfoCallback cb,
-                                   bool all,
+                                   unsigned int iteratorFlags,
                                    void *opaque)
 {
     size_t i;
@@ -3772,6 +3780,8 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             return rc;
     }
     for (i = 0; i < def->nconsoles; i++) {
+        bool all = iteratorFlags & DOMAIN_DEVICE_ITERATE_ALL_CONSOLES;
+
         if (virDomainSkipBackcompatConsole(def, i, all))
             continue;
         device.data.chr = def->consoles[i];
@@ -3908,7 +3918,7 @@ virDomainDeviceInfoIterate(virDomainDefPtr def,
                            virDomainDeviceInfoCallback cb,
                            void *opaque)
 {
-    return virDomainDeviceInfoIterateInternal(def, cb, false, opaque);
+    return virDomainDeviceInfoIterateInternal(def, cb, 0, opaque);
 }
 
 
@@ -3918,7 +3928,7 @@ virDomainDefHasDeviceAddress(virDomainDefPtr def,
 {
     if (virDomainDeviceInfoIterateInternal(def,
                                            virDomainDefHasDeviceAddressIterator,
-                                           true,
+                                           DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
                                            info) < 0)
         return true;
 
@@ -5291,7 +5301,7 @@ virDomainDefPostParse(virDomainDefPtr def,
     /* iterate the devices */
     ret = virDomainDeviceInfoIterateInternal(def,
                                              virDomainDefPostParseDeviceIterator,
-                                             true,
+                                             DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
                                              &data);
 
     if (virDomainDefPostParseCheckFailure(def, parseFlags, ret) < 0)
@@ -5927,7 +5937,8 @@ virDomainDefValidateAliases(const virDomainDef *def,
 
     if (virDomainDeviceInfoIterateInternal((virDomainDefPtr) def,
                                            virDomainDeviceDefValidateAliasesIterator,
-                                           true, &data) < 0)
+                                           DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
+                                           &data) < 0)
         goto cleanup;
 
     if (aliases) {
@@ -6337,7 +6348,8 @@ virDomainDefValidate(virDomainDefPtr def,
     /* iterate the devices */
     if (virDomainDeviceInfoIterateInternal(def,
                                            virDomainDefValidateDeviceIterator,
-                                           true, &data) < 0)
+                                           DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
+                                           &data) < 0)
         return -1;
 
     if (virDomainDefValidateInternal(def) < 0)
@@ -29926,7 +29938,8 @@ virDomainDefFindDevice(virDomainDefPtr def,
 
     dev->type = VIR_DOMAIN_DEVICE_NONE;
     virDomainDeviceInfoIterateInternal(def, virDomainDefFindDeviceCallback,
-                                       true, &data);
+                                       DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
+                                       &data);
 
     if (dev->type == VIR_DOMAIN_DEVICE_NONE) {
         if (reportError) {
