@@ -609,6 +609,54 @@ libxlDomainShutdownThread(void *opaque)
     virObjectUnref(cfg);
 }
 
+static void
+libxlDomainDeathThread(void *opaque)
+{
+    struct libxlShutdownThreadInfo *shutdown_info = opaque;
+    virDomainObjPtr vm = NULL;
+    libxl_event *ev = shutdown_info->event;
+    libxlDriverPrivatePtr driver = shutdown_info->driver;
+    virObjectEventPtr dom_event = NULL;
+    libxlDriverConfigPtr cfg;
+    libxlDomainObjPrivatePtr priv;
+
+    cfg = libxlDriverConfigGet(driver);
+
+    vm = virDomainObjListFindByID(driver->domains, ev->domid);
+    if (!vm) {
+        /* vm->def->id already cleared, means the death was handled by the
+         * driver already */
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (priv->ignoreDeathEvent) {
+        priv->ignoreDeathEvent = false;
+        goto cleanup;
+    }
+
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_STOPPED,
+                                                  VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+    libxlDomainCleanup(driver, vm);
+    if (!vm->persistent)
+        virDomainObjListRemove(driver->domains, vm);
+    libxlDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    virObjectEventStateQueue(driver->domainEventState, dom_event);
+    libxl_event_free(cfg->ctx, ev);
+    VIR_FREE(shutdown_info);
+    virObjectUnref(cfg);
+}
+
+
 /*
  * Handle previously registered domain event notification from libxenlight.
  */
@@ -619,8 +667,10 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     struct libxlShutdownThreadInfo *shutdown_info = NULL;
     virThread thread;
     libxlDriverConfigPtr cfg;
+    int ret = -1;
 
-    if (event->type != LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
+    if (event->type != LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN &&
+            event->type != LIBXL_EVENT_TYPE_DOMAIN_DEATH) {
         VIR_INFO("Unhandled event type %d", event->type);
         goto error;
     }
@@ -634,8 +684,14 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
 
     shutdown_info->driver = driver;
     shutdown_info->event = (libxl_event *)event;
-    if (virThreadCreate(&thread, false, libxlDomainShutdownThread,
-                        shutdown_info) < 0) {
+    if (event->type == LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN)
+        ret = virThreadCreate(&thread, false, libxlDomainShutdownThread,
+                              shutdown_info);
+    else if (event->type == LIBXL_EVENT_TYPE_DOMAIN_DEATH)
+        ret = virThreadCreate(&thread, false, libxlDomainDeathThread,
+                              shutdown_info);
+
+    if (ret < 0) {
         /*
          * Not much we can do on error here except log it.
          */
@@ -751,14 +807,21 @@ libxlDomainDestroyInternal(libxlDriverPrivatePtr driver,
                            virDomainObjPtr vm)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxlDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
+    /* Ignore next LIBXL_EVENT_TYPE_DOMAIN_DEATH as the caller will handle
+     * domain death appropriately already (having more info, like the reason).
+     */
+    priv->ignoreDeathEvent = true;
     /* Unlock virDomainObj during destroy, which can take considerable
      * time on large memory domains.
      */
     virObjectUnlock(vm);
     ret = libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
     virObjectLock(vm);
+    if (ret)
+        priv->ignoreDeathEvent = false;
 
     virObjectUnref(cfg);
     return ret;
@@ -810,6 +873,8 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
         libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
         priv->deathW = NULL;
     }
+
+    priv->ignoreDeathEvent = false;
 
     if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
