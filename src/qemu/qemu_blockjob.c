@@ -516,3 +516,44 @@ qemuBlockJobGetByDisk(virDomainDiskDefPtr disk)
 
     return virObjectRef(job);
 }
+
+
+/**
+ * @monitorstatus: Status of the blockjob from qemu monitor (qemuMonitorJobStatus)
+ *
+ * Converts the block job status from the monitor to the one used by
+ * qemuBlockJobData. If the status is unknown or does not require any handling
+ * QEMU_BLOCKJOB_TYPE_LAST is returned.
+ */
+qemuBlockjobState
+qemuBlockjobConvertMonitorStatus(int monitorstatus)
+{
+    qemuBlockjobState ret = QEMU_BLOCKJOB_STATE_LAST;
+
+    switch ((qemuMonitorJobStatus) monitorstatus) {
+    case QEMU_MONITOR_JOB_STATUS_READY:
+        ret = QEMU_BLOCKJOB_STATE_READY;
+        break;
+
+    case QEMU_MONITOR_JOB_STATUS_CONCLUDED:
+        ret = QEMU_BLOCKJOB_STATE_CONCLUDED;
+        break;
+
+    case QEMU_MONITOR_JOB_STATUS_UNKNOWN:
+    case QEMU_MONITOR_JOB_STATUS_CREATED:
+    case QEMU_MONITOR_JOB_STATUS_RUNNING:
+    case QEMU_MONITOR_JOB_STATUS_PAUSED:
+    case QEMU_MONITOR_JOB_STATUS_STANDBY:
+    case QEMU_MONITOR_JOB_STATUS_WAITING:
+    case QEMU_MONITOR_JOB_STATUS_PENDING:
+    case QEMU_MONITOR_JOB_STATUS_ABORTING:
+    case QEMU_MONITOR_JOB_STATUS_UNDEFINED:
+    case QEMU_MONITOR_JOB_STATUS_NULL:
+    case QEMU_MONITOR_JOB_STATUS_LAST:
+    default:
+        break;
+    }
+
+    return ret;
+
+}

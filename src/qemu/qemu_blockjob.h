@@ -134,3 +134,6 @@ void qemuBlockJobSyncEnd(virDomainObjPtr vm,
 qemuBlockJobDataPtr
 qemuBlockJobGetByDisk(virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
+qemuBlockjobState
+qemuBlockjobConvertMonitorStatus(int monitorstatus);
