@@ -17,6 +17,10 @@ struct remote_nonnull_network {
         remote_nonnull_string      name;
         remote_uuid                uuid;
 };
+struct remote_nonnull_network_port {
+        remote_nonnull_network     net;
+        remote_uuid                uuid;
+};
 struct remote_nonnull_nwfilter {
         remote_nonnull_string      name;
         remote_uuid                uuid;
@@ -2981,6 +2985,64 @@ struct remote_connect_get_storage_pool_capabilities_args {
 struct remote_connect_get_storage_pool_capabilities_ret {
         remote_nonnull_string      capabilities;
 };
+struct remote_network_list_all_ports_args {
+        remote_nonnull_network     network;
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_network_list_all_ports_ret {
+        struct {
+                u_int              ports_len;
+                remote_nonnull_network_port * ports_val;
+        } ports;
+        u_int                      ret;
+};
+struct remote_network_port_lookup_by_uuid_args {
+        remote_nonnull_network     network;
+        remote_uuid                uuid;
+};
+struct remote_network_port_lookup_by_uuid_ret {
+        remote_nonnull_network_port port;
+};
+struct remote_network_port_create_xml_args {
+        remote_nonnull_network     network;
+        remote_nonnull_string      xml;
+        u_int                      flags;
+};
+struct remote_network_port_create_xml_ret {
+        remote_nonnull_network_port port;
+};
+struct remote_network_port_set_parameters_args {
+        remote_nonnull_network_port port;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
+struct remote_network_port_get_parameters_args {
+        remote_nonnull_network_port port;
+        int                        nparams;
+        u_int                      flags;
+};
+struct remote_network_port_get_parameters_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        int                        nparams;
+};
+struct remote_network_port_get_xml_desc_args {
+        remote_nonnull_network_port port;
+        u_int                      flags;
+};
+struct remote_network_port_get_xml_desc_ret {
+        remote_nonnull_string      xml;
+};
+struct remote_network_port_delete_args {
+        remote_nonnull_network_port port;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3385,4 +3447,11 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401,
         REMOTE_PROC_DOMAIN_SET_IOTHREAD_PARAMS = 402,
         REMOTE_PROC_CONNECT_GET_STORAGE_POOL_CAPABILITIES = 403,
+        REMOTE_PROC_NETWORK_LIST_ALL_PORTS = 404,
+        REMOTE_PROC_NETWORK_PORT_LOOKUP_BY_UUID = 405,
+        REMOTE_PROC_NETWORK_PORT_CREATE_XML = 406,
+        REMOTE_PROC_NETWORK_PORT_GET_PARAMETERS = 407,
+        REMOTE_PROC_NETWORK_PORT_SET_PARAMETERS = 408,
+        REMOTE_PROC_NETWORK_PORT_GET_XML_DESC = 409,
+        REMOTE_PROC_NETWORK_PORT_DELETE = 410,
 };

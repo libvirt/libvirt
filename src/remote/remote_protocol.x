@@ -74,6 +74,9 @@ const REMOTE_MIGRATE_COOKIE_MAX = 4194304;
 /* Upper limit on lists of networks. */
 const REMOTE_NETWORK_LIST_MAX = 16384;
 
+/* Upper limit on lists of network ports. */
+const REMOTE_NETWORK_PORT_LIST_MAX = 16384;
+
 /* Upper limit on lists of interfaces. */
 const REMOTE_INTERFACE_LIST_MAX = 16384;
 
@@ -263,6 +266,12 @@ const REMOTE_NODE_SEV_INFO_MAX = 64;
 /* Upper limit on number of launch security information entries */
 const REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX = 64;
 
+/*
+ * Upper limit on list of network port parameters
+ */
+const REMOTE_NETWORK_PORT_PARAMETERS_MAX = 16;
+
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -276,6 +285,11 @@ struct remote_nonnull_domain {
 /* A network which may not be NULL. */
 struct remote_nonnull_network {
     remote_nonnull_string name;
+    remote_uuid uuid;
+};
+
+struct remote_nonnull_network_port {
+    remote_nonnull_network net;
     remote_uuid uuid;
 };
 
@@ -331,6 +345,7 @@ struct remote_nonnull_domain_snapshot {
 /* A domain or network which may be NULL. */
 typedef remote_nonnull_domain *remote_domain;
 typedef remote_nonnull_network *remote_network;
+typedef remote_nonnull_network_port *remote_network_port;
 typedef remote_nonnull_nwfilter *remote_nwfilter;
 typedef remote_nonnull_nwfilter_binding *remote_nwfilter_binding;
 typedef remote_nonnull_storage_pool *remote_storage_pool;
@@ -3573,6 +3588,68 @@ struct remote_connect_get_storage_pool_capabilities_ret {
     remote_nonnull_string capabilities;
 };
 
+struct remote_network_list_all_ports_args {
+    remote_nonnull_network network;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_network_list_all_ports_ret { /* insert@1 */
+    remote_nonnull_network_port ports<REMOTE_NETWORK_PORT_LIST_MAX>;
+    unsigned int ret;
+};
+
+struct remote_network_port_lookup_by_uuid_args {
+    remote_nonnull_network network;
+    remote_uuid uuid;
+};
+
+struct remote_network_port_lookup_by_uuid_ret {
+    remote_nonnull_network_port port;
+};
+
+struct remote_network_port_create_xml_args {
+    remote_nonnull_network network;
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
+struct remote_network_port_create_xml_ret {
+    remote_nonnull_network_port port;
+};
+
+struct remote_network_port_set_parameters_args {
+    remote_nonnull_network_port port;
+    remote_typed_param params<REMOTE_NETWORK_PORT_PARAMETERS_MAX>;
+    unsigned int flags;
+};
+
+struct remote_network_port_get_parameters_args {
+    remote_nonnull_network_port port;
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_network_port_get_parameters_ret {
+    remote_typed_param params<REMOTE_NETWORK_PORT_PARAMETERS_MAX>;
+    int nparams;
+};
+
+struct remote_network_port_get_xml_desc_args {
+    remote_nonnull_network_port port;
+    unsigned int flags;
+};
+
+struct remote_network_port_get_xml_desc_ret {
+    remote_nonnull_string xml;
+};
+
+struct remote_network_port_delete_args {
+    remote_nonnull_network_port port;
+    unsigned int flags;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6342,5 +6419,50 @@ enum remote_procedure {
      * @generate: both
      * @acl: connect:read
      */
-    REMOTE_PROC_CONNECT_GET_STORAGE_POOL_CAPABILITIES = 403
+    REMOTE_PROC_CONNECT_GET_STORAGE_POOL_CAPABILITIES = 403,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: network:search_ports
+     * @aclfilter: network_port:getattr
+     */
+    REMOTE_PROC_NETWORK_LIST_ALL_PORTS = 404,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: network_port:getattr
+     */
+    REMOTE_PROC_NETWORK_PORT_LOOKUP_BY_UUID = 405,
+
+    /**
+     * @generate: both
+     * @acl: network_port:create
+     */
+    REMOTE_PROC_NETWORK_PORT_CREATE_XML = 406,
+
+    /**
+     * @generate: none
+     * @acl: network_port:read
+     */
+    REMOTE_PROC_NETWORK_PORT_GET_PARAMETERS = 407,
+
+    /**
+     * @generate: both
+     * @acl: network_port:write
+     */
+    REMOTE_PROC_NETWORK_PORT_SET_PARAMETERS = 408,
+
+    /**
+     * @generate: both
+     * @acl: network_port:read
+     */
+    REMOTE_PROC_NETWORK_PORT_GET_XML_DESC = 409,
+
+    /**
+     * @generate: both
+     * @acl: network_port:delete
+     */
+    REMOTE_PROC_NETWORK_PORT_DELETE = 410
 };

@@ -557,7 +557,7 @@ elsif ($mode eq "server") {
                 if ($args_member =~ m/^remote_nonnull_string name;/ and $has_node_device) {
                     # ignore the name arg for node devices
                     next
-                } elsif ($args_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|interface|secret|nwfilter|nwfilter_binding) (\S+);/) {
+                } elsif ($args_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|interface|secret|nwfilter|nwfilter_binding) (\S+);/) {
                     my $type_name = name_to_TypeName($1);
 
                     push(@vars_list, "vir${type_name}Ptr $2 = NULL");
@@ -722,7 +722,7 @@ elsif ($mode eq "server") {
                         if (!$modern_ret_as_list) {
                             push(@ret_list, "ret->$3 = tmp.$3;");
                         }
-                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|nwfilter_binding|node_device|interface|network|storage_vol|storage_pool|domain_snapshot|domain|server|client) (\S+)<(\S+)>;/) {
+                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|nwfilter_binding|node_device|interface|network|network_port|storage_vol|storage_pool|domain_snapshot|domain|server|client) (\S+)<(\S+)>;/) {
                         $modern_ret_struct_name = $1;
                         $single_ret_list_error_msg_type = $1;
                         $single_ret_list_name = $2;
@@ -780,7 +780,7 @@ elsif ($mode eq "server") {
                     $single_ret_var = $1;
                     $single_ret_by_ref = 0;
                     $single_ret_check = " == NULL";
-                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|interface|node_device|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|interface|node_device|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
                     my $type_name = name_to_TypeName($1);
 
                     if ($call->{ProcName} eq "DomainCreateWithFlags") {
@@ -1328,7 +1328,7 @@ elsif ($mode eq "client") {
                     $priv_src = "dev->conn";
                     push(@args_list, "virNodeDevicePtr dev");
                     push(@setters_list, "args.name = dev->name;");
-                } elsif ($args_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|interface|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
+                } elsif ($args_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|interface|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
                     my $name = $1;
                     my $arg_name = $2;
                     my $type_name = name_to_TypeName($name);
@@ -1336,6 +1336,8 @@ elsif ($mode eq "client") {
                     if ($is_first_arg) {
                         if ($name eq "domain_snapshot") {
                             $priv_src = "$arg_name->domain->conn";
+                        } elsif ($name eq "network_port") {
+                            $priv_src = "$arg_name->net->conn";
                         } else {
                             $priv_src = "$arg_name->conn";
                         }
@@ -1521,7 +1523,7 @@ elsif ($mode eq "client") {
                         }
 
                         push(@ret_list, "memcpy(result->$3, ret.$3, sizeof(result->$3));");
-                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|nwfilter_binding|node_device|interface|network|storage_vol|storage_pool|domain_snapshot|domain|server|client) (\S+)<(\S+)>;/) {
+                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|nwfilter_binding|node_device|interface|network|network_port|storage_vol|storage_pool|domain_snapshot|domain|server|client) (\S+)<(\S+)>;/) {
                         my $proc_name = name_to_TypeName($1);
 
                         if ($structprefix eq "admin") {
@@ -1574,7 +1576,7 @@ elsif ($mode eq "client") {
                     push(@ret_list, "VIR_FREE(ret.$1);");
                     $single_ret_var = "char *rv = NULL";
                     $single_ret_type = "char *";
-                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|storage_pool|storage_vol|node_device|interface|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|node_device|interface|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
                     my $name = $1;
                     my $arg_name = $2;
                     my $type_name = name_to_TypeName($name);
@@ -2135,6 +2137,8 @@ elsif ($mode eq "client") {
             if ($object ne "Connect") {
                 if ($object eq "StorageVol") {
                     push @argdecls, "virStoragePoolDefPtr pool";
+                } elsif ($object eq "NetworkPort") {
+                    push @argdecls, "virNetworkDefPtr net";
                 }
                 push @argdecls, "$objecttype $arg";
             }
@@ -2164,6 +2168,8 @@ elsif ($mode eq "client") {
                 if ($object ne "Connect") {
                     if ($object eq "StorageVol") {
                         push @argvars, "pool";
+                    } elsif ($object eq "NetworkPort") {
+                        push @argvars, "net";
                     }
                     push @argvars, $arg;
                 }
