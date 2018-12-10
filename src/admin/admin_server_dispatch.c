@@ -113,11 +113,13 @@ get_nonnull_server(virNetDaemonPtr dmn, admin_nonnull_server srv)
     return virNetDaemonGetServer(dmn, srv.name);
 }
 
-static void
+static int ATTRIBUTE_RETURN_CHECK
 make_nonnull_server(admin_nonnull_server *srv_dst,
                     virNetServerPtr srv_src)
 {
-    ignore_value(VIR_STRDUP_QUIET(srv_dst->name, virNetServerGetName(srv_src)));
+    if (VIR_STRDUP(srv_dst->name, virNetServerGetName(srv_src)) < 0)
+        return -1;
+    return 0;
 }
 
 static virNetServerClientPtr
@@ -126,13 +128,14 @@ get_nonnull_client(virNetServerPtr srv, admin_nonnull_client clnt)
     return virNetServerGetClient(srv, clnt.id);
 }
 
-static void
+static int
 make_nonnull_client(admin_nonnull_client *clt_dst,
                     virNetServerClientPtr clt_src)
 {
     clt_dst->id = virNetServerClientGetID(clt_src);
     clt_dst->timestamp = virNetServerClientGetTimestamp(clt_src);
     clt_dst->transport = virNetServerClientGetTransport(clt_src);
+    return 0;
 }
 
 /* Functions */
