@@ -201,14 +201,14 @@ then
         echo Client certificate $LIBVIRT/clientcert.pem should be world readable
         echo "as root do: chown root:root $LIBVIRT/clientcert.pem ; chmod 644 $LIBVIRT/clientcert.pem"
     else
-        S_ORG=`"$CERTOOL" -i --infile "$LIBVIRT/clientcert.pem" | grep Subject: | sed 's+.*O=\([a-zA-Z \._-]*\).*+\1+'`
+        S_ORG=`"$CERTOOL" -i --infile "$LIBVIRT/clientcert.pem" | grep Subject: | sed 's+.*O=\([^,]*\).*+\1+'`
         if [ "$ORG" != "$S_ORG" ]
         then
             echo The CA certificate and the client certificate do not match
             echo CA organization: $ORG
             echo Client organization: $S_ORG
         fi
-        CLIENT=`"$CERTOOL" -i --infile "$LIBVIRT/clientcert.pem" | grep Subject: | sed 's+.*CN=\(.[a-zA-Z \._-]*\).*+\1+'`
+        CLIENT=`"$CERTOOL" -i --infile "$LIBVIRT/clientcert.pem" | grep Subject: | sed 's+.*CN=\(.[^,]*\).*+\1+'`
         echo Found client certificate $LIBVIRT/clientcert.pem for $CLIENT
         if [ ! -e "$LIBVIRTP/clientkey.pem" ]
         then
@@ -248,14 +248,14 @@ then
         echo Server certificate $LIBVIRT/servercert.pem should be world readable
         echo "as root do: chown root:root $LIBVIRT/servercert.pem ; chmod 644 $LIBVIRT/servercert.pem"
     else
-        S_ORG=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*O=\([a-zA-Z\. _-]*\).*+\1+'`
+        S_ORG=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*O=\([^,]*\).*+\1+'`
         if [ "$ORG" != "$S_ORG" ]
         then
             echo The CA certificate and the server certificate do not match
             echo CA organization: $ORG
             echo Server organization: $S_ORG
         fi
-        S_HOST=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*CN=\(.[a-zA-Z \._-]*\).*+\1+'`
+        S_HOST=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*CN=\([^,]*\).*+\1+'`
         if test "$S_HOST" != "`hostname -s`" && test "$S_HOST" != "`hostname`"
         then
             echo The server certificate does not seem to match the host name
