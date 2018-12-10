@@ -24,6 +24,7 @@
 # include "internal.h"
 
 # include "vircgroup.h"
+# include "virhash.h"
 
 # define CGROUP_MAX_VAL 512
 
@@ -127,6 +128,11 @@ typedef int
 typedef int
 (*virCgroupHasEmptyTasksCB)(virCgroupPtr cgroup,
                             int controller);
+
+typedef int
+(*virCgroupKillRecursiveCB)(virCgroupPtr group,
+                            int signum,
+                            virHashTablePtr pids);
 
 typedef int
 (*virCgroupBindMountCB)(virCgroupPtr group,
@@ -370,6 +376,7 @@ struct _virCgroupBackend {
     virCgroupRemoveCB remove;
     virCgroupAddTaskCB addTask;
     virCgroupHasEmptyTasksCB hasEmptyTasks;
+    virCgroupKillRecursiveCB killRecursive;
     virCgroupBindMountCB bindMount;
     virCgroupSetOwnerCB setOwner;
 

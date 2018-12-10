@@ -120,4 +120,12 @@ int virCgroupNewDomainPartition(virCgroupPtr partition,
 
 int virCgroupRemoveRecursively(char *grppath);
 
+
+int virCgroupKillRecursiveInternal(virCgroupPtr group,
+                                   int signum,
+                                   virHashTablePtr pids,
+                                   int controller,
+                                   const char *taskFile,
+                                   bool dormdir);
+
 #endif /* __VIR_CGROUP_PRIV_H__ */

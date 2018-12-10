@@ -757,6 +757,21 @@ virCgroupV1HasEmptyTasks(virCgroupPtr cgroup,
 }
 
 
+static int
+virCgroupV1KillRecursive(virCgroupPtr group,
+                         int signum,
+                         virHashTablePtr pids)
+{
+    int controller = virCgroupV1GetAnyController(group);
+
+    if (controller < 0)
+        return -1;
+
+    return virCgroupKillRecursiveInternal(group, signum, pids, controller,
+                                          "tasks", false);
+}
+
+
 static char *
 virCgroupV1IdentifyRoot(virCgroupPtr group)
 {
@@ -2041,6 +2056,7 @@ virCgroupBackend virCgroupV1Backend = {
     .remove = virCgroupV1Remove,
     .addTask = virCgroupV1AddTask,
     .hasEmptyTasks = virCgroupV1HasEmptyTasks,
+    .killRecursive = virCgroupV1KillRecursive,
     .bindMount = virCgroupV1BindMount,
     .setOwner = virCgroupV1SetOwner,
 
