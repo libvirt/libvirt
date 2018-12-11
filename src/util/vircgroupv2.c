@@ -120,6 +120,13 @@ virCgroupV2ValidateMachineGroup(virCgroupPtr group,
 
     if (!(tmp = strrchr(group->unified.placement, '/')))
         return false;
+
+    if (STREQ(tmp, "/emulator")) {
+        *tmp = '\0';
+
+        if (!(tmp = strrchr(group->unified.placement, '/')))
+            return false;
+    }
     tmp++;
 
     if (STRNEQ(tmp, partmachinename) &&
