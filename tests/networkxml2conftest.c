@@ -136,6 +136,7 @@ mymain(void)
     DO_TEST("nat-network-dns-forwarders", full);
     DO_TEST("nat-network-dns-forwarder-no-resolv", full);
     DO_TEST("nat-network-dns-local-domain", full);
+    DO_TEST("nat-network-mtu", dhcpv6);
     DO_TEST("dhcp6-network", dhcpv6);
     DO_TEST("dhcp6-nat-network", dhcpv6);
     DO_TEST("dhcp6host-routed-network", dhcpv6);

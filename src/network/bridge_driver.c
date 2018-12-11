@@ -1410,6 +1410,10 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                           dctx->addnhostsfile->path);
     }
 
+    /* Configure DHCP to tell clients about the MTU. */
+    if (def->mtu > 0)
+        virBufferAsprintf(&configbuf, "dhcp-option=option:mtu,%d\n", def->mtu);
+
     /* Are we doing RA instead of radvd? */
     if (DNSMASQ_RA_SUPPORT(caps)) {
         if (ipv6def) {
