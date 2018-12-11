@@ -253,6 +253,111 @@ qemuBlockJobIsRunning(qemuBlockJobDataPtr job)
 }
 
 
+/* returns 1 for a job we didn't reconnect to */
+static int
+qemuBlockJobRefreshJobsFindInactive(const void *payload,
+                                    const void *name ATTRIBUTE_UNUSED,
+                                    const void *data ATTRIBUTE_UNUSED)
+{
+    const qemuBlockJobData *job = payload;
+
+    return !job->reconnected;
+}
+
+
+int
+qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMonitorJobInfoPtr *jobinfo = NULL;
+    size_t njobinfo = 0;
+    qemuBlockJobDataPtr job = NULL;
+    int newstate;
+    size_t i;
+    int ret = -1;
+    int rc;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorGetJobInfo(priv->mon, &jobinfo, &njobinfo);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    for (i = 0; i < njobinfo; i++) {
+        if (!(job = virHashLookup(priv->blockjobs, jobinfo[i]->id))) {
+            VIR_DEBUG("ignoring untracked job '%s'", jobinfo[i]->id);
+            continue;
+        }
+
+        /* try cancelling invalid jobs - this works only if the job is not
+         * concluded. In such case it will fail. We'll leave such job linger
+         * in qemu and just forget about it in libvirt because there's not much
+         * we coud do besides killing the VM */
+        if (job->invalidData) {
+            qemuDomainObjEnterMonitor(driver, vm);
+
+            rc = qemuMonitorJobCancel(priv->mon, job->name, true);
+            if (rc == -1 && jobinfo[i]->status == QEMU_MONITOR_JOB_STATUS_CONCLUDED)
+                VIR_WARN("can't cancel job '%s' with invalid data", job->name);
+
+            if (qemuDomainObjExitMonitor(driver, vm) < 0)
+                goto cleanup;
+
+            if (rc < 0)
+                qemuBlockJobUnregister(job, vm);
+            continue;
+        }
+
+        if ((newstate = qemuBlockjobConvertMonitorStatus(jobinfo[i]->status)) < 0)
+            continue;
+
+        if (newstate != job->state) {
+            if ((job->state == QEMU_BLOCKJOB_STATE_FAILED ||
+                 job->state == QEMU_BLOCKJOB_STATE_COMPLETED)) {
+                /* preserve the old state but allow the job to be bumped to
+                 * execute the finishing steps */
+                job->newstate = job->state;
+            } else if (newstate == QEMU_BLOCKJOB_STATE_CONCLUDED) {
+                if (VIR_STRDUP(job->errmsg, jobinfo[i]->error) < 0)
+                    goto cleanup;
+
+                if (job->errmsg)
+                    job->newstate = QEMU_BLOCKJOB_STATE_FAILED;
+                else
+                    job->newstate = QEMU_BLOCKJOB_STATE_COMPLETED;
+            } else if (newstate == QEMU_BLOCKJOB_STATE_READY) {
+                /* Apply _READY state only if it was not applied before */
+                if (job->state == QEMU_BLOCKJOB_STATE_NEW ||
+                    job->state == QEMU_BLOCKJOB_STATE_RUNNING)
+                    job->newstate = newstate;
+            }
+            /* don't update the job otherwise */
+        }
+
+        job->reconnected = true;
+
+        if (job->newstate != -1)
+            qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
+    }
+
+    /* remove data for job which qemu didn't report (the algorithm is
+     * inefficient, but the possibility of such jobs is very low */
+    while ((job = virHashSearch(priv->blockjobs, qemuBlockJobRefreshJobsFindInactive, NULL, NULL)))
+        qemuBlockJobUnregister(job, vm);
+
+    ret = 0;
+
+ cleanup:
+    for (i = 0; i < njobinfo; i++)
+        qemuMonitorJobInfoFree(jobinfo[i]);
+    VIR_FREE(jobinfo);
+
+    return ret;
+}
+
+
 /**
  * qemuBlockJobEmitEvents:
  *

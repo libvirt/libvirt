@@ -84,6 +84,7 @@ struct _qemuBlockJobData {
     int newstate; /* qemuBlockjobState, subset of events emitted by qemu */
 
     bool invalidData; /* the job data (except name) is not valid */
+    bool reconnected; /* internal field for tracking whether job is live after reconnect to qemu */
 };
 
 int
@@ -121,6 +122,10 @@ qemuBlockJobIsRunning(qemuBlockJobDataPtr job)
 void
 qemuBlockJobStartupFinalize(virDomainObjPtr vm,
                             qemuBlockJobDataPtr job);
+
+int
+qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm);
 
 int qemuBlockJobUpdate(virDomainObjPtr vm,
                        qemuBlockJobDataPtr job,
