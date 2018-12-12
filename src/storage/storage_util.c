@@ -4284,6 +4284,7 @@ virStorageBackendFileSystemGetPoolSource(virStoragePoolObjPtr pool)
 
 static void
 virStorageBackendFileSystemMountAddOptions(virCommandPtr cmd,
+                                           virStoragePoolDefPtr def,
                                            const char *providedOpts)
 {
     VIR_AUTOFREE(char *) mountOpts = NULL;
@@ -4294,6 +4295,19 @@ virStorageBackendFileSystemMountAddOptions(virCommandPtr cmd,
 
     if (providedOpts)
         virBufferAsprintf(&buf, "%s,", providedOpts);
+
+    if (def->namespaceData) {
+        size_t i;
+        virStoragePoolFSMountOptionsDefPtr opts = def->namespaceData;
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        for (i = 0; i < opts->noptions; i++)
+            virBufferAsprintf(&buf, "%s,", opts->options[i]);
+
+        virUUIDFormat(def->uuid, uuidstr);
+        VIR_WARN("Storage Pool name='%s' uuid='%s' is tainted by custom "
+                 "mount_opts from XML", def->name, uuidstr);
+    }
 
     virBufferTrim(&buf, ",", -1);
     mountOpts = virBufferContentAndReset(&buf);
@@ -4310,7 +4324,7 @@ virStorageBackendFileSystemMountNFSArgs(virCommandPtr cmd,
                                         const char *nfsVers)
 {
     virCommandAddArgList(cmd, src, def->target.path, NULL);
-    virStorageBackendFileSystemMountAddOptions(cmd, nfsVers);
+    virStorageBackendFileSystemMountAddOptions(cmd, def, nfsVers);
 }
 
 
@@ -4323,7 +4337,7 @@ virStorageBackendFileSystemMountGlusterArgs(virCommandPtr cmd,
 
     fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
     virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
-    virStorageBackendFileSystemMountAddOptions(cmd, "direct-io-mode=1");
+    virStorageBackendFileSystemMountAddOptions(cmd, def, "direct-io-mode=1");
 }
 
 
@@ -4336,7 +4350,7 @@ virStorageBackendFileSystemMountCIFSArgs(virCommandPtr cmd,
 
     fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
     virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
-    virStorageBackendFileSystemMountAddOptions(cmd, "guest");
+    virStorageBackendFileSystemMountAddOptions(cmd, def, "guest");
 }
 
 
@@ -4353,7 +4367,7 @@ virStorageBackendFileSystemMountDefaultArgs(virCommandPtr cmd,
     else
         fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
     virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
-    virStorageBackendFileSystemMountAddOptions(cmd, nfsVers);
+    virStorageBackendFileSystemMountAddOptions(cmd, def, nfsVers);
 }
 
 
