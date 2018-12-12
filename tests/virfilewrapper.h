@@ -21,7 +21,7 @@
 
 int
 virFileWrapperAddPrefix(const char *prefix,
-                     const char *override);
+                        const char *override);
 
 void
 virFileWrapperRemovePrefix(const char *prefix);
