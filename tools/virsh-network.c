@@ -1,7 +1,7 @@
 /*
  * virsh-network.c: Commands to manage network
  *
- * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,6 +54,16 @@
 #define VIRSH_COMMON_OPT_NETWORK_OT_STRING_FULL(cflags) \
     VIRSH_COMMON_OPT_NETWORK_OT_STRING(N_("network name or uuid"), cflags)
 
+#define VIRSH_COMMON_OPT_NETWORK_PORT(cflags) \
+    {.name = "port", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("port UUID"), \
+     .completer = virshNetworkPortUUIDCompleter, \
+     .completer_flags = cflags, \
+    }
+
+
 virNetworkPtr
 virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
                          const char **name, unsigned int flags)
@@ -90,6 +100,35 @@ virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
         vshError(ctl, _("failed to get network '%s'"), n);
 
     return network;
+}
+
+
+virNetworkPortPtr
+virshCommandOptNetworkPort(vshControl *ctl, const vshCmd *cmd,
+                           virNetworkPtr net,
+                           const char **name)
+{
+    virNetworkPortPtr port = NULL;
+    const char *n = NULL;
+    const char *optname = "port";
+
+    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+        return NULL;
+
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+             cmd->def->name, optname, n);
+
+    if (name)
+        *name = n;
+
+    vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network UUID\n",
+             cmd->def->name, optname);
+    port = virNetworkPortLookupByUUIDString(net, n);
+
+    if (!port)
+        vshError(ctl, _("failed to get network port '%s'"), n);
+
+    return port;
 }
 
 /*
@@ -1437,6 +1476,340 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "net-port-create" command
+ */
+static const vshCmdInfo info_network_port_create[] = {
+    {.name = "help",
+     .data = N_("create a network port from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Create a network port.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_network_port_create[] = {
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML network port description")),
+    {.name = NULL}
+};
+
+static bool
+cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
+{
+    virNetworkPortPtr port = NULL;
+    const char *from = NULL;
+    bool ret = false;
+    char *buffer = NULL;
+    virNetworkPtr network = NULL;
+
+    network = virshCommandOptNetwork(ctl, cmd, NULL);
+    if (network == NULL)
+        goto cleanup;
+
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+        goto cleanup;
+
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
+        goto cleanup;
+
+    port = virNetworkPortCreateXML(network, buffer, 0);
+
+    if (port != NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virNetworkPortGetUUIDString(port, uuidstr);
+        vshPrintExtra(ctl, _("Network port %s created from %s\n"),
+                      uuidstr, from);
+    } else {
+        vshError(ctl, _("Failed to create network from %s"), from);
+        goto cleanup;
+    }
+
+    ret = true;
+ cleanup:
+    VIR_FREE(buffer);
+    if (port)
+        virNetworkPortFree(port);
+    if (network)
+        virNetworkFree(network);
+    return ret;
+}
+
+/*
+ * "net-port-dumpxml" command
+ */
+static const vshCmdInfo info_network_port_dumpxml[] = {
+    {.name = "help",
+     .data = N_("network port information in XML")
+    },
+    {.name = "desc",
+     .data = N_("Output the network port information as an XML dump to stdout.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_network_port_dumpxml[] = {
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
+    VIRSH_COMMON_OPT_NETWORK_PORT(0),
+    {.name = NULL}
+};
+
+static bool
+cmdNetworkPortDumpXML(vshControl *ctl, const vshCmd *cmd)
+{
+    virNetworkPtr network;
+    virNetworkPortPtr port = NULL;
+    bool ret = true;
+    char *dump;
+    unsigned int flags = 0;
+
+    if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (!(port = virshCommandOptNetworkPort(ctl, cmd, network, NULL)))
+        goto cleanup;
+
+    dump = virNetworkPortGetXMLDesc(port, flags);
+
+    if (dump != NULL) {
+        vshPrint(ctl, "%s", dump);
+        VIR_FREE(dump);
+    } else {
+        ret = false;
+    }
+
+ cleanup:
+    if (port)
+        virNetworkPortFree(port);
+    if (network)
+        virNetworkFree(network);
+    return ret;
+}
+
+
+/*
+ * "net-port-delete" command
+ */
+static const vshCmdInfo info_network_port_delete[] = {
+    {.name = "help",
+     .data = N_("network port information in XML")
+    },
+    {.name = "desc",
+     .data = N_("Output the network port information as an XML dump to stdout.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_network_port_delete[] = {
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
+    VIRSH_COMMON_OPT_NETWORK_PORT(0),
+    {.name = NULL}
+};
+
+static bool
+cmdNetworkPortDelete(vshControl *ctl, const vshCmd *cmd)
+{
+    virNetworkPtr network = NULL;
+    virNetworkPortPtr port = NULL;
+    bool ret = true;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (!(port = virshCommandOptNetworkPort(ctl, cmd, network, NULL)))
+        goto cleanup;
+
+    if (virNetworkPortGetUUIDString(port, uuidstr) < 0)
+        goto cleanup;
+
+    if (virNetworkPortDelete(port, 0) < 0) {
+        vshError(ctl, _("Failed to delete network port %s"), uuidstr);
+        goto cleanup;
+    } else {
+        vshPrintExtra(ctl, _("Network port %s deleted\n"), uuidstr);
+    }
+
+    ret = true;
+ cleanup:
+    if (port)
+        virNetworkPortFree(port);
+    if (network)
+        virNetworkFree(network);
+    return ret;
+}
+
+
+static int
+virshNetworkPortSorter(const void *a, const void *b)
+{
+    virNetworkPortPtr *na = (virNetworkPortPtr *) a;
+    virNetworkPortPtr *nb = (virNetworkPortPtr *) b;
+    unsigned char uuida[VIR_UUID_BUFLEN];
+    unsigned char uuidb[VIR_UUID_BUFLEN];
+
+    if (*na && !*nb)
+        return -1;
+
+    if (!*na)
+        return *nb != NULL;
+
+    if (virNetworkPortGetUUID(*na, uuida) < 0 ||
+        virNetworkPortGetUUID(*nb, uuidb) < 0)
+        return -1;
+
+    return memcmp(uuida, uuidb, VIR_UUID_BUFLEN);
+}
+
+struct virshNetworkPortList {
+    virNetworkPortPtr *ports;
+    size_t nports;
+};
+typedef struct virshNetworkPortList *virshNetworkPortListPtr;
+
+static void
+virshNetworkPortListFree(virshNetworkPortListPtr list)
+{
+    size_t i;
+
+    if (list && list->ports) {
+        for (i = 0; i < list->nports; i++) {
+            if (list->ports[i])
+                virNetworkPortFree(list->ports[i]);
+        }
+        VIR_FREE(list->ports);
+    }
+    VIR_FREE(list);
+}
+
+static virshNetworkPortListPtr
+virshNetworkPortListCollect(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags)
+{
+    virshNetworkPortListPtr list = vshMalloc(ctl, sizeof(*list));
+    int ret;
+    virNetworkPtr network = NULL;
+    bool success = false;
+
+    if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
+        goto cleanup;
+
+    /* try the list with flags support (0.10.2 and later) */
+    if ((ret = virNetworkListAllPorts(network,
+                                      &list->ports,
+                                      flags)) < 0)
+        goto cleanup;
+
+    list->nports = ret;
+
+    /* sort the list */
+    if (list->ports && list->nports)
+        qsort(list->ports, list->nports,
+              sizeof(*list->ports), virshNetworkPortSorter);
+
+    success = true;
+
+ cleanup:
+    if (!success) {
+        virshNetworkPortListFree(list);
+        list = NULL;
+    }
+
+    if (network)
+        virNetworkFree(network);
+
+    return list;
+}
+
+/*
+ * "net-list" command
+ */
+static const vshCmdInfo info_network_port_list[] = {
+    {.name = "help",
+     .data = N_("list network ports")
+    },
+    {.name = "desc",
+     .data = N_("Returns list of network ports.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_network_port_list[] = {
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
+    {.name = "uuid",
+     .type = VSH_OT_BOOL,
+     .help = N_("list uuid's only")
+    },
+    {.name = "table",
+     .type = VSH_OT_BOOL,
+     .help = N_("list table (default)")
+    },
+    {.name = NULL}
+};
+
+#define FILTER(NAME, FLAG) \
+    if (vshCommandOptBool(cmd, NAME)) \
+        flags |= (FLAG)
+static bool
+cmdNetworkPortList(vshControl *ctl, const vshCmd *cmd)
+{
+    virshNetworkPortListPtr list = NULL;
+    size_t i;
+    bool ret = false;
+    bool optTable = vshCommandOptBool(cmd, "table");
+    bool optUUID = vshCommandOptBool(cmd, "uuid");
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    unsigned int flags = 0;
+    vshTablePtr table = NULL;
+
+    if (optTable + optUUID > 1) {
+        vshError(ctl, "%s",
+                 _("Only one argument from --table and --uuid "
+                   "may be specified."));
+        return false;
+    }
+
+    if (!optUUID)
+        optTable = true;
+
+    if (!(list = virshNetworkPortListCollect(ctl, cmd, flags)))
+        return false;
+
+    if (optTable) {
+        table = vshTableNew(_("UUID"), NULL);
+        if (!table)
+            goto cleanup;
+    }
+
+    for (i = 0; i < list->nports; i++) {
+        virNetworkPortPtr port = list->ports[i];
+
+        if (virNetworkPortGetUUIDString(port, uuid) < 0) {
+            vshError(ctl, "%s", _("Failed to get network's UUID"));
+            goto cleanup;
+        }
+        if (optTable) {
+            if (vshTableRowAppend(table, uuid, NULL) < 0)
+                goto cleanup;
+        } else if (optUUID) {
+            vshPrint(ctl, "%s\n", uuid);
+        }
+    }
+
+    if (optTable)
+        vshTablePrintToStdout(table, ctl);
+
+    ret = true;
+ cleanup:
+    vshTableFree(table);
+    virshNetworkPortListFree(list);
+    return ret;
+}
+#undef FILTER
+
+
 const vshCmdDef networkCmds[] = {
     {.name = "net-autostart",
      .handler = cmdNetworkAutostart,
@@ -1526,6 +1899,30 @@ const vshCmdDef networkCmds[] = {
      .handler = cmdNetworkUuid,
      .opts = opts_network_uuid,
      .info = info_network_uuid,
+     .flags = 0
+    },
+    {.name = "net-port-list",
+     .handler = cmdNetworkPortList,
+     .opts = opts_network_port_list,
+     .info = info_network_port_list,
+     .flags = 0
+    },
+    {.name = "net-port-create",
+     .handler = cmdNetworkPortCreate,
+     .opts = opts_network_port_create,
+     .info = info_network_port_create,
+     .flags = 0
+    },
+    {.name = "net-port-dumpxml",
+     .handler = cmdNetworkPortDumpXML,
+     .opts = opts_network_port_dumpxml,
+     .info = info_network_port_dumpxml,
+     .flags = 0
+    },
+    {.name = "net-port-delete",
+     .handler = cmdNetworkPortDelete,
+     .opts = opts_network_port_delete,
+     .info = info_network_port_delete,
      .flags = 0
     },
     {.name = NULL}
