@@ -24,9 +24,7 @@
         </choice>
       </attribute>
       <interleave>
-        <zeroOrMore>
-          <ref name='secret'/>
-        </zeroOrMore>
+        <ref name='secret'/>
         <optional>
           <element name='cipher'>
             <ref name='keycipher'/>
