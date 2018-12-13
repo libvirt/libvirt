@@ -17,11 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Anton Blanchard <anton@au.ibm.com>
- *      Prerna Saxena <prerna@linux.vnet.ibm.com>
- *      Li Zhang <zhlcindy@linux.vnet.ibm.com>
  */
 
 #include <config.h>

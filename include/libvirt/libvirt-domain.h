@@ -2,7 +2,6 @@
  * libvirt-domain.h
  * Summary: APIs for management of domains
  * Description: Provides APIs for the management of domains
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2015 Red Hat, Inc.
  *

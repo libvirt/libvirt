@@ -2,7 +2,6 @@
  * libvirt-host.h
  * Summary: APIs for management of hosts
  * Description: Provides APIs for the management of hosts
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

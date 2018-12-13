@@ -17,7 +17,6 @@
 # License along with this library.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-# Author: Yuto KAWAMURA(kawamuray)
 #
 # For XDR syntax, see http://tools.ietf.org/html/rfc4506#section-6.3
 # This script does not strictly check syntax of xdr protocol specification.

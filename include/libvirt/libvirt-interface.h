@@ -2,7 +2,6 @@
  * libvirt-interface.h
  * Summary: APIs for management of interfaces
  * Description: Provides APIs for the management of interfaces
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Yuto KAWAMURA(kawamuray)
  */
 #ifndef _PACKET_LIBVIRT_H_
 # define _PACKET_LIBVIRT_H_

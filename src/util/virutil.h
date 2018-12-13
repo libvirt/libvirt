@@ -18,8 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * File created Jul 18, 2007 - Shuveb Hussain <shuveb@binarykarma.com>
  */
 
 #ifndef __VIR_UTIL_H__

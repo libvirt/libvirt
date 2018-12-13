@@ -16,9 +16,6 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *     Stefan Berger <stefanb@us.ibm.com>
- *
  * Notes:
  * netlink: http://lovezutto.googlepages.com/netlink.pdf
  *          iproute2 package

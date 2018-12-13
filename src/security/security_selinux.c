@@ -15,10 +15,6 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *     James Morris <jmorris@namei.org>
- *     Dan Walsh <dwalsh@redhat.com>
- *
  * SELinux security driver.
  */
 #include <config.h>

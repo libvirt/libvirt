@@ -16,16 +16,9 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *     Stefan Berger <stefanb@us.ibm.com>
- *     Dirk Herrendoerfer <herrend[at]de[dot]ibm[dot]com>
- *
  * Notes:
  * netlink: http://lovezutto.googlepages.com/netlink.pdf
  *          iproute2 package
- *
- * 2012/02: Renamed from netlink.[ch] to virnetlink.[ch]
- *
  */
 
 #include <config.h>

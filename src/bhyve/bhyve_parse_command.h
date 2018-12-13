@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Fabian Freyer <fabian.freyer@physik.tu-berlin.de>
  */
 
 #ifndef __BHYVE_PARSE_COMMAND_H__

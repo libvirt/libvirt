@@ -2,7 +2,6 @@
  * libvirt-nwfilter.h
  * Summary: APIs for management of nwfilters
  * Description: Provides APIs for the management of nwfilters
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

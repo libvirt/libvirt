@@ -16,8 +16,6 @@
 # License along with this library.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-# Author: Daniel P. Berrange <berrange@redhat.com>
-#
 # Generate a set of systemtap functions for translating various
 # RPC enum values into strings
 #

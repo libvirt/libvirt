@@ -5,7 +5,6 @@
  *          hypervisor and extract domain information.
  * usage: info1
  * test: info1
- * author: Daniel Veillard
  * copy: see Copyright for the status of this software.
  */
 

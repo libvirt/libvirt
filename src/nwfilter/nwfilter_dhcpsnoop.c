@@ -5,10 +5,6 @@
  * Copyright (C) 2012-2014 Red Hat, Inc.
  * Copyright (C) 2011,2012 IBM Corp.
  *
- * Authors:
- *    David L Stevens <dlstevens@us.ibm.com>
- *    Stefan Berger <stefanb@linux.vnet.ibm.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -22,8 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Based in part on work by Stefan Berger <stefanb@us.ibm.com>
  */
 
 /*

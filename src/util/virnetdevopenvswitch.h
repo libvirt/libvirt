@@ -16,12 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Dan Wendlandt <dan@nicira.com>
- *     Kyle Mestery <kmestery@cisco.com>
- *     Ansis Atteka <aatteka@nicira.com>
- *     Boris Fiuczynski <fiuczy@linux.vnet.ibm.com>
  */
 
 #ifndef __VIR_NETDEV_OPENVSWITCH_H__

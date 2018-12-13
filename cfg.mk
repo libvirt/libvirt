@@ -1050,6 +1050,11 @@ sc_prohibit_http_urls:
 	halt='Links must use https:// protocol' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_author:
+	@prohibit="(\*|#)\s*(A|a)uthors?:" \
+	halt="Author: statements are prohibited in source comments" \
+	  $(_sc_search_regexp)
+
 # Alignment is usually achieved through spaces (at least two of them)
 # or tabs (at least one of them) right before the trailing backslash
 sc_prohibit_backslash_alignment:

@@ -16,9 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Richard W.M. Jones <rjones@redhat.com>
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #ifndef __REMOTE_DAEMON_DISPATCH_H__

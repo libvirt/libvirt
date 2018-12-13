@@ -2,7 +2,6 @@
  * libvirt-nodedev.h
  * Summary: APIs for management of nodedevs
  * Description: Provides APIs for the management of nodedevs
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

@@ -17,9 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *  Dan Smith <danms@us.ibm.com>
  */
 
 #ifndef __VIR_CGROUP_H__

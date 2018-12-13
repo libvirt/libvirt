@@ -18,10 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Anthony Liguori <aliguori@us.ibm.com>
- * Author: Daniel Veillard <veillard@redhat.com>
- * Author: Markus Groß <gross@univention.de>
  */
 
 #ifndef __VIR_XEN_SXPR_H__

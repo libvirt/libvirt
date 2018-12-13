@@ -14,10 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author:
- *   Jamie Strandboge <jamie@canonical.com>
- *
  */
 #ifndef __VIR_SECURITY_APPARMOR_H__
 # define __VIR_SECURITY_APPARMOR_H__

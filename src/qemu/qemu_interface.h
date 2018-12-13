@@ -17,9 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Matthew J. Rosato <mjrosato@linux.vnet.ibm.com>
  */
 
 #ifndef __QEMU_INTERFACE_H__

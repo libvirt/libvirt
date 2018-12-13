@@ -2,7 +2,6 @@
  * libvirt-network.h
  * Summary: APIs for management of networks
  * Description: Provides APIs for the management of networks
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

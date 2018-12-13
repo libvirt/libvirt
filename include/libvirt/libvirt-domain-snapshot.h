@@ -2,7 +2,6 @@
  * libvirt-domain-snapshot.h
  * Summary: APIs for management of domain snapshots
  * Description: Provides APIs for the management of domain snapshots
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

@@ -17,8 +17,6 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Author: Daniel P. Berrange <berrange@redhat.com>
- *
  * The intent is that this file provides a set of time APIs which
  * are async signal safe, to allow use in between fork/exec eg by
  * the logging code.

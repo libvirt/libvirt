@@ -2,7 +2,6 @@
  * libvirt-storage.h
  * Summary: APIs for management of storage pools and volumes
  * Description: Provides APIs for the management of storage pools and volumes
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2016 Red Hat, Inc.
  *

@@ -5,9 +5,6 @@
  *
  * Copyright (C) 2005-2014 Red Hat, Inc.
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
- *
- * Author: Bjorn Reese <bjorn.reese@systematic.dk>
- *         Daniel Veillard <veillard@redhat.com>
  */
 
 #ifndef __VIR_HASH_H__

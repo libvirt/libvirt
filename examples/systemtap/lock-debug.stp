@@ -16,7 +16,6 @@
 #
 # Debug RWLock mechanisms as well.
 #
-# Author: Martin Kletzander <mkletzan@redhat.com>
 
 
 global mx_tolock

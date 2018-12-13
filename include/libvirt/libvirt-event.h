@@ -2,7 +2,6 @@
  * libvirt-event.h
  * Summary: APIs for management of events
  * Description: Provides APIs for the management of events
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *

@@ -2270,7 +2270,7 @@ class docBuilder:
         output.write("    <file name='%s'>\n" % (module))
         dict = self.headers[file]
         if dict.info is not None:
-            for data in ('Summary', 'Description', 'Author'):
+            for data in ('Summary', 'Description'):
                 try:
                     output.write("     <%s>%s</%s>\n" % (
                                  data.lower(),

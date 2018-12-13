@@ -14,9 +14,6 @@
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
  * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE AUTHORS AND
  * CONTRIBUTORS ACCEPT NO RESPONSIBILITY IN ANY CONCEIVABLE MANNER.
- *
- * Author: Bjorn Reese <bjorn.reese@systematic.dk>
- *         Daniel Veillard <veillard@redhat.com>
  */
 
 #include <config.h>

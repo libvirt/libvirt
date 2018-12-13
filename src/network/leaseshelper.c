@@ -18,8 +18,6 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Author: Nehal J Wani <nehaljw.kkd1@gmail.com>
- *
  * For IPv6 support, use dnsmasq >= 2.67
  */
 

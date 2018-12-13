@@ -2,7 +2,6 @@
  * libvirt-secret.h
  * Summary: APIs for management of secrets
  * Description: Provides APIs for the management of secrets
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014, 2016 Red Hat, Inc.
  *

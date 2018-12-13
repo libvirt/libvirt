@@ -17,12 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author:
- *   Jamie Strandboge <jamie@canonical.com>
- *   Based on security_selinux.c by James Morris <jmorris@namei.org>
- *
- * AppArmor security driver.
  */
 
 #include <config.h>
