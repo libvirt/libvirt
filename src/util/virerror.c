@@ -1069,9 +1069,9 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_CALL_FAILED: /* DEPRECATED, use VIR_ERR_NO_SUPPORT */
             if (info == NULL)
-                errmsg = _("library call failed, possibly not supported");
+                errmsg = _("library call failed");
             else
-                errmsg = _("library call %s failed, possibly not supported");
+                errmsg = _("library call failed: %s");
             break;
         case VIR_ERR_XML_ERROR:
             if (info == NULL)
@@ -1093,9 +1093,9 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_OPEN_FAILED:
             if (info == NULL)
-                errmsg = _("failed to open configuration file for reading");
+                errmsg = _("failed to open configuration file");
             else
-                errmsg = _("failed to open %s for reading");
+                errmsg = _("failed to open configuration file %s");
             break;
         case VIR_ERR_READ_FAILED:
             if (info == NULL)
