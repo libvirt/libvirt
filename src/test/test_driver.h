@@ -21,11 +21,11 @@
  * Daniel Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_TEST_INTERNAL_H__
-# define __VIR_TEST_INTERNAL_H__
+#ifndef LIBVIRT_TEST_DRIVER_H
+# define LIBVIRT_TEST_DRIVER_H
 
 # include "internal.h"
 
 int testRegister(void);
 
-#endif /* __VIR_TEST_INTERNAL_H__ */
+#endif /* LIBVIRT_TEST_DRIVER_H */

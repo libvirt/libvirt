@@ -27,7 +27,7 @@
 
 #include "internal.h"
 #include "testutils.h"
-#define __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_ALLOW_H__
+#define LIBVIRT_STORAGE_BACKEND_SHEEPDOG_PRIV_H_ALLOW
 #include "storage/storage_backend_sheepdog_priv.h"
 #include "virstring.h"
 

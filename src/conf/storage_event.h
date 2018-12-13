@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __STORAGE_EVENT_H__
-# define __STORAGE_EVENT_H__
+#ifndef LIBVIRT_STORAGE_EVENT_H
+# define LIBVIRT_STORAGE_EVENT_H
 
 # include "internal.h"
 # include "object_event.h"
@@ -61,4 +61,4 @@ virObjectEventPtr
 virStoragePoolEventRefreshNew(const char *name,
                               const unsigned char *uuid);
 
-#endif /* __STORAGE_EVENT_H__ */
+#endif /* LIBVIRT_STORAGE_EVENT_H */

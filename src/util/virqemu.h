@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __VIR_QEMU_H_
-# define __VIR_QEMU_H_
+#ifndef LIBVIRT_VIRQEMU_H
+# define LIBVIRT_VIRQEMU_H
 
 # include "internal.h"
 # include "virbuffer.h"
@@ -53,4 +53,4 @@ void virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
                                       const char *alias)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-#endif /* __VIR_QEMU_H_ */
+#endif /* LIBVIRT_VIRQEMU_H */

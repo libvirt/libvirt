@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __OPENWSMAN_H__
-# define __OPENWSMAN_H__
+#ifndef LIBVIRT_OPENWSMAN_H
+# define LIBVIRT_OPENWSMAN_H
 
 /* Workaround openwsman <= 2.2.6 unconditionally defining optarg. Just pretend
  * that u/os.h was already included. Need to explicitly include time.h because
@@ -47,4 +47,4 @@
 WsXmlDocH ws_xml_create_doc(const char *rootNsUri, const char *rootName);
 WsXmlNodeH xml_parser_get_root(WsXmlDocH doc);
 
-#endif /* __OPENWSMAN_H__ */
+#endif /* LIBVIRT_OPENWSMAN_H */

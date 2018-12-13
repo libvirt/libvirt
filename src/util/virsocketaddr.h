@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_SOCKETADDR_H__
-# define __VIR_SOCKETADDR_H__
+#ifndef LIBVIRT_VIRSOCKETADDR_H
+# define LIBVIRT_VIRSOCKETADDR_H
 
 # include <netinet/in.h>
 # include <sys/socket.h>
@@ -162,4 +162,4 @@ void virSocketAddrFree(virSocketAddrPtr addr);
 
 VIR_DEFINE_AUTOPTR_FUNC(virSocketAddr, virSocketAddrFree)
 
-#endif /* __VIR_SOCKETADDR_H__ */
+#endif /* LIBVIRT_VIRSOCKETADDR_H */

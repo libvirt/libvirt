@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __VZ_SDK_H__
-# define __VZ_SDK_H__
+#ifndef LIBVIRT_VZ_SDK_H
+# define LIBVIRT_VZ_SDK_H
 
 # include <Parallels.h>
 
@@ -95,4 +95,4 @@ prlsdkSdkDomainLookupByName(vzDriverPtr driver, const char *name);
 int prlsdkCancelJob(virDomainObjPtr dom);
 int prlsdkResizeImage(virDomainObjPtr dom, virDomainDiskDefPtr disk, unsigned long long newsize);
 
-#endif /* __VZ_SDK_H__ */
+#endif /* LIBVIRT_VZ_SDK_H */

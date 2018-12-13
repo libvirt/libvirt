@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_PCI_H__
-# define __VIR_PCI_H__
+#ifndef LIBVIRT_VIRPCI_H
+# define LIBVIRT_VIRPCI_H
 
 # include "internal.h"
 # include "virmdev.h"
@@ -275,4 +275,4 @@ VIR_DEFINE_AUTOPTR_FUNC(virPCIDevice, virPCIDeviceFree)
 VIR_DEFINE_AUTOPTR_FUNC(virPCIDeviceAddress, virPCIDeviceAddressFree)
 VIR_DEFINE_AUTOPTR_FUNC(virPCIEDeviceInfo, virPCIEDeviceInfoFree)
 
-#endif /* __VIR_PCI_H__ */
+#endif /* LIBVIRT_VIRPCI_H */

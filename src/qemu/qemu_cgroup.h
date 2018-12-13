@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_CGROUP_H__
-# define __QEMU_CGROUP_H__
+#ifndef LIBVIRT_QEMU_CGROUP_H
+# define LIBVIRT_QEMU_CGROUP_H
 
 # include "virusb.h"
 # include "vircgroup.h"
@@ -83,4 +83,4 @@ int qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
 void qemuCgroupEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesDataPtr data);
 
 extern const char *const defaultDeviceACL[];
-#endif /* __QEMU_CGROUP_H__ */
+#endif /* LIBVIRT_QEMU_CGROUP_H */

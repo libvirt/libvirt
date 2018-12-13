@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_STREAM_H__
-# define __VIR_LIBVIRT_STREAM_H__
+#ifndef LIBVIRT_STREAM_H
+# define LIBVIRT_STREAM_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -266,4 +266,4 @@ int virStreamAbort(virStreamPtr st);
 
 int virStreamFree(virStreamPtr st);
 
-#endif /* __VIR_LIBVIRT_STREAM_H__ */
+#endif /* LIBVIRT_STREAM_H */

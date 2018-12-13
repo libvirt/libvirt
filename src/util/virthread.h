@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __THREADS_H_
-# define __THREADS_H_
+#ifndef LIBVIRT_VIRTHREAD_H
+# define LIBVIRT_VIRTHREAD_H
 
 # include "internal.h"
 # include "virerror.h"
@@ -213,4 +213,4 @@ int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
         return 0; \
     }
 
-#endif /* __THREADS_H_ */
+#endif /* LIBVIRT_VIRTHREAD_H */

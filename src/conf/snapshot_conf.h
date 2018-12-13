@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SNAPSHOT_CONF_H
-# define __SNAPSHOT_CONF_H
+#ifndef LIBVIRT_SNAPSHOT_CONF_H
+# define LIBVIRT_SNAPSHOT_CONF_H
 
 # include "internal.h"
 # include "domain_conf.h"
@@ -189,4 +189,4 @@ int virDomainSnapshotRedefinePrep(virDomainPtr domain,
 VIR_ENUM_DECL(virDomainSnapshotLocation)
 VIR_ENUM_DECL(virDomainSnapshotState)
 
-#endif /* __SNAPSHOT_CONF_H */
+#endif /* LIBVIRT_SNAPSHOT_CONF_H */

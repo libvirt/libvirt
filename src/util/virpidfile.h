@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef __VIR_PIDFILE_H__
-# define __VIR_PIDFILE_H__
+#ifndef LIBVIRT_VIRPIDFILE_H
+# define LIBVIRT_VIRPIDFILE_H
 
 # include <sys/types.h>
 # include "internal.h"
@@ -76,4 +76,4 @@ int virPidFileConstructPath(bool privileged,
 
 int virPidFileForceCleanupPath(const char *path) ATTRIBUTE_NONNULL(1);
 
-#endif /* __VIR_PIDFILE_H__ */
+#endif /* LIBVIRT_VIRPIDFILE_H */

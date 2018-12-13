@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_CLIENT_H__
-# define __VIR_NET_CLIENT_H__
+#ifndef LIBVIRT_VIRNETCLIENT_H
+# define LIBVIRT_VIRNETCLIENT_H
 
 # ifdef WITH_GNUTLS
 #  include "virnettlscontext.h"
@@ -148,4 +148,4 @@ int virNetClientKeepAliveStart(virNetClientPtr client,
 
 void virNetClientKeepAliveStop(virNetClientPtr client);
 
-#endif /* __VIR_NET_CLIENT_H__ */
+#endif /* LIBVIRT_VIRNETCLIENT_H */

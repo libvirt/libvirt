@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NETDEV_OPENVSWITCH_H__
-# define __VIR_NETDEV_OPENVSWITCH_H__
+#ifndef LIBVIRT_VIRNETDEVOPENVSWITCH_H
+# define LIBVIRT_VIRNETDEVOPENVSWITCH_H
 
 # include "internal.h"
 # include "virnetdevvportprofile.h"
@@ -65,4 +65,4 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
                                    virNetDevVlanPtr virtVlan)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-#endif /* __VIR_NETDEV_OPENVSWITCH_H__ */
+#endif /* LIBVIRT_VIRNETDEVOPENVSWITCH_H */

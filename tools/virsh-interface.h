@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VIRSH_INTERFACE_H
-# define VIRSH_INTERFACE_H
+#ifndef LIBVIRT_VIRSH_INTERFACE_H
+# define LIBVIRT_VIRSH_INTERFACE_H
 
 # include "virsh.h"
 
@@ -39,4 +39,4 @@ virInterfacePtr virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
 
 extern const vshCmdDef ifaceCmds[];
 
-#endif /* VIRSH_INTERFACE_H */
+#endif /* LIBVIRT_VIRSH_INTERFACE_H */

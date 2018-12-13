@@ -19,11 +19,11 @@
  *
  */
 
-#ifndef __VIR_MODULE_H__
-# define __VIR_MODULE_H__
+#ifndef LIBVIRT_VIRMODULE_H
+# define LIBVIRT_VIRMODULE_H
 
 int virModuleLoad(const char *path,
                   const char *regfunc,
                   bool required);
 
-#endif /* __VIR_MODULE_H__ */
+#endif /* LIBVIRT_VIRMODULE_H */

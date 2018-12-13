@@ -17,9 +17,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_XENAPI_PRIV_H__
-# define __VIR_XENAPI_PRIV_H__
+#ifndef LIBVIRT_XENAPI_DRIVER_H
+# define LIBVIRT_XENAPI_DRIVER_H
 
 int xenapiRegister(void);
 
-#endif /* __VIR_XENAPI_PRIV_H__ */
+#endif /* LIBVIRT_XENAPI_DRIVER_H */

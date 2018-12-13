@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NWFILTER_PARAMS_H
-# define NWFILTER_PARAMS_H
+#ifndef LIBVIRT_NWFILTER_PARAMS_H
+# define LIBVIRT_NWFILTER_PARAMS_H
 
 # include "virhash.h"
 # include "virbuffer.h"
@@ -152,4 +152,4 @@ const char *virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
                                               const virNWFilterVarAccess *);
 
 
-#endif /* NWFILTER_PARAMS_H */
+#endif /* LIBVIRT_NWFILTER_PARAMS_H */

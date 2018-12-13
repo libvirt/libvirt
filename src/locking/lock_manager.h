@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_LOCK_MANAGER_H__
-# define __VIR_LOCK_MANAGER_H__
+#ifndef LIBVIRT_LOCK_MANAGER_H
+# define LIBVIRT_LOCK_MANAGER_H
 
 # include "internal.h"
 # include "lock_driver.h"
@@ -67,4 +67,4 @@ int virLockManagerInquire(virLockManagerPtr manager,
 
 int virLockManagerFree(virLockManagerPtr manager);
 
-#endif /* __VIR_LOCK_MANAGER_H__ */
+#endif /* LIBVIRT_LOCK_MANAGER_H */

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_CLIENT_STREAM_H__
-# define __VIR_NET_CLIENT_STREAM_H__
+#ifndef LIBVIRT_VIRNETCLIENTSTREAM_H
+# define LIBVIRT_VIRNETCLIENTSTREAM_H
 
 # include "virnetclientprogram.h"
 # include "virobject.h"
@@ -82,4 +82,4 @@ int virNetClientStreamEventRemoveCallback(virNetClientStreamPtr st);
 bool virNetClientStreamEOF(virNetClientStreamPtr st)
     ATTRIBUTE_NONNULL(1);
 
-#endif /* __VIR_NET_CLIENT_STREAM_H__ */
+#endif /* LIBVIRT_VIRNETCLIENTSTREAM_H */

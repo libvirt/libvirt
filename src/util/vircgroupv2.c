@@ -26,9 +26,8 @@
 
 #include "internal.h"
 
-#define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
+#define LIBVIRT_VIRCGROUPPRIV_H_ALLOW
 #include "vircgrouppriv.h"
-#undef __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
 
 #include "vircgroup.h"
 #include "vircgroupbackend.h"

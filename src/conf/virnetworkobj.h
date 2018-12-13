@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIRNETWORKOBJ_H__
-# define __VIRNETWORKOBJ_H__
+#ifndef LIBVIRT_VIRNETWORKOBJ_H
+# define LIBVIRT_VIRNETWORKOBJ_H
 
 # include "internal.h"
 
@@ -221,4 +221,4 @@ void
 virNetworkObjListPrune(virNetworkObjListPtr nets,
                        unsigned int flags);
 
-#endif /* __VIRNETWORKOBJ_H__ */
+#endif /* LIBVIRT_VIRNETWORKOBJ_H */

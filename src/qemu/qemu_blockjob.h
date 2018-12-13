@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_BLOCKJOB_H__
-# define __QEMU_BLOCKJOB_H__
+#ifndef LIBVIRT_QEMU_BLOCKJOB_H
+# define LIBVIRT_QEMU_BLOCKJOB_H
 
 # include "internal.h"
 # include "qemu_conf.h"
@@ -42,4 +42,4 @@ void qemuBlockJobSyncEnd(virDomainObjPtr vm,
                          qemuDomainAsyncJob asyncJob,
                          virDomainDiskDefPtr disk);
 
-#endif /* __QEMU_BLOCKJOB_H__ */
+#endif /* LIBVIRT_QEMU_BLOCKJOB_H */

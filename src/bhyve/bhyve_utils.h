@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __BHYVE_UTILS_H__
-# define __BHYVE_UTILS_H__
+#ifndef LIBVIRT_BHYVE_UTILS_H
+# define LIBVIRT_BHYVE_UTILS_H
 
 # include "driver.h"
 # include "domain_event.h"
@@ -76,4 +76,4 @@ struct bhyveAutostartData {
 void bhyveDriverLock(bhyveConnPtr driver);
 void bhyveDriverUnlock(bhyveConnPtr driver);
 
-#endif /* __BHYVE_UTILS_H__ */
+#endif /* LIBVIRT_BHYVE_UTILS_H */

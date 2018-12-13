@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_STORAGE_BACKEND_DISK_H__
-# define __VIR_STORAGE_BACKEND_DISK_H__
+#ifndef LIBVIRT_STORAGE_BACKEND_DISK_H
+# define LIBVIRT_STORAGE_BACKEND_DISK_H
 
 int virStorageBackendDiskRegister(void);
 
-#endif /* __VIR_STORAGE_BACKEND_DISK_H__ */
+#endif /* LIBVIRT_STORAGE_BACKEND_DISK_H */

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_EXTDEVICE_H__
-# define __QEMU_EXTDEVICE_H__
+#ifndef LIBVIRT_QEMU_EXTDEVICE_H
+# define LIBVIRT_QEMU_EXTDEVICE_H
 
 # include "qemu_conf.h"
 # include "qemu_domain.h"
@@ -55,4 +55,4 @@ int qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
                               virDomainDefPtr def,
                               virCgroupPtr cgroup);
 
-#endif /* __QEMU_EXTDEVICE_H__ */
+#endif /* LIBVIRT_QEMU_EXTDEVICE_H */

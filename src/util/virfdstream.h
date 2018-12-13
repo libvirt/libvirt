@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_FDSTREAM_H_
-# define __VIR_FDSTREAM_H_
+#ifndef LIBVIRT_VIRFDSTREAM_H
+# define LIBVIRT_VIRFDSTREAM_H
 
 # include "internal.h"
 
@@ -65,4 +65,4 @@ int virFDStreamSetInternalCloseCb(virStreamPtr st,
                                   virFDStreamInternalCloseCb cb,
                                   void *opaque,
                                   virFDStreamInternalCloseCbFreeOpaque fcb);
-#endif /* __VIR_FDSTREAM_H_ */
+#endif /* LIBVIRT_VIRFDSTREAM_H */

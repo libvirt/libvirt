@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _BHYVE_CAPABILITIES
-# define _BHYVE_CAPABILITIES
+#ifndef LIBVIRT_BHYVE_CAPABILITIES_H
+# define LIBVIRT_BHYVE_CAPABILITIES_H
 
 # include "capabilities.h"
 # include "conf/domain_capabilities.h"
@@ -55,4 +55,4 @@ typedef enum {
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);
 int virBhyveProbeCaps(unsigned int *caps);
 
-#endif /* _BHYVE_CAPABILITIES */
+#endif /* LIBVIRT_BHYVE_CAPABILITIES_H */

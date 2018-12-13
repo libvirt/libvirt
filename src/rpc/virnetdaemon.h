@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_DAEMON_H__
-# define __VIR_NET_DAEMON_H__
+#ifndef LIBVIRT_VIRNETDAEMON_H
+# define LIBVIRT_VIRNETDAEMON_H
 
 # include <signal.h>
 
@@ -82,4 +82,4 @@ ssize_t virNetDaemonGetServers(virNetDaemonPtr dmn, virNetServerPtr **servers);
 bool virNetDaemonHasServer(virNetDaemonPtr dmn,
                            const char *serverName);
 
-#endif /* __VIR_NET_DAEMON_H__ */
+#endif /* LIBVIRT_VIRNETDAEMON_H */

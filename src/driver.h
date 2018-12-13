@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_DRIVER_H__
-# define __VIR_DRIVER_H__
+#ifndef LIBVIRT_DRIVER_H
+# define LIBVIRT_DRIVER_H
 
 # include <unistd.h>
 
@@ -127,4 +127,4 @@ int virSetConnectNodeDev(virConnectPtr conn);
 int virSetConnectSecret(virConnectPtr conn);
 int virSetConnectStorage(virConnectPtr conn);
 
-#endif /* __VIR_DRIVER_H__ */
+#endif /* LIBVIRT_DRIVER_H */

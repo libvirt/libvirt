@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __OBJECT_EVENT_H__
-# define __OBJECT_EVENT_H__
+#ifndef LIBVIRT_OBJECT_EVENT_H
+# define LIBVIRT_OBJECT_EVENT_H
 
 # include "internal.h"
 
@@ -89,4 +89,4 @@ virObjectEventStateSetRemote(virConnectPtr conn,
                              int remoteID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-#endif /* __OBJECT_EVENT_H__ */
+#endif /* LIBVIRT_OBJECT_EVENT_H */

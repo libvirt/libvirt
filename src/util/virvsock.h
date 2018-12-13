@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_VSOCK_H__
-# define __VIR_VSOCK_H__
+#ifndef LIBVIRT_VIRVSOCK_H
+# define LIBVIRT_VIRVSOCK_H
 
 int
 virVsockSetGuestCid(int fd,
@@ -26,4 +26,4 @@ virVsockSetGuestCid(int fd,
 int
 virVsockAcquireGuestCid(int fd,
                         unsigned int *guest_cid);
-#endif /* __VIR_VSOCK_H__ */
+#endif /* LIBVIRT_VIRVSOCK_H */

@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VBOX_UNIFORMED_API_H
-# define VBOX_UNIFORMED_API_H
+#ifndef LIBVIRT_VBOX_UNIFORMED_API_H
+# define LIBVIRT_VBOX_UNIFORMED_API_H
 
 # include "internal.h"
 
@@ -566,4 +566,4 @@ void vbox50InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox51InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox52InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 
-#endif /* VBOX_UNIFORMED_API_H */
+#endif /* LIBVIRT_VBOX_UNIFORMED_API_H */

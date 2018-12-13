@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_SECRET_H__
-# define __VIR_LIBVIRT_SECRET_H__
+#ifndef LIBVIRT_SECRET_H
+# define LIBVIRT_SECRET_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -202,4 +202,4 @@ typedef void (*virConnectSecretEventLifecycleCallback)(virConnectPtr conn,
                                                        void *opaque);
 
 
-#endif /* __VIR_LIBVIRT_SECRET_H__ */
+#endif /* LIBVIRT_SECRET_H */

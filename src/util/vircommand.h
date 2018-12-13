@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_COMMAND_H__
-# define __VIR_COMMAND_H__
+#ifndef LIBVIRT_VIRCOMMAND_H
+# define LIBVIRT_VIRCOMMAND_H
 
 # include "internal.h"
 # include "virbuffer.h"
@@ -221,4 +221,4 @@ int virCommandRunNul(virCommandPtr cmd,
 
 VIR_DEFINE_AUTOPTR_FUNC(virCommand, virCommandFree)
 
-#endif /* __VIR_COMMAND_H__ */
+#endif /* LIBVIRT_VIRCOMMAND_H */

@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_UTIL_H__
-# define __VIR_UTIL_H__
+#ifndef LIBVIRT_VIRUTIL_H
+# define LIBVIRT_VIRUTIL_H
 
 # include "internal.h"
 # include <unistd.h>
@@ -233,4 +233,4 @@ char *virHostGetDRMRenderNode(void) ATTRIBUTE_NOINLINE;
 # define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue) \
     (((lvalue) = (rvalue)) != (rvalue))
 
-#endif /* __VIR_UTIL_H__ */
+#endif /* LIBVIRT_VIRUTIL_H */

@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_SCSI_HOST_H__
-# define __VIR_SCSI_HOST_H__
+#ifndef LIBVIRT_VIRSCSIHOST_H
+# define LIBVIRT_VIRSCSIHOST_H
 
 # include "internal.h"
 
@@ -37,4 +37,4 @@ char *virSCSIHostGetNameByParentaddr(unsigned int domain,
                                      unsigned int function,
                                      unsigned int unique_id);
 
-#endif /* __VIR_SCSI_HOST_H__ */
+#endif /* LIBVIRT_VIRSCSIHOST_H */

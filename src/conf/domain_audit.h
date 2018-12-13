@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_DOMAIN_AUDIT_H__
-# define __VIR_DOMAIN_AUDIT_H__
+#ifndef LIBVIRT_DOMAIN_AUDIT_H
+# define LIBVIRT_DOMAIN_AUDIT_H
 
 # include "domain_conf.h"
 # include "vircgroup.h"
@@ -138,4 +138,4 @@ void virDomainAuditInput(virDomainObjPtr vm,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 
-#endif /* __VIR_DOMAIN_AUDIT_H__ */
+#endif /* LIBVIRT_DOMAIN_AUDIT_H */

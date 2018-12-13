@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_FCP_H__
-# define __VIR_FCP_H__
+#ifndef LIBVIRT_VIRFCP_H
+# define LIBVIRT_VIRFCP_H
 
 bool
 virFCIsCapableRport(const char *rport);
@@ -29,4 +29,4 @@ virFCReadRportValue(const char *rport,
                     const char *entry,
                     char **result);
 
-#endif /* __VIR_FCP_H__ */
+#endif /* LIBVIRT_VIRFCP_H */

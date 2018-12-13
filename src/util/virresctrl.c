@@ -23,7 +23,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define __VIR_RESCTRL_PRIV_H_ALLOW__
+#define LIBVIRT_VIRRESCTRLPRIV_H_ALLOW
 #include "virresctrlpriv.h"
 #include "viralloc.h"
 #include "virfile.h"

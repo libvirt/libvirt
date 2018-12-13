@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_DOMAIN_ADDRESS_H__
-# define __QEMU_DOMAIN_ADDRESS_H__
+#ifndef LIBVIRT_QEMU_DOMAIN_ADDRESS_H
+# define LIBVIRT_QEMU_DOMAIN_ADDRESS_H
 
 # include "domain_addr.h"
 # include "domain_conf.h"
@@ -66,4 +66,4 @@ int qemuDomainEnsureVirtioAddress(bool *releaseAddr,
                                   virDomainDeviceDefPtr dev,
                                   const char *devicename);
 
-#endif /* __QEMU_DOMAIN_ADDRESS_H__ */
+#endif /* LIBVIRT_QEMU_DOMAIN_ADDRESS_H */

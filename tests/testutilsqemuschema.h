@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TESTUTILSQEMUSCHEMA_H__
-# define __TESTUTILSQEMUSCHEMA_H__
+#ifndef LIBVIRT_TESTUTILSQEMUSCHEMA_H
+# define LIBVIRT_TESTUTILSQEMUSCHEMA_H
 
 # include "virhash.h"
 # include "virjson.h"
@@ -35,4 +35,4 @@ testQEMUSchemaGetLatest(void);
 virHashTablePtr
 testQEMUSchemaLoad(void);
 
-#endif /* __TESTUTILSQEMUSCHEMA_H__ */
+#endif /* LIBVIRT_TESTUTILSQEMUSCHEMA_H */

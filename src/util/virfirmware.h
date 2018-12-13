@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_FIRMWARE_H__
-# define __VIR_FIRMWARE_H__
+#ifndef LIBVIRT_VIRFIRMWARE_H
+# define LIBVIRT_VIRFIRMWARE_H
 
 # include "internal.h"
 
@@ -46,4 +46,4 @@ virFirmwareParseList(const char *list,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 
-#endif /* __VIR_FIRMWARE_H__ */
+#endif /* LIBVIRT_VIRFIRMWARE_H */

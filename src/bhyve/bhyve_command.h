@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __BHYVE_COMMAND_H__
-# define __BHYVE_COMMAND_H__
+#ifndef LIBVIRT_BHYVE_COMMAND_H
+# define LIBVIRT_BHYVE_COMMAND_H
 
 # include "bhyve_domain.h"
 # include "bhyve_utils.h"
@@ -42,4 +42,4 @@ virCommandPtr
 virBhyveProcessBuildLoadCmd(virConnectPtr conn, virDomainDefPtr def,
                             const char *devmap_file, char **devicesmap_out);
 
-#endif /* __BHYVE_COMMAND_H__ */
+#endif /* LIBVIRT_BHYVE_COMMAND_H */

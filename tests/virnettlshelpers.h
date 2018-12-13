@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIRNETTLSHELPERS_H
-# define VIRNETTLSHELPERS_H
+#ifndef LIBVIRT_VIRNETTLSHELPERS_H
+# define LIBVIRT_VIRNETTLSHELPERS_H
 
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
@@ -79,4 +79,4 @@ void testTLSCleanup(const char *keyfile);
 
 # endif
 
-#endif /* VIRNETTLSHELPERS_H */
+#endif /* LIBVIRT_VIRNETTLSHELPERS_H */

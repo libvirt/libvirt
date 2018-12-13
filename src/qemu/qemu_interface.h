@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_INTERFACE_H__
-# define __QEMU_INTERFACE_H__
+#ifndef LIBVIRT_QEMU_INTERFACE_H
+# define LIBVIRT_QEMU_INTERFACE_H
 
 # include "domain_conf.h"
 # include "qemu_conf.h"
@@ -55,4 +55,4 @@ int qemuInterfaceOpenVhostNet(virDomainDefPtr def,
                               virDomainNetDefPtr net,
                               int *vhostfd,
                               size_t *vhostfdSize);
-#endif /* __QEMU_INTERFACE_H__ */
+#endif /* LIBVIRT_QEMU_INTERFACE_H */

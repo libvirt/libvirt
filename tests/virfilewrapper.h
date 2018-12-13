@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_FILE_MOCK_H__
-# define __VIR_FILE_MOCK_H__
+#ifndef LIBVIRT_VIRFILEWRAPPER_H
+# define LIBVIRT_VIRFILEWRAPPER_H
 
 int
 virFileWrapperAddPrefix(const char *prefix,
@@ -29,4 +29,4 @@ virFileWrapperRemovePrefix(const char *prefix);
 void
 virFileWrapperClearPrefixes(void);
 
-#endif /* __VIR_FILE_MOCK_H__ */
+#endif /* LIBVIRT_VIRFILEWRAPPER_H */

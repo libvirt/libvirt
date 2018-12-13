@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __QEMU_MIGRATION_PARAMS_H__
-# define __QEMU_MIGRATION_PARAMS_H__
+#ifndef LIBVIRT_QEMU_MIGRATION_PARAMS_H
+# define LIBVIRT_QEMU_MIGRATION_PARAMS_H
 
 # include "internal.h"
 
@@ -148,4 +148,4 @@ bool
 qemuMigrationCapsGet(virDomainObjPtr vm,
                      qemuMigrationCapability cap);
 
-#endif /* __QEMU_MIGRATION_PARAMS_H__ */
+#endif /* LIBVIRT_QEMU_MIGRATION_PARAMS_H */

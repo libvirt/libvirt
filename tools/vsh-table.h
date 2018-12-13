@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VSH_TABLE_H
-# define VSH_TABLE_H
+#ifndef LIBVIRT_VSH_TABLE_H
+# define LIBVIRT_VSH_TABLE_H
 
 # include "vsh.h"
 
@@ -34,4 +34,4 @@ int vshTableRowAppend(vshTablePtr table, const char *arg, ...);
 void vshTablePrintToStdout(vshTablePtr table, vshControl *ctl);
 char *vshTablePrintToString(vshTablePtr table, bool header);
 
-#endif /* VSH_TABLE_H */
+#endif /* LIBVIRT_VSH_TABLE_H */

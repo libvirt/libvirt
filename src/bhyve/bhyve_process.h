@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __BHYVE_PROCESS_H__
-# define __BHYVE_PROCESS_H__
+#ifndef LIBVIRT_BHYVE_PROCESS_H
+# define LIBVIRT_BHYVE_PROCESS_H
 
 # include "bhyve_utils.h"
 
@@ -45,4 +45,4 @@ typedef enum {
     VIR_BHYVE_PROCESS_START_AUTODESTROY = 1 << 0,
 } bhyveProcessStartFlags;
 
-#endif /* __BHYVE_PROCESS_H__ */
+#endif /* LIBVIRT_BHYVE_PROCESS_H */

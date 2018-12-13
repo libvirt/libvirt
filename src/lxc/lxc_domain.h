@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LXC_DOMAIN_H__
-# define __LXC_DOMAIN_H__
+#ifndef LIBVIRT_LXC_DOMAIN_H
+# define LIBVIRT_LXC_DOMAIN_H
 
 # include "vircgroup.h"
 # include "lxc_conf.h"
@@ -109,4 +109,4 @@ virLXCDomainObjEndJob(virLXCDriverPtr driver,
 char *
 virLXCDomainGetMachineName(virDomainDefPtr def, pid_t pid);
 
-#endif /* __LXC_DOMAIN_H__ */
+#endif /* LIBVIRT_LXC_DOMAIN_H */

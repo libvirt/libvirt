@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UML_DRIVER_H
-# define UML_DRIVER_H
+#ifndef LIBVIRT_UML_DRIVER_H
+# define LIBVIRT_UML_DRIVER_H
 
 # include "internal.h"
 
 int umlRegister(void);
 
-#endif /* UML_DRIVER_H */
+#endif /* LIBVIRT_UML_DRIVER_H */

@@ -26,7 +26,7 @@
 #include "testutilsqemu.h"
 #include "qemumonitortestutils.h"
 #include "qemu/qemu_migration_params.h"
-#define __QEMU_MIGRATION_PARAMSPRIV_H_ALLOW__
+#define LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H_ALLOW
 #include "qemu/qemu_migration_paramspriv.h"
 #include "qemu/qemu_monitor.h"
 

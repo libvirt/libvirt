@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef VIRT_ADMIN_COMPLETER
-# define VIRT_ADMIN_COMPLETER
+#ifndef LIBVIRT_VIRT_ADMIN_COMPLETER_H
+# define LIBVIRT_VIRT_ADMIN_COMPLETER_H
 
 # include "vsh.h"
 
@@ -30,4 +30,4 @@ char **
 vshAdmServerCompleter(vshControl *ctl,
                       const vshCmd *cmd,
                       unsigned int flags);
-#endif /* VIRT_ADMIN_COMPLETER */
+#endif /* LIBVIRT_VIRT_ADMIN_COMPLETER_H */

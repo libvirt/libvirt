@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DOMAIN_CAPABILITIES_H__
-# define __DOMAIN_CAPABILITIES_H__
+#ifndef LIBVIRT_DOMAIN_CAPABILITIES_H
+# define LIBVIRT_DOMAIN_CAPABILITIES_H
 
 # include "internal.h"
 # include "domain_conf.h"
@@ -217,4 +217,4 @@ virSEVCapabilitiesFree(virSEVCapability *capabilities);
 
 VIR_DEFINE_AUTOPTR_FUNC(virSEVCapability, virSEVCapabilitiesFree);
 
-#endif /* __DOMAIN_CAPABILITIES_H__ */
+#endif /* LIBVIRT_DOMAIN_CAPABILITIES_H */

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __ESX_UTIL_H__
-# define __ESX_UTIL_H__
+#ifndef LIBVIRT_ESX_UTIL_H
+# define LIBVIRT_ESX_UTIL_H
 
 # include <netdb.h>
 # include "internal.h"
@@ -70,4 +70,4 @@ char *esxUtil_EscapeDatastoreItem(const char *string);
 
 char *esxUtil_EscapeForXml(const char *string);
 
-#endif /* __ESX_UTIL_H__ */
+#endif /* LIBVIRT_ESX_UTIL_H */

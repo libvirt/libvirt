@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_NUMA_H__
-# define __VIR_NUMA_H__
+#ifndef LIBVIRT_VIRNUMA_H
+# define LIBVIRT_VIRNUMA_H
 
 # include "internal.h"
 # include "virbitmap.h"
@@ -64,4 +64,4 @@ int virNumaSetPagePoolSize(int node,
                            unsigned int page_size,
                            unsigned long long page_count,
                            bool add);
-#endif /* __VIR_NUMA_H__ */
+#endif /* LIBVIRT_VIRNUMA_H */

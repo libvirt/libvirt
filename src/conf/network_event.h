@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NETWORK_EVENT_H__
-# define __NETWORK_EVENT_H__
+#ifndef LIBVIRT_NETWORK_EVENT_H
+# define LIBVIRT_NETWORK_EVENT_H
 
 # include "internal.h"
 # include "object_event.h"
@@ -56,4 +56,4 @@ virNetworkEventLifecycleNew(const char *name,
                             int type,
                             int detail);
 
-#endif /* __NETWORK_EVENT_H__ */
+#endif /* LIBVIRT_NETWORK_EVENT_H */

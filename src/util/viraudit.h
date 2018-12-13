@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __LIBVIRT_AUDIT_H__
-# define __LIBVIRT_AUDIT_H__
+#ifndef LIBVIRT_VIRAUDIT_H
+# define LIBVIRT_VIRAUDIT_H
 
 # include "internal.h"
 # include "virlog.h"
@@ -57,4 +57,4 @@ void virAuditClose(void);
 # define VIR_AUDIT_STR(str) \
     ((str) ? (str) : "?")
 
-#endif /* __LIBVIRT_AUDIT_H__ */
+#endif /* LIBVIRT_VIRAUDIT_H */

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_SCSIHOST_H__
-# define __VIR_SCSIHOST_H__
+#ifndef LIBVIRT_VIRSCSIVHOST_H
+# define LIBVIRT_VIRSCSIVHOST_H
 
 # include "internal.h"
 # include "virobject.h"
@@ -63,4 +63,4 @@ int virSCSIVHostOpenVhostSCSI(int *vhostfd) ATTRIBUTE_NOINLINE;
 
 VIR_DEFINE_AUTOPTR_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree)
 
-#endif /* __VIR_SCSIHOST_H__ */
+#endif /* LIBVIRT_VIRSCSIVHOST_H */

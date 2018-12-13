@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VIRSH_POOL_H
-# define VIRSH_POOL_H
+#ifndef LIBVIRT_VIRSH_POOL_H
+# define LIBVIRT_VIRSH_POOL_H
 
 # include "virsh.h"
 
@@ -47,4 +47,4 @@ extern virshPoolEventCallback virshPoolEventCallbacks[];
 
 extern const vshCmdDef storagePoolCmds[];
 
-#endif /* VIRSH_POOL_H */
+#endif /* LIBVIRT_VIRSH_POOL_H */

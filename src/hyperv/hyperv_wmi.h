@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef __HYPERV_WMI_H__
-# define __HYPERV_WMI_H__
+#ifndef LIBVIRT_HYPERV_WMI_H
+# define LIBVIRT_HYPERV_WMI_H
 
 # include "virbuffer.h"
 # include "hyperv_private.h"
@@ -253,4 +253,4 @@ int hypervMsvmComputerSystemToDomain(virConnectPtr conn,
 int hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
                                        Msvm_ComputerSystem **computerSystem);
 
-#endif /* __HYPERV_WMI_H__ */
+#endif /* LIBVIRT_HYPERV_WMI_H */

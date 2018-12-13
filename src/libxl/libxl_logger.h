@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBXL_LOGGER_H
-# define __LIBXL_LOGGER_H
+#ifndef LIBVIRT_LIBXL_LOGGER_H
+# define LIBVIRT_LIBXL_LOGGER_H
 
 # include "util/virlog.h"
 
@@ -34,4 +34,4 @@ void libxlLoggerOpenFile(libxlLoggerPtr logger, int id, const char *name,
                          const char *domain_config);
 void libxlLoggerCloseFile(libxlLoggerPtr logger, int id);
 
-#endif /* __LIBXL_LOGGER_H */
+#endif /* LIBVIRT_LIBXL_LOGGER_H */

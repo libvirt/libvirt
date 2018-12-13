@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef __VIR_FILE_H_
-# define __VIR_FILE_H_
+#ifndef LIBVIRT_VIRFILE_H
+# define LIBVIRT_VIRFILE_H
 
 # include <dirent.h>
 
@@ -382,4 +382,4 @@ int virFileInData(int fd,
 
 VIR_DEFINE_AUTOPTR_FUNC(virFileWrapperFd, virFileWrapperFdFree)
 
-#endif /* __VIR_FILE_H_ */
+#endif /* LIBVIRT_VIRFILE_H */

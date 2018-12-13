@@ -20,10 +20,9 @@
 
 #include <config.h>
 
-#define __VIR_FIREWALL_PRIV_H_ALLOW__
-
 #include <stdarg.h>
 
+#define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 #include "virfirewallpriv.h"
 #include "virerror.h"
 #include "virutil.h"

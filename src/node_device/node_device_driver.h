@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NODE_DEVICE_H__
-# define __VIR_NODE_DEVICE_H__
+#ifndef LIBVIRT_NODE_DEVICE_DRIVER_H
+# define LIBVIRT_NODE_DEVICE_DRIVER_H
 
 # include "internal.h"
 # include "driver.h"
@@ -118,4 +118,4 @@ int
 nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
                                         int callbackID);
 
-#endif /* __VIR_NODE_DEVICE_H__ */
+#endif /* LIBVIRT_NODE_DEVICE_DRIVER_H */

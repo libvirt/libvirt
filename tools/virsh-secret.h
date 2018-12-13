@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VIRSH_SECRET_H
-# define VIRSH_SECRET_H
+#ifndef LIBVIRT_VIRSH_SECRET_H
+# define LIBVIRT_VIRSH_SECRET_H
 
 # include "virsh.h"
 
@@ -38,4 +38,4 @@ extern virshSecretEventCallback virshSecretEventCallbacks[];
 
 extern const vshCmdDef secretCmds[];
 
-#endif /* VIRSH_SECRET_H */
+#endif /* LIBVIRT_VIRSH_SECRET_H */

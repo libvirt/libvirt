@@ -18,10 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LXC_DRIVER_H
-# define LXC_DRIVER_H
+#ifndef LIBVIRT_LXC_DRIVER_H
+# define LIBVIRT_LXC_DRIVER_H
 
 /* Function declarations */
 int lxcRegister(void);
 
-#endif /* LXC_DRIVER_H */
+#endif /* LIBVIRT_LXC_DRIVER_H */

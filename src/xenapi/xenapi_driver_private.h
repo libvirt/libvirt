@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_XENAPI_H__
-# define __VIR_XENAPI_H__
+#ifndef LIBVIRT_XENAPI_DRIVER_PRIVATE_H
+# define LIBVIRT_XENAPI_DRIVER_PRIVATE_H
 
 # include <libxml/tree.h>
 # include <xen/api/xen_common.h>
@@ -58,4 +58,4 @@ struct _xenapiPrivate {
     virDomainXMLOptionPtr xmlopt;
 };
 
-#endif /* __VIR_XENAPI_H__ */
+#endif /* LIBVIRT_XENAPI_DRIVER_PRIVATE_H */

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_MACMAP_H__
-# define __VIR_MACMAP_H__
+#ifndef LIBVIRT_VIRMACMAP_H
+# define LIBVIRT_VIRMACMAP_H
 
 typedef struct virMacMap virMacMap;
 typedef virMacMap *virMacMapPtr;
@@ -47,4 +47,4 @@ int virMacMapWriteFile(virMacMapPtr mgr,
 int virMacMapDumpStr(virMacMapPtr mgr,
                      char **str);
 
-#endif /* __VIR_MACMAP_H__ */
+#endif /* LIBVIRT_VIRMACMAP_H */

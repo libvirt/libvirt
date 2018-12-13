@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_GIC_H__
-# define __VIR_GIC_H__
+#ifndef LIBVIRT_VIRGIC_H
+# define LIBVIRT_VIRGIC_H
 
 # include "virutil.h"
 
@@ -46,4 +46,4 @@ struct _virGICCapability {
     virGICImplementation implementation;
 };
 
-#endif /* __VIR_GIC_H__ */
+#endif /* LIBVIRT_VIRGIC_H */

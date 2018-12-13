@@ -2,7 +2,7 @@
 
 #include "testutils.h"
 #include "virfilewrapper.h"
-#define __VIR_RESCTRL_PRIV_H_ALLOW__
+#define LIBVIRT_VIRRESCTRLPRIV_H_ALLOW
 #include "virresctrlpriv.h"
 
 

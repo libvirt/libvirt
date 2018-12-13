@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NODE_DEVICE_UDEV_H__
-# define __NODE_DEVICE_UDEV_H__
+#ifndef LIBVIRT_NODE_DEVICE_UDEV_H
+# define LIBVIRT_NODE_DEVICE_UDEV_H
 
 # include <libudev.h>
 
@@ -27,4 +27,4 @@
 # define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
 # define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"
 
-#endif /* __NODE_DEVICE_UDEV_H__ */
+#endif /* LIBVIRT_NODE_DEVICE_UDEV_H */

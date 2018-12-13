@@ -22,8 +22,8 @@
  * include/libvirt/libvirt.h apply. ie this file is *append* only
  */
 
-#ifndef __LIBVIRT_H_
-# define __LIBVIRT_H_
+#ifndef LIBVIRT_LIBVIRT_INTERNAL_H
+# define LIBVIRT_LIBVIRT_INTERNAL_H
 
 # include "internal.h"
 
@@ -298,4 +298,4 @@ int virStreamInData(virStreamPtr stream,
                     int *data,
                     long long *length);
 
-#endif /* __LIBVIRT_H_ */
+#endif /* LIBVIRT_LIBVIRT_INTERNAL_H */

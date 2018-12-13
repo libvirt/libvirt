@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __ESX_PRIVATE_H__
-# define __ESX_PRIVATE_H__
+#ifndef LIBVIRT_ESX_PRIVATE_H
+# define LIBVIRT_ESX_PRIVATE_H
 
 # include "internal.h"
 # include "virerror.h"
@@ -42,4 +42,4 @@ typedef struct _esxPrivate {
     int32_t usedCpuTimeCounterId;
 } esxPrivate;
 
-#endif /* __ESX_PRIVATE_H__ */
+#endif /* LIBVIRT_ESX_PRIVATE_H */

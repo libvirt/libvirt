@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NETLINK_H__
-# define __VIR_NETLINK_H__
+#ifndef LIBVIRT_VIRNETLINK_H
+# define LIBVIRT_VIRNETLINK_H
 
 # include "internal.h"
 # include "virmacaddr.h"
@@ -163,4 +163,4 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
 int virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
                                 unsigned int protocol);
 
-#endif /* __VIR_NETLINK_H__ */
+#endif /* LIBVIRT_VIRNETLINK_H */

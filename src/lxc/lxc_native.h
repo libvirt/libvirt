@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LXC_NATIVE_H__
-# define __LXC_NATIVE_H__
+#ifndef LIBVIRT_LXC_NATIVE_H
+# define LIBVIRT_LXC_NATIVE_H
 
 # include "domain_conf.h"
 
@@ -29,4 +29,4 @@ virDomainDefPtr lxcParseConfigString(const char *config,
                                      virCapsPtr caps,
                                      virDomainXMLOptionPtr xmlopt);
 
-#endif /* __LXC_NATIVE_H__ */
+#endif /* LIBVIRT_LXC_NATIVE_H */

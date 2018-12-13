@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_TIME_H__
-# define __VIR_TIME_H__
+#ifndef LIBVIRT_VIRTIME_H
+# define LIBVIRT_VIRTIME_H
 
 # include <time.h>
 
@@ -73,4 +73,4 @@ int virTimeBackOffStart(virTimeBackOffVar *var,
 
 bool virTimeBackOffWait(virTimeBackOffVar *var);
 
-#endif /* __VIR_TIME_H__ */
+#endif /* LIBVIRT_VIRTIME_H */

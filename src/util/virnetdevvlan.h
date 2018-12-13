@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NETDEV_VLAN_H__
-# define __VIR_NETDEV_VLAN_H__
+#ifndef LIBVIRT_VIRNETDEVVLAN_H
+# define LIBVIRT_VIRNETDEVVLAN_H
 
 # include <virutil.h>
 
@@ -50,4 +50,4 @@ int virNetDevVlanCopy(virNetDevVlanPtr dst, const virNetDevVlan *src);
 
 VIR_DEFINE_AUTOPTR_FUNC(virNetDevVlan, virNetDevVlanFree)
 
-#endif /* __VIR_NETDEV_VLAN_H__ */
+#endif /* LIBVIRT_VIRNETDEVVLAN_H */

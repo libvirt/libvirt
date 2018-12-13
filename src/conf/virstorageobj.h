@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIRSTORAGEOBJ_H__
-# define __VIRSTORAGEOBJ_H__
+#ifndef LIBVIRT_VIRSTORAGEOBJ_H
+# define LIBVIRT_VIRSTORAGEOBJ_H
 
 # include "internal.h"
 
@@ -252,4 +252,4 @@ virStoragePoolObjListExport(virConnectPtr conn,
                             virStoragePoolObjListFilter filter,
                             unsigned int flags);
 
-#endif /* __VIRSTORAGEOBJ_H__ */
+#endif /* LIBVIRT_VIRSTORAGEOBJ_H */

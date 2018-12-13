@@ -22,7 +22,7 @@
 
 #ifdef __linux__
 
-# define __VIR_COMMAND_PRIV_H_ALLOW__
+# define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
 # include "virkmod.h"
 # include "virstring.h"

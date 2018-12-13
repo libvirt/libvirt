@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_INTERFACE_H__
-# define __VIR_LIBVIRT_INTERFACE_H__
+#ifndef LIBVIRT_INTERFACE_H
+# define LIBVIRT_INTERFACE_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -106,4 +106,4 @@ int                     virInterfaceChangeRollback(virConnectPtr conn,
 int virInterfaceIsActive(virInterfacePtr iface);
 
 
-#endif /* __VIR_LIBVIRT_INTERFACE_H__ */
+#endif /* LIBVIRT_INTERFACE_H */

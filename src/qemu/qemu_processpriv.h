@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef __QEMU_PROCESS_PRIV_H_ALLOW__
+#ifndef LIBVIRT_QEMU_PROCESSPRIV_H_ALLOW
 # error "qemu_process_priv.h may only be included by qemu_process.c or test suites"
-#endif /* __QEMU_PROCESS_PRIV_H_ALLOW__ */
+#endif /* LIBVIRT_QEMU_PROCESSPRIV_H_ALLOW */
 
-#ifndef __QEMU_PROCESSPRIV_H__
-# define __QEMU_PROCESSPRIV_H__
+#ifndef LIBVIRT_QEMU_PROCESSPRIV_H
+# define LIBVIRT_QEMU_PROCESSPRIV_H
 
 # include "domain_conf.h"
 # include "qemu_monitor.h"
@@ -38,4 +38,4 @@ int qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon,
                                    const char *devAlias,
                                    void *opaque);
 
-#endif /* __QEMU_PROCESSPRIV_H__ */
+#endif /* LIBVIRT_QEMU_PROCESSPRIV_H */

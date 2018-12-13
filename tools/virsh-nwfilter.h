@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VIRSH_NWFILTER_H
-# define VIRSH_NWFILTER_H
+#ifndef LIBVIRT_VIRSH_NWFILTER_H
+# define LIBVIRT_VIRSH_NWFILTER_H
 
 # include "virsh.h"
 
@@ -47,4 +47,4 @@ virshCommandOptNWFilterBindingBy(vshControl *ctl, const vshCmd *cmd,
 
 extern const vshCmdDef nwfilterCmds[];
 
-#endif /* VIRSH_NWFILTER_H */
+#endif /* LIBVIRT_VIRSH_NWFILTER_H */

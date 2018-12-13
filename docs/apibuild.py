@@ -1003,6 +1003,8 @@ class CParser:
                 # skip hidden macros
                 if name in hidden_macros:
                     return token
+                if name[-2:] == "_H" or name[-8:] == "_H_ALLOW":
+                    return token
 
                 strValue = None
                 if len(lst) == 1 and lst[0][0] == '"' and lst[0][-1] == '"':

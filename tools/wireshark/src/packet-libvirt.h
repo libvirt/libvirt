@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _PACKET_LIBVIRT_H_
-# define _PACKET_LIBVIRT_H_
+#ifndef LIBVIRT_PACKET_LIBVIRT_H
+# define LIBVIRT_PACKET_LIBVIRT_H
 
 # include "libvirt/libvirt.h"
 
@@ -112,4 +112,4 @@ static gboolean dissect_xdr_array(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, in
 
 # include "libvirt/protocol.h"
 
-#endif /* _PACKET_LIBVIRT_H_ */
+#endif /* LIBVIRT_PACKET_LIBVIRT_H */

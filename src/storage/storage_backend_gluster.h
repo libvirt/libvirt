@@ -19,9 +19,9 @@
  *
  */
 
-#ifndef __VIR_STORAGE_BACKEND_GLUSTER_H__
-# define __VIR_STORAGE_BACKEND_GLUSTER_H__
+#ifndef LIBVIRT_STORAGE_BACKEND_GLUSTER_H
+# define LIBVIRT_STORAGE_BACKEND_GLUSTER_H
 
 int virStorageBackendGlusterRegister(void);
 
-#endif /* __VIR_STORAGE_BACKEND_GLUSTER_H__ */
+#endif /* LIBVIRT_STORAGE_BACKEND_GLUSTER_H */

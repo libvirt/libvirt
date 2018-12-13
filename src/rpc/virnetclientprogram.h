@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_CLIENT_PROGRAM_H__
-# define __VIR_NET_CLIENT_PROGRAM_H__
+#ifndef LIBVIRT_VIRNETCLIENTPROGRAM_H
+# define LIBVIRT_VIRNETCLIENTPROGRAM_H
 
 # include <rpc/types.h>
 # include <rpc/xdr.h>
@@ -81,4 +81,4 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
 
 
 
-#endif /* __VIR_NET_CLIENT_PROGRAM_H__ */
+#endif /* LIBVIRT_VIRNETCLIENTPROGRAM_H */

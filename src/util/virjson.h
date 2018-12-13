@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __VIR_JSON_H_
-# define __VIR_JSON_H_
+#ifndef LIBVIRT_VIRJSON_H
+# define LIBVIRT_VIRJSON_H
 
 # include "internal.h"
 # include "virbitmap.h"
@@ -158,4 +158,4 @@ virJSONValuePtr virJSONValueObjectDeflatten(virJSONValuePtr json);
 
 VIR_DEFINE_AUTOPTR_FUNC(virJSONValue, virJSONValueFree)
 
-#endif /* __VIR_JSON_H_ */
+#endif /* LIBVIRT_VIRJSON_H */

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_ACCESS_DRIVER_H__
-# define __VIR_ACCESS_DRIVER_H__
+#ifndef LIBVIRT_VIRACCESSDRIVER_H
+# define LIBVIRT_VIRACCESSDRIVER_H
 
 # include "conf/domain_conf.h"
 # include "access/viraccessmanager.h"
@@ -91,4 +91,4 @@ struct _virAccessDriver {
 };
 
 
-#endif /* __VIR_ACCESS_DRIVER_H__ */
+#endif /* LIBVIRT_VIRACCESSDRIVER_H */

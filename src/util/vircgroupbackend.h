@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CGROUP_BACKEND_H__
-# define __VIR_CGROUP_BACKEND_H__
+#ifndef LIBVIRT_VIRCGROUPBACKEND_H
+# define LIBVIRT_VIRCGROUPBACKEND_H
 
 # include "internal.h"
 
@@ -461,4 +461,4 @@ virCgroupBackendForController(virCgroupPtr group,
     } \
     return backend->func(group, ##__VA_ARGS__);
 
-#endif /* __VIR_CGROUP_BACKEND_H__ */
+#endif /* LIBVIRT_VIRCGROUPBACKEND_H */

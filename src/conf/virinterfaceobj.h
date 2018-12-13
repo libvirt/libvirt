@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIRINTERFACEOBJ_H__
-# define __VIRINTERFACEOBJ_H__
+#ifndef LIBVIRT_VIRINTERFACEOBJ_H
+# define LIBVIRT_VIRINTERFACEOBJ_H
 
 # include "internal.h"
 
@@ -89,4 +89,4 @@ virInterfaceObjListExport(virConnectPtr conn,
                           virInterfaceObjListFilter filter,
                           unsigned int flags);
 
-#endif /* __VIRINTERFACEOBJ_H__ */
+#endif /* LIBVIRT_VIRINTERFACEOBJ_H */

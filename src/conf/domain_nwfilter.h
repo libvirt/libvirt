@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DOMAIN_NWFILTER_H
-# define DOMAIN_NWFILTER_H
+#ifndef LIBVIRT_DOMAIN_NWFILTER_H
+# define LIBVIRT_DOMAIN_NWFILTER_H
 
 int virDomainConfNWFilterInstantiate(const char *vmname,
                                      const unsigned char *vmuuid,
@@ -29,4 +29,4 @@ int virDomainConfNWFilterInstantiate(const char *vmname,
 void virDomainConfNWFilterTeardown(virDomainNetDefPtr net);
 void virDomainConfVMNWFilterTeardown(virDomainObjPtr vm);
 
-#endif /* DOMAIN_NWFILTER_H */
+#endif /* LIBVIRT_DOMAIN_NWFILTER_H */

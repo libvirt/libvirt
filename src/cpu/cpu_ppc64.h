@@ -18,11 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CPU_PPC64_H__
-# define __VIR_CPU_PPC64_H__
+#ifndef LIBVIRT_CPU_PPC64_H
+# define LIBVIRT_CPU_PPC64_H
 
 # include "cpu.h"
 
 extern struct cpuArchDriver cpuDriverPPC64;
 
-#endif /* __VIR_CPU_PPC64_H__ */
+#endif /* LIBVIRT_CPU_PPC64_H */

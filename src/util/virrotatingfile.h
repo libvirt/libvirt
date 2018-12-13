@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_ROTATING_FILE_H__
-# define __VIR_ROTATING_FILE_H__
+#ifndef LIBVIRT_VIRROTATINGFILE_H
+# define LIBVIRT_VIRROTATINGFILE_H
 
 # include "internal.h"
 
@@ -59,4 +59,4 @@ ssize_t virRotatingFileReaderConsume(virRotatingFileReaderPtr file,
 void virRotatingFileWriterFree(virRotatingFileWriterPtr file);
 void virRotatingFileReaderFree(virRotatingFileReaderPtr file);
 
-#endif /* __VIR_ROTATING_FILE_H__ */
+#endif /* LIBVIRT_VIRROTATINGFILE_H */

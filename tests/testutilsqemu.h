@@ -14,8 +14,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TESTUTILSQEMU_H
-# define TESTUTILSQEMU_H
+#ifndef LIBVIRT_TESTUTILSQEMU_H
+# define LIBVIRT_TESTUTILSQEMU_H
 
 # ifdef WITH_QEMU
 
@@ -65,4 +65,4 @@ char *testQemuGetLatestCapsForArch(const char *dirname,
 
 # endif
 
-#endif /* TESTUTILSQEMU_H */
+#endif /* LIBVIRT_TESTUTILSQEMU_H */

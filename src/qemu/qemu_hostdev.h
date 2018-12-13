@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_HOSTDEV_H__
-# define __QEMU_HOSTDEV_H__
+#ifndef LIBVIRT_QEMU_HOSTDEV_H
+# define LIBVIRT_QEMU_HOSTDEV_H
 
 # include "qemu_conf.h"
 # include "domain_conf.h"
@@ -91,4 +91,4 @@ void qemuHostdevReAttachMediatedDevices(virQEMUDriverPtr driver,
 void qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
                                       virDomainDefPtr def);
 
-#endif /* __QEMU_HOSTDEV_H__ */
+#endif /* LIBVIRT_QEMU_HOSTDEV_H */

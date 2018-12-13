@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __REMOTE_DAEMON_DISPATCH_H__
-# define __REMOTE_DAEMON_DISPATCH_H__
+#ifndef LIBVIRT_REMOTE_DAEMON_DISPATCH_H
+# define LIBVIRT_REMOTE_DAEMON_DISPATCH_H
 
 # include "remote_protocol.h"
 # include "rpc/virnetserverprogram.h"
@@ -39,4 +39,4 @@ void remoteClientFree(void *data);
 void *remoteClientNew(virNetServerClientPtr client,
                       void *opaque);
 
-#endif /* __REMOTE_DAEMON_DISPATCH_H__ */
+#endif /* LIBVIRT_REMOTE_DAEMON_DISPATCH_H */

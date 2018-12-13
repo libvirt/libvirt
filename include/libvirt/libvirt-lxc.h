@@ -21,8 +21,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LXC_H__
-# define __VIR_LXC_H__
+#ifndef LIBVIRT_LXC_H
+# define LIBVIRT_LXC_H
 
 # include <libvirt/libvirt.h>
 
@@ -51,4 +51,4 @@ int virDomainLxcEnterCGroup(virDomainPtr domain,
 }
 # endif
 
-#endif /* __VIR_LXC_H__ */
+#endif /* LIBVIRT_LXC_H */

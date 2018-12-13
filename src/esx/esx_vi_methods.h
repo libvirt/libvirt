@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __ESX_VI_METHODS_H__
-# define __ESX_VI_METHODS_H__
+#ifndef LIBVIRT_ESX_VI_METHODS_H
+# define LIBVIRT_ESX_VI_METHODS_H
 
 # include "esx_vi.h"
 # include "esx_vi_types.h"
@@ -46,4 +46,4 @@ int esxVI_ValidateMigration
 
 # include "esx_vi_methods.generated.h"
 
-#endif /* __ESX_VI_METHODS_H__ */
+#endif /* LIBVIRT_ESX_VI_METHODS_H */

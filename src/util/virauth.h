@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __VIR_AUTH_H__
-# define __VIR_AUTH_H__
+#ifndef LIBVIRT_VIRAUTH_H
+# define LIBVIRT_VIRAUTH_H
 
 # include "internal.h"
 # include "viruri.h"
@@ -53,4 +53,4 @@ char * virAuthGetPasswordPath(const char *path,
                               const char *servicename,
                               const char *username,
                               const char *hostname);
-#endif /* __VIR_AUTH_H__ */
+#endif /* LIBVIRT_VIRAUTH_H */

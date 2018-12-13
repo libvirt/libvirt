@@ -18,9 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_SECRET_DRIVER_H__
-# define __VIR_SECRET_DRIVER_H__
+#ifndef LIBVIRT_SECRET_DRIVER_H
+# define LIBVIRT_SECRET_DRIVER_H
 
 int secretRegister(void);
 
-#endif /* __VIR_SECRET_DRIVER_H__ */
+#endif /* LIBVIRT_SECRET_DRIVER_H */

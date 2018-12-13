@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NETWORK_CONF_H__
-# define __NETWORK_CONF_H__
+#ifndef LIBVIRT_NETWORK_CONF_H
+# define LIBVIRT_NETWORK_CONF_H
 
 # define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
 
@@ -383,4 +383,4 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
                            unsigned int flags);  /* virNetworkUpdateFlags */
 
 VIR_ENUM_DECL(virNetworkTaint)
-#endif /* __NETWORK_CONF_H__ */
+#endif /* LIBVIRT_NETWORK_CONF_H */

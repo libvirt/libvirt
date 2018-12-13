@@ -21,8 +21,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OPENVZ_CONF_H
-# define OPENVZ_CONF_H
+#ifndef LIBVIRT_OPENVZ_CONF_H
+# define LIBVIRT_OPENVZ_CONF_H
 
 # include "internal.h"
 # include "virdomainobjlist.h"
@@ -65,4 +65,4 @@ int openvzSetDefinedUUID(int vpsid, unsigned char *uuid);
 int openvzGetVEID(const char *name);
 int openvzReadNetworkConf(virDomainDefPtr def, int veid);
 
-#endif /* OPENVZ_CONF_H */
+#endif /* LIBVIRT_OPENVZ_CONF_H */

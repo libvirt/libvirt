@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_FIREWALL_H__
-# define __VIR_FIREWALL_H__
+#ifndef LIBVIRT_VIRFIREWALL_H
+# define LIBVIRT_VIRFIREWALL_H
 
 # include "internal.h"
 # include "viralloc.h"
@@ -116,4 +116,4 @@ void virFirewallSetLockOverride(bool avoid);
 
 VIR_DEFINE_AUTOPTR_FUNC(virFirewall, virFirewallFree)
 
-#endif /* __VIR_FIREWALL_H__ */
+#endif /* LIBVIRT_VIRFIREWALL_H */

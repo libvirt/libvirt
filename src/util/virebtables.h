@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMUD_EBTABLES_H__
-# define __QEMUD_EBTABLES_H__
+#ifndef LIBVIRT_VIREBTABLES_H
+# define LIBVIRT_VIREBTABLES_H
 
 # include "virmacaddr.h"
 
@@ -38,4 +38,4 @@ int              ebtablesRemoveForwardAllowIn    (ebtablesContext *ctx,
 
 int              ebtablesAddForwardPolicyReject(ebtablesContext *ctx);
 
-#endif /* __QEMUD_EBTABLES_H__ */
+#endif /* LIBVIRT_VIREBTABLES_H */

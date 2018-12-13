@@ -42,7 +42,7 @@
 #include "virstring.h"
 #include "qemu_hostdev.h"
 #include "qemu_domain.h"
-#define __QEMU_CAPSPRIV_H_ALLOW__
+#define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 #include "qemu_capspriv.h"
 #include "qemu_qapi.h"
 

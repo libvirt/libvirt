@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIR_NWFILTER_EBTABLES_DRIVER_H__
-# define VIR_NWFILTER_EBTABLES_DRIVER_H__
+#ifndef LIBVIRT_NWFILTER_EBIPTABLES_DRIVER_H
+# define LIBVIRT_NWFILTER_EBIPTABLES_DRIVER_H
 
 # include "nwfilter_tech_driver.h"
 
@@ -32,4 +32,4 @@ extern virNWFilterTechDriver ebiptables_driver;
 
 # define IPTABLES_MAX_COMMENT_LENGTH  256
 
-#endif /* VIR_NWFILTER_EBTABLES_DRIVER_H__ */
+#endif /* LIBVIRT_NWFILTER_EBIPTABLES_DRIVER_H */

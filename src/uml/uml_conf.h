@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __UML_CONF_H
-# define __UML_CONF_H
+#ifndef LIBVIRT_UML_CONF_H
+# define LIBVIRT_UML_CONF_H
 
 # include "internal.h"
 # include "libvirt_internal.h"
@@ -79,4 +79,4 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
                                   struct uml_driver *driver,
                                   virDomainObjPtr dom);
 
-#endif /* __UML_CONF_H */
+#endif /* LIBVIRT_UML_CONF_H */

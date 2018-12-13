@@ -21,8 +21,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NWFILTER_TECH_DRIVER_H__
-# define __NWFILTER_TECH_DRIVER_H__
+#ifndef LIBVIRT_NWFILTER_TECH_DRIVER_H
+# define LIBVIRT_NWFILTER_TECH_DRIVER_H
 
 # include "virnwfilterobj.h"
 
@@ -91,4 +91,4 @@ struct _virNWFilterTechDriver {
     virNWFilterRemoveBasicRules removeBasicRules;
 };
 
-#endif /* __NWFILTER_TECH_DRIVER_H__ */
+#endif /* LIBVIRT_NWFILTER_TECH_DRIVER_H */

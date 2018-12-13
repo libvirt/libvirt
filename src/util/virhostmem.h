@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_HOSTMEM_H__
-# define __VIR_HOSTMEM_H__
+#ifndef LIBVIRT_VIRHOSTMEM_H
+# define LIBVIRT_VIRHOSTMEM_H
 
 # include "internal.h"
 
@@ -55,4 +55,4 @@ int virHostMemAllocPages(unsigned int npages,
                          unsigned int cellCount,
                          bool add);
 
-#endif /* __VIR_HOSTMEM_H__ */
+#endif /* LIBVIRT_VIRHOSTMEM_H */

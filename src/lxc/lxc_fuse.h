@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LXC_FUSE_H
-# define LXC_FUSE_H
+#ifndef LIBVIRT_LXC_FUSE_H
+# define LIBVIRT_LXC_FUSE_H
 
 # define FUSE_USE_VERSION 26
 
@@ -58,4 +58,4 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def);
 int lxcStartFuse(virLXCFusePtr f);
 void lxcFreeFuse(virLXCFusePtr *f);
 
-#endif /* LXC_FUSE_H */
+#endif /* LIBVIRT_LXC_FUSE_H */

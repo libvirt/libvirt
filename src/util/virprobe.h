@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_PROBE_H__
-# define __VIR_PROBE_H__
+#ifndef LIBVIRT_VIRPROBE_H
+# define LIBVIRT_VIRPROBE_H
 
 # include "internal.h"
 # include "virlog.h"
@@ -105,4 +105,4 @@
 #  define PROBE_QUIET(NAME, FMT, ...)
 # endif
 
-#endif /* __VIR_PROBE_H__ */
+#endif /* LIBVIRT_VIRPROBE_H */

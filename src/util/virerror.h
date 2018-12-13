@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIRT_ERROR_H_
-# define __VIRT_ERROR_H_
+#ifndef LIBVIRT_VIRERROR_H
+# define LIBVIRT_VIRERROR_H
 
 # include "internal.h"
 # include "viralloc.h"
@@ -208,4 +208,4 @@ void virErrorRestore(virErrorPtr *savederr);
 
 VIR_DEFINE_AUTOPTR_FUNC(virError, virFreeError)
 
-#endif /* __VIRT_ERROR_H_ */
+#endif /* LIBVIRT_VIRERROR_H */

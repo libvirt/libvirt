@@ -23,11 +23,11 @@
  *
  */
 
-#ifndef VIRSH_HOST_H
-# define VIRSH_HOST_H
+#ifndef LIBVIRT_VIRSH_HOST_H
+# define LIBVIRT_VIRSH_HOST_H
 
 # include "virsh.h"
 
 extern const vshCmdDef hostAndHypervisorCmds[];
 
-#endif /* VIRSH_HOST_H */
+#endif /* LIBVIRT_VIRSH_HOST_H */

@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_REMOTE_INTERNAL_H__
-# define __VIR_REMOTE_INTERNAL_H__
+#ifndef LIBVIRT_REMOTE_DRIVER_H
+# define LIBVIRT_REMOTE_DRIVER_H
 
 # include "internal.h"
 # include "configmake.h"
@@ -46,4 +46,4 @@ unsigned long remoteVersion(void);
 # define LIBVIRT_SERVERCERT LIBVIRT_PKI_DIR "/libvirt/servercert.pem"
 
 
-#endif /* __VIR_REMOTE_INTERNAL_H__ */
+#endif /* LIBVIRT_REMOTE_DRIVER_H */

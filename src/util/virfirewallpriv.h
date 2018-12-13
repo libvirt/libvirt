@@ -18,12 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_FIREWALL_PRIV_H_ALLOW__
+#ifndef LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 # error "virfirewallpriv.h may only be included by virfirewall.c or test suites"
-#endif /* __VIR_FIREWALL_PRIV_H_ALLOW__ */
+#endif /* LIBVIRT_VIRFIREWALLPRIV_H_ALLOW */
 
-#ifndef __VIR_FIREWALL_PRIV_H__
-# define __VIR_FIREWALL_PRIV_H__
+#ifndef LIBVIRT_VIRFIREWALLPRIV_H
+# define LIBVIRT_VIRFIREWALLPRIV_H
 
 # include "virfirewall.h"
 
@@ -39,4 +39,4 @@ typedef enum {
 
 int virFirewallSetBackend(virFirewallBackend backend);
 
-#endif /* __VIR_FIREWALL_PRIV_H__ */
+#endif /* LIBVIRT_VIRFIREWALLPRIV_H */

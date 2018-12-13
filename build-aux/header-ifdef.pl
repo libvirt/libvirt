@@ -70,6 +70,15 @@ while (<>) {
             &mistake("$file: missing '#endif /* $ifdef */'");
         }
 
+        $ifdef = uc $ARGV;
+        $ifdef =~ s,.*/,,;
+        $ifdef =~ s,[^A-Z0-9],_,g;
+        $ifdef =~ s,__+,_,g;
+        unless ($ifdef =~ /^LIBVIRT_/ && $ARGV !~ /libvirt_internal.h/) {
+            $ifdef = "LIBVIRT_" . $ifdef;
+        }
+        $ifdefpriv = $ifdef . "_ALLOW";
+
         $file = $ARGV;
         $state = $STATE_COPYRIGHT_COMMENT;
         $mistake = 0;
@@ -98,11 +107,10 @@ while (<>) {
     } elsif ($state == $STATE_PRIV_START) {
         if (/^$/) {
             &mistake("$file: too many blank lines after coyright header");
-        } elsif (/#ifndef\s(.*ALLOW.*)/) {
-            $ifdefpriv = $1;
+        } elsif (/#ifndef $ifdefpriv$/) {
             $state = $STATE_PRIV_ERROR;
         } else {
-            &mistake("$file: missing '#ifndef SYMBOL_ALLOW'");
+            &mistake("$file: missing '#ifndef $ifdefpriv'");
         }
     } elsif ($state == $STATE_PRIV_ERROR) {
         if (/# error ".*"$/) {
@@ -124,11 +132,10 @@ while (<>) {
     } elsif ($state == $STATE_GUARD_START) {
         if (/^$/) {
             &mistake("$file: too many blank lines after coyright header");
-        } elsif (/#ifndef\s(.*)$/) {
-            $ifdef = $1;
+        } elsif (/#ifndef $ifdef$/) {
             $state = $STATE_GUARD_DEFINE;
         } else {
-            &mistake("$file: missing '#ifndef SYMBOL'");
+            &mistake("$file: missing '#ifndef $ifdef'");
         }
     } elsif ($state == $STATE_GUARD_DEFINE) {
         if (/# define $ifdef$/) {

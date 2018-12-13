@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_ENDIAN_H__
-# define __VIR_ENDIAN_H__
+#ifndef LIBVIRT_VIRENDIAN_H
+# define LIBVIRT_VIRENDIAN_H
 
 # include "internal.h"
 
@@ -114,4 +114,4 @@
     ((uint16_t)(uint8_t)((buf)[0]) | \
      ((uint16_t)(uint8_t)((buf)[1]) << 8))
 
-#endif /* __VIR_ENDIAN_H__ */
+#endif /* LIBVIRT_VIRENDIAN_H */

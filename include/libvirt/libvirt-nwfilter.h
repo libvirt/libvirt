@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_NWFILTER_H__
-# define __VIR_LIBVIRT_NWFILTER_H__
+#ifndef LIBVIRT_NWFILTER_H
+# define LIBVIRT_NWFILTER_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -130,4 +130,4 @@ int                     virNWFilterBindingDelete(virNWFilterBindingPtr binding);
 int                     virNWFilterBindingRef(virNWFilterBindingPtr binding);
 int                     virNWFilterBindingFree(virNWFilterBindingPtr binding);
 
-#endif /* __VIR_LIBVIRT_NWFILTER_H__ */
+#endif /* LIBVIRT_NWFILTER_H */

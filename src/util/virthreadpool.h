@@ -21,8 +21,8 @@
  *     Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_THREADPOOL_H__
-# define __VIR_THREADPOOL_H__
+#ifndef LIBVIRT_VIRTHREADPOOL_H
+# define LIBVIRT_VIRTHREADPOOL_H
 
 # include "internal.h"
 
@@ -60,4 +60,4 @@ int virThreadPoolSetParameters(virThreadPoolPtr pool,
                                long long int maxWorkers,
                                long long int prioWorkers);
 
-#endif /* __VIR_THREADPOOL_H__ */
+#endif /* LIBVIRT_VIRTHREADPOOL_H */

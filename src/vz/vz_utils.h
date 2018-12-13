@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef PARALLELS_UTILS_H
-# define PARALLELS_UTILS_H
+#ifndef LIBVIRT_VZ_UTILS_H
+# define LIBVIRT_VZ_UTILS_H
 
 # include <Parallels.h>
 
@@ -158,4 +158,4 @@ vzDomainObjEndJob(virDomainObjPtr dom);
 int
 vzDomainJobUpdateTime(vzDomainJobObjPtr job);
 
-#endif /* PARALLELS_UTILS_H */
+#endif /* LIBVIRT_VZ_UTILS_H */

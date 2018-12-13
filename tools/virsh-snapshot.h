@@ -23,11 +23,11 @@
  *
  */
 
-#ifndef VIRSH_SNAPSHOT_H
-# define VIRSH_SNAPSHOT_H
+#ifndef LIBVIRT_VIRSH_SNAPSHOT_H
+# define LIBVIRT_VIRSH_SNAPSHOT_H
 
 # include "virsh.h"
 
 extern const vshCmdDef snapshotCmds[];
 
-#endif /* VIRSH_SNAPSHOT_H */
+#endif /* LIBVIRT_VIRSH_SNAPSHOT_H */

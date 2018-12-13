@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __BHYVE_DOMAIN_H__
-# define __BHYVE_DOMAIN_H__
+#ifndef LIBVIRT_BHYVE_DOMAIN_H
+# define LIBVIRT_BHYVE_DOMAIN_H
 
 # include "domain_addr.h"
 # include "domain_conf.h"
@@ -40,4 +40,4 @@ virDomainXMLOptionPtr virBhyveDriverCreateXMLConf(bhyveConnPtr);
 extern virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virBhyveDriverDomainDefParserConfig;
 
-#endif /* __BHYVE_DOMAIN_H__ */
+#endif /* LIBVIRT_BHYVE_DOMAIN_H */

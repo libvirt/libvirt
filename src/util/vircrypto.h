@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CRYPTO_H__
-# define __VIR_CRYPTO_H__
+#ifndef LIBVIRT_VIRCRYPTO_H
+# define LIBVIRT_VIRCRYPTO_H
 
 # include "internal.h"
 
@@ -65,4 +65,4 @@ int virCryptoEncryptData(virCryptoCipher algorithm,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
     ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9) ATTRIBUTE_RETURN_CHECK;
 
-#endif /* __VIR_CRYPTO_H__ */
+#endif /* LIBVIRT_VIRCRYPTO_H */

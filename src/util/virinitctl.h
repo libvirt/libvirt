@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_INITCTL_H__
-# define __VIR_INITCTL_H__
+#ifndef LIBVIRT_VIRINITCTL_H
+# define LIBVIRT_VIRINITCTL_H
 
 typedef enum {
     VIR_INITCTL_RUNLEVEL_POWEROFF = 0,
@@ -35,4 +35,4 @@ typedef enum {
 
 int virInitctlSetRunLevel(virInitctlRunLevel level);
 
-#endif /* __VIR_INITCTL_H__ */
+#endif /* LIBVIRT_VIRINITCTL_H */

@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_COMMAND_H__
-# define __QEMU_COMMAND_H__
+#ifndef LIBVIRT_QEMU_COMMAND_H
+# define LIBVIRT_QEMU_COMMAND_H
 
 # include "domain_addr.h"
 # include "domain_conf.h"
@@ -227,4 +227,4 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
 
-#endif /* __QEMU_COMMAND_H__ */
+#endif /* LIBVIRT_QEMU_COMMAND_H */

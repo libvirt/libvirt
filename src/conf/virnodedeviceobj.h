@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIRNODEDEVICEOBJ_H__
-# define __VIRNODEDEVICEOBJ_H__
+#ifndef LIBVIRT_VIRNODEDEVICEOBJ_H
+# define LIBVIRT_VIRNODEDEVICEOBJ_H
 
 # include "internal.h"
 # include "virthread.h"
@@ -113,4 +113,4 @@ void
 virNodeDeviceObjSetSkipUpdateCaps(virNodeDeviceObjPtr obj,
                                   bool skipUpdateCaps);
 
-#endif /* __VIRNODEDEVICEOBJ_H__ */
+#endif /* LIBVIRT_VIRNODEDEVICEOBJ_H */

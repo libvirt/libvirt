@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_PLUGINS_LOCK_DRIVER_H__
-# define __VIR_PLUGINS_LOCK_DRIVER_H__
+#ifndef LIBVIRT_LOCK_DRIVER_H
+# define LIBVIRT_LOCK_DRIVER_H
 
 # include "internal.h"
 # include "domain_conf.h"
@@ -316,4 +316,4 @@ struct _virLockDriver {
 };
 
 
-#endif /* __VIR_PLUGINS_LOCK_DRIVER_H__ */
+#endif /* LIBVIRT_LOCK_DRIVER_H */

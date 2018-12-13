@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_XENAPI_UTILS__
-# define __VIR_XENAPI_UTILS__
+#ifndef LIBVIRT_XENAPI_UTILS_H
+# define LIBVIRT_XENAPI_UTILS_H
 
 # include <xen/api/xen_all.h>
 # include "internal.h"
@@ -76,4 +76,4 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr defPtr,
 int
 allocStringMap (xen_string_string_map **strings, char *key, char *val);
 
-#endif /* __VIR_XENAPI_UTILS__ */
+#endif /* LIBVIRT_XENAPI_UTILS_H */

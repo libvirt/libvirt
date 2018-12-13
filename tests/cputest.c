@@ -38,9 +38,8 @@
 #if WITH_QEMU && WITH_YAJL
 # include "testutilsqemu.h"
 # include "qemumonitortestutils.h"
-# define __QEMU_CAPSPRIV_H_ALLOW__
+# define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 # include "qemu/qemu_capspriv.h"
-# undef __QEMU_CAPSPRIV_H_ALLOW__
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_CPU

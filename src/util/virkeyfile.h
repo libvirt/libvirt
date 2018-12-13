@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_KEYFILE_H__
-# define __VIR_KEYFILE_H__
+#ifndef LIBVIRT_VIRKEYFILE_H
+# define LIBVIRT_VIRKEYFILE_H
 
 # include "internal.h"
 
@@ -58,4 +58,4 @@ const char *virKeyFileGetValueString(virKeyFilePtr conf,
                                      const char *valuename)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-#endif /* __VIR_KEYFILE_H__ */
+#endif /* LIBVIRT_VIRKEYFILE_H */

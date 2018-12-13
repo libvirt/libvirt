@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_STRING_H__
-# define __VIR_STRING_H__
+#ifndef LIBVIRT_VIRSTRING_H
+# define LIBVIRT_VIRSTRING_H
 
 # include <stdarg.h>
 
@@ -309,4 +309,4 @@ int virStringParsePort(const char *str,
 
 VIR_DEFINE_AUTOPTR_FUNC(virString, virStringListFree)
 
-#endif /* __VIR_STRING_H__ */
+#endif /* LIBVIRT_VIRSTRING_H */

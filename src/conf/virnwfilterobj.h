@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIRNWFILTEROBJ_H
-# define VIRNWFILTEROBJ_H
+#ifndef LIBVIRT_VIRNWFILTEROBJ_H
+# define LIBVIRT_VIRNWFILTEROBJ_H
 
 # include "internal.h"
 
@@ -115,4 +115,4 @@ virNWFilterObjLock(virNWFilterObjPtr obj);
 void
 virNWFilterObjUnlock(virNWFilterObjPtr obj);
 
-#endif /* VIRNWFILTEROBJ_H */
+#endif /* LIBVIRT_VIRNWFILTEROBJ_H */

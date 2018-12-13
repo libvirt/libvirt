@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_XEN_XL_H__
-# define __VIR_XEN_XL_H__
+#ifndef LIBVIRT_XEN_XL_H
+# define LIBVIRT_XEN_XL_H
 
 # include "virconf.h"
 # include "domain_conf.h"
@@ -34,4 +34,4 @@ virConfPtr xenFormatXL(virDomainDefPtr def, virConnectPtr);
 
 const char *xenTranslateCPUFeature(const char *feature_name, bool from_libxl);
 
-#endif /* __VIR_XEN_XL_H__ */
+#endif /* LIBVIRT_XEN_XL_H */

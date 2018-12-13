@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __ESX_VI_TYPES_H__
-# define __ESX_VI_TYPES_H__
+#ifndef LIBVIRT_ESX_VI_TYPES_H
+# define LIBVIRT_ESX_VI_TYPES_H
 
 # include "virbuffer.h"
 
@@ -420,4 +420,4 @@ int esxVI_Event_DeserializeList(xmlNodePtr node, esxVI_Event **list);
 int esxVI_VirtualMachinePowerState_ConvertToLibvirt
       (esxVI_VirtualMachinePowerState powerState);
 
-#endif /* __ESX_VI_TYPES_H__ */
+#endif /* LIBVIRT_ESX_VI_TYPES_H */

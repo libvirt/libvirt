@@ -41,7 +41,7 @@
 # include <sys/apparmor.h>
 #endif
 
-#define __VIR_COMMAND_PRIV_H_ALLOW__
+#define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 #include "vircommandpriv.h"
 #include "virerror.h"
 #include "virutil.h"

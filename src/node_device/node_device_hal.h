@@ -19,7 +19,7 @@
  *
  */
 
-#ifndef __VIR_NODE_DEVICE_HAL_H__
-# define __VIR_NODE_DEVICE_HAL_H__
+#ifndef LIBVIRT_NODE_DEVICE_HAL_H
+# define LIBVIRT_NODE_DEVICE_HAL_H
 
-#endif /* __VIR_NODE_DEVICE_HAL_H__ */
+#endif /* LIBVIRT_NODE_DEVICE_HAL_H */

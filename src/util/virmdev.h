@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_MDEV_H__
-# define __VIR_MDEV_H__
+#ifndef LIBVIRT_VIRMDEV_H
+# define LIBVIRT_VIRMDEV_H
 
 # include "internal.h"
 # include "virobject.h"
@@ -140,4 +140,4 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
 VIR_DEFINE_AUTOPTR_FUNC(virMediatedDevice, virMediatedDeviceFree)
 VIR_DEFINE_AUTOPTR_FUNC(virMediatedDeviceType, virMediatedDeviceTypeFree)
 
-#endif /* __VIR_MDEV_H__ */
+#endif /* LIBVIRT_VIRMDEV_H */

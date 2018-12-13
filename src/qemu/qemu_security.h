@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_SECURITY_H__
-# define __QEMU_SECURITY_H__
+#ifndef LIBVIRT_QEMU_SECURITY_H
+# define LIBVIRT_QEMU_SECURITY_H
 
 
 # include "qemu_conf.h"
@@ -131,4 +131,4 @@ int qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
 # define qemuSecurityStackAddNested virSecurityManagerStackAddNested
 # define qemuSecurityVerify virSecurityManagerVerify
 
-#endif /* __QEMU_SECURITY_H__ */
+#endif /* LIBVIRT_QEMU_SECURITY_H */

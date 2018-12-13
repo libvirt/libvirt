@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIR_SECURITY_MANAGER_H__
-# define VIR_SECURITY_MANAGER_H__
+#ifndef LIBVIRT_SECURITY_MANAGER_H
+# define LIBVIRT_SECURITY_MANAGER_H
 
 # include "domain_conf.h"
 # include "vircommand.h"
@@ -208,4 +208,4 @@ void
 virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr,
                                  virSecurityManagerMetadataLockStatePtr *state);
 
-#endif /* VIR_SECURITY_MANAGER_H__ */
+#endif /* LIBVIRT_SECURITY_MANAGER_H */

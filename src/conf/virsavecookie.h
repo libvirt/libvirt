@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_SAVE_COOKIE_H__
-# define __VIR_SAVE_COOKIE_H__
+#ifndef LIBVIRT_VIRSAVECOOKIE_H
+# define LIBVIRT_VIRSAVECOOKIE_H
 
 # include <libxml/xpath.h>
 
@@ -60,4 +60,4 @@ char *
 virSaveCookieFormat(virObjectPtr obj,
                     virSaveCookieCallbacksPtr saveCookie);
 
-#endif /* __VIR_SAVE_COOKIE_H__ */
+#endif /* LIBVIRT_VIRSAVECOOKIE_H */

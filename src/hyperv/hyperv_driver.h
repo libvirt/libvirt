@@ -20,9 +20,9 @@
  *
  */
 
-#ifndef __HYPERV_DRIVER_H__
-# define __HYPERV_DRIVER_H__
+#ifndef LIBVIRT_HYPERV_DRIVER_H
+# define LIBVIRT_HYPERV_DRIVER_H
 
 int hypervRegister(void);
 
-#endif /* __HYPERV_DRIVER_H__ */
+#endif /* LIBVIRT_HYPERV_DRIVER_H */

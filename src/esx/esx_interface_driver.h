@@ -20,11 +20,11 @@
  *
  */
 
-#ifndef __ESX_INTERFACE_DRIVER_H__
-# define __ESX_INTERFACE_DRIVER_H__
+#ifndef LIBVIRT_ESX_INTERFACE_DRIVER_H
+# define LIBVIRT_ESX_INTERFACE_DRIVER_H
 
 # include "driver.h"
 
 extern virInterfaceDriver esxInterfaceDriver;
 
-#endif /* __ESX_INTERFACE_DRIVER_H__ */
+#endif /* LIBVIRT_ESX_INTERFACE_DRIVER_H */

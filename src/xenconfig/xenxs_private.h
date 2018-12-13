@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_XENXS_PRIVATE_H__
-# define __VIR_XENXS_PRIVATE_H__
+#ifndef LIBVIRT_XENXS_PRIVATE_H
+# define LIBVIRT_XENXS_PRIVATE_H
 
 # include "internal.h"
 
@@ -43,4 +43,4 @@
 #  define DEFAULT_VIF_SCRIPT "vif-bridge"
 # endif
 
-#endif /* __VIR_XENXS_PRIVATE_H__ */
+#endif /* LIBVIRT_XENXS_PRIVATE_H */

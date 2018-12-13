@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NUMA_CONF_H__
-# define __NUMA_CONF_H__
+#ifndef LIBVIRT_NUMA_CONF_H
+# define LIBVIRT_NUMA_CONF_H
 
 # include <libxml/xpath.h>
 
@@ -186,4 +186,4 @@ int virDomainNumaDefCPUFormatXML(virBufferPtr buf, virDomainNumaPtr def);
 unsigned int virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa);
 
 
-#endif /* __NUMA_CONF_H__ */
+#endif /* LIBVIRT_NUMA_CONF_H */

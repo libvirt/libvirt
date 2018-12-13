@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __HYPERV_PRIVATE_H__
-# define __HYPERV_PRIVATE_H__
+#ifndef LIBVIRT_HYPERV_PRIVATE_H
+# define LIBVIRT_HYPERV_PRIVATE_H
 
 # include "internal.h"
 # include "virerror.h"
@@ -41,4 +41,4 @@ struct _hypervPrivate {
     hypervWmiVersion wmiVersion;
 };
 
-#endif /* __HYPERV_PRIVATE_H__ */
+#endif /* LIBVIRT_HYPERV_PRIVATE_H */

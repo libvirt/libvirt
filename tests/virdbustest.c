@@ -18,7 +18,7 @@
 
 #include <config.h>
 
-#define __VIR_DBUS_PRIV_H_ALLOW__
+#define LIBVIRT_VIRDBUSPRIV_H_ALLOW
 #include "virdbuspriv.h"
 #include "virlog.h"
 #include "testutils.h"

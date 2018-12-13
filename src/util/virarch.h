@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_ARCH_H__
-# define __VIR_ARCH_H__
+#ifndef LIBVIRT_VIRARCH_H
+# define LIBVIRT_VIRARCH_H
 
 # include "internal.h"
 
@@ -108,4 +108,4 @@ virArch virArchFromString(const char *name);
 
 virArch virArchFromHost(void);
 
-#endif /* __VIR_ARCH_H__ */
+#endif /* LIBVIRT_VIRARCH_H */

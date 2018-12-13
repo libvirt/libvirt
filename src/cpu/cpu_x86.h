@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CPU_X86_H__
-# define __VIR_CPU_X86_H__
+#ifndef LIBVIRT_CPU_X86_H
+# define LIBVIRT_CPU_X86_H
 
 # include "cpu.h"
 # include "cpu_x86_data.h"
@@ -40,4 +40,4 @@ int virCPUx86DataSetVendor(virCPUDataPtr cpuData,
 int virCPUx86DataAddFeature(virCPUDataPtr cpuData,
                             const char *name);
 
-#endif /* __VIR_CPU_X86_H__ */
+#endif /* LIBVIRT_CPU_X86_H */

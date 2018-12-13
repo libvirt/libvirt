@@ -22,8 +22,8 @@
  * additional information or have any questions.
  */
 
-#ifndef VBOX_DRIVER_H
-# define VBOX_DRIVER_H
+#ifndef LIBVIRT_VBOX_DRIVER_H
+# define LIBVIRT_VBOX_DRIVER_H
 
 # include "internal.h"
 
@@ -39,4 +39,4 @@ int vboxStorageRegister(void);
 int vboxRegister(void);
 # endif
 
-#endif /* VBOX_DRIVER_H */
+#endif /* LIBVIRT_VBOX_DRIVER_H */

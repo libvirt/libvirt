@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_NODE_SUSPEND_H__
-# define __VIR_NODE_SUSPEND_H__
+#ifndef LIBVIRT_VIRNODESUSPEND_H
+# define LIBVIRT_VIRNODESUSPEND_H
 
 # include "internal.h"
 
@@ -30,4 +30,4 @@ int virNodeSuspend(unsigned int target,
 
 int virNodeSuspendGetTargetMask(unsigned int *bitmask);
 
-#endif /* __VIR_NODE_SUSPEND_H__ */
+#endif /* LIBVIRT_VIRNODESUSPEND_H */

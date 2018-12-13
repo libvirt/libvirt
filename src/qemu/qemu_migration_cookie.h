@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_MIGRATION_COOKIE_H__
-# define __QEMU_MIGRATION_COOKIE_H__
+#ifndef LIBVIRT_QEMU_MIGRATION_COOKIE_H
+# define LIBVIRT_QEMU_MIGRATION_COOKIE_H
 
 # include "qemu_migration_params.h"
 
@@ -177,4 +177,4 @@ qemuMigrationCookieAddPersistent(qemuMigrationCookiePtr mig,
 virDomainDefPtr
 qemuMigrationCookieGetPersistent(qemuMigrationCookiePtr mig);
 
-#endif /* __QEMU_MIGRATION_COOKIE_H__ */
+#endif /* LIBVIRT_QEMU_MIGRATION_COOKIE_H */

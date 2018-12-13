@@ -20,8 +20,8 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#ifndef __VIR_XML_H__
-# define __VIR_XML_H__
+#ifndef LIBVIRT_VIRXML_H
+# define LIBVIRT_VIRXML_H
 
 # include "internal.h"
 
@@ -221,4 +221,4 @@ virXMLFormatElement(virBufferPtr buf,
                     virBufferPtr attrBuf,
                     virBufferPtr childBuf);
 
-#endif /* __VIR_XML_H__ */
+#endif /* LIBVIRT_VIRXML_H */

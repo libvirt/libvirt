@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_THREAD_JOB_H__
-# define __VIR_THREAD_JOB_H__
+#ifndef LIBVIRT_VIRTHREADJOB_H
+# define LIBVIRT_VIRTHREADJOB_H
 
 
 const char *virThreadJobGet(void);
@@ -28,4 +28,4 @@ void virThreadJobSetWorker(const char *caller);
 void virThreadJobSet(const char *caller);
 void virThreadJobClear(int rv);
 
-#endif /* __VIR_THREAD_JOB_H__ */
+#endif /* LIBVIRT_VIRTHREADJOB_H */

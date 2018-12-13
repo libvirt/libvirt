@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VIRSH_DOMAIN_H
-# define VIRSH_DOMAIN_H
+#ifndef LIBVIRT_VIRSH_DOMAIN_H
+# define LIBVIRT_VIRSH_DOMAIN_H
 
 # include "virsh.h"
 
@@ -38,4 +38,4 @@ extern virshDomainEventCallback virshDomainEventCallbacks[];
 
 extern const vshCmdDef domManagementCmds[];
 
-#endif /* VIRSH_DOMAIN_H */
+#endif /* LIBVIRT_VIRSH_DOMAIN_H */

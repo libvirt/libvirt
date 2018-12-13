@@ -21,8 +21,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_VIRLIB_H__
-# define __VIR_VIRLIB_H__
+#ifndef LIBVIRT_H
+# define LIBVIRT_H
 
 # include <sys/types.h>
 
@@ -49,4 +49,4 @@ extern "C" {
 }
 # endif
 
-#endif /* __VIR_VIRLIB_H__ */
+#endif /* LIBVIRT_H */

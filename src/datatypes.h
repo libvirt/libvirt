@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_DATATYPES_H_
-# define __VIR_DATATYPES_H_
+#ifndef LIBVIRT_DATATYPES_H
+# define LIBVIRT_DATATYPES_H
 
 # include "internal.h"
 
@@ -777,4 +777,4 @@ int virAdmConnectCloseCallbackDataRegister(virAdmConnectCloseCallbackDataPtr cbd
 int virAdmConnectCloseCallbackDataUnregister(virAdmConnectCloseCallbackDataPtr cbdata,
                                              virAdmConnectCloseFunc cb);
 
-#endif /* __VIR_DATATYPES_H_ */
+#endif /* LIBVIRT_DATATYPES_H */

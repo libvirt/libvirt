@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DOMAIN_EVENT_H__
-# define __DOMAIN_EVENT_H__
+#ifndef LIBVIRT_DOMAIN_EVENT_H
+# define LIBVIRT_DOMAIN_EVENT_H
 
 # include "internal.h"
 # include "object_event.h"
@@ -324,4 +324,4 @@ virDomainQemuMonitorEventNew(int id,
                              const char *details)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
-#endif /* __DOMAIN_EVENT_H__ */
+#endif /* LIBVIRT_DOMAIN_EVENT_H */

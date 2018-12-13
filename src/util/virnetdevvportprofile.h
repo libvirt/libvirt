@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NETDEV_VPORT_PROFILE_H__
-# define __VIR_NETDEV_VPORT_PROFILE_H__
+#ifndef LIBVIRT_VIRNETDEVVPORTPROFILE_H
+# define LIBVIRT_VIRNETDEVVPORTPROFILE_H
 
 # include "internal.h"
 # include "viruuid.h"
@@ -108,4 +108,4 @@ int virNetDevVPortProfileDisassociate(const char *ifname,
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 
 
-#endif /* __VIR_NETDEV_VPORT_PROFILE_H__ */
+#endif /* LIBVIRT_VIRNETDEVVPORTPROFILE_H */

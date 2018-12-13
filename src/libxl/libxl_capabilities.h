@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBXL_CAPABILITIES_H
-# define LIBXL_CAPABILITIES_H
+#ifndef LIBVIRT_LIBXL_CAPABILITIES_H
+# define LIBVIRT_LIBXL_CAPABILITIES_H
 
 # include <libxl.h>
 
@@ -52,4 +52,4 @@ libxlMakeDomainCapabilities(virDomainCapsPtr domCaps,
 int
 libxlDomainGetEmulatorType(const virDomainDef *def);
 
-#endif /* LIBXL_CAPABILITIES_H */
+#endif /* LIBVIRT_LIBXL_CAPABILITIES_H */

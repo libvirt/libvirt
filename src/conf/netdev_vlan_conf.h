@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NETDEV_VLAN_CONF_H__
-# define __VIR_NETDEV_VLAN_CONF_H__
+#ifndef LIBVIRT_NETDEV_VLAN_CONF_H
+# define LIBVIRT_NETDEV_VLAN_CONF_H
 
 # include "internal.h"
 # include "virnetdevvlan.h"
@@ -27,4 +27,4 @@
 int virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr def);
 int virNetDevVlanFormat(const virNetDevVlan *def, virBufferPtr buf);
 
-#endif /* __VIR_NETDEV_VLAN_CONF_H__ */
+#endif /* LIBVIRT_NETDEV_VLAN_CONF_H */

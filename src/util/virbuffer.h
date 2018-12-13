@@ -20,8 +20,8 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#ifndef __VIR_BUFFER_H__
-# define __VIR_BUFFER_H__
+#ifndef LIBVIRT_VIRBUFFER_H
+# define LIBVIRT_VIRBUFFER_H
 
 # include <stdarg.h>
 
@@ -123,4 +123,4 @@ void virBufferAddStr(virBufferPtr buf, const char *str);
 
 VIR_DEFINE_AUTOPTR_FUNC(virBuffer, virBufferFreeAndReset)
 
-#endif /* __VIR_BUFFER_H__ */
+#endif /* LIBVIRT_VIRBUFFER_H */

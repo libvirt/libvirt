@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LXC_CONTAINER_H
-# define LXC_CONTAINER_H
+#ifndef LIBVIRT_LXC_CONTAINER_H
+# define LIBVIRT_LXC_CONTAINER_H
 
 # include "lxc_conf.h"
 # include "lxc_domain.h"
@@ -65,4 +65,4 @@ int lxcContainerChown(virDomainDefPtr def, const char *path);
 
 bool lxcIsBasicMountLocation(const char *path);
 
-#endif /* LXC_CONTAINER_H */
+#endif /* LIBVIRT_LXC_CONTAINER_H */

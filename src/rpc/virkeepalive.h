@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_KEEPALIVE_H__
-# define __VIR_KEEPALIVE_H__
+#ifndef LIBVIRT_VIRKEEPALIVE_H
+# define LIBVIRT_VIRKEEPALIVE_H
 
 # include "virnetmessage.h"
 # include "virobject.h"
@@ -53,4 +53,4 @@ bool virKeepAliveCheckMessage(virKeepAlivePtr ka,
                               virNetMessagePtr msg,
                               virNetMessagePtr *response);
 
-#endif /* __VIR_KEEPALIVE_H__ */
+#endif /* LIBVIRT_VIRKEEPALIVE_H */

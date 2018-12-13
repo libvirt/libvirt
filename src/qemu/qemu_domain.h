@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_DOMAIN_H__
-# define __QEMU_DOMAIN_H__
+#ifndef LIBVIRT_QEMU_DOMAIN_H
+# define LIBVIRT_QEMU_DOMAIN_H
 
 # include "virthread.h"
 # include "vircgroup.h"
@@ -1095,4 +1095,4 @@ qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason);
 bool
 qemuDomainIsUsingNoShutdown(qemuDomainObjPrivatePtr priv);
 
-#endif /* __QEMU_DOMAIN_H__ */
+#endif /* LIBVIRT_QEMU_DOMAIN_H */

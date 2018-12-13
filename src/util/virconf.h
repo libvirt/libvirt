@@ -20,8 +20,8 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#ifndef __VIR_CONF_H__
-# define __VIR_CONF_H__
+#ifndef LIBVIRT_VIRCONF_H
+# define LIBVIRT_VIRCONF_H
 
 # include "virutil.h"
 
@@ -130,4 +130,4 @@ int virConfWriteMem(char *memory,
                     virConfPtr conf);
 int virConfLoadConfig(virConfPtr *conf, const char *name);
 
-#endif /* __VIR_CONF_H__ */
+#endif /* LIBVIRT_VIRCONF_H */

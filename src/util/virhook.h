@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_HOOKS_H__
-# define __VIR_HOOKS_H__
+#ifndef LIBVIRT_VIRHOOK_H
+# define LIBVIRT_VIRHOOK_H
 
 # include "internal.h"
 
@@ -105,4 +105,4 @@ int virHookPresent(int driver);
 int virHookCall(int driver, const char *id, int op, int sub_op,
                 const char *extra, const char *input, char **output);
 
-#endif /* __VIR_HOOKS_H__ */
+#endif /* LIBVIRT_VIRHOOK_H */

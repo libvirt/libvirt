@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef VIRSH_COMPLETER
-# define VIRSH_COMPLETER
+#ifndef LIBVIRT_VIRSH_COMPLETER_H
+# define LIBVIRT_VIRSH_COMPLETER_H
 
 # include "vsh.h"
 
@@ -109,4 +109,4 @@ char ** virshDomainDeviceAliasCompleter(vshControl *ctl,
 char ** virshCellnoCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags);
-#endif /* VIRSH_COMPLETER */
+#endif /* LIBVIRT_VIRSH_COMPLETER_H */

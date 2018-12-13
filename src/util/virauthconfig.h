@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_AUTHCONFIG_H__
-# define __VIR_AUTHCONFIG_H__
+#ifndef LIBVIRT_VIRAUTHCONFIG_H
+# define LIBVIRT_VIRAUTHCONFIG_H
 
 # include "internal.h"
 # include "viralloc.h"
@@ -43,4 +43,4 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
 
 VIR_DEFINE_AUTOPTR_FUNC(virAuthConfig, virAuthConfigFree)
 
-#endif /* __VIR_AUTHCONFIG_H__ */
+#endif /* LIBVIRT_VIRAUTHCONFIG_H */

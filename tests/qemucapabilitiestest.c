@@ -22,9 +22,9 @@
 #include "testutils.h"
 #include "testutilsqemu.h"
 #include "qemumonitortestutils.h"
-#define __QEMU_CAPSPRIV_H_ALLOW__
+#define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 #include "qemu/qemu_capspriv.h"
-#define __QEMU_MONITOR_PRIV_H_ALLOW__
+#define LIBVIRT_QEMU_MONITOR_PRIV_H_ALLOW
 #include "qemu/qemu_monitor_priv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

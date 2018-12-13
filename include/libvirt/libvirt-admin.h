@@ -21,8 +21,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_ADMIN_H__
-# define __VIR_ADMIN_H__
+#ifndef LIBVIRT_ADMIN_H
+# define LIBVIRT_ADMIN_H
 
 # ifdef __cplusplus
 extern "C" {
@@ -422,4 +422,4 @@ int virAdmConnectSetLoggingFilters(virAdmConnectPtr conn,
 }
 # endif
 
-#endif /* __VIR_ADMIN_H__ */
+#endif /* LIBVIRT_ADMIN_H */

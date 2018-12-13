@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ADMIN_SERVER_DISPATCH_H__
-# define __ADMIN_SERVER_DISPATCH_H__
+#ifndef LIBVIRT_ADMIN_SERVER_DISPATCH_H
+# define LIBVIRT_ADMIN_SERVER_DISPATCH_H
 
 # include "rpc/virnetserverprogram.h"
 # include "rpc/virnetserverclient.h"
@@ -37,4 +37,4 @@ void *remoteAdmClientNewPostExecRestart(virNetServerClientPtr client,
 virJSONValuePtr remoteAdmClientPreExecRestart(virNetServerClientPtr client,
                                               void *data);
 
-#endif /* __ADMIN_SERVER_DISPATCH_H__ */
+#endif /* LIBVIRT_ADMIN_SERVER_DISPATCH_H */

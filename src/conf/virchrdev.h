@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CHRDEV_H__
-# define __VIR_CHRDEV_H__
+#ifndef LIBVIRT_VIRCHRDEV_H
+# define LIBVIRT_VIRCHRDEV_H
 
 # include "internal.h"
 # include "domain_conf.h"
@@ -34,4 +34,4 @@ void virChrdevFree(virChrdevsPtr devs);
 int virChrdevOpen(virChrdevsPtr devs, virDomainChrSourceDefPtr source,
                   virStreamPtr st, bool force);
 
-#endif /* __VIR_CHRDEV_H__ */
+#endif /* LIBVIRT_VIRCHRDEV_H */

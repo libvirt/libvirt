@@ -22,8 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NWFILTER_CONF_H
-# define NWFILTER_CONF_H
+#ifndef LIBVIRT_NWFILTER_CONF_H
+# define LIBVIRT_NWFILTER_CONF_H
 
 # include "internal.h"
 
@@ -615,4 +615,4 @@ VIR_ENUM_DECL(virNWFilterChainPolicy);
 VIR_ENUM_DECL(virNWFilterEbtablesTable);
 VIR_ENUM_DECL(virNWFilterChainSuffix);
 
-#endif /* NWFILTER_CONF_H */
+#endif /* LIBVIRT_NWFILTER_CONF_H */

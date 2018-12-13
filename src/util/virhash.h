@@ -7,8 +7,8 @@
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  */
 
-#ifndef __VIR_HASH_H__
-# define __VIR_HASH_H__
+#ifndef LIBVIRT_VIRHASH_H
+# define LIBVIRT_VIRHASH_H
 
 
 # include "viralloc.h"
@@ -199,4 +199,4 @@ void virHashValueFree(void *value, const void *name);
 
 VIR_DEFINE_AUTOPTR_FUNC(virHashTable, virHashFree)
 
-#endif /* __VIR_HASH_H__ */
+#endif /* LIBVIRT_VIRHASH_H */

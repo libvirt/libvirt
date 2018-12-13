@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_STORAGE_H__
-# define __VIR_LIBVIRT_STORAGE_H__
+#ifndef LIBVIRT_STORAGE_H
+# define LIBVIRT_STORAGE_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -495,4 +495,4 @@ typedef void (*virConnectStoragePoolEventLifecycleCallback)(virConnectPtr conn,
                                                             int detail,
                                                             void *opaque);
 
-#endif /* __VIR_LIBVIRT_STORAGE_H__ */
+#endif /* LIBVIRT_STORAGE_H */

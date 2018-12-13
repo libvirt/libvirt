@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OPENVZ_DRIVER_H
-# define OPENVZ_DRIVER_H
+#ifndef LIBVIRT_OPENVZ_DRIVER_H
+# define LIBVIRT_OPENVZ_DRIVER_H
 
 # include "internal.h"
 
@@ -37,4 +37,4 @@
 
 int openvzRegister(void);
 
-#endif /* OPENVZ_DRIVER_H */
+#endif /* LIBVIRT_OPENVZ_DRIVER_H */

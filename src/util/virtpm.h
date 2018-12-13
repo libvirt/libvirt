@@ -18,9 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_TPM_H__
-# define __VIR_TPM_H__
+#ifndef LIBVIRT_VIRTPM_H
+# define LIBVIRT_VIRTPM_H
 
 char *virTPMCreateCancelPath(const char *devpath) ATTRIBUTE_NOINLINE;
 
-#endif /* __VIR_TPM_H__ */
+#endif /* LIBVIRT_VIRTPM_H */

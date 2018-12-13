@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VIRSH_DOMAIN_MONITOR_H
-# define VIRSH_DOMAIN_MONITOR_H
+#ifndef LIBVIRT_VIRSH_DOMAIN_MONITOR_H
+# define LIBVIRT_VIRSH_DOMAIN_MONITOR_H
 
 # include "virsh.h"
 
@@ -34,4 +34,4 @@ char *virshGetDomainDescription(vshControl *ctl, virDomainPtr dom,
 
 extern const vshCmdDef domMonitoringCmds[];
 
-#endif /* VIRSH_DOMAIN_MONITOR_H */
+#endif /* LIBVIRT_VIRSH_DOMAIN_MONITOR_H */

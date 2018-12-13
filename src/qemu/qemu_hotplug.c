@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include "qemu_hotplug.h"
-#define __QEMU_HOTPLUGPRIV_H_ALLOW__
+#define LIBVIRT_QEMU_HOTPLUGPRIV_H_ALLOW
 #include "qemu_hotplugpriv.h"
 #include "qemu_alias.h"
 #include "qemu_capabilities.h"

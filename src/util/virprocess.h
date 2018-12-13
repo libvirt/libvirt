@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_PROCESS_H__
-# define __VIR_PROCESS_H__
+#ifndef LIBVIRT_VIRPROCESS_H
+# define LIBVIRT_VIRPROCESS_H
 
 # include <sys/types.h>
 
@@ -125,4 +125,4 @@ typedef enum {
 
 int virProcessNamespaceAvailable(unsigned int ns);
 
-#endif /* __VIR_PROCESS_H__ */
+#endif /* LIBVIRT_VIRPROCESS_H */

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_IDENTITY_H__
-# define __VIR_IDENTITY_H__
+#ifndef LIBVIRT_VIRIDENTITY_H
+# define LIBVIRT_VIRIDENTITY_H
 
 # include "virobject.h"
 
@@ -105,4 +105,4 @@ int virIdentitySetSELinuxContext(virIdentityPtr ident,
                                  const char *context);
 
 
-#endif /* __VIR_IDENTITY_H__ */
+#endif /* LIBVIRT_VIRIDENTITY_H */

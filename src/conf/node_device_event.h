@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NODE_DEVICE_EVENT_H__
-# define __NODE_DEVICE_EVENT_H__
+#ifndef LIBVIRT_NODE_DEVICE_EVENT_H
+# define LIBVIRT_NODE_DEVICE_EVENT_H
 
 # include "internal.h"
 # include "object_event.h"
@@ -59,4 +59,4 @@ virNodeDeviceEventLifecycleNew(const char *name,
 virObjectEventPtr
 virNodeDeviceEventUpdateNew(const char *name);
 
-#endif /* __NODE_DEVICE_EVENT_H__ */
+#endif /* LIBVIRT_NODE_DEVICE_EVENT_H */

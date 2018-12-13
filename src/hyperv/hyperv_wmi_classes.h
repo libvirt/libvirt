@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef __HYPERV_WMI_CLASSES_H__
-# define __HYPERV_WMI_CLASSES_H__
+#ifndef LIBVIRT_HYPERV_WMI_CLASSES_H
+# define LIBVIRT_HYPERV_WMI_CLASSES_H
 
 # include "internal.h"
 # include "openwsman.h"
@@ -140,4 +140,4 @@ struct _hypervWmiClassInfoList {
 
 # include "hyperv_wmi_classes.generated.h"
 
-#endif /* __HYPERV_WMI_CLASSES_H__ */
+#endif /* LIBVIRT_HYPERV_WMI_CLASSES_H */

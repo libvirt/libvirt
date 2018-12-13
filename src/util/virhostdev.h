@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_HOSTDEV_H__
-# define __VIR_HOSTDEV_H__
+#ifndef LIBVIRT_VIRHOSTDEV_H
+# define LIBVIRT_VIRHOSTDEV_H
 
 # include "internal.h"
 
@@ -203,4 +203,4 @@ int virHostdevPCINodeDeviceReset(virHostdevManagerPtr mgr,
                                  virPCIDevicePtr pci)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-#endif /* __VIR_HOSTDEV_H__ */
+#endif /* LIBVIRT_VIRHOSTDEV_H */

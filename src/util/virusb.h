@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_USB_H__
-# define __VIR_USB_H__
+#ifndef LIBVIRT_VIRUSB_H
+# define LIBVIRT_VIRUSB_H
 
 # include "internal.h"
 # include "virobject.h"
@@ -98,4 +98,4 @@ virUSBDevicePtr virUSBDeviceListFind(virUSBDeviceListPtr list,
 
 VIR_DEFINE_AUTOPTR_FUNC(virUSBDevice, virUSBDeviceFree)
 
-#endif /* __VIR_USB_H__ */
+#endif /* LIBVIRT_VIRUSB_H */

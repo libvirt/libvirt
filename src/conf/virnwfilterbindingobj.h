@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef VIR_NWFILTER_BINDING_OBJ_H
-# define VIR_NWFILTER_BINDING_OBJ_H
+#ifndef LIBVIRT_VIRNWFILTERBINDINGOBJ_H
+# define LIBVIRT_VIRNWFILTERBINDINGOBJ_H
 
 # include "internal.h"
 # include "virnwfilterbindingdef.h"
@@ -67,4 +67,4 @@ virNWFilterBindingObjParseFile(const char *filename);
 char *
 virNWFilterBindingObjFormat(const virNWFilterBindingObj *obj);
 
-#endif /* VIR_NWFILTER_BINDING_OBJ_H */
+#endif /* LIBVIRT_VIRNWFILTERBINDINGOBJ_H */

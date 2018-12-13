@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CPU_MAP_H__
-# define __VIR_CPU_MAP_H__
+#ifndef LIBVIRT_CPU_MAP_H
+# define LIBVIRT_CPU_MAP_H
 
 # include "virxml.h"
 
@@ -35,4 +35,4 @@ cpuMapLoad(const char *arch,
            cpuMapLoadCallback modelCB,
            void *data);
 
-#endif /* __VIR_CPU_MAP_H__ */
+#endif /* LIBVIRT_CPU_MAP_H */

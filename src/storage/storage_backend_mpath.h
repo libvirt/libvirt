@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_STORAGE_BACKEND_MPATH_H__
-# define __VIR_STORAGE_BACKEND_MPATH_H__
+#ifndef LIBVIRT_STORAGE_BACKEND_MPATH_H
+# define LIBVIRT_STORAGE_BACKEND_MPATH_H
 
 int virStorageBackendMpathRegister(void);
 
-#endif /* __VIR_STORAGE_BACKEND_MPATH_H__ */
+#endif /* LIBVIRT_STORAGE_BACKEND_MPATH_H */

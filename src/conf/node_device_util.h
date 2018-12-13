@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NODE_DEVICE_UTIL_H__
-# define __VIR_NODE_DEVICE_UTIL_H__
+#ifndef LIBVIRT_NODE_DEVICE_UTIL_H
+# define LIBVIRT_NODE_DEVICE_UTIL_H
 
 # include "conf/storage_adapter_conf.h"
 
@@ -32,4 +32,4 @@ int
 virNodeDeviceDeleteVport(virConnectPtr conn,
                          virStorageAdapterFCHostPtr fchost);
 
-#endif /* __VIR_NODE_DEVICE_UTIL_H__ */
+#endif /* LIBVIRT_NODE_DEVICE_UTIL_H */

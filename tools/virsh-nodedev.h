@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VIRSH_NODEDEV_H
-# define VIRSH_NODEDEV_H
+#ifndef LIBVIRT_VIRSH_NODEDEV_H
+# define LIBVIRT_VIRSH_NODEDEV_H
 
 # include "virsh.h"
 
@@ -38,4 +38,4 @@ extern virshNodedevEventCallback virshNodedevEventCallbacks[];
 
 extern const vshCmdDef nodedevCmds[];
 
-#endif /* VIRSH_NODEDEV_H */
+#endif /* LIBVIRT_VIRSH_NODEDEV_H */

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __ESX_VI_H__
-# define __ESX_VI_H__
+#ifndef LIBVIRT_ESX_VI_H
+# define LIBVIRT_ESX_VI_H
 
 # include <libxml/tree.h>
 # include <libxml/xpath.h>
@@ -532,4 +532,4 @@ int esxVI_LookupStoragePoolNameByScsiLunKey(esxVI_Context *ctx, const char *key,
 
 # include "esx_vi.generated.h"
 
-#endif /* __ESX_VI_H__ */
+#endif /* LIBVIRT_ESX_VI_H */

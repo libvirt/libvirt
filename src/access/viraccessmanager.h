@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_ACCESS_MANAGER_H__
-# define __VIR_ACCESS_MANAGER_H__
+#ifndef LIBVIRT_VIRACCESSMANAGER_H
+# define LIBVIRT_VIRACCESSMANAGER_H
 
 # include "viridentity.h"
 # include "conf/domain_conf.h"
@@ -93,4 +93,4 @@ int virAccessManagerCheckStorageVol(virAccessManagerPtr manager,
                                     virAccessPermStorageVol perm);
 
 
-#endif /* __VIR_ACCESS_MANAGER_H__ */
+#endif /* LIBVIRT_VIRACCESSMANAGER_H */

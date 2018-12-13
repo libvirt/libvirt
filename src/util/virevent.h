@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_EVENT_H__
-# define __VIR_EVENT_H__
+#ifndef LIBVIRT_VIREVENT_H
+# define LIBVIRT_VIREVENT_H
 # include "internal.h"
 
-#endif /* __VIR_EVENT_H__ */
+#endif /* LIBVIRT_VIREVENT_H */

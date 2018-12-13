@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef __QEMU_MIGRATION_PARAMSPRIV_H_ALLOW__
+#ifndef LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H_ALLOW
 # error "qemu_migration_paramspriv.h may only be included by qemu_migration_params.c or test suites"
-#endif /* __QEMU_MIGRATION_PARAMSPRIV_H_ALLOW__ */
+#endif /* LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H_ALLOW */
 
-#ifndef __QEMU_MIGRATION_PARAMSPRIV_H__
-# define __QEMU_MIGRATION_PARAMSPRIV_H__
+#ifndef LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H
+# define LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H
 
 virJSONValuePtr
 qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams);
@@ -36,4 +36,4 @@ virJSONValuePtr
 qemuMigrationCapsToJSON(virBitmapPtr caps,
                         virBitmapPtr states);
 
-#endif /* __QEMU_MIGRATION_PARAMSPRIV_H__ */
+#endif /* LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H */

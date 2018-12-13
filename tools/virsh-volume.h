@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VIRSH_VOLUME_H
-# define VIRSH_VOLUME_H
+#ifndef LIBVIRT_VIRSH_VOLUME_H
+# define LIBVIRT_VIRSH_VOLUME_H
 
 # include "virsh.h"
 
@@ -40,4 +40,4 @@ virStorageVolPtr virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
 
 extern const vshCmdDef storageVolCmds[];
 
-#endif /* VIRSH_VOLUME_H */
+#endif /* LIBVIRT_VIRSH_VOLUME_H */

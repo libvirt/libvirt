@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VBOX_GLUE_H__
-# define __VBOX_GLUE_H__
+#ifndef LIBVIRT_VBOX_GLUE_H
+# define LIBVIRT_VBOX_GLUE_H
 
 # ifdef WIN32
 #  include "vbox_MSCOMGlue.h"
@@ -28,4 +28,4 @@
 #  include "vbox_XPCOMCGlue.h"
 # endif
 
-#endif /* __VBOX_GLUE_H__ */
+#endif /* LIBVIRT_VBOX_GLUE_H */

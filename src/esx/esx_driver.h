@@ -20,9 +20,9 @@
  *
  */
 
-#ifndef __ESX_DRIVER_H__
-# define __ESX_DRIVER_H__
+#ifndef LIBVIRT_ESX_DRIVER_H
+# define LIBVIRT_ESX_DRIVER_H
 
 int esxRegister(void);
 
-#endif /* __ESX_DRIVER_H__ */
+#endif /* LIBVIRT_ESX_DRIVER_H */

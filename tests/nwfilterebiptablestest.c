@@ -26,10 +26,10 @@
 #include "virbuffer.h"
 #include "virfirewall.h"
 
-#define __VIR_FIREWALL_PRIV_H_ALLOW__
+#define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 #include "virfirewallpriv.h"
 
-#define __VIR_COMMAND_PRIV_H_ALLOW__
+#define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 #include "vircommandpriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_HOST_H__
-# define __VIR_LIBVIRT_HOST_H__
+#ifndef LIBVIRT_HOST_H
+# define LIBVIRT_HOST_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -743,4 +743,4 @@ int virNodeAllocPages(virConnectPtr conn,
                       unsigned int flags);
 
 
-#endif /* __VIR_LIBVIRT_HOST_H__ */
+#endif /* LIBVIRT_HOST_H */

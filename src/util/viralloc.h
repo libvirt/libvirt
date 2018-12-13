@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __VIR_MEMORY_H_
-# define __VIR_MEMORY_H_
+#ifndef LIBVIRT_VIRALLOC_H
+# define LIBVIRT_VIRALLOC_H
 
 # include "internal.h"
 
@@ -637,4 +637,4 @@ void virAllocTestHook(void (*func)(int, void*), void *data);
 # define VIR_AUTOPTR(type) \
     __attribute__((cleanup(VIR_AUTOPTR_FUNC_NAME(type)))) type *
 
-#endif /* __VIR_MEMORY_H_ */
+#endif /* LIBVIRT_VIRALLOC_H */

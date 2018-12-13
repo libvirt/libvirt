@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __QEMU_PROCESS_H__
-# define __QEMU_PROCESS_H__
+#ifndef LIBVIRT_QEMU_PROCESS_H
+# define LIBVIRT_QEMU_PROCESS_H
 
 # include "qemu_conf.h"
 # include "qemu_domain.h"
@@ -214,4 +214,4 @@ int qemuProcessStartManagedPRDaemon(virDomainObjPtr vm);
 
 void qemuProcessKillManagedPRDaemon(virDomainObjPtr vm);
 
-#endif /* __QEMU_PROCESS_H__ */
+#endif /* LIBVIRT_QEMU_PROCESS_H */

@@ -14,8 +14,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TESTUTILSLXC_H
-# define TESTUTILSLXC_H
+#ifndef LIBVIRT_TESTUTILSLXC_H
+# define LIBVIRT_TESTUTILSLXC_H
 
 # include "capabilities.h"
 
@@ -24,4 +24,4 @@
 
 virCapsPtr testLXCCapsInit(void);
 
-#endif /* TESTUTILSLXC_H */
+#endif /* LIBVIRT_TESTUTILSLXC_H */

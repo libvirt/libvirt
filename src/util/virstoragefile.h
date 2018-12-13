@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_STORAGE_FILE_H__
-# define __VIR_STORAGE_FILE_H__
+#ifndef LIBVIRT_VIRSTORAGEFILE_H
+# define LIBVIRT_VIRSTORAGEFILE_H
 
 # include <sys/stat.h>
 
@@ -540,4 +540,4 @@ void virStorageFileReportBrokenChain(int errcode,
                                      virStorageSourcePtr src,
                                      virStorageSourcePtr parent);
 
-#endif /* __VIR_STORAGE_FILE_H__ */
+#endif /* LIBVIRT_VIRSTORAGEFILE_H */

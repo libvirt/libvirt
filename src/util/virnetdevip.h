@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NETDEVIP_H__
-# define __VIR_NETDEVIP_H__
+#ifndef LIBVIRT_VIRNETDEVIP_H
+# define LIBVIRT_VIRNETDEVIP_H
 
 # include "virsocketaddr.h"
 
@@ -97,4 +97,4 @@ int virNetDevIPInfoAddToDev(const char *ifname,
 VIR_DEFINE_AUTOPTR_FUNC(virNetDevIPAddr, virNetDevIPAddrFree)
 VIR_DEFINE_AUTOPTR_FUNC(virNetDevIPRoute, virNetDevIPRouteFree)
 
-#endif /* __VIR_NETDEVIP_H__ */
+#endif /* LIBVIRT_VIRNETDEVIP_H */

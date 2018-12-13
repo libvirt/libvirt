@@ -24,7 +24,7 @@
 
 # include <dbus/dbus.h>
 
-# define __VIR_SYSTEMD_PRIV_H_ALLOW__ 1
+# define LIBVIRT_VIRSYSTEMDPRIV_H_ALLOW
 # include "virsystemdpriv.h"
 
 # include "virsystemd.h"

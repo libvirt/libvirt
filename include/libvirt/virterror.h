@@ -21,8 +21,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_VIRERR_H__
-# define __VIR_VIRERR_H__
+#ifndef LIBVIRT_VIRTERROR_H
+# define LIBVIRT_VIRTERROR_H
 
 # include <libvirt/libvirt.h>
 
@@ -364,4 +364,4 @@ int                     virConnCopyLastError    (virConnectPtr conn,
 }
 # endif
 
-#endif /* __VIR_VIRERR_H__ */
+#endif /* LIBVIRT_VIRTERROR_H */

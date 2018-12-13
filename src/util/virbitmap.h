@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __BITMAP_H__
-# define __BITMAP_H__
+#ifndef LIBVIRT_VIRBITMAP_H
+# define LIBVIRT_VIRBITMAP_H
 
 # include "internal.h"
 # include "viralloc.h"
@@ -156,4 +156,4 @@ void virBitmapShrink(virBitmapPtr map, size_t b);
 
 VIR_DEFINE_AUTOPTR_FUNC(virBitmap, virBitmapFree)
 
-#endif /* __BITMAP_H__ */
+#endif /* LIBVIRT_VIRBITMAP_H */

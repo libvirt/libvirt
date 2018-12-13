@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_EVENT_POLL_H__
-# define __VIR_EVENT_POLL_H__
+#ifndef LIBVIRT_VIREVENTPOLL_H
+# define LIBVIRT_VIREVENTPOLL_H
 
 # include "internal.h"
 
@@ -127,4 +127,4 @@ int virEventPollToNativeEvents(int events);
 int virEventPollInterrupt(void);
 
 
-#endif /* __VIR_EVENT_POLL_H__ */
+#endif /* LIBVIRT_VIREVENTPOLL_H */

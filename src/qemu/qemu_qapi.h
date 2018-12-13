@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_QAPI_H__
-# define __QEMU_QAPI_H__
+#ifndef LIBVIRT_QEMU_QAPI_H
+# define LIBVIRT_QEMU_QAPI_H
 
 # include "internal.h"
 
@@ -37,4 +37,4 @@ virHashTablePtr
 virQEMUQAPISchemaConvert(virJSONValuePtr schemareply);
 
 
-#endif /* __QEMU_QAPI_H__ */
+#endif /* LIBVIRT_QEMU_QAPI_H */

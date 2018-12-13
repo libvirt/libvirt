@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_CAPABILITIES_H__
-# define __QEMU_CAPABILITIES_H__
+#ifndef LIBVIRT_QEMU_CAPABILITIES_H
+# define LIBVIRT_QEMU_CAPABILITIES_H
 
 # include "virobject.h"
 # include "capabilities.h"
@@ -636,4 +636,4 @@ bool virQEMUCapsCPUFilterFeatures(const char *name,
 virSEVCapabilityPtr
 virQEMUCapsGetSEVCapabilities(virQEMUCapsPtr qemuCaps);
 
-#endif /* __QEMU_CAPABILITIES_H__ */
+#endif /* LIBVIRT_QEMU_CAPABILITIES_H */

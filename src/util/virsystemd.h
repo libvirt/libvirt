@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_SYSTEMD_H__
-# define __VIR_SYSTEMD_H__
+#ifndef LIBVIRT_VIRSYSTEMD_H
+# define LIBVIRT_VIRSYSTEMD_H
 
 # include "internal.h"
 
@@ -51,4 +51,4 @@ int virSystemdCanHybridSleep(bool *result);
 
 char *virSystemdGetMachineNameByPID(pid_t pid);
 
-#endif /* __VIR_SYSTEMD_H__ */
+#endif /* LIBVIRT_VIRSYSTEMD_H */

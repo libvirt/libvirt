@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_EVENT_H__
-# define __VIR_LIBVIRT_EVENT_H__
+#ifndef LIBVIRT_EVENT_H
+# define LIBVIRT_EVENT_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -186,4 +186,4 @@ void virEventUpdateTimeout(int timer, int frequency);
 int virEventRemoveTimeout(int timer);
 
 
-#endif /* __VIR_LIBVIRT_EVENT_H__ */
+#endif /* LIBVIRT_EVENT_H */

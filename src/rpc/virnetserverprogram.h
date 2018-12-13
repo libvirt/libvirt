@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_SERVER_PROGRAM_H__
-# define __VIR_NET_SERVER_PROGRAM_H__
+#ifndef LIBVIRT_VIRNETSERVERPROGRAM_H
+# define LIBVIRT_VIRNETSERVERPROGRAM_H
 
 # include "virnetmessage.h"
 # include "virnetserverclient.h"
@@ -107,4 +107,4 @@ int virNetServerProgramSendStreamHole(virNetServerProgramPtr prog,
                                       long long length,
                                       unsigned int flags);
 
-#endif /* __VIR_NET_SERVER_PROGRAM_H__ */
+#endif /* LIBVIRT_VIRNETSERVERPROGRAM_H */

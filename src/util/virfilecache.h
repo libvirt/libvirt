@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_FILE_CACHE_H__
-# define __VIR_FILE_CACHE_H__
+#ifndef LIBVIRT_VIRFILECACHE_H
+# define LIBVIRT_VIRFILECACHE_H
 
 # include "internal.h"
 
@@ -134,4 +134,4 @@ virFileCacheInsertData(virFileCachePtr cache,
                        const char *name,
                        void *data);
 
-#endif /* __VIR_FILE_CACHE_H__ */
+#endif /* LIBVIRT_VIRFILECACHE_H */

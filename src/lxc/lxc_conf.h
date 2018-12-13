@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LXC_CONF_H
-# define LXC_CONF_H
+#ifndef LIBVIRT_LXC_CONF_H
+# define LIBVIRT_LXC_CONF_H
 
 # include "internal.h"
 # include "libvirt_internal.h"
@@ -121,4 +121,4 @@ static inline void lxcDriverUnlock(virLXCDriverPtr driver)
     virMutexUnlock(&driver->lock);
 }
 
-#endif /* LXC_CONF_H */
+#endif /* LIBVIRT_LXC_CONF_H */

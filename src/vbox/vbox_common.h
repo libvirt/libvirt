@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VBOX_COMMON_H
-# define VBOX_COMMON_H
+#ifndef LIBVIRT_VBOX_COMMON_H
+# define LIBVIRT_VBOX_COMMON_H
 
 # ifdef ___VirtualBox_CXPCOM_h
 #  error this file should not be included after vbox_CAPI_v*.h
@@ -453,4 +453,4 @@ typedef nsISupports IKeyboard;
         } \
     } while (0)
 
-#endif /* VBOX_COMMON_H */
+#endif /* LIBVIRT_VBOX_COMMON_H */

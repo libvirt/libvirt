@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIRSH_UTIL_H
-# define VIRSH_UTIL_H
+#ifndef LIBVIRT_VIRSH_UTIL_H
+# define LIBVIRT_VIRSH_UTIL_H
 
 # include "virsh.h"
 
@@ -104,4 +104,4 @@ virshDomainGetXML(vshControl *ctl,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 
-#endif /* VIRSH_UTIL_H */
+#endif /* LIBVIRT_VIRSH_UTIL_H */

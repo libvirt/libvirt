@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_SSH_SESSION_H__
-# define __VIR_NET_SSH_SESSION_H__
+#ifndef LIBVIRT_VIRNETSSHSESSION_H
+# define LIBVIRT_VIRNETSSHSESSION_H
 
 # include "internal.h"
 # include "viruri.h"
@@ -85,4 +85,4 @@ ssize_t virNetSSHChannelWrite(virNetSSHSessionPtr sess,
 
 bool virNetSSHSessionHasCachedData(virNetSSHSessionPtr sess);
 
-#endif /* __VIR_NET_SSH_SESSION_H__ */
+#endif /* LIBVIRT_VIRNETSSHSESSION_H */

@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
+#ifndef LIBVIRT_VIRCGROUPPRIV_H_ALLOW
 # error "vircgrouppriv.h may only be included by vircgroup.c or its test suite"
-#endif /* __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__ */
+#endif /* LIBVIRT_VIRCGROUPPRIV_H_ALLOW */
 
-#ifndef __VIR_CGROUP_PRIV_H__
-# define __VIR_CGROUP_PRIV_H__
+#ifndef LIBVIRT_VIRCGROUPPRIV_H
+# define LIBVIRT_VIRCGROUPPRIV_H
 
 # include "vircgroup.h"
 # include "vircgroupbackend.h"
@@ -128,4 +128,4 @@ int virCgroupKillRecursiveInternal(virCgroupPtr group,
                                    const char *taskFile,
                                    bool dormdir);
 
-#endif /* __VIR_CGROUP_PRIV_H__ */
+#endif /* LIBVIRT_VIRCGROUPPRIV_H */

@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_SERVER_H__
-# define __VIR_NET_SERVER_H__
+#ifndef LIBVIRT_VIRNETSERVER_H
+# define LIBVIRT_VIRNETSERVER_H
 
 # include "virnettlscontext.h"
 # include "virnetserverprogram.h"
@@ -113,4 +113,4 @@ int virNetServerSetClientLimits(virNetServerPtr srv,
                                 long long int maxClients,
                                 long long int maxClientsUnauth);
 
-#endif /* __VIR_NET_SERVER_H__ */
+#endif /* LIBVIRT_VIRNETSERVER_H */

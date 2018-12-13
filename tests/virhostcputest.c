@@ -4,7 +4,7 @@
 
 #include "testutils.h"
 #include "internal.h"
-#define __VIR_HOSTCPU_PRIV_H_ALLOW__
+#define LIBVIRT_VIRHOSTCPUPRIV_H_ALLOW
 #include "virhostcpupriv.h"
 #include "virfile.h"
 #include "virstring.h"

@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_STORAGE_DRIVER_H__
-# define __VIR_STORAGE_DRIVER_H__
+#ifndef LIBVIRT_STORAGE_DRIVER_H
+# define LIBVIRT_STORAGE_DRIVER_H
 
 # include <sys/stat.h>
 
@@ -42,4 +42,4 @@ char *virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr obj,
 int storageRegister(void);
 int storageRegisterAll(void);
 
-#endif /* __VIR_STORAGE_DRIVER_H__ */
+#endif /* LIBVIRT_STORAGE_DRIVER_H */

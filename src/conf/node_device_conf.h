@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NODE_DEVICE_CONF_H__
-# define __VIR_NODE_DEVICE_CONF_H__
+#ifndef LIBVIRT_NODE_DEVICE_CONF_H
+# define LIBVIRT_NODE_DEVICE_CONF_H
 
 # include "internal.h"
 # include "virbitmap.h"
@@ -383,4 +383,4 @@ int
 virNodeDeviceCapsListExport(virNodeDeviceDefPtr def,
                             virNodeDevCapType **list);
 
-#endif /* __VIR_NODE_DEVICE_CONF_H__ */
+#endif /* LIBVIRT_NODE_DEVICE_CONF_H */

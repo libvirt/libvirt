@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_INTERNAL_H__
-# define __VIR_INTERNAL_H__
+#ifndef LIBVIRT_INTERNAL_H
+# define LIBVIRT_INTERNAL_H
 
 # include <errno.h>
 # include <limits.h>
@@ -513,4 +513,4 @@ enum {
 #  define ENODATA EIO
 # endif
 
-#endif /* __VIR_INTERNAL_H__ */
+#endif /* LIBVIRT_INTERNAL_H */

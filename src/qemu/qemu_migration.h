@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __QEMU_MIGRATION_H__
-# define __QEMU_MIGRATION_H__
+#ifndef LIBVIRT_QEMU_MIGRATION_H
+# define LIBVIRT_QEMU_MIGRATION_H
 
 # include "qemu_conf.h"
 # include "qemu_domain.h"
@@ -254,4 +254,4 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
                                  qemuDomainAsyncJob asyncJob,
                                  qemuDomainJobInfoPtr jobInfo);
 
-#endif /* __QEMU_MIGRATION_H__ */
+#endif /* LIBVIRT_QEMU_MIGRATION_H */

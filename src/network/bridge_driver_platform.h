@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_BRIDGE_DRIVER_PLATFORM_H__
-# define __VIR_BRIDGE_DRIVER_PLATFORM_H__
+#ifndef LIBVIRT_BRIDGE_DRIVER_PLATFORM_H
+# define LIBVIRT_BRIDGE_DRIVER_PLATFORM_H
 
 # include "internal.h"
 # include "virthread.h"
@@ -64,4 +64,4 @@ int networkAddFirewallRules(virNetworkDefPtr def);
 
 void networkRemoveFirewallRules(virNetworkDefPtr def);
 
-#endif /* __VIR_BRIDGE_DRIVER_PLATFORM_H__ */
+#endif /* LIBVIRT_BRIDGE_DRIVER_PLATFORM_H */

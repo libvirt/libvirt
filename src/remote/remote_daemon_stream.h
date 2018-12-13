@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __REMOTE_DAEMON_STREAM_H__
-# define __REMOTE_DAEMON_STREAM_H__
+#ifndef LIBVIRT_REMOTE_DAEMON_STREAM_H
+# define LIBVIRT_REMOTE_DAEMON_STREAM_H
 
 # include "remote_daemon.h"
 
@@ -44,4 +44,4 @@ daemonRemoveClientStream(virNetServerClientPtr client,
 void
 daemonRemoveAllClientStreams(daemonClientStream *stream);
 
-#endif /* __REMOTE_DAEMON_STREAM_H__ */
+#endif /* LIBVIRT_REMOTE_DAEMON_STREAM_H */

@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef QEMU_MONITOR_H
-# define QEMU_MONITOR_H
+#ifndef LIBVIRT_QEMU_MONITOR_H
+# define LIBVIRT_QEMU_MONITOR_H
 
 # include "internal.h"
 
@@ -1194,4 +1194,4 @@ struct _qemuMonitorPRManagerInfo {
 int qemuMonitorGetPRManagerInfo(qemuMonitorPtr mon,
                                 virHashTablePtr *retinfo);
 
-#endif /* QEMU_MONITOR_H */
+#endif /* LIBVIRT_QEMU_MONITOR_H */

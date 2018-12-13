@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SECRET_EVENT_H__
-# define __SECRET_EVENT_H__
+#ifndef LIBVIRT_SECRET_EVENT_H
+# define LIBVIRT_SECRET_EVENT_H
 
 # include "internal.h"
 # include "object_event.h"
@@ -62,4 +62,4 @@ virSecretEventValueChangedNew(const unsigned char *uuid,
                               int usage_type,
                               const char *usage_id);
 
-#endif /* __SECRET_EVENT_H__ */
+#endif /* LIBVIRT_SECRET_EVENT_H */

@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_SERVER_CLIENT_H__
-# define __VIR_NET_SERVER_CLIENT_H__
+#ifndef LIBVIRT_VIRNETSERVERCLIENT_H
+# define LIBVIRT_VIRNETSERVERCLIENT_H
 
 # include "viridentity.h"
 # include "virnetsocket.h"
@@ -170,4 +170,4 @@ int virNetServerClientGetInfo(virNetServerClientPtr client,
 
 void virNetServerClientSetQuietEOF(virNetServerClientPtr client);
 
-#endif /* __VIR_NET_SERVER_CLIENT_H__ */
+#endif /* LIBVIRT_VIRNETSERVERCLIENT_H */

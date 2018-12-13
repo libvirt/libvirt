@@ -20,9 +20,8 @@
 #include "conf/cpu_conf.h"
 #include "cpu/cpu.h"
 #include "qemu/qemu_capabilities.h"
-#define __QEMU_CAPSPRIV_H_ALLOW__
+#define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 #include "qemu/qemu_capspriv.h"
-#undef __QEMU_CAPSPRIV_H_ALLOW__
 #include "testutilshostcpus.h"
 #include "virarch.h"
 

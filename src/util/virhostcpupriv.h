@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef __VIR_HOSTCPU_PRIV_H_ALLOW__
+#ifndef LIBVIRT_VIRHOSTCPUPRIV_H_ALLOW
 # error "virhostcpupriv.h may only be included by virhostcpu.c or test suites"
-#endif /* __VIR_HOSTCPU_PRIV_H_ALLOW__ */
+#endif /* LIBVIRT_VIRHOSTCPUPRIV_H_ALLOW */
 
-#ifndef __VIR_HOSTCPU_PRIV_H__
-# define __VIR_HOSTCPU_PRIV_H__
+#ifndef LIBVIRT_VIRHOSTCPUPRIV_H
+# define LIBVIRT_VIRHOSTCPUPRIV_H
 
 # include "virhostcpu.h"
 
@@ -44,4 +44,4 @@ int virHostCPUGetStatsLinux(FILE *procstat,
                             int *nparams);
 # endif
 
-#endif /* __VIR_HOSTCPU_PRIV_H__ */
+#endif /* LIBVIRT_VIRHOSTCPUPRIV_H */

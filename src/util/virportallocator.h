@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_PORT_ALLOCATOR_H__
-# define __VIR_PORT_ALLOCATOR_H__
+#ifndef LIBVIRT_VIRPORTALLOCATOR_H
+# define LIBVIRT_VIRPORTALLOCATOR_H
 
 # include "internal.h"
 # include "virobject.h"
@@ -42,4 +42,4 @@ int virPortAllocatorRelease(unsigned short port);
 
 int virPortAllocatorSetUsed(unsigned short port);
 
-#endif /* __VIR_PORT_ALLOCATOR_H__ */
+#endif /* LIBVIRT_VIRPORTALLOCATOR_H */

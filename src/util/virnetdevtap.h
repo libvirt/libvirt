@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NETDEV_TAP_H__
-# define __VIR_NETDEV_TAP_H__
+#ifndef LIBVIRT_VIRNETDEVTAP_H
+# define LIBVIRT_VIRNETDEVTAP_H
 
 # include "internal.h"
 # include "virnetdev.h"
@@ -92,4 +92,4 @@ int virNetDevTapInterfaceStats(const char *ifname,
                                bool swapped)
     ATTRIBUTE_RETURN_CHECK;
 
-#endif /* __VIR_NETDEV_TAP_H__ */
+#endif /* LIBVIRT_VIRNETDEVTAP_H */

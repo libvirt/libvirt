@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBXL_DOMAIN_H
-# define LIBXL_DOMAIN_H
+#ifndef LIBVIRT_LIBXL_DOMAIN_H
+# define LIBVIRT_LIBXL_DOMAIN_H
 
 # include <libxl.h>
 
@@ -156,4 +156,4 @@ libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
                                 virDomainDefPtr src,
                                 virDomainDefPtr dst);
 
-#endif /* LIBXL_DOMAIN_H */
+#endif /* LIBVIRT_LIBXL_DOMAIN_H */

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_MACADDR_H__
-# define __VIR_MACADDR_H__
+#ifndef LIBVIRT_VIRMACADDR_H
+# define LIBVIRT_VIRMACADDR_H
 
 # include "internal.h"
 # include "viralloc.h"
@@ -66,4 +66,4 @@ void virMacAddrFree(virMacAddrPtr addr);
 
 VIR_DEFINE_AUTOPTR_FUNC(virMacAddr, virMacAddrFree)
 
-#endif /* __VIR_MACADDR_H__ */
+#endif /* LIBVIRT_VIRMACADDR_H */

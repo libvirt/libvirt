@@ -16,16 +16,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_MONITOR_PRIV_H_ALLOW__
+#ifndef LIBVIRT_QEMU_MONITOR_PRIV_H_ALLOW
 # error "qemu_monitor_priv.h may only be included by qemu_monitor.c or test suites"
-#endif /* __QEMU_MONITOR_PRIV_H_ALLOW__ */
+#endif /* LIBVIRT_QEMU_MONITOR_PRIV_H_ALLOW */
 
-#ifndef __QEMU_MONITOR_PRIV_H__
-# define __QEMU_MONITOR_PRIV_H__
+#ifndef LIBVIRT_QEMU_MONITOR_PRIV_H
+# define LIBVIRT_QEMU_MONITOR_PRIV_H
 
 # include "qemu_monitor.h"
 
 void
 qemuMonitorResetCommandID(qemuMonitorPtr mon);
 
-#endif /* __QEMU_MONITOR_PRIV_H__ */
+#endif /* LIBVIRT_QEMU_MONITOR_PRIV_H */

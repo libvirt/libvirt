@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_DOMAIN_SNAPSHOT_H__
-# define __VIR_LIBVIRT_DOMAIN_SNAPSHOT_H__
+#ifndef LIBVIRT_DOMAIN_SNAPSHOT_H
+# define LIBVIRT_DOMAIN_SNAPSHOT_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -210,4 +210,4 @@ int virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 int virDomainSnapshotRef(virDomainSnapshotPtr snapshot);
 int virDomainSnapshotFree(virDomainSnapshotPtr snapshot);
 
-#endif /* __VIR_LIBVIRT_DOMAIN_SNAPSHOT_H__ */
+#endif /* LIBVIRT_DOMAIN_SNAPSHOT_H */

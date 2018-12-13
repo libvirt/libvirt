@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_RESCTRL_H__
-# define __VIR_RESCTRL_H__
+#ifndef LIBVIRT_VIRRESCTRL_H
+# define LIBVIRT_VIRRESCTRL_H
 
 # include "internal.h"
 
@@ -235,4 +235,4 @@ virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
 void
 virResctrlMonitorFreeStats(virResctrlMonitorStatsPtr *stats,
                            size_t nstats);
-#endif /* __VIR_RESCTRL_H__ */
+#endif /* LIBVIRT_VIRRESCTRL_H */

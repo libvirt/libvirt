@@ -24,9 +24,8 @@
 # include "storage/storage_driver.h"
 # include "virmock.h"
 
-# define __QEMU_CAPSPRIV_H_ALLOW__
+# define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 # include "qemu/qemu_capspriv.h"
-# undef __QEMU_CAPSPRIV_H_ALLOW__
 
 # include "testutilsqemu.h"
 

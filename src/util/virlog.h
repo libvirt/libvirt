@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIRTLOG_H_
-# define __VIRTLOG_H_
+#ifndef LIBVIRT_VIRLOG_H
+# define LIBVIRT_VIRLOG_H
 
 # include "internal.h"
 # include "virbuffer.h"
@@ -239,4 +239,4 @@ int virLogParseOutputs(const char *src,
 int virLogParseFilters(const char *src,
                        virLogFilterPtr **filters) ATTRIBUTE_NONNULL(1);
 
-#endif /* __VIRTLOG_H_ */
+#endif /* LIBVIRT_VIRLOG_H */

@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_VHBA_H__
-# define __VIR_VHBA_H__
+#ifndef LIBVIRT_VIRVHBA_H
+# define LIBVIRT_VIRVHBA_H
 
 # include "internal.h"
 
@@ -59,4 +59,4 @@ virVHBAGetHostByFabricWWN(const char *sysfs_prefix,
                           const char *fabric_wwn)
     ATTRIBUTE_NONNULL(2);
 
-#endif /* __VIR_VHBA_H__ */
+#endif /* LIBVIRT_VIRVHBA_H */

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LOG_MANAGER_H__
-# define __VIR_LOG_MANAGER_H__
+#ifndef LIBVIRT_LOG_MANAGER_H
+# define LIBVIRT_LOG_MANAGER_H
 
 # include "internal.h"
 
@@ -62,4 +62,4 @@ int virLogManagerDomainAppendMessage(virLogManagerPtr mgr,
                                      const char *message,
                                      unsigned int flags);
 
-#endif /* __VIR_LOG_MANAGER_H__ */
+#endif /* LIBVIRT_LOG_MANAGER_H */

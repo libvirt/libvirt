@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __REMOTE_DAEMON_H__
-# define __REMOTE_DAEMON_H__
+#ifndef LIBVIRT_REMOTE_DAEMON_H
+# define LIBVIRT_REMOTE_DAEMON_H
 
 # define VIR_ENUM_SENTINELS
 
@@ -88,4 +88,4 @@ extern virNetSASLContextPtr saslCtxt;
 extern virNetServerProgramPtr remoteProgram;
 extern virNetServerProgramPtr qemuProgram;
 
-#endif /* __REMOTE_DAEMON_H__ */
+#endif /* LIBVIRT_REMOTE_DAEMON_H */

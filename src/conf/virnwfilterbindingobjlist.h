@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NWFILTER_BINDING_OBJ_LIST_H__
-# define __VIR_NWFILTER_BINDING_OBJ_LIST_H__
+#ifndef LIBVIRT_VIRNWFILTERBINDINGOBJLIST_H
+# define LIBVIRT_VIRNWFILTERBINDINGOBJLIST_H
 
 # include "virnwfilterbindingobj.h"
 
@@ -64,4 +64,4 @@ virNWFilterBindingObjListExport(virNWFilterBindingObjListPtr bindings,
                                 virNWFilterBindingObjListACLFilter filter);
 
 
-#endif /* __VIR_NWFILTER_BINDING_OBJ_LIST_H__ */
+#endif /* LIBVIRT_VIRNWFILTERBINDINGOBJLIST_H */

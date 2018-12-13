@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef BHYVE_CONF_H
-# define BHYVE_CONF_H
+#ifndef LIBVIRT_BHYVE_CONF_H
+# define LIBVIRT_BHYVE_CONF_H
 
 # include "bhyve_utils.h"
 
@@ -29,4 +29,4 @@ virBhyveDriverConfigPtr virBhyveDriverGetConfig(bhyveConnPtr driver);
 int virBhyveLoadDriverConfig(virBhyveDriverConfigPtr cfg,
                              const char *filename);
 
-#endif /* BHYVE_CONF_H */
+#endif /* LIBVIRT_BHYVE_CONF_H */

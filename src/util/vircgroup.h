@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CGROUP_H__
-# define __VIR_CGROUP_H__
+#ifndef LIBVIRT_VIRCGROUP_H
+# define LIBVIRT_VIRCGROUP_H
 
 # include "virutil.h"
 # include "virbitmap.h"
@@ -284,4 +284,4 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
 int virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller);
 
 bool virCgroupControllerAvailable(int controller);
-#endif /* __VIR_CGROUP_H__ */
+#endif /* LIBVIRT_VIRCGROUP_H */

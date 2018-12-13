@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_BLOCK_H__
-# define __QEMU_BLOCK_H__
+#ifndef LIBVIRT_QEMU_BLOCK_H
+# define LIBVIRT_QEMU_BLOCK_H
 
 # include "internal.h"
 
@@ -125,4 +125,4 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
                            virStorageSourcePtr newsrc,
                            bool reuse);
 
-#endif /* __QEMU_BLOCK_H__ */
+#endif /* LIBVIRT_QEMU_BLOCK_H */

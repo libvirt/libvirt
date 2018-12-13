@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIRT_HOST_VALIDATE_COMMON_H__
-# define __VIRT_HOST_VALIDATE_COMMON_H__
+#ifndef LIBVIRT_VIRT_HOST_VALIDATE_COMMON_H
+# define LIBVIRT_VIRT_HOST_VALIDATE_COMMON_H
 
 # include "internal.h"
 # include "virutil.h"
@@ -84,4 +84,4 @@ int virHostValidateCGroupControllers(const char *hvname,
 int virHostValidateIOMMU(const char *hvname,
                          virHostValidateLevel level);
 
-#endif /* __VIRT_HOST_VALIDATE_COMMON_H__ */
+#endif /* LIBVIRT_VIRT_HOST_VALIDATE_COMMON_H */

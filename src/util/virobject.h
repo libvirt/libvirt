@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_OBJECT_H__
-# define __VIR_OBJECT_H__
+#ifndef LIBVIRT_VIROBJECT_H
+# define LIBVIRT_VIROBJECT_H
 
 # include "internal.h"
 # include "virthread.h"
@@ -152,4 +152,4 @@ void
 virObjectListFreeCount(void *list,
                        size_t count);
 
-#endif /* __VIR_OBJECT_H__ */
+#endif /* LIBVIRT_VIROBJECT_H */

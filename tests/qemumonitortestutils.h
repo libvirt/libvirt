@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef __VIR_QEMU_MONITOR_TEST_UTILS_H__
-# define __VIR_QEMU_MONITOR_TEST_UTILS_H__
+#ifndef LIBVIRT_QEMUMONITORTESTUTILS_H
+# define LIBVIRT_QEMUMONITORTESTUTILS_H
 
 # include "domain_conf.h"
 # include "qemu/qemu_conf.h"
@@ -101,4 +101,4 @@ qemuMonitorPtr qemuMonitorTestGetMonitor(qemuMonitorTestPtr test);
 qemuAgentPtr qemuMonitorTestGetAgent(qemuMonitorTestPtr test);
 virDomainObjPtr qemuMonitorTestGetDomainObj(qemuMonitorTestPtr test);
 
-#endif /* __VIR_QEMU_MONITOR_TEST_UTILS_H__ */
+#endif /* LIBVIRT_QEMUMONITORTESTUTILS_H */

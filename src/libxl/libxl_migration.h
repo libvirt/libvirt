@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBXL_MIGRATION_H
-# define LIBXL_MIGRATION_H
+#ifndef LIBVIRT_LIBXL_MIGRATION_H
+# define LIBVIRT_LIBXL_MIGRATION_H
 
 # include "libxl_conf.h"
 
@@ -98,4 +98,4 @@ libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
                                unsigned int flags,
                                int cancelled);
 
-#endif /* LIBXL_MIGRATION_H */
+#endif /* LIBVIRT_LIBXL_MIGRATION_H */

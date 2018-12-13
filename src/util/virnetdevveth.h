@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NETDEV_VETH_H__
-# define __VIR_NETDEV_VETH_H__
+#ifndef LIBVIRT_VIRNETDEVVETH_H
+# define LIBVIRT_VIRNETDEVVETH_H
 
 # include "internal.h"
 
@@ -28,4 +28,4 @@ int virNetDevVethCreate(char **veth1, char **veth2)
 int virNetDevVethDelete(const char *veth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-#endif /* __VIR_NETDEV_VETH_H__ */
+#endif /* LIBVIRT_VIRNETDEVVETH_H */

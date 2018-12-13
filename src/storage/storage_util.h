@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_STORAGE_UTIL_H__
-# define __VIR_STORAGE_UTIL_H__
+#ifndef LIBVIRT_STORAGE_UTIL_H
+# define LIBVIRT_STORAGE_UTIL_H
 
 # include <sys/stat.h>
 
@@ -190,4 +190,4 @@ virStorageBackendLogicalChangeCmd(const char *cmdstr,
                                   virStoragePoolDefPtr def,
                                   bool on);
 
-#endif /* __VIR_STORAGE_UTIL_H__ */
+#endif /* LIBVIRT_STORAGE_UTIL_H */

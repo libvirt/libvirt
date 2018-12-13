@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMU_ALIAS_H__
-# define __QEMU_ALIAS_H__
+#ifndef LIBVIRT_QEMU_ALIAS_H
+# define LIBVIRT_QEMU_ALIAS_H
 
 # include "domain_conf.h"
 
@@ -97,4 +97,4 @@ const char *qemuDomainGetManagedPRAlias(void);
 
 char *qemuDomainGetUnmanagedPRAlias(const char *parentalias);
 
-#endif /* __QEMU_ALIAS_H__ */
+#endif /* LIBVIRT_QEMU_ALIAS_H */

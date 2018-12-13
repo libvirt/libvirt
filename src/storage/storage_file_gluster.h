@@ -19,9 +19,9 @@
  *
  */
 
-#ifndef __VIR_STORAGE_FILE_GLUSTER_H__
-# define __VIR_STORAGE_FILE_GLUSTER_H__
+#ifndef LIBVIRT_STORAGE_FILE_GLUSTER_H
+# define LIBVIRT_STORAGE_FILE_GLUSTER_H
 
 int virStorageFileGlusterRegister(void);
 
-#endif /* __VIR_STORAGE_FILE_GLUSTER_H__ */
+#endif /* LIBVIRT_STORAGE_FILE_GLUSTER_H */

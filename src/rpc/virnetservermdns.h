@@ -21,8 +21,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_NET_SERVER_MDNS_H__
-# define __VIR_NET_SERVER_MDNS_H__
+#ifndef LIBVIRT_VIRNETSERVERMDNS_H
+# define LIBVIRT_VIRNETSERVERMDNS_H
 
 # include "internal.h"
 
@@ -104,4 +104,4 @@ void virNetServerMDNSFree(virNetServerMDNSPtr ptr);
 void virNetServerMDNSGroupFree(virNetServerMDNSGroupPtr ptr);
 void virNetServerMDNSEntryFree(virNetServerMDNSEntryPtr ptr);
 
-#endif /* __VIR_NET_SERVER_MDNS_H__ */
+#endif /* LIBVIRT_VIRNETSERVERMDNS_H */

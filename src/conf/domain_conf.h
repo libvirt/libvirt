@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DOMAIN_CONF_H
-# define __DOMAIN_CONF_H
+#ifndef LIBVIRT_DOMAIN_CONF_H
+# define LIBVIRT_DOMAIN_CONF_H
 
 # include <libxml/parser.h>
 # include <libxml/tree.h>
@@ -3678,4 +3678,4 @@ virDomainGraphicsGetRenderNode(const virDomainGraphicsDef *graphics);
 bool
 virDomainGraphicsNeedsAutoRenderNode(const virDomainGraphicsDef *graphics);
 
-#endif /* __DOMAIN_CONF_H */
+#endif /* LIBVIRT_DOMAIN_CONF_H */

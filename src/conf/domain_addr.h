@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DOMAIN_ADDR_H__
-# define __DOMAIN_ADDR_H__
+#ifndef LIBVIRT_DOMAIN_ADDR_H
+# define LIBVIRT_DOMAIN_ADDR_H
 
 # include "domain_conf.h"
 
@@ -312,4 +312,4 @@ int
 virDomainUSBAddressRelease(virDomainUSBAddressSetPtr addrs,
                            virDomainDeviceInfoPtr info)
     ATTRIBUTE_NONNULL(2);
-#endif /* __DOMAIN_ADDR_H__ */
+#endif /* LIBVIRT_DOMAIN_ADDR_H */

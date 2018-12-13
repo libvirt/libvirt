@@ -16,16 +16,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_RESCTRL_PRIV_H_ALLOW__
+#ifndef LIBVIRT_VIRRESCTRLPRIV_H_ALLOW
 # error "virresctrlpriv.h may only be included by virresctrl.c or test suites"
-#endif /* __VIR_RESCTRL_PRIV_H_ALLOW__ */
+#endif /* LIBVIRT_VIRRESCTRLPRIV_H_ALLOW */
 
-#ifndef __VIR_RESCTRL_PRIV_H__
-# define __VIR_RESCTRL_PRIV_H__
+#ifndef LIBVIRT_VIRRESCTRLPRIV_H
+# define LIBVIRT_VIRRESCTRLPRIV_H
 
 # include "virresctrl.h"
 
 virResctrlAllocPtr
 virResctrlAllocGetUnused(virResctrlInfoPtr resctrl);
 
-#endif /* __VIR_RESCTRL_PRIV_H__ */
+#endif /* LIBVIRT_VIRRESCTRLPRIV_H */

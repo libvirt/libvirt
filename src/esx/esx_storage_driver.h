@@ -20,11 +20,11 @@
  *
  */
 
-#ifndef __ESX_STORAGE_DRIVER_H__
-# define __ESX_STORAGE_DRIVER_H__
+#ifndef LIBVIRT_ESX_STORAGE_DRIVER_H
+# define LIBVIRT_ESX_STORAGE_DRIVER_H
 
 # include "driver.h"
 
 extern virStorageDriver esxStorageDriver;
 
-#endif /* __ESX_STORAGE_DRIVER_H__ */
+#endif /* LIBVIRT_ESX_STORAGE_DRIVER_H */

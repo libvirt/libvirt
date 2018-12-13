@@ -38,7 +38,7 @@
 # include <unistd.h>
 #endif /* __linux__ */
 
-#define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
+#define LIBVIRT_VIRCGROUPPRIV_H_ALLOW
 #include "vircgrouppriv.h"
 
 #include "virutil.h"

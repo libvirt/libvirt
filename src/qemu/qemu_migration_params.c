@@ -30,7 +30,7 @@
 #include "qemu_hotplug.h"
 #include "qemu_migration.h"
 #include "qemu_migration_params.h"
-#define __QEMU_MIGRATION_PARAMSPRIV_H_ALLOW__
+#define LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H_ALLOW
 #include "qemu_migration_paramspriv.h"
 #include "qemu_monitor.h"
 

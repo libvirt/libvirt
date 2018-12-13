@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef __VIR_ATOMIC_H__
-# define __VIR_ATOMIC_H__
+#ifndef LIBVIRT_VIRATOMIC_H
+# define LIBVIRT_VIRATOMIC_H
 
 # include "internal.h"
 
@@ -451,4 +451,4 @@ virAtomicIntXor(volatile unsigned int *atomic,
 
 # endif
 
-#endif /* __VIR_ATOMIC_H__ */
+#endif /* LIBVIRT_VIRATOMIC_H */

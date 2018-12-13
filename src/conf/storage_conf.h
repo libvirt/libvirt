@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_STORAGE_CONF_H__
-# define __VIR_STORAGE_CONF_H__
+#ifndef LIBVIRT_STORAGE_CONF_H
+# define LIBVIRT_STORAGE_CONF_H
 
 # include "internal.h"
 # include "virstorageencryption.h"
@@ -433,4 +433,4 @@ VIR_ENUM_DECL(virStoragePartedFs)
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART  | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE)
 
-#endif /* __VIR_STORAGE_CONF_H__ */
+#endif /* LIBVIRT_STORAGE_CONF_H */

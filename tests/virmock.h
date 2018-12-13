@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_MOCK_H__
-# define __VIR_MOCK_H__
+#ifndef LIBVIRT_VIRMOCK_H
+# define LIBVIRT_VIRMOCK_H
 
 # if HAVE_DLFCN_H
 #  include <dlfcn.h>
@@ -300,4 +300,4 @@
         } \
     } while (0)
 
-#endif /* __VIR_MOCK_H__ */
+#endif /* LIBVIRT_VIRMOCK_H */

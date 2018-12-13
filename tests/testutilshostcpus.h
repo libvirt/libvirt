@@ -14,8 +14,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TESTUTILSHOSTCPUS_H
-# define TESTUTILSHOSTCPUS_H
+#ifndef LIBVIRT_TESTUTILSHOSTCPUS_H
+# define LIBVIRT_TESTUTILSHOSTCPUS_H
 
 # include "conf/cpu_conf.h"
 # include "internal.h"
@@ -166,4 +166,4 @@ testUtilsHostCpusGetDefForArch(virArch arch)
     return NULL;
 }
 
-#endif /* TESTUTILSHOSTCPUS_H */
+#endif /* LIBVIRT_TESTUTILSHOSTCPUS_H */

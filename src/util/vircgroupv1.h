@@ -18,10 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_CGROUP_V1_H__
-# define __VIR_CGROUP_V1_H__
+#ifndef LIBVIRT_VIRCGROUPV1_H
+# define LIBVIRT_VIRCGROUPV1_H
 
 void
 virCgroupV1Register(void);
 
-#endif /* __VIR_CGROUP_V1_H__ */
+#endif /* LIBVIRT_VIRCGROUPV1_H */

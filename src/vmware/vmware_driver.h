@@ -16,9 +16,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VMWARE_DRIVER_H
-# define VMWARE_DRIVER_H
+#ifndef LIBVIRT_VMWARE_DRIVER_H
+# define LIBVIRT_VMWARE_DRIVER_H
 
 int vmwareRegister(void);
 
-#endif /* VMWARE_DRIVER_H */
+#endif /* LIBVIRT_VMWARE_DRIVER_H */

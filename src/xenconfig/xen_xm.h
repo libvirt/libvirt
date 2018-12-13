@@ -20,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_XEN_XM_H__
-# define __VIR_XEN_XM_H__
+#ifndef LIBVIRT_XEN_XM_H
+# define LIBVIRT_XEN_XM_H
 
 # include "internal.h"
 # include "virconf.h"
@@ -32,4 +32,4 @@ virConfPtr xenFormatXM(virConnectPtr conn, virDomainDefPtr def);
 virDomainDefPtr xenParseXM(virConfPtr conf,
                            virCapsPtr caps, virDomainXMLOptionPtr xmlopt);
 
-#endif /* __VIR_XEN_XM_H__ */
+#endif /* LIBVIRT_XEN_XM_H */

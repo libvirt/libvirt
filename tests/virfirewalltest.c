@@ -18,18 +18,17 @@
 
 #include <config.h>
 
-#define __VIR_FIREWALL_PRIV_H_ALLOW__
-#define __VIR_COMMAND_PRIV_H_ALLOW__
-#define __VIR_DBUS_PRIV_H_ALLOW__
-
 #include "testutils.h"
 
 #if defined(__linux__)
 
 # include "virbuffer.h"
+# define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
+# define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 # include "virfirewallpriv.h"
 # include "virmock.h"
+# define LIBVIRT_VIRDBUSPRIV_H_ALLOW
 # include "virdbuspriv.h"
 
 # define VIR_FROM_THIS VIR_FROM_FIREWALL

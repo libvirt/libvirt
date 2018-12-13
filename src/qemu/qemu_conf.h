@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __QEMUD_CONF_H
-# define __QEMUD_CONF_H
+#ifndef LIBVIRT_QEMU_CONF_H
+# define LIBVIRT_QEMU_CONF_H
 
 # include <unistd.h>
 
@@ -385,4 +385,4 @@ int qemuGetMemoryBackingPath(const virDomainDef *def,
                              virQEMUDriverConfigPtr cfg,
                              const char *alias,
                              char **memPath);
-#endif /* __QEMUD_CONF_H */
+#endif /* LIBVIRT_QEMU_CONF_H */
