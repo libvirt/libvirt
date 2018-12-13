@@ -40,6 +40,7 @@
 
 #include "c-ctype.h"
 #include "viralloc.h"
+#define __VIR_HOSTCPU_PRIV_H_ALLOW__
 #include "virhostcpupriv.h"
 #include "physmem.h"
 #include "virerror.h"

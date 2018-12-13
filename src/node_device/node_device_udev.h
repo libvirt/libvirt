@@ -18,8 +18,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <libudev.h>
+#ifndef __NODE_DEVICE_UDEV_H__
+# define __NODE_DEVICE_UDEV_H__
 
-#define SYSFS_DATA_SIZE 4096
-#define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
-#define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"
+# include <libudev.h>
+
+# define SYSFS_DATA_SIZE 4096
+# define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
+# define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"
+
+#endif /* __NODE_DEVICE_UDEV_H__ */

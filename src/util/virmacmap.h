@@ -46,4 +46,5 @@ int virMacMapWriteFile(virMacMapPtr mgr,
 
 int virMacMapDumpStr(virMacMapPtr mgr,
                      char **str);
-#endif /* __VIR_MACMAPPING_H__ */
+
+#endif /* __VIR_MACMAP_H__ */

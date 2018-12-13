@@ -98,4 +98,4 @@ libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
                                unsigned int flags,
                                int cancelled);
 
-#endif /* LIBXL_DRIVER_H */
+#endif /* LIBXL_MIGRATION_H */

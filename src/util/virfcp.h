@@ -29,4 +29,4 @@ virFCReadRportValue(const char *rport,
                     const char *entry,
                     char **result);
 
-#endif
+#endif /* __VIR_FCP_H__ */

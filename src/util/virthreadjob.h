@@ -28,4 +28,4 @@ void virThreadJobSetWorker(const char *caller);
 void virThreadJobSet(const char *caller);
 void virThreadJobClear(int rv);
 
-#endif
+#endif /* __VIR_THREAD_JOB_H__ */

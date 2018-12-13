@@ -20,7 +20,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef OPENVZ_DRIVER_H
 # define OPENVZ_DRIVER_H
 
@@ -38,4 +37,4 @@
 
 int openvzRegister(void);
 
-#endif
+#endif /* OPENVZ_DRIVER_H */

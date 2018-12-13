@@ -25,4 +25,4 @@
 
 int vzRegister(void);
 
-#endif
+#endif /* PARALLELS_DRIVER_H */

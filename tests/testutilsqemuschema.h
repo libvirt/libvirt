@@ -16,9 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "virhash.h"
-#include "virjson.h"
-#include "virbuffer.h"
+#ifndef __TESTUTILSQEMUSCHEMA_H__
+# define __TESTUTILSQEMUSCHEMA_H__
+
+# include "virhash.h"
+# include "virjson.h"
+# include "virbuffer.h"
 
 int
 testQEMUSchemaValidate(virJSONValuePtr obj,
@@ -31,3 +34,5 @@ testQEMUSchemaGetLatest(void);
 
 virHashTablePtr
 testQEMUSchemaLoad(void);
+
+#endif /* __TESTUTILSQEMUSCHEMA_H__ */

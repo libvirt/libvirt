@@ -66,4 +66,4 @@ int sexpr_int(const struct sexpr *sexpr, const char *name);
 double sexpr_float(const struct sexpr *sexpr, const char *name);
 uint64_t sexpr_u64(const struct sexpr *sexpr, const char *name);
 
-#endif
+#endif /* _LIBVIR_SEXPR_H_ */

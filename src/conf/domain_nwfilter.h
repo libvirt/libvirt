@@ -18,6 +18,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef DOMAIN_NWFILTER_H
 # define DOMAIN_NWFILTER_H
 

@@ -19,6 +19,10 @@
  *
  */
 
+#ifndef __QEMU_PROCESS_PRIV_H_ALLOW__
+# error "qemu_process_priv.h may only be included by qemu_process.c or test suites"
+#endif /* __QEMU_PROCESS_PRIV_H_ALLOW__ */
+
 #ifndef __QEMU_PROCESSPRIV_H__
 # define __QEMU_PROCESSPRIV_H__
 

@@ -19,7 +19,6 @@
  *
  */
 
-
 #ifndef __VIR_NODE_SUSPEND_H__
 # define __VIR_NODE_SUSPEND_H__
 

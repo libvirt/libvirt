@@ -20,10 +20,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "datatypes.h"
-
 #ifndef __OBJECT_EVENT_PRIVATE_H__
 # define __OBJECT_EVENT_PRIVATE_H__
+
+# include "datatypes.h"
 
 struct _virObjectMeta {
     int id;
@@ -106,4 +106,4 @@ virObjectEventNew(virClassPtr klass,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
     ATTRIBUTE_NONNULL(7);
 
-#endif
+#endif /* __OBJECT_EVENT_PRIVATE_H__ */

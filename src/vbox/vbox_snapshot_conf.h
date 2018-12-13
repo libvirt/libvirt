@@ -138,4 +138,4 @@ virVBoxSnapshotConfSnapshotPtr
 virVBoxSnapshotConfSnapshotByName(virVBoxSnapshotConfSnapshotPtr snapshot,
                                   const char *snapshotName);
 
-#endif /*VBOX_SNAPSHOT_CONF_H*/
+#endif /* VBOX_SNAPSHOT_CONF_H */

@@ -208,4 +208,4 @@ void virErrorRestore(virErrorPtr *savederr);
 
 VIR_DEFINE_AUTOPTR_FUNC(virError, virFreeError)
 
-#endif
+#endif /* __VIRT_ERROR_H_ */

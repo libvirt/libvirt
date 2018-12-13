@@ -298,4 +298,4 @@ int virStreamInData(virStreamPtr stream,
                     int *data,
                     long long *length);
 
-#endif
+#endif /* __LIBVIRT_H_ */

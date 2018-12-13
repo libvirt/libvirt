@@ -52,5 +52,4 @@ char *virSecretDefFormat(const virSecretDef *def);
                 (VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL  | \
                  VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE)
 
-
-#endif
+#endif /* __VIR_SECRET_CONF_H__ */

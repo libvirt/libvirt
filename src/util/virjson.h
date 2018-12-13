@@ -20,7 +20,6 @@
  *
  */
 
-
 #ifndef __VIR_JSON_H_
 # define __VIR_JSON_H_
 

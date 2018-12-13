@@ -19,7 +19,6 @@
  *
  */
 
-
 #ifndef __VIR_TYPED_PARAM_H_
 # define __VIR_TYPED_PARAM_H_
 
@@ -135,4 +134,4 @@ VIR_ENUM_DECL(virTypedParameter)
         } \
     } while (0)
 
-#endif /* __VIR_TYPED_PARAM_H */
+#endif /* __VIR_TYPED_PARAM_H_ */

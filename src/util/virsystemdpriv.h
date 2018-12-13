@@ -21,7 +21,7 @@
 
 #ifndef __VIR_SYSTEMD_PRIV_H_ALLOW__
 # error "virsystemdpriv.h may only be included by virsystemd.c or test suites"
-#endif
+#endif /* __VIR_SYSTEMD_PRIV_H_ALLOW__ */
 
 #ifndef __VIR_SYSTEMD_PRIV_H__
 # define __VIR_SYSTEMD_PRIV_H__

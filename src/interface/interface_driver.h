@@ -18,7 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __VIR_INTERFACE__DRIVER_H
 # define __VIR_INTERFACE__DRIVER_H
 

@@ -30,4 +30,4 @@ int virKeycodeValueTranslate(virKeycodeSet from_codeset,
                         virKeycodeSet to_offset,
                         int key_value);
 
-#endif
+#endif /* __VIR_UTIL_VIRTKEYCODE_H__ */

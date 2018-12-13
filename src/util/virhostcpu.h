@@ -66,4 +66,4 @@ int virHostCPUGetOnline(unsigned int cpu, bool *online);
 
 unsigned int virHostCPUGetMicrocodeVersion(void);
 
-#endif /* __VIR_HOSTCPU_H__*/
+#endif /* __VIR_HOSTCPU_H__ */

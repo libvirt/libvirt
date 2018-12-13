@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef QEMU_MONITOR_H
 # define QEMU_MONITOR_H
 

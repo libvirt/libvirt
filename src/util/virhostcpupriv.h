@@ -19,6 +19,10 @@
  *
  */
 
+#ifndef __VIR_HOSTCPU_PRIV_H_ALLOW__
+# error "virhostcpupriv.h may only be included by virhostcpu.c or test suites"
+#endif /* __VIR_HOSTCPU_PRIV_H_ALLOW__ */
+
 #ifndef __VIR_HOSTCPU_PRIV_H__
 # define __VIR_HOSTCPU_PRIV_H__
 

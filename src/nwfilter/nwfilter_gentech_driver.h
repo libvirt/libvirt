@@ -19,6 +19,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __NWFILTER_GENTECH_DRIVER_H
 # define __NWFILTER_GENTECH_DRIVER_H
 
@@ -55,4 +56,4 @@ virHashTablePtr virNWFilterCreateVarHashmap(const char *macaddr,
 int virNWFilterBuildAll(virNWFilterDriverStatePtr driver,
                         bool newFilters);
 
-#endif
+#endif /* __NWFILTER_GENTECH_DRIVER_H */

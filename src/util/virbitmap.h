@@ -156,4 +156,4 @@ void virBitmapShrink(virBitmapPtr map, size_t b);
 
 VIR_DEFINE_AUTOPTR_FUNC(virBitmap, virBitmapFree)
 
-#endif
+#endif /* __BITMAP_H__ */

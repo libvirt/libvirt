@@ -127,4 +127,4 @@ int virEventPollToNativeEvents(int events);
 int virEventPollInterrupt(void);
 
 
-#endif /* __VIRTD_EVENT_H__ */
+#endif /* __VIR_EVENT_POLL_H__ */

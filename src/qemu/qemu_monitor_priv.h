@@ -18,7 +18,7 @@
 
 #ifndef __QEMU_MONITOR_PRIV_H_ALLOW__
 # error "qemu_monitor_priv.h may only be included by qemu_monitor.c or test suites"
-#endif
+#endif /* __QEMU_MONITOR_PRIV_H_ALLOW__ */
 
 #ifndef __QEMU_MONITOR_PRIV_H__
 # define __QEMU_MONITOR_PRIV_H__
@@ -28,4 +28,4 @@
 void
 qemuMonitorResetCommandID(qemuMonitorPtr mon);
 
-#endif
+#endif /* __QEMU_MONITOR_PRIV_H__ */

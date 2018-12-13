@@ -35,6 +35,7 @@
 #include <sys/utsname.h>
 
 #include "qemu_process.h"
+#define __QEMU_PROCESS_PRIV_H_ALLOW__
 #include "qemu_processpriv.h"
 #include "qemu_alias.h"
 #include "qemu_block.h"

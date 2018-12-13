@@ -199,4 +199,4 @@ void virHashValueFree(void *value, const void *name);
 
 VIR_DEFINE_AUTOPTR_FUNC(virHashTable, virHashFree)
 
-#endif                          /* ! __VIR_HASH_H__ */
+#endif /* __VIR_HASH_H__ */

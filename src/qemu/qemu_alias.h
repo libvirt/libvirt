@@ -97,4 +97,4 @@ const char *qemuDomainGetManagedPRAlias(void);
 
 char *qemuDomainGetUnmanagedPRAlias(const char *parentalias);
 
-#endif /* __QEMU_ALIAS_H__*/
+#endif /* __QEMU_ALIAS_H__ */

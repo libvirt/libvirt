@@ -20,12 +20,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "internal.h"
-
-#include "virobject.h"
-
 #ifndef __OBJECT_EVENT_H__
 # define __OBJECT_EVENT_H__
+
+# include "internal.h"
+
+# include "virobject.h"
 
 /**
  * Dispatching domain events that come in while
@@ -89,4 +89,4 @@ virObjectEventStateSetRemote(virConnectPtr conn,
                              int remoteID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-#endif
+#endif /* __OBJECT_EVENT_H__ */

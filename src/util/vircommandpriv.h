@@ -21,7 +21,7 @@
 
 #ifndef __VIR_COMMAND_PRIV_H_ALLOW__
 # error "vircommandpriv.h may only be included by vircommand.c or test suites"
-#endif
+#endif /* __VIR_COMMAND_PRIV_H_ALLOW__ */
 
 #ifndef __VIR_COMMAND_PRIV_H__
 # define __VIR_COMMAND_PRIV_H__

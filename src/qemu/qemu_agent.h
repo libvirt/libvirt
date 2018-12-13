@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __QEMU_AGENT_H__
 # define __QEMU_AGENT_H__
 

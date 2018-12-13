@@ -20,9 +20,12 @@
  *
  */
 
-#include <Parallels.h>
+#ifndef __VZ_SDK_H__
+# define __VZ_SDK_H__
 
-#include "vz_utils.h"
+# include <Parallels.h>
+
+# include "vz_utils.h"
 
 int prlsdkInit(void);
 void prlsdkDeinit(void);
@@ -91,3 +94,5 @@ PRL_HANDLE
 prlsdkSdkDomainLookupByName(vzDriverPtr driver, const char *name);
 int prlsdkCancelJob(virDomainObjPtr dom);
 int prlsdkResizeImage(virDomainObjPtr dom, virDomainDiskDefPtr disk, unsigned long long newsize);
+
+#endif /* __VZ_SDK_H__ */

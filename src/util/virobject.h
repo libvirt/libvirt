@@ -152,4 +152,4 @@ void
 virObjectListFreeCount(void *list,
                        size_t count);
 
-#endif /* __VIR_OBJECT_H */
+#endif /* __VIR_OBJECT_H__ */

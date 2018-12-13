@@ -17,6 +17,7 @@
  */
 
 #ifndef __VIR_FILE_MOCK_H__
+# define __VIR_FILE_MOCK_H__
 
 int
 virFileWrapperAddPrefix(const char *prefix,

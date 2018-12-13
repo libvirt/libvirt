@@ -18,6 +18,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __VIR_CHRDEV_H__
 # define __VIR_CHRDEV_H__
 
@@ -32,4 +33,5 @@ void virChrdevFree(virChrdevsPtr devs);
 
 int virChrdevOpen(virChrdevsPtr devs, virDomainChrSourceDefPtr source,
                   virStreamPtr st, bool force);
-#endif /*__VIR_CHRDEV_H__*/
+
+#endif /* __VIR_CHRDEV_H__ */

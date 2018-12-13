@@ -19,7 +19,6 @@
  *
  */
 
-
 #ifndef __LIBVIRT_AUDIT_H__
 # define __LIBVIRT_AUDIT_H__
 

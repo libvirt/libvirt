@@ -16,6 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __VIR_RESCTRL_PRIV_H_ALLOW__
+# error "virresctrlpriv.h may only be included by virresctrl.c or test suites"
+#endif /* __VIR_RESCTRL_PRIV_H_ALLOW__ */
+
 #ifndef __VIR_RESCTRL_PRIV_H__
 # define __VIR_RESCTRL_PRIV_H__
 

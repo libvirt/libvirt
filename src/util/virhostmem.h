@@ -55,4 +55,4 @@ int virHostMemAllocPages(unsigned int npages,
                          unsigned int cellCount,
                          bool add);
 
-#endif /* __VIR_HOSTMEM_H__*/
+#endif /* __VIR_HOSTMEM_H__ */

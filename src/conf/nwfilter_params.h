@@ -18,6 +18,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef NWFILTER_PARAMS_H
 # define NWFILTER_PARAMS_H
 

@@ -33,6 +33,7 @@
 #include "cpu/cpu.h"
 #include "qemu/qemu_monitor.h"
 #include "qemu/qemu_migration_params.h"
+#define __QEMU_MIGRATION_PARAMSPRIV_H_ALLOW__
 #include "qemu/qemu_migration_paramspriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

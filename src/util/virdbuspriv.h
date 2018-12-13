@@ -19,6 +19,10 @@
  *
  */
 
+#ifndef __VIR_DBUS_PRIV_H_ALLOW__
+# error "virdbuspriv.h may only be included by virdbus.c or test suites"
+#endif /* __VIR_DBUS_PRIV_H_ALLOW__ */
+
 #ifndef __VIR_DBUS_PRIV_H__
 # define __VIR_DBUS_PRIV_H__
 

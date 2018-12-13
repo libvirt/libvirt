@@ -18,10 +18,10 @@
  * Stacked security driver
  */
 
-#include "security_driver.h"
-
 #ifndef __VIR_SECURITY_STACK
 # define __VIR_SECURITY_STACK
+
+# include "security_driver.h"
 
 extern virSecurityDriver virSecurityDriverStack;
 

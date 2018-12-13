@@ -25,6 +25,7 @@
 
 #include "virerror.h"
 #include "storage_backend_sheepdog.h"
+#define __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_ALLOW_H__
 #include "storage_backend_sheepdog_priv.h"
 #include "storage_conf.h"
 #include "vircommand.h"

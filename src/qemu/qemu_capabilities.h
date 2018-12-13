@@ -636,4 +636,4 @@ bool virQEMUCapsCPUFilterFeatures(const char *name,
 virSEVCapabilityPtr
 virQEMUCapsGetSEVCapabilities(virQEMUCapsPtr qemuCaps);
 
-#endif /* __QEMU_CAPABILITIES_H__*/
+#endif /* __QEMU_CAPABILITIES_H__ */

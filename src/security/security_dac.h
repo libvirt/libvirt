@@ -18,10 +18,10 @@
  * POSIX DAC security driver
  */
 
-#include "security_driver.h"
-
 #ifndef __VIR_SECURITY_DAC
 # define __VIR_SECURITY_DAC
+
+# include "security_driver.h"
 
 extern virSecurityDriver virSecurityDriverDAC;
 

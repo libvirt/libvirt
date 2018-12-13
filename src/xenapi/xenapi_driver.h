@@ -17,7 +17,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __VIR_XENAPI_PRIV_H__
 # define __VIR_XENAPI_PRIV_H__
 

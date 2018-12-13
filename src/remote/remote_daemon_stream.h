@@ -18,7 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __REMOTE_DAEMON_STREAM_H__
 # define __REMOTE_DAEMON_STREAM_H__
 

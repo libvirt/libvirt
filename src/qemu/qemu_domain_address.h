@@ -20,6 +20,7 @@
  */
 
 #ifndef __QEMU_DOMAIN_ADDRESS_H__
+# define __QEMU_DOMAIN_ADDRESS_H__
 
 # include "domain_addr.h"
 # include "domain_conf.h"
@@ -64,7 +65,5 @@ int qemuDomainEnsureVirtioAddress(bool *releaseAddr,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev,
                                   const char *devicename);
-
-# define __QEMU_DOMAIN_ADDRESS_H__
 
 #endif /* __QEMU_DOMAIN_ADDRESS_H__ */

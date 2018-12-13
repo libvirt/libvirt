@@ -19,6 +19,10 @@
  *
  */
 
+#ifndef __QEMU_HOTPLUGPRIV_H_ALLOW__
+# error "qemu_hotplugpriv.h may only be included by qemu_hotplug.c or test suites"
+#endif /* __QEMU_HOTPLUGPRIV_H_ALLOW__ */
+
 #ifndef __QEMU_HOTPLUGPRIV_H__
 # define __QEMU_HOTPLUGPRIV_H__
 

@@ -513,4 +513,4 @@ enum {
 #  define ENODATA EIO
 # endif
 
-#endif                          /* __VIR_INTERNAL_H__ */
+#endif /* __VIR_INTERNAL_H__ */

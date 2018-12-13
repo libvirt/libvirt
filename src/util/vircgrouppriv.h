@@ -21,7 +21,7 @@
 
 #ifndef __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
 # error "vircgrouppriv.h may only be included by vircgroup.c or its test suite"
-#endif
+#endif /* __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__ */
 
 #ifndef __VIR_CGROUP_PRIV_H__
 # define __VIR_CGROUP_PRIV_H__

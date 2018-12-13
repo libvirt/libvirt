@@ -88,4 +88,4 @@ void virNetServerServiceToggle(virNetServerServicePtr svc,
 
 void virNetServerServiceClose(virNetServerServicePtr svc);
 
-#endif
+#endif /* __VIR_NET_SERVER_SERVICE_H__ */

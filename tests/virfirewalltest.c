@@ -20,6 +20,7 @@
 
 #define __VIR_FIREWALL_PRIV_H_ALLOW__
 #define __VIR_COMMAND_PRIV_H_ALLOW__
+#define __VIR_DBUS_PRIV_H_ALLOW__
 
 #include "testutils.h"
 

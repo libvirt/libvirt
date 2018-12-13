@@ -109,4 +109,4 @@ char ** virshDomainDeviceAliasCompleter(vshControl *ctl,
 char ** virshCellnoCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags);
-#endif
+#endif /* VIRSH_COMPLETER */

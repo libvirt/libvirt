@@ -20,12 +20,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "internal.h"
-#include "object_event.h"
-#include "object_event_private.h"
-
 #ifndef __NODE_DEVICE_EVENT_H__
 # define __NODE_DEVICE_EVENT_H__
+
+# include "internal.h"
+# include "object_event.h"
+# include "object_event_private.h"
 
 int
 virNodeDeviceEventStateRegisterID(virConnectPtr conn,
@@ -59,4 +59,4 @@ virNodeDeviceEventLifecycleNew(const char *name,
 virObjectEventPtr
 virNodeDeviceEventUpdateNew(const char *name);
 
-#endif
+#endif /* __NODE_DEVICE_EVENT_H__ */

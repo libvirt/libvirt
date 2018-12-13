@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __LXC_DOMAIN_H__
 # define __LXC_DOMAIN_H__
 

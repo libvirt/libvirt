@@ -18,7 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __VIR_LOG_MANAGER_H__
 # define __VIR_LOG_MANAGER_H__
 

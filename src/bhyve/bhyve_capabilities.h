@@ -55,4 +55,4 @@ typedef enum {
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);
 int virBhyveProbeCaps(unsigned int *caps);
 
-#endif
+#endif /* _BHYVE_CAPABILITIES */

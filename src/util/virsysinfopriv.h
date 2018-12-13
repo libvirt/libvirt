@@ -19,7 +19,7 @@
 
 #ifndef __VIR_SYSINFO_PRIV_H_ALLOW__
 # error "virsysinfopriv.h may only be included by virsysinfo.c or test suites"
-#endif
+#endif /* __VIR_SYSINFO_PRIV_H_ALLOW__ */
 
 #ifndef __VIR_SYSINFO_PRIV_H__
 # define __VIR_SYSINFO_PRIV_H__

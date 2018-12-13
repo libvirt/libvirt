@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __REMOTE_DAEMON_H__
 # define __REMOTE_DAEMON_H__
 

@@ -16,14 +16,17 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
+#ifndef VIRNETTLSHELPERS_H
+# define VIRNETTLSHELPERS_H
 
-#if !defined WIN32 && HAVE_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
+# include <gnutls/gnutls.h>
+# include <gnutls/x509.h>
 
-# include <libtasn1.h>
+# if !defined WIN32 && HAVE_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
 
-# include "rpc/virnettlscontext.h"
+#  include <libtasn1.h>
+
+#  include "rpc/virnettlscontext.h"
 
 /*
  * This contains parameter about how to generate
@@ -74,4 +77,6 @@ void testTLSDiscardCert(struct testTLSCertReq *req);
 void testTLSInit(const char *keyfile);
 void testTLSCleanup(const char *keyfile);
 
-#endif
+# endif
+
+#endif /* VIRNETTLSHELPERS_H */

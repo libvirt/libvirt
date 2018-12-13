@@ -1122,7 +1122,8 @@ _autogen_error:
 
 ifneq ($(_gl-Makefile),)
 syntax-check: spacing-check test-wrap-argv \
-	prohibit-duplicate-header mock-noinline group-qemu-caps
+	prohibit-duplicate-header mock-noinline group-qemu-caps \
+        header-ifdef
 endif
 
 # Don't include duplicate header in the source (either *.c or *.h)
@@ -1138,6 +1139,10 @@ spacing-check:
 mock-noinline:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.[ch]$$'`; \
 	$(PERL) $(top_srcdir)/build-aux/mock-noinline.pl $$files
+
+header-ifdef:
+	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.[h]$$'`; \
+	$(PERL) $(top_srcdir)/build-aux/header-ifdef.pl $$files
 
 test-wrap-argv:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep -E '\.(ldargs|args)'`; \

@@ -221,4 +221,4 @@ virXMLFormatElement(virBufferPtr buf,
                     virBufferPtr attrBuf,
                     virBufferPtr childBuf);
 
-#endif                          /* __VIR_XML_H__ */
+#endif /* __VIR_XML_H__ */

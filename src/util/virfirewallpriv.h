@@ -20,7 +20,7 @@
 
 #ifndef __VIR_FIREWALL_PRIV_H_ALLOW__
 # error "virfirewallpriv.h may only be included by virfirewall.c or test suites"
-#endif
+#endif /* __VIR_FIREWALL_PRIV_H_ALLOW__ */
 
 #ifndef __VIR_FIREWALL_PRIV_H__
 # define __VIR_FIREWALL_PRIV_H__

@@ -20,7 +20,6 @@
  *
  */
 
-
 #ifndef __VIR_QEMU_H_
 # define __VIR_QEMU_H_
 

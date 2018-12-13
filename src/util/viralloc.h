@@ -20,7 +20,6 @@
  *
  */
 
-
 #ifndef __VIR_MEMORY_H_
 # define __VIR_MEMORY_H_
 

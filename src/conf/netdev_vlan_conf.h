@@ -27,4 +27,4 @@
 int virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr def);
 int virNetDevVlanFormat(const virNetDevVlan *def, virBufferPtr buf);
 
-#endif /* __VIR_NETDEV_VPORT_PROFILE_CONF_H__ */
+#endif /* __VIR_NETDEV_VLAN_CONF_H__ */

@@ -35,4 +35,4 @@ typedef enum {
 
 int virInitctlSetRunLevel(virInitctlRunLevel level);
 
-#endif
+#endif /* __VIR_INITCTL_H__ */

@@ -59,4 +59,4 @@ virVHBAGetHostByFabricWWN(const char *sysfs_prefix,
                           const char *fabric_wwn)
     ATTRIBUTE_NONNULL(2);
 
-#endif /* __VIR_VBHA_H__ */
+#endif /* __VIR_VHBA_H__ */

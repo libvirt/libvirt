@@ -1,4 +1,3 @@
-/*---------------------------------------------------------------------------*/
 /*
  * Copyright (C) 2014 Red Hat, Inc.
  * Copyright 2010, diateam (www.diateam.net)
@@ -18,7 +17,6 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-/*---------------------------------------------------------------------------*/
 
 #ifndef VMWARE_CONF_H
 # define VMWARE_CONF_H
@@ -87,4 +85,4 @@ int vmwareExtractPid(const char * vmxPath);
 
 char *vmwareCopyVMXFileName(const char *datastorePath, void *opaque);
 
-#endif
+#endif /* VMWARE_CONF_H */

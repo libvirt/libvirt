@@ -18,6 +18,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef VIR_NWFILTER_EBTABLES_DRIVER_H__
 # define VIR_NWFILTER_EBTABLES_DRIVER_H__
 
@@ -31,4 +32,4 @@ extern virNWFilterTechDriver ebiptables_driver;
 
 # define IPTABLES_MAX_COMMENT_LENGTH  256
 
-#endif
+#endif /* VIR_NWFILTER_EBTABLES_DRIVER_H__ */

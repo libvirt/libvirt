@@ -227,4 +227,4 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
 
-#endif /* __QEMU_COMMAND_H__*/
+#endif /* __QEMU_COMMAND_H__ */

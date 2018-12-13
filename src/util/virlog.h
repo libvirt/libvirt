@@ -239,4 +239,4 @@ int virLogParseOutputs(const char *src,
 int virLogParseFilters(const char *src,
                        virLogFilterPtr **filters) ATTRIBUTE_NONNULL(1);
 
-#endif
+#endif /* __VIRTLOG_H_ */

@@ -19,6 +19,10 @@
  *
  */
 
+#ifndef __QEMU_MIGRATION_PARAMSPRIV_H_ALLOW__
+# error "qemu_migration_paramspriv.h may only be included by qemu_migration_params.c or test suites"
+#endif /* __QEMU_MIGRATION_PARAMSPRIV_H_ALLOW__ */
+
 #ifndef __QEMU_MIGRATION_PARAMSPRIV_H__
 # define __QEMU_MIGRATION_PARAMSPRIV_H__
 

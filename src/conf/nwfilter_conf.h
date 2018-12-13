@@ -21,6 +21,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef NWFILTER_CONF_H
 # define NWFILTER_CONF_H
 

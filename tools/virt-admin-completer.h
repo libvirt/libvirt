@@ -30,4 +30,4 @@ char **
 vshAdmServerCompleter(vshControl *ctl,
                       const vshCmd *cmd,
                       unsigned int flags);
-#endif
+#endif /* VIRT_ADMIN_COMPLETER */

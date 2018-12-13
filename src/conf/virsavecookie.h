@@ -17,6 +17,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __VIR_SAVE_COOKIE_H__
 # define __VIR_SAVE_COOKIE_H__
 
@@ -59,4 +60,4 @@ char *
 virSaveCookieFormat(virObjectPtr obj,
                     virSaveCookieCallbacksPtr saveCookie);
 
-#endif /*__VIR_SAVE_COOKIE_H__ */
+#endif /* __VIR_SAVE_COOKIE_H__ */

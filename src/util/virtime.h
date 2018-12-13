@@ -73,4 +73,4 @@ int virTimeBackOffStart(virTimeBackOffVar *var,
 
 bool virTimeBackOffWait(virTimeBackOffVar *var);
 
-#endif
+#endif /* __VIR_TIME_H__ */

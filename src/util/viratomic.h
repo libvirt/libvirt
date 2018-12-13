@@ -451,4 +451,4 @@ virAtomicIntXor(volatile unsigned int *atomic,
 
 # endif
 
-#endif /* __VIR_ATOMIC_H */
+#endif /* __VIR_ATOMIC_H__ */

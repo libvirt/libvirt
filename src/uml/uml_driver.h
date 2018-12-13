@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef UML_DRIVER_H
 # define UML_DRIVER_H
 

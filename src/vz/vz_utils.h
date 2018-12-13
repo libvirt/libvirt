@@ -151,11 +151,11 @@ int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr);
     OP(wr_req, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ, "write_requests") \
     OP(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES, "write_total")
 
-#endif
-
 int
 vzDomainObjBeginJob(virDomainObjPtr dom);
 void
 vzDomainObjEndJob(virDomainObjPtr dom);
 int
 vzDomainJobUpdateTime(vzDomainJobObjPtr job);
+
+#endif /* PARALLELS_UTILS_H */

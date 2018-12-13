@@ -17,6 +17,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __VIR_NET_LIBSSH_SESSION_H__
 # define __VIR_NET_LIBSSH_SESSION_H__
 
@@ -72,4 +73,4 @@ ssize_t virNetLibsshChannelWrite(virNetLibsshSessionPtr sess,
 
 bool virNetLibsshSessionHasCachedData(virNetLibsshSessionPtr sess);
 
-#endif /* ___VIR_NET_LIBSSH_SESSION_H_ */
+#endif /* __VIR_NET_LIBSSH_SESSION_H__ */

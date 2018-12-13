@@ -777,4 +777,4 @@ int virAdmConnectCloseCallbackDataRegister(virAdmConnectCloseCallbackDataPtr cbd
 int virAdmConnectCloseCallbackDataUnregister(virAdmConnectCloseCallbackDataPtr cbdata,
                                              virAdmConnectCloseFunc cb);
 
-#endif /* __VIR_DATATYPES_H__ */
+#endif /* __VIR_DATATYPES_H_ */

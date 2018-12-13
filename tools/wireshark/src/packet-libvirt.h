@@ -16,6 +16,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef _PACKET_LIBVIRT_H_
 # define _PACKET_LIBVIRT_H_
 

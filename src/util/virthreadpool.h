@@ -60,4 +60,4 @@ int virThreadPoolSetParameters(virThreadPoolPtr pool,
                                long long int maxWorkers,
                                long long int prioWorkers);
 
-#endif
+#endif /* __VIR_THREADPOOL_H__ */

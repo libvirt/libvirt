@@ -213,4 +213,4 @@ int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
         return 0; \
     }
 
-#endif
+#endif /* __THREADS_H_ */

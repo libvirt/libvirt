@@ -21,7 +21,7 @@
 
 #ifndef __QEMU_CAPSPRIV_H_ALLOW__
 # error "qemu_capspriv.h may only be included by qemu_capabilities.c or test suites"
-#endif
+#endif /* __QEMU_CAPSPRIV_H_ALLOW__ */
 
 #ifndef __QEMU_CAPSPRIV_H__
 # define __QEMU_CAPSPRIV_H__
@@ -98,4 +98,5 @@ virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
 
 void
 virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps);
-#endif
+
+#endif /* __QEMU_CAPSPRIV_H__ */

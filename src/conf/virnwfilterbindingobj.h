@@ -18,6 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  *
  */
+
 #ifndef VIR_NWFILTER_BINDING_OBJ_H
 # define VIR_NWFILTER_BINDING_OBJ_H
 

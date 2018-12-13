@@ -100,4 +100,4 @@ int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess);
 
 const char *virNetTLSSessionGetX509DName(virNetTLSSessionPtr sess);
 
-#endif
+#endif /* __VIR_NET_TLS_CONTEXT_H__ */

@@ -19,7 +19,6 @@
  *
  */
 
-
 #ifndef __VIR_FDSTREAM_H_
 # define __VIR_FDSTREAM_H_
 

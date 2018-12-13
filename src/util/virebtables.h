@@ -38,4 +38,4 @@ int              ebtablesRemoveForwardAllowIn    (ebtablesContext *ctx,
 
 int              ebtablesAddForwardPolicyReject(ebtablesContext *ctx);
 
-#endif /* __QEMUD_ebtabLES_H__ */
+#endif /* __QEMUD_EBTABLES_H__ */

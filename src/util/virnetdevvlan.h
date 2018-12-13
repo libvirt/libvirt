@@ -15,6 +15,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __VIR_NETDEV_VLAN_H__
 # define __VIR_NETDEV_VLAN_H__
 

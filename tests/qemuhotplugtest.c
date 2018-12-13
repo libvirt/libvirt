@@ -22,6 +22,7 @@
 #include "qemu/qemu_alias.h"
 #include "qemu/qemu_conf.h"
 #include "qemu/qemu_hotplug.h"
+#define __QEMU_HOTPLUGPRIV_H_ALLOW__
 #include "qemu/qemu_hotplugpriv.h"
 #include "qemumonitortestutils.h"
 #include "testutils.h"

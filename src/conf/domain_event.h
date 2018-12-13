@@ -20,11 +20,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "internal.h"
-
 #ifndef __DOMAIN_EVENT_H__
 # define __DOMAIN_EVENT_H__
 
+# include "internal.h"
 # include "object_event.h"
 # include "domain_conf.h"
 
@@ -325,4 +324,4 @@ virDomainQemuMonitorEventNew(int id,
                              const char *details)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
-#endif
+#endif /* __DOMAIN_EVENT_H__ */

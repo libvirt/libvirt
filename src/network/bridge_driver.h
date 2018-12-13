@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef __VIR_NETWORK__DRIVER_H
 # define __VIR_NETWORK__DRIVER_H
 

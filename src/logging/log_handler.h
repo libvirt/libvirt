@@ -77,4 +77,4 @@ int virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
 
 virJSONValuePtr virLogHandlerPreExecRestart(virLogHandlerPtr handler);
 
-#endif /** __VIR_LOG_HANDLER_H__ */
+#endif /* __VIR_LOG_HANDLER_H__ */

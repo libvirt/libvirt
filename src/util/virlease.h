@@ -41,4 +41,5 @@ int virLeaseNew(virJSONValuePtr *lease_ret,
                 const char *hostname,
                 const char *iaid,
                 const char *server_duid);
-#endif /* __VIR_LEASE_H */
+
+#endif /* __VIR_LEASE_H_ */

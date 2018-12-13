@@ -46,4 +46,4 @@ int virLogDaemonConfigLoadFile(virLogDaemonConfigPtr data,
                                const char *filename,
                                bool allow_missing);
 
-#endif /* __LIBVIRTD_CONFIG_H__ */
+#endif /* __VIR_LOG_DAEMON_CONFIG_H__ */

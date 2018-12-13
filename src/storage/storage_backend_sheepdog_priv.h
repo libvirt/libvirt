@@ -16,6 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_ALLOW_H__
+# error "storage_backend_sheepdog_priv.h may only be included by storage_backend_sheepdog.c or test suites"
+#endif /* __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_ALLOW_H__ */
+
 #ifndef __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_H__
 # define __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_H__
 

@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "internal.h"
-#include "object_event.h"
-#include "object_event_private.h"
-
 #ifndef __NETWORK_EVENT_H__
 # define __NETWORK_EVENT_H__
+
+# include "internal.h"
+# include "object_event.h"
+# include "object_event_private.h"
 
 int
 virNetworkEventStateRegisterID(virConnectPtr conn,
@@ -56,4 +56,4 @@ virNetworkEventLifecycleNew(const char *name,
                             int type,
                             int detail);
 
-#endif
+#endif /* __NETWORK_EVENT_H__ */

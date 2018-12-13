@@ -17,6 +17,7 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __QEMU_EXTDEVICE_H__
 # define __QEMU_EXTDEVICE_H__
 
