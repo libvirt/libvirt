@@ -4312,7 +4312,8 @@ virStorageBackendFileSystemMountDefaultArgs(virCommandPtr cmd,
 
 
 virCommandPtr
-virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
+virStorageBackendFileSystemMountCmd(const char *cmdstr,
+                                    virStoragePoolDefPtr def,
                                     const char *src)
 {
     /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
@@ -4326,7 +4327,7 @@ virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
                    def->source.format == VIR_STORAGE_POOL_NETFS_CIFS);
     virCommandPtr cmd = NULL;
 
-    cmd = virCommandNew(MOUNT);
+    cmd = virCommandNew(cmdstr);
     if (netauto)
         virStorageBackendFileSystemMountNFSArgs(cmd, src, def);
     else if (glusterfs)
@@ -4340,10 +4341,11 @@ virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
 
 
 virCommandPtr
-virStorageBackendLogicalChangeCmd(virStoragePoolDefPtr def,
+virStorageBackendLogicalChangeCmd(const char *cmdstr,
+                                  virStoragePoolDefPtr def,
                                   bool on)
 {
-    return virCommandNewArgList(VGCHANGE,
+    return virCommandNewArgList(cmdstr,
                                 on ? "-aly" : "-aln",
                                 def->source.name,
                                 NULL);

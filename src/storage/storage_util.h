@@ -181,11 +181,13 @@ char *
 virStorageBackendFileSystemGetPoolSource(virStoragePoolObjPtr pool);
 
 virCommandPtr
-virStorageBackendFileSystemMountCmd(virStoragePoolDefPtr def,
+virStorageBackendFileSystemMountCmd(const char *cmdstr,
+                                    virStoragePoolDefPtr def,
                                     const char *src);
 
 virCommandPtr
-virStorageBackendLogicalChangeCmd(virStoragePoolDefPtr def,
+virStorageBackendLogicalChangeCmd(const char *cmdstr,
+                                  virStoragePoolDefPtr def,
                                   bool on);
 
 #endif /* __VIR_STORAGE_UTIL_H__ */

@@ -50,7 +50,7 @@ virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
 {
     int ret;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    virCommandPtr cmd = virStorageBackendLogicalChangeCmd(def, on);
+    virCommandPtr cmd = virStorageBackendLogicalChangeCmd(VGCHANGE, def, on);
 
     ret = virCommandRun(cmd, NULL);
     virCommandFree(cmd);

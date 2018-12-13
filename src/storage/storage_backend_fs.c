@@ -328,7 +328,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
     if (!(src = virStorageBackendFileSystemGetPoolSource(pool)))
         return -1;
 
-    cmd = virStorageBackendFileSystemMountCmd(def, src);
+    cmd = virStorageBackendFileSystemMountCmd(MOUNT, def, src);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 

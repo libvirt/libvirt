@@ -9,6 +9,13 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+#ifndef MOUNT
+# define MOUNT "/usr/bin/mount"
+#endif
+
+#ifndef VGCHANGE
+# define VGCHANGE "/usr/sbin/vgchange"
+#endif
 
 static int
 testCompareXMLToArgvFiles(bool shouldFail,
@@ -40,11 +47,11 @@ testCompareXMLToArgvFiles(bool shouldFail,
             goto cleanup;
         }
 
-        cmd = virStorageBackendFileSystemMountCmd(def, src);
+        cmd = virStorageBackendFileSystemMountCmd(MOUNT, def, src);
         break;
 
     case VIR_STORAGE_POOL_LOGICAL:
-        cmd = virStorageBackendLogicalChangeCmd(def, true);
+        cmd = virStorageBackendLogicalChangeCmd(VGCHANGE, def, true);
         break;
 
     case VIR_STORAGE_POOL_DIR:
