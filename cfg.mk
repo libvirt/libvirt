@@ -1149,7 +1149,7 @@ test-wrap-argv:
 	$(PERL) $(top_srcdir)/tests/test-wrap-argv.pl --check $$files
 
 group-qemu-caps:
-	$(PERL) $(top_srcdir)/tests/group-qemu-caps.pl --check $(top_srcdir)/
+	$(AM_V_GEN)$(PERL) $(top_srcdir)/tests/group-qemu-caps.pl --check $(top_srcdir)/
 
 # sc_po_check can fail if generated files are not built first
 sc_po_check: \
