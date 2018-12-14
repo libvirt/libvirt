@@ -85,7 +85,7 @@ while (<>) {
     }
 
     if ($mistake ||
-        $ARGV eq "config-post.h" ||
+        $ARGV =~ /config-post\.h$/ ||
         $ARGV =~ /vbox_(CAPI|XPCOM)/) {
         $state = $STATE_EOF;
         next;
