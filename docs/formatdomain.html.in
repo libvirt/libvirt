@@ -1243,9 +1243,9 @@
         <a href="#elementsMemoryBacking">memory backing</a> because your
         workload demands it, you'll have to take into account the specifics of
         your deployment and figure out a value for <code>hard_limit</code> that
-        balances the risk of your guest being killed because the limit was set
-        too low and the risk of your host crashing because it cannot reclaim
-        the memory used by the guest due to <code>locked</code>. Good luck!</dd>
+        is large enough to support the memory requirements of your guest, but
+        small enough to protect your host against a malicious guest locking all
+        memory.</dd>
       <dt><code>soft_limit</code></dt>
       <dd> The optional <code>soft_limit</code> element is the memory limit to
         enforce during memory contention. The units for this value are
