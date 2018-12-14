@@ -32,6 +32,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <poll.h>
 
 #include "configmake.h"
 
@@ -48,6 +49,7 @@ struct _virLogHandlerLogFile {
     virRotatingFileWriterPtr file;
     int watch;
     int pipefd; /* Read from QEMU via this */
+    bool drained;
 
     char *driver;
     unsigned char domuuid[VIR_UUID_BUFLEN];
@@ -151,6 +153,11 @@ virLogHandlerDomainLogFileEvent(int watch,
         return;
     }
 
+    if (logfile->drained) {
+        logfile->drained = false;
+        goto cleanup;
+    }
+
  reread:
     len = read(fd, buf, sizeof(buf));
     if (len < 0) {
@@ -168,6 +175,7 @@ virLogHandlerDomainLogFileEvent(int watch,
     if (events & VIR_EVENT_HANDLE_HANGUP)
         goto error;
 
+ cleanup:
     virObjectUnlock(handler);
     return;
 
@@ -433,6 +441,44 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
 }
 
 
+static void
+virLogHandlerDomainLogFileDrain(virLogHandlerLogFilePtr file)
+{
+    char buf[1024];
+    ssize_t len;
+    struct pollfd pfd;
+    int ret;
+
+    for (;;) {
+        pfd.fd = file->pipefd;
+        pfd.events = POLLIN;
+        pfd.revents = 0;
+
+        ret = poll(&pfd, 1, 0);
+        if (ret < 0) {
+            if (errno == EINTR)
+                continue;
+
+            return;
+        }
+
+        if (ret == 0)
+            return;
+
+        len = read(file->pipefd, buf, sizeof(buf));
+        file->drained = true;
+        if (len < 0) {
+            if (errno == EINTR)
+                continue;
+            return;
+        }
+
+        if (virRotatingFileWriterAppend(file->file, buf, len) != len)
+            return;
+    }
+}
+
+
 int
 virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
                                       const char *path,
@@ -462,6 +508,8 @@ virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
                        path);
         goto cleanup;
     }
+
+    virLogHandlerDomainLogFileDrain(file);
 
     *inode = virRotatingFileWriterGetINode(file->file);
     *offset = virRotatingFileWriterGetOffset(file->file);
