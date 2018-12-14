@@ -733,14 +733,14 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
                                                 NULL)))
             goto cleanup;
 
-        virBufferAdd(&buf, virCommandToString(loadcmd), -1);
+        virBufferAdd(&buf, virCommandToString(loadcmd, false), -1);
         virBufferAddChar(&buf, '\n');
     }
 
     if (!(cmd = virBhyveProcessBuildBhyveCmd(conn, def, true)))
         goto cleanup;
 
-    virBufferAdd(&buf, virCommandToString(cmd), -1);
+    virBufferAdd(&buf, virCommandToString(cmd, false), -1);
 
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;

@@ -71,7 +71,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
         goto cleanup;
     };
 
-    if (!(actualCmdline = virCommandToString(cmd))) {
+    if (!(actualCmdline = virCommandToString(cmd, false))) {
         VIR_TEST_DEBUG("pool type %d failed to get commandline\n", def->type);
         goto cleanup;
     }

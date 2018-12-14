@@ -7425,7 +7425,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                             VIR_QEMU_PROCESS_START_COLD)))
         goto cleanup;
 
-    ret = virCommandToString(cmd);
+    ret = virCommandToString(cmd, false);
 
  cleanup:
     virCommandFree(cmd);

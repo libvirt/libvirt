@@ -426,7 +426,7 @@ dprintf(logfd, "%s: ", timestamp);
 VIR_FREE(timestamp);
 virCommandWriteArgLog(cmd, logfd);
 
-string = virCommandToString(cmd);
+string = virCommandToString(cmd, false);
 if (string)
     VIR_DEBUG("about to run %s", string);
 VIR_FREE(string);

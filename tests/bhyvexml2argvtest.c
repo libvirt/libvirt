@@ -68,13 +68,13 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
     }
 
-    if (!(actualargv = virCommandToString(cmd)))
+    if (!(actualargv = virCommandToString(cmd, false)))
         goto out;
 
     if (actualdm != NULL)
         virTrimSpaces(actualdm, NULL);
 
-    if (!(actualld = virCommandToString(ldcmd)))
+    if (!(actualld = virCommandToString(ldcmd, false)))
         goto out;
 
     if (virTestCompareToFile(actualargv, cmdline) < 0)

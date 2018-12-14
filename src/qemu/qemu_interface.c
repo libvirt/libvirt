@@ -360,7 +360,7 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
         char ebuf[1024];
         char *errstr = NULL;
 
-        if (!(cmdstr = virCommandToString(cmd)))
+        if (!(cmdstr = virCommandToString(cmd, false)))
             goto cleanup;
         virCommandAbort(cmd);
 

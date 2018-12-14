@@ -620,7 +620,7 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
     }
 
-    if (!(actualargv = virCommandToString(cmd)))
+    if (!(actualargv = virCommandToString(cmd, false)))
         goto cleanup;
 
     if (virTestCompareToFile(actualargv, args) < 0)

@@ -4353,7 +4353,7 @@ qemuLogOperation(virDomainObjPtr vm,
         goto cleanup;
 
     if (cmd) {
-        char *args = virCommandToString(cmd);
+        char *args = virCommandToString(cmd, true);
         qemuDomainLogContextWrite(logCtxt, "%s\n", args);
         VIR_FREE(args);
     }

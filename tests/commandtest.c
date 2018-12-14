@@ -630,7 +630,7 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
     virCommandAddArg(cmd, "F");
     virCommandAddArg(cmd, "G  H");
 
-    if ((outactual = virCommandToString(cmd)) == NULL) {
+    if ((outactual = virCommandToString(cmd, false)) == NULL) {
         printf("Cannot convert to string: %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
@@ -1135,6 +1135,67 @@ static int test25(const void *unused ATTRIBUTE_UNUSED)
 }
 
 
+/*
+ * Don't run program; rather, log what would be run.
+ */
+static int test26(const void *unused ATTRIBUTE_UNUSED)
+{
+    virCommandPtr cmd = virCommandNew("true");
+    char *outactual = NULL;
+    const char *outexpect =
+        "A=B \\\n"
+        "C='D  E' \\\n"
+        "true \\\n"
+        "--foo bar \\\n"
+        "--oooh \\\n"
+        "-f \\\n"
+        "--wizz 'eek eek' \\\n"
+        "-w \\\n"
+        "-z \\\n"
+        "-l \\\n"
+        "--mmm flash \\\n"
+        "bang \\\n"
+        "wallop";
+
+    int ret = -1;
+    int fd = -1;
+
+    virCommandAddEnvPair(cmd, "A", "B");
+    virCommandAddEnvPair(cmd, "C", "D  E");
+    virCommandAddArgList(cmd, "--foo", "bar", "--oooh", "-f",
+                         "--wizz", "eek eek", "-w", "-z", "-l",
+                         "--mmm", "flash", "bang", "wallop",
+                         NULL);
+
+    if ((outactual = virCommandToString(cmd, true)) == NULL) {
+        printf("Cannot convert to string: %s\n", virGetLastErrorMessage());
+        goto cleanup;
+    }
+    if ((fd = open(abs_builddir "/commandhelper.log",
+                   O_CREAT | O_TRUNC | O_WRONLY, 0600)) < 0) {
+        printf("Cannot open log file: %s\n", strerror(errno));
+        goto cleanup;
+    }
+    virCommandWriteArgLog(cmd, fd);
+    if (VIR_CLOSE(fd) < 0) {
+        printf("Cannot close log file: %s\n", strerror(errno));
+        goto cleanup;
+    }
+
+    if (STRNEQ(outactual, outexpect)) {
+        virTestDifference(stderr, outexpect, outactual);
+        goto cleanup;
+    }
+
+    ret = checkoutput("test26", NULL);
+
+ cleanup:
+    virCommandFree(cmd);
+    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(outactual);
+    return ret;
+}
+
 static void virCommandThreadWorker(void *opaque)
 {
     virCommandTestDataPtr test = opaque;
@@ -1288,6 +1349,7 @@ mymain(void)
     DO_TEST(test23);
     DO_TEST(test24);
     DO_TEST(test25);
+    DO_TEST(test26);
 
     virMutexLock(&test->lock);
     if (test->running) {

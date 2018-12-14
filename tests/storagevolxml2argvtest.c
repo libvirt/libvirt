@@ -104,14 +104,14 @@ testCompareXMLToArgvFiles(bool shouldFail,
         }
 
         if (convertStep != VIR_STORAGE_VOL_ENCRYPT_CONVERT) {
-            if (!(actualCmdline = virCommandToString(cmd)))
+            if (!(actualCmdline = virCommandToString(cmd, false)))
                 goto cleanup;
         } else {
             char *createCmdline = actualCmdline;
             char *cvtCmdline;
             int rc;
 
-            if (!(cvtCmdline = virCommandToString(cmd)))
+            if (!(cvtCmdline = virCommandToString(cmd, false)))
                 goto cleanup;
 
             rc = virAsprintf(&actualCmdline, "%s\n%s",
