@@ -278,7 +278,6 @@
         &lt;value&gt;virtio&lt;/value&gt;
         &lt;value&gt;xen&lt;/value&gt;
         &lt;value&gt;usb&lt;/value&gt;
-        &lt;value&gt;uml&lt;/value&gt;
         &lt;value&gt;sata&lt;/value&gt;
         &lt;value&gt;sd&lt;/value&gt;
       &lt;/enum&gt;

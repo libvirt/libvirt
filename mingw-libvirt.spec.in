@@ -177,7 +177,6 @@ autoreconf -if
   --without-avahi \
   --without-polkit \
   --without-libvirtd \
-  --without-uml \
   %{?_without_phyp} \
   %{?_without_esx} \
   %{?_without_hyperv} \

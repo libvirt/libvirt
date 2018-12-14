@@ -124,7 +124,7 @@ struct _virLockManagerParam {
  * too old to support key features.
  *
  * NB: A plugin may be loaded multiple times, for different
- * libvirt drivers (eg QEMU, LXC, UML)
+ * libvirt drivers (eg QEMU, LXC)
  *
  * Returns -1 if the requested version/flags were inadequate
  */

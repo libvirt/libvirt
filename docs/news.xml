@@ -59,6 +59,20 @@
         </description>
       </change>
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          Drop UML driver
+        </summary>
+        <description>
+          The UML driver was unmaintained and not tested for
+          quite some time now. Worse, there is a bug that causes
+          it to deadlock on some very basic operations (e.g.
+          dumping domain XML). These facts make us believe no one
+          uses it.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
       <change>
         <summary>

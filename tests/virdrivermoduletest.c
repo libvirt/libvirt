@@ -89,9 +89,6 @@ mymain(void)
 #ifdef WITH_LXC
     TEST("lxc");
 #endif
-#ifdef WITH_UML
-    TEST("uml");
-#endif
 #ifdef WITH_VBOX
     TEST("vbox");
 #endif

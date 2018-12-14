@@ -20,7 +20,6 @@
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
 %define with_lxc           0%{!?_without_lxc:1}
-%define with_uml           0%{!?_without_uml:1}
 %define with_libxl         0%{!?_without_libxl:1}
 %define with_vbox          0%{!?_without_vbox:1}
 
@@ -111,13 +110,12 @@
 %endif
 
 
-# RHEL doesn't ship OpenVZ, VBox, UML, PowerHypervisor,
+# RHEL doesn't ship OpenVZ, VBox, PowerHypervisor,
 # VMware, libxenserver (xenapi), libxenlight (Xen 4.1 and newer),
 # or HyperV.
 %if 0%{?rhel}
     %define with_openvz 0
     %define with_vbox 0
-    %define with_uml 0
     %define with_phyp 0
     %define with_vmware 0
     %define with_xenapi 0
@@ -178,7 +176,7 @@
 %endif
 
 
-%if %{with_qemu} || %{with_lxc} || %{with_uml}
+%if %{with_qemu} || %{with_lxc}
 # numad is used to manage the CPU and memory placement dynamically,
 # it's not available on many non-x86 architectures.
     %ifnarch s390 s390x %{arm} riscv64
@@ -231,9 +229,9 @@ Requires: libvirt-daemon-driver-lxc = %{version}-%{release}
 %if %{with_qemu}
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
 %endif
-%if %{with_uml}
-Requires: libvirt-daemon-driver-uml = %{version}-%{release}
-%endif
+# We had UML driver, but we've removed it.
+Obsoletes: libvirt-daemon-driver-uml <= 5.0.0
+Obsoletes: libvirt-daemon-uml <= 5.0.0
 %if %{with_vbox}
 Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
 %endif
@@ -743,19 +741,6 @@ the Linux kernel
 %endif
 
 
-%if %{with_uml}
-%package daemon-driver-uml
-Summary: Uml driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
-Requires: libvirt-libs = %{version}-%{release}
-
-%description daemon-driver-uml
-The UML driver plugin for the libvirtd daemon, providing
-an implementation of the hypervisor driver APIs using
-User Mode Linux
-%endif
-
-
 %if %{with_vbox}
 %package daemon-driver-vbox
 Summary: VirtualBox driver plugin for the libvirtd daemon
@@ -840,26 +825,6 @@ Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 %description daemon-lxc
 Server side daemon and driver required to manage the virtualization
 capabilities of LXC
-%endif
-
-
-%if %{with_uml}
-%package daemon-uml
-Summary: Server side daemon & driver required to run UML guests
-
-Requires: libvirt-daemon = %{version}-%{release}
-Requires: libvirt-daemon-driver-uml = %{version}-%{release}
-Requires: libvirt-daemon-driver-interface = %{version}-%{release}
-Requires: libvirt-daemon-driver-network = %{version}-%{release}
-Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
-Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
-Requires: libvirt-daemon-driver-secret = %{version}-%{release}
-Requires: libvirt-daemon-driver-storage = %{version}-%{release}
-# There are no UML kernel RPMs in Fedora/RHEL to depend on.
-
-%description daemon-uml
-Server side daemon and driver required to manage the virtualization
-capabilities of UML
 %endif
 
 
@@ -1068,12 +1033,6 @@ exit 1
     %define arg_vmware --without-vmware
 %endif
 
-%if %{with_uml}
-    %define arg_uml --with-uml
-%else
-    %define arg_uml --without-uml
-%endif
-
 %if %{with_storage_rbd}
     %define arg_storage_rbd --with-storage-rbd
 %else
@@ -1187,7 +1146,6 @@ rm -f po/stamp-po
            --with-avahi \
            --with-polkit \
            --with-libvirtd \
-           %{?arg_uml} \
            %{?arg_phyp} \
            %{?arg_esx} \
            %{?arg_hyperv} \
@@ -1315,9 +1273,6 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libxl.conf
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.libxl
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_libxl.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
-%endif
-%if ! %{with_uml}
-rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.uml
 %endif
 
 # Copied into libvirt-docs subpackage eventually
@@ -1725,15 +1680,6 @@ exit 0
 %{_libdir}/%{name}/connection-driver/libvirt_driver_lxc.so
 %endif
 
-%if %{with_uml}
-%files daemon-driver-uml
-%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
-%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.uml
-%ghost %dir %{_localstatedir}/run/libvirt/uml/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
-%{_libdir}/%{name}/connection-driver/libvirt_driver_uml.so
-%endif
-
 %if %{with_libxl}
 %files daemon-driver-libxl
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
@@ -1762,10 +1708,6 @@ exit 0
 
 %if %{with_lxc}
 %files daemon-lxc
-%endif
-
-%if %{with_uml}
-%files daemon-uml
 %endif
 
 %if %{with_libxl}

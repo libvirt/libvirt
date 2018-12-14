@@ -1,8 +1,0 @@
-@localstatedir@/log/libvirt/uml/*.log {
-        weekly
-        missingok
-        rotate 4
-        compress
-        delaycompress
-        copytruncate
-}

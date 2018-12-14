@@ -7161,9 +7161,9 @@ qemu-kvm -net nic,model=? /dev/null
       Valid values for the <code>type</code> attribute are:
       <code>serial</code> (described below);
       <code>virtio</code> (usable whenever VirtIO support is available);
-      <code>xen</code>, <code>lxc</code>, <code>uml</code> and
-      <code>openvz</code> (available when the corresponding hypervisor is in
-      use). <code>sclp</code> and <code>sclplm</code> (usable for s390 and
+      <code>xen</code>, <code>lxc</code> and <code>openvz</code>
+      (available when the corresponding hypervisor is in use).
+      <code>sclp</code> and <code>sclplm</code> (usable for s390 and
       s390x QEMU guests) are supported for compatibility reasons but should
       not be used for new guests: use the <code>sclpconsole</code> and
       <code>sclplmconsole</code> target models, respectively, with the

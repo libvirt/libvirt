@@ -190,8 +190,6 @@ src/storage/storage_backend_zfs.c
 src/storage/storage_driver.c
 src/storage/storage_util.c
 src/test/test_driver.c
-src/uml/uml_conf.c
-src/uml/uml_driver.c
 src/util/iohelper.c
 src/util/viralloc.c
 src/util/virarptable.c

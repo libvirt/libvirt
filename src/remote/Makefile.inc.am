@@ -39,7 +39,6 @@ LOGROTATE_FILES_IN += \
 	remote/libvirtd.qemu.logrotate.in \
 	remote/libvirtd.lxc.logrotate.in \
 	remote/libvirtd.libxl.logrotate.in \
-	remote/libvirtd.uml.logrotate.in \
 	remote/libvirtd.logrotate.in \
 	$(NULL)
 

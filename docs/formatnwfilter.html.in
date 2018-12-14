@@ -2265,7 +2265,7 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
      to the incoming and outgoing direction. All this is related to the ftp
      data traffic originating from TCP port 20 of the VM. This then leads to
      the following solution
-     <span class="since">(since 0.8.5 (QEMU, KVM, UML))</span>:
+     <span class="since">(since 0.8.5 (QEMU, KVM))</span>:
     </p>
 <pre>
 &lt;filter name='test-eth0'&gt;

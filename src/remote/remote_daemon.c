@@ -339,10 +339,6 @@ static int daemonInitialize(void)
     if (virDriverLoadModule("lxc", "lxcRegister", false) < 0)
         return -1;
 #endif
-#ifdef WITH_UML
-    if (virDriverLoadModule("uml", "umlRegister", false) < 0)
-        return -1;
-#endif
 #ifdef WITH_VBOX
     if (virDriverLoadModule("vbox", "vboxRegister", false) < 0)
         return -1;

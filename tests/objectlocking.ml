@@ -121,7 +121,6 @@ let driverLockMethods = [
     "openvzDriverLock";
     "testDriverLock";
     "lxcDriverLock";
-    "umlDriverLock";
     "nodedevDriverLock";
     "networkDriverLock";
     "storageDriverLock";
@@ -136,7 +135,6 @@ let driverUnlockMethods = [
     "openvzDriverUnlock";
     "testDriverUnlock";
     "lxcDriverUnlock";
-    "umlDriverUnlock";
     "nodedevDriverUnlock";
     "networkDriverUnlock";
     "storageDriverUnlock";
@@ -153,7 +151,6 @@ let lockableDrivers = [
       "openvz_driver";
       "testConnPtr";
       "lxc_driver_t";
-      "uml_driver";
       "virStorageDriverStatePtr";
       "network_driver";
       "virNodeDeviceState";

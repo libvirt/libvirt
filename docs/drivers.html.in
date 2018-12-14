@@ -29,7 +29,6 @@
       <li><strong><a href="drvopenvz.html">OpenVZ</a></strong></li>
       <li><strong><a href="drvqemu.html">QEMU</a></strong></li>
       <li><strong><a href="drvtest.html">Test</a></strong> - Used for testing</li>
-      <li><strong><a href="drvuml.html">UML</a></strong> - User Mode Linux</li>
       <li><strong><a href="drvvbox.html">VirtualBox</a></strong></li>
       <li><strong><a href="drvesx.html">VMware ESX</a></strong></li>
       <li><strong><a href="drvvmware.html">VMware Workstation/Player</a></strong></li>

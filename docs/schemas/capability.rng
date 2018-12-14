@@ -412,7 +412,7 @@
                                   but is also used by phyp driver -->
         <value>hvm</value> <!-- unmodified OS -->
         <value>exe</value> <!-- For container based virt -->
-        <value>uml</value> <!-- user mode linux -->
+        <value>uml</value> <!-- user mode linux; NOT USED ANYMORE -->
       </choice>
     </element>
   </define>
@@ -484,7 +484,7 @@
           <value>kqemu</value>
           <value>kvm</value>
           <value>xen</value>
-          <value>uml</value>
+          <value>uml</value> <!-- NOT USED ANYMORE -->
           <value>lxc</value>
           <value>openvz</value>
           <value>test</value>

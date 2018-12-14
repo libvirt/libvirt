@@ -87,9 +87,6 @@
 
           <dt><code>exe</code></dt>
           <dd>Container based virtualization</dd>
-
-          <dt><code>uml</code></dt>
-          <dd>User Mode Linux</dd>
         </dl>
         </dd>
 
