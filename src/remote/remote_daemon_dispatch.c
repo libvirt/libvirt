@@ -337,7 +337,7 @@ remoteRelayDomainEventLifecycle(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_lifecycle_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -378,7 +378,7 @@ remoteRelayDomainEventReboot(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_reboot_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -423,7 +423,7 @@ remoteRelayDomainEventRTCChange(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_rtc_change_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -467,7 +467,7 @@ remoteRelayDomainEventWatchdog(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_watchdog_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -516,7 +516,7 @@ remoteRelayDomainEventIOError(virConnectPtr conn,
     return 0;
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_io_error_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -569,7 +569,7 @@ remoteRelayDomainEventIOErrorReason(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_io_error_reason_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -643,7 +643,7 @@ remoteRelayDomainEventGraphics(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_graphics_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -691,7 +691,7 @@ remoteRelayDomainEventBlockJob(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_block_job_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -733,7 +733,7 @@ remoteRelayDomainEventControlError(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_control_error_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -797,7 +797,7 @@ remoteRelayDomainEventDiskChange(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_disk_change_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -846,7 +846,7 @@ remoteRelayDomainEventTrayChange(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_tray_change_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -888,7 +888,7 @@ remoteRelayDomainEventPMWakeup(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_pmwakeup_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -930,7 +930,7 @@ remoteRelayDomainEventPMSuspend(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_pmsuspend_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -973,7 +973,7 @@ remoteRelayDomainEventBalloonChange(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_balloon_change_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1016,7 +1016,7 @@ remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_pmsuspend_disk_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1064,7 +1064,7 @@ remoteRelayDomainEventDeviceRemoved(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_device_removed_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1105,7 +1105,7 @@ remoteRelayDomainEventBlockJob2(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_block_job_2_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1150,7 +1150,7 @@ remoteRelayDomainEventTunable(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_callback_tunable_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1191,7 +1191,7 @@ remoteRelayDomainEventAgentLifecycle(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_callback_agent_lifecycle_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1231,7 +1231,7 @@ remoteRelayDomainEventDeviceAdded(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_callback_device_added_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1270,7 +1270,7 @@ remoteRelayDomainEventMigrationIteration(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_callback_migration_iteration_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1315,7 +1315,7 @@ remoteRelayDomainEventJobCompleted(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_callback_job_completed_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1355,7 +1355,7 @@ remoteRelayDomainEventDeviceRemovalFailed(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_callback_device_removal_failed_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1405,7 +1405,7 @@ remoteRelayDomainEventMetadataChange(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_callback_metadata_change_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1453,7 +1453,7 @@ remoteRelayDomainEventBlockThreshold(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_domain_event_block_threshold_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1521,7 +1521,7 @@ remoteRelayNetworkEventLifecycle(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_network_event_lifecycle_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1565,7 +1565,7 @@ remoteRelayStoragePoolEventLifecycle(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_storage_pool_event_lifecycle_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1599,7 +1599,7 @@ remoteRelayStoragePoolEventRefresh(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_storage_pool_event_refresh_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1644,7 +1644,7 @@ remoteRelayNodeDeviceEventLifecycle(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_node_device_event_lifecycle_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1678,7 +1678,7 @@ remoteRelayNodeDeviceEventUpdate(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_node_device_event_update_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1723,7 +1723,7 @@ remoteRelaySecretEventLifecycle(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_secret_event_lifecycle_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1757,7 +1757,7 @@ remoteRelaySecretEventValueChanged(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_remote_secret_event_value_changed_msg,
-             &data);
+             (char *) &data);
     return -1;
 }
 
@@ -1812,7 +1812,7 @@ remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
 
  error:
     xdr_free((xdrproc_t)xdr_qemu_domain_monitor_event_msg,
-             &data);
+             (char *) &data);
     return;
 }
 
