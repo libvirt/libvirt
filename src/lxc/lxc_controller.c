@@ -1390,6 +1390,13 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
     size_t i;
     int ret = -1;
 
+    /* The kernel supports up to 340 lines in /proc/<pid>/{g,u}id_map */
+    if (num > 340) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Too many id mappings defined."));
+        goto cleanup;
+    }
+
     for (i = 0; i < num; i++)
         virBufferAsprintf(&map_value, "%u %u %u\n",
                           map[i].start, map[i].target, map[i].count);
