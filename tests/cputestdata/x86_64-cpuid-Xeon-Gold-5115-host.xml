@@ -24,6 +24,7 @@
   <feature name='clflushopt'/>
   <feature name='intel-pt'/>
   <feature name='pku'/>
+  <feature name='stibp'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>

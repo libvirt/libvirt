@@ -323,6 +323,9 @@
   <feature name='spec-ctrl'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x04000000'/>
   </feature>
+  <feature name='stibp'>
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x08000000'/>
+  </feature>
   <feature name='ssbd'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x80000000'/>
   </feature>

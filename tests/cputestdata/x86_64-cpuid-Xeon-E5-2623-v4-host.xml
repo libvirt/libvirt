@@ -26,6 +26,7 @@
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
   <feature name='intel-pt'/>
+  <feature name='stibp'/>
   <feature name='xsaveopt'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>

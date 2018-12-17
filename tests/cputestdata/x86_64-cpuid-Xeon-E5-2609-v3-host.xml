@@ -25,6 +25,7 @@
   <feature name='arat'/>
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
+  <feature name='stibp'/>
   <feature name='xsaveopt'/>
   <feature name='pdpe1gb'/>
   <feature name='abm'/>
