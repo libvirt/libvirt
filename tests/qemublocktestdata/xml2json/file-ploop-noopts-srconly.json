@@ -1,0 +1,4 @@
+{
+  "driver": "file",
+  "filename": "/path/to/i.img"
+}

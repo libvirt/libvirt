@@ -1,0 +1,22 @@
+{
+  "driver": "rbd",
+  "pool": "rbdpool",
+  "image": "rbdimg",
+  "server": [
+    {
+      "host": "host1.example.com",
+      "port": "0"
+    },
+    {
+      "host": "host2.example.com",
+      "port": "0"
+    }
+  ]
+}
+{
+  "driver": "iscsi",
+  "portal": "example.org:3260",
+  "target": "iqn.2016-09.com.example:iscsitarget",
+  "lun": 1,
+  "transport": "tcp"
+}

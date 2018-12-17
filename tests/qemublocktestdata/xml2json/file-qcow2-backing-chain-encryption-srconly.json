@@ -1,0 +1,8 @@
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/a"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/b"
+}

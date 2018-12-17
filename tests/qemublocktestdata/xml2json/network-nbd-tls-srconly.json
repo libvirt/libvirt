@@ -1,0 +1,8 @@
+{
+  "driver": "nbd",
+  "server": {
+    "type": "inet",
+    "host": "host1.example.com",
+    "port": "10809"
+  }
+}

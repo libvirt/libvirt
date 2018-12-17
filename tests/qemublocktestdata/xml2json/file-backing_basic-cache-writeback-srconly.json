@@ -1,0 +1,24 @@
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/a"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/b"
+}
+{
+  "driver": "gluster",
+  "volume": "images",
+  "path": "c",
+  "server": [
+    {
+      "type": "inet",
+      "host": "test.org",
+      "port": "24007"
+    }
+  ]
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/d"
+}

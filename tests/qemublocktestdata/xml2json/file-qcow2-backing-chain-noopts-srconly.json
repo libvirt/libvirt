@@ -1,0 +1,40 @@
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1507297895"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1484071872"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1483615252"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1483605924"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1483605920"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1483546244"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1483545901"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1483545313"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1483536402"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.qcow2"
+}

@@ -1,0 +1,8 @@
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1507297895"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1484071872"
+}

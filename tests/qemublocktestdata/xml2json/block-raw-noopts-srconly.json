@@ -1,0 +1,4 @@
+{
+  "driver": "host_device",
+  "filename": "/dev/blah"
+}

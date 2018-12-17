@@ -1,0 +1,5 @@
+{
+  "driver": "vvfat",
+  "dir": "/var/somefiles",
+  "floppy": false
+}

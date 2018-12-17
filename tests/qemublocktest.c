@@ -115,6 +115,9 @@ struct testQemuDiskXMLToJSONData {
     virJSONValuePtr *props;
     size_t nprops;
 
+    virJSONValuePtr *propssrc;
+    size_t npropssrc;
+
     virQEMUCapsPtr qemuCaps;
 };
 
@@ -127,8 +130,13 @@ testQemuDiskXMLToPropsClear(struct testQemuDiskXMLToJSONData *data)
     for (i = 0; i < data->nprops; i++)
         virJSONValueFree(data->props[i]);
 
+    for (i = 0; i < data->npropssrc; i++)
+        virJSONValueFree(data->propssrc[i]);
+
     data->nprops = 0;
     VIR_FREE(data->props);
+    data->npropssrc = 0;
+    VIR_FREE(data->propssrc);
 }
 
 
@@ -180,6 +188,7 @@ testQemuDiskXMLToProps(const void *opaque)
     virStorageSourcePtr n;
     virJSONValuePtr formatProps = NULL;
     virJSONValuePtr storageProps = NULL;
+    VIR_AUTOPTR(virJSONValue) storageSrcOnlyProps = NULL;
     char *xmlpath = NULL;
     char *xmlstr = NULL;
     int ret = -1;
@@ -213,6 +222,7 @@ testQemuDiskXMLToProps(const void *opaque)
             goto cleanup;
 
         if (!(formatProps = qemuBlockStorageSourceGetBlockdevProps(n)) ||
+            !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, false, true)) ||
             !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false, false))) {
             if (!data->fail) {
                 VIR_TEST_VERBOSE("failed to generate qemu blockdev props\n");
@@ -224,7 +234,8 @@ testQemuDiskXMLToProps(const void *opaque)
         }
 
         if (VIR_APPEND_ELEMENT(data->props, data->nprops, formatProps) < 0 ||
-            VIR_APPEND_ELEMENT(data->props, data->nprops, storageProps) < 0)
+            VIR_APPEND_ELEMENT(data->props, data->nprops, storageProps) < 0 ||
+            VIR_APPEND_ELEMENT(data->propssrc, data->npropssrc, storageSrcOnlyProps) < 0)
             goto cleanup;
     }
 
@@ -268,6 +279,23 @@ testQemuDiskXMLToPropsValidateSchema(const void *opaque)
 
         virBufferFreeAndReset(&debug);
     }
+
+    for (i = 0; i < data->npropssrc; i++) {
+        if (testQEMUSchemaValidate(data->propssrc[i], data->schemaroot,
+                                   data->schema, &debug) < 0) {
+            debugmsg = virBufferContentAndReset(&debug);
+            propsstr = virJSONValueToString(data->propssrc[i], true);
+            VIR_TEST_VERBOSE("json does not conform to QAPI schema");
+            VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
+                           propsstr, NULLSTR(debugmsg));
+            VIR_FREE(debugmsg);
+            VIR_FREE(propsstr);
+            ret = -1;
+        }
+
+        virBufferFreeAndReset(&debug);
+    }
+
     return ret;
 }
 
@@ -310,6 +338,40 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
     VIR_FREE(jsonpath);
     VIR_FREE(actual);
     return ret;
+}
+
+
+static int
+testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
+{
+    struct testQemuDiskXMLToJSONData *data = (void *) opaque;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOFREE(char *) jsonpath = NULL;
+    VIR_AUTOFREE(char *) actual = NULL;
+    size_t i;
+
+    if (data->fail)
+        return EXIT_AM_SKIP;
+
+    if (virAsprintf(&jsonpath, "%s%s-srconly.json",
+                    testQemuDiskXMLToJSONPath, data->name) < 0)
+        return -1;
+
+    for (i = 0; i < data->npropssrc; i++) {
+        VIR_AUTOFREE(char *) jsonstr = NULL;
+
+        if (!(jsonstr = virJSONValueToString(data->propssrc[i], true)))
+            return -1;
+
+        virBufferAdd(&buf, jsonstr, -1);
+    }
+
+    if (virBufferCheckError(&buf) < 0)
+        return -1;
+
+    actual = virBufferContentAndReset(&buf);
+
+    return virTestCompareToFile(actual, jsonpath);
 }
 
 
@@ -411,6 +473,8 @@ mymain(void)
         diskxmljsondata.name = nme; \
         diskxmljsondata.props = NULL; \
         diskxmljsondata.nprops = 0; \
+        diskxmljsondata.propssrc = NULL; \
+        diskxmljsondata.npropssrc = 0; \
         diskxmljsondata.fail = fl; \
         if (virTestRun("disk xml to props " nme, testQemuDiskXMLToProps, \
                        &diskxmljsondata) < 0) \
@@ -420,6 +484,9 @@ mymain(void)
             ret = -1; \
         if (virTestRun("disk xml to props validate file " nme, \
                        testQemuDiskXMLToPropsValidateFile,  &diskxmljsondata) < 0) \
+            ret = -1; \
+        if (virTestRun("disk xml to props source only validate file " nme, \
+                       testQemuDiskXMLToPropsValidateFileSrcOnly,  &diskxmljsondata) < 0) \
             ret = -1; \
         testQemuDiskXMLToPropsClear(&diskxmljsondata); \
     } while (0)
