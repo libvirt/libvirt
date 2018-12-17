@@ -74,13 +74,13 @@ virErrorTestMsgs(const void *opaque ATTRIBUTE_UNUSED)
             ret = -1;
         }
 
-        if (strchr(err_noinfo, '%')) {
+        if (err_noinfo && strchr(err_noinfo, '%')) {
             VIR_TEST_VERBOSE("\nerror message id %zu contains formatting characters: '%s'\n",
                              i, err_noinfo);
             ret = -1;
         }
 
-        if (virErrorTestMsgFormatInfoOne(err_info) < 0)
+        if (err_info && virErrorTestMsgFormatInfoOne(err_info) < 0)
             ret = -1;
     }
 
