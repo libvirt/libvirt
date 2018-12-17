@@ -15256,6 +15256,8 @@ struct _qemuDomainSnapshotDiskData {
     bool prepared; /* @src was prepared using qemuDomainStorageSourceAccessAllow */
     virDomainDiskDefPtr disk;
     char *relPath; /* relative path component to fill into original disk */
+    qemuBlockStorageSourceChainDataPtr crdata;
+    bool blockdevadded;
 
     virStorageSourcePtr persistsrc;
     virDomainDiskDefPtr persistdisk;
@@ -15269,7 +15271,8 @@ static void
 qemuDomainSnapshotDiskCleanup(qemuDomainSnapshotDiskDataPtr data,
                               size_t ndata,
                               virQEMUDriverPtr driver,
-                              virDomainObjPtr vm)
+                              virDomainObjPtr vm,
+                              qemuDomainAsyncJob asyncJob)
 {
     virErrorPtr orig_err;
     size_t i;
@@ -15283,6 +15286,15 @@ qemuDomainSnapshotDiskCleanup(qemuDomainSnapshotDiskDataPtr data,
         /* on success of the snapshot the 'src' and 'persistsrc' properties will
          * be set to NULL by qemuDomainSnapshotDiskUpdateSource */
         if (data[i].src) {
+            if (data[i].blockdevadded) {
+                if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+
+                    qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm),
+                                                         data[i].crdata->srcdata[0]);
+                    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+                }
+            }
+
             if (data[i].created &&
                 virStorageFileUnlink(data[i].src) < 0) {
                 VIR_WARN("Unable to remove just-created %s",
@@ -15299,6 +15311,7 @@ qemuDomainSnapshotDiskCleanup(qemuDomainSnapshotDiskDataPtr data,
         }
         virObjectUnref(data[i].persistsrc);
         VIR_FREE(data[i].relPath);
+        qemuBlockStorageSourceChainDataFree(data[i].crdata);
     }
 
     VIR_FREE(data);
@@ -15309,15 +15322,21 @@ qemuDomainSnapshotDiskCleanup(qemuDomainSnapshotDiskDataPtr data,
 static int
 qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
+                                 virQEMUDriverConfigPtr cfg,
                                  virDomainDiskDefPtr disk,
                                  virDomainSnapshotDiskDefPtr snapdisk,
                                  qemuDomainSnapshotDiskDataPtr dd,
-                                 bool reuse)
+                                 bool reuse,
+                                 bool blockdev,
+                                 qemuDomainAsyncJob asyncJob)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *backingStoreStr;
     virDomainDiskDefPtr persistdisk;
+    VIR_AUTOUNREF(virStorageSourcePtr) terminator = NULL;
     bool supportsCreate;
     bool supportsBacking;
+    int rc;
 
     dd->disk = disk;
 
@@ -15386,6 +15405,44 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
 
     dd->prepared = true;
 
+    if (blockdev) {
+        /* create a terminator for the snapshot disks so that qemu does not try
+         * to open them at first */
+        if (!(terminator = virStorageSourceNew()))
+            return -1;
+
+        if (qemuDomainPrepareStorageSourceBlockdev(dd->disk, dd->src,
+                                                   priv, cfg) < 0)
+            return -1;
+
+        if (!(dd->crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(dd->src,
+                                                                               terminator,
+                                                                               priv->qemuCaps)))
+            return -1;
+
+        if (reuse) {
+            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+                return -1;
+
+            rc = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm),
+                                                   dd->crdata->srcdata[0]);
+
+            if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+                return -1;
+        } else {
+            if (qemuBlockStorageSourceCreateDetectSize(vm, dd->src, dd->disk->src,
+                                                       asyncJob) < 0)
+                return -1;
+
+            if (qemuBlockStorageSourceCreate(vm, dd->src, dd->disk->src,
+                                             NULL, dd->crdata->srcdata[0],
+                                             asyncJob) < 0)
+                return -1;
+        }
+
+        dd->blockdevadded = true;
+    }
+
     return 0;
 }
 
@@ -15400,7 +15457,10 @@ static int
 qemuDomainSnapshotDiskPrepare(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainMomentObjPtr snap,
+                              virQEMUDriverConfigPtr cfg,
                               bool reuse,
+                              bool blockdev,
+                              qemuDomainAsyncJob asyncJob,
                               qemuDomainSnapshotDiskDataPtr *rdata,
                               size_t *rndata)
 {
@@ -15417,9 +15477,10 @@ qemuDomainSnapshotDiskPrepare(virQEMUDriverPtr driver,
         if (snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
 
-        if (qemuDomainSnapshotDiskPrepareOne(driver, vm, vm->def->disks[i],
+        if (qemuDomainSnapshotDiskPrepareOne(driver, vm, cfg, vm->def->disks[i],
                                              snapdef->disks + i,
-                                             data + ndata++, reuse) < 0)
+                                             data + ndata++, reuse, blockdev,
+                                             asyncJob) < 0)
             goto cleanup;
     }
 
@@ -15428,7 +15489,7 @@ qemuDomainSnapshotDiskPrepare(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuDomainSnapshotDiskCleanup(data, ndata, driver, vm);
+    qemuDomainSnapshotDiskCleanup(data, ndata, driver, vm, asyncJob);
     return ret;
 }
 
@@ -15449,13 +15510,15 @@ qemuDomainSnapshotDiskUpdateSourceRenumber(virStorageSourcePtr src)
  * @driver: QEMU driver
  * @vm: domain object
  * @dd: snapshot disk data object
+ * @blockdev: -blockdev is in use for the VM
  *
  * Updates disk definition after a successful snapshot.
  */
 static void
 qemuDomainSnapshotDiskUpdateSource(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
-                                   qemuDomainSnapshotDiskDataPtr dd)
+                                   qemuDomainSnapshotDiskDataPtr dd,
+                                   bool blockdev)
 {
     /* storage driver access won'd be needed */
     if (dd->initialized)
@@ -15479,7 +15542,8 @@ qemuDomainSnapshotDiskUpdateSource(virQEMUDriverPtr driver,
     VIR_STEAL_PTR(dd->disk->src, dd->src);
 
     /* fix numbering of disks */
-    qemuDomainSnapshotDiskUpdateSourceRenumber(dd->disk->src);
+    if (!blockdev)
+        qemuDomainSnapshotDiskUpdateSourceRenumber(dd->disk->src);
 
     if (dd->persistdisk) {
         VIR_STEAL_PTR(dd->persistsrc->backingStore, dd->persistdisk->src);
@@ -15505,6 +15569,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     qemuDomainSnapshotDiskDataPtr diskdata = NULL;
     size_t ndiskdata = 0;
+    bool blockdev =  virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
@@ -15514,8 +15579,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
-    if (qemuDomainSnapshotDiskPrepare(driver, vm, snap, reuse,
-                                      &diskdata, &ndiskdata) < 0)
+    if (qemuDomainSnapshotDiskPrepare(driver, vm, snap, cfg, reuse, blockdev,
+                                      asyncJob, &diskdata, &ndiskdata) < 0)
         goto cleanup;
 
     /* check whether there's anything to do */
@@ -15529,11 +15594,18 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
       * VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL with a valid file name and
       * qcow2 format.  */
     for (i = 0; i < ndiskdata; i++) {
-        if (qemuBlockSnapshotAddLegacy(actions,
-                                       diskdata[i].disk,
-                                       diskdata[i].src,
-                                       reuse) < 0)
-            goto cleanup;
+        if (blockdev) {
+            if (qemuBlockSnapshotAddBlockdev(actions,
+                                             diskdata[i].disk,
+                                             diskdata[i].src))
+                goto cleanup;
+        } else {
+            if (qemuBlockSnapshotAddLegacy(actions,
+                                           diskdata[i].disk,
+                                           diskdata[i].src,
+                                           reuse) < 0)
+                goto cleanup;
+        }
     }
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -15550,7 +15622,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
 
         if (rc == 0)
-            qemuDomainSnapshotDiskUpdateSource(driver, vm, dd);
+            qemuDomainSnapshotDiskUpdateSource(driver, vm, dd, blockdev);
     }
 
     if (rc < 0)
@@ -15564,7 +15636,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuDomainSnapshotDiskCleanup(diskdata, ndiskdata, driver, vm);
+    qemuDomainSnapshotDiskCleanup(diskdata, ndiskdata, driver, vm, asyncJob);
     return ret;
 }
 
