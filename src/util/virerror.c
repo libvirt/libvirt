@@ -908,138 +908,313 @@ typedef struct {
 } virErrorMsgTuple;
 
 
-/**
- * These macros expand to the following format of error message:
- * MSG2("error message", " suffix %s")
- *   - no info: "error message"
- *   - info: "error message suffix %s"
- *
- * MSG("error message")
- *  - no info: "error message"
- *  - info: "error message: %s"
- *
- * MSG_EXISTS("sausage")
- *  - no info: "this sausage exists already"
- *  - info: "sausage %s exists already"
- *
- * For any other case please use:
- * { "error message without info string", "message containing %s description"}
- */
-#define MSG2(msg, sfx) \
-   { N_(msg), N_(msg sfx) }
-#define MSG(msg) \
-    MSG2(msg, ": %s")
-#define MSG_EXISTS(object) \
-   { N_("this " object " exists already"), N_(object " %s exists already") }
-
 const virErrorMsgTuple virErrorMsgStrings[VIR_ERR_NUMBER_LAST] = {
     [VIR_ERR_OK] = { NULL, NULL },
-    [VIR_ERR_INTERNAL_ERROR] = MSG("internal error"),
-    [VIR_ERR_NO_MEMORY] = MSG("out of memory"),
-    [VIR_ERR_NO_SUPPORT] = MSG("this function is not supported by the connection driver"),
-    [VIR_ERR_UNKNOWN_HOST] = MSG2("unknown host", " %s"),
-    [VIR_ERR_NO_CONNECT] = MSG2("no connection driver available", " for %s"),
-    [VIR_ERR_INVALID_CONN] = MSG2("invalid connection pointer in", " %s"),
-    [VIR_ERR_INVALID_DOMAIN] = MSG2("invalid domain pointer in", " %s"),
-    [VIR_ERR_INVALID_ARG] = MSG("invalid argument"),
-    [VIR_ERR_OPERATION_FAILED] = MSG("operation failed"),
-    [VIR_ERR_GET_FAILED] = MSG("GET operation failed"),
-    [VIR_ERR_POST_FAILED] = MSG("POST operation failed"),
-    [VIR_ERR_HTTP_ERROR] = MSG2("got unknown HTTP error code", " %s"),
-    [VIR_ERR_SEXPR_SERIAL] = MSG("failed to serialize S-Expr"),
-    [VIR_ERR_NO_XEN] = MSG2("could not use Xen hypervisor entry", " %s"),
-    [VIR_ERR_XEN_CALL] = MSG2("failed Xen syscall", " %s"),
-    [VIR_ERR_OS_TYPE] = MSG2("unknown OS type", " %s"),
-    [VIR_ERR_NO_KERNEL] = MSG("missing kernel information"),
-    [VIR_ERR_NO_ROOT] = MSG2("missing root device information", " in %s"),
-    [VIR_ERR_NO_SOURCE] = MSG2("missing source information for device", " %s"),
-    [VIR_ERR_NO_TARGET] = MSG2("missing target information for device", " %s"),
-    [VIR_ERR_NO_NAME] = MSG2("missing name information", " in %s"),
-    [VIR_ERR_NO_OS] = MSG2("missing operating system information", " for %s"),
-    [VIR_ERR_NO_DEVICE] = MSG2("missing devices information", " for %s"),
-    [VIR_ERR_NO_XENSTORE] = MSG2("could not connect to Xen Store", " %s"),
-    [VIR_ERR_DRIVER_FULL] = MSG2("too many drivers registered", " in %s"),
-    [VIR_ERR_CALL_FAILED] = MSG("library call failed"),
-    [VIR_ERR_XML_ERROR] = { "XML description is invalid or not well formed", "XML error: %s" },
-    [VIR_ERR_DOM_EXIST] = MSG_EXISTS("domain"),
-    [VIR_ERR_OPERATION_DENIED] = { "operation forbidden for read only access", "operation forbidden: %s" },
-    [VIR_ERR_OPEN_FAILED] = MSG2("failed to open configuration file", " %s"),
-    [VIR_ERR_READ_FAILED] = MSG2("failed to read configuration file", " %s"),
-    [VIR_ERR_PARSE_FAILED] = MSG2("failed to parse configuration file", " %s"),
-    [VIR_ERR_CONF_SYNTAX] = MSG("configuration file syntax error"),
-    [VIR_ERR_WRITE_FAILED] = MSG("failed to write configuration file"),
-    [VIR_ERR_XML_DETAIL] = { "parser error", "%s" },
-    [VIR_ERR_INVALID_NETWORK] = MSG2("invalid network pointer in", " %s"),
-    [VIR_ERR_NETWORK_EXIST] = MSG_EXISTS("network"),
-    [VIR_ERR_SYSTEM_ERROR] = { "system call error", "%s" },
-    [VIR_ERR_RPC] = { "RPC error", "%s" },
-    [VIR_ERR_GNUTLS_ERROR] = { "GNUTLS call error", "%s" },
-    [VIR_WAR_NO_NETWORK] = MSG("Failed to find the network"),
-    [VIR_ERR_NO_DOMAIN] = MSG("Domain not found"),
-    [VIR_ERR_NO_NETWORK] = MSG("Network not found"),
-    [VIR_ERR_INVALID_MAC] = MSG("invalid MAC address"),
-    [VIR_ERR_AUTH_FAILED] = MSG("authentication failed"),
-    [VIR_ERR_INVALID_STORAGE_POOL] = MSG2("invalid storage pool pointer in", " %s"),
-    [VIR_ERR_INVALID_STORAGE_VOL] = MSG2("invalid storage volume pointer in", " %s"),
-    [VIR_WAR_NO_STORAGE] = MSG("Failed to find a storage driver"),
-    [VIR_ERR_NO_STORAGE_POOL] = MSG("Storage pool not found"),
-    [VIR_ERR_NO_STORAGE_VOL] = MSG("Storage volume not found"),
-    [VIR_WAR_NO_NODE] = MSG("Failed to find a node driver"),
-    [VIR_ERR_INVALID_NODE_DEVICE] = MSG2("invalid node device pointer", " in %s"),
-    [VIR_ERR_NO_NODE_DEVICE] = MSG("Node device not found"),
-    [VIR_ERR_NO_SECURITY_MODEL] = MSG("Security model not found"),
-    [VIR_ERR_OPERATION_INVALID] = MSG("Requested operation is not valid"),
-    [VIR_WAR_NO_INTERFACE] = MSG("Failed to find the interface"),
-    [VIR_ERR_NO_INTERFACE] = MSG("Interface not found"),
-    [VIR_ERR_INVALID_INTERFACE] = MSG2("invalid interface pointer in", " %s"),
-    [VIR_ERR_MULTIPLE_INTERFACES] = MSG("multiple matching interfaces found"),
-    [VIR_WAR_NO_NWFILTER] = MSG("Failed to start the nwfilter driver"),
-    [VIR_ERR_INVALID_NWFILTER] = MSG("Invalid network filter"),
-    [VIR_ERR_NO_NWFILTER] = MSG("Network filter not found"),
-    [VIR_ERR_BUILD_FIREWALL] = MSG("Error while building firewall"),
-    [VIR_WAR_NO_SECRET] = MSG("Failed to find a secret storage driver"),
-    [VIR_ERR_INVALID_SECRET] = MSG("Invalid secret"),
-    [VIR_ERR_NO_SECRET] = MSG("Secret not found"),
-    [VIR_ERR_CONFIG_UNSUPPORTED] = MSG("unsupported configuration"),
-    [VIR_ERR_OPERATION_TIMEOUT] = MSG("Timed out during operation"),
-    [VIR_ERR_MIGRATE_PERSIST_FAILED] = MSG("Failed to make domain persistent after migration"),
-    [VIR_ERR_HOOK_SCRIPT_FAILED] = MSG("Hook script execution failed"),
-    [VIR_ERR_INVALID_DOMAIN_SNAPSHOT] = MSG("Invalid snapshot"),
-    [VIR_ERR_NO_DOMAIN_SNAPSHOT] = MSG("Domain snapshot not found"),
-    [VIR_ERR_INVALID_STREAM] = MSG2("invalid stream pointer", " in %s"),
-    [VIR_ERR_ARGUMENT_UNSUPPORTED] = MSG("argument unsupported"),
-    [VIR_ERR_STORAGE_PROBE_FAILED] = MSG("Storage pool probe failed"),
-    [VIR_ERR_STORAGE_POOL_BUILT] = MSG("Storage pool already built"),
-    [VIR_ERR_SNAPSHOT_REVERT_RISKY] = MSG("revert requires force"),
-    [VIR_ERR_OPERATION_ABORTED] = MSG("operation aborted"),
-    [VIR_ERR_AUTH_CANCELLED] = MSG("authentication cancelled"),
-    [VIR_ERR_NO_DOMAIN_METADATA] = MSG("metadata not found"),
-    [VIR_ERR_MIGRATE_UNSAFE] = MSG("Unsafe migration"),
-    [VIR_ERR_OVERFLOW] = MSG("numerical overflow"),
-    [VIR_ERR_BLOCK_COPY_ACTIVE] = MSG("block copy still active"),
-    [VIR_ERR_OPERATION_UNSUPPORTED] = MSG("Operation not supported"),
-    [VIR_ERR_SSH] = MSG("SSH transport error"),
-    [VIR_ERR_AGENT_UNRESPONSIVE] = MSG("Guest agent is not responding"),
-    [VIR_ERR_RESOURCE_BUSY] = MSG("resource busy"),
-    [VIR_ERR_ACCESS_DENIED] = MSG("access denied"),
-    [VIR_ERR_DBUS_SERVICE] = MSG("error from service"),
-    [VIR_ERR_STORAGE_VOL_EXIST] = MSG_EXISTS("storage volume"),
-    [VIR_ERR_CPU_INCOMPATIBLE] = MSG("the CPU is incompatible with host CPU"),
-    [VIR_ERR_XML_INVALID_SCHEMA] = MSG("XML document failed to validate against schema"),
-    [VIR_ERR_MIGRATE_FINISH_OK] = MSG("migration successfully aborted"),
-    [VIR_ERR_AUTH_UNAVAILABLE] = MSG("authentication unavailable"),
-    [VIR_ERR_NO_SERVER] = MSG("Server not found"),
-    [VIR_ERR_NO_CLIENT] = MSG("Client not found"),
-    [VIR_ERR_AGENT_UNSYNCED] = MSG("guest agent replied with wrong id to guest-sync command"),
-    [VIR_ERR_LIBSSH] = MSG("libssh transport error"),
-    [VIR_ERR_DEVICE_MISSING] = MSG("device not found"),
-    [VIR_ERR_INVALID_NWFILTER_BINDING] = MSG("Invalid network filter binding"),
-    [VIR_ERR_NO_NWFILTER_BINDING] = MSG("Network filter binding not found"),
+    [VIR_ERR_INTERNAL_ERROR] = {
+        N_("internal error"),
+        N_("internal error: %s") },
+    [VIR_ERR_NO_MEMORY] = {
+        N_("out of memory"),
+        N_("out of memory: %s") },
+    [VIR_ERR_NO_SUPPORT] = {
+        N_("this function is not supported by the connection driver"),
+        N_("this function is not supported by the connection driver: %s") },
+    [VIR_ERR_UNKNOWN_HOST] = {
+        N_("unknown host"),
+        N_("unknown host %s") },
+    [VIR_ERR_NO_CONNECT] = {
+        N_("no connection driver available"),
+        N_("no connection driver available for %s") },
+    [VIR_ERR_INVALID_CONN] = {
+        N_("invalid connection pointer in"),
+        N_("invalid connection pointer in %s") },
+    [VIR_ERR_INVALID_DOMAIN] = {
+        N_("invalid domain pointer in"),
+        N_("invalid domain pointer in %s") },
+    [VIR_ERR_INVALID_ARG] = {
+        N_("invalid argument"),
+        N_("invalid argument: %s") },
+    [VIR_ERR_OPERATION_FAILED] = {
+        N_("operation failed"),
+        N_("operation failed: %s") },
+    [VIR_ERR_GET_FAILED] = {
+        N_("GET operation failed"),
+        N_("GET operation failed: %s") },
+    [VIR_ERR_POST_FAILED] = {
+        N_("POST operation failed"),
+        N_("POST operation failed: %s") },
+    [VIR_ERR_HTTP_ERROR] = {
+        N_("got unknown HTTP error code"),
+        N_("got unknown HTTP error code %s") },
+    [VIR_ERR_SEXPR_SERIAL] = {
+        N_("failed to serialize S-Expr"),
+        N_("failed to serialize S-Expr: %s") },
+    [VIR_ERR_NO_XEN] = {
+        N_("could not use Xen hypervisor entry"),
+        N_("could not use Xen hypervisor entry %s") },
+    [VIR_ERR_XEN_CALL] = {
+        N_("failed Xen syscall"),
+        N_("failed Xen syscall %s") },
+    [VIR_ERR_OS_TYPE] = {
+        N_("unknown OS type"),
+        N_("unknown OS type %s") },
+    [VIR_ERR_NO_KERNEL] = {
+        N_("missing kernel information"),
+        N_("missing kernel information: %s") },
+    [VIR_ERR_NO_ROOT] = {
+        N_("missing root device information"),
+        N_("missing root device information in %s") },
+    [VIR_ERR_NO_SOURCE] = {
+        N_("missing source information for device"),
+        N_("missing source information for device %s") },
+    [VIR_ERR_NO_TARGET] = {
+        N_("missing target information for device"),
+        N_("missing target information for device %s") },
+    [VIR_ERR_NO_NAME] = {
+        N_("missing name information"),
+        N_("missing name information in %s") },
+    [VIR_ERR_NO_OS] = {
+        N_("missing operating system information"),
+        N_("missing operating system information for %s") },
+    [VIR_ERR_NO_DEVICE] = {
+        N_("missing devices information"),
+        N_("missing devices information for %s") },
+    [VIR_ERR_NO_XENSTORE] = {
+        N_("could not connect to Xen Store"),
+        N_("could not connect to Xen Store %s") },
+    [VIR_ERR_DRIVER_FULL] = {
+        N_("too many drivers registered"),
+        N_("too many drivers registered in %s") },
+    [VIR_ERR_CALL_FAILED] = {
+        N_("library call failed"),
+        N_("library call failed: %s") },
+    [VIR_ERR_XML_ERROR] = {
+        N_("XML description is invalid or not well formed"),
+        N_("XML error: %s") },
+    [VIR_ERR_DOM_EXIST] = {
+        N_("this domain exists already"),
+        N_("domain %s exists already") },
+    [VIR_ERR_OPERATION_DENIED] = {
+        N_("operation forbidden for read only access"),
+        N_("operation forbidden: %s") },
+    [VIR_ERR_OPEN_FAILED] = {
+        N_("failed to open configuration file"),
+        N_("failed to open configuration file %s") },
+    [VIR_ERR_READ_FAILED] = {
+        N_("failed to read configuration file"),
+        N_("failed to read configuration file %s") },
+    [VIR_ERR_PARSE_FAILED] = {
+        N_("failed to parse configuration file"),
+        N_("failed to parse configuration file %s") },
+    [VIR_ERR_CONF_SYNTAX] = {
+        N_("configuration file syntax error"),
+        N_("configuration file syntax error: %s") },
+    [VIR_ERR_WRITE_FAILED] = {
+        N_("failed to write configuration file"),
+        N_("failed to write configuration file: %s") },
+    [VIR_ERR_XML_DETAIL] = {
+        N_("parser error"),
+        "%s" },
+    [VIR_ERR_INVALID_NETWORK] = {
+        N_("invalid network pointer in"),
+        N_("invalid network pointer in %s") },
+    [VIR_ERR_NETWORK_EXIST] = {
+        N_("this network exists already"),
+        N_("network %s exists already") },
+    [VIR_ERR_SYSTEM_ERROR] = {
+        N_("system call error"),
+        "%s" },
+    [VIR_ERR_RPC] = {
+        N_("RPC error"),
+        "%s" },
+    [VIR_ERR_GNUTLS_ERROR] = {
+        N_("GNUTLS call error"),
+        "%s" },
+    [VIR_WAR_NO_NETWORK] = {
+        N_("Failed to find the network"),
+        N_("Failed to find the network: %s") },
+    [VIR_ERR_NO_DOMAIN] = {
+        N_("Domain not found"),
+        N_("Domain not found: %s") },
+    [VIR_ERR_NO_NETWORK] = {
+        N_("Network not found"),
+        N_("Network not found: %s") },
+    [VIR_ERR_INVALID_MAC] = {
+        N_("invalid MAC address"),
+        N_("invalid MAC address: %s") },
+    [VIR_ERR_AUTH_FAILED] = {
+        N_("authentication failed"),
+        N_("authentication failed: %s") },
+    [VIR_ERR_INVALID_STORAGE_POOL] = {
+        N_("invalid storage pool pointer in"),
+        N_("invalid storage pool pointer in %s") },
+    [VIR_ERR_INVALID_STORAGE_VOL] = {
+        N_("invalid storage volume pointer in"),
+        N_("invalid storage volume pointer in %s") },
+    [VIR_WAR_NO_STORAGE] = {
+        N_("Failed to find a storage driver"),
+        N_("Failed to find a storage driver: %s") },
+    [VIR_ERR_NO_STORAGE_POOL] = {
+        N_("Storage pool not found"),
+        N_("Storage pool not found: %s") },
+    [VIR_ERR_NO_STORAGE_VOL] = {
+        N_("Storage volume not found"),
+        N_("Storage volume not found: %s") },
+    [VIR_WAR_NO_NODE] = {
+        N_("Failed to find a node driver"),
+        N_("Failed to find a node driver: %s") },
+    [VIR_ERR_INVALID_NODE_DEVICE] = {
+        N_("invalid node device pointer"),
+        N_("invalid node device pointer in %s") },
+    [VIR_ERR_NO_NODE_DEVICE] = {
+        N_("Node device not found"),
+        N_("Node device not found: %s") },
+    [VIR_ERR_NO_SECURITY_MODEL] = {
+        N_("Security model not found"),
+        N_("Security model not found: %s") },
+    [VIR_ERR_OPERATION_INVALID] = {
+        N_("Requested operation is not valid"),
+        N_("Requested operation is not valid: %s") },
+    [VIR_WAR_NO_INTERFACE] = {
+        N_("Failed to find the interface"),
+        N_("Failed to find the interface: %s") },
+    [VIR_ERR_NO_INTERFACE] = {
+        N_("Interface not found"),
+        N_("Interface not found: %s") },
+    [VIR_ERR_INVALID_INTERFACE] = {
+        N_("invalid interface pointer in"),
+        N_("invalid interface pointer in %s") },
+    [VIR_ERR_MULTIPLE_INTERFACES] = {
+        N_("multiple matching interfaces found"),
+        N_("multiple matching interfaces found: %s") },
+    [VIR_WAR_NO_NWFILTER] = {
+        N_("Failed to start the nwfilter driver"),
+        N_("Failed to start the nwfilter driver: %s") },
+    [VIR_ERR_INVALID_NWFILTER] = {
+        N_("Invalid network filter"),
+        N_("Invalid network filter: %s") },
+    [VIR_ERR_NO_NWFILTER] = {
+        N_("Network filter not found"),
+        N_("Network filter not found: %s") },
+    [VIR_ERR_BUILD_FIREWALL] = {
+        N_("Error while building firewall"),
+        N_("Error while building firewall: %s") },
+    [VIR_WAR_NO_SECRET] = {
+        N_("Failed to find a secret storage driver"),
+        N_("Failed to find a secret storage driver: %s") },
+    [VIR_ERR_INVALID_SECRET] = {
+        N_("Invalid secret"),
+        N_("Invalid secret: %s") },
+    [VIR_ERR_NO_SECRET] = {
+        N_("Secret not found"),
+        N_("Secret not found: %s") },
+    [VIR_ERR_CONFIG_UNSUPPORTED] = {
+        N_("unsupported configuration"),
+        N_("unsupported configuration: %s") },
+    [VIR_ERR_OPERATION_TIMEOUT] = {
+        N_("Timed out during operation"),
+        N_("Timed out during operation: %s") },
+    [VIR_ERR_MIGRATE_PERSIST_FAILED] = {
+        N_("Failed to make domain persistent after migration"),
+        N_("Failed to make domain persistent after migration: %s") },
+    [VIR_ERR_HOOK_SCRIPT_FAILED] = {
+        N_("Hook script execution failed"),
+        N_("Hook script execution failed: %s") },
+    [VIR_ERR_INVALID_DOMAIN_SNAPSHOT] = {
+        N_("Invalid snapshot"),
+        N_("Invalid snapshot: %s") },
+    [VIR_ERR_NO_DOMAIN_SNAPSHOT] = {
+        N_("Domain snapshot not found"),
+        N_("Domain snapshot not found: %s") },
+    [VIR_ERR_INVALID_STREAM] = {
+        N_("invalid stream pointer"),
+        N_("invalid stream pointer in %s") },
+    [VIR_ERR_ARGUMENT_UNSUPPORTED] = {
+        N_("argument unsupported"),
+        N_("argument unsupported: %s") },
+    [VIR_ERR_STORAGE_PROBE_FAILED] = {
+        N_("Storage pool probe failed"),
+        N_("Storage pool probe failed: %s") },
+    [VIR_ERR_STORAGE_POOL_BUILT] = {
+        N_("Storage pool already built"),
+        N_("Storage pool already built: %s") },
+    [VIR_ERR_SNAPSHOT_REVERT_RISKY] = {
+        N_("revert requires force"),
+        N_("revert requires force: %s") },
+    [VIR_ERR_OPERATION_ABORTED] = {
+        N_("operation aborted"),
+        N_("operation aborted: %s") },
+    [VIR_ERR_AUTH_CANCELLED] = {
+        N_("authentication cancelled"),
+        N_("authentication cancelled: %s") },
+    [VIR_ERR_NO_DOMAIN_METADATA] = {
+        N_("metadata not found"),
+        N_("metadata not found: %s") },
+    [VIR_ERR_MIGRATE_UNSAFE] = {
+        N_("Unsafe migration"),
+        N_("Unsafe migration: %s") },
+    [VIR_ERR_OVERFLOW] = {
+        N_("numerical overflow"),
+        N_("numerical overflow: %s") },
+    [VIR_ERR_BLOCK_COPY_ACTIVE] = {
+        N_("block copy still active"),
+        N_("block copy still active: %s") },
+    [VIR_ERR_OPERATION_UNSUPPORTED] = {
+        N_("Operation not supported"),
+        N_("Operation not supported: %s") },
+    [VIR_ERR_SSH] = {
+        N_("SSH transport error"),
+        N_("SSH transport error: %s") },
+    [VIR_ERR_AGENT_UNRESPONSIVE] = {
+        N_("Guest agent is not responding"),
+        N_("Guest agent is not responding: %s") },
+    [VIR_ERR_RESOURCE_BUSY] = {
+        N_("resource busy"),
+        N_("resource busy: %s") },
+    [VIR_ERR_ACCESS_DENIED] = {
+        N_("access denied"),
+        N_("access denied: %s") },
+    [VIR_ERR_DBUS_SERVICE] = {
+        N_("error from service"),
+        N_("error from service: %s") },
+    [VIR_ERR_STORAGE_VOL_EXIST] = {
+        N_("this storage volume exists already"),
+        N_("storage volume %s exists already") },
+    [VIR_ERR_CPU_INCOMPATIBLE] = {
+        N_("the CPU is incompatible with host CPU"),
+        N_("the CPU is incompatible with host CPU: %s") },
+    [VIR_ERR_XML_INVALID_SCHEMA] = {
+        N_("XML document failed to validate against schema"),
+        N_("XML document failed to validate against schema: %s") },
+    [VIR_ERR_MIGRATE_FINISH_OK] = {
+        N_("migration successfully aborted"),
+        N_("migration successfully aborted: %s") },
+    [VIR_ERR_AUTH_UNAVAILABLE] = {
+        N_("authentication unavailable"),
+        N_("authentication unavailable: %s") },
+    [VIR_ERR_NO_SERVER] = {
+        N_("Server not found"),
+        N_("Server not found: %s") },
+    [VIR_ERR_NO_CLIENT] = {
+        N_("Client not found"),
+        N_("Client not found: %s") },
+    [VIR_ERR_AGENT_UNSYNCED] = {
+        N_("guest agent replied with wrong id to guest-sync command"),
+        N_("guest agent replied with wrong id to guest-sync command: %s") },
+    [VIR_ERR_LIBSSH] = {
+        N_("libssh transport error"),
+        N_("libssh transport error: %s") },
+    [VIR_ERR_DEVICE_MISSING] = {
+        N_("device not found"),
+        N_("device not found: %s") },
+    [VIR_ERR_INVALID_NWFILTER_BINDING] = {
+        N_("Invalid network filter binding"),
+        N_("Invalid network filter binding: %s") },
+    [VIR_ERR_NO_NWFILTER_BINDING] = {
+        N_("Network filter binding not found"),
+        N_("Network filter binding not found: %s") },
 };
 
-#undef MSG
-#undef MSG2
-#undef MSG_EXISTS
 
 /**
  * virErrorMsg:
