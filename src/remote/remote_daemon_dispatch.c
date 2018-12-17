@@ -1366,7 +1366,6 @@ remoteRelayDomainEventMetadataChange(virConnectPtr conn,
 {
     daemonClientEventCallbackPtr callback = opaque;
     remote_domain_event_callback_metadata_change_msg data;
-    char **nsurip;
 
     if (callback->callbackID < 0 ||
         !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
@@ -1380,13 +1379,9 @@ remoteRelayDomainEventMetadataChange(virConnectPtr conn,
 
     data.type = type;
     if (nsuri) {
-        if (VIR_ALLOC(nsurip) < 0)
-            return -1;
-        if (VIR_STRDUP(*nsurip, nsuri) < 0) {
-            VIR_FREE(nsurip);
-            return -1;
-        }
-        data.nsuri = nsurip;
+        if (VIR_ALLOC(data.nsuri) < 0 ||
+            VIR_STRDUP(*(data.nsuri), nsuri) < 0)
+            goto error;
     }
 
     if (make_nonnull_domain(&data.dom, dom) < 0)
@@ -1432,9 +1427,8 @@ remoteRelayDomainEventBlockThreshold(virConnectPtr conn,
     if (VIR_STRDUP(data.dev, dev) < 0)
         goto error;
     if (path) {
-        if (VIR_ALLOC(data.path) < 0)
-            goto error;
-        if (VIR_STRDUP(*(data.path), path) < 0)
+        if (VIR_ALLOC(data.path) < 0 ||
+            VIR_STRDUP(*(data.path), path) < 0)
             goto error;
     }
     data.threshold = threshold;
@@ -4006,14 +4000,9 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
         ret->parentName = NULL;
     } else {
         /* remoteDispatchClientRequest will free this. */
-        char **parent_p;
-        if (VIR_ALLOC(parent_p) < 0)
+        if (VIR_ALLOC(ret->parentName) < 0 ||
+            VIR_STRDUP(*(ret->parentName), parent) < 0)
             goto cleanup;
-        if (VIR_STRDUP(*parent_p, parent) < 0) {
-            VIR_FREE(parent_p);
-            goto cleanup;
-        }
-        ret->parentName = parent_p;
     }
 
     rv = 0;
