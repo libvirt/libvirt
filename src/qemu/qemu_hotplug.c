@@ -1369,6 +1369,25 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
         goto cleanup;
 
+    if (qemuDomainIsS390CCW(vm->def) &&
+        net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CCW)) {
+        net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
+        if (!(ccwaddrs = virDomainCCWAddressSetCreateFromDomain(vm->def)))
+            goto cleanup;
+        if (virDomainCCWAddressAssign(&net->info, ccwaddrs,
+                                      !net->info.addr.ccw.assigned) < 0)
+            goto cleanup;
+    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("virtio-s390 net device cannot be hotplugged."));
+        goto cleanup;
+    } else if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0) {
+        goto cleanup;
+    }
+
+    releaseaddr = true;
+
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -1502,25 +1521,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                                       vm->def, tapfd[i]) < 0)
             goto cleanup;
     }
-
-    if (qemuDomainIsS390CCW(vm->def) &&
-        net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CCW)) {
-        net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
-        if (!(ccwaddrs = virDomainCCWAddressSetCreateFromDomain(vm->def)))
-            goto cleanup;
-        if (virDomainCCWAddressAssign(&net->info, ccwaddrs,
-                                      !net->info.addr.ccw.assigned) < 0)
-            goto cleanup;
-    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("virtio-s390 net device cannot be hotplugged."));
-        goto cleanup;
-    } else if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0) {
-        goto cleanup;
-    }
-
-    releaseaddr = true;
 
     if (VIR_ALLOC_N(tapfdName, tapfdSize) < 0 ||
         VIR_ALLOC_N(vhostfdName, vhostfdSize) < 0)
