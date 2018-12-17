@@ -749,7 +749,6 @@ remoteRelayDomainEventDiskChange(virConnectPtr conn,
 {
     daemonClientEventCallbackPtr callback = opaque;
     remote_domain_event_disk_change_msg data;
-    char **oldSrcPath_p = NULL, **newSrcPath_p = NULL;
 
     if (callback->callbackID < 0 ||
         !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
@@ -762,17 +761,15 @@ remoteRelayDomainEventDiskChange(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
     if (oldSrcPath &&
-        ((VIR_ALLOC(oldSrcPath_p) < 0) ||
-         VIR_STRDUP(*oldSrcPath_p, oldSrcPath) < 0))
+        ((VIR_ALLOC(data.oldSrcPath) < 0) ||
+         VIR_STRDUP(*(data.oldSrcPath), oldSrcPath) < 0))
         goto error;
 
     if (newSrcPath &&
-        ((VIR_ALLOC(newSrcPath_p) < 0) ||
-         VIR_STRDUP(*newSrcPath_p, newSrcPath) < 0))
+        ((VIR_ALLOC(data.newSrcPath) < 0) ||
+         VIR_STRDUP(*(data.newSrcPath), newSrcPath) < 0))
         goto error;
 
-    data.oldSrcPath = oldSrcPath_p;
-    data.newSrcPath = newSrcPath_p;
     if (VIR_STRDUP(data.devAlias, devAlias) < 0)
         goto error;
     data.reason = reason;
@@ -1779,7 +1776,6 @@ remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
 {
     daemonClientEventCallbackPtr callback = opaque;
     qemu_domain_monitor_event_msg data;
-    char **details_p = NULL;
 
     if (callback->callbackID < 0 ||
         !remoteRelayDomainQemuMonitorEventCheckACL(callback->client, conn,
@@ -1797,10 +1793,9 @@ remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
     data.seconds = seconds;
     data.micros = micros;
     if (details &&
-        ((VIR_ALLOC(details_p) < 0) ||
-         VIR_STRDUP(*details_p, details) < 0))
+        ((VIR_ALLOC(data.details) < 0) ||
+         VIR_STRDUP(*(data.details), details) < 0))
         goto error;
-    data.details = details_p;
     if (make_nonnull_domain(&data.dom, dom) < 0)
         goto error;
 
