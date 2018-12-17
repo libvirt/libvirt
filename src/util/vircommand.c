@@ -1498,6 +1498,12 @@ virCommandAddArg(virCommandPtr cmd, const char *val)
     if (!cmd || cmd->has_error)
         return;
 
+    if (val == NULL) {
+        cmd->has_error = EINVAL;
+        abort();
+        return;
+    }
+
     if (VIR_STRDUP_QUIET(arg, val) < 0) {
         cmd->has_error = ENOMEM;
         return;
@@ -1595,6 +1601,10 @@ virCommandAddArgFormat(virCommandPtr cmd, const char *format, ...)
 void
 virCommandAddArgPair(virCommandPtr cmd, const char *name, const char *val)
 {
+    if (name == NULL || val == NULL) {
+        cmd->has_error = EINVAL;
+        return;
+    }
     virCommandAddArgFormat(cmd, "%s=%s", name, val);
 }
 
