@@ -91,10 +91,8 @@
   &lt;/network&gt;
 &lt;/hookData&gt;</pre>
 
-    <p>In the case of an interface
-       being plugged/unplugged to/from the network, the network XML will be
-       followed with the full XML description of the domain containing the
-       interface that is being plugged/unplugged:</p>
+    <p>In the case of an network port being created / deleted, the network
+       XML will be followed with the full XML description of the port:</p>
 
 <pre>&lt;hookData&gt;
   &lt;network&gt;
@@ -102,11 +100,11 @@
      &lt;uuid&gt;afca425a-2c3a-420c-b2fb-dd7b4950d722&lt;/uuid&gt;
      ...
   &lt;/network&gt;
-  &lt;domain type='$domain_type' id='$domain_id'&gt;
-     &lt;name&gt;$domain_name&lt;/name&gt;
-     &lt;uuid&gt;afca425a-2c3a-420c-b2fb-dd7b4950d722&lt;/uuid&gt;
-     ...
-  &lt;/domain&gt;
+  &lt;networkport&gt;
+    &lt;uuid&gt;5d744f21-ba4a-4d6e-bdb2-30a35ff3207d&lt;/uuid&gt;
+    ...
+    &lt;plug type='direct' dev='ens3' mode='vepa'/&gt;
+  &lt;/networkport&gt;
 &lt;/hookData&gt;</pre>
 
     <p>Please note that this approach is different from other cases such as
@@ -296,15 +294,15 @@
           <pre>/etc/libvirt/hooks/network network_name stopped end -</pre></li>
       <li>Later, when network is started and there's an interface from a
         domain to be plugged into the network, the hook script is called as:<br/>
-          <pre>/etc/libvirt/hooks/network network_name plugged begin -</pre>
+          <pre>/etc/libvirt/hooks/network network_name port-created begin -</pre>
         Please note, that in this case, the script is passed both network and
-        domain XMLs on its stdin.</li>
+        port XMLs on its stdin.</li>
       <li>When network is updated, the hook script is called as:<br/>
           <pre>/etc/libvirt/hooks/network network_name updated begin -</pre></li>
       <li>When the domain from previous case is shutting down, the interface
         is unplugged. This leads to another script invocation:<br/>
-          <pre>/etc/libvirt/hooks/network network_name unplugged begin -</pre>
-        And again, as in previous case, both network and domain XMLs are passed
+          <pre>/etc/libvirt/hooks/network network_name port-deleted begin -</pre>
+        And again, as in previous case, both network and port XMLs are passed
         onto script's stdin.</li>
     </ul>
 
