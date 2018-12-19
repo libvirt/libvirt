@@ -58,6 +58,8 @@ struct _virNetworkObj {
 
     /* Immutable pointer, self locking APIs */
     virMacMapPtr macmap;
+
+    virHashTablePtr ports; /* uuid -> virNetworkPortDefPtr */
 };
 
 struct _virNetworkObjList {
@@ -86,6 +88,17 @@ virNetworkObjOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virNetworkObj);
 
+static int
+virNetworkObjLoadAllPorts(virNetworkObjPtr net,
+                          const char *stateDir);
+
+
+static void
+virNetworkObjPortFree(void *val, const void *key ATTRIBUTE_UNUSED)
+{
+    virNetworkPortDefFree(val);
+}
+
 virNetworkObjPtr
 virNetworkObjNew(void)
 {
@@ -104,6 +117,10 @@ virNetworkObjNew(void)
     if (virBitmapSetBitExpand(obj->classIdMap, 0) < 0 ||
         virBitmapSetBitExpand(obj->classIdMap, 1) < 0 ||
         virBitmapSetBitExpand(obj->classIdMap, 2) < 0)
+        goto error;
+
+    if (!(obj->ports = virHashCreate(10,
+                                     virNetworkObjPortFree)))
         goto error;
 
     virObjectLock(obj);
@@ -458,6 +475,7 @@ virNetworkObjDispose(void *opaque)
 {
     virNetworkObjPtr obj = opaque;
 
+    virHashFree(obj->ports);
     virNetworkDefFree(obj->def);
     virNetworkDefFree(obj->newDef);
     virBitmapFree(obj->classIdMap);
@@ -1072,9 +1090,16 @@ virNetworkObjLoadAllState(virNetworkObjListPtr nets,
             continue;
 
         obj = virNetworkLoadState(nets, stateDir, entry->d_name);
+
+        if (obj &&
+            virNetworkObjLoadAllPorts(obj, stateDir) < 0) {
+            virNetworkObjEndAPI(&obj);
+            goto cleanup;
+        }
         virNetworkObjEndAPI(&obj);
     }
 
+ cleanup:
     VIR_DIR_CLOSE(dir);
     return ret;
 }
@@ -1583,4 +1608,282 @@ virNetworkObjListPrune(virNetworkObjListPtr nets,
     virObjectRWLockWrite(nets);
     virHashRemoveSet(nets->objs, virNetworkObjListPruneHelper, &data);
     virObjectRWUnlock(nets);
+}
+
+
+char *
+virNetworkObjGetPortStatusDir(virNetworkObjPtr net,
+                              const char *stateDir)
+{
+    char *ret;
+    ignore_value(virAsprintf(&ret, "%s/%s/ports", stateDir, net->def->name));
+    return ret;
+}
+
+int
+virNetworkObjAddPort(virNetworkObjPtr net,
+                     virNetworkPortDefPtr portdef,
+                     const char *stateDir)
+{
+    int ret = -1;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *dir = NULL;
+
+    virUUIDFormat(portdef->uuid, uuidstr);
+
+    if (virHashLookup(net->ports, uuidstr)) {
+        virReportError(VIR_ERR_NETWORK_PORT_EXIST,
+                       _("Network port with UUID %s already exists"),
+                       uuidstr);
+        goto cleanup;
+    }
+
+    if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
+        goto cleanup;
+
+    if (virHashAddEntry(net->ports, uuidstr, portdef) < 0)
+        goto cleanup;
+
+    if (virNetworkPortDefSaveStatus(portdef, dir) < 0) {
+        virHashRemoveEntry(net->ports, uuidstr);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+virNetworkPortDefPtr
+virNetworkObjLookupPort(virNetworkObjPtr net,
+                        const unsigned char *uuid)
+{
+    virNetworkPortDefPtr ret = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(uuid, uuidstr);
+
+    if (!(ret = virHashLookup(net->ports, uuidstr))) {
+        virReportError(VIR_ERR_NO_NETWORK_PORT,
+                       _("Network port with UUID %s does not exist"),
+                       uuidstr);
+        goto cleanup;
+    }
+
+ cleanup:
+    return ret;
+}
+
+
+int
+virNetworkObjDeletePort(virNetworkObjPtr net,
+                        const unsigned char *uuid,
+                        const char *stateDir)
+{
+    int ret = -1;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *dir = NULL;
+    virNetworkPortDefPtr portdef;
+
+    virUUIDFormat(uuid, uuidstr);
+
+    if (!(portdef = virHashLookup(net->ports, uuidstr))) {
+        virReportError(VIR_ERR_NO_NETWORK_PORT,
+                       _("Network port with UUID %s does not exist"),
+                       uuidstr);
+        goto cleanup;
+    }
+
+    if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
+        goto cleanup;
+
+    if (virNetworkPortDefDeleteStatus(portdef, dir) < 0)
+        goto cleanup;
+
+    if (virHashRemoveEntry(net->ports, uuidstr) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(dir);
+    return ret;
+}
+
+
+int
+virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
+                            const char *stateDir)
+{
+    char *dir;
+    DIR *dh;
+    struct dirent *de;
+    int rc;
+    int ret = -1;
+
+    if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
+        goto cleanup;
+
+    if ((rc = virDirOpenIfExists(&dh, dir)) <= 0) {
+        ret = rc;
+        goto cleanup;
+    }
+
+    while ((rc = virDirRead(dh, &de, dir)) > 0) {
+        char *file = NULL;
+
+        if (!virStringStripSuffix(de->d_name, ".xml"))
+            continue;
+
+        if (virAsprintf(&file, "%s/%s.xml", dir, de->d_name) < 0)
+            goto cleanup;
+
+        if (unlink(file) < 0 && errno != ENOENT)
+            VIR_WARN("Unable to delete %s", file);
+
+        VIR_FREE(file);
+    }
+
+    virHashRemoveAll(net->ports);
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+typedef struct _virNetworkObjPortListExportData virNetworkObjPortListExportData;
+typedef virNetworkObjPortListExportData *virNetworkObjPortListExportDataPtr;
+struct _virNetworkObjPortListExportData {
+    virNetworkPtr net;
+    virNetworkDefPtr def;
+    virNetworkPortPtr *ports;
+    virNetworkPortListFilter filter;
+    int nports;
+    bool error;
+};
+
+static int
+virNetworkObjPortListExportCallback(void *payload,
+                                    const void *name ATTRIBUTE_UNUSED,
+                                    void *opaque)
+{
+    virNetworkObjPortListExportDataPtr data = opaque;
+    virNetworkPortDefPtr def = payload;
+    virNetworkPortPtr port;
+
+    if (data->error)
+        return 0;
+
+    if (data->filter &&
+        !data->filter(data->net->conn, data->def, def))
+        goto cleanup;
+
+    if (!data->ports) {
+        data->nports++;
+        goto cleanup;
+    }
+
+    if (!(port = virGetNetworkPort(data->net, def->uuid))) {
+        data->error = true;
+        goto cleanup;
+    }
+
+    data->ports[data->nports++] = port;
+
+ cleanup:
+    return 0;
+}
+
+
+int
+virNetworkObjPortListExport(virNetworkPtr net,
+                            virNetworkObjPtr obj,
+                            virNetworkPortPtr **ports,
+                            virNetworkPortListFilter filter)
+{
+    virNetworkObjPortListExportData data = {
+        net, obj->def, NULL, filter, 0, false,
+    };
+    int ret = -1;
+
+    *ports = NULL;
+
+    if (ports && VIR_ALLOC_N(data.ports, virHashSize(obj->ports) + 1) < 0)
+        goto cleanup;
+
+    virHashForEach(obj->ports, virNetworkObjPortListExportCallback, &data);
+
+    if (data.error)
+        goto cleanup;
+
+    if (data.ports) {
+        /* trim the array to the final size */
+        ignore_value(VIR_REALLOC_N(data.ports, data.nports + 1));
+        *ports = data.ports;
+        data.ports = NULL;
+    }
+
+    ret = data.nports;
+ cleanup:
+    while (data.ports && data.nports)
+        virObjectUnref(data.ports[--data.nports]);
+
+    VIR_FREE(data.ports);
+    return ret;
+}
+
+
+static int
+virNetworkObjLoadAllPorts(virNetworkObjPtr net,
+                          const char *stateDir)
+{
+    char *dir;
+    DIR *dh = NULL;
+    struct dirent *de;
+    int ret = -1;
+    int rc;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virNetworkPortDefPtr portdef = NULL;
+
+    if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
+        goto cleanup;
+
+    if ((rc = virDirOpenIfExists(&dh, dir)) <= 0) {
+        ret = rc;
+        goto cleanup;
+    }
+
+    while ((rc = virDirRead(dh, &de, dir)) > 0) {
+        char *file = NULL;
+
+        if (!virStringStripSuffix(de->d_name, ".xml"))
+            continue;
+
+        if (virAsprintf(&file, "%s/%s.xml", dir, de->d_name) < 0)
+            goto cleanup;
+
+        portdef = virNetworkPortDefParseFile(file);
+        VIR_FREE(file);
+        file = NULL;
+
+        if (!portdef) {
+            VIR_WARN("Cannot parse port %s", file);
+            continue;
+        }
+
+        virUUIDFormat(portdef->uuid, uuidstr);
+        if (virHashAddEntry(net->ports, uuidstr, portdef) < 0)
+            goto cleanup;
+
+        portdef = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_DIR_CLOSE(dh);
+    virNetworkPortDefFree(portdef);
+    return ret;
 }

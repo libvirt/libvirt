@@ -22,6 +22,7 @@
 #include "internal.h"
 
 #include "network_conf.h"
+#include "virnetworkportdef.h"
 
 typedef struct _virNetworkObj virNetworkObj;
 typedef virNetworkObj *virNetworkObjPtr;
@@ -154,6 +155,39 @@ virNetworkObjReplacePersistentDef(virNetworkObjPtr network,
 void
 virNetworkObjRemoveInactive(virNetworkObjListPtr nets,
                             virNetworkObjPtr net);
+
+int
+virNetworkObjAddPort(virNetworkObjPtr net,
+                     virNetworkPortDefPtr portdef,
+                     const char *stateDir);
+
+char *
+virNetworkObjGetPortStatusDir(virNetworkObjPtr net,
+                              const char *stateDir);
+
+virNetworkPortDefPtr
+virNetworkObjLookupPort(virNetworkObjPtr net,
+                        const unsigned char *uuid);
+
+int
+virNetworkObjDeletePort(virNetworkObjPtr net,
+                        const unsigned char *uuid,
+                        const char *stateDir);
+
+int
+virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
+                            const char *stateDir);
+
+typedef bool
+(*virNetworkPortListFilter)(virConnectPtr conn,
+                            virNetworkDefPtr def,
+                            virNetworkPortDefPtr portdef);
+
+int
+virNetworkObjPortListExport(virNetworkPtr net,
+                            virNetworkObjPtr obj,
+                            virNetworkPortPtr **ports,
+                            virNetworkPortListFilter filter);
 
 int
 virNetworkObjSaveStatus(const char *statusDir,
