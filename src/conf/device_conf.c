@@ -308,7 +308,7 @@ virPCIDeviceAddressParseXML(xmlNodePtr node,
     return ret;
 }
 
-int
+void
 virPCIDeviceAddressFormat(virBufferPtr buf,
                           virPCIDeviceAddress addr,
                           bool includeTypeInAddr)
@@ -320,7 +320,6 @@ virPCIDeviceAddressFormat(virBufferPtr buf,
                       addr.bus,
                       addr.slot,
                       addr.function);
-    return 0;
 }
 
 bool

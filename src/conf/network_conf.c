@@ -2485,10 +2485,9 @@ virNetworkDefFormatBuf(virBufferPtr buf,
                     virBufferAddLit(buf, "/>\n");
                 } else {
                     if (def->forward.ifs[i].type ==  VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI) {
-                        if (virPCIDeviceAddressFormat(buf,
-                                                      def->forward.ifs[i].device.pci,
-                                                      true) < 0)
-                            goto error;
+                        virPCIDeviceAddressFormat(buf,
+                                                  def->forward.ifs[i].device.pci,
+                                                  true);
                     }
                 }
             }

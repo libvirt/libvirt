@@ -25136,10 +25136,8 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (virPCIDeviceAddressFormat(buf, pcisrc->addr,
-                                      includeTypeInAddr) != 0)
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("PCI address Formatting failed"));
+        virPCIDeviceAddressFormat(buf, pcisrc->addr,
+                                  includeTypeInAddr);
 
         if ((flags & VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES) &&
             (def->origstates.states.pci.unbind_from_stub ||

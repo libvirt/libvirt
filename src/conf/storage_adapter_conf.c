@@ -326,8 +326,8 @@ virStorageAdapterFormatSCSIHost(virBufferPtr buf,
         virBufferAsprintf(buf, "<parentaddr unique_id='%d'>\n",
                           scsi_host->unique_id);
         virBufferAdjustIndent(buf, 2);
-        ignore_value(virPCIDeviceAddressFormat(buf, scsi_host->parentaddr,
-                                               false));
+        virPCIDeviceAddressFormat(buf, scsi_host->parentaddr,
+                                  false);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</parentaddr>\n");
         virBufferAdjustIndent(buf, -2);
