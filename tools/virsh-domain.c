@@ -6954,7 +6954,8 @@ virshVcpuPinQuery(vshControl *ctl,
             if (got_vcpu && i != vcpu)
                 continue;
 
-            if (!(pinInfo = virBitmapDataFormat(cpumap, cpumaplen)))
+            if (!(pinInfo = virBitmapDataFormat(VIR_GET_CPUMAP(cpumap, cpumaplen, i),
+                                                cpumaplen)))
                 goto cleanup;
 
             if (virAsprintf(&vcpuStr, "%zu", i) < 0)
