@@ -8332,6 +8332,19 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/label&gt;
     &lt;/target&gt;
   &lt;/memory&gt;
+  &lt;memory model='nvdimm'&gt;
+    &lt;source&gt;
+      &lt;path&gt;/dev/dax0.0&lt;/path&gt;
+      &lt;pmem/&gt;
+    &lt;/source&gt;
+    &lt;target&gt;
+      &lt;size unit='KiB'&gt;524288&lt;/size&gt;
+      &lt;node&gt;1&lt;/node&gt;
+      &lt;label&gt;
+        &lt;size unit='KiB'&gt;128&lt;/size&gt;
+      &lt;/label&gt;
+    &lt;/target&gt;
+  &lt;/memory&gt;
 &lt;/devices&gt;
 ...
 </pre>
@@ -8419,6 +8432,17 @@ qemu-kvm -net nic,model=? /dev/null
               <code>path</code>. If not supplied the host page size is used.
               For example, to mmap a real NVDIMM device a 2M-aligned page may
               be required.
+              <span class="since">Since 5.0.0</span>
+            </p>
+          </dd>
+
+          <dt><code>pmem</code></dt>
+          <dd>
+            <p>
+              If persistent memory is supported and enabled by the hypervisor
+              in order to guarantee the persistence of writes to the vNVDIMM
+              backend, then use the <code>pmem</code> element in order to
+              utilize the feature.
               <span class="since">Since 5.0.0</span>
             </p>
           </dd>

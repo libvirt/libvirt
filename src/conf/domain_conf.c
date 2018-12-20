@@ -15785,6 +15785,9 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
                                  &def->alignsize, false, false) < 0)
             goto cleanup;
 
+        if (virXPathBoolean("boolean(./pmem)", ctxt))
+            def->nvdimmPmem = true;
+
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
@@ -22756,6 +22759,13 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
                            src->alignsize, dst->alignsize);
             return false;
         }
+
+        if (src->nvdimmPmem != dst->nvdimmPmem) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Target NVDIMM pmem flag doesn't match "
+                             "source NVDIMM pmem flag"));
+            return false;
+        }
     }
 
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
@@ -26296,6 +26306,9 @@ virDomainMemorySourceDefFormat(virBufferPtr buf,
         if (def->alignsize)
             virBufferAsprintf(buf, "<alignsize unit='KiB'>%llu</alignsize>\n",
                               def->alignsize);
+
+        if (def->nvdimmPmem)
+            virBufferAddLit(buf, "<pmem/>\n");
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:

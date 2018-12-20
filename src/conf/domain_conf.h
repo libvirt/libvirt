@@ -2148,6 +2148,7 @@ struct _virDomainMemoryDef {
     unsigned long long pagesize; /* kibibytes */
     char *nvdimmPath;
     unsigned long long alignsize; /* kibibytes; valid only for NVDIMM */
+    bool nvdimmPmem; /* valid only for NVDIMM */
 
     /* target */
     int model; /* virDomainMemoryModel */
