@@ -1477,10 +1477,12 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
         goto cleanup;
     }
 
-    if ((rc = virSecuritySELinuxTransactionAppend(path, NULL, false, true)) < 0)
-        return -1;
-    else if (rc > 0)
-        return 0;
+    if ((rc = virSecuritySELinuxTransactionAppend(path, NULL, false, true)) < 0) {
+        goto cleanup;
+    } else if (rc > 0) {
+        ret = 0;
+        goto cleanup;
+    }
 
     if (recall) {
         if ((rc = virSecuritySELinuxRecallLabel(newpath, &fcon)) < 0) {
