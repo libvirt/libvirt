@@ -516,6 +516,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "machine.pseries.cap-nested-hv",
               "egl-headless.rendernode",
               "memory-backend-file.align",
+
+              /* 325 */
+              "memory-backend-file.pmem",
     );
 
 
@@ -1367,6 +1370,7 @@ static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {
     { "discard-data", QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD },
     { "align", QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN },
+    { "pmem", QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] = {

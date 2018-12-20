@@ -501,6 +501,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_EGL_HEADLESS_RENDERNODE, /* -display egl-headless,rendernode= */
     QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN, /* -object memory-backend-file,align= */
 
+    /* 325 */
+    QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM, /* -object memory-backend-file,pmem= */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

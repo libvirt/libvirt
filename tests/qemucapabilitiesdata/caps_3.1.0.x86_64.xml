@@ -210,6 +210,7 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.align'/>
+  <flag name='memory-backend-file.pmem'/>
   <version>3000092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>440395</microcodeVersion>
