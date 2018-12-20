@@ -3409,6 +3409,17 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
             goto cleanup;
     }
 
+    if (mem->nvdimmPmem) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("nvdimm pmem property is not available "
+                             "with this QEMU binary"));
+            goto cleanup;
+        }
+        if (virJSONValueObjectAdd(props, "s:pmem", "on", NULL) < 0)
+            goto cleanup;
+    }
+
     if (mem->sourceNodes) {
         nodemask = mem->sourceNodes;
     } else {
