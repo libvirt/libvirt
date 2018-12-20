@@ -211,7 +211,7 @@ virSecuritySELinuxRecallLabel(const char *path,
                                       path, con) < 0)
         return -1;
 
-    if (!con)
+    if (!*con)
         return 1;
 
     return 0;
