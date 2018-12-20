@@ -209,9 +209,10 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='memory-backend-file.align'/>
+  <flag name='nvdimm.unarmed'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>425972</microcodeVersion>
+  <microcodeVersion>426554</microcodeVersion>
   <package>v3.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

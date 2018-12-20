@@ -4752,11 +4752,29 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "nvdimm"
+  },
+  "id": "libvirt-35"
+}
+
+{
+  "return": [
+    {
+      "name": "memdev",
+      "type": "link<memory-backend>"
+    }
+  ],
+  "id": "libvirt-35"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -4810,7 +4828,7 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -4818,7 +4836,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -4868,7 +4886,7 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -4876,11 +4894,11 @@
   "arguments": {
     "typename": "spapr-machine"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
-  "id": "libvirt-37",
+  "id": "libvirt-38",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Class 'spapr-machine' not found"
@@ -4889,7 +4907,7 @@
 
 {
   "execute": "query-machines",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -5088,12 +5106,12 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -5607,12 +5625,12 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -5620,12 +5638,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -5633,12 +5651,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -6925,12 +6943,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -6992,12 +7010,12 @@
       "capability": "dirty-bitmaps"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -18365,7 +18383,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -18376,7 +18394,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -18566,7 +18584,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -18758,7 +18776,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -19013,7 +19031,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -19027,7 +19045,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -19217,7 +19235,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -19409,7 +19427,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -19664,12 +19682,12 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
   "execute": "query-sev-capabilities",
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {
@@ -19679,7 +19697,7 @@
     "cert-chain": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA",
     "pdh": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA"
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {

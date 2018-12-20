@@ -3640,8 +3640,26 @@
 }
 
 {
-  "execute": "query-machines",
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "nvdimm"
+  },
   "id": "libvirt-35"
+}
+
+{
+  "return": [
+    {
+      "name": "memdev",
+      "type": "link<memory-backend>"
+    }
+  ],
+  "id": "libvirt-35"
+}
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-36"
 }
 
 {
@@ -3790,12 +3808,12 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -3888,36 +3906,36 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -5015,12 +5033,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -5054,12 +5072,12 @@
       "capability": "postcopy-ram"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -13415,7 +13433,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {

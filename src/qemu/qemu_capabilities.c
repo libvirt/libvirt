@@ -519,6 +519,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               /* 325 */
               "memory-backend-file.pmem",
+              "nvdimm.unarmed",
     );
 
 
@@ -1242,6 +1243,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsMCH[] = {
     { "extended-tseg-mbytes", QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsNVDIMM[] = {
+    { "unarmed", QEMU_CAPS_DEVICE_NVDIMM_UNARMED },
+};
+
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/options/+gluster/debug-level", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
@@ -1365,6 +1370,9 @@ static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "mch", virQEMUCapsDevicePropsMCH,
       ARRAY_CARDINALITY(virQEMUCapsDevicePropsMCH),
       QEMU_CAPS_DEVICE_MCH },
+    { "nvdimm", virQEMUCapsDevicePropsNVDIMM,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsNVDIMM),
+      QEMU_CAPS_DEVICE_NVDIMM },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {

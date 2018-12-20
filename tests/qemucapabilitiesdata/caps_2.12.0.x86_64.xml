@@ -209,7 +209,7 @@
   <flag name='memory-backend-file.align'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>414371</microcodeVersion>
+  <microcodeVersion>414601</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
