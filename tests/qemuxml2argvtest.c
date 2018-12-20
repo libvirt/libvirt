@@ -2758,6 +2758,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-access");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-label");
+    DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-align");
 
     DO_TEST("machine-aeskeywrap-on-caps",
             QEMU_CAPS_AES_KEY_WRAP,
