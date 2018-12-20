@@ -15780,6 +15780,11 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
                            _("path is required for model 'nvdimm'"));
             goto cleanup;
         }
+
+        if (virDomainParseMemory("./alignsize", "./alignsize/@unit", ctxt,
+                                 &def->alignsize, false, false) < 0)
+            goto cleanup;
+
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
@@ -22735,13 +22740,22 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
         return false;
     }
 
-    if (src->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        src->labelsize != dst->labelsize) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target NVDIMM label size '%llu' doesn't match "
-                         "source NVDIMM label size '%llu'"),
-                       src->labelsize, dst->labelsize);
-        return false;
+    if (src->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+        if (src->labelsize != dst->labelsize) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target NVDIMM label size '%llu' doesn't match "
+                             "source NVDIMM label size '%llu'"),
+                           src->labelsize, dst->labelsize);
+            return false;
+        }
+
+        if (src->alignsize != dst->alignsize) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target NVDIMM alignment '%llu' doesn't match "
+                             "source NVDIMM alignment '%llu'"),
+                           src->alignsize, dst->alignsize);
+            return false;
+        }
     }
 
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
@@ -26278,6 +26292,10 @@ virDomainMemorySourceDefFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         virBufferEscapeString(buf, "<path>%s</path>\n", def->nvdimmPath);
+
+        if (def->alignsize)
+            virBufferAsprintf(buf, "<alignsize unit='KiB'>%llu</alignsize>\n",
+                              def->alignsize);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:

@@ -2147,6 +2147,7 @@ struct _virDomainMemoryDef {
     virBitmapPtr sourceNodes;
     unsigned long long pagesize; /* kibibytes */
     char *nvdimmPath;
+    unsigned long long alignsize; /* kibibytes; valid only for NVDIMM */
 
     /* target */
     int model; /* virDomainMemoryModel */

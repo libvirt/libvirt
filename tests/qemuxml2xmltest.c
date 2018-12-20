@@ -1116,6 +1116,7 @@ mymain(void)
     DO_TEST("memory-hotplug-nvdimm", NONE);
     DO_TEST("memory-hotplug-nvdimm-access", NONE);
     DO_TEST("memory-hotplug-nvdimm-label", NONE);
+    DO_TEST("memory-hotplug-nvdimm-align", NONE);
     DO_TEST("net-udp", NONE);
 
     DO_TEST("video-virtio-gpu-device", NONE);

@@ -5384,9 +5384,16 @@
           </interleave>
         </group>
         <group>
-          <element name="path">
-            <ref name="absFilePath"/>
-          </element>
+          <interleave>
+            <element name="path">
+              <ref name="absFilePath"/>
+            </element>
+            <optional>
+              <element name="alignsize">
+                <ref name="scaledInteger"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
       </choice>
     </element>
