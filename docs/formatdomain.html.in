@@ -8330,6 +8330,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;label&gt;
         &lt;size unit='KiB'&gt;128&lt;/size&gt;
       &lt;/label&gt;
+      &lt;readonly/&gt;
     &lt;/target&gt;
   &lt;/memory&gt;
   &lt;memory model='nvdimm'&gt;
@@ -8465,19 +8466,39 @@ qemu-kvm -net nic,model=? /dev/null
           NUMA nodes configured.
         </p>
         <p>
-          For NVDIMM type devices one can optionally use
-          <code>label</code> and its subelement <code>size</code>
-          to configure the size of namespaces label storage
-          within the NVDIMM module. The <code>size</code> element
-          has usual meaning described
-          <a href="#elementsMemoryAllocation">here</a>.
-          For QEMU domains the following restrictions apply:
+          The following optional elements may be used:
         </p>
-        <ol>
-          <li>the minimum label size is 128KiB,</li>
-          <li>the remaining size (total-size - label-size) has to be aligned to
-            4KiB</li>
-        </ol>
+
+        <dl>
+          <dt><code>label</code></dt>
+          <dd>
+            <p>
+              For NVDIMM type devices one can optionally use
+              <code>label</code> and its subelement <code>size</code>
+              to configure the size of namespaces label storage
+              within the NVDIMM module. The <code>size</code> element
+              has usual meaning described
+              <a href="#elementsMemoryAllocation">here</a>.
+              For QEMU domains the following restrictions apply:
+            </p>
+            <ol>
+              <li>the minimum label size is 128KiB,</li>
+              <li>the remaining size (total-size - label-size) will be aligned
+                to 4KiB as default.</li>
+            </ol>
+          </dd>
+
+          <dt><code>readonly</code></dt>
+          <dd>
+            <p>
+              The <code>readonly</code> element is used to mark the vNVDIMM
+              as read-only. Only the real NVDIMM device backend can guarantee
+              the guest write persistence, so other backend types should use
+              the <code>readonly</code> element.
+              <span class="since">Since 5.0.0</span>
+            </p>
+          </dd>
+        </dl>
       </dd>
     </dl>
 

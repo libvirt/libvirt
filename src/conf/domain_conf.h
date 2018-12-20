@@ -2155,6 +2155,7 @@ struct _virDomainMemoryDef {
     int targetNode;
     unsigned long long size; /* kibibytes */
     unsigned long long labelsize; /* kibibytes; valid only for NVDIMM */
+    bool readonly; /* valid only for NVDIMM */
 
     virDomainDeviceInfo info;
 };
