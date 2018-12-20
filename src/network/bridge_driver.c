@@ -5409,17 +5409,99 @@ networkNetworkObjTaint(virNetworkObjPtr obj,
 
 
 static int
+networkUpdatePortBandwidth(virNetworkObjPtr obj,
+                           virMacAddrPtr mac,
+                           unsigned int *class_id,
+                           virNetDevBandwidthPtr oldBandwidth,
+                           virNetDevBandwidthPtr newBandwidth)
+{
+    virNetworkDriverStatePtr driver = networkGetDriver();
+    virNetworkDefPtr def;
+    unsigned long long tmp_floor_sum;
+    unsigned long long new_rate = 0;
+    unsigned long long old_floor, new_floor;
+    int plug_ret;
+
+    old_floor = new_floor = 0;
+
+    if (oldBandwidth && oldBandwidth->in)
+        old_floor = oldBandwidth->in->floor;
+    if (newBandwidth && newBandwidth->in)
+        new_floor = newBandwidth->in->floor;
+
+    if (new_floor == old_floor)
+        return 0;
+
+    def = virNetworkObjGetDef(obj);
+
+    if ((plug_ret = networkCheckBandwidth(obj, newBandwidth, oldBandwidth,
+                                          mac, &new_rate)) < 0) {
+        /* helper reported error */
+        return -1;
+    }
+
+    if (plug_ret > 0) {
+        /* no QoS needs to be set; claim success */
+        return 0;
+    }
+
+    /* Okay, there are three possible scenarios: */
+
+    if (oldBandwidth && oldBandwidth->in && oldBandwidth->in->floor &&
+        newBandwidth->in && newBandwidth->in->floor) {
+        /* Either we just need to update @floor .. */
+
+        if (virNetDevBandwidthUpdateRate(def->bridge,
+                                         *class_id,
+                                         def->bandwidth,
+                                         newBandwidth->in->floor) < 0)
+            return -1;
+
+        tmp_floor_sum = virNetworkObjGetFloorSum(obj);
+        tmp_floor_sum -= oldBandwidth->in->floor;
+        tmp_floor_sum += newBandwidth->in->floor;
+        virNetworkObjSetFloorSum(obj, tmp_floor_sum);
+        new_rate -= tmp_floor_sum;
+
+        if (virNetDevBandwidthUpdateRate(def->bridge, 2,
+                                         def->bandwidth, new_rate) < 0 ||
+            virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
+            /* Ouch, rollback */
+            tmp_floor_sum -= newBandwidth->in->floor;
+            tmp_floor_sum += oldBandwidth->in->floor;
+            virNetworkObjSetFloorSum(obj, tmp_floor_sum);
+
+            ignore_value(virNetDevBandwidthUpdateRate(def->bridge,
+                                                      *class_id,
+                                                      def->bandwidth,
+                                                      oldBandwidth->in->floor));
+            return -1;
+        }
+    } else if (newBandwidth->in && newBandwidth->in->floor) {
+        /* .. or we need to plug in new .. */
+
+        if (networkPlugBandwidthImpl(obj, mac, newBandwidth,
+                                     class_id,
+                                     new_rate) < 0)
+            return -1;
+    } else {
+        /* .. or unplug old. */
+
+        if (networkUnplugBandwidth(obj, oldBandwidth, class_id) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 networkBandwidthUpdate(virDomainNetDefPtr iface,
                        virNetDevBandwidthPtr newBandwidth)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
     virNetworkObjPtr obj = NULL;
-    virNetworkDefPtr def;
-    unsigned long long tmp_floor_sum;
-    virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
-    unsigned long long new_rate = 0;
-    unsigned long long old_floor, new_floor;
-    int plug_ret;
+    virNetDevBandwidthPtr oldBandwidth = virDomainNetGetActualBandwidth(iface);
     int ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -5436,16 +5518,6 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
         return 0;
     }
 
-    old_floor = new_floor = 0;
-
-    if (ifaceBand && ifaceBand->in)
-        old_floor = ifaceBand->in->floor;
-    if (newBandwidth && newBandwidth->in)
-        new_floor = newBandwidth->in->floor;
-
-    if (new_floor == old_floor)
-        return 0;
-
     obj = virNetworkObjFindByName(driver->networks, iface->data.network.name);
     if (!obj) {
         virReportError(VIR_ERR_NO_NETWORK,
@@ -5453,71 +5525,14 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
                        iface->data.network.name);
         return ret;
     }
-    def = virNetworkObjGetDef(obj);
 
-    if ((plug_ret = networkCheckBandwidth(obj, newBandwidth, ifaceBand,
-                                          &iface->mac, &new_rate)) < 0) {
-        /* helper reported error */
-        goto cleanup;
-    }
-
-    if (plug_ret > 0) {
-        /* no QoS needs to be set; claim success */
-        ret = 0;
-        goto cleanup;
-    }
-
-    /* Okay, there are three possible scenarios: */
-
-    if (ifaceBand && ifaceBand->in && ifaceBand->in->floor &&
-        newBandwidth->in && newBandwidth->in->floor) {
-        /* Either we just need to update @floor .. */
-
-        if (virNetDevBandwidthUpdateRate(def->bridge,
-                                         iface->data.network.actual->class_id,
-                                         def->bandwidth,
-                                         newBandwidth->in->floor) < 0)
-            goto cleanup;
-
-        tmp_floor_sum = virNetworkObjGetFloorSum(obj);
-        tmp_floor_sum -= ifaceBand->in->floor;
-        tmp_floor_sum += newBandwidth->in->floor;
-        virNetworkObjSetFloorSum(obj, tmp_floor_sum);
-        new_rate -= tmp_floor_sum;
-
-        if (virNetDevBandwidthUpdateRate(def->bridge, 2,
-                                         def->bandwidth, new_rate) < 0 ||
-            virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
-            /* Ouch, rollback */
-            tmp_floor_sum -= newBandwidth->in->floor;
-            tmp_floor_sum += ifaceBand->in->floor;
-            virNetworkObjSetFloorSum(obj, tmp_floor_sum);
-
-            ignore_value(virNetDevBandwidthUpdateRate(def->bridge,
-                                                      iface->data.network.actual->class_id,
-                                                      def->bandwidth,
-                                                      ifaceBand->in->floor));
-            goto cleanup;
-        }
-    } else if (newBandwidth->in && newBandwidth->in->floor) {
-        /* .. or we need to plug in new .. */
-
-        if (networkPlugBandwidthImpl(obj, &iface->mac, newBandwidth,
+    ret = networkUpdatePortBandwidth(obj,
+                                     &iface->mac,
                                      iface->data.network.actual ?
                                      &iface->data.network.actual->class_id : NULL,
-                                     new_rate) < 0)
-            goto cleanup;
-    } else {
-        /* .. or unplug old. */
+                                     newBandwidth,
+                                     oldBandwidth);
 
-        if (networkUnplugBandwidth(obj, iface->bandwidth,
-                                   iface->data.network.actual ?
-                                   &iface->data.network.actual->class_id : NULL) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
     virNetworkObjEndAPI(&obj);
     return ret;
 }
