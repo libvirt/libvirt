@@ -92,6 +92,16 @@
           and restored properly.
         </description>
       </change>
+      <change>
+        <summary>
+          Support more NVDIMM configuration options
+        </summary>
+        <description>
+          Introduce more configuration options. For the source element, add
+          the 'alignsize' and 'pmem' subelements. For the target element, add
+          the 'readonly' subelement.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
