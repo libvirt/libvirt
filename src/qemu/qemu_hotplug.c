@@ -2563,7 +2563,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (virAsprintf(&objalias, "mem%s", mem->info.alias) < 0)
         goto cleanup;
 
-    if (!(devstr = qemuBuildMemoryDeviceStr(mem)))
+    if (!(devstr = qemuBuildMemoryDeviceStr(mem, priv)))
         goto cleanup;
 
     if (qemuBuildMemoryBackendProps(&props, objalias, cfg,
