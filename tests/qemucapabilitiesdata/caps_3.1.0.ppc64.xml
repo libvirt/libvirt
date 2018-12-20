@@ -166,6 +166,7 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='machine.pseries.cap-nested-hv'/>
+  <flag name='memory-backend-file.align'/>
   <version>3000091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>437731</microcodeVersion>

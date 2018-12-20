@@ -163,6 +163,7 @@
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
+  <flag name='memory-backend-file.align'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>444946</microcodeVersion>
