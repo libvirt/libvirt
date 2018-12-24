@@ -89,6 +89,7 @@ static void qemuMonitorJSONHandleAcpiOstInfo(qemuMonitorPtr mon, virJSONValuePtr
 static void qemuMonitorJSONHandleBlockThreshold(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleDumpCompleted(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePRManagerStatusChanged(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleRdmaGidStatusChanged(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -112,6 +113,7 @@ static qemuEventHandler eventHandlers[] = {
     { "NIC_RX_FILTER_CHANGED", qemuMonitorJSONHandleNicRxFilterChanged, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "PR_MANAGER_STATUS_CHANGED", qemuMonitorJSONHandlePRManagerStatusChanged, },
+    { "RDMA_GID_STATUS_CHANGED", qemuMonitorJSONHandleRdmaGidStatusChanged, },
     { "RESET", qemuMonitorJSONHandleReset, },
     { "RESUME", qemuMonitorJSONHandleResume, },
     { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
@@ -1346,6 +1348,40 @@ static void qemuMonitorJSONHandlePRManagerStatusChanged(qemuMonitorPtr mon,
     }
 
     qemuMonitorEmitPRManagerStatusChanged(mon, name, connected);
+}
+
+
+static void qemuMonitorJSONHandleRdmaGidStatusChanged(qemuMonitorPtr mon,
+                                                      virJSONValuePtr data)
+{
+    const char *netdev;
+    bool gid_status;
+    unsigned long long subnet_prefix, interface_id;
+
+    if (!(netdev = virJSONValueObjectGetString(data, "netdev"))) {
+        VIR_WARN("missing netdev in GID_STATUS_CHANGED event");
+        return;
+    }
+
+    if (virJSONValueObjectGetBoolean(data, "gid-status", &gid_status)) {
+        VIR_WARN("missing gid-status in GID_STATUS_CHANGED event");
+        return;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(data, "subnet-prefix",
+                                         &subnet_prefix)) {
+        VIR_WARN("missing subnet-prefix in GID_STATUS_CHANGED event");
+        return;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(data, "interface-id",
+                                         &interface_id)) {
+        VIR_WARN("missing interface-id in GID_STATUS_CHANGED event");
+        return;
+    }
+
+    qemuMonitorEmitRdmaGidStatusChanged(mon, netdev, gid_status, subnet_prefix,
+                                        interface_id);
 }
 
 

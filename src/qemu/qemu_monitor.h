@@ -106,8 +106,20 @@ struct _qemuMonitorEventPanicInfo {
     } data;
 };
 
+
+typedef struct _qemuMonitorRdmaGidStatus qemuMonitorRdmaGidStatus;
+typedef qemuMonitorRdmaGidStatus *qemuMonitorRdmaGidStatusPtr;
+struct _qemuMonitorRdmaGidStatus {
+    char *netdev;
+    bool gid_status;
+    unsigned long long subnet_prefix;
+    unsigned long long interface_id;
+};
+
+
 char *qemuMonitorGuestPanicEventInfoFormatMsg(qemuMonitorEventPanicInfoPtr info);
 void qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfoPtr info);
+void qemuMonitorEventRdmaGidStatusFree(qemuMonitorRdmaGidStatusPtr info);
 
 typedef void (*qemuMonitorDestroyCallback)(qemuMonitorPtr mon,
                                            virDomainObjPtr vm,
@@ -278,6 +290,14 @@ typedef int (*qemuMonitorDomainPRManagerStatusChangedCallback)(qemuMonitorPtr mo
                                                                bool connected,
                                                                void *opaque);
 
+typedef int (*qemuMonitorDomainRdmaGidStatusChangedCallback)(qemuMonitorPtr mon,
+                                                             virDomainObjPtr vm,
+                                                             const char *netdev,
+                                                             bool gid_status,
+                                                             uint64_t subnet_prefix,
+                                                             uint64_t interface_id,
+                                                             void *opaque);
+
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
 struct _qemuMonitorCallbacks {
@@ -311,6 +331,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainBlockThresholdCallback domainBlockThreshold;
     qemuMonitorDomainDumpCompletedCallback domainDumpCompleted;
     qemuMonitorDomainPRManagerStatusChangedCallback domainPRManagerStatusChanged;
+    qemuMonitorDomainRdmaGidStatusChangedCallback domainRdmaGidStatusChanged;
 };
 
 char *qemuMonitorEscapeArg(const char *in);
@@ -444,6 +465,10 @@ int qemuMonitorEmitDumpCompleted(qemuMonitorPtr mon,
 int qemuMonitorEmitPRManagerStatusChanged(qemuMonitorPtr mon,
                                           const char *prManager,
                                           bool connected);
+
+int qemuMonitorEmitRdmaGidStatusChanged(qemuMonitorPtr mon, const char *netdev,
+                                        bool gid_status, uint64_t subnet_prefix,
+                                        uint64_t interface_id);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon);
 int qemuMonitorStopCPUs(qemuMonitorPtr mon);

@@ -13605,6 +13605,9 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
     case QEMU_PROCESS_EVENT_GUESTPANIC:
         qemuMonitorEventPanicInfoFree(event->data);
         break;
+    case QEMU_PROCESS_EVENT_RDMA_GID_STATUS_CHANGED:
+        qemuMonitorEventRdmaGidStatusFree(event->data);
+        break;
     case QEMU_PROCESS_EVENT_WATCHDOG:
     case QEMU_PROCESS_EVENT_DEVICE_DELETED:
     case QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED:
