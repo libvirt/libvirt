@@ -3573,32 +3573,6 @@ virNetworkPortDefPtr
 virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
                                    virDomainNetDefPtr iface);
 
-typedef int
-(*virDomainNetAllocateActualDeviceImpl)(virNetworkPtr net,
-                                        virDomainDefPtr dom,
-                                        virDomainNetDefPtr iface);
-
-typedef int
-(*virDomainNetNotifyActualDeviceImpl)(virNetworkPtr net,
-                                      virDomainDefPtr dom,
-                                      virDomainNetDefPtr iface);
-
-typedef int
-(*virDomainNetReleaseActualDeviceImpl)(virNetworkPtr net,
-                                       virDomainDefPtr dom,
-                                       virDomainNetDefPtr iface);
-
-typedef int
-(*virDomainNetBandwidthUpdateImpl)(virDomainNetDefPtr iface,
-                                   virNetDevBandwidthPtr newBandwidth);
-
-
-void
-virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
-                          virDomainNetNotifyActualDeviceImpl notify,
-                          virDomainNetReleaseActualDeviceImpl release,
-                          virDomainNetBandwidthUpdateImpl bandwidthUpdate);
-
 int
 virDomainNetAllocateActualDevice(virConnectPtr conn,
                                  virDomainDefPtr dom,

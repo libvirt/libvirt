@@ -487,7 +487,6 @@ virDomainNetReleaseActualDevice;
 virDomainNetRemove;
 virDomainNetRemoveHostdev;
 virDomainNetResolveActualType;
-virDomainNetSetDeviceImpl;
 virDomainNetSetModelString;
 virDomainNetTypeFromString;
 virDomainNetTypeSharesHostView;

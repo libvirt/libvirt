@@ -30688,22 +30688,67 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
     return NULL;
 }
 
-static virDomainNetAllocateActualDeviceImpl netAllocate;
-static virDomainNetNotifyActualDeviceImpl netNotify;
-static virDomainNetReleaseActualDeviceImpl netRelease;
-static virDomainNetBandwidthUpdateImpl netBandwidthUpdate;
 
-
-void
-virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
-                          virDomainNetNotifyActualDeviceImpl notify,
-                          virDomainNetReleaseActualDeviceImpl release,
-                          virDomainNetBandwidthUpdateImpl bandwidthUpdate)
+static int
+virDomainNetCreatePort(virConnectPtr conn,
+                       virDomainDefPtr dom,
+                       virDomainNetDefPtr iface,
+                       unsigned int flags)
 {
-    netAllocate = allocate;
-    netNotify = notify;
-    netRelease = release;
-    netBandwidthUpdate = bandwidthUpdate;
+    virNetworkPtr net = NULL;
+    int ret = -1;
+    virNetworkPortDefPtr portdef = NULL;
+    virNetworkPortPtr port = NULL;
+    char *portxml = NULL;
+    virErrorPtr saved;
+
+    if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
+        return -1;
+
+    if (flags & VIR_NETWORK_PORT_CREATE_RECLAIM) {
+        if (!(portdef = virDomainNetDefActualToNetworkPort(dom, iface)))
+            goto cleanup;
+    } else {
+        if (!(portdef = virDomainNetDefToNetworkPort(dom, iface)))
+            goto cleanup;
+    }
+
+    if (!(portxml = virNetworkPortDefFormat(portdef)))
+        goto cleanup;
+
+    virNetworkPortDefFree(portdef);
+    portdef = NULL;
+
+    if (!(port = virNetworkPortCreateXML(net, portxml, flags)))
+        goto cleanup;
+
+    VIR_FREE(portxml);
+
+    if (!(portxml = virNetworkPortGetXMLDesc(port, 0)))
+        goto deleteport;
+
+    if (!(portdef = virNetworkPortDefParseString(portxml)))
+        goto deleteport;
+
+    if (virDomainNetDefActualFromNetworkPort(iface, portdef) < 0)
+        goto deleteport;
+
+    virNetworkPortGetUUID(port, iface->data.network.portid);
+
+    ret = 0;
+ cleanup:
+    virNetworkPortDefFree(portdef);
+    VIR_FREE(portxml);
+    virObjectUnref(port);
+    virObjectUnref(net);
+    return ret;
+
+ deleteport:
+    saved = virSaveLastError();
+    virNetworkPortDelete(port, 0);
+    virSetError(saved);
+    virFreeError(saved);
+    goto cleanup;
 }
 
 int
@@ -30711,22 +30756,7 @@ virDomainNetAllocateActualDevice(virConnectPtr conn,
                                  virDomainDefPtr dom,
                                  virDomainNetDefPtr iface)
 {
-    virNetworkPtr net = NULL;
-    int ret = -1;
-
-    if (!netAllocate) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Virtual networking driver is not available"));
-        return -1;
-    }
-
-    if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
-        return -1;
-
-    ret = netAllocate(net, dom, iface);
-
-    virObjectUnref(net);
-    return ret;
+    return virDomainNetCreatePort(conn, dom, iface, 0);
 }
 
 void
@@ -30734,16 +30764,11 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
                                virDomainDefPtr dom,
                                virDomainNetDefPtr iface)
 {
-    virNetworkPtr net = NULL;
-
-    if (!netNotify)
-        return;
-
-    if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
-        return;
-
-    if (netNotify(net, dom, iface) < 0)
-        goto cleanup;
+    if (!virUUIDIsValid(iface->data.network.portid)) {
+        if (virDomainNetCreatePort(conn, dom, iface,
+                                   VIR_NETWORK_PORT_CREATE_RECLAIM) < 0)
+            return;
+    }
 
     if (virDomainNetGetActualType(iface) == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         /*
@@ -30751,38 +30776,82 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
          * so there is no point in trying to learn the actualMTU
          * (final arg to virNetDevTapReattachBridge())
          */
-        if (virNetDevTapReattachBridge(iface->ifname,
-                                       iface->data.network.actual->data.bridge.brname,
-                                       &iface->mac, dom->uuid,
-                                       virDomainNetGetActualVirtPortProfile(iface),
-                                       virDomainNetGetActualVlan(iface),
-                                       iface->mtu, NULL) < 0)
-            goto cleanup;
+        ignore_value(virNetDevTapReattachBridge(iface->ifname,
+                                                iface->data.network.actual->data.bridge.brname,
+                                                &iface->mac, dom->uuid,
+                                                virDomainNetGetActualVirtPortProfile(iface),
+                                                virDomainNetGetActualVlan(iface),
+                                                iface->mtu, NULL));
     }
-
- cleanup:
-    virObjectUnref(net);
 }
 
 
 int
 virDomainNetReleaseActualDevice(virConnectPtr conn,
-                                virDomainDefPtr dom,
+                                virDomainDefPtr dom ATTRIBUTE_UNUSED,
                                 virDomainNetDefPtr iface)
 {
     virNetworkPtr net = NULL;
-    int ret;
-
-    if (!netRelease)
-        return 0;
+    virNetworkPortPtr port = NULL;
+    int ret = -1;
 
     if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
-        return -1;
+        goto cleanup;
 
-    ret = netRelease(net, dom, iface);
+    if (!(port = virNetworkPortLookupByUUID(net, iface->data.network.portid)))
+        goto cleanup;
 
+    if (virNetworkPortDelete(port, 0) < 0)
+        goto cleanup;
+
+ cleanup:
+    virObjectUnref(port);
     virObjectUnref(net);
     return ret;
+}
+
+
+static int
+virDomainNetBandwidthToTypedParams(virNetDevBandwidthPtr bandwidth,
+                                   virTypedParameterPtr *params,
+                                   int *nparams)
+{
+    int maxparams = 0;
+
+    if ((bandwidth->in != NULL) &&
+        (virTypedParamsAddUInt(params, nparams, &maxparams,
+                               VIR_NETWORK_PORT_BANDWIDTH_IN_AVERAGE,
+                               bandwidth->in->average) < 0 ||
+         virTypedParamsAddUInt(params, nparams, &maxparams,
+                               VIR_NETWORK_PORT_BANDWIDTH_IN_PEAK,
+                               bandwidth->in->peak) < 0 ||
+         virTypedParamsAddUInt(params, nparams, &maxparams,
+                               VIR_NETWORK_PORT_BANDWIDTH_IN_FLOOR,
+                               bandwidth->in->floor) < 0 ||
+         virTypedParamsAddUInt(params, nparams, &maxparams,
+                               VIR_NETWORK_PORT_BANDWIDTH_IN_BURST,
+                               bandwidth->in->burst) < 0))
+        goto error;
+
+    if ((bandwidth->out != NULL) &&
+        (virTypedParamsAddUInt(params, nparams, &maxparams,
+                               VIR_NETWORK_PORT_BANDWIDTH_OUT_AVERAGE,
+                               bandwidth->out->average) < 0 ||
+         virTypedParamsAddUInt(params, nparams, &maxparams,
+                               VIR_NETWORK_PORT_BANDWIDTH_OUT_PEAK,
+                               bandwidth->out->peak) < 0 ||
+         virTypedParamsAddUInt(params, nparams, &maxparams,
+                               VIR_NETWORK_PORT_BANDWIDTH_OUT_BURST,
+                               bandwidth->out->burst) < 0))
+        goto error;
+
+    return 0;
+
+ error:
+    virTypedParamsFree(*params, *nparams);
+    *params = NULL;
+    *nparams = 0;
+    return -1;
 }
 
 
@@ -30790,13 +30859,35 @@ int
 virDomainNetBandwidthUpdate(virDomainNetDefPtr iface,
                             virNetDevBandwidthPtr newBandwidth)
 {
-    if (!netBandwidthUpdate) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Virtual networking driver is not available"));
-        return -1;
-    }
+    virNetworkPtr net = NULL;
+    virNetworkPortPtr port = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    virConnectPtr conn = NULL;
+    int ret = -1;
 
-    return netBandwidthUpdate(iface, newBandwidth);
+    if (!(conn = virGetConnectNetwork()))
+        goto cleanup;
+
+    if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
+        goto cleanup;
+
+    if (!(port = virNetworkPortLookupByUUID(net, iface->data.network.portid)))
+        goto cleanup;
+
+    if (virDomainNetBandwidthToTypedParams(newBandwidth, &params, &nparams) < 0)
+        goto cleanup;
+
+    if (virNetworkPortSetParameters(port, params, nparams, 0) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(conn);
+    virTypedParamsFree(params, nparams);
+    virObjectUnref(port);
+    virObjectUnref(net);
+    return ret;
 }
 
 /* virDomainNetResolveActualType:
