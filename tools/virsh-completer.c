@@ -936,3 +936,59 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
     VIR_STEAL_PTR(ret, tmp);
     return ret;
 }
+
+
+char **
+virshDomainShutdownModeCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int flags)
+{
+    const char *modes[] = {"acpi", "agent", "initctl", "signal", "paravirt"};
+    size_t i;
+    char **ret = NULL;
+    size_t ntmp = 0;
+    VIR_AUTOSTRINGLIST tmp = NULL;
+    const char *modeConst = NULL;
+    VIR_AUTOFREE(char *) mode = NULL;
+    VIR_AUTOSTRINGLIST modesSpecified = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "mode", &modeConst) < 0)
+        return NULL;
+
+    if (STREQ_NULLABLE(modeConst, " "))
+        modeConst = NULL;
+
+    if (modeConst) {
+        char *modeTmp = NULL;
+
+        if (VIR_STRDUP(mode, modeConst) < 0)
+            return NULL;
+
+        if ((modeTmp = strrchr(mode, ',')))
+            *modeTmp = '\0';
+        else
+            VIR_FREE(mode);
+    }
+
+    if (mode && !(modesSpecified = virStringSplit(mode, ",", 0)))
+        return NULL;
+
+    if (VIR_ALLOC_N(tmp, ARRAY_CARDINALITY(modes) + 1) < 0)
+        return NULL;
+
+    for (i = 0; i < ARRAY_CARDINALITY(modes); i++) {
+        if (virStringListHasString((const char **)modesSpecified, modes[i]))
+            continue;
+
+        if ((mode && virAsprintf(&tmp[ntmp], "%s,%s", mode, modes[i]) < 0) ||
+            (!mode && VIR_STRDUP(tmp[ntmp], modes[i]) < 0))
+            return NULL;
+
+        ntmp++;
+    }
+
+    VIR_STEAL_PTR(ret, tmp);
+    return ret;
+}

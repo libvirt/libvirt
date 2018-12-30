@@ -5830,6 +5830,7 @@ static const vshCmdOptDef opts_shutdown[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "mode",
      .type = VSH_OT_STRING,
+     .completer = virshDomainShutdownModeCompleter,
      .help = N_("shutdown mode: acpi|agent|initctl|signal|paravirt")
     },
     {.name = NULL}
@@ -5914,6 +5915,7 @@ static const vshCmdOptDef opts_reboot[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "mode",
      .type = VSH_OT_STRING,
+     .completer = virshDomainShutdownModeCompleter,
      .help = N_("shutdown mode: acpi|agent|initctl|signal|paravirt")
     },
     {.name = NULL}
