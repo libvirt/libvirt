@@ -1,10 +1,10 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2018-07-01.02; # UTC
+scriptversion=2018-10-13.05; # UTC
 
 # Bootstrap this package from checked-out sources.
 
-# Copyright (C) 2003-2018 Free Software Foundation, Inc.
+# Copyright (C) 2003-2019 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -142,6 +142,9 @@ die() { warn_ "$@"; exit 1; }
 
 # Configuration.
 
+# Name of the Makefile.am
+gnulib_mk=gnulib.mk
+
 # List of gnulib modules needed.
 gnulib_modules=
 
@@ -159,18 +162,11 @@ bootstrap_post_import_hook() { :; }
 # Override it via your own definition in bootstrap.conf.
 bootstrap_epilogue() { :; }
 
-# The command to download all .po files for a specified domain into
-# a specified directory.  Fill in the first %s is the domain name, and
-# the second with the destination directory.  Use rsync's -L and -r
-# options because the latest/%s directory and the .po files within are
-# all symlinks.
+# The command to download all .po files for a specified domain into a
+# specified directory.  Fill in the first %s with the destination
+# directory and the second with the domain name.
 po_download_command_format=\
-"rsync --delete --exclude '*.s1' -Lrtvz \
- 'translationproject.org::tp/latest/%s/' '%s'"
-
-# Fallback for downloading .po files (if rsync fails).
-po_download_command_format2=\
-"wget --mirror -nd -q -np -A.po -P '%s' \
+"wget --mirror --level=1 -nd -q -A.po -P '%s' \
  https://translationproject.org/latest/%s/"
 
 # Prefer a non-empty tarname (4th argument of AC_INIT if given), else
@@ -738,10 +734,7 @@ download_po_files() {
   subdir=$1
   domain=$2
   echo "$me: getting translations into $subdir for $domain..."
-  cmd=$(printf "$po_download_command_format" "$domain" "$subdir")
-  eval "$cmd" && return
-  # Fallback to HTTPS.
-  cmd=$(printf "$po_download_command_format2" "$subdir" "$domain")
+  cmd=$(printf "$po_download_command_format" "$subdir" "$domain")
   eval "$cmd"
 }
 
