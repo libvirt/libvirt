@@ -223,11 +223,17 @@ virLogSetDefaultOutputToFile(const char *filename, bool privileged)
 int
 virLogSetDefaultOutput(const char *filename, bool godaemon, bool privileged)
 {
-    if (!godaemon)
-        return virLogSetDefaultOutputToStderr();
+    bool have_journald = access("/run/systemd/journal/socket", W_OK) >= 0;
 
-    if (access("/run/systemd/journal/socket", W_OK) >= 0)
-        return virLogSetDefaultOutputToJournald();
+    if (godaemon) {
+        if (have_journald)
+            return virLogSetDefaultOutputToJournald();
+    } else {
+        if (!isatty(STDIN_FILENO) && have_journald)
+            return virLogSetDefaultOutputToJournald();
+
+        return virLogSetDefaultOutputToStderr();
+    }
 
     return virLogSetDefaultOutputToFile(filename, privileged);
 }
