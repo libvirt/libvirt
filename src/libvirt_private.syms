@@ -921,6 +921,7 @@ virStoragePoolFormatDiskTypeToString;
 virStoragePoolFormatFileSystemNetTypeToString;
 virStoragePoolFormatFileSystemTypeToString;
 virStoragePoolFormatLogicalTypeToString;
+virStoragePoolOptionsPoolTypeSetXMLNamespace;
 virStoragePoolSaveConfig;
 virStoragePoolSaveState;
 virStoragePoolSourceClear;

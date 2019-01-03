@@ -124,6 +124,9 @@ typedef virStoragePoolOptions *virStoragePoolOptionsPtr;
 struct _virStoragePoolOptions {
     unsigned int flags;
     int defaultFormat;
+
+    virStoragePoolXMLNamespace ns;
+
     virStoragePoolFormatToString formatToString;
     virStoragePoolFormatFromString formatFromString;
 };
@@ -318,6 +321,34 @@ virStoragePoolOptionsForPoolType(int type)
 }
 
 
+/* virStoragePoolOptionsPoolTypeSetXMLNamespace:
+ * @type: virStoragePoolType
+ * @ns: xmlopt namespace pointer
+ *
+ * Store the @ns in the pool options for the particular backend.
+ * This allows the parse/format code to then directly call the Namespace
+ * method space (parse, format, href, free) as needed during processing.
+ *
+ * Returns: 0 on success, -1 on failure.
+ */
+int
+virStoragePoolOptionsPoolTypeSetXMLNamespace(int type,
+                                             virStoragePoolXMLNamespacePtr ns)
+{
+    int ret = -1;
+    virStoragePoolTypeInfoPtr backend = virStoragePoolTypeInfoLookup(type);
+
+    if (!backend)
+        goto cleanup;
+
+    backend->poolOptions.ns = *ns;
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 static virStorageVolOptionsPtr
 virStorageVolOptionsForPoolType(int type)
 {
@@ -401,6 +432,8 @@ virStoragePoolDefFree(virStoragePoolDefPtr def)
 
     VIR_FREE(def->target.path);
     VIR_FREE(def->target.perms.label);
+    if (def->namespaceData && def->ns.free)
+        (def->ns.free)(def->namespaceData);
     VIR_FREE(def);
 }
 
@@ -834,6 +867,13 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         goto error;
     }
 
+    /* Make a copy of all the callback pointers here for easier use,
+     * especially during the virStoragePoolSourceClear method */
+    ret->ns = options->ns;
+    if (ret->ns.parse &&
+        (ret->ns.parse)(ctxt, &ret->namespaceData) < 0)
+        goto error;
+
  cleanup:
     VIR_FREE(uuid);
     VIR_FREE(type);
@@ -1010,7 +1050,10 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
                        _("unexpected pool type"));
         return -1;
     }
-    virBufferAsprintf(buf, "<pool type='%s'>\n", type);
+    virBufferAsprintf(buf, "<pool type='%s'", type);
+    if (def->namespaceData && def->ns.href)
+        virBufferAsprintf(buf, " %s", (def->ns.href)());
+    virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
     virBufferEscapeString(buf, "<name>%s</name>\n", def->name);
 
@@ -1063,6 +1106,12 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</target>\n");
     }
+
+    if (def->namespaceData && def->ns.format) {
+        if ((def->ns.format)(buf, def->namespaceData) < 0)
+            return -1;
+    }
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</pool>\n");
 
