@@ -1,5 +1,5 @@
 # Customize Makefile.maint.                           -*- makefile -*-
-# Copyright (C) 2008-2015 Red Hat, Inc.
+# Copyright (C) 2008-2019 Red Hat, Inc.
 # Copyright (C) 2003-2008 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -305,7 +305,7 @@ sc_flags_usage:
 	    $(srcdir)/include/libvirt/libvirt-qemu.h \
 	    $(srcdir)/include/libvirt/libvirt-lxc.h \
 	    $(srcdir)/include/libvirt/libvirt-admin.h \
-	  | grep -c '\(long\|unsigned\) flags')" != 4 && \
+	  | $(GREP) -c '\(long\|unsigned\) flags')" != 4 && \
 	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2; \
 	    exit 1; } || :
 	@prohibit=' flags ATTRIBUTE_UNUSED' \
@@ -639,10 +639,10 @@ sc_libvirt_unmarked_diagnostics:
 	exclude='_\(' \
 	halt='found unmarked diagnostic(s)' \
 	  $(_sc_search_regexp)
-	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT)); \
-	   grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
+	@{ $(GREP)     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT)); \
+	   $(GREP) -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
 	   | $(SED) 's/_("\([^\"]\|\\.\)\+"//;s/[	 ]"%s"//' \
-	   | grep '[	 ]"' && \
+	   | $(GREP) '[	 ]"' && \
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2; \
 	    exit 1; } || :
 
@@ -654,9 +654,9 @@ sc_libvirt_unmarked_diagnostics:
 # there are functions to which this one applies but that do not get marked
 # diagnostics.
 sc_prohibit_newline_at_end_of_diagnostic:
-	@grep -A2 -nE \
+	@$(GREP) -A2 -nE \
 	    '\<$(func_re) *\(' $$($(VC_LIST_EXCEPT)) \
-	    | grep '\\n"' \
+	    | $(GREP) '\\n"' \
 	  && { echo '$(ME): newline at end of message(s)' 1>&2; \
 	    exit 1; } || :
 
@@ -664,12 +664,12 @@ sc_prohibit_newline_at_end_of_diagnostic:
 # allow VIR_ERROR to do this, and ignore functions that take a single
 # string rather than a format argument.
 sc_prohibit_diagnostic_without_format:
-	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT)); \
-	   grep -A2 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
+	@{ $(GREP)     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT)); \
+	   $(GREP) -A2 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
 	   | $(SED) -rn -e ':l; /[,"]$$/ {N;b l;}' \
 		-e '/(xenapiSessionErrorHandler|vah_(error|warning))/d' \
 		-e '/\<$(func_re) *\([^"]*"([^%"]|"\n[^"]*")*"[,)]/p' \
-           | grep -vE 'VIR_ERROR' && \
+           | $(GREP) -vE 'VIR_ERROR' && \
 	  { echo '$(ME): found diagnostic without %' 1>&2; \
 	    exit 1; } || :
 
@@ -687,16 +687,16 @@ sc_prohibit_useless_translation:
 # When splitting a diagnostic across lines, ensure that there is a space
 # or \n on one side of the split.
 sc_require_whitespace_in_translation:
-	@grep -n -A1 '"$$' $$($(VC_LIST_EXCEPT)) \
+	@$(GREP) -n -A1 '"$$' $$($(VC_LIST_EXCEPT)) \
 	   | $(SED) -ne ':l; /"$$/ {N;b l;}; s/"\n[^"]*"/""/g; s/\\n/ /g' \
-		-e '/_(.*[^\ ]""[^\ ]/p' | grep . && \
+		-e '/_(.*[^\ ]""[^\ ]/p' | $(GREP) . && \
 	  { echo '$(ME): missing whitespace at line split' 1>&2; \
 	    exit 1; } || :
 
 # Enforce recommended preprocessor indentation style.
 sc_preprocessor_indentation:
 	@if cppi --version >/dev/null 2>&1; then \
-	  $(VC_LIST_EXCEPT) | grep -E '\.[ch](\.in)?$$' | xargs cppi -a -c \
+	  $(VC_LIST_EXCEPT) | $(GREP) -E '\.[ch](\.in)?$$' | xargs cppi -a -c \
 	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2; \
 		exit 1; }; \
 	else \
@@ -707,13 +707,13 @@ sc_preprocessor_indentation:
 # (comment-only) C file that mirrors the same layout as the spec file.
 sc_spec_indentation:
 	@if cppi --version >/dev/null 2>&1; then \
-	  for f in $$($(VC_LIST_EXCEPT) | grep '\.spec\.in$$'); do \
+	  for f in $$($(VC_LIST_EXCEPT) | $(GREP) '\.spec\.in$$'); do \
 	    $(SED) -e 's|#|// #|; s|%ifn*\(arch\)* |#if a // |' \
 		-e 's/%\(else\|endif\|define\)/#\1/' \
 		-e 's/^\( *\)\1\1\1#/#\1/' \
 		-e 's|^\( *[^#/ ]\)|// \1|; s|^\( */[^/]\)|// \1|' $$f \
 	    | cppi -a -c 2>&1 | $(SED) "s|standard input|$$f|"; \
-	  done | { if grep . >&2; then false; else :; fi; } \
+	  done | { if $(GREP) . >&2; then false; else :; fi; } \
 	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2; \
 		exit 1; }; \
 	else \
@@ -803,11 +803,11 @@ sc_prohibit_cross_inclusion:
 # When converting an enum to a string, make sure that we track any new
 # elements added to the enum by using a _LAST marker.
 sc_require_enum_last_marker:
-	@grep -A1 -nE '^[^#]*VIR_ENUM_IMPL *\(' $$($(VC_LIST_EXCEPT)) \
+	@$(GREP) -A1 -nE '^[^#]*VIR_ENUM_IMPL *\(' $$($(VC_LIST_EXCEPT)) \
 	   | $(SED) -ne '/VIR_ENUM_IMPL[^,]*,$$/N' \
 	     -e '/VIR_ENUM_IMPL[^,]*,[^,]*[^_,][^L,][^A,][^S,][^T,],/p' \
 	     -e '/VIR_ENUM_IMPL[^,]*,[^,]\{0,4\},/p' \
-	   | grep . && \
+	   | $(GREP) . && \
 	  { echo '$(ME): enum impl needs to use _LAST marker' 1>&2; \
 	    exit 1; } || :
 
@@ -883,7 +883,7 @@ sc_prohibit_wrong_filename_in_comment:
 	  if (fail == 1) { \
 	    exit 1; \
 	  } \
-	}' $$($(VC_LIST_EXCEPT) | grep '\.[ch]$$') || fail=1; \
+	}' $$($(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$') || fail=1; \
 	if test $$fail -eq 1; then \
 	  { echo '$(ME): The file name in comments must match the' \
 	    'actual file name' 1>&2; exit 1; } \
@@ -918,7 +918,7 @@ sc_require_if_else_matching_braces:
 	  $(_sc_search_regexp)
 
 sc_curly_braces_style:
-	@files=$$($(VC_LIST_EXCEPT) | grep '\.[ch]$$'); \
+	@files=$$($(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$'); \
 	if $(GREP) -nHP \
 '^\s*(?!([a-zA-Z_]*for_?each[a-zA-Z_]*) ?\()([_a-zA-Z0-9]+( [_a-zA-Z0-9]+)* ?\()?(\*?[_a-zA-Z0-9]+(,? \*?[_a-zA-Z0-9\[\]]+)+|void)\) ?\{' \
 	$$files; then \
@@ -931,7 +931,7 @@ sc_curly_braces_style:
 	fi
 
 sc_prohibit_windows_special_chars_in_filename:
-	@files=$$($(VC_LIST_EXCEPT) | grep '[:*?"<>|]'); \
+	@files=$$($(VC_LIST_EXCEPT) | $(GREP) '[:*?"<>|]'); \
 	test -n "$$files" && { echo '$(ME): Windows special chars' \
 	  'in filename not allowed:' 1>&2; echo $$files 1>&2; exit 1; } || :
 
@@ -996,8 +996,8 @@ sc_prohibit_sysconf_pagesize:
 	  $(_sc_search_regexp)
 
 sc_prohibit_virSecurity:
-	@grep -Pn 'virSecurityManager(?!Ptr)' $$($(VC_LIST_EXCEPT) | grep 'src/qemu/' | \
-		grep -v 'src/qemu/qemu_security') && \
+	@$(GREP) -Pn 'virSecurityManager(?!Ptr)' $$($(VC_LIST_EXCEPT) | $(GREP) 'src/qemu/' | \
+		$(GREP) -v 'src/qemu/qemu_security') && \
 		{ echo '$(ME): prefer qemuSecurity wrappers' 1>&2; exit 1; } || :
 
 sc_prohibit_pthread_create:
@@ -1128,24 +1128,24 @@ endif
 
 # Don't include duplicate header in the source (either *.c or *.h)
 prohibit-duplicate-header:
-	$(AM_V_GEN)files=$$($(VC_LIST_EXCEPT) | grep '\.[chx]$$'); \
+	$(AM_V_GEN)files=$$($(VC_LIST_EXCEPT) | $(GREP) '\.[chx]$$'); \
 	$(PERL) -W $(top_srcdir)/build-aux/prohibit-duplicate-header.pl $$files
 
 spacing-check:
-	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
+	$(AM_V_GEN)files=`$(VC_LIST) | $(GREP) '\.c$$'`; \
 	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl $$files || \
 	  { echo '$(ME): incorrect formatting' 1>&2; exit 1; }
 
 mock-noinline:
-	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.[ch]$$'`; \
+	$(AM_V_GEN)files=`$(VC_LIST) | $(GREP) '\.[ch]$$'`; \
 	$(PERL) $(top_srcdir)/build-aux/mock-noinline.pl $$files
 
 header-ifdef:
-	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.[h]$$'`; \
+	$(AM_V_GEN)files=`$(VC_LIST) | $(GREP) '\.[h]$$'`; \
 	$(PERL) $(top_srcdir)/build-aux/header-ifdef.pl $$files
 
 test-wrap-argv:
-	$(AM_V_GEN)files=`$(VC_LIST) | grep -E '\.(ldargs|args)'`; \
+	$(AM_V_GEN)files=`$(VC_LIST) | $(GREP) -E '\.(ldargs|args)'`; \
 	$(PERL) $(top_srcdir)/tests/test-wrap-argv.pl --check $$files
 
 group-qemu-caps:
