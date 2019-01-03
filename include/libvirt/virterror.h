@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              errors raised while using the library.
  *
- * Copyright (C) 2006-2016 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -132,6 +132,7 @@ typedef enum {
     VIR_FROM_LIBSSH = 66,       /* Error from libssh connection transport */
     VIR_FROM_RESCTRL = 67,      /* Error from resource control */
     VIR_FROM_FIREWALLD = 68,    /* Error from firewalld */
+    VIR_FROM_DOMAIN_CHECKPOINT = 69, /* Error from domain checkpoint */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST
@@ -322,11 +323,13 @@ typedef enum {
     VIR_ERR_DEVICE_MISSING = 99,        /* fail to find the desired device */
     VIR_ERR_INVALID_NWFILTER_BINDING = 100,  /* invalid nwfilter binding */
     VIR_ERR_NO_NWFILTER_BINDING = 101,  /* no nwfilter binding */
+    VIR_ERR_INVALID_DOMAIN_CHECKPOINT = 102, /* invalid domain checkpoint */
+    VIR_ERR_NO_DOMAIN_CHECKPOINT = 103, /* domain checkpoint not found */
+    VIR_ERR_NO_DOMAIN_BACKUP = 104,     /* domain backup job id not found */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_NUMBER_LAST
 # endif
-
 } virErrorNumber;
 
 /**

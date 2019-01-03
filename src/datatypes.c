@@ -1,7 +1,7 @@
 /*
  * datatypes.c: management of structs for public data types
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@ VIR_LOG_INIT("datatypes");
 virClassPtr virConnectClass;
 virClassPtr virConnectCloseCallbackDataClass;
 virClassPtr virDomainClass;
+virClassPtr virDomainCheckpointClass;
 virClassPtr virDomainSnapshotClass;
 virClassPtr virInterfaceClass;
 virClassPtr virNetworkClass;
@@ -50,6 +51,7 @@ virClassPtr virStoragePoolClass;
 static void virConnectDispose(void *obj);
 static void virConnectCloseCallbackDataDispose(void *obj);
 static void virDomainDispose(void *obj);
+static void virDomainCheckpointDispose(void *obj);
 static void virDomainSnapshotDispose(void *obj);
 static void virInterfaceDispose(void *obj);
 static void virNetworkDispose(void *obj);
@@ -86,6 +88,7 @@ virDataTypesOnceInit(void)
     DECLARE_CLASS_LOCKABLE(virConnect);
     DECLARE_CLASS_LOCKABLE(virConnectCloseCallbackData);
     DECLARE_CLASS(virDomain);
+    DECLARE_CLASS(virDomainCheckpoint);
     DECLARE_CLASS(virDomainSnapshot);
     DECLARE_CLASS(virInterface);
     DECLARE_CLASS(virNetwork);
@@ -897,6 +900,64 @@ virNWFilterBindingDispose(void *obj)
     VIR_FREE(binding->portdev);
     VIR_FREE(binding->filtername);
     virObjectUnref(binding->conn);
+}
+
+
+/**
+ * virGetDomainCheckpoint:
+ * @domain: the domain to checkpoint
+ * @name: pointer to the domain checkpoint name
+ *
+ * Allocates a new domain checkpoint object. When the object is no longer needed,
+ * virObjectUnref() must be called in order to not leak data.
+ *
+ * Returns a pointer to the domain checkpoint object, or NULL on error.
+ */
+virDomainCheckpointPtr
+virGetDomainCheckpoint(virDomainPtr domain,
+                       const char *name)
+{
+    virDomainCheckpointPtr ret = NULL;
+
+    if (virDataTypesInitialize() < 0)
+        return NULL;
+
+    virCheckDomainGoto(domain, error);
+    virCheckNonNullArgGoto(name, error);
+
+    if (!(ret = virObjectNew(virDomainCheckpointClass)))
+        goto error;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto error;
+
+    ret->domain = virObjectRef(domain);
+
+    return ret;
+
+ error:
+    virObjectUnref(ret);
+    return NULL;
+}
+
+
+/**
+ * virDomainCheckpointDispose:
+ * @obj: the domain checkpoint to release
+ *
+ * Unconditionally release all memory associated with a checkpoint.
+ * The checkpoint object must not be used once this method returns.
+ *
+ * It will also unreference the associated connection object,
+ * which may also be released if its ref count hits zero.
+ */
+static void
+virDomainCheckpointDispose(void *obj)
+{
+    virDomainCheckpointPtr checkpoint = obj;
+    VIR_DEBUG("release checkpoint %p %s", checkpoint, checkpoint->name);
+
+    VIR_FREE(checkpoint->name);
+    virObjectUnref(checkpoint->domain);
 }
 
 

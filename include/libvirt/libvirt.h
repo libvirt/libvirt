@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              virtualized domains
  *
- * Copyright (C) 2005-2006, 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2005-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,6 +34,10 @@ extern "C" {
 # include <libvirt/libvirt-common.h>
 # include <libvirt/libvirt-host.h>
 # include <libvirt/libvirt-domain.h>
+/* FIXME: Temporary hack until later patch creates new
+ * libvirt-domain-checkpoint.h file */
+typedef struct _virDomainCheckpoint virDomainCheckpoint;
+typedef virDomainCheckpoint *virDomainCheckpointPtr;
 # include <libvirt/libvirt-domain-snapshot.h>
 # include <libvirt/libvirt-event.h>
 # include <libvirt/libvirt-interface.h>
