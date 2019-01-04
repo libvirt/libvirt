@@ -1066,7 +1066,7 @@ sc_prohibit_backslash_alignment:
 # Some syntax rules pertaining to the usage of cleanup macros
 # implementing GNU C's cleanup attribute
 
-# Rule to ensure that varibales declared using a cleanup macro are
+# Rule to ensure that variables declared using a cleanup macro are
 # always initialized.
 sc_require_attribute_cleanup_initialization:
 	@prohibit='VIR_AUTO((FREE|PTR)\(.+\)|CLOSE) *[^=]+;' \
