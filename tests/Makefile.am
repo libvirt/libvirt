@@ -31,7 +31,7 @@ INCLUDES = \
 	-I$(top_builddir)/src -I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/util \
 	-I$(top_srcdir)/src/conf \
-	$(GETTEXT_CPPFLAGS)
+	$(NULL)
 
 WARN_CFLAGS += $(RELAXED_FRAME_LIMIT_CFLAGS)
 

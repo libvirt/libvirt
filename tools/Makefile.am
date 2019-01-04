@@ -21,7 +21,7 @@ INCLUDES = \
 	-I$(top_builddir)/src -I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/util \
 	-I$(top_srcdir) \
-	$(GETTEXT_CPPFLAGS)
+	$(NULL)
 
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 

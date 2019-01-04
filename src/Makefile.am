@@ -24,7 +24,7 @@ abs_topsrcdir = $(shell cd $(top_srcdir) && pwd)
 
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
-# that actually use them. Also keep GETTEXT_CPPFLAGS at the end.
+# that actually use them.
 INCLUDES =	-I../gnulib/lib \
 		-I$(top_srcdir)/gnulib/lib \
 		-I$(top_srcdir) \
@@ -35,7 +35,7 @@ INCLUDES =	-I../gnulib/lib \
 		-DIN_LIBVIRT \
 		-Dabs_topbuilddir="\"$(abs_topbuilddir)\"" \
 		-Dabs_topsrcdir="\"$(abs_topsrcdir)\"" \
-		$(GETTEXT_CPPFLAGS)
+		$(NULL)
 
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 
