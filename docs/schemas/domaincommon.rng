@@ -5498,6 +5498,8 @@
       <attribute name="iommu">
         <ref name="virOnOff"/>
       </attribute>
+    </optional>
+    <optional>
       <attribute name="ats">
         <ref name="virOnOff"/>
       </attribute>
