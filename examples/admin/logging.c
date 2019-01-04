@@ -1,8 +1,9 @@
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "config.h"
 #include <unistd.h>
 #include <libvirt/libvirt-admin.h>
 #include <libvirt/virterror.h>
