@@ -24,7 +24,7 @@ abs_topsrcdir = $(shell cd $(top_srcdir) && pwd)
 
 SHELL = $(PREFERABLY_POSIX_SHELL)
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) -I$(top_srcdir) \
 	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/include -I$(top_srcdir)/include \
@@ -63,7 +63,7 @@ QEMULIB_LDFLAGS = \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
 	$(MINGW_EXTRA_LDFLAGS)
 
-INCLUDES += \
+AM_CPPFLAGS += \
 	-DTEST_DRIVER_DIR=\"$(top_builddir)/src/.libs\"
 
 PROBES_O =

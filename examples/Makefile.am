@@ -33,7 +33,8 @@ EXTRA_DIST = \
 	$(wildcard $(srcdir)/xml/test/*.xml)
 
 
-INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir) \
+AM_CPPFLAGS = \
+	-I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir) \
 	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib
 LDADD = $(STATIC_BINARIES) $(WARN_CFLAGS) $(COVERAGE_LDFLAGS) \
 	$(top_builddir)/src/libvirt.la $(top_builddir)/gnulib/lib/libgnu.la \

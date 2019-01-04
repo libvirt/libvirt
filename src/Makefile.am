@@ -25,7 +25,7 @@ abs_topsrcdir = $(shell cd $(top_srcdir) && pwd)
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them.
-INCLUDES =	-I../gnulib/lib \
+AM_CPPFLAGS =	-I../gnulib/lib \
 		-I$(top_srcdir)/gnulib/lib \
 		-I$(top_srcdir) \
 		-I../include \
