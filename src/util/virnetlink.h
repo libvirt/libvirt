@@ -79,7 +79,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
                       uint32_t src_pid, uint32_t dst_pid,
                       unsigned int protocol, unsigned int groups);
 
-typedef int (*virNetlinkDumpCallback)(const struct nlmsghdr *resp,
+typedef int (*virNetlinkDumpCallback)(struct nlmsghdr *resp,
                                       void *data);
 
 int virNetlinkDumpCommand(struct nl_msg *nl_msg,

@@ -506,7 +506,7 @@ struct virNetDevIPCheckIPv6ForwardingData {
 };
 
 static int
-virNetDevIPCheckIPv6ForwardingCallback(const struct nlmsghdr *resp,
+virNetDevIPCheckIPv6ForwardingCallback(struct nlmsghdr *resp,
                                        void *opaque)
 {
     struct rtmsg *rtmsg = NLMSG_DATA(resp);
