@@ -31,21 +31,36 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device megasas,id=scsi1,bus=pci.0,addr=0x3 \
 -device mptsas1068,id=scsi2,bus=pci.0,addr=0x4 \
 -device spapr-vscsi,id=scsi3,reg=0x00002000 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--drive file=/tmp/scsidisk.img,format=raw,if=none,id=drive-scsi0-0-0 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+"node-name":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-5-format","read-only":false,"driver":"raw",\
+"file":"libvirt-5-storage"}' \
+-device ide-hd,bus=ide.0,unit=0,drive=libvirt-5-format,id=ide0-0-0,bootindex=1 \
+-blockdev '{"driver":"file","filename":"/tmp/scsidisk.img",\
+"node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw",\
+"file":"libvirt-4-storage"}' \
 -device scsi-hd,bus=scsi0.0,scsi-id=0,device_id=drive-scsi0-0-0,\
-drive=drive-scsi0-0-0,id=scsi0-0-0 \
--drive file=/tmp/scsidisk2.img,format=raw,if=none,id=drive-scsi1-0-0-0 \
+drive=libvirt-4-format,id=scsi0-0-0 \
+-blockdev '{"driver":"file","filename":"/tmp/scsidisk2.img",\
+"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw",\
+"file":"libvirt-3-storage"}' \
 -device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,device_id=abcdefghijklmn,\
-drive=drive-scsi1-0-0-0,id=scsi1-0-0-0,serial=abcdefghijklmn \
--drive file=/tmp/scsidisk3.img,format=raw,if=none,id=drive-scsi2-0-0-0 \
+drive=libvirt-3-format,id=scsi1-0-0-0,serial=abcdefghijklmn \
+-blockdev '{"driver":"file","filename":"/tmp/scsidisk3.img",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
 -device scsi-hd,bus=scsi2.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi2-0-0-0,drive=drive-scsi2-0-0-0,id=scsi2-0-0-0,\
+device_id=drive-scsi2-0-0-0,drive=libvirt-2-format,id=scsi2-0-0-0,\
 wwn=0x5000c50015ea71ac \
--drive file=/tmp/scsidisk4.img,format=raw,if=none,id=drive-scsi3-0-0-0 \
+-blockdev '{"driver":"file","filename":"/tmp/scsidisk4.img",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
 -device scsi-hd,bus=scsi3.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi3-0-0-0,drive=drive-scsi3-0-0-0,id=scsi3-0-0-0 \
+device_id=drive-scsi3-0-0-0,drive=libvirt-1-format,id=scsi3-0-0-0 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

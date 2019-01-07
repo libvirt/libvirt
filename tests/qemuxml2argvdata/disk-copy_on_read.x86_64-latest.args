@@ -29,13 +29,20 @@ file=/tmp/lib/domain--1-test/master-key.aes \
 -boot menu=on,strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
--drive file=/var/lib/libvirt/images/f14.img,format=qcow2,if=none,\
-id=drive-virtio-disk0,copy-on-read=on \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/f14.img",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"qcow2",\
+"file":"libvirt-2-storage"}' \
+-blockdev '{"driver":"copy-on-read","node-name":"libvirt-CoR-vda",\
+"file":"libvirt-2-format"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-CoR-vda,\
 id=virtio-disk0,bootindex=2 \
--drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,format=raw,if=none,\
-id=drive-ide0-1-0,readonly=on \
--device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
+-blockdev '{"driver":"file",\
+"filename":"/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
+-device ide-cd,bus=ide.1,unit=0,drive=libvirt-1-format,id=ide0-1-0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,tx=bh,netdev=hostnet0,id=net0,mac=52:54:00:e5:48:58,\
 bus=pci.0,addr=0x2 \

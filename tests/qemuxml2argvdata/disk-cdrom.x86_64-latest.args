@@ -27,15 +27,18 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--drive file=/root/boot.iso,format=raw,if=none,id=drive-ide0-0-1,readonly=on \
--device ide-cd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
--drive if=none,id=drive-ide0-1-0,readonly=on \
--device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,\
-write-cache=on \
--drive if=none,id=drive-ide0-1-1,readonly=on \
--device ide-cd,bus=ide.1,unit=1,drive=drive-ide0-1-1,id=ide0-1-1 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+"node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw",\
+"file":"libvirt-4-storage"}' \
+-device ide-hd,bus=ide.0,unit=0,drive=libvirt-4-format,id=ide0-0-0,bootindex=1 \
+-blockdev '{"driver":"file","filename":"/root/boot.iso",\
+"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"raw",\
+"file":"libvirt-3-storage"}' \
+-device ide-cd,bus=ide.0,unit=1,drive=libvirt-3-format,id=ide0-0-1 \
+-device ide-cd,bus=ide.1,unit=0,id=ide0-1-0,write-cache=on \
+-device ide-cd,bus=ide.1,unit=1,id=ide0-1-1 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

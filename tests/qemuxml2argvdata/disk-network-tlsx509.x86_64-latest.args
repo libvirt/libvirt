@@ -28,34 +28,50 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--object tls-creds-x509,id=objvirtio-disk0_tls0,dir=/etc/pki/libvirt-vxhs/dummy,\
-,path,endpoint=client,verify-peer=yes \
--drive file.driver=vxhs,file.tls-creds=objvirtio-disk0_tls0,\
-file.vdisk-id=eb90327c-8302-4725-9e1b-4e85ed4dc251,\
-file.server.host=192.168.0.1,file.server.port=9999,format=raw,if=none,\
-id=drive-virtio-disk0,cache=none \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
+-object tls-creds-x509,id=objlibvirt-4-storage_tls0,\
+dir=/etc/pki/libvirt-vxhs/dummy,,path,endpoint=client,verify-peer=yes \
+-blockdev '{"driver":"vxhs","tls-creds":"objlibvirt-4-storage_tls0",\
+"vdisk-id":"eb90327c-8302-4725-9e1b-4e85ed4dc251",\
+"server":{"host":"192.168.0.1","port":"9999"},"node-name":"libvirt-4-storage",\
+"cache":{"direct":true,"no-flush":false},"auto-read-only":true,\
+"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"raw",\
+"file":"libvirt-4-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-4-format,\
 id=virtio-disk0,bootindex=1,write-cache=on,\
 serial=eb90327c-8302-4725-9e1b-4e85ed4dc251 \
--object tls-creds-x509,id=objvirtio-disk1_tls0,dir=/etc/pki/libvirt-vxhs/dummy,\
-,path,endpoint=client,verify-peer=yes \
--drive file.driver=vxhs,file.tls-creds=objvirtio-disk1_tls0,\
-file.vdisk-id=eb90327c-8302-4725-9e1b-4e85ed4dc252,\
-file.server.host=192.168.0.2,file.server.port=9999,format=raw,if=none,\
-id=drive-virtio-disk1,cache=none \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=drive-virtio-disk1,\
+-object tls-creds-x509,id=objlibvirt-3-storage_tls0,\
+dir=/etc/pki/libvirt-vxhs/dummy,,path,endpoint=client,verify-peer=yes \
+-blockdev '{"driver":"vxhs","tls-creds":"objlibvirt-3-storage_tls0",\
+"vdisk-id":"eb90327c-8302-4725-9e1b-4e85ed4dc252",\
+"server":{"host":"192.168.0.2","port":"9999"},"node-name":"libvirt-3-storage",\
+"cache":{"direct":true,"no-flush":false},"auto-read-only":true,\
+"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"raw",\
+"file":"libvirt-3-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=libvirt-3-format,\
 id=virtio-disk1,write-cache=on,serial=eb90327c-8302-4725-9e1b-4e85ed4dc252 \
--drive file.driver=vxhs,file.vdisk-id=eb90327c-8302-4725-9e1b-4e85ed4dc253,\
-file.server.host=192.168.0.3,file.server.port=9999,format=raw,if=none,\
-id=drive-virtio-disk2,cache=none \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=drive-virtio-disk2,\
+-blockdev '{"driver":"vxhs","vdisk-id":"eb90327c-8302-4725-9e1b-4e85ed4dc253",\
+"server":{"host":"192.168.0.3","port":"9999"},"node-name":"libvirt-2-storage",\
+"cache":{"direct":true,"no-flush":false},"auto-read-only":true,\
+"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"raw",\
+"file":"libvirt-2-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=libvirt-2-format,\
 id=virtio-disk2,write-cache=on,serial=eb90327c-8302-4725-9e1b-4e85ed4dc252 \
--object tls-creds-x509,id=objvirtio-disk3_tls0,dir=/etc/pki/libvirt-nbd/dummy,,\
-path,endpoint=client,verify-peer=yes \
--drive file.driver=nbd,file.server.type=inet,file.server.host=example.com,\
-file.server.port=1234,file.tls-creds=objvirtio-disk3_tls0,format=raw,if=none,\
-id=drive-virtio-disk3,cache=none \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x7,drive=drive-virtio-disk3,\
+-object tls-creds-x509,id=objlibvirt-1-storage_tls0,\
+dir=/etc/pki/libvirt-nbd/dummy,,path,endpoint=client,verify-peer=yes \
+-blockdev '{"driver":"nbd","server":{"type":"inet","host":"example.com",\
+"port":"1234"},"tls-creds":"objlibvirt-1-storage_tls0",\
+"node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"raw",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x7,drive=libvirt-1-format,\
 id=virtio-disk3,write-cache=on \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

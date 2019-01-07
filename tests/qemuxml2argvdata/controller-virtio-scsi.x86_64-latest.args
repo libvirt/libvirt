@@ -32,21 +32,36 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device virtio-scsi-pci,id=scsi2,cmd_per_lun=50,bus=pci.0,addr=0x4 \
 -device virtio-scsi-pci,id=scsi3,max_sectors=512,bus=pci.0,addr=0x5 \
 -device virtio-scsi-pci,id=scsi4,ioeventfd=on,bus=pci.0,addr=0x6 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-scsi0-0-0-0 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+"node-name":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-5-format","read-only":false,"driver":"raw",\
+"file":"libvirt-5-storage"}' \
 -device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi0-0-0-0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,bootindex=1 \
--drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-scsi1-0-0-0 \
+device_id=drive-scsi0-0-0-0,drive=libvirt-5-format,id=scsi0-0-0-0,bootindex=1 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2",\
+"node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw",\
+"file":"libvirt-4-storage"}' \
 -device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi1-0-0-0,drive=drive-scsi1-0-0-0,id=scsi1-0-0-0 \
--drive file=/dev/HostVG/QEMUGuest3,format=raw,if=none,id=drive-scsi2-0-0-0 \
+device_id=drive-scsi1-0-0-0,drive=libvirt-4-format,id=scsi1-0-0-0 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest3",\
+"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw",\
+"file":"libvirt-3-storage"}' \
 -device scsi-hd,bus=scsi2.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi2-0-0-0,drive=drive-scsi2-0-0-0,id=scsi2-0-0-0 \
--drive file=/dev/HostVG/QEMUGuest4,format=raw,if=none,id=drive-scsi3-0-0-0 \
+device_id=drive-scsi2-0-0-0,drive=libvirt-3-format,id=scsi2-0-0-0 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest4",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
 -device scsi-hd,bus=scsi3.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi3-0-0-0,drive=drive-scsi3-0-0-0,id=scsi3-0-0-0 \
--drive file=/dev/HostVG/QEMUGuest5,format=raw,if=none,id=drive-scsi4-0-0-0 \
+device_id=drive-scsi3-0-0-0,drive=libvirt-2-format,id=scsi3-0-0-0 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest5",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
 -device scsi-hd,bus=scsi4.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi4-0-0-0,drive=drive-scsi4-0-0-0,id=scsi4-0-0-0 \
+device_id=drive-scsi4-0-0-0,drive=libvirt-1-format,id=scsi4-0-0-0 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x7 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

@@ -30,16 +30,22 @@ path=/tmp/lib/domain--1-QEMUGuest1/pr-helper0.sock \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-scsi-pci,id=scsi0,num_queues=8,bus=pci.0,addr=0x3 \
--drive file=/dev/HostVG/QEMUGuest1,file.pr-manager=pr-helper0,format=raw,\
-if=none,id=drive-scsi0-0-0-0 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+"pr-manager":"pr-helper0","node-name":"libvirt-2-storage",\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
 -device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=0,\
-drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,bootindex=1 \
--object pr-manager-helper,id=pr-helper-scsi0-0-0-1,\
+drive=libvirt-2-format,id=scsi0-0-0-0,bootindex=1 \
+-object pr-manager-helper,id=pr-helper-libvirt-1-storage,\
 path=/path/to/qemu-pr-helper.sock \
--drive file=/dev/HostVG/QEMUGuest2,file.pr-manager=pr-helper-scsi0-0-0-1,\
-format=raw,if=none,id=drive-scsi0-0-0-1 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2",\
+"pr-manager":"pr-helper-libvirt-1-storage","node-name":"libvirt-1-storage",\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
 -device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=1,\
-drive=drive-scsi0-0-0-1,id=scsi0-0-0-1 \
+drive=libvirt-1-format,id=scsi0-0-0-1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

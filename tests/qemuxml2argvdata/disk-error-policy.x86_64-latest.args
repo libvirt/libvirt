@@ -27,17 +27,29 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
-cache=none \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1,\
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+"node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
+"file":"libvirt-3-storage"}' \
+-device ide-hd,bus=ide.0,unit=0,drive=libvirt-3-format,id=ide0-0-0,bootindex=1,\
 write-cache=on,werror=stop,rerror=stop \
--drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,\
-cache=none \
--device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,\
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2",\
+"node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
+"file":"libvirt-2-storage"}' \
+-device ide-hd,bus=ide.0,unit=1,drive=libvirt-2-format,id=ide0-0-1,\
 write-cache=on,werror=enospc \
--drive file=/dev/HostVG/QEMUGuest3,format=qcow2,if=none,id=drive-ide0-1-0,\
-cache=none \
--device ide-hd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,\
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest3",\
+"node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
+"file":"libvirt-1-storage"}' \
+-device ide-hd,bus=ide.1,unit=0,drive=libvirt-1-format,id=ide0-1-0,\
 write-cache=on,werror=report,rerror=ignore \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

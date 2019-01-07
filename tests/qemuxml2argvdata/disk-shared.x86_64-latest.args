@@ -28,20 +28,36 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0,\
-cache=none \
--device ide-hd,bus=ide.0,unit=0,share-rw=on,drive=drive-ide0-0-0,id=ide0-0-0,\
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+"node-name":"libvirt-4-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"raw",\
+"file":"libvirt-4-storage"}' \
+-device ide-hd,bus=ide.0,unit=0,share-rw=on,drive=libvirt-4-format,id=ide0-0-0,\
 bootindex=1,write-cache=on,serial=XYZXYZXYZYXXYZYZYXYZY \
--drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-1-0,\
-readonly=on \
--device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
--drive file=/dev/scsi,format=raw,if=none,id=drive-scsi0-0-0-0,cache=none \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2",\
+"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"raw",\
+"file":"libvirt-3-storage"}' \
+-device ide-cd,bus=ide.1,unit=0,drive=libvirt-3-format,id=ide0-1-0 \
+-blockdev '{"driver":"host_device","filename":"/dev/scsi",\
+"node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"raw",\
+"file":"libvirt-2-storage"}' \
 -device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi0-0-0-0,share-rw=on,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,\
+device_id=drive-scsi0-0-0-0,share-rw=on,drive=libvirt-2-format,id=scsi0-0-0-0,\
 write-cache=on \
--drive file=/dev/virtio,format=raw,if=none,id=drive-virtio-disk0,cache=none \
+-blockdev '{"driver":"host_device","filename":"/dev/virtio",\
+"node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"raw",\
+"file":"libvirt-1-storage"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,share-rw=on,\
-drive=drive-virtio-disk0,id=virtio-disk0,write-cache=on \
+drive=libvirt-1-format,id=virtio-disk0,write-cache=on \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

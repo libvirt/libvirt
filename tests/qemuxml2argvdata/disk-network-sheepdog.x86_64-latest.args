@@ -27,11 +27,17 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=/dev/HostVG/QEMU,,Guest,,,,1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--drive file=sheepdog:example.org:6000:image,,with,,commas,format=raw,if=none,\
-id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMU,Guest,,1",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
+-device ide-hd,bus=ide.0,unit=0,drive=libvirt-2-format,id=ide0-0-0,bootindex=1 \
+-blockdev '{"driver":"sheepdog","server":{"type":"inet","host":"example.org",\
+"port":"6000"},"vdi":"image,with,commas","node-name":"libvirt-1-storage",\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=libvirt-1-format,\
 id=virtio-disk0 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

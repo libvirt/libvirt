@@ -28,39 +28,49 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
--drive file.driver=iscsi,file.portal=example.org:6000,\
-file.target=iqn.1992-01.com.example,file.lun=0,file.transport=tcp,format=raw,\
-if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"iscsi","portal":"example.org:6000",\
+"target":"iqn.1992-01.com.example","lun":0,"transport":"tcp",\
+"node-name":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-5-format","read-only":false,"driver":"raw",\
+"file":"libvirt-5-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=libvirt-5-format,\
 id=virtio-disk0,bootindex=1 \
--drive file.driver=iscsi,file.portal=example.org:6000,\
-file.target=iqn.1992-01.com.example,file.lun=1,file.transport=tcp,format=raw,\
-if=none,id=drive-virtio-disk1 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,\
+-blockdev '{"driver":"iscsi","portal":"example.org:6000",\
+"target":"iqn.1992-01.com.example","lun":1,"transport":"tcp",\
+"node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw",\
+"file":"libvirt-4-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-4-format,\
 id=virtio-disk1 \
--object secret,id=virtio-disk2-secret0,\
+-object secret,id=libvirt-3-storage-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
--drive file.driver=iscsi,file.portal=example.org:6000,\
-file.target=iqn.1992-01.com.example:storage,file.lun=1,file.transport=tcp,\
-file.user=myname,file.password-secret=virtio-disk2-secret0,format=raw,if=none,\
-id=drive-virtio-disk2 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=drive-virtio-disk2,\
+-blockdev '{"driver":"iscsi","portal":"example.org:6000",\
+"target":"iqn.1992-01.com.example:storage","lun":1,"transport":"tcp",\
+"user":"myname","password-secret":"libvirt-3-storage-secret0",\
+"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw",\
+"file":"libvirt-3-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=libvirt-3-format,\
 id=virtio-disk2 \
--object secret,id=virtio-disk3-secret0,\
+-object secret,id=libvirt-2-storage-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
--drive file.driver=iscsi,file.portal=example.org:6000,\
-file.target=iqn.1992-01.com.example:storage,file.lun=2,file.transport=tcp,\
-file.user=myname,file.password-secret=virtio-disk3-secret0,format=raw,if=none,\
-id=drive-virtio-disk3 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=drive-virtio-disk3,\
+-blockdev '{"driver":"iscsi","portal":"example.org:6000",\
+"target":"iqn.1992-01.com.example:storage","lun":2,"transport":"tcp",\
+"user":"myname","password-secret":"libvirt-2-storage-secret0",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=libvirt-2-format,\
 id=virtio-disk3 \
--drive file.driver=iscsi,file.portal=example.org:3260,\
-file.target=iqn.1992-01.com.example,file.lun=0,file.transport=tcp,format=raw,\
-if=none,id=drive-scsi0-0-0-0 \
+-blockdev '{"driver":"iscsi","portal":"example.org:3260",\
+"target":"iqn.1992-01.com.example","lun":0,"transport":"tcp",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
 -device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=0,\
-drive=drive-scsi0-0-0-0,id=scsi0-0-0-0 \
+drive=libvirt-1-format,id=scsi0-0-0-0 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

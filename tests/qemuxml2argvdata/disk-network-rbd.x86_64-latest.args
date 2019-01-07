@@ -27,37 +27,56 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive 'file=rbd:pool/image:auth_supported=none:mon_host=mon1.example.org\:\
-6321\;mon2.example.org\:6322\;mon3.example.org\:6322,format=raw,if=none,\
-id=drive-virtio-disk0' \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"rbd","pool":"pool","image":"image",\
+"server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org",\
+"port":"6322"},{"host":"mon3.example.org","port":"6322"}],\
+"node-name":"libvirt-6-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-6-format","read-only":false,"driver":"raw",\
+"file":"libvirt-6-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=libvirt-6-format,\
 id=virtio-disk0,bootindex=1 \
--drive file=rbd:pool/image@asdf:auth_supported=none,format=raw,if=none,\
-id=drive-virtio-disk1 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,\
+-blockdev '{"driver":"rbd","pool":"pool","image":"image","snapshot":"asdf",\
+"node-name":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-5-format","read-only":false,"driver":"raw",\
+"file":"libvirt-5-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=libvirt-5-format,\
 id=virtio-disk1 \
--drive 'file=rbd:pool/image@foo:auth_supported=none:mon_host=mon1.example.org\:\
-6321\;mon2.example.org\:6322\;mon3.example.org\:6322,format=raw,if=none,\
-id=drive-virtio-disk2' \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk2,\
+-blockdev '{"driver":"rbd","pool":"pool","image":"image","snapshot":"foo",\
+"server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org",\
+"port":"6322"},{"host":"mon3.example.org","port":"6322"}],\
+"node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw",\
+"file":"libvirt-4-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-4-format,\
 id=virtio-disk2 \
--drive file=rbd:pool/image@foo:auth_supported=none:conf=/blah/test.conf,\
-format=raw,if=none,id=drive-virtio-disk3 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=drive-virtio-disk3,\
+-blockdev '{"driver":"rbd","pool":"pool","image":"image","snapshot":"foo",\
+"conf":"/blah/test.conf","node-name":"libvirt-3-storage","auto-read-only":true,\
+"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw",\
+"file":"libvirt-3-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=libvirt-3-format,\
 id=virtio-disk3 \
--object secret,id=virtio-disk4-secret0,\
+-object secret,id=libvirt-2-storage-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
--drive 'file=rbd:pool/image:id=myname:auth_supported=cephx\;none:\
-mon_host=mon1.example.org\:6321\;mon2.example.org\:6322\;mon3.example.org\:\
-6322,file.password-secret=virtio-disk4-secret0,format=raw,if=none,\
-id=drive-virtio-disk4' \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=drive-virtio-disk4,\
+-blockdev '{"driver":"rbd","pool":"pool","image":"image",\
+"server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org",\
+"port":"6322"},{"host":"mon3.example.org","port":"6322"}],"user":"myname",\
+"auth-client-required":["cephx","none"],\
+"key-secret":"libvirt-2-storage-secret0","node-name":"libvirt-2-storage",\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=libvirt-2-format,\
 id=virtio-disk4 \
--drive 'file=rbd:pool/image:auth_supported=none:mon_host=[\:\:1]\:\
-6321\;example.org\:6789\;[ffff\:1234\:567\:abc\:\:0f]\:6322\;[2001\:db8\:\:\
-ff00\:42\:8329]\:6322,format=raw,if=none,id=drive-virtio-disk5' \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x7,drive=drive-virtio-disk5,\
+-blockdev '{"driver":"rbd","pool":"pool","image":"image",\
+"server":[{"host":"::1","port":"6321"},{"host":"example.org","port":"6789"},\
+{"host":"ffff:1234:567:abc::0f","port":"6322"},\
+{"host":"2001:db8::ff00:42:8329","port":"6322"}],\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x7,drive=libvirt-1-format,\
 id=virtio-disk5 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

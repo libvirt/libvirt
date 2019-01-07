@@ -30,16 +30,25 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-scsi-pci,iothread=iothread2,id=scsi0,bus=pci.0,addr=0xb \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--drive file=/var/lib/libvirt/images/iothrtest1.img,format=raw,if=none,\
-id=drive-virtio-disk1 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw",\
+"file":"libvirt-3-storage"}' \
+-device ide-hd,bus=ide.0,unit=0,drive=libvirt-3-format,id=ide0-0-0,bootindex=1 \
+-blockdev '{"driver":"file",\
+"filename":"/var/lib/libvirt/images/iothrtest1.img",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
 -device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,\
-drive=drive-virtio-disk1,id=virtio-disk1 \
--drive file=/var/lib/libvirt/images/iothrtest2.img,format=raw,if=none,\
-id=drive-scsi0-0-0-3 \
+drive=libvirt-2-format,id=virtio-disk1 \
+-blockdev '{"driver":"file",\
+"filename":"/var/lib/libvirt/images/iothrtest2.img",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
 -device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=3,\
-device_id=drive-scsi0-0-0-3,drive=drive-scsi0-0-0-3,id=scsi0-0-0-3 \
+device_id=drive-scsi0-0-0-3,drive=libvirt-1-format,id=scsi0-0-0-3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

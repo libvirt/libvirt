@@ -31,9 +31,17 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 addr=0x1 \
 -device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -device qemu-xhci,id=usb,bus=pci.1,addr=0x0 \
--drive file=/tmp/firmware.img,format=raw,if=none,id=drive-fdc0-0-0 \
--drive file=/tmp/data.img,format=qcow2,if=none,id=drive-fdc0-0-1 \
--device isa-fdc,driveA=drive-fdc0-0-0,bootindexA=1,driveB=drive-fdc0-0-1 \
+-device isa-fdc,bootindexA=1 \
+-blockdev '{"driver":"file","filename":"/tmp/firmware.img",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
+-device floppy,unit=0,drive=libvirt-2-format,id=fdc0-0-0 \
+-blockdev '{"driver":"file","filename":"/tmp/data.img",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2",\
+"file":"libvirt-1-storage"}' \
+-device floppy,unit=1,drive=libvirt-1-format,id=fdc0-0-1 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

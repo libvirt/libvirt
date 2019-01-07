@@ -4619,13 +4619,15 @@ virQEMUCapsInitProcessCaps(virQEMUCapsPtr qemuCaps)
             virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW);
     }
 
-    /* To avoid guest ABI regression, blockdev shall be enabled only when
-     * we are able to pass the custom 'device_id' for SCSI disks and cdroms. */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_BLOCKDEV);
-
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES);
+
+    /* To avoid guest ABI regression, blockdev shall be enabled only when
+     * we are able to pass the custom 'device_id' for SCSI disks and cdroms. */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_SAVEVM_MONITOR_NODES))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV);
 }
 
 

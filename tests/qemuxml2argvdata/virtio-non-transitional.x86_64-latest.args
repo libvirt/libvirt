@@ -42,9 +42,12 @@ multifunction=on,addr=0x2 \
 -device virtio-scsi-pci-non-transitional,id=scsi0,bus=pci.4,addr=0x0 \
 -device virtio-serial-pci-non-transitional,id=virtio-serial0,bus=pci.3,\
 addr=0x0 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
 -device virtio-blk-pci-non-transitional,scsi=off,bus=pci.5,addr=0x0,\
-drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/fs1 \
 -device virtio-9p-pci-non-transitional,id=fs0,fsdev=fsdev-fs0,mount_tag=fs1,\
 bus=pci.1,addr=0x0 \

@@ -27,8 +27,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive if=none,id=drive-ide0-1-1,readonly=on \
--device ide-cd,bus=ide.1,unit=1,drive=drive-ide0-1-1,id=ide0-1-1 \
+-device ide-cd,bus=ide.1,unit=1,id=ide0-1-1 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

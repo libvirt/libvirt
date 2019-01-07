@@ -27,20 +27,28 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=gluster://example.org:6000/Volume1/Image,file.debug=4,format=raw,\
-if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"gluster","volume":"Volume1","path":"Image",\
+"server":[{"type":"inet","host":"example.org","port":"6000"}],"debug":4,\
+"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw",\
+"file":"libvirt-3-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=libvirt-3-format,\
 id=virtio-disk0,bootindex=1 \
--drive 'file=gluster+unix:///Volume2/Image?socket=/path/to/sock,file.debug=4,\
-format=raw,if=none,id=drive-virtio-disk1' \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,\
+-blockdev '{"driver":"gluster","volume":"Volume2","path":"Image",\
+"server":[{"type":"unix","path":"/path/to/sock"}],"debug":4,\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=libvirt-2-format,\
 id=virtio-disk1 \
--drive file.driver=gluster,file.volume=Volume3,file.path=Image.qcow2,\
-file.server.0.type=tcp,file.server.0.host=example.org,file.server.0.port=6000,\
-file.server.1.type=tcp,file.server.1.host=example.org,file.server.1.port=24007,\
-file.server.2.type=unix,file.server.2.socket=/path/to/sock,file.debug=4,\
-format=qcow2,if=none,id=drive-virtio-disk2 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk2,\
+-blockdev '{"driver":"gluster","volume":"Volume3","path":"Image.qcow2",\
+"server":[{"type":"inet","host":"example.org","port":"6000"},{"type":"inet",\
+"host":"example.org","port":"24007"},{"type":"unix","path":"/path/to/sock"}],\
+"debug":4,"node-name":"libvirt-1-storage","auto-read-only":true,\
+"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-1-format,\
 id=virtio-disk2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

@@ -141,7 +141,7 @@
     <gic supported='no'/>
     <vmcoreinfo supported='yes'/>
     <genid supported='no'/>
-    <backingStoreInput supported='no'/>
+    <backingStoreInput supported='yes'/>
     <sev supported='no'/>
   </features>
 </domainCapabilities>

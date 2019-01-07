@@ -12,12 +12,20 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-fedora/master-key.aes \
--machine pc-q35-4.0,accel=kvm,usb=off,smm=on,dump-guest-core=off \
+-blockdev '{"driver":"file","filename":"/usr/share/OVMF/OVMF_CODE.secboot.fd",\
+"node-name":"libvirt-pflash0-storage","auto-read-only":true,\
+"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,\
+"driver":"raw","file":"libvirt-pflash0-storage"}' \
+-blockdev '{"driver":"file",\
+"filename":"/var/lib/libvirt/qemu/nvram/fedora_VARS.fd",\
+"node-name":"libvirt-pflash1-storage","auto-read-only":true,\
+"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,\
+"driver":"raw","file":"libvirt-pflash1-storage"}' \
+-machine pc-q35-4.0,accel=kvm,usb=off,smm=on,dump-guest-core=off,\
+pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format \
 -cpu qemu64 \
--drive file=/usr/share/OVMF/OVMF_CODE.secboot.fd,if=pflash,format=raw,unit=0,\
-readonly=on \
--drive file=/var/lib/libvirt/qemu/nvram/fedora_VARS.fd,if=pflash,format=raw,\
-unit=1 \
 -m 8 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

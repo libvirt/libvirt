@@ -30,9 +30,11 @@ file=/tmp/lib/domain--1-guest/master-key.aes \
 -boot strict=on \
 -device qemu-xhci,p2=15,p3=15,id=usb,bus=pci.0,addr=0x4 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x5 \
--drive file=/var/lib/libvirt/images/guest.qcow2,format=qcow2,if=none,\
-id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/guest.qcow2",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=libvirt-1-format,\
 id=virtio-disk0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:4c:e3:86,bus=pci.0,\
