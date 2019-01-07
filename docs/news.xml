@@ -112,6 +112,15 @@
           sibling Hyperthread.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for postcopy-requests migration statistics
+        </summary>
+        <description>
+          The <code>virDomainJobInfo</code> can get number page requests
+          received from the destination host during post-copy migration.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
