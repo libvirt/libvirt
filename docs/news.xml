@@ -102,6 +102,16 @@
           the 'readonly' subelement.
         </description>
       </change>
+      <change>
+        <summary>
+          cpu: Add support for "stibp" x86_64 feature
+        </summary>
+        <description>
+          Add cpu flag stibp (Single Thread Indirect Branch Predictors) to
+          prevent indirect branch predictions from being controlled by the
+          sibling Hyperthread.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
