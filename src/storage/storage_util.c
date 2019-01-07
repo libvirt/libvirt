@@ -82,6 +82,22 @@
 
 VIR_LOG_INIT("storage.storage_util");
 
+
+/* virStorageBackendNamespaceInit:
+ * @poolType: virStoragePoolType
+ * @xmlns: Storage Pool specific namespace callback methods
+ *
+ * To be called during storage backend registration to configure the
+ * Storage Pool XML Namespace based on the backend's needs.
+ */
+int
+virStorageBackendNamespaceInit(int poolType,
+                               virStoragePoolXMLNamespacePtr xmlns)
+{
+    return virStoragePoolOptionsPoolTypeSetXMLNamespace(poolType, xmlns);
+}
+
+
 #define READ_BLOCK_SIZE_DEFAULT  (1024 * 1024)
 #define WRITE_BLOCK_SIZE_DEFAULT (4 * 1024)
 

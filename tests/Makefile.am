@@ -937,7 +937,9 @@ storagevolxml2xmltest_LDADD = $(LDADDS)
 storagepoolxml2xmltest_SOURCES = \
 	storagepoolxml2xmltest.c \
 	testutils.c testutils.h
-storagepoolxml2xmltest_LDADD = $(LDADDS)
+storagepoolxml2xmltest_LDADD = $(LDADDS) \
+	../src/libvirt_driver_storage_impl.la \
+	$(GNULIB_LIBS)
 
 nodedevxml2xmltest_SOURCES = \
 	nodedevxml2xmltest.c \

@@ -26,6 +26,20 @@
 # include "storage_driver.h"
 # include "storage_backend.h"
 
+/* Storage Pool Namespace options to share w/ storage_backend_fs.c and
+ * the virStorageBackendFileSystemMountCmd method */
+typedef struct _virStoragePoolFSMountOptionsDef virStoragePoolFSMountOptionsDef;
+typedef virStoragePoolFSMountOptionsDef *virStoragePoolFSMountOptionsDefPtr;
+struct _virStoragePoolFSMountOptionsDef {
+    size_t noptions;
+    char **options;
+};
+
+int
+virStorageBackendNamespaceInit(int poolType,
+                               virStoragePoolXMLNamespacePtr xmlns);
+
+
 /* File creation/cloning functions used for cloning between backends */
 
 int

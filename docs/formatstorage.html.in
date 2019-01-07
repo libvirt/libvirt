@@ -508,6 +508,69 @@
       device, measured in bytes.  <span class="since">Since 0.4.1</span>
     </p>
 
+    <h3><a id="StoragePoolNamespaces">Storage Pool Namespaces</a></h3>
+
+    <p>
+      Usage of Storage Pool Namespaces provides a mechanism to provide
+      pool type specific data in a free form or arbitrary manner via
+      XML syntax targeted solely for the needs of the specific pool type
+      which is not otherwise supported in standard XML. For the "fs" and
+      "netfs" pool types this provides a mechanism to provide additional
+      mount options on the command line.
+    </p>
+    <p>
+      Usage of namespaces comes with no support guarantees. It is intended
+      for developers testing out a concept prior to requesting an explicitly
+      supported XML option in libvirt, and thus should never be used in
+      production.
+    </p>
+    <dl>
+      <dt><code>fs:mount_opts</code></dt>
+      <dd>Provides an XML namespace mechanism to optionally utilize
+        specifically named options for the mount command via the "-o"
+        option for the <code>fs</code> or <code>netfs</code> type storage
+        pools. In order to designate that the Storage Pool will be using
+        the mechanism, the <code>pool</code> element must be modified to
+        provide the XML namespace attribute syntax as follows:
+
+        <p>
+        xmlns:fs='http://libvirt.org/schemas/storagepool/source/fs/1.0'
+        </p>
+
+        <p>
+        The <code>fs:mount_opts</code> defines the mount options by
+        specifying multiple <code>fs:option</code> subelements with
+        the attribute <code>name</code> specifying the mount option to
+        be added. The value of the named option is not checked since
+        it's possible options don't exist on all distributions. It is
+        expected that proper and valid options will be supplied for the
+        target host.
+        </p>
+
+        The following XML snippet shows the syntax required in order to
+        utilize for a netfs pool:
+      <pre>
+&lt;pool type="netfs" xmlns:fs='http://libvirt.org/schemas/storagepool/source/fs/1.0'&gt;
+  &lt;name&gt;nfsimages&lt;/name&gt;
+...
+  &lt;source&gt;
+...
+  &lt;/source&gt;
+...
+  &lt;target&gt;
+...
+  &lt;/target&gt;
+  &lt;fs:mount_opts&gt;
+    &lt;fs:option name='sync'/&gt;
+    &lt;fs:option name='lazytime'/&gt;
+  &lt;/fs:mount_opts&gt;
+&lt;/pool&gt;
+...</pre>
+
+      <span class="since">Since 5.1.0.</span></dd>
+
+    </dl>
+
     <h2><a id="StorageVol">Storage volume XML</a></h2>
     <p>
       A storage volume will generally be either a file or a device

@@ -11,6 +11,8 @@
 #include "testutilsqemu.h"
 #include "virstring.h"
 
+#include "storage/storage_util.h"
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
@@ -70,6 +72,9 @@ mymain(void)
                    testCompareXMLToXMLHelper, (name)) < 0) \
         ret = -1
 
+    if (storageRegisterAll() < 0)
+       return EXIT_FAILURE;
+
     DO_TEST("pool-dir");
     DO_TEST("pool-dir-naming");
     DO_TEST("pool-fs");
@@ -86,6 +91,7 @@ mymain(void)
     DO_TEST("pool-netfs-protocol-ver");
     DO_TEST("pool-netfs-gluster");
     DO_TEST("pool-netfs-cifs");
+    DO_TEST("pool-netfs-ns-mountopts");
     DO_TEST("pool-scsi");
     DO_TEST("pool-scsi-type-scsi-host");
     DO_TEST("pool-scsi-type-fc-host");
