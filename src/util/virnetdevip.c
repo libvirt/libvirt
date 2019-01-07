@@ -505,6 +505,25 @@ struct virNetDevIPCheckIPv6ForwardingData {
     size_t ndevices;
 };
 
+
+static int
+virNetDevIPCheckIPv6ForwardingAddIF(struct virNetDevIPCheckIPv6ForwardingData *data,
+                                    char **ifname)
+{
+    size_t i;
+
+    /* add ifname to the array if it's not already there
+     * (ifname is char** so VIR_APPEND_ELEMENT() will move the
+     * original pointer out of the way and avoid having it freed)
+     */
+    for (i = 0; i < data->ndevices; i++) {
+        if (STREQ(data->devices[i], *ifname))
+            return 0;
+    }
+    return VIR_APPEND_ELEMENT(data->devices, data->ndevices, *ifname);
+}
+
+
 static int
 virNetDevIPCheckIPv6ForwardingCallback(struct nlmsghdr *resp,
                                        void *opaque)
@@ -515,8 +534,6 @@ virNetDevIPCheckIPv6ForwardingCallback(struct nlmsghdr *resp,
     struct virNetDevIPCheckIPv6ForwardingData *data = opaque;
     int len = RTM_PAYLOAD(resp);
     int oif = -1;
-    size_t i;
-    bool hasDevice;
     VIR_AUTOFREE(char *) ifname = NULL;
 
     /* Ignore messages other than route ones */
@@ -553,13 +570,7 @@ virNetDevIPCheckIPv6ForwardingCallback(struct nlmsghdr *resp,
     accept_ra = virNetDevIPGetAcceptRA(ifname);
     VIR_DEBUG("Checking route for device %s, accept_ra: %d", ifname, accept_ra);
 
-    hasDevice = false;
-    for (i = 0; i < data->ndevices && !hasDevice; i++) {
-        if (STREQ(data->devices[i], ifname))
-            hasDevice = true;
-    }
-    if (accept_ra != 2 && !hasDevice &&
-        VIR_APPEND_ELEMENT(data->devices, data->ndevices, ifname) < 0)
+    if (accept_ra != 2 && virNetDevIPCheckIPv6ForwardingAddIF(data, &ifname) < 0)
         return -1;
 
     return 0;
