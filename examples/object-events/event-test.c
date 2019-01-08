@@ -1147,12 +1147,7 @@ main(int argc, char **argv)
     virConnectPtr dconn = NULL;
     int callback1ret = -1;
     int callback16ret = -1;
-    struct sigaction action_stop;
     size_t i;
-
-    memset(&action_stop, 0, sizeof(action_stop));
-
-    action_stop.sa_handler = stop;
 
     if (argc > 1 && STREQ(argv[1], "--help")) {
         printf("%s uri\n", argv[0]);
@@ -1184,8 +1179,10 @@ main(int argc, char **argv)
         goto cleanup;
     }
 
-    sigaction(SIGTERM, &action_stop, NULL);
-    sigaction(SIGINT, &action_stop, NULL);
+    /* The ideal program would use sigaction to set this handler, but
+     * this way is portable to mingw. */
+    signal(SIGTERM, stop);
+    signal(SIGINT, stop);
 
     printf("Registering event callbacks\n");
 

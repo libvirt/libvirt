@@ -266,10 +266,6 @@ do_top(virConnectPtr conn,
     int max_id = 0;
     int nparams = 0, then_nparams = 0, now_nparams = 0;
     virTypedParameterPtr then_params = NULL, now_params = NULL;
-    struct sigaction action_stop;
-
-    memset(&action_stop, 0, sizeof(action_stop));
-    action_stop.sa_handler = stop;
 
     /* Lookup the domain */
     if (!(dom = virDomainLookupByName(conn, dom_name))) {
@@ -295,8 +291,10 @@ do_top(virConnectPtr conn,
         goto cleanup;
     }
 
-    sigaction(SIGTERM, &action_stop, NULL);
-    sigaction(SIGINT, &action_stop, NULL);
+    /* The ideal program would use sigaction to set this handler, but
+     * this way is portable to mingw. */
+    signal(SIGTERM, stop);
+    signal(SIGINT, stop);
 
     run_top = true;
     while (run_top) {
