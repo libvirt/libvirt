@@ -1,8 +1,6 @@
 /* This is a copy of the hellolibvirt example demonstaring how to use
  * virConnectOpenAuth with a custom auth callback */
 
-#include <config.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

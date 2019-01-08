@@ -34,10 +34,9 @@ EXTRA_DIST = \
 
 
 AM_CPPFLAGS = \
-	-I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir) \
-	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib
+	-I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir)
 LDADD = $(STATIC_BINARIES) $(WARN_CFLAGS) $(COVERAGE_LDFLAGS) \
-	$(top_builddir)/src/libvirt.la $(top_builddir)/gnulib/lib/libgnu.la \
+	$(top_builddir)/src/libvirt.la \
 	$(top_builddir)/src/libvirt-admin.la
 
 noinst_PROGRAMS=dominfo/info1 dommigrate/dommigrate domsuspend/suspend \

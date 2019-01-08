@@ -19,8 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <config.h>
-
 #include <errno.h>
 #include <getopt.h>
 #include <libvirt/libvirt.h>
