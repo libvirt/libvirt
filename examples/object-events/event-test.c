@@ -948,10 +948,11 @@ myDomainEventBlockThresholdCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                     unsigned long long excess,
                                     void *opaque ATTRIBUTE_UNUSED)
 {
+    /* Casts to uint64_t to work around mingw not knowing %lld */
     printf("%s EVENT: Domain %s(%d) block threshold callback dev '%s'(%s), "
-           "threshold: '%llu', excess: '%llu'",
+           "threshold: '%" PRIu64 "', excess: '%" PRIu64 "'",
            __func__, virDomainGetName(dom), virDomainGetID(dom),
-           dev, NULLSTR(path), threshold, excess);
+           dev, NULLSTR(path), (uint64_t)threshold, (uint64_t)excess);
     return 0;
 }
 

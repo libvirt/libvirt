@@ -241,7 +241,8 @@ print_cpu_usage(const char *dom_name,
 
         if (delim)
             printf("\t");
-        printf("CPU%zu: %.2lf", cpu + i, usage);
+        /* mingw lacks %zu */
+        printf("CPU%u: %.2lf", (unsigned)(cpu + i), usage);
         delim = true;
     }
 
