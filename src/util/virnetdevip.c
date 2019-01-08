@@ -529,49 +529,42 @@ virNetDevIPCheckIPv6ForwardingCallback(struct nlmsghdr *resp,
                                        void *opaque)
 {
     struct rtmsg *rtmsg = NLMSG_DATA(resp);
-    int accept_ra = -1;
-    struct rtattr *rta;
     struct virNetDevIPCheckIPv6ForwardingData *data = opaque;
-    int len = RTM_PAYLOAD(resp);
-    int oif = -1;
+    struct rtattr *rta_attr;
+    int accept_ra = -1;
+    int ifindex = -1;
     VIR_AUTOFREE(char *) ifname = NULL;
 
     /* Ignore messages other than route ones */
     if (resp->nlmsg_type != RTM_NEWROUTE)
         return 0;
 
-    /* Extract a device ID attribute */
-    VIR_WARNINGS_NO_CAST_ALIGN
-    for (rta = RTM_RTA(rtmsg); RTA_OK(rta, len); rta = RTA_NEXT(rta, len)) {
-        VIR_WARNINGS_RESET
-        if (rta->rta_type == RTA_OIF) {
-            oif = *(int *)RTA_DATA(rta);
-
-            /* Should never happen: netlink message would be broken */
-            if (ifname) {
-                VIR_AUTOFREE(char *) ifname2 = virNetDevGetName(oif);
-                VIR_WARN("Single route has unexpected 2nd interface "
-                         "- '%s' and '%s'", ifname, ifname2);
-                break;
-            }
-
-            if (!(ifname = virNetDevGetName(oif)))
-                return -1;
-        }
-    }
-
     /* No need to do anything else for non RA routes */
     if (rtmsg->rtm_protocol != RTPROT_RA)
         return 0;
 
-    data->hasRARoutes = true;
+    rta_attr = (struct rtattr *)nlmsg_find_attr(resp, sizeof(struct rtmsg), RTA_OIF);
+    if (rta_attr) {
+        /* This is a single path route, with interface used to reach
+         * nexthop in the RTA_OIF attribute.
+         */
+        ifindex = *(int *)RTA_DATA(rta_attr);
+        ifname = virNetDevGetName(ifindex);
 
-    /* Check the accept_ra value for the interface */
-    accept_ra = virNetDevIPGetAcceptRA(ifname);
-    VIR_DEBUG("Checking route for device %s, accept_ra: %d", ifname, accept_ra);
+        if (!ifname)
+           return -1;
 
-    if (accept_ra != 2 && virNetDevIPCheckIPv6ForwardingAddIF(data, &ifname) < 0)
-        return -1;
+        accept_ra = virNetDevIPGetAcceptRA(ifname);
+
+        VIR_DEBUG("Checking route for device %s (%d), accept_ra: %d",
+                  ifname, ifindex, accept_ra);
+
+        if (accept_ra != 2 && virNetDevIPCheckIPv6ForwardingAddIF(data, &ifname) < 0)
+            return -1;
+
+        data->hasRARoutes = true;
+        return 0;
+    }
 
     return 0;
 }
