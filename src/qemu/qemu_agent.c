@@ -357,7 +357,7 @@ static int qemuAgentIOProcessData(qemuAgentPtr mon,
 #if DEBUG_IO
 # if DEBUG_RAW_IO
     char *str1 = qemuAgentEscapeNonPrintable(data);
-    VIR_ERROR("[%s]", str1);
+    VIR_ERROR(_("[%s]"), str1);
     VIR_FREE(str1);
 # else
     VIR_DEBUG("Data %zu bytes [%s]", len, data);

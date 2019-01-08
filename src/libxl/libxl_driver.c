@@ -3649,8 +3649,8 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
 
     if (libxl_device_pci_remove(cfg->ctx, vm->def->id, &pcidev, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("libxenlight failed to detach pci device\
-                          %.4x:%.2x:%.2x.%.1x"),
+                       _("libxenlight failed to detach pci device "
+                         "%.4x:%.2x:%.2x.%.1x"),
                        pcisrc->addr.domain, pcisrc->addr.bus,
                        pcisrc->addr.slot, pcisrc->addr.function);
         goto error;
@@ -3773,8 +3773,8 @@ libxlDomainDetachHostUSBDevice(libxlDriverPrivatePtr driver,
 
     if (libxl_device_usbdev_remove(cfg->ctx, vm->def->id, &usbdev, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("libxenlight failed to detach USB device\
-                          Busnum: %3x, Devnum: %3x"),
+                       _("libxenlight failed to detach USB device "
+                         "Busnum: %3x, Devnum: %3x"),
                        usbsrc->bus, usbsrc->device);
         goto cleanup;
     }

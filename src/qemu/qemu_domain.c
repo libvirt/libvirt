@@ -2676,7 +2676,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
 
     if (!(format = virXMLPropString(ctxt->node, "format"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       ("missing storage source format"));
+                       _("missing storage source format"));
         goto cleanup;
     }
 

@@ -718,7 +718,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     machineDescription->mediaRegistry = virVBoxSnapshotConfRetrieveMediaRegistry(cur, xPathContext, machineLocation);
     if (machineDescription->mediaRegistry == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       ("Unable to create media registry"));
+                       _("Unable to create media registry"));
         goto cleanup;
     }
 
