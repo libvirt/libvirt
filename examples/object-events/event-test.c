@@ -6,8 +6,6 @@
 #include <signal.h>
 #include <inttypes.h>
 
-#include <verify.h>
-
 #define VIR_ENUM_SENTINELS
 
 #include <libvirt/libvirt.h>
@@ -16,6 +14,14 @@
 #define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
 #define STREQ(a, b) (strcmp(a, b) == 0)
 #define NULLSTR(s) ((s) ? (s) : "<null>")
+
+#if (4 < __GNUC__ + (6 <= __GNUC_MINOR__) \
+     && (201112L <= __STDC_VERSION__  || !defined __STRICT_ANSI__) \
+     && !defined __cplusplus)
+# define verify(cond) _Static_assert(cond, "verify (" #cond ")")
+#else
+# define verify(cond)
+#endif
 
 #ifndef ATTRIBUTE_UNUSED
 # define ATTRIBUTE_UNUSED __attribute__((__unused__))
