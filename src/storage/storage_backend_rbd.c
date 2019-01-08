@@ -36,6 +36,7 @@
 #include "rbd/librbd.h"
 #include "secret_util.h"
 #include "storage_util.h"
+#include <libxml/xpathInternals.h>
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -49,6 +50,138 @@ struct _virStorageBackendRBDState {
 
 typedef struct _virStorageBackendRBDState virStorageBackendRBDState;
 typedef virStorageBackendRBDState *virStorageBackendRBDStatePtr;
+
+typedef struct _virStoragePoolRBDConfigOptionsDef virStoragePoolRBDConfigOptionsDef;
+typedef virStoragePoolRBDConfigOptionsDef *virStoragePoolRBDConfigOptionsDefPtr;
+struct _virStoragePoolRBDConfigOptionsDef {
+    size_t noptions;
+    char **names;
+    char **values;
+};
+
+#define STORAGE_POOL_RBD_NAMESPACE_HREF "http://libvirt.org/schemas/storagepool/source/rbd/1.0"
+
+static void
+virStoragePoolDefRBDNamespaceFree(void *nsdata)
+{
+    virStoragePoolRBDConfigOptionsDefPtr cmdopts = nsdata;
+    size_t i;
+
+    if (!cmdopts)
+        return;
+
+    for (i = 0; i < cmdopts->noptions; i++) {
+        VIR_FREE(cmdopts->names[i]);
+        VIR_FREE(cmdopts->values[i]);
+    }
+    VIR_FREE(cmdopts->names);
+    VIR_FREE(cmdopts->values);
+
+    VIR_FREE(cmdopts);
+}
+
+
+static int
+virStoragePoolDefRBDNamespaceParse(xmlXPathContextPtr ctxt,
+                                   void **data)
+{
+    virStoragePoolRBDConfigOptionsDefPtr cmdopts = NULL;
+    xmlNodePtr *nodes = NULL;
+    int nnodes;
+    size_t i;
+    int ret = -1;
+
+    if (xmlXPathRegisterNs(ctxt, BAD_CAST "rbd",
+                           BAD_CAST STORAGE_POOL_RBD_NAMESPACE_HREF) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to register xml namespace '%s'"),
+                       STORAGE_POOL_RBD_NAMESPACE_HREF);
+        return -1;
+    }
+
+    nnodes = virXPathNodeSet("./rbd:config_opts/rbd:option", ctxt, &nodes);
+    if (nnodes < 0)
+        return -1;
+
+    if (nnodes == 0)
+        return 0;
+
+    if (VIR_ALLOC(cmdopts) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(cmdopts->names, nnodes) < 0 ||
+        VIR_ALLOC_N(cmdopts->values, nnodes) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nnodes; i++) {
+        if (!(cmdopts->names[cmdopts->noptions] =
+              virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("no rbd option name specified"));
+            goto cleanup;
+        }
+        if (*cmdopts->names[cmdopts->noptions] == '\0') {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("empty rbd option name specified"));
+            goto cleanup;
+        }
+        if (!(cmdopts->values[cmdopts->noptions] =
+              virXMLPropString(nodes[i], "value"))) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("no rbd option value specified for name '%s'"),
+                           cmdopts->names[cmdopts->noptions]);
+            goto cleanup;
+        }
+        if (*cmdopts->values[cmdopts->noptions] == '\0') {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("empty rbd option value specified for name '%s'"),
+                           cmdopts->names[cmdopts->noptions]);
+            goto cleanup;
+        }
+        cmdopts->noptions++;
+    }
+
+    VIR_STEAL_PTR(*data, cmdopts);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodes);
+    virStoragePoolDefRBDNamespaceFree(cmdopts);
+    return ret;
+}
+
+
+static int
+virStoragePoolDefRBDNamespaceFormatXML(virBufferPtr buf,
+                                       void *nsdata)
+{
+    size_t i;
+    virStoragePoolRBDConfigOptionsDefPtr def = nsdata;
+
+    if (!def)
+        return 0;
+
+    virBufferAddLit(buf, "<rbd:config_opts>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < def->noptions; i++) {
+        virBufferEscapeString(buf, "<rbd:option name='%s' ", def->names[i]);
+        virBufferEscapeString(buf, "value='%s'/>\n", def->values[i]);
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</rbd:config_opts>\n");
+
+    return 0;
+}
+
+
+static const char *
+virStoragePoolDefRBDNamespaceHref(void)
+{
+    return "xmlns:rbd='" STORAGE_POOL_RBD_NAMESPACE_HREF "'";
+}
+
 
 static int
 virStorageBackendRBDRADOSConfSet(rados_t cluster,
@@ -69,10 +202,11 @@ virStorageBackendRBDRADOSConfSet(rados_t cluster,
 
 static int
 virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
-                                  virStoragePoolSourcePtr source)
+                                  virStoragePoolDefPtr def)
 {
     int ret = -1;
     int r = 0;
+    virStoragePoolSourcePtr source = &def->source;
     virStorageAuthDefPtr authdef = source->auth;
     unsigned char *secret_value = NULL;
     size_t secret_value_size = 0;
@@ -183,6 +317,22 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                                          rbd_default_format) < 0)
         goto cleanup;
 
+    if (def->namespaceData) {
+        virStoragePoolRBDConfigOptionsDefPtr cmdopts = def->namespaceData;
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        for (i = 0; i < cmdopts->noptions; i++) {
+            if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                                 cmdopts->names[i],
+                                                 cmdopts->values[i]) < 0)
+                goto cleanup;
+        }
+
+        virUUIDFormat(def->uuid, uuidstr);
+        VIR_WARN("Storage Pool name='%s' uuid='%s' is tainted by custom "
+                 "config_opts from XML", def->name, uuidstr);
+    }
+
     ptr->starttime = time(0);
     if ((r = rados_connect(ptr->cluster)) < 0) {
         virReportSystemError(-r, _("failed to connect to the RADOS monitor on: %s"),
@@ -256,7 +406,7 @@ virStorageBackendRBDNewState(virStoragePoolObjPtr pool)
     if (VIR_ALLOC(ptr) < 0)
         return NULL;
 
-    if (virStorageBackendRBDOpenRADOSConn(ptr, &def->source) < 0)
+    if (virStorageBackendRBDOpenRADOSConn(ptr, def) < 0)
         goto error;
 
     if (virStorageBackendRBDOpenIoCTX(ptr, pool) < 0)
@@ -1277,6 +1427,7 @@ virStorageBackendRBDVolWipe(virStoragePoolObjPtr pool,
     return ret;
 }
 
+
 virStorageBackend virStorageBackendRBD = {
     .type = VIR_STORAGE_POOL_RBD,
 
@@ -1291,8 +1442,20 @@ virStorageBackend virStorageBackendRBD = {
 };
 
 
+static virStoragePoolXMLNamespace virStoragePoolRBDXMLNamespace = {
+    .parse = virStoragePoolDefRBDNamespaceParse,
+    .free = virStoragePoolDefRBDNamespaceFree,
+    .format = virStoragePoolDefRBDNamespaceFormatXML,
+    .href = virStoragePoolDefRBDNamespaceHref,
+};
+
+
 int
 virStorageBackendRBDRegister(void)
 {
-    return virStorageBackendRegister(&virStorageBackendRBD);
+    if (virStorageBackendRegister(&virStorageBackendRBD) < 0)
+        return -1;
+
+    return virStorageBackendNamespaceInit(VIR_STORAGE_POOL_RBD,
+                                          &virStoragePoolRBDXMLNamespace);
 }

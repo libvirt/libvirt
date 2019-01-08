@@ -156,6 +156,9 @@
       <ref name='sizing'/>
       <ref name='sourcerbd'/>
     </interleave>
+    <optional>
+      <ref name='rbd_config_opts'/>
+    </optional>
   </define>
 
   <define name='poolsheepdog'>
@@ -698,6 +701,26 @@
       <zeroOrMore>
         <element name="option">
           <attribute name='name'>
+            <text/>
+          </attribute>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <!--
+       Optional storage pool extensions in their own namespace:
+         RBD
+    -->
+
+  <define name="rbd_config_opts">
+    <element name="config_opts" ns="http://libvirt.org/schemas/storagepool/source/rbd/1.0">
+      <zeroOrMore>
+        <element name="option">
+          <attribute name='name'>
+            <text/>
+          </attribute>
+          <attribute name='value'>
             <text/>
           </attribute>
         </element>

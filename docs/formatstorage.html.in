@@ -516,7 +516,8 @@
       XML syntax targeted solely for the needs of the specific pool type
       which is not otherwise supported in standard XML. For the "fs" and
       "netfs" pool types this provides a mechanism to provide additional
-      mount options on the command line.
+      mount options on the command line. For the "rbd" pool this provides
+      a mechanism to override default settings for RBD configuration options.
     </p>
     <p>
       Usage of namespaces comes with no support guarantees. It is intended
@@ -566,6 +567,55 @@
   &lt;/fs:mount_opts&gt;
 &lt;/pool&gt;
 ...</pre>
+
+      <span class="since">Since 5.1.0.</span></dd>
+
+      <dt><code>rbd:config_opts</code></dt>
+      <dd>Provides an XML namespace mechanism to optionally utilize
+        specifically named options for the RBD configuration options
+        via the rados_conf_set API for the <code>rbd</code> type
+        storage pools. In order to designate that the Storage Pool
+        will be using the mechanism, the <code>pool</code> element
+        must be modified to provide the XML namespace attribute
+        syntax as follows:
+
+        <p>
+        xmlns:rbd='http://libvirt.org/schemas/storagepool/source/rbd/1.0'
+        </p>
+
+        <p>
+        The <code>rbd:config_opts</code> defines the configuration options
+        by specifying multiple <code>rbd:option</code> subelements with
+        the attribute <code>name</code> specifying the configuration option
+        to be added and <code>value</code> specifying the configuration
+        option value. The name and value for each option is only checked
+        to be not empty. The name and value provided are not checked since
+        it's possible options don't exist on all distributions. It is
+        expected that proper and valid options will be supplied for the
+        target host.
+        </p>
+
+        The following XML snippet shows the syntax required in order to
+        utilize
+      <pre>
+&lt;pool type="rbd" xmlns:rbd='http://libvirt.org/schemas/storagepool/source/rbd/1.0'&gt;
+  &lt;name&gt;myrbdpool&lt;/name&gt;
+...
+  &lt;source&gt;
+...
+  &lt;/source&gt;
+...
+  &lt;target&gt;
+...
+  &lt;/target&gt;
+...
+  &lt;rbd:config_opts&gt;
+    &lt;rbd:option name='client_mount_timeout' value='45'/&gt;
+    &lt;rbd:option name='rados_mon_op_timeout' value='20'/&gt;
+    &lt;rbd:option name='rados_osd_op_timeout' value='10'/&gt;
+  &lt;/rbd:config_opts&gt;
+&lt;/pool&gt;
+</pre>
 
       <span class="since">Since 5.1.0.</span></dd>
 
