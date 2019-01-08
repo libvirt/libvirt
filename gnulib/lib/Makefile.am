@@ -26,3 +26,5 @@ SUFFIXES =
 noinst_LTLIBRARIES =
 
 include gnulib.mk
+
+AM_CPPFLAGS = -I$(top_srcdir)
