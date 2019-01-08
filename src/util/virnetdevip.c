@@ -566,6 +566,43 @@ virNetDevIPCheckIPv6ForwardingCallback(struct nlmsghdr *resp,
         return 0;
     }
 
+    /* if no RTA_OIF was found, see if this is a multipath route (one
+     * which has an array of nexthops, each with its own interface)
+     */
+
+    rta_attr = (struct rtattr *)nlmsg_find_attr(resp, sizeof(struct rtmsg), RTA_MULTIPATH);
+    if (rta_attr) {
+        /* The data of the attribute is an array of rtnexthop */
+        struct rtnexthop *nh = RTA_DATA(rta_attr);
+        size_t len = RTA_PAYLOAD(rta_attr);
+
+        /* validate the attribute array length */
+        len = MIN(len, ((char *)resp + NLMSG_PAYLOAD(resp, 0) - (char *)rta_attr));
+
+        while (len >= sizeof(*nh) && len >= nh->rtnh_len) {
+            /* check accept_ra for the interface of each nexthop */
+
+            ifname = virNetDevGetName(nh->rtnh_ifindex);
+
+            if (ifname)
+                accept_ra = virNetDevIPGetAcceptRA(ifname);
+
+            VIR_DEBUG("Checking multipath route nexthop device %s (%d), accept_ra: %d",
+                      ifname, nh->rtnh_ifindex, accept_ra);
+
+            if (!ifname ||
+                (accept_ra != 2 && virNetDevIPCheckIPv6ForwardingAddIF(data, &ifname) < 0)) {
+                return -1;
+            }
+
+            VIR_FREE(ifname); /* in case it wasn't added to the array */
+            data->hasRARoutes = true;
+
+            len -= NLMSG_ALIGN(nh->rtnh_len);
+            nh = RTNH_NEXT(nh);
+        }
+    }
+
     return 0;
 }
 
