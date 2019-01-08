@@ -643,8 +643,8 @@ sc_libvirt_unmarked_diagnostics:
 		$(GREP)     -nE '\<$(func_re) *\(.*;$$' /dev/null; \
 	   $(VC_LIST_EXCEPT) | xargs \
 		$(GREP) -A1 -nE '\<$(func_re) *\(.*,$$' /dev/null; } \
-	   | $(SED) 's/_("\([^\"]\|\\.\)\+"//;s/[	 ]"%s"//' \
-	   | $(GREP) '[	 ]"' && \
+	   | $(SED) -E 's/_\("([^\"]|\\.)+"//;s/"%s"//' \
+	   | $(GREP) '"' && \
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2; \
 	    exit 1; } || :
 
