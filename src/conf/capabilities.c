@@ -1058,7 +1058,7 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
 
 
 static int
-virCapabilitiesFormatHostXML(virCapsPtr caps,
+virCapabilitiesFormatHostXML(virCapsHostPtr host,
                              virBufferPtr buf)
 {
     size_t i, j;
@@ -1066,40 +1066,40 @@ virCapabilitiesFormatHostXML(virCapsPtr caps,
 
     virBufferAddLit(buf, "<host>\n");
     virBufferAdjustIndent(buf, 2);
-    if (virUUIDIsValid(caps->host.host_uuid)) {
-        virUUIDFormat(caps->host.host_uuid, host_uuid);
+    if (virUUIDIsValid(host->host_uuid)) {
+        virUUIDFormat(host->host_uuid, host_uuid);
         virBufferAsprintf(buf, "<uuid>%s</uuid>\n", host_uuid);
     }
     virBufferAddLit(buf, "<cpu>\n");
     virBufferAdjustIndent(buf, 2);
 
-    if (caps->host.arch)
+    if (host->arch)
         virBufferAsprintf(buf, "<arch>%s</arch>\n",
-                          virArchToString(caps->host.arch));
-    if (caps->host.nfeatures) {
+                          virArchToString(host->arch));
+    if (host->nfeatures) {
         virBufferAddLit(buf, "<features>\n");
         virBufferAdjustIndent(buf, 2);
-        for (i = 0; i < caps->host.nfeatures; i++) {
+        for (i = 0; i < host->nfeatures; i++) {
             virBufferAsprintf(buf, "<%s/>\n",
-                              caps->host.features[i]);
+                              host->features[i]);
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</features>\n");
     }
-    virCPUDefFormatBuf(buf, caps->host.cpu);
+    virCPUDefFormatBuf(buf, host->cpu);
 
-    for (i = 0; i < caps->host.nPagesSize; i++) {
+    for (i = 0; i < host->nPagesSize; i++) {
         virBufferAsprintf(buf, "<pages unit='KiB' size='%u'/>\n",
-                          caps->host.pagesSize[i]);
+                          host->pagesSize[i]);
     }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</cpu>\n");
 
     /* The PM query was successful. */
-    if (caps->host.powerMgmt) {
+    if (host->powerMgmt) {
         /* The host supports some PM features. */
-        unsigned int pm = caps->host.powerMgmt;
+        unsigned int pm = host->powerMgmt;
         virBufferAddLit(buf, "<power_management>\n");
         virBufferAdjustIndent(buf, 2);
         while (pm) {
@@ -1116,19 +1116,19 @@ virCapabilitiesFormatHostXML(virCapsPtr caps,
     }
 
     virBufferAsprintf(buf, "<iommu support='%s'/>\n",
-                      caps->host.iommu  ? "yes" : "no");
+                      host->iommu  ? "yes" : "no");
 
-    if (caps->host.offlineMigrate) {
+    if (host->offlineMigrate) {
         virBufferAddLit(buf, "<migration_features>\n");
         virBufferAdjustIndent(buf, 2);
-        if (caps->host.liveMigrate)
+        if (host->liveMigrate)
             virBufferAddLit(buf, "<live/>\n");
-        if (caps->host.nmigrateTrans) {
+        if (host->nmigrateTrans) {
             virBufferAddLit(buf, "<uri_transports>\n");
             virBufferAdjustIndent(buf, 2);
-            for (i = 0; i < caps->host.nmigrateTrans; i++) {
+            for (i = 0; i < host->nmigrateTrans; i++) {
                 virBufferAsprintf(buf, "<uri_transport>%s</uri_transport>\n",
-                                  caps->host.migrateTrans[i]);
+                                  host->migrateTrans[i]);
             }
             virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "</uri_transports>\n");
@@ -1137,32 +1137,32 @@ virCapabilitiesFormatHostXML(virCapsPtr caps,
         virBufferAddLit(buf, "</migration_features>\n");
     }
 
-    if (caps->host.netprefix)
+    if (host->netprefix)
         virBufferAsprintf(buf, "<netprefix>%s</netprefix>\n",
-                          caps->host.netprefix);
+                          host->netprefix);
 
-    if (caps->host.nnumaCell &&
-        virCapabilitiesFormatNUMATopology(buf, caps->host.nnumaCell,
-                                          caps->host.numaCell) < 0)
+    if (host->nnumaCell &&
+        virCapabilitiesFormatNUMATopology(buf, host->nnumaCell,
+                                          host->numaCell) < 0)
         goto error;
 
-    if (virCapabilitiesFormatCaches(buf, &caps->host.cache) < 0)
+    if (virCapabilitiesFormatCaches(buf, &host->cache) < 0)
         goto error;
 
-    if (virCapabilitiesFormatMemoryBandwidth(buf, &caps->host.memBW) < 0)
+    if (virCapabilitiesFormatMemoryBandwidth(buf, &host->memBW) < 0)
         goto error;
 
-    for (i = 0; i < caps->host.nsecModels; i++) {
+    for (i = 0; i < host->nsecModels; i++) {
         virBufferAddLit(buf, "<secmodel>\n");
         virBufferAdjustIndent(buf, 2);
         virBufferAsprintf(buf, "<model>%s</model>\n",
-                          caps->host.secModels[i].model);
+                          host->secModels[i].model);
         virBufferAsprintf(buf, "<doi>%s</doi>\n",
-                          caps->host.secModels[i].doi);
-        for (j = 0; j < caps->host.secModels[i].nlabels; j++) {
+                          host->secModels[i].doi);
+        for (j = 0; j < host->secModels[i].nlabels; j++) {
             virBufferAsprintf(buf, "<baselabel type='%s'>%s</baselabel>\n",
-                              caps->host.secModels[i].labels[j].type,
-                              caps->host.secModels[i].labels[j].label);
+                              host->secModels[i].labels[j].type,
+                              host->secModels[i].labels[j].label);
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</secmodel>\n");
@@ -1195,7 +1195,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     virBufferAddLit(&buf, "<capabilities>\n\n");
     virBufferAdjustIndent(&buf, 2);
 
-    if (virCapabilitiesFormatHostXML(caps, &buf) < 0)
+    if (virCapabilitiesFormatHostXML(&caps->host, &buf) < 0)
         goto error;
 
     for (i = 0; i < caps->nguests; i++) {
