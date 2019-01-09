@@ -46,6 +46,14 @@ VIR_ENUM_IMPL(virFirewallLayerFirewallD, VIR_FIREWALL_LAYER_LAST,
               );
 
 
+VIR_ENUM_DECL(virFirewallDBackend);
+VIR_ENUM_IMPL(virFirewallDBackend, VIR_FIREWALLD_BACKEND_LAST,
+              "",
+              "iptables",
+              "nftables",
+              );
+
+
 /**
  * virFirewallDIsRegistered:
  *
@@ -55,6 +63,195 @@ int
 virFirewallDIsRegistered(void)
 {
     return virDBusIsServiceRegistered(VIR_FIREWALL_FIREWALLD_SERVICE);
+}
+
+/**
+ * virFirewallDGetVersion:
+ * @version: pointer to location to save version in the form of:
+ *           1000000 * major + 1000 * minor + micro
+ *
+ * queries the firewalld version property from dbus, and converts it
+ * from a string into a number.
+ *
+ * Returns 0 if version was successfully retrieved, or -1 on error
+ */
+int
+virFirewallDGetVersion(unsigned long *version)
+{
+    int ret = -1;
+    DBusConnection *sysbus = virDBusGetSystemBus();
+    DBusMessage *reply = NULL;
+    VIR_AUTOFREE(char *) versionStr = NULL;
+
+    if (!sysbus)
+        return -1;
+
+    if (virDBusCallMethod(sysbus,
+                          &reply,
+                          NULL,
+                          VIR_FIREWALL_FIREWALLD_SERVICE,
+                          "/org/fedoraproject/FirewallD1",
+                          "org.freedesktop.DBus.Properties",
+                          "Get",
+                          "ss",
+                          "org.fedoraproject.FirewallD1",
+                          "version") < 0)
+        goto cleanup;
+
+    if (virDBusMessageRead(reply, "v", "s", &versionStr) < 0)
+        goto cleanup;
+
+    if (virParseVersionString(versionStr, version, false) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse firewalld version '%s'"),
+                       versionStr);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("FirewallD version: %s - %lu", versionStr, *version);
+
+    ret = 0;
+ cleanup:
+    virDBusMessageUnref(reply);
+    return ret;
+}
+
+/**
+ * virFirewallDGetBackend:
+ *
+ * Returns virVirewallDBackendType value representing which packet
+ * filtering backend is currently in use by firewalld, or -1 on error.
+ */
+int
+virFirewallDGetBackend(void)
+{
+    DBusConnection *sysbus = virDBusGetSystemBus();
+    DBusMessage *reply = NULL;
+    virError error;
+    VIR_AUTOFREE(char *) backendStr = NULL;
+    int backend = -1;
+
+    if (!sysbus)
+        return -1;
+
+    memset(&error, 0, sizeof(error));
+
+    if (virDBusCallMethod(sysbus,
+                          &reply,
+                          &error,
+                          VIR_FIREWALL_FIREWALLD_SERVICE,
+                          "/org/fedoraproject/FirewallD1/config",
+                          "org.freedesktop.DBus.Properties",
+                          "Get",
+                          "ss",
+                          "org.fedoraproject.FirewallD1.config",
+                          "FirewallBackend") < 0)
+        goto cleanup;
+
+    if (error.level == VIR_ERR_ERROR) {
+        /* we don't want to log any error in the case that
+         * FirewallBackend isn't implemented in this firewalld, since
+         * that just means that it is an old version, and only has an
+         * iptables backend.
+         */
+        VIR_DEBUG("Failed to get FirewallBackend setting, assuming 'iptables'");
+        backend = VIR_FIREWALLD_BACKEND_IPTABLES;
+        goto cleanup;
+    }
+
+    if (virDBusMessageRead(reply, "v", "s", &backendStr) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("FirewallD backend: %s", backendStr);
+
+    if ((backend = virFirewallDBackendTypeFromString(backendStr)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unrecognized firewalld backend type: %s"),
+                       backendStr);
+        goto cleanup;
+    }
+
+ cleanup:
+    virResetError(&error);
+    virDBusMessageUnref(reply);
+    return backend;
+}
+
+
+/**
+ * virFirewallDGetZones:
+ * @zones: array of char *, each entry is a null-terminated zone name
+ * @nzones: number of entries in @zones
+ *
+ * Get the number of currently active firewalld zones, and their names
+ * in an array of null-terminated strings. The memory pointed to by
+ * @zones will belong to the caller, and must be freed.
+ *
+ * Returns 0 on success, -1 (and failure logged) on error
+ */
+int
+virFirewallDGetZones(char ***zones, size_t *nzones)
+{
+    DBusConnection *sysbus = virDBusGetSystemBus();
+    DBusMessage *reply = NULL;
+    int ret = -1;
+
+    *nzones = 0;
+    *zones = NULL;
+
+    if (!sysbus)
+        return -1;
+
+    if (virDBusCallMethod(sysbus,
+                          &reply,
+                          NULL,
+                          VIR_FIREWALL_FIREWALLD_SERVICE,
+                          "/org/fedoraproject/FirewallD1",
+                          "org.fedoraproject.FirewallD1.zone",
+                          "getZones",
+                          NULL) < 0)
+        goto cleanup;
+
+    if (virDBusMessageRead(reply, "a&s", nzones, zones) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virDBusMessageUnref(reply);
+    return ret;
+}
+
+
+/**
+ * virFirewallDZoneExists:
+ * @match: name of zone to look for
+ *
+ * Returns true if the requested zone exists, or false if it doesn't exist
+ */
+bool
+virFirewallDZoneExists(const char *match)
+{
+    size_t nzones = 0, i;
+    char **zones = NULL;
+    bool result = false;
+
+    return true;
+
+    if (virFirewallDGetZones(&zones, &nzones) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nzones; i++) {
+        if (STREQ_NULLABLE(zones[i], match))
+            result = true;
+    }
+
+ cleanup:
+    VIR_DEBUG("Requested zone '%s' %s exist",
+              match, result ? "does" : "doesn't");
+    for (i = 0; i < nzones; i++)
+       VIR_FREE(zones[i]);
+    VIR_FREE(zones);
+    return result;
 }
 
 
@@ -148,4 +345,27 @@ virFirewallDApplyRule(virFirewallLayer layer,
     virResetError(&error);
     virDBusMessageUnref(reply);
     return ret;
+}
+
+
+int
+virFirewallDInterfaceSetZone(const char *iface,
+                             const char *zone)
+{
+    DBusConnection *sysbus = virDBusGetSystemBus();
+    DBusMessage *reply = NULL;
+
+    if (!sysbus)
+        return -1;
+
+    return virDBusCallMethod(sysbus,
+                             &reply,
+                             NULL,
+                             VIR_FIREWALL_FIREWALLD_SERVICE,
+                             "/org/fedoraproject/FirewallD1",
+                             "org.fedoraproject.FirewallD1.zone",
+                             "changeZoneOfInterface",
+                             "ss",
+                             zone,
+                             iface);
 }
