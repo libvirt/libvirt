@@ -248,14 +248,16 @@ endif ! WITH_LIBVIRTD
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional
 if WITH_SASL
+sasldir = $(sysconfdir)/sasl2
+
 install-sasl:
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sasl2/
+	$(MKDIR_P) $(DESTDIR)$(sasldir)
 	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sasl \
-		$(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
+		$(DESTDIR)$(sasldir)/libvirt.conf
 
 uninstall-sasl:
-	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
-	rmdir $(DESTDIR)$(sysconfdir)/sasl2/ || :
+	rm -f $(DESTDIR)$(sasldir)/libvirt.conf
+	rmdir $(DESTDIR)$(sasldir) || :
 else ! WITH_SASL
 install-sasl:
 uninstall-sasl:
