@@ -193,14 +193,16 @@ check-augeas-remote: test_libvirtd.aug
 if WITH_SYSCTL
 # Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
 # /usr/lib/sysctl.d/ even when libdir is /usr/lib64
+sysctldir = $(prefix)/lib/sysctl.d
+
 install-sysctl:
-	$(MKDIR_P) $(DESTDIR)$(prefix)/lib/sysctl.d
+	$(MKDIR_P) $(DESTDIR)$(sysctldir)
 	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sysctl \
-	  $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
+	  $(DESTDIR)$(sysctldir)/60-libvirtd.conf
 
 uninstall-sysctl:
-	rm -f $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
-	rmdir $(DESTDIR)$(prefix)/lib/sysctl.d || :
+	rm -f $(DESTDIR)$(sysctldir)/60-libvirtd.conf
+	rmdir $(DESTDIR)$(sysctldir) || :
 else ! WITH_SYSCTL
 install-sysctl:
 uninstall-sysctl:
