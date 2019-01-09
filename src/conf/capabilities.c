@@ -1178,6 +1178,103 @@ virCapabilitiesFormatHostXML(virCapsHostPtr host,
 }
 
 
+static void
+virCapabilitiesFormatGuestXML(virCapsPtr caps,
+                              virBufferPtr buf)
+{
+    size_t i, j, k;
+
+    for (i = 0; i < caps->nguests; i++) {
+        virBufferAddLit(buf, "<guest>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<os_type>%s</os_type>\n",
+                          virDomainOSTypeToString(caps->guests[i]->ostype));
+        if (caps->guests[i]->arch.id)
+            virBufferAsprintf(buf, "<arch name='%s'>\n",
+                              virArchToString(caps->guests[i]->arch.id));
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<wordsize>%d</wordsize>\n",
+                          caps->guests[i]->arch.wordsize);
+        if (caps->guests[i]->arch.defaultInfo.emulator)
+            virBufferAsprintf(buf, "<emulator>%s</emulator>\n",
+                              caps->guests[i]->arch.defaultInfo.emulator);
+        if (caps->guests[i]->arch.defaultInfo.loader)
+            virBufferAsprintf(buf, "<loader>%s</loader>\n",
+                              caps->guests[i]->arch.defaultInfo.loader);
+
+        for (j = 0; j < caps->guests[i]->arch.defaultInfo.nmachines; j++) {
+            virCapsGuestMachinePtr machine = caps->guests[i]->arch.defaultInfo.machines[j];
+            virBufferAddLit(buf, "<machine");
+            if (machine->canonical)
+                virBufferAsprintf(buf, " canonical='%s'", machine->canonical);
+            if (machine->maxCpus > 0)
+                virBufferAsprintf(buf, " maxCpus='%d'", machine->maxCpus);
+            virBufferAsprintf(buf, ">%s</machine>\n", machine->name);
+        }
+
+        for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
+            virBufferAsprintf(buf, "<domain type='%s'",
+                virDomainVirtTypeToString(caps->guests[i]->arch.domains[j]->type));
+            if (!caps->guests[i]->arch.domains[j]->info.emulator &&
+                !caps->guests[i]->arch.domains[j]->info.loader &&
+                !caps->guests[i]->arch.domains[j]->info.nmachines) {
+                virBufferAddLit(buf, "/>\n");
+                continue;
+            }
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            if (caps->guests[i]->arch.domains[j]->info.emulator)
+                virBufferAsprintf(buf, "<emulator>%s</emulator>\n",
+                                  caps->guests[i]->arch.domains[j]->info.emulator);
+            if (caps->guests[i]->arch.domains[j]->info.loader)
+                virBufferAsprintf(buf, "<loader>%s</loader>\n",
+                                  caps->guests[i]->arch.domains[j]->info.loader);
+
+            for (k = 0; k < caps->guests[i]->arch.domains[j]->info.nmachines; k++) {
+                virCapsGuestMachinePtr machine = caps->guests[i]->arch.domains[j]->info.machines[k];
+                virBufferAddLit(buf, "<machine");
+                if (machine->canonical)
+                    virBufferAsprintf(buf, " canonical='%s'", machine->canonical);
+                if (machine->maxCpus > 0)
+                    virBufferAsprintf(buf, " maxCpus='%d'", machine->maxCpus);
+                virBufferAsprintf(buf, ">%s</machine>\n", machine->name);
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</domain>\n");
+        }
+
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</arch>\n");
+
+        if (caps->guests[i]->nfeatures) {
+            virBufferAddLit(buf, "<features>\n");
+            virBufferAdjustIndent(buf, 2);
+
+            for (j = 0; j < caps->guests[i]->nfeatures; j++) {
+                if (STREQ(caps->guests[i]->features[j]->name, "pae") ||
+                    STREQ(caps->guests[i]->features[j]->name, "nonpae") ||
+                    STREQ(caps->guests[i]->features[j]->name, "ia64_be") ||
+                    STREQ(caps->guests[i]->features[j]->name, "cpuselection") ||
+                    STREQ(caps->guests[i]->features[j]->name, "deviceboot")) {
+                    virBufferAsprintf(buf, "<%s/>\n",
+                                      caps->guests[i]->features[j]->name);
+                } else {
+                    virBufferAsprintf(buf, "<%s default='%s' toggle='%s'/>\n",
+                                      caps->guests[i]->features[j]->name,
+                                      caps->guests[i]->features[j]->defaultOn ? "on" : "off",
+                                      caps->guests[i]->features[j]->toggle ? "yes" : "no");
+                }
+            }
+
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</features>\n");
+        }
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</guest>\n\n");
+    }
+}
+
+
 /**
  * virCapabilitiesFormatXML:
  * @caps: capabilities to format
@@ -1190,7 +1287,6 @@ char *
 virCapabilitiesFormatXML(virCapsPtr caps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    size_t i, j, k;
 
     virBufferAddLit(&buf, "<capabilities>\n\n");
     virBufferAdjustIndent(&buf, 2);
@@ -1198,94 +1294,8 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     if (virCapabilitiesFormatHostXML(&caps->host, &buf) < 0)
         goto error;
 
-    for (i = 0; i < caps->nguests; i++) {
-        virBufferAddLit(&buf, "<guest>\n");
-        virBufferAdjustIndent(&buf, 2);
-        virBufferAsprintf(&buf, "<os_type>%s</os_type>\n",
-                          virDomainOSTypeToString(caps->guests[i]->ostype));
-        if (caps->guests[i]->arch.id)
-            virBufferAsprintf(&buf, "<arch name='%s'>\n",
-                              virArchToString(caps->guests[i]->arch.id));
-        virBufferAdjustIndent(&buf, 2);
-        virBufferAsprintf(&buf, "<wordsize>%d</wordsize>\n",
-                          caps->guests[i]->arch.wordsize);
-        if (caps->guests[i]->arch.defaultInfo.emulator)
-            virBufferAsprintf(&buf, "<emulator>%s</emulator>\n",
-                              caps->guests[i]->arch.defaultInfo.emulator);
-        if (caps->guests[i]->arch.defaultInfo.loader)
-            virBufferAsprintf(&buf, "<loader>%s</loader>\n",
-                              caps->guests[i]->arch.defaultInfo.loader);
+    virCapabilitiesFormatGuestXML(caps, &buf);
 
-        for (j = 0; j < caps->guests[i]->arch.defaultInfo.nmachines; j++) {
-            virCapsGuestMachinePtr machine = caps->guests[i]->arch.defaultInfo.machines[j];
-            virBufferAddLit(&buf, "<machine");
-            if (machine->canonical)
-                virBufferAsprintf(&buf, " canonical='%s'", machine->canonical);
-            if (machine->maxCpus > 0)
-                virBufferAsprintf(&buf, " maxCpus='%d'", machine->maxCpus);
-            virBufferAsprintf(&buf, ">%s</machine>\n", machine->name);
-        }
-
-        for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
-            virBufferAsprintf(&buf, "<domain type='%s'",
-                virDomainVirtTypeToString(caps->guests[i]->arch.domains[j]->type));
-            if (!caps->guests[i]->arch.domains[j]->info.emulator &&
-                !caps->guests[i]->arch.domains[j]->info.loader &&
-                !caps->guests[i]->arch.domains[j]->info.nmachines) {
-                virBufferAddLit(&buf, "/>\n");
-                continue;
-            }
-            virBufferAddLit(&buf, ">\n");
-            virBufferAdjustIndent(&buf, 2);
-            if (caps->guests[i]->arch.domains[j]->info.emulator)
-                virBufferAsprintf(&buf, "<emulator>%s</emulator>\n",
-                                  caps->guests[i]->arch.domains[j]->info.emulator);
-            if (caps->guests[i]->arch.domains[j]->info.loader)
-                virBufferAsprintf(&buf, "<loader>%s</loader>\n",
-                                  caps->guests[i]->arch.domains[j]->info.loader);
-
-            for (k = 0; k < caps->guests[i]->arch.domains[j]->info.nmachines; k++) {
-                virCapsGuestMachinePtr machine = caps->guests[i]->arch.domains[j]->info.machines[k];
-                virBufferAddLit(&buf, "<machine");
-                if (machine->canonical)
-                    virBufferAsprintf(&buf, " canonical='%s'", machine->canonical);
-                if (machine->maxCpus > 0)
-                    virBufferAsprintf(&buf, " maxCpus='%d'", machine->maxCpus);
-                virBufferAsprintf(&buf, ">%s</machine>\n", machine->name);
-            }
-            virBufferAdjustIndent(&buf, -2);
-            virBufferAddLit(&buf, "</domain>\n");
-        }
-
-        virBufferAdjustIndent(&buf, -2);
-        virBufferAddLit(&buf, "</arch>\n");
-
-        if (caps->guests[i]->nfeatures) {
-            virBufferAddLit(&buf, "<features>\n");
-            virBufferAdjustIndent(&buf, 2);
-
-            for (j = 0; j < caps->guests[i]->nfeatures; j++) {
-                if (STREQ(caps->guests[i]->features[j]->name, "pae") ||
-                    STREQ(caps->guests[i]->features[j]->name, "nonpae") ||
-                    STREQ(caps->guests[i]->features[j]->name, "ia64_be") ||
-                    STREQ(caps->guests[i]->features[j]->name, "cpuselection") ||
-                    STREQ(caps->guests[i]->features[j]->name, "deviceboot")) {
-                    virBufferAsprintf(&buf, "<%s/>\n",
-                                      caps->guests[i]->features[j]->name);
-                } else {
-                    virBufferAsprintf(&buf, "<%s default='%s' toggle='%s'/>\n",
-                                      caps->guests[i]->features[j]->name,
-                                      caps->guests[i]->features[j]->defaultOn ? "on" : "off",
-                                      caps->guests[i]->features[j]->toggle ? "yes" : "no");
-                }
-            }
-
-            virBufferAdjustIndent(&buf, -2);
-            virBufferAddLit(&buf, "</features>\n");
-        }
-        virBufferAdjustIndent(&buf, -2);
-        virBufferAddLit(&buf, "</guest>\n\n");
-    }
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</capabilities>\n");
 
