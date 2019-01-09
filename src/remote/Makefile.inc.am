@@ -123,10 +123,6 @@ conf_DATA += remote/libvirtd.conf
 
 CLEANFILES += test_libvirtd.aug
 
-if WITH_POLKIT
-policydir = $(datadir)/polkit-1/actions
-endif WITH_POLKIT
-
 man8_MANS += libvirtd.8
 
 libvirtd_SOURCES = $(LIBVIRTD_SOURCES)
@@ -211,6 +207,8 @@ uninstall-sysctl:
 endif ! WITH_SYSCTL
 
 if WITH_POLKIT
+policydir = $(datadir)/polkit-1/actions
+
 install-polkit::
 	$(MKDIR_P) $(DESTDIR)$(policydir)
 	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.policy \
