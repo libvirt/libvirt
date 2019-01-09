@@ -235,6 +235,7 @@ struct _virNetworkDef {
     int   connections; /* # of guest interfaces connected to this network */
 
     char *bridge;       /* Name of bridge device */
+    char *bridgeZone;  /* name of firewalld zone for bridge */
     int  macTableManager; /* enum virNetworkBridgeMACTableManager */
     char *domain;
     int domainLocalOnly; /* enum virTristateBool: yes disables dns forwarding */

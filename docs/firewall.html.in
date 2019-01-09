@@ -152,6 +152,11 @@ MASQUERADE all  --  *      *       192.168.122.0/24    !192.168.122.0/24</pre>
       firewalld.
     </p>
     <p>
+      NB: It is possible to manually set the firewalld zone for a
+      network's interface with the "zone" attribute of the network's
+      "bridge" element.
+    </p>
+    <p>
       NB: Prior to libvirt 5.1.0, the firewalld "libvirt" zone did not
       exist, and prior to firewalld 0.7.0 a feature crucial to making
       the "libvirt" zone operate properly (rich rule priority

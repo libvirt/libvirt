@@ -4,7 +4,7 @@
   <forward dev='eth1' mode='route'>
     <interface dev='eth1'/>
   </forward>
-  <bridge name='virbr1' stp='on' delay='0'/>
+  <bridge name='virbr1' zone='myzone' stp='on' delay='0'/>
   <mac address='12:34:56:78:9a:bc'/>
   <ip address='192.168.122.1' netmask='255.255.255.0'>
   </ip>

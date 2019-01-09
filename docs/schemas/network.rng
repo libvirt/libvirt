@@ -59,6 +59,12 @@
             </optional>
 
             <optional>
+              <attribute name="zone">
+                <ref name="zoneName"/>
+              </attribute>
+            </optional>
+
+            <optional>
               <attribute name="stp">
                 <ref name="virOnOff"/>
               </attribute>

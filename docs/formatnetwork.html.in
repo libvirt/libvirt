@@ -152,6 +152,23 @@
           <span class="since">Since 1.2.11, requires kernel 3.17 or
           newer</span>
         </p>
+
+        <p>
+          The optional <code>zone</code> attribute of
+          the <code>bridge</code> element is used to specify
+          the <a href="https://firewalld.org">firewalld</a>
+          zone for the bridge of a network with <code>forward</code>
+          mode of "nat", "route", "open", or one with
+          no <code>forward</code> specified. By default, the bridges
+          of all virtual networks with these forward modes are placed
+          in the firewalld zone named "libvirt", which permits
+          incoming DNS, DHCP, TFTP, and SSH to the host from guests on
+          the network. This behavior can be changed either by
+          modifying the libvirt zone (using firewalld management
+          tools), or by placing the network in a different zone (which
+          will also be managed using firewalld tools).
+          <span class="since">Since 5.1.0</span>
+        </p>
       </dd>
 
       <dt><code>mtu</code></dt>
