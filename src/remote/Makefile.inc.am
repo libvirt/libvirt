@@ -203,10 +203,10 @@ install-sysctl:
 uninstall-sysctl:
 	rm -f $(DESTDIR)$(sysctldir)/60-libvirtd.conf
 	rmdir $(DESTDIR)$(sysctldir) || :
-else ! WITH_SYSCTL
-install-sysctl:
-uninstall-sysctl:
-endif ! WITH_SYSCTL
+
+INSTALL_DATA_LOCAL += install-sysctl
+UNINSTALL_LOCAL += uninstall-sysctl
+endif WITH_SYSCTL
 
 if WITH_POLKIT
 polkitdir = $(datadir)/polkit-1
@@ -227,17 +227,11 @@ uninstall-polkit::
 	rm -f $(DESTDIR)$(polkitrulesdir)/50-libvirt.rules
 	rmdir $(DESTDIR)$(polkitrulesdir) || :
 
-else ! WITH_POLKIT
-install-polkit::
-uninstall-polkit::
-endif ! WITH_POLKIT
+INSTALL_DATA_LOCAL += install-polkit
+UNINSTALL_LOCAL += uninstall-polkit
+endif WITH_POLKIT
 
-else ! WITH_LIBVIRTD
-install-polkit::
-uninstall-polkit::
-install-sysctl::
-uninstall-sysctl::
-endif ! WITH_LIBVIRTD
+endif WITH_LIBVIRTD
 
 .PHONY: \
 	install-data-remote \
@@ -258,10 +252,10 @@ install-sasl:
 uninstall-sasl:
 	rm -f $(DESTDIR)$(sasldir)/libvirt.conf
 	rmdir $(DESTDIR)$(sasldir) || :
-else ! WITH_SASL
-install-sasl:
-uninstall-sasl:
-endif ! WITH_SASL
+
+INSTALL_DATA_LOCAL += install-sasl
+UNINSTALL_LOCAL += uninstall-sasl
+endif WITH_SASL
 
 libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
