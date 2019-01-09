@@ -32,6 +32,12 @@ EXTRA_DIST += \
 	$(SECURITY_DRIVER_SELINUX_SOURCES) \
 	$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 	$(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES) \
+	security/apparmor/TEMPLATE.qemu \
+	security/apparmor/TEMPLATE.lxc \
+	security/apparmor/libvirt-qemu \
+	security/apparmor/libvirt-lxc \
+	security/apparmor/usr.lib.libvirt.virt-aa-helper \
+	security/apparmor/usr.sbin.libvirtd \
 	$(NULL)
 
 libvirt_security_manager_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
@@ -80,3 +86,37 @@ virt_aa_helper_CFLAGS = \
 	$(NULL)
 endif WITH_LIBVIRTD
 endif WITH_SECDRIVER_APPARMOR
+
+if WITH_APPARMOR_PROFILES
+apparmordir = $(sysconfdir)/apparmor.d/
+apparmor_DATA = \
+	security/apparmor/usr.lib.libvirt.virt-aa-helper \
+	security/apparmor/usr.sbin.libvirtd \
+	$(NULL)
+
+abstractionsdir = $(apparmordir)/abstractions
+abstractions_DATA = \
+	security/apparmor/libvirt-qemu \
+	security/apparmor/libvirt-lxc \
+	$(NULL)
+
+templatesdir = $(apparmordir)/libvirt
+templates_DATA = \
+	security/apparmor/TEMPLATE.qemu \
+	security/apparmor/TEMPLATE.lxc \
+	$(NULL)
+
+APPARMOR_LOCAL_DIR = "$(DESTDIR)$(apparmordir)/local"
+install-apparmor-local:
+	$(MKDIR_P) "$(APPARMOR_LOCAL_DIR)"
+	echo "# Site-specific additions and overrides for \
+		'usr.lib.libvirt.virt-aa-helper'" \
+		>"$(APPARMOR_LOCAL_DIR)/usr.lib.libvirt.virt-aa-helper"
+
+uninstall-apparmor-local:
+	rm -f "$(APPARMOR_LOCAL_DIR)/usr.lib.libvirt.virt-aa-helper"
+	rmdir "$(APPARMOR_LOCAL_DIR)" || :
+
+INSTALL_DATA_LOCAL += install-apparmor-local
+UNINSTALL_LOCAL += uninstall-apparmor-local
+endif WITH_APPARMOR_PROFILES
