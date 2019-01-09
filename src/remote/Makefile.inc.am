@@ -207,21 +207,23 @@ uninstall-sysctl:
 endif ! WITH_SYSCTL
 
 if WITH_POLKIT
-policydir = $(datadir)/polkit-1/actions
+polkitdir = $(datadir)/polkit-1
+polkitactionsdir = $(polkitdir)/actions
+polkitrulesdir = $(polkitdir)/rules.d
 
 install-polkit::
-	$(MKDIR_P) $(DESTDIR)$(policydir)
+	$(MKDIR_P) $(DESTDIR)$(polkitactionsdir)
 	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.policy \
-		$(DESTDIR)$(policydir)/org.libvirt.unix.policy
-	$(MKDIR_P) $(DESTDIR)$(datadir)/polkit-1/rules.d
+		$(DESTDIR)$(polkitactionsdir)/org.libvirt.unix.policy
+	$(MKDIR_P) $(DESTDIR)$(polkitrulesdir)
 	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.rules \
-		$(DESTDIR)$(datadir)/polkit-1/rules.d/50-libvirt.rules
+		$(DESTDIR)$(polkitrulesdir)/50-libvirt.rules
 
 uninstall-polkit::
-	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
-	rmdir $(DESTDIR)$(policydir) || :
-	rm -f $(DESTDIR)$(datadir)/polkit-1/rules.d/50-libvirt.rules
-	rmdir $(DESTDIR)$(datadir)/polkit-1/rules.d || :
+	rm -f $(DESTDIR)$(polkitactionsdir)/org.libvirt.unix.policy
+	rmdir $(DESTDIR)$(polkitactionsdir) || :
+	rm -f $(DESTDIR)$(polkitrulesdir)/50-libvirt.rules
+	rmdir $(DESTDIR)$(polkitrulesdir) || :
 
 else ! WITH_POLKIT
 install-polkit::
