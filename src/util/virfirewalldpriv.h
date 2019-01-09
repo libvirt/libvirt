@@ -1,7 +1,7 @@
 /*
- * virfirewallpriv.h: integration with firewalls private APIs
+ * virfirewalldpriv.h: private APIs for firewalld
  *
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,23 +18,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
-# error "virfirewallpriv.h may only be included by virfirewall.c or test suites"
-#endif /* LIBVIRT_VIRFIREWALLPRIV_H_ALLOW */
+#ifndef LIBVIRT_VIRFIREWALLDPRIV_H_ALLOW
+# error "virfirewalldpriv.h may only be included by virfirewalld.c or test suites"
+#endif /* LIBVIRT_VIRFIREWALLDPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRFIREWALLPRIV_H
-# define LIBVIRT_VIRFIREWALLPRIV_H
+#ifndef LIBVIRT_VIRFIREWALLDPRIV_H
+# define LIBVIRT_VIRFIREWALLDPRIV_H
 
-# include "virfirewall.h"
+# define VIR_FIREWALL_FIREWALLD_SERVICE "org.fedoraproject.FirewallD1"
 
-typedef enum {
-    VIR_FIREWALL_BACKEND_AUTOMATIC,
-    VIR_FIREWALL_BACKEND_DIRECT,
-    VIR_FIREWALL_BACKEND_FIREWALLD,
-
-    VIR_FIREWALL_BACKEND_LAST,
-} virFirewallBackend;
-
-int virFirewallSetBackend(virFirewallBackend backend);
-
-#endif /* LIBVIRT_VIRFIREWALLPRIV_H */
+#endif /* LIBVIRT_VIRFIREWALLDPRIV_H */

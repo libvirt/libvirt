@@ -64,6 +64,9 @@ UTIL_SOURCES = \
 	util/virfirewall.c \
 	util/virfirewall.h \
 	util/virfirewallpriv.h \
+	util/virfirewalld.c \
+	util/virfirewalld.h \
+	util/virfirewalldpriv.h \
 	util/virfirmware.c \
 	util/virfirmware.h \
 	util/virgettext.c \

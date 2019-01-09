@@ -24,12 +24,12 @@
 
 #define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 #include "virfirewallpriv.h"
+#include "virfirewalld.h"
 #include "virerror.h"
 #include "virutil.h"
 #include "virstring.h"
 #include "vircommand.h"
 #include "virlog.h"
-#include "virdbus.h"
 #include "virfile.h"
 #include "virthread.h"
 
@@ -45,11 +45,6 @@ VIR_ENUM_IMPL(virFirewallLayerCommand, VIR_FIREWALL_LAYER_LAST,
               EBTABLES_PATH,
               IPTABLES_PATH,
               IP6TABLES_PATH);
-
-VIR_ENUM_DECL(virFirewallLayerFirewallD)
-VIR_ENUM_IMPL(virFirewallLayerFirewallD, VIR_FIREWALL_LAYER_LAST,
-              "eb", "ipv4", "ipv6")
-
 
 struct _virFirewallRule {
     virFirewallLayer layer;
@@ -152,7 +147,7 @@ virFirewallValidateBackend(virFirewallBackend backend)
     VIR_DEBUG("Validating backend %d", backend);
     if (backend == VIR_FIREWALL_BACKEND_AUTOMATIC ||
         backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        int rv = virDBusIsServiceRegistered(VIR_FIREWALL_FIREWALLD_SERVICE);
+        int rv = virFirewallDIsRegistered();
 
         VIR_DEBUG("Firewalld is registered ? %d", rv);
         if (rv < 0) {
@@ -712,81 +707,8 @@ virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
                               bool ignoreErrors,
                               char **output)
 {
-    const char *ipv = virFirewallLayerFirewallDTypeToString(rule->layer);
-    DBusConnection *sysbus = virDBusGetSystemBus();
-    DBusMessage *reply = NULL;
-    virError error;
-    int ret = -1;
-
-    if (!sysbus)
-        return -1;
-
-    memset(&error, 0, sizeof(error));
-
-    if (!ipv) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown firewall layer %d"),
-                       rule->layer);
-        goto cleanup;
-    }
-
-    if (virDBusCallMethod(sysbus,
-                          &reply,
-                          &error,
-                          VIR_FIREWALL_FIREWALLD_SERVICE,
-                          "/org/fedoraproject/FirewallD1",
-                          "org.fedoraproject.FirewallD1.direct",
-                          "passthrough",
-                          "sa&s",
-                          ipv,
-                          (int)rule->argsLen,
-                          rule->args) < 0)
-        goto cleanup;
-
-    if (error.level == VIR_ERR_ERROR) {
-        /*
-         * As of firewalld-0.3.9.3-1.fc20.noarch the name and
-         * message fields in the error look like
-         *
-         *    name="org.freedesktop.DBus.Python.dbus.exceptions.DBusException"
-         * message="COMMAND_FAILED: '/sbin/iptables --table filter --delete
-         *          INPUT --in-interface virbr0 --protocol udp --destination-port 53
-         *          --jump ACCEPT' failed: iptables: Bad rule (does a matching rule
-         *          exist in that chain?)."
-         *
-         * We'd like to only ignore DBus errors precisely related to the failure
-         * of iptables/ebtables commands. A well designed DBus interface would
-         * return specific named exceptions not the top level generic python dbus
-         * exception name. With this current scheme our only option is todo a
-         * sub-string match for 'COMMAND_FAILED' on the message. eg like
-         *
-         * if (ignoreErrors &&
-         *     STREQ(error.name,
-         *           "org.freedesktop.DBus.Python.dbus.exceptions.DBusException") &&
-         *     STRPREFIX(error.message, "COMMAND_FAILED"))
-         *    ...
-         *
-         * But this risks our error detecting code being broken if firewalld changes
-         * ever alter the message string, so we're avoiding doing that.
-         */
-        if (ignoreErrors) {
-            VIR_DEBUG("Ignoring error '%s': '%s'",
-                      error.str1, error.message);
-        } else {
-            virReportErrorObject(&error);
-            goto cleanup;
-        }
-    } else {
-        if (virDBusMessageRead(reply, "s", output) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    virResetError(&error);
-    virDBusMessageUnref(reply);
-    return ret;
+    /* wrapper necessary because virFirewallRule is a private struct */
+    return virFirewallDApplyRule(rule->layer, rule->args, rule->argsLen, ignoreErrors, output);
 }
 
 static int
