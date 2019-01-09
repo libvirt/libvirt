@@ -107,13 +107,13 @@
         may also be connected to the LAN. When defining
         a new network with a <code>&lt;forward&gt;</code> mode of
 
-        "nat" or "route" (or an isolated network with
+        "nat", "route", or "open" (or an isolated network with
         no <code>&lt;forward&gt;</code> element), libvirt will
         automatically generate a unique name for the bridge device if
         none is given, and this name will be permanently stored in the
         network configuration so that that the same name will be used
         every time the network is started. For these types of networks
-        (nat, routed, and isolated), a bridge name beginning with the
+        (nat, route, open, and isolated), a bridge name beginning with the
         prefix "virbr" is recommended (and that is what is
         auto-generated), but not enforced.
         Attribute <code>stp</code> specifies if Spanning Tree Protocol
