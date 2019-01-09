@@ -1688,11 +1688,11 @@ int
 qemuMonitorEmitRdmaGidStatusChanged(qemuMonitorPtr mon,
                                     const char *netdev,
                                     bool gid_status,
-                                    uint64_t subnet_prefix,
-                                    uint64_t interface_id)
+                                    unsigned long long subnet_prefix,
+                                    unsigned long long interface_id)
 {
     int ret = -1;
-    VIR_DEBUG("netdev=%s, gid_status=%d, subnet_prefix=0x%lx, interface_id=0x%lx",
+    VIR_DEBUG("netdev=%s, gid_status=%d, subnet_prefix=0x%llx, interface_id=0x%llx",
               netdev, gid_status, subnet_prefix, interface_id);
 
     QEMU_MONITOR_CALLBACK(mon, ret, domainRdmaGidStatusChanged, mon->vm,

@@ -294,8 +294,8 @@ typedef int (*qemuMonitorDomainRdmaGidStatusChangedCallback)(qemuMonitorPtr mon,
                                                              virDomainObjPtr vm,
                                                              const char *netdev,
                                                              bool gid_status,
-                                                             uint64_t subnet_prefix,
-                                                             uint64_t interface_id,
+                                                             unsigned long long subnet_prefix,
+                                                             unsigned long long interface_id,
                                                              void *opaque);
 
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
@@ -466,9 +466,11 @@ int qemuMonitorEmitPRManagerStatusChanged(qemuMonitorPtr mon,
                                           const char *prManager,
                                           bool connected);
 
-int qemuMonitorEmitRdmaGidStatusChanged(qemuMonitorPtr mon, const char *netdev,
-                                        bool gid_status, uint64_t subnet_prefix,
-                                        uint64_t interface_id);
+int qemuMonitorEmitRdmaGidStatusChanged(qemuMonitorPtr mon,
+                                        const char *netdev,
+                                        bool gid_status,
+                                        unsigned long long subnet_prefix,
+                                        unsigned long long interface_id);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon);
 int qemuMonitorStopCPUs(qemuMonitorPtr mon);
