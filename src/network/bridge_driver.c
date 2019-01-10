@@ -33,7 +33,6 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
-#include <dirent.h>
 #if HAVE_SYS_SYSCTL_H
 # include <sys/sysctl.h>
 #endif
@@ -559,92 +558,6 @@ firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
 #endif
 
 
-static int
-networkMigrateStateFiles(virNetworkDriverStatePtr driver)
-{
-    /* Due to a change in location of network state xml beginning in
-     * libvirt 1.2.4 (from /var/lib/libvirt/network to
-     * /var/run/libvirt/network), we must check for state files in two
-     * locations. Anything found in the old location must be written
-     * to the new location, then erased from the old location. (Note
-     * that we read/write the file rather than calling rename()
-     * because the old and new state directories are likely in
-     * different filesystems).
-     */
-    int ret = -1;
-    const char *oldStateDir = LOCALSTATEDIR "/lib/libvirt/network";
-    DIR *dir;
-    int direrr;
-    struct dirent *entry;
-    char *oldPath = NULL, *newPath = NULL;
-    char *contents = NULL;
-    int rc;
-
-    if ((rc = virDirOpenIfExists(&dir, oldStateDir)) <= 0)
-        return rc;
-
-    if (virFileMakePath(driver->stateDir) < 0) {
-        virReportSystemError(errno, _("cannot create directory %s"),
-                             driver->stateDir);
-        goto cleanup;
-    }
-
-    while ((direrr = virDirRead(dir, &entry, oldStateDir)) > 0) {
-        if (entry->d_type != DT_UNKNOWN &&
-            entry->d_type != DT_REG)
-            continue;
-
-        if (virAsprintf(&oldPath, "%s/%s",
-                        oldStateDir, entry->d_name) < 0)
-            goto cleanup;
-
-        if (entry->d_type == DT_UNKNOWN) {
-            struct stat st;
-
-            if (lstat(oldPath, &st) < 0) {
-                virReportSystemError(errno,
-                                     _("failed to stat network status file '%s'"),
-                                     oldPath);
-                goto cleanup;
-            }
-
-            if (!S_ISREG(st.st_mode)) {
-                VIR_FREE(oldPath);
-                continue;
-            }
-        }
-
-        if (virFileReadAll(oldPath, 1024*1024, &contents) < 0)
-            goto cleanup;
-
-        if (virAsprintf(&newPath, "%s/%s",
-                        driver->stateDir, entry->d_name) < 0)
-            goto cleanup;
-        if (virFileWriteStr(newPath, contents, S_IRUSR | S_IWUSR) < 0) {
-            virReportSystemError(errno,
-                                 _("failed to write network status file '%s'"),
-                                 newPath);
-            goto cleanup;
-        }
-
-        unlink(oldPath);
-        VIR_FREE(oldPath);
-        VIR_FREE(newPath);
-        VIR_FREE(contents);
-    }
-    if (direrr < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    VIR_DIR_CLOSE(dir);
-    VIR_FREE(oldPath);
-    VIR_FREE(newPath);
-    VIR_FREE(contents);
-    return ret;
-}
-
-
 /**
  * networkStateInitialize:
  *
@@ -689,13 +602,6 @@ networkStateInitialize(bool privileged,
                        LOCALSTATEDIR "/lib/libvirt/dnsmasq") < 0 ||
             VIR_STRDUP(network_driver->radvdStateDir,
                        LOCALSTATEDIR "/lib/libvirt/radvd") < 0)
-            goto error;
-
-        /* migration from old to new location is only applicable for
-         * privileged mode - unprivileged mode directories haven't
-         * changed location.
-         */
-        if (networkMigrateStateFiles(network_driver) < 0)
             goto error;
     } else {
         configdir = virGetUserConfigDirectory();
