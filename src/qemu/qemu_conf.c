@@ -145,7 +145,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         cfg->group = (gid_t)-1;
     }
     cfg->dynamicOwnership = privileged;
-    cfg->rememberOwner = true;
+    cfg->rememberOwner = privileged;
 
     cfg->cgroupControllers = -1; /* -1 == auto-detect */
 
