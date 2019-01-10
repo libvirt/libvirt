@@ -1603,6 +1603,8 @@ struct _virDomainGraphicsListenDef {
 };
 
 struct _virDomainGraphicsDef {
+    virObjectPtr privateData;
+
     /* Port value discipline:
      * Value -1 is legacy syntax indicating that it should be auto-allocated.
      * Value 0 means port wasn't specified in XML at all.
@@ -2783,6 +2785,7 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    vcpuNew;
     virDomainXMLPrivateDataNewFunc    chrSourceNew;
     virDomainXMLPrivateDataNewFunc    vsockNew;
+    virDomainXMLPrivateDataNewFunc    graphicsNew;
     virDomainXMLPrivateDataFormatFunc format;
     virDomainXMLPrivateDataParseFunc  parse;
     /* following function shall return a pointer which will be used as the

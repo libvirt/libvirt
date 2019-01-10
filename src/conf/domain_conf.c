@@ -1431,6 +1431,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
         virDomainGraphicsListenDefClear(&def->listens[i]);
     VIR_FREE(def->listens);
 
+    virObjectUnref(def->privateData);
     VIR_FREE(def);
 }
 
@@ -14116,12 +14117,18 @@ virDomainGraphicsDefParseXMLEGLHeadless(virDomainGraphicsDefPtr def,
 
 
 virDomainGraphicsDefPtr
-virDomainGraphicsDefNew(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
+virDomainGraphicsDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainGraphicsDefPtr def = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
+
+    if (xmlopt && xmlopt->privateData.graphicsNew &&
+        !(def->privateData = xmlopt->privateData.graphicsNew())) {
+        VIR_FREE(def);
+        def = NULL;
+    }
 
     return def;
 }
