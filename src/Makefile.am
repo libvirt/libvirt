@@ -811,16 +811,18 @@ uninstall-logrotate:
 endif ! WITH_LIBVIRTD
 
 if LIBVIRT_INIT_SCRIPT_RED_HAT
+initdir = $(sysconfdir)/rc.d/init.d
+
 install-init:: $(SYSVINIT_FILES) install-sysconfig
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	$(MKDIR_P) $(DESTDIR)$(initdir)
 	for f in $(SYSVINIT_FILES:%.init=%) ; \
 	do \
-	  $(INSTALL_SCRIPT) $$f.init $(DESTDIR)$(sysconfdir)/rc.d/init.d/$$f; \
+	  $(INSTALL_SCRIPT) $$f.init $(DESTDIR)$(initdir)/$$f; \
 	done
 
 uninstall-init:: uninstall-sysconfig
-	rm -f $(SYSVINIT_FILES:%.init=$(DESTDIR)$(sysconfdir)/rc.d/init.d/%)
-	rmdir $(DESTDIR)$(sysconfdir)/rc.d/init.d || :
+	rm -f $(SYSVINIT_FILES:%.init=$(DESTDIR)$(initdir)/%)
+	rmdir $(DESTDIR)$(initdir) || :
 
 BUILT_SOURCES += $(SYSVINIT_FILES)
 DISTCLEANFILES += $(SYSVINIT_FILES)
