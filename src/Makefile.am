@@ -810,6 +810,7 @@ install-logrotate:
 uninstall-logrotate:
 endif ! WITH_LIBVIRTD
 
+if WITH_LIBVIRTD
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 initdir = $(sysconfdir)/rc.d/init.d
 
@@ -830,6 +831,10 @@ else ! LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init::
 uninstall-init::
 endif ! LIBVIRT_INIT_SCRIPT_RED_HAT
+else ! WITH_LIBVIRTD
+install-init::
+uninstall-init::
+endif ! WITH_LIBVIRTD
 
 
 %.8: %.8.in $(top_srcdir)/configure.ac
