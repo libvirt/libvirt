@@ -232,7 +232,7 @@
         "avx512vbmi": false,
         "kvm-asyncpf": true,
         "spec-ctrl": true,
-        "arch-facilities": false,
+        "arch-capabilities": false,
         "model": 79,
         "node-id": -1
       }
