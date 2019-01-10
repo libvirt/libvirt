@@ -126,4 +126,7 @@ int virStorageBackendDriversRegister(bool allmodules);
 
 int virStorageBackendRegister(virStorageBackendPtr backend);
 
+virCapsPtr
+virStorageBackendGetCapabilities(void);
+
 #endif /* LIBVIRT_STORAGE_BACKEND_H */

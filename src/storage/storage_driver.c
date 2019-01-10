@@ -298,6 +298,12 @@ storageStateInitialize(bool privileged,
 
     driver->storageEventState = virObjectEventStateNew();
 
+    /* Only one load of storage driver plus backends exists. Unlike
+     * domains where new binaries could change the capabilities. A
+     * new/changed backend requires a reinitialization. */
+    if (!(driver->caps = virStorageBackendGetCapabilities()))
+        goto error;
+
     storageDriverUnlock();
 
     return 0;
@@ -346,6 +352,7 @@ storageStateCleanup(void)
 
     storageDriverLock();
 
+    virObjectUnref(driver->caps);
     virObjectUnref(driver->storageEventState);
 
     /* free inactive pools */
@@ -554,6 +561,18 @@ storageConnectListStoragePools(virConnectPtr conn,
                                      virConnectListStoragePoolsCheckACL,
                                      names, maxnames);
 }
+
+
+static char *
+storageConnectGetCapabilities(virConnectPtr conn)
+{
+
+    if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
+        return NULL;
+
+    return virCapabilitiesFormatXML(driver->caps);
+}
+
 
 static int
 storageConnectNumOfDefinedStoragePools(virConnectPtr conn)
@@ -2805,6 +2824,7 @@ static virHypervisorDriver storageHypervisorDriver = {
     .connectIsEncrypted = storageConnectIsEncrypted, /* 4.1.0 */
     .connectIsSecure = storageConnectIsSecure, /* 4.1.0 */
     .connectIsAlive = storageConnectIsAlive, /* 4.1.0 */
+    .connectGetCapabilities = storageConnectGetCapabilities, /* 5.2.0 */
 };
 
 static virConnectDriver storageConnectDriver = {
