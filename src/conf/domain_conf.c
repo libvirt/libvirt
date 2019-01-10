@@ -14115,9 +14115,22 @@ virDomainGraphicsDefParseXMLEGLHeadless(virDomainGraphicsDefPtr def,
 }
 
 
+virDomainGraphicsDefPtr
+virDomainGraphicsDefNew(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
+{
+    virDomainGraphicsDefPtr def = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    return def;
+}
+
+
 /* Parse the XML definition for a graphics device */
 static virDomainGraphicsDefPtr
-virDomainGraphicsDefParseXML(xmlNodePtr node,
+virDomainGraphicsDefParseXML(virDomainXMLOptionPtr xmlopt,
+                             xmlNodePtr node,
                              xmlXPathContextPtr ctxt,
                              unsigned int flags)
 {
@@ -14125,7 +14138,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
     char *type = NULL;
     int typeVal;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainGraphicsDefNew(xmlopt)))
         return NULL;
 
     type = virXMLPropString(node, "type");
@@ -16237,7 +16250,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
-        if (!(dev->data.graphics = virDomainGraphicsDefParseXML(node, ctxt, flags)))
+        if (!(dev->data.graphics = virDomainGraphicsDefParseXML(xmlopt, node,
+                                                                ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_HUB:
@@ -20847,7 +20861,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->graphics, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        virDomainGraphicsDefPtr graphics = virDomainGraphicsDefParseXML(nodes[i],
+        virDomainGraphicsDefPtr graphics = virDomainGraphicsDefParseXML(xmlopt,
+                                                                        nodes[i],
                                                                         ctxt,
                                                                         flags);
         if (!graphics)

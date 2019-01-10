@@ -2954,6 +2954,8 @@ virDomainChrSourceDefNew(virDomainXMLOptionPtr xmlopt);
 
 virDomainChrDefPtr virDomainChrDefNew(virDomainXMLOptionPtr xmlopt);
 
+virDomainGraphicsDefPtr
+virDomainGraphicsDefNew(virDomainXMLOptionPtr xmlopt);
 virDomainDefPtr virDomainDefNew(void);
 
 void virDomainObjAssignDef(virDomainObjPtr domain,
