@@ -275,6 +275,9 @@ qemuHostdevPrepareSCSIDevices(virQEMUDriverPtr driver,
     for (i = 0; i < nhostdevs; i++) {
         virDomainDeviceDef dev;
 
+        if (!virHostdevIsSCSIDevice(hostdevs[i]))
+            continue;
+
         dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
         dev.data.hostdev = hostdevs[i];
 
