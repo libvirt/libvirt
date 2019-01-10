@@ -476,6 +476,18 @@ struct _qemuDomainVsockPrivate {
 };
 
 
+# define QEMU_DOMAIN_GRAPHICS_PRIVATE(dev) \
+    ((qemuDomainGraphicsPrivatePtr) (dev)->privateData)
+
+typedef struct _qemuDomainGraphicsPrivate qemuDomainGraphicsPrivate;
+typedef qemuDomainGraphicsPrivate *qemuDomainGraphicsPrivatePtr;
+struct _qemuDomainGraphicsPrivate {
+    virObject parent;
+
+    char *tlsAlias;
+};
+
+
 typedef enum {
     QEMU_PROCESS_EVENT_WATCHDOG = 0,
     QEMU_PROCESS_EVENT_GUESTPANIC,

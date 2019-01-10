@@ -1234,6 +1234,44 @@ qemuDomainVsockPrivateDispose(void *obj ATTRIBUTE_UNUSED)
 }
 
 
+static virClassPtr qemuDomainGraphicsPrivateClass;
+static void qemuDomainGraphicsPrivateDispose(void *obj);
+
+static int
+qemuDomainGraphicsPrivateOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(qemuDomainGraphicsPrivate, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuDomainGraphicsPrivate)
+
+static virObjectPtr
+qemuDomainGraphicsPrivateNew(void)
+{
+    qemuDomainGraphicsPrivatePtr priv;
+
+    if (qemuDomainGraphicsPrivateInitialize() < 0)
+        return NULL;
+
+    if (!(priv = virObjectNew(qemuDomainGraphicsPrivateClass)))
+        return NULL;
+
+    return (virObjectPtr) priv;
+}
+
+
+static void
+qemuDomainGraphicsPrivateDispose(void *obj)
+{
+    qemuDomainGraphicsPrivatePtr priv = obj;
+
+    VIR_FREE(priv->tlsAlias);
+}
+
+
 /* qemuDomainSecretPlainSetup:
  * @secinfo: Pointer to secret info
  * @usageType: The virSecretUsageType
@@ -3020,6 +3058,7 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .vcpuNew = qemuDomainVcpuPrivateNew,
     .chrSourceNew = qemuDomainChrSourcePrivateNew,
     .vsockNew = qemuDomainVsockPrivateNew,
+    .graphicsNew = qemuDomainGraphicsPrivateNew,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
     .getParseOpaque = qemuDomainObjPrivateXMLGetParseOpaque,
