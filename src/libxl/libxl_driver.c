@@ -1676,6 +1676,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                                  " with libxenlight"), vm->def->id);
                 goto endjob;
             }
+            vm->def->mem.cur_balloon = newmem;
         }
 
         if (flags & VIR_DOMAIN_MEM_CONFIG) {
