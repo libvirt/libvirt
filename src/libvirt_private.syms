@@ -49,6 +49,7 @@ virCapabilitiesAddGuestFeature;
 virCapabilitiesAddHostFeature;
 virCapabilitiesAddHostMigrateTransport;
 virCapabilitiesAddHostNUMACell;
+virCapabilitiesAddStoragePool;
 virCapabilitiesAllocMachines;
 virCapabilitiesClearHostNUMACellCPUTopology;
 virCapabilitiesDomainDataLookup;

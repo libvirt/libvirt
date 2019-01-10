@@ -211,6 +211,13 @@ struct _virCapsHost {
     bool iommu;
 };
 
+typedef struct _virCapsStoragePool virCapsStoragePool;
+typedef virCapsStoragePool *virCapsStoragePoolPtr;
+struct _virCapsStoragePool {
+    int type;
+};
+
+
 typedef int (*virDomainDefNamespaceParse)(xmlDocPtr, xmlNodePtr,
                                           xmlXPathContextPtr, void **);
 typedef void (*virDomainDefNamespaceFree)(void *);
@@ -235,6 +242,10 @@ struct _virCaps {
     size_t nguests;
     size_t nguests_max;
     virCapsGuestPtr *guests;
+
+    size_t npools;
+    size_t npools_max;
+    virCapsStoragePoolPtr *pools;
 };
 
 typedef struct _virCapsDomainData virCapsDomainData;
@@ -317,6 +328,10 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
                                const char *name,
                                bool defaultOn,
                                bool toggle);
+
+int
+virCapabilitiesAddStoragePool(virCapsPtr caps,
+                              int poolType);
 
 int
 virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,

@@ -28,6 +28,7 @@
 #include "cpu_conf.h"
 #include "domain_conf.h"
 #include "physmem.h"
+#include "storage_conf.h"
 #include "viralloc.h"
 #include "virarch.h"
 #include "virbuffer.h"
@@ -181,6 +182,17 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
     VIR_FREE(guest);
 }
 
+
+static void
+virCapabilitiesFreeStoragePool(virCapsStoragePoolPtr pool)
+{
+    if (!pool)
+        return;
+
+    VIR_FREE(pool);
+}
+
+
 void
 virCapabilitiesFreeNUMAInfo(virCapsPtr caps)
 {
@@ -221,6 +233,10 @@ virCapsDispose(void *object)
 {
     virCapsPtr caps = object;
     size_t i;
+
+    for (i = 0; i < caps->npools; i++)
+        virCapabilitiesFreeStoragePool(caps->pools[i]);
+    VIR_FREE(caps->pools);
 
     for (i = 0; i < caps->nguests; i++)
         virCapabilitiesFreeGuest(caps->guests[i]);
@@ -793,6 +809,30 @@ virCapabilitiesDomainDataLookup(virCapsPtr caps,
                                                    emulator, machinetype);
 }
 
+
+int
+virCapabilitiesAddStoragePool(virCapsPtr caps,
+                              int poolType)
+{
+    virCapsStoragePoolPtr pool;
+
+    if (VIR_ALLOC(pool) < 0)
+        goto error;
+
+    pool->type = poolType;
+
+    if (VIR_RESIZE_N(caps->pools, caps->npools_max, caps->npools, 1) < 0)
+        goto error;
+    caps->pools[caps->npools++] = pool;
+
+    return 0;
+
+ error:
+    virCapabilitiesFreeStoragePool(pool);
+    return -1;
+}
+
+
 static int
 virCapabilitiesFormatNUMATopology(virBufferPtr buf,
                                   size_t ncells,
@@ -1065,6 +1105,12 @@ virCapabilitiesFormatHostXML(virCapsHostPtr host,
     size_t i, j;
     char host_uuid[VIR_UUID_STRING_BUFLEN];
 
+    /* The lack of some data means we have nothing
+     * minimally to format, so just return. */
+    if (!virUUIDIsValid(host->host_uuid) &&
+        !host->arch && !host->powerMgmt && !host->iommu)
+        return 0;
+
     virBufferAddLit(buf, "<host>\n");
     virBufferAdjustIndent(buf, 2);
     if (virUUIDIsValid(host->host_uuid)) {
@@ -1277,6 +1323,32 @@ virCapabilitiesFormatGuestXML(virCapsGuestPtr *guests,
 }
 
 
+static void
+virCapabilitiesFormatStoragePoolXML(virCapsStoragePoolPtr *pools,
+                                    size_t npools,
+                                    virBufferPtr buf)
+{
+    size_t i;
+
+    if (npools == 0)
+        return;
+
+    virBufferAddLit(buf, "<pool>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virBufferAddLit(buf, "<enum name='type'>\n");
+    virBufferAdjustIndent(buf, 2);
+    for (i = 0; i < npools; i++)
+        virBufferAsprintf(buf, "<value>%s</value>\n",
+                          virStoragePoolTypeToString(pools[i]->type));
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</enum>\n");
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</pool>\n\n");
+}
+
+
 /**
  * virCapabilitiesFormatXML:
  * @caps: capabilities to format
@@ -1297,6 +1369,8 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         goto error;
 
     virCapabilitiesFormatGuestXML(caps->guests, caps->nguests, &buf);
+
+    virCapabilitiesFormatStoragePoolXML(caps->pools, caps->npools, &buf);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</capabilities>\n");
