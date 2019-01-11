@@ -1807,6 +1807,23 @@ virCgroupV2DenyDevice(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2AllowAllDevices(virCgroupPtr group,
+                           int perms)
+{
+    if (virCgroupV2DevicesPrepareProg(group) < 0)
+        return -1;
+
+    if (group->unified.devices.count > 0 &&
+        perms == VIR_CGROUP_DEVICE_RWM &&
+        virCgroupV2DevicesCreateProg(group) < 0) {
+        return -1;
+    }
+
+    return virCgroupV2AllowDevice(group, 'a', -1, -1, perms);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1858,6 +1875,7 @@ virCgroupBackend virCgroupV2Backend = {
 
     .allowDevice = virCgroupV2AllowDevice,
     .denyDevice = virCgroupV2DenyDevice,
+    .allowAllDevices = virCgroupV2AllowAllDevices,
 
     .setCpuShares = virCgroupV2SetCpuShares,
     .getCpuShares = virCgroupV2GetCpuShares,
