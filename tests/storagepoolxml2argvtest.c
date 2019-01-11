@@ -176,18 +176,21 @@ mymain(void)
     DO_TEST_LINUX("pool-fs");
     DO_TEST_LINUX("pool-netfs");
     DO_TEST_LINUX("pool-netfs-auto");
+    DO_TEST_LINUX("pool-netfs-protocol-ver");
     DO_TEST_LINUX("pool-netfs-gluster");
     DO_TEST_LINUX("pool-netfs-cifs");
 #elif defined(__FreeBSD__)
     DO_TEST_FREEBSD("pool-fs");
     DO_TEST_FREEBSD("pool-netfs");
     DO_TEST_FREEBSD("pool-netfs-auto");
+    DO_TEST_FREEBSD("pool-netfs-protocol-ver");
     DO_TEST_FREEBSD("pool-netfs-gluster");
     DO_TEST_FREEBSD("pool-netfs-cifs");
 #else
     DO_TEST("pool-fs");
     DO_TEST("pool-netfs");
     DO_TEST("pool-netfs-auto");
+    DO_TEST("pool-netfs-protocol-ver");
     DO_TEST("pool-netfs-gluster");
     DO_TEST("pool-netfs-cifs");
 #endif

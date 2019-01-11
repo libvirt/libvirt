@@ -4290,10 +4290,11 @@ virStorageBackendFileSystemMountAddOptions(virCommandPtr cmd,
 static void
 virStorageBackendFileSystemMountNFSArgs(virCommandPtr cmd,
                                         const char *src,
-                                        virStoragePoolDefPtr def)
+                                        virStoragePoolDefPtr def,
+                                        const char *nfsVers)
 {
     virCommandAddArgList(cmd, src, def->target.path, NULL);
-    virStorageBackendFileSystemMountAddOptions(cmd, NULL);
+    virStorageBackendFileSystemMountAddOptions(cmd, nfsVers);
 }
 
 
@@ -4326,7 +4327,8 @@ virStorageBackendFileSystemMountCIFSArgs(virCommandPtr cmd,
 static void
 virStorageBackendFileSystemMountDefaultArgs(virCommandPtr cmd,
                                             const char *src,
-                                            virStoragePoolDefPtr def)
+                                            virStoragePoolDefPtr def,
+                                            const char *nfsVers)
 {
     const char *fmt;
 
@@ -4335,7 +4337,7 @@ virStorageBackendFileSystemMountDefaultArgs(virCommandPtr cmd,
     else
         fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
     virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
-    virStorageBackendFileSystemMountAddOptions(cmd, NULL);
+    virStorageBackendFileSystemMountAddOptions(cmd, nfsVers);
 }
 
 
@@ -4354,16 +4356,21 @@ virStorageBackendFileSystemMountCmd(const char *cmdstr,
     bool cifsfs = (def->type == VIR_STORAGE_POOL_NETFS &&
                    def->source.format == VIR_STORAGE_POOL_NETFS_CIFS);
     virCommandPtr cmd = NULL;
+    VIR_AUTOFREE(char *) nfsVers = NULL;
+
+    if (def->type == VIR_STORAGE_POOL_NETFS && def->source.protocolVer > 0 &&
+        virAsprintf(&nfsVers, "nfsvers=%u", def->source.protocolVer) < 0)
+        return NULL;
 
     cmd = virCommandNew(cmdstr);
     if (netauto)
-        virStorageBackendFileSystemMountNFSArgs(cmd, src, def);
+        virStorageBackendFileSystemMountNFSArgs(cmd, src, def, nfsVers);
     else if (glusterfs)
         virStorageBackendFileSystemMountGlusterArgs(cmd, src, def);
     else if (cifsfs)
         virStorageBackendFileSystemMountCIFSArgs(cmd, src, def);
     else
-        virStorageBackendFileSystemMountDefaultArgs(cmd, src, def);
+        virStorageBackendFileSystemMountDefaultArgs(cmd, src, def, nfsVers);
     return cmd;
 }
 
