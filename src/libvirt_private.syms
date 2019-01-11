@@ -343,6 +343,8 @@ virDomainDiskIoTypeFromString;
 virDomainDiskIoTypeToString;
 virDomainDiskMirrorStateTypeFromString;
 virDomainDiskMirrorStateTypeToString;
+virDomainDiskModelTypeFromString;
+virDomainDiskModelTypeToString;
 virDomainDiskPathByName;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;

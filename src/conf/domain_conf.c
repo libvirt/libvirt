@@ -991,6 +991,13 @@ VIR_ENUM_IMPL(virDomainDiskDetectZeroes, VIR_DOMAIN_DISK_DETECT_ZEROES_LAST,
               "unmap",
 );
 
+VIR_ENUM_IMPL(virDomainDiskModel, VIR_DOMAIN_DISK_MODEL_LAST,
+              "default",
+              "virtio",
+              "virtio-transitional",
+              "virtio-non-transitional",
+);
+
 VIR_ENUM_IMPL(virDomainDiskMirrorState, VIR_DOMAIN_DISK_MIRROR_STATE_LAST,
               "none",
               "yes",
@@ -5688,6 +5695,17 @@ virDomainDiskDefValidate(const virDomainDiskDef *disk)
         return -1;
     }
 
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
+        (disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO ||
+         disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL ||
+         disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("disk model '%s' not supported for bus '%s'"),
+                       virDomainDiskModelTypeToString(disk->model),
+                       virDomainDiskBusTypeToString(disk->bus));
+        return -1;
+    }
+
     return 0;
 }
 
@@ -9639,6 +9657,14 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         (def->device = virDomainDiskDeviceTypeFromString(tmp)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown disk device '%s'"), tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    if ((tmp = virXMLPropString(node, "model")) &&
+        (def->model = virDomainDiskModelTypeFromString(tmp)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown disk model '%s'"), tmp);
         goto error;
     }
     VIR_FREE(tmp);
@@ -21480,6 +21506,14 @@ virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
         return false;
     }
 
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk model %s does not match source %s"),
+                       virDomainDiskModelTypeToString(dst->model),
+                       virDomainDiskModelTypeToString(src->model));
+        return false;
+    }
+
     if (src->virtio && dst->virtio &&
         !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
@@ -24034,6 +24068,12 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf,
                       "<disk type='%s' device='%s'",
                       type, device);
+
+    if (def->model) {
+        virBufferAsprintf(buf, " model='%s'",
+                          virDomainDiskModelTypeToString(def->model));
+    }
+
     if (def->rawio) {
         virBufferAsprintf(buf, " rawio='%s'",
                           virTristateBoolTypeToString(def->rawio));

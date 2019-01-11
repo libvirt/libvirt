@@ -2932,6 +2932,17 @@
             <span class="since">Since 0.1.4</span>
             </p>
             </dd>
+          <dt><code>model</code></dt>
+            <dd>
+            Indicates the emulated device model of the disk. Typically
+            this is indicated solely by the <code>bus</code> property but
+            for <code>bus</code> "virtio" the model can be specified further
+            with "virtio-transitional", "virtio-non-transitional", or
+            "virtio". See
+            <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
+            for more details.
+            <span class="since">Since 5.2.0</span>
+            </dd>
           <dt><code>rawio</code></dt>
             <dd>
             Indicates whether the disk needs rawio capability. Valid
@@ -4083,6 +4094,45 @@
       Possible values are <code>on</code> or <code>off</code>.
       <span class="since">Since 3.5.0</span>
     </p>
+
+    <h4><a id="elementsVirtioTransitional">Virtio transitional devices</a></h4>
+
+    <p>
+      <span class="since">Since 5.2.0</span>, some of QEMU's virtio devices,
+      when used with PCI/PCIe machine types, accept the following
+      <code>model</code> values:
+    </p>
+
+    <dl>
+      <dt><code>virtio-transitional</code></dt>
+      <dd>This device can work both with virtio 0.9 and virtio 1.0 guest
+      drivers, so it's the best choice when compatibility with older
+      guest operating systems is desired. libvirt will plug the device
+      into a conventional PCI slot.
+      </dd>
+      <dt><code>virtio-non-transitional</code></dt>
+      <dd>This device can only work with virtio 1.0 guest drivers, and it's
+      the recommended option unless compatibility with older guest
+      operating systems is necessary. libvirt will plug the device into
+      either a PCI Express slot or a conventional PCI slot based on the
+      machine type, resulting in a more optimized PCI topology.
+      </dd>
+      <dt><code>virtio</code></dt>
+      <dd>This device will work like a <code>virtio-non-transitional</code>
+      device when plugged into a PCI Express slot, and like a
+      <code>virtio-transitional</code> device otherwise; libvirt will
+      pick one or the other based on the machine type. This is the best
+      choice when compatibility with libvirt versions older than 5.1.0
+      is necessary, but it's otherwise not recommended to use it.
+      </dd>
+    </dl>
+
+    <p>
+      For more details see the
+      <a href="https://lists.gnu.org/archive/html/qemu-devel/2018-12/msg00923.html">qemu patch posting</a> and the
+      <a href="http://docs.oasis-open.org/virtio/virtio/v1.0/virtio-v1.0.html">virtio-1.0 spec</a>.
+    </p>
+
 
     <h4><a id="elementsControllers">Controllers</a></h4>
 

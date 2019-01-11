@@ -2996,6 +2996,12 @@ mymain(void)
     DO_TEST("riscv64-virt-pci",
             QEMU_CAPS_OBJECT_GPEX);
 
+    /* Older version checks disable-legacy usage */
+    DO_TEST_CAPS_VER("virtio-transitional", "3.1.0");
+    DO_TEST_CAPS_VER("virtio-non-transitional", "3.1.0");
+    DO_TEST_CAPS_LATEST("virtio-transitional");
+    DO_TEST_CAPS_LATEST("virtio-non-transitional");
+
     /* Simple headless guests for various architectures */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-headless", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-headless", "ppc64");
