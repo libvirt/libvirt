@@ -122,6 +122,16 @@
 &lt;/source&gt;
 ...</pre>
 
+    <pre>
+...
+  &lt;source&gt;
+    &lt;host name='localhost'/&gt;
+    &lt;dir path='/var/lib/libvirt/images'/&gt;
+    &lt;format type='nfs'/&gt;
+    &lt;protocol ver='3'/&gt;
+  &lt;/source&gt;
+...</pre>
+
     <dl>
       <dt><code>device</code></dt>
       <dd>Provides the source for pools backed by physical devices
@@ -397,6 +407,12 @@
         LVM metadata type. All drivers are required to have a default
         value for this, so it is optional. <span class="since">Since 0.4.1</span></dd>
 
+      <dt><code>protocol</code></dt>
+      <dd>For a <code>netfs</code> Storage Pool provide a mechanism to
+        define which NFS protocol version number will be used to contact
+        the server's NFS service. The attribute <code>ver</code> accepts
+        an unsigned integer as the version number to use.
+        <span class="since">Since 5.1.0</span></dd>
       <dt><code>vendor</code></dt>
       <dd>Provides optional information about the vendor of the
         storage device. This contains a single

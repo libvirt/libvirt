@@ -532,6 +532,13 @@
             <ref name='sourceinfodir'/>
             <ref name='sourcefmtnetfs'/>
             <optional>
+              <element name='protocol'>
+                <attribute name='ver'>
+                  <ref name='unsignedInt'/>
+                </attribute>
+              </element>
+            </optional>
+            <optional>
               <ref name='sourceinfovendor'/>
             </optional>
           </interleave>

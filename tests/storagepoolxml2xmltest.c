@@ -83,6 +83,7 @@ mymain(void)
     DO_TEST("pool-iscsi-auth");
     DO_TEST("pool-netfs");
     DO_TEST("pool-netfs-auto");
+    DO_TEST("pool-netfs-protocol-ver");
     DO_TEST("pool-netfs-gluster");
     DO_TEST("pool-netfs-cifs");
     DO_TEST("pool-scsi");
