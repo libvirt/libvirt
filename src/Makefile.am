@@ -816,14 +816,14 @@ if WITH_LIBVIRTD
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 initdir = $(sysconfdir)/rc.d/init.d
 
-install-init:: $(SYSVINIT_FILES) install-sysconfig
+install-init: $(SYSVINIT_FILES) install-sysconfig
 	$(MKDIR_P) $(DESTDIR)$(initdir)
 	for f in $(SYSVINIT_FILES:%.init=%) ; \
 	do \
 	  $(INSTALL_SCRIPT) $$f.init $(DESTDIR)$(initdir)/$$f; \
 	done
 
-uninstall-init:: uninstall-sysconfig
+uninstall-init: uninstall-sysconfig
 	rm -f $(SYSVINIT_FILES:%.init=$(DESTDIR)$(initdir)/%)
 	rmdir $(DESTDIR)$(initdir) || :
 
@@ -1010,7 +1010,7 @@ install-data-local: $(INSTALL_DATA_LOCAL) \
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/boot"
 
-uninstall-local:: $(UNINSTALL_LOCAL) \
+uninstall-local: $(UNINSTALL_LOCAL) \
 		$(INSTALL_DATA_DIRS:%=uninstall-data-%)
 	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/images" ||:
