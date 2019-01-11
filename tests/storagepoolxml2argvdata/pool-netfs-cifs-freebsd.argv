@@ -1,0 +1,1 @@
+mount -t cifs //example.com/samba_share /mnt/cifs -o nosuid,noexec,guest

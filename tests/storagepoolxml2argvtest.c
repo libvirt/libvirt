@@ -96,6 +96,8 @@ testCompareXMLToArgvFiles(bool shouldFail,
 struct testInfo {
     bool shouldFail;
     const char *pool;
+    bool linuxOut;
+    bool freebsdOut;
 };
 
 static int
@@ -110,9 +112,19 @@ testCompareXMLToArgvHelper(const void *data)
                     abs_srcdir, info->pool) < 0)
         goto cleanup;
 
-    if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s.argv",
-                    abs_srcdir, info->pool) < 0 && !info->shouldFail)
-        goto cleanup;
+    if (info->linuxOut) {
+        if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s-linux.argv",
+                        abs_srcdir, info->pool) < 0 && !info->shouldFail)
+            goto cleanup;
+    } else if (info->freebsdOut) {
+        if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s-freebsd.argv",
+                        abs_srcdir, info->pool) < 0 && !info->shouldFail)
+            goto cleanup;
+    } else {
+        if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s.argv",
+                        abs_srcdir, info->pool) < 0 && !info->shouldFail)
+            goto cleanup;
+    }
 
     result = testCompareXMLToArgvFiles(info->shouldFail, poolxml, cmdline);
 
@@ -129,9 +141,9 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(shouldFail, pool) \
+#define DO_TEST_FULL(shouldFail, pool, linuxOut, freebsdOut) \
     do { \
-        struct testInfo info = { shouldFail, pool }; \
+        struct testInfo info = { shouldFail, pool, linuxOut, freebsdOut }; \
         if (virTestRun("Storage Pool XML-2-argv " pool, \
                        testCompareXMLToArgvHelper, &info) < 0) \
             ret = -1; \
@@ -139,14 +151,19 @@ mymain(void)
     while (0);
 
 #define DO_TEST(pool, ...) \
-    DO_TEST_FULL(false, pool)
+    DO_TEST_FULL(false, pool, false, false)
 
 #define DO_TEST_FAIL(pool, ...) \
-    DO_TEST_FULL(true, pool)
+    DO_TEST_FULL(true, pool, false, false)
+
+#define DO_TEST_LINUX(pool, ...) \
+    DO_TEST_FULL(false, pool, true, false)
+
+#define DO_TEST_FREEBSD(pool, ...) \
+    DO_TEST_FULL(false, pool, false, true)
 
     DO_TEST_FAIL("pool-dir");
     DO_TEST_FAIL("pool-dir-naming");
-    DO_TEST("pool-fs");
     DO_TEST("pool-logical");
     DO_TEST("pool-logical-nopath");
     DO_TEST("pool-logical-create");
@@ -155,10 +172,25 @@ mymain(void)
     DO_TEST_FAIL("pool-disk-device-nopartsep");
     DO_TEST_FAIL("pool-iscsi");
     DO_TEST_FAIL("pool-iscsi-auth");
+#ifdef __linux__
+    DO_TEST_LINUX("pool-fs");
+    DO_TEST_LINUX("pool-netfs");
+    DO_TEST_LINUX("pool-netfs-auto");
+    DO_TEST_LINUX("pool-netfs-gluster");
+    DO_TEST_LINUX("pool-netfs-cifs");
+#elif defined(__FreeBSD__)
+    DO_TEST_FREEBSD("pool-fs");
+    DO_TEST_FREEBSD("pool-netfs");
+    DO_TEST_FREEBSD("pool-netfs-auto");
+    DO_TEST_FREEBSD("pool-netfs-gluster");
+    DO_TEST_FREEBSD("pool-netfs-cifs");
+#else
+    DO_TEST("pool-fs");
     DO_TEST("pool-netfs");
     DO_TEST("pool-netfs-auto");
     DO_TEST("pool-netfs-gluster");
     DO_TEST("pool-netfs-cifs");
+#endif
     DO_TEST_FAIL("pool-scsi");
     DO_TEST_FAIL("pool-scsi-type-scsi-host");
     DO_TEST_FAIL("pool-scsi-type-fc-host");
