@@ -27,8 +27,8 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 addr=0x1 \
 -device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.1,addr=0x0,drive=drive-virtio-disk0,\
-id=virtio-disk0,bootindex=1 \
+-device virtio-blk-pci-non-transitional,scsi=off,bus=pci.1,addr=0x0,\
+drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

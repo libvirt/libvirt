@@ -423,13 +423,14 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
 static int
 qemuBuildVirtioDevStr(virBufferPtr buf,
                       const char *baseName,
-                      virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
+                      virQEMUCapsPtr qemuCaps,
                       virDomainDeviceType devtype,
                       void *devdata)
 {
     const char *implName = NULL;
     virDomainDeviceDef device = { .type = devtype };
     virDomainDeviceInfoPtr info;
+    bool has_tmodel, has_ntmodel;
 
     virDomainDeviceSetData(&device, devdata);
     info = virDomainDeviceGetInfo(&device);
@@ -470,6 +471,78 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf, "%s-%s", baseName, implName);
+
+    switch (devtype) {
+        case VIR_DOMAIN_DEVICE_DISK:
+            has_tmodel = device.data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device.data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_NET:
+        case VIR_DOMAIN_DEVICE_LEASE:
+        case VIR_DOMAIN_DEVICE_FS:
+        case VIR_DOMAIN_DEVICE_INPUT:
+        case VIR_DOMAIN_DEVICE_SOUND:
+        case VIR_DOMAIN_DEVICE_VIDEO:
+        case VIR_DOMAIN_DEVICE_HOSTDEV:
+        case VIR_DOMAIN_DEVICE_WATCHDOG:
+        case VIR_DOMAIN_DEVICE_CONTROLLER:
+        case VIR_DOMAIN_DEVICE_GRAPHICS:
+        case VIR_DOMAIN_DEVICE_HUB:
+        case VIR_DOMAIN_DEVICE_REDIRDEV:
+        case VIR_DOMAIN_DEVICE_NONE:
+        case VIR_DOMAIN_DEVICE_SMARTCARD:
+        case VIR_DOMAIN_DEVICE_CHR:
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        case VIR_DOMAIN_DEVICE_NVRAM:
+        case VIR_DOMAIN_DEVICE_SHMEM:
+        case VIR_DOMAIN_DEVICE_TPM:
+        case VIR_DOMAIN_DEVICE_PANIC:
+        case VIR_DOMAIN_DEVICE_RNG:
+        case VIR_DOMAIN_DEVICE_MEMORY:
+        case VIR_DOMAIN_DEVICE_IOMMU:
+        case VIR_DOMAIN_DEVICE_VSOCK:
+        case VIR_DOMAIN_DEVICE_LAST:
+        default:
+            return 0;
+    }
+
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+        (has_tmodel || has_ntmodel)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("virtio (non-)transitional models are not "
+                         "supported for address type=%s"),
+                       virDomainDeviceAddressTypeToString(info->type));
+        return -1;
+    }
+
+    if (has_tmodel) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
+            virBufferAddLit(buf, "-transitional");
+        } else if (virQEMUCapsGet(qemuCaps,
+                                  QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+            virBufferAddLit(buf, ",disable-legacy=off,disable-modern=off");
+        }
+        /* No error if -transitional is not supported: our address
+         * allocation will force the device into plain PCI bus, which
+         * is functionally identical to standard 'virtio-XXX' behavior
+         */
+    } else if (has_ntmodel) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
+            virBufferAddLit(buf, "-non-transitional");
+        } else if (virQEMUCapsGet(qemuCaps,
+                                  QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+            /* Even if the QEMU binary doesn't support the non-transitional
+             * device, we can still make it work by manually disabling legacy
+             * VirtIO and enabling modern VirtIO */
+            virBufferAddLit(buf, ",disable-legacy=on,disable-modern=off");
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio non-transitional model not supported "
+                             "for this qemu"));
+            return -1;
+        }
+    }
 
     return 0;
 }
