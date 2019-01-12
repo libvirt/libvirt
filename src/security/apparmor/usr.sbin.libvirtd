@@ -2,7 +2,7 @@
 #include <tunables/global>
 @{LIBVIRT}="libvirt"
 
-/usr/sbin/libvirtd flags=(attach_disconnected) {
+profile libvirtd /usr/sbin/libvirtd flags=(attach_disconnected) {
   #include <abstractions/base>
   #include <abstractions/dbus>
 
@@ -51,7 +51,7 @@
   unix (send, receive) type=stream addr=none peer=(label=unconfined addr=none),
 
   ptrace (read,trace) peer=unconfined,
-  ptrace (read,trace) peer=/usr/sbin/libvirtd,
+  ptrace (read,trace) peer=@{profile_name},
   ptrace (read,trace) peer=dnsmasq,
   ptrace (read,trace) peer=/usr/sbin/dnsmasq,
   ptrace (read,trace) peer=libvirt-*,
@@ -123,6 +123,7 @@
    # For communication/control from libvirtd
    unix (send, receive) type=stream addr=none peer=(label=/usr/sbin/libvirtd),
    signal (receive) set=("term") peer=/usr/sbin/libvirtd,
+   signal (receive) set=("term") peer=libvirtd,
 
    /dev/net/tun rw,
    /etc/qemu/** r,
