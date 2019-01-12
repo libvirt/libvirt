@@ -52,9 +52,11 @@
 
   ptrace (read,trace) peer=unconfined,
   ptrace (read,trace) peer=/usr/sbin/libvirtd,
+  ptrace (read,trace) peer=dnsmasq,
   ptrace (read,trace) peer=/usr/sbin/dnsmasq,
   ptrace (read,trace) peer=libvirt-*,
 
+  signal (send) peer=dnsmasq,
   signal (send) peer=/usr/sbin/dnsmasq,
   signal (read, send) peer=libvirt-*,
   signal (send) set=("kill", "term") peer=unconfined,
