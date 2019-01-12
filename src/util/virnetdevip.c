@@ -584,18 +584,18 @@ virNetDevIPCheckIPv6ForwardingCallback(struct nlmsghdr *resp,
 
             ifname = virNetDevGetName(nh->rtnh_ifindex);
 
-            if (ifname)
-                accept_ra = virNetDevIPGetAcceptRA(ifname);
+            if (!ifname)
+                return -1;
+
+            accept_ra = virNetDevIPGetAcceptRA(ifname);
 
             VIR_DEBUG("Checking multipath route nexthop device %s (%d), accept_ra: %d",
                       ifname, nh->rtnh_ifindex, accept_ra);
 
-            if (!ifname ||
-                (accept_ra != 2 && virNetDevIPCheckIPv6ForwardingAddIF(data, &ifname) < 0)) {
+            if (accept_ra != 2 && virNetDevIPCheckIPv6ForwardingAddIF(data, &ifname) < 0)
                 return -1;
-            }
 
-            VIR_FREE(ifname); /* in case it wasn't added to the array */
+            VIR_FREE(ifname);
             data->hasRARoutes = true;
 
             len -= NLMSG_ALIGN(nh->rtnh_len);
