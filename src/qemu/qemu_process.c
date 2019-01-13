@@ -8332,6 +8332,7 @@ qemuProcessQMPFree(qemuProcessQMPPtr proc)
 
     qemuProcessQMPStop(proc);
     VIR_FREE(proc->binary);
+    VIR_FREE(proc->libDir);
     VIR_FREE(proc->monpath);
     VIR_FREE(proc->monarg);
     VIR_FREE(proc->pidfile);
@@ -8352,7 +8353,8 @@ qemuProcessQMPNew(const char *binary,
     if (VIR_ALLOC(proc) < 0)
         goto error;
 
-    if (VIR_STRDUP(proc->binary, binary) < 0)
+    if (VIR_STRDUP(proc->binary, binary) < 0 ||
+        VIR_STRDUP(proc->libDir, libDir) < 0)
         goto error;
 
     proc->runUid = runUid;
@@ -8362,7 +8364,7 @@ qemuProcessQMPNew(const char *binary,
     /* the ".sock" sufix is important to avoid a possible clash with a qemu
      * domain called "capabilities"
      */
-    if (virAsprintf(&proc->monpath, "%s/%s", libDir,
+    if (virAsprintf(&proc->monpath, "%s/%s", proc->libDir,
                     "capabilities.monitor.sock") < 0)
         goto error;
     if (virAsprintf(&proc->monarg, "unix:%s,server,nowait", proc->monpath) < 0)
@@ -8374,7 +8376,7 @@ qemuProcessQMPNew(const char *binary,
      * -daemonize we need QEMU to be allowed to create them, rather
      * than libvirtd. So we're using libDir which QEMU can write to
      */
-    if (virAsprintf(&proc->pidfile, "%s/%s", libDir, "capabilities.pidfile") < 0)
+    if (virAsprintf(&proc->pidfile, "%s/%s", proc->libDir, "capabilities.pidfile") < 0)
         goto error;
 
     virPidFileForceCleanupPath(proc->pidfile);
