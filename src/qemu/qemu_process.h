@@ -242,6 +242,6 @@ void qemuProcessQMPFree(qemuProcessQMPPtr proc);
 int qemuProcessQMPRun(qemuProcessQMPPtr proc,
                       bool forceTCG);
 
-void qemuProcessQMPAbort(qemuProcessQMPPtr proc);
+void qemuProcessQMPStop(qemuProcessQMPPtr proc);
 
 #endif /* LIBVIRT_QEMU_PROCESS_H */
