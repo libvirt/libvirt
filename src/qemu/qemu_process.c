@@ -8341,6 +8341,17 @@ qemuProcessQMPFree(qemuProcessQMPPtr proc)
 }
 
 
+/**
+ * qemuProcessQMPNew:
+ * @binary: QEMU binary
+ * @libDir: Directory for process and connection artifacts
+ * @runUid: UserId for QEMU process
+ * @runGid: GroupId for QEMU process
+ * @forceTCG: Force TCG mode if true
+ *
+ * Allocate and initialize domain structure encapsulating QEMU process state
+ * and monitor connection for completing QMP queries.
+ */
 qemuProcessQMPPtr
 qemuProcessQMPNew(const char *binary,
                   const char *libDir,
@@ -8348,24 +8359,28 @@ qemuProcessQMPNew(const char *binary,
                   gid_t runGid,
                   bool forceTCG)
 {
+    qemuProcessQMPPtr ret = NULL;
     qemuProcessQMPPtr proc = NULL;
 
+    VIR_DEBUG("exec=%s, libDir=%s, runUid=%u, runGid=%u, forceTCG=%d",
+              binary, libDir, runUid, runGid, forceTCG);
+
     if (VIR_ALLOC(proc) < 0)
-        goto error;
+        goto cleanup;
 
     if (VIR_STRDUP(proc->binary, binary) < 0 ||
         VIR_STRDUP(proc->libDir, libDir) < 0)
-        goto error;
+        goto cleanup;
 
     proc->runUid = runUid;
     proc->runGid = runGid;
     proc->forceTCG = forceTCG;
 
-    return proc;
+    VIR_STEAL_PTR(ret, proc);
 
- error:
+ cleanup:
     qemuProcessQMPFree(proc);
-    return NULL;
+    return ret;
 }
 
 
