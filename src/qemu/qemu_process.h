@@ -214,4 +214,34 @@ int qemuProcessStartManagedPRDaemon(virDomainObjPtr vm);
 
 void qemuProcessKillManagedPRDaemon(virDomainObjPtr vm);
 
+typedef struct _virQEMUCapsInitQMPCommand virQEMUCapsInitQMPCommand;
+typedef virQEMUCapsInitQMPCommand *virQEMUCapsInitQMPCommandPtr;
+struct _virQEMUCapsInitQMPCommand {
+    char *binary;
+    uid_t runUid;
+    gid_t runGid;
+    char **qmperr;
+    char *monarg;
+    char *monpath;
+    char *pidfile;
+    virCommandPtr cmd;
+    qemuMonitorPtr mon;
+    virDomainChrSourceDef config;
+    pid_t pid;
+    virDomainObjPtr vm;
+};
+
+virQEMUCapsInitQMPCommandPtr virQEMUCapsInitQMPCommandNew(char *binary,
+                                                          const char *libDir,
+                                                          uid_t runUid,
+                                                          gid_t runGid,
+                                                          char **qmperr);
+
+void virQEMUCapsInitQMPCommandFree(virQEMUCapsInitQMPCommandPtr cmd);
+
+int virQEMUCapsInitQMPCommandRun(virQEMUCapsInitQMPCommandPtr cmd,
+                                 bool forceTCG);
+
+void virQEMUCapsInitQMPCommandAbort(virQEMUCapsInitQMPCommandPtr cmd);
+
 #endif /* LIBVIRT_QEMU_PROCESS_H */
