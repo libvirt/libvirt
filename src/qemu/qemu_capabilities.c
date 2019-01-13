@@ -4385,7 +4385,7 @@ virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
                                    runUid, runGid, onlyTCG)))
         goto cleanup;
 
-    if (qemuProcessQMPRun(proc) < 0)
+    if (qemuProcessQMPStart(proc) < 0)
         goto cleanup;
 
     if (onlyTCG)
