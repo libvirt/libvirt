@@ -4361,39 +4361,39 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
                    gid_t runGid,
                    char **qmperr)
 {
-    qemuProcessQMPPtr cmd = NULL;
+    qemuProcessQMPPtr proc = NULL;
     int ret = -1;
     int rc;
 
-    if (!(cmd = qemuProcessQMPNew(qemuCaps->binary, libDir,
-                                  runUid, runGid, qmperr)))
+    if (!(proc = qemuProcessQMPNew(qemuCaps->binary, libDir,
+                                   runUid, runGid, qmperr)))
         goto cleanup;
 
-    if ((rc = qemuProcessQMPRun(cmd, false)) != 0) {
+    if ((rc = qemuProcessQMPRun(proc, false)) != 0) {
         if (rc == 1)
             ret = 0;
         goto cleanup;
     }
 
-    if (virQEMUCapsInitQMPMonitor(qemuCaps, cmd->mon) < 0)
+    if (virQEMUCapsInitQMPMonitor(qemuCaps, proc->mon) < 0)
         goto cleanup;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
-        qemuProcessQMPAbort(cmd);
-        if ((rc = qemuProcessQMPRun(cmd, true)) != 0) {
+        qemuProcessQMPAbort(proc);
+        if ((rc = qemuProcessQMPRun(proc, true)) != 0) {
             if (rc == 1)
                 ret = 0;
             goto cleanup;
         }
 
-        if (virQEMUCapsInitQMPMonitorTCG(qemuCaps, cmd->mon) < 0)
+        if (virQEMUCapsInitQMPMonitorTCG(qemuCaps, proc->mon) < 0)
             goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    qemuProcessQMPFree(cmd);
+    qemuProcessQMPFree(proc);
     return ret;
 }
 

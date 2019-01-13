@@ -237,11 +237,11 @@ qemuProcessQMPPtr qemuProcessQMPNew(const char *binary,
                                     gid_t runGid,
                                     char **qmperr);
 
-void qemuProcessQMPFree(qemuProcessQMPPtr cmd);
+void qemuProcessQMPFree(qemuProcessQMPPtr proc);
 
-int qemuProcessQMPRun(qemuProcessQMPPtr cmd,
+int qemuProcessQMPRun(qemuProcessQMPPtr proc,
                       bool forceTCG);
 
-void qemuProcessQMPAbort(qemuProcessQMPPtr cmd);
+void qemuProcessQMPAbort(qemuProcessQMPPtr proc);
 
 #endif /* LIBVIRT_QEMU_PROCESS_H */
