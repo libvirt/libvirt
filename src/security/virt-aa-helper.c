@@ -1062,6 +1062,20 @@ get_files(vahControl * ctl)
     for (i = 0; i < ctl->def->ngraphics; i++) {
         virDomainGraphicsDefPtr graphics = ctl->def->graphics[i];
         size_t n;
+        const char *rendernode = virDomainGraphicsGetRenderNode(graphics);
+
+        if (rendernode) {
+            vah_add_file(&buf, rendernode, "rw");
+        } else {
+            if (virDomainGraphicsNeedsAutoRenderNode(graphics)) {
+                char *defaultRenderNode = virHostGetDRMRenderNode();
+
+                if (defaultRenderNode) {
+                    vah_add_file(&buf, defaultRenderNode, "rw");
+                    VIR_FREE(defaultRenderNode);
+                }
+            }
+        }
 
         for (n = 0; n < graphics->nListens; n++) {
             virDomainGraphicsListenDef listenObj = graphics->listens[n];

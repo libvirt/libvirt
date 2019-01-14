@@ -378,6 +378,12 @@ testme "0" "input dev passthrough" "-r -u $valid_uuid" "$test_xml" "$disk2.*rw,$
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<memory>524288</memory>,<memory>1048576</memory>,g" -e "s,</devices>,<memory model='nvdimm'><source><path>$disk2</path></source><target><size unit='KiB'>524288</size><node>0</node></target></memory></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "nvdimm" "-r -u $valid_uuid" "$test_xml" "$disk2.*rw,$"
 
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<graphics type='egl-headless'><gl rendernode='/dev/dri/testegl1'/></graphics></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "dri egl" "-r -u $valid_uuid" "$test_xml" "/dev/dri/testegl1.*rw,$"
+
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<graphics type='spice'><gl enable='yes' rendernode='/dev/dri/testegl2'/></graphics></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "dri spice" "-r -u $valid_uuid" "$test_xml" "/dev/dri/testegl2.*rw,$"
+
 testme "0" "help" "-h"
 
 echo "" >$output
