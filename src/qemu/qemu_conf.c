@@ -424,6 +424,25 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadDefaultTLSEntry(virQEMUDriverConfigPtr cfg,
+                                       virConfPtr conf)
+{
+    int rv;
+
+    if ((rv = virConfGetValueString(conf, "default_tls_x509_cert_dir", &cfg->defaultTLSx509certdir)) < 0)
+        return -1;
+    cfg->checkdefaultTLSx509certdir = (rv == 1);
+    if (virConfGetValueBool(conf, "default_tls_x509_verify", &cfg->defaultTLSx509verify) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "default_tls_x509_secret_uuid",
+                              &cfg->defaultTLSx509secretUUID) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virQEMUDriverConfigLoadVNCEntry(virQEMUDriverConfigPtr cfg,
                                 virConfPtr conf)
 {
@@ -1009,7 +1028,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 {
     virConfPtr conf = NULL;
     int ret = -1;
-    int rv;
     char *corestr = NULL;
 
     /* Just check the file is readable before opening it, otherwise
@@ -1023,13 +1041,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (!(conf = virConfReadFile(filename, 0)))
         goto cleanup;
 
-    if ((rv = virConfGetValueString(conf, "default_tls_x509_cert_dir", &cfg->defaultTLSx509certdir)) < 0)
-        goto cleanup;
-    cfg->checkdefaultTLSx509certdir = (rv == 1);
-    if (virConfGetValueBool(conf, "default_tls_x509_verify", &cfg->defaultTLSx509verify) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "default_tls_x509_secret_uuid",
-                              &cfg->defaultTLSx509secretUUID) < 0)
+    if (virQEMUDriverConfigLoadDefaultTLSEntry(cfg, conf) < 0)
         goto cleanup;
 
     if (virQEMUDriverConfigLoadVNCEntry(cfg, conf) < 0)
