@@ -45,6 +45,16 @@
           trunking configuration.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Report whether KVM nesting is available
+        </summary>
+        <description>
+          Running nested KVM guests requires specific configuration steps to
+          be performed on the host; libvirt will now report in the host
+          capabilities whether KVM nesting support is available.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
@@ -88,6 +98,17 @@
       </change>
       <change>
         <summary>
+          libxl: Handle external domain destroy
+        </summary>
+        <description>
+          Historically, if a domain was destroyed using <code>xl</code>
+          rather than through libvirt APIs, libvirt would not be aware of
+          the fact and keep considering it as running. This is no longer the
+          case.
+        </description>
+      </change>
+      <change>
+        <summary>
           Start selecting the first available DRI device for OpenGL operations
         </summary>
         <description>
@@ -110,6 +131,23 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          lxc: Don't forbid interfaces with type=direct
+        </summary>
+        <description>
+          Such interfaces are supported by lxc and should be allowed.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Fully clean up RNG devices on detach
+        </summary>
+        <description>
+          Some RNG device types, such as those using EGD, might need extra
+          clean up on the host in addition to removing the guest-side device.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v4.10.0" date="2018-12-03">
