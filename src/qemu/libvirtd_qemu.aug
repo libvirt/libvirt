@@ -76,7 +76,7 @@ module Libvirtd_qemu =
                  | int_entry "seccomp_sandbox"
                  | str_array_entry "namespaces"
 
-   let save_entry =  str_entry "save_image_format"
+   let save_entry = str_entry "save_image_format"
                  | str_entry "dump_image_format"
                  | str_entry "snapshot_image_format"
                  | str_entry "auto_dump_path"
