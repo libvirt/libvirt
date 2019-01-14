@@ -535,8 +535,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     if ((rv = virConfGetValueBool(conf, "vnc_tls_x509_verify", &cfg->vncTLSx509verify)) < 0)
         goto cleanup;
-    if (rv == 0)
-        cfg->vncTLSx509verify = cfg->defaultTLSx509verify;
+    if (rv == 1)
+        cfg->vncTLSx509verifyPresent = true;
     if (virConfGetValueString(conf, "vnc_tls_x509_cert_dir", &cfg->vncTLSx509certdir) < 0)
         goto cleanup;
     if (virConfGetValueString(conf, "vnc_listen", &cfg->vncListen) < 0)
@@ -601,8 +601,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify", \
                                       &cfg->val## TLSx509verify)) < 0) \
             goto cleanup; \
-        if (rv == 0) \
-            cfg->val## TLSx509verify = cfg->defaultTLSx509verify; \
+        if (rv == 1) \
+            cfg->val## TLSx509verifyPresent = true; \
         if ((rv = virConfGetValueString(conf, #val "_tls_x509_cert_dir", \
                                   &cfg->val## TLSx509certdir)) < 0) \
             goto cleanup; \
@@ -1053,6 +1053,28 @@ virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg)
     }
 
     return 0;
+}
+
+
+int
+virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
+{
+    int ret = -1;
+
+#define SET_TLS_VERIFY_DEFAULT(val) \
+    do { \
+        if (!cfg->val## TLSx509verifyPresent) \
+            cfg->val## TLSx509verify = cfg->defaultTLSx509verify; \
+    } while (0)
+
+    SET_TLS_VERIFY_DEFAULT(vnc);
+    SET_TLS_VERIFY_DEFAULT(chardev);
+    SET_TLS_VERIFY_DEFAULT(migrate);
+
+#undef SET_TLS_VERIFY_DEFAULT
+
+    ret = 0;
+    return ret;
 }
 
 
