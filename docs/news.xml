@@ -25,19 +25,6 @@
     <section title="New features">
     </section>
     <section title="Improvements">
-      <change>
-        <summary>
-          Start selecting the first available DRI device for OpenGL operations
-        </summary>
-        <description>
-          If OpenGL support is needed (either with SPICE gl enabled or with
-          egl-headless), libvirt is now able to pick the first available DRI
-          device for the job. At the same time, this improvement is also a
-          bugfix as it prevents permission-related issues with regards to our
-          mount namespaces and the default DRI render node's permissions which
-          would normally prevent QEMU from accessing such a device.
-        </description>
-      </change>
     </section>
     <section title="Bug fixes">
     </section>
@@ -110,6 +97,19 @@
           Add cpu flag stibp (Single Thread Indirect Branch Predictors) to
           prevent indirect branch predictions from being controlled by the
           sibling Hyperthread.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Start selecting the first available DRI device for OpenGL operations
+        </summary>
+        <description>
+          If OpenGL support is needed (either with SPICE gl enabled or with
+          egl-headless), libvirt is now able to pick the first available DRI
+          device for the job. At the same time, this improvement is also a
+          bugfix as it prevents permission-related issues with regards to our
+          mount namespaces and the default DRI render node's permissions which
+          would normally prevent QEMU from accessing such a device.
         </description>
       </change>
       <change>
