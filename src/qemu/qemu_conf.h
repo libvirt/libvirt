@@ -115,7 +115,7 @@ struct _virQEMUDriverConfig {
     char *swtpmStorageDir;
 
     char *defaultTLSx509certdir;
-    bool checkdefaultTLSx509certdir;
+    bool defaultTLSx509certdirPresent;
     bool defaultTLSx509verify;
     char *defaultTLSx509secretUUID;
 

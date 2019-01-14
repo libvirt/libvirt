@@ -431,7 +431,7 @@ virQEMUDriverConfigLoadDefaultTLSEntry(virQEMUDriverConfigPtr cfg,
 
     if ((rv = virConfGetValueString(conf, "default_tls_x509_cert_dir", &cfg->defaultTLSx509certdir)) < 0)
         return -1;
-    cfg->checkdefaultTLSx509certdir = (rv == 1);
+    cfg->defaultTLSx509certdirPresent = (rv == 1);
     if (virConfGetValueBool(conf, "default_tls_x509_verify", &cfg->defaultTLSx509verify) < 0)
         return -1;
     if (virConfGetValueString(conf, "default_tls_x509_secret_uuid",
@@ -1111,7 +1111,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 int
 virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg)
 {
-    if (cfg->checkdefaultTLSx509certdir) {
+    if (cfg->defaultTLSx509certdirPresent) {
         if (!virFileExists(cfg->defaultTLSx509certdir)) {
             virReportError(VIR_ERR_CONF_SYNTAX,
                            _("default_tls_x509_cert_dir directory '%s' "
