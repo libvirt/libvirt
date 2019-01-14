@@ -8036,18 +8036,18 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
         virBufferAddLit(&opt, ",password");
 
     if (cfg->vncTLS) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509)) {
-            const char *alias = "vnc-tls-creds0";
+        qemuDomainGraphicsPrivatePtr gfxPriv = QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics);
+        if (gfxPriv->tlsAlias) {
             if (qemuBuildTLSx509CommandLine(cmd,
                                             cfg->vncTLSx509certdir,
                                             true,
                                             cfg->vncTLSx509verify,
                                             NULL,
-                                            alias,
+                                            gfxPriv->tlsAlias,
                                             qemuCaps) < 0)
                 goto error;
 
-            virBufferAsprintf(&opt, ",tls-creds=%s", alias);
+            virBufferAsprintf(&opt, ",tls-creds=%s", gfxPriv->tlsAlias);
         } else {
             virBufferAddLit(&opt, ",tls");
             if (cfg->vncTLSx509verify) {

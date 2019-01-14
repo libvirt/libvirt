@@ -1726,6 +1726,42 @@ qemuDomainSecretChardevPrepare(virQEMUDriverConfigPtr cfg,
 }
 
 
+static void
+qemuDomainSecretGraphicsDestroy(virDomainGraphicsDefPtr graphics)
+{
+    qemuDomainGraphicsPrivatePtr gfxPriv = QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics);
+
+    if (!gfxPriv)
+        return;
+
+    VIR_FREE(gfxPriv->tlsAlias);
+}
+
+
+static int
+qemuDomainSecretGraphicsPrepare(virQEMUDriverConfigPtr cfg,
+                                qemuDomainObjPrivatePtr priv,
+                                virDomainGraphicsDefPtr graphics)
+{
+    virQEMUCapsPtr qemuCaps = priv->qemuCaps;
+    qemuDomainGraphicsPrivatePtr gfxPriv = QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics);
+
+    if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+        return 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509))
+        return 0;
+
+    if (!cfg->vncTLS)
+        return 0;
+
+    if (VIR_STRDUP(gfxPriv->tlsAlias, "vnc-tls-creds0") < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* qemuDomainSecretDestroy:
  * @vm: Domain object
  *
@@ -1767,6 +1803,9 @@ qemuDomainSecretDestroy(virDomainObjPtr vm)
 
     for (i = 0; i < vm->def->nredirdevs; i++)
         qemuDomainSecretChardevDestroy(vm->def->redirdevs[i]->source);
+
+    for (i = 0; i < vm->def->ngraphics; i++)
+        qemuDomainSecretGraphicsDestroy(vm->def->graphics[i]);
 }
 
 
@@ -1847,6 +1886,11 @@ qemuDomainSecretPrepare(virQEMUDriverPtr driver,
         if (qemuDomainSecretChardevPrepare(cfg, priv,
                                            vm->def->redirdevs[i]->info.alias,
                                            vm->def->redirdevs[i]->source) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        if (qemuDomainSecretGraphicsPrepare(cfg, priv, vm->def->graphics[i]) < 0)
             goto cleanup;
     }
 
