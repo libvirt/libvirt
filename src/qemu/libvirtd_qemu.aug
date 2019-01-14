@@ -122,8 +122,8 @@ module Libvirtd_qemu =
    let nbd_entry = bool_entry "nbd_tls"
                 | str_entry "nbd_tls_x509_cert_dir"
 
-   let swtpm_user_entry = str_entry "swtpm_user"
-   let swtpm_group_entry = str_entry "swtpm_group"
+   let swtpm_entry = str_entry "swtpm_user"
+                | str_entry "swtpm_group"
 
    (* Each entry in the config is one of the following ... *)
    let entry = default_tls_entry
@@ -145,8 +145,7 @@ module Libvirtd_qemu =
              | memory_entry
              | vxhs_entry
              | nbd_entry
-             | swtpm_user_entry
-             | swtpm_group_entry
+             | swtpm_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
