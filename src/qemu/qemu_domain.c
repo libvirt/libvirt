@@ -1269,6 +1269,7 @@ qemuDomainGraphicsPrivateDispose(void *obj)
     qemuDomainGraphicsPrivatePtr priv = obj;
 
     VIR_FREE(priv->tlsAlias);
+    qemuDomainSecretInfoFree(&priv->secinfo);
 }
 
 
@@ -1735,6 +1736,7 @@ qemuDomainSecretGraphicsDestroy(virDomainGraphicsDefPtr graphics)
         return;
 
     VIR_FREE(gfxPriv->tlsAlias);
+    qemuDomainSecretInfoFree(&gfxPriv->secinfo);
 }
 
 
@@ -1757,6 +1759,13 @@ qemuDomainSecretGraphicsPrepare(virQEMUDriverConfigPtr cfg,
 
     if (VIR_STRDUP(gfxPriv->tlsAlias, "vnc-tls-creds0") < 0)
         return -1;
+
+    if (cfg->vncTLSx509secretUUID) {
+        gfxPriv->secinfo = qemuDomainSecretInfoTLSNew(priv, gfxPriv->tlsAlias,
+                                                      cfg->vncTLSx509secretUUID);
+        if (!gfxPriv->secinfo)
+            return -1;
+    }
 
     return 0;
 }

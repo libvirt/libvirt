@@ -8038,11 +8038,20 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     if (cfg->vncTLS) {
         qemuDomainGraphicsPrivatePtr gfxPriv = QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics);
         if (gfxPriv->tlsAlias) {
+            const char *secretAlias = NULL;
+
+            if (gfxPriv->secinfo) {
+                if (qemuBuildObjectSecretCommandLine(cmd,
+                                                     gfxPriv->secinfo) < 0)
+                    goto error;
+                secretAlias = gfxPriv->secinfo->s.aes.alias;
+            }
+
             if (qemuBuildTLSx509CommandLine(cmd,
                                             cfg->vncTLSx509certdir,
                                             true,
                                             cfg->vncTLSx509verify,
-                                            NULL,
+                                            secretAlias,
                                             gfxPriv->tlsAlias,
                                             qemuCaps) < 0)
                 goto error;

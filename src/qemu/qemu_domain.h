@@ -485,6 +485,7 @@ struct _qemuDomainGraphicsPrivate {
     virObject parent;
 
     char *tlsAlias;
+    qemuDomainSecretInfoPtr secinfo;
 };
 
 

@@ -1290,6 +1290,11 @@ mymain(void)
     DO_TEST("graphics-vnc-tls", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST_CAPS_VER("graphics-vnc-tls", "2.4.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-tls");
+    if (VIR_STRDUP_QUIET(driver.config->vncTLSx509secretUUID,
+                         "6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea") < 0)
+        return EXIT_FAILURE;
+    DO_TEST_CAPS_LATEST("graphics-vnc-tls-secret");
+    VIR_FREE(driver.config->vncTLSx509secretUUID);
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
     VIR_FREE(driver.config->vncSASLdir);
     VIR_FREE(driver.config->vncTLSx509certdir);
