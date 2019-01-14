@@ -423,6 +423,31 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 }
 
 
+static int
+virQEMUDriverConfigLoadSWTPMEntry(virQEMUDriverConfigPtr cfg,
+                                  virConfPtr conf)
+{
+    char *swtpm_user = NULL, *swtpm_group = NULL;
+    int ret = -1;
+
+    if (virConfGetValueString(conf, "swtpm_user", &swtpm_user) < 0)
+        goto cleanup;
+    if (swtpm_user && virGetUserID(swtpm_user, &cfg->swtpm_user) < 0)
+        goto cleanup;
+
+    if (virConfGetValueString(conf, "swtpm_group", &swtpm_group) < 0)
+        goto cleanup;
+    if (swtpm_group && virGetGroupID(swtpm_group, &cfg->swtpm_group) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(swtpm_user);
+    VIR_FREE(swtpm_group);
+    return ret;
+}
+
+
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename,
                                 bool privileged)
@@ -433,7 +458,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     size_t i, j;
     char *stdioHandler = NULL;
     char *user = NULL, *group = NULL;
-    char *swtpm_user = NULL, *swtpm_group = NULL;
     char **controllers = NULL;
     char **hugetlbfs = NULL;
     char **nvram = NULL;
@@ -871,14 +895,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueString(conf, "memory_backing_dir", &cfg->memoryBackingDir) < 0)
         goto cleanup;
 
-    if (virConfGetValueString(conf, "swtpm_user", &swtpm_user) < 0)
-        goto cleanup;
-    if (swtpm_user && virGetUserID(swtpm_user, &cfg->swtpm_user) < 0)
-        goto cleanup;
-
-    if (virConfGetValueString(conf, "swtpm_group", &swtpm_group) < 0)
-        goto cleanup;
-    if (swtpm_group && virGetGroupID(swtpm_group, &cfg->swtpm_group) < 0)
+    if (virQEMUDriverConfigLoadSWTPMEntry(cfg, conf) < 0)
         goto cleanup;
 
     ret = 0;
@@ -891,8 +908,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     VIR_FREE(corestr);
     VIR_FREE(user);
     VIR_FREE(group);
-    VIR_FREE(swtpm_user);
-    VIR_FREE(swtpm_group);
     virConfFree(conf);
     return ret;
 }
