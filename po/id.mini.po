@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-27 05:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/libvirt/"
@@ -472,13 +472,6 @@ msgstr "gagal mendapatkan versi hypervisor"
 
 msgid "failed to get the library version"
 msgstr "gagal mendapatkan versi pustaka"
-
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "gagal membuka berkas %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "gagal membuka berkas konfigurasi"
 
 msgid "failed to open file"
 msgstr "gagal membuka berkas"

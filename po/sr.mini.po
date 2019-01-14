@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-03-03 07:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/fedora/language/"
@@ -587,9 +587,6 @@ msgstr "Недостаје особина изворног сервиса за �
 msgid "Model name contains invalid characters"
 msgstr "Назив модела садржи неисправне знаке"
 
-msgid "NULL or empty path"
-msgstr "NULL или празна путања"
-
 msgid "NUMA cell number"
 msgstr "број NUMA ћелије"
 
@@ -632,10 +629,6 @@ msgstr "Мрежа %s је покренута\n"
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "Мрежи %s је скинута ознака само покренута\n"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "Мрежа „%s“ није пронађена"
 
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
@@ -965,9 +958,6 @@ msgstr "изгради складиште"
 msgid "building"
 msgstr "изградња"
 
-msgid "cannot attach device on inactive domain"
-msgstr "не могу да прикачим уређај на неактивни домен"
-
 #, c-format
 msgid "cannot list SASL mechanisms %d (%s)"
 msgstr "не могу да прикажем SASL механизме %d (%s)"
@@ -1002,14 +992,8 @@ msgstr "не могу да уклоним подешавање за %s"
 msgid "cannot set external SSF %d (%s)"
 msgstr "не могу да поставим спољашњи SSF %d (%s)"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "не могу да поставим максималну меморију мању од тренутне меморије"
-
 msgid "cannot set memory higher than max memory"
 msgstr "не могу да поставим меморију већу од максималне меморије"
-
-msgid "cannot set memory of an active domain"
-msgstr "не могу да поставим меморију активног домена"
 
 #, c-format
 msgid "cannot set security props %d (%s)"
@@ -1312,13 +1296,6 @@ msgstr "Неуспешно означавање мреже %s као само п
 msgid "failed to mark pool %s as autostarted"
 msgstr "Неуспешно означавање складишта %s као самопокренутог"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "неуспело отварање %s за читање"
-
-msgid "failed to open configuration file for reading"
-msgstr "неуспело отварање датотеку подешавања за читање"
-
 msgid "failed to open file"
 msgstr "неуспело отварање датотеке"
 
@@ -1400,10 +1377,6 @@ msgstr "добави статистику мрежне спреге за дом�
 
 msgid "getting time of day"
 msgstr "добављам време дана"
-
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "добијен непознат број HTTP грешке %d"
 
 msgid "gracefully shutdown a domain"
 msgstr "љубазно угаси домен"
@@ -1491,13 +1464,6 @@ msgstr "неисправан показивач диска складиштењ�
 
 msgid "length of metadata out of range"
 msgstr "дужина мета податка је ван опсега"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "неуспео позив %s у библиотеци, вероватно није подржан"
-
-msgid "library call failed, possibly not supported"
-msgstr "неуспео позив у библиотеци, вероватно није подржан"
 
 msgid "list domains"
 msgstr "испиши домене"
@@ -1842,9 +1808,6 @@ msgstr "прикажи/подеси параметре планера"
 
 msgid "shut off"
 msgstr "заустављено"
-
-msgid "shutdown operation failed"
-msgstr "неуспешна операција спуштања"
 
 msgid "size > maximum buffer size"
 msgstr "величина > максималне величине бафера"

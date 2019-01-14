@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2016-09-16 11:27+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -447,10 +447,6 @@ msgstr "Nie można odnaleźć %s — prawdopodobnie pakiet nie jest zainstalowan
 msgid "Cannot find '%s' in path"
 msgstr "Nie można odnaleźć „%s” w ścieżce"
 
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "Nie można odnaleźć jądra UML %s"
-
 msgid "Cannot find suitable CPU model for given data"
 msgstr "Nie można odnaleźć odpowiedniego modelu procesora dla podanych danych"
 
@@ -546,10 +542,6 @@ msgstr "Zmienia maksymalne ograniczenie przydziału pamięci w domenie gościa.
 
 msgid "Change the number of virtual CPUs in the guest domain."
 msgstr "Zmienia liczbę wirtualnych procesorów w domenie gościa."
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "Polecenie %s jest za długie dla celu"
 
 msgid "Compiled with support for:\n"
 msgstr "Skompilowano z obsługą:\n"
@@ -3004,9 +2996,6 @@ msgstr "Ścieżka monitora %s jest za duża dla celu"
 msgid "Multi-head video devices are unsupported"
 msgstr "Wielomonitorowe urządzenia graficzne są nieobsługiwane"
 
-msgid "NULL or empty path"
-msgstr "NULL lub pusta ścieżka"
-
 msgid "NUMA cell number"
 msgstr "Numer komórki NUMA"
 
@@ -3060,10 +3049,6 @@ msgstr "Sieć „%s” jest już uruchomiona"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "Sieć „%s” jest ciągle uruchomiona"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "Nie odnaleziono sieci „%s”"
 
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
@@ -3881,12 +3866,6 @@ msgstr "Usypianie gości pod adresem URI $uri…"
 msgid "System lacks NETNS support"
 msgstr "W systemie brak obsługi NETNS"
 
-msgid "TCP client networking type not supported"
-msgstr "typ sieci klienta TCP jest nieobsługiwany"
-
-msgid "TCP server networking type not supported"
-msgstr "typ sieci serwera TCP jest nieobsługiwany"
-
 msgid "Target already exists"
 msgstr "Cel już istnieje"
 
@@ -3927,9 +3906,6 @@ msgstr "Ta funkcja nie jest obsługiwana na platformie Win32"
 
 msgid "This host is not managed by a vCenter"
 msgstr "Ten gospodarz nie jest zarządzany przez vCenter"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr "Tego typu urządzenia nie można odłączać w czasie pracy"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Tego typu dysku nie można odłączać w czasie pracy"
@@ -4233,10 +4209,6 @@ msgstr "Nie można przywrócić urządzenia PCI %s: %s"
 msgid "Unable to send container continue message"
 msgstr "Nie można wysłać komunikatu kontynuacji kontenera"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr ""
-"Nie można ustawić flagi pliku dziennika maszyny wirtualnej close-on-exec"
-
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Nie można ustawić flagi monitora close-on-exec"
 
@@ -4281,10 +4253,6 @@ msgstr "Nieoczekiwany monitor QEMU jest nadal aktywny podczas usuwania domeny"
 msgid "Unexpected bhyve URI path '%s', try bhyve:///system"
 msgstr ""
 "nieoczekiwana ścieżka URI bhyve „%s”, należy wypróbować bhyve:///system"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "Gniazdo uniksowe %s jest za długie dla celu"
 
 msgid "Unknown"
 msgstr "Nieznany"
@@ -4788,14 +4756,8 @@ msgstr "nie można uzyskać blokady zmiany stanu"
 msgid "cannot allocate nlhandle for netlink"
 msgstr "nie można przydzielić nlhandle dla netlink"
 
-msgid "cannot attach device on inactive domain"
-msgstr "nie można podłączyć urządzenia do nieaktywnej domeny"
-
 msgid "cannot become session leader"
 msgstr "nie można przełączyć na przywódcę sesji"
-
-msgid "cannot bind socket"
-msgstr "nie można dowiązać gniazda"
 
 msgid "cannot block signals"
 msgstr "nie można zablokować sygnałów"
@@ -4926,9 +4888,6 @@ msgstr "nie można usunąć migawki domeny dla uruchomionej domeny"
 msgid "cannot delete snapshots of running domain"
 msgstr "nie można usunąć migawek uruchomionej domeny"
 
-msgid "cannot detach device on inactive domain"
-msgstr "nie można odłączyć urządzenia na nieaktywnej domenie"
-
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "nie można ustalić systemu plików dla „%s”"
@@ -5045,9 +5004,6 @@ msgstr ""
 msgid "cannot initialize condition variable"
 msgstr "nie można zainicjować zmiennej warunkowej"
 
-msgid "cannot initialize inotify"
-msgstr "nie można zainicjować inotify"
-
 msgid "cannot initialize monitor condition"
 msgstr "nie można zainicjować warunku monitora"
 
@@ -5097,9 +5053,6 @@ msgstr "nie można otworzyć urządzenia taśmowego macvtap %s"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "nie można otworzyć ścieżki „%s”"
-
-msgid "cannot open socket"
-msgstr "nie można otworzyć gniazda"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -5239,10 +5192,6 @@ msgid "cannot parse vendor id %s"
 msgstr "nie można przetworzyć identyfikatora producenta %s"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "nie można przetworzyć wersji %s"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "nie można przetworzyć głowic graficznych „%s”"
 
@@ -5325,10 +5274,6 @@ msgstr "nie można odczytać nagłówka „%s”"
 msgid "cannot read mount list '%s'"
 msgstr "nie można odczytać listy montowania „%s”"
 
-#, c-format
-msgid "cannot read reply %s"
-msgstr "nie można odczytać odpowiedzi %s"
-
 msgid "cannot register file watch on stream"
 msgstr "nie można zarejestrować obserwacji pliku na strumieniu"
 
@@ -5377,16 +5322,8 @@ msgstr "nie można przejść do początku pliku „%s”"
 msgid "cannot seek to start of '%s'"
 msgstr "nie można przejść do początku „%s”"
 
-#, c-format
-msgid "cannot send command %s"
-msgstr "nie można wysłać polecenia %s"
-
 msgid "cannot send to netlink socket"
 msgstr "nie można wysłać do gniazda netlink"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "nie można wysłać za długiego polecenia %s (%d bajtów)"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -5410,14 +5347,8 @@ msgstr "nie można ustawić trybu pliku „%s”"
 msgid "cannot set file owner '%s'"
 msgstr "nie można ustawić właściciela pliku „%s”"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "nie można ustawić maksymalnej pamięci poniżej obecnej pamięci"
-
 msgid "cannot set memory higher than max memory"
 msgstr "nie można ustawić pamięci powyżej maksymalnej pamięci"
-
-msgid "cannot set memory of an active domain"
-msgstr "nie można ustawić pamięci aktywnej domeny"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -5985,9 +5916,6 @@ msgstr "typ urządzenia „%s” nie może zostać zaktualizowany"
 msgid "direct migration"
 msgstr "migracja bezpośrednia"
 
-msgid "direct networking type not supported"
-msgstr "typ bezpośredniej sieci jest nieobsługiwany"
-
 msgid "directory to switch to (default: home or else root)"
 msgstr "katalog do przełączenia (domyślnie: domowy lub inny root)"
 
@@ -6467,17 +6395,6 @@ msgstr "oznaczenie puli %s jako automatycznie uruchamianej się nie powiodło"
 msgid "failed to move file to %s "
 msgstr "nie powiodło się przeniesienie pliku do %s "
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "otwarcie %s do odczytania się nie powiodło"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "otwarcie pliku urządzenia znakowego się nie powiodło: %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "otwarcie pliku konfiguracji do odczytania się nie powiodło"
-
 msgid "failed to open file"
 msgstr "otwarcie pliku się nie powiodło"
 
@@ -6509,10 +6426,6 @@ msgstr "odczytanie pliku konfiguracji %s się nie powiodło"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "odczytanie długości metadanych w „%s” się nie powiodło"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "odczytanie PID się nie powiodło: %s"
 
 msgid "failed to read qemu header"
 msgstr "odczytanie nagłówka QEMU się nie powiodło"
@@ -6689,10 +6602,6 @@ msgstr "uzyskiwanie bieżącego czasu"
 msgid "given uuid does not match XML uuid"
 msgstr "podany UUID nie zgadza się z UUID z XML"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "otrzymano nieznany kod błędu HTTP %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "stosownie wyłącza domenę"
 
@@ -6777,10 +6686,6 @@ msgid "include security sensitive information in XML dump"
 msgstr "zawiera prywatne informacje w zrzucie XML"
 
 #, c-format
-msgid "incomplete reply %s"
-msgstr "niepełna odpowiedź %s"
-
-#, c-format
 msgid "incomplete save header in '%s'"
 msgstr "niepełny nagłówek zapisu w „%s”"
 
@@ -6830,9 +6735,6 @@ msgstr "wewnętrzny błąd"
 #, c-format
 msgid "internal error: bad options in command: '%s'"
 msgstr "błąd wewnętrzny: błędne opcje w poleceniu: „%s”"
-
-msgid "internal networking type not supported"
-msgstr "typ sieci wewnętrznej jest nieobsługiwany"
 
 #, c-format
 msgid "invalid '=' after option --%s"
@@ -7109,15 +7011,6 @@ msgstr "libhal_ctx_set_dbus_connection się nie powiodło"
 
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices się nie powiodło"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr ""
-"wywołanie biblioteki %s się nie powiodło, prawdopodobnie jest nieobsługiwana"
-
-msgid "library call failed, possibly not supported"
-msgstr ""
-"wywołanie biblioteki się nie powiodło, prawdopodobnie jest nieobsługiwana"
 
 #, c-format
 msgid "libvirt was built without the '%s' driver"
@@ -7801,9 +7694,6 @@ msgstr ""
 msgid "no job is active on the domain"
 msgstr "brak aktywnych zadać w domenie"
 
-msgid "no kernel specified"
-msgstr "nie podano jądra"
-
 msgid "no large enough free extent"
 msgstr "brak wystarczająco dużego wolnego obszaru"
 
@@ -7932,9 +7822,6 @@ msgstr "nwfilter jest używany"
 
 msgid "offline"
 msgstr "offline"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "dla urządzeń znakowych obsługiwane jest tylko nasłuchiwanie TCP"
 
 msgid "only a single memory balloon device is supported"
 msgstr "obsługiwane jest tylko pojedyncze urządzenie balonu pamięci"
@@ -8339,9 +8226,6 @@ msgstr "wyświetla/ustawia parametry planisty"
 msgid "shut off"
 msgstr "wyłączone"
 
-msgid "shutdown operation failed"
-msgstr "działanie wyłączenia się nie powiodło"
-
 msgid "size > maximum buffer size"
 msgstr "rozmiar > maksymalny rozmiar bufora"
 
@@ -8625,12 +8509,6 @@ msgstr "skanowanie urządzeń udev zwróciło %d"
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink zwróciło NULL"
 
-msgid "uml state driver is not active"
-msgstr "sterownik stanu UML jest nieaktywny"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: brak pamięci"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "nie można uzyskać dostępu do urządzenia %s\n"
@@ -8785,14 +8663,6 @@ msgstr "nieoczekiwana ścieżka URI QEMU „%s”, należy wypróbować qemu:///
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "nieoczekiwana ścieżka URI QEMU „%s”, należy wypróbować qemu:///system"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "nieoczekiwana ścieżka URI UML „%s”, należy wypróbować uml:///session"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "nieoczekiwana ścieżka URI UML „%s”, należy wypróbować uml:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -9373,10 +9243,6 @@ msgstr "nieobsługiwany typ uwierzytelniania %d"
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "nieobsługiwane urządzenie znakowe „%s”"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "nieobsługiwany typ urządzenia znakowego %d"
 
 #, c-format
 msgid "unsupported clock offset '%s'"

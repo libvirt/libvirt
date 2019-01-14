@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-24 05:43+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/projects/p/fedora/"
@@ -295,13 +295,6 @@ msgstr "forventer et navn"
 msgid "expecting a value"
 msgstr "forventer en verdi"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "feil ved åpning av %s for lesing"
-
-msgid "failed to open configuration file for reading"
-msgstr "feil ved åpning av konfigurasjonfil for lesing"
-
 msgid "failed to open file"
 msgstr "kunne ikke åpne fil"
 
@@ -325,19 +318,8 @@ msgstr "kunne ikke skrive til konfigurasjonsfilen: %s"
 msgid "getting time of day"
 msgstr "henter tid på døgnet"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "fikk ukjent HTTP-feilkode %d"
-
 msgid "internal error"
 msgstr "intern feil"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "bibliotekskall %s feilet, muligens ikke støttet"
-
-msgid "library call failed, possibly not supported"
-msgstr "bibliotekskall feilet, muligens ikke støttet"
 
 msgid "list domains"
 msgstr "vis domener"

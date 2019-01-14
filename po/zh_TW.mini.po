@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2018-09-10 04:24+0000\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/libvirt/"
@@ -702,13 +702,6 @@ msgstr "無法取得 hypervisor 的版本"
 msgid "failed to get the library version"
 msgstr "無法取得函式庫的版本"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "無法開啟要讀取的 %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "無法開啟要讀取的設定檔"
-
 msgid "failed to open file"
 msgstr "無法開啟檔案"
 
@@ -749,10 +742,6 @@ msgstr "包含 XML 網路描述的檔案"
 msgid "getting time of day"
 msgstr "讀取當天的時間"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "收到未知的 HTTP 錯誤碼 %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "以正確方法讓區域停機"
 
@@ -788,13 +777,6 @@ msgstr "無效的網路指標，於 "
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "無效的網路指標，於 %s"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "呼叫函式庫 %s 失敗，可能並不支援"
-
-msgid "library call failed, possibly not supported"
-msgstr "呼叫函式庫失敗，可能並不支援"
 
 msgid "list domains"
 msgstr "列出區域"

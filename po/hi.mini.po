@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -861,10 +861,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "पीवीआर 0x%08x के साथ सीपीयू मॉडल नहीं खोज सके"
 
 #, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "UML कर्नेल %s नहीं ढूंढ़ सकता है"
-
-#, c-format
 msgid "Cannot find security driver '%s'"
 msgstr "सुरक्षा ड्राइवर '%s' नहीं मिला "
 
@@ -1099,10 +1095,6 @@ msgstr "संतति:"
 
 msgid "Client socket identity not available"
 msgstr "क्लाइंट सॉकेट पहचान उपलब्ध नहीं"
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "कमांड %s गंतव्य के लिए काफी बड़ा है"
 
 msgid "Completed with no error"
 msgstr "कोई त्रुटि के साथ पूरा हो गया"
@@ -4081,9 +4073,6 @@ msgstr "नोट"
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-msgid "NULL or empty path"
-msgstr "रिक्त या खाली पथ"
-
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL स्ट्रिंग पैरामीटर '%s'"
@@ -4155,10 +4144,6 @@ msgstr "संजाल '%s' पहले से चल रहा है"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "संजाल '%s' अभी भी चल रहा है"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "संजाल '%s' नहीं मिला"
 
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
@@ -5063,12 +5048,6 @@ msgstr "सिस्टम उपलब्ध नहीं है "
 msgid "System lacks NETNS support"
 msgstr "तंत्र में NETNS समर्थन की कमी है"
 
-msgid "TCP client networking type not supported"
-msgstr "TCP क्लाइंट संजालन प्रकार समर्थित नहीं"
-
-msgid "TCP server networking type not supported"
-msgstr "TCP सर्वर संजालन प्रकार समर्थित नहीं है"
-
 #, c-format
 msgid "TLS handshake failed %s"
 msgstr "TLS हैंडशेक विफल: %s"
@@ -5491,9 +5470,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "यह होस्ट vCenter द्वारा प्रबंधित नहीं है"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr "युक्ति प्रकार को हॉट प्लग नहीं किया जा सकता है"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "इस प्रकार की डिस्क को हॉट प्लग नहीं किया जा सकता है"
@@ -6026,9 +6002,6 @@ msgstr "आरंभिक पीआईडी​​ %llu को SIGTERM भे�
 msgid "Unable to send container continue message"
 msgstr "कंटेनर जारी संदेश भेजने में असमर्थ"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "VM लॉगफाइल को close-on-exec फ्लैग सेट करने में असमर्थ"
-
 msgid "Unable to set cloexec flag"
 msgstr "cloexec फ्लैग सेट करने में असमर्थ"
 
@@ -6183,10 +6156,6 @@ msgstr "अनपेक्षित मात्रा पथ प्रारू
 #, c-format
 msgid "Unhandled event %d for monitor fd %d"
 msgstr "Unhandled इवेंट %d मॉनिटर fd %d"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "यूनिक्स पथ %s गंतव्य के लिए काफी बड़ा है"
 
 msgid "Unknown"
 msgstr "अज्ञात"
@@ -6896,14 +6865,8 @@ msgstr "स्थिति परिवर्तन लॉक पा नही�
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "स्थिति परिवर्तन लॉक पा नहीं सकता है max_queued सीमा के कारण"
 
-msgid "cannot attach device on inactive domain"
-msgstr "निष्क्रिय डोमेन पर युक्ति संलग्न नहीं कर सकता है"
-
 msgid "cannot become session leader"
 msgstr "सत्र नेता नहीं बन सकता है"
-
-msgid "cannot bind socket"
-msgstr "सॉकेट बाइंड नहीं कर सकता है"
 
 msgid "cannot block signals"
 msgstr "संकेत रोक नहीं सकता है"
@@ -7047,9 +7010,6 @@ msgstr "CPU डाटा को %s ऑर्किटेक्चर के ल�
 #, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr "निष्क्रिय डोमेन को नष्ट नहीं कर सकते %d स्नैपशॉट के साथ"
-
-msgid "cannot detach device on inactive domain"
-msgstr "निष्क्रिय डोमेन पर युक्ति अलग नहीं कर सकता है"
 
 #, c-format
 msgid "cannot disable %s"
@@ -7220,9 +7180,6 @@ msgstr "cert ऑब्जेक्ट को प्रारंभ नहीं 
 msgid "cannot initialize condition variable"
 msgstr "स्थिति चर आरंभीकृत नहीं कर सकता है"
 
-msgid "cannot initialize inotify"
-msgstr "inotify आरंभ नहीं कर सकता है"
-
 msgid "cannot initialize monitor condition"
 msgstr "मॉनिटर स्थिति आरंभीकृत नहीं कर सकता है"
 
@@ -7283,9 +7240,6 @@ msgstr "macvtap टैप युक्ति %s खोल नहीं सकत
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "पथ '%s' खोल नहीं सकता है"
-
-msgid "cannot open socket"
-msgstr "सॉकेट खोल नहीं सकता है"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -7444,10 +7398,6 @@ msgid "cannot parse vendor id %s"
 msgstr "विक्रेता आईडी %s नहीं पढ़ सकता है"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "संस्करण %s का विश्लेषण नहीं कर सकता है"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "वीडियो हेड '%s' विश्लेषित नहीं कर सकता है"
 
@@ -7534,10 +7484,6 @@ msgstr "हेडर '%s' नहीं पढ़ सकता है"
 msgid "cannot read mount list '%s'"
 msgstr "आरोह सूची '%s' नहीं पढ़ सकता है"
 
-#, c-format
-msgid "cannot read reply %s"
-msgstr "जवाब %s पढ़ नहीं सकता है"
-
 msgid "cannot register file watch on stream"
 msgstr "फाइल प्रेक्षण स्ट्रीम पर सेट नहीं कर सकता है"
 
@@ -7587,16 +7533,8 @@ msgstr "'%s' की तलाश नहीं कर सकते"
 msgid "cannot seek to beginning of file '%s'"
 msgstr "फाइल '%s' के शुरू तक नहीं पहुंच सकता है"
 
-#, c-format
-msgid "cannot send command %s"
-msgstr "कमांड %s नहीं भेज सकता है"
-
 msgid "cannot send to netlink socket"
 msgstr "नेटलिंक सॉकेट भेज नहीं सकता है"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "काफी लंबा कमांड %s (%d bytes) नहीं भेज सकता है"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -7620,14 +7558,8 @@ msgstr "फाइल मोड '%s' सेट नहीं कर सकता �
 msgid "cannot set file owner '%s'"
 msgstr "फाइल स्वामी '%s' सेट नहीं कर सकता है"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "मौजूदा स्मृति के साथ अधिकतम स्मृति नहीं सेट कर सकता है"
-
 msgid "cannot set memory higher than max memory"
 msgstr "अधिकतम स्मृति से अधिक स्मृति सेट नहीं कर सकता है"
-
-msgid "cannot set memory of an active domain"
-msgstr "एक सक्रिय डोमेन की स्मृति सेट नहीं कर सकता है"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -8222,9 +8154,6 @@ msgstr "डिर."
 
 msgid "direct migration"
 msgstr "सीधा उत्प्रवासन"
-
-msgid "direct networking type not supported"
-msgstr "प्रत्यक्ष नेटवर्किंग प्रकार समर्थित नहीं है"
 
 msgid "directory to switch to (default: home or else root)"
 msgstr "निर्देशिका जिसमें स्विच करना है (default: home or else root)"
@@ -8836,17 +8765,6 @@ msgstr "%s संजाल को स्वतः आरंभन चिह्�
 msgid "failed to mark pool %s as autostarted"
 msgstr "पुल %s को ऑटोस्टार्ट चिह्नित करने में विफल"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "%s को पढ़ने के लिये खोलने में विफल"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "chardev फ़ाइल खोलने में विफल: %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "पढ़ने के लिये विन्यास खोलने में विफल"
-
 msgid "failed to open file"
 msgstr "फाइल खोलने में विफल"
 
@@ -8882,10 +8800,6 @@ msgstr "libxl हेडर पढ़ने में विफल"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s' में मेटाडेटा लंबाई पढ़ने में विफल"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "pid पढ़ने में विफल: %s"
 
 msgid "failed to read qemu header"
 msgstr "qemu हेडर पढ़ने में विफल"
@@ -9090,10 +9004,6 @@ msgstr "दिए गए uuid से XML uuid से मेल नहीं ख�
 msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
 msgstr "अप्रत्याशित RPC काल prog %d vers %d proc %d type %d सर्वर से पाया"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "अज्ञात HTTP त्रुटि कोड %d पाया"
-
 msgid "gracefully shutdown a domain"
 msgstr "एक डोमेन उदाहरता पूर्वक बंद करें"
 
@@ -9213,10 +9123,6 @@ msgstr "निष्क्रिय"
 msgid "include security sensitive information in XML dump"
 msgstr "XML डंप में सुरक्षा संवेदनशील सूचना शामिल करें"
 
-#, c-format
-msgid "incomplete reply %s"
-msgstr "अपूर्ण जवाब %s"
-
 msgid "incomplete return information"
 msgstr "अपूर्ण वापसी सूचना"
 
@@ -9279,9 +9185,6 @@ msgstr "स प्लैटफॉर्म पर अंतरफलक stats �
 
 msgid "internal error"
 msgstr "आंतरिक त्रुटि"
-
-msgid "internal networking type not supported"
-msgstr "आंतरिक संजालन प्रकार समर्थित नहीं"
 
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
@@ -9566,10 +9469,6 @@ msgid "invalid path %s not assigned to domain"
 msgstr "अमान्य पथ %s डोमेन को असाइन नहीं किया गया"
 
 #, c-format
-msgid "invalid path '%s'"
-msgstr "अवैध पथ %s"
-
-#, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "अवैध पथ, '%s' एक ज्ञात अंतरफलक नहीं है"
 
@@ -9688,13 +9587,6 @@ msgstr "libhal_ctx_set_dbus_connection असफल"
 
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices असफल"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "लाइब्रेरी कॉल %s विफल रहा, संभवतः समर्थित नहीं"
-
-msgid "library call failed, possibly not supported"
-msgstr "लाइब्रेरी कॉल विफल रहा, संभवतः समर्थित नहीं"
 
 #, c-format
 msgid "libvirt was built without the '%s' driver"
@@ -10613,9 +10505,6 @@ msgstr "कोई विस्तारित विभाजन नहीं �
 msgid "no job is active on the domain"
 msgstr "डोमेन पर कोई कार्य सक्रिय नहीं"
 
-msgid "no kernel specified"
-msgstr "कोई कर्नेल निर्दिष्ट नहीं"
-
 msgid "no large enough free extent"
 msgstr "कोई पर्याप्त बड़ा मुक्त विस्तार"
 
@@ -10774,9 +10663,6 @@ msgstr "ठीक"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "इस QEMU द्विपदीय के साथ ऑनलाइन कमिट समर्थित नहीं है"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "chr युक्ति के लिए केवल TCP श्रोता समर्थित है"
 
 msgid "only a single TPM device is supported"
 msgstr "केवल एक TPM युक्ति समर्थित है"
@@ -11280,9 +11166,6 @@ msgstr "बंद करें"
 msgid "shutdown"
 msgstr "शटडाउन"
 
-msgid "shutdown operation failed"
-msgstr "शटडाउन ऑपरेशन विफल"
-
 msgid "shutting down"
 msgstr "बंद कर रहा है"
 
@@ -11736,12 +11619,6 @@ msgstr "udev_monitor_new_from_netlink नल लौटाया"
 msgid "uid and gid should be mapped both"
 msgstr "यूआईडी और जीआईडी ​​दोनों मैप किया जाना चाहिए"
 
-msgid "uml state driver is not active"
-msgstr "uml स्थिति ड्राइवर सक्रिय नहीं है"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: स्मृति कम"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "उपकरण %s का उपयोग करने में असमर्थ \n"
@@ -11919,14 +11796,6 @@ msgstr "अप्रत्याशित QEMU URI पथ '%s', qemu:///session 
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "अप्रत्याशित QEMU URI पथ '%s', qemu:///system आजमाएँ"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "अप्रत्याशित UML URI path '%s', try uml:///session"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "अप्रत्याशित UML URI path '%s', try uml:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -12772,10 +12641,6 @@ msgstr "असमर्थित सत्यापन प्रकार %d"
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "असमर्थित chardev '%s'"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "असमर्थित चार युक्ति प्रकार %d"
 
 #, c-format
 msgid "unsupported clock offset '%s'"

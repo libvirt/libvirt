@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2018-05-04 06:13+0000\n"
 "Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -1450,12 +1450,6 @@ msgstr "无法载入配置文件：%s：%s"
 msgid "Can't modify device type '%s'"
 msgstr "未知修改设备类型 '%s'"
 
-msgid "Can't parse barrier from "
-msgstr "无法解析障碍"
-
-msgid "Can't parse limit from "
-msgstr "无法解析限制"
-
 msgid "Can't parse prlctl output"
 msgstr "无法节写 prlctl 输出结果"
 
@@ -1625,10 +1619,6 @@ msgstr "未在路径中找到 '%s'"
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "无法找到使用 PVR 0x%08x 的 CPU 型号"
-
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "无法找到 UML 内核 %s"
 
 #, c-format
 msgid "Cannot find program %d version %d"
@@ -2110,10 +2100,6 @@ msgstr "客户端用户没有在允许的客户端列表中"
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr "已使用另一个连接 %s 注册的域 %p 的 close 回叫"
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "对于目的地来说命令 %s 太长"
 
 msgid "Commit aborted"
 msgstr "放弃指派"
@@ -5843,9 +5829,6 @@ msgstr "对于目的地来说 IP %s 太大"
 msgid "IP address lookup for host '%s' failed: %s"
 msgstr "为主机 ‘%s’ 查询 IP 地址失败：%s"
 
-msgid "IP address not supported for ethernet interface"
-msgstr "以太网接口不支持 IP 地址"
-
 msgid ""
 "IP parameter must be given since libvirt was not compiled with IP address "
 "learning support"
@@ -7279,9 +7262,6 @@ msgstr "备注"
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-msgid "NULL or empty path"
-msgstr "NULL 或者空路径"
-
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL 字符串参数 '%s'"
@@ -7372,10 +7352,6 @@ msgstr "网络 '%s' 已经运行"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "网络 '%s' 仍在运行"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "未找到网络 '%s'"
 
 msgid "Network config change transaction committed\n"
 msgstr "已提交网络配置更改事务\n"
@@ -7538,9 +7514,6 @@ msgstr "没有可用类别范围"
 
 msgid "No channel command provided"
 msgstr "没有提供任何频道命令"
-
-msgid "No controllers are mounted"
-msgstr "未挂载控制器"
 
 msgid "No data supplied for <initarg> element"
 msgstr "没有 <initarg> 元素的数据"
@@ -9182,12 +9155,6 @@ msgstr "系统不可用"
 msgid "System lacks NETNS support"
 msgstr "系统缺少 NETNS 支持"
 
-msgid "TCP client networking type not supported"
-msgstr "不支持 TCP 客户端联网类型"
-
-msgid "TCP server networking type not supported"
-msgstr "不支持 TCP 服务器联网类型"
-
 #, c-format
 msgid "TLS handshake failed %s"
 msgstr "TLS 握手失败 %s"
@@ -9762,9 +9729,6 @@ msgstr "WIN32 平台不支持这个功能"
 
 msgid "This host is not managed by a vCenter"
 msgstr "这台主机不是由 vCenter 管理"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr "无法热插拔此类设备"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "无法热插拔此类磁盘"
@@ -10961,9 +10925,6 @@ msgstr "无法在这个平台中为 %s 设定 STP 延迟"
 msgid "Unable to set STP on %s on this platform"
 msgstr "无法在这个平台中为 %s 设定 STP"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "无法为 VM 日志文件设定 close-on-exec 标签"
-
 msgid "Unable to set cloexec flag"
 msgstr "无法设定 cloexec 标签"
 
@@ -11247,10 +11208,6 @@ msgstr "意外卷路径格式：%s"
 #, c-format
 msgid "Unhandled event %d for monitor fd %d"
 msgstr "监控程序 fd %d 的未处理事件 %d"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "对于目的地来说 Unix 路径 %s 太长"
 
 msgid "Unknown"
 msgstr "未知"
@@ -12499,14 +12456,8 @@ msgstr "无法为 netlink 分配占位 nlhandle"
 msgid "cannot apply process capabilities %d"
 msgstr "无法应用进程功能 %d"
 
-msgid "cannot attach device on inactive domain"
-msgstr "无法在非活跃的域中附加设备"
-
 msgid "cannot become session leader"
 msgstr "无法成为会话领导者"
-
-msgid "cannot bind socket"
-msgstr "无法绑定套接字"
 
 msgid "cannot block signals"
 msgstr "无法阻断信号"
@@ -12702,9 +12653,6 @@ msgstr "无法删除使用 %d 快照的不活跃域"
 
 msgid "cannot delete snapshots of running domain"
 msgstr "无法删除运行中的域的快照"
-
-msgid "cannot detach device on inactive domain"
-msgstr "无法在非活跃的域中分离设备"
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
@@ -12931,9 +12879,6 @@ msgstr "无法初始化证书对象：%s"
 msgid "cannot initialize condition variable"
 msgstr "无法初始化条件变量"
 
-msgid "cannot initialize inotify"
-msgstr "无法初始化 inotify"
-
 msgid ""
 "cannot initialize libxenlight context, probably not running in a Xen Dom0, "
 "disabling driver"
@@ -13056,9 +13001,6 @@ msgstr "无法打开 macvtap tap 设备 %s"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "无法打开路径 '%s'"
-
-msgid "cannot open socket"
-msgstr "无法打开套接字"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -13252,10 +13194,6 @@ msgid "cannot parse vendor id %s"
 msgstr "无法解析零售商 id %s"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "无法解析版本 %s"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "无法解析影像头 '%s'"
 
@@ -13366,10 +13304,6 @@ msgid "cannot read mount list '%s'"
 msgstr "无法读取挂载列表 '%s'"
 
 #, c-format
-msgid "cannot read reply %s"
-msgstr "无法读取回复 %s"
-
-#, c-format
 msgid "cannot receive data from volume %s"
 msgstr "无法从卷 %s 中检索数据"
 
@@ -13443,19 +13377,11 @@ msgid "cannot seek to start of '%s'"
 msgstr "无法查找 '%s' 启动"
 
 #, c-format
-msgid "cannot send command %s"
-msgstr "无法发送命令 %s "
-
-#, c-format
 msgid "cannot send data to volume %s"
 msgstr "无法向卷 %s 发送数据"
 
 msgid "cannot send to netlink socket"
 msgstr "无法发送 netlink 插槽"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "无法发送过长的命令 %s（%d 字节）"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -13479,14 +13405,8 @@ msgstr "无法设定文件模式 '%s'"
 msgid "cannot set file owner '%s'"
 msgstr "无法设定文件拥有者 '%s'"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "无法将最大内存设置为低于当前内存"
-
 msgid "cannot set memory higher than max memory"
 msgstr "无法将内存设置为高于最大内存"
-
-msgid "cannot set memory of an active domain"
-msgstr "无法在活跃域中设定内存"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -14488,9 +14408,6 @@ msgstr "dir"
 msgid "direct migration"
 msgstr "直接迁移"
 
-msgid "direct networking type not supported"
-msgstr "不支持直接联网类型"
-
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %s "
@@ -14585,10 +14502,6 @@ msgstr "只有 virtio 总线支持 event_idx 模式"
 #, c-format
 msgid "disk format %s is not supported"
 msgstr "不支持磁盘格式 %s"
-
-#, c-format
-msgid "disk format '%s' lacks backing file support"
-msgstr "磁盘格式 '%s' 缺少备份文件支持"
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "只有 virtio 总线支持磁盘 ioeventfd 模式"
@@ -15497,17 +15410,6 @@ msgstr "将池 %s 标记为自动启动失败"
 msgid "failed to move file to %s "
 msgstr "移动文件 %s 失败"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "打开并读取 %s 文件失败"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "打开 chardev 文件失败：%s"
-
-msgid "failed to open configuration file for reading"
-msgstr "打开并读取配置文件失败"
-
 msgid "failed to open file"
 msgstr "打开文件失败"
 
@@ -15625,10 +15527,6 @@ msgstr "读取 libxl 标头失败"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "在 '%s' 中读取元数据长度失败"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "读取 pid 失败：%s"
 
 msgid "failed to read qemu header"
 msgstr "读取 qemu 标题失败"
@@ -16051,10 +15949,6 @@ msgstr "给定 uuid 与 XML uuid 不符"
 msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
 msgstr "得到意外的 RPC 调用 prog %d vers %d serial %d type %d"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "得到未知的HTTP错误代码 %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "关闭一个域"
 
@@ -16161,9 +16055,6 @@ msgstr "不支持 hostdev 模式 '%s'"
 msgid "hostdev mode 'capabilities' is not supported in %s"
 msgstr "%s 不支持 hostdev 模式 'capabilities'"
 
-msgid "hostdev networking type not supported"
-msgstr "不支持 hostdev 联网类型"
-
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "不支持 hostdev 子系统类型 '%s'"
@@ -16236,10 +16127,6 @@ msgstr "包括 XML 转储中与安全性相关的信息"
 
 msgid "includes the password into the connection URI if available"
 msgstr "如可用，则包括连接 URI 的密码。"
-
-#, c-format
-msgid "incomplete reply %s"
-msgstr "不完整的回复 %s"
 
 msgid "incomplete return information"
 msgstr "不完整的返回信息"
@@ -16328,9 +16215,6 @@ msgstr "接口名称 %s 不适用于缓存"
 msgid "interface name or MAC address"
 msgstr "MAC 地址的接口名称"
 
-msgid "interface script execution not supported by this driver"
-msgstr "这台驱动器不支持接口脚本执行"
-
 msgid "interface stats not implemented on this platform"
 msgstr "在这个平台中未采用接口 stats"
 
@@ -16347,9 +16231,6 @@ msgstr "内部错误：%s"
 #, c-format
 msgid "internal error: bad options in command: '%s'"
 msgstr "内部错误：命令中有坏选项：'%s'"
-
-msgid "internal networking type not supported"
-msgstr "不支持内部联网类型"
 
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
@@ -16751,10 +16632,6 @@ msgid "invalid path %s not assigned to domain"
 msgstr "没有为域分配无效路径 %s"
 
 #, c-format
-msgid "invalid path '%s'"
-msgstr "无效路径 '%s'"
-
-#, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "无效路径，'%s' 是未知接口"
 
@@ -16976,13 +16853,6 @@ msgstr "libhal_get_all_devices 失败"
 msgid "libnl was not available at build time"
 msgstr "构建时 libnl 不可用"
 
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "库调用 %s 失败，可能不支持"
-
-msgid "library call failed, possibly not supported"
-msgstr "库调用失败，可能不支持"
-
 msgid "libselinux does not support LXC contexts path"
 msgstr "libselinux 不支持 LXC 上下文路径"
 
@@ -17041,13 +16911,6 @@ msgstr "libxenlight 分离磁盘 '%s' 失败"
 
 msgid "libxenlight failed to detach network device"
 msgstr "libxenlight 无法分离网络设备"
-
-#, c-format
-msgid ""
-"libxenlight failed to detach pci device                          %.4x:%.2x:"
-"%.2x.%.1x"
-msgstr ""
-"libxenlight 无法分离 pci 设备                          %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%s'"
@@ -18536,9 +18399,6 @@ msgstr "无 internalFlags 支持"
 msgid "no job is active on the domain"
 msgstr "该域中没有活跃的任务"
 
-msgid "no kernel specified"
-msgstr "没有指定内核"
-
 msgid "no large enough free extent"
 msgstr "没有足够的可用扩展"
 
@@ -18822,9 +18682,6 @@ msgstr "确定"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持在线指派"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "只支持字符设备的 TCP 侦听"
 
 msgid "only a single TPM device is supported"
 msgstr "只支持单一 TPM 设备"
@@ -19813,9 +19670,6 @@ msgstr "关闭"
 msgid "shutdown"
 msgstr "关闭"
 
-msgid "shutdown operation failed"
-msgstr "关闭操作失败"
-
 msgid "shutting down"
 msgstr "关机"
 
@@ -20487,12 +20341,6 @@ msgstr "udev_monitor_new_from_netlink 返回的 NULL"
 msgid "uid and gid should be mapped both"
 msgstr "uid 和 gid 之间应彼此映射"
 
-msgid "uml state driver is not active"
-msgstr "uml 状态驱动器不活跃"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: 超出内存"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "无法访问设备 %s\n"
@@ -20820,14 +20668,6 @@ msgstr "应为 QEMU URI 路径 '%s'，尝试 qemu:///session"
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "应为 QEMU URI 路径 '%s'，尝试 qemu:///system"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "意外的 UML URI 路径 '%s', 尝试 uml:///session"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "意外的 UML URI 路径 '%s', 尝试 uml:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -21947,10 +21787,6 @@ msgstr "不支持的验证类型 %d"
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "不支持的 chardev '%s'"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "不支持字符设备类型 %d"
 
 #, c-format
 msgid "unsupported chr device type '%s'"

@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -1271,12 +1271,6 @@ msgstr "રૂપરેખાંકન ફાઇલને લાવી શકા
 msgid "Can't modify device type '%s'"
 msgstr "ઉપકરણ પ્રકાર '%s' ને બદલી શકાતુ નથી"
 
-msgid "Can't parse barrier from "
-msgstr "તેમાંથી બેરિઅર પદચ્છેદન કરી શકાતુ નથી"
-
-msgid "Can't parse limit from "
-msgstr "તેમાંથી મર્યાદાનુ પદચ્છેદન કરી શકાતુ નથી "
-
 msgid "Can't parse prlctl output"
 msgstr "prlctl આઉટપુટનું પદચ્છેદન કરી શકાતુ નથી"
 
@@ -1444,10 +1438,6 @@ msgstr "પાથમાં '%s' ને શોધી શકાતુ નથી"
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x સાથે CPU મોડલને શોધી શકાતુ નથી"
-
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "UML કર્નલ %s ને શોધી શકાતુ નથી"
 
 #, c-format
 msgid "Cannot find program %d version %d"
@@ -1914,10 +1904,6 @@ msgstr "ક્લાયન્ટનુ વપરાશકર્તાનામ �
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr "ડોમેઇન %s માટે બંધ કોલબેક બીજા જોડાણ %p સાથે પહેલેથી રજીસ્ટર થયેલ છે"
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "આદેશ %s એ લક્ષ્ય માટે ઘણું લાંબુ છે"
 
 msgid "Commit aborted"
 msgstr "મોકલવાનું અટકાવેલ છે"
@@ -5595,9 +5581,6 @@ msgstr "IP સરનામું"
 msgid "IP address lookup for host '%s' failed: %s"
 msgstr "યજમાન '%s' માટે IP સરનામાંને જોવાનુ નિષ્ફળ: %s"
 
-msgid "IP address not supported for ethernet interface"
-msgstr "IP સરનામું ઇથરનેટ ઇન્ટરફેસ માટે આધારભૂત નથી"
-
 msgid ""
 "IP parameter must be given since libvirt was not compiled with IP address "
 "learning support"
@@ -6979,9 +6962,6 @@ msgstr "NOTE"
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-msgid "NULL or empty path"
-msgstr "NULL અથવા ખાલી પાથ"
-
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL શબ્દમાળા પરિમાણ '%s'"
@@ -7068,10 +7048,6 @@ msgstr "નેટવર્ક '%s' પહેલાથી જ ચાલી રહ
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "નેટવર્ક '%s' હજુ પણ ચાલી રહ્યું છે"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "નેટવર્ક '%s' શોધાયુ નહિં"
 
 msgid "Network Events"
 msgstr "નેટવર્ક ઘટના"
@@ -7220,9 +7196,6 @@ msgstr "વર્ગ સીમા ઉપલબ્ધ નથી"
 
 msgid "No channel command provided"
 msgstr "ચેનલ આદેશ પૂરો પાડેલ નથી"
-
-msgid "No controllers are mounted"
-msgstr "નિયંત્રણો માઉન્ટ થયેલ નથી"
 
 msgid "No data supplied for <initarg> element"
 msgstr "<initarg> ઘટક માટે પૂરી પાડેલ માહિતી નથી"
@@ -8847,12 +8820,6 @@ msgstr "સિસ્ટમ ઉપલ્બધ નથી"
 msgid "System lacks NETNS support"
 msgstr "સિસ્ટમને NETNS આધાર ઓછો છે"
 
-msgid "TCP client networking type not supported"
-msgstr "TCP ક્લાઇન્ટ નેટવર્કીંગ પ્રકાર આધારભૂત નથી"
-
-msgid "TCP server networking type not supported"
-msgstr "TCP સર્વર નેટવર્કીંગ પ્રકાર આધારભૂત નથી"
-
 #, c-format
 msgid "TLS handshake failed %s"
 msgstr "TLS હેન્ડશેક નિષ્ફળ %s"
@@ -9381,9 +9348,6 @@ msgstr "આ વિધેય WIN32 પ્લેટફોર્મ પર આધ�
 
 msgid "This host is not managed by a vCenter"
 msgstr "આ યજમાન vCenter દ્દારા સંચાલિત થયેલ નથી"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr "ઉપકરણનો આ પ્રકાર ને હોટપ્લગ કરી શકાતુ નથી"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ડિસ્કનાનાં આ પ્રકાર ને હોટપ્લગ કરી શકાતુ નથી"
@@ -10581,9 +10545,6 @@ msgstr "આ પ્લેટફોર્મ પર %s પર STP  વિલંબ
 msgid "Unable to set STP on %s on this platform"
 msgstr "આ પ્લેટફોર્મ પર %s પર STP ને સુયોજિત કરવાનું અસમર્થ"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "VM લોગફાઇલ close-on-exec flag ને સુયોજિત કરવામાં નિષ્ફળ"
-
 msgid "Unable to set cloexec flag"
 msgstr "cloexec ફ્લેગ સુયોજિત કરવાનું અસમર્થ"
 
@@ -10849,10 +10810,6 @@ msgstr "અનિચ્છનીય વોલ્યુમ પાથ બંધા
 #, c-format
 msgid "Unhandled event %d for monitor fd %d"
 msgstr "મોનિટર fd %d માટે અસંચાલિત થયેલ ઘટના %d"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "Unix પાથ %s એ લક્ષ્ય માટે ઘણું લાંબુ છે"
 
 msgid "Unknown"
 msgstr "અજ્ઞાત"
@@ -12041,14 +11998,8 @@ msgstr "નેટલીંક માટે પ્લેસહોલ્ડર nlh
 msgid "cannot apply process capabilities %d"
 msgstr "પ્રક્રિયા ક્ષમતાઓ %d લાગુ કરી શકાતી નથી"
 
-msgid "cannot attach device on inactive domain"
-msgstr "અસક્રિય ડોમેઈન પર ઉપકરણ જોડાઇ શકાતુ નથી"
-
 msgid "cannot become session leader"
 msgstr "સત્ર લીડર બનાવી શકાતુ નથી"
-
-msgid "cannot bind socket"
-msgstr "સોકેટને બાંધી શકાતુ નથી"
 
 msgid "cannot block signals"
 msgstr "સંકેતોને બ્લોક કરી શકાતા નથી"
@@ -12247,9 +12198,6 @@ msgstr "%d સ્નેપશોટ સાથે અસક્રિય ડોમ
 
 msgid "cannot delete snapshots of running domain"
 msgstr "ચાલી રહેલ ડોમેઇનનાં સ્નેપશોટ કાઢી શકાતુ નથી"
-
-msgid "cannot detach device on inactive domain"
-msgstr "અસક્રિય ડોમેઈન પર ઉપકરણને અલગ કરી શકાતુ નથી"
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
@@ -12482,9 +12430,6 @@ msgstr "પ્રમાણપત્ર ઑબ્જેક્ટને પ્ર�
 msgid "cannot initialize condition variable"
 msgstr "શરત ચલની શરૂઆત કરી શકાતી નથી"
 
-msgid "cannot initialize inotify"
-msgstr "inotify ને શરૂ કરી શકાતુ નથી"
-
 msgid ""
 "cannot initialize libxenlight context, probably not running in a Xen Dom0, "
 "disabling driver"
@@ -12613,9 +12558,6 @@ msgstr "પાથ '%s' ખોલી શકાતો નથી"
 #, c-format
 msgid "cannot open path '%s' in '%s'"
 msgstr "'%s' માં પાથ '%s' ને ખોલી શકાતુ નથી"
-
-msgid "cannot open socket"
-msgstr "સોકેટ ખોલી શકાતી નથી"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -12811,10 +12753,6 @@ msgid "cannot parse vendor id %s"
 msgstr "વિક્રેતા id %s નું પદચ્છેદન કરી શકાતુ નથી"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "આવૃત્તિ %s નું પદચ્છેદન કરી શકાતુ નથી"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "વિડિયો heads '%s' નું પદચ્છેદન કરી શકાતુ નથી"
 
@@ -12917,10 +12855,6 @@ msgid "cannot read mount list '%s'"
 msgstr "માઉન્ટ યાદી '%s' ને વાંચી શકાતી નથી"
 
 #, c-format
-msgid "cannot read reply %s"
-msgstr "જવાબ %s ને વાંચી શકાતુ નથી"
-
-#, c-format
 msgid "cannot receive data from volume %s"
 msgstr "વોલ્યુમ %s માંથી માહિતીને મેળવી શકાતી નથી"
 
@@ -12996,19 +12930,11 @@ msgid "cannot seek to start of '%s'"
 msgstr "'%s' ફાઇલની અંતમાં શોધી શકાતુ નથી"
 
 #, c-format
-msgid "cannot send command %s"
-msgstr "આદેશ %s ને મોકલી શકાતો નથી"
-
-#, c-format
 msgid "cannot send data to volume %s"
 msgstr "વોલ્યુમ %s માં માહિતીને મોકલી શકાતી નથી"
 
 msgid "cannot send to netlink socket"
 msgstr "નેટલીંક સોકેટને મોકલી શકાતુ નથી"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "ઘણો લાંબો આદેશ%s (%d બાઇટો) મોકલી શકાતો નથી"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -13032,14 +12958,8 @@ msgstr "ફાઇલ સ્થિતિ '%s' ને સુયોજિત કર
 msgid "cannot set file owner '%s'"
 msgstr "ફાઇલ માલિક '%s' સુયોજિત કરી શકાતુ નથી"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "હાલની મેમરી કરતા નીચી મહત્તમ મેમરીને સુયોજિત કરી શકાતી નથી"
-
 msgid "cannot set memory higher than max memory"
 msgstr "મહત્તમ મેમરી કરતી ઊંચી મેમરીને સુયોજિત કરી શકાતી નથી"
-
-msgid "cannot set memory of an active domain"
-msgstr "સક્રિય ડોમેઈનની મેમરી સુયોજિત કરી શકાતીનથી"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -14031,9 +13951,6 @@ msgstr "ડિરેક્ટરી"
 msgid "direct migration"
 msgstr "સીધુ સ્થળાંતર"
 
-msgid "direct networking type not supported"
-msgstr "સીધુ નેટવર્કીંગ પ્રકાર આધારભૂત નથી"
-
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %s "
@@ -14965,17 +14882,6 @@ msgstr "Pool %s ને આપોઆપ શરૂથયેલ તરીકે ચ
 msgid "failed to move file to %s "
 msgstr "%s માં ફાઇલને ખસેડવામાં નિષ્ફળતા "
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "%s ને વાંચવા માટે ખોલવામાં નિષ્ફળ"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "chardev ફાઇલને ખોલવામાં નિષ્ફળતા: %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "રૂપરેખાંકન ફાઈલને વાંચવા માટે ખોલવામાં નિષ્ફળ"
-
 msgid "failed to open file"
 msgstr "ફાઈલ ખોલવામાં નિષ્ફળ"
 
@@ -15060,10 +14966,6 @@ msgstr "libxl હેડરને વાંચવામાં નિષ્ફળ�
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s' માં મેટાડેટાને વાંચવામાં નિષ્ફળ"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "pid ને વાંચવામાં નિષ્ફળ: %s"
 
 msgid "failed to read qemu header"
 msgstr "qemu હેડર વાંચવામાં નિષ્ફળ"
@@ -15465,10 +15367,6 @@ msgstr "આપેલ uuid એ XML uuid સાથે બંધબેસતુ ન
 msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
 msgstr "અનિચ્છનીય RPC કોલ prog %d vers %d proc %d type %d મળ્યો"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "અજ્ઞાત HTTP ભૂલ કોડ %d મળ્યો"
-
 msgid "gracefully shutdown a domain"
 msgstr "સારી રીતે ડોમેઈન બંધ કરો"
 
@@ -15571,9 +15469,6 @@ msgstr "hostdev %s મળ્યુ નથી"
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev સ્થિતિ '%s' આધારભૂત નથી"
 
-msgid "hostdev networking type not supported"
-msgstr "hostdev નેટવર્કીંગ પ્રકાર આધારભૂત નથી"
-
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys પ્રકાર '%s' આધારભૂત નથી"
@@ -15647,10 +15542,6 @@ msgstr "જોડાણ URI માં પાસવર્ડને સમાવ�
 #, c-format
 msgid "incomplete metadata in '%s'"
 msgstr "'%s' માં અપૂર્ણ મેટાડેટા"
-
-#, c-format
-msgid "incomplete reply %s"
-msgstr "અપૂરતો જવાબ %s"
 
 msgid "incomplete return information"
 msgstr "અપૂરતી પરત જાણકારી"
@@ -15732,9 +15623,6 @@ msgstr "ઇન્ટરફેસ નામ %s બફરમાં બંધબે
 msgid "interface name or MAC address"
 msgstr "ઇન્ટરફેસ નામ અથવા MAC સરનામું"
 
-msgid "interface script execution not supported by this driver"
-msgstr "ઇન્ટરફેસ સ્ક્રિપ્ટ એક્સિક્યૂશન ડ્રાઇવર દ્દારા આધારભૂત નથી"
-
 msgid "interface stats not implemented on this platform"
 msgstr "ઇન્ટરફેસ સ્થિતિ આ પ્લેટફોર્મ પર અમલીકરણ થયેલ નથી"
 
@@ -15751,9 +15639,6 @@ msgstr "આંતરિક ભૂલ: %s"
 #, c-format
 msgid "internal error: bad options in command: '%s'"
 msgstr "આંતરિક ભૂલ: આદેશમાં ખરાબ વિકલ્પો: '%s'"
-
-msgid "internal networking type not supported"
-msgstr "આંતરિક નેટવર્કીંગ પ્રકાર આધારભૂત નથી"
 
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
@@ -16098,10 +15983,6 @@ msgid "invalid path %s not assigned to domain"
 msgstr "અયોગ્ય પાથ %s એ ડોમેઇનમાં સોંપેલ નથી "
 
 #, c-format
-msgid "invalid path '%s'"
-msgstr "અયોગ્ય પાથ '%s'"
-
-#, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "અયોગ્ય પાથ, '%s' એ જાણીતો ઇન્ટરફેસ નથી"
 
@@ -16306,13 +16187,6 @@ msgstr "libhal_get_all_devices નિષ્ફળ"
 
 msgid "libnl was not available at build time"
 msgstr "libnl બિલ્ડ સમયે ઉપલબ્ધ ન હતુ"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "લાઈબ્રેરી કોલ %s નિષ્ફળ, કદાચ આધારભૂત નથી"
-
-msgid "library call failed, possibly not supported"
-msgstr "લાઈબ્રેરી બોલાવવાનું નિષ્ફળ, કદાચ આધારભૂત નથી"
 
 msgid "libselinux does not support LXC contexts path"
 msgstr "libselinux LXC સંદર્ભ પાથને આધાર આપતુ નથી"
@@ -17755,9 +17629,6 @@ msgstr "internalFlags આધાર નથી"
 msgid "no job is active on the domain"
 msgstr "ડોમેઇન પર જોબ સક્રિય નથી"
 
-msgid "no kernel specified"
-msgstr "કર્નલ સ્પષ્ટ થયેલ નથી"
-
 msgid "no large enough free extent"
 msgstr "વિશાળ પૂરતા મુક્ત વિસ્તાર નથી"
 
@@ -18039,9 +17910,6 @@ msgstr "બરાબર"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "ઓનલાઇન સોંપવાનુ આ QEMU બાઇનરી સાથે આધારભૂત નથી"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "અક્ષર ઉપકરણ માટે ફક્ત સાંભળેલ TCP એ આધારભૂત નથી"
 
 msgid "only a single TPM device is supported"
 msgstr "ફક્ત એક TPM ઉપકરણ આધારભૂત છે"
@@ -19030,9 +18898,6 @@ msgstr "બંધ કરો"
 msgid "shutdown"
 msgstr "બંધ કરો"
 
-msgid "shutdown operation failed"
-msgstr "બંધ કરવાની પ્રક્રિયા નિષ્ફળ"
-
 msgid "shutting down"
 msgstr "બંધ કરી રહ્યા છે"
 
@@ -19659,12 +19524,6 @@ msgstr "udev_monitor_new_from_netlink ને NULL પરત મળેલ છે"
 msgid "uid and gid should be mapped both"
 msgstr "uid અને gid બંનેનુ માપાંકન થવુ જોઇએ"
 
-msgid "uml state driver is not active"
-msgstr "uml સ્ટેટ ડ્રાઇવર સક્રિય નથી"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: મેમરીની બહાર"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "ઉપકરણ %s ને વાપરવાનું અસમર્થ\n"
@@ -20004,14 +19863,6 @@ msgstr "અનિચ્છનીય QEMU URI પાથ '%s', qemu:///session ન
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "અનિચ્છનીય QEMU URI પાશ '%s', qemu:///system નો પ્રયત્ન કરો"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "અનિચ્છનીય UML URI પાથ '%s', uml:///session નો પ્રયત્ન કરો"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "અનિચ્છનીય UML URI પાથ '%s', uml:///system નો પ્રયત્ન કરો"
 
 #, c-format
 msgid ""
@@ -21033,10 +20884,6 @@ msgstr "બિનઆધારિત સત્તાધિકરણ પ્રક�
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "બિનઆધારભૂત chardev '%s'"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "બિનઆધારિત અક્ષર ઉપકરણ પ્રકાર %d"
 
 #, c-format
 msgid "unsupported chr device type '%s'"

@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-26 09:47+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
@@ -2624,13 +2624,6 @@ msgstr "impossible de marquer le réseau %s en démarrage automatique"
 msgid "failed to mark pool %s as autostarted"
 msgstr "impossible de démarrer automatiquement le pool %s"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "impossible d'ouvrir %s en lecture"
-
-msgid "failed to open configuration file for reading"
-msgstr "impossible d'ouvrir le fichier pour la lecture de la configuration"
-
 msgid "failed to open file"
 msgstr "impossible d'ouvrir le fichier"
 
@@ -2714,10 +2707,6 @@ msgstr "obtenir les statistiques d'une interface réseau pour un domaine"
 
 msgid "getting time of day"
 msgstr "récupération de l'heure du jour"
-
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "réception d'un code d'erreur HTTP %d inconnu"
 
 msgid "gracefully shutdown a domain"
 msgstr "arrêter un domaine proprement"
@@ -2894,13 +2883,6 @@ msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr ""
 "les remplacements d'étiquettes nécessitent que le réétiquetage soit activé "
 "au niveau du domaine"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "échec de l'appel de la bibliothèque %s, elle n'est peut être pas gérée"
-
-msgid "library call failed, possibly not supported"
-msgstr "échec de l'appel de la bibliothèque, elle n'est peut être pas gérée"
 
 msgid "list devices in a tree"
 msgstr "énumérer les périphériques en arbre"

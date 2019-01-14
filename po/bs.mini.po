@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-26 07:12+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
@@ -480,13 +480,6 @@ msgstr "dohvaćanje hypervisor verzije nije uspjelo"
 msgid "failed to get the library version"
 msgstr "dohvaćanje verzije biblioteke nije uspjelo"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "otvaranje %s za čitanje nije uspjelo"
-
-msgid "failed to open configuration file for reading"
-msgstr "otvaranje konfiguracijske datoteke za čitanje nije uspjelo"
-
 msgid "failed to open file"
 msgstr "otvaranje datoteke nije uspjelo"
 
@@ -524,10 +517,6 @@ msgstr "zapisivanje konfiguracijske datoteke %s nije uspjelo"
 msgid "getting time of day"
 msgstr "dohvaćanje vremena dana"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "dobiven je nepoznat broj HTTP pogreške %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "dostojanstveno ugasi domenu"
 
@@ -553,13 +542,6 @@ msgstr "neispravan pokazivač domene pri"
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "neispravan pokazivač domene pri %s"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "pozivanje biblioteke %s nije uspjelo, možda nije podržano"
-
-msgid "library call failed, possibly not supported"
-msgstr "pozivanje biblioteke nije uspjelo, možda nije podržano"
 
 msgid "list domains"
 msgstr "ispiši domene"

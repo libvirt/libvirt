@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2017-02-26 05:02+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1148,9 +1148,6 @@ msgstr "Mål-sysinfo matchar inte källan"
 msgid "Temporary failure in name resolution"
 msgstr "Tillfälliga fel i namnuppslagning"
 
-msgid "This type of device cannot be hot unplugged"
-msgstr "Denna typ av enhet kan inte vara tas bort under drift"
-
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Denna typ av disk kan inte tas bort under drift"
 
@@ -1733,13 +1730,6 @@ msgstr "misslyckades att hämta biblioteksversion"
 msgid "failed to mark network %s as autostarted"
 msgstr "Misslyckades att markera nätverk %s som autostartat"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "kunde inte öppna %s för läsning"
-
-msgid "failed to open configuration file for reading"
-msgstr "kunde inte öppna konfigurationsfilen för läsning"
-
 msgid "failed to open file"
 msgstr "misslyckades att öppna fil"
 
@@ -1805,10 +1795,6 @@ msgstr "hämta nätverksgränssnitt-statistik för en domän"
 
 msgid "getting time of day"
 msgstr "hämtar tid på dygnet"
-
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "fick okänd HTTP-felkod %d"
 
 msgid "gracefully shutdown a domain"
 msgstr "stäng snällt ned en domän"
@@ -1878,13 +1864,6 @@ msgstr "ogiltig vakthundsåtgärd"
 
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices misslyckades"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "biblioteksanrop %s misslyckades, stöds troligen inte"
-
-msgid "library call failed, possibly not supported"
-msgstr "biblioteksanrop misslyckades, stöds troligen inte"
 
 msgid "libvirtd quit during handshake"
 msgstr "libvirtd avslutade under handskakningen"

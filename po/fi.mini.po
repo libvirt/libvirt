@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2017-03-26 10:24+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish (http://www.transifex.com/projects/p/fedora/language/"
@@ -854,13 +854,6 @@ msgstr "kirjastoversion saanti epäonnistui"
 msgid "failed to mark network %s as autostarted"
 msgstr "verkon %s merkitseminen automaattisesti käynnistyväksi epäonnistui"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "tiedoston %s avaaminen luettavaksi epäonnistui"
-
-msgid "failed to open configuration file for reading"
-msgstr "asetustiedoston avaaminen luettavaksi epäonnistui"
-
 msgid "failed to open file"
 msgstr "ei voitu avata tiedostoa"
 
@@ -914,10 +907,6 @@ msgstr "hae toimialueen verkkoliitäntätilastot"
 msgid "getting time of day"
 msgstr "haetaan kellonaika"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "saatiin tuntematon HTTP-virhekoodi %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "sammuta toimialue siististi"
 
@@ -953,13 +942,6 @@ msgstr "virheellinen verkko-osoitin kohteessa"
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "virheellinen verkko-osoitin kohteessa %s"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "kirjastokutsu %s epäonnistui, sitä ei ehkä tueta"
-
-msgid "library call failed, possibly not supported"
-msgstr "kirjastokutsu epäonnistui, sitä ei ehkä tueta"
 
 msgid "list domains"
 msgstr "luetteloi toimialueet"

@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
-"PO-Revision-Date: 2018-11-27 07:08+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2018-12-26 03:58+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
 "cs/)\n"
@@ -148,12 +148,28 @@ msgid "%s: initialization failed\n"
 msgstr "%s: inicializace selhala\n"
 
 #, c-format
+msgid "%s: invalid option -- '%c'\n"
+msgstr "%s: neplatná volba -- „%c“\n"
+
+#, c-format
+msgid "%s: option '%s%s' doesn't allow an argument\n"
+msgstr "%s: volba „%s%s“ neumožňuje argument\n"
+
+#, c-format
 msgid "%s: option '%s%s' is ambiguous\n"
 msgstr "%s: volba „%s%s“ není jednoznačná\n"
 
 #, c-format
 msgid "%s: option '%s%s' is ambiguous; possibilities:"
 msgstr "%s: volba „%s%s“ není jednoznačná; možnosti:"
+
+#, c-format
+msgid "%s: option '%s%s' requires an argument\n"
+msgstr "%s: volba „%s%s“ vyžaduje argument\n"
+
+#, c-format
+msgid "%s: option requires an argument -- '%c'\n"
+msgstr "%s: volba vyžaduje argument -- „%c“\n"
 
 #, c-format
 msgid ""
@@ -172,8 +188,16 @@ msgid "%s: warning: %s%c"
 msgstr "%s: varování: %s%c"
 
 #, c-format
+msgid "'%s' denied access"
+msgstr "„%s“ odepřelo přístup"
+
+#, c-format
 msgid "'%s' does not exist"
 msgstr "'%s' neexistuje"
+
+#, c-format
+msgid "'%s' is not a suitable bridge helper"
+msgstr "„%s“ není použitelné pomocné pro most"
 
 msgid "(none)"
 msgstr "(žádný)"
@@ -204,6 +228,12 @@ msgstr "Alokace"
 msgid "Allocation:"
 msgstr "Alokace:"
 
+msgid "Argument buffer too small"
+msgstr "Vyrovnávací paměť je příliš malá"
+
+msgid "At least one PTY console is required"
+msgstr "Je vyžadována alespoň jedna PTY konzole"
+
 msgid "Attach device from an XML <file>."
 msgstr "Připojit zařízení z XML <souboru>."
 
@@ -231,6 +261,9 @@ msgstr "Dostupný:"
 #, c-format
 msgid "Bad $%s value."
 msgstr "Chybná hodnota $%s."
+
+msgid "Bad value for ai_flags"
+msgstr "Chybná hodnota pro ai_flags"
 
 msgid "Build a given pool."
 msgstr "Sestav dané úložiště."
@@ -296,6 +329,10 @@ msgstr "Nelze alokovat paměť"
 msgid "Can't read %s"
 msgstr "Nelze číst %s"
 
+#, c-format
+msgid "Cannot create %s"
+msgstr "Nedaří se vytvořit %s"
+
 msgid "Cannot create /dev/pts"
 msgstr "Nelze vytvořit /dev/pts"
 
@@ -309,6 +346,10 @@ msgstr "Nelze deaktivovat automatický start úložiště"
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Nelze získat verzi běžícího %s hypervizora\n"
+
+#, c-format
+msgid "Cannot find security driver '%s'"
+msgstr "Nedaří se nalézt ovladač zabezpečení „%s“"
 
 msgid "Cannot open /dev/urandom"
 msgstr "Nelze otevřít /dev/urandom"
@@ -350,6 +391,9 @@ msgstr "Kapacita"
 
 msgid "Capacity:"
 msgstr "Kapacita:"
+
+msgid "Ceph usage specified, but name is missing"
+msgstr "Zadáno použití ceph, ale chybí název"
 
 msgid "Change the current directory."
 msgstr "Změnit aktuální pracovní adresář."
@@ -476,6 +520,14 @@ msgstr "Nepodařilo se najít odpovídající zařízení"
 #, c-format
 msgid "Could not find parent device for '%s'"
 msgstr "Nelze najít nadřazené rozhraní pro '%s'"
+
+#, c-format
+msgid "Could not find typefile '%s'"
+msgstr "Nedaří se nalézt typ souboru „%s“"
+
+#, c-format
+msgid "Could not find value for variable '%s'"
+msgstr "Nedaří se najít hodnotu pro proměnnou „%s“"
 
 msgid "Could not get name of virtual machine"
 msgstr "Nepodařilo se získat jméno virtualního stroje"
@@ -624,6 +676,10 @@ msgstr "Zařízení %s bylo znovu připojeno\n"
 msgid "Device %s reset\n"
 msgstr "Reset zařízení %s\n"
 
+#, c-format
+msgid "Device '%s' is unrecognized, requires build"
+msgstr "Zařízení „%s“ není rozpoznáno, vyžaduje sestavení"
+
 msgid "Device attached successfully\n"
 msgstr "Zařízení bylo úspěšně připojeno\n"
 
@@ -632,6 +688,10 @@ msgstr "Zařízení bylo úspěšně odpojeno\n"
 
 msgid "Device is not a fibre channel HBA"
 msgstr "Zařízení není fibre channel HBA"
+
+#, c-format
+msgid "Device type '%s' is not an integer"
+msgstr "Typ zařízení „%s“ není celé kladné číslo"
 
 msgid "Device updated successfully\n"
 msgstr "Zařízení aktualizováno\n"
@@ -1020,6 +1080,10 @@ msgid "Failed to open file '%s'"
 msgstr "Selhalo otevření souboru '%s'"
 
 #, c-format
+msgid "Failed to open storage volume with path '%s'"
+msgstr "Nepodařilo se otevřít svazek úložiště s popisem umístění „%s“"
+
+#, c-format
 msgid "Failed to open tty %s"
 msgstr "Selhalo otevření tty %s"
 
@@ -1229,6 +1293,10 @@ msgstr "Rozhraní bylo úspěšně odpojeno\n"
 msgid "Interrupted by a signal"
 msgstr "Přerušeno signálem"
 
+#, c-format
+msgid "Invalid CIDR address: '%s'"
+msgstr "neplatná CIDR adresa: „%s“"
+
 msgid "Invalid CPU feature name"
 msgstr "Neplatné jméno vlastnosti CPU"
 
@@ -1241,6 +1309,9 @@ msgstr "Neplatný řetezec výrobce CPU '%s'"
 
 msgid "Invalid argument"
 msgstr "Neplatný argument"
+
+msgid "Invalid back reference"
+msgstr "Neplatná zpětná reference"
 
 msgid "Invalid base64 data"
 msgstr "Neplatná data base64"
@@ -1258,6 +1329,12 @@ msgstr "Neplatné volaní"
 
 msgid "Invalid certificate"
 msgstr "Neplatný certifikát"
+
+msgid "Invalid character class name"
+msgstr "Neplatný název třídy znaku"
+
+msgid "Invalid content of \\{\\}"
+msgstr "Neplatný obsah \\{\\}"
 
 #, c-format
 msgid "Invalid floppy device name: %s"
@@ -1278,9 +1355,18 @@ msgstr "Neplatné číslo portu: %s"
 msgid "Invalid ports: %s"
 msgstr "Neplatné porty: %s"
 
+msgid "Invalid preceding regular expression"
+msgstr "Neplatný předcházející regulární výraz"
+
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Neplatný prefix nebo maska podsítě pro '%s'"
+
+msgid "Invalid range end"
+msgstr "Neplatný konec rozsahu"
+
+msgid "Invalid regular expression"
+msgstr "Neplatný regulární výraz"
 
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
@@ -1312,6 +1398,12 @@ msgstr "Nesmyslná velikost %s"
 
 msgid "Max memory:"
 msgstr "Max. paměti:"
+
+msgid "Memory allocation failure"
+msgstr "Nezdar při přiřazování paměti"
+
+msgid "Memory exhausted"
+msgstr "Došla paměť"
 
 msgid "Memory size:"
 msgstr "Velikost paměti:"
@@ -1347,8 +1439,19 @@ msgid "Missing address"
 msgstr "Chybí adresa"
 
 #, c-format
+msgid "Missing backend %d"
+msgstr "Chybí podpůrná vrstva %d"
+
+msgid "Missing bridge name"
+msgstr "Chybí název síťového mostu"
+
+#, c-format
 msgid "Missing feature name for CPU model %s"
 msgstr "Chybí jméno vlastnosti pro model CPU %s"
+
+#, c-format
+msgid "Model %s too big for destination"
+msgstr "Model %s je příliš velký pro cíl"
 
 msgid "Model name contains invalid characters"
 msgstr "Jméno modelu obsahuje neplatné znaky"
@@ -1442,6 +1545,18 @@ msgstr "Typ sítě %d není podporován"
 msgid "No IP address for host '%s' found: %s"
 msgstr "IP adresa pro hosta '%s' nalezena: %s"
 
+msgid "No UNIX caller UID available"
+msgstr "Není k dispozici unixový identifikátor spouštějícího uživatele"
+
+msgid "No UNIX process ID available"
+msgstr "Není k dispozici žádný unixový identif. procesu"
+
+msgid "No UNIX process start time available"
+msgstr "Není k dispozici čas spuštění unixového procesu"
+
+msgid "No address associated with hostname"
+msgstr "S názvem stroje není spojená žádná adresa"
+
 #, c-format
 msgid "No domain with ID %d"
 msgstr "Žádná doména s ID %d"
@@ -1461,6 +1576,12 @@ msgstr "Žádná doména odpovídající uuid '%s'"
 msgid "No error message provided"
 msgstr "Chybová zpráva nebyla zadána"
 
+msgid "No match"
+msgstr "Žádná shoda"
+
+msgid "No previous regular expression"
+msgstr "Žádný předchozí regulární výraz"
+
 #, c-format
 msgid "No support for %s in command 'attach-disk'"
 msgstr "Nepodporovaný %s v příkazu 'attach-disk'"
@@ -1472,8 +1593,14 @@ msgstr "Nepodporovaný %s v příkazu 'attach-interface'"
 msgid "No type specified for device address"
 msgstr "Nebyl specifikován typ pro adresu zařízení"
 
+msgid "Not enough space left in storage pool"
+msgstr "Na fondu úložiště není dostatek místa"
+
 msgid "OS Type:"
 msgstr "Druh OS:"
+
+msgid "Only luks encryption is supported for raw files"
+msgstr "u raw souborů je podporováno pouze šifrování luks"
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Pouze migrace typu vpxmigr:// jsou podporovány"
@@ -1542,6 +1669,10 @@ msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Spřáhnout virtuální CPU domény k fyzickým CPU hostitele."
 
 #, c-format
+msgid "Policy kit denied action %s from <anonymous>"
+msgstr "Policikyt odepřel akci %s z <anonymous>"
+
+#, c-format
 msgid "Pool %s built\n"
 msgstr "Úložiště %s sestaveno\n"
 
@@ -1589,6 +1720,9 @@ msgstr "Úložiště %s spuštěno\n"
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Úložiště %s není označeno jako automaticky spouštěné\n"
 
+msgid "Premature end of regular expression"
+msgstr "Předčasný konec regulárního výrazu"
+
 msgid "Print the current directory."
 msgstr "Zobrazí jméno adresáře, ve kterém se právě nacházíte."
 
@@ -1596,6 +1730,13 @@ msgid ""
 "Prints global help, command specific help, or help for a\n"
 "    group of related commands"
 msgstr "Vypíše souhrnnou nápovědu nebo nápovědu k určenému příkazu."
+
+msgid "Processing request in progress"
+msgstr "Požadavek na zpracování je zpracováván"
+
+#, c-format
+msgid "QEMU does not support device assignment mode '%s'"
+msgstr "QEMU nepodporuje režim přiřazení zařízení „%s“"
 
 #, c-format
 msgid "QueryPerf returned object with unexpected type '%s'"
@@ -1609,6 +1750,9 @@ msgstr "Znovu se připojit k hypervizoru"
 
 msgid "Refresh a given pool."
 msgstr "Obnov dané úložiště."
+
+msgid "Regular expression too big"
+msgstr "Regulární výraz je příliš velký"
 
 msgid "Remove managed save of a domain"
 msgstr "uložit stav domény do souboru"
@@ -1751,6 +1895,9 @@ msgstr "Svazek nenalezen"
 msgid "Storage volume not found: %s"
 msgstr "Svazek nenalezen: %s"
 
+msgid "Success"
+msgstr "Úspěch"
+
 msgid "Suspend a running domain."
 msgstr "Uspat běžící doménu."
 
@@ -1774,11 +1921,17 @@ msgstr "Tato funkce není na platformě WIN32 podporována"
 msgid "This host is not managed by a vCenter"
 msgstr "Tento host není spravován vCenter"
 
+msgid "This type of disk cannot be hot unplugged"
+msgstr "Tento typ disku nelze odpojovat za chodu"
+
 msgid "Thread(s) per core:"
 msgstr "Vláken na jádro:"
 
 msgid "Total"
 msgstr "Celkem"
+
+msgid "Trailing backslash"
+msgstr "Končí na zpětné lomítko"
 
 msgid "Try again?"
 msgstr "Zkusit znovu?"
@@ -1817,6 +1970,9 @@ msgstr "Nelze se přesunout do kořenového adresáře"
 msgid "Unable to create Volume: %s"
 msgstr "Nelze vytvořit Svazek: %s"
 
+msgid "Unable to create pipe"
+msgstr "Nedaří se vytvořit rouru"
+
 msgid "Unable to generate random uuid."
 msgstr "Nelzye vygenerovat náhodné uuid."
 
@@ -1845,6 +2001,10 @@ msgstr "Nelze otevřít /proc/mounts"
 
 msgid "Unable to open UNIX socket"
 msgstr "Nelze otevřít UNIXový socket"
+
+#, c-format
+msgid "Unable to open log file %s"
+msgstr "Nedaří se otevřít soubor se záznamem událostí %s"
 
 #, c-format
 msgid "Unable to parse devaddr parameter '%s'"
@@ -1881,6 +2041,9 @@ msgstr "Neznámý model CPU %s"
 msgid "Unknown CPU vendor %s"
 msgstr "Neznámý výrobce CPU %s"
 
+msgid "Unknown Partition Type, requires build --overwrite"
+msgstr "Neznámý typ oddílu, vyžaduje sestavení --overwrite"
+
 #, c-format
 msgid "Unknown controller type '%s'"
 msgstr "Neznámý typ řadiče '%s'"
@@ -1907,6 +2070,21 @@ msgstr "Neznámý typ zdroje: '%s'"
 #, c-format
 msgid "Unknown value '%s' for %s"
 msgstr "Neznámá hodnota '%s' pro %s"
+
+msgid "Unmatched ( or \\("
+msgstr "Neuzavřené ( nebo \\("
+
+msgid "Unmatched ) or \\)"
+msgstr "Neuzavřené ) nebo \\)"
+
+msgid "Unmatched [, [^, [:, [., or [="
+msgstr "Neuzavřené [, [^, [:, [., nebo [="
+
+msgid "Unmatched \\{"
+msgstr "Neuzavřené \\{"
+
+msgid "Unsupported address type for character device"
+msgstr "Nepodporovaný typ adresy pro znakové zařízení"
 
 #, c-format
 msgid "Unsupported bus type '%s'"
@@ -1935,6 +2113,14 @@ msgstr "Nepodporovaný typ diskového zařízení '%s'"
 #, c-format
 msgid "Unsupported graphics type '%s'"
 msgstr "Nepodporovaný typ grafického rozhraní '%s'"
+
+#, c-format
+msgid "Unsupported hostdev mode %s"
+msgstr "Nepodporovaný režim zařízení hostitele %s"
+
+#, c-format
+msgid "Unsupported hostdev type %s"
+msgstr "Nepodporovaný typ zařízení hostitele %s"
 
 msgid "Unused"
 msgstr "Nepoužito"
@@ -2030,6 +2216,12 @@ msgstr "[--%s] <řetězec>"
 msgid "active"
 msgstr "aktivní"
 
+msgid "ai_family not supported"
+msgstr "ai_family nepodporovaná"
+
+msgid "ai_socktype not supported"
+msgstr "ai_socktype není podporovaná"
+
 msgid "attach device from an XML file"
 msgstr "připojit zařízení z XML souboru"
 
@@ -2079,14 +2271,53 @@ msgstr "blokové zařízení"
 msgid "bool"
 msgstr "bool"
 
+#, c-format
+msgid "bridge %s doesn't exist"
+msgstr "most %s už existuje"
+
+#, c-format
+msgid "bridge '%s' has an invalid netmask or IP address"
+msgstr "most „%s“ nemá platnou masku sítě nebo IP adresu"
+
+#, c-format
+msgid "bridge name '%s' already in use."
+msgstr "název mostu „%s“ už je používán."
+
 msgid "build a pool"
 msgstr "sestav úložiště"
 
 msgid "building"
 msgstr "sestavuji"
 
+msgid "can't shrink capacity below existing allocation"
+msgstr "není možné snížit kapacitu pod existující přiřazení"
+
 msgid "canceled by client"
 msgstr "zrušeno klientem"
+
+#, c-format
+msgid "cannot change config of '%s' network type"
+msgstr "není možné změnit nastavení „%s“ typu sítě"
+
+msgid "cannot change keymap setting on spice graphics"
+msgstr "není možné změnit nastavení mapy kláves na spice grafice"
+
+msgid "cannot change keymap setting on vnc graphics"
+msgstr "není možné změnit nastavení mapy kláves na vnc grafice"
+
+#, c-format
+msgid "cannot change listen socket setting on '%s' graphics"
+msgstr "není možné změnit nastavení soketu pro očekávání na grafice „%s“"
+
+#, c-format
+msgid "cannot change network interface mac address from %s to %s"
+msgstr "není možné změnit mac adresu síťového rozhraní z %s na %s"
+
+msgid "cannot change port settings on spice graphics"
+msgstr "není možné změnit nastavení portu na spice grafice"
+
+msgid "cannot change port settings on vnc graphics"
+msgstr "není možné změnit nastavení portu na vnc grafice"
 
 msgid "cannot change to root directory"
 msgstr "nelze se přesunout do kořenového adresáře"
@@ -2128,6 +2359,10 @@ msgid "cannot decode CPU data for %s architecture"
 msgstr "nelze dešifrovat data CPU pro architekturu %s"
 
 #, c-format
+msgid "cannot disable %s"
+msgstr "není možné vypnout %s"
+
+#, c-format
 msgid "cannot encode CPU data for %s architecture"
 msgstr "nelze zašifrovat data CPU pro architekturu %s"
 
@@ -2146,6 +2381,16 @@ msgstr "nelze inicializovat podmínkovou proměnnou"
 
 msgid "cannot initialize mutex"
 msgstr "nelze inicializovat mutex"
+
+#, c-format
+msgid "cannot modify network device model from %s to %s"
+msgstr "není možné změnit model síťového rozhraní z %s na %s"
+
+msgid "cannot modify network device script attribute"
+msgstr "není možné upravit atributy skriptu síťového rozhraní"
+
+msgid "cannot modify virtio network device driver attributes"
+msgstr "není možné upravit atributy ovladače síťového rozhraní"
 
 #, c-format
 msgid "cannot open %s"
@@ -2226,6 +2471,14 @@ msgid "cannot parse vnc port %s"
 msgstr "nelze parsovat vnc port %s"
 
 #, c-format
+msgid "cannot precreate storage for disk type '%s'"
+msgstr "nedaří se předvytvořit úložiště pro disk typu „%s“"
+
+#, c-format
+msgid "cannot read beginning of file '%s'"
+msgstr "nedaří se číst začátek souboru „%s“"
+
+#, c-format
 msgid "cannot read dir '%s'"
 msgstr "nelze číst adresář '%s'"
 
@@ -2240,6 +2493,10 @@ msgstr "nelze smazat konfigurační soubor '%s'"
 #, c-format
 msgid "cannot remove config for %s"
 msgstr "nelze smazat konfiguraci pro %s"
+
+#, c-format
+msgid "cannot sync data to file '%s'"
+msgstr "nedaří se synchronizovat data do souboru „%s“"
 
 #, c-format
 msgid "cannot write config file '%s'"
@@ -2266,6 +2523,9 @@ msgstr "změnit počet virtuálních CPU"
 
 msgid "change the current directory"
 msgstr "změnit aktuální pracovní adresář."
+
+msgid "chardev already exists"
+msgstr "znakové zařízení už existuje"
 
 msgid "client tried invalid PolicyKit init request"
 msgstr "klient se pokusil o neplatný PolicyKit init požadavek"
@@ -2458,14 +2718,36 @@ msgstr "odpojit diskové zařízení"
 msgid "detach network interface"
 msgstr "odpojit síťové rozhraní"
 
+msgid "detaching serial console is not supported"
+msgstr "odpojení sériové konzole není podporováno"
+
 msgid "detailed domain vcpu information"
 msgstr "detailní informace o VCPU domény"
+
+msgid "device cannot be detached without a device alias"
+msgstr "zařízení není možné odpojit bez jeho alternativního názvu"
+
+#, c-format
+msgid "device with '%s' address cannot be detached"
+msgstr "zařízení s adresou „%s“ není možné odpojit"
 
 msgid "direct migration"
 msgstr "přímá migrace"
 
 msgid "disable autostarting"
 msgstr "zakázat automatické spuštění"
+
+#, c-format
+msgid "disk '%s' must use snapshot mode '%s'"
+msgstr "je třeba, aby disk „%s“ používal režim zachycování stavu „%s“"
+
+#, c-format
+msgid "disk '%s' specified twice"
+msgstr "disk „%s“ je zadán dvakrát"
+
+#, c-format
+msgid "disk device type '%s' cannot be detached"
+msgstr "diskové zařízení typu „%s“ nelze odpojovat"
 
 msgid "display available free memory for the NUMA cell."
 msgstr "zobrazit dostupnou volnou paměť pro tuto buňku NUMA."
@@ -2526,6 +2808,10 @@ msgstr "XML definice obrazu domény"
 
 msgid "domain state"
 msgstr "stav domény"
+
+#, c-format
+msgid "don't know how to remove a %s device"
+msgstr "není známo jako odebrat zařízení %s"
 
 msgid "driver of disk device"
 msgstr "ovladač diskového zařízení"
@@ -2613,6 +2899,9 @@ msgstr "selhalo vytvoření logovacího souboru %s"
 msgid "failed to determine host name"
 msgstr "nepodařilo se získat hostitelské jméno"
 
+msgid "failed to extract gluster volume name"
+msgstr "nepodařilo se získat název gluster svazku"
+
 msgid "failed to generate XML"
 msgstr "selhalo generování XML"
 
@@ -2682,15 +2971,12 @@ msgstr "Nepodařilo se označit úložiště %s jako automaticky spouštěné"
 msgid "failed to move file to %s "
 msgstr "selhalo přesunutí souboru na %s"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "nepodařilo se otevřít %s pro čtení"
-
-msgid "failed to open configuration file for reading"
-msgstr "nepodařilo se otevřít konfigurační soubor pro čtení"
-
 msgid "failed to open file"
 msgstr "nepodařilo se otevřít soubor"
+
+#, c-format
+msgid "failed to open ns %s"
+msgstr "nepodařilo se otevřít ns %s"
 
 msgid "failed to open the log file. check the log file path"
 msgstr "Nepodařilo se otevřít log soubor. Zkontrolujte cestu k log souboru"
@@ -2711,6 +2997,10 @@ msgstr "nepodařilo se načíst konfigurační soubor"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "nepodařilo se načíst konfigurační soubor %s"
+
+#, c-format
+msgid "failed to remove pool '%s'"
+msgstr "nepodařilo se odebrat fond „%s“"
 
 msgid "failed to save content"
 msgstr "nepodařilo se uložit obsah"
@@ -2739,6 +3029,10 @@ msgstr "nepodařilo se zapsat konfigurační soubor: %s"
 
 msgid "failed to write the log file"
 msgstr "nezdařil se zápis do log souboru"
+
+#, c-format
+msgid "failed writing to file '%s'"
+msgstr "nepodařilo se zapsat do souboru „%s“"
 
 msgid "file"
 msgstr "soubor"
@@ -2777,11 +3071,21 @@ msgstr "soubor obsahující XML popis svazku"
 msgid "filter has no name"
 msgstr "filtr nemá jméno"
 
+#, c-format
+msgid "filters not supported on interfaces of type %s"
+msgstr "filtry nepodporované na zařízení typu %s"
+
 msgid "for hardware virtualization"
 msgstr "pro hardwarovou virtualizaci"
 
 msgid "force device update"
 msgstr "vynutit aktualizaci zařízení"
+
+msgid "format features only available with qcow2"
+msgstr "funkce formátování jsou k dispozici pouze s qcow2"
+
+msgid "found lease without ip-address"
+msgstr "nalezena zápůjčka bez IP adresy"
 
 msgid "get device block stats for a domain"
 msgstr "získat stav bloku zařízení domény"
@@ -2789,12 +3093,16 @@ msgstr "získat stav bloku zařízení domény"
 msgid "get network interface stats for a domain"
 msgstr "získat stav síťového rozhraní pro doménu"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "obdržel jsem neznámý chybový kód HTTP %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "elegantně vypnout doménu"
+
+#, c-format
+msgid "guest failed to start: %s"
+msgstr "hosta se nepodařilo spustit: %s"
+
+#, c-format
+msgid "host usb device %03d.%03d not found"
+msgstr "usb zařízení hostitele %03d.%03d nenalezeno"
 
 msgid "hypervisor connection URI"
 msgstr "URI spojení hypervizoru"
@@ -2810,6 +3118,14 @@ msgstr "nepřístupný"
 
 msgid "inactive"
 msgstr "neaktivní"
+
+#, c-format
+msgid "input device on bus '%s' cannot be detached"
+msgstr "vstupní zařízení na sběrnici „%s“ není možné odpojit"
+
+#, c-format
+msgid "input device on bus '%s' cannot be hot plugged."
+msgstr "vstupní zařízení na sběrnici „%s“ není možné připojovat za chodu."
 
 msgid "interface has no name"
 msgstr "rozhraní nemá jméno"
@@ -2835,6 +3151,10 @@ msgstr "vnitřní chyba"
 
 msgid "internal use only"
 msgstr "pouze pro vnitřní použití"
+
+#, c-format
+msgid "invalid %s: '%s'"
+msgstr "neplatné %s: „%s“"
 
 #, c-format
 msgid "invalid '=' after option --%s"
@@ -3016,13 +3336,6 @@ msgstr "libhal_ctx_set_dbus_connection selhalo"
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices selhalo"
 
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "volání knihovny %s selhalo, pravděpodobně není podporováno"
-
-msgid "library call failed, possibly not supported"
-msgstr "volání knihovny selhalo, pravděpodobně není podporováno"
-
 msgid "list devices in a tree"
 msgstr "zobrazit zařízení jako stromovou strukturu"
 
@@ -3074,6 +3387,10 @@ msgstr "vypsat svazky"
 msgid "live migration"
 msgstr "živá migrace"
 
+#, c-format
+msgid "malformed disk path: %s"
+msgstr "nesprávně formulovaný popis umístění disku: %s"
+
 msgid "malformed uuid element"
 msgstr "nesmyslný uuid element"
 
@@ -3115,11 +3432,17 @@ msgstr "chybí informace o zařízení"
 msgid "missing devices information for %s"
 msgstr "chybí informace o zařízení pro %s"
 
+msgid "missing domain in snapshot"
+msgstr "v zachyceném stavu chybí doména"
+
 msgid "missing domain state"
 msgstr "chýbí stav domény"
 
 msgid "missing domain type attribute"
 msgstr "chýbí atribut typu domény"
+
+msgid "missing encryption description"
+msgstr "chybí popis šifrování"
 
 msgid "missing graphics device type"
 msgstr "chybí typ grafického rozhraní"
@@ -3135,6 +3458,9 @@ msgstr "chybí jméno zdroje disku"
 
 msgid "missing name for host"
 msgstr "chybí jméno hostitele"
+
+msgid "missing network device feature name"
+msgstr "chybí název funkce síťového rozhraní"
 
 msgid "missing operating system information"
 msgstr "chybí informace o operačním systému"
@@ -3183,6 +3509,9 @@ msgstr "chybí cílové informace pro zařízení %s"
 msgid "missing timer name"
 msgstr "chybí název časovače"
 
+msgid "missing tmpfs size, set the size option"
+msgstr "chybí velikost tmpfs, nastavte volbu velikosti"
+
 msgid "missing vendor"
 msgstr "chybí výrobce"
 
@@ -3219,6 +3548,18 @@ msgid "network '%s' already exists with uuid %s"
 msgstr "síť '%s' je již existuje s uuid %s"
 
 #, c-format
+msgid "network '%s' does not have a bridge name."
+msgstr "síť „%s“"
+
+#, c-format
+msgid "network '%s' has an invalid netmask or IP address in route definition"
+msgstr "síť „%s“ nemá v definici trasy platnou masku sítě nebo IP adresu"
+
+#, c-format
+msgid "network '%s' has no bridge name defined"
+msgstr "síť „%s“ nemá definován název mostu"
+
+#, c-format
 msgid "network '%s' is already defined with uuid %s"
 msgstr "síť '%s' je již definována s uuid %s"
 
@@ -3246,6 +3587,9 @@ msgstr "název sítě"
 
 msgid "network name or uuid"
 msgstr "název nebo UUID sítě"
+
+msgid "network state driver is not active"
+msgstr "ovladač stavu sítě není aktivní"
 
 msgid "network uuid"
 msgstr "UUID sítě"
@@ -3331,6 +3675,10 @@ msgstr "nebylo nalezeno uživatelské jméno klienta"
 msgid "no config file for %s"
 msgstr "žádný konfigurační soubor pro %s"
 
+#, c-format
+msgid "no disk named '%s'"
+msgstr "žádný disk nazvaný „%s“"
+
 msgid "no domain config"
 msgstr "žádná konfigurace domény"
 
@@ -3359,6 +3707,10 @@ msgstr "nebylo zadáno síťové rozhraní pro '%s'"
 #, c-format
 msgid "no network with matching name '%s'"
 msgstr "žádná síť odpovídající jménu '%s'"
+
+#, c-format
+msgid "no removable media size supplied for '%s'"
+msgstr "nebyla zadána velikost vyjímatelného média pro „%s“"
 
 #, c-format
 msgid "no server with matching name '%s' found"
@@ -3399,6 +3751,9 @@ msgstr "počet virtuálních CPU"
 msgid "offline"
 msgstr "offline"
 
+msgid "only one hotpluggable entity can be selected"
+msgstr "vybrat je možné jen jednu entitu připojitelnou za chodu"
+
 msgid "operation failed"
 msgstr "selhala operace"
 
@@ -3435,6 +3790,12 @@ msgstr "úložiště '%s' je již existuje s uuid %s"
 #, c-format
 msgid "pool '%s' is already defined with uuid %s"
 msgstr "úložiště '%s' je již definováno s uuid %s"
+
+msgid "pool does not support pool deletion"
+msgstr "fond nepodporuje mazání fondu"
+
+msgid "pool has no config file"
+msgstr "fond nemá soubor s nastaveními"
 
 msgid "pool information in XML"
 msgstr "informace o úložišti v XML"
@@ -3511,6 +3872,9 @@ msgstr "uložit stav domény do souboru"
 msgid "script used to bridge network interface"
 msgstr "skript použitý k přemostění síťového rozhraní"
 
+msgid "scripts are not supported on LXC network interfaces"
+msgstr "na LXC síťových rozhraních nejsou skripty podporované"
+
 msgid "secret UUID"
 msgstr "tajné UUID"
 
@@ -3556,6 +3920,14 @@ msgstr "spustit (dříve definované) neaktivní úložiště"
 #, c-format
 msgid "storage pool '%s' is already active"
 msgstr "úložiště '%s' je již aktivní"
+
+#, c-format
+msgid "storage pool '%s' is not active"
+msgstr "fond úložiště „%s“ není aktivní"
+
+#, c-format
+msgid "storage pool '%s' is still active"
+msgstr "fond úložiště „%s“ je pořád aktivní"
 
 msgid "storage pool information"
 msgstr "informace o úložišti"
@@ -3606,6 +3978,9 @@ msgstr "tcp"
 msgid "template '%s' does not exist"
 msgstr "template '%s' neexistuje"
 
+msgid "terminated abnormally"
+msgstr "ukončeno nenormálně"
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: zadejte cestu nebo test:///default"
 
@@ -3641,12 +4016,23 @@ msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink vrátil NULL"
 
 #, c-format
+msgid "unable to change config on '%s' graphics type"
+msgstr "není možné změnit nastavení na grafice typu „%s“"
+
+#, c-format
 msgid "unable to close %s"
 msgstr "nelze zavřít %s"
 
 #, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "nelze vytvořit rundir %s: %s"
+
+msgid "unable to create volume XML"
+msgstr "nedaří se vytvořit XML pro svazek"
+
+#, c-format
+msgid "unable to find disk by target: %s"
+msgstr "nedaří se nalézt disk podle cíle: %s"
 
 msgid "unable to generate uuid"
 msgstr "nelze vygenerovat uuid"
@@ -3738,6 +4124,10 @@ msgid "unexpected encryption format"
 msgstr "neočekávaný formát šifrování"
 
 #, c-format
+msgid "unexpected exit status %d"
+msgstr "neočekávaný návratový stav %d"
+
+#, c-format
 msgid "unexpected filesystem type %d"
 msgstr "neočekávaný typ systému souborů %d"
 
@@ -3780,6 +4170,10 @@ msgstr "neočekávaný mód smbios %d"
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "neočekávaný model zvukového zařízení %d"
+
+#, c-format
+msgid "unexpected storage mode for '%s'"
+msgstr "neočekávaný režim úložiště pro „%s“"
 
 #, c-format
 msgid "unexpected sysinfo type model %d"
@@ -3829,6 +4223,10 @@ msgstr "neznámý typ autentizace '%s'"
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "neznámé bootovací zařízení '%s'"
+
+#, c-format
+msgid "unknown capability type '%s'"
+msgstr "neznámý typ kapacity „%s“"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -3920,6 +4318,10 @@ msgstr "neznámý typ rozhraní '%s'"
 msgid "unknown memory balloon model '%s'"
 msgstr "neznámý model ballon memory '%s'"
 
+#, c-format
+msgid "unknown network device feature '%s'"
+msgstr "neznámá funkce síťového zařízení „%s“"
+
 msgid "unknown option"
 msgstr "neznámá volba"
 
@@ -3954,6 +4356,10 @@ msgstr "neznámý typ vlastnosti úložiště '%s' pro '%s'"
 #, c-format
 msgid "unknown storage pool type %s"
 msgstr "neznámý typ úložiště %s"
+
+#, c-format
+msgid "unknown storage vol type %d"
+msgstr "neznámý typ svazku úložiště %d"
 
 #, c-format
 msgid "unknown sysinfo type '%s'"
@@ -4000,6 +4406,9 @@ msgstr "neznámá akce watchdogu '%s'"
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "neznámý model watchdogu '%s'"
+
+msgid "unplug of device was rejected by the guest"
+msgstr "odpojení zařízení bylo odmítnuto hostem"
 
 msgid "unsupported configuration"
 msgstr "nepodporovaná konfigurace"
@@ -4064,6 +4473,9 @@ msgstr "usb produkt potřebuje id"
 msgid "usb vendor needs id"
 msgstr "výrobce usb potřebuje id"
 
+msgid "vCPU '0' can't be modified"
+msgstr "virt. procesor „0“ není možné upravit"
+
 #, c-format
 msgid "vCenter IP address %s too big for destination"
 msgstr "IP adresa %s vCenter je příliš veliká pro cíl"
@@ -4076,6 +4488,14 @@ msgstr "hodnota managerid je mimo rozsah"
 
 msgid "value of typeidversion out of range"
 msgstr "hodnota typeidversion je mimo rozsah"
+
+#, c-format
+msgid "vcpu '%zd' can't be hotunplugged"
+msgstr "virt. procesor „%zd“ není možné odpojit za chodu"
+
+#, c-format
+msgid "vcpu '%zd' is already in requested state"
+msgstr "virt. procesor „%zd“ se už nachází v požadovaném stavu"
 
 msgid "vcpu number"
 msgstr "počet VCPU"
@@ -4101,6 +4521,14 @@ msgstr "vnc display"
 
 msgid "vol information in XML"
 msgstr "informace o svazku v XML"
+
+#, c-format
+msgid "volume '%s' is still in use."
+msgstr "svazek „%s“ je pořád používán."
+
+#, c-format
+msgid "volume name '%s' cannot contain '/'"
+msgstr "název svazku „%s“ nemůže obsahovat „/“"
 
 msgid "volume name or path"
 msgstr "jméno svazku nebo cesta k němu"

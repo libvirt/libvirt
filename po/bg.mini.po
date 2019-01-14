@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-26 07:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bulgarian (http://www.transifex.com/projects/p/fedora/"
@@ -778,13 +778,6 @@ msgstr "неуспешно получаване версията на библи
 msgid "failed to mark network %s as autostarted"
 msgstr "Неуспешно маркиране на мрежата %s като авто-стартирана"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "грешка при отваряне на конфигурационен файл %s за четене"
-
-msgid "failed to open configuration file for reading"
-msgstr "грешка при отваряне на конфигурационния файл за четене"
-
 msgid "failed to open file"
 msgstr "неуспешно отваряне на файл"
 
@@ -844,10 +837,6 @@ msgstr "извличане състоянието на мрежов интерф
 msgid "getting time of day"
 msgstr "вземане на времето"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "получен бе непознат HTTP код на грешка %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "внимателно изключване на домейн"
 
@@ -883,14 +872,6 @@ msgstr "невалиден мрежов указател за връзка в"
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "невалиден мрежов указател за връзка в %s"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr ""
-"неуспешно извикване на библиотечната функция %s, може би не се поддържа"
-
-msgid "library call failed, possibly not supported"
-msgstr "неуспешно извикване на библиотечна функция, може би не се поддържа"
 
 msgid "list domains"
 msgstr "показване на домейните"

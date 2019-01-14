@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -340,10 +340,6 @@ msgstr "Không thể gắn đĩa mềm %s trực tiếp"
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Không thể trích xuất phiên bản quản lý máy ảo %s đang chạy\n"
 
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "Không thể tìm nhân UML %s"
-
 msgid "Cannot find suitable CPU model for given data"
 msgstr "Không thể tìm mẫu CPU phù hợp cho dữ liệu đã cho"
 
@@ -434,10 +430,6 @@ msgstr "Thay đổi giới hạn cấp phát bộ nhớ lớn nhất cho miền 
 
 msgid "Change the number of virtual CPUs in the guest domain."
 msgstr "Thay đổi số CPU ảo trong miền khách"
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "Lệnh %s quá dài cho chỗ ghi"
 
 msgid "Compute baseline CPU for a set of given CPUs."
 msgstr "Tính toán CPU gốc cho một tập hợp các CPU đã cho."
@@ -2566,9 +2558,6 @@ msgstr "Tên mẫu chứa các ký tự không hợp lệ"
 msgid "Monitor path %s too big for destination"
 msgstr "Đường dẫn bộ theo dõi %s quá lớn cho chỗ ghi"
 
-msgid "NULL or empty path"
-msgstr "NULL hay đường dẫn trống"
-
 msgid "NUMA cell number"
 msgstr "số ô NUMA"
 
@@ -2619,10 +2608,6 @@ msgstr "Mạng '%s' đã đang chạy"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "Mạng '%s' vẫn đang chạy"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "Mạng '%s' không tìm thấy"
 
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
@@ -3351,12 +3336,6 @@ msgstr "Ngưng thao tác thất bại"
 msgid "System lacks NETNS support"
 msgstr "Hệ thống thiếu hỗ trợ NETNS"
 
-msgid "TCP client networking type not supported"
-msgstr "Kiểu mạng trình khách TCP không hỗ trợ"
-
-msgid "TCP server networking type not supported"
-msgstr "Kiểu mạng máy phục vụ TCP không hỗ trợ"
-
 msgid "The certificate has been revoked."
 msgstr "Chứng thực đã bị hủy bỏ."
 
@@ -3385,9 +3364,6 @@ msgstr "Máy phục vụ điều hướng từ '%s' sang '%s'"
 
 msgid "This host is not managed by a vCenter"
 msgstr "Máy chủ này không được quản lý bởi một vCenter"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr "Kiểu thiết bị này không thể tháo nóng được"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Kiểu đĩa này không thể tháo nóng được"
@@ -3603,9 +3579,6 @@ msgstr "Không thể thiết lập lại thiết bị PCI %s: %s"
 msgid "Unable to send container continue message"
 msgstr "Không thể gửi tin nhắn tiếp tục của bộ chứa"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "Không thể đặt cờ close-on-exec cho tập tin bản ghi máy ảo"
-
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Không thể đặt cờ close-on-exec cho bộ theo dõi"
 
@@ -3638,10 +3611,6 @@ msgstr "Chính sách khớp CPU không mong đợi %d"
 
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Bộ quản lý QEMU không mong đợi vẫn còn hoạt động trong khi xóa miền"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "Đường dẫn Unix %s quá dài cho chỗ ghi"
 
 msgid "Unknown"
 msgstr "Không rõ"
@@ -4045,14 +4014,8 @@ msgstr "không thể lấy được mutex công việc"
 msgid "cannot acquire state change lock"
 msgstr "không thể lấy được khóa thay đổi trạng thái"
 
-msgid "cannot attach device on inactive domain"
-msgstr "không thể gắn thiết bị vào miền không hoạt động"
-
 msgid "cannot become session leader"
 msgstr "không thể trở thành lãnh đạo phiên làm việc"
-
-msgid "cannot bind socket"
-msgstr "không thể gắn kết socket"
 
 msgid "cannot block signals"
 msgstr "không thể chặn tín hiệu"
@@ -4148,9 +4111,6 @@ msgstr "không thể xoá ảnh chụp miền cho miền đang chạy"
 
 msgid "cannot delete snapshots of running domain"
 msgstr "không thể xoá các ảnh chụp của miền đang chạy"
-
-msgid "cannot detach device on inactive domain"
-msgstr "không thể tháo thiết bị trên miền không hoạt động"
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
@@ -4256,9 +4216,6 @@ msgstr "không thể lấy thay thế vCPU và thời gian pCPU"
 msgid "cannot initialize condition variable"
 msgstr "không thể khởi chạy biến số điều kiện"
 
-msgid "cannot initialize inotify"
-msgstr "không thể khởi chạy inotify"
-
 msgid "cannot initialize monitor condition"
 msgstr "không thể khởi chạy bộ theo dõi điều kiện"
 
@@ -4293,9 +4250,6 @@ msgstr "không thể mở thiết bị tap macvtap %s"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "không thể mở đường dẫn '%s'"
-
-msgid "cannot open socket"
-msgstr "không thể mở socket"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -4402,10 +4356,6 @@ msgid "cannot parse vendor id %s"
 msgstr "không thể phân tích id nhà cung cấp %s"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "không thể phân tích phiên bản %s"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "không thể phân tích đầu video '%s'"
 
@@ -4478,10 +4428,6 @@ msgstr "không thể đọc header '%s'"
 msgid "cannot read mount list '%s'"
 msgstr "không thể đọc danh sách lắp '%s'"
 
-#, c-format
-msgid "cannot read reply %s"
-msgstr "không thể đọc phản hồi %s"
-
 msgid "cannot register file watch on stream"
 msgstr "không thể đăng ký tập tin xem trên luồng"
 
@@ -4522,16 +4468,8 @@ msgstr "không thể hoàn nguyên ảnh chụp của miền đang chạy"
 msgid "cannot seek to beginning of file '%s'"
 msgstr "không thể tìm kiếm tới đầu của tập tin '%s'"
 
-#, c-format
-msgid "cannot send command %s"
-msgstr "không thể gửi lệnh %s"
-
 msgid "cannot send to netlink socket"
 msgstr "không thể gửi socket netlink"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "không thể gửi lệnh quá dài %s (%d byte)"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -4555,14 +4493,8 @@ msgstr "không thể đặt chế độ tập tin '%s'"
 msgid "cannot set file owner '%s'"
 msgstr "không thể đặt chủ tập tin '%s'"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "không thể đặt bộ nhớ lớn nhất thấp hơn bộ nhớ hiện tại"
-
 msgid "cannot set memory higher than max memory"
 msgstr "không thể đặt bộ nhớ lớn hơn bộ nhớ lớn nhất"
-
-msgid "cannot set memory of an active domain"
-msgstr "không thể đặt bộ nhớ cho miền hoạt động"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -5008,9 +4940,6 @@ msgstr "kiểu thiết bị '%s' không thể được gắn"
 msgid "direct migration"
 msgstr "di trú trực tiếp"
 
-msgid "direct networking type not supported"
-msgstr "kiểu mạng trực tiếp không hỗ trợ"
-
 msgid "directory to switch to (default: home or else root)"
 msgstr "thư mục để chuyển sang (mặc định: home hoặc root)"
 
@@ -5418,17 +5347,6 @@ msgstr "thất bại khi đánh dấu network %s tự khởi động"
 msgid "failed to mark pool %s as autostarted"
 msgstr "thất bại khi đánh dấu pool %s tự khởi động"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "mở %s để đọc thất bại"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "thất bại khi mở tập tin chardev: %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "mở tập tin cấu hình để đọc thất bại"
-
 msgid "failed to open file"
 msgstr "thất bại khi mở tập tin"
 
@@ -5455,10 +5373,6 @@ msgstr "thất bại khi đọc tập tin cấu hình %s"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "thất bại khi đọc độ dài dữ liệu meta trong '%s'"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "thất bại khi đọc pid: %s"
 
 msgid "failed to read qemu header"
 msgstr "thất bại khi đọc header qemu"
@@ -5609,10 +5523,6 @@ msgstr "lấy giá trị được sử dụng lần khởi động tiếp theo"
 msgid "getting time of day"
 msgstr "lấy giờ của ngày"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "nhận được mã lỗi HTTP không rõ %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "tắt đúng kiểu một miền "
 
@@ -5691,10 +5601,6 @@ msgid "include security sensitive information in XML dump"
 msgstr "bao gồm thông tin cảm giác bảo mật trong dump XML"
 
 #, c-format
-msgid "incomplete reply %s"
-msgstr "phản hồi %s không hoàn thiện"
-
-#, c-format
 msgid "incomplete save header in '%s'"
 msgstr "header lưu không hoàn thiện trong '%s'"
 
@@ -5735,9 +5641,6 @@ msgstr "tên giao diện hoặc địa chỉ MAC"
 
 msgid "internal error"
 msgstr "lỗi nội bộ"
-
-msgid "internal networking type not supported"
-msgstr "kiểu mạng nội bộ không hỗ trợ"
 
 #, c-format
 msgid "invalid '=' after option --%s"
@@ -5984,13 +5887,6 @@ msgstr "libhal_ctx_set_dbus_connection thất bại"
 
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices thất bại"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "gọi thư viện %s thất bại, có thể không được hỗ trợ"
-
-msgid "library call failed, possibly not supported"
-msgstr "gọi thư viện thất bại, có thể không được hỗ trợ"
 
 #, c-format
 msgid "libvirt was built without the '%s' driver"
@@ -6579,9 +6475,6 @@ msgstr ""
 msgid "no job is active on the domain"
 msgstr "không có công việc đang hoạt động trên miền"
 
-msgid "no kernel specified"
-msgstr "không có nhân được chỉ định"
-
 msgid "no large enough free extent"
 msgstr "không có vùng mở rộng trống đủ lớn"
 
@@ -6693,9 +6586,6 @@ msgstr "nwfilter đang được dùng"
 
 msgid "offline"
 msgstr "ngoại tuyến"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "chỉ nghe TCP được hỗ trợ cho thiết bị ký tự"
 
 msgid "only a single memory balloon device is supported"
 msgstr "chỉ có một thiết bị balloon bộ nhớ đơn được hỗ trợ"
@@ -7020,9 +6910,6 @@ msgstr "hiện/đặt các thông số bộ lập lịch"
 msgid "shut off"
 msgstr "tắt"
 
-msgid "shutdown operation failed"
-msgstr "thao tác tắt thất bại"
-
 msgid "size > maximum buffer size"
 msgstr "size > kích thước bộ đệm lớn nhất"
 
@@ -7261,12 +7148,6 @@ msgstr "udev quét thiết bị trả lại %d"
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink trả lại NULL"
 
-msgid "uml state driver is not active"
-msgstr "trình điều khiển trạng thái uml không hoạt động"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: thiếu bộ nhớ"
-
 #, c-format
 msgid "unable to allocate socket security context '%s'"
 msgstr "không thể cấp phát ngữ cảnh bảo mật socket '%s'"
@@ -7390,14 +7271,6 @@ msgstr "đường dẫn URI QEMU '%s' không mong đợi, thử qemu:/
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "đường dẫn URI QEMU '%s' không mong đợi, thử qemu:///system"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "đường dẫn URI UML '%s' không mong muốn, thử uml:///session"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "đường dẫn URI UML '%s' không mong muốn, thử uml:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -7899,10 +7772,6 @@ msgstr "mẫu watchdog không rõ '%s'"
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "kiểu xác thực %d không hỗ trợ"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "kiểu thiết bị ký tự %d không hỗ trợ"
 
 #, c-format
 msgid "unsupported clock offset '%s'"

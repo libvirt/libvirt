@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -809,10 +809,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x로 CPU 모델을 찾을 수 없음"
 
 #, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "UML 커널 %s를 찾을 수 없음"
-
-#, c-format
 msgid "Cannot find security driver '%s'"
 msgstr "보안 드라이버 '%s'를 찾을 수 없음"
 
@@ -1087,10 +1083,6 @@ msgid ""
 "Changing device type to/from spicevmc would change default target channel "
 "name"
 msgstr "spicevmc에서/로 장치 이름을 변경하면 기본값 대상 채널 이름이 변경됨 "
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "명령 %s가 목적지에 대해 너무 긺"
 
 msgid "Completed with no error"
 msgstr "오류 없이 완료되었습니다 "
@@ -3964,9 +3956,6 @@ msgstr "알림 "
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-msgid "NULL or empty path"
-msgstr "NULL 또는 비어있는 경로"
-
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL 문자열 매개 변수 '%s'"
@@ -4046,10 +4035,6 @@ msgstr "도메인 '%s'가 이미 실행중입니다"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "네트워크 '%s'가 여전히 실행중입니다"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "네트워크 '%s'를 찾을 수 없음"
 
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
@@ -4874,12 +4859,6 @@ msgstr "시스템이 사용 불가능합니다 "
 msgid "System lacks NETNS support"
 msgstr "시스템에 NETNS 지원이 없습니다"
 
-msgid "TCP client networking type not supported"
-msgstr "지원되지 않는 TCP 클라이언트 네트워킹 유형"
-
-msgid "TCP server networking type not supported"
-msgstr "지원되지 않는 TCP 서버 네트워킹 유형"
-
 msgid "Target"
 msgstr "대상"
 
@@ -5279,9 +5258,6 @@ msgstr "'%s'에서 '%s'로 서버가 리디렉션되었습니다 "
 msgid "This host is not managed by a vCenter"
 msgstr "이 호스트는 vCenter에 의해 관리되지 않습니다"
 
-msgid "This type of device cannot be hot unplugged"
-msgstr "이런 유형의 장치는 핫 언플러그될 수 없습니다"
-
 msgid "Thread(s) per core:"
 msgstr "코어당 스레드:"
 
@@ -5676,9 +5652,6 @@ msgstr "역할 '%s'의 SELinux 문맥을 설정할 수 없음"
 msgid "Unable to set SELinux context user '%s'"
 msgstr "사용자 '%s'의 SELinux 문맥을 설정할 수 없음"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "VM 로그파일의 close-on-exec 플래그를 설정할 수 없음"
-
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "모니터의 close-on-exec 플래그를 설정할 수 없음"
 
@@ -5750,10 +5723,6 @@ msgstr "디스크 리소스의 예상치 않은 매개 변수 "
 #, c-format
 msgid "Unexpected volume path format: %s"
 msgstr "예상치 못한 볼륨 경로 형식: %s"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "유닉스 경로 %s가 목적지에 대해 너무 긺"
 
 msgid "Unknown"
 msgstr "알려지지 않음"
@@ -6327,14 +6296,8 @@ msgstr "상태 변경 락(lock)을 얻을 수 없음"
 msgid "cannot allocate nlhandle for netlink"
 msgstr "netlink의 nlhandle을 할당할 수 없음"
 
-msgid "cannot attach device on inactive domain"
-msgstr "비실행중인 도메인에 장치를 부착할 수 없음"
-
 msgid "cannot become session leader"
 msgstr "세션 리더가 되는 데 실패"
-
-msgid "cannot bind socket"
-msgstr "소켓을 바인드할 수 없음"
 
 msgid "cannot block signals"
 msgstr "시그널을 블럭할 수 없음"
@@ -6428,9 +6391,6 @@ msgstr "파이프를 생성할 수 없음"
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
-
-msgid "cannot detach device on inactive domain"
-msgstr "작동중이 아닌 도메인에서 장치를 탈착할 수 없음"
 
 #, c-format
 msgid "cannot disable %s"
@@ -6567,9 +6527,6 @@ msgstr "임시 도메인의 스냅샷 이후 중지할 수 없음 "
 msgid "cannot initialize condition variable"
 msgstr "상태 변수를 초기화할 수 없습니다"
 
-msgid "cannot initialize inotify"
-msgstr "inotify를 초기화할 수 없음"
-
 msgid "cannot initialize monitor condition"
 msgstr "모니터 조건을 초기화할 수 없음"
 
@@ -6604,9 +6561,6 @@ msgstr " %s macvtap 탭 장치를 열 수 없습니다"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "'%s' 경로를 열 수 없음"
-
-msgid "cannot open socket"
-msgstr "소켓을 열수 없음"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -6753,10 +6707,6 @@ msgid "cannot parse vendor id %s"
 msgstr "벤더 id %s를 구문분석 할 수 없음"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "버전 번호 %s를 구문 분석할 수 없음"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "비디오 헤드 '%s'를 구문분석 할 수 없음"
 
@@ -6841,10 +6791,6 @@ msgid "cannot read mount list '%s'"
 msgstr "'%s' 마운트 목록을 읽을 수 없음"
 
 #, c-format
-msgid "cannot read reply %s"
-msgstr "응답 %s를 읽을 수 없음"
-
-#, c-format
 msgid "cannot receive data from volume %s"
 msgstr "볼륨 %s에서 데이터를 수신할 수 없음 "
 
@@ -6875,19 +6821,11 @@ msgid "cannot seek to beginning of file '%s'"
 msgstr "파일 '%s'의 시작 부분으로 이동할 수 없습니다"
 
 #, c-format
-msgid "cannot send command %s"
-msgstr "명령 '%s'를 보낼 수 없음"
-
-#, c-format
 msgid "cannot send data to volume %s"
 msgstr "볼륨 %s으로 데이터를 전송할 수 없음 "
 
 msgid "cannot send to netlink socket"
 msgstr "넷링크 소켓에 송신할 수 없습니다"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "%s 명령어가 너무 길어서 보낼 수 없습니다 (%d 바이트)"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -6911,14 +6849,8 @@ msgstr "설정 모드 '%s'를 설정할 수 없음"
 msgid "cannot set file owner '%s'"
 msgstr "파일 소유자 '%s'를 설정할 수 없음"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "최대 메모리를 현재 메모리보다 적게 설정할 수 없음"
-
 msgid "cannot set memory higher than max memory"
 msgstr "최대 메모리보다 더 높게 메모리를 설정할 수 없음"
-
-msgid "cannot set memory of an active domain"
-msgstr "동작중인 도메인의 메모리를 설정할 수 없음"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -7957,13 +7889,6 @@ msgstr "자동 시작으로 %s 풀을 표시하기 실패"
 msgid "failed to move file to %s "
 msgstr "파일을 %s로 이동하는데 실패 "
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "읽기 용 %s 열기 실패"
-
-msgid "failed to open configuration file for reading"
-msgstr "읽기 용 설정 파일 열기 실패"
-
 msgid "failed to open file"
 msgstr "파일 열기 실패"
 
@@ -8012,10 +7937,6 @@ msgstr "libxl 헤더를 읽는데 실패"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s'에서 메타데이터 길이를 읽는 데 실패"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "pid 읽기 실패: %s"
 
 msgid "failed to read qemu header"
 msgstr "qemu 헤더를 읽는 것을 실패"
@@ -8223,10 +8144,6 @@ msgstr "도메인의 네트워크 인터페이스 상태 보기"
 msgid "getting time of day"
 msgstr "시간 읽어오는 중"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "알려지지 않은 HTTP 오류 코드 %d가 있음"
-
 msgid "gracefully shutdown a domain"
 msgstr "도메인을 종료"
 
@@ -8271,9 +8188,6 @@ msgstr "호스트 인증 모드에는 세 개의 인증서가 필요합니다"
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev 모드 '%s'가 지원되지 않음"
-
-msgid "hostdev networking type not supported"
-msgstr "hostdev 네트워크 유형이 지원되지 않음"
 
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
@@ -8326,10 +8240,6 @@ msgstr "비활성화"
 
 msgid "include security sensitive information in XML dump"
 msgstr "XML 덤프에 보안상 중요한 정보를 포함합니다"
-
-#, c-format
-msgid "incomplete reply %s"
-msgstr "완전하지 않은 응답 %s"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -8385,9 +8295,6 @@ msgstr "인터페이스 이름 또는 MAC 주소"
 
 msgid "internal error"
 msgstr "내부 오류"
-
-msgid "internal networking type not supported"
-msgstr "내부 네트워킹 유형을 지원하지 않음"
 
 #, c-format
 msgid "invalid \"trunk='%s'\" in <vlan> - must be yes or no"
@@ -8698,10 +8605,6 @@ msgid "invalid node memory value"
 msgstr "잘못된 노드 메모리 값"
 
 #, c-format
-msgid "invalid path '%s'"
-msgstr "잘못된 경로 '%s'"
-
-#, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "잘못된 경로, '%s'는 알려진 인터페이스가 이닙니다"
 
@@ -8835,13 +8738,6 @@ msgstr "libhal_ctx_set_dbus_connection 실패 "
 
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices 실패"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "라이브러리가 지원되지 않아 %s 라이브러리 호출 실패"
-
-msgid "library call failed, possibly not supported"
-msgstr "라이브러리가 지원되지 않아 라이브러리 호출 실패"
 
 #, c-format
 msgid "libvirt was built without the '%s' driver"
@@ -9701,9 +9597,6 @@ msgstr "확장 파티션을 찾지 못했으며, 기본 파티션도 사용할 �
 msgid "no job is active on the domain"
 msgstr "도메인에 작동중인 잡이 없습니다"
 
-msgid "no kernel specified"
-msgstr "커널이 지정되지 않았습니다"
-
 msgid "no large enough free extent"
 msgstr "충분히 큰 확장 공간을 가지고 있지 않습니다"
 
@@ -9842,9 +9735,6 @@ msgstr "오프라인 마이그레이션은 소스 호스트에 의해 지원되�
 
 msgid "ok"
 msgstr "ok"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "문자 장치에 대해 TCP listen만을 지원"
 
 msgid "only a single TPM device is supported"
 msgstr "단일 TPM 장치만 지원됨"
@@ -10321,9 +10211,6 @@ msgstr "종료"
 msgid "shutdown"
 msgstr "종료"
 
-msgid "shutdown operation failed"
-msgstr "시스템 종료 동작이 실패했습니다"
-
 msgid "shutting down"
 msgstr "종료 중"
 
@@ -10749,12 +10636,6 @@ msgstr "udev 스캔 장치가 %d를 반환함 "
 msgid "uid and gid should be mapped both"
 msgstr "uid와 gid 모두 매핑해야 합니다"
 
-msgid "uml state driver is not active"
-msgstr "uml 상태 드라이버가 작동중이 아닙니다"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: 메모리가 부족"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "장치 %s에 액세스할 수 없음\n"
@@ -11003,14 +10884,6 @@ msgstr "예기치 못한 QEMU URI 경로 '%s', qemu:///session을 시도"
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "예기치 못한 QEMU URI 경로 '%s', qemu:///system을 시도"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "예기치 못한 UML URI 경로 '%s', uml:///session을 시도"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "예기치 못한 UML URI 경로 '%s', uml:///system을 시도하십시오"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -11891,10 +11764,6 @@ msgstr "지원되지 않는 인증 유형 %d"
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "지원되지 않는 문자 장치 '%s'"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "지원되지 않는 문자 장치 유형 %d"
 
 #, c-format
 msgid "unsupported chr device type '%s'"

@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -1310,12 +1310,6 @@ msgstr "設定ファイルを読み込みできません: %s: %s"
 msgid "Can't modify device type '%s'"
 msgstr "デバイス形式 '%s' を変更できません"
 
-msgid "Can't parse barrier from "
-msgstr "以下から barrier を構文解析できません "
-
-msgid "Can't parse limit from "
-msgstr "以下から limit を構文解析できません "
-
 msgid "Can't parse prlctl output"
 msgstr "prlctl 出力を構文解析できません"
 
@@ -1480,10 +1474,6 @@ msgstr "パスに '%s' を見つけられません"
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x を持つ CPU モデルを見つけられませんでした"
-
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "UML カーネル %s を見つけられません"
 
 #, c-format
 msgid "Cannot find program %d version %d"
@@ -1955,10 +1945,6 @@ msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr ""
 "ドメイン %s のクローズコールバックはすでに他の接続 %p で登録されています"
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "コマンド %s が宛先にとって長すぎます"
 
 msgid "Commit aborted"
 msgstr "コミットが中断されました"
@@ -5698,9 +5684,6 @@ msgstr "IP %s が宛先に対して大きすぎます"
 msgid "IP address lookup for host '%s' failed: %s"
 msgstr "ホスト '%s' の IP アドレスの検索に失敗しました: %s"
 
-msgid "IP address not supported for ethernet interface"
-msgstr "IP アドレスはイーサネットインターフェースに対してサポートされません"
-
 msgid ""
 "IP parameter must be given since libvirt was not compiled with IP address "
 "learning support"
@@ -7080,9 +7063,6 @@ msgstr "注記"
 msgid "NULL NetworkDef"
 msgstr "空の NetworkDef"
 
-msgid "NULL or empty path"
-msgstr "NULL または空のパス"
-
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL 文字列パラメーター '%s'"
@@ -7176,10 +7156,6 @@ msgstr "ネットワーク '%s' はすでに実行中です"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "ネットワーク '%s' はまだ実行中です"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "ネットワーク '%s' が見つかりません"
 
 msgid "Network config change transaction committed\n"
 msgstr "ネットワーク設定変更トランザクションがコミットされました\n"
@@ -7336,9 +7312,6 @@ msgstr "利用可能なカテゴリー範囲がありません"
 
 msgid "No channel command provided"
 msgstr "チャネルコマンドが指定されていません"
-
-msgid "No controllers are mounted"
-msgstr "コントローラーがマウントされていません"
 
 msgid "No data supplied for <initarg> element"
 msgstr "<initarg> 要素にデータがありません"
@@ -9011,12 +8984,6 @@ msgstr "システムが利用可能ではありません"
 msgid "System lacks NETNS support"
 msgstr "システムに NETNS サポートが欠けています"
 
-msgid "TCP client networking type not supported"
-msgstr "TCP クライアントネットワーク形式はサポートされません"
-
-msgid "TCP server networking type not supported"
-msgstr "TCP サーバーネットワークタイプはサポートされていません"
-
 #, c-format
 msgid "TLS handshake failed %s"
 msgstr "TLS ハンドシェイクに失敗しました %s"
@@ -9560,9 +9527,6 @@ msgstr "この関数は WIN32 プラットフォームにおいてサポート�
 
 msgid "This host is not managed by a vCenter"
 msgstr "このホストは vCenter により管理されていません"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr "この形式のデバイスはホットプラグで抜けません"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "この形式のディスクはホットプラグで抜けません"
@@ -10722,9 +10686,6 @@ msgstr "このプラットフォームにおいて %s における STP 遅延を
 msgid "Unable to set STP on %s on this platform"
 msgstr "このプラットフォームにおいて %s における STP を設定できません"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "VM ログファイルの close-on-exec フラグをセットできません"
-
 msgid "Unable to set cloexec flag"
 msgstr "cloexec フラグを設定できません"
 
@@ -10982,10 +10943,6 @@ msgid "Unhandled event %d for monitor fd %d"
 msgstr ""
 "処理できないイベント %d がモニターファイルディスクリプター %d に対してありま"
 "した"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "Unix パス %s が宛先にとって長すぎます"
 
 msgid "Unknown"
 msgstr "不明"
@@ -12167,14 +12124,8 @@ msgstr "ネットリンクに対してプレースホルダー nlhandle を割�
 msgid "cannot apply process capabilities %d"
 msgstr "プロセスのケイパビリティ %d を適用できません"
 
-msgid "cannot attach device on inactive domain"
-msgstr "停止状態のドメインでデバイスを添付できません"
-
 msgid "cannot become session leader"
 msgstr "セッションのリーダーになれません"
-
-msgid "cannot bind socket"
-msgstr "ソケットをバインドできません"
 
 msgid "cannot block signals"
 msgstr "信号をブロックできません"
@@ -12378,9 +12329,6 @@ msgstr "%d 個のスナップショットを持つ停止状態のドメインを
 
 msgid "cannot delete snapshots of running domain"
 msgstr "実行中のドメインのスナップショットを削除できません"
-
-msgid "cannot detach device on inactive domain"
-msgstr "停止状態のドメインではデバイスを外せません"
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
@@ -12590,9 +12538,6 @@ msgstr "証明書オブジェクトを初期化できません: %s"
 msgid "cannot initialize condition variable"
 msgstr "条件変数を初期化出来ません"
 
-msgid "cannot initialize inotify"
-msgstr "inotify を初期化できません"
-
 msgid "cannot initialize monitor condition"
 msgstr "モニター条件を初期化できません"
 
@@ -12709,9 +12654,6 @@ msgstr "macvtap タップデバイス %s を開けません"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "パス '%s' を開けません"
-
-msgid "cannot open socket"
-msgstr "ソケットを開けません"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -12911,10 +12853,6 @@ msgid "cannot parse vendor id %s"
 msgstr "vendor id %s を構文解析できません"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "version %s を構文解析できません"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "video heads '%s' を構文解析できません"
 
@@ -13017,10 +12955,6 @@ msgid "cannot read mount list '%s'"
 msgstr "マウント一覧 %s を読み込めません"
 
 #, c-format
-msgid "cannot read reply %s"
-msgstr "応答 %s を読み込めません"
-
-#, c-format
 msgid "cannot receive data from volume %s"
 msgstr "ボリューム %s からデータを受信できませんでした"
 
@@ -13096,19 +13030,11 @@ msgid "cannot seek to start of '%s'"
 msgstr "'%s' の先頭にシークできませんでした"
 
 #, c-format
-msgid "cannot send command %s"
-msgstr "コマンド %s を送信できません"
-
-#, c-format
 msgid "cannot send data to volume %s"
 msgstr "ボリューム %s にデータを送信できませんでした"
 
 msgid "cannot send to netlink socket"
 msgstr "netlink ソケットに送信できません"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "長すぎるコマンド %s を送信できません (%d バイト)"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -13132,14 +13058,8 @@ msgstr "ファイルモード'%s' をセットできません"
 msgid "cannot set file owner '%s'"
 msgstr "ファイルオーナー '%s' をセットできません"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "最大メモリーはカレントメモリー以下に設定できません"
-
 msgid "cannot set memory higher than max memory"
 msgstr "メモリーは最大メモリー以上にセットできません"
-
-msgid "cannot set memory of an active domain"
-msgstr "動作中のドメインのメモリーを設定できません"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -14127,9 +14047,6 @@ msgstr "ディレクトリー"
 msgid "direct migration"
 msgstr "ダイレクト・マイグレーション"
 
-msgid "direct networking type not supported"
-msgstr "直接ネットワーク形式はサポートされません"
-
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %s "
@@ -15104,17 +15021,6 @@ msgstr "プール %s を自動起動としてマークするのに失敗しま�
 msgid "failed to move file to %s "
 msgstr "ファイルを %s に移動できませんでした"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "読み込みのため %s を開くのに失敗しました"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "キャラクターデバイスを開けません: %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "読み込みのため設定ファイルを開くのに失敗しました"
-
 msgid "failed to open file"
 msgstr "ファイルを開くのに失敗しました"
 
@@ -15199,10 +15105,6 @@ msgstr "libxl ヘッダーの読み込みに失敗しました"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s' にあるメタ情報の長さの読み込みに失敗しました"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "pid の読み込みに失敗: %s"
 
 msgid "failed to read qemu header"
 msgstr "qemu ヘッダーの読み込みに失敗しました"
@@ -15615,10 +15517,6 @@ msgstr ""
 "予期しない RPC コールのプログラム %d バージョン %d プロセス %d 種類 %d があり"
 "ました"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "不明な HTTP エラーコード %d を取得しました"
-
 msgid "gracefully shutdown a domain"
 msgstr "ドメインの穏やかな停止"
 
@@ -15725,9 +15623,6 @@ msgstr "ホストデバイス %s がありませんでした"
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev モード '%s' はサポートされません"
 
-msgid "hostdev networking type not supported"
-msgstr "hostdev ネットワーク形式はサポートされません"
-
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys モード '%s' はサポートされません"
@@ -15803,10 +15698,6 @@ msgstr "利用可能ならば、接続 URI の中にパスワードを含めま�
 #, c-format
 msgid "incomplete metadata in '%s'"
 msgstr "'%s' にあるメタデータが不完全です"
-
-#, c-format
-msgid "incomplete reply %s"
-msgstr "不完全な応答 %s"
 
 msgid "incomplete return information"
 msgstr "不完全な返り情報"
@@ -15885,9 +15776,6 @@ msgstr "インターフェース名 %s がバッファーの中に収まりま�
 msgid "interface name or MAC address"
 msgstr "インターフェイス名または MAC アドレス"
 
-msgid "interface script execution not supported by this driver"
-msgstr "インターフェーススクリプト実行はこのドライバーによりサポートされません"
-
 msgid "interface stats not implemented on this platform"
 msgstr "インターフェースの統計はこのプラットフォームにおいてサポートされません"
 
@@ -15904,9 +15792,6 @@ msgstr "内部エラー: %s"
 #, c-format
 msgid "internal error: bad options in command: '%s'"
 msgstr "内部エラー: コマンドに不正なオプションがあります: '%s'"
-
-msgid "internal networking type not supported"
-msgstr "内部ネットワーク形式はサポートされません"
 
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
@@ -16249,10 +16134,6 @@ msgid "invalid path %s not assigned to domain"
 msgstr "無効なパス %s はドメインに割り当てられていません"
 
 #, c-format
-msgid "invalid path '%s'"
-msgstr "無効なパス '%s'"
-
-#, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "無効なパス、'%s' は不明なインターフェイスです"
 
@@ -16456,14 +16337,6 @@ msgstr "libhal_get_all_devices に失敗しました"
 
 msgid "libnl was not available at build time"
 msgstr "libnl がビルド時に利用可能ではありませんでした"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr ""
-"ライブラリー呼出し %s が失敗しました、サポートされていない可能性があります"
-
-msgid "library call failed, possibly not supported"
-msgstr "ライブラリー呼出しが失敗しました、サポートされていない可能性があります"
 
 msgid "libselinux does not support LXC contexts path"
 msgstr "libselinux は LXC コンテキストパスをサポートしていません"
@@ -17944,9 +17817,6 @@ msgstr "internalFlags サポートがありません"
 msgid "no job is active on the domain"
 msgstr "ドメインにおいてアクティブなジョブはありません"
 
-msgid "no kernel specified"
-msgstr "カーネルの指定がありません"
-
 msgid "no large enough free extent"
 msgstr "空き拡張に十分な領域がありません"
 
@@ -18219,9 +18089,6 @@ msgstr "ok"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "オンラインコミットはこの QEMU バイナリーでサポートされません"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "TCP リッスンのみが文字デバイス用にサポートされています"
 
 msgid "only a single TPM device is supported"
 msgstr "一つの TPM デバイスのみがサポートされます"
@@ -19177,9 +19044,6 @@ msgstr "シャットオフ"
 msgid "shutdown"
 msgstr "シャットダウン"
 
-msgid "shutdown operation failed"
-msgstr "シャットダウン操作は失敗しました"
-
 msgid "shutting down"
 msgstr "シャットダウン中"
 
@@ -19833,12 +19697,6 @@ msgstr "udev_monitor_new_from_netlink が NULL を返しました"
 msgid "uid and gid should be mapped both"
 msgstr "UID と GID をどちらも対応付ける必要があります"
 
-msgid "uml state driver is not active"
-msgstr "uml 状態ドライバーはアクティブではありません"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: メモリー不足"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "デバイス %s にアクセスできません\n"
@@ -20172,14 +20030,6 @@ msgstr "予期しない QEMU URI パス '%s'、qemu:///session を試して下�
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "予期しない QEMU URI パス '%s'、qemu:///system を試して下さい"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "予期しない UML URI パス '%s'、uml:///session を試して下さい"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "予期しない UML URI パス '%s'、uml:///system を試して下さい"
 
 #, c-format
 msgid ""
@@ -21174,10 +21024,6 @@ msgstr "サポートのない認証タイプ %d です"
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "サポートされないキャラクターデバイス '%s' です"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "サポートのない文字デバイスタイプ %d"
 
 #, c-format
 msgid "unsupported chr device type '%s'"

@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-27 05:14+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -307,10 +307,6 @@ msgstr ""
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Impossibile estrarre la versione dell'hypervisor %s in esecuzione\n"
-
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "Impossibile trovare il kernel UNL %s"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "Impossibile trovare una CPU che soddisfa i dati richiesti"
@@ -1753,9 +1749,6 @@ msgstr "Interfacce multiple connesse al bridge"
 msgid "NOTE"
 msgstr "NOTE"
 
-msgid "NULL or empty path"
-msgstr "percorso vuoto o NULL"
-
 msgid "NUMA cell number"
 msgstr "Numero cella NUMA"
 
@@ -1806,10 +1799,6 @@ msgstr "La rete '%s' è già in esecuzione"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "La rete '%s' è ancora in esecuzione"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "Rete '%s' non trovata"
 
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
@@ -2346,9 +2335,6 @@ msgstr "Il certificato usa un algoritmo non sicuro"
 msgid "This host is not managed by a vCenter"
 msgstr "Questo host non è gestito da un vCenter"
 
-msgid "This type of device cannot be hot unplugged"
-msgstr "Questo tipo di dispositivo non può essere scollegato a caldo"
-
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Questo tipo di disco non può essere scollegato a caldo"
 
@@ -2528,9 +2514,6 @@ msgstr "Impossibile impostare il monitor in modalità non-blocking"
 
 msgid "Unable to send container continue message"
 msgstr "impossibile inviare il messaggio di continua contenitore"
-
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "Impossibile impostare il flag close-on-exec del file di log della VM"
 
 msgid "Unable to set interface parameters"
 msgstr "Impossibile impostare i parametri dell'interfaccia"
@@ -2844,14 +2827,8 @@ msgstr "cancellato dal client"
 msgid "cannot acquire job mutex"
 msgstr "impossibile ottenere job mutex"
 
-msgid "cannot attach device on inactive domain"
-msgstr "impossibile collegare il dispositivo ad un dominio inattivo"
-
 msgid "cannot become session leader"
 msgstr "impossibile diventare leader della sessione"
-
-msgid "cannot bind socket"
-msgstr "impossibile legare il socket"
 
 msgid "cannot block signals"
 msgstr "impossibile bloccare segnali"
@@ -2922,9 +2899,6 @@ msgstr "impossibile creare la directory '%s' per l'istantanea"
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "impossibile decodificare i dati della CPU per l'architettura %s"
-
-msgid "cannot detach device on inactive domain"
-msgstr "impossibile scollegare il dispositivo su un dominio inattivo"
 
 #, c-format
 msgid "cannot disable %s"
@@ -3024,9 +2998,6 @@ msgstr "impossibile ottenere la posizione di vCPU e l'ora pCPU"
 msgid "cannot initialize condition variable"
 msgstr "impossibile inizializzare la variabile condition"
 
-msgid "cannot initialize inotify"
-msgstr "impossibile inizializzare inotify"
-
 msgid "cannot initialize monitor condition"
 msgstr "impossibile inizializzare la condizione del monitor"
 
@@ -3051,9 +3022,6 @@ msgstr "impossibile aprire '%s'"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "Impossibile aprire il percorso '%s'"
-
-msgid "cannot open socket"
-msgstr "impossibile aprire il socket"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -3170,10 +3138,6 @@ msgid "cannot parse vendor id %s"
 msgstr "impossibile analizzare l'id produttore %s"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "impossibile analizzare la versione %s"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "impossibile analizzare le testine video '%s'"
 
@@ -3236,10 +3200,6 @@ msgid "cannot read mount list '%s'"
 msgstr "impossibile leggere la lista di mount '%s'"
 
 #, c-format
-msgid "cannot read reply %s"
-msgstr "impossibile leggere la risposta %s"
-
-#, c-format
 msgid "cannot remove config %s"
 msgstr "impossibile rimuovere la configurazione %s"
 
@@ -3270,14 +3230,6 @@ msgstr ""
 msgid "cannot seek to beginning of file '%s'"
 msgstr "impossibile determinare l'inizio del file '%s'"
 
-#, c-format
-msgid "cannot send command %s"
-msgstr "impossibile inviare il comando %s"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "impossibile inviare il comando troppo lungo %s (%d byte)"
-
 msgid "cannot set autostart for transient domain"
 msgstr "impossibile impostare l'autostart di un dominio transitorio"
 
@@ -3296,15 +3248,8 @@ msgstr "impossibile impostare la modalità del file '%s'"
 msgid "cannot set file owner '%s'"
 msgstr "impossibile impostare il proprietario del file '%s'"
 
-msgid "cannot set max memory lower than current memory"
-msgstr ""
-"impossibile impostare la memoria massima al di sotto della memoria corrente"
-
 msgid "cannot set memory higher than max memory"
 msgstr "impossibile impostare la memoria al di sopra della memoria massima"
-
-msgid "cannot set memory of an active domain"
-msgstr "impossibile impostare la memoria di un dominio attivo"
 
 #, c-format
 msgid "cannot set security props %d (%s)"
@@ -3858,13 +3803,6 @@ msgstr "Impossibile contrassegnare la rete %s come auto avviante"
 msgid "failed to mark pool %s as autostarted"
 msgstr "Impossibile contrassegnare il pool %s come auto avviante"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "impossibile aprire in lettura %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "impossibile aprire in lettura il file di configurazione"
-
 msgid "failed to open file"
 msgstr "impossibile aprire un file"
 
@@ -3892,10 +3830,6 @@ msgstr "errore di lettura del file di configurazione %s"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "impossibile leggere la lunghezza dei metadata in '%s'"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "impossibile leggere il pid: %s"
 
 msgid "failed to read qemu header"
 msgstr "impossibile leggere l'intestazione qemu"
@@ -4002,10 +3936,6 @@ msgstr "ottieni statistiche interfaccia di rete per un dominio"
 
 msgid "getting time of day"
 msgstr "acquisizione ora del giorno in corso"
-
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "ricevuto un codice d'errore HTTP sconosciuto %d"
 
 msgid "gracefully shutdown a domain"
 msgstr "arrestare un dominio (graceful shutdown)"
@@ -4329,13 +4259,6 @@ msgstr "libhal_ctx_set_dbus_connection fallita"
 
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices fallita"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "errore chiamata %s della libreria, forse non risulta supportata"
-
-msgid "library call failed, possibly not supported"
-msgstr "errore chiamata della libreria, forse non risulta supportata"
 
 #, c-format
 msgid "libvirt was built without the '%s' driver"
@@ -4831,9 +4754,6 @@ msgstr "nessun errore"
 msgid "no job is active on the domain"
 msgstr "nessun lavoro è attivo sul dominio"
 
-msgid "no kernel specified"
-msgstr "nessun kernel specificato"
-
 msgid "no large enough free extent"
 msgstr "non ci sono extent liberi abbastanza grandi"
 
@@ -4931,9 +4851,6 @@ msgstr "nwfilter è in uso"
 
 msgid "offline"
 msgstr "scollegato"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "è supportato solo l'ascolto TCP per i dispositivi chr"
 
 msgid "only a single memory balloon device is supported"
 msgstr "è supportato solo un singolo dispositivo balloon della memoria"
@@ -5167,9 +5084,6 @@ msgstr "mostrare/impostare i parametri dello scheduler"
 
 msgid "shut off"
 msgstr "terminato"
-
-msgid "shutdown operation failed"
-msgstr "operazione di interruzione fallita"
 
 msgid "size > maximum buffer size"
 msgstr "dimensione > dimensione buffer massima"
@@ -5973,10 +5887,6 @@ msgstr "tipo di autenticazione %d non supportato"
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "chardev '%s' non supportato"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "tipo di dispositivo chr non supportato %d"
 
 #, c-format
 msgid "unsupported clock offset '%s'"

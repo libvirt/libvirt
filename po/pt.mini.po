@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-24 02:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Portuguese <trans-pt@lists.fedoraproject.org>\n"
@@ -809,13 +809,6 @@ msgstr "não foi possível obter a versão da biblioteca"
 msgid "failed to mark network %s as autostarted"
 msgstr "não foi possível marcar a rede %s como iniciada automaticamente"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "não foi possível aceder ao %s para leitura"
-
-msgid "failed to open configuration file for reading"
-msgstr "não foi possível aceder ao ficheiro de configuração para leitura"
-
 msgid "failed to open file"
 msgstr "não foi possível aceder ao ficheiro"
 
@@ -877,10 +870,6 @@ msgstr "obter a interface de rede de um domínio"
 msgid "getting time of day"
 msgstr "a obter a data de hoje"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "obteve-se um código de erro de HTTP desconhecido %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "terminar um domínio ordeiramente"
 
@@ -916,13 +905,6 @@ msgstr "ponteiro de rede inválido em"
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "ponteiro de rede inválido em %s"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "a chamada da biblioteca %s falhou, talvez por não ser suportada"
-
-msgid "library call failed, possibly not supported"
-msgstr "a chamada da biblioteca falhou, talvez por não ser suportada"
 
 msgid "list domains"
 msgstr "listar os domínios"

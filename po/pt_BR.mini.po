@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2017-04-15 11:51+0000\n"
 "Last-Translator: Filipe Rosset <rosset.filipe@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
@@ -1281,12 +1281,6 @@ msgstr "Não foi possível carregar arquivo de config: %s: %s"
 msgid "Can't modify device type '%s'"
 msgstr "Não é possível modificar tipo de dispositivo '%s'"
 
-msgid "Can't parse barrier from "
-msgstr "Não foi possível analisar barreira a partir de "
-
-msgid "Can't parse limit from "
-msgstr "Não foi possível analisar limite a partir de "
-
 msgid "Can't parse prlctl output"
 msgstr "Não foi possível analisar o resultado do prlctl"
 
@@ -1459,10 +1453,6 @@ msgstr "não foi possível localizar '%s' no caminho"
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "Não foi possível encontrar o modelo de CPU com o PVR 0x%08x"
-
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "Não foi possível localizar o kernel UML %s"
 
 #, c-format
 msgid "Cannot find program %d version %d"
@@ -1956,10 +1946,6 @@ msgstr "Nome de usuário do cliente não está na lista de clientes permissívei
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr "Fechar callback para domínio %s já registrado com outra conexão %p"
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "Comando %s muito longo para o destino"
 
 msgid "Commit aborted"
 msgstr "Commit abortado"
@@ -5706,9 +5692,6 @@ msgstr "IP %s é muito grande para o destino"
 msgid "IP address lookup for host '%s' failed: %s"
 msgstr "Procura por um endereço IP para um host '%s' falhou: %s"
 
-msgid "IP address not supported for ethernet interface"
-msgstr "Endereço IP não suportado para interface de ethernet"
-
 msgid ""
 "IP parameter must be given since libvirt was not compiled with IP address "
 "learning support"
@@ -7090,9 +7073,6 @@ msgstr "NOTA"
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-msgid "NULL or empty path"
-msgstr "caminho NULL (nulo) ou vazio "
-
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "parâmetro de string NULL '%s'"
@@ -7182,10 +7162,6 @@ msgstr "A rede \"%s\" já está em execução"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "A rede \"%s\" ainda está em execução"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "Rede \"%s\" não encontrada"
 
 msgid "Network config change transaction committed\n"
 msgstr "Transação de mudança de config de rede salva\n"
@@ -7349,9 +7325,6 @@ msgstr "Nenhuma categoria de classe disponível"
 
 msgid "No channel command provided"
 msgstr "Nenhum comando de canal fornecido"
-
-msgid "No controllers are mounted"
-msgstr "Nenhum controlador é montado"
 
 msgid "No data supplied for <initarg> element"
 msgstr "Nenhum dado fornecido para elemento <intarg>"
@@ -9043,12 +9016,6 @@ msgstr "Sistema não está disponível"
 msgid "System lacks NETNS support"
 msgstr "Sistema não possui suporte a NETNS"
 
-msgid "TCP client networking type not supported"
-msgstr "tipo de rede de trabalho de cliente TCP não é suportada"
-
-msgid "TCP server networking type not supported"
-msgstr "tipo de rede de trabalho do servidor TCP não é suportada"
-
 #, c-format
 msgid "TLS handshake failed %s"
 msgstr "Falha no handshake TLS %s"
@@ -9595,10 +9562,6 @@ msgstr "Esta função não é suportada na plataforma WIN32"
 
 msgid "This host is not managed by a vCenter"
 msgstr "Este host não é gerenciado pelo vCenter"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr ""
-"esse tipo de dispositivo de disco não pode ser desconectado de forma hot"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Este tipo de disco não pode ser desconectado como hot "
@@ -10754,9 +10717,6 @@ msgstr "Incapaz de definir o atraso de STP em %s nesta plataforma"
 msgid "Unable to set STP on %s on this platform"
 msgstr "Não foi possível definir STP em %s nesta plataforma"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "Não foi possível definir a flag close-on-exec do arquivo de log da MV "
-
 msgid "Unable to set cloexec flag"
 msgstr "Não foi possível definir a flag cloexec"
 
@@ -11013,10 +10973,6 @@ msgstr "Formato de caminho de volume inesperado: %s "
 #, c-format
 msgid "Unhandled event %d for monitor fd %d"
 msgstr "Evento não manuseado %d para monitor fd %d"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "Caminho do Unix %s muito longo para o destino"
 
 msgid "Unknown"
 msgstr "Desconhecido"
@@ -12210,14 +12166,8 @@ msgstr "não foi possível alocar placeholder nlhandle para o netlink"
 msgid "cannot apply process capabilities %d"
 msgstr "não é possível aplicar as capacidades de processo %d"
 
-msgid "cannot attach device on inactive domain"
-msgstr "não foi possível conectar o dispositivo a um domínio inativo"
-
 msgid "cannot become session leader"
 msgstr "não foi possível tornar-se o líder da sessão"
-
-msgid "cannot bind socket"
-msgstr "não foi possível associar o socket"
 
 msgid "cannot block signals"
 msgstr "não foi possível bloquear sinais"
@@ -12424,9 +12374,6 @@ msgstr "não foi possível excluir o domínio com os snapshots %d"
 
 msgid "cannot delete snapshots of running domain"
 msgstr "não foi possível excluir o snapshot de domínio em execução"
-
-msgid "cannot detach device on inactive domain"
-msgstr "não foi possível desconectar o dispositivo do domínio inativo"
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
@@ -12640,9 +12587,6 @@ msgstr "não foi possível inicializar objeto de cert: %s"
 msgid "cannot initialize condition variable"
 msgstr "não foi possível inicializar a variável de condição"
 
-msgid "cannot initialize inotify"
-msgstr "não foi possível inicializar o inotify"
-
 msgid "cannot initialize monitor condition"
 msgstr "não é possível inicializar condição de monitor"
 
@@ -12769,9 +12713,6 @@ msgstr "não foi possível abrir o dispositivo de toque do macvtap %s"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "não foi possível abrir o caminho \"%s\""
-
-msgid "cannot open socket"
-msgstr "não foi possível abrir o socket"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -12966,10 +12907,6 @@ msgid "cannot parse vendor id %s"
 msgstr "Não foi possível analisar a id do fornecedor %s"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "não foi possível analisar a versão %s"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "não foi possível analisar cabeçotes de vídeo '%s'"
 
@@ -13077,10 +13014,6 @@ msgid "cannot read mount list '%s'"
 msgstr "não foi possível ler a lista de montagem \"%s\""
 
 #, c-format
-msgid "cannot read reply %s"
-msgstr "não foi possível ler a resposta %s"
-
-#, c-format
 msgid "cannot receive data from volume %s"
 msgstr "não foi possível receber dados do volume %s"
 
@@ -13157,19 +13090,11 @@ msgid "cannot seek to start of '%s'"
 msgstr "não foi possível realizar stat de \"%s\""
 
 #, c-format
-msgid "cannot send command %s"
-msgstr "não foi possível enviar o comando %s"
-
-#, c-format
 msgid "cannot send data to volume %s"
 msgstr "não foi possível enviar dados ao volume %s"
 
 msgid "cannot send to netlink socket"
 msgstr "não foi possível enviar o soquete do netlink"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "não foi possível enviar comando muito longo %s (%d bytes)"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -13193,18 +13118,10 @@ msgstr "não foi possível definir o modo do arquivo \"%s\""
 msgid "cannot set file owner '%s'"
 msgstr "não foi possível definir o dono do arquivo \"%s\""
 
-msgid "cannot set max memory lower than current memory"
-msgstr ""
-"não foi possível ajustar o valor máximo da memória para que seja menor do "
-"que a memória atual"
-
 msgid "cannot set memory higher than max memory"
 msgstr ""
 "não foi possível ajustar a memória para um valor maior do que a memória "
 "máxima"
-
-msgid "cannot set memory of an active domain"
-msgstr "não foi possível ajustar a memória de um domínio ativo"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -14196,9 +14113,6 @@ msgstr "dir"
 msgid "direct migration"
 msgstr "migração direta"
 
-msgid "direct networking type not supported"
-msgstr "tipo de rede de trabalho direta não é suportada"
-
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %s "
@@ -15143,17 +15057,6 @@ msgstr "falha ao obter a lista de servidores disponíveis de %s"
 msgid "failed to obtain list of connected clients from server '%s'"
 msgstr "falha ao obter a lista de clientes conectados do servidor '%s'"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "falha ao abrir %s para leitura"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "falha ao abrir arquivo chardev: %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "falha ao abrir o arquivo de configuração para leitura"
-
 msgid "failed to open file"
 msgstr "falha ao abrir o arquivo"
 
@@ -15234,10 +15137,6 @@ msgstr "falha ao ler o cabeçalho do libxl"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "falha ao ler comprimento dos meta dados em \"%s\""
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "falha ao ler o pid: %s"
 
 msgid "failed to read qemu header"
 msgstr "falha ao ler o cabeçalho do qemu"
@@ -15638,10 +15537,6 @@ msgstr "uuid fornecida não coincide com uuid do XML"
 msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
 msgstr "obteve chamada RPC inesperada prog %d vers %d proc %d type %d"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "foi obtido um erro HTTP de código desconhecido %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "desliga elegantemente um domínio"
 
@@ -15738,9 +15633,6 @@ msgstr "hostdev %s não foi encontrado"
 msgid "hostdev mode '%s' not supported"
 msgstr "modo \"%s\" de hostdev não suportado"
 
-msgid "hostdev networking type not supported"
-msgstr "tipo de rede de trabalho hostdeve não suportada"
-
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "não há suporte para tipo hostdev subsys '%s'"
@@ -15815,10 +15707,6 @@ msgstr "Inclui a senha no URI da conexão se disponível"
 #, c-format
 msgid "incomplete metadata in '%s'"
 msgstr "metadados incompletos em '%s'"
-
-#, c-format
-msgid "incomplete reply %s"
-msgstr "Resposta incompleta %s"
 
 msgid "incomplete return information"
 msgstr "informação de retorno incompleta"
@@ -15895,9 +15783,6 @@ msgstr "nome da interface %s não encaixou no buffer"
 msgid "interface name or MAC address"
 msgstr "Nome da interface ou endereço MAC"
 
-msgid "interface script execution not supported by this driver"
-msgstr "Execução de script de interface não é suportado por este driver"
-
 msgid "interface stats not implemented on this platform"
 msgstr "stats de interface não foi implementada nesta plataforma"
 
@@ -15914,9 +15799,6 @@ msgstr "erro interno: %s"
 #, c-format
 msgid "internal error: bad options in command: '%s'"
 msgstr "erro interno: opções ruins no comando: '%s'"
-
-msgid "internal networking type not supported"
-msgstr "tipo de rede de trabalho interna não é suportada"
 
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
@@ -16260,10 +16142,6 @@ msgid "invalid path %s not assigned to domain"
 msgstr "Caminho inválido %s não atribuído para o domínio"
 
 #, c-format
-msgid "invalid path '%s'"
-msgstr "Caminho inválido: '%s'"
-
-#, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "caminho inválido, \"%s\" não é uma interface conhecida"
 
@@ -16468,13 +16346,6 @@ msgstr "libhal_get_all_devices falhou"
 
 msgid "libnl was not available at build time"
 msgstr "libnl não estava disponível durante a construção"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "falha na chamada à biblioteca %s, possivelmente não há suporte"
-
-msgid "library call failed, possibly not supported"
-msgstr "falha na chamada à biblioteca, possivelmente não há suporte"
 
 msgid "libselinux does not support LXC contexts path"
 msgstr "libselinux não suporta caminho de contexto do LXC"
@@ -17932,9 +17803,6 @@ msgstr "nenhum suporte de internalFlags"
 msgid "no job is active on the domain"
 msgstr "não existe trabalhos ativos no domínio"
 
-msgid "no kernel specified"
-msgstr "nenhum kernel especificado"
-
 msgid "no large enough free extent"
 msgstr "extensão livre não é grande o suficiente"
 
@@ -18211,9 +18079,6 @@ msgstr "ok"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "commit online não é suportada neste binário do QEMU"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "para dispositivo chr, somente há suporte à escuta TCP "
 
 msgid "only a single TPM device is supported"
 msgstr "somente um único dispositivo de TPM é suportado"
@@ -19194,9 +19059,6 @@ msgstr "desligado"
 msgid "shutdown"
 msgstr "shutdown"
 
-msgid "shutdown operation failed"
-msgstr "falha na operação de desligamento"
-
 msgid "shutting down"
 msgstr "fechando"
 
@@ -19845,12 +19707,6 @@ msgstr "udev_monitor_new_from_netlink retornou NULL"
 msgid "uid and gid should be mapped both"
 msgstr "uid e gid devem ser mapeados"
 
-msgid "uml state driver is not active"
-msgstr "driver do estado de uml não está ativo"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup:  sem memória"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "falha na criação do dispositivo %s\n"
@@ -20173,14 +20029,6 @@ msgstr "Caminho QEMU URI  inesperado '%s', try qemu:///session"
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "caminho '%s' de URI de QEMU indesperado, tente o qemu:///system"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "caminho UML URI inesperado '%s', tente "
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "Caminho UML URI inesperado '%s' tente um"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -21148,10 +20996,6 @@ msgstr "não há suporte para o tipo %d de autenticação "
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "chardev não é suportado '%s'"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "não há suporte para o tipo %d de dispositivo chr"
 
 #, c-format
 msgid "unsupported chr device type '%s'"

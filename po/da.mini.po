@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-26 08:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Danish (http://www.transifex.com/projects/p/fedora/language/"
@@ -629,13 +629,6 @@ msgstr "kunne ikke hente biblioteksversion"
 msgid "failed to mark network %s as autostarted"
 msgstr "Kunne ikke markere netværk %s som automatisk startet"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "kunne ikke åbne %s for læsning"
-
-msgid "failed to open configuration file for reading"
-msgstr "kunne ikke åbne konfigurationsfilen for læsning"
-
 msgid "failed to open file"
 msgstr "kunne ikke åbne fil"
 
@@ -683,10 +676,6 @@ msgstr "fil som indeholder XML-netværksbeskrivelse"
 msgid "getting time of day"
 msgstr "henter tid på døgnet"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "fik ukendt HTTP-fejlkode %d"
-
 msgid "gracefully shutdown a domain"
 msgstr "luk et domæne pænt ned"
 
@@ -722,13 +711,6 @@ msgstr "ugyldig netværkspeger i"
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "ugyldig netværkspeger i %s"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "bibliotekskald %s mislykkedes, understøttes nok ikke"
-
-msgid "library call failed, possibly not supported"
-msgstr "bibliotekskald mislykkedes, understøttes nok ikke"
 
 msgid "list domains"
 msgstr "vis domæner"

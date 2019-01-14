@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2018-02-24 11:19+0000\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
@@ -554,10 +554,6 @@ msgid "Network %s unmarked as autostarted\n"
 msgstr "S'ha desmarcat la xarxa %s com a autoiniciada\n"
 
 #, c-format
-msgid "Network '%s' not found"
-msgstr "No s'ha trobat la xarxa '%s'"
-
-#, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 "El nom del fitxer de configuració de la xarxa '%s' no concorda amb el nom de "
@@ -1052,13 +1048,6 @@ msgstr "no s'ha pogut obtenir la versió de la biblioteca"
 msgid "failed to mark network %s as autostarted"
 msgstr "no s'ha pogut marcar la xarxa %s com a autoiniciada"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "no s'ha pogut obrir %s per a llegir"
-
-msgid "failed to open configuration file for reading"
-msgstr "no s'ha pogut obrir el fitxer de configuració per a llegir"
-
 msgid "failed to open file"
 msgstr "no s'ha pogut obrir el fitxer"
 
@@ -1118,10 +1107,6 @@ msgstr "obté les estadístiques d'una interfície de xarxa referits a un domini
 msgid "getting time of day"
 msgstr "obtenció de la data i hora"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "s'ha rebut un codi d'error HTTP %d desconegut"
-
 msgid "gracefully shutdown a domain"
 msgstr "apaga un domini"
 
@@ -1157,13 +1142,6 @@ msgstr "punter de xarxa invàlid a"
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "punter de xarxa invàlid a %s"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "ha fallat la crida %s a la biblioteca, potser no està disponible"
-
-msgid "library call failed, possibly not supported"
-msgstr "ha fallat la crida a la biblioteca, potser no està disponible"
 
 msgid "list domains"
 msgstr "llista els dominis"

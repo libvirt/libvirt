@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-26 07:10+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
@@ -535,10 +535,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "CPU মডেল PVR 0x%08x সমেত খুঁজে পাওয়া যাবে না"
 
 #, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "UML কার্নেল %s অনুসন্ধান করতে ব্যর্থ"
-
-#, c-format
 msgid "Cannot find security driver '%s'"
 msgstr "নিরাপত্তা ড্রাইভার '%s' খুঁজে পাওয়া যাচ্ছে না"
 
@@ -670,10 +666,6 @@ msgid ""
 "name"
 msgstr ""
 "spicevmc থেকে/এ ডিভাইস ধরন পরিবর্তন ডিফল্ট টার্গেট চ্যানেল নাম পরিবর্তন করবে"
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "গন্তব্যের ক্ষেত্রে কমান্ড %s অত্যাধিক লম্বা"
 
 msgid "Compute baseline CPU for a set of given CPUs."
 msgstr "সুনির্দিষ্ট CPU-র সংকলনের জন্য CPU বেস-লাইন গণনা করুন।"
@@ -2400,9 +2392,6 @@ msgstr "N/A"
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-msgid "NULL or empty path"
-msgstr "NULL অথবা পাথ ফাঁকা"
-
 msgid "NUMA cell number"
 msgstr "NUMA সেল সংখ্যা:"
 
@@ -2467,10 +2456,6 @@ msgstr "নেটওয়ার্ক  '%s' পূর্বেই সক্রি�
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "নেটওয়ার্ক '%s' এখনো সক্রিয়"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "নেটওয়ার্ক '%s' পাওয়া যায়নি"
 
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
@@ -3056,12 +3041,6 @@ msgstr "সিস্টেম সংক্রান্ত সমস্যা"
 msgid "System lacks NETNS support"
 msgstr "সিস্টেমের মধ্যে NETNS সমর্থন অনুপস্থিত"
 
-msgid "TCP client networking type not supported"
-msgstr "TCP ক্লায়েন্ট প্রকৃতির নেটওয়ার্ক সমর্থিত নয়"
-
-msgid "TCP server networking type not supported"
-msgstr "TCP সার্ভার প্রকৃতির নেটওয়ার্ক সমর্থিত নয়"
-
 msgid "Target"
 msgstr "টার্গেট"
 
@@ -3443,9 +3422,6 @@ msgstr "ডোমেইন বর্তমানে সক্রিয় নয়"
 msgid "This host is not managed by a vCenter"
 msgstr "এই হোস্ট একটি vCenter দ্বারা পরিচালিত নয়"
 
-msgid "This type of device cannot be hot unplugged"
-msgstr "এই ধরনের ডিভাইস হট-আনপ্লাগ করা সম্ভব নয়"
-
 msgid "Thread(s) per core:"
 msgstr "প্রতি কোরে থ্রেড সংখ্যা:"
 
@@ -3571,9 +3547,6 @@ msgstr "%s PCI ডিভাইস পুনরায় নির্ধারণ �
 msgid "Unable to send container continue message"
 msgstr "ধারণকারীর উদ্দেশ্যে কর্মে এগিয়ে যাওয়ার বার্তা পাঠাতে ব্যর্থ"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "VM লগ-ফাইল সংক্রান্ত close-on-exec ফ্ল্যাগ নির্ধারণ করতে ব্যর্থ"
-
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "মনিটর সংক্রান্ত close-on-exec ফ্ল্যাগের মান নির্ধারণ করতে ব্যর্থ"
 
@@ -3613,10 +3586,6 @@ msgstr "অপ্রত্যাশিত ডিস্ক sgio মোড '%d'"
 #, c-format
 msgid "Unexpected hostdev mode %d"
 msgstr "অপ্রত্যাশিত hostdev মোড %d"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "গন্তব্যের ক্ষেত্রে Unix পাথ %s অত্যাধিক লম্বা"
 
 msgid "Unknown"
 msgstr "অজানা"
@@ -4054,14 +4023,8 @@ msgstr "কর্মের mutex প্রাপ্ত করতে ব্যর
 msgid "cannot acquire state change lock"
 msgstr "অবস্থা পরিবর্তনের লক প্রাপ্ত করতে ব্যর্থ"
 
-msgid "cannot attach device on inactive domain"
-msgstr "নিষ্ক্রিয় ডোমেইনের সাথে ডিভাইস সংযুক্ত করা যাবে না"
-
 msgid "cannot become session leader"
 msgstr "সেশানের অধিকর্তা হতে ব্যর্থ"
-
-msgid "cannot bind socket"
-msgstr "সকেট বাইন্ড করতে ব্যর্থ"
 
 msgid "cannot block signals"
 msgstr "সিগন্যাল ব্লক করা সম্ভব নয়"
@@ -4144,9 +4107,6 @@ msgstr "পাইপ নির্মাণ করতে ব্যর্থ"
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "%s আর্কিটেকচারের জন্য CPU-র জন্য ডি-কোড করা সম্ভব নয়"
-
-msgid "cannot detach device on inactive domain"
-msgstr "নিষ্ক্রিয় ডোমেইন থেকে ডিভাইস বিচ্ছিন্ন করা সম্ভব নয়"
 
 #, c-format
 msgid "cannot disable %s"
@@ -4270,9 +4230,6 @@ msgstr "vCPU স্থাপনাও ও pCPU-র সময় প্রাপ্�
 msgid "cannot initialize condition variable"
 msgstr "কন্ডিশন ভেরিয়েবল আরম্ভ করতে ব্যর্থ"
 
-msgid "cannot initialize inotify"
-msgstr "inotify আরম্ভ করতে ব্যর্থ"
-
 msgid "cannot initialize monitor condition"
 msgstr "মনিটর কন্ডিশন আরম্ভ করতে ব্যর্থ"
 
@@ -4307,9 +4264,6 @@ msgstr "macvtap tap ডিভাইস %s খুলতে ব্যর্থ"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "পাথ '%s' খুলতে ব্যর্থ"
-
-msgid "cannot open socket"
-msgstr "সকেট খুলতে ব্যর্থ: %s"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -4447,10 +4401,6 @@ msgid "cannot parse vendor id %s"
 msgstr "বিক্রেতার id %s পার্স করতে ব্যর্থ"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "%s সংস্করণ পার্স করতে ব্যর্থ"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "ভিডিও হেড '%s' পার্স করতে ব্যর্থ"
 
@@ -4527,10 +4477,6 @@ msgstr "হেডার '%s' পড়তে ব্যর্থ"
 msgid "cannot read mount list '%s'"
 msgstr "মাউন্টের তালিকা '%s' পড়তে ব্যর্থ"
 
-#, c-format
-msgid "cannot read reply %s"
-msgstr "%s-র উত্তর দিতে ব্যর্থ"
-
 msgid "cannot register file watch on stream"
 msgstr "স্ট্রিমের মধ্যে ফাইল ওয়াচ নিবন্ধন করা সম্ভব নয়"
 
@@ -4557,16 +4503,8 @@ msgstr "%s ড্রাইভার লিংক মীমাংসা করত
 msgid "cannot seek to beginning of file '%s'"
 msgstr "'%s' ফাইলের প্রারম্ভে অনুসন্ধান করতে ব্যর্থ"
 
-#, c-format
-msgid "cannot send command %s"
-msgstr "কমান্ড %s পাঠাতে ব্যর্থ"
-
 msgid "cannot send to netlink socket"
 msgstr "netlink সকেটে পাঠাতে ব্যর্থ"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "অত্যাধিক লম্বা কমান্ড %s (%d বাইট) পাঠানো সম্ভব নয়"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -4591,15 +4529,8 @@ msgstr "'%s' ফাইল মোড নির্ধারণ করতে ব্
 msgid "cannot set file owner '%s'"
 msgstr "'%s' ফাইলের মালিকানা নির্ধারণ করতে ব্যর্থ"
 
-msgid "cannot set max memory lower than current memory"
-msgstr ""
-"সর্বাধিক মেমরির পরিমাণ বর্তমান মেমরির তূলনায় কম পরিমাণে নির্ধারণ করা যাবে না"
-
 msgid "cannot set memory higher than max memory"
 msgstr "সর্বাধিক মেমরির পরিমাণের তূলনায় অধিক পরিমাণে মেমরি নির্ধারণ করা যাবে না"
-
-msgid "cannot set memory of an active domain"
-msgstr "সক্রিয় ডোমেইনের মেমরি নির্ধারণ করা যাবে না"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -5356,13 +5287,6 @@ msgstr "নেটওয়ার্ক %s, স্বয়ং প্রারম্ভ
 msgid "failed to mark pool %s as autostarted"
 msgstr "পুল %s, স্বয়ং প্রারম্ভকারী রূপে চিহ্নিত করতে ব্যর্থ"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "পড়ার উদ্দেশ্যে %s খুলতে ব্যর্থ"
-
-msgid "failed to open configuration file for reading"
-msgstr "পড়ার উদ্দেশ্যে কনফিগারেশন ফাইল খুলতে ব্যর্থ"
-
 msgid "failed to open file"
 msgstr "ফাইল খুলতে ব্যর্থ"
 
@@ -5389,10 +5313,6 @@ msgstr "কনফিগারেশন ফাইল %s পড়তে ব্যর
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s'-র মধ্যে মিটাডাটার দৈর্ঘ্য পড়তে ব্যর্থ"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "pid পড়তে ব্যর্থ: %s"
 
 msgid "failed to read qemu header"
 msgstr "qemu হেডার পড়তে ব্যর্থ"
@@ -5533,10 +5453,6 @@ msgstr "ডোমেইনের জন্যা নেটওয়ার্ক ই
 msgid "getting time of day"
 msgstr "দিনের বর্তমান সময় সংগ্রহ"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "অজানা HTTP ত্রুটির কোড %d প্রাপ্ত"
-
 msgid "gracefully shutdown a domain"
 msgstr "সঠিক পদ্ধতিতে ডোমেইন বন্ধ করুন"
 
@@ -5616,10 +5532,6 @@ msgid "include security sensitive information in XML dump"
 msgstr "XML ডাম্পের মধ্যে নিরাপত্তা সংক্রান্ত সংবেদনশীল তথ্য অন্তর্ভুক্ত করা হবে"
 
 #, c-format
-msgid "incomplete reply %s"
-msgstr "অসম্পূর্ণ উত্তর %s"
-
-#, c-format
 msgid "incomplete save header in '%s'"
 msgstr "'%s'-র মধ্যে সংরক্ষণের অসম্পূর্ণ হেডার"
 
@@ -5663,9 +5575,6 @@ msgstr "ইন্টারফেসের নাম অথবা MAC ঠিক�
 
 msgid "internal error"
 msgstr "অভ্যন্তরীণ ত্রুটি"
-
-msgid "internal networking type not supported"
-msgstr "অভ্যান্তরীণ প্রকৃতির নেটওয়ার্ক সমর্থিত নয়"
 
 #, c-format
 msgid "invalid \"trunk='%s'\" in <vlan> - must be yes or no"
@@ -6003,13 +5912,6 @@ msgstr "লেবেল ওভার-রাইডের ক্ষেত্রে
 
 msgid "length of metadata out of range"
 msgstr "মিটা-ডাটার দৈর্ঘ্য সীমা বহির্ভূত"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "লাইব্রেরি কল %s বিফল, সম্ভবত সমর্থিত নয়"
-
-msgid "library call failed, possibly not supported"
-msgstr "লাইব্রেরি কল বিফল, সম্ভবত সমর্থিত নয়"
 
 msgid "list devices in a tree"
 msgstr "ট্রি রূপে ডিভাইসের তালিকা প্রদর্শন করা হবে"
@@ -6740,9 +6642,6 @@ msgstr "কোনো এক্সটেন্ডেড পার্টিশন 
 msgid "no job is active on the domain"
 msgstr "ডোমেইনের মধ্যে কোনো সক্রিয় কাজ উপস্থিত নেই"
 
-msgid "no kernel specified"
-msgstr "কোনো কার্নেল উল্লিখিত হয়নি"
-
 msgid "no large enough free extent"
 msgstr "পর্যাপ্ত স্থানবিশিষ্ট ফাঁকা এক্সটেন্ট অনুপস্থিত"
 
@@ -6853,9 +6752,6 @@ msgstr "VMX বিন্যাসের সংখ্যা অনুমোদি
 
 msgid "offline"
 msgstr "অফ-লাইন"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "chr ডিভাইসের জন্য শুধুমাত্র TCP listen সমর্থিত"
 
 msgid "only a single TPM device is supported"
 msgstr "শুধুমাত্র একটি TPM ডিভাইস সমর্থিত হবে"
@@ -7181,9 +7077,6 @@ msgstr "সময় নির্ধারণকারী সংক্রান্�
 msgid "shut off"
 msgstr "বন্ধ"
 
-msgid "shutdown operation failed"
-msgstr "বন্ধ করার কর্ম বিফল"
-
 msgid "size > maximum buffer size"
 msgstr "মাপ > বাফারের সর্বাধিক মাপ"
 
@@ -7504,12 +7397,6 @@ msgstr "পুলের ধরন"
 msgid "uid and gid should be mapped both"
 msgstr "uid এবং gid এর উভয়ই ম্যাপ করা উচিত"
 
-msgid "uml state driver is not active"
-msgstr "uml state ড্রাইভার সক্রিয় নয়"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: মেমরি অবশিষ্ট নেই"
-
 #, c-format
 msgid "unable to create hugepage path %s"
 msgstr "hugepage পাথ %s নির্মাণ করতে ব্যর্থ"
@@ -7624,14 +7511,6 @@ msgstr "অপ্রত্যাশিত QEMU URI পাথ '%s', qemu:///sessi
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "অপ্রত্যাশিত QEMU URI পাথ '%s', qemu:///system প্রচেষ্টা করুন"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "অপ্রত্যাশিত UML URI পাথ '%s', uml:///session প্রচেষ্টা করুন"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "অপ্রত্যাশিত UML URI পাথ '%s', uml:///system প্রচেষ্টা করুন"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -8444,10 +8323,6 @@ msgstr "অসমর্থিত ঠিকানা ধরন '%s' %s নেট�
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "অনুমোদন প্রণালী সমর্থিত নয় %d"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "অসমর্থিত chr ডিভাইসের ধরন %d"
 
 #, c-format
 msgid "unsupported clock offset '%s'"

@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -420,10 +420,6 @@ msgstr "Kan %s niet vinden, is het pakket geinstalleerd?"
 msgid "Cannot find '%s' in path"
 msgstr "Kan '%s' niet vinden in pad"
 
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "Kan UML kernel %s niet vinden"
-
 msgid "Cannot find suitable CPU model for given data"
 msgstr "Kan geen geschikt CPU model vinden voor gegeven data"
 
@@ -519,10 +515,6 @@ msgstr ""
 
 msgid "Change the number of virtual CPUs in the guest domain."
 msgstr "Verander het aantal virtuele CPU's in het gast domein."
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "Commando %s is te lang voor bestemming"
 
 msgid "Compiled with support for:\n"
 msgstr "Gecompileerd met ondersteuning voor:\n"
@@ -2906,9 +2898,6 @@ msgstr "Monitor pad %s is te groot voor bestemming"
 msgid "Multi-head video devices are unsupported"
 msgstr "Multi-kop video apparaten worden niet ondersteund"
 
-msgid "NULL or empty path"
-msgstr "NULL of leeg pad"
-
 msgid "NUMA cell number"
 msgstr "NUMA cel nummer"
 
@@ -2959,10 +2948,6 @@ msgstr "Netwerk '%s' draait al"
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "Netwerk '%s' draait nog"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "Netwerk '%s' niet gevonden"
 
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
@@ -3764,12 +3749,6 @@ msgstr "Opschorten van gasten op $uri URI..."
 msgid "System lacks NETNS support"
 msgstr "Systeem ontbreekt NETNS ondersteuning"
 
-msgid "TCP client networking type not supported"
-msgstr "TCP cliënt netwerk type niet ondersteund"
-
-msgid "TCP server networking type not supported"
-msgstr "TCP server netwerk type niet ondersteund"
-
 msgid "The certificate has been revoked."
 msgstr "Het certificaat is ingetrokken"
 
@@ -3804,9 +3783,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "Deze host wordt niet beheerd door een vCenter"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr "Dit type schijf ondersteunt geen hotunplug"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Dit type schijf ondersteunt geen hotplug"
@@ -4053,9 +4029,6 @@ msgstr "Kan PCI apparaat %s niet resetten: %s"
 msgid "Unable to send container continue message"
 msgstr "Kan container vervolg boodschap niet sturen"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "Kon VM log bestand close-on-exec vlag niet instellen"
-
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Kan monitor vlag close-on-exec niet instellen"
 
@@ -4088,10 +4061,6 @@ msgstr "Onverwachte CPU match tactiek %d"
 
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Onverwachte QEMU monitor nog actief tijdens verwijderen van domein"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "Unix pad %s is te lang voor bestemming"
 
 msgid "Unknown"
 msgstr "Onbekend"
@@ -4572,14 +4541,8 @@ msgstr "kan taak mutex niet verkrijgen"
 msgid "cannot acquire state change lock"
 msgstr "kan toestand verander slot niet verkrijgen"
 
-msgid "cannot attach device on inactive domain"
-msgstr "kan geen apparaat aansluiten op inactief domein"
-
 msgid "cannot become session leader"
 msgstr "kan geen sessie leider worden"
-
-msgid "cannot bind socket"
-msgstr "kan socket niet binden"
 
 msgid "cannot block signals"
 msgstr "kan signalen niet blokkeren"
@@ -4687,9 +4650,6 @@ msgstr "kan domein snapshot niet verwijderen voor draaiend domein"
 
 msgid "cannot delete snapshots of running domain"
 msgstr "kan snapshots van draaiend domein niet verwijderen"
-
-msgid "cannot detach device on inactive domain"
-msgstr "kan geen apparaat loskoppelen van inactief domein"
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
@@ -4802,9 +4762,6 @@ msgstr "kan vCPU plaatsing & pCPU tijd niet krijgen"
 msgid "cannot initialize condition variable"
 msgstr "kan conditie variabele niet initialiseren"
 
-msgid "cannot initialize inotify"
-msgstr "kan inotify niet initialiseren"
-
 msgid "cannot initialize monitor condition"
 msgstr "kan monitor conditie niet initialiseren"
 
@@ -4851,9 +4808,6 @@ msgstr "kan macvtap tap apparaat %s niet openen"
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "kan pad '%s' niet openen"
-
-msgid "cannot open socket"
-msgstr "kan socket niet openen"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -4993,10 +4947,6 @@ msgid "cannot parse vendor id %s"
 msgstr "kan leverancier id %s niet ontleden"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "kan versie %s niet ontleden"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "kan video hoofden '%s' niet ontleden"
 
@@ -5073,10 +5023,6 @@ msgstr "kan koptekst '%s' niet lezen"
 msgid "cannot read mount list '%s'"
 msgstr "kan aankoppel lijst '%s' niet lezen"
 
-#, c-format
-msgid "cannot read reply %s"
-msgstr "kan antwoord %s niet lezen"
-
 msgid "cannot register file watch on stream"
 msgstr "kan geen bestand bekijken op stream registreren"
 
@@ -5117,16 +5063,8 @@ msgstr "kan snapshot van draaiend domein niet terugdraaien"
 msgid "cannot seek to beginning of file '%s'"
 msgstr "kan niet zoeken naar het begin van bestand '%s'"
 
-#, c-format
-msgid "cannot send command %s"
-msgstr "kan commando %s niet versturen"
-
 msgid "cannot send to netlink socket"
 msgstr "kan niet naar netlink socket versturen"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "kan te lang commando  %s (%d bytes) niet versturen"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -5150,14 +5088,8 @@ msgstr "kan bestand mode '%s' niet instellen"
 msgid "cannot set file owner '%s'"
 msgstr "kan bestand eigenaar '%s' niet instellen"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "kan max geheugen niet lager instellen dan huidig geheugen"
-
 msgid "cannot set memory higher than max memory"
 msgstr "kan geheugen niet hoger dan max memory instellen"
-
-msgid "cannot set memory of an active domain"
-msgstr "kan geheugen van een actief domein niet instellen"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -5723,9 +5655,6 @@ msgstr "apparaattype '%s' kon niet veranderd worden"
 msgid "direct migration"
 msgstr "directe migratie"
 
-msgid "direct networking type not supported"
-msgstr "direct netwerk type niet ondersteund"
-
 msgid "directory to switch to (default: home or else root)"
 msgstr "map om naar om te schakelen (standaard home of anders root)"
 
@@ -6187,17 +6116,6 @@ msgstr "pool %s als autostart te markeren mislukte"
 msgid "failed to move file to %s "
 msgstr "bestand verplaatsen naar %s mislukte"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "openen van %s voor lezen mislukte"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "openen van karakter apparaat bestand mislukte: %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "openen van configuratie bestand voor lezen mislukte"
-
 msgid "failed to open file"
 msgstr "openen van bestand mislukte"
 
@@ -6227,10 +6145,6 @@ msgstr "lezen van configuratie bestand %s mislukte"
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "lezen van metadata lengte in '%s' mislukte"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "lezen van pid mislukte: %s"
 
 msgid "failed to read qemu header"
 msgstr "kan qemu koptekst net lezen"
@@ -6404,10 +6318,6 @@ msgstr "tijd van de dag verkrijgen"
 msgid "given uuid does not match XML uuid"
 msgstr "opgegeven uuid komt niet overeen met XML uuid"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "onbekende HTTP fout code %d gekregen"
-
 msgid "gracefully shutdown a domain"
 msgstr "een domein netjes afsluiten"
 
@@ -6489,10 +6399,6 @@ msgid "include security sensitive information in XML dump"
 msgstr "voeg beveiliging gevoelige informatie toe aan XML dump"
 
 #, c-format
-msgid "incomplete reply %s"
-msgstr "onvolledig antwoord %s"
-
-#, c-format
 msgid "incomplete save header in '%s'"
 msgstr "onvolledige opslag koptekst in '%s'"
 
@@ -6537,9 +6443,6 @@ msgstr "interface naam of MAC adres"
 
 msgid "internal error"
 msgstr "interne fout"
-
-msgid "internal networking type not supported"
-msgstr "intern netwerk type niet ondersteund"
 
 #, c-format
 msgid "invalid '=' after option --%s"
@@ -6810,13 +6713,6 @@ msgstr "libhal_ctx_set_dbus_connection faalde"
 
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices faalde"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "bibliotheek aanroep %s mislukte, mogelijk niet ondersteund"
-
-msgid "library call failed, possibly not supported"
-msgstr "bibliotheek aanroep mislukte, mogelijk niet ondersteund"
 
 #, c-format
 msgid "libvirt was built without the '%s' driver"
@@ -7459,9 +7355,6 @@ msgstr "geen extended partitie gevonden en geen primaire partitie beschikbaar"
 msgid "no job is active on the domain"
 msgstr "in het domein is geen taak actief"
 
-msgid "no kernel specified"
-msgstr "geen kernel gespecificeerd"
-
 msgid "no large enough free extent"
 msgstr "niet genoeg vrije ruimte"
 
@@ -7586,9 +7479,6 @@ msgstr "nwfilter is in gebruik"
 
 msgid "offline"
 msgstr "offline"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "alleen TCP luisteren wordt ondersteund voor chr apparaat"
 
 msgid "only a single memory balloon device is supported"
 msgstr "slechts een geheugen ballon apparaat wordt ondersteund"
@@ -7959,9 +7849,6 @@ msgstr "tonen/instellen van scheduler parameters"
 msgid "shut off"
 msgstr "afgesloten"
 
-msgid "shutdown operation failed"
-msgstr "afsluit operatie mislukte"
-
 msgid "size > maximum buffer size"
 msgstr "grootte > maximale buffer grootte"
 
@@ -8252,12 +8139,6 @@ msgstr "udev scan van apparaten gaf %d terug"
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink gaf NULL terug"
 
-msgid "uml state driver is not active"
-msgstr "uml toestand driver is niet actief"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: te weinig geheugen"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "kan geen toegang tot apparaat %s krijgen\n"
@@ -8406,14 +8287,6 @@ msgstr "onverwacht QEMU URI pad '%s', probeer qemu:///session"
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "onverwacht QEMU URI pad '%s', probeer qemu:///system"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "onverwacht UML URI pad '%s', probeer uml:///session"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "onverwacht UML URI pad '%s', probeer uml:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -8992,10 +8865,6 @@ msgstr "niet-ondersteund authenticatie type %d"
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "niet-ondersteund chardev '%s'"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "niet-ondersteund chr apparaat type %d"
 
 #, c-format
 msgid "unsupported clock offset '%s'"

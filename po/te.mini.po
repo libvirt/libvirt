@@ -1,5 +1,5 @@
 # Libvirt package strings.
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-11-28 16:52+0000\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1125,12 +1125,6 @@ msgstr "కాన్ఫిగ్ ఫైలు లోడ్ చేయలేదు
 msgid "Can't modify device type '%s'"
 msgstr "పరికరం రకం '%s' సవరించలేదు"
 
-msgid "Can't parse barrier from "
-msgstr "దీనినుండి బారియర్ పార్స్ చేయలేదు"
-
-msgid "Can't parse limit from "
-msgstr "దీనినుండి పరిమితిని పార్స్ చేయలేదు"
-
 msgid "Can't parse prlctl output"
 msgstr "prlctl అవుట్పుట్ పార్స్ చేయలేదు"
 
@@ -1287,10 +1281,6 @@ msgstr "పాత్ నందు '%s' కనుగొనలేదు"
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x తో CPU రకం కనుగొనలేదు"
-
-#, c-format
-msgid "Cannot find UML kernel %s"
-msgstr "UML కెర్నల్ %sను కనుగొనలేదు"
 
 #, c-format
 msgid "Cannot find program %d version %d"
@@ -1747,10 +1737,6 @@ msgstr "అనుమతించిన క్లైంట్ల జాబిత�
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr "డొమైన్ %s కొరకు క్లోజ్ కాల్‌బ్యాక్ యిప్పటికే వేరొక అనుసంధానం %p తో నమోదైవుంది"
-
-#, c-format
-msgid "Command %s too long for destination"
-msgstr "గమ్యమునకు ఆదేశము %s మరీ పొడవైనది"
 
 msgid "Commit aborted"
 msgstr "కమిట్ విరమించబడింది"
@@ -5318,9 +5304,6 @@ msgstr "గమ్యమునకు IP %s మరీ పెద్దది"
 msgid "IP address lookup for host '%s' failed: %s"
 msgstr "అతిధేయ '%s' కొరకు ఐపి చిరునామా లుకప్  విఫలమైంది: %s"
 
-msgid "IP address not supported for ethernet interface"
-msgstr "ఐపి చిరునామా ఈథర్నెట్ ఇంటర్ఫేస్ కు తోడ్పాటునీయదు"
-
 msgid ""
 "IP parameter must be given since libvirt was not compiled with IP address "
 "learning support"
@@ -6608,9 +6591,6 @@ msgstr "NOTE"
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-msgid "NULL or empty path"
-msgstr "NULL లేదా ఖాళీ పాత్"
-
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL స్ట్రింగ్ పారామితి '%s'"
@@ -6697,10 +6677,6 @@ msgstr "నెట్వర్కు '%s' ఇప్పటికే నడుస�
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "నెట్వర్కు '%s' ఇప్పటికీ నడుస్తూనే ఉంది"
-
-#, c-format
-msgid "Network '%s' not found"
-msgstr "నెట్వర్కు '%s' కనుగొనబడలేదు"
 
 msgid "Network config change transaction committed\n"
 msgstr "నెట్వర్కు ఆకృతీకరణ మార్చే వ్యవహారం సమర్పించబడింది\n"
@@ -6846,9 +6822,6 @@ msgstr "ఏ వర్గపు విస్తృతి అందుబాటు
 
 msgid "No channel command provided"
 msgstr "ఏ ఛానల్ ఆదేశం అందించబడలేదు"
-
-msgid "No controllers are mounted"
-msgstr "ఏ నియంత్రికలు మౌంట్ కాలేదు"
 
 msgid "No data supplied for <initarg> element"
 msgstr "<initarg> మూలకం కొరకు యే డాటా అందించలేదు"
@@ -8402,12 +8375,6 @@ msgstr "వ్యవస్థ అందుబాటులో లేదు"
 msgid "System lacks NETNS support"
 msgstr "సిస్టమ్‌కు NETNS మద్దతు లేదు"
 
-msgid "TCP client networking type not supported"
-msgstr "TCP క్లైంట్ నెట్వర్కింగ్ రకము మద్దతించబడదు"
-
-msgid "TCP server networking type not supported"
-msgstr "TCP సేవిక నెట్వర్కింగ్ రకము మద్దతించబడదు"
-
 #, c-format
 msgid "TLS handshake failed %s"
 msgstr "TLS హాండ్‌షేక్ విఫలమైంది %s"
@@ -8923,9 +8890,6 @@ msgstr "ఈ ఫంక్షన్ WIN32 ప్లాట్‌ఫాం పైన
 
 msgid "This host is not managed by a vCenter"
 msgstr "ఈ అతిధేయి vCenter చేత నిర్వహించబడుటలేదు"
-
-msgid "This type of device cannot be hot unplugged"
-msgstr "ఈ రకమైన పరికరము హాట్ అన్‌ప్లగ్ కాలేదు"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ఈ రకమైన డిస్కు హాట్ అన్‌ప్లగ్‌డ్ కాలేదు"
@@ -10019,9 +9983,6 @@ msgstr "ఈ ప్లాట్‌ఫాం పైన %s పైన STP అమర�
 msgid "Unable to set STP on %s on this platform"
 msgstr "ఈ ప్లాట్‌ఫాం పైన %s పైన STP అమర్చలేదు"
 
-msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "VM లాగ్‌ఫైలు close-on-exec ఫ్లాగ్‌ను అమర్చలేక పోయింది"
-
 msgid "Unable to set cloexec flag"
 msgstr "closexec ఫ్లాగ్ అమర్చలేదు"
 
@@ -10272,10 +10233,6 @@ msgstr "అనుకోని వాల్యూమ్ పాత్ ఫార్
 #, c-format
 msgid "Unhandled event %d for monitor fd %d"
 msgstr "సంభాలించని ఘటన %d మానిటర్ fd %d కొరకు"
-
-#, c-format
-msgid "Unix path %s too long for destination"
-msgstr "గమ్యమునకు Unix పాత్ %s మరీ పొడవైనది"
 
 msgid "Unknown"
 msgstr "తెలియని"
@@ -11411,14 +11368,8 @@ msgstr "నెట్‌లింక్ కొరకు ప్లేస్‌హ�
 msgid "cannot apply process capabilities %d"
 msgstr "ప్రోసెస్ సామర్ధ్యాలు %d వర్తింపచేయలేదు"
 
-msgid "cannot attach device on inactive domain"
-msgstr "క్రియాహీన డొమైన్‌నందు పరికరాన్ని అనుభందించలేము"
-
 msgid "cannot become session leader"
 msgstr "సెషన్ లీడర్ అవ్వలేదు"
-
-msgid "cannot bind socket"
-msgstr "సాకెట్ బందనం కాలేము"
 
 msgid "cannot block signals"
 msgstr "సంకేతములను నిరోధించలేదు"
@@ -11611,9 +11562,6 @@ msgstr "%d స్నాప్‌షాట్లతో వున్న క్ర�
 
 msgid "cannot delete snapshots of running domain"
 msgstr "నడుస్తున్న డొమైన్ యొక్క స్నాప్‌షాట్లు తొలగించలేదు"
-
-msgid "cannot detach device on inactive domain"
-msgstr "క్రియాహీన డొమైన్‌నందు పరికరాన్ని విడదీయలేము"
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
@@ -11816,9 +11764,6 @@ msgstr "ధృవీకరణపత్రం ఆబ్జక్టు సిద�
 msgid "cannot initialize condition variable"
 msgstr "నియమ చరరాశిని సిద్దముచేయలేక పోయింది"
 
-msgid "cannot initialize inotify"
-msgstr "inotify సిద్దీకరించలేదు"
-
 msgid "cannot initialize monitor condition"
 msgstr "మానిటర్ స్థితిని సిద్ధీకరించలేదు"
 
@@ -11935,9 +11880,6 @@ msgstr "macvtap టాప్ పరికరము %sను తెరువల�
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "పాత్ '%s'ను తెరువలేక పోయింది"
-
-msgid "cannot open socket"
-msgstr "సాకెట్ తెరువలేము"
 
 #, c-format
 msgid "cannot open volume '%s'"
@@ -12124,10 +12066,6 @@ msgid "cannot parse vendor id %s"
 msgstr "అమ్మకందారి id %sను పార్శ్ చేయలేదు"
 
 #, c-format
-msgid "cannot parse version %s"
-msgstr "వర్షన్ %s పార్శ్ చేయలేదు"
-
-#, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "వీడియో హెడ్సు '%s'ను పార్స్ చేయలేదు"
 
@@ -12230,10 +12168,6 @@ msgid "cannot read mount list '%s'"
 msgstr "మరల్పు జాబితా '%s'ను చదువలేదు"
 
 #, c-format
-msgid "cannot read reply %s"
-msgstr "ప్రత్యుత్తరము %sను చదువలేము"
-
-#, c-format
 msgid "cannot receive data from volume %s"
 msgstr "వాల్యూమ్ %s నుండి దత్తాంశం స్వీకరించలేదు"
 
@@ -12307,19 +12241,11 @@ msgid "cannot seek to start of '%s'"
 msgstr "'%s' యొక్క ప్రారంభముకు సీక్ చేయలేదు"
 
 #, c-format
-msgid "cannot send command %s"
-msgstr "మరీ పొడవైన ఆదేశము %s పంపలేము"
-
-#, c-format
 msgid "cannot send data to volume %s"
 msgstr "వాల్యూమ్ %s కు దత్తాంశం పంప లేదు"
 
 msgid "cannot send to netlink socket"
 msgstr "నెట్‌లింక్ సాకెట్‌నకు పంపలేదు"
-
-#, c-format
-msgid "cannot send too long command %s (%d bytes)"
-msgstr "మరీ పొడవైన ఆదేశము %s (%d బైట్లు) పంపలేము"
 
 #, c-format
 msgid "cannot set CPU affinity on process %d"
@@ -12343,14 +12269,8 @@ msgstr "దస్త్రము రీతి '%s'ను అమర్చలే�
 msgid "cannot set file owner '%s'"
 msgstr "దస్త్రము యజమాని '%s'ని అమర్చలేదు"
 
-msgid "cannot set max memory lower than current memory"
-msgstr "ప్రస్తుత మెమొరీకన్నా తక్కువగా గరిష్ట మెమొరీని పెట్టలేరు"
-
 msgid "cannot set memory higher than max memory"
 msgstr "గరిష్ట మెమొరీకన్నా యెక్కువగా మెమొరీని అమర్చలేము"
-
-msgid "cannot set memory of an active domain"
-msgstr "క్రియాశీల డొమైన్‌యొక్క మెమొరీని అమర్చలేము"
 
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -13309,9 +13229,6 @@ msgstr "dir"
 msgid "direct migration"
 msgstr "నేరుగా మైగ్రేషన్"
 
-msgid "direct networking type not supported"
-msgstr "డైరెక్ట్ నెట్వర్కింగ్ రకం తోడ్పాటులేదు"
-
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %s "
@@ -14205,17 +14122,6 @@ msgstr "పూల్ %s అనునది స్వయంచాలకప్ర�
 msgid "failed to move file to %s "
 msgstr "ఫైలు %s కు కదుల్చుటకు విఫలమైంది"
 
-#, c-format
-msgid "failed to open %s for reading"
-msgstr "చదవటానికి %sను తెరవటంలో విఫలమైంది"
-
-#, c-format
-msgid "failed to open chardev file: %s"
-msgstr "chardev ఫైల్ తెరుచుటకు విఫలమైంది: %s"
-
-msgid "failed to open configuration file for reading"
-msgstr "చదవటానికి ఆకృతీకరణ ఫైలును తెరవటంలో విఫలమైంది"
-
 msgid "failed to open file"
 msgstr "ఫైలును తెరవటంలో విఫలమైంది"
 
@@ -14285,10 +14191,6 @@ msgstr "libxl ఎగువసూచి చదువుటకు విఫలమ�
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s'నందు మెటాడాటా పొడవును చదువుటకు విఫలమైంది"
-
-#, c-format
-msgid "failed to read pid: %s"
-msgstr "pid చదువుటకు విఫలమైంది: %s"
 
 msgid "failed to read qemu header"
 msgstr "qemu పీఠికను చదువుటకు విఫలమైంది"
@@ -14683,10 +14585,6 @@ msgstr "ఇచ్చిన uuid అనునది XML uuid తో పోలు�
 msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
 msgstr "అనుకోని RPC కాల్ prog %d vers %d proc %d type %d పొందినది"
 
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "తెలియని HTTP దోష కోడు %dను పొందాను"
-
 msgid "gracefully shutdown a domain"
 msgstr "విజయవంతంగా ఒక క్షేతాన్ని ముయ్యి"
 
@@ -14778,9 +14676,6 @@ msgstr "hostdev %s కనబడలేదు"
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev రీతి '%s' మద్దతిచ్చునది కాదు"
 
-msgid "hostdev networking type not supported"
-msgstr "hostdev నెట్వర్కింగ్ రకం తోడ్పాటులేదు"
-
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev వుపవ్యవస్థ రకము '%s' మద్దతిచ్చునది కాదు"
@@ -14850,10 +14745,6 @@ msgstr "XML డంప్‌నందు రక్షణ సున్నితమ
 
 msgid "includes the password into the connection URI if available"
 msgstr "అందుబాటులోవుంటే అనుసంధానం URI నకు సంకేతపదం చేర్చును"
-
-#, c-format
-msgid "incomplete reply %s"
-msgstr "అంసపూర్తి ప్రత్యుత్తరము %s"
 
 msgid "incomplete return information"
 msgstr "అసంపూర్ణ తిప్పియిచ్చు సమాచారం"
@@ -14929,9 +14820,6 @@ msgstr "ఇంటర్ఫేస్ పేరు %s బఫర్‌ నందు
 msgid "interface name or MAC address"
 msgstr "ఇంటర్ఫేస్ నామము లేదా MAC చిరునామా"
 
-msgid "interface script execution not supported by this driver"
-msgstr "ఈ డ్రైవర్ చేత ఇంటర్ఫేస్ స్క్రిప్ట్ నిర్వర్తనం తోడ్పాటులేదు"
-
 msgid "interface stats not implemented on this platform"
 msgstr "ఈ ప్లాట్‌ఫాం పైన ఇంటర్ఫేస్ గణాంకాలు ఇంప్లిమెంట్ కాలేదు"
 
@@ -14948,9 +14836,6 @@ msgstr "అంతర్గత దోషం: %s"
 #, c-format
 msgid "internal error: bad options in command: '%s'"
 msgstr "అంతర్గత దోషం: ఆదేశం నందు చెడ్డ ఐచ్చికాలు: '%s'"
-
-msgid "internal networking type not supported"
-msgstr "అంతర్గత నెట్వర్కింగు రకము మద్దతించబడదు"
 
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
@@ -15285,10 +15170,6 @@ msgid "invalid path %s not assigned to domain"
 msgstr "డొమైన్‌కు చెల్లని పాత్ %s అప్పగించలేదు"
 
 #, c-format
-msgid "invalid path '%s'"
-msgstr "చెల్లని పాత్ '%s'"
-
-#, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "సరికాని పాత్, '%s' అనునది తెలిసిన ఇంటర్‌ఫేస్ కాదు"
 
@@ -15483,13 +15364,6 @@ msgstr "libhal_get_all_devices విఫలమైంది"
 
 msgid "libnl was not available at build time"
 msgstr "libnl అనునది బుల్డ్ సమయం వద్ద అందుబాటులోలేదు"
-
-#, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "%s library కాల్ విఫలమైంది, సాధ్యమైంనంతవరకూ మద్దతివ్వక పోవచ్చు"
-
-msgid "library call failed, possibly not supported"
-msgstr "library కాల్ విఫలమైంది, సాధ్యమైంనంతవరకూ మద్దతివ్వక పోవచ్చు"
 
 msgid "libselinux does not support LXC contexts path"
 msgstr "libselinux అనునది LXC సందర్భాల పాత్‌కు తోడ్పాటునీయదు"
@@ -16864,9 +16738,6 @@ msgstr "ఏ internalFlags తోడ్పాటులేదు"
 msgid "no job is active on the domain"
 msgstr "డొమైన్‌పై యే జాబ్ క్రియాశీలంగా లేదు"
 
-msgid "no kernel specified"
-msgstr "ఏ కెర్నల్ తెలుపలేదు"
-
 msgid "no large enough free extent"
 msgstr "సరిపోవునంత పొడవుగల ఖాళీ పొడిగింపులేదు"
 
@@ -17125,9 +16996,6 @@ msgstr "సరే"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "ఈ QEMU చేత ఆన్‌లైన్ కమిట్ తోడ్పాటునీయదు"
-
-msgid "only TCP listen is supported for chr device"
-msgstr "chr పరికరము కొరకు TCP మాత్రమే మద్దతిస్తుంది"
 
 msgid "only a single TPM device is supported"
 msgstr "ఒక TPM పరికరం మాత్రమే తోడ్పాటునిచ్చును"
@@ -18059,9 +17927,6 @@ msgstr "మూసివేయి"
 msgid "shutdown"
 msgstr "మూసివేయి"
 
-msgid "shutdown operation failed"
-msgstr "మూసివేత ఆపరేషన్ విఫలమైంది"
-
 msgid "shutting down"
 msgstr "మూసివేయుచున్నది"
 
@@ -18678,12 +18543,6 @@ msgstr "udev_monitor_new_from_netlink అనునది NULL తిప్పి
 msgid "uid and gid should be mapped both"
 msgstr "uid మరియు gid రెండూ మాప్ కావాలి"
 
-msgid "uml state driver is not active"
-msgstr "uml స్థితి డ్రైవర్ క్రియాశీలముగా లేదు"
-
-msgid "umlStartup: out of memory"
-msgstr "umlStartup: మెమొరీ దాటినది"
-
 #, c-format
 msgid "unable to access device %s\n"
 msgstr "పరికరం %s ఏక్సెస్ చేయలేదు\n"
@@ -19005,14 +18864,6 @@ msgstr "అనుకోని QEMU URI పాత్ '%s', qemu:///session ప్
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "అనుకోని QEMU URI పాత్ '%s',  qemu:///system ప్రయత్నించుము"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///session"
-msgstr "అనుకోని UML URI పాత్ '%s', uml:///session ప్రయత్నించుము"
-
-#, c-format
-msgid "unexpected UML URI path '%s', try uml:///system"
-msgstr "అనుకోని UML URI పాత్ '%s', uml:///system ప్రయత్నించుము"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -19962,10 +19813,6 @@ msgstr "మద్దతీయని దృవీకరణ రకము %d"
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "తోడ్పాటులేని chardev '%s'"
-
-#, c-format
-msgid "unsupported chr device type %d"
-msgstr "మద్దతీయని chr పరికరము రకము %d"
 
 #, c-format
 msgid "unsupported chr device type '%s'"
