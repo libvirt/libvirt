@@ -424,6 +424,48 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
+                                        virConfPtr conf)
+{
+    int rv;
+
+    if (virConfGetValueBool(conf, "vxhs_tls", &cfg->vxhsTLS) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "vxhs_tls_x509_cert_dir", &cfg->vxhsTLSx509certdir) < 0)
+        return -1;
+    if (virConfGetValueBool(conf, "nbd_tls", &cfg->nbdTLS) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "nbd_tls_x509_cert_dir", &cfg->nbdTLSx509certdir) < 0)
+        return -1;
+
+#define GET_CONFIG_TLS_CERTINFO(val) \
+    do { \
+        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify", \
+                                      &cfg->val## TLSx509verify)) < 0) \
+            return -1; \
+        if (rv == 1) \
+            cfg->val## TLSx509verifyPresent = true; \
+        if (virConfGetValueString(conf, #val "_tls_x509_cert_dir", \
+                                  &cfg->val## TLSx509certdir) < 0) \
+            return -1; \
+        if (virConfGetValueString(conf, \
+                                  #val "_tls_x509_secret_uuid", \
+                                  &cfg->val## TLSx509secretUUID) < 0) \
+            return -1; \
+    } while (0)
+
+    if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
+        return -1;
+    GET_CONFIG_TLS_CERTINFO(chardev);
+
+    GET_CONFIG_TLS_CERTINFO(migrate);
+
+#undef GET_CONFIG_TLS_CERTINFO
+    return 0;
+}
+
+
+static int
 virQEMUDriverConfigLoadRemoteDisplayEntry(virQEMUDriverConfigPtr cfg,
                                           virConfPtr conf,
                                           const char *filename)
@@ -966,38 +1008,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     if (virConfGetValueBool(conf, "spice_auto_unix_socket", &cfg->spiceAutoUnixSocket) < 0)
         goto cleanup;
-    if (virConfGetValueBool(conf, "vxhs_tls", &cfg->vxhsTLS) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "vxhs_tls_x509_cert_dir", &cfg->vxhsTLSx509certdir) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "nbd_tls", &cfg->nbdTLS) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "nbd_tls_x509_cert_dir", &cfg->nbdTLSx509certdir) < 0)
-        goto cleanup;
 
-#define GET_CONFIG_TLS_CERTINFO(val) \
-    do { \
-        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify", \
-                                      &cfg->val## TLSx509verify)) < 0) \
-            goto cleanup; \
-        if (rv == 1) \
-            cfg->val## TLSx509verifyPresent = true; \
-        if (virConfGetValueString(conf, #val "_tls_x509_cert_dir", \
-                                  &cfg->val## TLSx509certdir) < 0) \
-            goto cleanup; \
-        if (virConfGetValueString(conf, \
-                                  #val "_tls_x509_secret_uuid", \
-                                  &cfg->val## TLSx509secretUUID) < 0) \
-            goto cleanup; \
-    } while (0)
-
-    if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
+    if (virQEMUDriverConfigLoadSpecificTLSEntry(cfg, conf) < 0)
         goto cleanup;
-    GET_CONFIG_TLS_CERTINFO(chardev);
-
-    GET_CONFIG_TLS_CERTINFO(migrate);
-
-#undef GET_CONFIG_TLS_CERTINFO
 
     if (virQEMUDriverConfigLoadRemoteDisplayEntry(cfg, conf, filename) < 0)
         goto cleanup;
