@@ -424,6 +424,37 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadVNCEntry(virQEMUDriverConfigPtr cfg,
+                                virConfPtr conf)
+{
+    int rv;
+
+    if (virConfGetValueBool(conf, "vnc_auto_unix_socket", &cfg->vncAutoUnixSocket) < 0)
+        return -1;
+    if (virConfGetValueBool(conf, "vnc_tls", &cfg->vncTLS) < 0)
+        return -1;
+    if ((rv = virConfGetValueBool(conf, "vnc_tls_x509_verify", &cfg->vncTLSx509verify)) < 0)
+        return -1;
+    if (rv == 1)
+        cfg->vncTLSx509verifyPresent = true;
+    if (virConfGetValueString(conf, "vnc_tls_x509_cert_dir", &cfg->vncTLSx509certdir) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "vnc_listen", &cfg->vncListen) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "vnc_password", &cfg->vncPassword) < 0)
+        return -1;
+    if (virConfGetValueBool(conf, "vnc_sasl", &cfg->vncSASL) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "vnc_sasl_dir", &cfg->vncSASLdir) < 0)
+        return -1;
+    if (virConfGetValueBool(conf, "vnc_allow_host_audio", &cfg->vncAllowHostAudio) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virQEMUDriverConfigLoadNographicsEntry(virQEMUDriverConfigPtr cfg,
                                        virConfPtr conf)
 {
@@ -1001,25 +1032,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                               &cfg->defaultTLSx509secretUUID) < 0)
         goto cleanup;
 
-    if (virConfGetValueBool(conf, "vnc_auto_unix_socket", &cfg->vncAutoUnixSocket) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "vnc_tls", &cfg->vncTLS) < 0)
-        goto cleanup;
-    if ((rv = virConfGetValueBool(conf, "vnc_tls_x509_verify", &cfg->vncTLSx509verify)) < 0)
-        goto cleanup;
-    if (rv == 1)
-        cfg->vncTLSx509verifyPresent = true;
-    if (virConfGetValueString(conf, "vnc_tls_x509_cert_dir", &cfg->vncTLSx509certdir) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "vnc_listen", &cfg->vncListen) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "vnc_password", &cfg->vncPassword) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "vnc_sasl", &cfg->vncSASL) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "vnc_sasl_dir", &cfg->vncSASLdir) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "vnc_allow_host_audio", &cfg->vncAllowHostAudio) < 0)
+    if (virQEMUDriverConfigLoadVNCEntry(cfg, conf) < 0)
         goto cleanup;
 
     if (virQEMUDriverConfigLoadNographicsEntry(cfg, conf) < 0)
