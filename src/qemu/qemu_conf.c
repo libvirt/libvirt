@@ -361,6 +361,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->defaultTLSx509secretUUID);
 
     VIR_FREE(cfg->vncTLSx509certdir);
+    VIR_FREE(cfg->vncTLSx509secretUUID);
     VIR_FREE(cfg->vncListen);
     VIR_FREE(cfg->vncPassword);
     VIR_FREE(cfg->vncSASLdir);
@@ -457,6 +458,8 @@ virQEMUDriverConfigLoadVNCEntry(virQEMUDriverConfigPtr cfg,
     if (rv == 1)
         cfg->vncTLSx509verifyPresent = true;
     if (virConfGetValueString(conf, "vnc_tls_x509_cert_dir", &cfg->vncTLSx509certdir) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "vnc_tls_x509_secret_uuid", &cfg->vncTLSx509secretUUID) < 0)
         return -1;
     if (virConfGetValueString(conf, "vnc_listen", &cfg->vncListen) < 0)
         return -1;
@@ -1168,6 +1171,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
         } \
     } while (0)
 
+    SET_TLS_SECRET_UUID_DEFAULT(vnc);
     SET_TLS_SECRET_UUID_DEFAULT(chardev);
     SET_TLS_SECRET_UUID_DEFAULT(migrate);
 

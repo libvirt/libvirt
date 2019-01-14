@@ -35,6 +35,7 @@ module Libvirtd_qemu =
                  | bool_entry "vnc_auto_unix_socket"
                  | bool_entry "vnc_tls"
                  | str_entry "vnc_tls_x509_cert_dir"
+                 | str_entry "vnc_tls_x509_secret_uuid"
                  | bool_entry "vnc_tls_x509_verify"
                  | str_entry "vnc_password"
                  | bool_entry "vnc_sasl"

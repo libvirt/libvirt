@@ -125,6 +125,7 @@ struct _virQEMUDriverConfig {
     bool vncTLSx509verifyPresent;
     bool vncSASL;
     char *vncTLSx509certdir;
+    char *vncTLSx509secretUUID;
     char *vncListen;
     char *vncPassword;
     char *vncSASLdir;

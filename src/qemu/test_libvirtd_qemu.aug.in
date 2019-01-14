@@ -9,6 +9,7 @@ module Test_libvirtd_qemu =
 { "vnc_auto_unix_socket" = "1" }
 { "vnc_tls" = "1" }
 { "vnc_tls_x509_cert_dir" = "/etc/pki/libvirt-vnc" }
+{ "vnc_tls_x509_secret_uuid" = "00000000-0000-0000-0000-000000000000" }
 { "vnc_tls_x509_verify" = "1" }
 { "vnc_password" = "XYZ12345" }
 { "vnc_sasl" = "1" }
