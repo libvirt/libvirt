@@ -3063,11 +3063,11 @@ qemuBuildDomainForbidLegacyUSBController(const virDomainDef *def)
 
 static int
 qemuBuildLegacyUSBControllerCommandLine(virCommandPtr cmd,
-                                        const virDomainDef *def,
-                                        int usbcontroller)
+                                        const virDomainDef *def)
 {
     size_t i;
     size_t nlegacy = 0;
+    size_t nusb = 0;
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
@@ -3081,6 +3081,8 @@ qemuBuildLegacyUSBControllerCommandLine(virCommandPtr cmd,
 
         if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT)
             nlegacy++;
+        else
+            nusb++;
     }
 
     if (nlegacy > 1) {
@@ -3090,7 +3092,7 @@ qemuBuildLegacyUSBControllerCommandLine(virCommandPtr cmd,
         return -1;
     }
 
-    if (usbcontroller == 0 &&
+    if (nusb == 0 &&
         !qemuBuildDomainForbidLegacyUSBController(def) &&
         !ARCH_IS_S390(def->os.arch)) {
         /* We haven't added any USB controller yet, but we haven't been asked
@@ -3227,7 +3229,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
         }
     }
 
-    if (qemuBuildLegacyUSBControllerCommandLine(cmd, def, usbcontroller) < 0)
+    if (qemuBuildLegacyUSBControllerCommandLine(cmd, def) < 0)
         goto cleanup;
 
     ret = 0;
