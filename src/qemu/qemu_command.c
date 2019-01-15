@@ -3049,6 +3049,26 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 }
 
 
+static int
+qemuBuildLegacyUSBControllerCommandLine(virCommandPtr cmd,
+                                        const virDomainDef *def,
+                                        int usbcontroller)
+{
+    if (usbcontroller == 0 &&
+        !qemuDomainIsQ35(def) &&
+        !qemuDomainIsARMVirt(def) &&
+        !qemuDomainIsRISCVVirt(def) &&
+        !ARCH_IS_S390(def->os.arch)) {
+        /* We haven't added any USB controller yet, but we haven't been asked
+         * not to add one either. Add a legacy USB controller, unless we're
+         * creating a kind of guest we want to keep legacy-free */
+        virCommandAddArg(cmd, "-usb");
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuBuildSkipController:
  * @controller: Controller to check
@@ -3184,16 +3204,8 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
         }
     }
 
-    if (usbcontroller == 0 &&
-        !qemuDomainIsQ35(def) &&
-        !qemuDomainIsARMVirt(def) &&
-        !qemuDomainIsRISCVVirt(def) &&
-        !ARCH_IS_S390(def->os.arch)) {
-        /* We haven't added any USB controller yet, but we haven't been asked
-         * not to add one either. Add a legacy USB controller, unless we're
-         * creating a kind of guest we want to keep legacy-free */
-        virCommandAddArg(cmd, "-usb");
-    }
+    if (qemuBuildLegacyUSBControllerCommandLine(cmd, def, usbcontroller) < 0)
+        goto cleanup;
 
     ret = 0;
 
