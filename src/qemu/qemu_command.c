@@ -3145,12 +3145,12 @@ qemuBuildControllersByTypeCommandLine(virCommandPtr cmd,
                                       virQEMUCapsPtr qemuCaps,
                                       virDomainControllerType type)
 {
+    char *devstr = NULL;
     int ret = -1;
     size_t i;
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
-        char *devstr;
 
         if (cont->type != type)
             continue;
@@ -3183,23 +3183,22 @@ qemuBuildControllersByTypeCommandLine(virCommandPtr cmd,
             continue;
         }
 
+        VIR_FREE(devstr);
         if (qemuBuildControllerDevStr(def, cont, qemuCaps, &devstr) < 0)
             goto cleanup;
 
         if (devstr) {
-            if (qemuCommandAddExtDevice(cmd, &cont->info) < 0) {
-                VIR_FREE(devstr);
+            if (qemuCommandAddExtDevice(cmd, &cont->info) < 0)
                 goto cleanup;
-            }
 
             virCommandAddArg(cmd, "-device");
             virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
         }
     }
 
     ret = 0;
  cleanup:
+    VIR_FREE(devstr);
     return ret;
 }
 
