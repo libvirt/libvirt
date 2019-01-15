@@ -1475,11 +1475,6 @@ qemuDomainSecretInfoTLSNew(qemuDomainObjPrivatePtr priv,
 }
 
 
-/* qemuDomainSecretDiskDestroy:
- * @disk: Pointer to a disk definition
- *
- * Clears unnecessary data associated with disk secret objects.
- */
 void
 qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 {
@@ -1590,11 +1585,6 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
 }
 
 
-/* qemuDomainSecretHostdevDestroy:
- * @disk: Pointer to a hostdev definition
- *
- * Clear and destroy memory associated with the secret
- */
 void
 qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
 {
@@ -1642,11 +1632,6 @@ qemuDomainSecretHostdevPrepare(qemuDomainObjPrivatePtr priv,
 }
 
 
-/* qemuDomainSecretChardevDestroy:
- * @disk: Pointer to a chardev definition
- *
- * Clear and destroy memory associated with the secret
- */
 void
 qemuDomainSecretChardevDestroy(virDomainChrSourceDefPtr dev)
 {
