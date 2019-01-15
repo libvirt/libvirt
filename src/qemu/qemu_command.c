@@ -2857,8 +2857,7 @@ int
 qemuBuildControllerDevStr(const virDomainDef *domainDef,
                           virDomainControllerDefPtr def,
                           virQEMUCapsPtr qemuCaps,
-                          char **devstr,
-                          int *nusbcontroller)
+                          char **devstr)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2940,9 +2939,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
         if (qemuBuildUSBControllerDevStr(domainDef, def, qemuCaps, &buf) == -1)
             goto error;
-
-        if (nusbcontroller)
-            *nusbcontroller += 1;
 
         break;
 
@@ -3149,7 +3145,6 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
                                   virQEMUCapsPtr qemuCaps)
 {
     size_t i, j;
-    int usbcontroller = 0;
     int contOrder[] = {
         /*
          * List of controller types that we add commandline args for,
@@ -3212,8 +3207,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
                 continue;
             }
 
-            if (qemuBuildControllerDevStr(def, cont, qemuCaps,
-                                          &devstr, &usbcontroller) < 0)
+            if (qemuBuildControllerDevStr(def, cont, qemuCaps, &devstr) < 0)
                 goto cleanup;
 
             if (devstr) {

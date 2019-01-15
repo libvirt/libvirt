@@ -1022,7 +1022,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, controller) < 0)
         goto cleanup;
 
-    if (qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, &devstr, NULL) < 0)
+    if (qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, &devstr) < 0)
         goto cleanup;
 
     if (!devstr)

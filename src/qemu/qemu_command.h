@@ -117,8 +117,7 @@ char
 int qemuBuildControllerDevStr(const virDomainDef *domainDef,
                               virDomainControllerDefPtr def,
                               virQEMUCapsPtr qemuCaps,
-                              char **devstr,
-                              int *nusbcontroller);
+                              char **devstr);
 
 int qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                                 const char *alias,
