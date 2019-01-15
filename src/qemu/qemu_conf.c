@@ -424,6 +424,29 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadSPICEEntry(virQEMUDriverConfigPtr cfg,
+                                  virConfPtr conf)
+{
+    if (virConfGetValueBool(conf, "spice_tls", &cfg->spiceTLS) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "spice_tls_x509_cert_dir", &cfg->spiceTLSx509certdir) < 0)
+        return -1;
+    if (virConfGetValueBool(conf, "spice_sasl", &cfg->spiceSASL) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "spice_sasl_dir", &cfg->spiceSASLdir) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "spice_listen", &cfg->spiceListen) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "spice_password", &cfg->spicePassword) < 0)
+        return -1;
+    if (virConfGetValueBool(conf, "spice_auto_unix_socket", &cfg->spiceAutoUnixSocket) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
                                         virConfPtr conf)
 {
@@ -993,20 +1016,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "nographics_allow_host_audio", &cfg->nogfxAllowHostAudio) < 0)
         goto cleanup;
 
-
-    if (virConfGetValueBool(conf, "spice_tls", &cfg->spiceTLS) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "spice_tls_x509_cert_dir", &cfg->spiceTLSx509certdir) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "spice_sasl", &cfg->spiceSASL) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "spice_sasl_dir", &cfg->spiceSASLdir) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "spice_listen", &cfg->spiceListen) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "spice_password", &cfg->spicePassword) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "spice_auto_unix_socket", &cfg->spiceAutoUnixSocket) < 0)
+    if (virQEMUDriverConfigLoadSPICEEntry(cfg, conf) < 0)
         goto cleanup;
 
     if (virQEMUDriverConfigLoadSpecificTLSEntry(cfg, conf) < 0)
