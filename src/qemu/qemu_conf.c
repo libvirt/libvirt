@@ -424,6 +424,14 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadLogEntry(virQEMUDriverConfigPtr cfg,
+                                virConfPtr conf)
+{
+    return virConfGetValueBool(conf, "log_timestamp", &cfg->logTimestamp);
+}
+
+
+static int
 virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
                                   virConfPtr conf)
 {
@@ -935,7 +943,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    if (virConfGetValueBool(conf, "log_timestamp", &cfg->logTimestamp) < 0)
+    if (virQEMUDriverConfigLoadLogEntry(cfg, conf) < 0)
         goto cleanup;
 
     if (virQEMUDriverConfigLoadNVRAMEntry(cfg, conf) < 0)
