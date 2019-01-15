@@ -424,6 +424,61 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadNetworkEntry(virQEMUDriverConfigPtr cfg,
+                                    virConfPtr conf,
+                                    const char *filename)
+{
+    if (virConfGetValueUInt(conf, "migration_port_min", &cfg->migrationPortMin) < 0)
+        return -1;
+    if (cfg->migrationPortMin <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s: migration_port_min: port must be greater than 0"),
+                        filename);
+        return -1;
+    }
+
+    if (virConfGetValueUInt(conf, "migration_port_max", &cfg->migrationPortMax) < 0)
+        return -1;
+    if (cfg->migrationPortMax > 65535 ||
+        cfg->migrationPortMax < cfg->migrationPortMin) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("%s: migration_port_max: port must be between "
+                          "the minimal port %d and 65535"),
+                       filename, cfg->migrationPortMin);
+        return -1;
+    }
+
+    if (virConfGetValueString(conf, "migration_host", &cfg->migrateHost) < 0)
+        return -1;
+    virStringStripIPv6Brackets(cfg->migrateHost);
+    if (cfg->migrateHost &&
+        (STRPREFIX(cfg->migrateHost, "localhost") ||
+         virSocketAddrIsNumericLocalhost(cfg->migrateHost))) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("migration_host must not be the address of"
+                         " the local machine: %s"),
+                       cfg->migrateHost);
+        return -1;
+    }
+
+    if (virConfGetValueString(conf, "migration_address", &cfg->migrationAddress) < 0)
+        return -1;
+    virStringStripIPv6Brackets(cfg->migrationAddress);
+    if (cfg->migrationAddress &&
+        (STRPREFIX(cfg->migrationAddress, "localhost") ||
+         virSocketAddrIsNumericLocalhost(cfg->migrationAddress))) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("migration_address must not be the address of"
+                         " the local machine: %s"),
+                       cfg->migrationAddress);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virQEMUDriverConfigLoadLogEntry(virQEMUDriverConfigPtr cfg,
                                 virConfPtr conf)
 {
@@ -787,25 +842,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    if (virConfGetValueUInt(conf, "migration_port_min", &cfg->migrationPortMin) < 0)
-        goto cleanup;
-    if (cfg->migrationPortMin <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: migration_port_min: port must be greater than 0"),
-                        filename);
-        goto cleanup;
-    }
-
-    if (virConfGetValueUInt(conf, "migration_port_max", &cfg->migrationPortMax) < 0)
-        goto cleanup;
-    if (cfg->migrationPortMax > 65535 ||
-        cfg->migrationPortMax < cfg->migrationPortMin) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("%s: migration_port_max: port must be between "
-                          "the minimal port %d and 65535"),
-                       filename, cfg->migrationPortMin);
-        goto cleanup;
-    }
 
     if (virConfGetValueString(conf, "save_image_format", &cfg->saveImageFormat) < 0)
         goto cleanup;
@@ -857,6 +893,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     if (virConfGetValueBool(conf, "clear_emulator_capabilities", &cfg->clearEmulatorCapabilities) < 0)
         goto cleanup;
+
     if ((rv = virConfGetValueBool(conf, "allow_disk_format_probing", &tmp)) < 0)
         goto cleanup;
     if (rv == 1 && tmp) {
@@ -917,31 +954,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueUInt(conf, "keepalive_count", &cfg->keepAliveCount) < 0)
         goto cleanup;
 
-    if (virConfGetValueString(conf, "migration_host", &cfg->migrateHost) < 0)
+    if (virQEMUDriverConfigLoadNetworkEntry(cfg, conf, filename) < 0)
         goto cleanup;
-    virStringStripIPv6Brackets(cfg->migrateHost);
-    if (cfg->migrateHost &&
-        (STRPREFIX(cfg->migrateHost, "localhost") ||
-         virSocketAddrIsNumericLocalhost(cfg->migrateHost))) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("migration_host must not be the address of"
-                         " the local machine: %s"),
-                       cfg->migrateHost);
-        goto cleanup;
-    }
-
-    if (virConfGetValueString(conf, "migration_address", &cfg->migrationAddress) < 0)
-        goto cleanup;
-    virStringStripIPv6Brackets(cfg->migrationAddress);
-    if (cfg->migrationAddress &&
-        (STRPREFIX(cfg->migrationAddress, "localhost") ||
-         virSocketAddrIsNumericLocalhost(cfg->migrationAddress))) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("migration_address must not be the address of"
-                         " the local machine: %s"),
-                       cfg->migrationAddress);
-        goto cleanup;
-    }
 
     if (virQEMUDriverConfigLoadLogEntry(cfg, conf) < 0)
         goto cleanup;
