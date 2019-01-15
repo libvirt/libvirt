@@ -4112,8 +4112,10 @@ qemuDomainDefValidate(const virDomainDef *def,
                       void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virQEMUCapsPtr qemuCaps = NULL;
     int ret = -1;
+    size_t i;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
@@ -4234,10 +4236,23 @@ qemuDomainDefValidate(const virDomainDef *def,
     if (qemuDomainDefValidateMemory(def, qemuCaps) < 0)
         goto cleanup;
 
+    if (cfg->vncTLS && cfg->vncTLSx509secretUUID &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509)) {
+        for (i = 0; i < def->ngraphics; i++) {
+            if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("encrypted VNC TLS keys are not supported with "
+                                 "this QEMU binary"));
+                goto cleanup;
+            }
+        }
+    }
+
     ret = 0;
 
  cleanup:
     virObjectUnref(qemuCaps);
+    virObjectUnref(cfg);
     return ret;
 }
 
