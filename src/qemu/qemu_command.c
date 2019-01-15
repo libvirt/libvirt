@@ -1745,36 +1745,37 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
     }
 
-    if (disk->src->readonly)
-        virBufferAddLit(&opt, ",readonly=on");
+    if (!virStorageSourceIsEmpty(disk->src)) {
+        if (disk->src->readonly)
+            virBufferAddLit(&opt, ",readonly=on");
 
+        if (disk->cachemode) {
+            virBufferAsprintf(&opt, ",cache=%s",
+                              qemuDiskCacheV2TypeToString(disk->cachemode));
+        }
 
-    if (disk->cachemode) {
-        virBufferAsprintf(&opt, ",cache=%s",
-                          qemuDiskCacheV2TypeToString(disk->cachemode));
+        if (disk->copy_on_read) {
+            virBufferAsprintf(&opt, ",copy-on-read=%s",
+                              virTristateSwitchTypeToString(disk->copy_on_read));
+        }
+
+        if (disk->discard) {
+            virBufferAsprintf(&opt, ",discard=%s",
+                              virDomainDiskDiscardTypeToString(disk->discard));
+        }
+
+        if (detect_zeroes) {
+            virBufferAsprintf(&opt, ",detect-zeroes=%s",
+                              virDomainDiskDetectZeroesTypeToString(detect_zeroes));
+        }
+
+        if (disk->iomode) {
+            virBufferAsprintf(&opt, ",aio=%s",
+                              virDomainDiskIoTypeToString(disk->iomode));
+        }
+
+        qemuBuildDiskThrottling(disk, &opt);
     }
-
-    if (disk->copy_on_read) {
-        virBufferAsprintf(&opt, ",copy-on-read=%s",
-                          virTristateSwitchTypeToString(disk->copy_on_read));
-    }
-
-    if (disk->discard) {
-        virBufferAsprintf(&opt, ",discard=%s",
-                          virDomainDiskDiscardTypeToString(disk->discard));
-    }
-
-    if (detect_zeroes) {
-        virBufferAsprintf(&opt, ",detect-zeroes=%s",
-                          virDomainDiskDetectZeroesTypeToString(detect_zeroes));
-    }
-
-    if (disk->iomode) {
-        virBufferAsprintf(&opt, ",aio=%s",
-                          virDomainDiskIoTypeToString(disk->iomode));
-    }
-
-    qemuBuildDiskThrottling(disk, &opt);
 
     if (virBufferCheckError(&opt) < 0)
         goto error;

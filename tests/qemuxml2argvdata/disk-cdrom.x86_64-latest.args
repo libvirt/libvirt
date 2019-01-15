@@ -28,10 +28,10 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -drive file=/root/boot.iso,format=raw,if=none,id=drive-ide0-0-1,readonly=on \
 -device ide-cd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
--drive if=none,id=drive-ide0-1-0,readonly=on,cache=none \
+-drive if=none,id=drive-ide0-1-0 \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,\
 write-cache=on \
--drive if=none,id=drive-ide0-1-1,readonly=on \
+-drive if=none,id=drive-ide0-1-1 \
 -device ide-cd,bus=ide.1,unit=1,drive=drive-ide0-1-1,id=ide0-1-1 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
