@@ -424,6 +424,21 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadRPCEntry(virQEMUDriverConfigPtr cfg,
+                                virConfPtr conf)
+{
+    if (virConfGetValueUInt(conf, "max_queued", &cfg->maxQueuedJobs) < 0)
+        return -1;
+    if (virConfGetValueInt(conf, "keepalive_interval", &cfg->keepAliveInterval) < 0)
+        return -1;
+    if (virConfGetValueUInt(conf, "keepalive_count", &cfg->keepAliveCount) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virQEMUDriverConfigLoadNetworkEntry(virQEMUDriverConfigPtr cfg,
                                     virConfPtr conf,
                                     const char *filename)
@@ -946,12 +961,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         VIR_FREE(stdioHandler);
     }
 
-    if (virConfGetValueUInt(conf, "max_queued", &cfg->maxQueuedJobs) < 0)
-        goto cleanup;
-
-    if (virConfGetValueInt(conf, "keepalive_interval", &cfg->keepAliveInterval) < 0)
-        goto cleanup;
-    if (virConfGetValueUInt(conf, "keepalive_count", &cfg->keepAliveCount) < 0)
+    if (virQEMUDriverConfigLoadRPCEntry(cfg, conf) < 0)
         goto cleanup;
 
     if (virQEMUDriverConfigLoadNetworkEntry(cfg, conf, filename) < 0)
