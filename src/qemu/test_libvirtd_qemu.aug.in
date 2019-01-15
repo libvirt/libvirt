@@ -44,6 +44,7 @@ module Test_libvirtd_qemu =
 { "user" = "root" }
 { "group" = "root" }
 { "dynamic_ownership" = "1" }
+{ "remember_owner" = "1" }
 { "cgroup_controllers"
     { "1" = "cpu" }
     { "2" = "devices" }

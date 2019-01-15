@@ -25,6 +25,19 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          Remember original owners and SELinux labels of files
+        </summary>
+        <description>
+          When a domain is starting up libvirt changes DAC and
+          SELinux labels so that domain can access it. However,
+          it never remembered the original labels and therefore
+          the file was returned back to <code>root:root</code>.
+          With this release, the original labels are remembered
+          and restored properly.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
