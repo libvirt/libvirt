@@ -1428,6 +1428,7 @@ int virStorageFileGetLVMKey(const char *path,
 /* virStorageFileGetSCSIKey
  * @path: Path to the SCSI device
  * @key: Unique key to be returned
+ * @ignoreError: Used to not report ENOSYS
  *
  * Using a udev specific function, query the @path to get and return a
  * unique @key for the caller to use.
@@ -1440,7 +1441,8 @@ int virStorageFileGetLVMKey(const char *path,
  */
 int
 virStorageFileGetSCSIKey(const char *path,
-                         char **key)
+                         char **key,
+                         bool ignoreError ATTRIBUTE_UNUSED)
 {
     int status;
     virCommandPtr cmd = virCommandNewArgList("/lib/udev/scsi_id",
@@ -1480,9 +1482,11 @@ virStorageFileGetSCSIKey(const char *path,
 }
 #else
 int virStorageFileGetSCSIKey(const char *path,
-                             char **key ATTRIBUTE_UNUSED)
+                             char **key ATTRIBUTE_UNUSED,
+                             bool ignoreError)
 {
-    virReportSystemError(ENOSYS, _("Unable to get SCSI key for %s"), path);
+    if (!ignoreError)
+        virReportSystemError(ENOSYS, _("Unable to get SCSI key for %s"), path);
     return -1;
 }
 #endif

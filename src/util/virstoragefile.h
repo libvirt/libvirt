@@ -390,7 +390,8 @@ bool virStorageIsRelative(const char *backing);
 int virStorageFileGetLVMKey(const char *path,
                             char **key);
 int virStorageFileGetSCSIKey(const char *path,
-                             char **key);
+                             char **key,
+                             bool ignoreError);
 
 void virStorageAuthDefFree(virStorageAuthDefPtr def);
 virStorageAuthDefPtr virStorageAuthDefCopy(const virStorageAuthDef *src);

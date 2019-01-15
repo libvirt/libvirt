@@ -3778,36 +3778,17 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
 static char *
 virStorageBackendSCSISerial(const char *dev)
 {
+    int rc;
     char *serial = NULL;
-#ifdef WITH_UDEV
-    virCommandPtr cmd = virCommandNewArgList(
-        "/lib/udev/scsi_id",
-        "--replace-whitespace",
-        "--whitelisted",
-        "--device", dev,
-        NULL
-        );
 
-    /* Run the program and capture its output */
-    virCommandSetOutputBuffer(cmd, &serial);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-#endif
+    rc = virStorageFileGetSCSIKey(dev, &serial, true);
+    if (rc == 0 && serial)
+        return serial;
 
-    if (serial && STRNEQ(serial, "")) {
-        char *nl = strchr(serial, '\n');
-        if (nl)
-            *nl = '\0';
-    } else {
-        VIR_FREE(serial);
-        ignore_value(VIR_STRDUP(serial, dev));
-    }
+    if (rc == -2)
+        return NULL;
 
-#ifdef WITH_UDEV
- cleanup:
-    virCommandFree(cmd);
-#endif
-
+    ignore_value(VIR_STRDUP(serial, dev));
     return serial;
 }
 
