@@ -599,7 +599,9 @@ virNetDevIPCheckIPv6ForwardingCallback(struct nlmsghdr *resp,
             data->hasRARoutes = true;
 
             len -= NLMSG_ALIGN(nh->rtnh_len);
+            VIR_WARNINGS_NO_CAST_ALIGN
             nh = RTNH_NEXT(nh);
+            VIR_WARNINGS_RESET
         }
     }
 
