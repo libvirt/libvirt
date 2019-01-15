@@ -424,6 +424,32 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadDeviceEntry(virQEMUDriverConfigPtr cfg,
+                                   virConfPtr conf)
+{
+    bool tmp;
+    int rv;
+
+    if (virConfGetValueBool(conf, "mac_filter", &cfg->macFilter) < 0)
+        return -1;
+
+    if (virConfGetValueBool(conf, "relaxed_acs_check", &cfg->relaxedACS) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "lock_manager", &cfg->lockManagerName) < 0)
+        return -1;
+    if ((rv = virConfGetValueBool(conf, "allow_disk_format_probing", &tmp)) < 0)
+        return -1;
+    if (rv == 1 && tmp) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("allow_disk_format_probing is no longer supported"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virQEMUDriverConfigLoadRPCEntry(virQEMUDriverConfigPtr cfg,
                                 virConfPtr conf)
 {
@@ -702,7 +728,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     char *stdioHandler = NULL;
     char **hugetlbfs = NULL;
     char *corestr = NULL;
-    bool tmp;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -901,21 +926,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueString(conf, "pr_helper", &cfg->prHelperName) < 0)
         goto cleanup;
 
-    if (virConfGetValueBool(conf, "mac_filter", &cfg->macFilter) < 0)
-        goto cleanup;
-
-    if (virConfGetValueBool(conf, "relaxed_acs_check", &cfg->relaxedACS) < 0)
-        goto cleanup;
     if (virConfGetValueBool(conf, "clear_emulator_capabilities", &cfg->clearEmulatorCapabilities) < 0)
         goto cleanup;
-
-    if ((rv = virConfGetValueBool(conf, "allow_disk_format_probing", &tmp)) < 0)
-        goto cleanup;
-    if (rv == 1 && tmp) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("allow_disk_format_probing is no longer supported"));
-        goto cleanup;
-    }
     if (virConfGetValueBool(conf, "set_process_name", &cfg->setProcessName) < 0)
         goto cleanup;
     if (virConfGetValueUInt(conf, "max_processes", &cfg->maxProcesses) < 0)
@@ -941,9 +953,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "dump_guest_core", &cfg->dumpGuestCore) < 0)
         goto cleanup;
 
-    if (virConfGetValueString(conf, "lock_manager", &cfg->lockManagerName) < 0)
-        goto cleanup;
-
     if (virConfGetValueString(conf, "stdio_handler", &stdioHandler) < 0)
         goto cleanup;
     if (stdioHandler) {
@@ -960,6 +969,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         }
         VIR_FREE(stdioHandler);
     }
+
+    if (virQEMUDriverConfigLoadDeviceEntry(cfg, conf) < 0)
+        goto cleanup;
 
     if (virQEMUDriverConfigLoadRPCEntry(cfg, conf) < 0)
         goto cleanup;
