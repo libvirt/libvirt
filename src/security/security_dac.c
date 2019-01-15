@@ -458,10 +458,11 @@ virSecurityDACRecallLabel(virSecurityDACDataPtr priv ATTRIBUTE_UNUSED,
 {
     char *label;
     int ret = -1;
+    int rv;
 
-    if (virSecurityGetRememberedLabel(SECURITY_DAC_NAME,
-                                      path, &label) < 0)
-        goto cleanup;
+    rv = virSecurityGetRememberedLabel(SECURITY_DAC_NAME, path, &label);
+    if (rv < 0)
+        return rv;
 
     if (!label)
         return 1;
@@ -760,7 +761,9 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
         }
 
         refcount = virSecurityDACRememberLabel(priv, path, sb.st_uid, sb.st_gid);
-        if (refcount < 0) {
+        if (refcount == -2) {
+            /* Not supported. Don't error though. */
+        } else if (refcount < 0) {
             return -1;
         } else if (refcount > 1) {
             /* Refcount is greater than 1 which means that there
@@ -827,10 +830,13 @@ virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
 
     if (recall && path) {
         rv = virSecurityDACRecallLabel(priv, path, &uid, &gid);
-        if (rv < 0)
+        if (rv == -2) {
+            /* Not supported. Don't error though. */
+        } else if (rv < 0) {
             return -1;
-        if (rv > 0)
+        } else if (rv > 0) {
             return 0;
+        }
     }
 
     VIR_INFO("Restoring DAC user and group on '%s' to %ld:%ld",

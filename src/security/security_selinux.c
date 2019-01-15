@@ -207,9 +207,11 @@ static int
 virSecuritySELinuxRecallLabel(const char *path,
                               security_context_t *con)
 {
-    if (virSecurityGetRememberedLabel(SECURITY_SELINUX_NAME,
-                                      path, con) < 0)
-        return -1;
+    int rv;
+
+    rv = virSecurityGetRememberedLabel(SECURITY_SELINUX_NAME, path, con);
+    if (rv < 0)
+        return rv;
 
     if (!*con)
         return 1;
@@ -1337,7 +1339,9 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
 
         if (econ) {
             refcount = virSecuritySELinuxRememberLabel(path, econ);
-            if (refcount < 0) {
+            if (refcount == -2) {
+                /* Not supported. Don't error though. */
+            } else if (refcount < 0) {
                 goto cleanup;
             } else if (refcount > 1) {
                 /* Refcount is greater than 1 which means that there
@@ -1485,13 +1489,18 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
     }
 
     if (recall) {
-        if ((rc = virSecuritySELinuxRecallLabel(newpath, &fcon)) < 0) {
+        rc = virSecuritySELinuxRecallLabel(newpath, &fcon);
+        if (rc == -2) {
+            /* Not supported. Lookup the default label below. */
+        } else if (rc < 0) {
             goto cleanup;
         } else if (rc > 0) {
             ret = 0;
             goto cleanup;
         }
-    } else {
+    }
+
+    if (!recall || rc == -2) {
         if (stat(newpath, &buf) != 0) {
             VIR_WARN("cannot stat %s: %s", newpath,
                      virStrerror(errno, ebuf, sizeof(ebuf)));

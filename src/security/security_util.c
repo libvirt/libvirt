@@ -105,6 +105,7 @@ virSecurityGetRefCountAttrName(const char *name ATTRIBUTE_UNUSED)
  * zero) and returns zero.
  *
  * Returns: 0 on success,
+ *         -2 if underlying file system doesn't support XATTRs,
  *         -1 otherwise (with error reported)
  */
 int
@@ -125,7 +126,7 @@ virSecurityGetRememberedLabel(const char *name,
 
     if (virFileGetXAttrQuiet(path, ref_name, &value) < 0) {
         if (errno == ENOSYS || errno == ENODATA || errno == ENOTSUP) {
-            ret = 0;
+            ret = -2;
         } else {
             virReportSystemError(errno,
                                  _("Unable to get XATTR %s on %s"),
@@ -192,6 +193,7 @@ virSecurityGetRememberedLabel(const char *name,
  * See also virSecurityGetRememberedLabel.
  *
  * Returns: the new refcount value on success,
+ *         -2 if underlying file system doesn't support XATTRs,
  *         -1 otherwise (with error reported)
  */
 int
@@ -210,7 +212,7 @@ virSecuritySetRememberedLabel(const char *name,
 
     if (virFileGetXAttrQuiet(path, ref_name, &value) < 0) {
         if (errno == ENOSYS || errno == ENOTSUP) {
-            ret = 0;
+            ret = -2;
             goto cleanup;
         } else if (errno != ENODATA) {
             virReportSystemError(errno,
