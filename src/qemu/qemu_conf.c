@@ -424,6 +424,38 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
+                                  virConfPtr conf)
+{
+    char **nvram = NULL;
+    int ret = -1;
+    size_t i;
+
+    if (virConfGetValueStringList(conf, "nvram", false, &nvram) < 0)
+        goto cleanup;
+    if (nvram) {
+        virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
+
+        cfg->nfirmwares = virStringListLength((const char *const *)nvram);
+        if (nvram[0] && VIR_ALLOC_N(cfg->firmwares, cfg->nfirmwares) < 0)
+            goto cleanup;
+
+        for (i = 0; nvram[i] != NULL; i++) {
+            if (VIR_ALLOC(cfg->firmwares[i]) < 0)
+                goto cleanup;
+            if (virFirmwareParse(nvram[i], cfg->firmwares[i]) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    virStringListFree(nvram);
+    return ret;
+}
+
+
+static int
 virQEMUDriverConfigLoadGlusterDebugEntry(virQEMUDriverConfigPtr cfg,
                                          virConfPtr conf)
 {
@@ -591,7 +623,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     size_t i;
     char *stdioHandler = NULL;
     char **hugetlbfs = NULL;
-    char **nvram = NULL;
     char *corestr = NULL;
     bool tmp;
 
@@ -907,22 +938,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "log_timestamp", &cfg->logTimestamp) < 0)
         goto cleanup;
 
-    if (virConfGetValueStringList(conf, "nvram", false, &nvram) < 0)
+    if (virQEMUDriverConfigLoadNVRAMEntry(cfg, conf) < 0)
         goto cleanup;
-    if (nvram) {
-        virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
-
-        cfg->nfirmwares = virStringListLength((const char *const *)nvram);
-        if (nvram[0] && VIR_ALLOC_N(cfg->firmwares, cfg->nfirmwares) < 0)
-            goto cleanup;
-
-        for (i = 0; nvram[i] != NULL; i++) {
-            if (VIR_ALLOC(cfg->firmwares[i]) < 0)
-                goto cleanup;
-            if (virFirmwareParse(nvram[i], cfg->firmwares[i]) < 0)
-                goto cleanup;
-        }
-    }
 
     if (virQEMUDriverConfigLoadGlusterDebugEntry(cfg, conf) < 0)
         goto cleanup;
@@ -940,7 +957,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
  cleanup:
     virStringListFree(hugetlbfs);
-    virStringListFree(nvram);
     VIR_FREE(corestr);
     virConfFree(conf);
     return ret;
