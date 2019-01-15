@@ -424,6 +424,96 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfigPtr cfg,
+                                    virConfPtr conf)
+{
+    char *stdioHandler = NULL;
+    char **hugetlbfs = NULL;
+    char *corestr = NULL;
+    int ret = -1;
+    size_t i;
+
+    if (virConfGetValueStringList(conf, "hugetlbfs_mount", true,
+                                  &hugetlbfs) < 0)
+        goto cleanup;
+    if (hugetlbfs) {
+        /* There already might be something autodetected. Avoid leaking it. */
+        while (cfg->nhugetlbfs) {
+            cfg->nhugetlbfs--;
+            VIR_FREE(cfg->hugetlbfs[cfg->nhugetlbfs].mnt_dir);
+        }
+        VIR_FREE(cfg->hugetlbfs);
+
+        cfg->nhugetlbfs = virStringListLength((const char *const *)hugetlbfs);
+        if (hugetlbfs[0] &&
+            VIR_ALLOC_N(cfg->hugetlbfs, cfg->nhugetlbfs) < 0)
+            goto cleanup;
+
+        for (i = 0; hugetlbfs[i] != NULL; i++) {
+            if (virQEMUDriverConfigHugeTLBFSInit(&cfg->hugetlbfs[i],
+                                                 hugetlbfs[i], i != 0) < 0)
+                goto cleanup;
+        }
+    }
+
+    if (virConfGetValueBool(conf, "clear_emulator_capabilities", &cfg->clearEmulatorCapabilities) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "bridge_helper", &cfg->bridgeHelperName) < 0)
+        goto cleanup;
+
+    if (virConfGetValueString(conf, "pr_helper", &cfg->prHelperName) < 0)
+        goto cleanup;
+
+    if (virConfGetValueBool(conf, "set_process_name", &cfg->setProcessName) < 0)
+        goto cleanup;
+    if (virConfGetValueUInt(conf, "max_processes", &cfg->maxProcesses) < 0)
+        goto cleanup;
+    if (virConfGetValueUInt(conf, "max_files", &cfg->maxFiles) < 0)
+        goto cleanup;
+
+    if (virConfGetValueType(conf, "max_core") == VIR_CONF_STRING) {
+        if (virConfGetValueString(conf, "max_core", &corestr) < 0)
+            goto cleanup;
+        if (STREQ(corestr, "unlimited")) {
+            cfg->maxCore = ULLONG_MAX;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown core size '%s'"),
+                           corestr);
+            goto cleanup;
+        }
+    } else if (virConfGetValueULLong(conf, "max_core", &cfg->maxCore) < 0) {
+        goto cleanup;
+    }
+
+    if (virConfGetValueBool(conf, "dump_guest_core", &cfg->dumpGuestCore) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "stdio_handler", &stdioHandler) < 0)
+        goto cleanup;
+    if (stdioHandler) {
+        if (STREQ(stdioHandler, "logd")) {
+            cfg->stdioLogD = true;
+        } else if (STREQ(stdioHandler, "file")) {
+            cfg->stdioLogD = false;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown stdio handler %s"),
+                           stdioHandler);
+            VIR_FREE(stdioHandler);
+            goto cleanup;
+        }
+        VIR_FREE(stdioHandler);
+    }
+
+    ret = 0;
+ cleanup:
+    virStringListFree(hugetlbfs);
+    VIR_FREE(corestr);
+    return ret;
+}
+
+
+static int
 virQEMUDriverConfigLoadDeviceEntry(virQEMUDriverConfigPtr cfg,
                                    virConfPtr conf)
 {
@@ -724,9 +814,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     virConfPtr conf = NULL;
     int ret = -1;
     int rv;
-    size_t i;
-    char *stdioHandler = NULL;
-    char **hugetlbfs = NULL;
     char *corestr = NULL;
 
     /* Just check the file is readable before opening it, otherwise
@@ -897,78 +984,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "auto_start_bypass_cache", &cfg->autoStartBypassCache) < 0)
         goto cleanup;
 
-    if (virConfGetValueStringList(conf, "hugetlbfs_mount", true,
-                                  &hugetlbfs) < 0)
+    if (virQEMUDriverConfigLoadProcessEntry(cfg, conf) < 0)
         goto cleanup;
-    if (hugetlbfs) {
-        /* There already might be something autodetected. Avoid leaking it. */
-        while (cfg->nhugetlbfs) {
-            cfg->nhugetlbfs--;
-            VIR_FREE(cfg->hugetlbfs[cfg->nhugetlbfs].mnt_dir);
-        }
-        VIR_FREE(cfg->hugetlbfs);
-
-        cfg->nhugetlbfs = virStringListLength((const char *const *)hugetlbfs);
-        if (hugetlbfs[0] &&
-            VIR_ALLOC_N(cfg->hugetlbfs, cfg->nhugetlbfs) < 0)
-            goto cleanup;
-
-        for (i = 0; hugetlbfs[i] != NULL; i++) {
-            if (virQEMUDriverConfigHugeTLBFSInit(&cfg->hugetlbfs[i],
-                                                 hugetlbfs[i], i != 0) < 0)
-                goto cleanup;
-        }
-    }
-
-    if (virConfGetValueString(conf, "bridge_helper", &cfg->bridgeHelperName) < 0)
-        goto cleanup;
-
-    if (virConfGetValueString(conf, "pr_helper", &cfg->prHelperName) < 0)
-        goto cleanup;
-
-    if (virConfGetValueBool(conf, "clear_emulator_capabilities", &cfg->clearEmulatorCapabilities) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "set_process_name", &cfg->setProcessName) < 0)
-        goto cleanup;
-    if (virConfGetValueUInt(conf, "max_processes", &cfg->maxProcesses) < 0)
-        goto cleanup;
-    if (virConfGetValueUInt(conf, "max_files", &cfg->maxFiles) < 0)
-        goto cleanup;
-
-    if (virConfGetValueType(conf, "max_core") == VIR_CONF_STRING) {
-        if (virConfGetValueString(conf, "max_core", &corestr) < 0)
-            goto cleanup;
-        if (STREQ(corestr, "unlimited")) {
-            cfg->maxCore = ULLONG_MAX;
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown core size '%s'"),
-                           corestr);
-            goto cleanup;
-        }
-    } else if (virConfGetValueULLong(conf, "max_core", &cfg->maxCore) < 0) {
-        goto cleanup;
-    }
-
-    if (virConfGetValueBool(conf, "dump_guest_core", &cfg->dumpGuestCore) < 0)
-        goto cleanup;
-
-    if (virConfGetValueString(conf, "stdio_handler", &stdioHandler) < 0)
-        goto cleanup;
-    if (stdioHandler) {
-        if (STREQ(stdioHandler, "logd")) {
-            cfg->stdioLogD = true;
-        } else if (STREQ(stdioHandler, "file")) {
-            cfg->stdioLogD = false;
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown stdio handler %s"),
-                           stdioHandler);
-            VIR_FREE(stdioHandler);
-            goto cleanup;
-        }
-        VIR_FREE(stdioHandler);
-    }
 
     if (virQEMUDriverConfigLoadDeviceEntry(cfg, conf) < 0)
         goto cleanup;
@@ -1000,7 +1017,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     ret = 0;
 
  cleanup:
-    virStringListFree(hugetlbfs);
     VIR_FREE(corestr);
     virConfFree(conf);
     return ret;
