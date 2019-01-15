@@ -3140,11 +3140,76 @@ qemuBuildSkipController(const virDomainControllerDef *controller,
 
 
 static int
+qemuBuildControllersByTypeCommandLine(virCommandPtr cmd,
+                                      const virDomainDef *def,
+                                      virQEMUCapsPtr qemuCaps,
+                                      virDomainControllerType type)
+{
+    int ret = -1;
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        virDomainControllerDefPtr cont = def->controllers[i];
+        char *devstr;
+
+        if (cont->type != type)
+            continue;
+
+        if (qemuBuildSkipController(cont, def))
+            continue;
+
+        /* skip USB controllers with type none.*/
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
+            continue;
+        }
+
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT &&
+            !qemuBuildDomainForbidLegacyUSBController(def)) {
+
+            /* An appropriate default USB controller model should already
+             * have been selected in qemuDomainDeviceDefPostParse(); if
+             * we still have no model by now, we have to fall back to the
+             * legacy USB controller.
+             *
+             * Note that we *don't* want to end up with the legacy USB
+             * controller for q35 and virt machines, so we go ahead and
+             * fail in qemuBuildControllerDevStr(); on the other hand,
+             * for s390 machines we want to ignore any USB controller
+             * (see 548ba43028 for the full story), so we skip
+             * qemuBuildControllerDevStr() but we don't ultimately end
+             * up adding the legacy USB controller */
+            continue;
+        }
+
+        if (qemuBuildControllerDevStr(def, cont, qemuCaps, &devstr) < 0)
+            goto cleanup;
+
+        if (devstr) {
+            if (qemuCommandAddExtDevice(cmd, &cont->info) < 0) {
+                VIR_FREE(devstr);
+                goto cleanup;
+            }
+
+            virCommandAddArg(cmd, "-device");
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+static int
 qemuBuildControllerDevCommandLine(virCommandPtr cmd,
                                   const virDomainDef *def,
                                   virQEMUCapsPtr qemuCaps)
 {
-    size_t i, j;
+    size_t j;
     int contOrder[] = {
         /*
          * List of controller types that we add commandline args for,
@@ -3172,55 +3237,8 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
     int ret = -1;
 
     for (j = 0; j < ARRAY_CARDINALITY(contOrder); j++) {
-        for (i = 0; i < def->ncontrollers; i++) {
-            virDomainControllerDefPtr cont = def->controllers[i];
-            char *devstr;
-
-            if (cont->type != contOrder[j])
-                continue;
-
-            if (qemuBuildSkipController(cont, def))
-                continue;
-
-            /* skip USB controllers with type none.*/
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
-                continue;
-            }
-
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT &&
-                !qemuBuildDomainForbidLegacyUSBController(def)) {
-
-                /* An appropriate default USB controller model should already
-                 * have been selected in qemuDomainDeviceDefPostParse(); if
-                 * we still have no model by now, we have to fall back to the
-                 * legacy USB controller.
-                 *
-                 * Note that we *don't* want to end up with the legacy USB
-                 * controller for q35 and virt machines, so we go ahead and
-                 * fail in qemuBuildControllerDevStr(); on the other hand,
-                 * for s390 machines we want to ignore any USB controller
-                 * (see 548ba43028 for the full story), so we skip
-                 * qemuBuildControllerDevStr() but we don't ultimately end
-                 * up adding the legacy USB controller */
-                continue;
-            }
-
-            if (qemuBuildControllerDevStr(def, cont, qemuCaps, &devstr) < 0)
-                goto cleanup;
-
-            if (devstr) {
-                if (qemuCommandAddExtDevice(cmd, &cont->info) < 0) {
-                    VIR_FREE(devstr);
-                    goto cleanup;
-                }
-
-                virCommandAddArg(cmd, "-device");
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            }
-        }
+        if (qemuBuildControllersByTypeCommandLine(cmd, def, qemuCaps, contOrder[j]) < 0)
+            goto cleanup;
     }
 
     if (qemuBuildLegacyUSBControllerCommandLine(cmd, def) < 0)
