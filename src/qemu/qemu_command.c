@@ -3067,6 +3067,7 @@ qemuBuildLegacyUSBControllerCommandLine(virCommandPtr cmd,
                                         int usbcontroller)
 {
     size_t i;
+    size_t nlegacy = 0;
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
@@ -3077,6 +3078,16 @@ qemuBuildLegacyUSBControllerCommandLine(virCommandPtr cmd,
         /* If we have mode='none', there are no other USB controllers */
         if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
             return 0;
+
+        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT)
+            nlegacy++;
+    }
+
+    if (nlegacy > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Multiple legacy USB controllers are "
+                         "not supported"));
+        return -1;
     }
 
     if (usbcontroller == 0 &&
@@ -3137,7 +3148,6 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
 {
     size_t i, j;
     int usbcontroller = 0;
-    bool usblegacy = false;
     int contOrder[] = {
         /*
          * List of controller types that we add commandline args for,
@@ -3197,13 +3207,6 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
                  * (see 548ba43028 for the full story), so we skip
                  * qemuBuildControllerDevStr() but we don't ultimately end
                  * up adding the legacy USB controller */
-                if (usblegacy) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Multiple legacy USB controllers are "
-                                     "not supported"));
-                    goto cleanup;
-                }
-                usblegacy = true;
                 continue;
             }
 
