@@ -424,6 +424,14 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadNographicsEntry(virQEMUDriverConfigPtr cfg,
+                                       virConfPtr conf)
+{
+    return virConfGetValueBool(conf, "nographics_allow_host_audio", &cfg->nogfxAllowHostAudio);
+}
+
+
+static int
 virQEMUDriverConfigLoadSPICEEntry(virQEMUDriverConfigPtr cfg,
                                   virConfPtr conf)
 {
@@ -1013,7 +1021,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     if (virConfGetValueBool(conf, "vnc_allow_host_audio", &cfg->vncAllowHostAudio) < 0)
         goto cleanup;
-    if (virConfGetValueBool(conf, "nographics_allow_host_audio", &cfg->nogfxAllowHostAudio) < 0)
+
+    if (virQEMUDriverConfigLoadNographicsEntry(cfg, conf) < 0)
         goto cleanup;
 
     if (virQEMUDriverConfigLoadSPICEEntry(cfg, conf) < 0)
