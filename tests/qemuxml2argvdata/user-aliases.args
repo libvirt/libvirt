@@ -35,9 +35,9 @@ server,nowait \
 -global PIIX4_PM.disable_s3=0 \
 -global PIIX4_PM.disable_s4=0 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x8 \
+-usb \
 -device usb-ccid,id=ua-myCCID,bus=ua-SomeWeirdController.0,port=1 \
 -device usb-ccid,id=ua-myCCID2,bus=ua-SomeWeirdController.0,port=2 \
--usb \
 -drive file=/var/lib/libvirt/images/fd.img,format=raw,if=none,\
 id=drive-ua-myDisk1,cache=none \
 -drive file=/var/lib/libvirt/images/gentoo.qcow2,format=qcow2,if=none,\

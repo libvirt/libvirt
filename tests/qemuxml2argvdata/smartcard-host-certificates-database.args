@@ -20,8 +20,8 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -usb \
+-device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -device ccid-card-emulated,backend=certificates,cert1=cert1,cert2=cert2,\
 cert3=cert3,db=/tmp/foo,id=smartcard0,bus=ccid0.0 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

@@ -22,8 +22,8 @@ bar=2/monitor.sock,server,nowait \
 -no-shutdown \
 -no-acpi \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \
--device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -usb \
+-device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
 cache=none,throttling.bps-total=5000,throttling.iops-total=6000,\
 throttling.bps-total-max=10000,throttling.iops-total-max=11000,\

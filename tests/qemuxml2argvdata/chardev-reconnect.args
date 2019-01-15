@@ -22,8 +22,8 @@ server,nowait \
 -no-acpi \
 -device virtio-serial-pci,id=virtio-serial1,bus=pci.0,addr=0xa \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x3 \
--device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -usb \
+-device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -chardev socket,id=charsmartcard0,path=/tmp/channel/asdf,reconnect=20 \
 -device ccid-card-passthru,chardev=charsmartcard0,id=smartcard0,bus=ccid0.0 \
 -chardev socket,id=charchannel0,host=localhost,port=1234,reconnect=10 \
