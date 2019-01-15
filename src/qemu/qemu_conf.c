@@ -424,6 +424,27 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 static int
+virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfigPtr cfg,
+                                 virConfPtr conf)
+{
+    if (virConfGetValueString(conf, "save_image_format", &cfg->saveImageFormat) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "dump_image_format", &cfg->dumpImageFormat) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "snapshot_image_format", &cfg->snapshotImageFormat) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "auto_dump_path", &cfg->autoDumpPath) < 0)
+        return -1;
+    if (virConfGetValueBool(conf, "auto_dump_bypass_cache", &cfg->autoDumpBypassCache) < 0)
+        return -1;
+    if (virConfGetValueBool(conf, "auto_start_bypass_cache", &cfg->autoStartBypassCache) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfigPtr cfg,
                                     virConfPtr conf)
 {
@@ -969,19 +990,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-
-    if (virConfGetValueString(conf, "save_image_format", &cfg->saveImageFormat) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "dump_image_format", &cfg->dumpImageFormat) < 0)
-        goto cleanup;
-    if (virConfGetValueString(conf, "snapshot_image_format", &cfg->snapshotImageFormat) < 0)
-        goto cleanup;
-
-    if (virConfGetValueString(conf, "auto_dump_path", &cfg->autoDumpPath) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "auto_dump_bypass_cache", &cfg->autoDumpBypassCache) < 0)
-        goto cleanup;
-    if (virConfGetValueBool(conf, "auto_start_bypass_cache", &cfg->autoStartBypassCache) < 0)
+    if (virQEMUDriverConfigLoadSaveEntry(cfg, conf) < 0)
         goto cleanup;
 
     if (virQEMUDriverConfigLoadProcessEntry(cfg, conf) < 0)
