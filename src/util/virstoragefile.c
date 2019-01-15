@@ -1425,8 +1425,22 @@ int virStorageFileGetLVMKey(const char *path,
 #endif
 
 #ifdef WITH_UDEV
-int virStorageFileGetSCSIKey(const char *path,
-                             char **key)
+/* virStorageFileGetSCSIKey
+ * @path: Path to the SCSI device
+ * @key: Unique key to be returned
+ *
+ * Using a udev specific function, query the @path to get and return a
+ * unique @key for the caller to use.
+ *
+ * Returns:
+ *     0 On success, with the @key filled in or @key=NULL if the
+ *       returned string was empty.
+ *    -1 When WITH_UDEV is undefined and a system error is reported
+ *    -2 When WITH_UDEV is defined, but calling virCommandRun fails
+ */
+int
+virStorageFileGetSCSIKey(const char *path,
+                         char **key)
 {
     int status;
     virCommandPtr cmd = virCommandNewArgList("/lib/udev/scsi_id",
@@ -1435,7 +1449,7 @@ int virStorageFileGetSCSIKey(const char *path,
                                              "--device", path,
                                              NULL
                                              );
-    int ret = -1;
+    int ret = -2;
 
     *key = NULL;
 
