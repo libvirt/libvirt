@@ -184,15 +184,29 @@ Default policy will still allow any application to connect to the RO socket.
 </p>
     <p>
 The default policy can be overridden by creating a new policy file in the
-local override directory <code>/etc/polkit-1/localauthority/50-local.d/</code>.
-Policy files should have a unique name ending with .pkla.  Using reverse DNS
-naming works well. Information on the options available can be found by
-reading the pklocalauthority man page. The two libvirt daemon actions
-available are named <code>org.libvirt.unix.manage</code> for full management
-access, and <code>org.libvirt.unix.monitor</code> for read-only access.
-    </p>
+<code>/etc/polkit-1/rules.d</code> directory. Information on the options
+available can be found by reading the <code>polkit(8)</code> man page. The
+two libvirt actions are named <code>org.libvirt.unix.manage</code> for full
+management access, and <code>org.libvirt.unix.monitor</code> for read-only
+access.
+</p>
     <p>
-As an example, this gives the user <code>fred</code> full management access:
+As an example, creating <code>/etc/polkit-1/rules.d/80-libvirt-manage.rules</code>
+with the following gives the user <code>fred</code> full management access
+when accessing from an active local session:
+    </p>
+<pre>polkit.addRule(function(action, subject) {
+  if (action.id == "org.libvirt.unix.manage" &amp;&amp;
+      subject.local &amp;&amp; subject.active &amp;&amp; subject.user == "fred") {
+      return polkit.Result.YES;
+  }
+});</pre>
+    <p>
+Older versions of PolicyKit used policy files ending with .pkla in the
+local override directory <code>/etc/polkit-1/localauthority/50-local.d/</code>.
+Compatibility with this older format is provided by <a
+href="https://pagure.io/polkit-pkla-compat">polkit-pkla-compat</a>. As an
+example, this gives the user <code>fred</code> full management access:
     </p>
 <pre>[Allow fred libvirt management permissions]
 Identity=unix-user:fred
@@ -200,10 +214,6 @@ Action=org.libvirt.unix.manage
 ResultAny=yes
 ResultInactive=yes
 ResultActive=yes</pre>
-    <p>
-Further examples of PolicyKit setup can be found on the
-<a href="http://wiki.libvirt.org/page/SSHPolicyKitSetup">wiki page</a>.
-    </p>
     <h2><a id="ACL_server_sasl">SASL pluggable authentication</a></h2>
 
     <p>
