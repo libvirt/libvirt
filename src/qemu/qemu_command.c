@@ -3208,7 +3208,7 @@ qemuBuildControllersCommandLine(virCommandPtr cmd,
                                 const virDomainDef *def,
                                 virQEMUCapsPtr qemuCaps)
 {
-    size_t j;
+    size_t i;
     int contOrder[] = {
         /*
          * List of controller types that we add commandline args for,
@@ -3237,8 +3237,8 @@ qemuBuildControllersCommandLine(virCommandPtr cmd,
     };
     int ret = -1;
 
-    for (j = 0; j < ARRAY_CARDINALITY(contOrder); j++) {
-        if (qemuBuildControllersByTypeCommandLine(cmd, def, qemuCaps, contOrder[j]) < 0)
+    for (i = 0; i < ARRAY_CARDINALITY(contOrder); i++) {
+        if (qemuBuildControllersByTypeCommandLine(cmd, def, qemuCaps, contOrder[i]) < 0)
             goto cleanup;
     }
 
