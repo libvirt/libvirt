@@ -392,6 +392,8 @@ int virStorageFileGetLVMKey(const char *path,
 int virStorageFileGetSCSIKey(const char *path,
                              char **key,
                              bool ignoreError);
+int virStorageFileGetNPIVKey(const char *path,
+                             char **key);
 
 void virStorageAuthDefFree(virStorageAuthDefPtr def);
 virStorageAuthDefPtr virStorageAuthDefCopy(const virStorageAuthDef *src);
