@@ -3204,9 +3204,9 @@ qemuBuildControllersByTypeCommandLine(virCommandPtr cmd,
 
 
 static int
-qemuBuildControllerDevCommandLine(virCommandPtr cmd,
-                                  const virDomainDef *def,
-                                  virQEMUCapsPtr qemuCaps)
+qemuBuildControllersCommandLine(virCommandPtr cmd,
+                                const virDomainDef *def,
+                                virQEMUCapsPtr qemuCaps)
 {
     size_t j;
     int contOrder[] = {
@@ -10624,7 +10624,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildGlobalControllerCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildControllerDevCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildControllersCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildHubCommandLine(cmd, def, qemuCaps) < 0)
