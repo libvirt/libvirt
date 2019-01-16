@@ -39,3 +39,5 @@ unsigned long remoteVersion(void);
 #define LIBVIRT_CLIENTCERT LIBVIRT_PKI_DIR "/libvirt/clientcert.pem"
 #define LIBVIRT_SERVERKEY LIBVIRT_PKI_DIR "/libvirt/private/serverkey.pem"
 #define LIBVIRT_SERVERCERT LIBVIRT_PKI_DIR "/libvirt/servercert.pem"
+
+#define SSF_WARNING_LEVEL 112
