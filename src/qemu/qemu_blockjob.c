@@ -293,7 +293,7 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
     disk->src->id = 0;
     virStorageSourceBackingStoreClear(disk->src);
-    ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk, true));
+    ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true));
     ignore_value(qemuBlockNodeNamesDetect(driver, vm, asyncJob));
     qemuBlockJobTerminate(job);
 }

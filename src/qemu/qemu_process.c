@@ -6210,7 +6210,7 @@ qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
         if (qemuDomainDiskIsMissingLocalOptional(disk) && cold_boot)
             VIR_INFO("optional disk '%s' source file is missing, "
                      "skip checking disk chain", disk->dst);
-        else if (qemuDomainDetermineDiskChain(driver, vm, disk, true) >= 0)
+        else if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true) >= 0)
             continue;
 
         if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) >= 0)
@@ -8031,7 +8031,7 @@ qemuProcessReconnect(void *opaque)
              * qemuDomainDetermineDiskChain with @report_broken == false
              * to guarantee best-effort domain reconnect */
             virStorageSourceBackingStoreClear(disk->src);
-            if (qemuDomainDetermineDiskChain(driver, obj, disk, false) < 0)
+            if (qemuDomainDetermineDiskChain(driver, obj, disk, NULL, false) < 0)
                 goto error;
         } else {
             VIR_DEBUG("skipping backing chain detection for '%s'", disk->dst);

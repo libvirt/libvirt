@@ -17163,7 +17163,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         oldsrc = disk->src;
         disk->src = disk->mirror;
 
-        if (qemuDomainDetermineDiskChain(driver, vm, disk, true) < 0)
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, disk->mirror, true) < 0)
             goto cleanup;
 
         if (disk->mirror->format &&

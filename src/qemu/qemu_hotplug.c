@@ -820,7 +820,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
 
     sharedAdded = true;
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, true) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true) < 0)
         goto cleanup;
 
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
@@ -1197,7 +1197,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriverPtr driver,
     if (qemuSetUnprivSGIO(dev) < 0)
         goto cleanup;
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, true) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true) < 0)
         goto cleanup;
 
     for (i = 0; i < vm->def->ndisks; i++) {

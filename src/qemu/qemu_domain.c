@@ -8991,20 +8991,36 @@ qemuDomainStorageAlias(const char *device, int depth)
 }
 
 
+/**
+ * qemuDomainDetermineDiskChain:
+ * @driver: qemu driver object
+ * @vm: domain object
+ * @disk: disk definition
+ * @disksrc: source to determine the chain for, may be NULL
+ * @report_broken: report broken chain verbosely
+ *
+ * Prepares and initializes the backing chain of disk @disk. In cases where
+ * a new source is to be associated with @disk the @disksrc parameter can be
+ * used to override the source. If @report_broken is true missing images
+ * in the backing chain are reported.
+ */
 int
 qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk,
+                             virStorageSourcePtr disksrc,
                              bool report_broken)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virStorageSourcePtr disksrc = disk->src; /* disk source */
     virStorageSourcePtr src; /* iterator for the backing chain declared in XML */
     virStorageSourcePtr n; /* iterator for the backing chain detected from disk */
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     uid_t uid;
     gid_t gid;
+
+    if (!disksrc)
+        disksrc = disk->src;
 
     if (virStorageSourceIsEmpty(disksrc)) {
         ret = 0;

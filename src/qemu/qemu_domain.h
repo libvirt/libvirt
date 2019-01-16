@@ -742,6 +742,7 @@ int qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
 int qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk,
+                                 virStorageSourcePtr disksrc,
                                  bool report_broken);
 
 bool qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
