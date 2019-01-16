@@ -31,10 +31,10 @@ int qemuSetupImageCgroup(virDomainObjPtr vm,
                          virStorageSourcePtr src);
 int qemuTeardownImageCgroup(virDomainObjPtr vm,
                             virStorageSourcePtr src);
-int qemuSetupDiskCgroup(virDomainObjPtr vm,
-                        virDomainDiskDefPtr disk);
-int qemuTeardownDiskCgroup(virDomainObjPtr vm,
-                           virDomainDiskDefPtr disk);
+int qemuSetupImageChainCgroup(virDomainObjPtr vm,
+                              virStorageSourcePtr src);
+int qemuTeardownImageChainCgroup(virDomainObjPtr vm,
+                                 virStorageSourcePtr src);
 int qemuSetupInputCgroup(virDomainObjPtr vm,
                          virDomainInputDefPtr dev);
 int qemuTeardownInputCgroup(virDomainObjPtr vm,

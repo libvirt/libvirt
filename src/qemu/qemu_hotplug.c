@@ -116,14 +116,14 @@ qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
     if (qemuSecuritySetDiskLabel(driver, vm, disk) < 0)
         goto rollback_namespace;
 
-    if (qemuSetupDiskCgroup(vm, disk) < 0)
+    if (qemuSetupImageChainCgroup(vm, disk->src) < 0)
         goto rollback_label;
 
     ret = 0;
     goto cleanup;
 
  rollback_cgroup:
-    if (qemuTeardownDiskCgroup(vm, disk) < 0)
+    if (qemuTeardownImageChainCgroup(vm, disk->src) < 0)
         VIR_WARN("Unable to tear down cgroup access on %s",
                  NULLSTR(virDomainDiskGetSource(disk)));
  rollback_label:

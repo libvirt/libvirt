@@ -204,13 +204,13 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
 
 
 int
-qemuSetupDiskCgroup(virDomainObjPtr vm,
-                    virDomainDiskDefPtr disk)
+qemuSetupImageChainCgroup(virDomainObjPtr vm,
+                          virStorageSourcePtr src)
 {
     virStorageSourcePtr next;
     bool forceReadonly = false;
 
-    for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
+    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (qemuSetupImageCgroupInternal(vm, next, forceReadonly) < 0)
             return -1;
 
@@ -223,12 +223,12 @@ qemuSetupDiskCgroup(virDomainObjPtr vm,
 
 
 int
-qemuTeardownDiskCgroup(virDomainObjPtr vm,
-                       virDomainDiskDefPtr disk)
+qemuTeardownImageChainCgroup(virDomainObjPtr vm,
+                             virStorageSourcePtr src)
 {
     virStorageSourcePtr next;
 
-    for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
+    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (qemuTeardownImageCgroup(vm, next) < 0)
             return -1;
     }
@@ -720,7 +720,7 @@ qemuSetupDevicesCgroup(virDomainObjPtr vm)
         goto cleanup;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuSetupDiskCgroup(vm, vm->def->disks[i]) < 0)
+        if (qemuSetupImageChainCgroup(vm, vm->def->disks[i]->src) < 0)
             goto cleanup;
     }
 
