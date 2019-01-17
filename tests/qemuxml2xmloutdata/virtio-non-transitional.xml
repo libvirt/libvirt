@@ -60,6 +60,11 @@
       <target chassis='7' port='0xe'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x6'/>
     </controller>
+    <controller type='pci' index='8' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='8' port='0xf'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x7'/>
+    </controller>
     <filesystem type='mount' accessmode='passthrough' model='virtio-non-transitional'>
       <source dir='/export/fs1'/>
       <target dir='fs1'/>
@@ -83,5 +88,9 @@
       <backend model='random'>/dev/urandom</backend>
       <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
     </rng>
+    <vsock model='virtio-non-transitional'>
+      <cid auto='no' address='4'/>
+      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+    </vsock>
   </devices>
 </domain>

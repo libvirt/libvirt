@@ -62,5 +62,9 @@
       <backend model='random'>/dev/urandom</backend>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x06' function='0x0'/>
     </rng>
+    <vsock model='virtio-transitional'>
+      <cid auto='no' address='4'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x07' function='0x0'/>
+    </vsock>
   </devices>
 </domain>

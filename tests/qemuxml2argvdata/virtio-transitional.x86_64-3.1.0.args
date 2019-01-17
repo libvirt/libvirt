@@ -45,4 +45,6 @@ bus=pci.2,addr=0x5 \
 id=rng0,bus=pci.2,addr=0x6 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
+-device vhost-vsock-pci,disable-legacy=off,disable-modern=off,id=vsock0,\
+guest-cid=4,vhostfd=6789,bus=pci.2,addr=0x7 \
 -msg timestamp=on

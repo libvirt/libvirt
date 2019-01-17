@@ -8667,7 +8667,11 @@ qemu-kvm -net nic,model=? /dev/null
     <h3><a id="vsock">Vsock</a></h3>
 
     <p>A vsock host/guest interface. The <code>model</code> attribute
-    defaults to <code>virtio</code>.
+    defaults to <code>virtio</code>. <span class="since">Since 5.2.0</span>
+    <code>model</code> can also be 'virtio-transitional' and
+    'virtio-non-transitional', see
+    <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
+    for more details.
     The optional attribute <code>address</code> of the <code>cid</code>
     element specifies the CID assigned to the guest. If the attribute
     <code>auto</code> is set to <code>yes</code>, libvirt

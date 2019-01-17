@@ -974,7 +974,19 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VSOCK:
-        return virtioFlags;
+        switch ((virDomainVsockModel) dev->data.vsock->model) {
+        case VIR_DOMAIN_VSOCK_MODEL_VIRTIO_TRANSITIONAL:
+            /* Transitional devices only work in conventional PCI slots */
+            return pciFlags;
+        case VIR_DOMAIN_VSOCK_MODEL_VIRTIO:
+        case VIR_DOMAIN_VSOCK_MODEL_VIRTIO_NON_TRANSITIONAL:
+            return virtioFlags;
+
+        case VIR_DOMAIN_VSOCK_MODEL_DEFAULT:
+        case VIR_DOMAIN_VSOCK_MODEL_LAST:
+            return 0;
+        }
+        break;
 
         /* These devices don't ever connect with PCI */
     case VIR_DOMAIN_DEVICE_NVRAM:

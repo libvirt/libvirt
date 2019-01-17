@@ -507,6 +507,11 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
             has_ntmodel = device.data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
+        case VIR_DOMAIN_DEVICE_VSOCK:
+            has_tmodel = device.data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device.data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
         case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_INPUT:
         case VIR_DOMAIN_DEVICE_SOUND:
@@ -525,7 +530,6 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
         case VIR_DOMAIN_DEVICE_PANIC:
         case VIR_DOMAIN_DEVICE_MEMORY:
         case VIR_DOMAIN_DEVICE_IOMMU:
-        case VIR_DOMAIN_DEVICE_VSOCK:
         case VIR_DOMAIN_DEVICE_LAST:
         default:
             return 0;

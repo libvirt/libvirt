@@ -43,4 +43,6 @@ id=hostdev0,bus=pci.2,addr=0x4 \
 -device virtio-rng-pci-transitional,rng=objrng0,id=rng0,bus=pci.2,addr=0x6 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
+-device vhost-vsock-pci-transitional,id=vsock0,guest-cid=4,vhostfd=6789,\
+bus=pci.2,addr=0x7 \
 -msg timestamp=on

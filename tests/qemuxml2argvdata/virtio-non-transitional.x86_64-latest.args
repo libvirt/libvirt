@@ -31,6 +31,7 @@ addr=0x1 \
 -device pcie-root-port,port=0xc,chassis=5,id=pci.5,bus=pcie.0,addr=0x1.0x4 \
 -device pcie-root-port,port=0xd,chassis=6,id=pci.6,bus=pcie.0,addr=0x1.0x5 \
 -device pcie-root-port,port=0xe,chassis=7,id=pci.7,bus=pcie.0,addr=0x1.0x6 \
+-device pcie-root-port,port=0xf,chassis=8,id=pci.8,bus=pcie.0,addr=0x1.0x7 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci-non-transitional,scsi=off,bus=pci.3,addr=0x0,\
 drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
@@ -47,4 +48,6 @@ id=hostdev0,bus=pci.4,addr=0x0 \
 -device virtio-rng-pci-non-transitional,rng=objrng0,id=rng0,bus=pci.6,addr=0x0 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
+-device vhost-vsock-pci-non-transitional,id=vsock0,guest-cid=4,vhostfd=6789,\
+bus=pci.7,addr=0x0 \
 -msg timestamp=on
