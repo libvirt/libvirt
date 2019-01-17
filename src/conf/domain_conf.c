@@ -953,7 +953,10 @@ VIR_ENUM_IMPL(virDomainDiskTray, VIR_DOMAIN_DISK_TRAY_LAST,
 
 VIR_ENUM_IMPL(virDomainRNGModel,
               VIR_DOMAIN_RNG_MODEL_LAST,
-              "virtio");
+              "virtio",
+              "virtio-transitional",
+              "virtio-non-transitional",
+);
 
 VIR_ENUM_IMPL(virDomainRNGBackend,
               VIR_DOMAIN_RNG_BACKEND_LAST,

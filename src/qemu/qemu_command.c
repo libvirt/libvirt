@@ -492,6 +492,11 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
             has_ntmodel = device.data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_NON_TRANSITIONAL;
             break;
 
+        case VIR_DOMAIN_DEVICE_RNG:
+            has_tmodel = device.data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device.data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
         case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_FS:
         case VIR_DOMAIN_DEVICE_INPUT:
@@ -510,7 +515,6 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
         case VIR_DOMAIN_DEVICE_SHMEM:
         case VIR_DOMAIN_DEVICE_TPM:
         case VIR_DOMAIN_DEVICE_PANIC:
-        case VIR_DOMAIN_DEVICE_RNG:
         case VIR_DOMAIN_DEVICE_MEMORY:
         case VIR_DOMAIN_DEVICE_IOMMU:
         case VIR_DOMAIN_DEVICE_VSOCK:

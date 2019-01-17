@@ -45,6 +45,11 @@
       <target chassis='4' port='0xb'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x3'/>
     </controller>
+    <controller type='pci' index='5' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='5' port='0xc'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x4'/>
+    </controller>
     <interface type='user'>
       <mac address='00:11:22:33:44:55'/>
       <model type='virtio-non-transitional'/>
@@ -57,5 +62,9 @@
       <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
     </hostdev>
     <memballoon model='none'/>
+    <rng model='virtio-non-transitional'>
+      <backend model='random'>/dev/urandom</backend>
+      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
+    </rng>
   </devices>
 </domain>

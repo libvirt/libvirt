@@ -18,6 +18,9 @@
     <hostdev mode='subsystem' type='scsi_host' managed='no' model='virtio-non-transitional'>
       <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
     </hostdev>
+    <rng model='virtio-non-transitional'>
+      <backend model='random'>/dev/urandom</backend>
+    </rng>
     <controller type='usb' model='none'/>
     <memballoon model='none'/>
   </devices>
