@@ -4410,6 +4410,15 @@
           </group>
         </choice>
         <optional>
+          <attribute name="model">
+            <choice>
+              <value>virtio</value>
+              <value>virtio-transitional</value>
+              <value>virtio-non-transitional</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
           <ref name="alias"/>
         </optional>
         <optional>

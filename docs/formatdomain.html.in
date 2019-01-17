@@ -6488,6 +6488,12 @@ qemu-kvm -net nic,model=? /dev/null
       For type <code>passthrough</code>, the mandatory sub-element <code>source</code>
       must have an <code>evdev</code> attribute containing the absolute path to the
       event device passed through to guests. (KVM only)
+
+      <span class="since">Since 5.2.0</span>, the <code>input</code> element
+      accepts a <code>model</code> attribute which has the values 'virtio',
+      'virtio-transitional' and 'virtio-non-transitional'. See
+      <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
+      for more details.
     </p>
 
     <p>

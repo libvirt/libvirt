@@ -1376,9 +1376,19 @@ typedef enum {
     VIR_DOMAIN_INPUT_BUS_LAST
 } virDomainInputBus;
 
+typedef enum {
+    VIR_DOMAIN_INPUT_MODEL_DEFAULT = 0,
+    VIR_DOMAIN_INPUT_MODEL_VIRTIO,
+    VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL,
+    VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL,
+
+    VIR_DOMAIN_INPUT_MODEL_LAST
+} virDomainInputModel;
+
 struct _virDomainInputDef {
     int type;
     int bus;
+    int model; /* virDomainInputModel */
     struct {
         char *evdev;
     } source;
@@ -3518,6 +3528,7 @@ VIR_ENUM_DECL(virDomainHub);
 VIR_ENUM_DECL(virDomainRedirdevBus);
 VIR_ENUM_DECL(virDomainInput);
 VIR_ENUM_DECL(virDomainInputBus);
+VIR_ENUM_DECL(virDomainInputModel);
 VIR_ENUM_DECL(virDomainGraphics);
 VIR_ENUM_DECL(virDomainGraphicsListen);
 VIR_ENUM_DECL(virDomainGraphicsAuthConnected);
