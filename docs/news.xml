@@ -50,6 +50,17 @@
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          storage: Add default mount options for fs/netfs storage pools
+        </summary>
+        <description>
+          Altered the command line generation for fs/netfs storage pools to
+          add some default options. For Linux based systems, the options
+          added are "nodev, nosuid, noexec". For FreeBSD based systems,
+          the options added are "nosuid, noexec".
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.0.0" date="2019-01-15">
