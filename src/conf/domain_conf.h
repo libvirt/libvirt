@@ -903,12 +903,22 @@ typedef enum {
     VIR_DOMAIN_FS_WRPOLICY_LAST
 } virDomainFSWrpolicy;
 
+typedef enum {
+    VIR_DOMAIN_FS_MODEL_DEFAULT = 0,
+    VIR_DOMAIN_FS_MODEL_VIRTIO,
+    VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL,
+    VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL,
+
+    VIR_DOMAIN_FS_MODEL_LAST
+} virDomainFSModel;
+
 struct _virDomainFSDef {
     int type;
     int fsdriver; /* enum virDomainFSDriverType */
     int accessmode; /* enum virDomainFSAccessMode */
     int wrpolicy; /* enum virDomainFSWrpolicy */
     int format; /* virStorageFileFormat */
+    int model; /* virDomainFSModel */
     unsigned long long usage; /* in bytes */
     virStorageSourcePtr src;
     char *dst;
@@ -3475,6 +3485,7 @@ VIR_ENUM_DECL(virDomainFS);
 VIR_ENUM_DECL(virDomainFSDriver);
 VIR_ENUM_DECL(virDomainFSAccessMode);
 VIR_ENUM_DECL(virDomainFSWrpolicy);
+VIR_ENUM_DECL(virDomainFSModel);
 VIR_ENUM_DECL(virDomainNet);
 VIR_ENUM_DECL(virDomainNetBackend);
 VIR_ENUM_DECL(virDomainNetVirtioTxMode);

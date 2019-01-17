@@ -440,6 +440,13 @@ VIR_ENUM_IMPL(virDomainFSWrpolicy, VIR_DOMAIN_FS_WRPOLICY_LAST,
               "immediate",
 );
 
+VIR_ENUM_IMPL(virDomainFSModel, VIR_DOMAIN_FS_MODEL_LAST,
+              "default",
+              "virtio",
+              "virtio-transitional",
+              "virtio-non-transitional",
+);
+
 VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "user",
               "ethernet",
@@ -10703,6 +10710,7 @@ virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_AUTOFREE(char *) wrpolicy = NULL;
     VIR_AUTOFREE(char *) usage = NULL;
     VIR_AUTOFREE(char *) units = NULL;
+    VIR_AUTOFREE(char *) model = NULL;
 
     ctxt->node = node;
 
@@ -10729,6 +10737,16 @@ virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     } else {
         def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
+    }
+
+    model = virXMLPropString(node, "model");
+    if (model) {
+        if ((def->model = virDomainFSModelTypeFromString(model)) < 0 ||
+            def->model == VIR_DOMAIN_FS_MODEL_DEFAULT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown model '%s'"), model);
+            goto error;
+        }
     }
 
     if (virDomainParseScaledValue("./space_hard_limit[1]",
@@ -21626,6 +21644,12 @@ virDomainFsDefCheckABIStability(virDomainFSDefPtr src,
         return false;
     }
 
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target filesystem model does not match source"));
+        return false;
+    }
+
     if (src->virtio && dst->virtio &&
         !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
@@ -24420,10 +24444,15 @@ virDomainFSDefFormat(virBufferPtr buf,
         goto cleanup;
     }
 
-
     virBufferAsprintf(buf,
-                      "<filesystem type='%s' accessmode='%s'>\n",
+                      "<filesystem type='%s' accessmode='%s'",
                       type, accessmode);
+    if (def->model) {
+        virBufferAsprintf(buf, " model='%s'",
+                          virDomainFSModelTypeToString(def->model));
+    }
+    virBufferAddLit(buf, ">\n");
+
     virBufferAdjustIndent(buf, 2);
     if (def->fsdriver) {
         virBufferAsprintf(&driverBuf, " type='%s'", fsdriver);
