@@ -25365,9 +25365,9 @@ virDomainNetDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " actual='%s'", def->ifname_guest_actual);
         virBufferAddLit(buf, "/>\n");
     }
-    if (def->model) {
+    if (virDomainNetGetModelString(def)) {
         virBufferEscapeString(buf, "<model type='%s'/>\n",
-                              def->model);
+                              virDomainNetGetModelString(def));
         if (virDomainNetIsVirtioModel(def)) {
             int rc = 0;
             VIR_AUTOFREE(char *) str = NULL;
@@ -29477,13 +29477,39 @@ virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface)
     return iface->trustGuestRxFilters == VIR_TRISTATE_BOOL_YES;
 }
 
+const char *
+virDomainNetGetModelString(const virDomainNetDef *net)
+{
+    return net->model;
+}
+
+int
+virDomainNetSetModelString(virDomainNetDefPtr net,
+                           const char *model)
+{
+    return VIR_STRDUP(net->model, model);
+}
+
+int
+virDomainNetStreqModelString(const virDomainNetDef *net,
+                             const char *model)
+{
+    return STREQ_NULLABLE(net->model, model);
+}
+
+int
+virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
+                                 const char *model)
+{
+    return net->model && STRCASEEQ(net->model, model);
+}
 
 bool
 virDomainNetIsVirtioModel(const virDomainNetDef *net)
 {
-    return (STREQ_NULLABLE(net->model, "virtio") ||
-            STREQ_NULLABLE(net->model, "virtio-transitional") ||
-            STREQ_NULLABLE(net->model, "virtio-non-transitional"));
+    return (virDomainNetStreqModelString(net, "virtio") ||
+            virDomainNetStreqModelString(net, "virtio-transitional") ||
+            virDomainNetStreqModelString(net, "virtio-non-transitional"));
 }
 
 

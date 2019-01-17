@@ -265,9 +265,9 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         (dev->data.net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
          dev->data.net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
-        !dev->data.net->model &&
+        !virDomainNetGetModelString(dev->data.net) &&
         def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
-        VIR_STRDUP(dev->data.net->model, "e1000") < 0)
+        virDomainNetSetModelString(dev->data.net, "e1000") < 0)
         return -1;
 
     return 0;

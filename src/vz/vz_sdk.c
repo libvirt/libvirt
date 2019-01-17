@@ -1104,15 +1104,15 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
 
         switch ((int)type) {
         case PNT_RTL:
-            if (VIR_STRDUP(net->model, "rtl8139") < 0)
+            if (virDomainNetSetModelString(net, "rtl8139") < 0)
                 goto cleanup;
             break;
         case PNT_E1000:
-            if (VIR_STRDUP(net->model, "e1000") < 0)
+            if (virDomainNetSetModelString(net, "e1000") < 0)
                 goto cleanup;
             break;
         case PNT_VIRTIO:
-            if (VIR_STRDUP(net->model, "virtio") < 0)
+            if (virDomainNetSetModelString(net, "virtio") < 0)
                 goto cleanup;
             break;
         default:
@@ -3377,15 +3377,15 @@ static int prlsdkConfigureNet(vzDriverPtr driver ATTRIBUTE_UNUSED,
         goto cleanup;
 
     if (isCt) {
-        if (net->model)
+        if (virDomainNetGetModelString(net))
             VIR_WARN("Setting network adapter for containers is not "
                      "supported by vz driver.");
     } else {
-        if (STREQ(net->model, "rtl8139")) {
+        if (virDomainNetStreqModelString(net, "rtl8139")) {
             pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_RTL);
-        } else if (STREQ(net->model, "e1000")) {
+        } else if (virDomainNetStreqModelString(net, "e1000")) {
             pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_E1000);
-        } else if (STREQ(net->model, "virtio")) {
+        } else if (virDomainNetStreqModelString(net, "virtio")) {
             pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_VIRTIO);
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

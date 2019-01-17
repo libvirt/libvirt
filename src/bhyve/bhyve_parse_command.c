@@ -511,7 +511,7 @@ bhyveParsePCINet(virDomainDefPtr def,
     if (VIR_STRDUP(net->data.bridge.brname, "virbr0") < 0)
         goto error;
 
-    if (VIR_STRDUP(net->model, model) < 0)
+    if (virDomainNetSetModelString(net, model) < 0)
         goto error;
 
     net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;

@@ -489,10 +489,10 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
-            has_tmodel = STREQ_NULLABLE(device.data.net->model,
-                                        "virtio-transitional");
-            has_ntmodel = STREQ_NULLABLE(device.data.net->model,
-                                         "virtio-non-transitional");
+            has_tmodel = virDomainNetStreqModelString(device.data.net,
+                                                      "virtio-transitional");
+            has_ntmodel = virDomainNetStreqModelString(device.data.net,
+                                                       "virtio-non-transitional");
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV:
@@ -3875,13 +3875,14 @@ qemuBuildLegacyNicStr(virDomainNetDefPtr net)
 {
     char *str;
     char macaddr[VIR_MAC_STRING_BUFLEN];
+    const char *netmodel = virDomainNetGetModelString(net);
 
     ignore_value(virAsprintf(&str,
                              "nic,macaddr=%s,netdev=host%s%s%s%s%s",
                              virMacAddrFormat(&net->mac, macaddr),
                              net->info.alias,
-                             (net->model ? ",model=" : ""),
-                             NULLSTR_EMPTY(net->model),
+                             netmodel ? ",model=" : "",
+                             NULLSTR_EMPTY(netmodel),
                              (net->info.alias ? ",id=" : ""),
                              NULLSTR_EMPTY(net->info.alias)));
     return str;
@@ -3907,7 +3908,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
 
         usingVirtio = true;
     } else {
-        virBufferAddStr(&buf, net->model);
+        virBufferAddStr(&buf, virDomainNetGetModelString(net));
     }
 
     if (usingVirtio && net->driver.virtio.txmode) {

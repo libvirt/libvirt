@@ -1275,18 +1275,18 @@ libxlMakeNic(virDomainDefPtr def,
      * xen commit 32e9d0f ("libxl: nic type defaults to vif in hotplug for
      * hvm guest").
      */
-    if (l_nic->model) {
+    if (virDomainNetGetModelString(l_nic)) {
         if ((def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
             def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) &&
-            STRNEQ(l_nic->model, "netfront")) {
+            !virDomainNetStreqModelString(l_nic, "netfront")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("only model 'netfront' is supported for "
                              "Xen PV(H) domains"));
             return -1;
         }
-        if (VIR_STRDUP(x_nic->model, l_nic->model) < 0)
+        if (VIR_STRDUP(x_nic->model, virDomainNetGetModelString(l_nic)) < 0)
             goto cleanup;
-        if (STREQ(l_nic->model, "netfront"))
+        if (virDomainNetStreqModelString(l_nic, "netfront"))
             x_nic->nictype = LIBXL_NIC_TYPE_VIF;
         else
             x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;

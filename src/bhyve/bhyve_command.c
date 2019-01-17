@@ -57,16 +57,16 @@ bhyveBuildNetArgStr(virConnectPtr conn,
     int ret = -1;
     virDomainNetType actualType = virDomainNetGetActualType(net);
 
-    if (net->model == NULL) {
+    if (!virDomainNetGetModelString(net)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("NIC model must be specified"));
         return -1;
     }
 
-    if (STREQ(net->model, "virtio")) {
+    if (virDomainNetStreqModelString(net, "virtio")) {
         if (VIR_STRDUP(nic_model, "virtio-net") < 0)
             return -1;
-    } else if (STREQ(net->model, "e1000")) {
+    } else if (virDomainNetStreqModelString(net, "e1000")) {
         if ((bhyveDriverGetCaps(conn) & BHYVE_CAP_NET_E1000) != 0) {
             if (VIR_STRDUP(nic_model, "e1000") < 0)
                 return -1;
@@ -79,7 +79,7 @@ bhyveBuildNetArgStr(virConnectPtr conn,
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("NIC model '%s' is not supported"),
-                       net->model);
+                       virDomainNetGetModelString(net));
         return -1;
     }
 

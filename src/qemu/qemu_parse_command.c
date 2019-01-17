@@ -1109,8 +1109,9 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
         } else if (STREQ(keywords[i], "model")) {
-            def->model = values[i];
-            values[i] = NULL;
+            if (virDomainNetSetModelString(def, values[i]) < 0)
+                goto error;
+            VIR_FREE(values[i]);
         } else if (STREQ(keywords[i], "vhost")) {
             if ((values[i] == NULL) || STREQ(values[i], "on")) {
                 def->driver.virtio.name = VIR_DOMAIN_NET_BACKEND_TYPE_VHOST;

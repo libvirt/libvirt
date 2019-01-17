@@ -3790,11 +3790,12 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (STRNEQ_NULLABLE(olddev->model, newdev->model)) {
+    if (STRNEQ_NULLABLE(virDomainNetGetModelString(olddev),
+                        virDomainNetGetModelString(newdev))) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot modify network device model from %s to %s"),
-                       olddev->model ? olddev->model : "(default)",
-                       newdev->model ? newdev->model : "(default)");
+                       NULLSTR(virDomainNetGetModelString(olddev)),
+                       NULLSTR(virDomainNetGetModelString(newdev)));
         goto cleanup;
     }
 

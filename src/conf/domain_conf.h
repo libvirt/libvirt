@@ -3111,6 +3111,13 @@ virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);
 virNetDevVlanPtr virDomainNetGetActualVlan(virDomainNetDefPtr iface);
 bool virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface);
+const char *virDomainNetGetModelString(const virDomainNetDef *net);
+int virDomainNetSetModelString(virDomainNetDefPtr et,
+                               const char *model);
+int virDomainNetStreqModelString(const virDomainNetDef *net,
+                                 const char *model);
+int virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
+                                     const char *model);
 bool virDomainNetIsVirtioModel(const virDomainNetDef *net);
 int virDomainNetAppendIPAddress(virDomainNetDefPtr def,
                                 const char *address,

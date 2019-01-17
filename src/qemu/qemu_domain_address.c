@@ -230,7 +230,7 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
 
-        if (STREQ_NULLABLE(net->model, "spapr-vlan"))
+        if (virDomainNetStreqModelString(net, "spapr-vlan"))
             net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
 
         if (qemuDomainAssignSpaprVIOAddress(def, &net->info, VIO_ADDR_NET) < 0)
@@ -699,19 +699,18 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
          * addresses for other hostdev devices.
          */
         if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
-            STREQ_NULLABLE(net->model, "usb-net")) {
+            virDomainNetStreqModelString(net, "usb-net")) {
             return 0;
         }
 
-        if (STREQ_NULLABLE(net->model, "virtio") ||
-            STREQ_NULLABLE(net->model, "virtio-non-transitional"))
+        if (virDomainNetStreqModelString(net, "virtio") ||
+            virDomainNetStreqModelString(net, "virtio-non-transitional"))
             return virtioFlags;
 
-        /* Transitional devices only work in conventional PCI slots */
-        if (STREQ_NULLABLE(net->model, "virtio-transitional"))
+        if (virDomainNetStreqModelString(net, "virtio-transitional"))
             return pciFlags;
 
-        if (STREQ_NULLABLE(net->model, "e1000e"))
+        if (virDomainNetStreqModelString(net, "e1000e"))
             return pcieFlags;
 
         return pciFlags;
