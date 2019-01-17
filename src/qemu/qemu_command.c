@@ -523,6 +523,9 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
             if (device.data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
                 has_tmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_TRANSITIONAL;
                 has_ntmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_NON_TRANSITIONAL;
+            } else if (device.data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+                has_tmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL;
+                has_ntmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL;
             } else {
                 return 0;
             }
@@ -2997,6 +3000,8 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         switch ((virDomainControllerModelSCSI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
             if (qemuBuildVirtioDevStr(&buf, "virtio-scsi", qemuCaps,
                                       VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
                 goto error;

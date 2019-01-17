@@ -385,7 +385,10 @@ VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAS
               "vmpvscsi",
               "ibmvscsi",
               "virtio-scsi",
-              "lsisas1078");
+              "lsisas1078",
+              "virtio-transitional",
+              "virtio-non-transitional",
+);
 
 VIR_ENUM_IMPL(virDomainControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "piix3-uhci",
@@ -4935,11 +4938,12 @@ static int
 virDomainControllerDefPostParse(virDomainControllerDefPtr cdev)
 {
     if (cdev->iothread &&
-        cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI) {
-        virReportError(VIR_ERR_XML_ERROR,
+        cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI &&
+        cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL &&
+        cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("'iothread' attribute only supported for "
-                         "controller model '%s'"),
-                       virDomainControllerModelSCSITypeToString(VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI));
+                         "virtio scsi controllers"));
         return -1;
     }
 

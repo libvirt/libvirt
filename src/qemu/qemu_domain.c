@@ -5087,7 +5087,9 @@ static int
 qemuDomainDeviceDefValidateControllerAttributes(const virDomainControllerDef *controller)
 {
     if (!(controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
-          controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI)) {
+          (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI ||
+           controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL ||
+           controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL))) {
         if (controller->queues) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("'queues' is only supported by virtio-scsi controller"));
@@ -5141,6 +5143,8 @@ qemuDomainCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
         }
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("This QEMU doesn't support "
@@ -5256,6 +5260,8 @@ qemuDomainDeviceDefValidateControllerSCSI(const virDomainControllerDef *controll
 {
     switch ((virDomainControllerModelSCSI) controller->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
             if (!qemuDomainCheckSCSIControllerIOThreads(controller, def))
                 return -1;
             break;

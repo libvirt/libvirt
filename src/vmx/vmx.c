@@ -517,7 +517,10 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "pvscsi",
               "UNUSED ibmvscsi",
               "UNUSED virtio-scsi",
-              "UNUSED lsisas1078");
+              "UNUSED lsisas1078",
+              "UNUSED virtio-transitional",
+              "UNUSED virtio-non-transitional",
+);
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

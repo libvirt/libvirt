@@ -29,6 +29,7 @@
       <source evdev='/dev/input/event1234'/>
     </input>
     <controller type='virtio-serial' model='virtio-transitional'/>
+    <controller type='scsi' model='virtio-transitional'/>
     <controller type='usb' model='none'/>
     <memballoon model='virtio-transitional'/>
     <vsock model='virtio-transitional'>

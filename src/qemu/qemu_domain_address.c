@@ -648,8 +648,11 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
                 return 0;
 
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
                 return virtioFlags;
 
+            /* Transitional devices only work in conventional PCI slots */
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
