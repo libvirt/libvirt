@@ -28,6 +28,7 @@
 #include "bhyve_capabilities.h"
 #include "bhyve_command.h"
 #include "bhyve_domain.h"
+#include "bhyve_conf.h"
 #include "bhyve_driver.h"
 #include "datatypes.h"
 #include "viralloc.h"
@@ -625,6 +626,14 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
 
     if (bhyveBuildConsoleArgStr(def, cmd) < 0)
         goto error;
+
+    if (def->namespaceData) {
+        bhyveDomainCmdlineDefPtr bhyvecmd;
+
+        bhyvecmd = def->namespaceData;
+        for (i = 0; i < bhyvecmd->num_args; i++)
+            virCommandAddArg(cmd, bhyvecmd->args[i]);
+    }
 
     virCommandAddArg(cmd, def->name);
 

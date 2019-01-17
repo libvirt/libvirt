@@ -25,6 +25,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "bhyve_conf.h"
+#include "bhyve_domain.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
@@ -106,4 +107,19 @@ virBhyveDriverConfigDispose(void *obj)
     virBhyveDriverConfigPtr cfg = obj;
 
     VIR_FREE(cfg->firmwareDir);
+}
+
+void
+bhyveDomainCmdlineDefFree(bhyveDomainCmdlineDefPtr def)
+{
+    size_t i;
+
+    if (!def)
+        return;
+
+    for (i = 0; i < def->num_args; i++)
+        VIR_FREE(def->args[i]);
+
+    VIR_FREE(def->args);
+    VIR_FREE(def);
 }

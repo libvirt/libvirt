@@ -20,15 +20,20 @@
 
 #include <config.h>
 
+#include "bhyve_conf.h"
 #include "bhyve_device.h"
 #include "bhyve_domain.h"
 #include "bhyve_capabilities.h"
 #include "viralloc.h"
 #include "virlog.h"
 
+#include <libxml/xpathInternals.h>
+
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 
 VIR_LOG_INIT("bhyve.bhyve_domain");
+
+#define BHYVE_NAMESPACE_HREF "http://libvirt.org/schemas/domain/bhyve/1.0"
 
 static void *
 bhyveDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
@@ -157,11 +162,107 @@ virBhyveDriverCreateXMLConf(bhyveConnPtr driver)
     virBhyveDriverDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
                                  &virBhyveDriverPrivateDataCallbacks,
-                                 NULL, NULL, NULL);
+                                 &virBhyveDriverDomainXMLNamespace,
+                                 NULL, NULL);
 }
 
 virDomainDefParserConfig virBhyveDriverDomainDefParserConfig = {
     .devicesPostParseCallback = bhyveDomainDeviceDefPostParse,
     .domainPostParseCallback = bhyveDomainDefPostParse,
     .assignAddressesCallback = bhyveDomainDefAssignAddresses,
+};
+
+static void
+bhyveDomainDefNamespaceFree(void *nsdata)
+{
+    bhyveDomainCmdlineDefPtr cmd = nsdata;
+
+    bhyveDomainCmdlineDefFree(cmd);
+}
+
+static int
+bhyveDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
+                             xmlNodePtr root ATTRIBUTE_UNUSED,
+                             xmlXPathContextPtr ctxt,
+                             void **data)
+{
+    bhyveDomainCmdlineDefPtr cmd = NULL;
+    xmlNodePtr *nodes = NULL;
+    int n;
+    size_t i;
+    int ret = -1;
+
+    if (xmlXPathRegisterNs(ctxt, BAD_CAST "bhyve", BAD_CAST BHYVE_NAMESPACE_HREF) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to register xml namespace '%s'"),
+                       BHYVE_NAMESPACE_HREF);
+        return -1;
+    }
+
+    if (VIR_ALLOC(cmd) < 0)
+        return -1;
+
+    n = virXPathNodeSet("./bhyve:commandline/bhyve:arg", ctxt, &nodes);
+    if (n == 0)
+        ret = 0;
+    if (n <= 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(cmd->args, n) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        cmd->args[cmd->num_args] = virXMLPropString(nodes[i], "value");
+        if (cmd->args[cmd->num_args] == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("No bhyve command-line argument specified"));
+            goto cleanup;
+        }
+        cmd->num_args++;
+    }
+
+    VIR_STEAL_PTR(*data, cmd);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodes);
+    bhyveDomainDefNamespaceFree(cmd);
+
+    return ret;
+}
+
+static int
+bhyveDomainDefNamespaceFormatXML(virBufferPtr buf ATTRIBUTE_UNUSED,
+                                void *nsdata)
+{
+    bhyveDomainCmdlineDefPtr cmd = nsdata;
+    size_t i;
+
+    if (!cmd->num_args)
+        return 0;
+
+    virBufferAddLit(buf, "<bhyve:commandline>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < cmd->num_args; i++)
+        virBufferEscapeString(buf, "<bhyve:arg value='%s'/>\n",
+                              cmd->args[i]);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</bhyve:commandline>\n");
+
+    return 0;
+}
+
+static const char *
+bhyveDomainDefNamespaceHref(void)
+{
+    return "xmlns:bhyve='" BHYVE_NAMESPACE_HREF "'";
+}
+
+virDomainXMLNamespace virBhyveDriverDomainXMLNamespace = {
+    .parse = bhyveDomainDefNamespaceParse,
+    .free = bhyveDomainDefNamespaceFree,
+    .format = bhyveDomainDefNamespaceFormatXML,
+    .href = bhyveDomainDefNamespaceHref,
 };
