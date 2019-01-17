@@ -34,8 +34,8 @@ drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci-non-transitional,netdev=hostnet0,id=net0,\
 mac=00:11:22:33:44:55,bus=pci.1,addr=0x0 \
--device vhost-scsi-pci,wwpn=naa.5123456789abcde0,vhostfd=3,id=hostdev0,\
-bus=pci.3,addr=0x0 \
+-device vhost-scsi-pci-non-transitional,wwpn=naa.5123456789abcde0,vhostfd=3,\
+id=hostdev0,bus=pci.3,addr=0x0 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on
