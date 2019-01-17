@@ -358,8 +358,8 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
             def->hostdevs[i]->info->type = type;
     }
 
-    if (def->memballoon &&
-        def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
+    /* All memballoon devices accepted by the qemu driver are virtio */
+    if (virDomainDefHasMemballoon(def) &&
         def->memballoon->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
         def->memballoon->info.type = type;
 
@@ -2268,11 +2268,9 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
 
-    /* VirtIO balloon */
-    if (def->memballoon &&
-        def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
+    /* memballoon. the qemu driver only accepts virtio memballoon devices */
+    if (virDomainDefHasMemballoon(def) &&
         virDeviceInfoPCIAddressIsWanted(&def->memballoon->info)) {
-
         if (qemuDomainPCIAddressReserveNextAddr(addrs,
                                                 &def->memballoon->info) < 0)
             goto error;

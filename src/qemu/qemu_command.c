@@ -4046,19 +4046,8 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (STRPREFIX(def->os.machine, "s390-virtio") &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
-        def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
-
     if (!virDomainDefHasMemballoon(def))
         return 0;
-
-    if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Memory balloon device type '%s' is not supported by this version of qemu"),
-                       virDomainMemballoonModelTypeToString(def->memballoon->model));
-        return -1;
-    }
 
     if (qemuBuildVirtioDevStr(&buf, "virtio-balloon",
                               def->memballoon->info.type) < 0) {
@@ -4070,12 +4059,6 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
         goto error;
 
     if (def->memballoon->autodeflate != VIR_TRISTATE_SWITCH_ABSENT) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("deflate-on-oom is not supported by this QEMU binary"));
-            goto error;
-        }
-
         virBufferAsprintf(&buf, ",deflate-on-oom=%s",
                           virTristateSwitchTypeToString(def->memballoon->autodeflate));
     }

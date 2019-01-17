@@ -7593,8 +7593,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (running) {
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNPAUSED);
-        if (vm->def->memballoon &&
-            vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
+        if (virDomainDefHasMemballoon(vm->def) &&
             vm->def->memballoon->period) {
             qemuDomainObjEnterMonitor(driver, vm);
             qemuMonitorSetMemoryStatsPeriod(priv->mon, vm->def->memballoon,

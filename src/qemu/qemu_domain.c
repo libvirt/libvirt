@@ -3481,6 +3481,10 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         def->memballoon = memballoon;
     }
 
+    if (STRPREFIX(def->os.machine, "s390-virtio") &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
+        def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
+
     if (addDefaultUSBKBD &&
         def->ngraphics > 0 &&
         virDomainDefMaybeAddInput(def,
@@ -5981,6 +5985,33 @@ qemuDomainDeviceDefValidateInput(const virDomainInputDef *input,
 
 
 static int
+qemuDomainDeviceDefValidateMemballoon(const virDomainMemballoonDef *memballoon,
+                                      virQEMUCapsPtr qemuCaps)
+{
+    if (!memballoon ||
+        memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
+        return 0;
+    }
+
+    if (memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Memory balloon device type '%s' is not supported by this version of qemu"),
+                       virDomainMemballoonModelTypeToString(memballoon->model));
+        return -1;
+    }
+
+    if (memballoon->autodeflate != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("deflate-on-oom is not supported by this QEMU binary"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidateZPCIAddress(virDomainDeviceInfoPtr info,
                                        virQEMUCapsPtr qemuCaps)
 {
@@ -6088,11 +6119,14 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         ret = qemuDomainDeviceDefValidateInput(dev->data.input, def, qemuCaps);
         break;
 
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        ret = qemuDomainDeviceDefValidateMemballoon(dev->data.memballoon, qemuCaps);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_HUB:
-    case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_MEMORY:

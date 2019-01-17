@@ -2439,11 +2439,10 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     priv = vm->privateData;
 
     if (def) {
-        if (!def->memballoon ||
-            def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+        if (!virDomainDefHasMemballoon(def)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Memory balloon model must be virtio to set the"
-                             " collection period"));
+                           _("No memory balloon device configured, "
+                             "can not set the collection period"));
             goto endjob;
         }
 
@@ -2463,11 +2462,10 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     }
 
     if (persistentDef) {
-        if (!persistentDef->memballoon ||
-            persistentDef->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+        if (!virDomainDefHasMemballoon(persistentDef)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Memory balloon model must be virtio to set the"
-                             " collection period"));
+                           _("No memory balloon device configured, "
+                             "can not set the collection period"));
             goto endjob;
         }
         persistentDef->memballoon->period = period;
@@ -11964,8 +11962,7 @@ qemuDomainMemoryStatsInternal(virQEMUDriverPtr driver,
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
 
-    if (vm->def->memballoon &&
-        vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+    if (virDomainDefHasMemballoon(vm->def)) {
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorGetMemoryStats(qemuDomainGetMonitor(vm),
                                         vm->def->memballoon, stats, nr_stats);
