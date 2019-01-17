@@ -497,8 +497,12 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
             has_ntmodel = device.data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
-        case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_FS:
+            has_tmodel = device.data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device.data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_INPUT:
         case VIR_DOMAIN_DEVICE_SOUND:
         case VIR_DOMAIN_DEVICE_VIDEO:

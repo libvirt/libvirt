@@ -678,7 +678,18 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
 
     case VIR_DOMAIN_DEVICE_FS:
         /* the only type of filesystem so far is virtio-9p-pci */
-        return virtioFlags;
+        switch ((virDomainFSModel) dev->data.fs->model) {
+        case VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL:
+            /* Transitional devices only work in conventional PCI slots */
+            return pciFlags;
+        case VIR_DOMAIN_FS_MODEL_VIRTIO:
+        case VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL:
+        case VIR_DOMAIN_FS_MODEL_DEFAULT:
+            return virtioFlags;
+        case VIR_DOMAIN_FS_MODEL_LAST:
+            break;
+        }
+        return 0;
 
     case VIR_DOMAIN_DEVICE_NET: {
         virDomainNetDefPtr net = dev->data.net;
