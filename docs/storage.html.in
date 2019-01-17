@@ -437,9 +437,9 @@
 
     <h2><a id="StorageBackendISCSIDirect">iSCSI direct pool</a></h2>
     <p>
-      This is a variant of the iSCSI pool. Instead of unsing iscsiadm, it uses
+      This is a variant of the iSCSI pool. Instead of using iscsiadm, it uses
       libiscsi.
-      It require a host, a path which is the target iqn and an initiator iqn.
+      It requires a host, a path which is the target IQN, and an initiator IQN.
     </p>
 
     <h3>Example pool input</h3>
@@ -457,12 +457,12 @@
 
     <h3>Valid pool format types</h3>
     <p>
-      The iSCSI volume pool does not use the pool format type element.
+      The iSCSI direct volume pool does not use the pool format type element.
     </p>
 
     <h3>Valid volume format types</h3>
     <p>
-      The iSCSI volume pool does not use the volume format type element.
+      The iSCSI direct volume pool does not use the volume format type element.
     </p>
 
     <h2><a id="StorageBackendSCSI">SCSI pool</a></h2>
