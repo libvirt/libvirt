@@ -692,8 +692,13 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             return 0;
         }
 
-        if (STREQ_NULLABLE(net->model, "virtio"))
-            return  virtioFlags;
+        if (STREQ_NULLABLE(net->model, "virtio") ||
+            STREQ_NULLABLE(net->model, "virtio-non-transitional"))
+            return virtioFlags;
+
+        /* Transitional devices only work in conventional PCI slots */
+        if (STREQ_NULLABLE(net->model, "virtio-transitional"))
+            return pciFlags;
 
         if (STREQ_NULLABLE(net->model, "e1000e"))
             return pcieFlags;

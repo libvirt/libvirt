@@ -29418,7 +29418,9 @@ virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface)
 bool
 virDomainNetIsVirtioModel(const virDomainNetDef *net)
 {
-    return STREQ_NULLABLE(net->model, "virtio");
+    return (STREQ_NULLABLE(net->model, "virtio") ||
+            STREQ_NULLABLE(net->model, "virtio-transitional") ||
+            STREQ_NULLABLE(net->model, "virtio-non-transitional"));
 }
 
 

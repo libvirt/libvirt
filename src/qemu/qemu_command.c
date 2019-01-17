@@ -479,6 +479,12 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
+            has_tmodel = STREQ_NULLABLE(device.data.net->model,
+                                        "virtio-transitional");
+            has_ntmodel = STREQ_NULLABLE(device.data.net->model,
+                                         "virtio-non-transitional");
+            break;
+
         case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_FS:
         case VIR_DOMAIN_DEVICE_INPUT:

@@ -5764,7 +5764,11 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       Typical values for QEMU and KVM include:
-      ne2k_isa i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
+      ne2k_isa i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio.
+      <span class="since">Since 5.2.0</span>, <code>virtio-transitional</code>
+      and <code>virtio-non-transitional</code> values are supported.
+      See <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
+      for more details.
     </p>
 
     <h5><a id="elementsDriverBackendOptions">Setting NIC driver-specific options</a></h5>

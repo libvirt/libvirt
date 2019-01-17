@@ -28,8 +28,11 @@ addr=0x1 \
 -device pcie-pci-bridge,id=pci.2,bus=pci.1,addr=0x0 \
 -device pcie-root-port,port=0x9,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x1 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci-transitional,scsi=off,bus=pci.2,addr=0x1,\
+-device virtio-blk-pci-transitional,scsi=off,bus=pci.2,addr=0x2,\
 drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-netdev user,id=hostnet0 \
+-device virtio-net-pci-transitional,netdev=hostnet0,id=net0,\
+mac=00:11:22:33:44:55,bus=pci.2,addr=0x1 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on
