@@ -4730,7 +4730,12 @@
           <dd><span class="since">since 2.5.0</span>For SCSI devices, user
             is responsible to make sure the device is not used by host. This
             <code>type</code> passes all LUNs presented by a single HBA to
-            the guest.
+            the guest. <span class="since">Since 5.2.0,</span> the
+            <code>model</code> attribute can be specified further
+            with "virtio-transitional", "virtio-non-transitional", or
+            "virtio". See
+            <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
+            for more details.
           </dd>
           <dt><code>mdev</code></dt>
           <dd>For mediated devices (<span class="since">Since 3.2.0</span>)

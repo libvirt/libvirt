@@ -39,6 +39,11 @@
       <target chassis='3' port='0x9'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </controller>
+    <controller type='pci' index='4' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='4' port='0xa'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
     <interface type='user'>
       <mac address='00:11:22:33:44:55'/>
       <model type='virtio-transitional'/>
@@ -46,6 +51,10 @@
     </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <hostdev mode='subsystem' type='scsi_host' managed='no' model='virtio-transitional'>
+      <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+    </hostdev>
     <memballoon model='none'/>
   </devices>
 </domain>

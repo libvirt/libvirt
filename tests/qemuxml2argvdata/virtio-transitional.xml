@@ -15,6 +15,9 @@
       <mac address='00:11:22:33:44:55'/>
       <model type='virtio-transitional'/>
     </interface>
+    <hostdev mode='subsystem' type='scsi_host' managed='no' model='virtio-transitional'>
+      <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
+    </hostdev>
     <controller type='usb' model='none'/>
     <memballoon model='none'/>
   </devices>

@@ -4630,6 +4630,15 @@
     <attribute name="type">
       <value>scsi_host</value>
     </attribute>
+    <optional>
+      <attribute name="model">
+        <choice>
+          <value>virtio</value>
+          <value>virtio-transitional</value>
+          <value>virtio-non-transitional</value>
+        </choice>
+      </attribute>
+    </optional>
     <element name="source">
       <choice>
         <group>
