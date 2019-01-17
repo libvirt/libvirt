@@ -599,6 +599,8 @@ VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
               "virtio",
               "xen",
               "none",
+              "virtio-transitional",
+              "virtio-non-transitional",
 );
 
 VIR_ENUM_IMPL(virDomainSmbiosMode, VIR_DOMAIN_SMBIOS_LAST,

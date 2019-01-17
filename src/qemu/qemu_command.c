@@ -502,6 +502,11 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
             has_ntmodel = device.data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+            has_tmodel = device.data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device.data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
         case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_INPUT:
         case VIR_DOMAIN_DEVICE_SOUND:
@@ -514,7 +519,6 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
         case VIR_DOMAIN_DEVICE_NONE:
         case VIR_DOMAIN_DEVICE_SMARTCARD:
         case VIR_DOMAIN_DEVICE_CHR:
-        case VIR_DOMAIN_DEVICE_MEMBALLOON:
         case VIR_DOMAIN_DEVICE_NVRAM:
         case VIR_DOMAIN_DEVICE_SHMEM:
         case VIR_DOMAIN_DEVICE_TPM:

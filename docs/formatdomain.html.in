@@ -7959,8 +7959,12 @@ qemu-kvm -net nic,model=? /dev/null
         </p>
         <ul>
           <li>'virtio' - default with QEMU/KVM</li>
+          <li>'virtio-transitional' <span class="since">Since 5.2.0</span></li>
+          <li>'virtio-non-transitional' <span class="since">Since 5.2.0</span></li>
           <li>'xen' - default with Xen</li>
         </ul>
+        See <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
+        for more details.
       </dd>
       <dt><code>autodeflate</code></dt>
       <dd>

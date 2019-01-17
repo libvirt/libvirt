@@ -4093,6 +4093,8 @@
       <attribute name="model">
         <choice>
           <value>virtio</value>
+          <value>virtio-transitional</value>
+          <value>virtio-non-transitional</value>
           <value>xen</value>
           <value>none</value>
         </choice>

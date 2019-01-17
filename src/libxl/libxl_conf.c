@@ -718,6 +718,8 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         case VIR_DOMAIN_MEMBALLOON_MODEL_XEN:
             break;
         case VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO:
+        case VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_TRANSITIONAL:
+        case VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported balloon device model '%s'"),
                            virDomainMemballoonModelTypeToString(model));

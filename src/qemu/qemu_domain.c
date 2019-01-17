@@ -6015,7 +6015,9 @@ qemuDomainDeviceDefValidateMemballoon(const virDomainMemballoonDef *memballoon,
         return 0;
     }
 
-    if (memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+    if (memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
+        memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_TRANSITIONAL &&
+        memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Memory balloon device type '%s' is not supported by this version of qemu"),
                        virDomainMemballoonModelTypeToString(memballoon->model));

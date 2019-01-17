@@ -26,6 +26,6 @@
       <target dir='fs1'/>
     </filesystem>
     <controller type='usb' model='none'/>
-    <memballoon model='none'/>
+    <memballoon model='virtio-transitional'/>
   </devices>
 </domain>
