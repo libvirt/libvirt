@@ -3280,9 +3280,6 @@ qemuDomainAttachWatchdog(virQEMUDriverPtr driver,
     if (qemuAssignDeviceWatchdogAlias(watchdog) < 0)
         return -1;
 
-    if (!(watchdogstr = qemuBuildWatchdogDevStr(vm->def, watchdog, priv->qemuCaps)))
-        return -1;
-
     if (watchdog->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
         if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
             goto cleanup;
@@ -3293,6 +3290,9 @@ qemuDomainAttachWatchdog(virQEMUDriverPtr driver,
                        virDomainWatchdogModelTypeToString(watchdog->model));
         goto cleanup;
     }
+
+    if (!(watchdogstr = qemuBuildWatchdogDevStr(vm->def, watchdog, priv->qemuCaps)))
+        goto cleanup;
 
     /* QEMU doesn't have a 'dump' action; we tell qemu to 'pause', then
        libvirt listens for the watchdog event, and we perform the dump
