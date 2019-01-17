@@ -17445,9 +17445,8 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
      * do the waiting while still holding the VM job, to prevent newly
      * scheduled block jobs from confusing us. */
     if (!async) {
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         qemuBlockJobUpdateDisk(vm, QEMU_ASYNC_JOB_NONE, disk, NULL);
-        while (diskPriv->blockjob->started) {
+        while (qemuBlockJobIsRunning(job)) {
             if (virDomainObjWait(vm) < 0) {
                 ret = -1;
                 goto endjob;

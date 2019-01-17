@@ -9254,7 +9254,7 @@ qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk)
     }
 
     if (diskPriv->blockjob &&
-        diskPriv->blockjob->started) {
+        qemuBlockJobIsRunning(diskPriv->blockjob)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk '%s' already in active block job"),
                        disk->dst);
@@ -9283,7 +9283,8 @@ qemuDomainHasBlockjob(virDomainObjPtr vm,
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-        if (!copy_only && diskPriv->blockjob && diskPriv->blockjob->started)
+        if (!copy_only && diskPriv->blockjob &&
+            qemuBlockJobIsRunning(diskPriv->blockjob))
             return true;
 
         if (disk->mirror && disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
