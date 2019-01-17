@@ -63,6 +63,8 @@ typedef qemuBlockJobData *qemuBlockJobDataPtr;
 struct _qemuBlockJobData {
     virObject parent;
 
+    char *name;
+
     virDomainDiskDefPtr disk; /* may be NULL, if blockjob does not correspond to any disk */
 
     bool started;
@@ -77,8 +79,9 @@ struct _qemuBlockJobData {
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskNew(virDomainDiskDefPtr disk,
-                    qemuBlockJobType type)
-    ATTRIBUTE_NONNULL(1);
+                    qemuBlockJobType type,
+                    const char *jobname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)

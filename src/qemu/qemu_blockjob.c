@@ -36,6 +36,7 @@
 #include "virtime.h"
 #include "locking/domain_lock.h"
 #include "viralloc.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -50,6 +51,7 @@ qemuBlockJobDataDispose(void *obj)
 {
     qemuBlockJobDataPtr job = obj;
 
+    VIR_FREE(job->name);
     VIR_FREE(job->errmsg);
 }
 
@@ -67,9 +69,11 @@ qemuBlockJobDataOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(qemuBlockJobData)
 
 static qemuBlockJobDataPtr
-qemuBlockJobDataNew(qemuBlockJobType type)
+qemuBlockJobDataNew(qemuBlockJobType type,
+                    const char *name)
 {
     qemuBlockJobDataPtr job = NULL;
+    qemuBlockJobDataPtr ret = NULL;
 
     if (qemuBlockJobDataInitialize() < 0)
         return NULL;
@@ -77,11 +81,18 @@ qemuBlockJobDataNew(qemuBlockJobType type)
     if (!(job = virObjectNew(qemuBlockJobDataClass)))
         return NULL;
 
+    if (VIR_STRDUP(job->name, name) < 0)
+        goto cleanup;
+
     job->state = QEMU_BLOCKJOB_STATE_NEW;
     job->newstate = -1;
     job->type = type;
 
-    return job;
+    VIR_STEAL_PTR(ret, job);
+
+ cleanup:
+    virObjectUnref(job);
+    return ret;
 }
 
 
@@ -95,11 +106,12 @@ qemuBlockJobDataNew(qemuBlockJobType type)
  */
 qemuBlockJobDataPtr
 qemuBlockJobDiskNew(virDomainDiskDefPtr disk,
-                    qemuBlockJobType type)
+                    qemuBlockJobType type,
+                    const char *jobname)
 {
     qemuBlockJobDataPtr job = NULL;
 
-    if (!(job = qemuBlockJobDataNew(type)))
+    if (!(job = qemuBlockJobDataNew(type, jobname)))
         return NULL;
 
     job->disk = disk;
