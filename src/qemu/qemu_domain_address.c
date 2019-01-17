@@ -665,7 +665,20 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             break;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
-            return virtioFlags;
+            switch ((virDomainControllerModelVirtioSerial) cont->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_TRANSITIONAL:
+                /* Transitional devices only work in conventional PCI slots */
+                return pciFlags;
+
+            case VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO:
+            case VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_NON_TRANSITIONAL:
+            case VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_DEFAULT:
+                return virtioFlags;
+
+            case VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_LAST:
+                return 0;
+            }
+            break;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
         case VIR_DOMAIN_CONTROLLER_TYPE_CCID:

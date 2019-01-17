@@ -4186,7 +4186,12 @@
         <dd>The <code>virtio-serial</code> controller has two additional
         optional attributes <code>ports</code> and <code>vectors</code>,
         which control how many devices can be connected through the
-        controller.</dd>
+        controller. <span class="since">Since 5.2.0</span>, it
+        supports an optional attribute <code>model</code> which can
+        be 'virtio', 'virtio-transitional', or 'virtio-non-transitional'. See
+        <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
+        for more details.
+        </dd>
         <dt><code>scsi</code></dt>
         <dd>A <code>scsi</code> controller has an optional attribute
         <code>model</code>, which is one of 'auto', 'buslogic', 'ibmvscsi',

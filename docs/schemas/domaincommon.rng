@@ -2314,6 +2314,15 @@
               <value>virtio-serial</value>
             </attribute>
             <optional>
+              <attribute name="model">
+                <choice>
+                  <value>virtio</value>
+                  <value>virtio-transitional</value>
+                  <value>virtio-non-transitional</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
               <attribute name="ports">
                 <ref name="unsignedInt"/>
               </attribute>

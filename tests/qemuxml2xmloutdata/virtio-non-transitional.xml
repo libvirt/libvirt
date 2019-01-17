@@ -18,8 +18,11 @@
       <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='vda' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </disk>
+    <controller type='virtio-serial' index='0' model='virtio-non-transitional'>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+    </controller>
     <controller type='usb' index='0' model='none'/>
     <controller type='sata' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
@@ -68,7 +71,12 @@
     <controller type='pci' index='9' model='pcie-root-port'>
       <model name='pcie-root-port'/>
       <target chassis='9' port='0x10'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='10' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='10' port='0x11'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x1'/>
     </controller>
     <filesystem type='mount' accessmode='passthrough' model='virtio-non-transitional'>
       <source dir='/export/fs1'/>
@@ -82,24 +90,24 @@
     </interface>
     <input type='passthrough' bus='virtio' model='virtio-non-transitional'>
       <source evdev='/dev/input/event1234'/>
-      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <hostdev mode='subsystem' type='scsi_host' managed='no' model='virtio-non-transitional'>
       <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
-      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
     </hostdev>
     <memballoon model='virtio-non-transitional'>
-      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
     </memballoon>
     <rng model='virtio-non-transitional'>
       <backend model='random'>/dev/urandom</backend>
-      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
     </rng>
     <vsock model='virtio-non-transitional'>
       <cid auto='no' address='4'/>
-      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x09' slot='0x00' function='0x0'/>
     </vsock>
   </devices>
 </domain>
