@@ -42,8 +42,8 @@ bus=pci.1,addr=0x0 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci-non-transitional,netdev=hostnet0,id=net0,\
 mac=00:11:22:33:44:55,bus=pci.2,addr=0x0 \
--device virtio-input-host-pci,id=input0,evdev=/dev/input/event1234,bus=pci.7,\
-addr=0x0 \
+-device virtio-input-host-pci-non-transitional,id=input0,\
+evdev=/dev/input/event1234,bus=pci.7,addr=0x0 \
 -device vhost-scsi-pci-non-transitional,wwpn=naa.5123456789abcde0,vhostfd=3,\
 id=hostdev0,bus=pci.4,addr=0x0 \
 -device virtio-balloon-pci-non-transitional,id=balloon0,bus=pci.5,addr=0x0 \

@@ -39,11 +39,6 @@
       <target chassis='3' port='0x9'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </controller>
-    <controller type='pci' index='4' model='pcie-root-port'>
-      <model name='pcie-root-port'/>
-      <target chassis='4' port='0xa'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
-    </controller>
     <filesystem type='mount' accessmode='passthrough' model='virtio-transitional'>
       <source dir='/export/fs1'/>
       <target dir='fs1'/>
@@ -56,7 +51,7 @@
     </interface>
     <input type='passthrough' bus='virtio' model='virtio-transitional'>
       <source evdev='/dev/input/event1234'/>
-      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x07' function='0x0'/>
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
@@ -73,7 +68,7 @@
     </rng>
     <vsock model='virtio-transitional'>
       <cid auto='no' address='4'/>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x07' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x08' function='0x0'/>
     </vsock>
   </devices>
 </domain>
