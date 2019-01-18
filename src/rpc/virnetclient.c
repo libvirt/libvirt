@@ -299,7 +299,7 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
     int wakeupFD[2] = { -1, -1 };
 
     if (virNetClientInitialize() < 0)
-        return NULL;
+        goto error;
 
     if (pipe2(wakeupFD, O_CLOEXEC) < 0) {
         virReportSystemError(errno, "%s",
@@ -311,6 +311,7 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
         goto error;
 
     client->sock = sock;
+    sock = NULL;
     client->wakeupReadFD = wakeupFD[0];
     client->wakeupSendFD = wakeupFD[1];
     wakeupFD[0] = wakeupFD[1] = -1;
@@ -327,6 +328,7 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
     VIR_FORCE_CLOSE(wakeupFD[0]);
     VIR_FORCE_CLOSE(wakeupFD[1]);
     virObjectUnref(client);
+    virObjectUnref(sock);
     return NULL;
 }
 
@@ -513,7 +515,6 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
 
     if (!(ret = virNetClientNew(sock, NULL)))
         goto cleanup;
-    sock = NULL;
 
  cleanup:
     VIR_FREE(command);
@@ -522,7 +523,6 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     VIR_FREE(homedir);
     VIR_FREE(confdir);
     VIR_FREE(nc);
-    virObjectUnref(sock);
     return ret;
 
  no_memory:
@@ -619,7 +619,6 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
 
     if (!(ret = virNetClientNew(sock, NULL)))
         goto cleanup;
-    sock = NULL;
 
  cleanup:
     VIR_FREE(command);
@@ -628,7 +627,6 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
     VIR_FREE(homedir);
     VIR_FREE(confdir);
     VIR_FREE(nc);
-    virObjectUnref(sock);
     return ret;
 
  no_memory:
