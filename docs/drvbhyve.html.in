@@ -462,5 +462,27 @@ Example:</p>
 &lt;/domain&gt;
 </pre>
 
+<h3><a id="bhyvecommand">Pass-through of arbitrary bhyve commands</a></h3>
+
+<p><span class="since">Since 5.1.0</span>, it's possible to pass additional command-line
+arguments to the bhyve process when starting the domain using the
+<code>&lt;bhyve:commandline&gt;</code> element under <code>domain</code>.
+To supply an argument, use the element <code>&lt;bhyve:arg&gt;</code> with
+the attribute <code>value</code> set to additional argument to be added.
+The arg element may be repeated multiple times. To use this XML addition, it is necessary
+to issue an XML namespace request (the special <code>xmlns:<i>name</i></code> attribute)
+that pulls in <code>http://libvirt.org/schemas/domain/bhyve/1.0</code>;
+typically, the namespace is given the name of <code>bhyve</code>.
+</p>
+<p>Example:</p>
+<pre>
+&lt;domain type="bhyve" xmlns:bhyve="http://libvirt.org/schemas/domain/bhyve/1.0"&gt;
+  ...
+  &lt;bhyve:commandline&gt;
+    &lt;bhyve:arg value='-somebhyvearg'/&gt;
+  &lt;/bhyve:commandline&gt;
+&lt;/domain&gt;
+</pre>
+
   </body>
 </html>
