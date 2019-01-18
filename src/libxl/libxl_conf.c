@@ -1278,7 +1278,7 @@ libxlMakeNic(virDomainDefPtr def,
     if (virDomainNetGetModelString(l_nic)) {
         if ((def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
             def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) &&
-            !virDomainNetStreqModelString(l_nic, "netfront")) {
+            l_nic->model != VIR_DOMAIN_NET_MODEL_NETFRONT) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("only model 'netfront' is supported for "
                              "Xen PV(H) domains"));
@@ -1286,7 +1286,7 @@ libxlMakeNic(virDomainDefPtr def,
         }
         if (VIR_STRDUP(x_nic->model, virDomainNetGetModelString(l_nic)) < 0)
             goto cleanup;
-        if (virDomainNetStreqModelString(l_nic, "netfront"))
+        if (l_nic->model == VIR_DOMAIN_NET_MODEL_NETFRONT)
             x_nic->nictype = LIBXL_NIC_TYPE_VIF;
         else
             x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;

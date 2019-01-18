@@ -1068,13 +1068,13 @@ xenParseVif(char *entry, const char *vif_typename)
         VIR_STRDUP(net->script, script) < 0)
         goto cleanup;
 
-    if (model[0] &&
-        virDomainNetSetModelString(net, model) < 0)
-        goto cleanup;
-
-    if (!model[0] && type[0] && STREQ(type, vif_typename) &&
-        virDomainNetSetModelString(net, "netfront") < 0)
-        goto cleanup;
+    if (model[0]) {
+        if (virDomainNetSetModelString(net, model) < 0)
+            goto cleanup;
+    } else {
+        if (type[0] && STREQ(type, vif_typename))
+            net->model = VIR_DOMAIN_NET_MODEL_NETFRONT;
+    }
 
     if (vifname[0] &&
         VIR_STRDUP(net->ifname, vifname) < 0)
@@ -1427,7 +1427,7 @@ xenFormatNet(virConnectPtr conn,
             virBufferAsprintf(&buf, ",model=%s",
                               virDomainNetGetModelString(net));
         } else {
-            if (virDomainNetStreqModelString(net, "netfront"))
+            if (net->model == VIR_DOMAIN_NET_MODEL_NETFRONT)
                 virBufferAsprintf(&buf, ",type=%s", vif_typename);
             else
                 virBufferAsprintf(&buf, ",model=%s",

@@ -506,6 +506,12 @@ VIR_ENUM_IMPL(virDomainNet,
               "udp",
 );
 
+VIR_ENUM_IMPL(virDomainNetModel,
+              VIR_DOMAIN_NET_MODEL_LAST,
+              "unknown",
+              "netfront",
+);
+
 VIR_ENUM_IMPL(virDomainNetBackend,
               VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
               "default",
@@ -2326,6 +2332,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
         return;
 
     VIR_FREE(def->modelstr);
+    def->model = VIR_DOMAIN_NET_MODEL_UNKNOWN;
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -11607,20 +11614,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
     }
 
-    /* NIC model (see -net nic,model=?).  We only check that it looks
-     * reasonable, not that it is a supported NIC type.  FWIW kvm
-     * supports these types as of April 2008:
-     * i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
-     * QEMU PPC64 supports spapr-vlan
-     */
-    if (model != NULL) {
-        if (strspn(model, NET_MODEL_CHARS) < strlen(model)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Model name contains invalid characters"));
-            goto error;
-        }
-        VIR_STEAL_PTR(def->modelstr, model);
-    }
+    if (model != NULL &&
+        virDomainNetSetModelString(def, model) < 0)
+        goto error;
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -21831,6 +21827,14 @@ virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
         return false;
     }
 
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target network card model %s does not match source %s"),
+                       virDomainNetModelTypeToString(dst->model),
+                       virDomainNetModelTypeToString(src->model));
+        return false;
+    }
+
     if (src->mtu != dst->mtu) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target network card MTU %d does not match source %d"),
@@ -29480,6 +29484,8 @@ virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface)
 const char *
 virDomainNetGetModelString(const virDomainNetDef *net)
 {
+    if (net->model)
+        return virDomainNetModelTypeToString(net->model);
     return net->modelstr;
 }
 
@@ -29487,13 +29493,31 @@ int
 virDomainNetSetModelString(virDomainNetDefPtr net,
                            const char *model)
 {
-    return VIR_STRDUP(net->modelstr, model);
+    VIR_FREE(net->modelstr);
+    if ((net->model = virDomainNetModelTypeFromString(model)) >= 0)
+        return 0;
+
+    net->model = VIR_DOMAIN_NET_MODEL_UNKNOWN;
+    if (!model)
+        return 0;
+
+    if (strspn(model, NET_MODEL_CHARS) < strlen(model)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Model name contains invalid characters"));
+        return -1;
+    }
+
+    if (VIR_STRDUP(net->modelstr, model) < 0)
+        return -1;
+    return 0;
 }
 
 int
 virDomainNetStreqModelString(const virDomainNetDef *net,
                              const char *model)
 {
+    if (net->model)
+        return net->model == virDomainNetModelTypeFromString(model);
     return STREQ_NULLABLE(net->modelstr, model);
 }
 
@@ -29501,6 +29525,8 @@ int
 virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
                                  const char *model)
 {
+    if (net->model)
+        return STRCASEEQ(virDomainNetModelTypeToString(net->model), model);
     return net->modelstr && STRCASEEQ(net->modelstr, model);
 }
 

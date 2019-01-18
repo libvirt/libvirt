@@ -3799,6 +3799,14 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
+    if (olddev->model != newdev->model) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify network device model from %s to %s"),
+                       virDomainNetModelTypeToString(olddev->model),
+                       virDomainNetModelTypeToString(newdev->model));
+        goto cleanup;
+    }
+
     if (virDomainNetIsVirtioModel(olddev) &&
         (olddev->driver.virtio.name != newdev->driver.virtio.name ||
          olddev->driver.virtio.txmode != newdev->driver.virtio.txmode ||
