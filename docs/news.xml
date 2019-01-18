@@ -35,6 +35,17 @@
 <libvirt>
   <release version="v5.1.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          bhyve: Add support for additional command-line arguments
+        </summary>
+        <description>
+          The bhyve driver now supports passing additional command-line
+          arguments to the bhyve process using the new
+          <code>&lt;bhyve:commandline&gt;</code> element in domain
+          configuration.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
