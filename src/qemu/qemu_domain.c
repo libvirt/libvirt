@@ -6962,7 +6962,8 @@ virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
                 VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN |
                 VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS |
                 VIR_DOMAIN_DEF_FEATURE_USER_ALIAS |
-                VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT,
+                VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
+                VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
 };
 
 

@@ -5365,6 +5365,15 @@ virDomainDeviceDefPostParseCheckFeatures(virDomainDeviceDefPtr dev,
         virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)
         return -1;
 
+    if (UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING) &&
+        dev->type == VIR_DOMAIN_DEVICE_NET &&
+        dev->data.net->modelstr) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("driver does not support net model '%s'"),
+                       dev->data.net->modelstr);
+        return -1;
+    }
+
     return 0;
 }
 #undef UNSUPPORTED
