@@ -3776,12 +3776,16 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
 
 
 static char *
-virStorageBackendSCSISerial(const char *dev)
+virStorageBackendSCSISerial(const char *dev,
+                            bool isNPIV)
 {
     int rc;
     char *serial = NULL;
 
-    rc = virStorageFileGetSCSIKey(dev, &serial, true);
+    if (isNPIV)
+        rc = virStorageFileGetNPIVKey(dev, &serial);
+    else
+        rc = virStorageFileGetSCSIKey(dev, &serial, true);
     if (rc == 0 && serial)
         return serial;
 
@@ -3878,7 +3882,10 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                                                  VIR_STORAGE_VOL_READ_NOERROR)) < 0)
         goto cleanup;
 
-    if (!(vol->key = virStorageBackendSCSISerial(vol->target.path)))
+    vol->key = virStorageBackendSCSISerial(vol->target.path,
+                                           (def->source.adapter.type ==
+                                            VIR_STORAGE_ADAPTER_TYPE_FC_HOST));
+    if (!vol->key)
         goto cleanup;
 
     def->capacity += vol->target.capacity;
