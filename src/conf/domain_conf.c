@@ -2325,7 +2325,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->model);
+    VIR_FREE(def->modelstr);
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -11619,7 +11619,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                            _("Model name contains invalid characters"));
             goto error;
         }
-        VIR_STEAL_PTR(def->model, model);
+        VIR_STEAL_PTR(def->modelstr, model);
     }
 
     switch (def->type) {
@@ -21824,10 +21824,10 @@ virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
         return false;
     }
 
-    if (STRNEQ_NULLABLE(src->model, dst->model)) {
+    if (STRNEQ_NULLABLE(src->modelstr, dst->modelstr)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target network card model %s does not match source %s"),
-                       NULLSTR(dst->model), NULLSTR(src->model));
+                       NULLSTR(dst->modelstr), NULLSTR(src->modelstr));
         return false;
     }
 
@@ -29480,28 +29480,28 @@ virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface)
 const char *
 virDomainNetGetModelString(const virDomainNetDef *net)
 {
-    return net->model;
+    return net->modelstr;
 }
 
 int
 virDomainNetSetModelString(virDomainNetDefPtr net,
                            const char *model)
 {
-    return VIR_STRDUP(net->model, model);
+    return VIR_STRDUP(net->modelstr, model);
 }
 
 int
 virDomainNetStreqModelString(const virDomainNetDef *net,
                              const char *model)
 {
-    return STREQ_NULLABLE(net->model, model);
+    return STREQ_NULLABLE(net->modelstr, model);
 }
 
 int
 virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
                                  const char *model)
 {
-    return net->model && STRCASEEQ(net->model, model);
+    return net->modelstr && STRCASEEQ(net->modelstr, model);
 }
 
 bool
