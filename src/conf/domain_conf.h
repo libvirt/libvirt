@@ -857,6 +857,11 @@ typedef enum {
     VIR_DOMAIN_NET_MODEL_VMXNET,
     VIR_DOMAIN_NET_MODEL_VMXNET2,
     VIR_DOMAIN_NET_MODEL_VMXNET3,
+    VIR_DOMAIN_NET_MODEL_AM79C970A,
+    VIR_DOMAIN_NET_MODEL_AM79C973,
+    VIR_DOMAIN_NET_MODEL_82540EM,
+    VIR_DOMAIN_NET_MODEL_82545EM,
+    VIR_DOMAIN_NET_MODEL_82543GC,
 
     VIR_DOMAIN_NET_MODEL_LAST
 } virDomainNetModelType;
@@ -3137,8 +3142,6 @@ bool virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface);
 const char *virDomainNetGetModelString(const virDomainNetDef *net);
 int virDomainNetSetModelString(virDomainNetDefPtr et,
                                const char *model);
-int virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
-                                     const char *model);
 bool virDomainNetIsVirtioModel(const virDomainNetDef *net);
 int virDomainNetAppendIPAddress(virDomainNetDefPtr def,
                                 const char *address,

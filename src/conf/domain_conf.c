@@ -524,6 +524,11 @@ VIR_ENUM_IMPL(virDomainNetModel,
               "vmxnet",
               "vmxnet2",
               "vmxnet3",
+              "Am79C970A",
+              "Am79C973",
+              "82540EM",
+              "82545EM",
+              "82543GC",
 );
 
 VIR_ENUM_IMPL(virDomainNetBackend,
@@ -29530,15 +29535,6 @@ virDomainNetSetModelString(virDomainNetDefPtr net,
     if (VIR_STRDUP(net->modelstr, model) < 0)
         return -1;
     return 0;
-}
-
-int
-virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
-                                 const char *model)
-{
-    if (net->model)
-        return STRCASEEQ(virDomainNetModelTypeToString(net->model), model);
-    return net->modelstr && STRCASEEQ(net->modelstr, model);
 }
 
 bool

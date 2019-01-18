@@ -1310,7 +1310,7 @@ vboxAttachNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         macaddrvbox[VIR_MAC_STRING_BUFLEN - 6] = '\0';
 
         VIR_DEBUG("NIC(%zu): Type:   %d", i, def->nets[i]->type);
-        VIR_DEBUG("NIC(%zu): Model:  %s", i, virDomainNetGetModelString(def->nets[i]));
+        VIR_DEBUG("NIC(%zu): Model:  %s", i, virDomainNetModelTypeToString(def->nets[i]->model));
         VIR_DEBUG("NIC(%zu): Mac:    %s", i, macaddr);
         VIR_DEBUG("NIC(%zu): ifname: %s", i, def->nets[i]->ifname);
         if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -1339,19 +1339,19 @@ vboxAttachNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
         gVBoxAPI.UINetworkAdapter.SetEnabled(adapter, 1);
 
-        if (virDomainNetGetModelString(def->nets[i])) {
-            if (virDomainNetStrcaseeqModelString(def->nets[i], "Am79C970A")) {
+        if (def->nets[i]->model) {
+            if (def->nets[i]->model == VIR_DOMAIN_NET_MODEL_AM79C970A) {
                 adapterType = NetworkAdapterType_Am79C970A;
-            } else if (virDomainNetStrcaseeqModelString(def->nets[i], "Am79C973")) {
+            } else if (def->nets[i]->model == VIR_DOMAIN_NET_MODEL_AM79C973) {
                 adapterType = NetworkAdapterType_Am79C973;
-            } else if (virDomainNetStrcaseeqModelString(def->nets[i], "82540EM")) {
+            } else if (def->nets[i]->model == VIR_DOMAIN_NET_MODEL_82540EM) {
                 adapterType = NetworkAdapterType_I82540EM;
-            } else if (virDomainNetStrcaseeqModelString(def->nets[i], "82545EM")) {
+            } else if (def->nets[i]->model == VIR_DOMAIN_NET_MODEL_82545EM) {
                 adapterType = NetworkAdapterType_I82545EM;
-            } else if (virDomainNetStrcaseeqModelString(def->nets[i], "82543GC")) {
+            } else if (def->nets[i]->model == VIR_DOMAIN_NET_MODEL_82543GC) {
                 adapterType = NetworkAdapterType_I82543GC;
             } else if (gVBoxAPI.APIVersion >= 3000051 &&
-                       virDomainNetStrcaseeqModelString(def->nets[i], "virtio")) {
+                       def->nets[i]->model == VIR_DOMAIN_NET_MODEL_VIRTIO) {
                 /* Only vbox 3.1 and later support NetworkAdapterType_Virto */
                 adapterType = NetworkAdapterType_Virtio;
             }
@@ -3688,7 +3688,6 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
 {
     PRUint32 attachmentType = NetworkAttachmentType_Null;
     PRUint32 adapterType = NetworkAdapterType_Null;
-    const char *model = NULL;
     PRUnichar *utf16 = NULL;
     char *utf8 = NULL;
     virDomainNetDefPtr net = NULL;
@@ -3743,28 +3742,26 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
     gVBoxAPI.UINetworkAdapter.GetAdapterType(adapter, &adapterType);
     switch (adapterType) {
     case NetworkAdapterType_Am79C970A:
-        model = "Am79C970A";
+        net->model = VIR_DOMAIN_NET_MODEL_AM79C970A;
         break;
     case NetworkAdapterType_Am79C973:
-        model = "Am79C973";
+        net->model = VIR_DOMAIN_NET_MODEL_AM79C973;
         break;
     case NetworkAdapterType_I82540EM:
-        model = "82540EM";
+        net->model = VIR_DOMAIN_NET_MODEL_82540EM;
         break;
     case NetworkAdapterType_I82545EM:
-        model = "82545EM";
+        net->model = VIR_DOMAIN_NET_MODEL_82545EM;
         break;
     case NetworkAdapterType_I82543GC:
-        model = "82543GC";
+        net->model = VIR_DOMAIN_NET_MODEL_82543GC;
         break;
     case NetworkAdapterType_Virtio:
         /* Only vbox 3.1 and later support NetworkAdapterType_Virto */
         if (gVBoxAPI.APIVersion >= 3000051)
-            model = "virtio";
+            net->model = VIR_DOMAIN_NET_MODEL_VIRTIO;
         break;
     }
-    if (virDomainNetSetModelString(net, model) < 0)
-        goto error;
 
     gVBoxAPI.UINetworkAdapter.GetMACAddress(adapter, &utf16);
     VBOX_UTF16_TO_UTF8(utf16, &utf8);
