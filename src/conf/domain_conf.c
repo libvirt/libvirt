@@ -510,6 +510,9 @@ VIR_ENUM_IMPL(virDomainNetModel,
               VIR_DOMAIN_NET_MODEL_LAST,
               "unknown",
               "netfront",
+              "rtl8139",
+              "virtio",
+              "e1000",
 );
 
 VIR_ENUM_IMPL(virDomainNetBackend,

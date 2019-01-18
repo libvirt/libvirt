@@ -265,10 +265,9 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         (dev->data.net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
          dev->data.net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
-        !virDomainNetGetModelString(dev->data.net) &&
-        def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
-        virDomainNetSetModelString(dev->data.net, "e1000") < 0)
-        return -1;
+        dev->data.net->model == VIR_DOMAIN_NET_MODEL_UNKNOWN &&
+        def->os.type == VIR_DOMAIN_OSTYPE_HVM)
+        dev->data.net->model = VIR_DOMAIN_NET_MODEL_E1000;
 
     return 0;
 }
