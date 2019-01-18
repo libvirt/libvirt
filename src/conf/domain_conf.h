@@ -846,6 +846,13 @@ typedef enum {
     VIR_DOMAIN_NET_MODEL_RTL8139,
     VIR_DOMAIN_NET_MODEL_VIRTIO,
     VIR_DOMAIN_NET_MODEL_E1000,
+    VIR_DOMAIN_NET_MODEL_E1000E,
+    VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL,
+    VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL,
+    VIR_DOMAIN_NET_MODEL_USB_NET,
+    VIR_DOMAIN_NET_MODEL_SPAPR_VLAN,
+    VIR_DOMAIN_NET_MODEL_LAN9118,
+    VIR_DOMAIN_NET_MODEL_SMC91C111,
 
     VIR_DOMAIN_NET_MODEL_LAST
 } virDomainNetModelType;
@@ -3126,8 +3133,6 @@ bool virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface);
 const char *virDomainNetGetModelString(const virDomainNetDef *net);
 int virDomainNetSetModelString(virDomainNetDefPtr et,
                                const char *model);
-int virDomainNetStreqModelString(const virDomainNetDef *net,
-                                 const char *model);
 int virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
                                      const char *model);
 bool virDomainNetIsVirtioModel(const virDomainNetDef *net);

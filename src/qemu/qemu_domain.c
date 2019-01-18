@@ -6224,49 +6224,49 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
  * is NULL this function may return NULL if the default model depends on the
  * capabilities.
  */
-static const char *
+static int
 qemuDomainDefaultNetModel(const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
     if (ARCH_IS_S390(def->os.arch))
-        return "virtio";
+        return VIR_DOMAIN_NET_MODEL_VIRTIO;
 
     if (def->os.arch == VIR_ARCH_ARMV6L ||
         def->os.arch == VIR_ARCH_ARMV7L ||
         def->os.arch == VIR_ARCH_AARCH64) {
         if (STREQ(def->os.machine, "versatilepb"))
-            return "smc91c111";
+            return VIR_DOMAIN_NET_MODEL_SMC91C111;
 
         if (qemuDomainIsARMVirt(def))
-            return "virtio";
+            return VIR_DOMAIN_NET_MODEL_VIRTIO;
 
         /* Incomplete. vexpress (and a few others) use this, but not all
          * arm boards */
-        return "lan9118";
+        return VIR_DOMAIN_NET_MODEL_LAN9118;
     }
 
     /* virtio is a sensible default for RISC-V virt guests */
     if (qemuDomainIsRISCVVirt(def))
-        return "virtio";
+        return VIR_DOMAIN_NET_MODEL_VIRTIO;
 
     /* In all other cases the model depends on the capabilities. If they were
      * not provided don't report any default. */
     if (!qemuCaps)
-        return NULL;
+        return VIR_DOMAIN_NET_MODEL_UNKNOWN;
 
     /* Try several network devices in turn; each of these devices is
      * less likely be supported out-of-the-box by the guest operating
      * system than the previous one */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_RTL8139))
-        return "rtl8139";
+        return VIR_DOMAIN_NET_MODEL_RTL8139;
     else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_E1000))
-        return "e1000";
+        return VIR_DOMAIN_NET_MODEL_E1000;
     else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_NET))
-        return "virtio";
+        return VIR_DOMAIN_NET_MODEL_VIRTIO;
 
     /* We've had no luck detecting support for any network device,
      * but we have to return something: might as well be rtl8139 */
-    return "rtl8139";
+    return VIR_DOMAIN_NET_MODEL_RTL8139;
 }
 
 
@@ -6722,11 +6722,8 @@ qemuDomainDeviceNetDefPostParse(virDomainNetDefPtr net,
                                 virQEMUCapsPtr qemuCaps)
 {
     if (net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        !virDomainNetGetModelString(net)) {
-        if (virDomainNetSetModelString(net,
-                       qemuDomainDefaultNetModel(def, qemuCaps)) < 0)
-            return -1;
-    }
+        !virDomainNetGetModelString(net))
+        net->model = qemuDomainDefaultNetModel(def, qemuCaps);
 
     return 0;
 }

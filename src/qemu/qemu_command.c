@@ -489,10 +489,8 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
-            has_tmodel = virDomainNetStreqModelString(device.data.net,
-                                                      "virtio-transitional");
-            has_ntmodel = virDomainNetStreqModelString(device.data.net,
-                                                       "virtio-non-transitional");
+            has_tmodel = device.data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device.data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV:

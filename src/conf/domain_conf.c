@@ -513,6 +513,13 @@ VIR_ENUM_IMPL(virDomainNetModel,
               "rtl8139",
               "virtio",
               "e1000",
+              "e1000e",
+              "virtio-transitional",
+              "virtio-non-transitional",
+              "usb-net",
+              "spapr-vlan",
+              "lan9118",
+              "scm91c111",
 );
 
 VIR_ENUM_IMPL(virDomainNetBackend,
@@ -29516,15 +29523,6 @@ virDomainNetSetModelString(virDomainNetDefPtr net,
 }
 
 int
-virDomainNetStreqModelString(const virDomainNetDef *net,
-                             const char *model)
-{
-    if (net->model)
-        return net->model == virDomainNetModelTypeFromString(model);
-    return STREQ_NULLABLE(net->modelstr, model);
-}
-
-int
 virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
                                  const char *model)
 {
@@ -29536,9 +29534,9 @@ virDomainNetStrcaseeqModelString(const virDomainNetDef *net,
 bool
 virDomainNetIsVirtioModel(const virDomainNetDef *net)
 {
-    return (virDomainNetStreqModelString(net, "virtio") ||
-            virDomainNetStreqModelString(net, "virtio-transitional") ||
-            virDomainNetStreqModelString(net, "virtio-non-transitional"));
+    return (net->model == VIR_DOMAIN_NET_MODEL_VIRTIO ||
+            net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL ||
+            net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL);
 }
 
 
