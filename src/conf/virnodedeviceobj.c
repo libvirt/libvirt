@@ -207,7 +207,8 @@ virNodeDeviceObjListFindBySysfsPathCallback(const void *payload,
     int want = 0;
 
     virObjectLock(obj);
-    if (STREQ_NULLABLE(obj->def->sysfs_path, sysfs_path))
+    if (obj->def->sysfs_path &&
+        STREQ_NULLABLE(obj->def->sysfs_path, sysfs_path))
         want = 1;
     virObjectUnlock(obj);
     return want;
