@@ -7835,7 +7835,7 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
         return 0;
     }
 
-    if (jobtype == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
+    if (jobtype == QEMU_BLOCKJOB_TYPE_COMMIT &&
         disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
         jobtype = disk->mirrorJob;
 
