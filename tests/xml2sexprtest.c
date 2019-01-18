@@ -151,6 +151,7 @@ mymain(void)
 
     DO_TEST("fv-sound", "fv-sound", "fvtest");
 
+    DO_TEST("fv-net-many-models", "fv-net-many-models", "fvtest");
     DO_TEST("fv-net-netfront", "fv-net-netfront", "fvtest");
     DO_TEST("fv-net-rate", "fv-net-rate", "fvtest");
 

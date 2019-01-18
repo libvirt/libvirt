@@ -193,6 +193,7 @@ mymain(void)
     DO_TEST("paravirt-new-pvfb");
     DO_TEST("paravirt-new-pvfb-vncdisplay");
     DO_TEST("paravirt-net-e1000");
+    DO_TEST("paravirt-net-fakemodel");
     DO_TEST("paravirt-net-vifname");
     DO_TEST("paravirt-vcpu");
     DO_TEST("paravirt-maxvcpus");
