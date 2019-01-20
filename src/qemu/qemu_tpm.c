@@ -44,7 +44,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-VIR_LOG_INIT("qemu.tpm")
+VIR_LOG_INIT("qemu.tpm");
 
 /*
  * executables for the swtpm; to be found on the host

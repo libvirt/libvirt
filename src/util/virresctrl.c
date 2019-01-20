@@ -33,7 +33,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_RESCTRL
 
-VIR_LOG_INIT("util.virresctrl")
+VIR_LOG_INIT("util.virresctrl");
 
 
 /* Resctrl is short for Resource Control.  It might be implemented for various

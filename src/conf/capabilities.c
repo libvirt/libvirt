@@ -45,7 +45,7 @@
 
 #define SYSFS_SYSTEM_PATH "/sys/devices/system"
 
-VIR_LOG_INIT("conf.capabilities")
+VIR_LOG_INIT("conf.capabilities");
 
 VIR_ENUM_DECL(virCapsHostPMTarget);
 VIR_ENUM_IMPL(virCapsHostPMTarget, VIR_NODE_SUSPEND_TARGET_LAST,

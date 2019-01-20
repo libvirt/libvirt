@@ -79,7 +79,7 @@ struct _virLogSource {
         .priority = VIR_LOG_ERROR, \
         .serial = 0, \
         .flags = 0, \
-    };
+    }
 
 /*
  * If configured with --enable-debug=yes then library calls

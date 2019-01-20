@@ -33,7 +33,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-VIR_LOG_INIT("qemu.qemu_extdevice")
+VIR_LOG_INIT("qemu.qemu_extdevice");
 
 int
 qemuExtDeviceLogCommand(qemuDomainLogContextPtr logCtxt,
