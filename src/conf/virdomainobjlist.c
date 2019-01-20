@@ -60,7 +60,7 @@ static int virDomainObjListOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virDomainObjList)
+VIR_ONCE_GLOBAL_INIT(virDomainObjList);
 
 virDomainObjListPtr virDomainObjListNew(void)
 {

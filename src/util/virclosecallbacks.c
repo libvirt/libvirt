@@ -55,7 +55,7 @@ static int virCloseCallbacksOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virCloseCallbacks)
+VIR_ONCE_GLOBAL_INIT(virCloseCallbacks);
 
 
 virCloseCallbacksPtr

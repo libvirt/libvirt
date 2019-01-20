@@ -80,7 +80,7 @@ static int virQEMUConfigOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virQEMUConfig)
+VIR_ONCE_GLOBAL_INIT(virQEMUConfig);
 
 
 static void

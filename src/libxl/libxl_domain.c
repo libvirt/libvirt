@@ -61,7 +61,7 @@ libxlDomainObjPrivateOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(libxlDomainObjPrivate)
+VIR_ONCE_GLOBAL_INIT(libxlDomainObjPrivate);
 
 static int
 libxlDomainObjInitJob(libxlDomainObjPrivatePtr priv)

@@ -69,7 +69,7 @@ virNodeDeviceObjOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNodeDeviceObj)
+VIR_ONCE_GLOBAL_INIT(virNodeDeviceObj);
 
 
 static void

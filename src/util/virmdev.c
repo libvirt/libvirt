@@ -66,7 +66,7 @@ virMediatedOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virMediated)
+VIR_ONCE_GLOBAL_INIT(virMediated);
 
 #ifdef __linux__
 

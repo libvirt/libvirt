@@ -82,7 +82,7 @@ virLogHandlerOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virLogHandler)
+VIR_ONCE_GLOBAL_INIT(virLogHandler);
 
 
 static void

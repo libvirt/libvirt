@@ -67,7 +67,7 @@ virInterfaceObjOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virInterfaceObj)
+VIR_ONCE_GLOBAL_INIT(virInterfaceObj);
 
 
 static void

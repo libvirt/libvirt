@@ -73,7 +73,7 @@ virSCSIVHostOnceInit(void)
 }
 
 
-VIR_ONCE_GLOBAL_INIT(virSCSIVHost)
+VIR_ONCE_GLOBAL_INIT(virSCSIVHost);
 
 
 int

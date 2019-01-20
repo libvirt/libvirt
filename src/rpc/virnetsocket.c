@@ -128,7 +128,7 @@ static int virNetSocketOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetSocket)
+VIR_ONCE_GLOBAL_INIT(virNetSocket);
 
 
 #ifndef WIN32

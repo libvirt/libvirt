@@ -52,7 +52,7 @@ static int virNWFilterBindingObjListOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNWFilterBindingObjList)
+VIR_ONCE_GLOBAL_INIT(virNWFilterBindingObjList);
 
 
 virNWFilterBindingObjListPtr

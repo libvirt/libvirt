@@ -643,7 +643,7 @@ static int dnsmasqCapsOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(dnsmasqCaps)
+VIR_ONCE_GLOBAL_INIT(dnsmasqCaps);
 
 static void
 dnsmasqCapsSet(dnsmasqCapsPtr caps,

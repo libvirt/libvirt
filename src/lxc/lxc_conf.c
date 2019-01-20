@@ -51,7 +51,7 @@ static int virLXCConfigOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virLXCConfig)
+VIR_ONCE_GLOBAL_INIT(virLXCConfig);
 
 
 /* Functions */

@@ -63,7 +63,7 @@ static int virCapabilitiesOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virCapabilities)
+VIR_ONCE_GLOBAL_INIT(virCapabilities);
 
 /**
  * virCapabilitiesNew:

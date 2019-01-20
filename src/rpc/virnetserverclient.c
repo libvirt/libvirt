@@ -131,7 +131,7 @@ static int virNetServerClientOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetServerClient)
+VIR_ONCE_GLOBAL_INIT(virNetServerClient);
 
 
 static void virNetServerClientDispatchEvent(virNetSocketPtr sock, int events, void *opaque);

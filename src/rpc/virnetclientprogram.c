@@ -58,7 +58,7 @@ static int virNetClientProgramOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetClientProgram)
+VIR_ONCE_GLOBAL_INIT(virNetClientProgram);
 
 
 virNetClientProgramPtr virNetClientProgramNew(unsigned program,

@@ -124,7 +124,7 @@ static int virNetClientOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetClient)
+VIR_ONCE_GLOBAL_INIT(virNetClient);
 
 static void virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
                                                virNetClientCallPtr thiscall);

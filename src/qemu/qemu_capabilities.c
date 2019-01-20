@@ -615,7 +615,7 @@ static int virQEMUCapsOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virQEMUCaps)
+VIR_ONCE_GLOBAL_INIT(virQEMUCaps);
 
 static virArch virQEMUCapsArchFromString(const char *arch)
 {

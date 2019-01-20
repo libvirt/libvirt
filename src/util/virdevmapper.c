@@ -58,7 +58,7 @@ virDevMapperOnceInit(void)
 }
 
 
-VIR_ONCE_GLOBAL_INIT(virDevMapper)
+VIR_ONCE_GLOBAL_INIT(virDevMapper);
 
 
 static int

@@ -248,7 +248,7 @@ libxlMigrationDstArgsOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(libxlMigrationDstArgs)
+VIR_ONCE_GLOBAL_INIT(libxlMigrationDstArgs);
 
 static void
 libxlDoMigrateDstReceive(void *opaque)

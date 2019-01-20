@@ -42,7 +42,7 @@ virThreadJobOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virThreadJob)
+VIR_ONCE_GLOBAL_INIT(virThreadJob);
 
 
 const char *

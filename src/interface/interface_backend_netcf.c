@@ -59,7 +59,7 @@ virNetcfDriverStateOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetcfDriverState)
+VIR_ONCE_GLOBAL_INIT(virNetcfDriverState);
 
 static virNetcfDriverStatePtr driver;
 

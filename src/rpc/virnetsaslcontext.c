@@ -66,7 +66,7 @@ static int virNetSASLContextOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetSASLContext)
+VIR_ONCE_GLOBAL_INIT(virNetSASLContext);
 
 /* Apple have annotated all SASL functions as deprecated for
  * unknown reasons. Since they still work, lets just ignore

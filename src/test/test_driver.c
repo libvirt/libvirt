@@ -133,7 +133,7 @@ static int testDriverOnceInit(void)
 
     return 0;
 }
-VIR_ONCE_GLOBAL_INIT(testDriver)
+VIR_ONCE_GLOBAL_INIT(testDriver);
 
 #define TEST_MODEL "i686"
 #define TEST_EMULATOR "/usr/bin/test-hv"

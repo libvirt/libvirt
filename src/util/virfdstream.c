@@ -135,7 +135,7 @@ static int virFDStreamDataOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virFDStreamData)
+VIR_ONCE_GLOBAL_INIT(virFDStreamData);
 
 
 static int

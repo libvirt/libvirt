@@ -43,7 +43,7 @@ static int virBhyveConfigOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virBhyveConfig)
+VIR_ONCE_GLOBAL_INIT(virBhyveConfig);
 
 virBhyveDriverConfigPtr
 virBhyveDriverConfigNew(void)

@@ -91,7 +91,7 @@ virPortAllocatorOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virPortAllocator)
+VIR_ONCE_GLOBAL_INIT(virPortAllocator);
 
 virPortAllocatorRangePtr
 virPortAllocatorRangeNew(const char *name,

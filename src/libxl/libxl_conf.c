@@ -66,7 +66,7 @@ static int libxlConfigOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(libxlConfig)
+VIR_ONCE_GLOBAL_INIT(libxlConfig);
 
 static void
 libxlDriverConfigDispose(void *obj)

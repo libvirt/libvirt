@@ -59,7 +59,7 @@ static int virNetServerServiceOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetServerService)
+VIR_ONCE_GLOBAL_INIT(virNetServerService);
 
 
 static void virNetServerServiceAccept(virNetSocketPtr sock,

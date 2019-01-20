@@ -78,7 +78,7 @@ virNodeDeviceEventsOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNodeDeviceEvents)
+VIR_ONCE_GLOBAL_INIT(virNodeDeviceEvents);
 
 static void
 virNodeDeviceEventDispose(void *obj)

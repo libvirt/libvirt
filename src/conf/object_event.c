@@ -99,7 +99,7 @@ virObjectEventOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virObjectEvent)
+VIR_ONCE_GLOBAL_INIT(virObjectEvent);
 
 /**
  * virClassForObjectEvent:

@@ -93,7 +93,7 @@ virFileCacheOnceInit(void)
 }
 
 
-VIR_ONCE_GLOBAL_INIT(virFileCache)
+VIR_ONCE_GLOBAL_INIT(virFileCache);
 
 
 static char *

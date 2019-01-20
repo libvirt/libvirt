@@ -77,7 +77,7 @@ static int virHashAtomicOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virHashAtomic)
+VIR_ONCE_GLOBAL_INIT(virHashAtomic);
 
 
 static uint32_t virHashStrCode(const void *name, uint32_t seed)

@@ -55,7 +55,7 @@ static int virNetServerProgramOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetServerProgram)
+VIR_ONCE_GLOBAL_INIT(virNetServerProgram);
 
 
 virNetServerProgramPtr virNetServerProgramNew(unsigned program,

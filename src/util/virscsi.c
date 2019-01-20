@@ -84,7 +84,7 @@ virSCSIOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virSCSI)
+VIR_ONCE_GLOBAL_INIT(virSCSI);
 
 static int
 virSCSIDeviceGetAdapterId(const char *adapter,

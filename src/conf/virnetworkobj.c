@@ -84,7 +84,7 @@ virNetworkObjOnceInit(void)
 }
 
 
-VIR_ONCE_GLOBAL_INIT(virNetworkObj)
+VIR_ONCE_GLOBAL_INIT(virNetworkObj);
 
 virNetworkObjPtr
 virNetworkObjNew(void)

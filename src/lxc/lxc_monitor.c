@@ -57,7 +57,7 @@ static int virLXCMonitorOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virLXCMonitor)
+VIR_ONCE_GLOBAL_INIT(virLXCMonitor);
 
 static void
 virLXCMonitorHandleEventExit(virNetClientProgramPtr prog,

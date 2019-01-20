@@ -64,7 +64,7 @@ virNetworkEventsOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetworkEvents)
+VIR_ONCE_GLOBAL_INIT(virNetworkEvents);
 
 static void
 virNetworkEventDispose(void *obj)

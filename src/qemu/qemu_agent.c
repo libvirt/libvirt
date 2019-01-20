@@ -140,7 +140,7 @@ static int qemuAgentOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuAgent)
+VIR_ONCE_GLOBAL_INIT(qemuAgent);
 
 
 #if DEBUG_RAW_IO

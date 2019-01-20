@@ -338,7 +338,7 @@ virDomainEventsOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virDomainEvents)
+VIR_ONCE_GLOBAL_INIT(virDomainEvents);
 
 
 static void

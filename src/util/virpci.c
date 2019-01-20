@@ -203,7 +203,7 @@ static int virPCIOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virPCI)
+VIR_ONCE_GLOBAL_INIT(virPCI);
 
 
 static char *

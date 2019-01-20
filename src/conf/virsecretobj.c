@@ -78,7 +78,7 @@ virSecretObjOnceInit(void)
 }
 
 
-VIR_ONCE_GLOBAL_INIT(virSecretObj)
+VIR_ONCE_GLOBAL_INIT(virSecretObj);
 
 static virSecretObjPtr
 virSecretObjNew(void)

@@ -57,7 +57,7 @@ testFileCacheObjOnceInit(void)
 }
 
 
-VIR_ONCE_GLOBAL_INIT(testFileCacheObj)
+VIR_ONCE_GLOBAL_INIT(testFileCacheObj);
 
 
 static testFileCacheObjPtr

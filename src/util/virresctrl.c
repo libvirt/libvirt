@@ -443,7 +443,7 @@ virResctrlOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virResctrl)
+VIR_ONCE_GLOBAL_INIT(virResctrl);
 
 
 /* Common functions */

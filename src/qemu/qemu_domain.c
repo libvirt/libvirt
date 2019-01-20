@@ -156,7 +156,7 @@ qemuDomainOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomain)
+VIR_ONCE_GLOBAL_INIT(qemuDomain);
 
 static void
 qemuDomainLogContextDispose(void *obj)
@@ -1051,7 +1051,7 @@ qemuDomainDiskPrivateOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomainDiskPrivate)
+VIR_ONCE_GLOBAL_INIT(qemuDomainDiskPrivate);
 
 static virObjectPtr
 qemuDomainDiskPrivateNew(void)
@@ -1090,7 +1090,7 @@ qemuDomainStorageSourcePrivateOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomainStorageSourcePrivate)
+VIR_ONCE_GLOBAL_INIT(qemuDomainStorageSourcePrivate);
 
 virObjectPtr
 qemuDomainStorageSourcePrivateNew(void)
@@ -1129,7 +1129,7 @@ qemuDomainVcpuPrivateOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomainVcpuPrivate)
+VIR_ONCE_GLOBAL_INIT(qemuDomainVcpuPrivate);
 
 static virObjectPtr
 qemuDomainVcpuPrivateNew(void)
@@ -1169,7 +1169,7 @@ qemuDomainChrSourcePrivateOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomainChrSourcePrivate)
+VIR_ONCE_GLOBAL_INIT(qemuDomainChrSourcePrivate);
 
 static virObjectPtr
 qemuDomainChrSourcePrivateNew(void)
@@ -1207,7 +1207,7 @@ qemuDomainVsockPrivateOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomainVsockPrivate)
+VIR_ONCE_GLOBAL_INIT(qemuDomainVsockPrivate);
 
 static virObjectPtr
 qemuDomainVsockPrivateNew(void)
@@ -1247,7 +1247,7 @@ qemuDomainGraphicsPrivateOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomainGraphicsPrivate)
+VIR_ONCE_GLOBAL_INIT(qemuDomainGraphicsPrivate);
 
 static virObjectPtr
 qemuDomainGraphicsPrivateNew(void)

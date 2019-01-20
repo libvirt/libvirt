@@ -78,7 +78,7 @@ virStoragePoolEventsOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virStoragePoolEvents)
+VIR_ONCE_GLOBAL_INIT(virStoragePoolEvents);
 
 static void
 virStoragePoolEventDispose(void *obj)

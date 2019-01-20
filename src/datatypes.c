@@ -109,7 +109,7 @@ virDataTypesOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virDataTypes)
+VIR_ONCE_GLOBAL_INIT(virDataTypes);
 
 /**
  * virGetConnect:

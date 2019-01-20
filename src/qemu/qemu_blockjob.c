@@ -66,7 +66,7 @@ qemuBlockJobDataOnceInit(void)
 }
 
 
-VIR_ONCE_GLOBAL_INIT(qemuBlockJobData)
+VIR_ONCE_GLOBAL_INIT(qemuBlockJobData);
 
 static qemuBlockJobDataPtr
 qemuBlockJobDataNew(qemuBlockJobType type,

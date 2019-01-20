@@ -96,7 +96,7 @@ static int virNetTLSContextOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetTLSContext)
+VIR_ONCE_GLOBAL_INIT(virNetTLSContext);
 
 
 static int

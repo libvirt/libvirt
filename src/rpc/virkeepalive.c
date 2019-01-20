@@ -62,7 +62,7 @@ static int virKeepAliveOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virKeepAlive)
+VIR_ONCE_GLOBAL_INIT(virKeepAlive);
 
 static virNetMessagePtr
 virKeepAliveMessage(virKeepAlivePtr ka, int proc)

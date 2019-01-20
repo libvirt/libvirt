@@ -124,7 +124,7 @@ static int virHostdevManagerOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virHostdevManager)
+VIR_ONCE_GLOBAL_INIT(virHostdevManager);
 
 static void
 virHostdevManagerDispose(void *obj)

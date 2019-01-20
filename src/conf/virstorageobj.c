@@ -120,7 +120,7 @@ virStorageVolObjOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virStorageVolObj)
+VIR_ONCE_GLOBAL_INIT(virStorageVolObj);
 
 
 static virStorageVolObjPtr
@@ -211,7 +211,7 @@ virStoragePoolObjOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virStoragePoolObj)
+VIR_ONCE_GLOBAL_INIT(virStoragePoolObj);
 
 
 virStoragePoolObjPtr

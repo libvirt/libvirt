@@ -161,7 +161,7 @@ static int vzDriverOnceInit(void)
 
     return 0;
 }
-VIR_ONCE_GLOBAL_INIT(vzDriver)
+VIR_ONCE_GLOBAL_INIT(vzDriver);
 
 vzDriverPtr
 vzGetDriverConnection(void)

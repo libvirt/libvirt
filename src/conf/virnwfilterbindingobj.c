@@ -51,7 +51,7 @@ virNWFilterBindingObjOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNWFilterBindingObj)
+VIR_ONCE_GLOBAL_INIT(virNWFilterBindingObj);
 
 virNWFilterBindingObjPtr
 virNWFilterBindingObjNew(void)

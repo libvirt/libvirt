@@ -97,7 +97,7 @@ udevEventDataOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(udevEventData)
+VIR_ONCE_GLOBAL_INIT(udevEventData);
 
 static udevEventDataPtr
 udevEventDataNew(void)

@@ -83,7 +83,7 @@ static int virStorageFileBackendOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virStorageFileBackend)
+VIR_ONCE_GLOBAL_INIT(virStorageFileBackend);
 
 int
 virStorageFileBackendRegister(virStorageFileBackendPtr backend)
