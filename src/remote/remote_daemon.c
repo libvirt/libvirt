@@ -101,7 +101,8 @@ VIR_ENUM_IMPL(virDaemonErr, VIR_DAEMON_ERR_LAST,
               "Unable to load configuration file",
               "Unable to look for hook scripts",
               "Unable to initialize audit system",
-              "Unable to initialize driver")
+              "Unable to initialize driver",
+);
 
 static int daemonForkIntoBackground(const char *argv0)
 {

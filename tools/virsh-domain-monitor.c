@@ -41,7 +41,8 @@ VIR_ENUM_IMPL(virshDomainIOError,
               VIR_DOMAIN_DISK_ERROR_LAST,
               N_("no error"),
               N_("unspecified error"),
-              N_("no space"))
+              N_("no space"),
+);
 
 static const char *
 virshDomainIOErrorToString(int error)
@@ -105,7 +106,8 @@ VIR_ENUM_IMPL(virshDomainControlState,
               N_("ok"),
               N_("background job"),
               N_("occupied"),
-              N_("error"))
+              N_("error"),
+);
 
 static const char *
 virshDomainControlStateToString(int state)
@@ -120,7 +122,8 @@ VIR_ENUM_IMPL(virshDomainControlErrorReason,
               "",
               N_("unknown"),
               N_("monitor failure"),
-              N_("internal (locking) error"))
+              N_("internal (locking) error"),
+);
 
 static const char *
 virshDomainControlErrorReasonToString(int reason)
@@ -139,7 +142,8 @@ VIR_ENUM_IMPL(virshDomainState,
               N_("in shutdown"),
               N_("shut off"),
               N_("crashed"),
-              N_("pmsuspended"))
+              N_("pmsuspended"),
+);
 
 static const char *
 virshDomainStateToString(int state)
@@ -151,7 +155,8 @@ virshDomainStateToString(int state)
 VIR_ENUM_DECL(virshDomainNostateReason);
 VIR_ENUM_IMPL(virshDomainNostateReason,
               VIR_DOMAIN_NOSTATE_LAST,
-              N_("unknown"))
+              N_("unknown"),
+);
 
 VIR_ENUM_DECL(virshDomainRunningReason);
 VIR_ENUM_IMPL(virshDomainRunningReason,
@@ -166,12 +171,14 @@ VIR_ENUM_IMPL(virshDomainRunningReason,
               N_("save canceled"),
               N_("event wakeup"),
               N_("crashed"),
-              N_("post-copy"))
+              N_("post-copy"),
+);
 
 VIR_ENUM_DECL(virshDomainBlockedReason);
 VIR_ENUM_IMPL(virshDomainBlockedReason,
               VIR_DOMAIN_BLOCKED_LAST,
-              N_("unknown"))
+              N_("unknown"),
+);
 
 VIR_ENUM_DECL(virshDomainPausedReason);
 VIR_ENUM_IMPL(virshDomainPausedReason,
@@ -189,13 +196,15 @@ VIR_ENUM_IMPL(virshDomainPausedReason,
               N_("crashed"),
               N_("starting up"),
               N_("post-copy"),
-              N_("post-copy failed"))
+              N_("post-copy failed"),
+);
 
 VIR_ENUM_DECL(virshDomainShutdownReason);
 VIR_ENUM_IMPL(virshDomainShutdownReason,
               VIR_DOMAIN_SHUTDOWN_LAST,
               N_("unknown"),
-              N_("user"))
+              N_("user"),
+);
 
 VIR_ENUM_DECL(virshDomainShutoffReason);
 VIR_ENUM_IMPL(virshDomainShutoffReason,
@@ -208,18 +217,21 @@ VIR_ENUM_IMPL(virshDomainShutoffReason,
               N_("saved"),
               N_("failed"),
               N_("from snapshot"),
-              N_("daemon"))
+              N_("daemon"),
+);
 
 VIR_ENUM_DECL(virshDomainCrashedReason);
 VIR_ENUM_IMPL(virshDomainCrashedReason,
               VIR_DOMAIN_CRASHED_LAST,
               N_("unknown"),
-              N_("panicked"))
+              N_("panicked"),
+);
 
 VIR_ENUM_DECL(virshDomainPMSuspendedReason);
 VIR_ENUM_IMPL(virshDomainPMSuspendedReason,
               VIR_DOMAIN_PMSUSPENDED_LAST,
-              N_("unknown"))
+              N_("unknown"),
+);
 
 static const char *
 virshDomainStateReasonToString(int state, int reason)

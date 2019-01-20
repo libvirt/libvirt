@@ -54,7 +54,8 @@ VIR_ENUM_IMPL(virDomainSnapshotLocation, VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
               "default",
               "no",
               "internal",
-              "external")
+              "external",
+);
 
 /* virDomainSnapshotState is really virDomainState plus one extra state */
 VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_SNAPSHOT_STATE_LAST,
@@ -66,7 +67,8 @@ VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_SNAPSHOT_STATE_LAST,
               "shutoff",
               "crashed",
               "pmsuspended",
-              "disk-snapshot")
+              "disk-snapshot",
+);
 
 struct _virDomainSnapshotObjList {
     /* name string -> virDomainSnapshotObj  mapping

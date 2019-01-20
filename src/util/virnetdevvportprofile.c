@@ -30,7 +30,8 @@ VIR_ENUM_IMPL(virNetDevVPort, VIR_NETDEV_VPORT_PROFILE_LAST,
               "802.1Qbg",
               "802.1Qbh",
               "openvswitch",
-              "midonet")
+              "midonet",
+);
 
 VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
               "create",
@@ -40,7 +41,8 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
               "migrate out",
               "migrate in start",
               "migrate in finish",
-              "no-op")
+              "no-op",
+);
 
 #if WITH_VIRTUALPORT
 

@@ -1142,7 +1142,7 @@ VIR_ENUM_IMPL(virshNetworkEvent,
               N_("Defined"),
               N_("Undefined"),
               N_("Started"),
-              N_("Stopped"))
+              N_("Stopped"));
 
 static const char *
 virshNetworkEventToString(int event)
@@ -1162,7 +1162,7 @@ typedef struct virshNetEventData virshNetEventData;
 VIR_ENUM_DECL(virshNetworkEventId);
 VIR_ENUM_IMPL(virshNetworkEventId,
               VIR_NETWORK_EVENT_ID_LAST,
-              "lifecycle")
+              "lifecycle");
 
 static void
 vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,

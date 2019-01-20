@@ -174,13 +174,15 @@ VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
               "active", "pre-switchover",
               "device", "postcopy-active",
               "completed", "failed",
-              "cancelling", "cancelled")
+              "cancelling", "cancelled",
+);
 
 VIR_ENUM_IMPL(qemuMonitorVMStatus,
               QEMU_MONITOR_VM_STATUS_LAST,
               "debug", "inmigrate", "internal-error", "io-error", "paused",
               "postmigrate", "prelaunch", "finish-migrate", "restore-vm",
-              "running", "save-vm", "shutdown", "watchdog", "guest-panicked")
+              "running", "save-vm", "shutdown", "watchdog", "guest-panicked",
+);
 
 typedef enum {
     QEMU_MONITOR_BLOCK_IO_STATUS_OK,
@@ -194,11 +196,13 @@ VIR_ENUM_DECL(qemuMonitorBlockIOStatus);
 
 VIR_ENUM_IMPL(qemuMonitorBlockIOStatus,
               QEMU_MONITOR_BLOCK_IO_STATUS_LAST,
-              "ok", "failed", "nospace")
+              "ok", "failed", "nospace",
+);
 
 VIR_ENUM_IMPL(qemuMonitorDumpStatus,
               QEMU_MONITOR_DUMP_STATUS_LAST,
-              "none", "active", "completed", "failed")
+              "none", "active", "completed", "failed",
+);
 
 char *
 qemuMonitorEscapeArg(const char *in)

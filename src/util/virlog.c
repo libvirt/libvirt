@@ -77,7 +77,8 @@ static char virLogHostname[HOST_NAME_MAX+1];
 
 VIR_ENUM_DECL(virLogDestination);
 VIR_ENUM_IMPL(virLogDestination, VIR_LOG_TO_OUTPUT_LAST,
-              "stderr", "syslog", "file", "journald");
+              "stderr", "syslog", "file", "journald",
+);
 
 /*
  * Filters are used to refine the rules on what to keep or drop

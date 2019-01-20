@@ -46,20 +46,21 @@ VIR_LOG_INIT("util.pci");
 #define PCI_ADDR_LEN 13 /* "XXXX:XX:XX.X" */
 
 VIR_ENUM_IMPL(virPCIELinkSpeed, VIR_PCIE_LINK_SPEED_LAST,
-              "", "2.5", "5", "8", "16")
+              "", "2.5", "5", "8", "16",
+);
 
 VIR_ENUM_IMPL(virPCIStubDriver, VIR_PCI_STUB_DRIVER_LAST,
               "none",
               "pciback", /* XEN */
               "pci-stub", /* KVM */
               "vfio-pci", /* VFIO */
-              );
+);
 
 VIR_ENUM_IMPL(virPCIHeader, VIR_PCI_HEADER_LAST,
               "endpoint",
               "pci-bridge",
               "cardbus-bridge",
-              );
+);
 
 struct _virPCIDevice {
     virPCIDeviceAddress address;

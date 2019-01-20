@@ -42,7 +42,8 @@
 VIR_LOG_INIT("util.sysinfo");
 
 VIR_ENUM_IMPL(virSysinfo, VIR_SYSINFO_LAST,
-              "smbios");
+              "smbios",
+);
 
 static const char *sysinfoDmidecode = DMIDECODE;
 static const char *sysinfoSysinfo = "/proc/sysinfo";

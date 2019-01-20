@@ -42,18 +42,21 @@ VIR_ENUM_IMPL(virDomainNumatuneMemMode,
               VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "strict",
               "preferred",
-              "interleave");
+              "interleave",
+);
 
 VIR_ENUM_IMPL(virDomainNumatunePlacement,
               VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST,
               "default",
               "static",
-              "auto");
+              "auto",
+);
 
 VIR_ENUM_IMPL(virDomainMemoryAccess, VIR_DOMAIN_MEMORY_ACCESS_LAST,
               "default",
               "shared",
-              "private")
+              "private",
+);
 
 typedef struct _virDomainNumaDistance virDomainNumaDistance;
 typedef virDomainNumaDistance *virDomainNumaDistancePtr;

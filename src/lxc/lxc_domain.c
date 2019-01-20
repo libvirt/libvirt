@@ -183,14 +183,16 @@ VIR_ENUM_IMPL(virLXCDomainNamespace,
               VIR_LXC_DOMAIN_NAMESPACE_LAST,
               "sharenet",
               "shareipc",
-              "shareuts")
+              "shareuts",
+);
 
 VIR_ENUM_IMPL(virLXCDomainNamespaceSource,
               VIR_LXC_DOMAIN_NAMESPACE_SOURCE_LAST,
               "none",
               "name",
               "pid",
-              "netns")
+              "netns",
+);
 
 static void
 lxcDomainDefNamespaceFree(void *nsdata)

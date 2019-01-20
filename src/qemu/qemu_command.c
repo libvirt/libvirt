@@ -80,7 +80,8 @@ VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
               "usb",
               "uml",
               "sata",
-              "sd")
+              "sd",
+);
 
 
 VIR_ENUM_DECL(qemuDiskCacheV2);
@@ -91,7 +92,8 @@ VIR_ENUM_IMPL(qemuDiskCacheV2, VIR_DOMAIN_DISK_CACHE_LAST,
               "writethrough",
               "writeback",
               "directsync",
-              "unsafe");
+              "unsafe",
+);
 
 VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* default value, we shouldn't see this */
@@ -104,7 +106,8 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* don't support parallels */
               "", /* no need for virtio */
               "" /* don't support gop */,
-              "" /* 'none' doesn't make sense here */);
+              "" /* 'none' doesn't make sense here */,
+);
 
 VIR_ENUM_DECL(qemuDeviceVideo);
 
@@ -119,7 +122,8 @@ VIR_ENUM_IMPL(qemuDeviceVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* don't support parallels */
               "virtio-vga",
               "" /* don't support gop */,
-              "" /* 'none' doesn't make sense here */);
+              "" /* 'none' doesn't make sense here */,
+);
 
 VIR_ENUM_DECL(qemuDeviceVideoSecondary);
 
@@ -134,14 +138,16 @@ VIR_ENUM_IMPL(qemuDeviceVideoSecondary, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* don't support parallels */
               "virtio-gpu",
               "" /* don't support gop */,
-              "" /* 'none' doesn't make sense here */);
+              "" /* 'none' doesn't make sense here */,
+);
 
 VIR_ENUM_DECL(qemuSoundCodec);
 
 VIR_ENUM_IMPL(qemuSoundCodec, VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
               "hda-duplex",
               "hda-micro",
-              "hda-output");
+              "hda-output",
+);
 
 VIR_ENUM_DECL(qemuControllerModelUSB);
 
@@ -159,7 +165,8 @@ VIR_ENUM_IMPL(qemuControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "qusb1",
               "qusb2",
               "qemu-xhci",
-              "none");
+              "none",
+);
 
 VIR_ENUM_DECL(qemuDomainFSDriver);
 VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
@@ -168,13 +175,15 @@ VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "handle",
               NULL,
               NULL,
-              NULL);
+              NULL,
+);
 
 VIR_ENUM_DECL(qemuNumaPolicy);
 VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "bind",
               "preferred",
-              "interleave");
+              "interleave",
+);
 
 
 /**

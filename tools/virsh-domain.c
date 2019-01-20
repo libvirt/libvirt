@@ -102,7 +102,7 @@ VIR_ENUM_IMPL(virshDomainVcpuState,
               VIR_VCPU_LAST,
               N_("offline"),
               N_("running"),
-              N_("blocked"))
+              N_("blocked"));
 
 static const char *
 virshDomainVcpuStateToString(int state)
@@ -2561,7 +2561,7 @@ VIR_ENUM_IMPL(virshDomainBlockJob,
               N_("Block Pull"),
               N_("Block Copy"),
               N_("Block Commit"),
-              N_("Active Block Commit"))
+              N_("Active Block Commit"));
 
 static const char *
 virshDomainBlockJobToString(int type)
@@ -5647,7 +5647,7 @@ static const vshCmdOptDef opts_setLifecycleAction[] = {
 VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
               "poweroff",
               "reboot",
-              "crash")
+              "crash");
 
 VIR_ENUM_IMPL(virDomainLifecycleAction, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "destroy",
@@ -5655,7 +5655,7 @@ VIR_ENUM_IMPL(virDomainLifecycleAction, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "rename-restart",
               "preserve",
               "coredump-destroy",
-              "coredump-restart")
+              "coredump-restart");
 
 static bool
 cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)
@@ -6044,7 +6044,7 @@ VIR_ENUM_IMPL(virshDomainJob,
               N_("Unbounded"),
               N_("Completed"),
               N_("Failed"),
-              N_("Cancelled"))
+              N_("Cancelled"));
 
 static const char *
 virshDomainJobToString(int type)
@@ -6064,7 +6064,7 @@ VIR_ENUM_IMPL(virshDomainJobOperation,
               N_("Outgoing migration"),
               N_("Snapshot"),
               N_("Snapshot revert"),
-              N_("Dump"))
+              N_("Dump"));
 
 static const char *
 virshDomainJobOperationToString(int op)
@@ -8784,7 +8784,7 @@ VIR_ENUM_IMPL(virDomainProcessSignal,
               "rt13",   "rt14", "rt15",  "rt16", "rt17", /* 45-49 */
               "rt18",   "rt19", "rt20",  "rt21", "rt22", /* 50-54 */
               "rt23",   "rt24", "rt25",  "rt26", "rt27", /* 55-59 */
-              "rt28",   "rt29", "rt30",  "rt31", "rt32") /* 60-64 */
+              "rt28",   "rt29", "rt30",  "rt31", "rt32"); /* 60-64 */
 
 static int getSignalNumber(vshControl *ctl, const char *signame)
 {
@@ -12694,7 +12694,7 @@ VIR_ENUM_IMPL(virshDomainEvent,
               N_("Stopped"),
               N_("Shutdown"),
               N_("PMSuspended"),
-              N_("Crashed"))
+              N_("Crashed"));
 
 static const char *
 virshDomainEventToString(int event)
@@ -12709,13 +12709,13 @@ VIR_ENUM_IMPL(virshDomainEventDefined,
               N_("Added"),
               N_("Updated"),
               N_("Renamed"),
-              N_("Snapshot"))
+              N_("Snapshot"));
 
 VIR_ENUM_DECL(virshDomainEventUndefined);
 VIR_ENUM_IMPL(virshDomainEventUndefined,
               VIR_DOMAIN_EVENT_UNDEFINED_LAST,
               N_("Removed"),
-              N_("Renamed"))
+              N_("Renamed"));
 
 VIR_ENUM_DECL(virshDomainEventStarted);
 VIR_ENUM_IMPL(virshDomainEventStarted,
@@ -12724,7 +12724,7 @@ VIR_ENUM_IMPL(virshDomainEventStarted,
               N_("Migrated"),
               N_("Restored"),
               N_("Snapshot"),
-              N_("Event wakeup"))
+              N_("Event wakeup"));
 
 VIR_ENUM_DECL(virshDomainEventSuspended);
 VIR_ENUM_IMPL(virshDomainEventSuspended,
@@ -12737,7 +12737,7 @@ VIR_ENUM_IMPL(virshDomainEventSuspended,
               N_("Snapshot"),
               N_("API error"),
               N_("Post-copy"),
-              N_("Post-copy Error"))
+              N_("Post-copy Error"));
 
 VIR_ENUM_DECL(virshDomainEventResumed);
 VIR_ENUM_IMPL(virshDomainEventResumed,
@@ -12745,7 +12745,7 @@ VIR_ENUM_IMPL(virshDomainEventResumed,
               N_("Unpaused"),
               N_("Migrated"),
               N_("Snapshot"),
-              N_("Post-copy"))
+              N_("Post-copy"));
 
 VIR_ENUM_DECL(virshDomainEventStopped);
 VIR_ENUM_IMPL(virshDomainEventStopped,
@@ -12756,25 +12756,25 @@ VIR_ENUM_IMPL(virshDomainEventStopped,
               N_("Migrated"),
               N_("Saved"),
               N_("Failed"),
-              N_("Snapshot"))
+              N_("Snapshot"));
 
 VIR_ENUM_DECL(virshDomainEventShutdown);
 VIR_ENUM_IMPL(virshDomainEventShutdown,
               VIR_DOMAIN_EVENT_SHUTDOWN_LAST,
               N_("Finished"),
               N_("Finished after guest request"),
-              N_("Finished after host request"))
+              N_("Finished after host request"));
 
 VIR_ENUM_DECL(virshDomainEventPMSuspended);
 VIR_ENUM_IMPL(virshDomainEventPMSuspended,
               VIR_DOMAIN_EVENT_PMSUSPENDED_LAST,
               N_("Memory"),
-              N_("Disk"))
+              N_("Disk"));
 
 VIR_ENUM_DECL(virshDomainEventCrashed);
 VIR_ENUM_IMPL(virshDomainEventCrashed,
               VIR_DOMAIN_EVENT_CRASHED_LAST,
-              N_("Panicked"))
+              N_("Panicked"));
 
 static const char *
 virshDomainEventDetailToString(int event, int detail)
@@ -12823,7 +12823,7 @@ VIR_ENUM_IMPL(virshDomainEventWatchdog,
               N_("poweroff"),
               N_("shutdown"),
               N_("debug"),
-              N_("inject-nmi"))
+              N_("inject-nmi"));
 
 static const char *
 virshDomainEventWatchdogToString(int action)
@@ -12837,7 +12837,7 @@ VIR_ENUM_IMPL(virshDomainEventIOError,
               VIR_DOMAIN_EVENT_IO_ERROR_LAST,
               N_("none"),
               N_("pause"),
-              N_("report"))
+              N_("report"));
 
 static const char *
 virshDomainEventIOErrorToString(int action)
@@ -12851,7 +12851,7 @@ VIR_ENUM_IMPL(virshGraphicsPhase,
               VIR_DOMAIN_EVENT_GRAPHICS_LAST,
               N_("connect"),
               N_("initialize"),
-              N_("disconnect"))
+              N_("disconnect"));
 
 static const char *
 virshGraphicsPhaseToString(int phase)
@@ -12865,7 +12865,7 @@ VIR_ENUM_IMPL(virshGraphicsAddress,
               VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST,
               N_("IPv4"),
               N_("IPv6"),
-              N_("unix"))
+              N_("unix"));
 
 static const char *
 virshGraphicsAddressToString(int family)
@@ -12880,7 +12880,7 @@ VIR_ENUM_IMPL(virshDomainBlockJobStatus,
               N_("completed"),
               N_("failed"),
               N_("canceled"),
-              N_("ready"))
+              N_("ready"));
 
 static const char *
 virshDomainBlockJobStatusToString(int status)
@@ -12893,7 +12893,7 @@ VIR_ENUM_DECL(virshDomainEventDiskChange);
 VIR_ENUM_IMPL(virshDomainEventDiskChange,
               VIR_DOMAIN_EVENT_DISK_CHANGE_LAST,
               N_("changed"),
-              N_("dropped"))
+              N_("dropped"));
 
 static const char *
 virshDomainEventDiskChangeToString(int reason)
@@ -12906,7 +12906,7 @@ VIR_ENUM_DECL(virshDomainEventTrayChange);
 VIR_ENUM_IMPL(virshDomainEventTrayChange,
               VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST,
               N_("opened"),
-              N_("closed"))
+              N_("closed"));
 
 static const char *
 virshDomainEventTrayChangeToString(int reason)
@@ -13231,14 +13231,14 @@ VIR_ENUM_IMPL(virshEventAgentLifecycleState,
               VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_LAST,
               N_("unknown"),
               N_("connected"),
-              N_("disconnected"))
+              N_("disconnected"));
 
 VIR_ENUM_DECL(virshEventAgentLifecycleReason);
 VIR_ENUM_IMPL(virshEventAgentLifecycleReason,
               VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_LAST,
               N_("unknown"),
               N_("domain started"),
-              N_("channel event"))
+              N_("channel event"));
 
 #define UNKNOWNSTR(str) (str ? str : N_("unsupported value"))
 static void
@@ -13317,7 +13317,7 @@ VIR_ENUM_IMPL(virshEventMetadataChangeType,
               VIR_DOMAIN_METADATA_LAST,
               N_("description"),
               N_("title"),
-              N_("element"))
+              N_("element"));
 
 static void
 virshEventMetadataChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,

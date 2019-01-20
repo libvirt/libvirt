@@ -569,7 +569,7 @@ VIR_ENUM_DECL(virshSecretEvent);
 VIR_ENUM_IMPL(virshSecretEvent,
               VIR_SECRET_EVENT_LAST,
               N_("Defined"),
-              N_("Undefined"))
+              N_("Undefined"));
 
 static const char *
 virshSecretEventToString(int event)

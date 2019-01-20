@@ -2751,14 +2751,16 @@ VIR_ENUM_IMPL(qemuSaveCompression, QEMU_SAVE_FORMAT_LAST,
               "gzip",
               "bzip2",
               "xz",
-              "lzop")
+              "lzop",
+);
 
 VIR_ENUM_DECL(qemuDumpFormat);
 VIR_ENUM_IMPL(qemuDumpFormat, VIR_DOMAIN_CORE_DUMP_FORMAT_LAST,
               "elf",
               "kdump-zlib",
               "kdump-lzo",
-              "kdump-snappy")
+              "kdump-snappy",
+);
 
 typedef struct _virQEMUSaveHeader virQEMUSaveHeader;
 typedef virQEMUSaveHeader *virQEMUSaveHeaderPtr;

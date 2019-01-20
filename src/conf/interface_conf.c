@@ -33,7 +33,8 @@
 
 VIR_ENUM_IMPL(virInterface,
               VIR_INTERFACE_TYPE_LAST,
-              "ethernet", "bridge", "bond", "vlan")
+              "ethernet", "bridge", "bond", "vlan",
+);
 
 static virInterfaceDefPtr
 virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType);

@@ -87,12 +87,14 @@ VIR_LOG_INIT("util.util");
 VIR_ENUM_IMPL(virTristateBool, VIR_TRISTATE_BOOL_LAST,
               "default",
               "yes",
-              "no")
+              "no",
+);
 
 VIR_ENUM_IMPL(virTristateSwitch, VIR_TRISTATE_SWITCH_LAST,
               "default",
               "on",
-              "off")
+              "off",
+);
 
 
 virTristateBool

@@ -112,7 +112,8 @@ VIR_ENUM_IMPL(virProcessSchedPolicy, VIR_PROC_POLICY_LAST,
               "batch",
               "idle",
               "fifo",
-              "rr");
+              "rr",
+);
 
 /**
  * virProcessTranslateStatus:

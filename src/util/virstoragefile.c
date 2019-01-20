@@ -53,7 +53,8 @@ VIR_ENUM_IMPL(virStorage, VIR_STORAGE_TYPE_LAST,
               "block",
               "dir",
               "network",
-              "volume")
+              "volume",
+);
 
 VIR_ENUM_IMPL(virStorageFileFormat,
               VIR_STORAGE_FILE_LAST,
@@ -64,12 +65,13 @@ VIR_ENUM_IMPL(virStorageFileFormat,
               /* Not direct file formats, but used for various drivers */
               "fat", "vhd", "ploop",
               /* Formats with backing file below here */
-              "cow", "qcow", "qcow2", "qed", "vmdk")
+              "cow", "qcow", "qcow2", "qed", "vmdk",
+);
 
 VIR_ENUM_IMPL(virStorageFileFeature,
               VIR_STORAGE_FILE_FEATURE_LAST,
               "lazy_refcounts",
-              )
+);
 
 VIR_ENUM_IMPL(virStorageNetProtocol, VIR_STORAGE_NET_PROTOCOL_LAST,
               "none",
@@ -84,22 +86,26 @@ VIR_ENUM_IMPL(virStorageNetProtocol, VIR_STORAGE_NET_PROTOCOL_LAST,
               "ftps",
               "tftp",
               "ssh",
-              "vxhs")
+              "vxhs",
+);
 
 VIR_ENUM_IMPL(virStorageNetHostTransport, VIR_STORAGE_NET_HOST_TRANS_LAST,
               "tcp",
               "unix",
-              "rdma")
+              "rdma",
+);
 
 VIR_ENUM_IMPL(virStorageSourcePoolMode,
               VIR_STORAGE_SOURCE_POOL_MODE_LAST,
               "default",
               "host",
-              "direct")
+              "direct",
+);
 
 VIR_ENUM_IMPL(virStorageAuth,
               VIR_STORAGE_AUTH_TYPE_LAST,
-              "none", "chap", "ceph")
+              "none", "chap", "ceph",
+);
 
 enum lv_endian {
     LV_LITTLE_ENDIAN = 1, /* 1234 */

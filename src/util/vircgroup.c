@@ -65,7 +65,8 @@ VIR_LOG_INIT("util.cgroup");
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
               "freezer", "blkio", "net_cls", "perf_event",
-              "name=systemd");
+              "name=systemd",
+);
 
 
 /**

@@ -90,7 +90,8 @@ VIR_ENUM_IMPL(virDaemonErr, VIR_LOG_DAEMON_ERR_LAST,
               "Unable to initialize network sockets",
               "Unable to load configuration file",
               "Unable to look for hook scripts",
-              "Unable to re-execute daemon");
+              "Unable to re-execute daemon",
+);
 
 static void *
 virLogDaemonClientNew(virNetServerClientPtr client,

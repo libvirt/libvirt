@@ -54,28 +54,33 @@ VIR_ENUM_IMPL(virNWFilterRuleAction, VIR_NWFILTER_RULE_ACTION_LAST,
               "accept",
               "reject",
               "return",
-              "continue");
+              "continue",
+);
 
 VIR_ENUM_IMPL(virNWFilterJumpTarget, VIR_NWFILTER_RULE_ACTION_LAST,
               "DROP",
               "ACCEPT",
               "REJECT",
               "RETURN",
-              "CONTINUE");
+              "CONTINUE",
+);
 
 VIR_ENUM_IMPL(virNWFilterRuleDirection, VIR_NWFILTER_RULE_DIRECTION_LAST,
               "in",
               "out",
-              "inout");
+              "inout",
+);
 
 VIR_ENUM_IMPL(virNWFilterChainPolicy, VIR_NWFILTER_CHAIN_POLICY_LAST,
               "ACCEPT",
-              "DROP");
+              "DROP",
+);
 
 VIR_ENUM_IMPL(virNWFilterEbtablesTable, VIR_NWFILTER_EBTABLES_TABLE_LAST,
               "filter",
               "nat",
-              "broute");
+              "broute",
+);
 
 VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "root",
@@ -85,7 +90,8 @@ VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "arp",
               "rarp",
               "ipv4",
-              "ipv6");
+              "ipv6",
+);
 
 VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
               "none",
@@ -112,7 +118,8 @@ VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
               "esp-ipv6",
               "ah-ipv6",
               "sctp-ipv6",
-              "all-ipv6");
+              "all-ipv6",
+);
 
 
 /*

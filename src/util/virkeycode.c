@@ -79,7 +79,7 @@ VIR_ENUM_IMPL(virKeycodeSet, VIR_KEYCODE_SET_LAST,
               "usb",
               "win32",
               "qnum",
-              );
+);
 
 int virKeycodeValueFromString(virKeycodeSet codeset,
                               const char *keyname)

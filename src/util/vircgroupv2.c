@@ -45,7 +45,8 @@ VIR_LOG_INIT("util.cgroup");
 VIR_ENUM_DECL(virCgroupV2Controller);
 VIR_ENUM_IMPL(virCgroupV2Controller, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
-              "freezer", "io", "net_cls", "perf_event", "name=systemd");
+              "freezer", "io", "net_cls", "perf_event", "name=systemd",
+);
 
 #ifdef __linux__
 

@@ -44,7 +44,8 @@ VIR_LOG_INIT("conf.node_device_conf");
 
 VIR_ENUM_IMPL(virNodeDevDevnode, VIR_NODE_DEV_DEVNODE_LAST,
               "dev",
-              "link")
+              "link",
+);
 
 VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "system",
@@ -62,16 +63,19 @@ VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "drm",
               "mdev_types",
               "mdev",
-              "ccw")
+              "ccw",
+);
 
 VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
               "80203",
-              "80211")
+              "80211",
+);
 
 VIR_ENUM_IMPL(virNodeDevDRM, VIR_NODE_DEV_DRM_LAST,
               "primary",
               "control",
-              "render")
+              "render",
+);
 
 static int
 virNodeDevCapsDefParseString(const char *xpath,

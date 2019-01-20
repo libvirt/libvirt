@@ -59,7 +59,7 @@ VIR_ENUM_IMPL(virClientTransport,
               VIR_CLIENT_TRANS_LAST,
               N_("unix"),
               N_("tcp"),
-              N_("tls"))
+              N_("tls"));
 
 static const char *
 vshAdmClientTransportToString(int transport)

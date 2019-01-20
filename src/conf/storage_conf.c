@@ -50,7 +50,8 @@ VIR_LOG_INIT("conf.storage_conf");
 VIR_ENUM_IMPL(virStorageVol,
               VIR_STORAGE_VOL_LAST,
               "file", "block", "dir", "network",
-              "netdir", "ploop")
+              "netdir", "ploop",
+);
 
 VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,
@@ -58,26 +59,31 @@ VIR_ENUM_IMPL(virStoragePool,
               "logical", "disk", "iscsi",
               "iscsi-direct", "scsi", "mpath",
               "rbd", "sheepdog", "gluster",
-              "zfs", "vstorage")
+              "zfs", "vstorage",
+);
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
               VIR_STORAGE_POOL_FS_LAST,
               "auto", "ext2", "ext3",
               "ext4", "ufs", "iso9660", "udf",
-              "gfs", "gfs2", "vfat", "hfs+", "xfs", "ocfs2")
+              "gfs", "gfs2", "vfat", "hfs+", "xfs", "ocfs2",
+);
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystemNet,
               VIR_STORAGE_POOL_NETFS_LAST,
-              "auto", "nfs", "glusterfs", "cifs")
+              "auto", "nfs", "glusterfs", "cifs",
+);
 
 VIR_ENUM_IMPL(virStoragePoolFormatDisk,
               VIR_STORAGE_POOL_DISK_LAST,
               "unknown", "dos", "dvh", "gpt",
-              "mac", "bsd", "pc98", "sun", "lvm2")
+              "mac", "bsd", "pc98", "sun", "lvm2",
+);
 
 VIR_ENUM_IMPL(virStoragePoolFormatLogical,
               VIR_STORAGE_POOL_LOGICAL_LAST,
-              "unknown", "lvm2")
+              "unknown", "lvm2",
+);
 
 
 VIR_ENUM_IMPL(virStorageVolFormatDisk,
@@ -85,14 +91,16 @@ VIR_ENUM_IMPL(virStorageVolFormatDisk,
               "none", "linux", "fat16",
               "fat32", "linux-swap",
               "linux-lvm", "linux-raid",
-              "extended")
+              "extended",
+);
 
 VIR_ENUM_IMPL(virStoragePartedFs,
               VIR_STORAGE_PARTED_FS_TYPE_LAST,
               "ext2", "ext2", "fat16",
               "fat32", "linux-swap",
               "ext2", "ext2",
-              "extended")
+              "extended",
+);
 
 typedef const char *(*virStorageVolFormatToString)(int format);
 typedef int (*virStorageVolFormatFromString)(const char *format);

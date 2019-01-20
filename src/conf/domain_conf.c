@@ -99,7 +99,8 @@ VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
               "hook-script",
               "cdrom-passthrough",
               "custom-dtb",
-              "custom-ga-command");
+              "custom-ga-command",
+);
 
 VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "none",
@@ -117,7 +118,8 @@ VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "phyp",
               "parallels",
               "bhyve",
-              "vz")
+              "vz",
+);
 
 VIR_ENUM_IMPL(virDomainOS, VIR_DOMAIN_OSTYPE_LAST,
               "hvm",
@@ -125,13 +127,15 @@ VIR_ENUM_IMPL(virDomainOS, VIR_DOMAIN_OSTYPE_LAST,
               "linux",
               "exe",
               "uml",
-              "xenpvh")
+              "xenpvh",
+);
 
 VIR_ENUM_IMPL(virDomainBoot, VIR_DOMAIN_BOOT_LAST,
               "fd",
               "cdrom",
               "hd",
-              "network")
+              "network",
+);
 
 VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "acpi",
@@ -158,7 +162,8 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy, VIR_DOMAIN_CAPABILITIES_POLICY_LAST,
               "default",
               "allow",
-              "deny")
+              "deny",
+);
 
 VIR_ENUM_IMPL(virDomainHyperv, VIR_DOMAIN_HYPERV_LAST,
               "relaxed",
@@ -178,7 +183,8 @@ VIR_ENUM_IMPL(virDomainHyperv, VIR_DOMAIN_HYPERV_LAST,
 );
 
 VIR_ENUM_IMPL(virDomainKVM, VIR_DOMAIN_KVM_LAST,
-              "hidden")
+              "hidden",
+);
 
 VIR_ENUM_IMPL(virDomainCapsFeature, VIR_DOMAIN_CAPS_FEATURE_LAST,
               "audit_control",
@@ -217,12 +223,14 @@ VIR_ENUM_IMPL(virDomainCapsFeature, VIR_DOMAIN_CAPS_FEATURE_LAST,
               "sys_time",
               "sys_tty_config",
               "syslog",
-              "wake_alarm")
+              "wake_alarm",
+);
 
 VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
               "poweroff",
               "reboot",
-              "crash")
+              "crash",
+);
 
 VIR_ENUM_IMPL(virDomainLifecycleAction, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "destroy",
@@ -230,14 +238,16 @@ VIR_ENUM_IMPL(virDomainLifecycleAction, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "rename-restart",
               "preserve",
               "coredump-destroy",
-              "coredump-restart")
+              "coredump-restart",
+);
 
 VIR_ENUM_IMPL(virDomainLockFailure, VIR_DOMAIN_LOCK_FAILURE_LAST,
               "default",
               "poweroff",
               "restart",
               "pause",
-              "ignore")
+              "ignore",
+);
 
 VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "none",
@@ -264,19 +274,22 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "panic",
               "memory",
               "iommu",
-              "vsock")
+              "vsock",
+);
 
 VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "disk",
               "cdrom",
               "floppy",
-              "lun")
+              "lun",
+);
 
 VIR_ENUM_IMPL(virDomainDiskGeometryTrans, VIR_DOMAIN_DISK_TRANS_LAST,
               "default",
               "none",
               "auto",
-              "lba")
+              "lba",
+);
 
 VIR_ENUM_IMPL(virDomainDiskBus, VIR_DOMAIN_DISK_BUS_LAST,
               "ide",
@@ -287,7 +300,8 @@ VIR_ENUM_IMPL(virDomainDiskBus, VIR_DOMAIN_DISK_BUS_LAST,
               "usb",
               "uml",
               "sata",
-              "sd")
+              "sd",
+);
 
 VIR_ENUM_IMPL(virDomainDiskCache, VIR_DOMAIN_DISK_CACHE_LAST,
               "default",
@@ -295,24 +309,28 @@ VIR_ENUM_IMPL(virDomainDiskCache, VIR_DOMAIN_DISK_CACHE_LAST,
               "writethrough",
               "writeback",
               "directsync",
-              "unsafe")
+              "unsafe",
+);
 
 VIR_ENUM_IMPL(virDomainDiskErrorPolicy, VIR_DOMAIN_DISK_ERROR_POLICY_LAST,
               "default",
               "stop",
               "report",
               "ignore",
-              "enospace")
+              "enospace",
+);
 
 VIR_ENUM_IMPL(virDomainDiskIo, VIR_DOMAIN_DISK_IO_LAST,
               "default",
               "native",
-              "threads")
+              "threads",
+);
 
 VIR_ENUM_IMPL(virDomainDeviceSGIO, VIR_DOMAIN_DEVICE_SGIO_LAST,
               "default",
               "filtered",
-              "unfiltered")
+              "unfiltered",
+);
 
 VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "ide",
@@ -322,7 +340,8 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "virtio-serial",
               "ccid",
               "usb",
-              "pci")
+              "pci",
+);
 
 VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "pci-root",
@@ -334,7 +353,8 @@ VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "pcie-switch-upstream-port",
               "pcie-switch-downstream-port",
               "pci-expander-bus",
-              "pcie-expander-bus")
+              "pcie-expander-bus",
+);
 
 VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST,
@@ -375,12 +395,14 @@ VIR_ENUM_IMPL(virDomainControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "qusb1",
               "qusb2",
               "qemu-xhci",
-              "none")
+              "none",
+);
 
 VIR_ENUM_IMPL(virDomainControllerModelIDE, VIR_DOMAIN_CONTROLLER_MODEL_IDE_LAST,
               "piix3",
               "piix4",
-              "ich6")
+              "ich6",
+);
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
@@ -389,7 +411,8 @@ VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "template",
               "ram",
               "bind",
-              "volume")
+              "volume",
+);
 
 VIR_ENUM_IMPL(virDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "default",
@@ -397,16 +420,19 @@ VIR_ENUM_IMPL(virDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "handle",
               "loop",
               "nbd",
-              "ploop")
+              "ploop",
+);
 
 VIR_ENUM_IMPL(virDomainFSAccessMode, VIR_DOMAIN_FS_ACCESSMODE_LAST,
               "passthrough",
               "mapped",
-              "squash")
+              "squash",
+);
 
 VIR_ENUM_IMPL(virDomainFSWrpolicy, VIR_DOMAIN_FS_WRPOLICY_LAST,
               "default",
-              "immediate")
+              "immediate",
+);
 
 VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "user",
@@ -420,27 +446,32 @@ VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "internal",
               "direct",
               "hostdev",
-              "udp")
+              "udp",
+);
 
 VIR_ENUM_IMPL(virDomainNetBackend, VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
               "default",
               "qemu",
-              "vhost")
+              "vhost",
+);
 
 VIR_ENUM_IMPL(virDomainNetVirtioTxMode, VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST,
               "default",
               "iothread",
-              "timer")
+              "timer",
+);
 
 VIR_ENUM_IMPL(virDomainNetInterfaceLinkState, VIR_DOMAIN_NET_INTERFACE_LINK_STATE_LAST,
               "default",
               "up",
-              "down")
+              "down",
+);
 
 VIR_ENUM_IMPL(virDomainChrDeviceState, VIR_DOMAIN_CHR_DEVICE_STATE_LAST,
               "default",
               "connected",
-              "disconnected");
+              "disconnected",
+);
 
 VIR_ENUM_IMPL(virDomainChrSerialTarget,
               VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST,
@@ -458,7 +489,8 @@ VIR_ENUM_IMPL(virDomainChrChannelTarget,
               "none",
               "guestfwd",
               "virtio",
-              "xen")
+              "xen",
+);
 
 VIR_ENUM_IMPL(virDomainChrConsoleTarget,
               VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST,
@@ -470,7 +502,8 @@ VIR_ENUM_IMPL(virDomainChrConsoleTarget,
               "lxc",
               "openvz",
               "sclp",
-              "sclplm")
+              "sclplm",
+);
 
 VIR_ENUM_IMPL(virDomainChrSerialTargetModel,
               VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST,
@@ -489,7 +522,8 @@ VIR_ENUM_IMPL(virDomainChrDevice, VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
               "parallel",
               "serial",
               "console",
-              "channel")
+              "channel",
+);
 
 VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "null",
@@ -504,28 +538,33 @@ VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "unix",
               "spicevmc",
               "spiceport",
-              "nmdm")
+              "nmdm",
+);
 
 VIR_ENUM_IMPL(virDomainChrTcpProtocol, VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
               "raw",
               "telnet",
               "telnets",
-              "tls")
+              "tls",
+);
 
 VIR_ENUM_IMPL(virDomainChrSpicevmc, VIR_DOMAIN_CHR_SPICEVMC_LAST,
               "vdagent",
               "smartcard",
-              "usbredir")
+              "usbredir",
+);
 
 VIR_ENUM_IMPL(virDomainSmartcard, VIR_DOMAIN_SMARTCARD_TYPE_LAST,
               "host",
               "host-certificates",
-              "passthrough")
+              "passthrough",
+);
 
 VIR_ENUM_IMPL(virDomainSoundCodec, VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
               "duplex",
               "micro",
-              "output")
+              "output",
+);
 
 VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "sb16",
@@ -534,28 +573,33 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "ac97",
               "ich6",
               "ich9",
-              "usb")
+              "usb",
+);
 
 VIR_ENUM_IMPL(virDomainKeyWrapCipherName,
               VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_LAST,
               "aes",
-              "dea")
+              "dea",
+);
 
 VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
               "virtio",
               "xen",
-              "none")
+              "none",
+);
 
 VIR_ENUM_IMPL(virDomainSmbiosMode, VIR_DOMAIN_SMBIOS_LAST,
               "none",
               "emulate",
               "host",
-              "sysinfo")
+              "sysinfo",
+);
 
 VIR_ENUM_IMPL(virDomainWatchdogModel, VIR_DOMAIN_WATCHDOG_MODEL_LAST,
               "i6300esb",
               "ib700",
-              "diag288")
+              "diag288",
+);
 
 VIR_ENUM_IMPL(virDomainWatchdogAction, VIR_DOMAIN_WATCHDOG_ACTION_LAST,
               "reset",
@@ -564,14 +608,16 @@ VIR_ENUM_IMPL(virDomainWatchdogAction, VIR_DOMAIN_WATCHDOG_ACTION_LAST,
               "pause",
               "dump",
               "none",
-              "inject-nmi")
+              "inject-nmi",
+);
 
 VIR_ENUM_IMPL(virDomainPanicModel, VIR_DOMAIN_PANIC_MODEL_LAST,
               "default",
               "isa",
               "pseries",
               "hyperv",
-              "s390")
+              "s390",
+);
 
 VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "default",
@@ -584,25 +630,29 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "parallels",
               "virtio",
               "gop",
-              "none")
+              "none",
+);
 
 VIR_ENUM_IMPL(virDomainVideoVGAConf, VIR_DOMAIN_VIDEO_VGACONF_LAST,
               "io",
               "on",
-              "off")
+              "off",
+);
 
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",
               "tablet",
               "keyboard",
-              "passthrough")
+              "passthrough",
+);
 
 VIR_ENUM_IMPL(virDomainInputBus, VIR_DOMAIN_INPUT_BUS_LAST,
               "ps2",
               "usb",
               "xen",
               "parallels",
-              "virtio")
+              "virtio",
+);
 
 VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "sdl",
@@ -610,27 +660,31 @@ VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "rdp",
               "desktop",
               "spice",
-              "egl-headless")
+              "egl-headless",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsListen, VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST,
               "none",
               "address",
               "network",
-              "socket")
+              "socket",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsAuthConnected,
               VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_LAST,
               "default",
               "fail",
               "disconnect",
-              "keep")
+              "keep",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsVNCSharePolicy,
               VIR_DOMAIN_GRAPHICS_VNC_SHARE_LAST,
               "default",
               "allow-exclusive",
               "force-shared",
-              "ignore")
+              "ignore",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelName,
               VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST,
@@ -641,13 +695,15 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelName,
               "playback",
               "record",
               "smartcard",
-              "usbredir");
+              "usbredir",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelMode,
               VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_LAST,
               "any",
               "secure",
-              "insecure");
+              "insecure",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceImageCompression,
               VIR_DOMAIN_GRAPHICS_SPICE_IMAGE_COMPRESSION_LAST,
@@ -657,73 +713,86 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceImageCompression,
               "quic",
               "glz",
               "lz",
-              "off");
+              "off",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceJpegCompression,
               VIR_DOMAIN_GRAPHICS_SPICE_JPEG_COMPRESSION_LAST,
               "default",
               "auto",
               "never",
-              "always");
+              "always",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceZlibCompression,
               VIR_DOMAIN_GRAPHICS_SPICE_ZLIB_COMPRESSION_LAST,
               "default",
               "auto",
               "never",
-              "always");
+              "always",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceMouseMode,
               VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST,
               "default",
               "server",
-              "client");
+              "client",
+);
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceStreamingMode,
               VIR_DOMAIN_GRAPHICS_SPICE_STREAMING_MODE_LAST,
               "default",
               "filter",
               "all",
-              "off");
+              "off",
+);
 
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
-              "capabilities")
+              "capabilities",
+);
 
 VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "usb",
               "pci",
               "scsi",
               "scsi_host",
-              "mdev")
+              "mdev",
+);
 
 VIR_ENUM_IMPL(virDomainHostdevSubsysPCIBackend,
               VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST,
               "default",
               "kvm",
               "vfio",
-              "xen")
+              "xen",
+);
 
 VIR_ENUM_IMPL(virDomainHostdevSubsysSCSIProtocol,
               VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST,
               "adapter",
-              "iscsi")
+              "iscsi",
+);
 
 VIR_ENUM_IMPL(virDomainHostdevSubsysSCSIHostProtocol,
               VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_LAST,
               "none",
-              "vhost")
+              "vhost",
+);
 
 VIR_ENUM_IMPL(virDomainHostdevCaps, VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST,
               "storage",
               "misc",
-              "net")
+              "net",
+);
 
 VIR_ENUM_IMPL(virDomainHub, VIR_DOMAIN_HUB_TYPE_LAST,
-              "usb")
+              "usb",
+);
 
 VIR_ENUM_IMPL(virDomainRedirdevBus, VIR_DOMAIN_REDIRDEV_BUS_LAST,
-              "usb")
+              "usb",
+);
 
 VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_LAST,
               "nostate",
@@ -733,10 +802,12 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_LAST,
               "shutdown",
               "shutoff",
               "crashed",
-              "pmsuspended")
+              "pmsuspended",
+);
 
 VIR_ENUM_IMPL(virDomainNostateReason, VIR_DOMAIN_NOSTATE_LAST,
-              "unknown")
+              "unknown",
+);
 
 VIR_ENUM_IMPL(virDomainRunningReason, VIR_DOMAIN_RUNNING_LAST,
               "unknown",
@@ -749,10 +820,12 @@ VIR_ENUM_IMPL(virDomainRunningReason, VIR_DOMAIN_RUNNING_LAST,
               "save canceled",
               "wakeup",
               "crashed",
-              "post-copy")
+              "post-copy",
+);
 
 VIR_ENUM_IMPL(virDomainBlockedReason, VIR_DOMAIN_BLOCKED_LAST,
-              "unknown")
+              "unknown",
+);
 
 VIR_ENUM_IMPL(virDomainPausedReason, VIR_DOMAIN_PAUSED_LAST,
               "unknown",
@@ -768,11 +841,13 @@ VIR_ENUM_IMPL(virDomainPausedReason, VIR_DOMAIN_PAUSED_LAST,
               "panicked",
               "starting up",
               "post-copy",
-              "post-copy failed")
+              "post-copy failed",
+);
 
 VIR_ENUM_IMPL(virDomainShutdownReason, VIR_DOMAIN_SHUTDOWN_LAST,
               "unknown",
-              "user")
+              "user",
+);
 
 VIR_ENUM_IMPL(virDomainShutoffReason, VIR_DOMAIN_SHUTOFF_LAST,
               "unknown",
@@ -783,30 +858,36 @@ VIR_ENUM_IMPL(virDomainShutoffReason, VIR_DOMAIN_SHUTOFF_LAST,
               "saved",
               "failed",
               "from snapshot",
-              "daemon")
+              "daemon",
+);
 
 VIR_ENUM_IMPL(virDomainCrashedReason, VIR_DOMAIN_CRASHED_LAST,
               "unknown",
-              "panicked")
+              "panicked",
+);
 
 VIR_ENUM_IMPL(virDomainPMSuspendedReason, VIR_DOMAIN_PMSUSPENDED_LAST,
-              "unknown")
+              "unknown",
+);
 
 VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
               "default",
               "none",
               "dynamic",
-              "static")
+              "static",
+);
 
 VIR_ENUM_IMPL(virDomainClockOffset, VIR_DOMAIN_CLOCK_OFFSET_LAST,
               "utc",
               "localtime",
               "variable",
-              "timezone");
+              "timezone",
+);
 
 VIR_ENUM_IMPL(virDomainClockBasis, VIR_DOMAIN_CLOCK_BASIS_LAST,
               "utc",
-              "localtime");
+              "localtime",
+);
 
 VIR_ENUM_IMPL(virDomainTimerName, VIR_DOMAIN_TIMER_NAME_LAST,
               "platform",
@@ -815,39 +896,46 @@ VIR_ENUM_IMPL(virDomainTimerName, VIR_DOMAIN_TIMER_NAME_LAST,
               "hpet",
               "tsc",
               "kvmclock",
-              "hypervclock");
+              "hypervclock",
+);
 
 VIR_ENUM_IMPL(virDomainTimerTrack, VIR_DOMAIN_TIMER_TRACK_LAST,
               "boot",
               "guest",
-              "wall");
+              "wall",
+);
 
 VIR_ENUM_IMPL(virDomainTimerTickpolicy, VIR_DOMAIN_TIMER_TICKPOLICY_LAST,
               "delay",
               "catchup",
               "merge",
-              "discard");
+              "discard",
+);
 
 VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
               "auto",
               "native",
               "emulate",
               "paravirt",
-              "smpsafe");
+              "smpsafe",
+);
 
 VIR_ENUM_IMPL(virDomainStartupPolicy, VIR_DOMAIN_STARTUP_POLICY_LAST,
               "default",
               "mandatory",
               "requisite",
-              "optional");
+              "optional",
+);
 
 VIR_ENUM_IMPL(virDomainCpuPlacementMode, VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST,
               "static",
-              "auto");
+              "auto",
+);
 
 VIR_ENUM_IMPL(virDomainDiskTray, VIR_DOMAIN_DISK_TRAY_LAST,
               "closed",
-              "open");
+              "open",
+);
 
 VIR_ENUM_IMPL(virDomainRNGModel,
               VIR_DOMAIN_RNG_MODEL_LAST,
@@ -856,66 +944,79 @@ VIR_ENUM_IMPL(virDomainRNGModel,
 VIR_ENUM_IMPL(virDomainRNGBackend,
               VIR_DOMAIN_RNG_BACKEND_LAST,
               "random",
-              "egd");
+              "egd",
+);
 
 VIR_ENUM_IMPL(virDomainTPMModel, VIR_DOMAIN_TPM_MODEL_LAST,
               "tpm-tis",
-              "tpm-crb")
+              "tpm-crb",
+);
 
 VIR_ENUM_IMPL(virDomainTPMBackend, VIR_DOMAIN_TPM_TYPE_LAST,
               "passthrough",
-              "emulator")
+              "emulator",
+);
 
 VIR_ENUM_IMPL(virDomainTPMVersion, VIR_DOMAIN_TPM_VERSION_LAST,
               "default",
               "1.2",
-              "2.0")
+              "2.0",
+);
 
 VIR_ENUM_IMPL(virDomainIOMMUModel, VIR_DOMAIN_IOMMU_MODEL_LAST,
-              "intel")
+              "intel",
+);
 
 VIR_ENUM_IMPL(virDomainVsockModel, VIR_DOMAIN_VSOCK_MODEL_LAST,
               "default",
-              "virtio")
+              "virtio",
+);
 
 VIR_ENUM_IMPL(virDomainDiskDiscard, VIR_DOMAIN_DISK_DISCARD_LAST,
               "default",
               "unmap",
-              "ignore")
+              "ignore",
+);
 
 VIR_ENUM_IMPL(virDomainDiskDetectZeroes, VIR_DOMAIN_DISK_DETECT_ZEROES_LAST,
               "default",
               "off",
               "on",
-              "unmap")
+              "unmap",
+);
 
 VIR_ENUM_IMPL(virDomainDiskMirrorState, VIR_DOMAIN_DISK_MIRROR_STATE_LAST,
               "none",
               "yes",
               "abort",
-              "pivot")
+              "pivot",
+);
 
 VIR_ENUM_IMPL(virDomainMemorySource, VIR_DOMAIN_MEMORY_SOURCE_LAST,
               "none",
               "file",
               "anonymous",
-              "memfd")
+              "memfd",
+);
 
 VIR_ENUM_IMPL(virDomainMemoryAllocation, VIR_DOMAIN_MEMORY_ALLOCATION_LAST,
               "none",
               "immediate",
-              "ondemand")
+              "ondemand",
+);
 
 VIR_ENUM_IMPL(virDomainLoader,
               VIR_DOMAIN_LOADER_TYPE_LAST,
               "rom",
-              "pflash")
+              "pflash",
+);
 
 VIR_ENUM_IMPL(virDomainIOAPIC,
               VIR_DOMAIN_IOAPIC_LAST,
               "none",
               "qemu",
-              "kvm")
+              "kvm",
+);
 
 VIR_ENUM_IMPL(virDomainHPTResizing,
               VIR_DOMAIN_HPT_RESIZING_LAST,
@@ -929,22 +1030,26 @@ VIR_ENUM_IMPL(virDomainHPTResizing,
  * <mirror> XML (remaining types are not two-phase). */
 VIR_ENUM_DECL(virDomainBlockJob);
 VIR_ENUM_IMPL(virDomainBlockJob, VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
-              "", "", "copy", "", "active-commit")
+              "", "", "copy", "", "active-commit",
+);
 
 VIR_ENUM_IMPL(virDomainMemoryModel,
               VIR_DOMAIN_MEMORY_MODEL_LAST,
               "",
               "dimm",
-              "nvdimm")
+              "nvdimm",
+);
 
 VIR_ENUM_IMPL(virDomainShmemModel, VIR_DOMAIN_SHMEM_MODEL_LAST,
               "ivshmem",
               "ivshmem-plain",
-              "ivshmem-doorbell")
+              "ivshmem-doorbell",
+);
 
 VIR_ENUM_IMPL(virDomainLaunchSecurity, VIR_DOMAIN_LAUNCH_SECURITY_LAST,
               "",
-              "sev")
+              "sev",
+);
 
 static virClassPtr virDomainObjClass;
 static virClassPtr virDomainXMLOptionClass;

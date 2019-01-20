@@ -139,7 +139,7 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Libssh transport layer",
               "Resource control",
               "FirewallD",
-              );
+);
 
 
 /*

@@ -70,7 +70,8 @@ VIR_ENUM_IMPL(virConf, VIR_CONF_LAST,
               "long",
               "unsigned long",
               "string",
-              "list");
+              "list",
+);
 
 typedef struct _virConfEntry virConfEntry;
 typedef virConfEntry *virConfEntryPtr;

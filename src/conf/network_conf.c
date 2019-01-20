@@ -47,25 +47,30 @@ VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
               "none", "nat", "route", "open",
               "bridge", "private", "vepa", "passthrough",
-              "hostdev")
+              "hostdev",
+);
 
 VIR_ENUM_IMPL(virNetworkBridgeMACTableManager,
               VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LAST,
-              "default", "kernel", "libvirt")
+              "default", "kernel", "libvirt",
+);
 
 VIR_ENUM_DECL(virNetworkForwardHostdevDevice);
 VIR_ENUM_IMPL(virNetworkForwardHostdevDevice,
               VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST,
-              "none", "pci", "netdev")
+              "none", "pci", "netdev",
+);
 
 VIR_ENUM_IMPL(virNetworkForwardDriverName,
               VIR_NETWORK_FORWARD_DRIVER_NAME_LAST,
               "default",
               "kvm",
-              "vfio")
+              "vfio",
+);
 
 VIR_ENUM_IMPL(virNetworkTaint, VIR_NETWORK_TAINT_LAST,
-              "hook-script");
+              "hook-script",
+);
 
 static void
 virPortGroupDefClear(virPortGroupDefPtr def)

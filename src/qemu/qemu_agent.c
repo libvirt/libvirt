@@ -1216,7 +1216,8 @@ VIR_ENUM_DECL(qemuAgentShutdownMode);
 
 VIR_ENUM_IMPL(qemuAgentShutdownMode,
               QEMU_AGENT_SHUTDOWN_LAST,
-              "powerdown", "reboot", "halt");
+              "powerdown", "reboot", "halt",
+);
 
 int qemuAgentShutdown(qemuAgentPtr mon,
                       qemuAgentShutdownMode mode)
@@ -1337,7 +1338,8 @@ VIR_ENUM_IMPL(qemuAgentSuspendMode,
               VIR_NODE_SUSPEND_TARGET_LAST,
               "guest-suspend-ram",
               "guest-suspend-disk",
-              "guest-suspend-hybrid");
+              "guest-suspend-hybrid",
+);
 
 int
 qemuAgentSuspend(qemuAgentPtr mon,

@@ -34,7 +34,8 @@ VIR_LOG_INIT("conf.storage_adapter_conf");
 
 VIR_ENUM_IMPL(virStorageAdapter,
               VIR_STORAGE_ADAPTER_TYPE_LAST,
-              "default", "scsi_host", "fc_host")
+              "default", "scsi_host", "fc_host",
+);
 
 static void
 virStorageAdapterClearFCHost(virStorageAdapterFCHostPtr fchost)

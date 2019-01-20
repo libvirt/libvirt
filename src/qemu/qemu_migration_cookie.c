@@ -50,7 +50,8 @@ VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               "cpu-hotplug",
               "cpu",
               "allowReboot",
-              "capabilities");
+              "capabilities",
+);
 
 
 static void

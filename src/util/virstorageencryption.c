@@ -38,11 +38,14 @@
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 VIR_ENUM_IMPL(virStorageEncryptionSecret,
-              VIR_STORAGE_ENCRYPTION_SECRET_TYPE_LAST, "passphrase")
+              VIR_STORAGE_ENCRYPTION_SECRET_TYPE_LAST,
+              "passphrase",
+);
 
 VIR_ENUM_IMPL(virStorageEncryptionFormat,
               VIR_STORAGE_ENCRYPTION_FORMAT_LAST,
-              "default", "qcow", "luks")
+              "default", "qcow", "luks",
+);
 
 static void
 virStorageEncryptionInfoDefFree(virStorageEncryptionInfoDefPtr def)

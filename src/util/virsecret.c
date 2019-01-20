@@ -33,7 +33,8 @@
 VIR_LOG_INIT("util.secret");
 
 VIR_ENUM_IMPL(virSecretUsage, VIR_SECRET_USAGE_TYPE_LAST,
-              "none", "volume", "ceph", "iscsi", "tls")
+              "none", "volume", "ceph", "iscsi", "tls",
+);
 
 void
 virSecretLookupDefClear(virSecretLookupTypeDefPtr def)
