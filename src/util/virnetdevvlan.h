@@ -31,7 +31,7 @@ typedef enum {
     VIR_NATIVE_VLAN_MODE_LAST
 } virNativeVlanMode;
 
-VIR_ENUM_DECL(virNativeVlanMode)
+VIR_ENUM_DECL(virNativeVlanMode);
 
 typedef struct _virNetDevVlan virNetDevVlan;
 typedef virNetDevVlan *virNetDevVlanPtr;

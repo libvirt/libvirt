@@ -65,7 +65,7 @@ VIR_ENUM_IMPL(virCache, VIR_CACHE_TYPE_LAST,
               "data")
 
 /* Cache name mapping for resctrl interface naming. */
-VIR_ENUM_DECL(virResctrl)
+VIR_ENUM_DECL(virResctrl);
 VIR_ENUM_IMPL(virResctrl, VIR_CACHE_TYPE_LAST,
               "",
               "CODE",

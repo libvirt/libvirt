@@ -40,8 +40,8 @@ typedef enum {
     VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST
 } virDomainNumatunePlacement;
 
-VIR_ENUM_DECL(virDomainNumatunePlacement)
-VIR_ENUM_DECL(virDomainNumatuneMemMode)
+VIR_ENUM_DECL(virDomainNumatunePlacement);
+VIR_ENUM_DECL(virDomainNumatuneMemMode);
 
 typedef enum {
     VIR_DOMAIN_MEMORY_ACCESS_DEFAULT = 0,  /*  No memory access defined */
@@ -50,7 +50,7 @@ typedef enum {
 
     VIR_DOMAIN_MEMORY_ACCESS_LAST,
 } virDomainMemoryAccess;
-VIR_ENUM_DECL(virDomainMemoryAccess)
+VIR_ENUM_DECL(virDomainMemoryAccess);
 
 
 virDomainNumaPtr virDomainNumaNew(void);

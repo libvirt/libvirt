@@ -53,7 +53,7 @@ VIR_ENUM_IMPL(virNetworkBridgeMACTableManager,
               VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LAST,
               "default", "kernel", "libvirt")
 
-VIR_ENUM_DECL(virNetworkForwardHostdevDevice)
+VIR_ENUM_DECL(virNetworkForwardHostdevDevice);
 VIR_ENUM_IMPL(virNetworkForwardHostdevDevice,
               VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST,
               "none", "pci", "netdev")

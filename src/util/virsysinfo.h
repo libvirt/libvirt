@@ -150,6 +150,6 @@ int virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 bool virSysinfoIsEqual(virSysinfoDefPtr src,
                        virSysinfoDefPtr dst);
 
-VIR_ENUM_DECL(virSysinfo)
+VIR_ENUM_DECL(virSysinfo);
 
 #endif /* LIBVIRT_VIRSYSINFO_H */

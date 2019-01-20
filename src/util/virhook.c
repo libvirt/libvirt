@@ -41,13 +41,13 @@ VIR_LOG_INIT("util.hook");
 
 #define LIBVIRT_HOOK_DIR SYSCONFDIR "/libvirt/hooks"
 
-VIR_ENUM_DECL(virHookDriver)
-VIR_ENUM_DECL(virHookDaemonOp)
-VIR_ENUM_DECL(virHookSubop)
-VIR_ENUM_DECL(virHookQemuOp)
-VIR_ENUM_DECL(virHookLxcOp)
-VIR_ENUM_DECL(virHookNetworkOp)
-VIR_ENUM_DECL(virHookLibxlOp)
+VIR_ENUM_DECL(virHookDriver);
+VIR_ENUM_DECL(virHookDaemonOp);
+VIR_ENUM_DECL(virHookSubop);
+VIR_ENUM_DECL(virHookQemuOp);
+VIR_ENUM_DECL(virHookLxcOp);
+VIR_ENUM_DECL(virHookNetworkOp);
+VIR_ENUM_DECL(virHookLibxlOp);
 
 VIR_ENUM_IMPL(virHookDriver,
               VIR_HOOK_DRIVER_LAST,

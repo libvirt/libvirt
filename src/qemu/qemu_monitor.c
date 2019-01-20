@@ -190,7 +190,7 @@ typedef enum {
     QEMU_MONITOR_BLOCK_IO_STATUS_LAST
 } qemuMonitorBlockIOStatus;
 
-VIR_ENUM_DECL(qemuMonitorBlockIOStatus)
+VIR_ENUM_DECL(qemuMonitorBlockIOStatus);
 
 VIR_ENUM_IMPL(qemuMonitorBlockIOStatus,
               QEMU_MONITOR_BLOCK_IO_STATUS_LAST,

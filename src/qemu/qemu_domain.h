@@ -79,7 +79,7 @@ typedef enum {
 
     QEMU_JOB_LAST
 } qemuDomainJob;
-VIR_ENUM_DECL(qemuDomainJob)
+VIR_ENUM_DECL(qemuDomainJob);
 
 typedef enum {
     QEMU_AGENT_JOB_NONE = 0,    /* No agent job. */
@@ -88,7 +88,7 @@ typedef enum {
 
     QEMU_AGENT_JOB_LAST
 } qemuDomainAgentJob;
-VIR_ENUM_DECL(qemuDomainAgentJob)
+VIR_ENUM_DECL(qemuDomainAgentJob);
 
 /* Async job consists of a series of jobs that may change state. Independent
  * jobs that do not change state (and possibly others if explicitly allowed by
@@ -105,7 +105,7 @@ typedef enum {
 
     QEMU_ASYNC_JOB_LAST
 } qemuDomainAsyncJob;
-VIR_ENUM_DECL(qemuDomainAsyncJob)
+VIR_ENUM_DECL(qemuDomainAsyncJob);
 
 typedef enum {
     QEMU_DOMAIN_JOB_STATUS_NONE = 0,
@@ -225,7 +225,7 @@ typedef enum {
     QEMU_DOMAIN_NS_MOUNT = 0,
     QEMU_DOMAIN_NS_LAST
 } qemuDomainNamespace;
-VIR_ENUM_DECL(qemuDomainNamespace)
+VIR_ENUM_DECL(qemuDomainNamespace);
 
 bool qemuDomainNamespaceEnabled(virDomainObjPtr vm,
                                 qemuDomainNamespace ns);

@@ -46,7 +46,7 @@ typedef enum {
 
    VIR_NETDEV_RX_FILTER_MODE_LAST
 } virNetDevRxFilterMode;
-VIR_ENUM_DECL(virNetDevRxFilterMode)
+VIR_ENUM_DECL(virNetDevRxFilterMode);
 
 typedef struct _virNetDevRxFilter virNetDevRxFilter;
 typedef virNetDevRxFilter *virNetDevRxFilterPtr;
@@ -86,7 +86,7 @@ typedef enum {
     VIR_NETDEV_IF_STATE_LAST
 } virNetDevIfState;
 
-VIR_ENUM_DECL(virNetDevIfState)
+VIR_ENUM_DECL(virNetDevIfState);
 
 typedef struct _virNetDevIfLink virNetDevIfLink;
 typedef virNetDevIfLink *virNetDevIfLinkPtr;
@@ -113,7 +113,7 @@ typedef enum {
     VIR_NET_DEV_FEAT_LAST
 } virNetDevFeature;
 
-VIR_ENUM_DECL(virNetDevFeature)
+VIR_ENUM_DECL(virNetDevFeature);
 
 /* Modeled after struct ethtool_coalesce, see linux/ethtool.h for explanations
  * of particular fields */

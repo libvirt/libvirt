@@ -55,7 +55,7 @@ typedef enum {
     VIR_STORAGE_TYPE_LAST
 } virStorageType;
 
-VIR_ENUM_DECL(virStorage)
+VIR_ENUM_DECL(virStorage);
 
 
 typedef enum {
@@ -138,7 +138,7 @@ typedef enum {
     VIR_STORAGE_NET_PROTOCOL_LAST
 } virStorageNetProtocol;
 
-VIR_ENUM_DECL(virStorageNetProtocol)
+VIR_ENUM_DECL(virStorageNetProtocol);
 
 
 typedef enum {
@@ -149,7 +149,7 @@ typedef enum {
     VIR_STORAGE_NET_HOST_TRANS_LAST
 } virStorageNetHostTransport;
 
-VIR_ENUM_DECL(virStorageNetHostTransport)
+VIR_ENUM_DECL(virStorageNetHostTransport);
 
 typedef struct _virStorageNetHostDef virStorageNetHostDef;
 typedef virStorageNetHostDef *virStorageNetHostDefPtr;
@@ -182,7 +182,7 @@ typedef enum {
     VIR_STORAGE_SOURCE_POOL_MODE_LAST
 } virStorageSourcePoolMode;
 
-VIR_ENUM_DECL(virStorageSourcePoolMode)
+VIR_ENUM_DECL(virStorageSourcePoolMode);
 
 typedef struct _virStorageSourcePoolDef virStorageSourcePoolDef;
 struct _virStorageSourcePoolDef {
@@ -203,7 +203,7 @@ typedef enum {
 
     VIR_STORAGE_AUTH_TYPE_LAST,
 } virStorageAuthType;
-VIR_ENUM_DECL(virStorageAuth)
+VIR_ENUM_DECL(virStorageAuth);
 
 typedef struct _virStorageAuthDef virStorageAuthDef;
 typedef virStorageAuthDef *virStorageAuthDefPtr;

@@ -734,7 +734,7 @@ static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr d
     qemuMonitorEmitRTCChange(mon, offset);
 }
 
-VIR_ENUM_DECL(qemuMonitorWatchdogAction)
+VIR_ENUM_DECL(qemuMonitorWatchdogAction);
 VIR_ENUM_IMPL(qemuMonitorWatchdogAction, VIR_DOMAIN_EVENT_WATCHDOG_LAST,
               "none", "pause", "reset", "poweroff", "shutdown", "debug", "inject-nmi");
 
@@ -755,7 +755,7 @@ static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr da
     qemuMonitorEmitWatchdog(mon, actionID);
 }
 
-VIR_ENUM_DECL(qemuMonitorIOErrorAction)
+VIR_ENUM_DECL(qemuMonitorIOErrorAction);
 VIR_ENUM_IMPL(qemuMonitorIOErrorAction, VIR_DOMAIN_EVENT_IO_ERROR_LAST,
               "ignore", "stop", "report");
 
@@ -796,7 +796,7 @@ qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
 }
 
 
-VIR_ENUM_DECL(qemuMonitorGraphicsAddressFamily)
+VIR_ENUM_DECL(qemuMonitorGraphicsAddressFamily);
 VIR_ENUM_IMPL(qemuMonitorGraphicsAddressFamily,
               VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST,
               "ipv4", "ipv6", "unix");

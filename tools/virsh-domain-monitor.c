@@ -36,7 +36,7 @@
 #include "virstring.h"
 #include "vsh-table.h"
 
-VIR_ENUM_DECL(virshDomainIOError)
+VIR_ENUM_DECL(virshDomainIOError);
 VIR_ENUM_IMPL(virshDomainIOError,
               VIR_DOMAIN_DISK_ERROR_LAST,
               N_("no error"),
@@ -99,7 +99,7 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
     return desc;
 }
 
-VIR_ENUM_DECL(virshDomainControlState)
+VIR_ENUM_DECL(virshDomainControlState);
 VIR_ENUM_IMPL(virshDomainControlState,
               VIR_DOMAIN_CONTROL_LAST,
               N_("ok"),
@@ -114,7 +114,7 @@ virshDomainControlStateToString(int state)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainControlErrorReason)
+VIR_ENUM_DECL(virshDomainControlErrorReason);
 VIR_ENUM_IMPL(virshDomainControlErrorReason,
               VIR_DOMAIN_CONTROL_ERROR_REASON_LAST,
               "",
@@ -129,7 +129,7 @@ virshDomainControlErrorReasonToString(int reason)
     return ret ? _(ret) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainState)
+VIR_ENUM_DECL(virshDomainState);
 VIR_ENUM_IMPL(virshDomainState,
               VIR_DOMAIN_LAST,
               N_("no state"),
@@ -148,12 +148,12 @@ virshDomainStateToString(int state)
     return str ? _(str) : _("no state");
 }
 
-VIR_ENUM_DECL(virshDomainNostateReason)
+VIR_ENUM_DECL(virshDomainNostateReason);
 VIR_ENUM_IMPL(virshDomainNostateReason,
               VIR_DOMAIN_NOSTATE_LAST,
               N_("unknown"))
 
-VIR_ENUM_DECL(virshDomainRunningReason)
+VIR_ENUM_DECL(virshDomainRunningReason);
 VIR_ENUM_IMPL(virshDomainRunningReason,
               VIR_DOMAIN_RUNNING_LAST,
               N_("unknown"),
@@ -168,12 +168,12 @@ VIR_ENUM_IMPL(virshDomainRunningReason,
               N_("crashed"),
               N_("post-copy"))
 
-VIR_ENUM_DECL(virshDomainBlockedReason)
+VIR_ENUM_DECL(virshDomainBlockedReason);
 VIR_ENUM_IMPL(virshDomainBlockedReason,
               VIR_DOMAIN_BLOCKED_LAST,
               N_("unknown"))
 
-VIR_ENUM_DECL(virshDomainPausedReason)
+VIR_ENUM_DECL(virshDomainPausedReason);
 VIR_ENUM_IMPL(virshDomainPausedReason,
               VIR_DOMAIN_PAUSED_LAST,
               N_("unknown"),
@@ -191,13 +191,13 @@ VIR_ENUM_IMPL(virshDomainPausedReason,
               N_("post-copy"),
               N_("post-copy failed"))
 
-VIR_ENUM_DECL(virshDomainShutdownReason)
+VIR_ENUM_DECL(virshDomainShutdownReason);
 VIR_ENUM_IMPL(virshDomainShutdownReason,
               VIR_DOMAIN_SHUTDOWN_LAST,
               N_("unknown"),
               N_("user"))
 
-VIR_ENUM_DECL(virshDomainShutoffReason)
+VIR_ENUM_DECL(virshDomainShutoffReason);
 VIR_ENUM_IMPL(virshDomainShutoffReason,
               VIR_DOMAIN_SHUTOFF_LAST,
               N_("unknown"),
@@ -210,13 +210,13 @@ VIR_ENUM_IMPL(virshDomainShutoffReason,
               N_("from snapshot"),
               N_("daemon"))
 
-VIR_ENUM_DECL(virshDomainCrashedReason)
+VIR_ENUM_DECL(virshDomainCrashedReason);
 VIR_ENUM_IMPL(virshDomainCrashedReason,
               VIR_DOMAIN_CRASHED_LAST,
               N_("unknown"),
               N_("panicked"))
 
-VIR_ENUM_DECL(virshDomainPMSuspendedReason)
+VIR_ENUM_DECL(virshDomainPMSuspendedReason);
 VIR_ENUM_IMPL(virshDomainPMSuspendedReason,
               VIR_DOMAIN_PMSUSPENDED_LAST,
               N_("unknown"))

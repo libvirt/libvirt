@@ -38,7 +38,7 @@ enum vmwareDriverType {
     VMWARE_DRIVER_LAST,            /* required last item */
 };
 
-VIR_ENUM_DECL(vmwareDriver)
+VIR_ENUM_DECL(vmwareDriver);
 
 struct vmware_driver {
     virMutex lock;

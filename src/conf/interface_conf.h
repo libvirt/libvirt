@@ -41,7 +41,7 @@ typedef enum {
     VIR_INTERFACE_TYPE_LAST,
 } virInterfaceType;
 
-VIR_ENUM_DECL(virInterface)
+VIR_ENUM_DECL(virInterface);
 
 /* types of start mode */
 

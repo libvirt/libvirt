@@ -73,7 +73,7 @@ typedef enum {
     VIR_PCIE_LINK_SPEED_LAST
 } virPCIELinkSpeed;
 
-VIR_ENUM_DECL(virPCIELinkSpeed)
+VIR_ENUM_DECL(virPCIELinkSpeed);
 
 typedef enum {
     VIR_PCI_HEADER_ENDPOINT = 0,
@@ -83,7 +83,7 @@ typedef enum {
     VIR_PCI_HEADER_LAST
 } virPCIHeaderType;
 
-VIR_ENUM_DECL(virPCIHeader)
+VIR_ENUM_DECL(virPCIHeader);
 
 typedef struct _virPCIELink virPCIELink;
 typedef virPCIELink *virPCIELinkPtr;

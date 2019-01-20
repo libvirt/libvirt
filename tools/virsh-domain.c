@@ -97,7 +97,7 @@ virshDomainDefine(virConnectPtr conn, const char *xml, unsigned int flags)
     return dom;
 }
 
-VIR_ENUM_DECL(virshDomainVcpuState)
+VIR_ENUM_DECL(virshDomainVcpuState);
 VIR_ENUM_IMPL(virshDomainVcpuState,
               VIR_VCPU_LAST,
               N_("offline"),
@@ -2554,7 +2554,7 @@ static const vshCmdOptDef opts_blockjob[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virshDomainBlockJob)
+VIR_ENUM_DECL(virshDomainBlockJob);
 VIR_ENUM_IMPL(virshDomainBlockJob,
               VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
               N_("Unknown job"),
@@ -6036,7 +6036,7 @@ static const vshCmdOptDef opts_domjobinfo[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virshDomainJob)
+VIR_ENUM_DECL(virshDomainJob);
 VIR_ENUM_IMPL(virshDomainJob,
               VIR_DOMAIN_JOB_LAST,
               N_("None"),
@@ -8769,7 +8769,7 @@ static const vshCmdOptDef opts_send_process_signal[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virDomainProcessSignal)
+VIR_ENUM_DECL(virDomainProcessSignal);
 VIR_ENUM_IMPL(virDomainProcessSignal,
               VIR_DOMAIN_PROCESS_SIGNAL_LAST,
                "nop",    "hup",  "int",  "quit",  "ill", /* 0-4 */
@@ -12683,7 +12683,7 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
 /*
  * "event" command
  */
-VIR_ENUM_DECL(virshDomainEvent)
+VIR_ENUM_DECL(virshDomainEvent);
 VIR_ENUM_IMPL(virshDomainEvent,
               VIR_DOMAIN_EVENT_LAST,
               N_("Defined"),
@@ -12703,7 +12703,7 @@ virshDomainEventToString(int event)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainEventDefined)
+VIR_ENUM_DECL(virshDomainEventDefined);
 VIR_ENUM_IMPL(virshDomainEventDefined,
               VIR_DOMAIN_EVENT_DEFINED_LAST,
               N_("Added"),
@@ -12711,13 +12711,13 @@ VIR_ENUM_IMPL(virshDomainEventDefined,
               N_("Renamed"),
               N_("Snapshot"))
 
-VIR_ENUM_DECL(virshDomainEventUndefined)
+VIR_ENUM_DECL(virshDomainEventUndefined);
 VIR_ENUM_IMPL(virshDomainEventUndefined,
               VIR_DOMAIN_EVENT_UNDEFINED_LAST,
               N_("Removed"),
               N_("Renamed"))
 
-VIR_ENUM_DECL(virshDomainEventStarted)
+VIR_ENUM_DECL(virshDomainEventStarted);
 VIR_ENUM_IMPL(virshDomainEventStarted,
               VIR_DOMAIN_EVENT_STARTED_LAST,
               N_("Booted"),
@@ -12726,7 +12726,7 @@ VIR_ENUM_IMPL(virshDomainEventStarted,
               N_("Snapshot"),
               N_("Event wakeup"))
 
-VIR_ENUM_DECL(virshDomainEventSuspended)
+VIR_ENUM_DECL(virshDomainEventSuspended);
 VIR_ENUM_IMPL(virshDomainEventSuspended,
               VIR_DOMAIN_EVENT_SUSPENDED_LAST,
               N_("Paused"),
@@ -12739,7 +12739,7 @@ VIR_ENUM_IMPL(virshDomainEventSuspended,
               N_("Post-copy"),
               N_("Post-copy Error"))
 
-VIR_ENUM_DECL(virshDomainEventResumed)
+VIR_ENUM_DECL(virshDomainEventResumed);
 VIR_ENUM_IMPL(virshDomainEventResumed,
               VIR_DOMAIN_EVENT_RESUMED_LAST,
               N_("Unpaused"),
@@ -12747,7 +12747,7 @@ VIR_ENUM_IMPL(virshDomainEventResumed,
               N_("Snapshot"),
               N_("Post-copy"))
 
-VIR_ENUM_DECL(virshDomainEventStopped)
+VIR_ENUM_DECL(virshDomainEventStopped);
 VIR_ENUM_IMPL(virshDomainEventStopped,
               VIR_DOMAIN_EVENT_STOPPED_LAST,
               N_("Shutdown"),
@@ -12758,20 +12758,20 @@ VIR_ENUM_IMPL(virshDomainEventStopped,
               N_("Failed"),
               N_("Snapshot"))
 
-VIR_ENUM_DECL(virshDomainEventShutdown)
+VIR_ENUM_DECL(virshDomainEventShutdown);
 VIR_ENUM_IMPL(virshDomainEventShutdown,
               VIR_DOMAIN_EVENT_SHUTDOWN_LAST,
               N_("Finished"),
               N_("Finished after guest request"),
               N_("Finished after host request"))
 
-VIR_ENUM_DECL(virshDomainEventPMSuspended)
+VIR_ENUM_DECL(virshDomainEventPMSuspended);
 VIR_ENUM_IMPL(virshDomainEventPMSuspended,
               VIR_DOMAIN_EVENT_PMSUSPENDED_LAST,
               N_("Memory"),
               N_("Disk"))
 
-VIR_ENUM_DECL(virshDomainEventCrashed)
+VIR_ENUM_DECL(virshDomainEventCrashed);
 VIR_ENUM_IMPL(virshDomainEventCrashed,
               VIR_DOMAIN_EVENT_CRASHED_LAST,
               N_("Panicked"))
@@ -12814,7 +12814,7 @@ virshDomainEventDetailToString(int event, int detail)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainEventWatchdog)
+VIR_ENUM_DECL(virshDomainEventWatchdog);
 VIR_ENUM_IMPL(virshDomainEventWatchdog,
               VIR_DOMAIN_EVENT_WATCHDOG_LAST,
               N_("none"),
@@ -12832,7 +12832,7 @@ virshDomainEventWatchdogToString(int action)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainEventIOError)
+VIR_ENUM_DECL(virshDomainEventIOError);
 VIR_ENUM_IMPL(virshDomainEventIOError,
               VIR_DOMAIN_EVENT_IO_ERROR_LAST,
               N_("none"),
@@ -12846,7 +12846,7 @@ virshDomainEventIOErrorToString(int action)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshGraphicsPhase)
+VIR_ENUM_DECL(virshGraphicsPhase);
 VIR_ENUM_IMPL(virshGraphicsPhase,
               VIR_DOMAIN_EVENT_GRAPHICS_LAST,
               N_("connect"),
@@ -12860,7 +12860,7 @@ virshGraphicsPhaseToString(int phase)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshGraphicsAddress)
+VIR_ENUM_DECL(virshGraphicsAddress);
 VIR_ENUM_IMPL(virshGraphicsAddress,
               VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST,
               N_("IPv4"),
@@ -12874,7 +12874,7 @@ virshGraphicsAddressToString(int family)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainBlockJobStatus)
+VIR_ENUM_DECL(virshDomainBlockJobStatus);
 VIR_ENUM_IMPL(virshDomainBlockJobStatus,
               VIR_DOMAIN_BLOCK_JOB_LAST,
               N_("completed"),
@@ -12889,7 +12889,7 @@ virshDomainBlockJobStatusToString(int status)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainEventDiskChange)
+VIR_ENUM_DECL(virshDomainEventDiskChange);
 VIR_ENUM_IMPL(virshDomainEventDiskChange,
               VIR_DOMAIN_EVENT_DISK_CHANGE_LAST,
               N_("changed"),
@@ -12902,7 +12902,7 @@ virshDomainEventDiskChangeToString(int reason)
     return str ? _(str) : _("unknown");
 }
 
-VIR_ENUM_DECL(virshDomainEventTrayChange)
+VIR_ENUM_DECL(virshDomainEventTrayChange);
 VIR_ENUM_IMPL(virshDomainEventTrayChange,
               VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST,
               N_("opened"),
@@ -13226,14 +13226,14 @@ virshEventTunablePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     virshEventPrint(opaque, &buf);
 }
 
-VIR_ENUM_DECL(virshEventAgentLifecycleState)
+VIR_ENUM_DECL(virshEventAgentLifecycleState);
 VIR_ENUM_IMPL(virshEventAgentLifecycleState,
               VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_LAST,
               N_("unknown"),
               N_("connected"),
               N_("disconnected"))
 
-VIR_ENUM_DECL(virshEventAgentLifecycleReason)
+VIR_ENUM_DECL(virshEventAgentLifecycleReason);
 VIR_ENUM_IMPL(virshEventAgentLifecycleReason,
               VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_LAST,
               N_("unknown"),
@@ -13312,7 +13312,7 @@ virshEventDeviceRemovalFailedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     virshEventPrint(opaque, &buf);
 }
 
-VIR_ENUM_DECL(virshEventMetadataChangeType)
+VIR_ENUM_DECL(virshEventMetadataChangeType);
 VIR_ENUM_IMPL(virshEventMetadataChangeType,
               VIR_DOMAIN_METADATA_LAST,
               N_("description"),

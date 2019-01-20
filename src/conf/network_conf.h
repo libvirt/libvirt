@@ -63,7 +63,7 @@ typedef enum {
    VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LAST,
 } virNetworkBridgeMACTableManagerType;
 
-VIR_ENUM_DECL(virNetworkBridgeMACTableManager)
+VIR_ENUM_DECL(virNetworkBridgeMACTableManager);
 
 typedef enum {
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NONE = 0,
@@ -86,7 +86,7 @@ typedef enum {
     VIR_NETWORK_FORWARD_DRIVER_NAME_LAST
 } virNetworkForwardDriverNameType;
 
-VIR_ENUM_DECL(virNetworkForwardDriverName)
+VIR_ENUM_DECL(virNetworkForwardDriverName);
 
 typedef struct _virNetworkDHCPHostDef virNetworkDHCPHostDef;
 typedef virNetworkDHCPHostDef *virNetworkDHCPHostDefPtr;
@@ -355,7 +355,7 @@ virNetworkConfigFile(const char *dir,
 void
 virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
 
-VIR_ENUM_DECL(virNetworkForward)
+VIR_ENUM_DECL(virNetworkForward);
 
 # define VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE \
                 (VIR_CONNECT_LIST_NETWORKS_ACTIVE | \
@@ -383,5 +383,5 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
                            const char *xml,
                            unsigned int flags);  /* virNetworkUpdateFlags */
 
-VIR_ENUM_DECL(virNetworkTaint)
+VIR_ENUM_DECL(virNetworkTaint);
 #endif /* LIBVIRT_NETWORK_CONF_H */

@@ -508,7 +508,7 @@ def->parallels[0]...
 /* directly map the virDomainControllerModel to virVMXSCSIControllerModel,
  * this is good enough for now because all virDomainControllerModel values
  * are actually SCSI controller models in the ESX case */
-VIR_ENUM_DECL(virVMXControllerModelSCSI)
+VIR_ENUM_DECL(virVMXControllerModelSCSI);
 VIR_ENUM_IMPL(virVMXControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto", /* just to match virDomainControllerModel, will never be used */
               "buslogic",

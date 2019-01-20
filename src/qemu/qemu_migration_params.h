@@ -41,7 +41,7 @@ typedef enum {
 
     QEMU_MIGRATION_CAP_LAST
 } qemuMigrationCapability;
-VIR_ENUM_DECL(qemuMigrationCapability)
+VIR_ENUM_DECL(qemuMigrationCapability);
 
 typedef enum {
     QEMU_MIGRATION_PARAM_COMPRESS_LEVEL,

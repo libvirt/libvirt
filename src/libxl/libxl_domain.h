@@ -43,7 +43,7 @@ enum libxlDomainJob {
 
     LIBXL_JOB_LAST
 };
-VIR_ENUM_DECL(libxlDomainJob)
+VIR_ENUM_DECL(libxlDomainJob);
 
 
 struct libxlDomainJobObj {

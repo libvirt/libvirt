@@ -31,7 +31,7 @@ typedef enum {
 
     VIR_STORAGE_ADAPTER_TYPE_LAST,
 } virStorageAdapterType;
-VIR_ENUM_DECL(virStorageAdapter)
+VIR_ENUM_DECL(virStorageAdapter);
 
 typedef struct _virStorageAdapterSCSIHost virStorageAdapterSCSIHost;
 typedef virStorageAdapterSCSIHost *virStorageAdapterSCSIHostPtr;

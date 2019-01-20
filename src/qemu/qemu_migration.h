@@ -96,7 +96,7 @@ typedef enum {
 
     QEMU_MIGRATION_PHASE_LAST
 } qemuMigrationJobPhase;
-VIR_ENUM_DECL(qemuMigrationJobPhase)
+VIR_ENUM_DECL(qemuMigrationJobPhase);
 
 int
 qemuMigrationSrcSetOffline(virQEMUDriverPtr driver,

@@ -186,7 +186,7 @@ int virDomainSnapshotRedefinePrep(virDomainPtr domain,
                                   bool *update_current,
                                   unsigned int flags);
 
-VIR_ENUM_DECL(virDomainSnapshotLocation)
-VIR_ENUM_DECL(virDomainSnapshotState)
+VIR_ENUM_DECL(virDomainSnapshotLocation);
+VIR_ENUM_DECL(virDomainSnapshotState);
 
 #endif /* LIBVIRT_SNAPSHOT_CONF_H */

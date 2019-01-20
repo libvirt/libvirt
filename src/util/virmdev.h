@@ -32,7 +32,7 @@ typedef enum {
     VIR_MDEV_MODEL_TYPE_LAST
 } virMediatedDeviceModelType;
 
-VIR_ENUM_DECL(virMediatedDeviceModel)
+VIR_ENUM_DECL(virMediatedDeviceModel);
 
 
 typedef struct _virMediatedDevice virMediatedDevice;

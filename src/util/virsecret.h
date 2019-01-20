@@ -27,7 +27,7 @@
 # include "virutil.h"
 # include "virxml.h"
 
-VIR_ENUM_DECL(virSecretUsage)
+VIR_ENUM_DECL(virSecretUsage);
 
 typedef enum {
     VIR_SECRET_LOOKUP_TYPE_NONE,

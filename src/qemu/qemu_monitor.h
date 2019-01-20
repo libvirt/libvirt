@@ -267,7 +267,7 @@ typedef enum {
     QEMU_MONITOR_DUMP_STATUS_LAST,
 } qemuMonitorDumpStatus;
 
-VIR_ENUM_DECL(qemuMonitorDumpStatus)
+VIR_ENUM_DECL(qemuMonitorDumpStatus);
 
 typedef struct _qemuMonitorDumpStats qemuMonitorDumpStats;
 typedef qemuMonitorDumpStats *qemuMonitorDumpStatsPtr;
@@ -493,7 +493,7 @@ typedef enum {
 
     QEMU_MONITOR_VM_STATUS_LAST
 } qemuMonitorVMStatus;
-VIR_ENUM_DECL(qemuMonitorVMStatus)
+VIR_ENUM_DECL(qemuMonitorVMStatus);
 int qemuMonitorVMStatusToPausedReason(const char *status);
 
 int qemuMonitorCheck(qemuMonitorPtr mon);
@@ -701,7 +701,7 @@ typedef enum {
     QEMU_MONITOR_MIGRATION_STATUS_LAST
 } qemuMonitorMigrationStatus;
 
-VIR_ENUM_DECL(qemuMonitorMigrationStatus)
+VIR_ENUM_DECL(qemuMonitorMigrationStatus);
 
 typedef struct _qemuMonitorMigrationStats qemuMonitorMigrationStats;
 typedef qemuMonitorMigrationStats *qemuMonitorMigrationStatsPtr;
@@ -1028,7 +1028,7 @@ typedef enum {
     QEMU_MONITOR_CPU_PROPERTY_LAST
 } qemuMonitorCPUPropertyType;
 
-VIR_ENUM_DECL(qemuMonitorCPUProperty)
+VIR_ENUM_DECL(qemuMonitorCPUProperty);
 
 typedef struct _qemuMonitorCPUProperty qemuMonitorCPUProperty;
 typedef qemuMonitorCPUProperty *qemuMonitorCPUPropertyPtr;

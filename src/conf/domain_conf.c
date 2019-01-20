@@ -927,7 +927,7 @@ VIR_ENUM_IMPL(virDomainHPTResizing,
 
 /* Internal mapping: subset of block job types that can be present in
  * <mirror> XML (remaining types are not two-phase). */
-VIR_ENUM_DECL(virDomainBlockJob)
+VIR_ENUM_DECL(virDomainBlockJob);
 VIR_ENUM_IMPL(virDomainBlockJob, VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
               "", "", "copy", "", "active-commit")
 

@@ -40,7 +40,7 @@ VIR_LOG_INIT("util.firewall");
 typedef struct _virFirewallGroup virFirewallGroup;
 typedef virFirewallGroup *virFirewallGroupPtr;
 
-VIR_ENUM_DECL(virFirewallLayerCommand)
+VIR_ENUM_DECL(virFirewallLayerCommand);
 VIR_ENUM_IMPL(virFirewallLayerCommand, VIR_FIREWALL_LAYER_LAST,
               EBTABLES_PATH,
               IPTABLES_PATH,
