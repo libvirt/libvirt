@@ -35,7 +35,7 @@
 
 Name:           mingw-libvirt
 Version:        @VERSION@
-Release:        1%{?dist}%{?extra_release}
+Release:        1%{?dist}
 Summary:        MinGW Windows libvirt virtualization library
 
 License:        LGPLv2+

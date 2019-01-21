@@ -214,7 +214,7 @@
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: @VERSION@
-Release: 1%{?dist}%{?extra_release}
+Release: 1%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
 
