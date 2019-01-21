@@ -984,24 +984,20 @@ static int
 virQEMUDriverConfigLoadSWTPMEntry(virQEMUDriverConfigPtr cfg,
                                   virConfPtr conf)
 {
-    char *swtpm_user = NULL, *swtpm_group = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) swtpm_user = NULL;
+    VIR_AUTOFREE(char *) swtpm_group = NULL;
 
     if (virConfGetValueString(conf, "swtpm_user", &swtpm_user) < 0)
-        goto cleanup;
+        return -1;
     if (swtpm_user && virGetUserID(swtpm_user, &cfg->swtpm_user) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "swtpm_group", &swtpm_group) < 0)
-        goto cleanup;
+        return -1;
     if (swtpm_group && virGetGroupID(swtpm_group, &cfg->swtpm_group) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(swtpm_user);
-    VIR_FREE(swtpm_group);
-    return ret;
+    return 0;
 }
 
 
