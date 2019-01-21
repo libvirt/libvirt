@@ -866,14 +866,14 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfigPtr cfg,
                                      virConfPtr conf,
                                      bool privileged)
 {
-    char *user = NULL, *group = NULL;
-    char **controllers = NULL;
-    char **namespaces = NULL;
-    int ret = -1;
+    VIR_AUTOPTR(virString) controllers = NULL;
+    VIR_AUTOPTR(virString) namespaces = NULL;
+    VIR_AUTOFREE(char *) user = NULL;
+    VIR_AUTOFREE(char *) group = NULL;
     size_t i, j;
 
     if (virConfGetValueStringList(conf, "security_driver", true, &cfg->securityDriverNames) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; cfg->securityDriverNames && cfg->securityDriverNames[i] != NULL; i++) {
         for (j = i + 1; cfg->securityDriverNames[j] != NULL; j++) {
@@ -882,32 +882,32 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfigPtr cfg,
                 virReportError(VIR_ERR_CONF_SYNTAX,
                                _("Duplicate security driver %s"),
                                cfg->securityDriverNames[i]);
-                goto cleanup;
+                return -1;
             }
         }
     }
 
     if (virConfGetValueBool(conf, "security_default_confined", &cfg->securityDefaultConfined) < 0)
-        goto cleanup;
+        return -1;
     if (virConfGetValueBool(conf, "security_require_confined", &cfg->securityRequireConfined) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "user", &user) < 0)
-        goto cleanup;
+        return -1;
     if (user && virGetUserID(user, &cfg->user) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "group", &group) < 0)
-        goto cleanup;
+        return -1;
     if (group && virGetGroupID(group, &cfg->group) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueBool(conf, "dynamic_ownership", &cfg->dynamicOwnership) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueStringList(conf, "cgroup_controllers", false,
                                   &controllers) < 0)
-        goto cleanup;
+        return -1;
 
     if (controllers) {
         cfg->cgroupControllers = 0;
@@ -917,7 +917,7 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfigPtr cfg,
                 virReportError(VIR_ERR_CONF_SYNTAX,
                                _("Unknown cgroup controller '%s'"),
                                controllers[i]);
-                goto cleanup;
+                return -1;
             }
             cfg->cgroupControllers |= (1 << ctl);
         }
@@ -925,13 +925,13 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfigPtr cfg,
 
     if (virConfGetValueStringList(conf, "cgroup_device_acl", false,
                                   &cfg->cgroupDeviceACL) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueInt(conf, "seccomp_sandbox", &cfg->seccompSandbox) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueStringList(conf, "namespaces", false, &namespaces) < 0)
-        goto cleanup;
+        return -1;
 
     if (namespaces) {
         virBitmapClearAll(cfg->namespaces);
@@ -943,38 +943,32 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfigPtr cfg,
                 virReportError(VIR_ERR_CONF_SYNTAX,
                                _("Unknown namespace: %s"),
                                namespaces[i]);
-                goto cleanup;
+                return -1;
             }
 
             if (!privileged) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("cannot use namespaces in session mode"));
-                goto cleanup;
+                return -1;
             }
 
             if (!qemuDomainNamespaceAvailable(ns)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("%s namespace is not available"),
                                namespaces[i]);
-                goto cleanup;
+                return -1;
             }
 
             if (virBitmapSetBit(cfg->namespaces, ns) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unable to enable namespace: %s"),
                                namespaces[i]);
-                goto cleanup;
+                return -1;
             }
         }
     }
 
-    ret = 0;
- cleanup:
-    virStringListFree(controllers);
-    virStringListFree(namespaces);
-    VIR_FREE(user);
-    VIR_FREE(group);
-    return ret;
+    return 0;
 }
 
 
