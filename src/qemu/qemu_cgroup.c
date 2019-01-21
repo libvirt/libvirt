@@ -692,6 +692,22 @@ qemuTeardownChardevCgroup(virDomainObjPtr vm,
 
 
 static int
+qemuSetupSEVCgroup(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
+    ret = virCgroupAllowDevicePath(priv->cgroup, "/dev/sev",
+                                   VIR_CGROUP_DEVICE_RW, false);
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", "/dev/sev",
+                             "rw", ret);
+    return ret;
+}
+
+static int
 qemuSetupDevicesCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -797,6 +813,9 @@ qemuSetupDevicesCgroup(virDomainObjPtr vm)
         if (qemuSetupRNGCgroup(vm, vm->def->rngs[i]) < 0)
             goto cleanup;
     }
+
+    if (vm->def->sev && qemuSetupSEVCgroup(vm) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
