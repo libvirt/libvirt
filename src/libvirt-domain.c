@@ -10287,8 +10287,10 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * source file; progress in this phase can be tracked via the
  * virDomainBlockJobInfo() command, with a job type of
  * VIR_DOMAIN_BLOCK_JOB_TYPE_COPY.  The job transitions to the second
- * phase when the job info states cur == end, and remains alive to mirror
- * all further changes to both source and destination.  The user must
+ * phase when the block job event with state VIR_DOMAIN_BLOCK_JOB_READY is
+ * emitted for the given device. This information is also visible in the
+ * live XML as 'ready="yes"' attribute of the corresponding <mirror> element.
+ * All further changes are saved to both source and destination.  The user must
  * call virDomainBlockJobAbort() to end the mirroring while choosing
  * whether to revert to source or pivot to the destination.  An event is
  * issued when the job ends, and depending on the hypervisor, an event may
@@ -10402,9 +10404,9 @@ virDomainBlockCopy(virDomainPtr dom, const char *disk,
  * of VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT, and operates in two phases.
  * In the first phase, the contents are being committed into @base, and the
  * job can only be canceled.  The job transitions to the second phase when
- * the job info states cur == end, and remains alive to keep all further
- * changes to @top synchronized into @base; an event with status
- * VIR_DOMAIN_BLOCK_JOB_READY is also issued to mark the job transition.
+ * the block job event with state VIR_DOMAIN_BLOCK_JOB_READY is
+ * emitted for the given device. This information is also visible in the
+ * live XML as 'ready="yes"' attribute of the corresponding <mirror> element.
  * Once in the second phase, the user must choose whether to cancel the job
  * (keeping @top as the active image, but now containing only the changes
  * since the time the job ended) or to pivot the job (adjusting to @base as
