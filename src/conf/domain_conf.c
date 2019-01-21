@@ -11308,6 +11308,22 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
     }
 
+    /* NIC model (see -net nic,model=?).  We only check that it looks
+     * reasonable, not that it is a supported NIC type.  FWIW kvm
+     * supports these types as of April 2008:
+     * i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
+     * QEMU PPC64 supports spapr-vlan
+     */
+    if (model != NULL) {
+        if (strspn(model, NET_MODEL_CHARS) < strlen(model)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Model name contains invalid characters"));
+            goto error;
+        }
+        def->model = model;
+        model = NULL;
+    }
+
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         if (network == NULL) {
@@ -11325,7 +11341,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        if (STRNEQ_NULLABLE(model, "virtio")) {
+        if (STRNEQ_NULLABLE(def->model, "virtio")) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Wrong or no <model> 'type' attribute "
                              "specified with <interface type='vhostuser'/>. "
@@ -11551,22 +11567,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (ifname_guest_actual != NULL) {
         def->ifname_guest_actual = ifname_guest_actual;
         ifname_guest_actual = NULL;
-    }
-
-    /* NIC model (see -net nic,model=?).  We only check that it looks
-     * reasonable, not that it is a supported NIC type.  FWIW kvm
-     * supports these types as of April 2008:
-     * i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
-     * QEMU PPC64 supports spapr-vlan
-     */
-    if (model != NULL) {
-        if (strspn(model, NET_MODEL_CHARS) < strlen(model)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Model name contains invalid characters"));
-            goto error;
-        }
-        def->model = model;
-        model = NULL;
     }
 
     if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
