@@ -6133,11 +6133,6 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
  * virDomainUndefine(). A previous definition for this domain would be
  * overridden if it already exists.
  *
- * Some hypervisors may prevent this operation if there is a current
- * block copy operation on a transient domain with the same id as the
- * domain being defined; in that case, use virDomainBlockJobAbort() to
- * stop the block copy first.
- *
  * virDomainFree should be used to free the resources after the
  * domain object is no longer needed.
  *
@@ -6180,11 +6175,6 @@ virDomainDefineXML(virConnectPtr conn, const char *xml)
  * This definition is persistent, until explicitly undefined with
  * virDomainUndefine(). A previous definition for this domain would be
  * overridden if it already exists.
- *
- * Some hypervisors may prevent this operation if there is a current
- * block copy operation on a transient domain with the same id as the
- * domain being defined; in that case, use virDomainBlockJobAbort() to
- * stop the block copy first.
  *
  * virDomainFree should be used to free the resources after the
  * domain object is no longer needed.
@@ -10312,7 +10302,8 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  *
  * If @flags contains VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB the job will not be
  * recoverable if the VM is turned off while job is active. This flag will
- * remove the restriction of copy jobs to transient domains.
+ * remove the restriction of copy jobs to transient domains. Note that this flag
+ * is automatically implied if the VM is transient at the time it's started.
  *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as

@@ -7709,12 +7709,6 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (qemuDomainHasBlockjob(vm, true)) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
-                       _("domain has active block job"));
-        virDomainObjAssignDef(vm, NULL, false, NULL);
-        goto cleanup;
-    }
     vm->persistent = 1;
 
     if (virDomainSaveConfig(cfg->configDir, driver->caps,
