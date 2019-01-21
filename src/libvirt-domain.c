@@ -883,8 +883,8 @@ virDomainSave(virDomainPtr domain, const char *to)
  * virDomainSaveImageGetXMLDesc() and virDomainSaveImageDefineXML().
  *
  * Some hypervisors may prevent this operation if there is a current
- * block copy operation; in that case, use virDomainBlockJobAbort()
- * to stop the block copy first.
+ * block job running; in that case, use virDomainBlockJobAbort()
+ * to stop the block job first.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -8293,8 +8293,8 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
  * persisted device allocation.
  *
  * Some hypervisors may prevent this operation if there is a current
- * block copy operation on the device being detached; in that case,
- * use virDomainBlockJobAbort() to stop the block copy first.
+ * block job running operation on the device being detached; in that case,
+ * use virDomainBlockJobAbort() to stop the block job first.
  *
  * Beware that depending on the hypervisor and device type, detaching a device
  * from a running domain may be asynchronous. That is, calling
