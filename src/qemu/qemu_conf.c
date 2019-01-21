@@ -829,31 +829,27 @@ static int
 virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
                                   virConfPtr conf)
 {
-    char **nvram = NULL;
-    int ret = -1;
+    VIR_AUTOPTR(virString) nvram = NULL;
     size_t i;
 
     if (virConfGetValueStringList(conf, "nvram", false, &nvram) < 0)
-        goto cleanup;
+        return -1;
     if (nvram) {
         virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
 
         cfg->nfirmwares = virStringListLength((const char *const *)nvram);
         if (nvram[0] && VIR_ALLOC_N(cfg->firmwares, cfg->nfirmwares) < 0)
-            goto cleanup;
+            return -1;
 
         for (i = 0; nvram[i] != NULL; i++) {
             if (VIR_ALLOC(cfg->firmwares[i]) < 0)
-                goto cleanup;
+                return -1;
             if (virFirmwareParse(nvram[i], cfg->firmwares[i]) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    virStringListFree(nvram);
-    return ret;
+    return 0;
 }
 
 
