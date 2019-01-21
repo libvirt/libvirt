@@ -2768,7 +2768,7 @@
                         <ref name="usbAddr"/>
                       </attribute>
                       <attribute name="device">
-                        <ref name="usbPort"/>
+                        <ref name="usbAddr"/>
                       </attribute>
                     </group>
                   </choice>
@@ -4712,7 +4712,7 @@
         <ref name="usbAddr"/>
       </attribute>
       <attribute name="device">
-        <ref name="usbPort"/>
+        <ref name="usbAddr"/>
       </attribute>
     </element>
   </define>
