@@ -294,6 +294,9 @@ virPortAllocatorSetUsed(unsigned short port)
     if (!pa)
         return -1;
 
+    if (!port)
+        return 0;
+
     virObjectLock(pa);
 
     if (virBitmapIsBitSet(pa->bitmap, port) ||
