@@ -110,7 +110,7 @@
 %endif
 
 # Ceph dropping support for 32-bit hosts
-%if 0%{fedora} >= 30
+%if 0%{?fedora} >= 30
     %ifarch %{arm} %{ix86}
         %define with_storage_rbd 0
     %endif
