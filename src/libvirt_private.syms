@@ -469,6 +469,7 @@ virDomainNetGetActualType;
 virDomainNetGetActualVirtPortProfile;
 virDomainNetGetActualVlan;
 virDomainNetInsert;
+virDomainNetIsVirtioModel;
 virDomainNetNotifyActualDevice;
 virDomainNetReleaseActualDevice;
 virDomainNetRemove;

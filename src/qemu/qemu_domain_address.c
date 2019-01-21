@@ -320,7 +320,7 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
 
-        if (STREQ_NULLABLE(net->model, "virtio") &&
+        if (virDomainNetIsVirtioModel(net) &&
             net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
             net->info.type = type;
         }

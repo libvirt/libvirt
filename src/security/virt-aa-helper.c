@@ -1255,7 +1255,7 @@ get_files(vahControl * ctl)
             if (net && net->model) {
                 if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU)
                     continue;
-                if (STRNEQ(net->model, "virtio"))
+                if (!virDomainNetIsVirtioModel(net))
                     continue;
             }
             needsvhost = true;

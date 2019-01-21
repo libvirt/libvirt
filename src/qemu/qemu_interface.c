@@ -261,7 +261,7 @@ qemuInterfaceDirectConnect(virDomainDefPtr def,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
 
-    if (net->model && STREQ(net->model, "virtio"))
+    if (virDomainNetIsVirtioModel(net))
         macvlan_create_flags |= VIR_NETDEV_MACVLAN_VNET_HDR;
 
     if (virNetDevMacVLanCreateWithVPortProfile(net->ifname,
@@ -434,7 +434,7 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
         template_ifname = true;
     }
 
-    if (net->model && STREQ(net->model, "virtio"))
+    if (virDomainNetIsVirtioModel(net))
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
 
     if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
@@ -533,7 +533,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
         template_ifname = true;
     }
 
-    if (net->model && STREQ(net->model, "virtio"))
+    if (virDomainNetIsVirtioModel(net))
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
 
     if (virQEMUDriverIsPrivileged(driver)) {
@@ -653,7 +653,7 @@ qemuInterfaceOpenVhostNet(virDomainDefPtr def,
     }
 
     /* If the nic model isn't virtio, don't try to open. */
-    if (!(net->model && STREQ(net->model, "virtio"))) {
+    if (!virDomainNetIsVirtioModel(net)) {
         if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("vhost-net is only supported for "

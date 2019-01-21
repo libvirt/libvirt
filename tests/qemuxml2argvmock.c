@@ -228,7 +228,7 @@ qemuInterfaceOpenVhostNet(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     size_t i;
 
-    if (!(net->model && STREQ(net->model, "virtio"))) {
+    if (!virDomainNetIsVirtioModel(net)) {
         *vhostfdSize = 0;
         return 0;
     }

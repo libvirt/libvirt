@@ -4665,7 +4665,7 @@ qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
         return -1;
     }
 
-    if (STREQ_NULLABLE(net->model, "virtio")) {
+    if (virDomainNetIsVirtioModel(net)) {
         if (net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("rx_queue_size has to be a power of two"));

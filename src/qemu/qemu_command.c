@@ -3654,7 +3654,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     bool usingVirtio = false;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
-    if (STREQ(net->model, "virtio")) {
+    if (virDomainNetIsVirtioModel(net)) {
         if (qemuBuildVirtioDevStr(&buf, "virtio-net", net->info.type) < 0)
             goto error;
 

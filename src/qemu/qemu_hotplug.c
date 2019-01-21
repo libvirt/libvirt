@@ -3710,7 +3710,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (olddev->model && STREQ(olddev->model, "virtio") &&
+    if (virDomainNetIsVirtioModel(olddev) &&
         (olddev->driver.virtio.name != newdev->driver.virtio.name ||
          olddev->driver.virtio.txmode != newdev->driver.virtio.txmode ||
          olddev->driver.virtio.ioeventfd != newdev->driver.virtio.ioeventfd ||

@@ -3217,6 +3217,7 @@ virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);
 virNetDevVlanPtr virDomainNetGetActualVlan(virDomainNetDefPtr iface);
 bool virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface);
+bool virDomainNetIsVirtioModel(const virDomainNetDef *net);
 int virDomainNetAppendIPAddress(virDomainNetDefPtr def,
                                 const char *address,
                                 int family,

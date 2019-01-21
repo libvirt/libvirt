@@ -4735,7 +4735,7 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         virDomainNetDefPtr net = dev->data.net;
-        if (STRNEQ_NULLABLE(net->model, "virtio") &&
+        if (!virDomainNetIsVirtioModel(net) &&
             virDomainCheckVirtioOptions(net->virtio) < 0)
             return -1;
     }
@@ -11341,7 +11341,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        if (STRNEQ_NULLABLE(def->model, "virtio")) {
+        if (!virDomainNetIsVirtioModel(def)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Wrong or no <model> 'type' attribute "
                              "specified with <interface type='vhostuser'/>. "
@@ -11570,7 +11570,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        STREQ_NULLABLE(def->model, "virtio")) {
+        virDomainNetIsVirtioModel(def)) {
         if (backend != NULL) {
             if ((val = virDomainNetBackendTypeFromString(backend)) < 0 ||
                 val == VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT) {
@@ -25465,7 +25465,7 @@ virDomainNetDefFormat(virBufferPtr buf,
     if (def->model) {
         virBufferEscapeString(buf, "<model type='%s'/>\n",
                               def->model);
-        if (STREQ(def->model, "virtio")) {
+        if (virDomainNetIsVirtioModel(def)) {
             char *str = NULL, *gueststr = NULL, *hoststr = NULL;
             int rc = 0;
 
@@ -29716,6 +29716,13 @@ virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface)
         return (iface->data.network.actual->trustGuestRxFilters
                 == VIR_TRISTATE_BOOL_YES);
     return iface->trustGuestRxFilters == VIR_TRISTATE_BOOL_YES;
+}
+
+
+bool
+virDomainNetIsVirtioModel(const virDomainNetDef *net)
+{
+    return STREQ_NULLABLE(net->model, "virtio");
 }
 
 
