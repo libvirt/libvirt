@@ -4536,11 +4536,30 @@ qemuDomainSmartcardDefValidate(const virDomainSmartcardDef *def)
 
 
 static int
-qemuDomainRNGDefValidate(const virDomainRNGDef *def)
+qemuDomainRNGDefValidate(const virDomainRNGDef *def,
+                         virQEMUCapsPtr qemuCaps)
 {
+    bool modelIsSupported = false;
+
     if (def->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
         qemuDomainChrSourceDefValidate(def->source.chardev) < 0)
         return -1;
+
+    switch ((virDomainRNGModel) def->model) {
+    case VIR_DOMAIN_RNG_MODEL_VIRTIO:
+        modelIsSupported = virQEMUCapsGet(qemuCaps,
+                                          QEMU_CAPS_DEVICE_VIRTIO_RNG);
+        break;
+    case VIR_DOMAIN_RNG_MODEL_LAST:
+        break;
+    }
+
+    if (!modelIsSupported) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("this qemu doesn't support RNG device type '%s'"),
+                       virDomainRNGModelTypeToString(def->model));
+        return -1;
+    }
 
     return 0;
 }
@@ -6073,7 +6092,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_RNG:
-        ret = qemuDomainRNGDefValidate(dev->data.rng);
+        ret = qemuDomainRNGDefValidate(dev->data.rng, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:

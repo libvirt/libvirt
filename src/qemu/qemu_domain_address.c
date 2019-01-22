@@ -364,8 +364,8 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
         def->memballoon->info.type = type;
 
     for (i = 0; i < def->nrngs; i++) {
-        if (def->rngs[i]->model == VIR_DOMAIN_RNG_MODEL_VIRTIO &&
-            def->rngs[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        /* All <rng> devices accepted by the qemu driver are virtio */
+        if (def->rngs[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             def->rngs[i]->info.type = type;
     }
 
@@ -2276,10 +2276,9 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
 
-    /* VirtIO RNG */
+    /* the qemu driver only accepts virtio rng devices */
     for (i = 0; i < def->nrngs; i++) {
-        if (def->rngs[i]->model != VIR_DOMAIN_RNG_MODEL_VIRTIO ||
-            !virDeviceInfoPCIAddressIsWanted(&def->rngs[i]->info))
+        if (!virDeviceInfoPCIAddressIsWanted(&def->rngs[i]->info))
             continue;
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->rngs[i]->info) < 0)

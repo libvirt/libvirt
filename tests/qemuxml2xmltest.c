@@ -585,8 +585,10 @@ mymain(void)
 
     DO_TEST("disk-serial", NONE);
 
-    DO_TEST("virtio-rng-random", NONE);
-    DO_TEST("virtio-rng-egd", NONE);
+    DO_TEST("virtio-rng-random",
+            QEMU_CAPS_DEVICE_VIRTIO_RNG);
+    DO_TEST("virtio-rng-egd",
+            QEMU_CAPS_DEVICE_VIRTIO_RNG);
 
     DO_TEST("pseries-nvram",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
@@ -1019,7 +1021,8 @@ mymain(void)
     DO_TEST("disk-backing-chains-index", NONE);
     DO_TEST("disk-backing-chains-noindex", NONE);
 
-    DO_TEST("chardev-label", NONE);
+    DO_TEST("chardev-label",
+            QEMU_CAPS_DEVICE_VIRTIO_RNG);
 
     DO_TEST("cpu-numa1", NONE);
     DO_TEST("cpu-numa2", NONE);

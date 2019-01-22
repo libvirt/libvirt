@@ -5871,14 +5871,6 @@ qemuBuildRNGDevStr(const virDomainDef *def,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (dev->model != VIR_DOMAIN_RNG_MODEL_VIRTIO ||
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_RNG)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("this qemu doesn't support RNG device type '%s'"),
-                       virDomainRNGModelTypeToString(dev->model));
-        goto error;
-    }
-
     if (!qemuDomainCheckCCWS390AddressSupport(def, dev->info, qemuCaps,
                                               dev->source.file))
         goto error;
