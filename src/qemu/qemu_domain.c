@@ -116,6 +116,7 @@ VIR_ENUM_IMPL(qemuDomainNamespace, QEMU_DOMAIN_NS_LAST,
 #define DEVPREFIX "/dev/"
 #define DEV_VFIO "/dev/vfio/vfio"
 #define DEVICE_MAPPER_CONTROL_PATH "/dev/mapper/control"
+#define DEV_SEV "/dev/sev"
 
 
 struct _qemuDomainLogContext {
@@ -12202,6 +12203,26 @@ qemuDomainSetupLoader(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuDomainSetupLaunchSecurity(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+                              virDomainObjPtr vm,
+                              const struct qemuDomainCreateDeviceData *data)
+{
+    virDomainSEVDefPtr sev = vm->def->sev;
+
+    if (!sev || sev->sectype != VIR_DOMAIN_LAUNCH_SECURITY_SEV)
+        return 0;
+
+    VIR_DEBUG("Setting up launch security");
+
+    if (qemuDomainCreateDevice(DEV_SEV, data, false) < 0)
+        return -1;
+
+    VIR_DEBUG("Set up launch security");
+    return 0;
+}
+
+
 int
 qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
                          virSecurityManagerPtr mgr,
@@ -12271,6 +12292,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupLoader(cfg, vm, &data) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupLaunchSecurity(cfg, vm, &data) < 0)
         goto cleanup;
 
     /* Save some mount points because we want to share them with the host */
