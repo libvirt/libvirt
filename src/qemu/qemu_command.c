@@ -4925,10 +4925,8 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
         goto cleanup;
     }
 
-    if (dev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
-        virBufferAddLit(&buf, "vhost-scsi-ccw");
-    else
-        virBufferAddLit(&buf, "vhost-scsi-pci");
+    if (qemuBuildVirtioDevStr(&buf, "vhost-scsi", dev->info->type) < 0)
+        goto cleanup;
 
     virBufferAsprintf(&buf, ",wwpn=%s,vhostfd=%s,id=%s",
                       hostsrc->wwpn,
@@ -10347,11 +10345,9 @@ qemuBuildVsockDevStr(virDomainDefPtr def,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
 
-    if (vsock->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-        virBufferAddLit(&buf, "vhost-vsock-ccw");
-    } else {
-        virBufferAddLit(&buf, "vhost-vsock-pci");
-    }
+
+    if (qemuBuildVirtioDevStr(&buf, "vhost-vsock", vsock->info.type) < 0)
+        goto cleanup;
 
     virBufferAsprintf(&buf, ",id=%s", vsock->info.alias);
     virBufferAsprintf(&buf, ",guest-cid=%u", vsock->guest_cid);
