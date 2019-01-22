@@ -1344,14 +1344,36 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
  *     0x01: non-specific failure
  *     0x02: unrecognized notify code
  *     0x03 - 0x7f: reserved
- *     other values are specific to the notification type
+ *     other values are specific to the notification type (see below)
  *
- *   for the 0x100 source the following additional codes are standardized
+ *   for the 0x100 source the following additional codes are standardized:
  *     0x80: OS Shutdown request denied
  *     0x81: OS Shutdown in progress
  *     0x82: OS Shutdown completed
  *     0x83: OS Graceful shutdown not supported
- *     other values are reserved
+ *     other higher values are reserved
+ *
+ *  for the 0x003 (Ejection request) and 0x103 (Ejection processing) source
+ *  the following additional codes are standardized:
+ *     0x80: Device ejection not supported by OSPM
+ *     0x81: Device in use by application
+ *     0x82: Device Busy
+ *     0x83: Ejection dependency is busy or not supported for ejection by OSPM
+ *     0x84: Ejection is in progress (pending)
+ *     other higher values are reserved
+ *
+ *  for the 0x200 source the following additional codes are standardized:
+ *     0x80: Device insertion in progress (pending)
+ *     0x81: Device driver load failure
+ *     0x82: Device insertion not supported by OSPM
+ *     0x83-0x8F: Reserved
+ *     0x90-0x9F: Insertion failure - Resources Unavailable as described by the
+ *                                    following bit encodings:
+ *                                    Bit [3]: Bus or Segment Numbers
+ *                                    Bit [2]: Interrupts
+ *                                    Bit [1]: I/O
+ *                                    Bit [0]: Memory
+ *     other higher values are reserved
  *
  * Other fields and semantics are specific to the qemu handling of the event.
  *  - @alias may be NULL for successful unplug operations
