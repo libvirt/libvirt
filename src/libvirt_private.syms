@@ -307,6 +307,7 @@ virDomainDeviceDefParse;
 virDomainDeviceFindSCSIController;
 virDomainDeviceGetInfo;
 virDomainDeviceInfoIterate;
+virDomainDeviceSetData;
 virDomainDeviceTypeToString;
 virDomainDeviceValidateAliasForHotplug;
 virDomainDiskBusTypeToString;

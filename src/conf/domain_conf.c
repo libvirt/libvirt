@@ -3671,6 +3671,99 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
 }
 
 
+/**
+ * virDomainDeviceSetData
+ * @device: virDomainDeviceDefPtr with ->type filled in
+ * @devicedata: *DefPtr data for a device. Ex: virDomainDiskDefPtr
+ *
+ * Set the data.X variable for the device->type value. Basically
+ * a mapping of virDomainDeviceType to the associated name in
+ * the virDomainDeviceDef union
+ */
+void
+virDomainDeviceSetData(virDomainDeviceDefPtr device,
+                       void *devicedata)
+{
+    switch ((virDomainDeviceType) device->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        device->data.disk = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        device->data.net = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_SOUND:
+        device->data.sound = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        device->data.hostdev = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        device->data.video = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        device->data.controller = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        device->data.graphics = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+        device->data.smartcard = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_CHR:
+        device->data.chr = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_INPUT:
+        device->data.input = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_FS:
+        device->data.fs = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        device->data.watchdog = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        device->data.memballoon = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_RNG:
+        device->data.rng = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_NVRAM:
+        device->data.nvram = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_HUB:
+        device->data.hub = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        device->data.shmem = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_TPM:
+        device->data.tpm = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_PANIC:
+        device->data.panic = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        device->data.memory = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        device->data.redirdev = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        device->data.vsock = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        device->data.iommu = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_LEASE:
+        device->data.lease = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_LAST:
+        break;
+    }
+}
+
+
 static int
 virDomainDefHasDeviceAddressIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                      virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,

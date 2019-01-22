@@ -2935,6 +2935,8 @@ virDomainDeviceDefPtr virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                                              virCapsPtr caps,
                                              virDomainXMLOptionPtr xmlopt);
 virDomainDeviceInfoPtr virDomainDeviceGetInfo(virDomainDeviceDefPtr device);
+void virDomainDeviceSetData(virDomainDeviceDefPtr device,
+                            void *devicedata);
 void virDomainTPMDefFree(virDomainTPMDefPtr def);
 
 typedef int (*virDomainDeviceInfoCallback)(virDomainDefPtr def,
