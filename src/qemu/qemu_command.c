@@ -396,14 +396,34 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
 }
 
 
+/**
+ * qemuBuildVirtioDevStr
+ * @buf: virBufferPtr to append the built string
+ * @baseName: qemu virtio device basename string. Ex: virtio-rng for <rng>
+ * @devtype: virDomainDeviceType of the device. Ex: VIR_DOMAIN_DEVICE_TYPE_RNG
+ * @devdata: *DefPtr of the device definition
+ *
+ * Build the qemu virtio -device name from the passed parameters. Currently
+ * this is mostly about attaching the correct string prefix to @baseName for
+ * the passed @type. So for @baseName "virtio-rng" and devdata->info.type
+ * VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI, generate "virtio-rng-pci"
+ *
+ * Returns: -1 on failure, 0 on success
+ */
 static int
 qemuBuildVirtioDevStr(virBufferPtr buf,
                       const char *baseName,
-                      virDomainDeviceAddressType type)
+                      virDomainDeviceType devtype,
+                      void *devdata)
 {
     const char *implName = NULL;
+    virDomainDeviceDef device = { .type = devtype };
+    virDomainDeviceInfoPtr info;
 
-    switch (type) {
+    virDomainDeviceSetData(&device, devdata);
+    info = virDomainDeviceGetInfo(&device);
+
+    switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         implName = "pci";
         break;
@@ -434,7 +454,7 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
     default:
-        virReportEnumRangeError(virDomainDeviceAddressType, type);
+        virReportEnumRangeError(virDomainDeviceAddressType, info->type);
         return -1;
     }
 
@@ -442,7 +462,6 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
 
     return 0;
 }
-
 
 static int
 qemuBuildVirtioOptionsStr(virBufferPtr buf,
@@ -2050,8 +2069,10 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        if (qemuBuildVirtioDevStr(&opt, "virtio-blk", disk->info.type) < 0)
+        if (qemuBuildVirtioDevStr(&opt, "virtio-blk",
+                                  VIR_DOMAIN_DEVICE_DISK, disk) < 0) {
             goto error;
+        }
 
         if (disk->iothread)
             virBufferAsprintf(&opt, ",iothread=iothread%u", disk->iothread);
@@ -2639,8 +2660,10 @@ qemuBuildFSDevStr(const virDomainDef *def,
         goto error;
     }
 
-    if (qemuBuildVirtioDevStr(&opt, "virtio-9p", fs->info.type) < 0)
+    if (qemuBuildVirtioDevStr(&opt, "virtio-9p",
+                              VIR_DOMAIN_DEVICE_FS, fs) < 0) {
         goto error;
+    }
 
     virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
     virBufferAsprintf(&opt, ",fsdev=%s%s",
@@ -2845,8 +2868,10 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         switch ((virDomainControllerModelSCSI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-            if (qemuBuildVirtioDevStr(&buf, "virtio-scsi", def->info.type) < 0)
+            if (qemuBuildVirtioDevStr(&buf, "virtio-scsi",
+                                      VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
                 goto error;
+            }
 
             if (def->iothread) {
                 virBufferAsprintf(&buf, ",iothread=iothread%u",
@@ -2886,8 +2911,10 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-serial", def->info.type) < 0)
+        if (qemuBuildVirtioDevStr(&buf, "virtio-serial",
+                                  VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
             goto error;
+        }
 
         virBufferAsprintf(&buf, ",id=%s", def->info.alias);
         if (def->opts.vioserial.ports != -1) {
@@ -3655,8 +3682,10 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     if (virDomainNetIsVirtioModel(net)) {
-        if (qemuBuildVirtioDevStr(&buf, "virtio-net", net->info.type) < 0)
+        if (qemuBuildVirtioDevStr(&buf, "virtio-net",
+                                  VIR_DOMAIN_DEVICE_NET, net) < 0) {
             goto error;
+        }
 
         usingVirtio = true;
     } else {
@@ -4050,7 +4079,8 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
         return 0;
 
     if (qemuBuildVirtioDevStr(&buf, "virtio-balloon",
-                              def->memballoon->info.type) < 0) {
+                              VIR_DOMAIN_DEVICE_MEMBALLOON,
+                              def->memballoon) < 0) {
         goto error;
     }
 
@@ -4148,20 +4178,28 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
 
     switch ((virDomainInputType)dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-mouse", dev->info.type) < 0)
+        if (qemuBuildVirtioDevStr(&buf, "virtio-mouse",
+                                  VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
             goto error;
+        }
         break;
     case VIR_DOMAIN_INPUT_TYPE_TABLET:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-tablet", dev->info.type) < 0)
+        if (qemuBuildVirtioDevStr(&buf, "virtio-tablet",
+                                  VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
             goto error;
+        }
         break;
     case VIR_DOMAIN_INPUT_TYPE_KBD:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-keyboard", dev->info.type) < 0)
+        if (qemuBuildVirtioDevStr(&buf, "virtio-keyboard",
+                                  VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
             goto error;
+        }
         break;
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-input-host", dev->info.type) < 0)
+        if (qemuBuildVirtioDevStr(&buf, "virtio-input-host",
+                                  VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
             goto error;
+        }
         break;
     case VIR_DOMAIN_INPUT_TYPE_LAST:
     default:
@@ -4479,8 +4517,10 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     }
 
     if (STREQ(model, "virtio-gpu")) {
-        if (qemuBuildVirtioDevStr(&buf, "virtio-gpu", video->info.type) < 0)
+        if (qemuBuildVirtioDevStr(&buf, "virtio-gpu",
+                                  VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
             goto error;
+        }
     } else {
         virBufferAsprintf(&buf, "%s", model);
     }
@@ -4925,8 +4965,10 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
         goto cleanup;
     }
 
-    if (qemuBuildVirtioDevStr(&buf, "vhost-scsi", dev->info->type) < 0)
+    if (qemuBuildVirtioDevStr(&buf, "vhost-scsi",
+                              VIR_DOMAIN_DEVICE_HOSTDEV, dev) < 0) {
         goto cleanup;
+    }
 
     virBufferAsprintf(&buf, ",wwpn=%s,vhostfd=%s,id=%s",
                       hostsrc->wwpn,
@@ -5873,8 +5915,10 @@ qemuBuildRNGDevStr(const virDomainDef *def,
                                               dev->source.file))
         goto error;
 
-    if (qemuBuildVirtioDevStr(&buf, "virtio-rng", dev->info.type) < 0)
+    if (qemuBuildVirtioDevStr(&buf, "virtio-rng",
+                              VIR_DOMAIN_DEVICE_RNG, dev) < 0) {
         goto error;
+    }
 
     virBufferAsprintf(&buf, ",rng=obj%s,id=%s",
                       dev->info.alias, dev->info.alias);
@@ -10346,8 +10390,10 @@ qemuBuildVsockDevStr(virDomainDefPtr def,
     char *ret = NULL;
 
 
-    if (qemuBuildVirtioDevStr(&buf, "vhost-vsock", vsock->info.type) < 0)
+    if (qemuBuildVirtioDevStr(&buf, "vhost-vsock",
+                              VIR_DOMAIN_DEVICE_VSOCK, vsock) < 0) {
         goto cleanup;
+    }
 
     virBufferAsprintf(&buf, ",id=%s", vsock->info.alias);
     virBufferAsprintf(&buf, ",guest-cid=%u", vsock->guest_cid);
