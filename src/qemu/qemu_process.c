@@ -1403,14 +1403,20 @@ qemuProcessHandleAcpiOstInfo(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
               "slotType='%s' slot='%s' source=%u status=%u",
               NULLSTR(alias), vm, vm->def->name, slotType, slot, source, status);
 
-    /* handle memory unplug failure */
-    if (STREQ(slotType, "DIMM") && alias && status == 1) {
-        qemuDomainSignalDeviceRemoval(vm, alias,
-                                      QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_GUEST_REJECTED);
+    if (!alias)
+        goto cleanup;
 
-        event = virDomainEventDeviceRemovalFailedNewFromObj(vm, alias);
+    if (STREQ(slotType, "DIMM")) {
+        if ((source == 0x003 || source == 0x103) &&
+            (status == 0x01 || (status >= 0x80 && status <= 0x83))) {
+            qemuDomainSignalDeviceRemoval(vm, alias,
+                                          QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_GUEST_REJECTED);
+
+            event = virDomainEventDeviceRemovalFailedNewFromObj(vm, alias);
+        }
     }
 
+ cleanup:
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
 
