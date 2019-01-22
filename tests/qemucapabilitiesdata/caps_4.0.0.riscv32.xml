@@ -160,6 +160,7 @@
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
+  <flag name='virtio-pci-non-transitional'/>
   <version>3001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
