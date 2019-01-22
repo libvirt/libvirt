@@ -35,6 +35,39 @@
 #include "virxml.h"
 
 
+/**
+ * A completer callback is a function that accepts three arguments:
+ *
+ *   @ctl: virsh control structure
+ *   @cmd: parsed input
+ *   @flags: optional flags to alter completer's behaviour
+ *
+ * The @ctl contains connection to the daemon (should the
+ * completer need it). Any completer that requires a connection
+ * must check whether connection is still alive.
+ *
+ * The @cmd contains parsed user input which might be missing
+ * some arguments (if user is still typing the command), but may
+ * already contain important data. For instance if the completer
+ * needs domain XML it may inspect @cmd to find --domain. Using
+ * existing wrappers is advised. If @cmd does not contain all
+ * necessary bits, completer might return sensible defaults (i.e.
+ * generic values not tailored to specific use case) or return
+ * NULL (i.e. no strings are offered to the user for completion).
+ *
+ * The @flags contains a .completer_flags value defined for each
+ * use or 0 if no .completer_flags were specified. If a completer
+ * is generic enough @flags can be used to alter it's behaviour.
+ * For instance, a completer to fetch names of domains can use
+ * @flags to return names of only domains in a particular state
+ * that the command accepts.
+ *
+ * Under no circumstances should a completer output anything.
+ * Neither to stdout nor to stderr. This would harm the user
+ * experience.
+ */
+
+
 char **
 virshDomainNameCompleter(vshControl *ctl,
                          const vshCmd *cmd ATTRIBUTE_UNUSED,
