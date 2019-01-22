@@ -4925,7 +4925,7 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
         goto cleanup;
     }
 
-    if (ARCH_IS_S390(def->os.arch))
+    if (dev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
         virBufferAddLit(&buf, "vhost-scsi-ccw");
     else
         virBufferAddLit(&buf, "vhost-scsi-pci");
