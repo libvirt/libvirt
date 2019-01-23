@@ -1423,6 +1423,9 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        VIR_FREE(def->data.egl_headless.rendernode);
+        break;
+
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
     }
