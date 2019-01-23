@@ -17124,7 +17124,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virStorageSourcePtr oldsrc = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!disk->mirror) {
@@ -17160,21 +17159,15 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
      * has already been labeled; but only necessary when we know for
      * sure that there is a backing chain.  */
     if (disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
-        oldsrc = disk->src;
-        disk->src = disk->mirror;
-
         if (qemuDomainDetermineDiskChain(driver, vm, disk, disk->mirror, true) < 0)
             goto cleanup;
 
         if (disk->mirror->format &&
             disk->mirror->format != VIR_STORAGE_FILE_RAW &&
-            (qemuDomainNamespaceSetupDisk(vm, disk->src) < 0 ||
-             qemuSetupImageChainCgroup(vm, disk->src) < 0 ||
-             qemuSecuritySetImageLabel(driver, vm, disk->src, true) < 0))
+            (qemuDomainNamespaceSetupDisk(vm, disk->mirror) < 0 ||
+             qemuSetupImageChainCgroup(vm, disk->mirror) < 0 ||
+             qemuSecuritySetImageLabel(driver, vm, disk->mirror, true) < 0))
             goto cleanup;
-
-        disk->src = oldsrc;
-        oldsrc = NULL;
     }
 
     /* Attempt the pivot.  Record the attempt now, to prevent duplicate
@@ -17202,9 +17195,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    if (oldsrc)
-        disk->src = oldsrc;
-
     virObjectUnref(cfg);
     return ret;
 }
