@@ -90,18 +90,12 @@ bool virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetPrivileged(virSecurityManagerPtr mgr);
 
-int virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
-                                       virDomainDefPtr def,
-                                       virDomainDiskDefPtr disk);
 int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
                                            virDomainDefPtr vm);
 int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr def);
 int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
                                        virDomainDefPtr def);
-int virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr def,
-                                   virDomainDiskDefPtr disk);
 int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
                                           virDomainDefPtr def,
                                           virDomainHostdevDefPtr dev,

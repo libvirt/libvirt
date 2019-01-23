@@ -403,36 +403,6 @@ virSecurityManagerGetPrivileged(virSecurityManagerPtr mgr)
 
 
 /**
- * virSecurityManagerRestoreDiskLabel:
- * @mgr: security manager object
- * @vm: domain definition object
- * @disk: disk definition to operate on
- *
- * Removes security label from the source image of the disk. Note that this
- * function doesn't restore labels on backing chain elements of @disk.
- *
- * Returns: 0 on success, -1 on error.
- */
-int
-virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr vm,
-                                   virDomainDiskDefPtr disk)
-{
-    if (mgr->drv->domainRestoreSecurityImageLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityImageLabel(mgr, vm, disk->src,
-                                                        VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN);
-        virObjectUnlock(mgr);
-        return ret;
-    }
-
-    virReportUnsupportedError();
-    return -1;
-}
-
-
-/**
  * virSecurityManagerRestoreImageLabel:
  * @mgr: security manager object
  * @vm: domain definition object
@@ -504,36 +474,6 @@ virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
         int ret;
         virObjectLock(mgr);
         ret = mgr->drv->domainClearSecuritySocketLabel(mgr, vm);
-        virObjectUnlock(mgr);
-        return ret;
-    }
-
-    virReportUnsupportedError();
-    return -1;
-}
-
-
-/**
- * virSecurityManagerSetDiskLabel:
- * @mgr: security manager object
- * @vm: domain definition object
- * @disk: disk definition to operate on
- *
- * Labels the disk image and all images in the backing chain with the configured
- * security label.
- *
- * Returns: 0 on success, -1 on error.
- */
-int
-virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
-                               virDomainDefPtr vm,
-                               virDomainDiskDefPtr disk)
-{
-    if (mgr->drv->domainSetSecurityImageLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityImageLabel(mgr, vm, disk->src,
-                                                    VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN);
         virObjectUnlock(mgr);
         return ret;
     }
