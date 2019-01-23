@@ -1445,8 +1445,6 @@ virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
 {
     int ret = -1;
 
-    *pfname = NULL;
-
     if (virNetDevGetPhysicalFunction(vfname, pfname) < 0)
         return -1;
 

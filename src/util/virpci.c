@@ -2853,6 +2853,8 @@ virPCIGetNetName(const char *device_link_sysfs_path,
     struct dirent *entry = NULL;
     size_t i = 0;
 
+    *netname = NULL;
+
     if (virBuildPath(&pcidev_sysfs_net_path, device_link_sysfs_path,
                      "net") == -1) {
         virReportOOMError();
