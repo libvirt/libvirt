@@ -106,8 +106,8 @@ qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
         goto rollback_cgroup;
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, cfg->uri,
-                                vm, disk) < 0)
+    if (virDomainLockImageAttach(driver->lockManager, cfg->uri,
+                                 vm, disk->src) < 0)
         goto cleanup;
 
     if (qemuDomainNamespaceSetupDisk(vm, disk->src) < 0)
@@ -137,7 +137,7 @@ qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
                  NULLSTR(virDomainDiskGetSource(disk)));
 
  rollback_lock:
-    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
+    if (virDomainLockImageDetach(driver->lockManager, vm, disk->src) < 0)
         VIR_WARN("Unable to release lock on %s",
                  NULLSTR(virDomainDiskGetSource(disk)));
 

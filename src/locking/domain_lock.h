@@ -42,14 +42,6 @@ int virDomainLockProcessInquire(virLockManagerPluginPtr plugin,
                                 virDomainObjPtr dom,
                                 char **state);
 
-int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
-                            const char *uri,
-                            virDomainObjPtr dom,
-                            virDomainDiskDefPtr disk);
-int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
-                            virDomainObjPtr dom,
-                            virDomainDiskDefPtr disk);
-
 int virDomainLockImageAttach(virLockManagerPluginPtr plugin,
                              const char *uri,
                              virDomainObjPtr dom,

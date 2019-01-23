@@ -3051,9 +3051,9 @@ libxlDomainAttachDeviceDiskLive(virDomainObjPtr vm, virDomainDeviceDefPtr dev)
                 if (libxlMakeDisk(l_disk, &x_disk) < 0)
                     goto cleanup;
 
-                if (virDomainLockDiskAttach(libxl_driver->lockManager,
-                                            "xen:///system",
-                                            vm, l_disk) < 0)
+                if (virDomainLockImageAttach(libxl_driver->lockManager,
+                                             "xen:///system",
+                                             vm, l_disk->src) < 0)
                     goto cleanup;
 
                 if ((ret = libxl_device_disk_add(cfg->ctx, vm->def->id,
@@ -3061,8 +3061,8 @@ libxlDomainAttachDeviceDiskLive(virDomainObjPtr vm, virDomainDeviceDefPtr dev)
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("libxenlight failed to attach disk '%s'"),
                                    l_disk->dst);
-                    if (virDomainLockDiskDetach(libxl_driver->lockManager,
-                                                vm, l_disk) < 0) {
+                    if (virDomainLockImageDetach(libxl_driver->lockManager,
+                                                 vm, l_disk->src) < 0) {
                         VIR_WARN("Unable to release lock on %s",
                                  virDomainDiskGetSource(l_disk));
                     }
@@ -3350,8 +3350,8 @@ libxlDomainDetachDeviceDiskLive(virDomainObjPtr vm, virDomainDeviceDefPtr dev)
                     goto cleanup;
                 }
 
-                if (virDomainLockDiskDetach(libxl_driver->lockManager,
-                                            vm, l_disk) < 0)
+                if (virDomainLockImageDetach(libxl_driver->lockManager,
+                                             vm, l_disk->src) < 0)
                     VIR_WARN("Unable to release lock on %s",
                              virDomainDiskGetSource(l_disk));
 
