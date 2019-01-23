@@ -157,11 +157,16 @@ qemuSecurityRestoreDiskLabel(virQEMUDriverPtr driver,
 int
 qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          virStorageSourcePtr src)
+                          virStorageSourcePtr src,
+                          bool backingChain)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
+    virSecurityDomainImageLabelFlags labelFlags = 0;
+
+    if (backingChain)
+        labelFlags |= VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         pid = vm->pid;
@@ -170,7 +175,7 @@ qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (virSecurityManagerSetImageLabel(driver->securityManager,
-                                        vm->def, src, 0) < 0)
+                                        vm->def, src, labelFlags) < 0)
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
@@ -187,11 +192,16 @@ qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
 int
 qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virStorageSourcePtr src)
+                              virStorageSourcePtr src,
+                              bool backingChain)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
+    virSecurityDomainImageLabelFlags labelFlags = 0;
+
+    if (backingChain)
+        labelFlags |= VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         pid = vm->pid;
@@ -200,7 +210,7 @@ qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, src, 0) < 0)
+                                            vm->def, src, labelFlags) < 0)
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,

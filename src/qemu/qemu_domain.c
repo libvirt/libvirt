@@ -9174,7 +9174,7 @@ qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
         VIR_WARN("Failed to teardown cgroup for disk path %s",
                  NULLSTR(elem->path));
 
-    if (qemuSecurityRestoreImageLabel(driver, vm, elem) < 0)
+    if (qemuSecurityRestoreImageLabel(driver, vm, elem, false) < 0)
         VIR_WARN("Unable to restore security label on %s", NULLSTR(elem->path));
 
     if (qemuDomainNamespaceTeardownDisk(vm, elem) < 0)
@@ -9225,7 +9225,7 @@ qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
     if (qemuSetupImageCgroup(vm, elem) < 0)
         goto cleanup;
 
-    if (qemuSecuritySetImageLabel(driver, vm, elem) < 0)
+    if (qemuSecuritySetImageLabel(driver, vm, elem, false) < 0)
         goto cleanup;
 
     ret = 0;
