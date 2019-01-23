@@ -17150,26 +17150,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    /* For active commit, the mirror is part of the already labeled
-     * chain.  For blockcopy, we previously labeled only the top-level
-     * image; but if the user is reusing an external image that
-     * includes a backing file, the pivot may result in qemu needing
-     * to open the entire backing chain, so we need to label the
-     * entire chain.  This action is safe even if the backing chain
-     * has already been labeled; but only necessary when we know for
-     * sure that there is a backing chain.  */
-    if (disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
-        if (qemuDomainDetermineDiskChain(driver, vm, disk, disk->mirror, true) < 0)
-            goto cleanup;
-
-        if (disk->mirror->format &&
-            disk->mirror->format != VIR_STORAGE_FILE_RAW &&
-            (qemuDomainNamespaceSetupDisk(vm, disk->mirror) < 0 ||
-             qemuSetupImageChainCgroup(vm, disk->mirror) < 0 ||
-             qemuSecuritySetImageLabel(driver, vm, disk->mirror, true) < 0))
-            goto cleanup;
-    }
-
     /* Attempt the pivot.  Record the attempt now, to prevent duplicate
      * attempts; but the actual disk change will be made when emitting
      * the event.
@@ -17816,9 +17796,28 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                                          keepParentLabel) < 0)
         goto endjob;
 
-    if (qemuDomainDiskChainElementPrepare(driver, vm, mirror, false, true) < 0) {
-        qemuDomainDiskChainElementRevoke(driver, vm, mirror);
+    /* If reusing an external image that includes a backing file, the pivot may
+     * result in qemu needing to open the entire backing chain, so we need to
+     * label the full backing chain of the mirror instead of just the top image */
+    if (flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT &&
+        mirror->format >= VIR_STORAGE_FILE_BACKING &&
+        qemuDomainDetermineDiskChain(driver, vm, disk, mirror, true) < 0)
         goto endjob;
+
+    if (flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT &&
+        virStorageSourceHasBacking(mirror)) {
+        /* note that we don't really know whether a part of the backing chain
+         * is shared so rolling this back is not as easy. Thus we do it only
+         * if there's a backing chain */
+        if (qemuDomainNamespaceSetupDisk(vm, mirror) < 0 ||
+            qemuSetupImageChainCgroup(vm, mirror) < 0 ||
+            qemuSecuritySetImageLabel(driver, vm, mirror, true) < 0)
+            goto endjob;
+    } else {
+        if (qemuDomainDiskChainElementPrepare(driver, vm, mirror, false, true) < 0) {
+            qemuDomainDiskChainElementRevoke(driver, vm, mirror);
+            goto endjob;
+        }
     }
 
     if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_COPY, device)))

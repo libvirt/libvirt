@@ -7856,6 +7856,7 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
     virDomainDiskDefPtr disk;
     qemuBlockJobDataPtr job;
     qemuBlockJobType jobtype = info->type;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, jobname, jobname))) {
         VIR_DEBUG("could not find disk for block job '%s'", jobname);
@@ -7877,8 +7878,29 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
             job->state = VIR_DOMAIN_BLOCK_JOB_READY;
         }
+
+        /* Pre-blockdev block copy labelled the chain of the mirrored device
+         * just before pivoting. At that point it was no longer known whether
+         * it's even necessary (e.g. disk is being reused). This code fixes
+         * the labelling in case the job was started in a libvirt version
+         * which did not label the chain when the block copy is being started.
+         * Note that we can't do much on failure. */
+        if (disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+            if (qemuDomainDetermineDiskChain(priv->driver, vm, disk,
+                                             disk->mirror, true) < 0)
+                goto cleanup;
+
+            if (disk->mirror->format &&
+                disk->mirror->format != VIR_STORAGE_FILE_RAW &&
+                (qemuDomainNamespaceSetupDisk(vm, disk->mirror) < 0 ||
+                 qemuSetupImageChainCgroup(vm, disk->mirror) < 0 ||
+                 qemuSecuritySetImageLabel(priv->driver, vm, disk->mirror,
+                                           true) < 0))
+                goto cleanup;
+        }
     }
 
+ cleanup:
     qemuBlockJobStartupFinalize(job);
 
     return 0;
