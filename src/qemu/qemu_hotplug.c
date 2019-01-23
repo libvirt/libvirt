@@ -68,36 +68,28 @@ unsigned long long qemuDomainRemoveDeviceWaitTime = 1000ull * 5;
 
 
 /**
- * qemuHotplugPrepareDiskAccess:
+ * qemuHotplugPrepareDiskSourceAccess:
  * @driver: qemu driver struct
  * @vm: domain object
- * @disk: disk to prepare
- * @overridesrc: Source different than @disk->src when necessary
- * @teardown: Teardown the disk instead of adding it to a vm
+ * @src: Source to prepare
+ * @teardown: Teardown the access to @src instead of adding it to a vm
  *
- * Setup the locks, cgroups and security permissions on a disk of a VM.
- * If @overridesrc is specified the source struct is used instead of the
- * one present in @disk. If @teardown is true, then the labels and cgroups
- * are removed instead.
+ * Setup the locks, cgroups and security permissions on a disk source and its
+ * backing chain. If @teardown is true, then the labels and cgroups are removed
+ * instead.
  *
  * Returns 0 on success and -1 on error. Reports libvirt error.
  */
 static int
-qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virDomainDiskDefPtr disk,
-                             virStorageSourcePtr overridesrc,
-                             bool teardown)
+qemuHotplugPrepareDiskSourceAccess(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   virStorageSourcePtr src,
+                                   bool teardown)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const char *srcstr = NULLSTR(src->path);
     int ret = -1;
-    virStorageSourcePtr origsrc = NULL;
     virErrorPtr orig_err = NULL;
-
-    if (overridesrc) {
-        origsrc = disk->src;
-        disk->src = overridesrc;
-    }
 
     /* just tear down the disk access */
     if (teardown) {
@@ -106,47 +98,38 @@ qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
         goto rollback_cgroup;
     }
 
-    if (virDomainLockImageAttach(driver->lockManager, cfg->uri,
-                                 vm, disk->src) < 0)
+    if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, src) < 0)
         goto cleanup;
 
-    if (qemuDomainNamespaceSetupDisk(vm, disk->src) < 0)
+    if (qemuDomainNamespaceSetupDisk(vm, src) < 0)
         goto rollback_lock;
 
-    if (qemuSecuritySetImageLabel(driver, vm, disk->src, true) < 0)
+    if (qemuSecuritySetImageLabel(driver, vm, src, true) < 0)
         goto rollback_namespace;
 
-    if (qemuSetupImageChainCgroup(vm, disk->src) < 0)
+    if (qemuSetupImageChainCgroup(vm, src) < 0)
         goto rollback_label;
 
     ret = 0;
     goto cleanup;
 
  rollback_cgroup:
-    if (qemuTeardownImageChainCgroup(vm, disk->src) < 0)
-        VIR_WARN("Unable to tear down cgroup access on %s",
-                 NULLSTR(virDomainDiskGetSource(disk)));
+    if (qemuTeardownImageChainCgroup(vm, src) < 0)
+        VIR_WARN("Unable to tear down cgroup access on %s", srcstr);
  rollback_label:
-    if (qemuSecurityRestoreImageLabel(driver, vm, disk->src, true) < 0)
-        VIR_WARN("Unable to restore security label on %s",
-                 NULLSTR(virDomainDiskGetSource(disk)));
+    if (qemuSecurityRestoreImageLabel(driver, vm, src, true) < 0)
+        VIR_WARN("Unable to restore security label on %s", srcstr);
 
  rollback_namespace:
-    if (qemuDomainNamespaceTeardownDisk(vm, disk->src) < 0)
-        VIR_WARN("Unable to remove /dev entry for %s",
-                 NULLSTR(virDomainDiskGetSource(disk)));
+    if (qemuDomainNamespaceTeardownDisk(vm, src) < 0)
+        VIR_WARN("Unable to remove /dev entry for %s", srcstr);
 
  rollback_lock:
-    if (virDomainLockImageDetach(driver->lockManager, vm, disk->src) < 0)
-        VIR_WARN("Unable to release lock on %s",
-                 NULLSTR(virDomainDiskGetSource(disk)));
+    if (virDomainLockImageDetach(driver->lockManager, vm, src) < 0)
+        VIR_WARN("Unable to release lock on %s", srcstr);
 
  cleanup:
-    if (origsrc)
-        disk->src = origsrc;
-
     virErrorRestore(&orig_err);
-
     virObjectUnref(cfg);
 
     return ret;
@@ -826,7 +809,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto cleanup;
 
-    if (qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, false) < 0)
+    if (qemuHotplugPrepareDiskSourceAccess(driver, vm, newsrc, false) < 0)
         goto cleanup;
 
     if (qemuHotplugAttachManagedPR(driver, vm, newsrc, QEMU_ASYNC_JOB_NONE) < 0)
@@ -845,7 +828,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     /* remove the old source from shared device list */
     disk->src = oldsrc;
     ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
-    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, oldsrc, true));
+    ignore_value(qemuHotplugPrepareDiskSourceAccess(driver, vm, oldsrc, true));
 
     /* media was changed, so we can remove the old media definition now */
     virStorageSourceFree(oldsrc);
@@ -860,7 +843,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         if (sharedAdded)
             ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
 
-        ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, true));
+        ignore_value(qemuHotplugPrepareDiskSourceAccess(driver, vm, newsrc, true));
     }
 
     /* remove PR manager object if unneeded */
@@ -891,7 +874,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     char *devstr = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    if (qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, false) < 0)
+    if (qemuHotplugPrepareDiskSourceAccess(driver, vm, disk->src, false) < 0)
         goto cleanup;
 
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
@@ -954,7 +937,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
  error:
-    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
+    ignore_value(qemuHotplugPrepareDiskSourceAccess(driver, vm, disk->src, true));
     goto cleanup;
 }
 
@@ -4377,7 +4360,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     qemuDomainReleaseDeviceAddress(vm, &disk->info, virDomainDiskGetSource(disk));
 
     /* tear down disk security access */
-    qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true);
+    qemuHotplugPrepareDiskSourceAccess(driver, vm, disk->src, true);
 
     dev.type = VIR_DOMAIN_DEVICE_DISK;
     dev.data.disk = disk;
