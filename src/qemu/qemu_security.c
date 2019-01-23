@@ -93,68 +93,6 @@ qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecuritySetDiskLabel(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
-                         virDomainDiskDefPtr disk)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    pid_t pid = -1;
-    int ret = -1;
-
-    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        pid = vm->pid;
-
-    if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerSetDiskLabel(driver->securityManager,
-                                       vm->def,
-                                       disk) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virSecurityManagerTransactionAbort(driver->securityManager);
-    return ret;
-}
-
-
-int
-qemuSecurityRestoreDiskLabel(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virDomainDiskDefPtr disk)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    pid_t pid = -1;
-    int ret = -1;
-
-    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        pid = vm->pid;
-
-    if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                           vm->def,
-                                           disk) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virSecurityManagerTransactionAbort(driver->securityManager);
-    return ret;
-}
-
-
-int
 qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virStorageSourcePtr src,

@@ -17170,7 +17170,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
             disk->mirror->format != VIR_STORAGE_FILE_RAW &&
             (qemuDomainNamespaceSetupDisk(vm, disk->src) < 0 ||
              qemuSetupImageChainCgroup(vm, disk->src) < 0 ||
-             qemuSecuritySetDiskLabel(driver, vm, disk) < 0))
+             qemuSecuritySetImageLabel(driver, vm, disk->src, true) < 0))
             goto cleanup;
 
         disk->src = oldsrc;
