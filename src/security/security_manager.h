@@ -154,12 +154,18 @@ char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm);
 virSecurityManagerPtr* virSecurityManagerGetNested(virSecurityManagerPtr mgr);
 
+typedef enum {
+    VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN = 1 << 0,
+} virSecurityDomainImageLabelFlags;
+
 int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
                                     virDomainDefPtr vm,
-                                    virStorageSourcePtr src);
+                                    virStorageSourcePtr src,
+                                    virSecurityDomainImageLabelFlags flags);
 int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm,
-                                        virStorageSourcePtr src);
+                                        virStorageSourcePtr src,
+                                        virSecurityDomainImageLabelFlags flags);
 
 int virSecurityManagerSetMemoryLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr vm,

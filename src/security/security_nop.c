@@ -56,14 +56,6 @@ virSecurityDriverGetDOINop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 }
 
 static int
-virSecurityDomainRestoreDiskLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                     virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                     virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-static int
 virSecurityDomainSetDaemonSocketLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                          virDomainDefPtr vm ATTRIBUTE_UNUSED)
 {
@@ -80,14 +72,6 @@ virSecurityDomainSetSocketLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 virSecurityDomainClearSocketLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                      virDomainDefPtr vm ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-static int
-virSecurityDomainSetDiskLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                 virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                 virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -225,7 +209,8 @@ virSecurityGetBaseLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 virSecurityDomainRestoreImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                       virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                      virStorageSourcePtr src ATTRIBUTE_UNUSED)
+                                      virStorageSourcePtr src ATTRIBUTE_UNUSED,
+                                      virSecurityDomainImageLabelFlags flags ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -233,7 +218,8 @@ virSecurityDomainRestoreImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED
 static int
 virSecurityDomainSetImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                  virStorageSourcePtr src ATTRIBUTE_UNUSED)
+                                  virStorageSourcePtr src ATTRIBUTE_UNUSED,
+                                  virSecurityDomainImageLabelFlags flags ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -291,9 +277,6 @@ virSecurityDriver virSecurityDriverNop = {
     .getDOI                             = virSecurityDriverGetDOINop,
 
     .domainSecurityVerify               = virSecurityDomainVerifyNop,
-
-    .domainSetSecurityDiskLabel         = virSecurityDomainSetDiskLabelNop,
-    .domainRestoreSecurityDiskLabel     = virSecurityDomainRestoreDiskLabelNop,
 
     .domainSetSecurityImageLabel        = virSecurityDomainSetImageLabelNop,
     .domainRestoreSecurityImageLabel    = virSecurityDomainRestoreImageLabelNop,

@@ -309,6 +309,7 @@ sc_flags_usage:
 	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2; \
 	    exit 1; } || :
 	@prohibit=' flags ATTRIBUTE_UNUSED' \
+	exclude='virSecurityDomainImageLabelFlags' \
 	halt='flags should be checked with virCheckFlags' \
 	  $(_sc_search_regexp)
 	@prohibit='^[^@]*([^d] (int|long long)|[^dg] long) flags[;,)]' \

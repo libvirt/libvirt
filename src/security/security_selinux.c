@@ -1772,19 +1772,10 @@ virSecuritySELinuxRestoreImageLabelInt(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxRestoreDiskLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr def,
-                                   virDomainDiskDefPtr disk)
-{
-    return virSecuritySELinuxRestoreImageLabelInt(mgr, def, disk->src,
-                                                  false);
-}
-
-
-static int
 virSecuritySELinuxRestoreImageLabel(virSecurityManagerPtr mgr,
                                     virDomainDefPtr def,
-                                    virStorageSourcePtr src)
+                                    virStorageSourcePtr src,
+                                    virSecurityDomainImageLabelFlags flags ATTRIBUTE_UNUSED)
 {
     return virSecuritySELinuxRestoreImageLabelInt(mgr, def, src, false);
 }
@@ -1869,27 +1860,22 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
 static int
 virSecuritySELinuxSetImageLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr def,
-                                virStorageSourcePtr src)
+                                virStorageSourcePtr src,
+                                virSecurityDomainImageLabelFlags flags)
 {
-    return virSecuritySELinuxSetImageLabelInternal(mgr, def, src, NULL);
-}
+    virStorageSourcePtr n;
 
-
-static int
-virSecuritySELinuxSetDiskLabel(virSecurityManagerPtr mgr,
-                               virDomainDefPtr def,
-                               virDomainDiskDefPtr disk)
-
-{
-    virStorageSourcePtr next;
-
-    for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
-        if (virSecuritySELinuxSetImageLabelInternal(mgr, def, next, disk->src) < 0)
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (virSecuritySELinuxSetImageLabelInternal(mgr, def, n, src) < 0)
             return -1;
+
+        if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
+            break;
     }
 
     return 0;
 }
+
 
 static int
 virSecuritySELinuxSetHostdevLabelHelper(const char *file, void *opaque)
@@ -3026,8 +3012,8 @@ virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
                      def->disks[i]->dst);
             continue;
         }
-        if (virSecuritySELinuxSetDiskLabel(mgr,
-                                           def, def->disks[i]) < 0)
+        if (virSecuritySELinuxSetImageLabel(mgr, def, def->disks[i]->src,
+                                            VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN) < 0)
             return -1;
     }
     /* XXX fixme process  def->fss if relabel == true */
@@ -3440,9 +3426,6 @@ virSecurityDriver virSecurityDriverSELinux = {
     .transactionAbort                   = virSecuritySELinuxTransactionAbort,
 
     .domainSecurityVerify               = virSecuritySELinuxVerify,
-
-    .domainSetSecurityDiskLabel         = virSecuritySELinuxSetDiskLabel,
-    .domainRestoreSecurityDiskLabel     = virSecuritySELinuxRestoreDiskLabel,
 
     .domainSetSecurityImageLabel        = virSecuritySELinuxSetImageLabel,
     .domainRestoreSecurityImageLabel    = virSecuritySELinuxRestoreImageLabel,

@@ -170,8 +170,7 @@ qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (virSecurityManagerSetImageLabel(driver->securityManager,
-                                        vm->def,
-                                        src) < 0)
+                                        vm->def, src, 0) < 0)
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
@@ -201,8 +200,7 @@ qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def,
-                                            src) < 0)
+                                            vm->def, src, 0) < 0)
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
