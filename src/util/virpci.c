@@ -449,7 +449,7 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
 
     while ((ret = virDirRead(dir, &entry, PCI_SYSFS "devices")) > 0) {
         unsigned int domain, bus, slot, function;
-        virPCIDevicePtr check;
+        VIR_AUTOPTR(virPCIDevice) check = NULL;
         char *tmp;
 
         /* expected format: <domain>:<bus>:<slot>.<function> */
@@ -474,12 +474,11 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
         rc = predicate(dev, check, data);
         if (rc < 0) {
             /* the predicate returned an error, bail */
-            virPCIDeviceFree(check);
             ret = -1;
             break;
         } else if (rc == 1) {
             VIR_DEBUG("%s %s: iter matched on %s", dev->id, dev->name, check->name);
-            *matched = check;
+            VIR_STEAL_PTR(*matched, check);
             ret = 1;
             break;
         }
