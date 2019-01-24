@@ -17126,7 +17126,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!disk->mirror) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -17167,7 +17166,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
