@@ -1502,8 +1502,10 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
 {
     size_t i;
     int capng_ret, ret = -1;
-    bool need_setgid = false, need_setuid = false;
+    bool need_setgid = false;
+    bool need_setuid = false;
     bool need_setpcap = false;
+    const char *capstr = NULL;
 
     /* First drop all caps (unless the requested uid is "unchanged" or
      * root and clearExistingCaps wasn't requested), then add back
@@ -1512,14 +1514,18 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
      */
 
     if (clearExistingCaps || (uid != (uid_t)-1 && uid != 0))
-       capng_clear(CAPNG_SELECT_BOTH);
+        capng_clear(CAPNG_SELECT_BOTH);
 
     for (i = 0; i <= CAP_LAST_CAP; i++) {
+        capstr = capng_capability_to_name(i);
+
         if (capBits & (1ULL << i)) {
             capng_update(CAPNG_ADD,
                          CAPNG_EFFECTIVE|CAPNG_INHERITABLE|
                          CAPNG_PERMITTED|CAPNG_BOUNDING_SET,
                          i);
+
+            VIR_DEBUG("Added '%s' to child capabilities' set", capstr);
         }
     }
 
@@ -1578,6 +1584,27 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
                              _("prctl failed to reset KEEPCAPS"));
         goto cleanup;
     }
+
+# ifdef PR_CAP_AMBIENT
+    /* we couldn't do this in the loop earlier above, because the capabilities
+     * were not applied yet, since in order to add a capability into the AMBIENT
+     * set, it has to be present in both the PERMITTED and INHERITABLE sets
+     * (capabilities(7))
+     */
+    for (i = 0; i <= CAP_LAST_CAP; i++) {
+        capstr = capng_capability_to_name(i);
+
+        if (capBits & (1ULL << i)) {
+            if (prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, i, 0, 0) < 0) {
+                virReportSystemError(errno,
+                                     _("prctl failed to enable '%s' in the "
+                                       "AMBIENT set"),
+                                     capstr);
+                goto cleanup;
+            }
+        }
+    }
+# endif
 
     /* Set bounding set while we have CAP_SETPCAP.  Unfortunately we cannot
      * do this if we failed to get the capability above, so ignore the

@@ -53,6 +53,10 @@
 #include <stdarg.h>
 #include <sys/utsname.h>
 
+#if WITH_CAPNG
+# include <cap-ng.h>
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_capabilities");
@@ -4516,6 +4520,13 @@ virQEMUCapsInitQMPCommandRun(virQEMUCapsInitQMPCommandPtr cmd,
                                     NULL);
     virCommandAddEnvPassCommon(cmd->cmd);
     virCommandClearCaps(cmd->cmd);
+
+#if WITH_CAPNG
+    /* QEMU might run into permission issues, e.g. /dev/sev (0600), override
+     * them just for the purpose of probing */
+    virCommandAllowCap(cmd->cmd, CAP_DAC_OVERRIDE);
+#endif
+
     virCommandSetGID(cmd->cmd, cmd->runGid);
     virCommandSetUID(cmd->cmd, cmd->runUid);
 
