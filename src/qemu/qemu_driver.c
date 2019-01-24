@@ -18175,6 +18175,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
                            disk->dst);
             goto endjob;
         }
+
+        jobtype = QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
     } else if (flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("active commit requested but '%s' is not active"),
@@ -18247,22 +18249,16 @@ qemuDomainBlockCommit(virDomainPtr dom,
          qemuDomainDiskChainElementPrepare(driver, vm, top_parent, false, false) < 0))
         goto endjob;
 
+    if (!(job = qemuBlockJobDiskNew(disk, jobtype, device)))
+        goto endjob;
+
+    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+
     /* Start the commit operation.  Pass the user's original spelling,
      * if any, through to qemu, since qemu may behave differently
      * depending on whether the input was specified as relative or
      * absolute (that is, our absolute top_canon may do the wrong
-     * thing if the user specified a relative name).  Be prepared for
-     * a ready event to occur while locks are dropped.  */
-    if (mirror) {
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-        disk->mirror = mirror;
-        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
-        jobtype = QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
-    }
-
-    if (!(job = qemuBlockJobDiskNew(disk, jobtype, device)))
-        goto endjob;
-
+     * thing if the user specified a relative name).  */
     qemuDomainObjEnterMonitor(driver, vm);
     basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
                                          baseSource);
@@ -18272,17 +18268,15 @@ qemuDomainBlockCommit(virDomainPtr dom,
         ret = qemuMonitorBlockCommit(priv->mon, device,
                                      topPath, basePath, backingPath,
                                      speed);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0) {
         ret = -1;
         goto endjob;
     }
 
-    if (ret == 0) {
-        qemuBlockJobStarted(job);
-        mirror = NULL;
-    } else {
-        disk->mirror = NULL;
-        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+    qemuBlockJobStarted(job);
+    if (mirror) {
+        VIR_STEAL_PTR(disk->mirror, mirror);
+        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
