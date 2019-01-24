@@ -1357,7 +1357,8 @@ int virStorageFileIsClusterFS(const char *path)
      */
     return virFileIsSharedFSType(path,
                                  VIR_FILE_SHFS_GFS2 |
-                                 VIR_FILE_SHFS_OCFS);
+                                 VIR_FILE_SHFS_OCFS |
+                                 VIR_FILE_SHFS_CEPH);
 }
 
 #ifdef LVS

@@ -455,6 +455,8 @@ mymain(void)
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/gluster/file", true);
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/gluster/sshfs/file", false);
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/some/symlink/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/ceph/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/ceph/multi/file", true);
 
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

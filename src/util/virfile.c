@@ -3465,6 +3465,9 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 # ifndef FUSE_SUPER_MAGIC
 #  define FUSE_SUPER_MAGIC 0x65735546
 # endif
+# ifndef CEPH_SUPER_MAGIC
+#  define CEPH_SUPER_MAGIC 0x00C36400
+# endif
 
 # define PROC_MOUNTS "/proc/mounts"
 
@@ -3606,6 +3609,9 @@ virFileIsSharedFSType(const char *path,
         return 1;
     if ((fstypes & VIR_FILE_SHFS_CIFS) &&
         (f_type == CIFS_SUPER_MAGIC))
+        return 1;
+    if ((fstypes & VIR_FILE_SHFS_CEPH) &&
+        (f_type == CEPH_SUPER_MAGIC))
         return 1;
 
     return 0;
@@ -3769,7 +3775,8 @@ int virFileIsSharedFS(const char *path)
                                  VIR_FILE_SHFS_OCFS |
                                  VIR_FILE_SHFS_AFS |
                                  VIR_FILE_SHFS_SMB |
-                                 VIR_FILE_SHFS_CIFS);
+                                 VIR_FILE_SHFS_CIFS |
+                                 VIR_FILE_SHFS_CEPH);
 }
 
 

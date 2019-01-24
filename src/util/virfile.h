@@ -220,6 +220,7 @@ enum {
     VIR_FILE_SHFS_AFS = (1 << 3),
     VIR_FILE_SHFS_SMB = (1 << 4),
     VIR_FILE_SHFS_CIFS = (1 << 5),
+    VIR_FILE_SHFS_CEPH = (1 << 6),
 };
 
 int virFileIsSharedFSType(const char *path, int fstypes) ATTRIBUTE_NONNULL(1);

@@ -33,3 +33,5 @@ host:/nfs /nfs nfs4 rw,relatime,vers=4.1,rsize=1048576,wsize=1048576,namlen=255,
 dev /nfs/blah devtmpfs rw,nosuid,relatime,size=10240k,nr_inodes=4093060,mode=755 0 0
 host:/gv0 /gluster fuse.glusterfs rw 0 0
 root@host:/tmp/mkdir /gluster/sshfs fuse.sshfs rw 0 0
+192.168.0.1:/ceph/data /ceph ceph rw,noatime,name=cephfs,secret=<hidden>,acl,wsize=16777216 0 0
+192.168.0.1,192.168.0.2,192.168.0.3:/ceph/data2 /ceph/multi ceph rw,noatime,name=cephfs,secret=<hidden>,acl,wsize=16777216 0 0
