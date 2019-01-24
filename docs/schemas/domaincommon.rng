@@ -4997,6 +4997,9 @@
               <ref name="featurestate"/>
             </element>
           </optional>
+          <optional>
+            <ref name="msrs"/>
+          </optional>
         </interleave>
       </element>
     </optional>
@@ -5242,6 +5245,17 @@
           <ref name="virOnOff"/>
         </attribute>
       </optional>
+    </element>
+  </define>
+
+  <define name="msrs">
+    <element name="msrs">
+      <attribute name="unknown">
+        <choice>
+          <value>ignore</value>
+          <value>fault</value>
+        </choice>
+      </attribute>
     </element>
   </define>
 

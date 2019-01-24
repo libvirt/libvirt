@@ -4021,6 +4021,7 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
         case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_VMPORT:
         case VIR_DOMAIN_FEATURE_VMCOREINFO:
+        case VIR_DOMAIN_FEATURE_MSRS:
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }

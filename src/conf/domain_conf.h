@@ -1782,6 +1782,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_VMCOREINFO,
     VIR_DOMAIN_FEATURE_HTM,
     VIR_DOMAIN_FEATURE_NESTED_HV,
+    VIR_DOMAIN_FEATURE_MSRS,
 
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
@@ -1812,6 +1813,19 @@ typedef enum {
 
     VIR_DOMAIN_KVM_LAST
 } virDomainKVM;
+
+typedef enum {
+    VIR_DOMAIN_MSRS_UNKNOWN = 0,
+
+    VIR_DOMAIN_MSRS_LAST
+} virDomainMsrs;
+
+typedef enum {
+    VIR_DOMAIN_MSRS_UNKNOWN_IGNORE = 0,
+    VIR_DOMAIN_MSRS_UNKNOWN_FAULT,
+
+    VIR_DOMAIN_MSRS_UNKNOWN_LAST
+} virDomainMsrsUnknown;
 
 typedef enum {
     VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT = 0,
@@ -2466,6 +2480,7 @@ struct _virDomainDef {
     int caps_features[VIR_DOMAIN_CAPS_FEATURE_LAST];
     int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
     int kvm_features[VIR_DOMAIN_KVM_LAST];
+    int msrs_features[VIR_DOMAIN_MSRS_LAST];
     unsigned int hyperv_spinlocks;
     virGICVersion gic_version;
     virDomainHPTResizing hpt_resizing;
@@ -3477,6 +3492,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode);
 VIR_ENUM_DECL(virDomainGraphicsVNCSharePolicy);
 VIR_ENUM_DECL(virDomainHyperv);
 VIR_ENUM_DECL(virDomainKVM);
+VIR_ENUM_DECL(virDomainMsrsUnknown);
 VIR_ENUM_DECL(virDomainRNGModel);
 VIR_ENUM_DECL(virDomainRNGBackend);
 VIR_ENUM_DECL(virDomainTPMModel);
