@@ -17847,6 +17847,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_COPY, device)))
         goto endjob;
 
+    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+
     /* Actually start the mirroring */
     qemuDomainObjEnterMonitor(driver, vm);
     /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
