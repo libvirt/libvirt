@@ -180,6 +180,17 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
         VIR_FREE(xml);
     }
 
+    virSecurityManagerRestoreAllLabel(driver->securityManager,
+                                      vm->def, false, false);
+    virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
+    /* Clear out dynamically assigned labels */
+    if (vm->def->nseclabels &&
+        vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+        VIR_FREE(vm->def->seclabels[0]->model);
+        VIR_FREE(vm->def->seclabels[0]->label);
+        VIR_FREE(vm->def->seclabels[0]->imagelabel);
+    }
+
     /* Stop autodestroy in case guest is restarted */
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
                            lxcProcessAutoDestroy);
@@ -835,17 +846,6 @@ int virLXCProcessStop(virLXCDriverPtr driver,
     }
 
     priv = vm->privateData;
-
-    virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                      vm->def, false, false);
-    virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
-    /* Clear out dynamically assigned labels */
-    if (vm->def->nseclabels &&
-        vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        VIR_FREE(vm->def->seclabels[0]->model);
-        VIR_FREE(vm->def->seclabels[0]->label);
-        VIR_FREE(vm->def->seclabels[0]->imagelabel);
-    }
 
     /* If the LXC domain is suspended we send all processes a SIGKILL
      * and thaw them. Upon wakeup the process sees the pending signal
