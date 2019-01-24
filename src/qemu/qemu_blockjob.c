@@ -214,6 +214,11 @@ qemuBlockJobEmitEvents(virQEMUDriverPtr driver,
     virObjectEventPtr event = NULL;
     virObjectEventPtr event2 = NULL;
 
+    /* don't emit events for internal jobs and states */
+    if (type >= VIR_DOMAIN_BLOCK_JOB_TYPE_LAST ||
+        status >= VIR_DOMAIN_BLOCK_JOB_LAST)
+        return;
+
     if (virStorageSourceIsLocalStorage(disk->src) &&
         !virStorageSourceIsEmpty(disk->src)) {
         event = virDomainEventBlockJobNewFromObj(vm, virDomainDiskGetSource(disk),
