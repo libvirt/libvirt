@@ -17313,7 +17313,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     char *device = NULL;
     virDomainDiskDefPtr disk = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    bool save = false;
     bool pivot = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT);
     bool async = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC);
     qemuBlockJobDataPtr job = NULL;
@@ -17365,10 +17364,8 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         if ((ret = qemuDomainBlockPivot(driver, vm, device, disk)) < 0)
             goto endjob;
     } else {
-        if (disk->mirror) {
+        if (disk->mirror)
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_ABORT;
-            save = true;
-        }
 
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), device);
@@ -17384,11 +17381,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         }
     }
 
-    /* If we have made changes to XML due to a copy job, make a best
-     * effort to save it now.  But we can ignore failure, since there
-     * will be further changes when the event marks completion.  */
-    if (save)
-        ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));
+    ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));
 
     /*
      * With the ABORT_ASYNC flag we don't need to do anything, the event will
