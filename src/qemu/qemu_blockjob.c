@@ -149,7 +149,8 @@ qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)
 void
 qemuBlockJobStarted(qemuBlockJobDataPtr job)
 {
-    job->state = QEMU_BLOCKJOB_STATE_RUNNING;
+    if (job->state == QEMU_BLOCKJOB_STATE_NEW)
+        job->state = QEMU_BLOCKJOB_STATE_RUNNING;
 }
 
 
