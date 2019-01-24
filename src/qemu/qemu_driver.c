@@ -17121,7 +17121,7 @@ qemuDomainOpenChannel(virDomainPtr dom,
 static int
 qemuDomainBlockPivot(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
-                     const char *device,
+                     qemuBlockJobDataPtr job,
                      virDomainDiskDefPtr disk)
 {
     int ret = -1;
@@ -17153,7 +17153,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
      * overall return value.  */
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorDrivePivot(priv->mon, device);
+    ret = qemuMonitorDrivePivot(priv->mon, job->name);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         ret = -1;
         goto cleanup;
@@ -17298,7 +17298,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
                         unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    char *device = NULL;
     virDomainDiskDefPtr disk = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool pivot = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT);
@@ -17328,9 +17327,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
-    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
-        goto endjob;
-
     if (!(job = qemuBlockJobDiskGetJob(disk))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("disk %s does not have an active block job"), disk->dst);
@@ -17349,14 +17345,14 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         qemuBlockJobSyncBegin(job);
 
     if (pivot) {
-        if ((ret = qemuDomainBlockPivot(driver, vm, device, disk)) < 0)
+        if ((ret = qemuDomainBlockPivot(driver, vm, job, disk)) < 0)
             goto endjob;
     } else {
         if (disk->mirror)
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_ABORT;
 
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), device);
+        ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), job->name);
         if (qemuDomainObjExitMonitor(driver, vm) < 0) {
             ret = -1;
             goto endjob;
@@ -17396,7 +17392,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
  cleanup:
     virObjectUnref(job);
     virObjectUnref(cfg);
-    VIR_FREE(device);
     virDomainObjEndAPI(&vm);
     return ret;
 }
