@@ -1236,7 +1236,7 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
             continue;
 
         /* However, disks on local FS (e.g. ext4) are not safe. */
-        if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE) {
+        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_FILE) {
             if ((rc = virFileIsSharedFS(src)) < 0) {
                 return false;
             } else if (rc == 0) {
@@ -1248,8 +1248,8 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
                 return false;
             else if (rc == 1)
                 continue;
-        } else if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
-                   disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
+        } else if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK) {
+            /* But network disks are safe again. */
             continue;
         }
 
