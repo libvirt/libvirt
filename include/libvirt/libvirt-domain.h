@@ -2375,7 +2375,8 @@ int virDomainSetPerfEvents(virDomainPtr dom,
  * Describes various possible block jobs.
  */
 typedef enum {
-    VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0, /* Placeholder */
+    /* Placeholder */
+    VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0,
 
     /* Block Pull (virDomainBlockPull, or virDomainBlockRebase without
      * flags), job ends on completion */
