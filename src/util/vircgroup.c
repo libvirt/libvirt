@@ -2607,6 +2607,7 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
     int ret = 0;
     int rc;
     size_t i;
+    bool backendAvailable = false;
     virCgroupBackendPtr *backends = virCgroupBackendGetAll();
     virHashTablePtr pids = virHashCreateFull(100,
                                              NULL,
@@ -2617,13 +2618,9 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
 
     VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);
 
-    if (!backends) {
-        ret = -1;
-        goto cleanup;
-    }
-
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (backends[i]) {
+        if (backends && backends[i] && backends[i]->available()) {
+            backendAvailable = true;
             rc = backends[i]->killRecursive(group, signum, pids);
             if (rc < 0) {
                 ret = -1;
@@ -2632,6 +2629,12 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
             if (rc > 0)
                 ret = rc;
         }
+    }
+
+    if (!backends || !backendAvailable) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no cgroup backend available"));
+        goto cleanup;
     }
 
  cleanup:
