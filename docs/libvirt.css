@@ -537,3 +537,7 @@ dl.mail dt a:hover {
     color:  rgb(255, 230, 0);
     text-decoration: none;
 }
+
+td.enumvalue {
+    white-space: nowrap;
+}

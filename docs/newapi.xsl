@@ -288,6 +288,24 @@
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template name="enumvalue">
+    <xsl:param name="value" select="@value"/>
+    <xsl:param name="valuehex" select="@value_hex"/>
+    <xsl:param name="valuebitshift" select="@value_bitshift"/>
+    <xsl:value-of select="@value"/>
+    <xsl:if test="$valuehex != '' or $valuebitshift != ''">
+      <xsl:text> (</xsl:text>
+      <xsl:if test="$valuehex != ''">
+        <xsl:value-of select="@value_hex"/>
+      </xsl:if>
+      <xsl:if test="$valuebitshift != ''">
+        <xsl:text>; 1 &lt;&lt; </xsl:text>
+        <xsl:value-of select="@value_bitshift"/>
+      </xsl:if>
+      <xsl:text>)</xsl:text>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template match="typedef[@type = 'enum']">
     <xsl:variable name="name" select="string(@name)"/>
     <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
@@ -306,7 +324,7 @@
             <td><xsl:text> = </xsl:text></td>
             <xsl:choose>
               <xsl:when test="@info != ''">
-                <td><xsl:value-of select="@value"/></td>
+                <td class="enumvalue"><xsl:call-template name="enumvalue"/></td>
                 <td>
                   <div class="comment">
                     <xsl:call-template name="dumptext">
@@ -316,7 +334,7 @@
                 </td>
               </xsl:when>
               <xsl:otherwise>
-                <td colspan="2"><xsl:value-of select="@value"/></td>
+                <td colspan="2" class="enumvalue"><xsl:call-template name="enumvalue"/></td>
               </xsl:otherwise>
             </xsl:choose>
           </tr>

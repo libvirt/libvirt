@@ -2117,12 +2117,22 @@ class docBuilder:
                      self.modulename_file(id.header)))
         if id.info is not None:
             info = id.info
+            valhex = ""
             if info[0] is not None and info[0] != '':
                 try:
                     val = eval(info[0])
+                    valhex = hex(val)
                 except:
                     val = info[0]
                 output.write(" value='%s'" % (val))
+
+                if valhex != "":
+                    output.write(" value_hex='%s'" % (valhex))
+
+                m = re.match("\(?1<<(\d+)\)?", info[0])
+                if m:
+                    output.write(" value_bitshift='%s'" % (m.group(1)))
+
             if info[2] is not None and info[2] != '':
                 output.write(" type='%s'" % info[2])
             if info[1] is not None and info[1] != '':
