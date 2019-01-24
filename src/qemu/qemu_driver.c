@@ -17142,16 +17142,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    /* When pivoting to a shareable disk we need to make sure that the disk can
-     * be safely shared, since block copy might have changed the format. */
-    if (disk->src->shared && !disk->src->readonly &&
-        !qemuBlockStorageSourceSupportsConcurrentAccess(disk->mirror)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("can't pivot a shared disk to a storage volume not "
-                         "supporting sharing"));
-        goto cleanup;
-    }
-
     /* Attempt the pivot.  Record the attempt now, to prevent duplicate
      * attempts; but the actual disk change will be made when emitting
      * the event.
@@ -17780,6 +17770,16 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
             mirror->format = virStorageFileProbeFormat(mirror->path, cfg->user,
                                                        cfg->group);
         }
+    }
+
+    /* When copying a shareable disk we need to make sure that the disk can
+     * be safely shared, since block copy may change the format. */
+    if (disk->src->shared && !disk->src->readonly &&
+        !qemuBlockStorageSourceSupportsConcurrentAccess(mirror)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("can't pivot a shared disk to a storage volume not "
+                         "supporting sharing"));
+        goto endjob;
     }
 
     /* pre-create the image file */
