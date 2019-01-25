@@ -20524,18 +20524,16 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         }
 
-        if (val >= 0 && val < VIR_DOMAIN_CAPS_FEATURE_LAST) {
-            if ((tmp = virXMLPropString(nodes[i], "state"))) {
-                if ((def->caps_features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown state attribute '%s' of feature capability '%s'"),
-                                   tmp, virDomainFeatureTypeToString(val));
-                    goto error;
-                }
-                VIR_FREE(tmp);
-            } else {
-                def->caps_features[val] = VIR_TRISTATE_SWITCH_ON;
+        if ((tmp = virXMLPropString(nodes[i], "state"))) {
+            if ((def->caps_features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown state attribute '%s' of feature capability '%s'"),
+                               tmp, virDomainFeatureTypeToString(val));
+                goto error;
             }
+            VIR_FREE(tmp);
+        } else {
+            def->caps_features[val] = VIR_TRISTATE_SWITCH_ON;
         }
     }
     VIR_FREE(nodes);
