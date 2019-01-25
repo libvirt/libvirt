@@ -59,6 +59,16 @@
           of the network's <code>bridge</code> element.
         </description>
       </change>
+      <change>
+        <summary>
+          bhyve: support for ignoring unknown MSRs reads and writes
+        </summary>
+        <description>
+          A new &lt;features&gt; element &lt;msrs unknown='ignore'/&gt; was
+          introduced and the bhyve driver supports it to control unknown
+          Model Specific Registers (MSRs) reads and writes.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
