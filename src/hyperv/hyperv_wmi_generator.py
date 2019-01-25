@@ -65,7 +65,7 @@ class WmiClass:
         # because we'll generate "common" member and will be the "base" name
         if len(self.versions) > 1:
             first = self.versions[0]
-            if first.version == None:
+            if first.version is None:
                 first.version = "v1"
             first.name = "%s_%s" % (first.name, first.version)
 
