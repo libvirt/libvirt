@@ -106,3 +106,5 @@ gen-AUTHORS:
 	  mv -f $(distdir)/AUTHORS-tmp $(distdir)/AUTHORS && \
 	  rm -f all.list maint.list contrib.list; \
 	fi
+
+include Makefile.ci
