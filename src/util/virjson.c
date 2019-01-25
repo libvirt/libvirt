@@ -620,11 +620,16 @@ virJSONValueObjectAppend(virJSONValuePtr object,
 {
     char *newkey;
 
-    if (object->type != VIR_JSON_TYPE_OBJECT)
+    if (object->type != VIR_JSON_TYPE_OBJECT) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("expecting JSON object"));
         return -1;
+    }
 
-    if (virJSONValueObjectHasKey(object, key))
+    if (virJSONValueObjectHasKey(object, key)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("duplicate key '%s'"), key);
         return -1;
+    }
 
     if (VIR_STRDUP(newkey, key) < 0)
         return -1;
@@ -774,8 +779,10 @@ int
 virJSONValueArrayAppend(virJSONValuePtr array,
                         virJSONValuePtr value)
 {
-    if (array->type != VIR_JSON_TYPE_ARRAY)
+    if (array->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("expecting JSON array"));
         return -1;
+    }
 
     if (VIR_REALLOC_N(array->data.array.values,
                       array->data.array.nvalues + 1) < 0)
