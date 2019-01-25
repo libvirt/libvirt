@@ -796,6 +796,21 @@ virJSONValueArrayAppend(virJSONValuePtr array,
 
 
 int
+virJSONValueArrayAppendString(virJSONValuePtr object,
+                              const char *value)
+{
+    virJSONValuePtr jvalue = virJSONValueNewString(value);
+    if (!jvalue)
+        return -1;
+    if (virJSONValueArrayAppend(object, jvalue) < 0) {
+        virJSONValueFree(jvalue);
+        return -1;
+    }
+    return 0;
+}
+
+
+int
 virJSONValueObjectHasKey(virJSONValuePtr object,
                          const char *key)
 {

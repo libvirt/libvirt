@@ -2092,6 +2092,7 @@ virISCSIScanTargets;
 # util/virjson.h
 virJSONStringReformat;
 virJSONValueArrayAppend;
+virJSONValueArrayAppendString;
 virJSONValueArrayForeachSteal;
 virJSONValueArrayGet;
 virJSONValueArraySize;
