@@ -2010,6 +2010,7 @@
     &lt;tlbflush state='on'/&gt;
     &lt;ipi state='on'/&gt;
     &lt;evmcs state='on'/&gt;
+    &lt;msrs unknown='ignore'/&gt;
   &lt;/hyperv&gt;
   &lt;kvm&gt;
     &lt;hidden state='on'/&gt;
@@ -2306,6 +2307,15 @@
           <code>on</code> and <code>off</code>. If the attribute is not
           defined, the hypervisor default will be used.
           <span class="since">Since 4.10.0</span> (QEMU/KVM only)
+      </dd>
+      <dt><code>msrs</code></dt>
+      <dd>Some guests might require ignoring unknown
+          Model Specific Registers (MSRs) reads and writes. It's possible
+          to switch this by setting <code>unknown</code> attribute
+          of <code>msrs</code> to <code>ignore</code>. If the attribute is
+          not defined, or set to <code>fault</code>, unknown reads and writes
+          will not be ignored.
+          <span class="since">Since 5.1.0</span> (bhyve only)
       </dd>
     </dl>
 

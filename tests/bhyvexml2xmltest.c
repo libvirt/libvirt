@@ -111,6 +111,7 @@ mymain(void)
     DO_TEST_DIFFERENT("vnc-vgaconf-io");
     DO_TEST_DIFFERENT("vnc-autoport");
     DO_TEST_DIFFERENT("commandline");
+    DO_TEST_DIFFERENT("msrs");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");
