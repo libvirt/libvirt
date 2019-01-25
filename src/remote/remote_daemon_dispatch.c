@@ -3659,7 +3659,6 @@ remoteDispatchAuthSaslStart(virNetServerPtr server,
     const char *serverout;
     size_t serveroutlen;
     int err;
-    int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     const char *identity;
@@ -3739,8 +3738,7 @@ remoteDispatchAuthSaslStart(virNetServerPtr server,
     virResetLastError();
     virReportError(VIR_ERR_AUTH_FAILED, "%s",
                    _("authentication failed"));
-    if (rv < 0)
-        virNetMessageSaveError(rerr);
+    virNetMessageSaveError(rerr);
     virMutexUnlock(&priv->lock);
     return -1;
 }
@@ -3757,7 +3755,6 @@ remoteDispatchAuthSaslStep(virNetServerPtr server,
     const char *serverout;
     size_t serveroutlen;
     int err;
-    int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     const char *identity;
@@ -3837,8 +3834,7 @@ remoteDispatchAuthSaslStep(virNetServerPtr server,
     virResetLastError();
     virReportError(VIR_ERR_AUTH_FAILED, "%s",
                    _("authentication failed"));
-    if (rv < 0)
-        virNetMessageSaveError(rerr);
+    virNetMessageSaveError(rerr);
     virMutexUnlock(&priv->lock);
     return -1;
 }
