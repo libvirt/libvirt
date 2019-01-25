@@ -16978,6 +16978,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     switch ((qemuBlockJobType) job->type) {
     case QEMU_BLOCKJOB_TYPE_NONE:
@@ -17017,7 +17018,10 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
      * that pivot failed, we need to reflect that failure into the
      * overall return value.  */
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorDrivePivot(priv->mon, job->name);
+    if (blockdev)
+        ret = qemuMonitorJobComplete(priv->mon, job->name);
+    else
+        ret = qemuMonitorDrivePivot(priv->mon, job->name);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         ret = -1;
         goto cleanup;
@@ -17158,6 +17162,8 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     bool async = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC);
     qemuBlockJobDataPtr job = NULL;
     virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv = NULL;
+    bool blockdev = false;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC |
@@ -17184,6 +17190,9 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         goto endjob;
     }
 
+    priv = vm->privateData;
+    blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+
     if (job->state == QEMU_BLOCKJOB_STATE_ABORTING ||
         job->state == QEMU_BLOCKJOB_STATE_PIVOTING) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -17200,7 +17209,10 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
             goto endjob;
     } else {
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), job->name);
+        if (blockdev)
+            ret = qemuMonitorJobCancel(priv->mon, job->name, false);
+        else
+            ret = qemuMonitorBlockJobCancel(priv->mon, job->name);
         if (qemuDomainObjExitMonitor(driver, vm) < 0) {
             ret = -1;
             goto endjob;
