@@ -109,4 +109,8 @@ virLXCDomainObjEndJob(virLXCDriverPtr driver,
 char *
 virLXCDomainGetMachineName(virDomainDefPtr def, pid_t pid);
 
+int
+virLXCDomainSetRunlevel(virDomainObjPtr vm,
+                        int runlevel);
+
 #endif /* LIBVIRT_LXC_DOMAIN_H */

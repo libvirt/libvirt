@@ -32,6 +32,7 @@
 #include "virfile.h"
 #include "virtime.h"
 #include "virsystemd.h"
+#include "virinitctl.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 #define LXC_NAMESPACE_HREF "http://libvirt.org/schemas/domain/lxc/1.0"
@@ -416,5 +417,94 @@ virLXCDomainGetMachineName(virDomainDefPtr def, pid_t pid)
     if (!ret)
         ret = virDomainGenerateMachineName("lxc", def->id, def->name, true);
 
+    return ret;
+}
+
+
+typedef struct _lxcDomainInitctlCallbackData lxcDomainInitctlCallbackData;
+struct _lxcDomainInitctlCallbackData {
+    int runlevel;
+    bool *st_valid;
+    struct stat *st;
+};
+
+
+static int
+lxcDomainInitctlCallback(pid_t pid ATTRIBUTE_UNUSED,
+                         void *opaque)
+{
+    lxcDomainInitctlCallbackData *data = opaque;
+    size_t i;
+
+    for (i = 0; virInitctlFifos[i]; i++) {
+        const char *fifo = virInitctlFifos[i];
+        struct stat cont_sb;
+
+        if (stat(fifo, &cont_sb) < 0) {
+            if (errno == ENOENT)
+                continue;
+
+            virReportSystemError(errno, _("Unable to stat %s"), fifo);
+            return -1;
+        }
+
+        /* Check if the init fifo is not the very one that's on
+         * the host. We don't want to change the host's runlevel.
+         */
+        if (data->st_valid[i] &&
+            data->st[i].st_dev == cont_sb.st_dev &&
+            data->st[i].st_ino == cont_sb.st_ino)
+            continue;
+
+        return virInitctlSetRunLevel(fifo, data->runlevel);
+    }
+
+    /* If no usable fifo was found then declare success. Caller
+     * will try killing the domain with signal. */
+    return 0;
+}
+
+
+int
+virLXCDomainSetRunlevel(virDomainObjPtr vm,
+                        int runlevel)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    lxcDomainInitctlCallbackData data;
+    size_t nfifos = 0;
+    size_t i;
+    int ret = -1;
+
+    memset(&data, 0, sizeof(data));
+
+    data.runlevel = runlevel;
+
+    for (nfifos = 0; virInitctlFifos[nfifos]; nfifos++)
+        ;
+
+    if (VIR_ALLOC_N(data.st, nfifos) < 0 ||
+        VIR_ALLOC_N(data.st_valid, nfifos) < 0)
+        goto cleanup;
+
+    for (i = 0; virInitctlFifos[i]; i++) {
+        const char *fifo = virInitctlFifos[i];
+
+        if (stat(fifo, &(data.st[i])) < 0) {
+            if (errno == ENOENT)
+                continue;
+
+            virReportSystemError(errno, _("Unable to stat %s"), fifo);
+            goto cleanup;
+        }
+
+        data.st_valid[i] = true;
+    }
+
+    ret = virProcessRunInMountNamespace(priv->initpid,
+                                        lxcDomainInitctlCallback,
+                                        &data);
+ cleanup:
+    VIR_FREE(data.st);
+    VIR_FREE(data.st_valid);
     return ret;
 }

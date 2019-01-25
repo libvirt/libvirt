@@ -3273,15 +3273,6 @@ lxcConnectListAllDomains(virConnectPtr conn,
 
 
 static int
-lxcDomainInitctlCallback(pid_t pid ATTRIBUTE_UNUSED,
-                         void *opaque)
-{
-    int *command = opaque;
-    return virInitctlSetRunLevel(NULL, *command);
-}
-
-
-static int
 lxcDomainShutdownFlags(virDomainPtr dom,
                        unsigned int flags)
 {
@@ -3318,9 +3309,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
         (flags & VIR_DOMAIN_SHUTDOWN_INITCTL)) {
         int command = VIR_INITCTL_RUNLEVEL_POWEROFF;
 
-        if ((rc = virProcessRunInMountNamespace(priv->initpid,
-                                                lxcDomainInitctlCallback,
-                                                &command)) < 0)
+        if ((rc = virLXCDomainSetRunlevel(vm, command)) < 0)
             goto endjob;
         if (rc == 0 && flags != 0 &&
             ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
@@ -3398,9 +3387,7 @@ lxcDomainReboot(virDomainPtr dom,
         (flags & VIR_DOMAIN_REBOOT_INITCTL)) {
         int command = VIR_INITCTL_RUNLEVEL_REBOOT;
 
-        if ((rc = virProcessRunInMountNamespace(priv->initpid,
-                                                lxcDomainInitctlCallback,
-                                                &command)) < 0)
+        if ((rc = virLXCDomainSetRunlevel(vm, command)) < 0)
             goto endjob;
         if (rc == 0 && flags != 0 &&
             ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
