@@ -1065,10 +1065,11 @@ int
 qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
                                         virTristateBool *allowReboot);
 
-bool qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
-                                    virDomainDeviceInfo info,
-                                    virQEMUCapsPtr qemuCaps,
-                                    const char *devicename);
+bool
+qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
+                                     const virDomainDeviceInfo *info,
+                                     virQEMUCapsPtr qemuCaps,
+                                     const char *devicename);
 
 int
 qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,

@@ -5807,7 +5807,7 @@ qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
 {
     int ret = 0;
 
-    if (!qemuDomainCheckCCWS390AddressSupport(def, controller->info, qemuCaps,
+    if (!qemuDomainCheckCCWS390AddressSupport(def, &controller->info, qemuCaps,
                                               "controller"))
         return -1;
 
@@ -5861,7 +5861,7 @@ qemuDomainDeviceDefValidateVsock(const virDomainVsockDef *vsock,
         return -1;
     }
 
-    if (!qemuDomainCheckCCWS390AddressSupport(def, vsock->info, qemuCaps,
+    if (!qemuDomainCheckCCWS390AddressSupport(def, &vsock->info, qemuCaps,
                                               "vsock"))
         return -1;
 
@@ -13489,11 +13489,11 @@ qemuDomainGetMachineName(virDomainObjPtr vm)
  */
 bool
 qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
-                                     virDomainDeviceInfo info,
+                                     const virDomainDeviceInfo *info,
                                      virQEMUCapsPtr qemuCaps,
                                      const char *devicename)
 {
-    if (info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
         if (!qemuDomainIsS390CCW(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("cannot use CCW address type for device "
@@ -13506,7 +13506,7 @@ qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
                              "this QEMU"));
             return false;
         }
-    } else if (info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio S390 address type is not supported by "

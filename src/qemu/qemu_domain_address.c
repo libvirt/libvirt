@@ -3226,7 +3226,7 @@ qemuDomainEnsureVirtioAddress(bool *releaseAddr,
         else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
             info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
     } else {
-        if (!qemuDomainCheckCCWS390AddressSupport(vm->def, *info, priv->qemuCaps,
+        if (!qemuDomainCheckCCWS390AddressSupport(vm->def, info, priv->qemuCaps,
                                                   devicename))
             return -1;
     }

@@ -1894,7 +1894,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
         goto error;
 
-    if (!qemuDomainCheckCCWS390AddressSupport(def, disk->info, qemuCaps, disk->dst))
+    if (!qemuDomainCheckCCWS390AddressSupport(def, &disk->info, qemuCaps, disk->dst))
         goto error;
 
     if (disk->iothread && !qemuCheckIOThreads(def, disk))
@@ -5961,7 +5961,7 @@ qemuBuildRNGDevStr(const virDomainDef *def,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!qemuDomainCheckCCWS390AddressSupport(def, dev->info, qemuCaps,
+    if (!qemuDomainCheckCCWS390AddressSupport(def, &dev->info, qemuCaps,
                                               dev->source.file))
         goto error;
 
