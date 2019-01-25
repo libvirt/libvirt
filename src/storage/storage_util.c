@@ -742,38 +742,40 @@ struct _virStorageBackendQemuImgInfo {
 static int
 storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
                                 char **opts,
-                                struct _virStorageBackendQemuImgInfo info)
+                                struct _virStorageBackendQemuImgInfo *info)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (info.backingPath)
+    if (info->backingPath)
         virBufferAsprintf(&buf, "backing_fmt=%s,",
-                          virStorageFileFormatTypeToString(info.backingFormat));
+                          virStorageFileFormatTypeToString(info->backingFormat));
 
     if (encinfo)
-        virQEMUBuildQemuImgKeySecretOpts(&buf, encinfo, info.secretAlias);
+        virQEMUBuildQemuImgKeySecretOpts(&buf, encinfo, info->secretAlias);
 
-    if (info.preallocate) {
-        if (info.size_arg > info.allocation)
+    if (info->preallocate) {
+        if (info->size_arg > info->allocation)
             virBufferAddLit(&buf, "preallocation=metadata,");
         else
             virBufferAddLit(&buf, "preallocation=falloc,");
     }
 
-    if (info.nocow)
+    if (info->nocow)
         virBufferAddLit(&buf, "nocow=on,");
 
-    if (info.compat)
-        virBufferAsprintf(&buf, "compat=%s,", info.compat);
+    if (info->compat)
+        virBufferAsprintf(&buf, "compat=%s,", info->compat);
+    else if (info->format == VIR_STORAGE_FILE_QCOW2)
+        virBufferAddLit(&buf, "compat=0.10,");
 
-    if (info.features && info.format == VIR_STORAGE_FILE_QCOW2) {
-        if (virBitmapIsBitSet(info.features,
+    if (info->features && info->format == VIR_STORAGE_FILE_QCOW2) {
+        if (virBitmapIsBitSet(info->features,
                               VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS)) {
-            if (STREQ_NULLABLE(info.compat, "0.10")) {
+            if (STREQ_NULLABLE(info->compat, "0.10")) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("lazy_refcounts not supported with compat"
                                  " level %s"),
-                               info.compat);
+                               info->compat);
                 goto error;
             }
             virBufferAddLit(&buf, "lazy_refcounts,");
@@ -942,12 +944,9 @@ storageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
 static int
 storageBackendCreateQemuImgSetOptions(virCommandPtr cmd,
                                       virStorageEncryptionInfoDefPtr encinfo,
-                                      struct _virStorageBackendQemuImgInfo info)
+                                      struct _virStorageBackendQemuImgInfo *info)
 {
     char *opts = NULL;
-
-    if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat)
-        info.compat = "0.10";
 
     if (storageBackendCreateQemuImgOpts(encinfo, &opts, info) < 0)
         return -1;
@@ -1196,7 +1195,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
     }
 
     if (convertStep != VIR_STORAGE_VOL_ENCRYPT_CONVERT) {
-        if (storageBackendCreateQemuImgSetOptions(cmd, encinfo, info) < 0)
+        if (storageBackendCreateQemuImgSetOptions(cmd, encinfo, &info) < 0)
             goto error;
         if (info.inputPath)
             virCommandAddArg(cmd, info.inputPath);
