@@ -3277,7 +3277,7 @@ lxcDomainInitctlCallback(pid_t pid ATTRIBUTE_UNUSED,
                          void *opaque)
 {
     int *command = opaque;
-    return virInitctlSetRunLevel(*command);
+    return virInitctlSetRunLevel(NULL, *command);
 }
 
 
