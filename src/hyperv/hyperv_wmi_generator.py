@@ -280,7 +280,6 @@ class WmiClass:
 
         # alter each version's property list so that common members are first
         # and in the same order as in the common dictionary
-        total = len(common)
         for cls in self.versions:
             index = 0
             count = len(cls.properties)
