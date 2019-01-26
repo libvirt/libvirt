@@ -76,7 +76,7 @@ static void nwfilterDriverUnlock(void)
     virMutexUnlock(&driver->lock);
 }
 
-#if HAVE_FIREWALLD
+#ifdef WITH_FIREWALLD
 
 static DBusHandlerResult
 nwfilterFirewalldDBusFilter(DBusConnection *connection ATTRIBUTE_UNUSED,
@@ -145,7 +145,7 @@ nwfilterDriverInstallDBusMatches(DBusConnection *sysbus)
     return ret;
 }
 
-#else /* HAVE_FIREWALLD */
+#else /* WITH_FIREWALLD */
 
 static void
 nwfilterDriverRemoveDBusMatches(void)
@@ -158,7 +158,7 @@ nwfilterDriverInstallDBusMatches(DBusConnection *sysbus ATTRIBUTE_UNUSED)
     return 0;
 }
 
-#endif /* HAVE_FIREWALLD */
+#endif /* WITH_FIREWALLD */
 
 static int
 virNWFilterTriggerRebuildImpl(void *opaque)

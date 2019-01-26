@@ -536,7 +536,7 @@ networkAutostartConfig(virNetworkObjPtr obj,
 }
 
 
-#if HAVE_FIREWALLD
+#ifdef WITH_FIREWALLD
 static DBusHandlerResult
 firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
                              DBusMessage *message,
@@ -571,7 +571,7 @@ networkStateInitialize(bool privileged,
     int ret = -1;
     char *configdir = NULL;
     char *rundir = NULL;
-#ifdef HAVE_FIREWALLD
+#ifdef WITH_FIREWALLD
     DBusConnection *sysbus = NULL;
 #endif
 
@@ -662,7 +662,7 @@ networkStateInitialize(bool privileged,
 
     network_driver->networkEventState = virObjectEventStateNew();
 
-#ifdef HAVE_FIREWALLD
+#ifdef WITH_FIREWALLD
     if (!(sysbus = virDBusGetSystemBus())) {
         VIR_WARN("DBus not available, disabling firewalld support "
                  "in bridge_network_driver: %s", virGetLastErrorMessage());

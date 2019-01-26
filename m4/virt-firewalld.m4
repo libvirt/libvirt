@@ -32,10 +32,10 @@ AC_DEFUN([LIBVIRT_CHECK_FIREWALLD], [
     if test "x$with_dbus" != "xyes" ; then
       AC_MSG_ERROR([You must have dbus enabled for firewalld support])
     fi
-    AC_DEFINE_UNQUOTED([HAVE_FIREWALLD], [1], [whether firewalld support is enabled])
+    AC_DEFINE_UNQUOTED([WITH_FIREWALLD], [1], [whether firewalld support is enabled])
   fi
 
-  AM_CONDITIONAL([HAVE_FIREWALLD], [test "x$with_firewalld" != "xno"])
+  AM_CONDITIONAL([WITH_FIREWALLD], [test "x$with_firewalld" != "xno"])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_FIREWALLD], [
