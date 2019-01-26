@@ -82,6 +82,7 @@
 %define with_sanlock       0%{!?_without_sanlock:0}
 %define with_numad         0%{!?_without_numad:0}
 %define with_firewalld     0%{!?_without_firewalld:0}
+%define with_firewalld_zone 0%{!?_without_firewalld_zone:0}
 %define with_libssh2       0%{!?_without_libssh2:0}
 %define with_wireshark     0%{!?_without_wireshark:0}
 %define with_libssh        0%{!?_without_libssh:0}
@@ -135,6 +136,11 @@
 %endif
 
 %define with_firewalld 1
+
+%if 0%{?fedora} >= 30 || 0%{?rhel} > 7
+    %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
+%endif
+
 
 # fuse is used to provide virtualized /proc for LXC
 %if %{with_lxc}
@@ -393,6 +399,10 @@ BuildRequires: libssh-devel >= 0.7.0
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: rpcgen
 BuildRequires: libtirpc-devel
+%endif
+
+%if %{with_firewalld_zone}
+BuildRequires: firewalld-filesystem
 %endif
 
 Provides: bundled(gnulib)
@@ -1093,6 +1103,12 @@ exit 1
     %define arg_firewalld --without-firewalld
 %endif
 
+%if %{with_firewalld_zone}
+    %define arg_firewalld_zone --with-firewalld-zone
+%else
+    %define arg_firewalld_zone --without-firewalld-zone
+%endif
+
 %if %{with_wireshark}
     %define arg_wireshark --with-wireshark-dissector
 %else
@@ -1191,6 +1207,7 @@ rm -f po/stamp-po
            --with-dtrace \
            --with-driver-modules \
            %{?arg_firewalld} \
+           %{?arg_firewalld_zone} \
            %{?arg_wireshark} \
            --without-pm-utils \
            --with-nss-plugin \
@@ -1357,6 +1374,16 @@ if [ -f %{_localstatedir}/lib/rpm-state/libvirt/restart ]; then
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
 fi
 rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
+
+%post daemon-driver-network
+%if %{with_firewalld}
+    %firewalld_reload
+%endif
+
+%postun daemon-driver-network
+%if %{with_firewalld}
+    %firewalld_reload
+%endif
 
 %post daemon-config-network
 if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
@@ -1595,6 +1622,10 @@ exit 0
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
+
+%if %{with_firewalld_zone}
+%{_prefix}/lib/firewalld/zones/libvirt.xml
+%endif
 
 %files daemon-driver-nodedev
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so

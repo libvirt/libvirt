@@ -87,6 +87,11 @@ install-data-network:
 	( cd $(DESTDIR)$(confdir)/qemu/networks/autostart && \
 	  rm -f default.xml && \
 	  $(LN_S) ../default.xml default.xml )
+if WITH_FIREWALLD_ZONE
+	$(MKDIR_P) "$(DESTDIR)$(prefix)/lib/firewalld/zones"
+	$(INSTALL_DATA) $(srcdir)/network/libvirt.zone \
+	  $(DESTDIR)$(prefix)/lib/firewalld/zones/libvirt.xml
+endif WITH_FIREWALLD_ZONE
 
 uninstall-data-network:
 	rm -f $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml
@@ -95,10 +100,13 @@ uninstall-data-network:
 	rmdir "$(DESTDIR)$(confdir)/qemu/networks" || :
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/network" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/network" ||:
+if WITH_FIREWALLD_ZONE
+	rm -f  $(DESTDIR)$(prefix)/lib/firewalld/zones/libvirt.xml
+endif WITH_FIREWALLD_ZONE
 
 endif WITH_NETWORK
 
-EXTRA_DIST += network/default.xml
+EXTRA_DIST += network/default.xml network/libvirt.zone
 
 .PHONY: \
 	install-data-network \
