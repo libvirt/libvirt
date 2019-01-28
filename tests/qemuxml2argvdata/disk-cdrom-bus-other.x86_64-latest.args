@@ -24,15 +24,14 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=/root/boot.iso,format=raw,if=none,id=drive-usb-disk0,media=cdrom,\
-readonly=on \
+-drive file=/root/boot.iso,format=raw,if=none,id=drive-usb-disk0,readonly=on \
 -device usb-storage,bus=usb.0,port=1,drive=drive-usb-disk0,id=usb-disk0,\
 removable=off \
--drive if=none,id=drive-usb-disk1,media=cdrom,readonly=on \
+-drive if=none,id=drive-usb-disk1,readonly=on \
 -device usb-storage,bus=usb.0,port=2,drive=drive-usb-disk1,id=usb-disk1,\
 removable=off \
--drive file=/root/boot2.iso,format=raw,if=sd,index=2,media=cdrom,readonly=on \
--drive if=sd,index=3,media=cdrom,readonly=on \
+-drive file=/root/boot2.iso,format=raw,if=sd,index=2,readonly=on \
+-drive if=sd,index=3,readonly=on \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

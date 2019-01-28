@@ -1757,15 +1757,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_WERROR))
         qemuBuildDiskFrontendAttributeErrorPolicy(disk, &opt);
 
-
-    /* While this is a frontend attribute, it only makes sense to be used when
-     * legacy -drive is used. In modern qemu the 'ide-cd' or 'scsi-cd' are used.
-     * virtio and other just ignore the attribute anyways */
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-        disk->bus != VIR_DOMAIN_DISK_BUS_SCSI &&
-        disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
-        virBufferAddLit(&opt, ",media=cdrom");
-
     if (disk->src->readonly)
         virBufferAddLit(&opt, ",readonly=on");
 
