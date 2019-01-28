@@ -524,6 +524,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               /* 325 */
               "memory-backend-file.pmem",
               "nvdimm.unarmed",
+              "scsi-disk.device_id",
     );
 
 
@@ -1157,6 +1158,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "wwn", QEMU_CAPS_SCSI_DISK_WWN },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
+    { "device_id", QEMU_CAPS_SCSI_DISK_DEVICE_ID },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsIDEDrive[] = {
