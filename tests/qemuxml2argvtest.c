@@ -1181,8 +1181,6 @@ mymain(void)
             QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-scsi-vscsi", NONE);
-    DO_TEST("disk-virtio-scsi-ioeventfd",
-            QEMU_CAPS_VIRTIO_IOEVENTFD, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST("disk-scsi-megasas",
             QEMU_CAPS_SCSI_MEGASAS);

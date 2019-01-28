@@ -28,6 +28,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device virtio-scsi-pci,id=scsi1,num_queues=8,bus=pci.0,addr=0x3 \
 -device virtio-scsi-pci,id=scsi2,cmd_per_lun=50,bus=pci.0,addr=0x4 \
 -device virtio-scsi-pci,id=scsi3,max_sectors=512,bus=pci.0,addr=0x5 \
+-device virtio-scsi-pci,id=scsi4,ioeventfd=on,bus=pci.0,addr=0x6 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-scsi0-0-0-0 \
 -device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,\
 id=scsi0-0-0-0,bootindex=1 \
@@ -40,7 +41,10 @@ id=scsi2-0-0-0 \
 -drive file=/dev/HostVG/QEMUGuest4,format=raw,if=none,id=drive-scsi3-0-0-0 \
 -device scsi-hd,bus=scsi3.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi3-0-0-0,\
 id=scsi3-0-0-0 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
+-drive file=/dev/HostVG/QEMUGuest5,format=raw,if=none,id=drive-scsi4-0-0-0 \
+-device scsi-hd,bus=scsi4.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi4-0-0-0,\
+id=scsi4-0-0-0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x7 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on
