@@ -129,7 +129,6 @@ EXTRA_DIST = \
 	qemumigparamsdata \
 	qemumonitorjsondata \
 	qemuxml2argvdata \
-	qemuxml2startupxmloutdata \
 	qemuxml2xmloutdata \
 	qemustatusxml2xmldata \
 	qemumemlockdata \

@@ -291,9 +291,8 @@ typedef enum {
     FLAG_EXPECT_FAILURE     = 1 << 0,
     FLAG_EXPECT_PARSE_ERROR = 1 << 1,
     FLAG_FIPS               = 1 << 2,
-    FLAG_STEAL_VM           = 1 << 3,
-    FLAG_REAL_CAPS          = 1 << 4,
-    FLAG_SKIP_LEGACY_CPUS   = 1 << 5,
+    FLAG_REAL_CAPS          = 1 << 3,
+    FLAG_SKIP_LEGACY_CPUS   = 1 << 4,
 } virQemuXML2ArgvTestFlags;
 
 struct testInfo {
@@ -304,7 +303,6 @@ struct testInfo {
     int migrateFd;
     unsigned int flags;
     unsigned int parseFlags;
-    virDomainObjPtr vm;
 };
 
 
@@ -429,48 +427,15 @@ testUpdateQEMUCaps(const struct testInfo *info,
 
 
 static int
-testCompareXMLToStartupXML(const void *data)
-{
-    const struct testInfo *info = data;
-    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
-    char *xml = NULL;
-    char *actual = NULL;
-    int ret = -1;
-
-    if (!info->vm) {
-        VIR_TEST_DEBUG("VM object missing. Did the args conversion succeed?");
-        return -1;
-    }
-
-    if (virAsprintf(&xml, "%s/qemuxml2startupxmloutdata/%s.xml",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
-
-    if (!(actual = virDomainDefFormat(info->vm->def, NULL, format_flags)))
-        goto cleanup;
-
-    ret = virTestCompareToFile(actual, xml);
-
- cleanup:
-    VIR_FREE(xml);
-    VIR_FREE(actual);
-    return ret;
-}
-
-
-static int
 testCheckExclusiveFlags(int flags)
 {
     virCheckFlags(FLAG_EXPECT_FAILURE |
                   FLAG_EXPECT_PARSE_ERROR |
                   FLAG_FIPS |
-                  FLAG_STEAL_VM |
                   FLAG_REAL_CAPS |
                   FLAG_SKIP_LEGACY_CPUS |
                   0, -1);
 
-    VIR_EXCLUSIVE_FLAGS_RET(FLAG_STEAL_VM, FLAG_EXPECT_FAILURE, -1);
-    VIR_EXCLUSIVE_FLAGS_RET(FLAG_STEAL_VM, FLAG_EXPECT_PARSE_ERROR, -1);
     VIR_EXCLUSIVE_FLAGS_RET(FLAG_REAL_CAPS, FLAG_SKIP_LEGACY_CPUS, -1);
     return 0;
 }
@@ -643,9 +608,6 @@ testCompareXMLToArgv(const void *data)
         ret = 0;
     }
 
-    if (flags & FLAG_STEAL_VM)
-        VIR_STEAL_PTR(info->vm, vm);
-
  cleanup:
     VIR_FREE(log);
     VIR_FREE(actualargv);
@@ -781,7 +743,7 @@ mymain(void)
     do { \
         static struct testInfo info = { \
             name, "." suffix, NULL, migrateFrom, migrateFrom ? 7 : -1,\
-            (flags | FLAG_REAL_CAPS), parseFlags, NULL \
+            (flags | FLAG_REAL_CAPS), parseFlags, \
         }; \
         if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
                                                             capsfile))) \
@@ -792,7 +754,6 @@ mymain(void)
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
         virObjectUnref(info.qemuCaps); \
-        virObjectUnref(info.vm); \
     } while (0)
 
 # define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata/caps_"
@@ -838,7 +799,6 @@ mymain(void)
     do { \
         static struct testInfo info = { \
             name, NULL, NULL, migrateFrom, migrateFd, (flags), parseFlags, \
-            NULL \
         }; \
         if (testInitQEMUCaps(&info, gic) < 0) \
             return EXIT_FAILURE; \
@@ -846,12 +806,7 @@ mymain(void)
         if (virTestRun("QEMU XML-2-ARGV " name, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
-        if (((flags) & FLAG_STEAL_VM) && \
-            virTestRun("QEMU XML-2-startup-XML " name, \
-                       testCompareXMLToStartupXML, &info) < 0) \
-            ret = -1; \
         virObjectUnref(info.qemuCaps); \
-        virObjectUnref(info.vm); \
     } while (0)
 
 # define DO_TEST(name, ...) \
@@ -859,9 +814,6 @@ mymain(void)
 
 # define DO_TEST_GIC(name, gic, ...) \
     DO_TEST_FULL(name, NULL, -1, 0, 0, gic, __VA_ARGS__)
-
-# define DO_TEST_WITH_STARTUP(name, ...) \
-    DO_TEST_FULL(name, NULL, -1, FLAG_STEAL_VM, 0, GIC_NONE, __VA_ARGS__)
 
 # define DO_TEST_FAILURE(name, ...) \
     DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE, \
