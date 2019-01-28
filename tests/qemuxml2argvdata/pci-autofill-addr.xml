@@ -10,7 +10,7 @@
   </os>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <disk type='file' device='cdrom'>
+    <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
       <source file='/var/iso/f18kde.iso'/>
       <target dev='vda' bus='virtio'/>
