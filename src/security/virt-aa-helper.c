@@ -355,8 +355,7 @@ create_profile(const char *profile, const char *profile_name,
         if (!(tmp = virStringReplace(pcontent, template_end, replace_files)))
             goto clean_all;
         VIR_FREE(pcontent);
-        pcontent = tmp;
-        tmp = NULL;
+        VIR_STEAL_PTR(pcontent, tmp);
     }
 
     /* write the file */

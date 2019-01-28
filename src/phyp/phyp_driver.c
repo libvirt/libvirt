@@ -1468,8 +1468,7 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
         if (VIR_STRDUP(backing_device, char_ptr) < 0)
             goto cleanup;
     } else {
-        backing_device = ret;
-        ret = NULL;
+        VIR_STEAL_PTR(backing_device, ret);
     }
 
     char_ptr = strchr(backing_device, '\n');

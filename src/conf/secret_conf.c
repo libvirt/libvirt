@@ -193,8 +193,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     if (virXPathNode("./usage", ctxt) != NULL
         && virSecretDefParseUsage(ctxt, def) < 0)
         goto cleanup;
-    ret = def;
-    def = NULL;
+    VIR_STEAL_PTR(ret, def);
 
  cleanup:
     VIR_FREE(prop);

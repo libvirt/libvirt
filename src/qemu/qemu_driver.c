@@ -6655,11 +6655,9 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
         virFreeError(err);
 
         /* use the user provided XML */
-        ret = newdef;
-        newdef = NULL;
+        VIR_STEAL_PTR(ret, newdef);
     } else {
-        ret = newdef_migr;
-        newdef_migr = NULL;
+        VIR_STEAL_PTR(ret, newdef_migr);
     }
 
  cleanup:
@@ -12705,10 +12703,8 @@ qemuDomainMigratePerform(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (flags & VIR_MIGRATE_PEER2PEER) {
-        dconnuri = uri;
-        uri = NULL;
-    }
+    if (flags & VIR_MIGRATE_PEER2PEER)
+        VIR_STEAL_PTR(dconnuri, uri);
 
     /* Do not output cookies in v2 protocol, since the cookie
      * length was not sufficiently large, causing failures

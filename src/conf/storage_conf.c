@@ -587,8 +587,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
                                      node) < 0)
         goto cleanup;
 
-    ret = def;
-    def = NULL;
+    VIR_STEAL_PTR(ret, def);
  cleanup:
     virStoragePoolSourceFree(def);
     xmlFreeDoc(doc);

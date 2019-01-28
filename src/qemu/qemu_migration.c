@@ -4170,9 +4170,8 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
                           VIR_MIGRATE_AUTO_CONVERGE);
 
     VIR_DEBUG("Prepare3 %p", dconn);
-    cookiein = cookieout;
+    VIR_STEAL_PTR(cookiein, cookieout);
     cookieinlen = cookieoutlen;
-    cookieout = NULL;
     cookieoutlen = 0;
     if (flags & VIR_MIGRATE_TUNNELLED) {
         if (!(st = virStreamNew(dconn, 0)))
@@ -4239,9 +4238,8 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
     VIR_DEBUG("Perform3 %p uri=%s", sconn, NULLSTR(uri));
     qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
     VIR_FREE(cookiein);
-    cookiein = cookieout;
+    VIR_STEAL_PTR(cookiein, cookieout);
     cookieinlen = cookieoutlen;
-    cookieout = NULL;
     cookieoutlen = 0;
     if (flags & VIR_MIGRATE_TUNNELLED) {
         ret = qemuMigrationSrcPerformTunnel(driver, vm, st, persist_xml,
@@ -4281,9 +4279,8 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
      */
     VIR_DEBUG("Finish3 %p ret=%d", dconn, ret);
     VIR_FREE(cookiein);
-    cookiein = cookieout;
+    VIR_STEAL_PTR(cookiein, cookieout);
     cookieinlen = cookieoutlen;
-    cookieout = NULL;
     cookieoutlen = 0;
 
     if (useParams) {
@@ -4362,9 +4359,8 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
      */
     VIR_DEBUG("Confirm3 %p cancelled=%d vm=%p", sconn, cancelled, vm);
     VIR_FREE(cookiein);
-    cookiein = cookieout;
+    VIR_STEAL_PTR(cookiein, cookieout);
     cookieinlen = cookieoutlen;
-    cookieout = NULL;
     cookieoutlen = 0;
     ret = qemuMigrationSrcConfirmPhase(driver, vm,
                                        cookiein, cookieinlen,

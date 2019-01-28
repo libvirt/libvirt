@@ -1233,8 +1233,7 @@ virStorageFileGetMetadataFromFD(const char *path,
          * update the metadata.*/
         meta->type = VIR_STORAGE_TYPE_DIR;
         meta->format = VIR_STORAGE_FILE_DIR;
-        ret = meta;
-        meta = NULL;
+        VIR_STEAL_PTR(ret, meta);
         goto cleanup;
     }
 
@@ -1256,8 +1255,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     else if (S_ISBLK(sb.st_mode))
         meta->type = VIR_STORAGE_TYPE_BLOCK;
 
-    ret = meta;
-    meta = NULL;
+    VIR_STEAL_PTR(ret, meta);
 
  cleanup:
     virStorageSourceFree(meta);

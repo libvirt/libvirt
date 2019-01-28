@@ -394,8 +394,7 @@ virSecretObjListAdd(virSecretObjListPtr secrets,
         virObjectRef(obj);
     }
 
-    ret = obj;
-    obj = NULL;
+    VIR_STEAL_PTR(ret, obj);
 
  cleanup:
     virSecretObjEndAPI(&obj);

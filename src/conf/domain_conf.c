@@ -7900,8 +7900,7 @@ virDomainNetIPParseXML(xmlNodePtr node)
         goto cleanup;
     }
 
-    ret = ip;
-    ip = NULL;
+    VIR_STEAL_PTR(ret, ip);
 
  cleanup:
     VIR_FREE(prefixStr);
@@ -13482,10 +13481,8 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
             goto error;
         }
 
-        if (!address) {
-            address = addressCompat;
-            addressCompat = NULL;
-        }
+        if (!address)
+            VIR_STEAL_PTR(address, addressCompat);
     }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
@@ -13497,10 +13494,8 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
             goto error;
         }
 
-        if (!socketPath) {
-            socketPath = socketCompat;
-            socketCompat = NULL;
-        }
+        if (!socketPath)
+            VIR_STEAL_PTR(socketPath, socketCompat);
     }
 
     if (address && address[0] &&
@@ -14747,8 +14742,7 @@ virDomainShmemDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto cleanup;
 
 
-    ret = def;
-    def = NULL;
+    VIR_STEAL_PTR(ret, def);
  cleanup:
     ctxt->node = save;
     VIR_FREE(tmp);
@@ -16187,8 +16181,7 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
         }
     }
 
-    ret = iommu;
-    iommu = NULL;
+    VIR_STEAL_PTR(ret, iommu);
 
  cleanup:
     ctxt->node = save;

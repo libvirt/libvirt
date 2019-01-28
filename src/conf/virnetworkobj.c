@@ -602,8 +602,7 @@ virNetworkObjAssignDefLocked(virNetworkObjListPtr nets,
         obj->persistent = !(flags & VIR_NETWORK_OBJ_LIST_ADD_LIVE);
     }
 
-    ret = obj;
-    obj = NULL;
+    VIR_STEAL_PTR(ret, obj);
 
  cleanup:
     virNetworkObjEndAPI(&obj);

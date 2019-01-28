@@ -11645,8 +11645,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
             }
             VIR_FREE(devTmp);
             VIR_FREE(target);
-            target = tmp;
-            tmp = NULL;
+            VIR_STEAL_PTR(target, tmp);
         }
 
         if (qemuDomainCreateDeviceRecursive(target, data,
@@ -12601,8 +12600,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
             }
             VIR_FREE(fileTmp);
             VIR_FREE(target);
-            target = tmp;
-            tmp = NULL;
+            VIR_STEAL_PTR(target, tmp);
         }
 
         data.target = target;

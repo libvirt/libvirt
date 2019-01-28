@@ -928,8 +928,7 @@ prlsdkParseNetAddress(char *addr)
         goto cleanup;
     ip->prefix = nbits;
 
-    ret = ip;
-    ip = NULL;
+    VIR_STEAL_PTR(ret, ip);
 
  cleanup:
     if (!ret)
@@ -4768,8 +4767,7 @@ prlsdkParseSnapshotTree(const char *treexml)
         goto cleanup;
     }
 
-    ret = snapshots;
-    snapshots = NULL;
+    VIR_STEAL_PTR(ret, snapshots);
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);

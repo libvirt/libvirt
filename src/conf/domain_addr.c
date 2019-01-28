@@ -1757,8 +1757,7 @@ virDomainVirtioSerialAddrSetCreateFromDomain(virDomainDefPtr def)
                                    addrs) < 0)
         goto cleanup;
 
-    ret = addrs;
-    addrs = NULL;
+    VIR_STEAL_PTR(ret, addrs);
  cleanup:
     virDomainVirtioSerialAddrSetFree(addrs);
     return ret;
@@ -2095,8 +2094,7 @@ virDomainUSBAddressHubNew(size_t nports)
         goto cleanup;
     hub->nports = nports;
 
-    ret = hub;
-    hub = NULL;
+    VIR_STEAL_PTR(ret, hub);
  cleanup:
     virDomainUSBAddressHubFree(hub);
     return ret;

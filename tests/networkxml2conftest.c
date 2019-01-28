@@ -51,8 +51,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
                                  "except-interface=lo\n")))
         goto fail;
     VIR_FREE(actual);
-    actual = tmp;
-    tmp = NULL;
+    VIR_STEAL_PTR(actual, tmp);
 #endif
 
     if (virTestCompareToFile(actual, outconf) < 0)

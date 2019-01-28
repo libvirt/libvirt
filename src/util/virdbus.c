@@ -762,8 +762,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 goto cleanup;
             }
             VIR_FREE(contsig);
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = t + 1;
             nstruct = skiplen;
             narray = (size_t)va_arg(args, int);
@@ -789,8 +788,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 VIR_FREE(newiter);
                 goto cleanup;
             }
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = vsig;
             nstruct = strlen(types);
             narray = (size_t)-1;
@@ -821,8 +819,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 goto cleanup;
             }
             VIR_FREE(contsig);
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = t + 1;
             nstruct = skiplen - 2;
             narray = (size_t)-1;
@@ -1059,8 +1056,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                                      nstruct, narray) < 0)
                 goto cleanup;
             VIR_FREE(contsig);
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = t + 1;
             nstruct = skiplen;
             if (arrayref) {
@@ -1090,8 +1086,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                 VIR_DEBUG("Push failed");
                 goto cleanup;
             }
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = vsig;
             nstruct = strlen(types);
             narray = (size_t)-1;
@@ -1118,8 +1113,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                                      nstruct, narray) < 0)
                 goto cleanup;
             VIR_FREE(contsig);
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = t + 1;
             nstruct = skiplen - 2;
             narray = (size_t)-1;

@@ -182,12 +182,8 @@ vzDestroyDriverConnection(void)
     vzConnPtr privconn_list;
 
     virMutexLock(&vz_driver_lock);
-    driver = vz_driver;
-    vz_driver = NULL;
-
-    privconn_list = vz_conn_list;
-    vz_conn_list = NULL;
-
+    VIR_STEAL_PTR(driver, vz_driver);
+    VIR_STEAL_PTR(privconn_list, vz_conn_list);
     virMutexUnlock(&vz_driver_lock);
 
     while (privconn_list) {
@@ -3203,9 +3199,8 @@ vzDomainMigratePerformP2P(virDomainObjPtr dom,
                                 VIR_MIGRATE_PARAM_DEST_XML, dom_xml) < 0)
         goto done;
 
-    cookiein = cookieout;
+    VIR_STEAL_PTR(cookiein, cookieout);
     cookieinlen = cookieoutlen;
-    cookieout = NULL;
     cookieoutlen = 0;
     virObjectUnlock(dom);
     ret = dconn->driver->domainMigratePrepare3Params
@@ -3226,9 +3221,8 @@ vzDomainMigratePerformP2P(virDomainObjPtr dom,
     }
 
     VIR_FREE(cookiein);
-    cookiein = cookieout;
+    VIR_STEAL_PTR(cookiein, cookieout);
     cookieinlen = cookieoutlen;
-    cookieout = NULL;
     cookieoutlen = 0;
     if (vzDomainMigratePerformStep(dom, driver, params, nparams, cookiein,
                                    cookieinlen, flags) < 0) {

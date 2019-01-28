@@ -1356,8 +1356,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
           virshSnapSorter);
     snaplist->nsnaps -= deleted;
 
-    ret = snaplist;
-    snaplist = NULL;
+    VIR_STEAL_PTR(ret, snaplist);
 
  cleanup:
     virshSnapshotListFree(snaplist);

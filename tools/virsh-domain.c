@@ -8423,8 +8423,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
             }
 
             VIR_FREE(desc);
-            desc = desc_edited;
-            desc_edited = NULL;
+            VIR_STEAL_PTR(desc, desc_edited);
         }
 
         if (virDomainSetMetadata(dom, type, desc, NULL, NULL, flags) < 0) {

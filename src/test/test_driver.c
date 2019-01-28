@@ -5595,8 +5595,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     if (VIR_STRDUP(dev->parentName, def->parent) < 0)
         goto cleanup;
 
-    ret = dev;
-    dev = NULL;
+    VIR_STEAL_PTR(ret, dev);
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
