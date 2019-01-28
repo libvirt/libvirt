@@ -1302,7 +1302,7 @@ static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "scsi-hd", virQEMUCapsDevicePropsSCSIDisk,
       ARRAY_CARDINALITY(virQEMUCapsDevicePropsSCSIDisk),
       -1 },
-    { "ide-drive", virQEMUCapsDevicePropsIDEDrive,
+    { "ide-hd", virQEMUCapsDevicePropsIDEDrive,
       ARRAY_CARDINALITY(virQEMUCapsDevicePropsIDEDrive),
       -1 },
     { "PIIX4_PM", virQEMUCapsDevicePropsPiix4PM,

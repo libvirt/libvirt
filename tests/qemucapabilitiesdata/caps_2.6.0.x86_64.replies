@@ -2354,7 +2354,7 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "ide-drive"
+    "typename": "ide-hd"
   },
   "id": "libvirt-16"
 }
