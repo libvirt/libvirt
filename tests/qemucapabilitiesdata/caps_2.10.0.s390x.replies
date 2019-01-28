@@ -2813,7 +2813,7 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "scsi-disk"
+    "typename": "scsi-hd"
   },
   "id": "libvirt-16"
 }
