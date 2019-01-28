@@ -364,8 +364,7 @@ mymain(void)
     DO_TEST("disk-network-sheepdog", NONE);
     DO_TEST("disk-network-vxhs", NONE);
     DO_TEST("disk-network-tlsx509", NONE);
-    DO_TEST("disk-scsi-device",
-            QEMU_CAPS_SCSI_LSI);
+    DO_TEST("disk-scsi", QEMU_CAPS_SCSI_LSI);
     DO_TEST("disk-scsi-vscsi", NONE);
     DO_TEST("disk-virtio-scsi-reservations",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_PR_MANAGER_HELPER);

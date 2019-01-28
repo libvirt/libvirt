@@ -1114,7 +1114,7 @@ mymain(void)
             QEMU_CAPS_USB_STORAGE_REMOVABLE);
     DO_TEST_FAILURE("disk-usb-pci",
                     QEMU_CAPS_DEVICE_USB_STORAGE);
-    DO_TEST("disk-scsi-device",
+    DO_TEST("disk-scsi",
             QEMU_CAPS_SCSI_LSI);
     DO_TEST_CAPS_VER("disk-scsi-device-auto", "1.5.3");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");
