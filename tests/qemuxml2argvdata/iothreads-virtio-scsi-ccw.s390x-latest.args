@@ -5,10 +5,13 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
--name QEMUGuest1 \
+-name guest=QEMUGuest1,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,\
+file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine s390-ccw,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -object iothread,id=iothread1 \
 -object iothread,id=iothread2 \
@@ -16,16 +19,19 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -device virtio-scsi-ccw,iothread=iothread2,id=scsi0,devno=fe.0.0001 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-ccw,iothread=iothread1,devno=fe.0.0000,\
+-device virtio-blk-ccw,iothread=iothread1,scsi=off,devno=fe.0.0000,\
 drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-scsi0-0-2-0 \
--device scsi-disk,bus=scsi0.0,channel=0,scsi-id=2,lun=0,\
-drive=drive-scsi0-0-2-0,id=scsi0-0-2-0 \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a
+-device scsi-hd,bus=scsi0.0,channel=0,scsi-id=2,lun=0,drive=drive-scsi0-0-2-0,\
+id=scsi0-0-2-0 \
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
+-msg timestamp=on

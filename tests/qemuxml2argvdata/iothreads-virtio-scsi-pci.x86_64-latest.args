@@ -5,10 +5,13 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i686 \
--name QEMUGuest1 \
+-name guest=QEMUGuest1,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,\
+file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
+-realtime mlock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -object iothread,id=iothread1 \
 -object iothread,id=iothread2 \
@@ -16,22 +19,24 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-scsi-pci,iothread=iothread2,id=scsi0,bus=pci.0,addr=0xb \
--usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
-bootindex=1 \
+-device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -drive file=/var/lib/libvirt/images/iothrtest1.img,format=raw,if=none,\
 id=drive-virtio-disk1 \
--device virtio-blk-pci,iothread=iothread1,bus=pci.0,addr=0x4,\
+-device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,\
 drive=drive-virtio-disk1,id=virtio-disk1 \
 -drive file=/var/lib/libvirt/images/iothrtest2.img,format=raw,if=none,\
 id=drive-scsi0-0-0-3 \
--device scsi-disk,bus=scsi0.0,channel=0,scsi-id=0,lun=3,\
-drive=drive-scsi0-0-0-3,id=scsi0-0-0-3
+-device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=3,drive=drive-scsi0-0-0-3,\
+id=scsi0-0-0-3 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
+-msg timestamp=on
