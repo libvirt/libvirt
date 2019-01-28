@@ -29,6 +29,11 @@
       <target dev='sdc' bus='scsi'/>
       <address type='drive' controller='2' bus='0' target='0' unit='0'/>
     </disk>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest4'/>
+      <target dev='sdd' bus='scsi'/>
+      <address type='drive' controller='3' bus='0' target='0' unit='0'/>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='scsi' index='0' model='virtio-scsi'/>
     <controller type='scsi' index='1' model='virtio-scsi'>
@@ -36,6 +41,9 @@
     </controller>
     <controller type='scsi' index='2' model='virtio-scsi'>
       <driver cmd_per_lun='50'/>
+    </controller>
+    <controller type='scsi' index='3' model='virtio-scsi'>
+      <driver max_sectors='512'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>

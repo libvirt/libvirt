@@ -369,8 +369,6 @@ mymain(void)
     DO_TEST("disk-scsi-vscsi", NONE);
     DO_TEST("disk-virtio-scsi-reservations",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_PR_MANAGER_HELPER);
-    DO_TEST("disk-virtio-scsi-max_sectors",
-            QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-scsi-ioeventfd",
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("controller-virtio-scsi", QEMU_CAPS_VIRTIO_SCSI);
