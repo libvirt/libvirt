@@ -137,7 +137,7 @@
   <flag name='memory-backend-file.align'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>388416</microcodeVersion>
+  <microcodeVersion>39100757</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='z14-base' migratability='no'>

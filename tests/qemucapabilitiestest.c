@@ -48,6 +48,8 @@ testQemuCaps(const void *opaque)
     qemuMonitorTestPtr mon = NULL;
     virQEMUCapsPtr capsActual = NULL;
     char *actual = NULL;
+    unsigned int fakeMicrocodeVersion = 0;
+    const char *p;
 
     if (virAsprintf(&repliesFile, "%s/qemucapabilitiesdata/%s.%s.replies",
                     abs_srcdir, data->base, data->archName) < 0 ||
@@ -69,10 +71,17 @@ testQemuCaps(const void *opaque)
                                          qemuMonitorTestGetMonitor(mon)) < 0)
             goto cleanup;
 
-        /* Fill microcodeVersion with a "random" value which is the file
-         * length to provide a reproducible number for testing.
-         */
-        virQEMUCapsSetMicrocodeVersion(capsActual, virFileLength(repliesFile, -1));
+        /* calculate fake microcode version based on filename for a reproducible
+         * number for testing which does not change with the contents */
+        for (p = data->archName; *p; p++)
+            fakeMicrocodeVersion += *p;
+
+        fakeMicrocodeVersion *= 100000;
+
+        for (p = data->base; *p; p++)
+            fakeMicrocodeVersion += *p;
+
+        virQEMUCapsSetMicrocodeVersion(capsActual, fakeMicrocodeVersion);
     }
 
     if (!(actual = virQEMUCapsFormatCache(capsActual)))

@@ -117,7 +117,7 @@
   <flag name='iothread.poll-max-ns'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>306247</microcodeVersion>
+  <microcodeVersion>39100805</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='z14-base' migratability='no'>

@@ -145,7 +145,7 @@
   <flag name='iothread.poll-max-ns'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>349056</microcodeVersion>
+  <microcodeVersion>42900765</microcodeVersion>
   <package> (v2.9.0)</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>

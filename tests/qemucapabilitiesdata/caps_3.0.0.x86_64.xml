@@ -212,7 +212,7 @@
   <flag name='nvdimm.unarmed'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>426554</microcodeVersion>
+  <microcodeVersion>43100757</microcodeVersion>
   <package>v3.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

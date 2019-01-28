@@ -170,7 +170,7 @@
   <flag name='memory-backend-file.pmem'/>
   <version>3000091</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>437731</microcodeVersion>
+  <microcodeVersion>42900758</microcodeVersion>
   <package>v3.1.0-rc1-74-g3c035a41dc</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>
