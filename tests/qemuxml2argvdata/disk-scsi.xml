@@ -28,6 +28,7 @@
       <source file='/tmp/scsidisk2.img'/>
       <target dev='sdb' bus='scsi'/>
       <address type='drive' controller='1' bus='0' target='0' unit='0'/>
+      <serial>abcdefghijklmn</serial>
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/scsidisk3.img'/>

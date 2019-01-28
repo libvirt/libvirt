@@ -34,7 +34,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device scsi-hd,bus=scsi0.0,scsi-id=0,drive=drive-scsi0-0-0,id=scsi0-0-0 \
 -drive file=/tmp/scsidisk2.img,format=raw,if=none,id=drive-scsi1-0-0-0 \
 -device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi1-0-0-0,\
-id=scsi1-0-0-0 \
+id=scsi1-0-0-0,serial=abcdefghijklmn \
 -drive file=/tmp/scsidisk3.img,format=raw,if=none,id=drive-scsi2-0-0-0 \
 -device scsi-hd,bus=scsi2.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi2-0-0-0,\
 id=scsi2-0-0-0,wwn=0x5000c50015ea71ac \
