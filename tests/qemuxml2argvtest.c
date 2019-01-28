@@ -1105,7 +1105,6 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-fmt-cow", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-dir", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-iso", NONE);
-    DO_TEST_WITH_STARTUP("disk-shared", NONE);
     DO_TEST_CAPS_VER("disk-shared", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_PARSE_ERROR("disk-shared-qcow", NONE);
