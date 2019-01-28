@@ -39,6 +39,12 @@
       <wwn>5000c50015ea71ac</wwn>
       <address type='drive' controller='2' bus='0' target='0' unit='0'/>
     </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/tmp/scsidisk4.img'/>
+      <target dev='sdd' bus='scsi'/>
+      <address type='drive' controller='3' bus='0' target='0' unit='0'/>
+    </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
@@ -53,6 +59,9 @@
     </controller>
     <controller type='scsi' index='2' model='lsisas1068'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </controller>
+    <controller type='scsi' index='3' model='ibmvscsi'>
+      <address type='spapr-vio' reg='0x2000'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>

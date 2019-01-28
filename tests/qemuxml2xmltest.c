@@ -366,7 +366,6 @@ mymain(void)
     DO_TEST("disk-network-tlsx509", NONE);
     DO_TEST("disk-scsi", QEMU_CAPS_SCSI_LSI, QEMU_CAPS_SCSI_MEGASAS,
             QEMU_CAPS_SCSI_MPTSAS1068, QEMU_CAPS_SCSI_DISK_WWN);
-    DO_TEST("disk-scsi-vscsi", NONE);
     DO_TEST("disk-virtio-scsi-reservations",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_PR_MANAGER_HELPER);
     DO_TEST("controller-virtio-scsi", QEMU_CAPS_VIRTIO_SCSI);
