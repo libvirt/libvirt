@@ -89,7 +89,6 @@
   <flag name='splash-timeout'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
-  <flag name='ivshmem'/>
   <flag name='drive-iotune-max'/>
   <flag name='VGA.vgamem_mb'/>
   <flag name='vmware-svga.vgamem_mb'/>
@@ -213,7 +212,7 @@
   <version>3001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100758</microcodeVersion>
-  <package>v3.1.0-759-g15bede5541</package>
+  <package>v3.1.0-1445-ga61faa3d02</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='phys-bits' type='number' value='0'/>
@@ -248,6 +247,7 @@
     <property name='sse4-1' type='boolean' value='true' migratable='yes'/>
     <property name='family' type='number' value='6'/>
     <property name='legacy-cache' type='boolean' value='true' migratable='yes'/>
+    <property name='host-phys-bits-limit' type='number' value='0'/>
     <property name='vmware-cpuid-freq' type='boolean' value='true' migratable='yes'/>
     <property name='wbnoinvd' type='boolean' value='false'/>
     <property name='avx512f' type='boolean' value='false'/>
@@ -358,7 +358,7 @@
     <property name='nodeid_msr' type='boolean' value='false'/>
     <property name='pdcm' type='boolean' value='false'/>
     <property name='movbe' type='boolean' value='true' migratable='yes'/>
-    <property name='model' type='number' value='142'/>
+    <property name='model' type='number' value='94'/>
     <property name='nrip_save' type='boolean' value='false'/>
     <property name='nrip-save' type='boolean' value='false'/>
     <property name='kvm_pv_unhalt' type='boolean' value='true' migratable='yes'/>
@@ -373,7 +373,7 @@
     <property name='de' type='boolean' value='true' migratable='yes'/>
     <property name='pconfig' type='boolean' value='false'/>
     <property name='enforce' type='boolean' value='false'/>
-    <property name='stepping' type='number' value='10'/>
+    <property name='stepping' type='number' value='3'/>
     <property name='xsave' type='boolean' value='true' migratable='yes'/>
     <property name='clflush' type='boolean' value='true' migratable='yes'/>
     <property name='skinit' type='boolean' value='false'/>
@@ -468,7 +468,7 @@
     <property name='rdrand' type='boolean' value='true' migratable='yes'/>
     <property name='rdseed' type='boolean' value='true' migratable='yes'/>
     <property name='avx512-4vnniw' type='boolean' value='false'/>
-    <property name='vmx' type='boolean' value='true' migratable='yes'/>
+    <property name='vmx' type='boolean' value='false'/>
     <property name='vme' type='boolean' value='true' migratable='yes'/>
     <property name='dtes64' type='boolean' value='false'/>
     <property name='mtrr' type='boolean' value='true' migratable='yes'/>
@@ -479,7 +479,7 @@
     <property name='wdt' type='boolean' value='false'/>
     <property name='pause_filter' type='boolean' value='false'/>
     <property name='sha-ni' type='boolean' value='false'/>
-    <property name='model-id' type='string' value='Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz'/>
+    <property name='model-id' type='string' value='Intel(R) Xeon(R) CPU E3-1245 v5 @ 3.50GHz'/>
     <property name='abm' type='boolean' value='true' migratable='yes'/>
     <property name='avx512pf' type='boolean' value='false'/>
     <property name='xstore-en' type='boolean' value='false'/>
@@ -517,6 +517,7 @@
     <property name='sse4-1' type='boolean' value='true' migratable='yes'/>
     <property name='family' type='number' value='6'/>
     <property name='legacy-cache' type='boolean' value='true' migratable='yes'/>
+    <property name='host-phys-bits-limit' type='number' value='0'/>
     <property name='vmware-cpuid-freq' type='boolean' value='true' migratable='yes'/>
     <property name='wbnoinvd' type='boolean' value='false'/>
     <property name='avx512f' type='boolean' value='false'/>
@@ -818,12 +819,16 @@
     <blocker name='xop'/>
     <blocker name='fma4'/>
     <blocker name='tbm'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
   </cpu>
   <cpu type='kvm' name='Opteron_G4' usable='no'>
     <blocker name='sse4a'/>
     <blocker name='misalignsse'/>
     <blocker name='xop'/>
     <blocker name='fma4'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
   </cpu>
   <cpu type='kvm' name='Opteron_G3' usable='no'>
     <blocker name='sse4a'/>
@@ -901,6 +906,8 @@
     <blocker name='misalignsse'/>
     <blocker name='osvw'/>
     <blocker name='ibpb'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
   </cpu>
   <cpu type='kvm' name='EPYC' usable='no'>
     <blocker name='sha-ni'/>
@@ -910,6 +917,8 @@
     <blocker name='sse4a'/>
     <blocker name='misalignsse'/>
     <blocker name='osvw'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
   </cpu>
   <cpu type='kvm' name='Conroe' usable='yes'/>
   <cpu type='kvm' name='Cascadelake-Server' usable='no'>
@@ -1053,6 +1062,7 @@
     <blocker name='xop'/>
     <blocker name='fma4'/>
     <blocker name='tbm'/>
+    <blocker name='nrip-save'/>
   </cpu>
   <cpu type='tcg' name='Opteron_G4' usable='no'>
     <blocker name='avx'/>
@@ -1060,6 +1070,7 @@
     <blocker name='3dnowprefetch'/>
     <blocker name='xop'/>
     <blocker name='fma4'/>
+    <blocker name='nrip-save'/>
   </cpu>
   <cpu type='tcg' name='Opteron_G3' usable='no'>
     <blocker name='misalignsse'/>
@@ -1233,6 +1244,7 @@
     <blocker name='osvw'/>
     <blocker name='topoext'/>
     <blocker name='ibpb'/>
+    <blocker name='nrip-save'/>
     <blocker name='xsavec'/>
   </cpu>
   <cpu type='tcg' name='EPYC' usable='no'>
@@ -1248,6 +1260,7 @@
     <blocker name='3dnowprefetch'/>
     <blocker name='osvw'/>
     <blocker name='topoext'/>
+    <blocker name='nrip-save'/>
     <blocker name='xsavec'/>
   </cpu>
   <cpu type='tcg' name='Conroe' usable='yes'/>
@@ -1346,7 +1359,6 @@
   <machine name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='xenfv' hotplugCpus='yes' maxCpus='128'/>
   <machine name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255'/>
@@ -1357,7 +1369,6 @@
   <machine name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288'/>
   <machine name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288'/>
   <machine name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='xenpv' maxCpus='1'/>
   <machine name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288'/>
   <machine name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288'/>
@@ -1375,8 +1386,8 @@
   <machine name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-0.12' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-q35-4.0' alias='q35' hotplugCpus='yes' maxCpus='288'/>
 </qemuCaps>
