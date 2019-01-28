@@ -379,6 +379,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-scsi-ioeventfd",
             QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST("controller-virtio-scsi", QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-s390-zpci",
             QEMU_CAPS_DEVICE_ZPCI,
             QEMU_CAPS_CCW);
