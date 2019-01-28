@@ -26,13 +26,17 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
 -device virtio-scsi-pci,id=scsi1,num_queues=8,bus=pci.0,addr=0x3 \
+-device virtio-scsi-pci,id=scsi2,cmd_per_lun=50,bus=pci.0,addr=0x4 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-scsi0-0-0-0 \
 -device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,\
 id=scsi0-0-0-0,bootindex=1 \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-scsi1-0-0-0 \
 -device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi1-0-0-0,\
 id=scsi1-0-0-0 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
+-drive file=/dev/HostVG/QEMUGuest3,format=raw,if=none,id=drive-scsi2-0-0-0 \
+-device scsi-hd,bus=scsi2.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi2-0-0-0,\
+id=scsi2-0-0-0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on
