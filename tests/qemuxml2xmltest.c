@@ -346,6 +346,7 @@ mymain(void)
     DO_TEST("qemu-ns-no-env", NONE);
     DO_TEST("disk-aio", NONE);
     DO_TEST("disk-cdrom", NONE);
+    DO_TEST("disk-cdrom-bus-other", NONE);
     DO_TEST("disk-floppy", NONE);
     DO_TEST("disk-usb-device", NONE);
     DO_TEST("disk-virtio", NONE);
