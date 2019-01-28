@@ -557,11 +557,9 @@ mymain(void)
     DO_TEST("numad-static-vcpu-no-numatune", NONE);
 
     DO_TEST("disk-scsi-lun-passthrough-sgio",
-            QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI,
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
+            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-scsi-disk-vpd",
-            QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI,
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
+            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-source-pool", NONE);
     DO_TEST("disk-source-pool-mode", NONE);
 

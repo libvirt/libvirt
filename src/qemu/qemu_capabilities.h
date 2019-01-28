@@ -174,7 +174,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 90 */
     X_QEMU_CAPS_BLOCKJOB_SYNC, /* old block_job_cancel, block_stream */
     QEMU_CAPS_BLOCKJOB_ASYNC, /* new block-job-cancel, block-stream */
-    QEMU_CAPS_SCSI_CD, /* -device scsi-cd */
+    X_QEMU_CAPS_SCSI_CD, /* -device scsi-cd */
     QEMU_CAPS_IDE_CD, /* -device ide-cd */
     X_QEMU_CAPS_NO_USER_CONFIG, /* -no-user-config */
 

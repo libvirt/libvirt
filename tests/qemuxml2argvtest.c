@@ -1116,16 +1116,13 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-scsi-device-auto", "1.5.3");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");
     DO_TEST("disk-scsi-disk-split",
-            QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
+            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-scsi-disk-wwn",
-            QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_DISK_WWN);
+            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-scsi-disk-vpd",
-            QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_DISK_WWN);
+            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST_FAILURE("disk-scsi-disk-vpd-build-error",
-            QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_DISK_WWN);
+            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST("disk-sata-device",
             QEMU_CAPS_ICH9_AHCI);

@@ -29,7 +29,6 @@
   <flag name='scsi-block'/>
   <flag name='transaction'/>
   <flag name='block-job-async'/>
-  <flag name='scsi-cd'/>
   <flag name='ide-cd'/>
   <flag name='hda-micro'/>
   <flag name='dump-guest-memory'/>

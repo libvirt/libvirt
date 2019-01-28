@@ -1023,7 +1023,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "qxl", QEMU_CAPS_DEVICE_QXL },
     { "sga", QEMU_CAPS_SGA },
     { "scsi-block", QEMU_CAPS_SCSI_BLOCK },
-    { "scsi-cd", QEMU_CAPS_SCSI_CD },
     { "ide-cd", QEMU_CAPS_IDE_CD },
     { "VGA", QEMU_CAPS_DEVICE_VGA },
     { "cirrus-vga", QEMU_CAPS_DEVICE_CIRRUS_VGA },

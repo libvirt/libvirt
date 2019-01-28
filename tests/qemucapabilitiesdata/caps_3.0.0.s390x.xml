@@ -14,7 +14,6 @@
   <flag name='scsi-block'/>
   <flag name='transaction'/>
   <flag name='block-job-async'/>
-  <flag name='scsi-cd'/>
   <flag name='dump-guest-memory'/>
   <flag name='balloon-event'/>
   <flag name='virtio-scsi-pci'/>

@@ -1762,13 +1762,10 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
      * legacy -drive is used. In modern qemu the 'ide-cd' or 'scsi-cd' are used.
      * virtio and other just ignore the attribute anyways */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD))
-                virBufferAddLit(&opt, ",media=cdrom");
-        } else if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_CD))
                 virBufferAddLit(&opt, ",media=cdrom");
-        } else {
+        } else if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
             virBufferAddLit(&opt, ",media=cdrom");
         }
     }
@@ -1995,14 +1992,10 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
             virBufferAddLit(&opt, "scsi-block");
         } else {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD)) {
-                if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-                    virBufferAddLit(&opt, "scsi-cd");
-                else
-                    virBufferAddLit(&opt, "scsi-hd");
-            } else {
-                virBufferAddLit(&opt, "scsi-disk");
-            }
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+                virBufferAddLit(&opt, "scsi-cd");
+            else
+                virBufferAddLit(&opt, "scsi-hd");
         }
 
         if (!(contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
