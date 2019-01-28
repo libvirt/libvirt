@@ -1972,15 +1972,11 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     DO_TEST_PARSE_ERROR("mach-virt-serial-invalid-machine", NONE);
 
-    DO_TEST("disk-ide-split",
-            QEMU_CAPS_IDE_CD);
-    DO_TEST("disk-ide-wwn",
-            QEMU_CAPS_IDE_CD,
-            QEMU_CAPS_IDE_DRIVE_WWN);
+    DO_TEST("disk-ide-split", NONE);
+    DO_TEST("disk-ide-wwn", QEMU_CAPS_IDE_DRIVE_WWN);
 
     DO_TEST("disk-geometry", NONE);
-    DO_TEST("disk-blockio",
-            QEMU_CAPS_IDE_CD, QEMU_CAPS_BLOCKIO);
+    DO_TEST("disk-blockio", QEMU_CAPS_BLOCKIO);
 
     DO_TEST("video-device-pciaddr-default",
             QEMU_CAPS_KVM,

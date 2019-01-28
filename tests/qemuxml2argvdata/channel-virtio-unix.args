@@ -24,8 +24,7 @@ server,nowait \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x3 \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
-bootindex=1 \
+-device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -chardev socket,id=charchannel0,\
 path=/tmp/channel/domain--1-QEMUGuest1/org.qemu.guest_agent.0,server,nowait \
 -device virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0,\

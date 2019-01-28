@@ -25,8 +25,7 @@ server,nowait \
 cache=none,throttling.bps-total=5000,throttling.iops-total=6000,\
 throttling.bps-total-max=10000,throttling.iops-total-max=11000,\
 throttling.bps-total-max-length=3,throttling.iops-total-max-length=5 \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
-bootindex=1 \
+-device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,\
 cache=none,throttling.bps-read=5000,throttling.bps-write=5500,\
 throttling.iops-read=3500,throttling.iops-write=4000,\
@@ -35,5 +34,5 @@ throttling.iops-read-max=7000,throttling.iops-write-max=7500,\
 throttling.iops-size=2000,throttling.bps-read-max-length=3,\
 throttling.bps-write-max-length=5,throttling.iops-read-max-length=7,\
 throttling.iops-write-max-length=9 \
--device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
+-device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

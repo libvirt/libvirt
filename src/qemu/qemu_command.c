@@ -1761,14 +1761,10 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     /* While this is a frontend attribute, it only makes sense to be used when
      * legacy -drive is used. In modern qemu the 'ide-cd' or 'scsi-cd' are used.
      * virtio and other just ignore the attribute anyways */
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_CD))
-                virBufferAddLit(&opt, ",media=cdrom");
-        } else if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
-            virBufferAddLit(&opt, ",media=cdrom");
-        }
-    }
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+        disk->bus != VIR_DOMAIN_DISK_BUS_SCSI &&
+        disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
+        virBufferAddLit(&opt, ",media=cdrom");
 
     if (disk->src->readonly)
         virBufferAddLit(&opt, ",readonly=on");
@@ -1930,14 +1926,10 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             goto error;
         }
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_CD)) {
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-                virBufferAddLit(&opt, "ide-cd");
-            else
-                virBufferAddLit(&opt, "ide-hd");
-        } else {
-            virBufferAddLit(&opt, "ide-drive");
-        }
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+            virBufferAddLit(&opt, "ide-cd");
+        else
+            virBufferAddLit(&opt, "ide-hd");
 
         /* When domain has builtin IDE controller we don't put it onto cmd
          * line. Therefore we can't set its alias. In that case, use the
@@ -2052,14 +2044,10 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             goto error;
         }
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_CD)) {
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-                virBufferAddLit(&opt, "ide-cd");
-            else
-                virBufferAddLit(&opt, "ide-hd");
-        } else {
-            virBufferAddLit(&opt, "ide-drive");
-        }
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+            virBufferAddLit(&opt, "ide-cd");
+        else
+            virBufferAddLit(&opt, "ide-hd");
 
         /* When domain has builtin SATA controller we don't put it onto cmd
          * line. Therefore we can't set its alias. In that case, use the

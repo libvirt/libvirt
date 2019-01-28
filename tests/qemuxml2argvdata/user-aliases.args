@@ -53,8 +53,8 @@ id=drive-ua-myEncryptedDisk1 \
 -device virtio-blk-pci,bus=pci.0,addr=0x7,drive=drive-ua-myEncryptedDisk1,\
 id=ua-myEncryptedDisk1 \
 -drive file=/home/zippy/tmp/install-amd64-minimal-20140619.iso,format=raw,\
-if=none,id=drive-ua-WhatAnAwesomeCDROM,media=cdrom,readonly=on,cache=none \
--device ide-drive,bus=ide.1,unit=0,drive=drive-ua-WhatAnAwesomeCDROM,\
+if=none,id=drive-ua-WhatAnAwesomeCDROM,readonly=on,cache=none \
+-device ide-cd,bus=ide.1,unit=0,drive=drive-ua-WhatAnAwesomeCDROM,\
 id=ua-WhatAnAwesomeCDROM,bootindex=2 \
 -global isa-fdc.driveA=drive-ua-myDisk1 \
 -netdev tap,fd=3,id=hostua-CheckoutThisNIC,vhost=on,vhostfd=44 \

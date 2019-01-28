@@ -23,8 +23,7 @@ server,nowait \
 -usb \
 -drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,\
 id=drive-ide0-0-0,cache=none \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
-bootindex=1 \
+-device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -vga qxl \
 -global qxl-vga.ram_size=67108864 \
 -global qxl-vga.vram_size=67108864 \

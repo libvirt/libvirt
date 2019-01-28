@@ -21,8 +21,7 @@ server,nowait \
 -no-acpi \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,\
-bootindex=1 \
+-device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -vnc '[2001:1:2:3:4:5:1234:1234]:3' \
 -display egl-headless \
 -vga cirrus

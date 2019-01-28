@@ -54,4 +54,4 @@ addr=0x2 \
 -device ich9-usb-uhci3,masterbus=usb4.0,firstport=4,bus=pci.2,addr=0x2.0x2 \
 -device ich9-usb-ehci1,id=usb4,bus=pci.2,addr=0x2.0x7 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
--device ide-drive,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0,bootindex=1
+-device ide-hd,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0,bootindex=1

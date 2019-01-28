@@ -58,7 +58,7 @@ path=/tmp/lib/domain--1-pcie-expander-bus-te/monitor.sock,server,nowait \
 -device xio3130-downstream,port=0x1e,chassis=34,id=pci.34,bus=pci.3,addr=0x1e \
 -device xio3130-downstream,port=0x1f,chassis=35,id=pci.35,bus=pci.3,addr=0x1f \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
--device ide-drive,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0,bootindex=1 \
+-device ide-hd,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:f1:95:51,bus=pci.4,\
 addr=0x0 \
