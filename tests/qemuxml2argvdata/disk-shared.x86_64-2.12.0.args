@@ -24,6 +24,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0,\
 cache=none \
 -device ide-hd,bus=ide.0,unit=0,share-rw=on,drive=drive-ide0-0-0,id=ide0-0-0,\
@@ -31,7 +32,13 @@ bootindex=1,write-cache=on,serial=XYZXYZXYZYXXYZYZYXYZY \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-1-0,\
 readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-drive file=/dev/scsi,format=raw,if=none,id=drive-scsi0-0-0-0,cache=none \
+-device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,share-rw=on,\
+drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,write-cache=on \
+-drive file=/dev/virtio,format=raw,if=none,id=drive-virtio-disk0,cache=none \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,share-rw=on,\
+drive=drive-virtio-disk0,id=virtio-disk0,write-cache=on \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on
