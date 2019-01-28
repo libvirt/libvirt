@@ -1130,8 +1130,6 @@ mymain(void)
             QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-scsi-vscsi", NONE);
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
-    DO_TEST("disk-scsi-megasas",
-            QEMU_CAPS_SCSI_MEGASAS);
     DO_TEST("disk-scsi-mptsas1068",
             QEMU_CAPS_SCSI_MPTSAS1068,
             QEMU_CAPS_SCSI_DISK_WWN);

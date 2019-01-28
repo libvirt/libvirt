@@ -364,7 +364,7 @@ mymain(void)
     DO_TEST("disk-network-sheepdog", NONE);
     DO_TEST("disk-network-vxhs", NONE);
     DO_TEST("disk-network-tlsx509", NONE);
-    DO_TEST("disk-scsi", QEMU_CAPS_SCSI_LSI);
+    DO_TEST("disk-scsi", QEMU_CAPS_SCSI_LSI, QEMU_CAPS_SCSI_MEGASAS);
     DO_TEST("disk-scsi-vscsi", NONE);
     DO_TEST("disk-virtio-scsi-reservations",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_PR_MANAGER_HELPER);
@@ -372,8 +372,6 @@ mymain(void)
     DO_TEST("disk-virtio-s390-zpci",
             QEMU_CAPS_DEVICE_ZPCI,
             QEMU_CAPS_CCW);
-    DO_TEST("disk-scsi-megasas",
-            QEMU_CAPS_SCSI_MEGASAS);
     DO_TEST("disk-scsi-mptsas1068",
             QEMU_CAPS_SCSI_MPTSAS1068,
             QEMU_CAPS_SCSI_DISK_WWN);
