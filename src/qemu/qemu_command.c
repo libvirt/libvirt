@@ -1890,6 +1890,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *contAlias;
     char *backendAlias = NULL;
+    char *scsiVPDDeviceId = NULL;
     int controllerModel;
 
     if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
@@ -1979,6 +1980,21 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                 virBufferAddLit(&opt, "scsi-cd");
             else
                 virBufferAddLit(&opt, "scsi-hd");
+
+            /* qemu historically used the name of -drive as one of the device
+             * ids in the Vital Product Data Device Identification page if
+             * disk serial was not set and the disk serial otherwise.
+             * To avoid a guest-visible regression we need to provide it
+             * ourselves especially for cases when -blockdev will be used */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID)) {
+                if (disk->serial) {
+                    if (VIR_STRDUP(scsiVPDDeviceId, disk->serial) < 0)
+                        goto error;
+                } else {
+                    if (!(scsiVPDDeviceId = qemuAliasDiskDriveFromDisk(disk)))
+                        goto error;
+                }
+            }
         }
 
         if (!(contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
@@ -2021,6 +2037,10 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                               disk->info.addr.drive.target,
                               disk->info.addr.drive.unit);
         }
+
+        if (scsiVPDDeviceId)
+            virBufferStrcat(&opt, ",device_id=", scsiVPDDeviceId, NULL);
+
         break;
 
     case VIR_DOMAIN_DISK_BUS_SATA:
