@@ -17440,6 +17440,14 @@ qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfoPtr rawInfo,
         }
     }
 
+    /* If qemu reports that it's not ready yet don't make the job go to
+     * cur == end as some apps wrote code polling this instead of waiting for
+     * the ready event */
+    if (rawInfo->ready == 0 &&
+        info->cur == info->end &&
+        info->cur > 0)
+        info->cur -= 1;
+
     info->type = rawInfo->type;
     if (info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
         disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
