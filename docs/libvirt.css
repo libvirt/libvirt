@@ -100,14 +100,15 @@
     margin-right: auto;
     padding: 0px;
     padding-bottom: 1em;
-    max-width: 60em;
+    max-width: 95%;
+    width: 70em;
 }
 
 body.index #content,
 body.docs #content,
 body.hvsupport #content
 {
-    max-width: inherit;
+    width: inherit;
 }
 
 pre {
