@@ -55,7 +55,7 @@ struct testSetStruct {
  \
         rc = virNetDevBandwidthParse(&(var), \
                                      ctxt->node, \
-                                     VIR_DOMAIN_NET_TYPE_NETWORK); \
+                                     true); \
         xmlFreeDoc(doc); \
         xmlXPathFreeContext(ctxt); \
         if (rc < 0) \

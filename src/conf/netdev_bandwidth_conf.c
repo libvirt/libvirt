@@ -100,18 +100,18 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
  * virNetDevBandwidthParse:
  * @bandwidth: parsed bandwidth
  * @node: XML node
- * @net_type: one of virDomainNetType
+ * @allowFloor: whether "floor" setting is supported
  *
  * Parse bandwidth XML and return pointer to structure.
- * @net_type tell to which type will/is interface connected to.
- * Pass -1 if this is not called on interface.
+ * The @allowFloor attribute indicates whether the caller
+ * is able to support use of the "floor" setting.
  *
  * Returns !NULL on success, NULL on error.
  */
 int
 virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                         xmlNodePtr node,
-                        int net_type)
+                        bool allowFloor)
 {
     int ret = -1;
     virNetDevBandwidthPtr def = NULL;
@@ -162,17 +162,9 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
             goto cleanup;
         }
 
-        if (def->in->floor && net_type != VIR_DOMAIN_NET_TYPE_NETWORK) {
-            if (net_type == -1) {
-                /* 'floor' on network isn't supported */
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("floor attribute isn't supported for "
-                                 "network's bandwidth yet"));
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("floor attribute is supported only for "
-                                 "interfaces of type network"));
-            }
+        if (def->in->floor && !allowFloor) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("floor attribute is not supported for this config"));
             goto cleanup;
         }
     }

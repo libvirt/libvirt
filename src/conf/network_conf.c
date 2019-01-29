@@ -1188,7 +1188,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
     if (bandwidth_node &&
-        virNetDevBandwidthParse(&def->bandwidth, bandwidth_node, -1) < 0)
+        virNetDevBandwidthParse(&def->bandwidth, bandwidth_node, false) < 0)
         goto cleanup;
 
     vlanNode = virXPathNode("./vlan", ctxt);
@@ -1682,7 +1682,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     if ((bandwidthNode = virXPathNode("./bandwidth", ctxt)) &&
-        virNetDevBandwidthParse(&def->bandwidth, bandwidthNode, -1) < 0)
+        virNetDevBandwidthParse(&def->bandwidth, bandwidthNode, false) < 0)
         goto error;
 
     vlanNode = virXPathNode("./vlan", ctxt);

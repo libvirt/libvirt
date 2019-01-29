@@ -27,7 +27,7 @@
 
 int virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                             xmlNodePtr node,
-                            int net_type)
+                            bool allowFloor)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
                              virBufferPtr buf);
