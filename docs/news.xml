@@ -46,6 +46,19 @@
           configuration.
         </description>
       </change>
+      <change>
+        <summary>
+          network: support setting a firewalld "zone" for virtual network bridges
+        </summary>
+        <description>
+          All libvirt virtual networks with bridges managed by libvirt
+          (i.e. those with forward mode of "nat", "route", "open", or
+          no forward mode) will now be placed in a special firewalld
+          zone called "libvirt" by default. The zone of any network
+          bridge can be changed using the <code>zone</code> attribute
+          of the network's <code>bridge</code> element.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
@@ -81,6 +94,33 @@
           This works with QEMU 4.0.0+ only and is opt-in at the moment, since
           it requires users to manually assign PCI addresses, but is otherwise
           fully functional.
+        </description>
+      </change>
+      <change>
+        <summary>
+          network: fix virtual networks on systems using firewalld+nftables
+        </summary>
+        <description>
+          Because of the transitional state of firewalld's new support
+          for nftables, not all iptables features required by libvirt
+          are yet available, so libvirt must continue to use iptables
+          for its own packet filtering rules even when the firewalld
+          backend is set to use nftables. However, due to the way
+          iptables support is implemented in kernels using nftables
+          (iptables rules are converted to nftables rules and
+          processed in a separate hook from the native nftables
+          rules), guest networking was broken on hosts with firewalld
+          configured to use nftables as the backend. This has been
+          fixed by putting libvirt-managed bridges in their own
+          firewalld zone, so that guest traffic can be forwarded
+          beyond the host and host services can be exposed to guests
+          on the virtual network without opening up those same
+          services to the rest of the physical network. This means
+          that host access from virtual machines is no longer
+          controlled by the firewalld default zone (usually "public"),
+          but rather by the new firewalld zone called "libvirt"
+          (unless configured otherwise using the new zone
+          attribute of the network bridge element).
         </description>
       </change>
     </section>
