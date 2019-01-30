@@ -935,6 +935,7 @@ storagepoolxml2xmltest_LDADD = $(LDADDS) \
 else ! WITH_STORAGE
 EXTRA_DIST += storagevolxml2argvtest.c
 EXTRA_DIST += virstorageutiltest.c
+EXTRA_DIST += storagepoolxml2argvtest.c
 EXTRA_DIST += storagepoolxml2xmltest.c
 endif ! WITH_STORAGE
 
