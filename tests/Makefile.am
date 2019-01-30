@@ -368,6 +368,7 @@ if WITH_STORAGE
 test_programs += storagevolxml2argvtest
 test_programs += storagepoolxml2argvtest
 test_programs += virstorageutiltest
+test_programs += storagepoolxml2xmltest
 endif WITH_STORAGE
 
 if WITH_STORAGE_FS
@@ -384,7 +385,7 @@ test_programs += nsstest nssguesttest
 test_libraries += nssmock.la
 endif WITH_NSS
 
-test_programs += storagevolxml2xmltest storagepoolxml2xmltest
+test_programs += storagevolxml2xmltest
 
 test_programs += nodedevxml2xmltest
 
@@ -924,22 +925,23 @@ storagepoolxml2argvtest_LDADD = \
 	../src/libvirt_util.la \
 	$(LDADDS)
 
-else ! WITH_STORAGE
-EXTRA_DIST += storagevolxml2argvtest.c
-EXTRA_DIST += virstorageutiltest.c
-endif ! WITH_STORAGE
-
-storagevolxml2xmltest_SOURCES = \
-	storagevolxml2xmltest.c \
-	testutils.c testutils.h
-storagevolxml2xmltest_LDADD = $(LDADDS)
-
 storagepoolxml2xmltest_SOURCES = \
 	storagepoolxml2xmltest.c \
 	testutils.c testutils.h
 storagepoolxml2xmltest_LDADD = $(LDADDS) \
 	../src/libvirt_driver_storage_impl.la \
 	$(GNULIB_LIBS)
+
+else ! WITH_STORAGE
+EXTRA_DIST += storagevolxml2argvtest.c
+EXTRA_DIST += virstorageutiltest.c
+EXTRA_DIST += storagepoolxml2xmltest.c
+endif ! WITH_STORAGE
+
+storagevolxml2xmltest_SOURCES = \
+	storagevolxml2xmltest.c \
+	testutils.c testutils.h
+storagevolxml2xmltest_LDADD = $(LDADDS)
 
 nodedevxml2xmltest_SOURCES = \
 	nodedevxml2xmltest.c \
