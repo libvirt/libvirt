@@ -91,7 +91,9 @@ mymain(void)
     DO_TEST("pool-netfs-protocol-ver");
     DO_TEST("pool-netfs-gluster");
     DO_TEST("pool-netfs-cifs");
+#ifdef WITH_STORAGE_FS
     DO_TEST("pool-netfs-ns-mountopts");
+#endif
     DO_TEST("pool-scsi");
     DO_TEST("pool-scsi-type-scsi-host");
     DO_TEST("pool-scsi-type-fc-host");
@@ -106,7 +108,9 @@ mymain(void)
     DO_TEST("pool-zfs");
     DO_TEST("pool-zfs-sourcedev");
     DO_TEST("pool-rbd");
+#ifdef WITH_STORAGE_RBD
     DO_TEST("pool-rbd-ns-configopts");
+#endif
     DO_TEST("pool-vstorage");
     DO_TEST("pool-iscsi-direct-auth");
     DO_TEST("pool-iscsi-direct");
