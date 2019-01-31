@@ -23173,14 +23173,6 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
     if (!virDomainDefVcpuCheckAbiStability(src, dst))
         goto error;
 
-    if (src->niothreadids != dst->niothreadids) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain iothreads count %zu does not "
-                         "match source %zu"),
-                       dst->niothreadids, src->niothreadids);
-        goto error;
-    }
-
     if (src->os.type != dst->os.type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain OS type %s does not match source %s"),
