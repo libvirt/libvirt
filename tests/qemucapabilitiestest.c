@@ -197,7 +197,9 @@ mymain(void)
     DO_TEST("s390x", "caps_2.12.0");
     DO_TEST("s390x", "caps_3.0.0");
     DO_TEST("riscv32", "caps_3.0.0");
+    DO_TEST("riscv32", "caps_4.0.0");
     DO_TEST("riscv64", "caps_3.0.0");
+    DO_TEST("riscv64", "caps_4.0.0");
 
     /*
      * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"

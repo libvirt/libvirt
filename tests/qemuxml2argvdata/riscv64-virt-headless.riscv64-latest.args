@@ -25,7 +25,8 @@ file=/tmp/lib/domain--1-guest/master-key.aes \
 -device virtio-serial-device,id=virtio-serial0 \
 -drive file=/var/lib/libvirt/images/guest.qcow2,format=qcow2,if=none,\
 id=drive-virtio-disk0 \
--device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-device virtio-blk-device,scsi=off,drive=drive-virtio-disk0,id=virtio-disk0,\
+bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-device,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37 \
 -chardev pty,id=charserial0 \
