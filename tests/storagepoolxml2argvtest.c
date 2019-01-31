@@ -130,6 +130,13 @@ static int
 mymain(void)
 {
     int ret = 0;
+#ifdef __linux__
+    const char *platform = "-linux";
+#elif defined(__FreeBSD__)
+    const char *platform = "-freebsd";
+#else
+    const char *platform = "";
+#endif
 
 #define DO_TEST_FULL(shouldFail, pool, platformSuffix) \
     do { \
@@ -146,11 +153,8 @@ mymain(void)
 #define DO_TEST_FAIL(pool, ...) \
     DO_TEST_FULL(true, pool, "")
 
-#define DO_TEST_LINUX(pool, ...) \
-    DO_TEST_FULL(false, pool, "-linux")
-
-#define DO_TEST_FREEBSD(pool, ...) \
-    DO_TEST_FULL(false, pool, "-freebsd")
+#define DO_TEST_PLATFORM(pool, ...) \
+    DO_TEST_FULL(false, pool, platform)
 
     if (storageRegisterAll() < 0)
        return EXIT_FAILURE;
@@ -165,31 +169,15 @@ mymain(void)
     DO_TEST_FAIL("pool-disk-device-nopartsep");
     DO_TEST_FAIL("pool-iscsi");
     DO_TEST_FAIL("pool-iscsi-auth");
-#ifdef __linux__
-    DO_TEST_LINUX("pool-fs");
-    DO_TEST_LINUX("pool-netfs");
-    DO_TEST_LINUX("pool-netfs-auto");
-    DO_TEST_LINUX("pool-netfs-protocol-ver");
-    DO_TEST_LINUX("pool-netfs-ns-mountopts");
-    DO_TEST_LINUX("pool-netfs-gluster");
-    DO_TEST_LINUX("pool-netfs-cifs");
-#elif defined(__FreeBSD__)
-    DO_TEST_FREEBSD("pool-fs");
-    DO_TEST_FREEBSD("pool-netfs");
-    DO_TEST_FREEBSD("pool-netfs-auto");
-    DO_TEST_FREEBSD("pool-netfs-protocol-ver");
-    DO_TEST_FREEBSD("pool-netfs-ns-mountopts");
-    DO_TEST_FREEBSD("pool-netfs-gluster");
-    DO_TEST_FREEBSD("pool-netfs-cifs");
-#else
-    DO_TEST("pool-fs");
-    DO_TEST("pool-netfs");
-    DO_TEST("pool-netfs-auto");
-    DO_TEST("pool-netfs-protocol-ver");
-    DO_TEST("pool-netfs-ns-mountopts");
-    DO_TEST("pool-netfs-gluster");
-    DO_TEST("pool-netfs-cifs");
-#endif
+
+    DO_TEST_PLATFORM("pool-fs");
+    DO_TEST_PLATFORM("pool-netfs");
+    DO_TEST_PLATFORM("pool-netfs-auto");
+    DO_TEST_PLATFORM("pool-netfs-protocol-ver");
+    DO_TEST_PLATFORM("pool-netfs-ns-mountopts");
+    DO_TEST_PLATFORM("pool-netfs-gluster");
+    DO_TEST_PLATFORM("pool-netfs-cifs");
+
     DO_TEST_FAIL("pool-scsi");
     DO_TEST_FAIL("pool-scsi-type-scsi-host");
     DO_TEST_FAIL("pool-scsi-type-fc-host");
