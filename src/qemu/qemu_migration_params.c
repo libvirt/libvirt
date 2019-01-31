@@ -102,6 +102,7 @@ VIR_ENUM_IMPL(qemuMigrationParam, QEMU_MIGRATION_PARAM_LAST,
               "downtime-limit",
               "block-incremental",
               "xbzrle-cache-size",
+              "max-postcopy-bandwidth",
 );
 
 typedef struct _qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOnItem;
@@ -178,6 +179,11 @@ static const qemuMigrationParamsTPMapItem qemuMigrationParamsTPMap[] = {
     {.typedParam = VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE,
      .param = QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE,
      .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
+    {.typedParam = VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY,
+     .unit = 1024 * 1024, /* MiB/s */
+     .param = QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH,
+     .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 };
 
 static const qemuMigrationParamType qemuMigrationParamTypes[] = {
@@ -192,6 +198,7 @@ static const qemuMigrationParamType qemuMigrationParamTypes[] = {
     [QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT] = QEMU_MIGRATION_PARAM_TYPE_ULL,
     [QEMU_MIGRATION_PARAM_BLOCK_INCREMENTAL] = QEMU_MIGRATION_PARAM_TYPE_BOOL,
     [QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE] = QEMU_MIGRATION_PARAM_TYPE_ULL,
+    [QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH] = QEMU_MIGRATION_PARAM_TYPE_ULL,
 };
 verify(ARRAY_CARDINALITY(qemuMigrationParamTypes) == QEMU_MIGRATION_PARAM_LAST);
 
