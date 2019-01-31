@@ -1376,13 +1376,14 @@ int virStorageFileGetLVMKey(const char *path,
      *    06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky
      */
     int status;
-    virCommandPtr cmd = virCommandNewArgList(LVS, "--noheadings",
-                                             "--unbuffered", "--nosuffix",
-                                             "--options", "uuid", path,
-                                             NULL
-                                             );
     int ret = -1;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
+    cmd = virCommandNewArgList(LVS, "--noheadings",
+                               "--unbuffered", "--nosuffix",
+                               "--options", "uuid", path,
+                               NULL
+                               );
     *key = NULL;
 
     /* Run the program and capture its output */
@@ -1417,8 +1418,6 @@ int virStorageFileGetLVMKey(const char *path,
     if (*key && STREQ(*key, ""))
         VIR_FREE(*key);
 
-    virCommandFree(cmd);
-
     return ret;
 }
 #else
@@ -1451,20 +1450,20 @@ virStorageFileGetSCSIKey(const char *path,
                          bool ignoreError ATTRIBUTE_UNUSED)
 {
     int status;
-    virCommandPtr cmd = virCommandNewArgList("/lib/udev/scsi_id",
-                                             "--replace-whitespace",
-                                             "--whitelisted",
-                                             "--device", path,
-                                             NULL
-                                             );
-    int ret = -2;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
+    cmd = virCommandNewArgList("/lib/udev/scsi_id",
+                               "--replace-whitespace",
+                               "--whitelisted",
+                               "--device", path,
+                               NULL
+                               );
     *key = NULL;
 
     /* Run the program and capture its output */
     virCommandSetOutputBuffer(cmd, key);
     if (virCommandRun(cmd, &status) < 0)
-        goto cleanup;
+        return -2;
 
     /* Explicitly check status == 0, rather than passing NULL
      * to virCommandRun because we don't want to raise an actual
@@ -1476,15 +1475,10 @@ virStorageFileGetSCSIKey(const char *path,
             *nl = '\0';
     }
 
-    ret = 0;
-
- cleanup:
     if (*key && STREQ(*key, ""))
         VIR_FREE(*key);
 
-    virCommandFree(cmd);
-
-    return ret;
+    return 0;
 }
 #else
 int virStorageFileGetSCSIKey(const char *path,
@@ -1521,24 +1515,24 @@ virStorageFileGetNPIVKey(const char *path,
                          char **key)
 {
     int status;
-    VIR_AUTOFREE(char *) outbuf = NULL;
     const char *serial;
     const char *port;
-    virCommandPtr cmd = virCommandNewArgList("/lib/udev/scsi_id",
-                                             "--replace-whitespace",
-                                             "--whitelisted",
-                                             "--export",
-                                             "--device", path,
-                                             NULL
-                                             );
-    int ret = -2;
+    VIR_AUTOFREE(char *) outbuf = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
+    cmd = virCommandNewArgList("/lib/udev/scsi_id",
+                               "--replace-whitespace",
+                               "--whitelisted",
+                               "--export",
+                               "--device", path,
+                               NULL
+                               );
     *key = NULL;
 
     /* Run the program and capture its output */
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, &status) < 0)
-        goto cleanup;
+        return -2;
 
     /* Explicitly check status == 0, rather than passing NULL
      * to virCommandRun because we don't want to raise an actual
@@ -1562,12 +1556,7 @@ virStorageFileGetNPIVKey(const char *path,
             ignore_value(virAsprintf(key, "%s_PORT%s", serial, port));
     }
 
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-
-    return ret;
+    return 0;
 }
 #else
 int virStorageFileGetNPIVKey(const char *path ATTRIBUTE_UNUSED,

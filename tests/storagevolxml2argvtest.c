@@ -45,14 +45,12 @@ testCompareXMLToArgvFiles(bool shouldFail,
     char *actualCmdline = NULL;
     virStorageVolEncryptConvertStep convertStep = VIR_STORAGE_VOL_ENCRYPT_NONE;
     int ret = -1;
-
-    virCommandPtr cmd = NULL;
-
     virStoragePoolDefPtr def = NULL;
     virStoragePoolObjPtr obj = NULL;
     VIR_AUTOPTR(virStorageVolDef) vol = NULL;
     VIR_AUTOPTR(virStorageVolDef) inputvol = NULL;
     VIR_AUTOPTR(virStoragePoolDef) inputpool = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (!(def = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
@@ -90,6 +88,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
         convertStep = VIR_STORAGE_VOL_ENCRYPT_CREATE;
 
     do {
+        virCommandFree(cmd);
         cmd = virStorageBackendCreateQemuImgCmdFromVol(obj, vol,
                                                        inputvol, flags,
                                                        create_tool,
@@ -139,7 +138,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
     VIR_FREE(actualCmdline);
     virStoragePoolObjEndAPI(&obj);
     return ret;

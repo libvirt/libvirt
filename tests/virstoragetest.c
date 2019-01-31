@@ -128,9 +128,9 @@ static int
 testPrepImages(void)
 {
     int ret = EXIT_FAILURE;
-    virCommandPtr cmd = NULL;
     char *buf = NULL;
     bool compat = false;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     qemuimg = virFindFileInPath("qemu-img");
     if (!qemuimg)
@@ -246,7 +246,6 @@ testPrepImages(void)
     ret = 0;
  cleanup:
     VIR_FREE(buf);
-    virCommandFree(cmd);
     if (ret)
         testCleanupImages();
     return ret;
@@ -713,7 +712,6 @@ static int
 mymain(void)
 {
     int ret;
-    virCommandPtr cmd = NULL;
     struct testChainData data;
     struct testLookupData data2;
     struct testPathCanonicalizeData data3;
@@ -722,6 +720,7 @@ mymain(void)
     virStorageSourcePtr chain = NULL;
     virStorageSourcePtr chain2; /* short for chain->backingStore */
     virStorageSourcePtr chain3; /* short for chain2->backingStore */
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (storageRegisterAll() < 0)
        return EXIT_FAILURE;
@@ -1604,7 +1603,6 @@ mymain(void)
     /* Final cleanup */
     virStorageSourceFree(chain);
     testCleanupImages();
-    virCommandFree(cmd);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

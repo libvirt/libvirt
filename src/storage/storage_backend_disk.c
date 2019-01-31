@@ -356,12 +356,12 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
 
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *parthelper_path;
-    virCommandPtr cmd;
     struct virStorageBackendDiskPoolVolData cbdata = {
         .pool = pool,
         .vol = vol,
     };
     int ret;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
                                                 abs_topbuilddir "/src",
@@ -392,7 +392,6 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
                            6,
                            virStorageBackendDiskMakeVol,
                            &cbdata);
-    virCommandFree(cmd);
     VIR_FREE(parthelper_path);
     return ret;
 }
@@ -421,8 +420,8 @@ virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *parthelper_path;
-    virCommandPtr cmd;
     int ret;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
                                                 abs_topbuilddir "/src",
@@ -438,7 +437,6 @@ virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
                            3,
                            virStorageBackendDiskMakePoolGeometry,
                            pool);
-    virCommandFree(cmd);
     VIR_FREE(parthelper_path);
     return ret;
 }
@@ -502,26 +500,25 @@ virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int format = def->source.format;
     const char *fmt;
-    int ret = -1;
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
-                  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, ret);
+                  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, -1);
 
-    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_STORAGE_POOL_BUILD_OVERWRITE,
-                             VIR_STORAGE_POOL_BUILD_NO_OVERWRITE,
-                             error);
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_STORAGE_POOL_BUILD_OVERWRITE,
+                            VIR_STORAGE_POOL_BUILD_NO_OVERWRITE,
+                            -1);
 
     fmt = virStoragePoolFormatDiskTypeToString(format);
 
     if (!(flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) &&
         !(virStorageBackendDeviceIsEmpty(def->source.devices[0].path,
                                          fmt, true)))
-        goto error;
+        return -1;
 
     if (virStorageBackendZeroPartitionTable(def->source.devices[0].path,
                                             1024 * 1024) < 0)
-        goto error;
+        return -1;
 
     /* eg parted /dev/sda mklabel --script msdos */
     if (format == VIR_STORAGE_POOL_DISK_UNKNOWN)
@@ -537,11 +534,7 @@ virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
                                "--script",
                                fmt,
                                NULL);
-    ret = virCommandRun(cmd, NULL);
-
- error:
-    virCommandFree(cmd);
-    return ret;
+    return virCommandRun(cmd, NULL);
 }
 
 
@@ -782,9 +775,9 @@ virStorageBackendDiskDeleteVol(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *src_path = def->source.devices[0].path;
     char *srcname = last_component(src_path);
-    virCommandPtr cmd = NULL;
     bool isDevMapperDevice;
     int rc = -1;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     virCheckFlags(0, -1);
 
@@ -857,7 +850,6 @@ virStorageBackendDiskDeleteVol(virStoragePoolObjPtr pool,
     rc = 0;
  cleanup:
     VIR_FREE(devpath);
-    virCommandFree(cmd);
     return rc;
 }
 
@@ -871,11 +863,13 @@ virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
     unsigned long long startOffset = 0, endOffset = 0;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virErrorPtr save_err;
-    virCommandPtr cmd = virCommandNewArgList(PARTED,
-                                             def->source.devices[0].path,
-                                             "mkpart",
-                                             "--script",
-                                             NULL);
+    VIR_AUTOPTR(virCommand) cmd = NULL;
+
+    cmd = virCommandNewArgList(PARTED,
+                               def->source.devices[0].path,
+                               "mkpart",
+                               "--script",
+                               NULL);
 
     if (vol->target.encryption &&
         vol->target.encryption->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
@@ -929,7 +923,6 @@ virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
 
  cleanup:
     VIR_FREE(partFormat);
-    virCommandFree(cmd);
     return res;
 
  error:

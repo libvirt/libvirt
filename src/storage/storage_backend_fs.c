@@ -95,8 +95,6 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(char **const groups,
 static int
 virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
 {
-    int ret = -1;
-
     /*
      *  # showmount --no-headers -e HOSTNAME
      *  /tmp   *
@@ -112,7 +110,7 @@ virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
         1
     };
 
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(SHOWMOUNT,
                                "--no-headers",
@@ -120,16 +118,9 @@ virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
                                state->host,
                                NULL);
 
-    if (virCommandRunRegex(cmd, 1, regexes, vars,
-                           virStorageBackendFileSystemNetFindPoolSourcesFunc,
-                           state, NULL, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return virCommandRunRegex(cmd, 1, regexes, vars,
+                              virStorageBackendFileSystemNetFindPoolSourcesFunc,
+                              state, NULL, NULL);
 }
 
 
@@ -309,9 +300,9 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *src = NULL;
-    virCommandPtr cmd = NULL;
     int ret = -1;
     int rc;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (virStorageBackendFileSystemIsValid(pool) < 0)
         return -1;
@@ -334,7 +325,6 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
 
     ret = 0;
  cleanup:
-    virCommandFree(cmd);
     VIR_FREE(src);
     return ret;
 }
@@ -376,9 +366,8 @@ static int
 virStorageBackendFileSystemStop(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    virCommandPtr cmd = NULL;
-    int ret = -1;
     int rc;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (virStorageBackendFileSystemIsValid(pool) < 0)
         return -1;
@@ -388,13 +377,7 @@ virStorageBackendFileSystemStop(virStoragePoolObjPtr pool)
         return rc;
 
     cmd = virCommandNewArgList(UMOUNT, def->target.path, NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return virCommandRun(cmd, NULL);
 }
 #endif /* WITH_STORAGE_FS */
 
@@ -432,8 +415,7 @@ static int
 virStorageBackendExecuteMKFS(const char *device,
                              const char *format)
 {
-    int ret = 0;
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(MKFS, "-t", format, NULL);
 
@@ -456,11 +438,10 @@ virStorageBackendExecuteMKFS(const char *device,
                              _("Failed to make filesystem of "
                                "type '%s' on device '%s'"),
                              format, device);
-        ret = -1;
+        return -1;
     }
 
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 #else /* #ifdef MKFS */
 static int

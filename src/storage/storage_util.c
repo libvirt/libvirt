@@ -617,9 +617,9 @@ storageBackendCreatePloop(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                           unsigned int flags)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
     char *create_tool = NULL;
     bool created = false;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     virCheckFlags(0, -1);
 
@@ -677,7 +677,6 @@ storageBackendCreatePloop(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
     created = true;
     ret = virCommandRun(cmd, NULL);
  cleanup:
-    virCommandFree(cmd);
     VIR_FREE(create_tool);
     if (ret < 0 && created)
         virFileDeleteTree(vol->target.path);
@@ -690,8 +689,8 @@ storagePloopResize(virStorageVolDefPtr vol,
                    unsigned long long capacity)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
     char *resize_tool = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     resize_tool = virFindFileInPath("ploop");
     if (!resize_tool) {
@@ -705,7 +704,6 @@ storagePloopResize(virStorageVolDefPtr vol,
     virCommandAddArgFormat(cmd, "%s/DiskDescriptor.xml", vol->target.path);
 
     ret = virCommandRun(cmd, NULL);
-    virCommandFree(cmd);
     VIR_FREE(resize_tool);
     return ret;
 }
@@ -1319,8 +1317,7 @@ storageBackendDoCreateQemuImg(virStoragePoolObjPtr pool,
                               const char *inputSecretPath,
                               virStorageVolEncryptConvertStep convertStep)
 {
-    int ret;
-    virCommandPtr cmd;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     cmd = virStorageBackendCreateQemuImgCmdFromVol(pool, vol, inputvol,
                                                    flags, create_tool,
@@ -1329,11 +1326,7 @@ storageBackendDoCreateQemuImg(virStoragePoolObjPtr pool,
     if (!cmd)
         return -1;
 
-    ret = virStorageBackendCreateExecCommand(pool, vol, cmd);
-
-    virCommandFree(cmd);
-
-    return ret;
+    return virStorageBackendCreateExecCommand(pool, vol, cmd);
 }
 
 
@@ -2324,11 +2317,11 @@ storageBackendResizeQemuImg(virStoragePoolObjPtr pool,
 {
     int ret = -1;
     char *img_tool = NULL;
-    virCommandPtr cmd = NULL;
     const char *type;
     char *secretPath = NULL;
     char *secretAlias = NULL;
     virStorageEncryptionPtr enc = vol->target.encryption;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (enc && (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_QCOW ||
                 enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) &&
@@ -2395,7 +2388,6 @@ storageBackendResizeQemuImg(virStoragePoolObjPtr pool,
         VIR_FREE(secretPath);
     }
     VIR_FREE(secretAlias);
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -2449,10 +2441,10 @@ virStorageBackendVolResizeLocal(virStoragePoolObjPtr pool,
 static int
 storageBackendPloopHasSnapshots(char *path)
 {
-    virCommandPtr cmd = NULL;
     char *output = NULL;
     char *snap_tool = NULL;
     int ret = -1;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     snap_tool = virFindFileInPath("ploop");
     if (!snap_tool) {
@@ -2477,7 +2469,6 @@ storageBackendPloopHasSnapshots(char *path)
 
  cleanup:
     VIR_FREE(output);
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -2685,7 +2676,7 @@ storageBackendVolWipeLocalFile(const char *path,
     int ret = -1, fd = -1;
     const char *alg_char = NULL;
     struct stat st;
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     fd = open(path, O_RDWR);
     if (fd == -1) {
@@ -2763,7 +2754,6 @@ storageBackendVolWipeLocalFile(const char *path,
     }
 
  cleanup:
-    virCommandFree(cmd);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -2773,10 +2763,10 @@ static int
 storageBackendVolWipePloop(virStorageVolDefPtr vol,
                            unsigned int algorithm)
 {
-    virCommandPtr cmd = NULL;
     char *target_path = NULL;
     char *disk_desc = NULL;
     char *create_tool = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     int ret = -1;
 
@@ -2820,7 +2810,6 @@ storageBackendVolWipePloop(virStorageVolDefPtr vol,
     VIR_FREE(disk_desc);
     VIR_FREE(target_path);
     VIR_FREE(create_tool);
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -3034,8 +3023,8 @@ virStorageBackendFindGlusterPoolSources(const char *host,
 {
     char *glusterpath = NULL;
     char *outbuf = NULL;
-    virCommandPtr cmd = NULL;
     int rc;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     int ret = -1;
 
@@ -3069,7 +3058,6 @@ virStorageBackendFindGlusterPoolSources(const char *host,
 
  cleanup:
     VIR_FREE(outbuf);
-    virCommandFree(cmd);
     VIR_FREE(glusterpath);
     return ret;
 }
@@ -3309,12 +3297,13 @@ virStorageBackendPARTEDFindLabel(const char *device,
     const char *const args[] = {
         device, "print", "--script", NULL,
     };
-    virCommandPtr cmd = virCommandNew(PARTED);
     char *output = NULL;
     char *error = NULL;
     char *start, *end;
     int ret = VIR_STORAGE_PARTED_ERROR;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
+    cmd = virCommandNew(PARTED);
     virCommandAddArgSet(cmd, args);
     virCommandAddEnvString(cmd, "LC_ALL=C");
     virCommandSetOutputBuffer(cmd, &output);
@@ -3359,7 +3348,6 @@ virStorageBackendPARTEDFindLabel(const char *device,
         ret = VIR_STORAGE_PARTED_DIFFERENT;
 
  cleanup:
-    virCommandFree(cmd);
     VIR_FREE(output);
     VIR_FREE(error);
     return ret;

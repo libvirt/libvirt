@@ -2207,9 +2207,9 @@ static int
 virStorageBackendPloopRestoreDesc(char *path)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
     char *refresh_tool = NULL;
     char *desc = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (virAsprintf(&desc, "%s/DiskDescriptor.xml", path) < 0)
         return ret;
@@ -2238,7 +2238,6 @@ virStorageBackendPloopRestoreDesc(char *path)
 
  cleanup:
     VIR_FREE(refresh_tool);
-    virCommandFree(cmd);
     VIR_FREE(desc);
     return ret;
 }
