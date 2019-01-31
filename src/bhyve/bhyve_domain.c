@@ -232,8 +232,8 @@ bhyveDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
 }
 
 static int
-bhyveDomainDefNamespaceFormatXML(virBufferPtr buf ATTRIBUTE_UNUSED,
-                                void *nsdata)
+bhyveDomainDefNamespaceFormatXML(virBufferPtr buf,
+                                 void *nsdata)
 {
     bhyveDomainCmdlineDefPtr cmd = nsdata;
     size_t i;
