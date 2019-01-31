@@ -48,6 +48,7 @@
 VIR_LOG_INIT("security.security_dac");
 
 #define SECURITY_DAC_NAME "dac"
+#define DEV_SEV "/dev/sev"
 
 typedef struct _virSecurityDACData virSecurityDACData;
 typedef virSecurityDACData *virSecurityDACDataPtr;
@@ -1677,6 +1678,16 @@ virSecurityDACRestoreMemoryLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityDACRestoreSEVLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                              virDomainDefPtr def ATTRIBUTE_UNUSED)
+{
+    /* we only label /dev/sev when running with namespaces, so we don't need to
+     * restore anything */
+    return 0;
+}
+
+
+static int
 virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
                               bool migrated,
@@ -1743,6 +1754,11 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
         if (virSecurityDACRestoreTPMFileLabel(mgr,
                                               def,
                                               def->tpm) < 0)
+            rc = -1;
+    }
+
+    if (def->sev) {
+        if (virSecurityDACRestoreSEVLabel(mgr, def) < 0)
             rc = -1;
     }
 
@@ -1820,6 +1836,36 @@ virSecurityDACSetMemoryLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityDACSetSEVLabel(virSecurityManagerPtr mgr,
+                          virDomainDefPtr def)
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr seclabel;
+    uid_t user;
+    gid_t group;
+
+    /* Skip chowning /dev/sev if namespaces are disabled as we'd significantly
+     * increase the chance of a DOS attack on SEV
+     */
+    if (!priv->mountNamespace)
+        return 0;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+    if (seclabel && !seclabel->relabel)
+        return 0;
+
+    if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
+        return -1;
+
+    if (virSecurityDACSetOwnership(mgr, NULL, DEV_SEV,
+                                   user, group, false) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
                           virDomainDefPtr def,
                           const char *stdin_path ATTRIBUTE_UNUSED,
@@ -1885,6 +1931,11 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
         if (virSecurityDACSetTPMFileLabel(mgr,
                                           def,
                                           def->tpm) < 0)
+            return -1;
+    }
+
+    if (def->sev) {
+        if (virSecurityDACSetSEVLabel(mgr, def) < 0)
             return -1;
     }
 
