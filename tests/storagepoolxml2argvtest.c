@@ -174,7 +174,9 @@ mymain(void)
     DO_TEST_PLATFORM("pool-netfs");
     DO_TEST_PLATFORM("pool-netfs-auto");
     DO_TEST_PLATFORM("pool-netfs-protocol-ver");
+#if WITH_STORAGE_FS
     DO_TEST_PLATFORM("pool-netfs-ns-mountopts");
+#endif
     DO_TEST_PLATFORM("pool-netfs-gluster");
     DO_TEST_PLATFORM("pool-netfs-cifs");
 
