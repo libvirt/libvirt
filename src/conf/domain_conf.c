@@ -20528,7 +20528,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             if ((def->caps_features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown state attribute '%s' of feature capability '%s'"),
-                               tmp, virDomainFeatureTypeToString(val));
+                               tmp, virDomainCapsFeatureTypeToString(val));
                 goto error;
             }
             VIR_FREE(tmp);
