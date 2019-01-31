@@ -690,7 +690,6 @@ storagePoolCreateXML(virConnectPtr conn,
                      const char *xml,
                      unsigned int flags)
 {
-    virStoragePoolDefPtr newDef;
     virStoragePoolObjPtr obj = NULL;
     virStoragePoolDefPtr def;
     virStoragePoolPtr pool = NULL;
@@ -698,6 +697,7 @@ storagePoolCreateXML(virConnectPtr conn,
     virObjectEventPtr event = NULL;
     char *stateFile = NULL;
     unsigned int build_flags = 0;
+    VIR_AUTOPTR(virStoragePoolDef) newDef = NULL;
 
     virCheckFlags(VIR_STORAGE_POOL_CREATE_WITH_BUILD |
                   VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE |
@@ -762,7 +762,6 @@ storagePoolCreateXML(virConnectPtr conn,
 
  cleanup:
     VIR_FREE(stateFile);
-    virStoragePoolDefFree(newDef);
     virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return pool;
@@ -779,11 +778,11 @@ storagePoolDefineXML(virConnectPtr conn,
                      const char *xml,
                      unsigned int flags)
 {
-    virStoragePoolDefPtr newDef;
     virStoragePoolObjPtr obj = NULL;
     virStoragePoolDefPtr def;
     virStoragePoolPtr pool = NULL;
     virObjectEventPtr event = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) newDef = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -822,7 +821,6 @@ storagePoolDefineXML(virConnectPtr conn,
 
  cleanup:
     virObjectEventStateQueue(driver->storageEventState, event);
-    virStoragePoolDefFree(newDef);
     virStoragePoolObjEndAPI(&obj);
     return pool;
 }

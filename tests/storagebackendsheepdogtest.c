@@ -59,7 +59,7 @@ test_node_info_parser(const void *opaque)
     collie_test test = data->data;
     int ret = -1;
     char *output = NULL;
-    virStoragePoolDefPtr pool = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) pool = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
         goto cleanup;
@@ -82,7 +82,6 @@ test_node_info_parser(const void *opaque)
 
  cleanup:
     VIR_FREE(output);
-    virStoragePoolDefFree(pool);
     return ret;
 }
 
@@ -93,7 +92,7 @@ test_vdi_list_parser(const void *opaque)
     collie_test test = data->data;
     int ret = -1;
     char *output = NULL;
-    virStoragePoolDefPtr pool = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) pool = NULL;
     VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
@@ -120,7 +119,6 @@ test_vdi_list_parser(const void *opaque)
 
  cleanup:
     VIR_FREE(output);
-    virStoragePoolDefFree(pool);
     return ret;
 }
 

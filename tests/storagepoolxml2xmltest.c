@@ -20,7 +20,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 {
     char *actual = NULL;
     int ret = -1;
-    virStoragePoolDefPtr dev = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) dev = NULL;
 
     if (!(dev = virStoragePoolDefParseFile(inxml)))
         goto fail;
@@ -35,7 +35,6 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 
  fail:
     VIR_FREE(actual);
-    virStoragePoolDefFree(dev);
     return ret;
 }
 

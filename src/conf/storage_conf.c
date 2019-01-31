@@ -737,12 +737,12 @@ virStoragePoolDefPtr
 virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 {
     virStoragePoolOptionsPtr options;
-    virStoragePoolDefPtr def;
     virStoragePoolDefPtr ret = NULL;
     xmlNodePtr source_node;
     char *type = NULL;
     char *uuid = NULL;
     char *target_path = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) def = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -883,7 +883,6 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 
     VIR_STEAL_PTR(ret, def);
  cleanup:
-    virStoragePoolDefFree(def);
     VIR_FREE(uuid);
     VIR_FREE(type);
     VIR_FREE(target_path);

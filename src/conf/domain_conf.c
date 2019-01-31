@@ -30988,12 +30988,12 @@ int
 virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
 {
     virConnectPtr conn = NULL;
-    virStoragePoolDefPtr pooldef = NULL;
     virStoragePoolPtr pool = NULL;
     virStorageVolPtr vol = NULL;
     char *poolxml = NULL;
     virStorageVolInfo info;
     int ret = -1;
+    VIR_AUTOPTR(virStoragePoolDef) pooldef = NULL;
 
     if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
         return 0;
@@ -31152,7 +31152,6 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
     virObjectUnref(pool);
     virObjectUnref(vol);
     VIR_FREE(poolxml);
-    virStoragePoolDefFree(pooldef);
     return ret;
 }
 
