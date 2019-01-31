@@ -484,5 +484,10 @@ typically, the namespace is given the name of <code>bhyve</code>.
 &lt;/domain&gt;
 </pre>
 
+<p>Note that these extensions are for testing and development purposes only.
+They are <b>unsupported</b>, using them may result in inconsistent state,
+and upgrading either bhyve or libvirtd maybe break behavior of a domain that
+was relying on a specific commands pass-through.</p>
+
   </body>
 </html>
