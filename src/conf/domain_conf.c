@@ -7578,11 +7578,10 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
                                            virDomainHostdevSubsysSCSIPtr def,
                                            xmlXPathContextPtr ctxt)
 {
-    int ret = -1;
     int auth_secret_usage = -1;
     xmlNodePtr cur;
-    virStorageAuthDefPtr authdef = NULL;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &def->u.iscsi;
+    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
 
     /* For the purposes of command line creation, this needs to look
      * like a disk storage source */
@@ -7594,23 +7593,23 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
     if (!(iscsisrc->src->path = virXMLPropString(sourcenode, "name"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing iSCSI hostdev source path name"));
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainStorageNetworkParseHosts(sourcenode, &iscsisrc->src->hosts,
                                           &iscsisrc->src->nhosts) < 0)
-        goto cleanup;
+        return -1;
 
     if (iscsisrc->src->nhosts < 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing the host address for the iSCSI hostdev"));
-        goto cleanup;
+        return -1;
     }
     if (iscsisrc->src->nhosts > 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("only one source host address may be specified "
                          "for the iSCSI hostdev"));
-        goto cleanup;
+        return -1;
     }
 
     cur = sourcenode->children;
@@ -7618,29 +7617,25 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
         if (cur->type == XML_ELEMENT_NODE &&
             virXMLNodeNameEqual(cur, "auth")) {
             if (!(authdef = virStorageAuthDefParse(cur, ctxt)))
-                goto cleanup;
+                return -1;
             if ((auth_secret_usage =
                  virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("invalid secret type %s"),
                                authdef->secrettype);
-                goto cleanup;
+                return -1;
             }
             if (auth_secret_usage != VIR_SECRET_USAGE_TYPE_ISCSI) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("hostdev invalid secret type '%s'"),
                                authdef->secrettype);
-                goto cleanup;
+                return -1;
             }
             VIR_STEAL_PTR(iscsisrc->src->auth, authdef);
         }
         cur = cur->next;
     }
-    ret = 0;
-
- cleanup:
-    virStorageAuthDefFree(authdef);
-    return ret;
+    return 0;
 }
 
 static int
@@ -9683,7 +9678,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
     char *startupPolicy = NULL;
-    virStorageAuthDefPtr authdef = NULL;
     char *tray = NULL;
     char *removable = NULL;
     char *logical_block_size = NULL;
@@ -9692,6 +9686,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vendor = NULL;
     char *product = NULL;
     char *domain_name = NULL;
+    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
 
     if (!(def = virDomainDiskDefNew(xmlopt)))
         return NULL;
@@ -10093,7 +10088,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(target);
     VIR_FREE(tray);
     VIR_FREE(removable);
-    virStorageAuthDefFree(authdef);
     VIR_FREE(devaddr);
     VIR_FREE(serial);
     virStorageEncryptionFree(encryption);

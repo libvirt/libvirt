@@ -59,7 +59,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     char *sock = NULL;
     char *volimg = NULL;
     char *secret = NULL;
-    virStorageAuthDefPtr authdef = NULL;
+    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
 
     if (VIR_ALLOC(def->src->hosts) < 0)
         goto error;
@@ -151,7 +151,6 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
  error:
     virStorageNetHostDefClear(def->src->hosts);
     VIR_FREE(def->src->hosts);
-    virStorageAuthDefFree(authdef);
     goto cleanup;
 }
 

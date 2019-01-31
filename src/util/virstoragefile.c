@@ -1879,25 +1879,23 @@ virStorageAuthDefFree(virStorageAuthDefPtr authdef)
 virStorageAuthDefPtr
 virStorageAuthDefCopy(const virStorageAuthDef *src)
 {
-    virStorageAuthDefPtr authdef;
     virStorageAuthDefPtr ret = NULL;
+    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
 
     if (VIR_ALLOC(authdef) < 0)
         return NULL;
 
     if (VIR_STRDUP(authdef->username, src->username) < 0)
-        goto cleanup;
+        return NULL;
     /* Not present for storage pool, but used for disk source */
     if (VIR_STRDUP(authdef->secrettype, src->secrettype) < 0)
-        goto cleanup;
+        return NULL;
     authdef->authType = src->authType;
 
     if (virSecretLookupDefCopy(&authdef->seclookupdef, &src->seclookupdef) < 0)
-        goto cleanup;
+        return NULL;
 
     VIR_STEAL_PTR(ret, authdef);
- cleanup:
-    virStorageAuthDefFree(authdef);
     return ret;
 }
 
@@ -1907,10 +1905,10 @@ virStorageAuthDefParse(xmlNodePtr node,
                        xmlXPathContextPtr ctxt)
 {
     xmlNodePtr saveNode = ctxt->node;
-    virStorageAuthDefPtr authdef = NULL;
     virStorageAuthDefPtr ret = NULL;
     xmlNodePtr secretnode = NULL;
     char *authtype = NULL;
+    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
 
     ctxt->node = node;
 
@@ -1958,7 +1956,6 @@ virStorageAuthDefParse(xmlNodePtr node,
 
  cleanup:
     VIR_FREE(authtype);
-    virStorageAuthDefFree(authdef);
     ctxt->node = saveNode;
 
     return ret;
@@ -2832,7 +2829,7 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
 {
     char *options = NULL;
     char *p, *e, *next;
-    virStorageAuthDefPtr authdef = NULL;
+    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
 
     /* optionally skip the "rbd:" prefix if provided */
     if (STRPREFIX(rbdstr, "rbd:"))
@@ -2935,7 +2932,6 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
 
  error:
     VIR_FREE(options);
-    virStorageAuthDefFree(authdef);
     return -1;
 }
 

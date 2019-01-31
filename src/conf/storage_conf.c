@@ -458,11 +458,11 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     int nsource;
     size_t i;
     virStoragePoolOptionsPtr options;
-    virStorageAuthDefPtr authdef = NULL;
     char *name = NULL;
     char *port = NULL;
     char *ver = NULL;
     int n;
+    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
 
     relnode = ctxt->node;
     ctxt->node = node;
@@ -614,7 +614,6 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 
     VIR_FREE(port);
     VIR_FREE(nodeset);
-    virStorageAuthDefFree(authdef);
     return ret;
 }
 
