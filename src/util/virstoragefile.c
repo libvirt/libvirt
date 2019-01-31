@@ -1594,11 +1594,10 @@ virStorageFileParseBackingStoreStr(const char *str,
                                    char **target,
                                    unsigned int *chainIndex)
 {
-    char **strings = NULL;
     size_t nstrings;
     unsigned int idx = 0;
     char *suffix;
-    int ret = -1;
+    VIR_AUTOPTR(virString) strings = NULL;
 
     *chainIndex = 0;
 
@@ -1608,19 +1607,15 @@ virStorageFileParseBackingStoreStr(const char *str,
     if (nstrings == 2) {
         if (virStrToLong_uip(strings[1], &suffix, 10, &idx) < 0 ||
             STRNEQ(suffix, "]"))
-            goto cleanup;
+            return -1;
     }
 
     if (target &&
         VIR_STRDUP(*target, strings[0]) < 0)
-        goto cleanup;
+        return -1;
 
     *chainIndex = idx;
-    ret = 0;
-
- cleanup:
-    virStringListFreeCount(strings, nstrings);
-    return ret;
+    return 0;
 }
 
 
@@ -2677,8 +2672,8 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 {
     virURIPtr uri = NULL;
     const char *path = NULL;
-    char **scheme = NULL;
     int ret = -1;
+    VIR_AUTOPTR(virString) scheme = NULL;
 
     if (!(uri = virURIParse(uristr))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2772,7 +2767,6 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
  cleanup:
     virURIFree(uri);
-    virStringListFree(scheme);
     return ret;
 }
 
@@ -2783,7 +2777,7 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
 {
     char *port;
     size_t skip;
-    char **parts;
+    VIR_AUTOPTR(virString) parts = NULL;
 
     if (VIR_EXPAND_N(src->hosts, src->nhosts, 1) < 0)
         return -1;
@@ -2808,7 +2802,6 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
     if (!parts)
         goto error;
     src->hosts[src->nhosts-1].name = virStringListJoin((const char **)parts, ":");
-    virStringListFree(parts);
     if (!src->hosts[src->nhosts-1].name)
         goto error;
 
@@ -2940,16 +2933,15 @@ static int
 virStorageSourceParseNBDColonString(const char *nbdstr,
                                     virStorageSourcePtr src)
 {
-    char **backing = NULL;
-    int ret = -1;
+    VIR_AUTOPTR(virString) backing = NULL;
 
     if (!(backing = virStringSplit(nbdstr, ":", 0)))
-        goto cleanup;
+        return -1;
 
     /* we know that backing[0] now equals to "nbd" */
 
     if (VIR_ALLOC_N(src->hosts, 1) < 0)
-        goto cleanup;
+        return -1;
 
     src->nhosts = 1;
     src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
@@ -2962,44 +2954,39 @@ virStorageSourceParseNBDColonString(const char *nbdstr,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing remote information in '%s' for protocol nbd"),
                        nbdstr);
-        goto cleanup;
+        return -1;
     } else if (STREQ(backing[1], "unix")) {
         if (!backing[2]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("missing unix socket path in nbd backing string %s"),
                            nbdstr);
-            goto cleanup;
+            return -1;
         }
 
         if (VIR_STRDUP(src->hosts->socket, backing[2]) < 0)
-            goto cleanup;
+            return -1;
 
    } else {
         if (VIR_STRDUP(src->hosts->name, backing[1]) < 0)
-            goto cleanup;
+            return -1;
 
         if (!backing[2]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("missing port in nbd string '%s'"),
                            nbdstr);
-            goto cleanup;
+            return -1;
         }
 
         if (virStringParsePort(backing[2], &src->hosts->port) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (backing[3] && STRPREFIX(backing[3], "exportname=")) {
         if (VIR_STRDUP(src->path, backing[3] + strlen("exportname=")) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virStringListFree(backing);
-
-    return ret;
+    return 0;
 }
 
 
@@ -4250,9 +4237,8 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
 int
 virStorageFileCheckCompat(const char *compat)
 {
-    char **version;
     unsigned int result;
-    int ret = -1;
+    VIR_AUTOPTR(virString) version = NULL;
 
     if (!compat)
         return 0;
@@ -4263,13 +4249,9 @@ virStorageFileCheckCompat(const char *compat)
         virStrToLong_ui(version[1], NULL, 10, &result) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("forbidden characters in 'compat' attribute"));
-        goto cleanup;
+        return -1;
     }
-    ret = 0;
-
- cleanup:
-    virStringListFree(version);
-    return ret;
+    return 0;
 }
 
 

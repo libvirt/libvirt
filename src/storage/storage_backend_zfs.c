@@ -104,13 +104,13 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
                              const char *volume_string)
 {
     int ret = -1;
-    char **tokens;
     size_t count;
-    char **name_tokens = NULL;
     char *vol_name;
     bool is_new_vol = false;
     virStorageVolDefPtr volume = NULL;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    VIR_AUTOPTR(virString) tokens = NULL;
+    VIR_AUTOPTR(virString) name_tokens = NULL;
 
     if (!(tokens = virStringSplitCount(volume_string, "\t", 0, &count)))
         return -1;
@@ -169,8 +169,6 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
 
     ret = 0;
  cleanup:
-    virStringListFree(tokens);
-    virStringListFree(name_tokens);
     if (is_new_vol)
         virStorageVolDefFree(volume);
     return ret;
@@ -183,8 +181,8 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virCommandPtr cmd = NULL;
     char *volumes_list = NULL;
-    char **lines = NULL;
     size_t i;
+    VIR_AUTOPTR(virString) lines = NULL;
 
     /**
      * $ zfs list -Hp -t volume -o name,volsize -r test
@@ -221,7 +219,6 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
 
  cleanup:
     virCommandFree(cmd);
-    virStringListFree(lines);
     VIR_FREE(volumes_list);
 
     return 0;
@@ -233,9 +230,9 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED)
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virCommandPtr cmd = NULL;
     char *zpool_props = NULL;
-    char **lines = NULL;
-    char **tokens = NULL;
     size_t i;
+    VIR_AUTOPTR(virString) lines = NULL;
+    VIR_AUTOPTR(virString) tokens = NULL;
 
     /**
      * $ zpool get -Hp health,size,free,allocated test
@@ -296,8 +293,6 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED)
 
  cleanup:
     virCommandFree(cmd);
-    virStringListFree(lines);
-    virStringListFree(tokens);
     VIR_FREE(zpool_props);
 
     return 0;
