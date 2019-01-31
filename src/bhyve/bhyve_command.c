@@ -630,6 +630,10 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
     if (def->namespaceData) {
         bhyveDomainCmdlineDefPtr bhyvecmd;
 
+        VIR_WARN("Booting the guest using command line pass-through feature, "
+                 "which could potentially cause inconsistent state and "
+                 "upgrade issues");
+
         bhyvecmd = def->namespaceData;
         for (i = 0; i < bhyvecmd->num_args; i++)
             virCommandAddArg(cmd, bhyvecmd->args[i]);
