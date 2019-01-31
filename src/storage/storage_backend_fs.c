@@ -562,7 +562,7 @@ virStorageBackendFileSystemBuild(virStoragePoolObjPtr pool,
 
 #if WITH_STORAGE_FS
 
-# define STORAGE_POOL_FS_NAMESPACE_HREF "http://libvirt.org/schemas/storagepool/source/fs/1.0"
+# define STORAGE_POOL_FS_NAMESPACE_HREF "http://libvirt.org/schemas/storagepool/fs/1.0"
 
 /* Backend XML Namespace handling for fs or netfs specific mount options to
  * be added to the mount -o {options_list} command line that are not otherwise

@@ -1,4 +1,4 @@
-<pool type='netfs' xmlns:fs='http://libvirt.org/schemas/storagepool/source/fs/1.0'>
+<pool type='netfs' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>
   <name>nfsimages</name>
   <uuid>7641d5a8-af11-f730-a34e-0a7dfcede71f</uuid>
   <capacity>0</capacity>

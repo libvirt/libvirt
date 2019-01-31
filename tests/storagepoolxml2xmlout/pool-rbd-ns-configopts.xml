@@ -1,4 +1,4 @@
-<pool type='rbd' xmlns:rbd='http://libvirt.org/schemas/storagepool/source/rbd/1.0'>
+<pool type='rbd' xmlns:rbd='http://libvirt.org/schemas/storagepool/rbd/1.0'>
   <name>ceph</name>
   <uuid>47c1faee-0207-e741-f5ae-d9b019b98fe2</uuid>
   <capacity unit='bytes'>0</capacity>

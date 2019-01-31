@@ -59,7 +59,7 @@ struct _virStoragePoolRBDConfigOptionsDef {
     char **values;
 };
 
-#define STORAGE_POOL_RBD_NAMESPACE_HREF "http://libvirt.org/schemas/storagepool/source/rbd/1.0"
+#define STORAGE_POOL_RBD_NAMESPACE_HREF "http://libvirt.org/schemas/storagepool/rbd/1.0"
 
 static void
 virStoragePoolDefRBDNamespaceFree(void *nsdata)
