@@ -744,12 +744,6 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
             goto out;
     }
 
-    /* Third attempt, i686 only: try 'qemu' */
-    if (guestarch == VIR_ARCH_I686) {
-        if ((ret = virQEMUCapsFindBinary("%s", "qemu")) != NULL)
-            goto out;
-    }
-
  out:
     return ret;
 }
