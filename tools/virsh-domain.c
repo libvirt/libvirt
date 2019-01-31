@@ -10557,6 +10557,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("use TLS for migration")
     },
+    {.name = "postcopy-bandwidth",
+     .type = VSH_OT_INT,
+     .help = N_("post-copy migration bandwidth limit in MiB/s")
+    },
     {.name = NULL}
 };
 
@@ -10750,6 +10754,15 @@ doMigrate(void *opaque)
         if (virTypedParamsAddInt(&params, &nparams, &maxparams,
                                  VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT,
                                  intOpt) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(ctl, cmd, "postcopy-bandwidth", &ullOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY,
+                                    ullOpt) < 0)
             goto save_error;
     }
 
@@ -11150,6 +11163,10 @@ static const vshCmdOptDef opts_migrate_setspeed[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("migration bandwidth limit in MiB/s")
     },
+    {.name = "postcopy",
+     .type = VSH_OT_BOOL,
+     .help = N_("set post-copy migration bandwidth")
+    },
     {.name = NULL}
 };
 
@@ -11158,6 +11175,7 @@ cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     unsigned long bandwidth = 0;
+    unsigned int flags = 0;
     bool ret = false;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
@@ -11166,7 +11184,10 @@ cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
         goto done;
 
-    if (virDomainMigrateSetMaxSpeed(dom, bandwidth, 0) < 0)
+    if (vshCommandOptBool(cmd, "postcopy"))
+        flags |= VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY;
+
+    if (virDomainMigrateSetMaxSpeed(dom, bandwidth, flags) < 0)
         goto done;
 
     ret = true;
@@ -11191,6 +11212,10 @@ static const vshCmdInfo info_migrate_getspeed[] = {
 
 static const vshCmdOptDef opts_migrate_getspeed[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
+    {.name = "postcopy",
+     .type = VSH_OT_BOOL,
+     .help = N_("get post-copy migration bandwidth")
+    },
     {.name = NULL}
 };
 
@@ -11199,12 +11224,16 @@ cmdMigrateGetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     unsigned long bandwidth;
+    unsigned int flags = 0;
     bool ret = false;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (virDomainMigrateGetMaxSpeed(dom, &bandwidth, 0) < 0)
+    if (vshCommandOptBool(cmd, "postcopy"))
+        flags |= VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY;
+
+    if (virDomainMigrateGetMaxSpeed(dom, &bandwidth, flags) < 0)
         goto done;
 
     vshPrint(ctl, "%lu\n", bandwidth);
