@@ -13714,6 +13714,11 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
 {
     qemuDomainPrepareDiskCachemode(disk);
 
+    /* add raw file format if the storage pool did not fill it in */
+    if (disk->src->type == VIR_STORAGE_TYPE_VOLUME &&
+        disk->src->format <= VIR_STORAGE_FILE_NONE)
+        disk->src->format = VIR_STORAGE_FILE_RAW;
+
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         if (qemuDomainPrepareDiskSourceBlockdev(disk, priv, cfg) < 0)
             return -1;
