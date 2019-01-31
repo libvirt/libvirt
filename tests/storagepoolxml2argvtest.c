@@ -96,8 +96,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
 struct testInfo {
     bool shouldFail;
     const char *pool;
-    bool linuxOut;
-    bool freebsdOut;
+    const char *platformSuffix;
 };
 
 static int
@@ -112,19 +111,10 @@ testCompareXMLToArgvHelper(const void *data)
                     abs_srcdir, info->pool) < 0)
         goto cleanup;
 
-    if (info->linuxOut) {
-        if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s-linux.argv",
-                        abs_srcdir, info->pool) < 0 && !info->shouldFail)
-            goto cleanup;
-    } else if (info->freebsdOut) {
-        if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s-freebsd.argv",
-                        abs_srcdir, info->pool) < 0 && !info->shouldFail)
-            goto cleanup;
-    } else {
-        if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s.argv",
-                        abs_srcdir, info->pool) < 0 && !info->shouldFail)
-            goto cleanup;
-    }
+    if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s%s.argv",
+                    abs_srcdir, info->pool, info->platformSuffix) < 0 &&
+        !info->shouldFail)
+        goto cleanup;
 
     result = testCompareXMLToArgvFiles(info->shouldFail, poolxml, cmdline);
 
@@ -141,9 +131,9 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(shouldFail, pool, linuxOut, freebsdOut) \
+#define DO_TEST_FULL(shouldFail, pool, platformSuffix) \
     do { \
-        struct testInfo info = { shouldFail, pool, linuxOut, freebsdOut }; \
+        struct testInfo info = { shouldFail, pool, platformSuffix }; \
         if (virTestRun("Storage Pool XML-2-argv " pool, \
                        testCompareXMLToArgvHelper, &info) < 0) \
             ret = -1; \
@@ -151,16 +141,16 @@ mymain(void)
     while (0);
 
 #define DO_TEST(pool, ...) \
-    DO_TEST_FULL(false, pool, false, false)
+    DO_TEST_FULL(false, pool, "")
 
 #define DO_TEST_FAIL(pool, ...) \
-    DO_TEST_FULL(true, pool, false, false)
+    DO_TEST_FULL(true, pool, "")
 
 #define DO_TEST_LINUX(pool, ...) \
-    DO_TEST_FULL(false, pool, true, false)
+    DO_TEST_FULL(false, pool, "-linux")
 
 #define DO_TEST_FREEBSD(pool, ...) \
-    DO_TEST_FULL(false, pool, false, true)
+    DO_TEST_FULL(false, pool, "-freebsd")
 
     if (storageRegisterAll() < 0)
        return EXIT_FAILURE;
