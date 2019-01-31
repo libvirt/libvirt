@@ -117,14 +117,14 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
 {
     int nextents, ret = -1;
     const char *regex_unit = "(\\S+)\\((\\S+)\\)";
-    char *regex = NULL;
-    regex_t *reg = NULL;
-    regmatch_t *vars = NULL;
     char *p = NULL;
     size_t i;
     int err, nvars;
     unsigned long long offset, size, length;
     virStorageVolSourceExtent extent;
+    VIR_AUTOFREE(char *) regex = NULL;
+    VIR_AUTOFREE(regex_t *) reg = NULL;
+    VIR_AUTOFREE(regmatch_t *) vars = NULL;
 
     memset(&extent, 0, sizeof(extent));
 
@@ -202,7 +202,7 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
     for (i = 0; i < nextents; i++) {
         size_t j;
         int len;
-        char *offset_str = NULL;
+        VIR_AUTOFREE(char *) offset_str = NULL;
 
         j = (i * 2) + 1;
         len = vars[j].rm_eo - vars[j].rm_so;
@@ -219,10 +219,8 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
         if (virStrToLong_ull(offset_str, NULL, 10, &offset) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("malformed volume extent offset value"));
-            VIR_FREE(offset_str);
             goto cleanup;
         }
-        VIR_FREE(offset_str);
         extent.start = offset * size;
         extent.end = (offset * size) + length;
 
@@ -234,9 +232,6 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
     ret = 0;
 
  cleanup:
-    VIR_FREE(regex);
-    VIR_FREE(reg);
-    VIR_FREE(vars);
     VIR_FREE(extent.path);
     return ret;
 }
@@ -459,16 +454,15 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
                                             void *data)
 {
     virStoragePoolSourceListPtr sourceList = data;
-    char *pvname = NULL;
-    char *vgname = NULL;
-    int retval = -1;
     size_t i;
     virStoragePoolSourceDevicePtr dev;
     virStoragePoolSource *thisSource;
+    VIR_AUTOFREE(char *) pvname = NULL;
+    VIR_AUTOFREE(char *) vgname = NULL;
 
     if (VIR_STRDUP(pvname, groups[0]) < 0 ||
         VIR_STRDUP(vgname, groups[1]) < 0)
-        goto error;
+        return -1;
 
     thisSource = NULL;
     for (i = 0; i < sourceList->nsources; i++) {
@@ -480,13 +474,13 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
 
     if (thisSource == NULL) {
         if (!(thisSource = virStoragePoolSourceListNewSource(sourceList)))
-            goto error;
+            return -1;
 
         VIR_STEAL_PTR(thisSource->name, vgname);
     }
 
     if (VIR_REALLOC_N(thisSource->devices, thisSource->ndevice + 1) != 0)
-        goto error;
+        return -1;
 
     dev = &thisSource->devices[thisSource->ndevice];
     thisSource->ndevice++;
@@ -495,13 +489,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
     memset(dev, 0, sizeof(*dev));
     VIR_STEAL_PTR(dev->path, pvname);
 
-    retval = 0;
-
- error:
-    VIR_FREE(pvname);
-    VIR_FREE(vgname);
-
-    return retval;
+    return 0;
 }
 
 /*

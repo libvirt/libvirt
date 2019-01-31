@@ -153,31 +153,31 @@ static int
 virStorageBackendCreateVols(virStoragePoolObjPtr pool,
                             struct dm_names *names)
 {
-    int retval = -1, is_mpath = 0;
-    char *map_device = NULL;
+    int is_mpath = 0;
     uint32_t minor = -1;
     uint32_t next;
+    VIR_AUTOFREE(char *) map_device = NULL;
 
     do {
         is_mpath = virStorageBackendIsMultipath(names->name);
 
         if (is_mpath < 0)
-            goto out;
+            return -1;
 
         if (is_mpath == 1) {
 
             if (virAsprintf(&map_device, "mapper/%s", names->name) < 0)
-                goto out;
+                return -1;
 
             if (virStorageBackendGetMinorNumber(names->name, &minor) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to get %s minor number"),
                                names->name);
-                goto out;
+                return -1;
             }
 
             if (virStorageBackendMpathNewVol(pool, minor, map_device) < 0)
-                goto out;
+                return -1;
 
             VIR_FREE(map_device);
         }
@@ -191,10 +191,7 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
     } while (next);
 
-    retval = 0;
- out:
-    VIR_FREE(map_device);
-    return retval;
+    return 0;
 }
 
 

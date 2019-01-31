@@ -52,7 +52,7 @@ static int
 virStorageBackendZFSVolModeNeeded(void)
 {
     int ret = -1, exit_code = -1;
-    char *error = NULL;
+    VIR_AUTOFREE(char *) error = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     /* 'zfs get' without arguments prints out
@@ -77,7 +77,6 @@ virStorageBackendZFSVolModeNeeded(void)
         ret = 0;
 
  cleanup:
-    VIR_FREE(error);
     return ret;
 }
 
@@ -86,13 +85,12 @@ virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                               bool *isActive)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    char *devpath;
+    VIR_AUTOFREE(char *) devpath = NULL;
 
     if (virAsprintf(&devpath, "/dev/zvol/%s",
                     def->source.name) < 0)
         return -1;
     *isActive = virFileIsDir(devpath);
-    VIR_FREE(devpath);
 
     return 0;
 }
@@ -178,10 +176,10 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
                              virStorageVolDefPtr vol)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    char *volumes_list = NULL;
     size_t i;
     VIR_AUTOPTR(virString) lines = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
+    VIR_AUTOFREE(char *) volumes_list = NULL;
 
     /**
      * $ zfs list -Hp -t volume -o name,volsize -r test
@@ -203,10 +201,10 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
                                NULL);
     virCommandSetOutputBuffer(cmd, &volumes_list);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(lines = virStringSplit(volumes_list, "\n", 0)))
-        goto cleanup;
+        return -1;
 
     for (i = 0; lines[i]; i++) {
         if (STREQ(lines[i], ""))
@@ -215,9 +213,6 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
         if (virStorageBackendZFSParseVol(pool, vol, lines[i]) < 0)
             continue;
     }
-
- cleanup:
-    VIR_FREE(volumes_list);
 
     return 0;
 }

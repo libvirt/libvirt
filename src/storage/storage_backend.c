@@ -87,8 +87,7 @@ virStorageDriverLoadBackendModule(const char *name,
                                   const char *regfunc,
                                   bool forceload)
 {
-    char *modfile = NULL;
-    int ret;
+    VIR_AUTOFREE(char *) modfile = NULL;
 
     if (!(modfile = virFileFindResourceFull(name,
                                             "libvirt_storage_backend_",
@@ -98,11 +97,7 @@ virStorageDriverLoadBackendModule(const char *name,
                                             "LIBVIRT_STORAGE_BACKEND_DIR")))
         return -1;
 
-    ret = virModuleLoad(modfile, regfunc, forceload);
-
-    VIR_FREE(modfile);
-
-    return ret;
+    return virModuleLoad(modfile, regfunc, forceload);
 }
 
 

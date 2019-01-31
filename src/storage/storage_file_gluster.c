@@ -258,11 +258,10 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
                                              void *data)
 {
     virStorageFileBackendGlusterPrivPtr priv = data;
-    char *buf = NULL;
     size_t bufsiz = 0;
     ssize_t ret;
     struct stat st;
-    int retval = -1;
+    VIR_AUTOFREE(char *) buf = NULL;
 
     *linkpath = NULL;
 
@@ -278,13 +277,13 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
 
  realloc:
     if (VIR_EXPAND_N(buf, bufsiz, 256) < 0)
-        goto error;
+        return -1;
 
     if ((ret = glfs_readlink(priv->vol, path, buf, bufsiz)) < 0) {
         virReportSystemError(errno,
                              _("failed to read link of gluster file '%s'"),
                              path);
-        goto error;
+        return -1;
     }
 
     if (ret == bufsiz)
@@ -294,11 +293,7 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
 
     VIR_STEAL_PTR(*linkpath, buf);
 
-    retval = 0;
-
- error:
-    VIR_FREE(buf);
-    return retval;
+    return 0;
 }
 
 
@@ -306,7 +301,7 @@ static const char *
 virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
 {
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
-    char *filePath = NULL;
+    VIR_AUTOFREE(char *) filePath = NULL;
 
     if (priv->canonpath)
         return priv->canonpath;
@@ -321,8 +316,6 @@ virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
                              src->hosts->port,
                              src->volume,
                              filePath));
-
-    VIR_FREE(filePath);
 
     return priv->canonpath;
 }

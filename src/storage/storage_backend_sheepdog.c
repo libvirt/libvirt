@@ -136,9 +136,8 @@ virStorageBackendSheepdogAddVolume(virStoragePoolObjPtr pool, const char *diskIn
 static int
 virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
 {
-    int ret = -1;
-    char *output = NULL;
     size_t i;
+    VIR_AUTOFREE(char *) output = NULL;
     VIR_AUTOPTR(virString) lines = NULL;
     VIR_AUTOPTR(virString) cells = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
@@ -147,11 +146,11 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     virCommandSetOutputBuffer(cmd, &output);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     lines = virStringSplit(output, "\n", 0);
     if (lines == NULL)
-        goto cleanup;
+        return -1;
 
     for (i = 0; lines[i]; i++) {
         const char *line = lines[i];
@@ -163,42 +162,34 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
         if (cells != NULL &&
             virStringListLength((const char * const *)cells) > 2) {
             if (virStorageBackendSheepdogAddVolume(pool, cells[1]) < 0)
-                goto cleanup;
+                return -1;
         }
 
         virStringListFree(cells);
         cells = NULL;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(output);
-    return ret;
+    return 0;
 }
 
 
 static int
 virStorageBackendSheepdogRefreshPool(virStoragePoolObjPtr pool)
 {
-    int ret = -1;
-    char *output = NULL;
+    VIR_AUTOFREE(char *) output = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(SHEEPDOGCLI, "node", "info", "-r", NULL);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     virCommandSetOutputBuffer(cmd, &output);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageBackendSheepdogParseNodeInfo(virStoragePoolObjGetDef(pool),
                                                output) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = virStorageBackendSheepdogRefreshAllVol(pool);
- cleanup:
-    VIR_FREE(output);
-    return ret;
+    return virStorageBackendSheepdogRefreshAllVol(pool);
 }
 
 

@@ -246,11 +246,11 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
 {
     int ret = -1;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    char *src = NULL;
     FILE *mtab;
     struct mntent ent;
     char buf[1024];
     int rc1, rc2;
+    VIR_AUTOFREE(char *) src = NULL;
 
     if ((mtab = fopen(_PATH_MOUNTED, "r")) == NULL) {
         virReportSystemError(errno,
@@ -282,7 +282,6 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
 
  cleanup:
     VIR_FORCE_FCLOSE(mtab);
-    VIR_FREE(src);
     return ret;
 }
 
@@ -299,9 +298,8 @@ static int
 virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    char *src = NULL;
-    int ret = -1;
     int rc;
+    VIR_AUTOFREE(char *) src = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (virStorageBackendFileSystemIsValid(pool) < 0)
@@ -320,13 +318,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
         return -1;
 
     cmd = virStorageBackendFileSystemMountCmd(MOUNT, def, src);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    VIR_FREE(src);
-    return ret;
+    return virCommandRun(cmd, NULL);
 }
 
 
@@ -579,10 +571,10 @@ virStoragePoolDefFSNamespaceParse(xmlXPathContextPtr ctxt,
                                   void **data)
 {
     virStoragePoolFSMountOptionsDefPtr cmdopts = NULL;
-    xmlNodePtr *nodes = NULL;
     int nnodes;
     size_t i;
     int ret = -1;
+    VIR_AUTOFREE(xmlNodePtr *)nodes = NULL;
 
     if (xmlXPathRegisterNs(ctxt, BAD_CAST "fs",
                            BAD_CAST STORAGE_POOL_FS_NAMESPACE_HREF) < 0) {
@@ -617,7 +609,6 @@ virStoragePoolDefFSNamespaceParse(xmlXPathContextPtr ctxt,
     ret = 0;
 
  cleanup:
-    VIR_FREE(nodes);
     virStoragePoolDefFSNamespaceFree(cmdopts);
     return ret;
 }

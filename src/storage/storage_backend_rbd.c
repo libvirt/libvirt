@@ -86,10 +86,10 @@ virStoragePoolDefRBDNamespaceParse(xmlXPathContextPtr ctxt,
                                    void **data)
 {
     virStoragePoolRBDConfigOptionsDefPtr cmdopts = NULL;
-    xmlNodePtr *nodes = NULL;
     int nnodes;
     size_t i;
     int ret = -1;
+    VIR_AUTOFREE(xmlNodePtr *)nodes = NULL;
 
     if (xmlXPathRegisterNs(ctxt, BAD_CAST "rbd",
                            BAD_CAST STORAGE_POOL_RBD_NAMESPACE_HREF) < 0) {
@@ -145,7 +145,6 @@ virStoragePoolDefRBDNamespaceParse(xmlXPathContextPtr ctxt,
     ret = 0;
 
  cleanup:
-    VIR_FREE(nodes);
     virStoragePoolDefRBDNamespaceFree(cmdopts);
     return ret;
 }
@@ -213,12 +212,12 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     char *rados_key = NULL;
     virBuffer mon_host = VIR_BUFFER_INITIALIZER;
     size_t i;
-    char *mon_buff = NULL;
     const char *client_mount_timeout = "30";
     const char *mon_op_timeout = "30";
     const char *osd_op_timeout = "30";
     const char *rbd_default_format = "2";
     virConnectPtr conn = NULL;
+    VIR_AUTOFREE(char *) mon_buff = NULL;
 
     if (authdef) {
         VIR_DEBUG("Using cephx authorization, username: %s", authdef->username);
@@ -348,7 +347,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
 
     virObjectUnref(conn);
     virBufferFreeAndReset(&mon_host);
-    VIR_FREE(mon_buff);
     return ret;
 }
 
@@ -574,11 +572,12 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
     int ret = -1;
     int len = -1;
     int r = 0;
-    char *name, *names = NULL;
+    char *name;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageBackendRBDStatePtr ptr = NULL;
     struct rados_cluster_stat_t clusterstat;
     struct rados_pool_stat_t poolstat;
+    VIR_AUTOFREE(char *) names = NULL;
 
     if (!(ptr = virStorageBackendRBDNewState(pool)))
         goto cleanup;
@@ -662,7 +661,6 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
     ret = 0;
 
  cleanup:
-    VIR_FREE(names);
     virStorageBackendRBDFreeState(&ptr);
     return ret;
 }
@@ -677,8 +675,8 @@ virStorageBackendRBDCleanupSnapshots(rados_ioctx_t ioctx,
     int max_snaps = 128;
     int snap_count, protected;
     size_t i;
-    rbd_snap_info_t *snaps = NULL;
     rbd_image_t image = NULL;
+    VIR_AUTOFREE(rbd_snap_info_t *) snaps = NULL;
 
     if ((r = rbd_open(ioctx, vol->name, &image, NULL)) < 0) {
        virReportSystemError(-r, _("failed to open the RBD image '%s'"),
@@ -736,8 +734,6 @@ virStorageBackendRBDCleanupSnapshots(rados_ioctx_t ioctx,
  cleanup:
     if (snaps)
         rbd_snap_list_end(snaps);
-
-    VIR_FREE(snaps);
 
     if (image)
         rbd_close(image);
@@ -949,8 +945,8 @@ virStorageBackendRBDSnapshotFindNoDiff(rbd_image_t image,
     int max_snaps = 128;
     size_t i;
     int diff;
-    rbd_snap_info_t *snaps = NULL;
     rbd_image_info_t info;
+    VIR_AUTOFREE(rbd_snap_info_t *) snaps = NULL;
 
     if ((r = rbd_stat(image, &info, sizeof(info))) < 0) {
         virReportSystemError(-r, _("failed to stat the RBD image %s"),
@@ -1022,8 +1018,6 @@ virStorageBackendRBDSnapshotFindNoDiff(rbd_image_t image,
  cleanup:
     if (snaps)
         rbd_snap_list_end(snaps);
-
-    VIR_FREE(snaps);
 
     return ret;
 }
@@ -1098,8 +1092,8 @@ virStorageBackendRBDCloneImage(rados_ioctx_t io,
     uint64_t stripe_count;
     uint64_t stripe_unit;
     virBuffer snapname = VIR_BUFFER_INITIALIZER;
-    char *snapname_buff = NULL;
     rbd_image_t image = NULL;
+    VIR_AUTOFREE(char *) snapname_buff = NULL;
 
     if ((r = rbd_open(io, origvol, &image, NULL)) < 0) {
         virReportSystemError(-r, _("failed to open the RBD image %s"),
@@ -1170,7 +1164,6 @@ virStorageBackendRBDCloneImage(rados_ioctx_t io,
 
  cleanup:
     virBufferFreeAndReset(&snapname);
-    VIR_FREE(snapname_buff);
 
     if (image)
         rbd_close(image);
@@ -1271,13 +1264,12 @@ virStorageBackendRBDVolWipeZero(rbd_image_t image,
                                 uint64_t stripe_count)
 {
     int r = -1;
-    int ret = -1;
     unsigned long long offset = 0;
     unsigned long long length;
-    char *writebuf;
+    VIR_AUTOFREE(char *) writebuf = NULL;
 
     if (VIR_ALLOC_N(writebuf, info->obj_size * stripe_count) < 0)
-        goto cleanup;
+        return -1;
 
     while (offset < info->size) {
         length = MIN((info->size - offset), (info->obj_size * stripe_count));
@@ -1286,7 +1278,7 @@ virStorageBackendRBDVolWipeZero(rbd_image_t image,
             virReportSystemError(-r, _("writing %llu bytes failed on "
                                        "RBD image %s at offset %llu"),
                                        length, imgname, offset);
-            goto cleanup;
+            return -1;
         }
 
         VIR_DEBUG("Wrote %llu bytes to RBD image %s at offset %llu",
@@ -1295,12 +1287,7 @@ virStorageBackendRBDVolWipeZero(rbd_image_t image,
         offset += length;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(writebuf);
-
-    return ret;
+    return 0;
 }
 
 static int
