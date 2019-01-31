@@ -4394,9 +4394,9 @@ testConnectFindStoragePoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   const char *srcSpec,
                                   unsigned int flags)
 {
-    virStoragePoolSourcePtr source = NULL;
     int pool_type;
     char *ret = NULL;
+    VIR_AUTOPTR(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -4404,40 +4404,38 @@ testConnectFindStoragePoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!pool_type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown storage pool type %s"), type);
-        goto cleanup;
+        return NULL;
     }
 
     if (srcSpec) {
         source = virStoragePoolDefParseSourceString(srcSpec, pool_type);
         if (!source)
-            goto cleanup;
+            return NULL;
     }
 
     switch (pool_type) {
 
     case VIR_STORAGE_POOL_LOGICAL:
         ignore_value(VIR_STRDUP(ret, defaultPoolSourcesLogicalXML));
-        break;
+        return ret;
 
     case VIR_STORAGE_POOL_NETFS:
         if (!source || !source->hosts[0].name) {
             virReportError(VIR_ERR_INVALID_ARG,
                            "%s", _("hostname must be specified for netfs sources"));
-            goto cleanup;
+            return NULL;
         }
 
         ignore_value(virAsprintf(&ret, defaultPoolSourcesNetFSXML,
                                  source->hosts[0].name));
-        break;
+        return ret;
 
     default:
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("pool type '%s' does not support source discovery"), type);
     }
 
- cleanup:
-    virStoragePoolSourceFree(source);
-    return ret;
+    return NULL;
 }
 
 

@@ -145,11 +145,11 @@ virStorageBackendFileSystemNetFindPoolSources(const char *srcSpec,
             .sources = NULL
         }
     };
-    virStoragePoolSourcePtr source = NULL;
     char *ret = NULL;
     size_t i;
     int retNFS = -1;
     int retGluster = 0;
+    VIR_AUTOPTR(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -196,7 +196,6 @@ virStorageBackendFileSystemNetFindPoolSources(const char *srcSpec,
         virStoragePoolSourceClear(&state.list.sources[i]);
     VIR_FREE(state.list.sources);
 
-    virStoragePoolSourceFree(source);
     return ret;
 }
 

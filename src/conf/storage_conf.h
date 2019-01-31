@@ -460,4 +460,6 @@ VIR_ENUM_DECL(virStoragePartedFs);
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART  | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE)
 
+VIR_DEFINE_AUTOPTR_FUNC(virStoragePoolSource, virStoragePoolSourceFree);
+
 #endif /* LIBVIRT_STORAGE_CONF_H */
