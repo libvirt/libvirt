@@ -46,42 +46,36 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
                              const char *dev)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    virStorageVolDefPtr vol;
-    int ret = -1;
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (VIR_ALLOC(vol) < 0)
-        goto cleanup;
+        return -1;
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     if (virAsprintf(&(vol->name), "dm-%u", devnum) < 0)
-        goto cleanup;
+        return -1;
 
     if (virAsprintf(&vol->target.path, "/dev/%s", dev) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageBackendUpdateVolInfo(vol, true,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT, 0) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* XXX should use logical unit's UUID instead */
     if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStoragePoolObjAddVol(pool, vol) < 0)
-        goto cleanup;
+        return -1;
 
     def->capacity += vol->target.capacity;
     def->allocation += vol->target.allocation;
-    ret = 0;
+    vol = NULL;
 
- cleanup:
-
-    if (ret != 0)
-        virStorageVolDefFree(vol);
-
-    return ret;
+    return 0;
 }
 
 

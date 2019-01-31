@@ -3672,10 +3672,10 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
     struct dirent *ent;
     struct statvfs sb;
     struct stat statbuf;
-    virStorageVolDefPtr vol = NULL;
     virStorageSourcePtr target = NULL;
     int direrr;
     int fd = -1, ret = -1;
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (virDirOpen(&dir, def->target.path) < 0)
         goto cleanup;
@@ -3767,7 +3767,6 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
  cleanup:
     VIR_DIR_CLOSE(dir);
     VIR_FORCE_CLOSE(fd);
-    virStorageVolDefFree(vol);
     virStorageSourceFree(target);
     if (ret < 0)
         virStoragePoolObjClearVols(pool);
@@ -3816,9 +3815,9 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                             const char *dev)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    virStorageVolDefPtr vol = NULL;
     char *devpath = NULL;
     int retval = -1;
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     /* Check if the pool is using a stable target path. The call to
      * virStorageBackendStablePath will fail if the pool target path
@@ -3898,7 +3897,6 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
     retval = 0;
 
  cleanup:
-    virStorageVolDefFree(vol);
     VIR_FREE(devpath);
     return retval;
 }

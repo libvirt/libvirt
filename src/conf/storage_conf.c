@@ -1168,7 +1168,6 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
                          xmlXPathContextPtr ctxt,
                          unsigned int flags)
 {
-    virStorageVolDefPtr def;
     virStorageVolDefPtr ret = NULL;
     virStorageVolOptionsPtr options;
     char *type = NULL;
@@ -1180,6 +1179,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     xmlNodePtr *nodes = NULL;
     size_t i;
     int n;
+    VIR_AUTOPTR(virStorageVolDef) def = NULL;
 
     virCheckFlags(VIR_VOL_XML_PARSE_NO_CAPACITY |
                   VIR_VOL_XML_PARSE_OPT_CAPACITY, NULL);
@@ -1331,7 +1331,6 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     VIR_STEAL_PTR(ret, def);
 
  cleanup:
-    virStorageVolDefFree(def);
     VIR_FREE(nodes);
     VIR_FREE(allocation);
     VIR_FREE(capacity);

@@ -48,10 +48,11 @@ testCompareXMLToArgvFiles(bool shouldFail,
 
     virCommandPtr cmd = NULL;
 
-    virStorageVolDefPtr vol = NULL, inputvol = NULL;
     virStoragePoolDefPtr def = NULL;
     virStoragePoolDefPtr inputpool = NULL;
     virStoragePoolObjPtr obj = NULL;
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
+    VIR_AUTOPTR(virStorageVolDef) inputvol = NULL;
 
     if (!(def = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
@@ -139,8 +140,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
 
  cleanup:
     virStoragePoolDefFree(inputpool);
-    virStorageVolDefFree(vol);
-    virStorageVolDefFree(inputvol);
     virCommandFree(cmd);
     VIR_FREE(actualCmdline);
     virStoragePoolObjEndAPI(&obj);

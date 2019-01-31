@@ -94,7 +94,7 @@ test_vdi_list_parser(const void *opaque)
     int ret = -1;
     char *output = NULL;
     virStoragePoolDefPtr pool = NULL;
-    virStorageVolDefPtr vol = NULL;
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
         goto cleanup;
@@ -121,7 +121,6 @@ test_vdi_list_parser(const void *opaque)
  cleanup:
     VIR_FREE(output);
     virStoragePoolDefFree(pool);
-    virStorageVolDefFree(vol);
     return ret;
 }
 

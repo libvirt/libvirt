@@ -110,30 +110,27 @@ virStorageBackendSheepdogAddHostArg(virCommandPtr cmd,
 static int
 virStorageBackendSheepdogAddVolume(virStoragePoolObjPtr pool, const char *diskInfo)
 {
-    virStorageVolDefPtr vol = NULL;
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (diskInfo == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing disk info when adding volume"));
-        goto error;
+        return -1;
     }
 
     if (VIR_ALLOC(vol) < 0 || VIR_STRDUP(vol->name, diskInfo) < 0)
-        goto error;
+        return -1;
 
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
     if (virStorageBackendSheepdogRefreshVol(pool, vol) < 0)
-        goto error;
+        return -1;
 
     if (virStoragePoolObjAddVol(pool, vol) < 0)
-        goto error;
+        return -1;
+    vol = NULL;
 
     return 0;
-
- error:
-    virStorageVolDefFree(vol);
-    return -1;
 }
 
 static int

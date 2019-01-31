@@ -1025,7 +1025,7 @@ testOpenVolumesForPool(const char *file,
     size_t i;
     int num, ret = -1;
     xmlNodePtr *nodes = NULL;
-    virStorageVolDefPtr volDef = NULL;
+    VIR_AUTOPTR(virStorageVolDef) volDef = NULL;
 
     /* Find storage volumes */
     if (virAsprintf(&vol_xpath, "/node/pool[%d]/volume", objidx) < 0)
@@ -1064,7 +1064,6 @@ testOpenVolumesForPool(const char *file,
 
     ret = 0;
  error:
-    virStorageVolDefFree(volDef);
     VIR_FREE(nodes);
     return ret;
 }
@@ -5051,8 +5050,8 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
     testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
-    virStorageVolDefPtr privvol = NULL;
     virStorageVolPtr ret = NULL;
+    VIR_AUTOPTR(virStorageVolDef) privvol = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -5096,7 +5095,6 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
     privvol = NULL;
 
  cleanup:
-    virStorageVolDefFree(privvol);
     virStoragePoolObjEndAPI(&obj);
     return ret;
 }
@@ -5111,8 +5109,9 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
-    virStorageVolDefPtr privvol = NULL, origvol = NULL;
+    virStorageVolDefPtr origvol = NULL;
     virStorageVolPtr ret = NULL;
+    VIR_AUTOPTR(virStorageVolDef) privvol = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -5164,7 +5163,6 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     privvol = NULL;
 
  cleanup:
-    virStorageVolDefFree(privvol);
     virStoragePoolObjEndAPI(&obj);
     return ret;
 }

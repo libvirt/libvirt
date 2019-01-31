@@ -618,7 +618,7 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
     }
 
     for (name = names; name < names + max_size;) {
-        virStorageVolDefPtr vol;
+        VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
         if (STREQ(name, ""))
             break;
@@ -626,10 +626,8 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
         if (VIR_ALLOC(vol) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(vol->name, name) < 0) {
-            VIR_FREE(vol);
+        if (VIR_STRDUP(vol->name, name) < 0)
             goto cleanup;
-        }
 
         name += strlen(name) + 1;
 
@@ -648,15 +646,14 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
             if (r == -ENOENT || r == -ETIMEDOUT)
                 continue;
 
-            virStorageVolDefFree(vol);
             goto cleanup;
         }
 
         if (virStoragePoolObjAddVol(pool, vol) < 0) {
-            virStorageVolDefFree(vol);
             virStoragePoolObjClearVols(pool);
             goto cleanup;
         }
+        vol = NULL;
     }
 
     VIR_DEBUG("Found %zu images in RBD pool %s",

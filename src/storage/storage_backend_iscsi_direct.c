@@ -305,22 +305,21 @@ virISCSIDirectRefreshVol(virStoragePoolObjPtr pool,
                          char *portal)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    virStorageVolDefPtr vol = NULL;
     uint32_t block_size;
     uint32_t nb_block;
-    int ret = -1;
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     virStoragePoolObjClearVols(pool);
     if (virISCSIDirectTestUnitReady(iscsi, lun) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_ALLOC(vol) < 0)
-        goto cleanup;
+        return -1;
 
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
     if (virISCSIDirectGetVolumeCapacity(iscsi, lun, &block_size, &nb_block) < 0)
-        goto cleanup;
+        return -1;
 
     vol->target.capacity = block_size * nb_block;
     vol->target.allocation = block_size * nb_block;
@@ -328,17 +327,13 @@ virISCSIDirectRefreshVol(virStoragePoolObjPtr pool,
     def->allocation += vol->target.allocation;
 
     if (virISCSIDirectSetVolumeAttributes(pool, vol, lun, portal) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStoragePoolObjAddVol(pool, vol) < 0)
-        goto cleanup;
-
+        return -1;
     vol = NULL;
 
-    ret = 0;
- cleanup:
-    virStorageVolDefFree(vol);
-    return ret;
+    return 0;
 }
 
 static int
