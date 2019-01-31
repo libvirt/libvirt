@@ -3072,6 +3072,8 @@ mymain(void)
 
     DO_TEST("riscv64-virt",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
+    DO_TEST("riscv64-virt-pci",
+            QEMU_CAPS_OBJECT_GPEX);
 
     /* Simple headless guests for various architectures */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-headless", "aarch64");

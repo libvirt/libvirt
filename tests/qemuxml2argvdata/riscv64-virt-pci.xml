@@ -1,0 +1,24 @@
+<domain type='qemu'>
+  <name>riscv64</name>
+  <uuid>fd65fc03-8838-4c4d-9d8d-395802488790</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='riscv64' machine='virt'>hvm</type>
+    <kernel>/var/lib/libvirt/images/riscv64.bbl</kernel>
+    <cmdline>root=/dev/vda</cmdline>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-riscv64</emulator>
+    <disk type='file'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/riscv64.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+      <!-- We need to manually pick an address on pcie.0 because otherwise
+           libvirt would try to add pcie-root-ports, and QEMU doesn't support
+           PCIe controllers for RISC-V guests yet -->
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </disk>
+    <memballoon model='none'/>
+  </devices>
+</domain>

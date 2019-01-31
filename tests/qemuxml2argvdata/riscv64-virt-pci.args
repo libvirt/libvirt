@@ -1,0 +1,27 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-riscv64 \
+-name riscv64 \
+-S \
+-machine virt,accel=tcg,usb=off,dump-guest-core=off \
+-m 2048 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid fd65fc03-8838-4c4d-9d8d-395802488790 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-riscv64/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-kernel /var/lib/libvirt/images/riscv64.bbl \
+-append root=/dev/vda \
+-drive file=/var/lib/libvirt/images/riscv64.qcow2,format=qcow2,if=none,\
+id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pcie.0,addr=0x1,drive=drive-virtio-disk0,\
+id=virtio-disk0,bootindex=1
