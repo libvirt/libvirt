@@ -61,6 +61,16 @@
           the options added are "nosuid, noexec".
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Allow use of PCI for RISC-V guests
+        </summary>
+        <description>
+          This works with QEMU 4.0.0+ only and is opt-in at the moment, since
+          it requires users to manually assign PCI addresses, but is otherwise
+          fully functional.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.0.0" date="2019-01-15">
