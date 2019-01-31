@@ -83,8 +83,8 @@ virStorageFileBackendFileInit(virStorageSourcePtr src)
 static int
 virStorageFileBackendFileCreate(virStorageSourcePtr src)
 {
-    int fd = -1;
     mode_t mode = S_IRUSR;
+    VIR_AUTOCLOSE fd = -1;
 
     if (!src->readonly)
         mode |= S_IWUSR;
@@ -95,7 +95,6 @@ virStorageFileBackendFileCreate(virStorageSourcePtr src)
         return -1;
     }
 
-    VIR_FORCE_CLOSE(fd);
     return 0;
 }
 
@@ -121,8 +120,8 @@ virStorageFileBackendFileRead(virStorageSourcePtr src,
                               size_t len,
                               char **buf)
 {
-    int fd = -1;
     ssize_t ret = -1;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virFileOpenAs(src->path, O_RDONLY, 0,
                             src->drv->uid, src->drv->gid, 0)) < 0) {
@@ -134,18 +133,14 @@ virStorageFileBackendFileRead(virStorageSourcePtr src,
     if (offset > 0) {
         if (lseek(fd, offset, SEEK_SET) == (off_t) -1) {
             virReportSystemError(errno, _("cannot seek into '%s'"), src->path);
-            goto cleanup;
+            return -1;
         }
     }
 
     if ((ret = virFileReadHeaderFD(fd, len, buf)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot read header '%s'"), src->path);
-        goto cleanup;
+        virReportSystemError(errno, _("cannot read header '%s'"), src->path);
+        return -1;
     }
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
 
     return ret;
 }

@@ -1080,10 +1080,9 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
 int
 virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
 {
-    int fd;
-    int ret = -1;
     struct stat sb;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
+    VIR_AUTOCLOSE fd = -1;
     VIR_AUTOFREE(char *) header = NULL;
 
     if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
@@ -1093,31 +1092,24 @@ virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno, _("cannot stat file '%s'"), path);
-        goto cleanup;
+        return -1;
     }
 
     /* No header to probe for directories */
-    if (S_ISDIR(sb.st_mode)) {
-        ret = VIR_STORAGE_FILE_DIR;
-        goto cleanup;
-    }
+    if (S_ISDIR(sb.st_mode))
+        return VIR_STORAGE_FILE_DIR;
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
         virReportSystemError(errno, _("cannot set to start of '%s'"), path);
-        goto cleanup;
+        return -1;
     }
 
     if ((len = virFileReadHeaderFD(fd, len, &header)) < 0) {
         virReportSystemError(errno, _("cannot read header '%s'"), path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = virStorageFileProbeFormatFromBuf(path, header, len);
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-
-    return ret;
+    return virStorageFileProbeFormatFromBuf(path, header, len);
 }
 
 
@@ -1312,13 +1304,12 @@ virStorageFileResize(const char *path,
                      unsigned long long capacity,
                      bool pre_allocate)
 {
-    int fd = -1;
-    int ret = -1;
     int rc;
+    VIR_AUTOCLOSE fd = -1;
 
     if ((fd = open(path, O_RDWR)) < 0) {
         virReportSystemError(errno, _("Unable to open '%s'"), path);
-        goto cleanup;
+        return -1;
     }
 
     if (pre_allocate) {
@@ -1331,26 +1322,22 @@ virStorageFileResize(const char *path,
                                      _("Failed to pre-allocate space for "
                                        "file '%s'"), path);
             }
-            goto cleanup;
+            return -1;
         }
     }
 
     if (ftruncate(fd, capacity) < 0) {
         virReportSystemError(errno,
                              _("Failed to truncate file '%s'"), path);
-        goto cleanup;
+        return -1;
     }
 
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno, _("Unable to save '%s'"), path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 
 
