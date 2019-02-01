@@ -128,8 +128,8 @@ testQemuCapsXML(const void *opaque)
     char *capsXml = NULL;
     virCapsPtr capsProvided = NULL;
 
-    if (virAsprintf(&xmlFile, "%s/qemucaps2xmloutdata/%s.%s.xml",
-                    abs_srcdir, data->base, data->archName) < 0)
+    if (virAsprintf(&xmlFile, "%s/qemucaps2xmloutdata/caps.%s.xml",
+                    abs_srcdir, data->archName) < 0)
         goto cleanup;
 
     if (virAsprintf(&capsFile, "%s/qemucapabilitiesdata/%s.%s.xml",
