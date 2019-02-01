@@ -71,6 +71,18 @@ virNetDevTapAttachBridge(const char *tapname,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
 
+int
+virNetDevTapReattachBridge(const char *tapname,
+                           const char *brname,
+                           const virMacAddr *macaddr,
+                           const unsigned char *vmuuid,
+                           virNetDevVPortProfilePtr virtPortProfile,
+                           virNetDevVlanPtr virtVlan,
+                           unsigned int mtu,
+                           unsigned int *actualMTU)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
+
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
                                    const virMacAddr *macaddr,

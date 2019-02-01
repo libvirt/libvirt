@@ -554,6 +554,73 @@ virNetDevTapAttachBridge(const char *tapname,
 
 
 /**
+ * virNetDevTapReattachBridge:
+ * @tapname: the tap interface name (or name template)
+ * @brname: the bridge name
+ * @macaddr: desired MAC address
+ * @virtPortProfile: bridge/port specific configuration
+ * @virtVlan: vlan tag info
+ * @mtu: requested MTU for port (or 0 for "default")
+ * @actualMTU: MTU actually set for port (after accounting for bridge's MTU)
+ *
+ * Ensures that the tap device (@tapname) is connected to the bridge
+ * (@brname), potentially removing it from any existing bridge that
+ * does not match.
+ *
+ * Returns 0 in case of success or -1 on failure
+ */
+int
+virNetDevTapReattachBridge(const char *tapname,
+                           const char *brname,
+                           const virMacAddr *macaddr,
+                           const unsigned char *vmuuid,
+                           virNetDevVPortProfilePtr virtPortProfile,
+                           virNetDevVlanPtr virtVlan,
+                           unsigned int mtu,
+                           unsigned int *actualMTU)
+{
+    bool useOVS = false;
+    VIR_AUTOFREE(char *) master = NULL;
+
+    if (virNetDevGetMaster(tapname, &master) < 0)
+        return -1;
+
+    /* IFLA_MASTER for a tap on an OVS switch is always "ovs-system" */
+    if (STREQ_NULLABLE(master, "ovs-system")) {
+        useOVS = true;
+        if (virNetDevOpenvswitchInterfaceGetMaster(tapname, &master) < 0)
+            return -1;
+    }
+
+    /* Nothing more todo if we're on the right bridge already */
+    if (STREQ_NULLABLE(brname, master))
+        return 0;
+
+    /* disconnect from current (incorrect) bridge, if any  */
+    if (master) {
+        int ret;
+        VIR_INFO("Removing %s from %s", tapname, master);
+        if (useOVS)
+            ret = virNetDevOpenvswitchRemovePort(master, tapname);
+        else
+            ret = virNetDevBridgeRemovePort(master, tapname);
+        if (ret < 0)
+            return -1;
+    }
+
+    VIR_INFO("Attaching %s to %s", tapname, brname);
+    if (virNetDevTapAttachBridge(tapname, brname,
+                                 macaddr, vmuuid,
+                                 virtPortProfile,
+                                 virtVlan,
+                                 mtu, actualMTU) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * virNetDevTapCreateInBridgePort:
  * @brname: the bridge name
  * @ifname: the interface name (or name template)
