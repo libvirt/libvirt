@@ -2591,6 +2591,11 @@
         <ref name="deviceName"/>
       </attribute>
     </optional>
+    <optional>
+      <attribute name="portid">
+        <ref name="UUID"/>
+      </attribute>
+    </optional>
   </define>
 
   <define name="interface-bridge-attributes">

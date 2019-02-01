@@ -968,6 +968,7 @@ struct _virDomainNetDef {
         struct {
             char *name;
             char *portgroup;
+            unsigned char portid[VIR_UUID_BUFLEN];
             /* actual has info about the currently used physical
              * device (if the network is of type
              * bridge/private/vepa/passthrough). This is saved in the
@@ -975,6 +976,9 @@ struct _virDomainNetDef {
              * since it needs to be re-allocated whenever the domain
              * is restarted. It is also never shown to the user, and
              * the user cannot specify it in XML documents.
+             *
+             * This information is populated from the virNetworkPort
+             * object associated with the portid UUID above.
              */
             virDomainActualNetDefPtr actual;
         } network;

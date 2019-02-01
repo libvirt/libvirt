@@ -24,7 +24,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='network' trustGuestRxFilters='yes'>
       <mac address='00:11:22:33:44:55'/>
-      <source network='rednet' portgroup='bob'/>
+      <source network='rednet' portgroup='bob' portid='873be5a0-6b8a-4a0b-a1df-ef3659cd64bc'/>
       <vlan>
         <tag id='4095'/>
       </vlan>
@@ -35,7 +35,7 @@
     </interface>
     <interface type='network' trustGuestRxFilters='no'>
       <mac address='10:11:22:33:44:55'/>
-      <source network='blue' portgroup='sam'/>
+      <source network='blue' portgroup='sam' portid='b884cc7e-b347-4a17-9e78-4f672a67794e'/>
       <virtualport>
         <parameters instanceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f' interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/>
       </virtualport>
@@ -43,7 +43,7 @@
     </interface>
     <interface type='network'>
       <mac address='22:11:22:33:44:55'/>
-      <source network='blue' portgroup='sam'/>
+      <source network='blue' portgroup='sam' portid='c5fc8eb4-cb69-4fea-8f8b-65e00e6d1dba'/>
       <virtualport type='802.1Qbh'>
         <parameters profileid='testhis99'/>
       </virtualport>
