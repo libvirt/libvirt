@@ -57,32 +57,27 @@ test_node_info_parser(const void *opaque)
 {
     const struct testNodeInfoParserData *data = opaque;
     collie_test test = data->data;
-    int ret = -1;
-    char *output = NULL;
+    VIR_AUTOFREE(char *) output = NULL;
     VIR_AUTOPTR(virStoragePoolDef) pool = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(output, test.output) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageBackendSheepdogParseNodeInfo(pool, output) !=
         test.expected_return)
-        goto cleanup;
+        return -1;
 
-    if (test.expected_return) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (test.expected_return)
+        return 0;
 
     if (pool->capacity == test.expected_capacity &&
         pool->allocation == test.expected_allocation)
-        ret = 0;
+        return 0;
 
- cleanup:
-    VIR_FREE(output);
-    return ret;
+    return -1;
 }
 
 static int
@@ -90,36 +85,31 @@ test_vdi_list_parser(const void *opaque)
 {
     const struct testVDIListParserData *data = opaque;
     collie_test test = data->data;
-    int ret = -1;
-    char *output = NULL;
+    VIR_AUTOFREE(char *) output = NULL;
     VIR_AUTOPTR(virStoragePoolDef) pool = NULL;
     VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
-        goto cleanup;
+        return -1;
 
     if (!(vol = virStorageVolDefParseFile(pool, data->volxml, 0)))
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(output, test.output) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageBackendSheepdogParseVdiList(vol, output) !=
         test.expected_return)
-        goto cleanup;
+        return -1;
 
-    if (test.expected_return) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (test.expected_return)
+        return 0;
 
     if (vol->target.capacity == test.expected_capacity &&
         vol->target.allocation == test.expected_allocation)
-        ret = 0;
+        return 0;
 
- cleanup:
-    VIR_FREE(output);
-    return ret;
+    return -1;
 }
 
 
@@ -127,8 +117,8 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *poolxml = NULL;
-    char *volxml = NULL;
+    VIR_AUTOFREE(char *) poolxml = NULL;
+    VIR_AUTOFREE(char *) volxml = NULL;
 
     collie_test node_info_tests[] = {
         {"", -1, 0, 0},
@@ -215,8 +205,6 @@ mymain(void)
     }
 
  cleanup:
-    VIR_FREE(poolxml);
-    VIR_FREE(volxml);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

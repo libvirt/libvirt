@@ -128,9 +128,9 @@ static int
 testPrepImages(void)
 {
     int ret = EXIT_FAILURE;
-    char *buf = NULL;
     bool compat = false;
     VIR_AUTOPTR(virCommand) cmd = NULL;
+    VIR_AUTOFREE(char *) buf = NULL;
 
     qemuimg = virFindFileInPath("qemu-img");
     if (!qemuimg)
@@ -245,7 +245,6 @@ testPrepImages(void)
 
     ret = 0;
  cleanup:
-    VIR_FREE(buf);
     if (ret)
         testCleanupImages();
     return ret;
@@ -313,7 +312,7 @@ testStorageChain(const void *args)
     virStorageSourcePtr meta;
     virStorageSourcePtr elt;
     size_t i = 0;
-    char *broken = NULL;
+    VIR_AUTOFREE(char *) broken = NULL;
 
     meta = testStorageFileGetMetadata(data->start, data->format, -1, -1);
     if (!meta) {
@@ -349,8 +348,8 @@ testStorageChain(const void *args)
 
     elt = meta;
     while (virStorageSourceIsBacking(elt)) {
-        char *expect = NULL;
-        char *actual = NULL;
+        VIR_AUTOFREE(char *) expect = NULL;
+        VIR_AUTOFREE(char *) actual = NULL;
 
         if (i == data->nfiles) {
             fprintf(stderr, "probed chain was too long\n");
@@ -379,18 +378,12 @@ testStorageChain(const void *args)
                         elt->format,
                         virStorageNetProtocolTypeToString(elt->protocol),
                         NULLSTR(elt->nhosts ? elt->hosts[0].name : NULL)) < 0) {
-            VIR_FREE(expect);
-            VIR_FREE(actual);
             goto cleanup;
         }
         if (STRNEQ(expect, actual)) {
             virTestDifference(stderr, expect, actual);
-            VIR_FREE(expect);
-            VIR_FREE(actual);
             goto cleanup;
         }
-        VIR_FREE(expect);
-        VIR_FREE(actual);
         elt = elt->backingStore;
         i++;
     }
@@ -401,7 +394,6 @@ testStorageChain(const void *args)
 
     ret = 0;
  cleanup:
-    VIR_FREE(broken);
     virStorageSourceFree(meta);
     return ret;
 }
@@ -539,8 +531,7 @@ static int
 testPathCanonicalize(const void *args)
 {
     const struct testPathCanonicalizeData *data = args;
-    char *canon = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) canon = NULL;
 
     canon = virStorageFileCanonicalizePath(data->path,
                                            testPathCanonicalizeReadlink,
@@ -551,15 +542,10 @@ testPathCanonicalize(const void *args)
                 "path canonicalization of '%s' failed: expected '%s' got '%s'\n",
                 data->path, NULLSTR(data->expect), NULLSTR(canon));
 
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(canon);
-
-    return ret;
+    return 0;
 }
 
 static virStorageSource backingchain[12];
@@ -629,14 +615,13 @@ static int
 testPathRelative(const void *args)
 {
     const struct testPathRelativeBacking *data = args;
-    char *actual = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) actual = NULL;
 
     if (virStorageFileGetRelativeBackingPath(data->top,
                                              data->base,
                                              &actual) < 0) {
         fprintf(stderr, "relative backing path resolution failed\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(data->expect, actual)) {
@@ -644,15 +629,10 @@ testPathRelative(const void *args)
                 "expected '%s', got '%s'\n",
                 data->top->path, data->base->path,
                 NULLSTR(data->expect), NULLSTR(actual));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(actual);
-
-    return ret;
+    return 0;
 }
 
 
@@ -667,8 +647,8 @@ testBackingParse(const void *args)
     const struct testBackingParseData *data = args;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virStorageSourcePtr src = NULL;
-    char *xml = NULL;
     int ret = -1;
+    VIR_AUTOFREE(char *) xml = NULL;
 
     if (!(src = virStorageSourceNewFromBackingAbsolute(data->backing))) {
         if (!data->expect)
@@ -702,7 +682,6 @@ testBackingParse(const void *args)
  cleanup:
     virStorageSourceFree(src);
     virBufferFreeAndReset(&buf);
-    VIR_FREE(xml);
 
     return ret;
 }

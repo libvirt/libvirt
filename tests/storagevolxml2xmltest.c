@@ -17,28 +17,23 @@ static int
 testCompareXMLToXMLFiles(const char *poolxml, const char *inxml,
                          const char *outxml, unsigned int flags)
 {
-    char *actual = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) actual = NULL;
     VIR_AUTOPTR(virStoragePoolDef) pool = NULL;
     VIR_AUTOPTR(virStorageVolDef) dev = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(poolxml)))
-        goto fail;
+        return -1;
 
     if (!(dev = virStorageVolDefParseFile(pool, inxml, flags)))
-        goto fail;
+        return -1;
 
     if (!(actual = virStorageVolDefFormat(pool, dev)))
-        goto fail;
+        return -1;
 
     if (virTestCompareToFile(actual, outxml) < 0)
-        goto fail;
+        return -1;
 
-    ret = 0;
-
- fail:
-    VIR_FREE(actual);
-    return ret;
+    return 0;
 }
 
 struct testInfo {
@@ -50,29 +45,20 @@ struct testInfo {
 static int
 testCompareXMLToXMLHelper(const void *data)
 {
-    int result = -1;
     const struct testInfo *info = data;
-    char *poolxml = NULL;
-    char *inxml = NULL;
-    char *outxml = NULL;
+    VIR_AUTOFREE(char *) poolxml = NULL;
+    VIR_AUTOFREE(char *) inxml = NULL;
+    VIR_AUTOFREE(char *) outxml = NULL;
 
     if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/%s.xml",
                     abs_srcdir, info->pool) < 0 ||
         virAsprintf(&inxml, "%s/storagevolxml2xmlin/%s.xml",
                     abs_srcdir, info->name) < 0 ||
         virAsprintf(&outxml, "%s/storagevolxml2xmlout/%s.xml",
-                    abs_srcdir, info->name) < 0) {
-        goto cleanup;
-    }
+                    abs_srcdir, info->name) < 0)
+        return -1;
 
-    result = testCompareXMLToXMLFiles(poolxml, inxml, outxml, info->flags);
-
- cleanup:
-    VIR_FREE(poolxml);
-    VIR_FREE(inxml);
-    VIR_FREE(outxml);
-
-    return result;
+    return testCompareXMLToXMLFiles(poolxml, inxml, outxml, info->flags);
 }
 
 

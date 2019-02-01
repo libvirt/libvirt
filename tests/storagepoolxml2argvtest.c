@@ -83,7 +83,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
     ret = 0;
 
  cleanup:
-    VIR_FREE(actualCmdline);
     virStoragePoolObjEndAPI(&pool);
     if (shouldFail) {
         virResetLastError();
@@ -101,27 +100,20 @@ struct testInfo {
 static int
 testCompareXMLToArgvHelper(const void *data)
 {
-    int result = -1;
     const struct testInfo *info = data;
-    char *poolxml = NULL;
-    char *cmdline = NULL;
+    VIR_AUTOFREE(char *) poolxml = NULL;
+    VIR_AUTOFREE(char *) cmdline = NULL;
 
     if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/%s.xml",
                     abs_srcdir, info->pool) < 0)
-        goto cleanup;
+        return -1;
 
     if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s%s.argv",
                     abs_srcdir, info->pool, info->platformSuffix) < 0 &&
         !info->shouldFail)
-        goto cleanup;
+        return -1;
 
-    result = testCompareXMLToArgvFiles(info->shouldFail, poolxml, cmdline);
-
- cleanup:
-    VIR_FREE(poolxml);
-    VIR_FREE(cmdline);
-
-    return result;
+    return testCompareXMLToArgvFiles(info->shouldFail, poolxml, cmdline);
 }
 
 
