@@ -1564,7 +1564,7 @@ virStorageFileGetNPIVKey(const char *path,
     return ret;
 }
 #else
-int virStorageFileGetNPIVKey(const char *path,
+int virStorageFileGetNPIVKey(const char *path ATTRIBUTE_UNUSED,
                              char **key ATTRIBUTE_UNUSED)
 {
     return -1;
