@@ -54,6 +54,7 @@
 #include "virsecret.h"
 #include "virstring.h"
 #include "virnetdev.h"
+#include "virnetdevtap.h"
 #include "virnetdevmacvlan.h"
 #include "virhostdev.h"
 #include "virmdev.h"
@@ -30449,8 +30450,25 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
     if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
         return;
 
-    netNotify(net, dom, iface);
+    if (netNotify(net, dom, iface) < 0)
+        goto cleanup;
 
+    if (virDomainNetGetActualType(iface) == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        /*
+         * NB: we can't notify the guest of any MTU change anyway,
+         * so there is no point in trying to learn the actualMTU
+         * (final arg to virNetDevTapReattachBridge())
+         */
+        if (virNetDevTapReattachBridge(iface->ifname,
+                                       iface->data.network.actual->data.bridge.brname,
+                                       &iface->mac, dom->uuid,
+                                       virDomainNetGetActualVirtPortProfile(iface),
+                                       virDomainNetGetActualVlan(iface),
+                                       iface->mtu, NULL) < 0)
+            goto cleanup;
+    }
+
+ cleanup:
     virObjectUnref(net);
 }
 

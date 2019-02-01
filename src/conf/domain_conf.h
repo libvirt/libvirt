@@ -3552,7 +3552,7 @@ typedef int
                                         virDomainDefPtr dom,
                                         virDomainNetDefPtr iface);
 
-typedef void
+typedef int
 (*virDomainNetNotifyActualDeviceImpl)(virNetworkPtr net,
                                       virDomainDefPtr dom,
                                       virDomainNetDefPtr iface);
