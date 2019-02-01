@@ -1773,10 +1773,18 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
     }
 
-    if (!virStorageSourceIsEmpty(disk->src)) {
-        if (disk->src->readonly)
-            virBufferAddLit(&opt, ",readonly=on");
+    if (disk->src->readonly)
+        virBufferAddLit(&opt, ",readonly=on");
 
+    /* qemu rejects some parameters for an empty -drive, so we need to skip
+     * them in that case:
+     * cache: modifies properties of the format driver which is not present
+     * copy_on_read: really only works for floppies
+     * discard: modifies properties of format driver
+     * detect_zeroes: works but really depends on discard so it's useless
+     * iomode: setting it to 'native' requires a specific cache mode
+     */
+    if (!virStorageSourceIsEmpty(disk->src)) {
         if (disk->cachemode) {
             virBufferAsprintf(&opt, ",cache=%s",
                               qemuDiskCacheV2TypeToString(disk->cachemode));
@@ -1801,9 +1809,9 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
             virBufferAsprintf(&opt, ",aio=%s",
                               virDomainDiskIoTypeToString(disk->iomode));
         }
-
-        qemuBuildDiskThrottling(disk, &opt);
     }
+
+    qemuBuildDiskThrottling(disk, &opt);
 
     if (virBufferCheckError(&opt) < 0)
         goto error;
