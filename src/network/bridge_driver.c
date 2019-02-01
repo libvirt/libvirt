@@ -4816,7 +4816,6 @@ networkNotifyActualDevice(virNetworkPtr net,
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;
     size_t i;
-    char *master = NULL;
 
     obj = virNetworkObjFindByName(driver->networks, net->name);
     if (!obj) {
@@ -4843,42 +4842,17 @@ networkNotifyActualDevice(virNetworkPtr net,
 
     /* see if we're connected to the correct bridge */
     if (netdef->bridge) {
-        bool useOVS = false;
-
-        if (virNetDevGetMaster(iface->ifname, &master) < 0)
+        /*
+         * NB: we can't notify the guest of any MTU change anyway,
+         * so there is no point in trying to learn the actualMTU
+         * (final arg to virNetDevTapReattachBridge())
+         */
+        if (virNetDevTapReattachBridge(iface->ifname, netdef->bridge,
+                                       &iface->mac, dom->uuid,
+                                       virDomainNetGetActualVirtPortProfile(iface),
+                                       virDomainNetGetActualVlan(iface),
+                                       iface->mtu, NULL) < 0) {
             goto error;
-
-        /* IFLA_MASTER for a tap on an OVS switch is always "ovs-system" */
-        if (STREQ_NULLABLE(master, "ovs-system")) {
-            useOVS = true;
-            VIR_FREE(master);
-            if (virNetDevOpenvswitchInterfaceGetMaster(iface->ifname, &master) < 0)
-                goto error;
-        }
-
-        if (STRNEQ_NULLABLE(netdef->bridge, master)) {
-            /* disconnect from current (incorrect) bridge */
-            if (master) {
-                VIR_INFO("Removing %s from %s", iface->ifname, master);
-                if (useOVS)
-                    ignore_value(virNetDevOpenvswitchRemovePort(master, iface->ifname));
-                else
-                    ignore_value(virNetDevBridgeRemovePort(master, iface->ifname));
-            }
-
-            /* attach/reattach to correct bridge.
-             * NB: we can't notify the guest of any MTU change anyway,
-             * so there is no point in trying to learn the actualMTU
-             * (final arg to virNetDevTapAttachBridge())
-             */
-            VIR_INFO("Attaching %s to %s", iface->ifname, netdef->bridge);
-            if (virNetDevTapAttachBridge(iface->ifname, netdef->bridge,
-                                         &iface->mac, dom->uuid,
-                                         virDomainNetGetActualVirtPortProfile(iface),
-                                         virDomainNetGetActualVlan(iface),
-                                         iface->mtu, NULL) < 0) {
-                goto error;
-            }
         }
     }
 
@@ -5013,7 +4987,6 @@ networkNotifyActualDevice(virNetworkPtr net,
 
  cleanup:
     virNetworkObjEndAPI(&obj);
-    VIR_FREE(master);
     return;
 
  error:
