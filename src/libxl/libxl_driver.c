@@ -454,6 +454,9 @@ libxlReconnectDomain(virDomainObjPtr vm,
 
     libxlReconnectNotifyNets(vm->def);
 
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, cfg->caps) < 0)
+        VIR_WARN("Cannot update XML for running Xen guest %s", vm->def->name);
+
     /* now that we know it's reconnected call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL) &&
         STRNEQ("Domain-0", vm->def->name)) {
