@@ -352,6 +352,34 @@ libxlAutostartDomain(virDomainObjPtr vm,
     return ret;
 }
 
+
+static void
+libxlReconnectNotifyNets(virDomainDefPtr def)
+{
+    size_t i;
+    virConnectPtr conn = NULL;
+
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        /* keep others from trying to use the macvtap device name, but
+         * don't return error if this happens, since that causes the
+         * domain to be unceremoniously killed, which would be *very*
+         * impolite.
+         */
+        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT)
+           ignore_value(virNetDevMacVLanReserveName(net->ifname, false));
+
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            if (!conn && !(conn = virGetConnectNetwork()))
+                continue;
+            virDomainNetNotifyActualDevice(conn, def, net);
+        }
+    }
+
+    virObjectUnref(conn);
+}
+
+
 /*
  * Reconnect to running domains that were previously started/created
  * with libxenlight driver.
@@ -423,6 +451,8 @@ libxlReconnectDomain(virDomainObjPtr vm,
 
     /* Enable domain death events */
     libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW);
+
+    libxlReconnectNotifyNets(vm->def);
 
     /* now that we know it's reconnected call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL) &&
