@@ -235,8 +235,6 @@ virFirewallDZoneExists(const char *match)
     char **zones = NULL;
     bool result = false;
 
-    return true;
-
     if (virFirewallDGetZones(&zones, &nzones) < 0)
         goto cleanup;
 
