@@ -14275,10 +14275,12 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
-    int rc;
+    bool postcopy = !!(flags & VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY);
+    VIR_AUTOPTR(qemuMigrationParams) migParams = NULL;
+    unsigned long long max;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -14288,14 +14290,18 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     if (virDomainMigrateSetMaxSpeedEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (bandwidth > QEMU_DOMAIN_MIG_BANDWIDTH_MAX) {
+    if (postcopy)
+        max = ULLONG_MAX / 1024 / 1024;
+    else
+        max = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
+
+    if (bandwidth > max) {
         virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
-                       QEMU_DOMAIN_MIG_BANDWIDTH_MAX + 1ULL);
+                       _("bandwidth must be less than %llu"), max + 1);
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
+    if (!postcopy && !virDomainObjIsActive(vm)) {
         priv->migMaxBandwidth = bandwidth;
         ret = 0;
         goto cleanup;
@@ -14308,12 +14314,29 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
         goto endjob;
 
     VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
-    qemuDomainObjEnterMonitor(driver, vm);
-    rc = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-        goto endjob;
 
-    priv->migMaxBandwidth = bandwidth;
+    if (postcopy) {
+        if (!(migParams = qemuMigrationParamsNew()))
+            goto endjob;
+
+        if (qemuMigrationParamsSetULL(migParams,
+                                      QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH,
+                                      bandwidth * 1024 * 1024) < 0)
+            goto endjob;
+
+        if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                     migParams) < 0)
+            goto endjob;
+    } else {
+        int rc;
+
+        qemuDomainObjEnterMonitor(driver, vm);
+        rc = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+            goto endjob;
+
+        priv->migMaxBandwidth = bandwidth;
+    }
 
     ret = 0;
 
@@ -14325,16 +14348,71 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     return ret;
 }
 
+
+static int
+qemuDomainMigrationGetPostcopyBandwidth(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        unsigned long *bandwidth)
+{
+    VIR_AUTOPTR(qemuMigrationParams) migParams = NULL;
+    unsigned long long bw;
+    int rc;
+    int ret = -1;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    if (qemuMigrationParamsFetch(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                 &migParams) < 0)
+        goto cleanup;
+
+    if ((rc = qemuMigrationParamsGetULL(migParams,
+                                        QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH,
+                                        &bw)) < 0)
+        goto cleanup;
+
+    if (rc == 1) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("querying maximum post-copy migration speed is "
+                         "not supported by QEMU binary"));
+        goto cleanup;
+    }
+
+    /* QEMU reports B/s while we use MiB/s */
+    bw /= 1024 * 1024;
+
+    if (bw > ULONG_MAX) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth %llu is greater than %lu which is the "
+                         "maximum value supported by this API"),
+                       bw, ULONG_MAX);
+        goto cleanup;
+    }
+
+    *bandwidth = bw;
+    ret = 0;
+
+ cleanup:
+    qemuDomainObjEndJob(driver, vm);
+    return ret;
+}
+
+
 static int
 qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
                              unsigned long *bandwidth,
                              unsigned int flags)
 {
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
+    bool postcopy = !!(flags & VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY);
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -14344,7 +14422,13 @@ qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
     if (virDomainMigrateGetMaxSpeedEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    *bandwidth = priv->migMaxBandwidth;
+    if (postcopy) {
+        if (qemuDomainMigrationGetPostcopyBandwidth(driver, vm, bandwidth) < 0)
+            goto cleanup;
+    } else {
+        *bandwidth = priv->migMaxBandwidth;
+    }
+
     ret = 0;
 
  cleanup:
