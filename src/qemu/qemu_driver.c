@@ -14275,6 +14275,7 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
+    int rc;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -14294,28 +14295,30 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
-            goto cleanup;
-
-        if (virDomainObjCheckActive(vm) < 0)
-            goto endjob;
-
-        VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
-
-        if (ret == 0)
-            priv->migMaxBandwidth = bandwidth;
-
- endjob:
-        qemuDomainObjEndJob(driver, vm);
-    } else {
+    if (!virDomainObjIsActive(vm)) {
         priv->migMaxBandwidth = bandwidth;
         ret = 0;
+        goto cleanup;
     }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto endjob;
+
+    priv->migMaxBandwidth = bandwidth;
+
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
