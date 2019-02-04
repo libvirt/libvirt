@@ -904,6 +904,15 @@ typedef enum {
 # define VIR_MIGRATE_PARAM_BANDWIDTH         "bandwidth"
 
 /**
+ * VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY:
+ *
+ * virDomainMigrate* params field: the maximum bandwidth (in MiB/s) that will
+ * be used for post-copy phase of a migration as VIR_TYPED_PARAM_ULLONG. If set
+ * to 0 or omitted, post-copy migration speed will not be limited.
+ */
+# define VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY "bandwidth.postcopy"
+
+/**
  * VIR_MIGRATE_PARAM_GRAPHICS_URI:
  *
  * virDomainMigrate* params field: URI to use for migrating client's connection
@@ -1061,6 +1070,12 @@ int virDomainMigrateGetCompressionCache(virDomainPtr domain,
 int virDomainMigrateSetCompressionCache(virDomainPtr domain,
                                         unsigned long long cacheSize,
                                         unsigned int flags);
+
+/* Domain migration speed flags. */
+typedef enum {
+    /* Set or get maximum speed of post-copy migration. */
+    VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY = (1 << 0),
+} virDomainMigrateMaxSpeedFlags;
 
 int virDomainMigrateSetMaxSpeed(virDomainPtr domain,
                                 unsigned long bandwidth,

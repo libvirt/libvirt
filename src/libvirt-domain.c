@@ -9036,11 +9036,13 @@ virDomainMigrateSetCompressionCache(virDomainPtr domain,
  * virDomainMigrateSetMaxSpeed:
  * @domain: a domain object
  * @bandwidth: migration bandwidth limit in MiB/s
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainMigrateMaxSpeedFlags
  *
  * The maximum bandwidth (in MiB/s) that will be used to do migration
  * can be specified with the bandwidth parameter. Not all hypervisors
- * will support a bandwidth cap
+ * will support a bandwidth cap. When VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY
+ * is set in @flags, this API sets the maximum bandwidth for the post-copy
+ * phase of the migration.
  *
  * Returns 0 in case of success, -1 otherwise.
  */
@@ -9077,10 +9079,13 @@ virDomainMigrateSetMaxSpeed(virDomainPtr domain,
  * virDomainMigrateGetMaxSpeed:
  * @domain: a domain object
  * @bandwidth: return value of current migration bandwidth limit in MiB/s
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainMigrateMaxSpeedFlags
  *
  * Get the current maximum bandwidth (in MiB/s) that will be used if the
  * domain is migrated.  Not all hypervisors will support a bandwidth limit.
+ * When VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY is set in @flags, this API
+ * gets the current maximum bandwidth for the post-copy phase of the
+ * migration.
  *
  * Returns 0 in case of success, -1 otherwise.
  */
