@@ -70,7 +70,7 @@
         <description>
           By default, libvirt runs the QEMU process as <code>qemu:qemu</code>
           which could cause issues during probing as some features like AMD SEV
-          might be inaccesible to QEMU because of file system permissions.
+          might be inaccessible to QEMU because of file system permissions.
           Therefore, <code>CAP_DAC_OVERRIDE</code> is granted to overcome these
           for the purposes of probing.
         </description>
