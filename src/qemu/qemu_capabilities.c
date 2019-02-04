@@ -4524,7 +4524,8 @@ virQEMUCapsInitQMPCommandRun(virQEMUCapsInitQMPCommandPtr cmd,
 #if WITH_CAPNG
     /* QEMU might run into permission issues, e.g. /dev/sev (0600), override
      * them just for the purpose of probing */
-    virCommandAllowCap(cmd->cmd, CAP_DAC_OVERRIDE);
+    if (geteuid() == 0)
+        virCommandAllowCap(cmd->cmd, CAP_DAC_OVERRIDE);
 #endif
 
     virCommandSetGID(cmd->cmd, cmd->runGid);
