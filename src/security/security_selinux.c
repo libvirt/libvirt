@@ -2597,7 +2597,7 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManagerPtr mgr,
     size_t i;
     int rc = 0;
 
-    VIR_DEBUG("Restoring security label on %s", def->name);
+    VIR_DEBUG("Restoring security label on %s migrated=%d", def->name, migrated);
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
 
