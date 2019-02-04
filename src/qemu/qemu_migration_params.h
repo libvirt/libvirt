@@ -84,8 +84,12 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
                         int *maxparams,
                         unsigned long *flags);
 
+qemuMigrationParamsPtr
+qemuMigrationParamsNew(void);
+
 void
 qemuMigrationParamsFree(qemuMigrationParamsPtr migParams);
+VIR_DEFINE_AUTOPTR_FUNC(qemuMigrationParams, qemuMigrationParamsFree)
 
 int
 qemuMigrationParamsApply(virQEMUDriverPtr driver,
@@ -111,6 +115,11 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob,
                          qemuMigrationParamsPtr *migParams);
+
+int
+qemuMigrationParamsSetULL(qemuMigrationParamsPtr migParams,
+                          qemuMigrationParam param,
+                          unsigned long long value);
 
 int
 qemuMigrationParamsGetULL(qemuMigrationParamsPtr migParams,

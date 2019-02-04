@@ -216,7 +216,7 @@ qemuMigrationParamsGetAlwaysOnCaps(qemuMigrationParty party)
 }
 
 
-static qemuMigrationParamsPtr
+qemuMigrationParamsPtr
 qemuMigrationParamsNew(void)
 {
     qemuMigrationParamsPtr params;
@@ -1036,6 +1036,20 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
  cleanup:
     virJSONValueFree(jsonParams);
     return ret;
+}
+
+
+int
+qemuMigrationParamsSetULL(qemuMigrationParamsPtr migParams,
+                          qemuMigrationParam param,
+                          unsigned long long value)
+{
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_ULL) < 0)
+        return -1;
+
+    migParams->params[param].value.ull = value;
+    migParams->params[param].set = true;
+    return 0;
 }
 
 
