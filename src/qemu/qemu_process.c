@@ -6929,10 +6929,17 @@ qemuProcessStart(virConnectPtr conn,
     }
     relabel = true;
 
-    if (incoming &&
-        incoming->deferredURI &&
-        qemuMigrationDstRun(driver, vm, incoming->deferredURI, asyncJob) < 0)
-        goto stop;
+    if (incoming) {
+        if (incoming->deferredURI &&
+            qemuMigrationDstRun(driver, vm, incoming->deferredURI, asyncJob) < 0)
+            goto stop;
+    } else {
+        /* Refresh state of devices from QEMU. During migration this happens
+         * in qemuMigrationDstFinish to ensure that state information is fully
+         * transferred. */
+        if (qemuProcessRefreshState(driver, vm, asyncJob) < 0)
+            goto stop;
+    }
 
     if (qemuProcessFinishStartup(driver, vm, asyncJob,
                                  !(flags & VIR_QEMU_PROCESS_START_PAUSED),
@@ -6945,11 +6952,6 @@ qemuProcessStart(virConnectPtr conn,
         /* Keep watching qemu log for errors during incoming migration, otherwise
          * unset reporting errors from qemu log. */
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
-
-        /* Refresh state of devices from qemu. During migration this needs to
-         * happen after the state information is fully transferred. */
-        if (qemuProcessRefreshState(driver, vm, asyncJob) < 0)
-            goto stop;
     }
 
     ret = 0;
