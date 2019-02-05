@@ -2055,12 +2055,14 @@ virCommandProcessIO(virCommandPtr cmd)
      * results accumulated over a prior run of the same command.  */
     if (cmd->outbuf) {
         outfd = cmd->outfd;
-        if (VIR_REALLOC_N(*cmd->outbuf, 1) < 0)
+        VIR_FREE(*cmd->outbuf);
+        if (VIR_ALLOC_N(*cmd->outbuf, 1) < 0)
             ret = -1;
     }
     if (cmd->errbuf) {
         errfd = cmd->errfd;
-        if (VIR_REALLOC_N(*cmd->errbuf, 1) < 0)
+        VIR_FREE(*cmd->errbuf);
+        if (VIR_ALLOC_N(*cmd->errbuf, 1) < 0)
             ret = -1;
     }
     if (ret == -1)
