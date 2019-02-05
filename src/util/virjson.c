@@ -606,10 +606,11 @@ virJSONValueNewObject(void)
 }
 
 
-int
-virJSONValueObjectAppend(virJSONValuePtr object,
+static int
+virJSONValueObjectInsert(virJSONValuePtr object,
                          const char *key,
-                         virJSONValuePtr value)
+                         virJSONValuePtr value,
+                         bool prepend)
 {
     virJSONObjectPair pair = { NULL, value };
     int ret = -1;
@@ -628,11 +629,42 @@ virJSONValueObjectAppend(virJSONValuePtr object,
     if (VIR_STRDUP(pair.key, key) < 0)
         return -1;
 
-    ret = VIR_APPEND_ELEMENT(object->data.object.pairs,
-                             object->data.object.npairs, pair);
+    if (prepend) {
+        ret = VIR_INSERT_ELEMENT(object->data.object.pairs, 0,
+                                 object->data.object.npairs, pair);
+    } else {
+        ret = VIR_APPEND_ELEMENT(object->data.object.pairs,
+                                 object->data.object.npairs, pair);
+    }
 
     VIR_FREE(pair.key);
     return ret;
+}
+
+
+int
+virJSONValueObjectAppend(virJSONValuePtr object,
+                         const char *key,
+                         virJSONValuePtr value)
+{
+    return virJSONValueObjectInsert(object, key, value, false);
+}
+
+
+static int
+virJSONValueObjectInsertString(virJSONValuePtr object,
+                               const char *key,
+                               const char *value,
+                               bool prepend)
+{
+    virJSONValuePtr jvalue = virJSONValueNewString(value);
+    if (!jvalue)
+        return -1;
+    if (virJSONValueObjectInsert(object, key, jvalue, prepend) < 0) {
+        virJSONValueFree(jvalue);
+        return -1;
+    }
+    return 0;
 }
 
 
@@ -641,14 +673,16 @@ virJSONValueObjectAppendString(virJSONValuePtr object,
                                const char *key,
                                const char *value)
 {
-    virJSONValuePtr jvalue = virJSONValueNewString(value);
-    if (!jvalue)
-        return -1;
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
-        virJSONValueFree(jvalue);
-        return -1;
-    }
-    return 0;
+    return virJSONValueObjectInsertString(object, key, value, false);
+}
+
+
+int
+virJSONValueObjectPrependString(virJSONValuePtr object,
+                                const char *key,
+                                const char *value)
+{
+    return virJSONValueObjectInsertString(object, key, value, true);
 }
 
 
