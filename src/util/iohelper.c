@@ -236,7 +236,7 @@ main(int argc, char **argv)
     return 0;
 
  error:
-    fprintf(stderr, _("%s: failure with %s\n: %s"),
+    fprintf(stderr, _("%s: failure with %s: %s"),
             program_name, path, virGetLastErrorMessage());
     exit(EXIT_FAILURE);
 }
