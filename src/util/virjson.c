@@ -611,7 +611,8 @@ virJSONValueObjectAppend(virJSONValuePtr object,
                          const char *key,
                          virJSONValuePtr value)
 {
-    char *newkey;
+    virJSONObjectPair pair = { NULL, value };
+    int ret = -1;
 
     if (object->type != VIR_JSON_TYPE_OBJECT) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -624,20 +625,14 @@ virJSONValueObjectAppend(virJSONValuePtr object,
         return -1;
     }
 
-    if (VIR_STRDUP(newkey, key) < 0)
+    if (VIR_STRDUP(pair.key, key) < 0)
         return -1;
 
-    if (VIR_REALLOC_N(object->data.object.pairs,
-                      object->data.object.npairs + 1) < 0) {
-        VIR_FREE(newkey);
-        return -1;
-    }
+    ret = VIR_APPEND_ELEMENT(object->data.object.pairs,
+                             object->data.object.npairs, pair);
 
-    object->data.object.pairs[object->data.object.npairs].key = newkey;
-    object->data.object.pairs[object->data.object.npairs].value = value;
-    object->data.object.npairs++;
-
-    return 0;
+    VIR_FREE(pair.key);
+    return ret;
 }
 
 
