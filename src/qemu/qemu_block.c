@@ -640,7 +640,6 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src,
       *            {type:"unix", socket:"/tmp/glusterd.socket"}, ...]}
       */
     if (virJSONValueObjectCreate(&props,
-                                 "s:driver", "gluster",
                                  "s:volume", src->volume,
                                  "s:path", src->path,
                                  "a:server", &servers, NULL) < 0)
@@ -659,7 +658,6 @@ static virJSONValuePtr
 qemuBlockStorageSourceGetVxHSProps(virStorageSourcePtr src,
                                    bool onlytarget)
 {
-    const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
     VIR_AUTOPTR(virJSONValue) server = NULL;
     const char *tlsAlias = src->tlsAlias;
     virJSONValuePtr ret = NULL;
@@ -683,7 +681,6 @@ qemuBlockStorageSourceGetVxHSProps(virStorageSourcePtr src,
      *   server:{type:"tcp", host:"1.2.3.4", port:9999}}
      */
     ignore_value(virJSONValueObjectCreate(&ret,
-                                          "s:driver", protocol,
                                           "S:tls-creds", tlsAlias,
                                           "s:vdisk-id", src->path,
                                           "a:server", &server, NULL));
@@ -702,7 +699,6 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
     virJSONValuePtr ret = NULL;
     VIR_AUTOPTR(virURI) uri = NULL;
     VIR_AUTOFREE(char *) uristr = NULL;
-    const char *driver;
 
     /**
      * Common options:
@@ -716,7 +712,6 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
      * sslverify
      */
 
-    driver = virStorageNetProtocolTypeToString(src->protocol);
 
     if (!(uri = qemuBlockStorageSourceGetURI(src)))
         return NULL;
@@ -730,7 +725,6 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
     }
 
     ignore_value(virJSONValueObjectCreate(&ret,
-                                          "s:driver", driver,
                                           "s:url", uristr,
                                           "S:username", username,
                                           "S:password-secret", passwordalias,
@@ -745,7 +739,6 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src,
                                     bool onlytarget)
 {
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-    const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
     VIR_AUTOFREE(char *) target = NULL;
     char *lunStr = NULL;
     char *username = NULL;
@@ -796,7 +789,6 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src,
     }
 
     ignore_value(virJSONValueObjectCreate(&ret,
-                                          "s:driver", protocol,
                                           "s:portal", portal,
                                           "s:target", target,
                                           "u:lun", lun,
@@ -832,7 +824,6 @@ qemuBlockStorageSourceGetNBDProps(virStorageSourcePtr src,
         tlsAlias = NULL;
 
     if (virJSONValueObjectCreate(&ret,
-                                 "s:driver", "nbd",
                                  "a:server", &serverprops,
                                  "S:export", src->path,
                                  "S:tls-creds", tlsAlias,
@@ -880,7 +871,6 @@ qemuBlockStorageSourceGetRBDProps(virStorageSourcePtr src,
     }
 
     if (virJSONValueObjectCreate(&ret,
-                                 "s:driver", "rbd",
                                  "s:pool", src->volume,
                                  "s:image", src->path,
                                  "S:snapshot", src->snapshot,
@@ -915,7 +905,6 @@ qemuBlockStorageSourceGetSheepdogProps(virStorageSourcePtr src)
 
     /* libvirt does not support the 'snap-id' and 'tag' properties */
     if (virJSONValueObjectCreate(&ret,
-                                 "s:driver", "sheepdog",
                                  "a:server", &serverprops,
                                  "s:vdi", src->path,
                                  NULL) < 0)
@@ -946,7 +935,6 @@ qemuBlockStorageSourceGetSshProps(virStorageSourcePtr src)
         username = src->auth->username;
 
     if (virJSONValueObjectCreate(&ret,
-                                 "s:driver", "ssh",
                                  "s:path", src->path,
                                  "a:server", &serverprops,
                                  "S:user", username,
@@ -961,17 +949,9 @@ static virJSONValuePtr
 qemuBlockStorageSourceGetFileProps(virStorageSourcePtr src,
                                    bool onlytarget)
 {
-    const char *driver = "file";
     const char *iomode = NULL;
     const char *prManagerAlias = NULL;
     virJSONValuePtr ret = NULL;
-
-    if (virStorageSourceIsBlockLocal(src)) {
-        if (src->hostcdrom)
-            driver = "host_cdrom";
-        else
-            driver = "host_device";
-    }
 
     if (!onlytarget) {
         if (src->pr)
@@ -982,7 +962,6 @@ qemuBlockStorageSourceGetFileProps(virStorageSourcePtr src,
     }
 
     ignore_value(virJSONValueObjectCreate(&ret,
-                                          "s:driver", driver,
                                           "s:filename", src->path,
                                           "S:aio", iomode,
                                           "S:pr-manager", prManagerAlias,
@@ -1059,10 +1038,20 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
 {
     int actualType = virStorageSourceGetActualType(src);
     VIR_AUTOPTR(virJSONValue) fileprops = NULL;
+    const char *driver = NULL;
 
     switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
+        if (virStorageSourceIsBlockLocal(src)) {
+            if (src->hostcdrom)
+                driver = "host_cdrom";
+            else
+                driver = "host_device";
+        } else {
+            driver = "file";
+        }
+
         if (!(fileprops = qemuBlockStorageSourceGetFileProps(src, onlytarget)))
             return NULL;
         break;
@@ -1082,11 +1071,13 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
     case VIR_STORAGE_TYPE_NETWORK:
         switch ((virStorageNetProtocol) src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+            driver = "gluster";
             if (!(fileprops = qemuBlockStorageSourceGetGlusterProps(src, legacy, onlytarget)))
                 return NULL;
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_VXHS:
+            driver = "vxhs";
             if (!(fileprops = qemuBlockStorageSourceGetVxHSProps(src, onlytarget)))
                 return NULL;
             break;
@@ -1096,31 +1087,37 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
         case VIR_STORAGE_NET_PROTOCOL_FTP:
         case VIR_STORAGE_NET_PROTOCOL_FTPS:
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
+            driver = virStorageNetProtocolTypeToString(src->protocol);
             if (!(fileprops = qemuBlockStorageSourceGetCURLProps(src, onlytarget)))
                 return NULL;
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+            driver = "iscsi";
             if (!(fileprops = qemuBlockStorageSourceGetISCSIProps(src, onlytarget)))
                 return NULL;
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_NBD:
+            driver = "nbd";
             if (!(fileprops = qemuBlockStorageSourceGetNBDProps(src, onlytarget)))
                 return NULL;
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_RBD:
+            driver = "rbd";
             if (!(fileprops = qemuBlockStorageSourceGetRBDProps(src, onlytarget)))
                 return NULL;
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+            driver = "sheepdog";
             if (!(fileprops = qemuBlockStorageSourceGetSheepdogProps(src)))
                 return NULL;
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_SSH:
+            driver = "ssh";
             if (!(fileprops = qemuBlockStorageSourceGetSshProps(src)))
                 return NULL;
             break;
@@ -1131,6 +1128,9 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
         }
         break;
     }
+
+    if (driver && virJSONValueObjectPrependString(fileprops, "driver", driver) < 0)
+        return NULL;
 
     if (!onlytarget) {
         if (qemuBlockNodeNameValidate(src->nodestorage) < 0 ||
