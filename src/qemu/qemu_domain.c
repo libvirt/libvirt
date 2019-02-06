@@ -9882,8 +9882,12 @@ qemuDomainMachineIsQ35(const char *machine,
     if (!ARCH_IS_X86(arch))
         return false;
 
-    return (STRPREFIX(machine, "pc-q35-") ||
-            STREQ(machine, "q35"));
+    if (STREQ(machine, "q35") ||
+        STRPREFIX(machine, "pc-q35-")) {
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -9894,11 +9898,15 @@ qemuDomainMachineIsI440FX(const char *machine,
     if (!ARCH_IS_X86(arch))
         return false;
 
-    return (STREQ(machine, "pc") ||
-            STRPREFIX(machine, "pc-0.") ||
-            STRPREFIX(machine, "pc-1.") ||
-            STRPREFIX(machine, "pc-i440fx-") ||
-            STRPREFIX(machine, "rhel"));
+    if (STREQ(machine, "pc") ||
+        STRPREFIX(machine, "pc-0.") ||
+        STRPREFIX(machine, "pc-1.") ||
+        STRPREFIX(machine, "pc-i440fx-") ||
+        STRPREFIX(machine, "rhel")) {
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -9909,7 +9917,10 @@ qemuDomainMachineIsS390CCW(const char *machine,
     if (!ARCH_IS_S390(arch))
         return false;
 
-    return STRPREFIX(machine, "s390-ccw");
+    if (STRPREFIX(machine, "s390-ccw"))
+        return true;
+
+    return false;
 }
 
 
@@ -9921,14 +9932,16 @@ qemuDomainMachineIsARMVirt(const char *machine,
 {
     if (arch != VIR_ARCH_ARMV6L &&
         arch != VIR_ARCH_ARMV7L &&
-        arch != VIR_ARCH_AARCH64)
+        arch != VIR_ARCH_AARCH64) {
         return false;
+    }
 
-    if (STRNEQ(machine, "virt") &&
-        !STRPREFIX(machine, "virt-"))
-        return false;
+    if (STREQ(machine, "virt") ||
+        STRPREFIX(machine, "virt-")) {
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 
@@ -9939,11 +9952,12 @@ qemuDomainMachineIsRISCVVirt(const char *machine,
     if (!ARCH_IS_RISCV(arch))
         return false;
 
-    if (STRNEQ(machine, "virt") &&
-        !STRPREFIX(machine, "virt-"))
-        return false;
+    if (STREQ(machine, "virt") ||
+        STRPREFIX(machine, "virt-")) {
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 
@@ -9956,11 +9970,12 @@ qemuDomainMachineIsPSeries(const char *machine,
     if (!ARCH_IS_PPC64(arch))
         return false;
 
-    if (STRNEQ(machine, "pseries") &&
-        !STRPREFIX(machine, "pseries-"))
-        return false;
+    if (STREQ(machine, "pseries") ||
+        STRPREFIX(machine, "pseries-")) {
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 
@@ -9986,16 +10001,18 @@ qemuDomainMachineNeedsFDC(const char *machine,
     if (!ARCH_IS_X86(arch))
         return false;
 
-    if (p) {
-        if (STRPREFIX(p, "1.") ||
-            STREQ(p, "2.0") ||
-            STREQ(p, "2.1") ||
-            STREQ(p, "2.2") ||
-            STREQ(p, "2.3"))
-            return false;
-        return true;
+    if (!p)
+        return false;
+
+    if (STRPREFIX(p, "1.") ||
+        STREQ(p, "2.0") ||
+        STREQ(p, "2.1") ||
+        STREQ(p, "2.2") ||
+        STREQ(p, "2.3")) {
+        return false;
     }
-    return false;
+
+    return true;
 }
 
 
@@ -10089,19 +10106,21 @@ bool
 qemuDomainSupportsPCI(virDomainDefPtr def,
                       virQEMUCapsPtr qemuCaps)
 {
-    if ((def->os.arch != VIR_ARCH_ARMV6L) &&
-        (def->os.arch != VIR_ARCH_ARMV7L) &&
-        (def->os.arch != VIR_ARCH_AARCH64) &&
-        !ARCH_IS_RISCV(def->os.arch))
+    if (def->os.arch != VIR_ARCH_ARMV6L &&
+        def->os.arch != VIR_ARCH_ARMV7L &&
+        def->os.arch != VIR_ARCH_AARCH64 &&
+        !ARCH_IS_RISCV(def->os.arch)) {
         return true;
+    }
 
     if (STREQ(def->os.machine, "versatilepb"))
         return true;
 
     if ((qemuDomainIsARMVirt(def) ||
          qemuDomainIsRISCVVirt(def)) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX))
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX)) {
         return true;
+    }
 
     return false;
 }
