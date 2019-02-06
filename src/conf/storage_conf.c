@@ -250,9 +250,6 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
      }
     },
     {.poolType = VIR_STORAGE_POOL_MPATH,
-     .volOptions = {
-         .formatToString = virStoragePoolFormatDiskTypeToString,
-     }
     },
     {.poolType = VIR_STORAGE_POOL_DISK,
      .poolOptions = {
