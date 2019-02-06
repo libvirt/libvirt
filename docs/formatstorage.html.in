@@ -478,8 +478,8 @@
         The <code>owner</code> element contains the numeric user ID.
         The <code>group</code> element contains the numeric group ID.
         If <code>owner</code> or <code>group</code> aren't specified when
-        creating a directory, the values are inherited from the parent
-        directory. The <code>label</code> element contains the MAC (eg SELinux)
+        creating a directory, the UID and GID of the libvirtd process are used.
+        The <code>label</code> element contains the MAC (eg SELinux)
         label string.
         <span class="since">Since 0.4.1</span>
         For running directory or filesystem based pools, these fields
@@ -776,8 +776,8 @@
         The <code>owner</code> element contains the numeric user ID.
         The <code>group</code> element contains the numeric group ID.
         If <code>owner</code> or <code>group</code> aren't specified when
-        creating a supported volume, the values are inherited from the parent
-        directory. The <code>label</code> element contains the MAC (eg SELinux)
+        creating a supported volume, the UID and GID of the libvirtd process
+        are used. The <code>label</code> element contains the MAC (eg SELinux)
         label string.
         For existing directory or filesystem based volumes, these fields
         will be filled with the values used by the existing file.
