@@ -3822,10 +3822,13 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
         }
     }
 
-    if (STRNEQ(uribits->scheme, "rdma"))
-        spec.destType = MIGRATION_DEST_CONNECT_HOST;
-    else
+    /* RDMA and multi-fd migration requires QEMU to connect to the destination
+     * itself.
+     */
+    if (STREQ(uribits->scheme, "rdma") || (flags & VIR_MIGRATE_PARALLEL))
         spec.destType = MIGRATION_DEST_HOST;
+    else
+        spec.destType = MIGRATION_DEST_CONNECT_HOST;
     spec.dest.host.protocol = uribits->scheme;
     spec.dest.host.name = uribits->server;
     spec.dest.host.port = uribits->port;
