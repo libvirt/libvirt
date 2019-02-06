@@ -178,6 +178,7 @@
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>
   <flag name='virtio-net.failover'/>
+  <flag name='vhost-user-fs'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700242</microcodeVersion>

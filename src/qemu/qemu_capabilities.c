@@ -561,6 +561,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-net.failover",
               "tpm-spapr",
               "cpu.kvm-no-adjvtime",
+
+              /* 355 */
+              "vhost-user-fs",
     );
 
 
@@ -1278,6 +1281,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "i8042", QEMU_CAPS_DEVICE_I8042 },
     { "rng-builtin", QEMU_CAPS_OBJECT_RNG_BUILTIN },
     { "tpm-spapr", QEMU_CAPS_DEVICE_TPM_SPAPR },
+    { "vhost-user-fs-device", QEMU_CAPS_DEVICE_VHOST_USER_FS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

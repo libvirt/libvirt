@@ -137,6 +137,7 @@
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>
+  <flag name='vhost-user-fs'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100242</microcodeVersion>
