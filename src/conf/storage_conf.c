@@ -208,9 +208,6 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
                    VIR_STORAGE_POOL_SOURCE_DEVICE |
                    VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN),
       },
-      .volOptions = {
-         .formatToString = virStoragePoolFormatDiskTypeToString,
-      }
     },
     {.poolType = VIR_STORAGE_POOL_ISCSI_DIRECT,
      .poolOptions = {
@@ -219,9 +216,6 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
                    VIR_STORAGE_POOL_SOURCE_NETWORK |
                    VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN),
       },
-      .volOptions = {
-         .formatToString = virStoragePoolFormatDiskTypeToString,
-      }
     },
     {.poolType = VIR_STORAGE_POOL_SCSI,
      .poolOptions = {
