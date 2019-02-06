@@ -227,9 +227,6 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
      .poolOptions = {
          .flags = (VIR_STORAGE_POOL_SOURCE_ADAPTER),
      },
-     .volOptions = {
-         .formatToString = virStoragePoolFormatDiskTypeToString,
-     }
     },
     {.poolType = VIR_STORAGE_POOL_RBD,
      .poolOptions = {
