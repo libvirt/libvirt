@@ -831,6 +831,12 @@ typedef enum {
      */
     VIR_MIGRATE_TLS               = (1 << 16),
 
+    /* Send memory pages to the destination host through several network
+     * connections. See VIR_MIGRATE_PARAM_PARALLEL_* parameters for
+     * configuring the parallel migration.
+     */
+    VIR_MIGRATE_PARALLEL          = (1 << 17),
+
 } virDomainMigrateFlags;
 
 
@@ -1024,6 +1030,14 @@ typedef enum {
  * As VIR_TYPED_PARAM_INT.
  */
 # define VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT  "auto_converge.increment"
+
+/**
+ * VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS:
+ *
+ * virDomainMigrate* params field: number of connections used during parallel
+ * migration. As VIR_TYPED_PARAM_INT.
+ */
+# define VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS     "parallel.connections"
 
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
