@@ -6,6 +6,5 @@
   <allocation unit='bytes'>0</allocation>
   <target>
     <path>sheepdog:test2</path>
-    <format type='unknown'/>
   </target>
 </volume>
