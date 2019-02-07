@@ -2216,20 +2216,26 @@ int virNetClientSendWithReplyStream(virNetClientPtr client,
                                     virNetMessagePtr msg,
                                     virNetClientStreamPtr st)
 {
-    int ret;
+    int ret = -1;
+
     virObjectLock(client);
-    /* Other thread might have already received
-     * stream EOF so we don't want sent anything.
-     * Server won't respond anyway.
-     */
-    if (virNetClientStreamEOF(st)) {
-        virObjectUnlock(client);
-        return 0;
+
+    if (virNetClientStreamRaiseError(st))
+        goto cleanup;
+
+    /* Check for EOF only if we are going to wait for incoming data */
+    if (!msg->bufferLength && virNetClientStreamEOF(st)) {
+        ret = 0;
+        goto cleanup;
     }
 
-    ret = virNetClientSendInternal(client, msg, true, false);
+    if (virNetClientSendInternal(client, msg, true, false) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
     virObjectUnlock(client);
-    if (ret < 0)
-        return -1;
-    return 0;
+
+    return ret;
 }

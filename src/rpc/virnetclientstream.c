@@ -350,7 +350,7 @@ int virNetClientStreamSendPacket(virNetClientStreamPtr st,
         if (virNetMessageEncodePayloadRaw(msg, NULL, 0) < 0)
             goto error;
 
-        if (virNetClientSendWithReply(client, msg) < 0)
+        if (virNetClientSendWithReplyStream(client, msg, st) < 0)
             goto error;
     }
 
