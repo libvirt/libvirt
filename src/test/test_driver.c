@@ -5164,13 +5164,28 @@ testStorageVolDelete(virStorageVolPtr vol,
 static int
 testStorageVolumeTypeForPool(int pooltype)
 {
-    switch (pooltype) {
-        case VIR_STORAGE_POOL_DIR:
-        case VIR_STORAGE_POOL_FS:
-        case VIR_STORAGE_POOL_NETFS:
-            return VIR_STORAGE_VOL_FILE;
-        default:
-            return VIR_STORAGE_VOL_BLOCK;
+    switch ((virStoragePoolType) pooltype) {
+    case VIR_STORAGE_POOL_DIR:
+    case VIR_STORAGE_POOL_FS:
+    case VIR_STORAGE_POOL_NETFS:
+    case VIR_STORAGE_POOL_VSTORAGE:
+        return VIR_STORAGE_VOL_FILE;
+    case VIR_STORAGE_POOL_SHEEPDOG:
+    case VIR_STORAGE_POOL_ISCSI_DIRECT:
+    case VIR_STORAGE_POOL_GLUSTER:
+    case VIR_STORAGE_POOL_RBD:
+        return VIR_STORAGE_VOL_NETWORK;
+    case VIR_STORAGE_POOL_LOGICAL:
+    case VIR_STORAGE_POOL_DISK:
+    case VIR_STORAGE_POOL_MPATH:
+    case VIR_STORAGE_POOL_ISCSI:
+    case VIR_STORAGE_POOL_SCSI:
+    case VIR_STORAGE_POOL_ZFS:
+        return VIR_STORAGE_VOL_BLOCK;
+    case VIR_STORAGE_POOL_LAST:
+    default:
+        virReportEnumRangeError(virStoragePoolType, pooltype);
+        return -1;
     }
 }
 
@@ -5193,7 +5208,8 @@ testStorageVolGetInfo(virStorageVolPtr vol,
         goto cleanup;
 
     memset(info, 0, sizeof(*info));
-    info->type = testStorageVolumeTypeForPool(def->type);
+    if ((info->type = testStorageVolumeTypeForPool(def->type)) < 0)
+        goto cleanup;
     info->capacity = privvol->target.capacity;
     info->allocation = privvol->target.allocation;
     ret = 0;
