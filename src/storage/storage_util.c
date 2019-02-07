@@ -3492,13 +3492,11 @@ storageBackendProbeTarget(virStorageSourcePtr target,
     }
 
     virBitmapFree(target->features);
-    target->features = meta->features;
-    meta->features = NULL;
+    VIR_STEAL_PTR(target->features, meta->features);
 
     if (meta->compat) {
         VIR_FREE(target->compat);
-        target->compat = meta->compat;
-        meta->compat = NULL;
+        VIR_STEAL_PTR(target->compat, meta->compat);
     }
 
  cleanup:
