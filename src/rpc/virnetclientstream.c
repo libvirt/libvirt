@@ -86,7 +86,7 @@ virNetClientStreamEventTimerUpdate(virNetClientStreamPtr st)
 
     VIR_DEBUG("Check timer rx=%p cbEvents=%d", st->rx, st->cbEvents);
 
-    if (((st->rx || st->incomingEOF) &&
+    if (((st->rx || st->incomingEOF || st->err.code != VIR_ERR_OK) &&
          (st->cbEvents & VIR_STREAM_EVENT_READABLE)) ||
         (st->cbEvents & VIR_STREAM_EVENT_WRITABLE)) {
         VIR_DEBUG("Enabling event timer");
@@ -108,7 +108,7 @@ virNetClientStreamEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 
     if (st->cb &&
         (st->cbEvents & VIR_STREAM_EVENT_READABLE) &&
-        (st->rx || st->incomingEOF))
+        (st->rx || st->incomingEOF || st->err.code != VIR_ERR_OK))
         events |= VIR_STREAM_EVENT_READABLE;
     if (st->cb &&
         (st->cbEvents & VIR_STREAM_EVENT_WRITABLE))
@@ -272,7 +272,6 @@ int virNetClientStreamSetError(virNetClientStreamPtr st,
     st->err.int1 = err.int1;
     st->err.int2 = err.int2;
 
-    st->incomingEOF = true;
     virNetClientStreamEventTimerUpdate(st);
 
     ret = 0;
