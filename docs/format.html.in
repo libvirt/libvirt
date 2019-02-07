@@ -21,6 +21,7 @@
       <li><a href="formatstorageencryption.html">Storage encryption</a></li>
       <li><a href="formatcaps.html">Capabilities</a></li>
       <li><a href="formatdomaincaps.html">Domain capabilities</a></li>
+      <li><a href="formatstoragecaps.html">Storage Pool capabilities</a></li>
       <li><a href="formatnode.html">Node devices</a></li>
       <li><a href="formatsecret.html">Secrets</a></li>
       <li><a href="formatsnapshot.html">Snapshots</a></li>
