@@ -8408,13 +8408,9 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         }
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION)) {
-        /* If qemu supports seamless migration turn it
-         * unconditionally on. If migration destination
-         * doesn't support it, it fallbacks to previous
-         * migration algorithm silently. */
-        virBufferAddLit(&opt, "seamless-migration=on,");
-    }
+    /* Turn on seamless migration unconditionally. If migration destination
+     * doesn't support it, it fallbacks to previous migration algorithm silently. */
+    virBufferAddLit(&opt, "seamless-migration=on,");
 
     virBufferTrim(&opt, ",", -1);
 

@@ -20,5 +20,5 @@ server,nowait \
 -no-shutdown \
 -no-acpi \
 -usb \
--spice unix,addr=/tmp/spice.sock \
+-spice unix,addr=/tmp/spice.sock,seamless-migration=on \
 -vga cirrus

@@ -20,5 +20,6 @@ server,nowait \
 -no-shutdown \
 -no-acpi \
 -usb \
--spice unix,addr=/tmp/lib/domain--1-QEMUGuest1/spice.sock \
+-spice unix,addr=/tmp/lib/domain--1-QEMUGuest1/spice.sock,\
+seamless-migration=on \
 -vga cirrus

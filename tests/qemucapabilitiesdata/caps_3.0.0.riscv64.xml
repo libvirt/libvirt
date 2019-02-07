@@ -12,7 +12,6 @@
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
-  <flag name='seamless-migration'/>
   <flag name='block-commit'/>
   <flag name='vnc'/>
   <flag name='drive-mirror'/>

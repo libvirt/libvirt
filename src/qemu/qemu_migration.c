@@ -1339,8 +1339,7 @@ qemuMigrationSrcWaitForSpice(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION) ||
-        !priv->job.spiceMigration)
+    if (!priv->job.spiceMigration)
         return 0;
 
     VIR_DEBUG("Waiting for SPICE to finish migration");

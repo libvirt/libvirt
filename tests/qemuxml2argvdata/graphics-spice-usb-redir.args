@@ -28,7 +28,7 @@ addr=0x4 \
 tls-channel=main,plaintext-channel=inputs,tls-channel=usbredir,\
 image-compression=auto_glz,jpeg-wan-compression=auto,\
 zlib-glz-wan-compression=auto,playback-compression=on,streaming-video=filter,\
-disable-copy-paste \
+disable-copy-paste,seamless-migration=on \
 -vga cirrus \
 -chardev socket,id=charredir0,host=localhost,port=4000 \
 -device usb-redir,chardev=charredir0,id=redir0,bus=usb.0,port=1 \

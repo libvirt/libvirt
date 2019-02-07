@@ -20,6 +20,6 @@ server,nowait \
 -no-shutdown \
 -no-acpi \
 -usb \
--spice port=0 \
+-spice port=0,seamless-migration=on \
 -vga cirrus \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
