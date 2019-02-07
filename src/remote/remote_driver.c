@@ -5835,9 +5835,6 @@ remoteStreamCloseInt(virStreamPtr st, bool streamAbort)
     priv->localUses--;
 
     virNetClientRemoveStream(priv->client, privst);
-    virObjectUnref(privst);
-    st->privateData = NULL;
-    st->driver = NULL;
 
     remoteDriverUnlock(priv);
     return ret;
@@ -6177,8 +6174,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
-    if (!(netst = virNetClientStreamNew(st,
-                                        priv->remoteProgram,
+    if (!(netst = virNetClientStreamNew(priv->remoteProgram,
                                         REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3,
                                         priv->counter,
                                         false)))
@@ -6191,6 +6187,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
 
     st->driver = &remoteStreamDrv;
     st->privateData = netst;
+    st->ff = virObjectFreeCallback;
 
     args.cookie_in.cookie_in_val = (char *)cookiein;
     args.cookie_in.cookie_in_len = cookieinlen;
@@ -7142,8 +7139,7 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(netst = virNetClientStreamNew(st,
-                                        priv->remoteProgram,
+    if (!(netst = virNetClientStreamNew(priv->remoteProgram,
                                         REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3_PARAMS,
                                         priv->counter,
                                         false)))
@@ -7156,6 +7152,7 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
 
     st->driver = &remoteStreamDrv;
     st->privateData = netst;
+    st->ff = virObjectFreeCallback;
 
     if (call(dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3_PARAMS,
              (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_params_args,

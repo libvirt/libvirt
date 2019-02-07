@@ -763,6 +763,8 @@ virStreamDispose(void *obj)
     virStreamPtr st = obj;
     VIR_DEBUG("release dev %p", st);
 
+    if (st->ff)
+        st->ff(st->privateData);
     virObjectUnref(st->conn);
 }
 

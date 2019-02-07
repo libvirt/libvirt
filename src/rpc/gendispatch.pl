@@ -1804,7 +1804,7 @@ elsif ($mode eq "client") {
 
         if ($call->{streamflag} ne "none") {
             print "\n";
-            print "    if (!(netst = virNetClientStreamNew(st, priv->remoteProgram, $call->{constname}, priv->counter, sparse)))\n";
+            print "    if (!(netst = virNetClientStreamNew(priv->remoteProgram, $call->{constname}, priv->counter, sparse)))\n";
             print "        goto done;\n";
             print "\n";
             print "    if (virNetClientAddStream(priv->client, netst) < 0) {\n";
@@ -1814,6 +1814,7 @@ elsif ($mode eq "client") {
             print "\n";
             print "    st->driver = &remoteStreamDrv;\n";
             print "    st->privateData = netst;\n";
+            print "    st->ff = virObjectFreeCallback;\n";
         }
 
         if ($call->{ProcName} eq "SupportsFeature") {

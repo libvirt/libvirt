@@ -34,8 +34,6 @@ VIR_LOG_INIT("rpc.netclientstream");
 struct _virNetClientStream {
     virObjectLockable parent;
 
-    virStreamPtr stream; /* Reverse pointer to parent stream */
-
     virNetClientProgramPtr prog;
     int proc;
     unsigned serial;
@@ -133,8 +131,7 @@ virNetClientStreamEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 }
 
 
-virNetClientStreamPtr virNetClientStreamNew(virStreamPtr stream,
-                                            virNetClientProgramPtr prog,
+virNetClientStreamPtr virNetClientStreamNew(virNetClientProgramPtr prog,
                                             int proc,
                                             unsigned serial,
                                             bool allowSkip)
@@ -147,7 +144,6 @@ virNetClientStreamPtr virNetClientStreamNew(virStreamPtr stream,
     if (!(st = virObjectLockableNew(virNetClientStreamClass)))
         return NULL;
 
-    st->stream = virObjectRef(stream);
     st->prog = virObjectRef(prog);
     st->proc = proc;
     st->serial = serial;
@@ -167,7 +163,6 @@ void virNetClientStreamDispose(void *obj)
         virNetMessageFree(msg);
     }
     virObjectUnref(st->prog);
-    virObjectUnref(st->stream);
 }
 
 bool virNetClientStreamMatches(virNetClientStreamPtr st,

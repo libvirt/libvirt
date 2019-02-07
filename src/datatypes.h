@@ -665,6 +665,7 @@ struct _virStream {
 
     virStreamDriverPtr driver;
     void *privateData;
+    virFreeCallback ff;
 };
 
 /**
