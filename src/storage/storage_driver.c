@@ -35,6 +35,7 @@
 #include "datatypes.h"
 #include "driver.h"
 #include "storage_driver.h"
+#include "storage_capabilities.h"
 #include "storage_conf.h"
 #include "storage_event.h"
 #include "viralloc.h"
@@ -634,6 +635,28 @@ storageConnectFindStoragePoolSources(virConnectPtr conn,
     ret = backend->findPoolSources(srcSpec, flags);
 
  cleanup:
+    return ret;
+}
+
+
+static char *
+storageConnectGetStoragePoolCapabilities(virConnectPtr conn,
+                                         unsigned int flags)
+{
+    virStoragePoolCapsPtr caps = NULL;
+    char *ret;
+
+    virCheckFlags(0, NULL);
+
+    if (virConnectGetStoragePoolCapabilitiesEnsureACL(conn) < 0)
+        return NULL;
+
+    if (!(caps = virStoragePoolCapsNew(driver->caps)))
+        return NULL;
+
+    ret = virStoragePoolCapsFormat(caps);
+
+    virObjectUnref(caps);
     return ret;
 }
 
@@ -2776,6 +2799,7 @@ static virStorageDriver storageDriver = {
     .connectStoragePoolEventRegisterAny = storageConnectStoragePoolEventRegisterAny, /* 2.0.0 */
     .connectStoragePoolEventDeregisterAny = storageConnectStoragePoolEventDeregisterAny, /* 2.0.0 */
     .connectFindStoragePoolSources = storageConnectFindStoragePoolSources, /* 0.4.0 */
+    .connectGetStoragePoolCapabilities = storageConnectGetStoragePoolCapabilities, /* 5.2.0 */
     .storagePoolLookupByName = storagePoolLookupByName, /* 0.4.0 */
     .storagePoolLookupByUUID = storagePoolLookupByUUID, /* 0.4.0 */
     .storagePoolLookupByVolume = storagePoolLookupByVolume, /* 0.4.0 */
