@@ -109,9 +109,6 @@ void virNetClientRemoveStream(virNetClientPtr client,
 int virNetClientSendWithReply(virNetClientPtr client,
                               virNetMessagePtr msg);
 
-int virNetClientSendNoReply(virNetClientPtr client,
-                            virNetMessagePtr msg);
-
 int virNetClientSendNonBlock(virNetClientPtr client,
                              virNetMessagePtr msg);
 

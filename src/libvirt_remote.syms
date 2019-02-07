@@ -38,7 +38,6 @@ virNetClientRegisterKeepAlive;
 virNetClientRemoteAddrStringSASL;
 virNetClientRemoveStream;
 virNetClientSendNonBlock;
-virNetClientSendNoReply;
 virNetClientSendStream;
 virNetClientSendWithReply;
 virNetClientSetCloseCallback;

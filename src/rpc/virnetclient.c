@@ -2160,28 +2160,6 @@ int virNetClientSendWithReply(virNetClientPtr client,
 
 
 /*
- * @msg: a message allocated on heap or stack
- *
- * Send a message synchronously, without any reply
- *
- * The caller is responsible for free'ing @msg if it was allocated
- * on the heap
- *
- * Returns 0 on success, -1 on failure
- */
-int virNetClientSendNoReply(virNetClientPtr client,
-                            virNetMessagePtr msg)
-{
-    int ret;
-    virObjectLock(client);
-    ret = virNetClientSendInternal(client, msg, false, false);
-    virObjectUnlock(client);
-    if (ret < 0)
-        return -1;
-    return 0;
-}
-
-/*
  * @msg: a message allocated on the heap.
  *
  * Send a message asynchronously, without any reply
