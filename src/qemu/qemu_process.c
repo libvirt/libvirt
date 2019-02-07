@@ -3635,9 +3635,6 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     char **tmp;
     int ret = -1;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
-        return 0;
-
     old = priv->qemuDevices;
     priv->qemuDevices = NULL;
     if (qemuDomainUpdateDeviceList(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)

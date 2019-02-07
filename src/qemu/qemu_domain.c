@@ -9486,9 +9486,6 @@ qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
     char **aliases;
     int rc;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
-        return 0;
-
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
     rc = qemuMonitorGetDeviceAliases(priv->mon, &aliases);

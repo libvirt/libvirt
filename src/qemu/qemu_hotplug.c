@@ -5116,9 +5116,6 @@ qemuDomainMarkDeviceAliasForRemoval(virDomainObjPtr vm,
 
     memset(&priv->unplug, 0, sizeof(priv->unplug));
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
-        return;
-
     priv->unplug.alias = alias;
 }
 
@@ -5142,11 +5139,9 @@ qemuDomainResetDeviceRemoval(virDomainObjPtr vm)
 /* Returns:
  *  -1 Unplug of the device failed
  *
- *   0 DEVICE_DELETED event is supported and removal of the device did not
- *     finish in qemuDomainRemoveDeviceWaitTime
+ *   0 removal of the device did not finish in qemuDomainRemoveDeviceWaitTime
  *
  *   1 when the caller is responsible for finishing the device removal:
- *      - DEVICE_DELETED event is unsupported
  *      - DEVICE_DELETED event arrived before the timeout time
  *      - we failed to reliably wait for the event and thus use fallback behavior
  */
@@ -5156,9 +5151,6 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned long long until;
     int rc;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
-        return 1;
 
     if (virTimeMillisNow(&until) < 0)
         return 1;

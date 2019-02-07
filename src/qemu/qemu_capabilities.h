@@ -257,7 +257,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 150 */
     X_QEMU_CAPS_VNC_SHARE_POLICY, /* set display sharing policy */
-    QEMU_CAPS_DEVICE_DEL_EVENT, /* DEVICE_DELETED event */
+    X_QEMU_CAPS_DEVICE_DEL_EVENT, /* DEVICE_DELETED event */
     QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, /* -device i82801b11-bridge */
     QEMU_CAPS_I440FX_PCI_HOLE64_SIZE, /* i440FX-pcihost.pci-hole64-size */
     QEMU_CAPS_Q35_PCI_HOLE64_SIZE, /* q35-pcihost.pci-hole64-size */
