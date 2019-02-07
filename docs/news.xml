@@ -35,6 +35,18 @@
 <libvirt>
   <release version="v5.2.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          Add Storage Pool Capabilities output
+        </summary>
+        <description>
+          Add support to list an enumerated list of supported Storage
+          Pools via the virConnectGetCapabilities API when connected
+          via a Storage Driver. Add support to get a more detailed
+          list XML output Storage Pool Capabilities vis the
+          virConnectGetStoragePoolCapabilites API.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
