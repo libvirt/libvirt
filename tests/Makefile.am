@@ -136,6 +136,7 @@ EXTRA_DIST = \
 	securityselinuxhelperdata \
 	securityselinuxlabeldata \
 	sexpr2xmldata \
+	storagepoolcapsschemadata \
 	storagepoolschemadata \
 	storagepoolxml2xmlin \
 	storagepoolxml2xmlout \

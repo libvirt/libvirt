@@ -1822,6 +1822,7 @@ exit 0
 %{_datadir}/libvirt/schemas/secret.rng
 %{_datadir}/libvirt/schemas/storagecommon.rng
 %{_datadir}/libvirt/schemas/storagepool.rng
+%{_datadir}/libvirt/schemas/storagepoolcaps.rng
 %{_datadir}/libvirt/schemas/storagevol.rng
 
 %{_datadir}/libvirt/cpu_map/*.xml

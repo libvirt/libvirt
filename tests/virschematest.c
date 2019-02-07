@@ -231,6 +231,7 @@ mymain(void)
     DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout", "../examples/xml/nwfilter");
     DO_TEST_DIR("nwfilterbinding.rng", "virnwfilterbindingxml2xmldata");
     DO_TEST_DIR("secret.rng", "secretxml2xmlin");
+    DO_TEST_DIR("storagepoolcaps.rng", "storagepoolcapsschemadata");
     DO_TEST_DIR("storagepool.rng", "storagepoolxml2xmlin", "storagepoolxml2xmlout",
                 "storagepoolschemadata");
     DO_TEST_DIR("storagevol.rng", "storagevolxml2xmlin", "storagevolxml2xmlout",

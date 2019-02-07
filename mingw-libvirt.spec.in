@@ -252,6 +252,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_datadir}/libvirt/schemas/secret.rng
 %{mingw32_datadir}/libvirt/schemas/storagecommon.rng
 %{mingw32_datadir}/libvirt/schemas/storagepool.rng
+%{mingw32_datadir}/libvirt/schemas/storagepoolcaps.rng
 %{mingw32_datadir}/libvirt/schemas/storagevol.rng
 %dir %{mingw32_datadir}/libvirt/api/
 %{mingw32_datadir}/libvirt/api/libvirt-api.xml
@@ -339,6 +340,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_datadir}/libvirt/schemas/secret.rng
 %{mingw64_datadir}/libvirt/schemas/storagecommon.rng
 %{mingw64_datadir}/libvirt/schemas/storagepool.rng
+%{mingw64_datadir}/libvirt/schemas/storagepoolcaps.rng
 %{mingw64_datadir}/libvirt/schemas/storagevol.rng
 %dir %{mingw64_datadir}/libvirt/api/
 %{mingw64_datadir}/libvirt/api/libvirt-api.xml
