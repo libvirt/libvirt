@@ -369,6 +369,7 @@ test_programs += storagevolxml2argvtest
 test_programs += storagepoolxml2argvtest
 test_programs += virstorageutiltest
 test_programs += storagepoolxml2xmltest
+test_programs += storagepoolcapstest
 endif WITH_STORAGE
 
 if WITH_STORAGE_FS
@@ -936,11 +937,16 @@ storagepoolxml2xmltest_LDADD = $(LDADDS) \
 	../src/libvirt_driver_storage_impl.la \
 	$(GNULIB_LIBS)
 
+storagepoolcapstest_SOURCES = \
+        storagepoolcapstest.c testutils.h testutils.c
+storagepoolcapstest_LDADD = $(LDADDS)
+
 else ! WITH_STORAGE
 EXTRA_DIST += storagevolxml2argvtest.c
 EXTRA_DIST += virstorageutiltest.c
 EXTRA_DIST += storagepoolxml2argvtest.c
 EXTRA_DIST += storagepoolxml2xmltest.c
+EXTRA_DIST += storagepoolcapstest.c
 endif ! WITH_STORAGE
 
 storagevolxml2xmltest_SOURCES = \
