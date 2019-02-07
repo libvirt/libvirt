@@ -647,9 +647,6 @@ mymain(void)
 #define DO_TEST_ATTACH_EVENT(file, dev, fial, kep, ...) \
     DO_TEST(file, ATTACH, dev, true, fial, kep, __VA_ARGS__)
 
-#define DO_TEST_DETACH_EVENT(file, dev, fial, kep, ...) \
-    DO_TEST(file, DETACH, dev, true, fial, kep, __VA_ARGS__)
-
 #define DO_TEST_UPDATE(file, dev, fial, kep, ...) \
     DO_TEST(file, UPDATE, dev, false, fial, kep, __VA_ARGS__)
 
