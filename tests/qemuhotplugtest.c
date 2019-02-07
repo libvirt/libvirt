@@ -58,8 +58,7 @@ struct qemuHotplugTestData {
 static int
 qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                          virDomainObjPtr *vm,
-                         const char *domxml,
-                         bool event ATTRIBUTE_UNUSED)
+                         const char *domxml)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = NULL;
@@ -273,8 +272,7 @@ testQemuHotplug(const void *data)
             goto cleanup;
         }
     } else {
-        if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_xml,
-                                     test->deviceDeletedEvent) < 0)
+        if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_xml) < 0)
             goto cleanup;
     }
 
@@ -427,7 +425,7 @@ testQemuHotplugCpuPrepare(const char *test,
     if (virTestLoadFile(data->file_xml_dom, &data->xml_dom) < 0)
         goto error;
 
-    if (qemuHotplugCreateObjects(driver.xmlopt, &data->vm, data->xml_dom, true) < 0)
+    if (qemuHotplugCreateObjects(driver.xmlopt, &data->vm, data->xml_dom) < 0)
         goto error;
 
     if (!(caps = virQEMUDriverGetCapabilities(&driver, false)))
@@ -622,7 +620,7 @@ mymain(void)
     /* wait only 100ms for DEVICE_DELETED event */
     qemuDomainRemoveDeviceWaitTime = 100;
 
-#define DO_TEST(file, ACTION, dev, event, fial, kep, ...) \
+#define DO_TEST(file, ACTION, dev, fial, kep, ...) \
     do { \
         const char *my_mon[] = { __VA_ARGS__, NULL}; \
         const char *name = file " " #ACTION " " dev; \
@@ -632,22 +630,18 @@ mymain(void)
         data.fail = fial; \
         data.mon = my_mon; \
         data.keep = kep; \
-        data.deviceDeletedEvent = event; \
         if (virTestRun(name, testQemuHotplug, &data) < 0) \
             ret = -1; \
     } while (0)
 
 #define DO_TEST_ATTACH(file, dev, fial, kep, ...) \
-    DO_TEST(file, ATTACH, dev, false, fial, kep, __VA_ARGS__)
+    DO_TEST(file, ATTACH, dev, fial, kep, __VA_ARGS__)
 
 #define DO_TEST_DETACH(file, dev, fial, kep, ...) \
-    DO_TEST(file, DETACH, dev, false, fial, kep, __VA_ARGS__)
-
-#define DO_TEST_ATTACH_EVENT(file, dev, fial, kep, ...) \
-    DO_TEST(file, ATTACH, dev, true, fial, kep, __VA_ARGS__)
+    DO_TEST(file, DETACH, dev, fial, kep, __VA_ARGS__)
 
 #define DO_TEST_UPDATE(file, dev, fial, kep, ...) \
-    DO_TEST(file, UPDATE, dev, false, fial, kep, __VA_ARGS__)
+    DO_TEST(file, UPDATE, dev, fial, kep, __VA_ARGS__)
 
 
 #define QMP_OK      "{\"return\": {}}"
@@ -685,9 +679,9 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("console1") QMP_OK,
                    "chardev-remove", QMP_OK);
 
-    DO_TEST_ATTACH_EVENT("base-live", "disk-virtio", false, true,
-                         "human-monitor-command", HMP("OK\\r\\n"),
-                         "device_add", QMP_OK);
+    DO_TEST_ATTACH("base-live", "disk-virtio", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-virtio", true, true,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
@@ -695,9 +689,9 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    DO_TEST_ATTACH_EVENT("base-live", "disk-usb", false, true,
-                         "human-monitor-command", HMP("OK\\r\\n"),
-                         "device_add", QMP_OK);
+    DO_TEST_ATTACH("base-live", "disk-usb", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-usb", true, true,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
@@ -705,9 +699,9 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("usb-disk16") QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    DO_TEST_ATTACH_EVENT("base-live", "disk-scsi", false, true,
-                         "human-monitor-command", HMP("OK\\r\\n"),
-                         "device_add", QMP_OK);
+    DO_TEST_ATTACH("base-live", "disk-scsi", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-scsi", true, true,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
@@ -715,15 +709,15 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-5") QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    DO_TEST_ATTACH_EVENT("base-without-scsi-controller-live", "disk-scsi-2", false, true,
-                         /* Four controllers added */
-                         "device_add", QMP_OK,
-                         "device_add", QMP_OK,
-                         "device_add", QMP_OK,
-                         "device_add", QMP_OK,
-                         "human-monitor-command", HMP("OK\\r\\n"),
-                         /* Disk added */
-                         "device_add", QMP_OK);
+    DO_TEST_ATTACH("base-without-scsi-controller-live", "disk-scsi-2", false, true,
+                   /* Four controllers added */
+                   "device_add", QMP_OK,
+                   "device_add", QMP_OK,
+                   "device_add", QMP_OK,
+                   "device_add", QMP_OK,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   /* Disk added */
+                   "device_add", QMP_OK);
     DO_TEST_DETACH("base-with-scsi-controller-live", "disk-scsi-2", true, true,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
