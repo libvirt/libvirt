@@ -2205,18 +2205,21 @@ int virNetClientSendNonBlock(virNetClientPtr client,
 /*
  * @msg: a message allocated on heap or stack
  *
- * Send a message synchronously, and wait for the reply synchronously
+ * Send a message synchronously, and wait for the reply synchronously if
+ * message is dummy (just to wait for incoming data) or abort/finish message.
  *
  * The caller is responsible for free'ing @msg if it was allocated
  * on the heap
  *
  * Returns 0 on success, -1 on failure
  */
-int virNetClientSendWithReplyStream(virNetClientPtr client,
-                                    virNetMessagePtr msg,
-                                    virNetClientStreamPtr st)
+int virNetClientSendStream(virNetClientPtr client,
+                           virNetMessagePtr msg,
+                           virNetClientStreamPtr st)
 {
     int ret = -1;
+    bool expectReply = !msg->bufferLength ||
+                       msg->header.status != VIR_NET_CONTINUE;
 
     virObjectLock(client);
 
@@ -2229,7 +2232,7 @@ int virNetClientSendWithReplyStream(virNetClientPtr client,
         goto cleanup;
     }
 
-    if (virNetClientSendInternal(client, msg, true, false) < 0)
+    if (virNetClientSendInternal(client, msg, expectReply, false) < 0)
         goto cleanup;
 
     ret = 0;

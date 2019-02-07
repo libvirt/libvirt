@@ -343,17 +343,13 @@ int virNetClientStreamSendPacket(virNetClientStreamPtr st,
     if (status == VIR_NET_CONTINUE) {
         if (virNetMessageEncodePayloadRaw(msg, data, nbytes) < 0)
             goto error;
-
-        if (virNetClientSendNoReply(client, msg) < 0)
-            goto error;
     } else {
         if (virNetMessageEncodePayloadRaw(msg, NULL, 0) < 0)
             goto error;
-
-        if (virNetClientSendWithReplyStream(client, msg, st) < 0)
-            goto error;
     }
 
+    if (virNetClientSendStream(client, msg, st) < 0)
+        goto error;
 
     virNetMessageFree(msg);
 
@@ -500,7 +496,7 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
 
         VIR_DEBUG("Dummy packet to wait for stream data");
         virObjectUnlock(st);
-        ret = virNetClientSendWithReplyStream(client, msg, st);
+        ret = virNetClientSendStream(client, msg, st);
         virObjectLock(st);
         virNetMessageFree(msg);
 
@@ -627,7 +623,7 @@ virNetClientStreamSendHole(virNetClientStreamPtr st,
                                    &data) < 0)
         goto cleanup;
 
-    if (virNetClientSendNoReply(client, msg) < 0)
+    if (virNetClientSendStream(client, msg, st) < 0)
         goto cleanup;
 
     ret = 0;
