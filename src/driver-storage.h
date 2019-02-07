@@ -52,6 +52,10 @@ typedef char *
                                        const char *srcSpec,
                                        unsigned int flags);
 
+typedef char *
+(*virDrvConnectGetStoragePoolCapabilities)(virConnectPtr conn,
+                                           unsigned int flags);
+
 typedef virStoragePoolPtr
 (*virDrvStoragePoolLookupByName)(virConnectPtr conn,
                                  const char *name);
@@ -237,6 +241,7 @@ struct _virStorageDriver {
     virDrvConnectFindStoragePoolSources connectFindStoragePoolSources;
     virDrvConnectStoragePoolEventRegisterAny connectStoragePoolEventRegisterAny;
     virDrvConnectStoragePoolEventDeregisterAny connectStoragePoolEventDeregisterAny;
+    virDrvConnectGetStoragePoolCapabilities connectGetStoragePoolCapabilities;
     virDrvStoragePoolLookupByName storagePoolLookupByName;
     virDrvStoragePoolLookupByUUID storagePoolLookupByUUID;
     virDrvStoragePoolLookupByVolume storagePoolLookupByVolume;

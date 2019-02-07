@@ -814,4 +814,9 @@ LIBVIRT_4.10.0 {
         virDomainSetIOThreadParams;
 } LIBVIRT_4.5.0;
 
+LIBVIRT_5.2.0 {
+    global:
+        virConnectGetStoragePoolCapabilities;
+} LIBVIRT_4.10.0;
+
 # .... define new API here using predicted next version number ....

@@ -2975,6 +2975,12 @@ struct remote_connect_list_all_nwfilter_bindings_ret {
         } bindings;
         u_int                      ret;
 };
+struct remote_connect_get_storage_pool_capabilities_args {
+        u_int                      flags;
+};
+struct remote_connect_get_storage_pool_capabilities_ret {
+        remote_nonnull_string      capabilities;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3378,4 +3384,5 @@ enum remote_procedure {
         REMOTE_PROC_NWFILTER_BINDING_DELETE = 400,
         REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401,
         REMOTE_PROC_DOMAIN_SET_IOTHREAD_PARAMS = 402,
+        REMOTE_PROC_CONNECT_GET_STORAGE_POOL_CAPABILITIES = 403,
 };

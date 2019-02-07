@@ -193,6 +193,10 @@ typedef enum {
  */
 virConnectPtr           virStoragePoolGetConnect        (virStoragePoolPtr pool);
 
+/* Storage Pool capabilities */
+char *virConnectGetStoragePoolCapabilities(virConnectPtr conn,
+                                           unsigned int flags);
+
 /*
  * List active storage pools
  */

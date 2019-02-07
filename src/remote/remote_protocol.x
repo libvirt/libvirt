@@ -3565,6 +3565,14 @@ struct remote_connect_list_all_nwfilter_bindings_ret { /* insert@1 */
     unsigned int ret;
 };
 
+struct remote_connect_get_storage_pool_capabilities_args {
+    unsigned int flags;
+};
+
+struct remote_connect_get_storage_pool_capabilities_ret {
+    remote_nonnull_string capabilities;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6328,6 +6336,11 @@ enum remote_procedure {
      * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
      * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
      */
-    REMOTE_PROC_DOMAIN_SET_IOTHREAD_PARAMS = 402
+    REMOTE_PROC_DOMAIN_SET_IOTHREAD_PARAMS = 402,
 
+    /**
+     * @generate: both
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_GET_STORAGE_POOL_CAPABILITIES = 403
 };
