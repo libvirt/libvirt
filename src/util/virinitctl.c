@@ -184,6 +184,11 @@ virInitctlSetRunLevel(const char *fifo,
     return ret;
 }
 #else
+/* On non-Linux and non-BSD there are no known inits */
+const char *virInitctlFifos[] = {
+  NULL
+};
+
 int virInitctlSetRunLevel(const char *fifo ATTRIBUTE_UNUSED,
                           virInitctlRunLevel level ATTRIBUTE_UNUSED)
 {
