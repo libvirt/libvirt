@@ -283,9 +283,8 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    /* If the tray is present and tray change event is supported wait for it to open. */
-    if (!force && diskPriv->tray &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
+    /* If the tray is present wait for it to open. */
+    if (!force && diskPriv->tray) {
         rc = qemuHotplugWaitForTrayEject(vm, disk);
         if (rc < 0)
             goto cleanup;

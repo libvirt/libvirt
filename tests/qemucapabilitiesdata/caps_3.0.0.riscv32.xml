@@ -56,7 +56,6 @@
   <flag name='chardev-logfile'/>
   <flag name='debug-threads'/>
   <flag name='secret'/>
-  <flag name='device-tray-moved-event'/>
   <flag name='name-guest'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>

@@ -66,7 +66,6 @@
   <flag name='chardev-logfile'/>
   <flag name='debug-threads'/>
   <flag name='secret'/>
-  <flag name='device-tray-moved-event'/>
   <flag name='virtio-scsi-pci.iothread'/>
   <flag name='name-guest'/>
   <flag name='drive-detect-zeroes'/>
