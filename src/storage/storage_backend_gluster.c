@@ -278,8 +278,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     if (S_ISDIR(st->st_mode)) {
         vol->type = VIR_STORAGE_VOL_NETDIR;
         vol->target.format = VIR_STORAGE_FILE_DIR;
-        *volptr = vol;
-        vol = NULL;
+        VIR_STEAL_PTR(*volptr, vol);
         ret = 0;
         goto cleanup;
     }
@@ -328,8 +327,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     vol->target.compat = meta->compat;
     meta->compat = NULL;
 
-    *volptr = vol;
-    vol = NULL;
+    VIR_STEAL_PTR(*volptr, vol);
     ret = 0;
  cleanup:
     virStorageSourceFree(meta);
