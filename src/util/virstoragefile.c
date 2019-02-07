@@ -4208,8 +4208,7 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
         goto cleanup;
     }
 
-    *relpath = path;
-    path = NULL;
+    VIR_STEAL_PTR(*relpath, path);
 
     ret = 0;
 
@@ -4947,8 +4946,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
             goto cleanup;
     }
 
-    src->backingStore = backingStore;
-    backingStore = NULL;
+    VIR_STEAL_PTR(src->backingStore, backingStore);
     ret = 0;
 
  cleanup:
