@@ -2193,7 +2193,7 @@ int virNetClientSendStream(virNetClientPtr client,
 
     virObjectLock(client);
 
-    if (virNetClientStreamRaiseError(st))
+    if (virNetClientStreamCheckState(st) < 0)
         goto cleanup;
 
     /* Check for EOF only if we are going to wait for incoming data */
@@ -2205,7 +2205,7 @@ int virNetClientSendStream(virNetClientPtr client,
     if (virNetClientSendInternal(client, msg, expectReply, false) < 0)
         goto cleanup;
 
-    if (virNetClientStreamRaiseError(st))
+    if (virNetClientStreamCheckSendStatus(st, msg) < 0)
         goto cleanup;
 
     ret = 0;

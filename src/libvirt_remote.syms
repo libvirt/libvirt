@@ -54,6 +54,8 @@ virNetClientProgramNew;
 
 
 # rpc/virnetclientstream.h
+virNetClientStreamCheckSendStatus;
+virNetClientStreamCheckState;
 virNetClientStreamEOF;
 virNetClientStreamEventAddCallback;
 virNetClientStreamEventRemoveCallback;
@@ -61,7 +63,6 @@ virNetClientStreamEventUpdateCallback;
 virNetClientStreamMatches;
 virNetClientStreamNew;
 virNetClientStreamQueuePacket;
-virNetClientStreamRaiseError;
 virNetClientStreamRecvHole;
 virNetClientStreamRecvPacket;
 virNetClientStreamSendHole;

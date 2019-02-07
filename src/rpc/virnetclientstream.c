@@ -184,14 +184,9 @@ bool virNetClientStreamMatches(virNetClientStreamPtr st,
 }
 
 
-bool virNetClientStreamRaiseError(virNetClientStreamPtr st)
+static
+void virNetClientStreamRaiseError(virNetClientStreamPtr st)
 {
-    virObjectLock(st);
-    if (st->err.code == VIR_ERR_OK) {
-        virObjectUnlock(st);
-        return false;
-    }
-
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,
                       st->err.domain,
                       st->err.code,
@@ -202,8 +197,31 @@ bool virNetClientStreamRaiseError(virNetClientStreamPtr st)
                       st->err.int1,
                       st->err.int2,
                       "%s", st->err.message ? st->err.message : _("Unknown error"));
-    virObjectUnlock(st);
-    return true;
+}
+
+
+/* MUST be called under stream or client lock */
+int virNetClientStreamCheckState(virNetClientStreamPtr st)
+{
+    if (st->err.code != VIR_ERR_OK) {
+        virNetClientStreamRaiseError(st);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/* MUST be called under stream or client lock */
+int virNetClientStreamCheckSendStatus(virNetClientStreamPtr st,
+                                      virNetMessagePtr msg ATTRIBUTE_UNUSED)
+{
+    if (st->err.code != VIR_ERR_OK) {
+        virNetClientStreamRaiseError(st);
+        return -1;
+    }
+
+    return 0;
 }
 
 
@@ -474,6 +492,9 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
     virObjectLock(st);
 
  reread:
+    if (virNetClientStreamCheckState(st) < 0)
+        goto cleanup;
+
     if (!st->rx && !st->incomingEOF) {
         virNetMessagePtr msg;
         int ret;
@@ -645,6 +666,11 @@ virNetClientStreamRecvHole(virNetClientPtr client ATTRIBUTE_UNUSED,
     }
 
     virObjectLock(st);
+
+    if (virNetClientStreamCheckState(st) < 0) {
+        virObjectUnlock(st);
+        return -1;
+    }
 
     *length = st->holeLength;
     st->holeLength = 0;

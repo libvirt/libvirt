@@ -36,7 +36,10 @@ virNetClientStreamPtr virNetClientStreamNew(virStreamPtr stream,
                                             unsigned serial,
                                             bool allowSkip);
 
-bool virNetClientStreamRaiseError(virNetClientStreamPtr st);
+int virNetClientStreamCheckState(virNetClientStreamPtr st);
+
+int virNetClientStreamCheckSendStatus(virNetClientStreamPtr st,
+                                      virNetMessagePtr msg);
 
 int virNetClientStreamSetError(virNetClientStreamPtr st,
                                virNetMessagePtr msg);

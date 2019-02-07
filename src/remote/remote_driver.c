@@ -5600,9 +5600,6 @@ remoteStreamSend(virStreamPtr st,
     virNetClientStreamPtr privst = st->privateData;
     int rv;
 
-    if (virNetClientStreamRaiseError(privst))
-        return -1;
-
     remoteDriverLock(priv);
     priv->localUses++;
     remoteDriverUnlock(priv);
@@ -5633,9 +5630,6 @@ remoteStreamRecvFlags(virStreamPtr st,
     int rv;
 
     virCheckFlags(VIR_STREAM_RECV_STOP_AT_HOLE, -1);
-
-    if (virNetClientStreamRaiseError(privst))
-        return -1;
 
     remoteDriverLock(priv);
     priv->localUses++;
@@ -5676,9 +5670,6 @@ remoteStreamSendHole(virStreamPtr st,
     virNetClientStreamPtr privst = st->privateData;
     int rv;
 
-    if (virNetClientStreamRaiseError(privst))
-        return -1;
-
     remoteDriverLock(priv);
     priv->localUses++;
     remoteDriverUnlock(priv);
@@ -5708,9 +5699,6 @@ remoteStreamRecvHole(virStreamPtr st,
               st, length, flags);
 
     virCheckFlags(0, -1);
-
-    if (virNetClientStreamRaiseError(privst))
-        return -1;
 
     remoteDriverLock(priv);
     priv->localUses++;
@@ -5834,9 +5822,6 @@ remoteStreamCloseInt(virStreamPtr st, bool streamAbort)
 
     remoteDriverLock(priv);
 
-    if (virNetClientStreamRaiseError(privst))
-        goto cleanup;
-
     priv->localUses++;
     remoteDriverUnlock(priv);
 
@@ -5849,7 +5834,6 @@ remoteStreamCloseInt(virStreamPtr st, bool streamAbort)
     remoteDriverLock(priv);
     priv->localUses--;
 
- cleanup:
     virNetClientRemoveStream(priv->client, privst);
     virObjectUnref(privst);
     st->privateData = NULL;
