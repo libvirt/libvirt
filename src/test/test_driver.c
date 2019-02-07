@@ -2579,7 +2579,6 @@ testDomainRenameCallback(virDomainObjPtr privdom,
     virObjectEventPtr event_old = NULL;
     int ret = -1;
     char *new_dom_name = NULL;
-    char *old_dom_name = NULL;
 
     virCheckFlags(0, -1);
 
@@ -2597,9 +2596,8 @@ testDomainRenameCallback(virDomainObjPtr privdom,
                                                   VIR_DOMAIN_EVENT_UNDEFINED_RENAMED);
 
     /* Switch name in domain definition. */
-    old_dom_name = privdom->def->name;
-    privdom->def->name = new_dom_name;
-    new_dom_name = NULL;
+    VIR_FREE(privdom->def->name);
+    VIR_STEAL_PTR(privdom->def->name, new_dom_name);
 
     event_new = virDomainEventLifecycleNewFromObj(privdom,
                                                   VIR_DOMAIN_EVENT_DEFINED,
@@ -2607,7 +2605,6 @@ testDomainRenameCallback(virDomainObjPtr privdom,
     ret = 0;
 
  cleanup:
-    VIR_FREE(old_dom_name);
     VIR_FREE(new_dom_name);
     virObjectEventStateQueue(driver->eventState, event_old);
     virObjectEventStateQueue(driver->eventState, event_new);
