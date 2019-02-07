@@ -7632,8 +7632,7 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
                                authdef->secrettype);
                 goto cleanup;
             }
-            iscsisrc->src->auth = authdef;
-            authdef = NULL;
+            VIR_STEAL_PTR(iscsisrc->src->auth, authdef);
         }
         cur = cur->next;
     }

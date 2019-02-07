@@ -2895,9 +2895,8 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
             if (VIR_STRDUP(authdef->secrettype,
                            virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_CEPH)) < 0)
                 goto error;
-            src->auth = authdef;
+            VIR_STEAL_PTR(src->auth, authdef);
             src->authInherited = true;
-            authdef = NULL;
 
             /* Cannot formulate a secretType (eg, usage or uuid) given
              * what is provided.

@@ -584,8 +584,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
 
-        source->auth = authdef;
-        authdef = NULL;
+        VIR_STEAL_PTR(source->auth, authdef);
     }
 
     /* Option protocol version string (NFSvN) */

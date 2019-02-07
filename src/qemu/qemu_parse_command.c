@@ -133,8 +133,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
             if (VIR_STRDUP(authdef->secrettype, secrettype) < 0)
                 goto error;
         }
-        def->src->auth = authdef;
-        authdef = NULL;
+        VIR_STEAL_PTR(def->src->auth, authdef);
 
         /* Cannot formulate a secretType (eg, usage or uuid) given
          * what is provided.
