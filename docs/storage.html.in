@@ -782,7 +782,7 @@
       The ZFS volume pool does not use the pool format type element.
     </p>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid volume format types</h3>
     <p>
       The ZFS volume pool does not use the volume format type element.
     </p>
@@ -810,6 +810,12 @@
     &lt;path&gt;/mnt/clustername&lt;/path&gt;
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The Vstorage volume pool does not use the pool format type element.
+    </p>
+
     <h3>Valid volume format types</h3>
     <p>The valid volume types are the same as for the directory pool.</p>
   </body>
