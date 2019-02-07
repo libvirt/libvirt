@@ -644,8 +644,12 @@ virNetClientStreamRecvHole(virNetClientPtr client ATTRIBUTE_UNUSED,
         return -1;
     }
 
+    virObjectLock(st);
+
     *length = st->holeLength;
     st->holeLength = 0;
+
+    virObjectUnlock(st);
     return 0;
 }
 
