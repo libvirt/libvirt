@@ -1230,9 +1230,6 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
 
         if (thecall && thecall->expectReply) {
             VIR_DEBUG("Got a synchronous error");
-            /* Raise error now, so that this call will see it immediately */
-            if (!virNetClientStreamRaiseError(st))
-                VIR_DEBUG("unable to raise synchronous error");
             thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
         }
         return 0;
@@ -1947,15 +1944,10 @@ static int virNetClientIO(virNetClientPtr client,
      */
     virNetClientIOUpdateCallback(client, false);
 
-    virResetLastError();
     rv = virNetClientIOEventLoop(client, thiscall);
 
     if (client->sock)
         virNetClientIOUpdateCallback(client, true);
-
-    if (rv == 0 &&
-        virGetLastErrorCode())
-        rv = -1;
 
  cleanup:
     VIR_DEBUG("All done with our call head=%p call=%p rv=%d",
@@ -2211,6 +2203,9 @@ int virNetClientSendStream(virNetClientPtr client,
     }
 
     if (virNetClientSendInternal(client, msg, expectReply, false) < 0)
+        goto cleanup;
+
+    if (virNetClientStreamRaiseError(st))
         goto cleanup;
 
     ret = 0;
