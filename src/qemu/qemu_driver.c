@@ -20295,26 +20295,22 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
                           int *maxparams,
                           unsigned int privflags)
 {
-    qemuDomainObjPrivatePtr priv = dom->privateData;
     virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
     int nr_stats;
     unsigned long long cur_balloon = 0;
     size_t i;
-    int err = 0;
 
     if (!virDomainDefHasMemballoon(dom->def)) {
         cur_balloon = virDomainDefGetMemoryTotal(dom->def);
-    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
-        cur_balloon = dom->def->mem.cur_balloon;
     } else {
-        err = -1;
+        cur_balloon = dom->def->mem.cur_balloon;
     }
 
-    if (!err && virTypedParamsAddULLong(&record->params,
-                                        &record->nparams,
-                                        maxparams,
-                                        "balloon.current",
-                                        cur_balloon) < 0)
+    if (virTypedParamsAddULLong(&record->params,
+                                &record->nparams,
+                                maxparams,
+                                "balloon.current",
+                                cur_balloon) < 0)
         return -1;
 
     if (virTypedParamsAddULLong(&record->params,

@@ -183,7 +183,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DUMP_GUEST_MEMORY, /* dump-guest-memory command */
     QEMU_CAPS_NEC_USB_XHCI, /* -device nec-usb-xhci */
     QEMU_CAPS_VIRTIO_S390, /* -device virtio-*-s390 */
-    QEMU_CAPS_BALLOON_EVENT, /* Async event for balloon changes */
+    X_QEMU_CAPS_BALLOON_EVENT, /* Async event for balloon changes */
 
     /* 100 */
     X_QEMU_CAPS_NETDEV_BRIDGE, /* bridge helper support */

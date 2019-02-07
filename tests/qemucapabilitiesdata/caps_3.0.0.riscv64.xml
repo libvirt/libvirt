@@ -8,7 +8,6 @@
   <flag name='transaction'/>
   <flag name='block-job-async'/>
   <flag name='dump-guest-memory'/>
-  <flag name='balloon-event'/>
   <flag name='virtio-scsi-pci'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
