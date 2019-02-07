@@ -1879,26 +1879,26 @@ virStorageAuthDefFree(virStorageAuthDefPtr authdef)
 virStorageAuthDefPtr
 virStorageAuthDefCopy(const virStorageAuthDef *src)
 {
-    virStorageAuthDefPtr ret;
+    virStorageAuthDefPtr authdef;
+    virStorageAuthDefPtr ret = NULL;
 
-    if (VIR_ALLOC(ret) < 0)
+    if (VIR_ALLOC(authdef) < 0)
         return NULL;
 
-    if (VIR_STRDUP(ret->username, src->username) < 0)
-        goto error;
+    if (VIR_STRDUP(authdef->username, src->username) < 0)
+        goto cleanup;
     /* Not present for storage pool, but used for disk source */
-    if (VIR_STRDUP(ret->secrettype, src->secrettype) < 0)
-        goto error;
-    ret->authType = src->authType;
+    if (VIR_STRDUP(authdef->secrettype, src->secrettype) < 0)
+        goto cleanup;
+    authdef->authType = src->authType;
 
-    if (virSecretLookupDefCopy(&ret->seclookupdef, &src->seclookupdef) < 0)
-        goto error;
+    if (virSecretLookupDefCopy(&authdef->seclookupdef, &src->seclookupdef) < 0)
+        goto cleanup;
 
+    VIR_STEAL_PTR(ret, authdef);
+ cleanup:
+    virStorageAuthDefFree(authdef);
     return ret;
-
- error:
-    virStorageAuthDefFree(ret);
-    return NULL;
 }
 
 
