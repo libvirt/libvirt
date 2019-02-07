@@ -851,8 +851,7 @@ bool qemuDomainMachineIsPSeries(const char *machine,
                                 const virArch arch);
 bool qemuDomainMachineHasBuiltinIDE(const char *machine);
 
-int qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
-                                      virDomainObjPtr vm);
+void qemuDomainUpdateCurrentMemorySize(virDomainObjPtr vm);
 
 unsigned long long qemuDomainGetMemLockLimitBytes(virDomainDefPtr def);
 int qemuDomainAdjustMaxMemLock(virDomainObjPtr vm);

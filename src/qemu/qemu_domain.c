@@ -10264,25 +10264,18 @@ qemuDomainMachineHasBuiltinIDE(const char *machine)
  *
  * In case when the balloon is not present for the domain, the function
  * recalculates the maximum size to reflect possible changes.
- *
- * Returns 0 on success and updates vm->def->mem.cur_balloon if necessary.
  */
-int
-qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                                  virDomainObjPtr vm)
+void
+qemuDomainUpdateCurrentMemorySize(virDomainObjPtr vm)
 {
     /* inactive domain doesn't need size update */
     if (!virDomainObjIsActive(vm))
-        return 0;
+        return;
 
     /* if no balloning is available, the current size equals to the current
      * full memory size */
-    if (!virDomainDefHasMemballoon(vm->def)) {
+    if (!virDomainDefHasMemballoon(vm->def))
         vm->def->mem.cur_balloon = virDomainDefGetMemoryTotal(vm->def);
-        return 0;
-    }
-
-    return 0;
 }
 
 

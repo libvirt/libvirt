@@ -2585,7 +2585,6 @@ qemuDomainGetInfo(virDomainPtr dom,
                   virDomainInfoPtr info)
 {
     unsigned long long maxmem;
-    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -2595,8 +2594,7 @@ qemuDomainGetInfo(virDomainPtr dom,
     if (virDomainGetInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainUpdateCurrentMemorySize(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainUpdateCurrentMemorySize(vm);
 
     memset(info, 0, sizeof(*info));
 
@@ -7352,8 +7350,7 @@ static char
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (qemuDomainUpdateCurrentMemorySize(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainUpdateCurrentMemorySize(vm);
 
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE))
         flags |= QEMU_DOMAIN_FORMAT_LIVE_FLAGS;
