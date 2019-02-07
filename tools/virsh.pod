@@ -389,6 +389,13 @@ supplied along with either the I<emulatorbin> or I<arch> in order to
 generate output for the default I<machine>.  Supplying a I<machine>
 value will generate output for the specific machine.
 
+=item B<pool-capabilities>
+Print an XML document describing the storage pool capabilities for the
+connected storage driver. This may be useful if you intend to create a
+new storage pool and need to know the available pool types and supported
+storage pool source and target volume formats as well as the required
+source elements to create the pool.
+
 =item B<inject-nmi> I<domain>
 
 Inject NMI to the guest.
