@@ -1158,6 +1158,19 @@ static int virNetClientCallDispatchMessage(virNetClientPtr client)
     return 0;
 }
 
+static void virNetClientCallCompleteAllWaitingReply(virNetClientPtr client)
+{
+    virNetClientCallPtr call;
+
+    for (call = client->waitDispatch; call; call = call->next) {
+        if (call->msg->header.prog == client->msg.header.prog &&
+            call->msg->header.vers == client->msg.header.vers &&
+            call->msg->header.serial == client->msg.header.serial &&
+            call->expectReply)
+            call->mode = VIR_NET_CLIENT_MODE_COMPLETE;
+    }
+}
+
 static int virNetClientCallDispatchStream(virNetClientPtr client)
 {
     size_t i;
@@ -1181,16 +1194,6 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
         return 0;
     }
 
-    /* Finish/Abort are synchronous, so also see if there's an
-     * (optional) call waiting for this stream packet */
-    thecall = client->waitDispatch;
-    while (thecall &&
-           !(thecall->msg->header.prog == client->msg.header.prog &&
-             thecall->msg->header.vers == client->msg.header.vers &&
-             thecall->msg->header.serial == client->msg.header.serial))
-        thecall = thecall->next;
-
-    VIR_DEBUG("Found call %p", thecall);
 
     /* Status is either
      *   - VIR_NET_OK - no payload for streams
@@ -1202,25 +1205,47 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
         if (virNetClientStreamQueuePacket(st, &client->msg) < 0)
             return -1;
 
-        if (thecall && thecall->expectReply) {
-            if (thecall->msg->header.status == VIR_NET_CONTINUE) {
-                VIR_DEBUG("Got a synchronous confirm");
-                thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
-            } else {
-                VIR_DEBUG("Not completing call with status %d", thecall->msg->header.status);
-            }
+        /* Find oldest dummy message waiting for incoming data. */
+        for (thecall = client->waitDispatch; thecall; thecall = thecall->next) {
+            if (thecall->msg->header.prog == client->msg.header.prog &&
+                thecall->msg->header.vers == client->msg.header.vers &&
+                thecall->msg->header.serial == client->msg.header.serial &&
+                thecall->expectReply &&
+                thecall->msg->header.status == VIR_NET_CONTINUE)
+                break;
+        }
+
+        if (thecall) {
+            VIR_DEBUG("Got a new incoming stream data");
+            thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
         }
         return 0;
     }
 
     case VIR_NET_OK:
-        if (thecall && thecall->expectReply) {
-            VIR_DEBUG("Got a synchronous confirm");
-            thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
-        } else {
+        /* Find oldest abort/finish message. */
+        for (thecall = client->waitDispatch; thecall; thecall = thecall->next) {
+            if (thecall->msg->header.prog == client->msg.header.prog &&
+                thecall->msg->header.vers == client->msg.header.vers &&
+                thecall->msg->header.serial == client->msg.header.serial &&
+                thecall->expectReply &&
+                thecall->msg->header.status != VIR_NET_CONTINUE)
+                break;
+        }
+
+        if (!thecall) {
             VIR_DEBUG("Got unexpected async stream finish confirmation");
             return -1;
         }
+
+        VIR_DEBUG("Got a synchronous abort/finish confirm");
+
+        virNetClientStreamSetClosed(st,
+                                    thecall->msg->header.status == VIR_NET_OK ?
+                                        VIR_NET_CLIENT_STREAM_CLOSED_FINISHED :
+                                        VIR_NET_CLIENT_STREAM_CLOSED_ABORTED);
+
+        virNetClientCallCompleteAllWaitingReply(client);
         return 0;
 
     case VIR_NET_ERROR:
@@ -1228,10 +1253,7 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
         if (virNetClientStreamSetError(st, &client->msg) < 0)
             return -1;
 
-        if (thecall && thecall->expectReply) {
-            VIR_DEBUG("Got a synchronous error");
-            thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
-        }
+        virNetClientCallCompleteAllWaitingReply(client);
         return 0;
 
     default:
@@ -2205,7 +2227,7 @@ int virNetClientSendStream(virNetClientPtr client,
     if (virNetClientSendInternal(client, msg, expectReply, false) < 0)
         goto cleanup;
 
-    if (virNetClientStreamCheckSendStatus(st, msg) < 0)
+    if (expectReply && virNetClientStreamCheckSendStatus(st, msg) < 0)
         goto cleanup;
 
     ret = 0;

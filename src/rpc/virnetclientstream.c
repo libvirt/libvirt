@@ -49,6 +49,7 @@ struct _virNetClientStream {
      */
     virNetMessagePtr rx;
     bool incomingEOF;
+    virNetClientStreamClosed closed;
 
     bool allowSkip;
     long long holeLength;  /* Size of incoming hole in stream. */
@@ -84,7 +85,7 @@ virNetClientStreamEventTimerUpdate(virNetClientStreamPtr st)
 
     VIR_DEBUG("Check timer rx=%p cbEvents=%d", st->rx, st->cbEvents);
 
-    if (((st->rx || st->incomingEOF || st->err.code != VIR_ERR_OK) &&
+    if (((st->rx || st->incomingEOF || st->err.code != VIR_ERR_OK || st->closed) &&
          (st->cbEvents & VIR_STREAM_EVENT_READABLE)) ||
         (st->cbEvents & VIR_STREAM_EVENT_WRITABLE)) {
         VIR_DEBUG("Enabling event timer");
@@ -106,7 +107,7 @@ virNetClientStreamEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 
     if (st->cb &&
         (st->cbEvents & VIR_STREAM_EVENT_READABLE) &&
-        (st->rx || st->incomingEOF || st->err.code != VIR_ERR_OK))
+        (st->rx || st->incomingEOF || st->err.code != VIR_ERR_OK || st->closed))
         events |= VIR_STREAM_EVENT_READABLE;
     if (st->cb &&
         (st->cbEvents & VIR_STREAM_EVENT_WRITABLE))
@@ -203,20 +204,58 @@ int virNetClientStreamCheckState(virNetClientStreamPtr st)
         return -1;
     }
 
+    if (st->closed) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("stream is closed"));
+        return -1;
+    }
+
     return 0;
 }
 
 
-/* MUST be called under stream or client lock */
+/* MUST be called under stream or client lock. This should
+ * be called only for message that expect reply.  */
 int virNetClientStreamCheckSendStatus(virNetClientStreamPtr st,
-                                      virNetMessagePtr msg ATTRIBUTE_UNUSED)
+                                      virNetMessagePtr msg)
 {
     if (st->err.code != VIR_ERR_OK) {
         virNetClientStreamRaiseError(st);
         return -1;
     }
 
+    /* We can not check if the message is dummy in a usual way
+     * by checking msg->bufferLength because at this point message payload
+     * is cleared. As caller must not call this function for messages
+     * not expecting reply we can check for dummy messages just by status.
+     */
+    if (msg->header.status == VIR_NET_CONTINUE) {
+        if (st->closed) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("stream is closed"));
+            return -1;
+        }
+        return 0;
+    } else if (msg->header.status == VIR_NET_OK &&
+               st->closed != VIR_NET_CLIENT_STREAM_CLOSED_FINISHED) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("stream aborted by another thread"));
+        return -1;
+    }
+
     return 0;
+}
+
+
+void virNetClientStreamSetClosed(virNetClientStreamPtr st,
+                                 virNetClientStreamClosed closed)
+{
+    virObjectLock(st);
+
+    st->closed = closed;
+    virNetClientStreamEventTimerUpdate(st);
+
+    virObjectUnlock(st);
 }
 
 
