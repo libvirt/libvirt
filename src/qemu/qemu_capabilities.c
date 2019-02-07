@@ -2123,14 +2123,12 @@ virQEMUCapsProbeQMPEvents(virQEMUCapsPtr qemuCaps,
     char **events = NULL;
     int nevents;
 
+    /* we can probe events also from the QMP schema so we can skip this here */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA))
+        return 0;
+
     if ((nevents = qemuMonitorGetEvents(mon, &events)) < 0)
         return -1;
-
-    /* we can probe events also from the QMP schema so we can skip this here */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA)) {
-        virStringListFreeCount(events, nevents);
-        return 0;
-    }
 
     virQEMUCapsProcessStringFlags(qemuCaps,
                                   ARRAY_CARDINALITY(virQEMUCapsEvents),

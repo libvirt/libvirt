@@ -513,130 +513,8 @@
 }
 
 {
-  "execute": "query-events",
-  "id": "libvirt-6"
-}
-
-{
-  "return": [
-    {
-      "name": "WATCHDOG"
-    },
-    {
-      "name": "WAKEUP"
-    },
-    {
-      "name": "VSERPORT_CHANGE"
-    },
-    {
-      "name": "VNC_INITIALIZED"
-    },
-    {
-      "name": "VNC_DISCONNECTED"
-    },
-    {
-      "name": "VNC_CONNECTED"
-    },
-    {
-      "name": "SUSPEND_DISK"
-    },
-    {
-      "name": "SUSPEND"
-    },
-    {
-      "name": "STOP"
-    },
-    {
-      "name": "SPICE_MIGRATE_COMPLETED"
-    },
-    {
-      "name": "SPICE_INITIALIZED"
-    },
-    {
-      "name": "SPICE_DISCONNECTED"
-    },
-    {
-      "name": "SPICE_CONNECTED"
-    },
-    {
-      "name": "SHUTDOWN"
-    },
-    {
-      "name": "RTC_CHANGE"
-    },
-    {
-      "name": "RESUME"
-    },
-    {
-      "name": "RESET"
-    },
-    {
-      "name": "QUORUM_REPORT_BAD"
-    },
-    {
-      "name": "QUORUM_FAILURE"
-    },
-    {
-      "name": "POWERDOWN"
-    },
-    {
-      "name": "NIC_RX_FILTER_CHANGED"
-    },
-    {
-      "name": "MIGRATION_PASS"
-    },
-    {
-      "name": "MIGRATION"
-    },
-    {
-      "name": "MEM_UNPLUG_ERROR"
-    },
-    {
-      "name": "GUEST_PANICKED"
-    },
-    {
-      "name": "DUMP_COMPLETED"
-    },
-    {
-      "name": "DEVICE_TRAY_MOVED"
-    },
-    {
-      "name": "DEVICE_DELETED"
-    },
-    {
-      "name": "BLOCK_WRITE_THRESHOLD"
-    },
-    {
-      "name": "BLOCK_JOB_READY"
-    },
-    {
-      "name": "BLOCK_JOB_ERROR"
-    },
-    {
-      "name": "BLOCK_JOB_COMPLETED"
-    },
-    {
-      "name": "BLOCK_JOB_CANCELLED"
-    },
-    {
-      "name": "BLOCK_IO_ERROR"
-    },
-    {
-      "name": "BLOCK_IMAGE_CORRUPTED"
-    },
-    {
-      "name": "BALLOON_CHANGE"
-    },
-    {
-      "name": "ACPI_DEVICE_OST"
-    }
-  ],
-  "id": "libvirt-6"
-}
-
-{
   "execute": "qom-list-types",
-  "id": "libvirt-7"
+  "id": "libvirt-6"
 }
 
 {
@@ -1538,7 +1416,7 @@
       "parent": "virtio-device"
     }
   ],
-  "id": "libvirt-7"
+  "id": "libvirt-6"
 }
 
 {
@@ -1546,7 +1424,7 @@
   "arguments": {
     "typename": "virtio-blk-pci"
   },
-  "id": "libvirt-8"
+  "id": "libvirt-7"
 }
 
 {
@@ -1774,7 +1652,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-8"
+  "id": "libvirt-7"
 }
 
 {
@@ -1782,7 +1660,7 @@
   "arguments": {
     "typename": "virtio-net-pci"
   },
-  "id": "libvirt-9"
+  "id": "libvirt-8"
 }
 
 {
@@ -2069,7 +1947,7 @@
       "type": "uint16"
     }
   ],
-  "id": "libvirt-9"
+  "id": "libvirt-8"
 }
 
 {
@@ -2077,7 +1955,7 @@
   "arguments": {
     "typename": "virtio-scsi-pci"
   },
-  "id": "libvirt-10"
+  "id": "libvirt-9"
 }
 
 {
@@ -2238,7 +2116,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-10"
+  "id": "libvirt-9"
 }
 
 {
@@ -2246,7 +2124,7 @@
   "arguments": {
     "typename": "virtio-blk-ccw"
   },
-  "id": "libvirt-11"
+  "id": "libvirt-10"
 }
 
 {
@@ -2384,7 +2262,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-11"
+  "id": "libvirt-10"
 }
 
 {
@@ -2392,7 +2270,7 @@
   "arguments": {
     "typename": "virtio-net-ccw"
   },
-  "id": "libvirt-12"
+  "id": "libvirt-11"
 }
 
 {
@@ -2593,7 +2471,7 @@
       "type": "uint16"
     }
   ],
-  "id": "libvirt-12"
+  "id": "libvirt-11"
 }
 
 {
@@ -2601,7 +2479,7 @@
   "arguments": {
     "typename": "virtio-scsi-ccw"
   },
-  "id": "libvirt-13"
+  "id": "libvirt-12"
 }
 
 {
@@ -2676,7 +2554,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-13"
+  "id": "libvirt-12"
 }
 
 {
@@ -2684,11 +2562,11 @@
   "arguments": {
     "typename": "virtio-net-s390"
   },
-  "id": "libvirt-14"
+  "id": "libvirt-13"
 }
 
 {
-  "id": "libvirt-14",
+  "id": "libvirt-13",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-s390' not found"
@@ -2700,7 +2578,7 @@
   "arguments": {
     "typename": "vfio-pci"
   },
-  "id": "libvirt-15"
+  "id": "libvirt-14"
 }
 
 {
@@ -2807,7 +2685,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-15"
+  "id": "libvirt-14"
 }
 
 {
@@ -2815,7 +2693,7 @@
   "arguments": {
     "typename": "scsi-hd"
   },
-  "id": "libvirt-16"
+  "id": "libvirt-15"
 }
 
 {
@@ -2929,7 +2807,7 @@
       "type": "uint64"
     }
   ],
-  "id": "libvirt-16"
+  "id": "libvirt-15"
 }
 
 {
@@ -2937,11 +2815,11 @@
   "arguments": {
     "typename": "ide-hd"
   },
-  "id": "libvirt-17"
+  "id": "libvirt-16"
 }
 
 {
-  "id": "libvirt-17",
+  "id": "libvirt-16",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ide-drive' not found"
@@ -2953,11 +2831,11 @@
   "arguments": {
     "typename": "PIIX4_PM"
   },
-  "id": "libvirt-18"
+  "id": "libvirt-17"
 }
 
 {
-  "id": "libvirt-18",
+  "id": "libvirt-17",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'PIIX4_PM' not found"
@@ -2969,11 +2847,11 @@
   "arguments": {
     "typename": "i440FX-pcihost"
   },
-  "id": "libvirt-19"
+  "id": "libvirt-18"
 }
 
 {
-  "id": "libvirt-19",
+  "id": "libvirt-18",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'i440FX-pcihost' not found"
@@ -2985,11 +2863,11 @@
   "arguments": {
     "typename": "q35-pcihost"
   },
-  "id": "libvirt-20"
+  "id": "libvirt-19"
 }
 
 {
-  "id": "libvirt-20",
+  "id": "libvirt-19",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'q35-pcihost' not found"
@@ -3001,11 +2879,11 @@
   "arguments": {
     "typename": "kvm-pit"
   },
-  "id": "libvirt-21"
+  "id": "libvirt-20"
 }
 
 {
-  "id": "libvirt-21",
+  "id": "libvirt-20",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'kvm-pit' not found"
@@ -3017,7 +2895,7 @@
   "arguments": {
     "typename": "virtio-gpu-pci"
   },
-  "id": "libvirt-22"
+  "id": "libvirt-21"
 }
 
 {
@@ -3168,7 +3046,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-22"
+  "id": "libvirt-21"
 }
 
 {
@@ -3176,7 +3054,7 @@
   "arguments": {
     "typename": "virtio-gpu-device"
   },
-  "id": "libvirt-23"
+  "id": "libvirt-22"
 }
 
 {
@@ -3223,7 +3101,7 @@
       "type": "size"
     }
   ],
-  "id": "libvirt-23"
+  "id": "libvirt-22"
 }
 
 {
@@ -3231,11 +3109,11 @@
   "arguments": {
     "typename": "ICH9-LPC"
   },
-  "id": "libvirt-24"
+  "id": "libvirt-23"
 }
 
 {
-  "id": "libvirt-24",
+  "id": "libvirt-23",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
@@ -3247,7 +3125,7 @@
   "arguments": {
     "typename": "virtio-balloon-pci"
   },
-  "id": "libvirt-25"
+  "id": "libvirt-24"
 }
 
 {
@@ -3390,7 +3268,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-25"
+  "id": "libvirt-24"
 }
 
 {
@@ -3398,7 +3276,7 @@
   "arguments": {
     "typename": "virtio-balloon-ccw"
   },
-  "id": "libvirt-26"
+  "id": "libvirt-25"
 }
 
 {
@@ -3460,7 +3338,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-26"
+  "id": "libvirt-25"
 }
 
 {
@@ -3468,7 +3346,7 @@
   "arguments": {
     "typename": "virtio-balloon-device"
   },
-  "id": "libvirt-27"
+  "id": "libvirt-26"
 }
 
 {
@@ -3512,7 +3390,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-27"
+  "id": "libvirt-26"
 }
 
 {
@@ -3520,7 +3398,7 @@
   "arguments": {
     "typename": "virtual-css-bridge"
   },
-  "id": "libvirt-28"
+  "id": "libvirt-27"
 }
 
 {
@@ -3530,12 +3408,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-27"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
@@ -3583,12 +3461,12 @@
       "cpu-max": 248
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
@@ -4122,34 +4000,34 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
@@ -5254,12 +5132,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -5309,12 +5187,12 @@
       "capability": "return-path"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
@@ -15037,7 +14915,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
@@ -15048,7 +14926,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
@@ -15088,7 +14966,7 @@
       }
     }
   },
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
@@ -15102,11 +14980,11 @@
       }
     }
   },
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
-  "id": "libvirt-37",
+  "id": "libvirt-36",
   "error": {
     "class": "GenericError",
     "desc": "Property '.migratable' not found"
