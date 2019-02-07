@@ -160,6 +160,6 @@ int virSocketAddrPTRDomain(const virSocketAddr *addr,
 
 void virSocketAddrFree(virSocketAddrPtr addr);
 
-VIR_DEFINE_AUTOPTR_FUNC(virSocketAddr, virSocketAddrFree)
+VIR_DEFINE_AUTOPTR_FUNC(virSocketAddr, virSocketAddrFree);
 
 #endif /* LIBVIRT_VIRSOCKETADDR_H */

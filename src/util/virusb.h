@@ -96,6 +96,6 @@ void virUSBDeviceListDel(virUSBDeviceListPtr list,
 virUSBDevicePtr virUSBDeviceListFind(virUSBDeviceListPtr list,
                                      virUSBDevicePtr dev);
 
-VIR_DEFINE_AUTOPTR_FUNC(virUSBDevice, virUSBDeviceFree)
+VIR_DEFINE_AUTOPTR_FUNC(virUSBDevice, virUSBDeviceFree);
 
 #endif /* LIBVIRT_VIRUSB_H */

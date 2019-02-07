@@ -661,7 +661,7 @@ virBufferEscapePairFree(virBufferEscapePairPtr pair)
     VIR_FREE(pair);
 }
 
-VIR_DEFINE_AUTOPTR_FUNC(virBufferEscapePair, virBufferEscapePairFree)
+VIR_DEFINE_AUTOPTR_FUNC(virBufferEscapePair, virBufferEscapePairFree);
 
 
 /**

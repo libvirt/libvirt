@@ -248,7 +248,7 @@ virSCSIDeviceUsedByInfoFree(virUsedByInfoPtr used_by)
     VIR_FREE(used_by->domname);
     VIR_FREE(used_by);
 }
-VIR_DEFINE_AUTOPTR_FUNC(virUsedByInfo, virSCSIDeviceUsedByInfoFree)
+VIR_DEFINE_AUTOPTR_FUNC(virUsedByInfo, virSCSIDeviceUsedByInfoFree);
 
 void
 virSCSIDeviceFree(virSCSIDevicePtr dev)

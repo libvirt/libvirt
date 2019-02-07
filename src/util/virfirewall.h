@@ -115,6 +115,6 @@ int virFirewallApply(virFirewallPtr firewall);
 
 void virFirewallSetLockOverride(bool avoid);
 
-VIR_DEFINE_AUTOPTR_FUNC(virFirewall, virFirewallFree)
+VIR_DEFINE_AUTOPTR_FUNC(virFirewall, virFirewallFree);
 
 #endif /* LIBVIRT_VIRFIREWALL_H */

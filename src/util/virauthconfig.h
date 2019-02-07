@@ -41,6 +41,6 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
                         const char *credname,
                         const char **value);
 
-VIR_DEFINE_AUTOPTR_FUNC(virAuthConfig, virAuthConfigFree)
+VIR_DEFINE_AUTOPTR_FUNC(virAuthConfig, virAuthConfigFree);
 
 #endif /* LIBVIRT_VIRAUTHCONFIG_H */

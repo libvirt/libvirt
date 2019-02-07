@@ -271,8 +271,8 @@ ssize_t virPCIGetMdevTypes(const char *sysfspath,
 
 void virPCIDeviceAddressFree(virPCIDeviceAddressPtr address);
 
-VIR_DEFINE_AUTOPTR_FUNC(virPCIDevice, virPCIDeviceFree)
-VIR_DEFINE_AUTOPTR_FUNC(virPCIDeviceAddress, virPCIDeviceAddressFree)
-VIR_DEFINE_AUTOPTR_FUNC(virPCIEDeviceInfo, virPCIEDeviceInfoFree)
+VIR_DEFINE_AUTOPTR_FUNC(virPCIDevice, virPCIDeviceFree);
+VIR_DEFINE_AUTOPTR_FUNC(virPCIDeviceAddress, virPCIDeviceAddressFree);
+VIR_DEFINE_AUTOPTR_FUNC(virPCIEDeviceInfo, virPCIEDeviceInfoFree);
 
 #endif /* LIBVIRT_VIRPCI_H */

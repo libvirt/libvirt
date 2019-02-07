@@ -219,6 +219,6 @@ int virCommandRunNul(virCommandPtr cmd,
                      virCommandRunNulFunc func,
                      void *data);
 
-VIR_DEFINE_AUTOPTR_FUNC(virCommand, virCommandFree)
+VIR_DEFINE_AUTOPTR_FUNC(virCommand, virCommandFree);
 
 #endif /* LIBVIRT_VIRCOMMAND_H */

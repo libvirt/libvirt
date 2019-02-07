@@ -93,6 +93,6 @@ void virSCSIDeviceListDel(virSCSIDeviceListPtr list,
 virSCSIDevicePtr virSCSIDeviceListFind(virSCSIDeviceListPtr list,
                                        virSCSIDevicePtr dev);
 
-VIR_DEFINE_AUTOPTR_FUNC(virSCSIDevice, virSCSIDeviceFree)
+VIR_DEFINE_AUTOPTR_FUNC(virSCSIDevice, virSCSIDeviceFree);
 
 #endif /* LIBVIRT_VIRSCSI_H */

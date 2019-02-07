@@ -311,6 +311,6 @@ int virNetDevSysfsFile(char **pf_sysfs_device_link,
 int virNetDevRunEthernetScript(const char *ifname, const char *script)
     ATTRIBUTE_NOINLINE;
 
-VIR_DEFINE_AUTOPTR_FUNC(virNetDevRxFilter, virNetDevRxFilterFree)
+VIR_DEFINE_AUTOPTR_FUNC(virNetDevRxFilter, virNetDevRxFilterFree);
 
 #endif /* LIBVIRT_VIRNETDEV_H */

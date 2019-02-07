@@ -206,6 +206,6 @@ bool virLastErrorIsSystemErrno(int errnum);
 void virErrorPreserveLast(virErrorPtr *saveerr);
 void virErrorRestore(virErrorPtr *savederr);
 
-VIR_DEFINE_AUTOPTR_FUNC(virError, virFreeError)
+VIR_DEFINE_AUTOPTR_FUNC(virError, virFreeError);
 
 #endif /* LIBVIRT_VIRERROR_H */

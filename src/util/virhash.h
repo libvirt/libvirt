@@ -197,6 +197,6 @@ void *virHashSearch(const virHashTable *table, virHashSearcher iter,
 /* Convenience for when VIR_FREE(value) is sufficient as a data freer.  */
 void virHashValueFree(void *value, const void *name);
 
-VIR_DEFINE_AUTOPTR_FUNC(virHashTable, virHashFree)
+VIR_DEFINE_AUTOPTR_FUNC(virHashTable, virHashFree);
 
 #endif /* LIBVIRT_VIRHASH_H */

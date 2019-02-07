@@ -82,6 +82,6 @@ int virPerfReadEvent(virPerfPtr perf,
                      virPerfEventType type,
                      uint64_t *value);
 
-VIR_DEFINE_AUTOPTR_FUNC(virPerf, virPerfFree)
+VIR_DEFINE_AUTOPTR_FUNC(virPerf, virPerfFree);
 
 #endif /* LIBVIRT_VIRPERF_H */

@@ -61,6 +61,6 @@ void virSCSIVHostDeviceGetUsedBy(virSCSIVHostDevicePtr dev,
 void virSCSIVHostDeviceFree(virSCSIVHostDevicePtr dev);
 int virSCSIVHostOpenVhostSCSI(int *vhostfd) ATTRIBUTE_NOINLINE;
 
-VIR_DEFINE_AUTOPTR_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree)
+VIR_DEFINE_AUTOPTR_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree);
 
 #endif /* LIBVIRT_VIRSCSIVHOST_H */

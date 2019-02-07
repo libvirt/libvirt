@@ -64,6 +64,6 @@ bool virMacAddrIsMulticast(const virMacAddr *addr);
 bool virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN]);
 void virMacAddrFree(virMacAddrPtr addr);
 
-VIR_DEFINE_AUTOPTR_FUNC(virMacAddr, virMacAddrFree)
+VIR_DEFINE_AUTOPTR_FUNC(virMacAddr, virMacAddrFree);
 
 #endif /* LIBVIRT_VIRMACADDR_H */

@@ -119,6 +119,6 @@ int virBufferGetIndent(const virBuffer *buf, bool dynamic);
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);
 void virBufferAddStr(virBufferPtr buf, const char *str);
 
-VIR_DEFINE_AUTOPTR_FUNC(virBuffer, virBufferFreeAndReset)
+VIR_DEFINE_AUTOPTR_FUNC(virBuffer, virBufferFreeAndReset);
 
 #endif /* LIBVIRT_VIRBUFFER_H */
