@@ -986,6 +986,7 @@ struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
     { "rdma-pin-all", QEMU_CAPS_MIGRATE_RDMA },
 };
 
+/* Use virQEMUCapsQMPSchemaQueries for querying parameters of events */
 struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
     { "MIGRATION", QEMU_CAPS_MIGRATION_EVENT },
     { "VSERPORT_CHANGE", QEMU_CAPS_VSERPORT_CHANGE },
@@ -2124,6 +2125,12 @@ virQEMUCapsProbeQMPEvents(virQEMUCapsPtr qemuCaps,
 
     if ((nevents = qemuMonitorGetEvents(mon, &events)) < 0)
         return -1;
+
+    /* we can probe events also from the QMP schema so we can skip this here */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA)) {
+        virStringListFreeCount(events, nevents);
+        return 0;
+    }
 
     virQEMUCapsProcessStringFlags(qemuCaps,
                                   ARRAY_CARDINALITY(virQEMUCapsEvents),
@@ -4135,6 +4142,14 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
 
     for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsQMPSchemaQueries); i++) {
         entry = virQEMUCapsQMPSchemaQueries + i;
+
+        if (virQEMUQAPISchemaPathExists(entry->value, schema))
+            virQEMUCapsSet(qemuCaps, entry->flag);
+    }
+
+    /* probe also for basic event support */
+    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsEvents); i++) {
+        entry = virQEMUCapsEvents + i;
 
         if (virQEMUQAPISchemaPathExists(entry->value, schema))
             virQEMUCapsSet(qemuCaps, entry->flag);
