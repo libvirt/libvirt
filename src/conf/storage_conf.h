@@ -53,6 +53,13 @@ int
 virStoragePoolOptionsPoolTypeSetXMLNamespace(int type,
                                              virStoragePoolXMLNamespacePtr ns);
 
+int
+virStoragePoolOptionsFormatPool(virBufferPtr buf,
+                                int type);
+
+int
+virStoragePoolOptionsFormatVolume(virBufferPtr buf,
+                                  int type);
 /*
  * How the volume's data is stored on underlying
  * physical devices - can potentially span many

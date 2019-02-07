@@ -912,6 +912,11 @@ virStorageAdapterParseXML;
 virStorageAdapterValidate;
 
 
+# conf/storage_capabilities.h
+virStoragePoolCapsFormat;
+virStoragePoolCapsNew;
+
+
 # conf/storage_conf.h
 virStoragePartedFsTypeToString;
 virStoragePoolDefFormat;
@@ -925,6 +930,8 @@ virStoragePoolFormatDiskTypeToString;
 virStoragePoolFormatFileSystemNetTypeToString;
 virStoragePoolFormatFileSystemTypeToString;
 virStoragePoolFormatLogicalTypeToString;
+virStoragePoolOptionsFormatPool;
+virStoragePoolOptionsFormatVolume;
 virStoragePoolOptionsPoolTypeSetXMLNamespace;
 virStoragePoolSaveConfig;
 virStoragePoolSaveState;
