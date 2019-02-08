@@ -6337,7 +6337,6 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     virObjectEventPtr event = NULL;
-    char *xml = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
@@ -6422,7 +6421,6 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
 
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
  cleanup:
-    VIR_FREE(xml);
     if (vm) {
         if (snapshot) {
             virDomainSnapshotObjPtr other;
