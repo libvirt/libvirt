@@ -2590,14 +2590,14 @@ static virStorageSourcePtr
 virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
                                        const char *rel)
 {
-    virStorageSourcePtr ret;
+    virStorageSourcePtr def;
     VIR_AUTOFREE(char *) dirname = NULL;
 
-    if (VIR_ALLOC(ret) < 0)
+    if (VIR_ALLOC(def) < 0)
         return NULL;
 
     /* store relative name */
-    if (VIR_STRDUP(ret->relPath, parent->backingStoreRaw) < 0)
+    if (VIR_STRDUP(def->relPath, parent->backingStoreRaw) < 0)
         goto error;
 
     if (!(dirname = mdir_name(parent->path))) {
@@ -2606,39 +2606,39 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
     }
 
     if (STRNEQ(dirname, "/")) {
-        if (virAsprintf(&ret->path, "%s/%s", dirname, rel) < 0)
+        if (virAsprintf(&def->path, "%s/%s", dirname, rel) < 0)
             goto error;
     } else {
-        if (virAsprintf(&ret->path, "/%s", rel) < 0)
+        if (virAsprintf(&def->path, "/%s", rel) < 0)
             goto error;
     }
 
     if (virStorageSourceGetActualType(parent) == VIR_STORAGE_TYPE_NETWORK) {
-        ret->type = VIR_STORAGE_TYPE_NETWORK;
+        def->type = VIR_STORAGE_TYPE_NETWORK;
 
         /* copy the host network part */
-        ret->protocol = parent->protocol;
+        def->protocol = parent->protocol;
         if (parent->nhosts) {
-            if (!(ret->hosts = virStorageNetHostDefCopy(parent->nhosts,
+            if (!(def->hosts = virStorageNetHostDefCopy(parent->nhosts,
                                                         parent->hosts)))
                 goto error;
 
-            ret->nhosts = parent->nhosts;
+            def->nhosts = parent->nhosts;
         }
 
-        if (VIR_STRDUP(ret->volume, parent->volume) < 0)
+        if (VIR_STRDUP(def->volume, parent->volume) < 0)
             goto error;
     } else {
         /* set the type to _FILE, the caller shall update it to the actual type */
-        ret->type = VIR_STORAGE_TYPE_FILE;
+        def->type = VIR_STORAGE_TYPE_FILE;
     }
 
  cleanup:
-    return ret;
+    return def;
 
  error:
-    virStorageSourceFree(ret);
-    ret = NULL;
+    virStorageSourceFree(def);
+    def = NULL;
     goto cleanup;
 }
 
