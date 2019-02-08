@@ -3357,7 +3357,6 @@ virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
  *   <qemuctime>234235253</qemuctime>
  *   <selfctime>234235253</selfctime>
  *   <selfvers>1002016</selfvers>
- *   <usedQMP/>
  *   <flag name='foo'/>
  *   <flag name='bar'/>
  *   ...
@@ -3417,9 +3416,6 @@ virQEMUCapsLoadCache(virArch hostArch,
     qemuCaps->libvirtVersion = 0;
     if (virXPathULong("string(./selfvers)", ctxt, &lu) == 0)
         qemuCaps->libvirtVersion = lu;
-
-    qemuCaps->usedQMP = virXPathBoolean("count(./usedQMP) > 0",
-                                        ctxt) > 0;
 
     if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3760,9 +3756,6 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
                       (long long)qemuCaps->libvirtCtime);
     virBufferAsprintf(&buf, "<selfvers>%lu</selfvers>\n",
                       (unsigned long)qemuCaps->libvirtVersion);
-
-    if (qemuCaps->usedQMP)
-        virBufferAddLit(&buf, "<usedQMP/>\n");
 
     for (i = 0; i < QEMU_CAPS_LAST; i++) {
         if (virQEMUCapsGet(qemuCaps, i)) {
