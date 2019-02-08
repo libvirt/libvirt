@@ -1,5 +1,5 @@
 /*
- * virmocklibxl.c: mocking of xenstore/libxs for libxl
+ * libxlmock.c: mocking of xenstore/libxs for libxl
  *
  * Copyright (C) 2014 Red Hat, Inc.
  *

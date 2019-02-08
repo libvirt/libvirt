@@ -278,7 +278,7 @@ ssh_LDADD = $(COVERAGE_LDFLAGS)
 if WITH_LIBXL
 test_programs += xlconfigtest xml2sexprtest sexpr2xmltest \
 	xmconfigtest libxlxml2domconfigtest
-test_libraries += virmocklibxl.la
+test_libraries += libxlmock.la
 endif WITH_LIBXL
 
 if WITH_QEMU
@@ -534,11 +534,11 @@ libxlxml2domconfigtest_SOURCES = \
 	testutils.c testutils.h
 libxlxml2domconfigtest_LDADD = $(libxl_LDADDS) $(LIBXML_LIBS)
 
-virmocklibxl_la_SOURCES = \
-	virmocklibxl.c
-virmocklibxl_la_CFLAGS = $(LIBXL_CFLAGS) $(LIBXML_CFLAGS)
-virmocklibxl_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
-virmocklibxl_la_LIBADD = $(MOCKLIBS_LIBS)
+libxlmock_la_SOURCES = \
+	libxlmock.c
+libxlmock_la_CFLAGS = $(LIBXL_CFLAGS) $(LIBXML_CFLAGS)
+libxlmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+libxlmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 else ! WITH_LIBXL
 EXTRA_DIST += xlconfigtest.c xml2sexprtest.c sexpr2xmltest.c \
