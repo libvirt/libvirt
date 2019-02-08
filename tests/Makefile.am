@@ -58,7 +58,7 @@ MOCKLIBS_LDFLAGS = -module -avoid-version \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
 	$(MINGW_EXTRA_LDFLAGS)
 
-QEMULIB_LDFLAGS = \
+DRIVERLIB_LDFLAGS = \
 	-avoid-version \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
 	$(MINGW_EXTRA_LDFLAGS)
@@ -278,7 +278,7 @@ ssh_LDADD = $(COVERAGE_LDFLAGS)
 if WITH_LIBXL
 test_programs += xlconfigtest xml2sexprtest sexpr2xmltest \
 	xmconfigtest libxlxml2domconfigtest
-test_libraries += libxlmock.la
+test_libraries += libxltestdriver.la libxlmock.la
 endif WITH_LIBXL
 
 if WITH_QEMU
@@ -509,6 +509,10 @@ libxl_LDADDS += ../src/libvirt_driver_network_impl.la
 endif WITH_NETWORK
 libxl_LDADDS += $(LDADDS)
 
+libxltestdriver_la_SOURCES =
+libxltestdriver_la_LDFLAGS = $(DRIVERLIB_LDFLAGS)
+libxltestdriver_la_LIBADD = $(libxl_LDADDS)
+
 xlconfigtest_SOURCES = \
 	xlconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
@@ -567,7 +571,7 @@ qemu_LDADDS += ../src/libvirt_qemu_probes.lo
 endif WITH_DTRACE_PROBES
 
 libqemutestdriver_la_SOURCES =
-libqemutestdriver_la_LDFLAGS = $(QEMULIB_LDFLAGS)
+libqemutestdriver_la_LDFLAGS = $(DRIVERLIB_LDFLAGS)
 libqemutestdriver_la_LIBADD = $(qemu_LDADDS)
 
 qemucpumock_la_SOURCES = \
@@ -1038,7 +1042,7 @@ endif WITH_QEMU
 
 if WITH_LIBXL
 domaincapstest_SOURCES += testutilsxen.c testutilsxen.h
-domaincapstest_LDADD += ../src/libvirt_driver_libxl_impl.la $(GNULIB_LIBS)
+domaincapstest_LDADD += libxltestdriver.la $(GNULIB_LIBS)
 endif WITH_LIBXL
 
 if WITH_BHYVE
