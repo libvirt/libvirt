@@ -671,6 +671,15 @@ libxlMakeDomainDeviceVideoCaps(virDomainCapsDeviceVideoPtr dev)
     return 0;
 }
 
+bool libxlCapsHasPVUSB(void)
+{
+#ifdef LIBXL_HAVE_PVUSB
+    return true;
+#else
+    return false;
+#endif
+}
+
 static int
 libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdevPtr dev)
 {
@@ -688,10 +697,9 @@ libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdevPtr dev)
     VIR_DOMAIN_CAPS_ENUM_SET(dev->subsysType,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI);
 
-#ifdef LIBXL_HAVE_PVUSB
-    VIR_DOMAIN_CAPS_ENUM_SET(dev->subsysType,
-                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB);
-#endif
+    if (libxlCapsHasPVUSB())
+        VIR_DOMAIN_CAPS_ENUM_SET(dev->subsysType,
+                                 VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB);
 
     /* No virDomainHostdevCapsType for libxl */
     virDomainCapsEnumClear(&dev->capsType);
