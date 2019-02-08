@@ -371,9 +371,9 @@ virDomainCapsStringValuesFormat(virBufferPtr buf,
 #define FORMAT_PROLOGUE(item) \
     do { \
         virBufferAsprintf(buf, "<" #item " supported='%s'%s\n", \
-                          item->supported ? "yes" : "no", \
-                          item->supported ? ">" : "/>"); \
-        if (!item->supported) \
+                (item->supported == VIR_TRISTATE_BOOL_YES) ? "yes" : "no", \
+                (item->supported == VIR_TRISTATE_BOOL_YES) ? ">" : "/>"); \
+        if (item->supported != VIR_TRISTATE_BOOL_YES) \
             return; \
         virBufferAdjustIndent(buf, 2); \
     } while (0)
@@ -387,7 +387,7 @@ virDomainCapsStringValuesFormat(virBufferPtr buf,
 #define FORMAT_SINGLE(name, supported) \
     do { \
         virBufferAsprintf(&buf, "<%s supported='%s'/>\n", name, \
-                          supported ? "yes" : "no"); \
+                (supported == VIR_TRISTATE_BOOL_YES) ? "yes" : "no"); \
     } while (0)
 
 #define ENUM_PROCESS(master, capsEnum, valToStr) \
