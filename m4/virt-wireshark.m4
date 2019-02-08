@@ -50,6 +50,12 @@ AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[
         dnl time
         ws_plugindir='${exec_prefix}'"${ws_plugindir#$ws_exec_prefix}"
       fi
+
+      dnl Since wireshark 2.5.0 plugins can't live in top level
+      dnl plugindir but have to be under one of ["epan",
+      dnl "wiretap", "codecs"] subdir. The first one looks okay.
+      ws_plugindir="$ws_plugindir/epan"
+
     elif test "x$with_ws_plugindir" = "xno" || test "x$with_ws_plugindir" = "xyes"; then
       AC_MSG_ERROR([ws-plugindir must be used only with valid path])
     else

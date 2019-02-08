@@ -168,9 +168,9 @@
     %define with_wireshark 0%{!?_without_wireshark:1}
 %endif
 %if 0%{?fedora} || 0%{?rhel} > 7
-    %define wireshark_plugindir %(pkg-config --variable plugindir wireshark)
+    %define wireshark_plugindir %(pkg-config --variable plugindir wireshark)/epan
 %else
-    %define wireshark_plugindir %{_libdir}/wireshark/plugins
+    %define wireshark_plugindir %{_libdir}/wireshark/plugins/epan
 %endif
 
 # Enable libssh transport for new enough distros
