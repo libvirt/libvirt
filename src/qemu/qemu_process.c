@@ -3255,7 +3255,11 @@ int qemuProcessStopCPUs(virQEMUDriverPtr driver,
     if (priv->job.current)
         ignore_value(virTimeMillisNow(&priv->job.current->stopped));
 
-    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
+    /* The STOP event handler will change the domain state with the reason
+     * saved in priv->pausedReason and it will also emit corresponding domain
+     * lifecycle event.
+     */
+
     if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
         VIR_WARN("Unable to release lease on %s", vm->def->name);
     VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));

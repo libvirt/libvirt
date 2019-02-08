@@ -1773,10 +1773,8 @@ static int qemuDomainSuspend(virDomainPtr dom)
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainPausedReason reason;
-    int eventDetail;
     int state;
     virQEMUDriverConfigPtr cfg = NULL;
 
@@ -1795,16 +1793,12 @@ static int qemuDomainSuspend(virDomainPtr dom)
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
         reason = VIR_DOMAIN_PAUSED_MIGRATION;
-        eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
-    } else if (priv->job.asyncJob == QEMU_ASYNC_JOB_SNAPSHOT) {
+    else if (priv->job.asyncJob == QEMU_ASYNC_JOB_SNAPSHOT)
         reason = VIR_DOMAIN_PAUSED_SNAPSHOT;
-        eventDetail = -1; /* don't create lifecycle events when doing snapshot */
-    } else {
+    else
         reason = VIR_DOMAIN_PAUSED_USER;
-        eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
-    }
 
     state = virDomainObjGetState(vm, NULL);
     if (state == VIR_DOMAIN_PMSUSPENDED) {
@@ -1814,12 +1808,6 @@ static int qemuDomainSuspend(virDomainPtr dom)
     } else if (state != VIR_DOMAIN_PAUSED) {
         if (qemuProcessStopCPUs(driver, vm, reason, QEMU_ASYNC_JOB_NONE) < 0)
             goto endjob;
-
-        if (eventDetail >= 0) {
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_SUSPENDED,
-                                             eventDetail);
-        }
     }
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto endjob;
@@ -1831,7 +1819,6 @@ static int qemuDomainSuspend(virDomainPtr dom)
  cleanup:
     virDomainObjEndAPI(&vm);
 
-    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -16453,13 +16440,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                         VIR_DOMAIN_PAUSED_FROM_SNAPSHOT,
                                         QEMU_ASYNC_JOB_START) < 0)
                     goto endjob;
-                /* Create an event now in case the restore fails, so
-                 * that user will be alerted that they are now paused.
-                 * If restore later succeeds, we might replace this. */
-                detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                                 VIR_DOMAIN_EVENT_SUSPENDED,
-                                                 detail);
                 if (!virDomainObjIsActive(vm)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("guest unexpectedly quit"));

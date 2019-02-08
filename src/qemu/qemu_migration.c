@@ -1269,29 +1269,6 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
     return true;
 }
 
-/** qemuMigrationSrcSetOffline
- * Pause domain for non-live migration.
- */
-int
-qemuMigrationSrcSetOffline(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm)
-{
-    int ret;
-    VIR_DEBUG("driver=%p vm=%p", driver, vm);
-    ret = qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION,
-                              QEMU_ASYNC_JOB_MIGRATION_OUT);
-    if (ret == 0) {
-        virObjectEventPtr event;
-
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_SUSPENDED,
-                                         VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED);
-        virObjectEventStateQueue(driver->domainEventState, event);
-    }
-
-    return ret;
-}
-
 
 void
 qemuMigrationAnyPostcopyFailed(virQEMUDriverPtr driver,
@@ -1314,19 +1291,10 @@ qemuMigrationAnyPostcopyFailed(virQEMUDriverPtr driver,
              "leaving the domain paused", vm->def->name);
 
     if (state == VIR_DOMAIN_RUNNING) {
-        virObjectEventPtr event;
-
         if (qemuProcessStopCPUs(driver, vm,
                                 VIR_DOMAIN_PAUSED_POSTCOPY_FAILED,
-                                QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {
+                                QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
             VIR_WARN("Unable to pause guest CPUs for %s", vm->def->name);
-            return;
-        }
-
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                VIR_DOMAIN_EVENT_SUSPENDED,
-                                VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED);
-        virObjectEventStateQueue(driver->domainEventState, event);
     } else {
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                              VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
@@ -3532,10 +3500,11 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         }
     }
 
-    /* Before EnterMonitor, since qemuMigrationSetOffline already does that */
+    /* Before EnterMonitor, since already qemuProcessStopCPUs does that */
     if (!(flags & VIR_MIGRATE_LIVE) &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        if (qemuMigrationSrcSetOffline(driver, vm) < 0)
+        if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION,
+                                QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
             goto error;
     }
 
@@ -3645,7 +3614,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                 goto error;
         }
     } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING &&
-               qemuMigrationSrcSetOffline(driver, vm) < 0) {
+               qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION,
+                                   QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
         goto error;
     }
 

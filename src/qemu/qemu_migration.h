@@ -102,10 +102,6 @@ typedef enum {
 } qemuMigrationJobPhase;
 VIR_ENUM_DECL(qemuMigrationJobPhase);
 
-int
-qemuMigrationSrcSetOffline(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm);
-
 char *
 qemuMigrationSrcBegin(virConnectPtr conn,
                       virDomainObjPtr vm,
