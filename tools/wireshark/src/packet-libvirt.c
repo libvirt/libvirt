@@ -29,6 +29,19 @@
 #include "packet-libvirt.h"
 #include "internal.h"
 
+#ifndef LIBVIRT_PORT
+# define LIBVIRT_PORT 16509
+#endif
+
+#define VIR_HEADER_LEN 28
+
+#ifdef DEBUG
+# define dbg(fmt, ...) \
+   g_print("[LIBVIRT] " fmt " at " __FILE__ " line %d\n", ##__VA_ARGS__, __LINE__)
+#else
+# define dbg(fmt, ...)
+#endif
+
 /* Wireshark 1.12 brings API change */
 #define WIRESHARK_VERSION \
     ((VERSION_MAJOR * 1000 * 1000) + \
@@ -79,6 +92,58 @@ XDR_PRIMITIVE_DISSECTOR(u_hyper, guint64, uint64)
 XDR_PRIMITIVE_DISSECTOR(float,   gfloat,  float)
 XDR_PRIMITIVE_DISSECTOR(double,  gdouble, double)
 XDR_PRIMITIVE_DISSECTOR(bool,    bool_t,  boolean)
+
+typedef gboolean (*vir_xdr_dissector_t)(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf);
+
+typedef struct vir_dissector_index vir_dissector_index_t;
+struct vir_dissector_index {
+    guint32             proc;
+    vir_xdr_dissector_t args;
+    vir_xdr_dissector_t ret;
+    vir_xdr_dissector_t msg;
+};
+
+enum vir_net_message_type {
+    VIR_NET_CALL           = 0,
+    VIR_NET_REPLY          = 1,
+    VIR_NET_MESSAGE        = 2,
+    VIR_NET_STREAM         = 3,
+    VIR_NET_CALL_WITH_FDS  = 4,
+    VIR_NET_REPLY_WITH_FDS = 5,
+    VIR_NET_STREAM_HOLE    = 6,
+};
+
+enum vir_net_message_status {
+    VIR_NET_OK       = 0,
+    VIR_NET_ERROR    = 1,
+    VIR_NET_CONTINUE = 2,
+};
+
+enum vir_program_data_index {
+    VIR_PROGRAM_PROCHFVAR,
+    VIR_PROGRAM_PROCSTRINGS,
+    VIR_PROGRAM_DISSECTORS,
+    VIR_PROGRAM_DISSECTORS_LEN,
+    VIR_PROGRAM_LAST,
+};
+
+static const value_string type_strings[] = {
+    { VIR_NET_CALL,           "CALL"           },
+    { VIR_NET_REPLY,          "REPLY"          },
+    { VIR_NET_MESSAGE,        "MESSAGE"        },
+    { VIR_NET_STREAM,         "STREAM"         },
+    { VIR_NET_CALL_WITH_FDS,  "CALL_WITH_FDS"  },
+    { VIR_NET_REPLY_WITH_FDS, "REPLY_WITH_FDS" },
+    { VIR_NET_STREAM_HOLE,    "STREAM_HOLE"    },
+    { -1, NULL }
+};
+
+static const value_string status_strings[] = {
+    { VIR_NET_OK,       "OK"       },
+    { VIR_NET_ERROR,    "ERROR"    },
+    { VIR_NET_CONTINUE, "CONTINUE" },
+    { -1, NULL }
+};
 
 static gboolean
 dissect_xdr_string(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf,
@@ -357,6 +422,8 @@ dissect_xdr_stream_hole(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf)
     return TRUE;
 }
 
+#include "libvirt/protocol.h"
+
 static void
 dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
                         guint32 prog, guint32 proc, guint32 type, guint32 status)
@@ -374,7 +441,7 @@ dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
             goto unknown;
         dissect_libvirt_payload_xdr_data(tvb, tree, payload_length, status, xd);
     } else if (status == VIR_NET_ERROR) {
-        dissect_libvirt_payload_xdr_data(tvb, tree, payload_length, status, VIR_ERROR_MESSAGE_DISSECTOR);
+        dissect_libvirt_payload_xdr_data(tvb, tree, payload_length, status, dissect_xdr_remote_error);
     } else if (type == VIR_NET_STREAM) { /* implicitly, status == VIR_NET_CONTINUE */
         dissect_libvirt_stream(tvb, tree, payload_length);
     } else if (type == VIR_NET_STREAM_HOLE) {

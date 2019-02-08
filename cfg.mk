@@ -1283,7 +1283,7 @@ exclude_file_name_regexp--sc_correct_id_types = \
 exclude_file_name_regexp--sc_m4_quote_check = m4/virt-lib.m4
 
 exclude_file_name_regexp--sc_prohibit_include_public_headers_quote = \
-  ^(src/internal\.h$$|tools/wireshark/src/packet-libvirt.h$$)
+  ^(src/internal\.h$$|tools/wireshark/src/packet-libvirt.c$$)
 
 exclude_file_name_regexp--sc_prohibit_include_public_headers_brackets = \
   ^(tools/|examples/|include/libvirt/(virterror|libvirt(-(admin|qemu|lxc))?)\.h$$)
