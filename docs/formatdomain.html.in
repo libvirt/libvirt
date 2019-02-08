@@ -8785,8 +8785,8 @@ qemu-kvm -net nic,model=? /dev/null
        different entity using a different key the encrypted guests data will
        be incorrectly decrypted, leading to unintelligible data.
 
-       For more information see various input parameters and its format see the SEV API spec
-       <a href="https://support.amd.com/TechDocs/55766_SEV-KM%20API_Specification.pdf"> https://support.amd.com/TechDocs/55766_SEV-KM%20API_Specification.pdf </a>
+       For more information see various input parameters and its format see the
+       <a href="https://support.amd.com/TechDocs/55766_SEV-KM_API_Specification.pdf">SEV API spec</a>
        <span class="since">Since 4.4.0</span>
        </p>
     <pre>

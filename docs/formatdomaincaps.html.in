@@ -481,7 +481,7 @@
 
     <p>
     For more details on SEV feature see:
-      <a href="https://support.amd.com/TechDocs/55766_SEV-KM%20API_Specification.pdf">
+      <a href="https://support.amd.com/TechDocs/55766_SEV-KM_API_Specification.pdf">
         SEV API spec</a> and <a href="http://amd-dev.wpengine.netdna-cdn.com/wordpress/media/2013/12/AMD_Memory_Encryption_Whitepaper_v7-Public.pdf">
         SEV White Paper</a>
     </p>
