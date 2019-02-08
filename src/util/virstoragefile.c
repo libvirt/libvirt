@@ -3682,39 +3682,39 @@ virStorageSourcePtr
 virStorageSourceNewFromBacking(virStorageSourcePtr parent)
 {
     struct stat st;
-    virStorageSourcePtr ret;
+    virStorageSourcePtr def;
 
     if (virStorageIsRelative(parent->backingStoreRaw))
-        ret = virStorageSourceNewFromBackingRelative(parent,
+        def = virStorageSourceNewFromBackingRelative(parent,
                                                      parent->backingStoreRaw);
     else
-        ret = virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw);
+        def = virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw);
 
-    if (ret) {
+    if (def) {
         /* possibly update local type */
-        if (ret->type == VIR_STORAGE_TYPE_FILE) {
-            if (stat(ret->path, &st) == 0) {
+        if (def->type == VIR_STORAGE_TYPE_FILE) {
+            if (stat(def->path, &st) == 0) {
                 if (S_ISDIR(st.st_mode)) {
-                    ret->type = VIR_STORAGE_TYPE_DIR;
-                    ret->format = VIR_STORAGE_FILE_DIR;
+                    def->type = VIR_STORAGE_TYPE_DIR;
+                    def->format = VIR_STORAGE_FILE_DIR;
                 } else if (S_ISBLK(st.st_mode)) {
-                    ret->type = VIR_STORAGE_TYPE_BLOCK;
+                    def->type = VIR_STORAGE_TYPE_BLOCK;
                 }
             }
         }
 
         /* copy parent's labelling and other top level stuff */
-        if (virStorageSourceInitChainElement(ret, parent, true) < 0)
+        if (virStorageSourceInitChainElement(def, parent, true) < 0)
             goto error;
 
-        ret->readonly = true;
-        ret->detected = true;
+        def->readonly = true;
+        def->detected = true;
     }
 
-    return ret;
+    return def;
 
  error:
-    virStorageSourceFree(ret);
+    virStorageSourceFree(def);
     return NULL;
 }
 
