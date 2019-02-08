@@ -3632,48 +3632,48 @@ virStorageSourcePtr
 virStorageSourceNewFromBackingAbsolute(const char *path)
 {
     const char *json;
-    virStorageSourcePtr ret;
+    virStorageSourcePtr def;
     int rc;
 
-    if (VIR_ALLOC(ret) < 0)
+    if (VIR_ALLOC(def) < 0)
         return NULL;
 
     if (virStorageIsFile(path)) {
-        ret->type = VIR_STORAGE_TYPE_FILE;
+        def->type = VIR_STORAGE_TYPE_FILE;
 
-        if (VIR_STRDUP(ret->path, path) < 0)
+        if (VIR_STRDUP(def->path, path) < 0)
             goto error;
     } else {
-        ret->type = VIR_STORAGE_TYPE_NETWORK;
+        def->type = VIR_STORAGE_TYPE_NETWORK;
 
         VIR_DEBUG("parsing backing store string: '%s'", path);
 
         /* handle URI formatted backing stores */
         if ((json = STRSKIP(path, "json:")))
-            rc = virStorageSourceParseBackingJSON(ret, json);
+            rc = virStorageSourceParseBackingJSON(def, json);
         else if (strstr(path, "://"))
-            rc = virStorageSourceParseBackingURI(ret, path);
+            rc = virStorageSourceParseBackingURI(def, path);
         else
-            rc = virStorageSourceParseBackingColon(ret, path);
+            rc = virStorageSourceParseBackingColon(def, path);
 
         if (rc < 0)
             goto error;
 
-        virStorageSourceNetworkAssignDefaultPorts(ret);
+        virStorageSourceNetworkAssignDefaultPorts(def);
 
         /* Some of the legacy parsers parse authentication data since they are
          * also used in other places. For backing store detection the
          * authentication data would be invalid anyways, so we clear it */
-        if (ret->auth) {
-            virStorageAuthDefFree(ret->auth);
-            ret->auth = NULL;
+        if (def->auth) {
+            virStorageAuthDefFree(def->auth);
+            def->auth = NULL;
         }
     }
 
-    return ret;
+    return def;
 
  error:
-    virStorageSourceFree(ret);
+    virStorageSourceFree(def);
     return NULL;
 }
 
