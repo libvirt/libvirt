@@ -166,11 +166,7 @@
 # Enable wireshark plugins for all distros shipping libvirt 1.2.2 or newer
 %if 0%{?fedora}
     %define with_wireshark 0%{!?_without_wireshark:1}
-%endif
-%if 0%{?fedora} || 0%{?rhel} > 7
     %define wireshark_plugindir %(pkg-config --variable plugindir wireshark)/epan
-%else
-    %define wireshark_plugindir %{_libdir}/wireshark/plugins/epan
 %endif
 
 # Enable libssh transport for new enough distros
@@ -389,7 +385,7 @@ BuildRequires: numad
 %endif
 
 %if %{with_wireshark}
-BuildRequires: wireshark-devel >= 2.1.0
+BuildRequires: wireshark-devel >= 2.4.0
 %endif
 
 %if %{with_libssh}
@@ -935,7 +931,7 @@ Bash completion script stub.
 %if %{with_wireshark}
 %package wireshark
 Summary: Wireshark dissector plugin for libvirt RPC transactions
-Requires: wireshark >= 1.12.6-4
+Requires: wireshark >= 2.4.0
 Requires: %{name}-libs = %{version}-%{release}
 
 %description wireshark
