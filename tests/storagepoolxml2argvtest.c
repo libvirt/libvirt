@@ -25,29 +25,33 @@ testCompareXMLToArgvFiles(bool shouldFail,
     int ret = -1;
     virStoragePoolDefPtr def = NULL;
     virStoragePoolObjPtr pool = NULL;
+    const char *defTypeStr;
     VIR_AUTOFREE(char *) actualCmdline = NULL;
     VIR_AUTOFREE(char *) src = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (!(def = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
+    defTypeStr = virStoragePoolTypeToString(def->type);
 
     switch ((virStoragePoolType)def->type) {
     case VIR_STORAGE_POOL_FS:
     case VIR_STORAGE_POOL_NETFS:
         if (!(pool = virStoragePoolObjNew())) {
-            VIR_TEST_DEBUG("pool type %d alloc pool obj fails\n", def->type);
+            VIR_TEST_DEBUG("pool type '%s' alloc pool obj fails\n", defTypeStr);
             virStoragePoolDefFree(def);
             goto cleanup;
         }
         virStoragePoolObjSetDef(pool, def);
 
         if (!(src = virStorageBackendFileSystemGetPoolSource(pool))) {
-            VIR_TEST_DEBUG("pool type %d has no pool source\n", def->type);
+            VIR_TEST_DEBUG("pool type '%s' has no pool source\n", defTypeStr);
+            def = NULL;
             goto cleanup;
         }
 
         cmd = virStorageBackendFileSystemMountCmd(MOUNT, def, src);
+        def = NULL;
         break;
 
     case VIR_STORAGE_POOL_LOGICAL:
@@ -67,12 +71,12 @@ testCompareXMLToArgvFiles(bool shouldFail,
     case VIR_STORAGE_POOL_VSTORAGE:
     case VIR_STORAGE_POOL_LAST:
     default:
-        VIR_TEST_DEBUG("pool type %d has no xml2argv test\n", def->type);
+        VIR_TEST_DEBUG("pool type '%s' has no xml2argv test\n", defTypeStr);
         goto cleanup;
     };
 
     if (!(actualCmdline = virCommandToString(cmd, false))) {
-        VIR_TEST_DEBUG("pool type %d failed to get commandline\n", def->type);
+        VIR_TEST_DEBUG("pool type '%s' failed to get commandline\n", defTypeStr);
         goto cleanup;
     }
 
@@ -83,6 +87,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
     ret = 0;
 
  cleanup:
+    virStoragePoolDefFree(def);
     virStoragePoolObjEndAPI(&pool);
     if (shouldFail) {
         virResetLastError();
