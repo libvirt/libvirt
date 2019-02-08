@@ -60,6 +60,7 @@
         <value>optional</value>
       </enum>
       <enum name='subsysType'>
+        <value>usb</value>
         <value>pci</value>
       </enum>
       <enum name='capsType'/>

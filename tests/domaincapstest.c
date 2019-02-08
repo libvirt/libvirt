@@ -508,17 +508,9 @@ mymain(void)
 
 #if WITH_LIBXL
 
-# ifdef LIBXL_HAVE_PVUSB
-#  define LIBXL_XENPV_CAPS "libxl-xenpv-usb"
-#  define LIBXL_XENFV_CAPS "libxl-xenfv-usb"
-# else
-#  define LIBXL_XENPV_CAPS "libxl-xenpv"
-#  define LIBXL_XENFV_CAPS "libxl-xenfv"
-# endif
-
-    DO_TEST_LIBXL(LIBXL_XENPV_CAPS, "/usr/bin/qemu-system-x86_64",
+    DO_TEST_LIBXL("libxl-xenpv", "/usr/bin/qemu-system-x86_64",
                   "xenpv", "x86_64", VIR_DOMAIN_VIRT_XEN);
-    DO_TEST_LIBXL(LIBXL_XENFV_CAPS, "/usr/bin/qemu-system-x86_64",
+    DO_TEST_LIBXL("libxl-xenfv", "/usr/bin/qemu-system-x86_64",
                   "xenfv", "x86_64", VIR_DOMAIN_VIRT_XEN);
 
 #endif /* WITH_LIBXL */
