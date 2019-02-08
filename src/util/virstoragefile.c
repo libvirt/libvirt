@@ -2256,98 +2256,98 @@ virStorageSourcePtr
 virStorageSourceCopy(const virStorageSource *src,
                      bool backingChain)
 {
-    virStorageSourcePtr ret = NULL;
+    virStorageSourcePtr def = NULL;
 
-    if (VIR_ALLOC(ret) < 0)
+    if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    ret->id = src->id;
-    ret->type = src->type;
-    ret->protocol = src->protocol;
-    ret->format = src->format;
-    ret->capacity = src->capacity;
-    ret->allocation = src->allocation;
-    ret->has_allocation = src->has_allocation;
-    ret->physical = src->physical;
-    ret->readonly = src->readonly;
-    ret->shared = src->shared;
-    ret->haveTLS = src->haveTLS;
-    ret->tlsFromConfig = src->tlsFromConfig;
-    ret->detected = src->detected;
-    ret->debugLevel = src->debugLevel;
-    ret->debug = src->debug;
-    ret->iomode = src->iomode;
-    ret->cachemode = src->cachemode;
-    ret->discard = src->discard;
-    ret->detect_zeroes = src->detect_zeroes;
+    def->id = src->id;
+    def->type = src->type;
+    def->protocol = src->protocol;
+    def->format = src->format;
+    def->capacity = src->capacity;
+    def->allocation = src->allocation;
+    def->has_allocation = src->has_allocation;
+    def->physical = src->physical;
+    def->readonly = src->readonly;
+    def->shared = src->shared;
+    def->haveTLS = src->haveTLS;
+    def->tlsFromConfig = src->tlsFromConfig;
+    def->detected = src->detected;
+    def->debugLevel = src->debugLevel;
+    def->debug = src->debug;
+    def->iomode = src->iomode;
+    def->cachemode = src->cachemode;
+    def->discard = src->discard;
+    def->detect_zeroes = src->detect_zeroes;
 
     /* storage driver metadata are not copied */
-    ret->drv = NULL;
+    def->drv = NULL;
 
-    if (VIR_STRDUP(ret->path, src->path) < 0 ||
-        VIR_STRDUP(ret->volume, src->volume) < 0 ||
-        VIR_STRDUP(ret->relPath, src->relPath) < 0 ||
-        VIR_STRDUP(ret->backingStoreRaw, src->backingStoreRaw) < 0 ||
-        VIR_STRDUP(ret->snapshot, src->snapshot) < 0 ||
-        VIR_STRDUP(ret->configFile, src->configFile) < 0 ||
-        VIR_STRDUP(ret->nodeformat, src->nodeformat) < 0 ||
-        VIR_STRDUP(ret->nodestorage, src->nodestorage) < 0 ||
-        VIR_STRDUP(ret->compat, src->compat) < 0 ||
-        VIR_STRDUP(ret->tlsAlias, src->tlsAlias) < 0 ||
-        VIR_STRDUP(ret->tlsCertdir, src->tlsCertdir) < 0)
+    if (VIR_STRDUP(def->path, src->path) < 0 ||
+        VIR_STRDUP(def->volume, src->volume) < 0 ||
+        VIR_STRDUP(def->relPath, src->relPath) < 0 ||
+        VIR_STRDUP(def->backingStoreRaw, src->backingStoreRaw) < 0 ||
+        VIR_STRDUP(def->snapshot, src->snapshot) < 0 ||
+        VIR_STRDUP(def->configFile, src->configFile) < 0 ||
+        VIR_STRDUP(def->nodeformat, src->nodeformat) < 0 ||
+        VIR_STRDUP(def->nodestorage, src->nodestorage) < 0 ||
+        VIR_STRDUP(def->compat, src->compat) < 0 ||
+        VIR_STRDUP(def->tlsAlias, src->tlsAlias) < 0 ||
+        VIR_STRDUP(def->tlsCertdir, src->tlsCertdir) < 0)
         goto error;
 
     if (src->nhosts) {
-        if (!(ret->hosts = virStorageNetHostDefCopy(src->nhosts, src->hosts)))
+        if (!(def->hosts = virStorageNetHostDefCopy(src->nhosts, src->hosts)))
             goto error;
 
-        ret->nhosts = src->nhosts;
+        def->nhosts = src->nhosts;
     }
 
     if (src->srcpool &&
-        !(ret->srcpool = virStorageSourcePoolDefCopy(src->srcpool)))
+        !(def->srcpool = virStorageSourcePoolDefCopy(src->srcpool)))
         goto error;
 
     if (src->features &&
-        !(ret->features = virBitmapNewCopy(src->features)))
+        !(def->features = virBitmapNewCopy(src->features)))
         goto error;
 
     if (src->encryption &&
-        !(ret->encryption = virStorageEncryptionCopy(src->encryption)))
+        !(def->encryption = virStorageEncryptionCopy(src->encryption)))
         goto error;
 
     if (src->perms &&
-        !(ret->perms = virStoragePermsCopy(src->perms)))
+        !(def->perms = virStoragePermsCopy(src->perms)))
         goto error;
 
     if (src->timestamps &&
-        !(ret->timestamps = virStorageTimestampsCopy(src->timestamps)))
+        !(def->timestamps = virStorageTimestampsCopy(src->timestamps)))
         goto error;
 
-    if (virStorageSourceSeclabelsCopy(ret, src) < 0)
+    if (virStorageSourceSeclabelsCopy(def, src) < 0)
         goto error;
 
     if (src->auth &&
-        !(ret->auth = virStorageAuthDefCopy(src->auth)))
+        !(def->auth = virStorageAuthDefCopy(src->auth)))
         goto error;
 
     if (src->pr &&
-        !(ret->pr = virStoragePRDefCopy(src->pr)))
+        !(def->pr = virStoragePRDefCopy(src->pr)))
         goto error;
 
-    if (virStorageSourceInitiatorCopy(&ret->initiator, &src->initiator))
+    if (virStorageSourceInitiatorCopy(&def->initiator, &src->initiator))
         goto error;
 
     if (backingChain && src->backingStore) {
-        if (!(ret->backingStore = virStorageSourceCopy(src->backingStore,
+        if (!(def->backingStore = virStorageSourceCopy(src->backingStore,
                                                        true)))
             goto error;
     }
 
-    return ret;
+    return def;
 
  error:
-    virStorageSourceFree(ret);
+    virStorageSourceFree(def);
     return NULL;
 }
 
