@@ -1125,21 +1125,21 @@ static virStorageSourcePtr
 virStorageFileMetadataNew(const char *path,
                           int format)
 {
-    virStorageSourcePtr ret = NULL;
+    virStorageSourcePtr def = NULL;
 
-    if (VIR_ALLOC(ret) < 0)
+    if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    ret->format = format;
-    ret->type = VIR_STORAGE_TYPE_FILE;
+    def->format = format;
+    def->type = VIR_STORAGE_TYPE_FILE;
 
-    if (VIR_STRDUP(ret->path, path) < 0)
+    if (VIR_STRDUP(def->path, path) < 0)
         goto error;
 
-    return ret;
+    return def;
 
  error:
-    virStorageSourceFree(ret);
+    virStorageSourceFree(def);
     return NULL;
 }
 
