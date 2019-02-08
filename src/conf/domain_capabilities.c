@@ -384,6 +384,12 @@ virDomainCapsStringValuesFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</" #item ">\n"); \
     } while (0)
 
+#define FORMAT_SINGLE(name, supported) \
+    do { \
+        virBufferAsprintf(&buf, "<%s supported='%s'/>\n", name, \
+                          supported ? "yes" : "no"); \
+    } while (0)
+
 #define ENUM_PROCESS(master, capsEnum, valToStr) \
     do { \
         virDomainCapsEnumFormat(buf, &master->capsEnum, \
@@ -594,8 +600,7 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
     if (caps->maxvcpus)
         virBufferAsprintf(&buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
 
-    virBufferAsprintf(&buf, "<iothreads supported='%s'/>\n",
-                      caps->iothreads ? "yes" : "no");
+    FORMAT_SINGLE("iothreads", caps->iothreads);
 
     virDomainCapsOSFormat(&buf, &caps->os);
     virDomainCapsCPUFormat(&buf, &caps->cpu);
@@ -615,11 +620,8 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
     virBufferAdjustIndent(&buf, 2);
 
     virDomainCapsFeatureGICFormat(&buf, &caps->gic);
-    virBufferAsprintf(&buf, "<vmcoreinfo supported='%s'/>\n",
-                      caps->vmcoreinfo ? "yes" : "no");
-
-    virBufferAsprintf(&buf, "<genid supported='%s'/>\n",
-                      caps->genid ? "yes" : "no");
+    FORMAT_SINGLE("vmcoreinfo", caps->vmcoreinfo);
+    FORMAT_SINGLE("genid", caps->genid);
     virDomainCapsFeatureSEVFormat(&buf, caps->sev);
 
     virBufferAdjustIndent(&buf, -2);
