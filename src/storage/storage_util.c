@@ -3869,6 +3869,9 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                                                  VIR_STORAGE_VOL_READ_NOERROR)) < 0)
         goto cleanup;
 
+    /* Reset retval for proper error handling */
+    retval = -1;
+
     vol->key = virStorageBackendSCSISerial(vol->target.path,
                                            (def->source.adapter.type ==
                                             VIR_STORAGE_ADAPTER_TYPE_FC_HOST));
