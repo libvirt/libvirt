@@ -444,9 +444,7 @@ uninstall-bash-completion:
 endif ! WITH_BASH_COMPLETION
 
 
-EXTRA_DIST += \
-	wireshark/util/genxdrstub.pl \
-	wireshark/util/make-dissector-reg
+EXTRA_DIST += wireshark/util/genxdrstub.pl
 
 if WITH_WIRESHARK_DISSECTOR
 
@@ -454,18 +452,13 @@ ws_plugin_LTLIBRARIES = wireshark/src/libvirt.la
 wireshark_src_libvirt_la_CFLAGS = \
 	-I wireshark/src $(WIRESHARK_DISSECTOR_CFLAGS) $(XDR_CFLAGS)
 wireshark_src_libvirt_la_LDFLAGS = -avoid-version -module
-nodist_wireshark_src_libvirt_la_SOURCES = wireshark/src/plugin.c
 wireshark_src_libvirt_la_SOURCES = \
 	wireshark/src/packet-libvirt.h \
-	wireshark/src/packet-libvirt.c
+	wireshark/src/packet-libvirt.c \
+	wireshark/src/plugin.c
 
 wireshark/src/packet-libvirt.c: wireshark/src/packet-libvirt.h \
 		wireshark/src/libvirt/protocol.h
-
-wireshark/src/plugin.c: wireshark/src/packet-libvirt.c
-	$(AM_V_GEN)cd wireshark/src && \
-		$(abs_top_srcdir)/tools/wireshark/util/make-dissector-reg \
-		. plugin packet-libvirt.c
 
 WS_DISSECTOR_PROTO_FILES  = \
   $(abs_top_srcdir)/src/remote/remote_protocol.x \
@@ -480,8 +473,6 @@ wireshark/src/libvirt/protocol.h: wireshark/util/genxdrstub.pl \
 	LIBVIRT_VERSION=$(LIBVIRT_VERSION) \
 		  $(PERL) $(abs_top_srcdir)/tools/wireshark/util/genxdrstub.pl \
 		  $(WS_DISSECTOR_PROTO_FILES)
-
-CLEANFILES += wireshark/src/plugin.c
 
 endif WITH_WIRESHARK_DISSECTOR
 
