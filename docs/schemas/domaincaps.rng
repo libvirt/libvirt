@@ -142,12 +142,18 @@
 
   <define name='devices'>
     <element name='devices'>
-      <interleave>
+      <optional>
         <ref name='disk'/>
+      </optional>
+      <optional>
         <ref name='graphics'/>
+      </optional>
+      <optional>
         <ref name='video'/>
+      </optional>
+      <optional>
         <ref name='hostdev'/>
-      </interleave>
+      </optional>
     </element>
   </define>
 
@@ -181,12 +187,18 @@
 
   <define name='features'>
     <element name='features'>
-      <interleave>
+      <optional>
         <ref name='gic'/>
+      </optional>
+      <optional>
         <ref name='vmcoreinfo'/>
+      </optional>
+      <optional>
         <ref name='vmgenid'/>
+      </optional>
+      <optional>
         <ref name='sev'/>
-      </interleave>
+      </optional>
     </element>
   </define>
 
