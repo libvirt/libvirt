@@ -24,8 +24,8 @@ server,nowait \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -chardev socket,id=charchannel0,path=/tmp/guestfwd-listen.socket,server,nowait \
--netdev user,guestfwd=tcp:10.0.2.1:4600-chardev:charchannel0,id=user-channel0 \
+-netdev user,guestfwd=tcp:10.0.2.1:4600-chardev:charchannel0,id=channel0 \
 -chardev socket,id=charchannel1,path=/tmp/guestfwd-connect.socket \
--netdev user,guestfwd=tcp:10.0.2.1:4601-chardev:charchannel1,id=user-channel1 \
+-netdev user,guestfwd=tcp:10.0.2.1:4601-chardev:charchannel1,id=channel1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -msg timestamp=on
