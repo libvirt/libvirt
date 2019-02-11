@@ -71,7 +71,6 @@ struct _qemuBlockJobData {
 
     virDomainDiskDefPtr disk; /* may be NULL, if blockjob does not correspond to any disk */
 
-    bool started;
     int type; /* qemuBlockJobType */
     int state; /* qemuBlockjobState */
     char *errmsg;
