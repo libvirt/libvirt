@@ -4355,19 +4355,19 @@ virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
 
 
 static int
-virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
-                   const char *libDir,
-                   uid_t runUid,
-                   gid_t runGid,
-                   char **qmperr)
+virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
+                         const char *libDir,
+                         uid_t runUid,
+                         gid_t runGid,
+                         char **qmperr,
+                         bool onlyTCG)
 {
     qemuProcessQMPPtr proc = NULL;
-    qemuProcessQMPPtr procTCG = NULL;
     int ret = -1;
     int rc;
 
     if (!(proc = qemuProcessQMPNew(qemuCaps->binary, libDir,
-                                   runUid, runGid, qmperr, false)))
+                                   runUid, runGid, qmperr, onlyTCG)))
         goto cleanup;
 
     if ((rc = qemuProcessQMPRun(proc)) != 0) {
@@ -4376,37 +4376,38 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     }
 
-    if (virQEMUCapsInitQMPMonitor(qemuCaps, proc->mon) < 0)
-        goto cleanup;
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
-        /* The second QEMU process probes for TCG capabilities
-         * in case the first process reported KVM as enabled
-         * (otherwise the first one already reported TCG capabilities). */
-
-        qemuProcessQMPStop(proc);
-
-        procTCG = qemuProcessQMPNew(qemuCaps->binary, libDir,
-                                    runUid, runGid, NULL, true);
-
-        if ((rc = qemuProcessQMPRun(procTCG)) != 0) {
-            if (rc == 1)
-                ret = 0;
-            goto cleanup;
-        }
-
-        if (virQEMUCapsInitQMPMonitorTCG(qemuCaps, procTCG->mon) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
+    if (onlyTCG)
+        ret = virQEMUCapsInitQMPMonitorTCG(qemuCaps, proc->mon);
+    else
+        ret = virQEMUCapsInitQMPMonitor(qemuCaps, proc->mon);
 
  cleanup:
     qemuProcessQMPStop(proc);
-    qemuProcessQMPStop(procTCG);
     qemuProcessQMPFree(proc);
-    qemuProcessQMPFree(procTCG);
     return ret;
+}
+
+
+static int
+virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
+                   const char *libDir,
+                   uid_t runUid,
+                   gid_t runGid,
+                   char **qmperr)
+{
+    if (virQEMUCapsInitQMPSingle(qemuCaps, libDir, runUid, runGid, qmperr, false) < 0)
+        return -1;
+
+    /*
+     * If KVM was enabled during the first probe, we need to explicitly probe
+     * for TCG capabilities by asking the same binary again and turning KVM
+     * off.
+     */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
+        virQEMUCapsInitQMPSingle(qemuCaps, libDir, runUid, runGid, NULL, true) < 0)
+        return -1;
+
+    return 0;
 }
 
 
