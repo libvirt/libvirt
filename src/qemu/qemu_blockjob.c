@@ -53,7 +53,9 @@ VIR_ENUM_IMPL(qemuBlockjobState,
               "ready",
               "new",
               "running",
-              "concluded");
+              "concluded",
+              "aborting",
+              "pivoting");
 
 VIR_ENUM_IMPL(qemuBlockjob,
               QEMU_BLOCKJOB_TYPE_LAST,
@@ -599,6 +601,8 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
     case QEMU_BLOCKJOB_STATE_NEW:
     case QEMU_BLOCKJOB_STATE_RUNNING:
     case QEMU_BLOCKJOB_STATE_CONCLUDED:
+    case QEMU_BLOCKJOB_STATE_ABORTING:
+    case QEMU_BLOCKJOB_STATE_PIVOTING:
     case QEMU_BLOCKJOB_STATE_LAST:
     default:
         break;
@@ -724,6 +728,9 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
     case QEMU_BLOCKJOB_STATE_NEW:
     case QEMU_BLOCKJOB_STATE_RUNNING:
     case QEMU_BLOCKJOB_STATE_LAST:
+    /* these are never processed as 'newstate' */
+    case QEMU_BLOCKJOB_STATE_ABORTING:
+    case QEMU_BLOCKJOB_STATE_PIVOTING:
     default:
         job->newstate = -1;
     }
