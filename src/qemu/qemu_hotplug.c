@@ -6131,7 +6131,7 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
 
     sa_assert(tmpChr->info.alias);
 
-    if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
+    if (qemuBuildChrDeviceStr(&devstr, vmdef, tmpChr, priv->qemuCaps) < 0)
         goto cleanup;
 
     if (!async)
