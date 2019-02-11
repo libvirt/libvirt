@@ -287,7 +287,7 @@ virshStorageVolNameCompleter(vshControl *ctl,
         return NULL;
 
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
-        return false;
+        return NULL;
 
     if ((nvols = virStoragePoolListAllVolumes(pool, &vols, flags)) < 0)
         goto error;
