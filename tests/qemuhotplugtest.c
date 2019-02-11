@@ -796,6 +796,12 @@ mymain(void)
     DO_TEST_DETACH("base-live", "watchdog-user-alias-full", false, false,
                    "device_del", QMP_DEVICE_DELETED("ua-UserWatchdog") QMP_OK);
 
+    DO_TEST_ATTACH("base-live", "guestfwd", false, true,
+                   "chardev-add", QMP_OK,
+                   "netdev_add", QMP_OK);
+    DO_TEST_DETACH("base-live", "guestfwd", false, false,
+                   "netdev_del", QMP_OK);
+
 #define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail) \
     do { \
         cpudata.test = prefix; \
