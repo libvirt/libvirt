@@ -2292,10 +2292,14 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     char *tlsAlias = NULL;
     const char *secAlias = NULL;
     bool need_release = false;
+    bool guestfwd = false;
 
-    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
-        qemuDomainPrepareChannel(chr, priv->channelTargetDir) < 0)
-        goto cleanup;
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL) {
+        guestfwd = chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD;
+
+        if (qemuDomainPrepareChannel(chr, priv->channelTargetDir) < 0)
+            goto cleanup;
+    }
 
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
         goto cleanup;
@@ -2337,8 +2341,14 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         goto exit_monitor;
     chardevAttached = true;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
-        goto exit_monitor;
+    if (guestfwd) {
+        if (qemuMonitorAddNetdev(priv->mon, devstr,
+                                 NULL, NULL, 0, NULL, NULL, 0) < 0)
+            goto exit_monitor;
+    } else {
+        if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+            goto exit_monitor;
+    }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto audit;
