@@ -643,11 +643,11 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
                                 "|./source/@volume)", ctxt);
         if (details) {
             if (vshTableRowAppend(table, type, device, target,
-                                  source ? source : "-", NULL) < 0)
+                                  NULLSTR_MINUS(source), NULL) < 0)
                 goto cleanup;
         } else {
             if (vshTableRowAppend(table, target,
-                                  source ? source : "-", NULL) < 0)
+                                  NULLSTR_MINUS(source), NULL) < 0)
                 goto cleanup;
         }
 

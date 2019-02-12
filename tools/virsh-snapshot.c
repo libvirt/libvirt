@@ -945,7 +945,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     /* Since we already have the XML, there's no need to call
      * virDomainSnapshotGetParent */
     parent = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
-    vshPrint(ctl, "%-15s %s\n", _("Parent:"), parent ? parent : "-");
+    vshPrint(ctl, "%-15s %s\n", _("Parent:"), NULLSTR_MINUS(parent));
 
     /* Children, Descendants.  After this point, the fallback to
      * compute children is too expensive, so we gracefully quit if the
