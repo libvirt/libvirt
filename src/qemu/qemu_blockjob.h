@@ -76,7 +76,7 @@ struct _qemuBlockJobData {
     char *errmsg;
     bool synchronous; /* API call is waiting for this job */
 
-    int newstate; /* virConnectDomainEventBlockJobStatus - new state to be processed */
+    int newstate; /* qemuBlockjobState, subset of events emitted by qemu */
 };
 
 
