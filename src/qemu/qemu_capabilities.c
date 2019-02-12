@@ -4152,7 +4152,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (qemuMonitorSetCapabilities(mon) < 0) {
         VIR_DEBUG("Failed to set monitor capabilities %s",
                   virGetLastErrorMessage());
-        ret = 0;
         goto cleanup;
     }
 
@@ -4161,7 +4160,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                               &package) < 0) {
         VIR_DEBUG("Failed to query monitor version %s",
                   virGetLastErrorMessage());
-        ret = 0;
         goto cleanup;
     }
 
@@ -4338,7 +4336,6 @@ virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
     if (qemuMonitorSetCapabilities(mon) < 0) {
         VIR_DEBUG("Failed to set monitor capabilities %s",
                   virGetLastErrorMessage());
-        ret = 0;
         goto cleanup;
     }
 
@@ -4364,17 +4361,13 @@ virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
 {
     qemuProcessQMPPtr proc = NULL;
     int ret = -1;
-    int rc;
 
     if (!(proc = qemuProcessQMPNew(qemuCaps->binary, libDir,
                                    runUid, runGid, qmperr, onlyTCG)))
         goto cleanup;
 
-    if ((rc = qemuProcessQMPRun(proc)) != 0) {
-        if (rc == 1)
-            ret = 0;
+    if (qemuProcessQMPRun(proc) < 0)
         goto cleanup;
-    }
 
     if (onlyTCG)
         ret = virQEMUCapsInitQMPMonitorTCG(qemuCaps, proc->mon);
@@ -4470,14 +4463,6 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     }
 
     if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid, &qmperr) < 0) {
-        virQEMUCapsLogProbeFailure(binary);
-        goto error;
-    }
-
-    if (!qemuCaps->usedQMP) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to probe QEMU binary with QMP: %s"),
-                       qmperr ? qmperr : _("unknown error"));
         virQEMUCapsLogProbeFailure(binary);
         goto error;
     }

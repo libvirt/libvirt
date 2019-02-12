@@ -8392,10 +8392,6 @@ qemuProcessQMPNew(const char *binary,
 }
 
 
-/* Returns -1 on fatal error,
- *          0 on success,
- *          1 when probing QEMU failed
- */
 int
 qemuProcessQMPRun(qemuProcessQMPPtr proc)
 {
@@ -8403,6 +8399,7 @@ qemuProcessQMPRun(qemuProcessQMPPtr proc)
     const char *machine;
     int status = 0;
     int ret = -1;
+    int rc;
 
     if (proc->forceTCG)
         machine = "none,accel=tcg";
@@ -8444,19 +8441,21 @@ qemuProcessQMPRun(qemuProcessQMPPtr proc)
 
     virCommandSetErrorBuffer(proc->cmd, proc->qmperr);
 
-    /* Log, but otherwise ignore, non-zero status.  */
     if (virCommandRun(proc->cmd, &status) < 0)
         goto cleanup;
 
     if (status != 0) {
-        VIR_DEBUG("QEMU %s exited with status %d: %s",
-                  proc->binary, status, *proc->qmperr);
-        goto ignore;
+        VIR_DEBUG("QEMU %s exited with status %d", proc->binary, status);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to start QEMU binary %s for probing: %s"),
+                       proc->binary,
+                       *proc->qmperr ? *proc->qmperr : _("unknown error"));
+        goto cleanup;
     }
 
-    if (virPidFileReadPath(proc->pidfile, &proc->pid) < 0) {
-        VIR_DEBUG("Failed to read pidfile %s", proc->pidfile);
-        goto ignore;
+    if ((rc = virPidFileReadPath(proc->pidfile, &proc->pid)) < 0) {
+        virReportSystemError(-rc, _("Failed to read pidfile %s"), proc->pidfile);
+        goto cleanup;
     }
 
     if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL, NULL, NULL)) ||
@@ -8467,7 +8466,7 @@ qemuProcessQMPRun(qemuProcessQMPPtr proc)
 
     if (!(proc->mon = qemuMonitorOpen(proc->vm, &proc->config, true, true,
                                       0, &callbacks, NULL)))
-        goto ignore;
+        goto cleanup;
 
     virObjectLock(proc->mon);
 
@@ -8479,10 +8478,6 @@ qemuProcessQMPRun(qemuProcessQMPPtr proc)
     virObjectUnref(xmlopt);
 
     return ret;
-
- ignore:
-    ret = 1;
-    goto cleanup;
 }
 
 
