@@ -7538,6 +7538,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     virshControlPtr priv = ctl->privData;
     vshTablePtr table = NULL;
+    bool ret = false;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
@@ -7559,6 +7560,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (niothreads == 0) {
+        ret = true;
         vshPrintExtra(ctl, _("No IOThreads found for the domain"));
         goto cleanup;
     }
@@ -7582,13 +7584,15 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
 
     vshTablePrintToStdout(table, ctl);
 
+    ret = true;
+
  cleanup:
     for (i = 0; i < niothreads; i++)
         virDomainIOThreadInfoFree(info[i]);
     VIR_FREE(info);
     vshTableFree(table);
     virshDomainFree(dom);
-    return niothreads >= 0;
+    return ret;
 }
 
 /*
