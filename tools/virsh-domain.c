@@ -13938,7 +13938,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     int rc = -1;
     size_t i, j;
-    virDomainFSInfoPtr *info;
+    virDomainFSInfoPtr *info = NULL;
     vshTablePtr table = NULL;
     size_t ninfos = 0;
 
