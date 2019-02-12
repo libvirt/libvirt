@@ -13968,11 +13968,9 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
             virBuffer targetsBuff = VIR_BUFFER_INITIALIZER;
             VIR_AUTOFREE(char *) targets = NULL;
 
-            for (j = 0; j < info[i]->ndevAlias; j++) {
-                virBufferAdd(&targetsBuff, info[i]->devAlias[j], -1);
-                if (j != info[i]->ndevAlias - 1)
-                    virBufferAddChar(&targetsBuff, ',');
-            }
+            for (j = 0; j < info[i]->ndevAlias; j++)
+                virBufferAsprintf(&targetsBuff, "%s,", info[i]->devAlias[j]);
+            virBufferTrim(&targetsBuff, ",", -1);
 
             targets = virBufferContentAndReset(&targetsBuff);
 
