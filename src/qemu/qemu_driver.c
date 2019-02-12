@@ -16979,17 +16979,30 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (!disk->mirror) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("pivot of disk '%s' requires an active copy job"),
-                       disk->dst);
+    switch ((qemuBlockJobType) job->type) {
+    case QEMU_BLOCKJOB_TYPE_NONE:
+    case QEMU_BLOCKJOB_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid job type '%d'"), job->type);
         goto cleanup;
+
+    case QEMU_BLOCKJOB_TYPE_PULL:
+    case QEMU_BLOCKJOB_TYPE_COMMIT:
+    case QEMU_BLOCKJOB_TYPE_INTERNAL:
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("job type '%s' does not support pivot"),
+                       qemuBlockjobTypeToString(job->type));
+        goto cleanup;
+
+    case QEMU_BLOCKJOB_TYPE_COPY:
+    case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+        break;
     }
 
-    if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
+    if (job->state != QEMU_BLOCKJOB_STATE_READY) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' not ready for pivot yet"),
-                       disk->dst);
+                       _("block job '%s' not ready for pivot yet"),
+                       job->name);
         goto cleanup;
     }
 
@@ -17014,7 +17027,8 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     if (ret < 0)
         goto cleanup;
 
-    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
+    if (disk && disk->mirror)
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
 
  cleanup:
     return ret;
