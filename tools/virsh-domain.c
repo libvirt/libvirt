@@ -13941,6 +13941,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     virDomainFSInfoPtr *info = NULL;
     vshTablePtr table = NULL;
     size_t ninfos = 0;
+    bool ret = false;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -13953,6 +13954,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     ninfos = rc;
 
     if (ninfos == 0) {
+        ret = true;
         vshError(ctl, _("No filesystems are mounted in the domain"));
         goto cleanup;
     }
@@ -13986,6 +13988,8 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
         vshTablePrintToStdout(table, ctl);
     }
 
+    ret = true;
+
  cleanup:
     if (info) {
         for (i = 0; i < ninfos; i++)
@@ -13994,7 +13998,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     }
     vshTableFree(table);
     virshDomainFree(dom);
-    return rc >= 0;
+    return ret;
 }
 
 const vshCmdDef domManagementCmds[] = {
