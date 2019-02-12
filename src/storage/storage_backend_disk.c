@@ -502,7 +502,6 @@ virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int format = def->source.format;
     const char *fmt;
-    bool ok_to_mklabel = false;
     int ret = -1;
     virCommandPtr cmd = NULL;
 
@@ -514,35 +513,31 @@ virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
                              error);
 
     fmt = virStoragePoolFormatDiskTypeToString(format);
-    if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) {
-        ok_to_mklabel = true;
-    } else {
-        if (virStorageBackendDeviceIsEmpty(def->source.devices[0].path,
-                                           fmt, true))
-            ok_to_mklabel = true;
-    }
 
-    if (ok_to_mklabel) {
-        if (virStorageBackendZeroPartitionTable(def->source.devices[0].path,
-                                                1024 * 1024) < 0)
-            goto error;
+    if (!(flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) &&
+        !(virStorageBackendDeviceIsEmpty(def->source.devices[0].path,
+                                         fmt, true)))
+        goto error;
 
-        /* eg parted /dev/sda mklabel --script msdos */
-        if (format == VIR_STORAGE_POOL_DISK_UNKNOWN)
-            format = def->source.format = VIR_STORAGE_POOL_DISK_DOS;
-        if (format == VIR_STORAGE_POOL_DISK_DOS)
-            fmt = "msdos";
-        else
-            fmt = virStoragePoolFormatDiskTypeToString(format);
+    if (virStorageBackendZeroPartitionTable(def->source.devices[0].path,
+                                            1024 * 1024) < 0)
+        goto error;
 
-        cmd = virCommandNewArgList(PARTED,
-                                   def->source.devices[0].path,
-                                   "mklabel",
-                                   "--script",
-                                   fmt,
-                                   NULL);
-        ret = virCommandRun(cmd, NULL);
-    }
+    /* eg parted /dev/sda mklabel --script msdos */
+    if (format == VIR_STORAGE_POOL_DISK_UNKNOWN)
+        format = def->source.format = VIR_STORAGE_POOL_DISK_DOS;
+    if (format == VIR_STORAGE_POOL_DISK_DOS)
+        fmt = "msdos";
+    else
+        fmt = virStoragePoolFormatDiskTypeToString(format);
+
+    cmd = virCommandNewArgList(PARTED,
+                               def->source.devices[0].path,
+                               "mklabel",
+                               "--script",
+                               fmt,
+                               NULL);
+    ret = virCommandRun(cmd, NULL);
 
  error:
     virCommandFree(cmd);
