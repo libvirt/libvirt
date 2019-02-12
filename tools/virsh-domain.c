@@ -13936,7 +13936,7 @@ static bool
 cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
-    int ret = -1;
+    int rc = -1;
     size_t i, j;
     virDomainFSInfoPtr *info;
     vshTablePtr table = NULL;
@@ -13945,12 +13945,12 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    ret = virDomainGetFSInfo(dom, &info, 0);
-    if (ret < 0) {
+    rc = virDomainGetFSInfo(dom, &info, 0);
+    if (rc < 0) {
         vshError(ctl, _("Unable to get filesystem information"));
         goto cleanup;
     }
-    ninfos = ret;
+    ninfos = rc;
 
     if (ninfos == 0) {
         vshError(ctl, _("No filesystems are mounted in the domain"));
@@ -13994,7 +13994,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     }
     vshTableFree(table);
     virshDomainFree(dom);
-    return ret >= 0;
+    return rc >= 0;
 }
 
 const vshCmdDef domManagementCmds[] = {
