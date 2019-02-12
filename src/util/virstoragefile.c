@@ -2840,6 +2840,11 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
 
         if (STRPREFIX(p, "id=")) {
             /* formulate authdef for src->auth */
+            if (src->auth) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("duplicate 'id' found in '%s'"), src->path);
+                return -1;
+            }
             if (VIR_ALLOC(authdef) < 0)
                 return -1;
 
