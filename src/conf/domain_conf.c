@@ -7616,6 +7616,12 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
             virXMLNodeNameEqual(cur, "auth")) {
+            if (iscsisrc->src->auth) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("an <auth> definition already found for "
+                                 "the <hostdev> iSCSI definition"));
+                return -1;
+            }
             if (!(authdef = virStorageAuthDefParse(cur, ctxt)))
                 return -1;
             if ((auth_secret_usage =
