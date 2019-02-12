@@ -4044,8 +4044,10 @@ getDeviceType(uint32_t host,
     int retval = 0;
 
     if (virAsprintf(&type_path, "/sys/bus/scsi/devices/%u:%u:%u:%u/type",
-                    host, bus, target, lun) < 0)
+                    host, bus, target, lun) < 0) {
+        retval = -1;
         goto out;
+    }
 
     typefile = fopen(type_path, "r");
     if (typefile == NULL) {
