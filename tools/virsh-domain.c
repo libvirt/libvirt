@@ -7531,7 +7531,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
-    int niothreads = 0;
+    size_t niothreads = 0;
     virDomainIOThreadInfoPtr *info;
     size_t i;
     int maxcpu;
@@ -7539,6 +7539,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     virshControlPtr priv = ctl->privData;
     vshTablePtr table = NULL;
     bool ret = false;
+    int rc;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
@@ -7554,10 +7555,11 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     if ((maxcpu = virshNodeGetCPUCount(priv->conn)) < 0)
         goto cleanup;
 
-    if ((niothreads = virDomainGetIOThreadInfo(dom, &info, flags)) < 0) {
+    if ((rc = virDomainGetIOThreadInfo(dom, &info, flags)) < 0) {
         vshError(ctl, _("Unable to get domain IOThreads information"));
         goto cleanup;
     }
+    niothreads = rc;
 
     if (niothreads == 0) {
         ret = true;
