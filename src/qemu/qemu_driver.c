@@ -17107,7 +17107,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
      * XXX If the abort command is synchronous but the qemu event says
      * that pivot failed, we need to reflect that failure into the
      * overall return value.  */
-    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDrivePivot(priv->mon, job->name);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
@@ -17115,11 +17114,11 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (ret < 0) {
-        /* The pivot failed. The block job in QEMU remains in the synchronised
-         * phase. Reset the state we changed and return the error to the user */
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-    }
+    /* The pivot failed. The block job in QEMU remains in the synchronised state */
+    if (ret < 0)
+        goto cleanup;
+
+    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
 
  cleanup:
     return ret;
@@ -17298,9 +17297,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         if ((ret = qemuDomainBlockPivot(driver, vm, job, disk)) < 0)
             goto endjob;
     } else {
-        if (disk->mirror)
-            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_ABORT;
-
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), job->name);
         if (qemuDomainObjExitMonitor(driver, vm) < 0) {
@@ -17308,11 +17304,11 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
             goto endjob;
         }
 
-        if (ret < 0) {
-            if (disk->mirror)
-                disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+        if (ret < 0)
             goto endjob;
-        }
+
+        if (disk->mirror)
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_ABORT;
     }
 
     ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));
