@@ -17029,6 +17029,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 
     if (disk && disk->mirror)
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
+    job->state = QEMU_BLOCKJOB_STATE_PIVOTING;
 
  cleanup:
     return ret;
@@ -17183,10 +17184,10 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         goto endjob;
     }
 
-    if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE &&
-        disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
+    if (job->state == QEMU_BLOCKJOB_STATE_ABORTING ||
+        job->state == QEMU_BLOCKJOB_STATE_PIVOTING) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("another job on disk '%s' is still being ended"),
+                       _("block job on disk '%s' is still being ended"),
                        disk->dst);
         goto endjob;
     }
@@ -17210,6 +17211,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
 
         if (disk->mirror)
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_ABORT;
+        job->state = QEMU_BLOCKJOB_STATE_ABORTING;
     }
 
     ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));

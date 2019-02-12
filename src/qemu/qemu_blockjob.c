@@ -256,7 +256,9 @@ bool
 qemuBlockJobIsRunning(qemuBlockJobDataPtr job)
 {
     return job->state == QEMU_BLOCKJOB_STATE_RUNNING ||
-           job->state == QEMU_BLOCKJOB_STATE_READY;
+           job->state == QEMU_BLOCKJOB_STATE_READY ||
+           job->state == QEMU_BLOCKJOB_STATE_ABORTING ||
+           job->state == QEMU_BLOCKJOB_STATE_PIVOTING;
 }
 
 
@@ -670,6 +672,10 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto cleanup;
+
+    if (job->newstate == QEMU_BLOCKJOB_STATE_COMPLETED &&
+        job->state == QEMU_BLOCKJOB_STATE_ABORTING)
+        job->newstate = QEMU_BLOCKJOB_STATE_CANCELLED;
 
     if (refreshed)
         qemuDomainSaveStatus(vm);
