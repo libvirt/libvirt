@@ -220,7 +220,7 @@ struct _qemuProcessQMP {
     char *binary;
     uid_t runUid;
     gid_t runGid;
-    char **qmperr;
+    char *stderr;
     char *monarg;
     char *monpath;
     char *pidfile;
@@ -236,7 +236,6 @@ qemuProcessQMPPtr qemuProcessQMPNew(const char *binary,
                                     const char *libDir,
                                     uid_t runUid,
                                     gid_t runGid,
-                                    char **qmperr,
                                     bool forceTCG);
 
 void qemuProcessQMPFree(qemuProcessQMPPtr proc);

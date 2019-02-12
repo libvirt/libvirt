@@ -4376,14 +4376,13 @@ virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
                          const char *libDir,
                          uid_t runUid,
                          gid_t runGid,
-                         char **qmperr,
                          bool onlyTCG)
 {
     qemuProcessQMPPtr proc = NULL;
     int ret = -1;
 
     if (!(proc = qemuProcessQMPNew(qemuCaps->binary, libDir,
-                                   runUid, runGid, qmperr, onlyTCG)))
+                                   runUid, runGid, onlyTCG)))
         goto cleanup;
 
     if (qemuProcessQMPRun(proc) < 0)
@@ -4408,10 +4407,9 @@ static int
 virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
                    const char *libDir,
                    uid_t runUid,
-                   gid_t runGid,
-                   char **qmperr)
+                   gid_t runGid)
 {
-    if (virQEMUCapsInitQMPSingle(qemuCaps, libDir, runUid, runGid, qmperr, false) < 0)
+    if (virQEMUCapsInitQMPSingle(qemuCaps, libDir, runUid, runGid, false) < 0)
         return -1;
 
     /*
@@ -4420,7 +4418,7 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
      * off.
      */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
-        virQEMUCapsInitQMPSingle(qemuCaps, libDir, runUid, runGid, NULL, true) < 0)
+        virQEMUCapsInitQMPSingle(qemuCaps, libDir, runUid, runGid, true) < 0)
         return -1;
 
     return 0;
@@ -4438,7 +4436,6 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
 {
     virQEMUCapsPtr qemuCaps;
     struct stat sb;
-    char *qmperr = NULL;
 
     if (!(qemuCaps = virQEMUCapsNew()))
         goto error;
@@ -4465,7 +4462,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
         goto error;
     }
 
-    if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid, &qmperr) < 0)
+    if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid) < 0)
         goto error;
 
     qemuCaps->libvirtCtime = virGetSelfLastChanged();
@@ -4484,7 +4481,6 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     }
 
  cleanup:
-    VIR_FREE(qmperr);
     return qemuCaps;
 
  error:

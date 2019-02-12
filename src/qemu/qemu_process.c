@@ -8335,6 +8335,7 @@ qemuProcessQMPFree(qemuProcessQMPPtr proc)
     VIR_FREE(proc->monpath);
     VIR_FREE(proc->monarg);
     VIR_FREE(proc->pidfile);
+    VIR_FREE(proc->stderr);
     VIR_FREE(proc);
 }
 
@@ -8344,7 +8345,6 @@ qemuProcessQMPNew(const char *binary,
                   const char *libDir,
                   uid_t runUid,
                   gid_t runGid,
-                  char **qmperr,
                   bool forceTCG)
 {
     qemuProcessQMPPtr proc = NULL;
@@ -8357,7 +8357,6 @@ qemuProcessQMPNew(const char *binary,
 
     proc->runUid = runUid;
     proc->runGid = runGid;
-    proc->qmperr = qmperr;
     proc->forceTCG = forceTCG;
 
     /* the ".sock" sufix is important to avoid a possible clash with a qemu
@@ -8439,7 +8438,7 @@ qemuProcessQMPRun(qemuProcessQMPPtr proc)
     virCommandSetGID(proc->cmd, proc->runGid);
     virCommandSetUID(proc->cmd, proc->runUid);
 
-    virCommandSetErrorBuffer(proc->cmd, proc->qmperr);
+    virCommandSetErrorBuffer(proc->cmd, &(proc->stderr));
 
     if (virCommandRun(proc->cmd, &status) < 0)
         goto cleanup;
@@ -8449,7 +8448,7 @@ qemuProcessQMPRun(qemuProcessQMPPtr proc)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to start QEMU binary %s for probing: %s"),
                        proc->binary,
-                       *proc->qmperr ? *proc->qmperr : _("unknown error"));
+                       proc->stderr ? proc->stderr : _("unknown error"));
         goto cleanup;
     }
 
@@ -8512,8 +8511,6 @@ qemuProcessQMPStop(qemuProcessQMPPtr proc)
             VIR_ERROR(_("Failed to kill process %lld: %s"),
                       (long long)proc->pid,
                       virStrerror(errno, ebuf, sizeof(ebuf)));
-
-        VIR_FREE(*proc->qmperr);
 
         proc->pid = 0;
     }
