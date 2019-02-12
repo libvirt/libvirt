@@ -13978,7 +13978,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
                                   info[i]->mountpoint,
                                   info[i]->name,
                                   info[i]->fstype,
-                                  targets,
+                                  targets ? targets : "",
                                   NULL) < 0)
                 goto cleanup;
         }
