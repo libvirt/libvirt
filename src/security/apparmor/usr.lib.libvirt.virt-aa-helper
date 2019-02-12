@@ -19,6 +19,9 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
 
   /etc/libnl-3/classid r,
 
+  # for gl enabled graphics
+  /dev/dri/{,*} r,
+
   # for hostdev
   /sys/devices/ r,
   /sys/devices/** r,
