@@ -458,7 +458,6 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     int nsource;
     size_t i;
     virStoragePoolOptionsPtr options;
-    char *name = NULL;
     char *port = NULL;
     char *ver = NULL;
     int n;
@@ -502,13 +501,12 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         source->nhost = n;
 
         for (i = 0; i < source->nhost; i++) {
-            name = virXMLPropString(nodeset[i], "name");
-            if (name == NULL) {
+            source->hosts[i].name = virXMLPropString(nodeset[i], "name");
+            if (!source->hosts[i].name) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("missing storage pool host name"));
                 goto cleanup;
             }
-            source->hosts[i].name = name;
 
             port = virXMLPropString(nodeset[i], "port");
             if (port) {
