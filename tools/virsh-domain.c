@@ -7532,7 +7532,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
     size_t niothreads = 0;
-    virDomainIOThreadInfoPtr *info;
+    virDomainIOThreadInfoPtr *info = NULL;
     size_t i;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     vshTablePtr table = NULL;
