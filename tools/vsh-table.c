@@ -219,9 +219,6 @@ vshTableSafeEncode(const char *s, size_t *width)
 
     memset(&st, 0, sizeof(st));
 
-    if (!sz)
-        return NULL;
-
     if (VIR_ALLOC_N(buf, (sz * HEX_ENCODE_LENGTH) + 1) < 0)
         return NULL;
 

@@ -291,7 +291,8 @@ testNTables(const void *opaque ATTRIBUTE_UNUSED)
         " Id   Name       Status\n"
         "--------------------------\n"
         " 1    fedora28   running\n"
-        " 2    rhel7.5    running\n";
+        " 2    rhel7.5    running\n"
+        " 3    gazpacho   \n";
     const char *exp2 =
         " Id   Name   Status\n"
         "---------------------\n";
@@ -311,6 +312,7 @@ testNTables(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     vshTableRowAppend(table1, "1", "fedora28", "running", NULL);
     vshTableRowAppend(table1, "2", "rhel7.5", "running", NULL);
+    vshTableRowAppend(table1, "3", "gazpacho", "", NULL);
     act1 = vshTablePrintToString(table1, true);
 
     table2 = vshTableNew("Id", "Name", "Status", NULL);
