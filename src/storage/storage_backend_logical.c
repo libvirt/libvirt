@@ -484,6 +484,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
     virStoragePoolSourceListPtr sourceList = data;
     char *pvname = NULL;
     char *vgname = NULL;
+    int retval = -1;
     size_t i;
     virStoragePoolSourceDevicePtr dev;
     virStoragePoolSource *thisSource;
@@ -504,10 +505,8 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
         if (!(thisSource = virStoragePoolSourceListNewSource(sourceList)))
             goto error;
 
-        thisSource->name = vgname;
+        VIR_STEAL_PTR(thisSource->name, vgname);
     }
-    else
-        VIR_FREE(vgname);
 
     if (VIR_REALLOC_N(thisSource->devices, thisSource->ndevice + 1) != 0)
         goto error;
@@ -517,15 +516,15 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
     thisSource->format = VIR_STORAGE_POOL_LOGICAL_LVM2;
 
     memset(dev, 0, sizeof(*dev));
-    dev->path = pvname;
+    VIR_STEAL_PTR(dev->path, pvname);
 
-    return 0;
+    retval = 0;
 
  error:
     VIR_FREE(pvname);
     VIR_FREE(vgname);
 
-    return -1;
+    return retval;
 }
 
 /*
