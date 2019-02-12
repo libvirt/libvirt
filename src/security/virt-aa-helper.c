@@ -937,7 +937,7 @@ get_files(vahControl * ctl)
     size_t i;
     char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    bool needsVfio = false, needsvhost = false;
+    bool needsVfio = false, needsvhost = false, needsgl = false;
 
     /* verify uuid is same as what we were given on the command line */
     virUUIDFormat(ctl->def->uuid, uuidstr);
@@ -1065,9 +1065,11 @@ get_files(vahControl * ctl)
 
         if (rendernode) {
             vah_add_file(&buf, rendernode, "rw");
+            needsgl = true;
         } else {
             if (virDomainGraphicsNeedsAutoRenderNode(graphics)) {
                 char *defaultRenderNode = virHostGetDRMRenderNode();
+                needsgl = true;
 
                 if (defaultRenderNode) {
                     vah_add_file(&buf, defaultRenderNode, "rw");
@@ -1266,6 +1268,23 @@ get_files(vahControl * ctl)
     if (needsVfio) {
         virBufferAddLit(&buf, "  \"/dev/vfio/vfio\" rw,\n");
         virBufferAddLit(&buf, "  \"/dev/vfio/[0-9]*\" rw,\n");
+    }
+    if (needsgl) {
+        /* if using gl all sorts of further dri related paths will be needed */
+        virBufferAddLit(&buf, "  # DRI/Mesa/(e)GL config and driver paths\n");
+        virBufferAddLit(&buf, "  \"/usr/lib{,32,64}/dri/*.so*\" mr,\n");
+        virBufferAddLit(&buf, "  \"/usr/lib/@{multiarch}/dri/*.so*\" mr,\n");
+        virBufferAddLit(&buf, "  \"/usr/lib/fglrx/dri/*.so*\" mr,\n");
+        virBufferAddLit(&buf, "  \"/etc/drirc\" r,\n");
+        virBufferAddLit(&buf, "  \"/usr/share/drirc.d/{,*.conf}\" r,\n");
+        virBufferAddLit(&buf, "  \"/etc/glvnd/egl_vendor.d/{,*}\" r,\n");
+        virBufferAddLit(&buf, "  \"/usr/share/glvnd/egl_vendor.d/{,*}\" r,\n");
+        virBufferAddLit(&buf, "  # Probe DRI device attributes\n");
+        virBufferAddLit(&buf, "  \"/dev/dri/\" r,\n");
+        virBufferAddLit(&buf, "  \"/sys/devices/*/*/{uevent,vendor,device,subsystem_vendor,subsystem_device}\" r,\n");
+        virBufferAddLit(&buf, "  \"/sys/devices/*/*/drm/*/{uevent,vendor,device,subsystem_vendor,subsystem_device}\" r,\n");
+        virBufferAddLit(&buf, "  # dri libs will trigger that, but t is not requited and DAC would deny it anyway\n");
+        virBufferAddLit(&buf, "  deny \"/var/lib/libvirt/.cache/\" w,\n");
     }
 
     if (ctl->newfile)
