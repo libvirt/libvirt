@@ -57,14 +57,14 @@ virStorageBackendSCSITriggerRescan(uint32_t host)
 {
     int fd = -1;
     int retval = 0;
-    char *path;
+    char *path = NULL;
 
     VIR_DEBUG("Triggering rescan of host %d", host);
 
     if (virAsprintf(&path, "%s/host%u/scan",
                     LINUX_SYSFS_SCSI_HOST_PREFIX, host) < 0) {
         retval = -1;
-        goto out;
+        goto cleanup;
     }
 
     VIR_DEBUG("Scan trigger path is '%s'", path);
@@ -76,23 +76,21 @@ virStorageBackendSCSITriggerRescan(uint32_t host)
                              _("Could not open '%s' to trigger host scan"),
                              path);
         retval = -1;
-        goto free_path;
+        goto cleanup;
     }
 
     if (safewrite(fd,
                   LINUX_SYSFS_SCSI_HOST_SCAN_STRING,
                   sizeof(LINUX_SYSFS_SCSI_HOST_SCAN_STRING)) < 0) {
-        VIR_FORCE_CLOSE(fd);
         virReportSystemError(errno,
                              _("Write to '%s' to trigger host scan failed"),
                              path);
         retval = -1;
     }
 
+ cleanup:
     VIR_FORCE_CLOSE(fd);
- free_path:
     VIR_FREE(path);
- out:
     VIR_DEBUG("Rescan of host %d complete", host);
     return retval;
 }
