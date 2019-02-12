@@ -13955,7 +13955,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
 
     if (ninfos == 0) {
         ret = true;
-        vshError(ctl, _("No filesystems are mounted in the domain"));
+        vshPrintExtra(ctl, _("No filesystems are mounted in the domain"));
         goto cleanup;
     }
 
