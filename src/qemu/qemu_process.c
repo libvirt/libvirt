@@ -4421,9 +4421,9 @@ qemuLogOperation(virDomainObjPtr vm,
                                   (qemuVersion / 1000000) % 1000,
                                   (qemuVersion / 1000) % 1000,
                                   qemuVersion % 1000,
-                                  package ? package : "",
+                                  NULLSTR_EMPTY(package),
                                   uts.release,
-                                  hostname ? hostname : "") < 0)
+                                  NULLSTR_EMPTY(hostname)) < 0)
         goto cleanup;
 
     if (cmd) {

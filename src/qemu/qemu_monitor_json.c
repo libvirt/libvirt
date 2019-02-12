@@ -1422,7 +1422,7 @@ qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
         const char *data;
 
         data = virJSONValueGetString(obj);
-        if (VIR_STRDUP(*reply_str, data ? data : "") < 0)
+        if (VIR_STRDUP(*reply_str, NULLSTR_EMPTY(data)) < 0)
             goto cleanup;
     }
 

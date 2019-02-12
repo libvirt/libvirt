@@ -686,7 +686,7 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
 
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
     ret->usageType = usageType;
-    if (VIR_STRDUP(ret->usageID, usageID ? usageID : "") < 0)
+    if (VIR_STRDUP(ret->usageID, NULLSTR_EMPTY(usageID)) < 0)
         goto error;
 
     ret->conn = virObjectRef(conn);

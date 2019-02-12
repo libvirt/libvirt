@@ -4119,7 +4119,7 @@ virStorageFileRemoveLastPathComponent(const char *path)
 {
     char *ret;
 
-    if (VIR_STRDUP(ret, path ? path : "") < 0)
+    if (VIR_STRDUP(ret, NULLSTR_EMPTY(path)) < 0)
         return NULL;
 
     virFileRemoveLastComponent(ret);

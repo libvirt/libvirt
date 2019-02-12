@@ -338,7 +338,7 @@ virCgroupV2PathOfController(virCgroupPtr group,
     if (virAsprintf(path, "%s%s/%s",
                     group->unified.mountPoint,
                     group->unified.placement,
-                    key ? key : "") < 0)
+                    NULLSTR_EMPTY(key)) < 0)
         return -1;
 
     return 0;

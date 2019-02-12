@@ -579,7 +579,7 @@ virNWFilterSnoopReqNew(const char *ifkey)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("virNWFilterSnoopReqNew called with invalid "
                          "key \"%s\" (%zu)"),
-                       ifkey ? ifkey : "",
+                       NULLSTR_EMPTY(ifkey),
                        ifkey ? strlen(ifkey) : 0);
         return NULL;
     }

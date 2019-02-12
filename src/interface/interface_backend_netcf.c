@@ -290,7 +290,7 @@ static struct netcf_if *interfaceDriverGetNetcfIF(struct netcf *ncf, virInterfac
             virReportError(netcf_to_vir_err(errcode),
                            _("couldn't find interface named '%s': %s%s%s"),
                            ifinfo->name, errmsg, details ? " - " : "",
-                           details ? details : "");
+                           NULLSTR_EMPTY(details));
         } else {
             virReportError(VIR_ERR_NO_INTERFACE,
                            _("couldn't find interface named '%s'"),
@@ -314,7 +314,7 @@ netcfInterfaceObjIsActive(struct netcf_if *iface,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to get status of interface %s: %s%s%s"),
                        ncf_if_name(iface), errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -346,7 +346,7 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to get number of host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -364,7 +364,7 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to list host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -380,7 +380,7 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
                 virReportError(netcf_to_vir_err(errcode),
                                _("couldn't find interface named '%s': %s%s%s"),
                                names[i], errmsg,
-                               details ? " - " : "", details ? details : "");
+                               details ? " - " : "", NULLSTR_EMPTY(details));
                 goto cleanup;
             } else {
                 /* Ignore the NETCF_NOERROR, as the interface is very likely
@@ -436,7 +436,7 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to get number of host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -454,7 +454,7 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to list host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -475,7 +475,7 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
                 virReportError(netcf_to_vir_err(errcode),
                                _("couldn't find interface named '%s': %s%s%s"),
                                allnames[i], errmsg,
-                               details ? " - " : "", details ? details : "");
+                               details ? " - " : "", NULLSTR_EMPTY(details));
                 goto cleanup;
             } else {
                 /* Ignore the NETCF_NOERROR, as the interface is very likely
@@ -622,7 +622,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to get number of host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -642,7 +642,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to list host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -660,7 +660,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
                 virReportError(netcf_to_vir_err(errcode),
                                _("couldn't find interface named '%s': %s%s%s"),
                                names[i], errmsg,
-                               details ? " - " : "", details ? details : "");
+                               details ? " - " : "", NULLSTR_EMPTY(details));
                 goto cleanup;
             } else {
                 /* Ignore the NETCF_NOERROR, as the interface is very likely
@@ -740,7 +740,7 @@ static virInterfacePtr netcfInterfaceLookupByName(virConnectPtr conn,
             virReportError(netcf_to_vir_err(errcode),
                            _("couldn't find interface named '%s': %s%s%s"),
                            name, errmsg,
-                           details ? " - " : "", details ? details : "");
+                           details ? " - " : "", NULLSTR_EMPTY(details));
         } else {
             virReportError(VIR_ERR_NO_INTERFACE,
                            _("couldn't find interface named '%s'"), name);
@@ -780,7 +780,7 @@ static virInterfacePtr netcfInterfaceLookupByMACString(virConnectPtr conn,
         virReportError(netcf_to_vir_err(errcode),
                        _("couldn't find interface with MAC address '%s': %s%s%s"),
                        macstr, errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
     if (niface == 0) {
@@ -844,7 +844,7 @@ static char *netcfInterfaceGetXMLDesc(virInterfacePtr ifinfo,
         virReportError(netcf_to_vir_err(errcode),
                        _("could not get interface XML description: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -906,7 +906,7 @@ static virInterfacePtr netcfInterfaceDefineXML(virConnectPtr conn,
         virReportError(netcf_to_vir_err(errcode),
                        _("could not get interface XML description: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -948,7 +948,7 @@ static int netcfInterfaceUndefine(virInterfacePtr ifinfo)
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to undefine interface %s: %s%s%s"),
                        ifinfo->name, errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -1000,7 +1000,7 @@ static int netcfInterfaceCreate(virInterfacePtr ifinfo,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to create (start) interface %s: %s%s%s"),
                        ifinfo->name, errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -1052,7 +1052,7 @@ static int netcfInterfaceDestroy(virInterfacePtr ifinfo,
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to destroy (stop) interface %s: %s%s%s"),
                        ifinfo->name, errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
         goto cleanup;
     }
 
@@ -1115,7 +1115,7 @@ static int netcfInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to begin transaction: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
     }
 
     virObjectUnlock(driver);
@@ -1140,7 +1140,7 @@ static int netcfInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to commit transaction: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
     }
 
     virObjectUnlock(driver);
@@ -1165,7 +1165,7 @@ static int netcfInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to rollback transaction: %s%s%s"),
                        errmsg, details ? " - " : "",
-                       details ? details : "");
+                       NULLSTR_EMPTY(details));
     }
 
     virObjectUnlock(driver);

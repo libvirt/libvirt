@@ -487,13 +487,13 @@ virNumaGetHugePageInfoPath(char **path,
         /* We are aiming at overall system info */
         ret = virAsprintf(path,
                           HUGEPAGES_SYSTEM_PREFIX HUGEPAGES_PREFIX "%ukB/%s",
-                          page_size, suffix ? suffix : "");
+                          page_size, NULLSTR_EMPTY(suffix));
     } else {
         /* We are aiming on specific NUMA node */
         ret = virAsprintf(path,
                           HUGEPAGES_NUMA_PREFIX "node%d/hugepages/"
                           HUGEPAGES_PREFIX "%ukB/%s",
-                          node, page_size, suffix ? suffix : "");
+                          node, page_size, NULLSTR_EMPTY(suffix));
     }
 
     if (ret >= 0 && !virFileExists(*path)) {

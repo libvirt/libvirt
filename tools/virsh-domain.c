@@ -5524,7 +5524,7 @@ virshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
     strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
 
     if (virAsprintf(&ret, "%s-%s%s", virDomainGetName(dom),
-                    timestr, ext ? ext : "") < 0) {
+                    timestr, NULLSTR_EMPTY(ext)) < 0) {
         vshError(ctl, "%s", _("Out of memory"));
         return NULL;
     }

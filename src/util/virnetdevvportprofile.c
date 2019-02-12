@@ -1239,7 +1239,7 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
 
     VIR_DEBUG("profile:'%p' vmOp: %s device: %s@%s mac: %s uuid: %s",
               virtPort, virNetDevVPortProfileOpTypeToString(vmOp),
-              (macvtap_ifname ? macvtap_ifname : ""), linkdev,
+              NULLSTR_EMPTY(macvtap_ifname), linkdev,
               (macvtap_macaddr
                ? virMacAddrFormat(macvtap_macaddr, macStr)
                : "(unspecified)"),
@@ -1305,7 +1305,7 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
 
     VIR_DEBUG("profile:'%p' vmOp: %s device: %s@%s mac: %s",
               virtPort, virNetDevVPortProfileOpTypeToString(vmOp),
-              (macvtap_ifname ? macvtap_ifname : ""), linkdev,
+              NULLSTR_EMPTY(macvtap_ifname), linkdev,
               (macvtap_macaddr
                ? virMacAddrFormat(macvtap_macaddr, macStr)
                : "(unspecified)"));

@@ -2389,7 +2389,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
             if (full || !j)
                 vshPrint(ctl, " %-10s %-17s    %s\n",
                          iface->name,
-                         iface->hwaddr ? iface->hwaddr : "", ip_addr_str);
+                         NULLSTR_EMPTY(iface->hwaddr), ip_addr_str);
             else
                 vshPrint(ctl, " %-10s %-17s    %s\n",
                          "-", "-", ip_addr_str);

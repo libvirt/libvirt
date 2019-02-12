@@ -930,7 +930,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                                      *tlsAlias) < 0 ||
         qemuMigrationParamsSetString(migParams,
                                      QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
-                                     hostname ? hostname : "") < 0)
+                                     NULLSTR_EMPTY(hostname)) < 0)
         goto error;
 
     ret = 0;

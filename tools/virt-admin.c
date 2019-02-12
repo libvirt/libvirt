@@ -1047,7 +1047,7 @@ cmdDaemonLogFilters(vshControl *ctl, const vshCmd *cmd)
         }
 
         vshPrintExtra(ctl, " %-15s", _("Logging filters: "));
-        vshPrint(ctl, "%s\n", filters ? filters : "");
+        vshPrint(ctl, "%s\n", NULLSTR_EMPTY(filters));
     }
 
     return true;
@@ -1101,7 +1101,7 @@ cmdDaemonLogOutputs(vshControl *ctl, const vshCmd *cmd)
         }
 
         vshPrintExtra(ctl, " %-15s", _("Logging outputs: "));
-        vshPrint(ctl, "%s\n", outputs ? outputs : "");
+        vshPrint(ctl, "%s\n", NULLSTR_EMPTY(outputs));
     }
 
     return true;

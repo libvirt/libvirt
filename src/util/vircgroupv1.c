@@ -532,7 +532,7 @@ virCgroupV1PathOfController(virCgroupPtr group,
     if (virAsprintf(path, "%s%s/%s",
                     group->legacy[controller].mountPoint,
                     group->legacy[controller].placement,
-                    key ? key : "") < 0)
+                    NULLSTR_EMPTY(key)) < 0)
         return -1;
 
     return 0;

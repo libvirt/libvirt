@@ -2160,7 +2160,7 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
     /* XXX should we support gid=X for X!=5 for distros which use
      * a different gid for tty?  */
     if (virAsprintf(&opts, "newinstance,ptmxmode=0666,mode=0620,gid=%u%s",
-                    ptsgid, (mount_options ? mount_options : "")) < 0)
+                    ptsgid, NULLSTR_EMPTY(mount_options)) < 0)
         goto cleanup;
 
     VIR_DEBUG("Mount devpts on %s type=tmpfs flags=0x%x, opts=%s",

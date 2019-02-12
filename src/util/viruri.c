@@ -117,7 +117,7 @@ virURIParseParams(virURIPtr uri)
         }
 
         /* Append to the parameter set. */
-        if (virURIParamAppend(uri, name, value ? value : "") < 0) {
+        if (virURIParamAppend(uri, name, NULLSTR_EMPTY(value)) < 0) {
             VIR_FREE(name);
             VIR_FREE(value);
             return -1;

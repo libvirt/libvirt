@@ -1652,24 +1652,18 @@ xenFormatSxprChr(virDomainChrDefPtr def,
                           (def->source->data.tcp.protocol
                            == VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW ?
                            "tcp" : "telnet"),
-                          (def->source->data.tcp.host ?
-                           def->source->data.tcp.host : ""),
-                          (def->source->data.tcp.service ?
-                           def->source->data.tcp.service : ""),
+                          NULLSTR_EMPTY(def->source->data.tcp.host),
+                          NULLSTR_EMPTY(def->source->data.tcp.service),
                           (def->source->data.tcp.listen ?
                            ",server,nowait" : ""));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
         virBufferAsprintf(buf, "%s:%s:%s@%s:%s", type,
-                          (def->source->data.udp.connectHost ?
-                           def->source->data.udp.connectHost : ""),
-                          (def->source->data.udp.connectService ?
-                           def->source->data.udp.connectService : ""),
-                          (def->source->data.udp.bindHost ?
-                           def->source->data.udp.bindHost : ""),
-                          (def->source->data.udp.bindService ?
-                           def->source->data.udp.bindService : ""));
+                          NULLSTR_EMPTY(def->source->data.udp.connectHost),
+                          NULLSTR_EMPTY(def->source->data.udp.connectService),
+                          NULLSTR_EMPTY(def->source->data.udp.bindHost),
+                          NULLSTR_EMPTY(def->source->data.udp.bindService));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:

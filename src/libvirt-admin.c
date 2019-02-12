@@ -152,7 +152,7 @@ getSocketPath(virURIPtr uri)
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid URI path '%s', try '/system'"),
-                           uri->path ? uri->path : "");
+                           NULLSTR_EMPTY(uri->path));
             goto error;
         }
     }
