@@ -42,13 +42,6 @@
 #define VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX (32 * 1024 * 1024)
 
 
-/*
- * Use this when passing possibly-NULL strings to printf-a-likes.
- * Required for unknown parameters during init call.
- */
-#define EMPTY_STR(s) ((s) ? (s) : "*")
-
-
 int
 virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
                             const char *custom_lease_file,
@@ -176,8 +169,8 @@ virLeasePrintLeases(virJSONValuePtr leases_array_new,
                    expirytime,
                    virJSONValueObjectGetString(lease_tmp, "mac-address"),
                    virJSONValueObjectGetString(lease_tmp, "ip-address"),
-                   EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
-                   EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
+                   NULLSTR_STAR(virJSONValueObjectGetString(lease_tmp, "hostname")),
+                   NULLSTR_STAR(virJSONValueObjectGetString(lease_tmp, "client-id")));
         }
     }
 
@@ -200,8 +193,8 @@ virLeasePrintLeases(virJSONValuePtr leases_array_new,
                        expirytime,
                        virJSONValueObjectGetString(lease_tmp, "iaid"),
                        virJSONValueObjectGetString(lease_tmp, "ip-address"),
-                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
-                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
+                       NULLSTR_STAR(virJSONValueObjectGetString(lease_tmp, "hostname")),
+                       NULLSTR_STAR(virJSONValueObjectGetString(lease_tmp, "client-id")));
             }
         }
     }
