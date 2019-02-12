@@ -1754,24 +1754,26 @@ storageBackendUpdateVolTargetInfo(virStorageVolType voltype,
                                   unsigned int openflags,
                                   unsigned int readflags)
 {
-    int ret, fd = -1;
+    int ret = -1;
+    int rc;
+    int fd = -1;
     struct stat sb;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
     VIR_AUTOFREE(char *) buf = NULL;
 
-    if ((ret = virStorageBackendVolOpen(target->path, &sb, openflags)) < 0)
-        goto cleanup;
-    fd = ret;
+    if ((rc = virStorageBackendVolOpen(target->path, &sb, openflags)) < 0)
+        return rc;
+    fd = rc;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb)) < 0)
+    if ((virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb)) < 0)
         goto cleanup;
 
     if ((voltype == VIR_STORAGE_VOL_FILE || voltype == VIR_STORAGE_VOL_BLOCK) &&
         target->format != VIR_STORAGE_FILE_NONE) {
         if (S_ISDIR(sb.st_mode)) {
             if (storageBackendIsPloopDir(target->path)) {
-                if ((ret = storageBackendRedoPloopUpdate(target, &sb, &fd,
-                                                         openflags)) < 0)
+                if ((storageBackendRedoPloopUpdate(target, &sb, &fd,
+                                                   openflags)) < 0)
                     goto cleanup;
                 target->format = VIR_STORAGE_FILE_PLOOP;
             } else {
@@ -1782,7 +1784,6 @@ storageBackendUpdateVolTargetInfo(virStorageVolType voltype,
 
         if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
             virReportSystemError(errno, _("cannot seek to start of '%s'"), target->path);
-            ret = -1;
             goto cleanup;
         }
 
@@ -1795,22 +1796,23 @@ storageBackendUpdateVolTargetInfo(virStorageVolType voltype,
                 virReportSystemError(errno,
                                      _("cannot read header '%s'"),
                                      target->path);
-                ret = -1;
             }
             goto cleanup;
         }
 
-        if (virStorageSourceUpdateCapacity(target, buf, len, false) < 0) {
-            ret = -1;
+        if (virStorageSourceUpdateCapacity(target, buf, len, false) < 0)
+            goto cleanup;
+    }
+
+    if (withBlockVolFormat) {
+        if ((rc = virStorageBackendDetectBlockVolFormatFD(target, fd,
+                                                          readflags)) < 0) {
+            ret = rc;
             goto cleanup;
         }
     }
 
-    if (withBlockVolFormat) {
-        if ((ret = virStorageBackendDetectBlockVolFormatFD(target, fd,
-                                                           readflags)) < 0)
-            goto cleanup;
-    }
+    ret = 0;
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
