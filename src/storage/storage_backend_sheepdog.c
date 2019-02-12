@@ -359,9 +359,10 @@ virStorageBackendSheepdogRefreshVol(virStoragePoolObjPtr pool,
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
     VIR_FREE(vol->key);
-    if (virAsprintf(&vol->key, "%s/%s",
-                    def->source.name, vol->name) < 0)
+    if (virAsprintf(&vol->key, "%s/%s", def->source.name, vol->name) < 0) {
+        ret = -1;
         goto cleanup;
+    }
 
     VIR_FREE(vol->target.path);
     ignore_value(VIR_STRDUP(vol->target.path, vol->name));
