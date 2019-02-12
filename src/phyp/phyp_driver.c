@@ -2031,6 +2031,7 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
         goto err;
 
     VIR_FREE(key);
+    virStoragePoolDefFree(spdef);
 
     return vol;
 
