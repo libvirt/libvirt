@@ -17007,16 +17007,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    /* Attempt the pivot.  Record the attempt now, to prevent duplicate
-     * attempts; but the actual disk change will be made when emitting
-     * the event.
-     * XXX On libvirtd restarts, if we missed the qemu event, we need
-     * to double check what state qemu is in.
-     * XXX We should be using qemu's rerror flag to make sure the job
-     * remains alive until we know its final state.
-     * XXX If the abort command is synchronous but the qemu event says
-     * that pivot failed, we need to reflect that failure into the
-     * overall return value.  */
     qemuDomainObjEnterMonitor(driver, vm);
     if (blockdev)
         ret = qemuMonitorJobComplete(priv->mon, job->name);
