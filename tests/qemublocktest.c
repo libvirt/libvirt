@@ -46,14 +46,14 @@ testBackingXMLjsonXML(const void *args)
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virStorageSourcePtr xmlsrc = NULL;
-    virStorageSourcePtr jsonsrc = NULL;
     virJSONValuePtr backendprops = NULL;
     virJSONValuePtr wrapper = NULL;
     char *propsstr = NULL;
     char *protocolwrapper = NULL;
     char *actualxml = NULL;
     int ret = -1;
+    VIR_AUTOPTR(virStorageSource) xmlsrc = NULL;
+    VIR_AUTOPTR(virStorageSource) jsonsrc = NULL;
 
     if (VIR_ALLOC(xmlsrc) < 0)
         return -1;
@@ -104,8 +104,6 @@ testBackingXMLjsonXML(const void *args)
     ret = 0;
 
  cleanup:
-    virStorageSourceFree(xmlsrc);
-    virStorageSourceFree(jsonsrc);
     VIR_FREE(propsstr);
     VIR_FREE(protocolwrapper);
     VIR_FREE(actualxml);

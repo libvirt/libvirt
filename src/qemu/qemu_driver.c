@@ -274,11 +274,11 @@ qemuSecurityChownCallback(const virStorageSource *src,
                           uid_t uid,
                           gid_t gid)
 {
-    virStorageSourcePtr cpy = NULL;
     struct stat sb;
     int save_errno = 0;
     int ret = -1;
     int rv;
+    VIR_AUTOPTR(virStorageSource) cpy = NULL;
 
     rv = virStorageFileSupportsSecurityDriver(src);
     if (rv <= 0)
@@ -319,7 +319,6 @@ qemuSecurityChownCallback(const virStorageSource *src,
  cleanup:
     save_errno = errno;
     virStorageFileDeinit(cpy);
-    virStorageSourceFree(cpy);
     errno = save_errno;
 
     return ret;
@@ -17958,7 +17957,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     virDomainObjPtr vm;
     int ret = -1;
     unsigned long long speed = bandwidth;
-    virStorageSourcePtr dest = NULL;
+    VIR_AUTOPTR(virStorageSource) dest = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
                   VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
@@ -18020,7 +18019,6 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virStorageSourceFree(dest);
     return ret;
 }
 
@@ -18150,10 +18148,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
     char *topPath = NULL;
     char *basePath = NULL;
     char *backingPath = NULL;
-    virStorageSourcePtr mirror = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
     qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
+    VIR_AUTOPTR(virStorageSource) mirror = NULL;
 
     /* XXX Add support for COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
@@ -18352,7 +18350,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
             virFreeError(orig_err);
         }
     }
-    virStorageSourceFree(mirror);
     qemuBlockJobStartupFinalize(job);
     qemuDomainObjEndJob(driver, vm);
 

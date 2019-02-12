@@ -788,9 +788,9 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
 {
     qemuBlockStorageSourceAttachDataPtr data = NULL;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    virStorageSourcePtr copysrc = NULL;
     int mon_ret = 0;
     int ret = -1;
+    VIR_AUTOPTR(virStorageSource) copysrc = NULL;
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
 
@@ -849,7 +849,6 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
 
  cleanup:
     qemuBlockStorageSourceAttachDataFree(data);
-    virStorageSourceFree(copysrc);
     return ret;
 }
 

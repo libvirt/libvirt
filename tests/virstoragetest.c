@@ -95,7 +95,8 @@ testStorageFileGetMetadata(const char *path,
                            uid_t uid, gid_t gid)
 {
     struct stat st;
-    virStorageSourcePtr def = NULL;
+    virStorageSourcePtr ret = NULL;
+    VIR_AUTOPTR(virStorageSource) def = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -112,16 +113,13 @@ testStorageFileGetMetadata(const char *path,
     }
 
     if (VIR_STRDUP(def->path, path) < 0)
-        goto error;
+        return NULL;
 
     if (virStorageFileGetMetadata(def, uid, gid, false) < 0)
-        goto error;
+        return NULL;
 
-    return def;
-
- error:
-    virStorageSourceFree(def);
-    return NULL;
+    VIR_STEAL_PTR(ret, def);
+    return ret;
 }
 
 static int
@@ -308,41 +306,40 @@ static int
 testStorageChain(const void *args)
 {
     const struct testChainData *data = args;
-    int ret = -1;
-    virStorageSourcePtr meta;
     virStorageSourcePtr elt;
     size_t i = 0;
+    VIR_AUTOPTR(virStorageSource) meta = NULL;
     VIR_AUTOFREE(char *) broken = NULL;
 
     meta = testStorageFileGetMetadata(data->start, data->format, -1, -1);
     if (!meta) {
         if (data->flags & EXP_FAIL) {
             virResetLastError();
-            ret = 0;
+            return 0;
         }
-        goto cleanup;
+        return -1;
     } else if (data->flags & EXP_FAIL) {
         fprintf(stderr, "call should have failed\n");
-        goto cleanup;
+        return -1;
     }
     if (data->flags & EXP_WARN) {
         if (virGetLastErrorCode() == VIR_ERR_OK) {
             fprintf(stderr, "call should have warned\n");
-            goto cleanup;
+            return -1;
         }
         virResetLastError();
         if (virStorageFileChainGetBroken(meta, &broken) || !broken) {
             fprintf(stderr, "call should identify broken part of chain\n");
-            goto cleanup;
+            return -1;
         }
     } else {
         if (virGetLastErrorCode()) {
             fprintf(stderr, "call should not have warned\n");
-            goto cleanup;
+            return -1;
         }
         if (virStorageFileChainGetBroken(meta, &broken) || broken) {
             fprintf(stderr, "chain should not be identified as broken\n");
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -353,7 +350,7 @@ testStorageChain(const void *args)
 
         if (i == data->nfiles) {
             fprintf(stderr, "probed chain was too long\n");
-            goto cleanup;
+            return -1;
         }
 
         if (virAsprintf(&expect,
@@ -378,24 +375,21 @@ testStorageChain(const void *args)
                         elt->format,
                         virStorageNetProtocolTypeToString(elt->protocol),
                         NULLSTR(elt->nhosts ? elt->hosts[0].name : NULL)) < 0) {
-            goto cleanup;
+            return -1;
         }
         if (STRNEQ(expect, actual)) {
             virTestDifference(stderr, expect, actual);
-            goto cleanup;
+            return -1;
         }
         elt = elt->backingStore;
         i++;
     }
     if (i != data->nfiles) {
         fprintf(stderr, "probed chain was too short\n");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    virStorageSourceFree(meta);
-    return ret;
+    return 0;
 }
 
 struct testLookupData
@@ -646,9 +640,9 @@ testBackingParse(const void *args)
 {
     const struct testBackingParseData *data = args;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virStorageSourcePtr src = NULL;
     int ret = -1;
     VIR_AUTOFREE(char *) xml = NULL;
+    VIR_AUTOPTR(virStorageSource) src = NULL;
 
     if (!(src = virStorageSourceNewFromBackingAbsolute(data->backing))) {
         if (!data->expect)
@@ -680,7 +674,6 @@ testBackingParse(const void *args)
     ret = 0;
 
  cleanup:
-    virStorageSourceFree(src);
     virBufferFreeAndReset(&buf);
 
     return ret;
@@ -696,10 +689,10 @@ mymain(void)
     struct testPathCanonicalizeData data3;
     struct testPathRelativeBacking data4;
     struct testBackingParseData data5;
-    virStorageSourcePtr chain = NULL;
     virStorageSourcePtr chain2; /* short for chain->backingStore */
     virStorageSourcePtr chain3; /* short for chain2->backingStore */
     VIR_AUTOPTR(virCommand) cmd = NULL;
+    VIR_AUTOPTR(virStorageSource) chain = NULL;
 
     if (storageRegisterAll() < 0)
        return EXIT_FAILURE;
@@ -1580,7 +1573,6 @@ mymain(void)
 
  cleanup:
     /* Final cleanup */
-    virStorageSourceFree(chain);
     testCleanupImages();
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

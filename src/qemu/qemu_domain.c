@@ -2730,10 +2730,10 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
 {
     xmlNodePtr savedNode = ctxt->node;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    virStorageSourcePtr migrSource = NULL;
     char *format = NULL;
     char *type = NULL;
     int ret = -1;
+    VIR_AUTOPTR(virStorageSource) migrSource = NULL;
 
     ctxt->node = node;
 
@@ -2781,7 +2781,6 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
     ret = 0;
 
  cleanup:
-    virStorageSourceFree(migrSource);
     VIR_FREE(format);
     VIR_FREE(type);
     ctxt->node = savedNode;

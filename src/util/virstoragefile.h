@@ -544,5 +544,6 @@ void virStorageFileReportBrokenChain(int errcode,
                                      virStorageSourcePtr parent);
 
 VIR_DEFINE_AUTOPTR_FUNC(virStorageAuthDef, virStorageAuthDefFree);
+VIR_DEFINE_AUTOPTR_FUNC(virStorageSource, virStorageSourceFree);
 
 #endif /* LIBVIRT_VIRSTORAGEFILE_H */
