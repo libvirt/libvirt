@@ -1398,11 +1398,11 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
 
         if (vshTableRowAppend(table,
                               expirytime,
-                              EMPTYSTR(lease->mac),
-                              EMPTYSTR(typestr),
-                              EMPTYSTR(cidr_format),
-                              EMPTYSTR(lease->hostname),
-                              EMPTYSTR(lease->clientid),
+                              NULLSTR_MINUS(lease->mac),
+                              NULLSTR_MINUS(typestr),
+                              NULLSTR_MINUS(cidr_format),
+                              NULLSTR_MINUS(lease->hostname),
+                              NULLSTR_MINUS(lease->clientid),
                               NULL) < 0)
             goto cleanup;
     }

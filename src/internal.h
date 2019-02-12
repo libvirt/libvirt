@@ -241,11 +241,6 @@
 # define NULLSTR(s) ((s) ? (s) : "<null>")
 
 /*
- * Similar to NULLSTR, but print '-' to make it more user friendly.
- */
-# define EMPTYSTR(s) ((s) ? (s) : "-")
-
-/*
  * Turn a NULL string into an empty string
  */
 # define NULLSTR_EMPTY(s) ((s) ? (s) : "")
