@@ -262,6 +262,7 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
     size_t bufsiz = 0;
     ssize_t ret;
     struct stat st;
+    int retval = -1;
 
     *linkpath = NULL;
 
@@ -291,13 +292,13 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
 
     buf[ret] = '\0';
 
-    *linkpath = buf;
+    VIR_STEAL_PTR(*linkpath, buf);
 
-    return 0;
+    retval = 0;
 
  error:
     VIR_FREE(buf);
-    return -1;
+    return retval;
 }
 
 
