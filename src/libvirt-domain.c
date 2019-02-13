@@ -2561,6 +2561,15 @@ virDomainGetControlInfo(virDomainPtr domain,
  * describing CPU capabilities is modified to match actual
  * capabilities of the host.
  *
+ * If @flags contains VIR_DOMAIN_XML_MIGRATABLE, the XML is altered to
+ * assist in migrations, since the source and destination may be
+ * running different libvirt versions.  This may include trimming
+ * redundant or default information that might confuse an older
+ * recipient, or exposing internal details that aid a newer recipient;
+ * this flag is rejected on read-only connections, and the resulting
+ * XML might not validate against the schema, so it is mainly for
+ * internal use.
+ *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
  */
