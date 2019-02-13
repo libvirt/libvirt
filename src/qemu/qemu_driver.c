@@ -100,6 +100,7 @@
 #include "virnuma.h"
 #include "dirname.h"
 #include "netdev_bandwidth_conf.h"
+#include "virqemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -14561,6 +14562,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
     virBitmapPtr created = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
         goto cleanup;
@@ -14589,13 +14591,15 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
                                          NULL)))
             goto cleanup;
 
-        /* adds cmd line arg: backing_file=/path/to/backing/file,backing_fmd=format */
-        virCommandAddArgFormat(cmd, "backing_file=%s,backing_fmt=%s",
-                               defdisk->src->path,
-                               virStorageFileFormatTypeToString(defdisk->src->format));
+        /* adds cmd line arg: backing_fmt=format,backing_file=/path/to/backing/file */
+        virBufferAsprintf(&buf, "backing_fmt=%s,backing_file=",
+                          virStorageFileFormatTypeToString(defdisk->src->format));
+        virQEMUBuildBufferEscapeComma(&buf, defdisk->src->path);
+        virCommandAddArgBuffer(cmd, &buf);
 
         /* adds cmd line args: /path/to/target/file */
-        virCommandAddArg(cmd, snapdisk->src->path);
+        virQEMUBuildBufferEscapeComma(&buf, snapdisk->src->path);
+        virCommandAddArgBuffer(cmd, &buf);
 
         /* If the target does not exist, we're going to create it possibly */
         if (!virFileExists(snapdisk->src->path))
@@ -14629,6 +14633,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    virBufferFreeAndReset(&buf);
     virCommandFree(cmd);
 
     /* unlink images if creation has failed */
