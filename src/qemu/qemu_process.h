@@ -225,6 +225,7 @@ struct _qemuProcessQMP {
     char *monarg;
     char *monpath;
     char *pidfile;
+    char *uniqDir;
     virCommandPtr cmd;
     qemuMonitorPtr mon;
     pid_t pid;
