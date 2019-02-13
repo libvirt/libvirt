@@ -244,14 +244,13 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
 /**
  * virDomainSnapshotGetXMLDesc:
  * @snapshot: a domain snapshot object
- * @flags: bitwise-OR of subset of virDomainXMLFlags
+ * @flags: bitwise-OR of supported virDomainSnapshotXMLFlags
  *
  * Provide an XML description of the domain snapshot.
  *
  * No security-sensitive data will be included unless @flags contains
- * VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
- * connections.  For this API, @flags should not contain either
- * VIR_DOMAIN_XML_INACTIVE or VIR_DOMAIN_XML_UPDATE_CPU.
+ * VIR_DOMAIN_SNAPSHOT_XML_SECURE; this flag is rejected on read-only
+ * connections.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
@@ -268,7 +267,8 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virCheckDomainSnapshotReturn(snapshot, NULL);
     conn = snapshot->domain->conn;
 
-    if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
+    if ((conn->flags & VIR_CONNECT_RO) &&
+        (flags & VIR_DOMAIN_SNAPSHOT_XML_SECURE)) {
         virReportError(VIR_ERR_OPERATION_DENIED, "%s",
                        _("virDomainSnapshotGetXMLDesc with secure flag"));
         goto error;
