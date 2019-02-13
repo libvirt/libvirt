@@ -1219,6 +1219,7 @@ int                     virDomainRestoreFlags   (virConnectPtr conn,
                                                  const char *dxml,
                                                  unsigned int flags);
 
+/* See below for virDomainSaveImageXMLFlags */
 char *          virDomainSaveImageGetXMLDesc    (virConnectPtr conn,
                                                  const char *file,
                                                  unsigned int flags);
@@ -1570,6 +1571,10 @@ typedef enum {
     VIR_DOMAIN_XML_UPDATE_CPU   = (1 << 2), /* update guest CPU requirements according to host CPU */
     VIR_DOMAIN_XML_MIGRATABLE   = (1 << 3), /* dump XML suitable for migration */
 } virDomainXMLFlags;
+
+typedef enum {
+    VIR_DOMAIN_SAVE_IMAGE_XML_SECURE         = VIR_DOMAIN_XML_SECURE, /* dump security sensitive information too */
+} virDomainSaveImageXMLFlags;
 
 char *                  virDomainGetXMLDesc     (virDomainPtr domain,
                                                  unsigned int flags);

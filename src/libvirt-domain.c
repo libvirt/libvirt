@@ -1066,16 +1066,15 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
  * virDomainSaveImageGetXMLDesc:
  * @conn: pointer to the hypervisor connection
  * @file: path to saved state file
- * @flags: bitwise-OR of subset of virDomainXMLFlags
+ * @flags: bitwise-OR of supported virDomainSaveImageXMLFlags
  *
  * This method will extract the XML describing the domain at the time
  * a saved state file was created.  @file must be a file created
  * previously by virDomainSave() or virDomainSaveFlags().
  *
  * No security-sensitive data will be included unless @flags contains
- * VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
- * connections.  For this API, @flags should not contain either
- * VIR_DOMAIN_XML_INACTIVE or VIR_DOMAIN_XML_UPDATE_CPU.
+ * VIR_DOMAIN_SAVE_IMAGE_XML_SECURE; this flag is rejected on read-only
+ * connections.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of
  * error.  The caller must free() the returned value.
@@ -1092,7 +1091,8 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
     virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(file, error);
 
-    if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
+    if ((conn->flags & VIR_CONNECT_RO) &&
+        (flags & VIR_DOMAIN_SAVE_IMAGE_XML_SECURE)) {
         virReportError(VIR_ERR_OPERATION_DENIED, "%s",
                        _("virDomainSaveImageGetXMLDesc with secure flag"));
         goto error;
@@ -9477,15 +9477,14 @@ virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 /**
  * virDomainManagedSaveGetXMLDesc:
  * @domain: a domain object
- * @flags: bitwise-OR of subset of virDomainXMLFlags
+ * @flags: bitwise-OR of supported virDomainSaveImageXMLFlags
  *
  * This method will extract the XML description of the managed save
  * state file of a domain.
  *
  * No security-sensitive data will be included unless @flags contains
- * VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
- * connections.  For this API, @flags should not contain either
- * VIR_DOMAIN_XML_INACTIVE or VIR_DOMAIN_XML_UPDATE_CPU.
+ * VIR_DOMAIN_SAVE_IMAGE_XML_SECURE; this flag is rejected on read-only
+ * connections.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of
  * error.  The caller must free() the returned value.
@@ -9502,7 +9501,8 @@ virDomainManagedSaveGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virCheckDomainReturn(domain, NULL);
     conn = domain->conn;
 
-    if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
+    if ((conn->flags & VIR_CONNECT_RO) &&
+        (flags & VIR_DOMAIN_SAVE_IMAGE_XML_SECURE)) {
         virReportError(VIR_ERR_OPERATION_DENIED, "%s",
                        _("virDomainManagedSaveGetXMLDesc with secure flag"));
         goto error;
