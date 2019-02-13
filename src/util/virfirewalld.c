@@ -351,13 +351,12 @@ virFirewallDInterfaceSetZone(const char *iface,
                              const char *zone)
 {
     DBusConnection *sysbus = virDBusGetSystemBus();
-    DBusMessage *reply = NULL;
 
     if (!sysbus)
         return -1;
 
     return virDBusCallMethod(sysbus,
-                             &reply,
+                             NULL,
                              NULL,
                              VIR_FIREWALL_FIREWALLD_SERVICE,
                              "/org/fedoraproject/FirewallD1",
