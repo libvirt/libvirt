@@ -242,6 +242,4 @@ void qemuProcessQMPFree(qemuProcessQMPPtr proc);
 
 int qemuProcessQMPStart(qemuProcessQMPPtr proc);
 
-void qemuProcessQMPStop(qemuProcessQMPPtr proc);
-
 #endif /* LIBVIRT_QEMU_PROCESS_H */

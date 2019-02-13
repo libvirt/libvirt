@@ -8324,6 +8324,49 @@ static qemuMonitorCallbacks callbacks = {
 };
 
 
+static void
+qemuProcessQMPStop(qemuProcessQMPPtr proc)
+{
+    if (proc->mon) {
+        virObjectUnlock(proc->mon);
+        qemuMonitorClose(proc->mon);
+        proc->mon = NULL;
+    }
+
+    if (proc->cmd) {
+        virCommandAbort(proc->cmd);
+        virCommandFree(proc->cmd);
+        proc->cmd = NULL;
+    }
+
+    if (proc->monpath)
+        unlink(proc->monpath);
+
+    virDomainObjEndAPI(&proc->vm);
+
+    if (proc->pid != 0) {
+        char ebuf[1024];
+
+        VIR_DEBUG("Killing QMP caps process %lld", (long long)proc->pid);
+        if (virProcessKill(proc->pid, SIGKILL) < 0 && errno != ESRCH)
+            VIR_ERROR(_("Failed to kill process %lld: %s"),
+                      (long long)proc->pid,
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
+
+        proc->pid = 0;
+    }
+
+    if (proc->pidfile)
+        unlink(proc->pidfile);
+}
+
+
+/**
+ * qemuProcessQMPFree:
+ * @proc: Stores process and connection state
+ *
+ * Kill QEMU process and free process data structure.
+ */
 void
 qemuProcessQMPFree(qemuProcessQMPPtr proc)
 {
@@ -8535,7 +8578,6 @@ qemuProcessQMPConnectMonitor(qemuProcessQMPPtr proc)
  *   proc = qemuProcessQMPNew(binary, libDir, runUid, runGid, forceTCG);
  *   qemuProcessQMPStart(proc);
  *   ** Send QMP Queries to QEMU using monitor (proc->mon) **
- *   qemuProcessQMPStop(proc);
  *   qemuProcessQMPFree(proc);
  *
  * Process error output (proc->stderr) remains available in qemuProcessQMP
@@ -8552,57 +8594,13 @@ qemuProcessQMPStart(qemuProcessQMPPtr proc)
         goto cleanup;
 
     if (qemuProcessQMPLaunch(proc) < 0)
-        goto stop;
+        goto cleanup;
 
     if (qemuProcessQMPConnectMonitor(proc) < 0)
-        goto stop;
+        goto cleanup;
 
     ret = 0;
 
  cleanup:
     return ret;
-
- stop:
-    qemuProcessQMPStop(proc);
-    goto cleanup;
-}
-
-
-void
-qemuProcessQMPStop(qemuProcessQMPPtr proc)
-{
-    if (!proc)
-        return;
-
-    if (proc->mon) {
-        virObjectUnlock(proc->mon);
-        qemuMonitorClose(proc->mon);
-        proc->mon = NULL;
-    }
-
-    if (proc->cmd) {
-        virCommandAbort(proc->cmd);
-        virCommandFree(proc->cmd);
-        proc->cmd = NULL;
-    }
-
-    if (proc->monpath)
-        unlink(proc->monpath);
-
-    virDomainObjEndAPI(&proc->vm);
-
-    if (proc->pid != 0) {
-        char ebuf[1024];
-
-        VIR_DEBUG("Killing QMP caps process %lld", (long long)proc->pid);
-        if (virProcessKill(proc->pid, SIGKILL) < 0 && errno != ESRCH)
-            VIR_ERROR(_("Failed to kill process %lld: %s"),
-                      (long long)proc->pid,
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
-
-        proc->pid = 0;
-    }
-
-    if (proc->pidfile)
-        unlink(proc->pidfile);
 }

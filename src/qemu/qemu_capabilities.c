@@ -4397,7 +4397,6 @@ virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
     if (ret < 0)
         virQEMUCapsLogProbeFailure(qemuCaps->binary);
 
-    qemuProcessQMPStop(proc);
     qemuProcessQMPFree(proc);
     return ret;
 }
