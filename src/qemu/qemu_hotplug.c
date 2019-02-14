@@ -4754,13 +4754,12 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
     VIR_DEBUG("Removing character device %s from domain %p %s",
               chr->info.alias, vm, vm->def->name);
 
-    if (monitor) {
-        if (!(charAlias = qemuAliasChardevFromDevAlias(chr->info.alias)))
-            goto cleanup;
+    if (!(charAlias = qemuAliasChardevFromDevAlias(chr->info.alias)))
+        goto cleanup;
 
+    if (monitor) {
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorDetachCharDev(priv->mon, charAlias);
-
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
     }
