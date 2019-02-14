@@ -7357,7 +7357,7 @@ static char
      * ignore the VIR_DOMAIN_XML_UPDATE_CPU flag.
      */
     if (virDomainObjIsActive(vm) &&
-        !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
+        !(flags & VIR_DOMAIN_XML_INACTIVE))
         flags &= ~VIR_DOMAIN_XML_UPDATE_CPU;
 
     ret = qemuDomainFormatXML(driver, vm, flags);
