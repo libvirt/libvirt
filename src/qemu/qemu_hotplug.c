@@ -6129,7 +6129,6 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr vmdef = vm->def;
     virDomainChrDefPtr tmpChr;
-    char *devstr = NULL;
     bool guestfwd = false;
 
     if (!(tmpChr = virDomainChrFind(vmdef, chr))) {
@@ -6150,9 +6149,6 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
 
     sa_assert(tmpChr->info.alias);
 
-    if (qemuBuildChrDeviceStr(&devstr, vmdef, tmpChr, priv->qemuCaps) < 0)
-        goto cleanup;
-
     if (!async && !guestfwd)
         qemuDomainMarkDeviceForRemoval(vm, &tmpChr->info);
 
@@ -6163,7 +6159,7 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
             goto cleanup;
         }
     } else {
-        if (devstr && qemuMonitorDelDevice(priv->mon, tmpChr->info.alias) < 0) {
+        if (qemuMonitorDelDevice(priv->mon, tmpChr->info.alias) < 0) {
             ignore_value(qemuDomainObjExitMonitor(driver, vm));
             goto cleanup;
         }
@@ -6183,7 +6179,6 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
  cleanup:
     if (!async)
         qemuDomainResetDeviceRemoval(vm);
-    VIR_FREE(devstr);
     return ret;
 }
 
