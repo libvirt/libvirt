@@ -37,7 +37,6 @@ virStorageBackendVzPoolBuild(virStoragePoolObjPtr pool,
 static int
 virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
 {
-    int ret = -1;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     VIR_AUTOFREE(char *) grp_name = NULL;
     VIR_AUTOFREE(char *) usr_name = NULL;
