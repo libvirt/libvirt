@@ -8544,6 +8544,19 @@ qemuProcessQMPLaunch(qemuProcessQMPPtr proc)
 }
 
 
+int
+qemuProcessQMPInitMonitor(qemuMonitorPtr mon)
+{
+    if (qemuMonitorSetCapabilities(mon) < 0) {
+        VIR_DEBUG("Failed to set monitor capabilities %s",
+                  virGetLastErrorMessage());
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuProcessQMPConnectMonitor(qemuProcessQMPPtr proc)
 {
@@ -8569,6 +8582,9 @@ qemuProcessQMPConnectMonitor(qemuProcessQMPPtr proc)
         goto cleanup;
 
     virObjectLock(proc->mon);
+
+    if (qemuProcessQMPInitMonitor(proc->mon) < 0)
+        goto cleanup;
 
     ret = 0;
 

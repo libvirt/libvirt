@@ -38,4 +38,6 @@ int qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon,
                                    const char *devAlias,
                                    void *opaque);
 
+int qemuProcessQMPInitMonitor(qemuMonitorPtr mon);
+
 #endif /* LIBVIRT_QEMU_PROCESSPRIV_H */
