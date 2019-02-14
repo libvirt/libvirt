@@ -2245,7 +2245,7 @@ virStorageSourceCopy(const virStorageSource *src,
 {
     virStorageSourcePtr def = NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virStorageSourceNew()))
         return NULL;
 
     def->id = src->id;
@@ -2562,6 +2562,18 @@ virStorageSourceClear(virStorageSourcePtr def)
 }
 
 
+virStorageSourcePtr
+virStorageSourceNew(void)
+{
+    virStorageSourcePtr ret = NULL;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    return ret;
+}
+
+
 void
 virStorageSourceFree(virStorageSourcePtr def)
 {
@@ -2580,7 +2592,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
     virStorageSourcePtr def;
     VIR_AUTOFREE(char *) dirname = NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virStorageSourceNew()))
         return NULL;
 
     /* store relative name */
@@ -3627,7 +3639,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
     virStorageSourcePtr def;
     int rc;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virStorageSourceNew()))
         return NULL;
 
     if (virStorageIsFile(path)) {
@@ -4900,7 +4912,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         }
     } else {
         /* add terminator */
-        if (VIR_ALLOC(backingStore) < 0)
+        if (!(backingStore = virStorageSourceNew()))
             goto cleanup;
     }
 

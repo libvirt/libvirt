@@ -308,7 +308,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
      *  lv is created with "--virtualsize").
      */
     if (groups[1] && STRNEQ(groups[1], "") && (groups[1][0] != '[')) {
-        if (VIR_ALLOC(vol->target.backingStore) < 0)
+        if (!(vol->target.backingStore = virStorageSourceNew()))
             goto cleanup;
 
         if (virAsprintf(&vol->target.backingStore->path, "%s/%s",

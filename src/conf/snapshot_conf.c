@@ -122,7 +122,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (VIR_ALLOC(def->src) < 0)
+    if (!(def->src = virStorageSourceNew()))
         goto cleanup;
 
     def->name = virXMLPropString(node, "name");
@@ -621,7 +621,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
         if (virBitmapIsBitSet(map, i))
             continue;
         disk = &def->disks[ndisks++];
-        if (VIR_ALLOC(disk->src) < 0)
+        if (!(disk->src = virStorageSourceNew()))
             goto cleanup;
         if (VIR_STRDUP(disk->name, def->dom->disks[i]->dst) < 0)
             goto cleanup;

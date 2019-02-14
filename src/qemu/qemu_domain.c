@@ -2742,7 +2742,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(migrSource) < 0)
+    if (!(migrSource = virStorageSourceNew()))
         goto cleanup;
 
     if (!(type = virXMLPropString(ctxt->node, "type"))) {
@@ -9050,7 +9050,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
         /* terminate the chain for such images as the code below would do */
         if (!disksrc->backingStore &&
-            VIR_ALLOC(disksrc->backingStore) < 0)
+            !(disksrc->backingStore = virStorageSourceNew()))
             goto cleanup;
 
         /* host cdrom requires special treatment in qemu, so we need to check

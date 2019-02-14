@@ -3402,7 +3402,7 @@ storageBackendProbeTarget(virStorageSourcePtr target,
         if (!virStorageSourceIsLocalStorage(target->backingStore)) {
             virStorageSourceFree(target->backingStore);
 
-            if (VIR_ALLOC(target->backingStore) < 0)
+            if (!(target->backingStore = virStorageSourceNew()))
                 return -1;
 
             target->backingStore->type = VIR_STORAGE_TYPE_NETWORK;
@@ -3576,7 +3576,7 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
         goto cleanup;
     VIR_DIR_CLOSE(dir);
 
-    if (VIR_ALLOC(target))
+    if (!(target = virStorageSourceNew()))
         goto cleanup;
 
     if ((fd = open(def->target.path, O_RDONLY)) < 0) {

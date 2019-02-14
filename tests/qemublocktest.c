@@ -55,7 +55,7 @@ testBackingXMLjsonXML(const void *args)
     VIR_AUTOPTR(virStorageSource) xmlsrc = NULL;
     VIR_AUTOPTR(virStorageSource) jsonsrc = NULL;
 
-    if (VIR_ALLOC(xmlsrc) < 0)
+    if (!(xmlsrc = virStorageSourceNew()))
         return -1;
 
     xmlsrc->type = data->type;

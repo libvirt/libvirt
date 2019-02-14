@@ -794,14 +794,14 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
 
-    if (VIR_ALLOC(copysrc) < 0)
+    if (!(copysrc = virStorageSourceNew()))
         goto cleanup;
 
     copysrc->type = VIR_STORAGE_TYPE_NETWORK;
     copysrc->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
     copysrc->format = VIR_STORAGE_FILE_RAW;
 
-    if (VIR_ALLOC(copysrc->backingStore) < 0)
+    if (!(copysrc->backingStore = virStorageSourceNew()))
         goto cleanup;
 
     if (VIR_STRDUP(copysrc->path, diskAlias) < 0)

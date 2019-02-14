@@ -1881,7 +1881,7 @@ virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    if (VIR_ALLOC(ret->src) < 0)
+    if (!(ret->src = virStorageSourceNew()))
         goto error;
 
     if (xmlopt &&
@@ -2099,7 +2099,7 @@ virDomainFSDefNew(void)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    if (VIR_ALLOC(ret->src) < 0)
+    if (!(ret->src = virStorageSourceNew()))
         goto cleanup;
 
     return ret;
@@ -7674,7 +7674,7 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
 
     /* For the purposes of command line creation, this needs to look
      * like a disk storage source */
-    if (VIR_ALLOC(iscsisrc->src) < 0)
+    if (!(iscsisrc->src = virStorageSourceNew()))
         return -1;
     iscsisrc->src->type = VIR_STORAGE_TYPE_NETWORK;
     iscsisrc->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
@@ -9167,7 +9167,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(backingStore) < 0)
+    if (!(backingStore = virStorageSourceNew()))
         goto cleanup;
 
     /* backing store is always read-only */
@@ -9325,7 +9325,7 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
     char *blockJob = NULL;
     int ret = -1;
 
-    if (VIR_ALLOC(def->mirror) < 0)
+    if (!(def->mirror = virStorageSourceNew()))
         goto cleanup;
 
     if ((blockJob = virXMLPropString(cur, "job"))) {

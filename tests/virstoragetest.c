@@ -98,7 +98,7 @@ testStorageFileGetMetadata(const char *path,
     virStorageSourcePtr ret = NULL;
     VIR_AUTOPTR(virStorageSource) def = NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virStorageSourceNew()))
         return NULL;
 
     def->type = VIR_STORAGE_TYPE_FILE;

@@ -294,7 +294,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         goto cleanup;
 
     if (meta->backingStoreRaw) {
-        if (VIR_ALLOC(vol->target.backingStore) < 0)
+        if (!(vol->target.backingStore = virStorageSourceNew()))
             goto cleanup;
 
         vol->target.backingStore->type = VIR_STORAGE_TYPE_NETWORK;
