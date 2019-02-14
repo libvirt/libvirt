@@ -1608,7 +1608,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                  &time_info);
 
         if (parent) {
-            if (vshTableRowAppend(table, snap_name, timestr, state, parent_snap,
+            if (vshTableRowAppend(table, snap_name, timestr, state,
+                                  NULLSTR_EMPTY(parent_snap),
                                   NULL) < 0)
                 goto cleanup;
         } else {
