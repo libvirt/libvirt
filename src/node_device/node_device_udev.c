@@ -1480,13 +1480,8 @@ udevEnumerateDevices(struct udev *udev)
     if (udevEnumerateAddMatches(udev_enumerate) < 0)
         goto cleanup;
 
-    ret = udev_enumerate_scan_devices(udev_enumerate);
-    if (ret != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("udev scan devices returned %d"),
-                       ret);
-        goto cleanup;
-    }
+    if (udev_enumerate_scan_devices(udev_enumerate) < 0)
+        VIR_WARN("udev scan devices failed");
 
     udev_list_entry_foreach(list_entry,
                             udev_enumerate_get_list_entry(udev_enumerate)) {
@@ -1494,6 +1489,7 @@ udevEnumerateDevices(struct udev *udev)
         udevProcessDeviceListEntry(udev, list_entry);
     }
 
+    ret = 0;
  cleanup:
     udev_enumerate_unref(udev_enumerate);
     return ret;
