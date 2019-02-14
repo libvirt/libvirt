@@ -6144,11 +6144,6 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     guestfwd = tmpChr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
                tmpChr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD;
 
-    if (!tmpChr->info.alias && qemuAssignDeviceChrAlias(vmdef, tmpChr, -1) < 0)
-        goto cleanup;
-
-    sa_assert(tmpChr->info.alias);
-
     if (!async && !guestfwd)
         qemuDomainMarkDeviceForRemoval(vm, &tmpChr->info);
 
