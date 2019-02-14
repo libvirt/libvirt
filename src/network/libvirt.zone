@@ -15,6 +15,8 @@
 <rule priority='32767'>
   <reject/>
 </rule>
+<protocol value='icmp'/>
+<protocol value='ipv6-icmp'/>
 <service name='dhcp'/>
 <service name='dhcpv6'/>
 <service name='dns'/>
