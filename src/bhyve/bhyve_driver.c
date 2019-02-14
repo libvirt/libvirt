@@ -484,6 +484,8 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virCapsPtr caps = NULL;
     char *ret = NULL;
 
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
+
     if (!(vm = bhyveDomObjFromDomain(domain)))
         goto cleanup;
 

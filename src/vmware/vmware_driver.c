@@ -932,7 +932,7 @@ vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     char *ret = NULL;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     if (!(vm = vmwareDomObjFromDomain(driver, dom->uuid)))
         return NULL;

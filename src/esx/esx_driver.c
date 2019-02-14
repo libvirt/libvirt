@@ -2604,7 +2604,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     memset(&data, 0, sizeof(data));
 

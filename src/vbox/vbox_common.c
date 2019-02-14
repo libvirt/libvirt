@@ -4052,7 +4052,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (!data->vboxObj)
         return ret;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     if (openSessionForMachine(data, dom->uuid, &iid, &machine) < 0)
         goto cleanup;

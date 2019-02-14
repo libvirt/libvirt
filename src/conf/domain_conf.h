@@ -3110,6 +3110,15 @@ virDomainIOThreadIDDefPtr virDomainIOThreadIDAdd(virDomainDefPtr def,
                                                  unsigned int iothread_id);
 void virDomainIOThreadIDDel(virDomainDefPtr def, unsigned int iothread_id);
 
+/* When extending this list, remember that libvirt 1.2.12-5.0.0 had a
+ * bug that silently ignored unknown flags.  A new flag to add
+ * information is okay as long as clients still work when an older
+ * server omits the requested output, but a new flag to suppress
+ * information could result in a security hole when older libvirt
+ * supplies the sensitive information in spite of the flag. */
+# define VIR_DOMAIN_XML_COMMON_FLAGS \
+    (VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE | \
+     VIR_DOMAIN_XML_MIGRATABLE)
 unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 
 char *virDomainDefFormat(virDomainDefPtr def,

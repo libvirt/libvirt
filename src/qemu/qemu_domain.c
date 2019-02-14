@@ -7725,6 +7725,8 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
     virCapsPtr caps = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
 
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS | VIR_DOMAIN_XML_UPDATE_CPU, -1);
+
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 

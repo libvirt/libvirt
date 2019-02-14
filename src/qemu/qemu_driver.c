@@ -7339,7 +7339,8 @@ static char
     virDomainObjPtr vm;
     char *ret = NULL;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS | VIR_DOMAIN_XML_UPDATE_CPU,
+                  NULL);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;

@@ -724,7 +724,7 @@ vzDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virDomainObjPtr dom;
     char *ret = NULL;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     if (!(dom = vzDomObjFromDomain(domain)))
         return NULL;

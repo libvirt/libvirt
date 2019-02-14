@@ -2621,7 +2621,7 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainDefPtr def;
     char *ret = NULL;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;

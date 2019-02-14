@@ -2628,7 +2628,7 @@ static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virDomainObjPtr privdom;
     char *ret = NULL;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return NULL;

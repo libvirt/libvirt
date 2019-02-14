@@ -3214,7 +3214,7 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     unsigned long long memory;
     unsigned int vcpus;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     memset(&def, 0, sizeof(virDomainDef));
 
