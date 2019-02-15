@@ -878,6 +878,7 @@ virSecurityDACSetImageLabelInternal(virSecurityManagerPtr mgr,
     virSecurityDeviceLabelDefPtr disk_seclabel;
     virSecurityDeviceLabelDefPtr parent_seclabel = NULL;
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    bool remember;
     uid_t user;
     gid_t group;
 
@@ -911,7 +912,21 @@ virSecurityDACSetImageLabelInternal(virSecurityManagerPtr mgr,
             return -1;
     }
 
-    return virSecurityDACSetOwnership(mgr, src, NULL, user, group, true);
+    /* We can't do restore on shared resources safely. Not even
+     * with refcounting implemented in XATTRs because if there
+     * was a domain running with the feature turned off the
+     * refcounter in XATTRs would not reflect the actual number
+     * of times the resource is in use and thus the last restore
+     * on the resource (which actually restores the original
+     * owner) might cut off access to the domain with the feature
+     * disabled.
+     * For disks, a shared resource is the whole backing chain
+     * but the top layer, or read only image, or disk explicitly
+     * marked as shared.
+     */
+    remember = src == parent && !src->readonly && !src->shared;
+
+    return virSecurityDACSetOwnership(mgr, src, NULL, user, group, remember);
 }
 
 
@@ -946,6 +961,14 @@ virSecurityDACRestoreImageLabelInt(virSecurityManagerPtr mgr,
     virSecurityDeviceLabelDefPtr disk_seclabel;
 
     if (!priv->dynamicOwnership)
+        return 0;
+
+    /* Don't restore labels on readoly/shared disks, because other VMs may
+     * still be accessing these. Alternatively we could iterate over all
+     * running domains and try to figure out if it is in use, but this would
+     * not work for clustered filesystems, since we can't see running VMs using
+     * the file on other nodes. Safest bet is thus to skip the restore step. */
+    if (src->readonly || src->shared)
         return 0;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
