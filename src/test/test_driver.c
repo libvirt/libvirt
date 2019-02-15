@@ -6209,8 +6209,7 @@ testDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     xml = virDomainSnapshotDefFormat(uuidstr, snap->def, privconn->caps,
                                      privconn->xmlopt,
-                                     virDomainDefFormatConvertXMLFlags(flags),
-                                     0);
+                                     virDomainSnapshotFormatConvertXMLFlags(flags));
 
  cleanup:
     virDomainObjEndAPI(&vm);

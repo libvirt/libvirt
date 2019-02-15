@@ -16266,8 +16266,7 @@ qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     xml = virDomainSnapshotDefFormat(uuidstr, snap->def,
                                      driver->caps, driver->xmlopt,
-                                     virDomainDefFormatConvertXMLFlags(flags),
-                                     0);
+                                     virDomainSnapshotFormatConvertXMLFlags(flags));
 
  cleanup:
     virDomainObjEndAPI(&vm);

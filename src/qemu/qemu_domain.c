@@ -8410,8 +8410,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     virUUIDFormat(vm->def->uuid, uuidstr);
     newxml = virDomainSnapshotDefFormat(
         uuidstr, snapshot->def, caps, xmlopt,
-        virDomainDefFormatConvertXMLFlags(QEMU_DOMAIN_FORMAT_LIVE_FLAGS),
-        1);
+        VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE | VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL);
     if (newxml == NULL)
         return -1;
 

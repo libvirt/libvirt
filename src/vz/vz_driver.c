@@ -2291,8 +2291,7 @@ vzDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     xml = virDomainSnapshotDefFormat(uuidstr, snap->def, privconn->driver->caps,
                                      privconn->driver->xmlopt,
-                                     virDomainDefFormatConvertXMLFlags(flags),
-                                     0);
+                                     virDomainSnapshotFormatConvertXMLFlags(flags));
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);

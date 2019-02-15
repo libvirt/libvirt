@@ -116,6 +116,13 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE  = 1 << 3,
 } virDomainSnapshotParseFlags;
 
+typedef enum {
+    VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE   = 1 << 0,
+    VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL = 1 << 1,
+} virDomainSnapshotFormatFlags;
+
+unsigned int virDomainSnapshotFormatConvertXMLFlags(unsigned int flags);
+
 virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
                                                         virCapsPtr caps,
                                                         virDomainXMLOptionPtr xmlopt,
@@ -130,8 +137,7 @@ char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  virDomainSnapshotDefPtr def,
                                  virCapsPtr caps,
                                  virDomainXMLOptionPtr xmlopt,
-                                 unsigned int flags,
-                                 int internal);
+                                 unsigned int flags);
 int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
                                 int default_snapshot,
                                 bool require_match);

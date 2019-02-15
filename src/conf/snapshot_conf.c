@@ -1,7 +1,7 @@
 /*
  * snapshot_conf.c: domain snapshot XML processing
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -652,6 +652,22 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
     return ret;
 }
 
+
+/* Converts public VIR_DOMAIN_SNAPSHOT_XML_* into
+ * VIR_DOMAIN_SNAPSHOT_FORMAT_* flags, and silently ignores any other
+ * flags. */
+unsigned int
+virDomainSnapshotFormatConvertXMLFlags(unsigned int flags)
+{
+    unsigned int formatFlags = 0;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_XML_SECURE)
+        formatFlags |= VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE;
+
+    return formatFlags;
+}
+
+
 static int
 virDomainSnapshotDiskDefFormat(virBufferPtr buf,
                                virDomainSnapshotDiskDefPtr disk,
@@ -692,15 +708,17 @@ virDomainSnapshotDefFormat(const char *uuidstr,
                            virDomainSnapshotDefPtr def,
                            virCapsPtr caps,
                            virDomainXMLOptionPtr xmlopt,
-                           unsigned int flags,
-                           int internal)
+                           unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
+    int domainflags = VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
-    virCheckFlags(VIR_DOMAIN_DEF_FORMAT_SECURE, NULL);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE |
+                  VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL, NULL);
 
-    flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+    if (flags & VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE)
+        domainflags |= VIR_DOMAIN_DEF_FORMAT_SECURE;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
     virBufferAdjustIndent(&buf, 2);
@@ -742,7 +760,8 @@ virDomainSnapshotDefFormat(const char *uuidstr,
     }
 
     if (def->dom) {
-        if (virDomainDefFormatInternal(def->dom, caps, flags, &buf, xmlopt) < 0)
+        if (virDomainDefFormatInternal(def->dom, caps, domainflags, &buf,
+                                       xmlopt) < 0)
             goto error;
     } else if (uuidstr) {
         virBufferAddLit(&buf, "<domain>\n");
@@ -756,7 +775,7 @@ virDomainSnapshotDefFormat(const char *uuidstr,
                                virDomainXMLOptionGetSaveCookie(xmlopt)) < 0)
         goto error;
 
-    if (internal)
+    if (flags & VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL)
         virBufferAsprintf(&buf, "<active>%d</active>\n", def->current);
 
     virBufferAdjustIndent(&buf, -2);
