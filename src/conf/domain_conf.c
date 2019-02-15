@@ -4843,6 +4843,20 @@ virDomainChrDefPostParse(virDomainChrDefPtr chr,
 
 
 static int
+virDomainRNGDefPostParse(virDomainRNGDefPtr rng)
+{
+    /* set default path for virtio-rng "random" backend to /dev/random */
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM &&
+        !rng->source.file) {
+        if (VIR_STRDUP(rng->source.file, "/dev/random") < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 {
     if (vsock->auto_cid == VIR_TRISTATE_BOOL_ABSENT) {
@@ -4866,13 +4880,8 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_CHR)
         return virDomainChrDefPostParse(dev->data.chr, def);
 
-    /* set default path for virtio-rng "random" backend to /dev/random */
-    if (dev->type == VIR_DOMAIN_DEVICE_RNG &&
-        dev->data.rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM &&
-        !dev->data.rng->source.file) {
-        if (VIR_STRDUP(dev->data.rng->source.file, "/dev/random") < 0)
-            return -1;
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_RNG)
+        return virDomainRNGDefPostParse(dev->data.rng);
 
     /* verify disk source */
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
