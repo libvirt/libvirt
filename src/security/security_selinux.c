@@ -82,7 +82,7 @@ struct _virSecuritySELinuxContextItem {
     char *path;
     char *tcon;
     bool optional;
-    bool restore;
+    bool restore; /* Whether current operation is 'set' or 'restore' */
 };
 
 typedef struct _virSecuritySELinuxContextList virSecuritySELinuxContextList;
@@ -168,8 +168,11 @@ virSecuritySELinuxContextListFree(void *opaque)
  * @path: Path to chown
  * @tcon: target context
  * @optional: true if setting @tcon is optional
+ * @restore: if current operation is set or restore
  *
  * Appends an entry onto transaction list.
+ * The @restore should be true if the operation is restoring
+ * seclabel and false otherwise.
  *
  * Returns: 1 in case of successful append
  *          0 if there is no transaction enabled

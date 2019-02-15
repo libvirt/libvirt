@@ -79,7 +79,7 @@ struct _virSecurityDACChownItem {
     const virStorageSource *src;
     uid_t uid;
     gid_t gid;
-    bool restore;
+    bool restore; /* Whether current operation is 'set' or 'restore' */
 };
 
 typedef struct _virSecurityDACChownList virSecurityDACChownList;
@@ -155,8 +155,11 @@ virSecurityDACChownListFree(void *opaque)
  * @src: disk source to chown
  * @uid: user ID
  * @gid: group ID
+ * @restore: if current operation is set or restore
  *
  * Appends an entry onto transaction list.
+ * The @restore should be true if the operation is restoring
+ * seclabel and false otherwise.
  *
  * Returns: 1 in case of successful append
  *          0 if there is no transaction enabled
