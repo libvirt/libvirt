@@ -4811,6 +4811,38 @@ virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
 
 
 static int
+virDomainChrDefPostParse(virDomainChrDefPtr chr,
+                         const virDomainDef *def)
+{
+    const virDomainChrDef **arrPtr;
+    size_t i, cnt;
+
+    virDomainChrGetDomainPtrs(def, chr->deviceType, &arrPtr, &cnt);
+
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) {
+        chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    }
+
+    if (chr->target.port == -1 &&
+        (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL ||
+         chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL ||
+         chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)) {
+        int maxport = -1;
+
+        for (i = 0; i < cnt; i++) {
+            if (arrPtr[i]->target.port > maxport)
+                maxport = arrPtr[i]->target.port;
+        }
+
+        chr->target.port = maxport + 1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 {
     if (vsock->auto_cid == VIR_TRISTATE_BOOL_ABSENT) {
@@ -4831,31 +4863,8 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
                                   unsigned int parseFlags ATTRIBUTE_UNUSED,
                                   virDomainXMLOptionPtr xmlopt)
 {
-    if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
-        virDomainChrDefPtr chr = dev->data.chr;
-        const virDomainChrDef **arrPtr;
-        size_t i, cnt;
-
-        virDomainChrGetDomainPtrs(def, chr->deviceType, &arrPtr, &cnt);
-
-        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
-            chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
-
-        if (chr->target.port == -1 &&
-            (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL ||
-             chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL ||
-             chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)) {
-            int maxport = -1;
-
-            for (i = 0; i < cnt; i++) {
-                if (arrPtr[i]->target.port > maxport)
-                    maxport = arrPtr[i]->target.port;
-            }
-
-            chr->target.port = maxport + 1;
-        }
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR)
+        return virDomainChrDefPostParse(dev->data.chr, def);
 
     /* set default path for virtio-rng "random" backend to /dev/random */
     if (dev->type == VIR_DOMAIN_DEVICE_RNG &&
