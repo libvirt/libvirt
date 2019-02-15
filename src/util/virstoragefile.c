@@ -47,6 +47,8 @@
 
 VIR_LOG_INIT("util.storagefile");
 
+static virClassPtr virStorageSourceClass;
+
 VIR_ENUM_IMPL(virStorage, VIR_STORAGE_TYPE_LAST,
               "none",
               "file",
@@ -2558,30 +2560,49 @@ virStorageSourceClear(virStorageSourcePtr def)
 
     virStorageSourceInitiatorClear(&def->initiator);
 
-    memset(def, 0, sizeof(*def));
+    /* clear everything except the class header as the object APIs
+     * will break otherwise */
+    memset((char *) def + sizeof(def->parent), 0,
+           sizeof(*def) - sizeof(def->parent));
 }
+
+
+static void
+virStorageSourceDispose(void *obj)
+{
+    virStorageSourcePtr src = obj;
+
+    virStorageSourceClear(src);
+}
+
+
+static int
+virStorageSourceOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(virStorageSource, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+
+VIR_ONCE_GLOBAL_INIT(virStorageSource);
 
 
 virStorageSourcePtr
 virStorageSourceNew(void)
 {
-    virStorageSourcePtr ret = NULL;
-
-    if (VIR_ALLOC(ret) < 0)
+    if (virStorageSourceInitialize() < 0)
         return NULL;
 
-    return ret;
+    return virObjectNew(virStorageSourceClass);
 }
 
 
 void
 virStorageSourceFree(virStorageSourcePtr def)
 {
-    if (!def)
-        return;
-
-    virStorageSourceClear(def);
-    VIR_FREE(def);
+    virObjectUnref(def);
 }
 
 

@@ -242,6 +242,8 @@ typedef virStorageSource *virStorageSourcePtr;
  * IMPORTANT: When adding fields to this struct it's also necessary to add
  * appropriate code to the virStorageSourceCopy deep copy function */
 struct _virStorageSource {
+    virObject parent;
+
     unsigned int id; /* backing chain identifier, 0 is unset */
     int type; /* virStorageType */
     char *path;
