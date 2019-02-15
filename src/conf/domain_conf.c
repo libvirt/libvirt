@@ -4901,6 +4901,23 @@ virDomainDiskDefPostParse(virDomainDiskDefPtr disk,
 
 
 static int
+virDomainVideoDefPostParse(virDomainVideoDefPtr video,
+                           const virDomainDef *def)
+{
+    /* Fill out (V)RAM if the driver-specific callback did not do so */
+    if (video->ram == 0 && video->type == VIR_DOMAIN_VIDEO_TYPE_QXL)
+        video->ram = virDomainVideoDefaultRAM(def, video->type);
+    if (video->vram == 0)
+        video->vram = virDomainVideoDefaultRAM(def, video->type);
+
+    video->ram = VIR_ROUND_UP_POWER_OF_TWO(video->ram);
+    video->vram = VIR_ROUND_UP_POWER_OF_TWO(video->vram);
+
+    return 0;
+}
+
+
+static int
 virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 {
     if (vsock->auto_cid == VIR_TRISTATE_BOOL_ABSENT) {
@@ -4930,17 +4947,8 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
         return virDomainDiskDefPostParse(dev->data.disk, def, xmlopt);
 
-    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
-        virDomainVideoDefPtr video = dev->data.video;
-        /* Fill out (V)RAM if the driver-specific callback did not do so */
-        if (video->ram == 0 && video->type == VIR_DOMAIN_VIDEO_TYPE_QXL)
-            video->ram = virDomainVideoDefaultRAM(def, video->type);
-        if (video->vram == 0)
-            video->vram = virDomainVideoDefaultRAM(def, video->type);
-
-        video->ram = VIR_ROUND_UP_POWER_OF_TWO(video->ram);
-        video->vram = VIR_ROUND_UP_POWER_OF_TWO(video->vram);
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO)
+        return virDomainVideoDefPostParse(dev->data.video, def);
 
     if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
         virDomainHostdevDefPostParse(dev->data.hostdev, def, xmlopt) < 0)
