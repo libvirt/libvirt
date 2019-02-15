@@ -434,7 +434,6 @@ bool virStorageSourceIsLocalStorage(const virStorageSource *src);
 bool virStorageSourceIsEmpty(virStorageSourcePtr src);
 bool virStorageSourceIsBlockLocal(const virStorageSource *src);
 virStorageSourcePtr virStorageSourceNew(void);
-void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
 int virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
                                        int fd, struct stat const *sb);

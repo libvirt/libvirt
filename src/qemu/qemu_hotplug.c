@@ -830,7 +830,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     ignore_value(qemuHotplugPrepareDiskSourceAccess(driver, vm, oldsrc, true));
 
     /* media was changed, so we can remove the old media definition now */
-    virStorageSourceFree(oldsrc);
+    virObjectUnref(oldsrc);
     oldsrc = NULL;
     disk->src = newsrc;
 

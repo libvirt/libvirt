@@ -760,7 +760,7 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
 
         qemuBlockStorageSourceDetachOneBlockdev(driver, vm, asyncJob,
                                                 diskPriv->migrSource);
-        virStorageSourceFree(diskPriv->migrSource);
+        virObjectUnref(diskPriv->migrSource);
         diskPriv->migrSource = NULL;
     }
 

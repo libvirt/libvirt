@@ -2910,7 +2910,6 @@ virStorageSourceChainHasManagedPR;
 virStorageSourceClear;
 virStorageSourceCopy;
 virStorageSourceFindByNodeName;
-virStorageSourceFree;
 virStorageSourceGetActualType;
 virStorageSourceGetSecurityLabelDef;
 virStorageSourceHasBacking;

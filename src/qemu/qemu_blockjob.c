@@ -258,13 +258,13 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
                     VIR_WARN("Unable to update persistent definition "
                              "on vm %s after block job",
                              vm->def->name);
-                    virStorageSourceFree(copy);
+                    virObjectUnref(copy);
                     copy = NULL;
                     persistDisk = NULL;
                 }
             }
             if (copy) {
-                virStorageSourceFree(persistDisk->src);
+                virObjectUnref(persistDisk->src);
                 persistDisk->src = copy;
             }
         }
@@ -275,12 +275,12 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
          * want to only revoke the non-shared portion of the chain); so for
          * now, we leak the access to the original.  */
         virDomainLockImageDetach(driver->lockManager, vm, disk->src);
-        virStorageSourceFree(disk->src);
+        virObjectUnref(disk->src);
         disk->src = disk->mirror;
     } else {
         if (disk->mirror) {
             virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
-            virStorageSourceFree(disk->mirror);
+            virObjectUnref(disk->mirror);
         }
     }
 
@@ -345,7 +345,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         if (disk->mirror) {
             virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
-            virStorageSourceFree(disk->mirror);
+            virObjectUnref(disk->mirror);
             disk->mirror = NULL;
         }
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;

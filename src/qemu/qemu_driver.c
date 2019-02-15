@@ -15183,9 +15183,9 @@ qemuDomainSnapshotDiskDataFree(qemuDomainSnapshotDiskDataPtr data,
             if (data[i].prepared)
                 qemuDomainDiskChainElementRevoke(driver, vm, data[i].src);
 
-            virStorageSourceFree(data[i].src);
+            virObjectUnref(data[i].src);
         }
-        virStorageSourceFree(data[i].persistsrc);
+        virObjectUnref(data[i].persistsrc);
         VIR_FREE(data[i].relPath);
     }
 
@@ -17950,7 +17950,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
  cleanup:
     VIR_FREE(device);
     virObjectUnref(cfg);
-    virStorageSourceFree(mirror);
+    virObjectUnref(mirror);
     return ret;
 }
 

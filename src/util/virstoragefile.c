@@ -1133,7 +1133,7 @@ virStorageFileMetadataNew(const char *path,
     return def;
 
  error:
-    virStorageSourceFree(def);
+    virObjectUnref(def);
     return NULL;
 }
 
@@ -1158,7 +1158,7 @@ virStorageFileMetadataNew(const char *path,
  * image didn't specify an explicit format for its backing store. Callers are
  * advised against probing for the backing store format in this case.
  *
- * Caller MUST free the result after use via virStorageSourceFree.
+ * Caller MUST free the result after use via virObjectUnref.
  */
 virStorageSourcePtr
 virStorageFileGetMetadataFromBuf(const char *path,
@@ -1178,7 +1178,7 @@ virStorageFileGetMetadataFromBuf(const char *path,
 
     if (virStorageFileGetMetadataInternal(ret, buf, len,
                                           backingFormat) < 0) {
-        virStorageSourceFree(ret);
+        virObjectUnref(ret);
         return NULL;
     }
 
@@ -1197,7 +1197,7 @@ virStorageFileGetMetadataFromBuf(const char *path,
  * format, since a malicious guest can turn a raw file into any
  * other non-raw format at will.
  *
- * Caller MUST free the result after use via virStorageSourceFree.
+ * Caller MUST free the result after use via virObjectUnref.
  */
 virStorageSourcePtr
 virStorageFileGetMetadataFromFD(const char *path,
@@ -1257,7 +1257,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     VIR_STEAL_PTR(ret, meta);
 
  cleanup:
-    virStorageSourceFree(meta);
+    virObjectUnref(meta);
     return ret;
 }
 
@@ -2336,7 +2336,7 @@ virStorageSourceCopy(const virStorageSource *src,
     return def;
 
  error:
-    virStorageSourceFree(def);
+    virObjectUnref(def);
     return NULL;
 }
 
@@ -2522,7 +2522,7 @@ virStorageSourceBackingStoreClear(virStorageSourcePtr def)
     VIR_FREE(def->backingStoreRaw);
 
     /* recursively free backing chain */
-    virStorageSourceFree(def->backingStore);
+    virObjectUnref(def->backingStore);
     def->backingStore = NULL;
 }
 
@@ -2599,13 +2599,6 @@ virStorageSourceNew(void)
 }
 
 
-void
-virStorageSourceFree(virStorageSourcePtr def)
-{
-    virObjectUnref(def);
-}
-
-
 static virStorageSourcePtr
 virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
                                        const char *rel)
@@ -2657,7 +2650,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
     return def;
 
  error:
-    virStorageSourceFree(def);
+    virObjectUnref(def);
     def = NULL;
     goto cleanup;
 }
@@ -3698,7 +3691,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
     return def;
 
  error:
-    virStorageSourceFree(def);
+    virObjectUnref(def);
     return NULL;
 }
 
@@ -3739,7 +3732,7 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
     return def;
 
  error:
-    virStorageSourceFree(def);
+    virObjectUnref(def);
     return NULL;
 }
 
@@ -3920,7 +3913,7 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
-    virStorageSourceFree(meta);
+    virObjectUnref(meta);
     return ret;
 }
 
@@ -4944,7 +4937,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     if (virStorageSourceHasBacking(src))
         src->backingStore->id = depth;
     virStorageFileDeinit(src);
-    virStorageSourceFree(backingStore);
+    virObjectUnref(backingStore);
     return ret;
 }
 
@@ -4967,7 +4960,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
  * If @report_broken is true, the whole function fails with a possibly sane
  * error instead of just returning a broken chain.
  *
- * Caller MUST free result after use via virStorageSourceFree.
+ * Caller MUST free result after use via virObjectUnref.
  */
 int
 virStorageFileGetMetadata(virStorageSourcePtr src,
@@ -5051,7 +5044,7 @@ virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
-    virStorageSourceFree(tmp);
+    virObjectUnref(tmp);
 
     return ret;
 }

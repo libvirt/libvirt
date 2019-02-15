@@ -1084,7 +1084,7 @@ mymain(void)
         ret = -1;
 
     /* Test behavior of chain lookups, relative backing from absolute start */
-    virStorageSourceFree(chain);
+    virObjectUnref(chain);
     chain = testStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2, -1, -1);
     if (!chain) {
         ret = -1;
@@ -1130,7 +1130,7 @@ mymain(void)
         ret = -1;
 
     /* Test behavior of chain lookups, relative backing */
-    virStorageSourceFree(chain);
+    virObjectUnref(chain);
     chain = testStorageFileGetMetadata("sub/link2", VIR_STORAGE_FILE_QCOW2,
                                        -1, -1);
     if (!chain) {

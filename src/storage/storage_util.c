@@ -3400,7 +3400,7 @@ storageBackendProbeTarget(virStorageSourcePtr target,
          * remote storage. To avoid trouble, just fake the backing store is RAW
          * and put the string from the metadata as the path of the target. */
         if (!virStorageSourceIsLocalStorage(target->backingStore)) {
-            virStorageSourceFree(target->backingStore);
+            virObjectUnref(target->backingStore);
 
             if (!(target->backingStore = virStorageSourceNew()))
                 return -1;

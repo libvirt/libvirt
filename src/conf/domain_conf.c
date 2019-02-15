@@ -1903,10 +1903,10 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     if (!def)
         return;
 
-    virStorageSourceFree(def->src);
+    virObjectUnref(def->src);
     VIR_FREE(def->serial);
     VIR_FREE(def->dst);
-    virStorageSourceFree(def->mirror);
+    virObjectUnref(def->mirror);
     VIR_FREE(def->wwn);
     VIR_FREE(def->driverName);
     VIR_FREE(def->vendor);
@@ -2115,7 +2115,7 @@ void virDomainFSDefFree(virDomainFSDefPtr def)
     if (!def)
         return;
 
-    virStorageSourceFree(def->src);
+    virObjectUnref(def->src);
     VIR_FREE(def->dst);
     virDomainDeviceInfoClear(&def->info);
     VIR_FREE(def->virtio);
@@ -2696,7 +2696,7 @@ virDomainHostdevSubsysSCSIiSCSIClear(virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc
     if (!iscsisrc)
         return;
 
-    virStorageSourceFree(iscsisrc->src);
+    virObjectUnref(iscsisrc->src);
     iscsisrc->src = NULL;
 }
 

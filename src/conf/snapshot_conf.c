@@ -83,7 +83,7 @@ static void
 virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDefPtr disk)
 {
     VIR_FREE(disk->name);
-    virStorageSourceFree(disk->src);
+    virObjectUnref(disk->src);
     disk->src = NULL;
 }
 

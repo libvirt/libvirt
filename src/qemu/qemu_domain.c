@@ -1072,7 +1072,7 @@ qemuDomainDiskPrivateDispose(void *obj)
 {
     qemuDomainDiskPrivatePtr priv = obj;
 
-    virStorageSourceFree(priv->migrSource);
+    virObjectUnref(priv->migrSource);
     VIR_FREE(priv->qomName);
     VIR_FREE(priv->nodeCopyOnRead);
     virObjectUnref(priv->blockjob);
