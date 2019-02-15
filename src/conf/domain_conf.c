@@ -4966,33 +4966,72 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
                                   unsigned int parseFlags ATTRIBUTE_UNUSED,
                                   virDomainXMLOptionPtr xmlopt)
 {
-    if (dev->type == VIR_DOMAIN_DEVICE_CHR)
-        return virDomainChrDefPostParse(dev->data.chr, def);
+    int ret = -1;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_RNG)
-        return virDomainRNGDefPostParse(dev->data.rng);
+    switch ((virDomainDeviceType)dev->type) {
+    case VIR_DOMAIN_DEVICE_CHR:
+        ret = virDomainChrDefPostParse(dev->data.chr, def);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK)
-        return virDomainDiskDefPostParse(dev->data.disk, def, xmlopt);
+    case VIR_DOMAIN_DEVICE_RNG:
+        ret = virDomainRNGDefPostParse(dev->data.rng);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO)
-        return virDomainVideoDefPostParse(dev->data.video, def);
+    case VIR_DOMAIN_DEVICE_DISK:
+        ret = virDomainDiskDefPostParse(dev->data.disk, def, xmlopt);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
-        virDomainHostdevDefPostParse(dev->data.hostdev, def, xmlopt) < 0)
-        return -1;
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        ret = virDomainVideoDefPostParse(dev->data.video, def);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER)
-        return virDomainControllerDefPostParse(dev->data.controller);
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        ret = virDomainHostdevDefPostParse(dev->data.hostdev, def, xmlopt);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_NET)
-        return virDomainNetDefPostParse(dev->data.net);
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        ret = virDomainControllerDefPostParse(dev->data.controller);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_VSOCK &&
-        virDomainVsockDefPostParse(dev->data.vsock) < 0)
-        return -1;
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = virDomainNetDefPostParse(dev->data.net);
+        break;
 
-    return 0;
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        ret = virDomainVsockDefPostParse(dev->data.vsock);
+        break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        ret = 0;
+        break;
+
+    case VIR_DOMAIN_DEVICE_NONE:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unexpected VIR_DOMAIN_DEVICE_NONE"));
+        break;
+
+    case VIR_DOMAIN_DEVICE_LAST:
+    default:
+        virReportEnumRangeError(virDomainDeviceType, dev->type);
+        break;
+    }
+
+    return ret;
 }
 
 
