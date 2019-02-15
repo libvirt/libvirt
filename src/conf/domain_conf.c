@@ -4857,6 +4857,50 @@ virDomainRNGDefPostParse(virDomainRNGDefPtr rng)
 
 
 static int
+virDomainDiskDefPostParse(virDomainDiskDefPtr disk,
+                          const virDomainDef *def,
+                          virDomainXMLOptionPtr xmlopt)
+{
+    /* internal snapshots and config files are currently supported
+     * only with rbd: */
+    if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_NETWORK &&
+        disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
+        if (disk->src->snapshot) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("<snapshot> element is currently supported "
+                             "only with 'rbd' disks"));
+            return -1;
+        }
+
+        if (disk->src->configFile) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("<config> element is currently supported "
+                             "only with 'rbd' disks"));
+            return -1;
+        }
+    }
+
+    if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
+        disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
+        virDomainPostParseCheckISCSIPath(&disk->src->path) < 0) {
+        return -1;
+    }
+
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
+        virDomainCheckVirtioOptions(disk->virtio) < 0) {
+        return -1;
+    }
+
+    if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        virDomainDiskDefAssignAddress(xmlopt, disk, def) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 {
     if (vsock->auto_cid == VIR_TRISTATE_BOOL_ABSENT) {
@@ -4883,42 +4927,8 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_RNG)
         return virDomainRNGDefPostParse(dev->data.rng);
 
-    /* verify disk source */
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        virDomainDiskDefPtr disk = dev->data.disk;
-
-        /* internal snapshots and config files are currently supported
-         * only with rbd: */
-        if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_NETWORK &&
-            disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
-            if (disk->src->snapshot) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("<snapshot> element is currently supported "
-                                 "only with 'rbd' disks"));
-                return -1;
-            }
-
-            if (disk->src->configFile) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("<config> element is currently supported "
-                                 "only with 'rbd' disks"));
-                return -1;
-            }
-        }
-
-        if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
-            disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
-            virDomainPostParseCheckISCSIPath(&disk->src->path) < 0)
-            return -1;
-
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
-            virDomainCheckVirtioOptions(disk->virtio) < 0)
-            return -1;
-
-        if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-            virDomainDiskDefAssignAddress(xmlopt, disk, def) < 0)
-            return -1;
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK)
+        return virDomainDiskDefPostParse(dev->data.disk, def, xmlopt);
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
         virDomainVideoDefPtr video = dev->data.video;
