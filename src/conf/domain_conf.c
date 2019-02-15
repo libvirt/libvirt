@@ -2982,7 +2982,6 @@ static int
 virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
                                 unsigned int iothreads)
 {
-    int retval = -1;
     size_t i;
     ssize_t nxt = -1;
     virDomainIOThreadIDDefPtr iothrid = NULL;
@@ -2996,7 +2995,7 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
 
     /* iothread's are numbered starting at 1, account for that */
     if (!(thrmap = virBitmapNew(iothreads + 1)))
-        goto error;
+        return -1;
     virBitmapSetAll(thrmap);
 
     /* Clear 0 since we don't use it, then mark those which are
@@ -3008,26 +3007,23 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
 
     /* resize array */
     if (VIR_REALLOC_N(def->iothreadids, iothreads) < 0)
-        goto error;
+        return -1;
 
     /* Populate iothreadids[] using the set bit number from thrmap */
     while (def->niothreadids < iothreads) {
         if ((nxt = virBitmapNextSetBit(thrmap, nxt)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to populate iothreadids"));
-            goto error;
+            return -1;
         }
         if (VIR_ALLOC(iothrid) < 0)
-            goto error;
+            return -1;
         iothrid->iothread_id = nxt;
         iothrid->autofill = true;
         def->iothreadids[def->niothreadids++] = iothrid;
     }
 
-    retval = 0;
-
- error:
-    return retval;
+    return 0;
 }
 
 
@@ -18778,31 +18774,27 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
     virDomainThreadSchedParamPtr sched;
     virProcessSchedPolicy policy;
     int priority;
-    int ret = -1;
     VIR_AUTOPTR(virBitmap) map = NULL;
 
     if (!(map = virDomainSchedulerParse(node, name, &policy, &priority)))
-        goto cleanup;
+        return -1;
 
     while ((next = virBitmapNextSetBit(map, next)) > -1) {
         if (!(sched = func(def, next)))
-            goto cleanup;
+            return -1;
 
         if (sched->policy != VIR_PROC_POLICY_NONE) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("%ssched attributes 'vcpus' must not overlap"),
                            name);
-            goto cleanup;
+            return -1;
         }
 
         sched->policy = policy;
         sched->priority = priority;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
