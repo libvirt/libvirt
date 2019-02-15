@@ -4934,6 +4934,18 @@ virDomainControllerDefPostParse(virDomainControllerDefPtr cdev)
 
 
 static int
+virDomainNetDefPostParse(virDomainNetDefPtr net)
+{
+    if (!virDomainNetIsVirtioModel(net) &&
+        virDomainCheckVirtioOptions(net->virtio) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 {
     if (vsock->auto_cid == VIR_TRISTATE_BOOL_ABSENT) {
@@ -4973,12 +4985,8 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER)
         return virDomainControllerDefPostParse(dev->data.controller);
 
-    if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        virDomainNetDefPtr net = dev->data.net;
-        if (!virDomainNetIsVirtioModel(net) &&
-            virDomainCheckVirtioOptions(net->virtio) < 0)
-            return -1;
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_NET)
+        return virDomainNetDefPostParse(dev->data.net);
 
     if (dev->type == VIR_DOMAIN_DEVICE_VSOCK &&
         virDomainVsockDefPostParse(dev->data.vsock) < 0)
