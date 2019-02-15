@@ -239,7 +239,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     ssize_t len;
     int backingFormat;
     VIR_AUTOPTR(virStorageVolDef) vol = NULL;
-    VIR_AUTOPTR(virStorageSource) meta = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) meta = NULL;
     VIR_AUTOFREE(char *) header = NULL;
 
     *volptr = NULL;

@@ -279,7 +279,7 @@ qemuSecurityChownCallback(const virStorageSource *src,
     int save_errno = 0;
     int ret = -1;
     int rv;
-    VIR_AUTOPTR(virStorageSource) cpy = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) cpy = NULL;
 
     rv = virStorageFileSupportsSecurityDriver(src);
     if (rv <= 0)
@@ -17962,7 +17962,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     virDomainObjPtr vm;
     int ret = -1;
     unsigned long long speed = bandwidth;
-    VIR_AUTOPTR(virStorageSource) dest = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) dest = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
                   VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
@@ -18156,7 +18156,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
     qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
-    VIR_AUTOPTR(virStorageSource) mirror = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) mirror = NULL;
 
     /* XXX Add support for COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |

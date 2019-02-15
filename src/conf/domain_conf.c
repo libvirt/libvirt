@@ -9160,7 +9160,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     char *format = NULL;
     char *idx = NULL;
     int ret = -1;
-    VIR_AUTOPTR(virStorageSource) backingStore = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) backingStore = NULL;
 
     if (!(ctxt->node = virXPathNode("./backingStore", ctxt))) {
         ret = 0;

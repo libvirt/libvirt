@@ -3359,7 +3359,7 @@ storageBackendProbeTarget(virStorageSourcePtr target,
     int backingStoreFormat;
     int rc;
     struct stat sb;
-    VIR_AUTOPTR(virStorageSource) meta = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) meta = NULL;
     VIR_AUTOCLOSE fd = -1;
 
     if (encryption)
@@ -3529,7 +3529,7 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
     int ret = -1;
     VIR_AUTOPTR(virStorageVolDef) vol = NULL;
     VIR_AUTOCLOSE fd = -1;
-    VIR_AUTOPTR(virStorageSource) target = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) target = NULL;
 
     if (virDirOpen(&dir, def->target.path) < 0)
         goto cleanup;

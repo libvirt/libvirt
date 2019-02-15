@@ -52,8 +52,8 @@ testBackingXMLjsonXML(const void *args)
     char *protocolwrapper = NULL;
     char *actualxml = NULL;
     int ret = -1;
-    VIR_AUTOPTR(virStorageSource) xmlsrc = NULL;
-    VIR_AUTOPTR(virStorageSource) jsonsrc = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) xmlsrc = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) jsonsrc = NULL;
 
     if (!(xmlsrc = virStorageSourceNew()))
         return -1;

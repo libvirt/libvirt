@@ -2733,7 +2733,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
     char *format = NULL;
     char *type = NULL;
     int ret = -1;
-    VIR_AUTOPTR(virStorageSource) migrSource = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) migrSource = NULL;
 
     ctxt->node = node;
 
