@@ -102,6 +102,9 @@ virObjectNew(virClassPtr klass)
 bool
 virObjectUnref(void *obj);
 
+void
+virObjectAutoUnref(void *objptr);
+
 void *
 virObjectRef(void *obj);
 

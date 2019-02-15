@@ -637,4 +637,14 @@ void virAllocTestHook(void (*func)(int, void*), void *data);
 # define VIR_AUTOPTR(type) \
     __attribute__((cleanup(VIR_AUTOPTR_FUNC_NAME(type)))) type *
 
+/**
+ * VIR_AUTOUNREF:
+ * @type: type of an virObject subclass to be unref'd automatically
+ *
+ * Declares a variable of @type which will be automatically unref'd when
+ * control goes out of the scope.
+ */
+# define VIR_AUTOUNREF(type) \
+    __attribute__((cleanup(virObjectAutoUnref))) type
+
 #endif /* LIBVIRT_VIRALLOC_H */
