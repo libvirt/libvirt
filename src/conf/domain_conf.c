@@ -4918,6 +4918,22 @@ virDomainVideoDefPostParse(virDomainVideoDefPtr video,
 
 
 static int
+virDomainControllerDefPostParse(virDomainControllerDefPtr cdev)
+{
+    if (cdev->iothread &&
+        cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("'iothread' attribute only supported for "
+                         "controller model '%s'"),
+                       virDomainControllerModelSCSITypeToString(VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 {
     if (vsock->auto_cid == VIR_TRISTATE_BOOL_ABSENT) {
@@ -4954,18 +4970,8 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
         virDomainHostdevDefPostParse(dev->data.hostdev, def, xmlopt) < 0)
         return -1;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
-        virDomainControllerDefPtr cdev = dev->data.controller;
-
-        if (cdev->iothread &&
-            cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("'iothread' attribute only supported for "
-                             "controller model '%s'"),
-                           virDomainControllerModelSCSITypeToString(VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI));
-            return -1;
-        }
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER)
+        return virDomainControllerDefPostParse(dev->data.controller);
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         virDomainNetDefPtr net = dev->data.net;
