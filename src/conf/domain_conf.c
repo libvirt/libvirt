@@ -400,6 +400,7 @@ VIR_ENUM_IMPL(virDomainController,
               "usb",
               "pci",
               "xenbus",
+              "isa",
 );
 
 VIR_ENUM_IMPL(virDomainControllerModelPCI,
@@ -443,6 +444,9 @@ VIR_ENUM_IMPL(virDomainControllerModelSCSI,
               "lsisas1078",
               "virtio-transitional",
               "virtio-non-transitional",
+);
+
+VIR_ENUM_IMPL(virDomainControllerModelISA, VIR_DOMAIN_CONTROLLER_MODEL_ISA_LAST,
 );
 
 VIR_ENUM_IMPL(virDomainControllerModelUSB,
@@ -2337,6 +2341,7 @@ virDomainControllerDefNew(virDomainControllerType type)
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+    case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         break;
     }
@@ -11047,6 +11052,8 @@ virDomainControllerModelTypeFromString(const virDomainControllerDef *def,
         return virDomainControllerModelIDETypeFromString(model);
     else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL)
         return virDomainControllerModelVirtioSerialTypeFromString(model);
+    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA)
+        return virDomainControllerModelISATypeFromString(model);
 
     return -1;
 }
@@ -11066,6 +11073,8 @@ virDomainControllerModelTypeToString(virDomainControllerDefPtr def,
         return virDomainControllerModelIDETypeToString(model);
     else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL)
         return virDomainControllerModelVirtioSerialTypeToString(model);
+    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA)
+        return virDomainControllerModelISATypeToString(model);
 
     return NULL;
 }

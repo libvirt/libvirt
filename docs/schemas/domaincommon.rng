@@ -2419,6 +2419,12 @@
               </attribute>
             </optional>
           </group>
+          <!-- isa -->
+          <group>
+            <attribute name="type">
+              <value>isa</value>
+            </attribute>
+          </group>
           <!-- pci has an optional attribute "model" -->
           <group>
             <attribute name="type">
