@@ -895,6 +895,7 @@ virDomainSnapshotFormatConvertXMLFlags;
 virDomainSnapshotIsExternal;
 virDomainSnapshotLocationTypeFromString;
 virDomainSnapshotLocationTypeToString;
+virDomainSnapshotObjListFormat;
 virDomainSnapshotObjListFree;
 virDomainSnapshotObjListGetNames;
 virDomainSnapshotObjListNew;

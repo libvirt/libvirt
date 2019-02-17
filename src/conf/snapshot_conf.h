@@ -138,6 +138,13 @@ char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  virCapsPtr caps,
                                  virDomainXMLOptionPtr xmlopt,
                                  unsigned int flags);
+int virDomainSnapshotObjListFormat(virBufferPtr buf,
+                                   const char *uuidstr,
+                                   virDomainSnapshotObjListPtr snapshots,
+                                   virDomainSnapshotObjPtr current_snapshot,
+                                   virCapsPtr caps,
+                                   virDomainXMLOptionPtr xmlopt,
+                                   unsigned int flags);
 int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
                                 int default_snapshot,
                                 bool require_match);
