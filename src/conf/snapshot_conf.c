@@ -703,6 +703,94 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
 }
 
 
+/* Append XML describing def into buf. Return 0 on success, or -1 on
+ * failure with buf cleared. */
+static int
+virDomainSnapshotDefFormatInternal(virBufferPtr buf,
+                                   const char *uuidstr,
+                                   virDomainSnapshotDefPtr def,
+                                   virCapsPtr caps,
+                                   virDomainXMLOptionPtr xmlopt,
+                                   unsigned int flags)
+{
+    size_t i;
+    int domainflags = VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE)
+        domainflags |= VIR_DOMAIN_DEF_FORMAT_SECURE;
+
+    virBufferAddLit(buf, "<domainsnapshot>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virBufferEscapeString(buf, "<name>%s</name>\n", def->name);
+    if (def->description)
+        virBufferEscapeString(buf, "<description>%s</description>\n",
+                              def->description);
+    virBufferAsprintf(buf, "<state>%s</state>\n",
+                      virDomainSnapshotStateTypeToString(def->state));
+
+    if (def->parent) {
+        virBufferAddLit(buf, "<parent>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<name>%s</name>\n", def->parent);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</parent>\n");
+    }
+
+    virBufferAsprintf(buf, "<creationTime>%lld</creationTime>\n",
+                      def->creationTime);
+
+    if (def->memory) {
+        virBufferAsprintf(buf, "<memory snapshot='%s'",
+                          virDomainSnapshotLocationTypeToString(def->memory));
+        virBufferEscapeString(buf, " file='%s'", def->file);
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    if (def->ndisks) {
+        virBufferAddLit(buf, "<disks>\n");
+        virBufferAdjustIndent(buf, 2);
+        for (i = 0; i < def->ndisks; i++) {
+            if (virDomainSnapshotDiskDefFormat(buf, &def->disks[i], xmlopt) < 0)
+                goto error;
+        }
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</disks>\n");
+    }
+
+    if (def->dom) {
+        if (virDomainDefFormatInternal(def->dom, caps, domainflags, buf,
+                                       xmlopt) < 0)
+            goto error;
+    } else if (uuidstr) {
+        virBufferAddLit(buf, "<domain>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</domain>\n");
+    }
+
+    if (virSaveCookieFormatBuf(buf, def->cookie,
+                               virDomainXMLOptionGetSaveCookie(xmlopt)) < 0)
+        goto error;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL)
+        virBufferAsprintf(buf, "<active>%d</active>\n", def->current);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</domainsnapshot>\n");
+
+    if (virBufferCheckError(buf) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    virBufferFreeAndReset(buf);
+    return -1;
+}
+
+
 char *
 virDomainSnapshotDefFormat(const char *uuidstr,
                            virDomainSnapshotDefPtr def,
@@ -711,84 +799,14 @@ virDomainSnapshotDefFormat(const char *uuidstr,
                            unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    size_t i;
-    int domainflags = VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE |
                   VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL, NULL);
-
-    if (flags & VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE)
-        domainflags |= VIR_DOMAIN_DEF_FORMAT_SECURE;
-
-    virBufferAddLit(&buf, "<domainsnapshot>\n");
-    virBufferAdjustIndent(&buf, 2);
-
-    virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
-    if (def->description)
-        virBufferEscapeString(&buf, "<description>%s</description>\n",
-                              def->description);
-    virBufferAsprintf(&buf, "<state>%s</state>\n",
-                      virDomainSnapshotStateTypeToString(def->state));
-
-    if (def->parent) {
-        virBufferAddLit(&buf, "<parent>\n");
-        virBufferAdjustIndent(&buf, 2);
-        virBufferEscapeString(&buf, "<name>%s</name>\n", def->parent);
-        virBufferAdjustIndent(&buf, -2);
-        virBufferAddLit(&buf, "</parent>\n");
-    }
-
-    virBufferAsprintf(&buf, "<creationTime>%lld</creationTime>\n",
-                      def->creationTime);
-
-    if (def->memory) {
-        virBufferAsprintf(&buf, "<memory snapshot='%s'",
-                          virDomainSnapshotLocationTypeToString(def->memory));
-        virBufferEscapeString(&buf, " file='%s'", def->file);
-        virBufferAddLit(&buf, "/>\n");
-    }
-
-    if (def->ndisks) {
-        virBufferAddLit(&buf, "<disks>\n");
-        virBufferAdjustIndent(&buf, 2);
-        for (i = 0; i < def->ndisks; i++) {
-            if (virDomainSnapshotDiskDefFormat(&buf, &def->disks[i], xmlopt) < 0)
-                goto error;
-        }
-        virBufferAdjustIndent(&buf, -2);
-        virBufferAddLit(&buf, "</disks>\n");
-    }
-
-    if (def->dom) {
-        if (virDomainDefFormatInternal(def->dom, caps, domainflags, &buf,
-                                       xmlopt) < 0)
-            goto error;
-    } else if (uuidstr) {
-        virBufferAddLit(&buf, "<domain>\n");
-        virBufferAdjustIndent(&buf, 2);
-        virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuidstr);
-        virBufferAdjustIndent(&buf, -2);
-        virBufferAddLit(&buf, "</domain>\n");
-    }
-
-    if (virSaveCookieFormatBuf(&buf, def->cookie,
-                               virDomainXMLOptionGetSaveCookie(xmlopt)) < 0)
-        goto error;
-
-    if (flags & VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL)
-        virBufferAsprintf(&buf, "<active>%d</active>\n", def->current);
-
-    virBufferAdjustIndent(&buf, -2);
-    virBufferAddLit(&buf, "</domainsnapshot>\n");
-
-    if (virBufferCheckError(&buf) < 0)
+    if (virDomainSnapshotDefFormatInternal(&buf, uuidstr, def, caps,
+                                           xmlopt, flags) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 /* Snapshot Obj functions */
