@@ -329,7 +329,8 @@ bhyveBuildControllerArgStr(const virDomainDef *def,
                            virDomainControllerDefPtr controller,
                            bhyveConnPtr driver,
                            virCommandPtr cmd,
-                           unsigned *nusbcontrollers)
+                           unsigned *nusbcontrollers,
+                           unsigned *nisacontrollers)
 {
     switch (controller->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
@@ -354,15 +355,17 @@ bhyveBuildControllerArgStr(const virDomainDef *def,
         if (bhyveBuildUSBControllerArgStr(def, controller, cmd) < 0)
             return -1;
         break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
+        if (++*nisacontrollers > 1) {
+             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            "%s", _("only single ISA controller is supported"));
+             return -1;
+        }
+        virCommandAddArg(cmd, "-s");
+        virCommandAddArgFormat(cmd, "%d:0,lpc",
+                                controller->info.addr.pci.slot);
+        break;
     }
-    return 0;
-}
-
-static int
-bhyveBuildLPCArgStr(const virDomainDef *def G_GNUC_UNUSED,
-                    virCommandPtr cmd)
-{
-    virCommandAddArgList(cmd, "-s", "1,lpc", NULL);
     return 0;
 }
 
@@ -545,6 +548,7 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
     virCommandPtr cmd = virCommandNew(BHYVE);
     size_t i;
     unsigned nusbcontrollers = 0;
+    unsigned nisacontrollers = 0;
     unsigned nvcpus = virDomainDefGetVcpus(def);
 
     /* CPUs */
@@ -650,7 +654,7 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
     /* Devices */
     for (i = 0; i < def->ncontrollers; i++) {
         if (bhyveBuildControllerArgStr(def, def->controllers[i], driver, cmd,
-                                       &nusbcontrollers) < 0)
+                                       &nusbcontrollers, &nisacontrollers) < 0)
             goto error;
     }
     for (i = 0; i < def->nnets; i++) {
@@ -680,9 +684,6 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
                                   driver, cmd) < 0)
             goto error;
     }
-
-    if (bhyveDomainDefNeedsISAController(def))
-        bhyveBuildLPCArgStr(def, cmd);
 
     if (bhyveBuildConsoleArgStr(def, cmd) < 0)
         goto error;

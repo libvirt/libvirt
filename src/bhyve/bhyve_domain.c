@@ -59,13 +59,13 @@ virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks = {
     .free = bhyveDomainObjPrivateFree,
 };
 
-bool
+static bool
 bhyveDomainDefNeedsISAController(virDomainDefPtr def)
 {
     if (def->os.bootloader == NULL && def->os.loader)
         return true;
 
-    if (def->nserials)
+    if (def->nserials || def->nconsoles)
         return true;
 
     if (def->ngraphics && def->nvideos)
@@ -94,6 +94,11 @@ bhyveDomainDefPostParse(virDomainDefPtr def,
     if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
                                        VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
         return -1;
+
+    if (bhyveDomainDefNeedsISAController(def))
+        if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_ISA, 0,
+                                           VIR_DOMAIN_CONTROLLER_MODEL_ISA_DEFAULT) < 0)
+            return -1;
 
     return 0;
 }
@@ -191,10 +196,26 @@ virBhyveDriverCreateXMLConf(bhyveConnPtr driver)
                                  NULL, NULL);
 }
 
+
+static int
+bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
+                             const virDomainDef *def G_GNUC_UNUSED,
+                             void *opaque G_GNUC_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
+        dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA &&
+        dev->data.controller->idx != 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 virDomainDefParserConfig virBhyveDriverDomainDefParserConfig = {
     .devicesPostParseCallback = bhyveDomainDeviceDefPostParse,
     .domainPostParseCallback = bhyveDomainDefPostParse,
     .assignAddressesCallback = bhyveDomainDefAssignAddresses,
+    .deviceValidateCallback = bhyveDomainDeviceDefValidate,
 };
 
 static void

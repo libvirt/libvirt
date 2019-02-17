@@ -46,10 +46,16 @@ bhyveCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
         if (addr->slot == 0) {
             return 0;
         } else if (addr->slot == 1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("PCI bus 0 slot 1 is reserved for the implicit "
-                             "LPC PCI-ISA bridge"));
-            return -1;
+            if (!(device->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
+                  device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA)) {
+                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("PCI bus 0 slot 1 is reserved for the implicit "
+                                  "LPC PCI-ISA bridge"));
+                 return -1;
+            } else {
+                /* We reserve slot 1 for LPC in bhyveAssignDevicePCISlots(), so exit early */
+                return 0;
+            }
         }
     }
 
@@ -99,6 +105,15 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
     if (virDomainPCIAddressReserveAddr(addrs, &lpc_addr,
                                        VIR_PCI_CONNECT_TYPE_PCI_DEVICE, 0) < 0) {
         return -1;
+    }
+
+    for (i = 0; i < def->ncontrollers; i++) {
+         if ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA) &&
+              virDeviceInfoPCIAddressIsWanted(&def->controllers[i]->info)) {
+             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+             def->controllers[i]->info.addr.pci = lpc_addr;
+             break;
+         }
     }
 
     for (i = 0; i < def->ncontrollers; i++) {

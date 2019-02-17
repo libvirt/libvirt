@@ -39,5 +39,3 @@ virDomainXMLOptionPtr virBhyveDriverCreateXMLConf(bhyveConnPtr);
 extern virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virBhyveDriverDomainDefParserConfig;
 extern virXMLNamespace virBhyveDriverDomainXMLNamespace;
-
-bool bhyveDomainDefNeedsISAController(virDomainDefPtr def);
