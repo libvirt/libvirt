@@ -554,6 +554,39 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
 
 
 static int
+lxcNetworkParseDataType(virConfValuePtr value,
+                        lxcNetworkParseData *parseData)
+{
+    virDomainDefPtr def = parseData->def;
+    size_t networks = parseData->networks;
+    bool privnet = parseData->privnet;
+    int status;
+
+    /* Store the previous NIC */
+    status = lxcAddNetworkDefinition(parseData);
+
+    if (status < 0)
+        return -1;
+    else if (status > 0)
+        networks++;
+    else if (parseData->type != NULL && STREQ(parseData->type, "none"))
+        privnet = false;
+
+    /* clean NIC to store a new one */
+    memset(parseData, 0, sizeof(*parseData));
+
+    parseData->def = def;
+    parseData->networks = networks;
+    parseData->privnet = privnet;
+
+    /* Keep the new value */
+    parseData->type = value->str;
+
+    return 0;
+}
+
+
+static int
 lxcNetworkParseDataIPs(const char *name,
                        virConfValuePtr value,
                        lxcNetworkParseData *parseData)
@@ -597,32 +630,9 @@ lxcNetworkParseDataSuffix(const char *name,
                           virConfValuePtr value,
                           lxcNetworkParseData *parseData)
 {
-    int status;
-
     if (STREQ(name, "type")) {
-        virDomainDefPtr def = parseData->def;
-        size_t networks = parseData->networks;
-        bool privnet = parseData->privnet;
-
-        /* Store the previous NIC */
-        status = lxcAddNetworkDefinition(parseData);
-
-        if (status < 0)
+        if (lxcNetworkParseDataType(value, parseData) < 0)
             return -1;
-        else if (status > 0)
-            networks++;
-        else if (parseData->type != NULL && STREQ(parseData->type, "none"))
-            privnet = false;
-
-        /* clean NIC to store a new one */
-        memset(parseData, 0, sizeof(*parseData));
-
-        parseData->def = def;
-        parseData->networks = networks;
-        parseData->privnet = privnet;
-
-        /* Keep the new value */
-        parseData->type = value->str;
     }
     else if (STREQ(name, "link"))
         parseData->link = value->str;
