@@ -552,6 +552,46 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
     return -1;
 }
 
+
+static int
+lxcNetworkParseDataIPs(const char *name,
+                       virConfValuePtr value,
+                       lxcNetworkParseData *parseData)
+{
+    int family = AF_INET;
+    char **ipparts = NULL;
+    virNetDevIPAddrPtr ip = NULL;
+
+    if (VIR_ALLOC(ip) < 0)
+        return -1;
+
+    if (STREQ(name, "lxc.network.ipv6"))
+        family = AF_INET6;
+
+    ipparts = virStringSplit(value->str, "/", 2);
+    if (virStringListLength((const char * const *)ipparts) != 2 ||
+        virSocketAddrParse(&ip->address, ipparts[0], family) < 0 ||
+        virStrToLong_ui(ipparts[1], NULL, 10, &ip->prefix) < 0) {
+
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid CIDR address: '%s'"), value->str);
+
+        virStringListFree(ipparts);
+        VIR_FREE(ip);
+        return -1;
+    }
+
+    virStringListFree(ipparts);
+
+    if (VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip) < 0) {
+        VIR_FREE(ip);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
 {
@@ -597,35 +637,8 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
         parseData->name = value->str;
     else if (STREQ(name, "lxc.network.ipv4") ||
              STREQ(name, "lxc.network.ipv6")) {
-        int family = AF_INET;
-        char **ipparts = NULL;
-        virNetDevIPAddrPtr ip = NULL;
-
-        if (VIR_ALLOC(ip) < 0)
+        if (lxcNetworkParseDataIPs(name, value, parseData) < 0)
             return -1;
-
-        if (STREQ(name, "lxc.network.ipv6"))
-            family = AF_INET6;
-
-        ipparts = virStringSplit(value->str, "/", 2);
-        if (virStringListLength((const char * const *)ipparts) != 2 ||
-            virSocketAddrParse(&ip->address, ipparts[0], family) < 0 ||
-            virStrToLong_ui(ipparts[1], NULL, 10, &ip->prefix) < 0) {
-
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid CIDR address: '%s'"), value->str);
-
-            virStringListFree(ipparts);
-            VIR_FREE(ip);
-            return -1;
-        }
-
-        virStringListFree(ipparts);
-
-        if (VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip) < 0) {
-            VIR_FREE(ip);
-            return -1;
-        }
     } else if (STREQ(name, "lxc.network.ipv4.gateway")) {
         parseData->gateway_ipv4 = value->str;
     } else if (STREQ(name, "lxc.network.ipv6.gateway")) {
