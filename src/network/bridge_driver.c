@@ -1320,11 +1320,27 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                 !(eaddr = virSocketAddrFormat(&ipdef->ranges[r].end)))
                 goto cleanup;
 
-            virBufferAsprintf(&configbuf, "dhcp-range=%s,%s",
-                              saddr, eaddr);
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-                virBufferAsprintf(&configbuf, ",%d", prefix);
-            virBufferAddLit(&configbuf, "\n");
+            if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
+               virBufferAsprintf(&configbuf, "dhcp-range=%s,%s,%d\n",
+                                 saddr, eaddr, prefix);
+            } else {
+                /* IPv4 - dnsmasq requires a netmask rather than prefix */
+                virSocketAddr netmask;
+                VIR_AUTOFREE(char *) netmaskStr = NULL;
+
+                if (virSocketAddrPrefixToNetmask(prefix, &netmask, AF_INET) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Failed to translate bridge '%s' "
+                                     "prefix %d to netmask"),
+                                   def->bridge, prefix);
+                    goto cleanup;
+                }
+
+                if (!(netmaskStr = virSocketAddrFormat(&netmask)))
+                    goto cleanup;
+                virBufferAsprintf(&configbuf, "dhcp-range=%s,%s,%s\n",
+                                  saddr, eaddr, netmaskStr);
+            }
 
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
