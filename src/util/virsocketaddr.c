@@ -1032,6 +1032,7 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
         ip = prefix ? ~((1 << (32 - prefix)) - 1) : 0;
         netmask->data.inet4.sin_addr.s_addr = htonl(ip);
         netmask->data.stor.ss_family = AF_INET;
+        netmask->len = sizeof(struct sockaddr_in);
         result = 0;
 
     } else if (family == AF_INET6) {
@@ -1055,6 +1056,7 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
             netmask->data.inet6.sin6_addr.s6_addr[i++] = 0;
         }
         netmask->data.stor.ss_family = AF_INET6;
+        netmask->len = sizeof(struct sockaddr_in6);
         result = 0;
     }
 
