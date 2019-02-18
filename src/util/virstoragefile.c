@@ -1119,22 +1119,20 @@ static virStorageSourcePtr
 virStorageFileMetadataNew(const char *path,
                           int format)
 {
-    virStorageSourcePtr def = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+    virStorageSourcePtr ret = NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virStorageSourceNew()))
         return NULL;
 
     def->format = format;
     def->type = VIR_STORAGE_TYPE_FILE;
 
     if (VIR_STRDUP(def->path, path) < 0)
-        goto error;
+        return NULL;
 
-    return def;
-
- error:
-    virObjectUnref(def);
-    return NULL;
+    VIR_STEAL_PTR(ret, def);
+    return ret;
 }
 
 
