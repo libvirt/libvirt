@@ -35,6 +35,20 @@
 
 VIR_LOG_INIT("lxc.lxc_native");
 
+VIR_ENUM_IMPL(virLXCNetworkConfigEntry, VIR_LXC_NETWORK_CONFIG_LAST,
+              "name",
+              "type",
+              "link",
+              "hwaddr",
+              "flags",
+              "macvlan.mode",
+              "vlan.id",
+              "ipv4",
+              "ipv4.gateway",
+              "ipv6",
+              "ipv6.gateway"
+);
+
 static virDomainFSDefPtr
 lxcCreateFSDef(int type,
                const char *src,
@@ -626,37 +640,49 @@ lxcNetworkParseDataIPs(const char *name,
 
 
 static int
-lxcNetworkParseDataSuffix(const char *name,
+lxcNetworkParseDataSuffix(const char *entry,
                           virConfValuePtr value,
                           lxcNetworkParseData *parseData)
 {
-    if (STREQ(name, "type")) {
+    int elem = virLXCNetworkConfigEntryTypeFromString(entry);
+
+    switch (elem) {
+    case VIR_LXC_NETWORK_CONFIG_TYPE:
         if (lxcNetworkParseDataType(value, parseData) < 0)
             return -1;
-    }
-    else if (STREQ(name, "link"))
+        break;
+    case VIR_LXC_NETWORK_CONFIG_LINK:
         parseData->link = value->str;
-    else if (STREQ(name, "hwaddr"))
+        break;
+    case VIR_LXC_NETWORK_CONFIG_HWADDR:
         parseData->mac = value->str;
-    else if (STREQ(name, "flags"))
+        break;
+    case VIR_LXC_NETWORK_CONFIG_FLAGS:
         parseData->flag = value->str;
-    else if (STREQ(name, "macvlan.mode"))
+        break;
+    case VIR_LXC_NETWORK_CONFIG_MACVLAN_MODE:
         parseData->macvlanmode = value->str;
-    else if (STREQ(name, "vlan.id"))
+        break;
+    case VIR_LXC_NETWORK_CONFIG_VLAN_ID:
         parseData->vlanid = value->str;
-    else if (STREQ(name, "name"))
+        break;
+    case VIR_LXC_NETWORK_CONFIG_NAME:
         parseData->name = value->str;
-    else if (STREQ(name, "ipv4") ||
-             STREQ(name, "ipv6")) {
-        if (lxcNetworkParseDataIPs(name, value, parseData) < 0)
+        break;
+    case VIR_LXC_NETWORK_CONFIG_IPV4:
+    case VIR_LXC_NETWORK_CONFIG_IPV6:
+        if (lxcNetworkParseDataIPs(entry, value, parseData) < 0)
             return -1;
-    } else if (STREQ(name, "ipv4.gateway")) {
+        break;
+    case VIR_LXC_NETWORK_CONFIG_IPV4_GATEWAY:
         parseData->gateway_ipv4 = value->str;
-    } else if (STREQ(name, "ipv6.gateway")) {
+        break;
+    case VIR_LXC_NETWORK_CONFIG_IPV6_GATEWAY:
         parseData->gateway_ipv6 = value->str;
-    } else {
+        break;
+    default:
         VIR_WARN("Unhandled network property: %s = %s",
-                 name,
+                 entry,
                  value->str);
         return -1;
     }
