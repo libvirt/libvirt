@@ -430,10 +430,8 @@ bhyveParsePCIDisk(virDomainDefPtr def,
     int idx = -1;
     virDomainDiskDefPtr disk = NULL;
 
-    if (VIR_ALLOC(disk) < 0)
+    if (!(disk = virDomainDiskDefNew(NULL)))
         goto cleanup;
-    if (VIR_ALLOC(disk->src) < 0)
-        goto error;
 
     disk->bus = bus;
     disk->device = device;
