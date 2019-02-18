@@ -23,7 +23,6 @@
   /dev/net/tun rw,
   /dev/kvm rw,
   /dev/ptmx rw,
-  /dev/kqemu rw,
   @{PROC}/*/status r,
   # When qemu is signaled to terminate, it will read cmdline of signaling
   # process for reporting purposes. Allowing read access to a process

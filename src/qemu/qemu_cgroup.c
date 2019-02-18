@@ -45,7 +45,7 @@ VIR_LOG_INIT("qemu.qemu_cgroup");
 const char *const defaultDeviceACL[] = {
     "/dev/null", "/dev/full", "/dev/zero",
     "/dev/random", "/dev/urandom",
-    "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
+    "/dev/ptmx", "/dev/kvm",
     "/dev/rtc", "/dev/hpet",
     NULL,
 };

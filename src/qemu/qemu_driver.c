@@ -1260,9 +1260,6 @@ qemuConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED, const char *type)
     if (STRCASEEQ(type, "kvm"))
         return virHostCPUGetKVMMaxVCPUs();
 
-    if (STRCASEEQ(type, "kqemu"))
-        return 1;
-
     virReportError(VIR_ERR_INVALID_ARG,
                    _("unknown type '%s'"), type);
     return -1;
