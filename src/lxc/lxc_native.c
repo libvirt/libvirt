@@ -565,7 +565,7 @@ lxcNetworkParseDataIPs(const char *name,
     if (VIR_ALLOC(ip) < 0)
         return -1;
 
-    if (STREQ(name, "lxc.network.ipv6"))
+    if (STREQ(name, "ipv6"))
         family = AF_INET6;
 
     ipparts = virStringSplit(value->str, "/", 2);
@@ -593,13 +593,13 @@ lxcNetworkParseDataIPs(const char *name,
 
 
 static int
-lxcNetworkParseDataEntry(const char *name,
-                         virConfValuePtr value,
-                         lxcNetworkParseData *parseData)
+lxcNetworkParseDataSuffix(const char *name,
+                          virConfValuePtr value,
+                          lxcNetworkParseData *parseData)
 {
     int status;
 
-    if (STREQ(name, "lxc.network.type")) {
+    if (STREQ(name, "type")) {
         virDomainDefPtr def = parseData->def;
         size_t networks = parseData->networks;
         bool privnet = parseData->privnet;
@@ -624,33 +624,45 @@ lxcNetworkParseDataEntry(const char *name,
         /* Keep the new value */
         parseData->type = value->str;
     }
-    else if (STREQ(name, "lxc.network.link"))
+    else if (STREQ(name, "link"))
         parseData->link = value->str;
-    else if (STREQ(name, "lxc.network.hwaddr"))
+    else if (STREQ(name, "hwaddr"))
         parseData->mac = value->str;
-    else if (STREQ(name, "lxc.network.flags"))
+    else if (STREQ(name, "flags"))
         parseData->flag = value->str;
-    else if (STREQ(name, "lxc.network.macvlan.mode"))
+    else if (STREQ(name, "macvlan.mode"))
         parseData->macvlanmode = value->str;
-    else if (STREQ(name, "lxc.network.vlan.id"))
+    else if (STREQ(name, "vlan.id"))
         parseData->vlanid = value->str;
-    else if (STREQ(name, "lxc.network.name"))
+    else if (STREQ(name, "name"))
         parseData->name = value->str;
-    else if (STREQ(name, "lxc.network.ipv4") ||
-             STREQ(name, "lxc.network.ipv6")) {
+    else if (STREQ(name, "ipv4") ||
+             STREQ(name, "ipv6")) {
         if (lxcNetworkParseDataIPs(name, value, parseData) < 0)
             return -1;
-    } else if (STREQ(name, "lxc.network.ipv4.gateway")) {
+    } else if (STREQ(name, "ipv4.gateway")) {
         parseData->gateway_ipv4 = value->str;
-    } else if (STREQ(name, "lxc.network.ipv6.gateway")) {
+    } else if (STREQ(name, "ipv6.gateway")) {
         parseData->gateway_ipv6 = value->str;
-    } else if (STRPREFIX(name, "lxc.network")) {
+    } else {
         VIR_WARN("Unhandled network property: %s = %s",
                  name,
                  value->str);
+        return -1;
     }
 
     return 0;
+}
+
+
+static int
+lxcNetworkParseDataEntry(const char *name,
+                         virConfValuePtr value,
+                         lxcNetworkParseData *parseData)
+{
+    const char *suffix = STRSKIP(name, "lxc.network.");
+
+    return lxcNetworkParseDataSuffix(suffix, value, parseData);
 }
 
 
