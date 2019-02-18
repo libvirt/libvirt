@@ -593,9 +593,10 @@ lxcNetworkParseDataIPs(const char *name,
 
 
 static int
-lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
+lxcNetworkParseDataEntry(const char *name,
+                         virConfValuePtr value,
+                         lxcNetworkParseData *parseData)
 {
-    lxcNetworkParseData *parseData = data;
     int status;
 
     if (STREQ(name, "lxc.network.type")) {
@@ -648,6 +649,18 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
                  name,
                  value->str);
     }
+
+    return 0;
+}
+
+
+static int
+lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
+{
+    lxcNetworkParseData *parseData = data;
+
+    if (STRPREFIX(name, "lxc.network."))
+        return lxcNetworkParseDataEntry(name, value, parseData);
 
     return 0;
 }
