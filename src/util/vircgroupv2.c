@@ -1600,6 +1600,28 @@ virCgroupV2GetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 
+static int
+virCgroupV2SetCpusetCpus(virCgroupPtr group,
+                         const char *cpus)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.cpus",
+                                cpus);
+}
+
+
+static int
+virCgroupV2GetCpusetCpus(virCgroupPtr group,
+                         char **cpus)
+{
+    return virCgroupGetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.cpus",
+                                cpus);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1664,6 +1686,8 @@ virCgroupBackend virCgroupV2Backend = {
     .getCpusetMems = virCgroupV2GetCpusetMems,
     .setCpusetMemoryMigrate = virCgroupV2SetCpusetMemoryMigrate,
     .getCpusetMemoryMigrate = virCgroupV2GetCpusetMemoryMigrate,
+    .setCpusetCpus = virCgroupV2SetCpusetCpus,
+    .getCpusetCpus = virCgroupV2GetCpusetCpus,
 };
 
 
