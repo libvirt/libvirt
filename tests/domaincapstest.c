@@ -433,6 +433,9 @@ mymain(void)
         VIR_FREE(name); \
     } while (0)
 
+    DO_TEST("empty", "/bin/emulatorbin", "my-machine-type",
+            "x86_64", VIR_DOMAIN_VIRT_KVM, CAPS_NONE);
+
 #if WITH_QEMU
 
     DO_TEST_QEMU("1.7.0", "caps_1.7.0",
