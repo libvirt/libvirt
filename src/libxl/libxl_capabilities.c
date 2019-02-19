@@ -604,6 +604,7 @@ libxlMakeDomainOSCaps(const char *machine,
     size_t i;
 
     os->supported = VIR_TRISTATE_BOOL_YES;
+    capsLoader->supported = VIR_TRISTATE_BOOL_NO;
 
     if (STREQ(machine, "xenpv") || STREQ(machine, "xenpvh"))
         return 0;
@@ -772,6 +773,11 @@ libxlMakeDomainCapabilities(virDomainCapsPtr domCaps,
     if (STRNEQ(domCaps->machine, "xenpvh") &&
         libxlMakeDomainDeviceHostdevCaps(hostdev) < 0)
         return -1;
+
+    domCaps->iothreads = VIR_TRISTATE_BOOL_NO;
+    domCaps->vmcoreinfo = VIR_TRISTATE_BOOL_NO;
+    domCaps->genid = VIR_TRISTATE_BOOL_NO;
+    domCaps->gic.supported = VIR_TRISTATE_BOOL_NO;
 
     return 0;
 }
