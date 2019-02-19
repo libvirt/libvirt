@@ -21,6 +21,8 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_cgroup.h \
 	qemu/qemu_extdevice.c \
 	qemu/qemu_extdevice.h \
+	qemu/qemu_firmware.c \
+	qemu/qemu_firmware.h \
 	qemu/qemu_hostdev.c \
 	qemu/qemu_hostdev.h \
 	qemu/qemu_hotplug.c \
