@@ -3231,6 +3231,8 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
+    if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
+        ret = -1;
     virFileWrapperFdFree(wrapperFd);
     virObjectUnref(cfg);
 
@@ -3834,9 +3836,11 @@ doCoreDump(virQEMUDriverPtr driver,
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
+    if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
+        ret = -1;
+    virFileWrapperFdFree(wrapperFd);
     if (ret != 0)
         unlink(path);
-    virFileWrapperFdFree(wrapperFd);
     VIR_FREE(compressedpath);
     virObjectUnref(cfg);
     return ret;
@@ -7043,17 +7047,17 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 
     ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, data, path,
                                      false, QEMU_ASYNC_JOB_START);
-    if (virFileWrapperFdClose(wrapperFd) < 0)
-        VIR_WARN("Failed to close %s", path);
 
     qemuProcessEndJob(driver, vm);
 
  cleanup:
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
+    if (virFileWrapperFdClose(wrapperFd) < 0)
+        ret = -1;
+    virFileWrapperFdFree(wrapperFd);
     virQEMUSaveDataFree(data);
     VIR_FREE(xmlout);
-    virFileWrapperFdFree(wrapperFd);
     if (vm && ret < 0)
         qemuDomainRemoveInactiveJob(driver, vm);
     virDomainObjEndAPI(&vm);
@@ -7316,14 +7320,14 @@ qemuDomainObjRestore(virConnectPtr conn,
 
     ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, data, path,
                                      start_paused, asyncJob);
-    if (virFileWrapperFdClose(wrapperFd) < 0)
-        VIR_WARN("Failed to close %s", path);
 
  cleanup:
     virQEMUSaveDataFree(data);
     VIR_FREE(xmlout);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
+    if (virFileWrapperFdClose(wrapperFd) < 0)
+        ret = -1;
     virFileWrapperFdFree(wrapperFd);
     return ret;
 }
