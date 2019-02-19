@@ -76,12 +76,12 @@ int virTestDifferenceBin(FILE *stream,
                          const char *expect,
                          const char *actual,
                          size_t length);
-int virTestCompareToFile(const char *strcontent,
+int virTestCompareToFile(const char *actual,
                          const char *filename);
-int virTestCompareToString(const char *strcontent,
-                           const char *strsrc);
-int virTestCompareToULL(unsigned long long content,
-                        unsigned long long src);
+int virTestCompareToString(const char *expect,
+                           const char *actual);
+int virTestCompareToULL(unsigned long long expect,
+                        unsigned long long actual);
 
 unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);

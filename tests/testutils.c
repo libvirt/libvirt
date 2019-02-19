@@ -767,19 +767,19 @@ int virTestDifferenceBin(FILE *stream,
 }
 
 /*
- * @param strcontent: String input content
- * @param filename: File to compare strcontent against
+ * @param actual: String input content
+ * @param filename: File to compare @actual against
  *
- * If @strcontent is NULL, it's treated as an empty string.
+ * If @actual is NULL, it's treated as an empty string.
  */
 int
-virTestCompareToFile(const char *strcontent,
+virTestCompareToFile(const char *actual,
                      const char *filename)
 {
     int ret = -1;
     char *filecontent = NULL;
     char *fixedcontent = NULL;
-    const char *cmpcontent = strcontent;
+    const char *cmpcontent = actual;
 
     if (!cmpcontent)
         cmpcontent = "";
@@ -814,36 +814,28 @@ virTestCompareToFile(const char *strcontent,
     return ret;
 }
 
-/*
- * @param content: Input content
- * @param src: Source to compare @content against
- */
 int
-virTestCompareToULL(unsigned long long content,
-                    unsigned long long src)
+virTestCompareToULL(unsigned long long expect,
+                    unsigned long long actual)
 {
     VIR_AUTOFREE(char *) expectStr = NULL;
     VIR_AUTOFREE(char *) actualStr = NULL;
 
-    if (virAsprintf(&expectStr, "%llu", content) < 0)
+    if (virAsprintf(&expectStr, "%llu", expect) < 0)
         return -1;
 
-    if (virAsprintf(&actualStr, "%llu", src) < 0)
+    if (virAsprintf(&actualStr, "%llu", actual) < 0)
         return -1;
 
     return virTestCompareToString(expectStr, actualStr);
 }
 
-/*
- * @param strcontent: String input content
- * @param strsrc: String source to compare strcontent against
- */
 int
-virTestCompareToString(const char *strcontent,
-                       const char *strsrc)
+virTestCompareToString(const char *expect,
+                       const char *actual)
 {
-    if (STRNEQ_NULLABLE(strcontent, strsrc)) {
-        virTestDifference(stderr, strcontent, strsrc);
+    if (STRNEQ_NULLABLE(expect, actual)) {
+        virTestDifference(stderr, expect, actual);
         return -1;
     }
 
