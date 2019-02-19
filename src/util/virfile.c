@@ -175,6 +175,7 @@ virFileDirectFdFlag(void)
 /* Opaque type for managing a wrapper around a fd.  For now,
  * read-write is not supported, just a single direction.  */
 struct _virFileWrapperFd {
+    bool closed; /* Whether virFileWrapperFdClose() has been already called */
     virCommandPtr cmd; /* Child iohelper process to do the I/O.  */
     char *err_msg; /* stderr of @cmd */
 };
@@ -323,16 +324,21 @@ virFileWrapperFdNew(int *fd ATTRIBUTE_UNUSED,
  * callers can conditionally create a virFileWrapperFd wrapper but
  * unconditionally call the cleanup code.  To avoid deadlock, only
  * call this after closing the fd resulting from virFileWrapperFdNew().
+ *
+ * This function can be safely called multiple times on the same @wfd.
  */
 int
 virFileWrapperFdClose(virFileWrapperFdPtr wfd)
 {
     int ret;
 
-    if (!wfd)
+    if (!wfd || wfd->closed)
         return 0;
 
     ret = virCommandWait(wfd->cmd, NULL);
+
+    wfd->closed = true;
+
     return ret;
 }
 
