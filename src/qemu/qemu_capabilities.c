@@ -5212,6 +5212,8 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
     virDomainCapsFeatureGICPtr gic = &domCaps->gic;
     virGICVersion version;
 
+    gic->supported = VIR_TRISTATE_BOOL_NO;
+
     if (!qemuDomainMachineIsARMVirt(domCaps->machine, domCaps->arch))
         return 0;
 
