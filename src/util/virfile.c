@@ -337,8 +337,14 @@ virFileWrapperFdClose(virFileWrapperFdPtr wfd)
 
     ret = virCommandWait(wfd->cmd, NULL);
 
-    if (wfd->err_msg && *wfd->err_msg)
-        VIR_WARN("iohelper reports: %s", wfd->err_msg);
+    /* If the command used to process I/O has failed and produced some
+     * messages on stderr, it's fair to assume those will be more
+     * relevant to the user than whatever eg. QEMU can figure out on its
+     * own having no knowledge of the fact a command is handling its I/O
+     * in the first place, so it's okay if we end up discarding an
+     * existing error here */
+    if (ret < 0 && wfd->err_msg && *wfd->err_msg)
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s", wfd->err_msg);
 
     wfd->closed = true;
 
