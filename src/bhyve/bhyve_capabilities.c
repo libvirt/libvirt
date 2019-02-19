@@ -86,6 +86,7 @@ virBhyveDomainCapsFill(virDomainCapsPtr caps,
 
     caps->os.supported = VIR_TRISTATE_BOOL_YES;
 
+    caps->os.loader.supported = VIR_TRISTATE_BOOL_NO;
     if (bhyvecaps & BHYVE_CAP_LPC_BOOTROM) {
         caps->os.loader.supported = VIR_TRISTATE_BOOL_YES;
         VIR_DOMAIN_CAPS_ENUM_SET(caps->os.loader.type,
@@ -98,12 +99,21 @@ virBhyveDomainCapsFill(virDomainCapsPtr caps,
     }
 
 
+    caps->graphics.supported = VIR_TRISTATE_BOOL_NO;
+    caps->video.supported = VIR_TRISTATE_BOOL_NO;
     if (bhyvecaps & BHYVE_CAP_FBUF) {
         caps->graphics.supported = VIR_TRISTATE_BOOL_YES;
         caps->video.supported = VIR_TRISTATE_BOOL_YES;
         VIR_DOMAIN_CAPS_ENUM_SET(caps->graphics.type, VIR_DOMAIN_GRAPHICS_TYPE_VNC);
         VIR_DOMAIN_CAPS_ENUM_SET(caps->video.modelType, VIR_DOMAIN_VIDEO_TYPE_GOP);
     }
+
+    caps->hostdev.supported = VIR_TRISTATE_BOOL_NO;
+    caps->iothreads = VIR_TRISTATE_BOOL_NO;
+    caps->vmcoreinfo = VIR_TRISTATE_BOOL_NO;
+    caps->genid = VIR_TRISTATE_BOOL_NO;
+    caps->gic.supported = VIR_TRISTATE_BOOL_NO;
+
     return 0;
 }
 
