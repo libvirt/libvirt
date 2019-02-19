@@ -24,9 +24,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-typedef int (*virDomainCapsFill)(virDomainCapsPtr domCaps,
-                                 void *opaque);
-
 #define SET_ALL_BITS(x) \
     memset(&(x.values), 0xff, sizeof(x.values))
 
