@@ -181,7 +181,7 @@ usage(int status)
     if (status) {
         fprintf(stderr, _("%s: try --help for more details"), program_name);
     } else {
-        printf(_("Usage: %s FILENAME FD\n"), program_name);
+        printf(_("Usage: %s FILENAME FD"), program_name);
     }
     exit(status);
 }
@@ -198,7 +198,7 @@ main(int argc, char **argv)
     if (virGettextInitialize() < 0 ||
         virThreadInitialize() < 0 ||
         virErrorInitialize() < 0) {
-        fprintf(stderr, _("%s: initialization failed\n"), program_name);
+        fprintf(stderr, _("%s: initialization failed"), program_name);
         exit(EXIT_FAILURE);
     }
 
