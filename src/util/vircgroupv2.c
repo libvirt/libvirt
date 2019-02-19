@@ -1561,6 +1561,28 @@ virCgroupV2GetCpuacctStat(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2SetCpusetMems(virCgroupPtr group,
+                         const char *mems)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.mems",
+                                mems);
+}
+
+
+static int
+virCgroupV2GetCpusetMems(virCgroupPtr group,
+                         char **mems)
+{
+    return virCgroupGetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.mems",
+                                mems);
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1620,6 +1642,9 @@ virCgroupBackend virCgroupV2Backend = {
 
     .getCpuacctUsage = virCgroupV2GetCpuacctUsage,
     .getCpuacctStat = virCgroupV2GetCpuacctStat,
+
+    .setCpusetMems = virCgroupV2SetCpusetMems,
+    .getCpusetMems = virCgroupV2GetCpusetMems,
 };
 
 
