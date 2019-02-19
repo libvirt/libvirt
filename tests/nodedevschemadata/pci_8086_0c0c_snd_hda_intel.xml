@@ -2,6 +2,7 @@
   <name>pci_0000_00_03_0</name>
   <parent>computer</parent>
   <capability type='pci'>
+    <class>0xffffff</class>
     <domain>0</domain>
     <bus>0</bus>
     <slot>3</slot>

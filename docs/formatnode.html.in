@@ -70,6 +70,10 @@
           <dd>Describes a device on the host's PCI bus.  Sub-elements
             include:
             <dl>
+              <dt><code>class</code></dt>
+              <dd>Combined class, subclass and
+                programming interface codes as 6-digit hexadecimal number.
+                <span class="since">Since 5.2.0</span></dd>
               <dt><code>domain</code></dt>
               <dd>Which domain the device belongs to.</dd>
               <dt><code>bus</code></dt>
@@ -381,6 +385,7 @@
     &lt;name&gt;igb&lt;/name&gt;
   &lt;/driver&gt;
   &lt;capability type='pci'&gt;
+    &lt;class&gt;0x020000&lt;/class&gt;
     &lt;domain&gt;0&lt;/domain&gt;
     &lt;bus&gt;2&lt;/bus&gt;
     &lt;slot&gt;0&lt;/slot&gt;

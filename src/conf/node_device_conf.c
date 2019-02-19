@@ -208,6 +208,7 @@ virNodeDeviceCapPCIDefFormat(virBufferPtr buf,
 {
     size_t i;
 
+    virBufferAsprintf(buf, "<class>0x%.6x</class>\n", data->pci_dev.klass);
     virBufferAsprintf(buf, "<domain>%d</domain>\n",
                       data->pci_dev.domain);
     virBufferAsprintf(buf, "<bus>%d</bus>\n", data->pci_dev.bus);
@@ -1643,6 +1644,18 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
 
     orignode = ctxt->node;
     ctxt->node = node;
+
+    if (virNodeDevCapsDefParseHexId("string(./class[1])", ctxt,
+                                    &pci_dev->klass, def,
+                                    _("no PCI class supplied for '%s'"),
+                                    _("invalid PCI class supplied for '%s'")) < 0)
+        goto out;
+
+    if (pci_dev->klass > 0xffffff) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid PCI class supplied for '%s'"), def->name);
+        goto out;
+    }
 
     if (virNodeDevCapsDefParseULong("number(./domain[1])", ctxt,
                                     &pci_dev->domain, def,

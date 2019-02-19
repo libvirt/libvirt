@@ -5,6 +5,7 @@
     <name>e1000e</name>
   </driver>
   <capability type='pci'>
+    <class>0xffffff</class>
     <domain>0</domain>
     <bus>0</bus>
     <slot>25</slot>
