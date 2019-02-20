@@ -221,7 +221,6 @@ virDomainChrSerialTargetTypeFromString;
 virDomainChrSerialTargetTypeToString;
 virDomainChrSourceDefClear;
 virDomainChrSourceDefCopy;
-virDomainChrSourceDefFree;
 virDomainChrSourceDefGetPath;
 virDomainChrSourceDefNew;
 virDomainChrSpicevmcTypeFromString;

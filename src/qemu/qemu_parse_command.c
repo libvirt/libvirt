@@ -2495,7 +2495,7 @@ qemuParseCommandLine(virFileCachePtr capsCache,
                     goto error;
 
                 if (qemuParseCommandLineChr(chr, val) < 0) {
-                    virDomainChrSourceDefFree(chr);
+                    virObjectUnref(chr);
                     goto error;
                 }
 
@@ -2732,7 +2732,7 @@ qemuParseCommandLine(virFileCachePtr capsCache,
     virStringListFree(list);
     VIR_FREE(nics);
     if (monConfig) {
-        virDomainChrSourceDefFree(*monConfig);
+        virObjectUnref(*monConfig);
         *monConfig = NULL;
     }
     if (pidfile)

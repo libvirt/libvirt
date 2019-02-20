@@ -1887,8 +1887,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     virObjectRef(vm);
 
     ignore_value(virTimeMillisNow(&priv->monStart));
-    monConfig = priv->monConfig;
-    virObjectRef(monConfig);
+    monConfig = virObjectRef(priv->monConfig);
     virObjectUnlock(vm);
 
     mon = qemuMonitorOpen(vm,
@@ -7184,7 +7183,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     if (priv->monConfig) {
         if (priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX)
             unlink(priv->monConfig->data.nix.path);
-        virDomainChrSourceDefFree(priv->monConfig);
+        virObjectUnref(priv->monConfig);
         priv->monConfig = NULL;
     }
 

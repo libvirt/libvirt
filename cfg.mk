@@ -120,7 +120,6 @@ useless_free_options = \
   --name=virConfFreeValue \
   --name=virDomainActualNetDefFree \
   --name=virDomainChrDefFree \
-  --name=virDomainChrSourceDefFree \
   --name=virDomainControllerDefFree \
   --name=virDomainDefFree \
   --name=virDomainDeviceDefFree \

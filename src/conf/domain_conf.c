@@ -2199,7 +2199,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        virDomainChrSourceDefFree(def->data.vhostuser);
+        virObjectUnref(def->data.vhostuser);
         def->data.vhostuser = NULL;
         break;
 
@@ -2438,13 +2438,6 @@ virDomainChrSourceDefDispose(void *obj)
 }
 
 
-void
-virDomainChrSourceDefFree(virDomainChrSourceDefPtr def)
-{
-    virObjectUnref(def);
-}
-
-
 /* virDomainChrSourceDefIsEqual:
  * @src: Source
  * @tgt: Target
@@ -2535,7 +2528,7 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
         break;
     }
 
-    virDomainChrSourceDefFree(def->source);
+    virObjectUnref(def->source);
     virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
@@ -2558,7 +2551,7 @@ void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def)
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        virDomainChrSourceDefFree(def->data.passthru);
+        virObjectUnref(def->data.passthru);
         break;
 
     default:
@@ -2817,7 +2810,7 @@ void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def)
     if (!def)
         return;
 
-    virDomainChrSourceDefFree(def->source);
+    virObjectUnref(def->source);
     virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
@@ -26540,7 +26533,7 @@ virDomainRNGDefFree(virDomainRNGDefPtr def)
         VIR_FREE(def->source.file);
         break;
     case VIR_DOMAIN_RNG_BACKEND_EGD:
-        virDomainChrSourceDefFree(def->source.chardev);
+        virObjectUnref(def->source.chardev);
         break;
     case VIR_DOMAIN_RNG_BACKEND_LAST:
         break;
