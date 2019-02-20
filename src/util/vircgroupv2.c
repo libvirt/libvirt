@@ -400,6 +400,12 @@ virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
                                             VIR_CGROUP_CONTROLLER_CPU) < 0) {
                 return -1;
             }
+
+            if (virCgroupV2HasController(parent, VIR_CGROUP_CONTROLLER_CPUSET) &&
+                virCgroupV2EnableController(parent,
+                                            VIR_CGROUP_CONTROLLER_CPUSET) < 0) {
+                return -1;
+            }
         } else {
             size_t i;
             for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
