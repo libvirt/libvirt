@@ -337,6 +337,9 @@ virFileWrapperFdClose(virFileWrapperFdPtr wfd)
 
     ret = virCommandWait(wfd->cmd, NULL);
 
+    if (wfd->err_msg && *wfd->err_msg)
+        VIR_WARN("iohelper reports: %s", wfd->err_msg);
+
     wfd->closed = true;
 
     return ret;
@@ -356,11 +359,6 @@ virFileWrapperFdFree(virFileWrapperFdPtr wfd)
 {
     if (!wfd)
         return;
-
-    if (wfd->err_msg && *wfd->err_msg)
-        VIR_WARN("iohelper reports: %s", wfd->err_msg);
-
-    virCommandAbort(wfd->cmd);
 
     VIR_FREE(wfd->err_msg);
     virCommandFree(wfd->cmd);
