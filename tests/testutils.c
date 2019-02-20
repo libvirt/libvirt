@@ -822,23 +822,16 @@ int
 virTestCompareToULL(unsigned long long content,
                     unsigned long long src)
 {
-    char *strcontent = NULL;
-    char *strsrc = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) strcontent = NULL;
+    VIR_AUTOFREE(char *) strsrc = NULL;
 
     if (virAsprintf(&strcontent, "%llu", content) < 0)
-        goto cleanup;
+        return -1;
 
     if (virAsprintf(&strsrc, "%llu", src) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = virTestCompareToString(strcontent, strsrc);
-
- cleanup:
-    VIR_FREE(strcontent);
-    VIR_FREE(strsrc);
-
-    return ret;
+    return virTestCompareToString(strcontent, strsrc);
 }
 
 /*
