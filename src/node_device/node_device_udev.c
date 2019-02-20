@@ -1805,6 +1805,7 @@ nodeStateInitializeEnumerate(void *opaque)
     ignore_value(virEventRemoveHandle(priv->watch));
     priv->watch = -1;
     priv->threadQuit = true;
+    virCondSignal(&priv->threadCond);
     virObjectUnlock(priv);
 }
 
