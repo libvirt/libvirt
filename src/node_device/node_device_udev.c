@@ -1802,6 +1802,8 @@ nodeStateInitializeEnumerate(void *opaque)
 
  error:
     virObjectLock(priv);
+    ignore_value(virEventRemoveHandle(priv->watch));
+    priv->watch = -1;
     priv->threadQuit = true;
     virObjectUnlock(priv);
 }
