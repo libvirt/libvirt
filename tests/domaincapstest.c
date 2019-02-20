@@ -94,6 +94,7 @@ fillAllCaps(virDomainCapsPtr domCaps)
     disk->supported = true;
     SET_ALL_BITS(disk->diskDevice);
     SET_ALL_BITS(disk->bus);
+    SET_ALL_BITS(disk->model);
 
     graphics->supported = true;
     SET_ALL_BITS(graphics->type);

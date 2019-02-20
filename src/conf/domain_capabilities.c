@@ -482,6 +482,7 @@ virDomainCapsDeviceDiskFormat(virBufferPtr buf,
 
     ENUM_PROCESS(disk, diskDevice, virDomainDiskDeviceTypeToString);
     ENUM_PROCESS(disk, bus, virDomainDiskBusTypeToString);
+    ENUM_PROCESS(disk, model, virDomainDiskModelTypeToString);
 
     FORMAT_EPILOGUE(disk);
 }

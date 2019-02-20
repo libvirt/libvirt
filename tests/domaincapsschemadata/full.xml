@@ -51,6 +51,12 @@
         <value>sata</value>
         <value>sd</value>
       </enum>
+      <enum name='model'>
+        <value>default</value>
+        <value>virtio</value>
+        <value>virtio-transitional</value>
+        <value>virtio-non-transitional</value>
+      </enum>
     </disk>
     <graphics supported='yes'>
       <enum name='type'>

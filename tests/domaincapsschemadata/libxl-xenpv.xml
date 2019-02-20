@@ -24,6 +24,7 @@
         <value>scsi</value>
         <value>xen</value>
       </enum>
+      <enum name='model'/>
     </disk>
     <graphics supported='yes'>
       <enum name='type'>

@@ -68,6 +68,9 @@
         <value>usb</value>
         <value>sata</value>
       </enum>
+      <enum name='model'>
+        <value>virtio</value>
+      </enum>
     </disk>
     <graphics supported='yes'>
       <enum name='type'>

@@ -65,6 +65,7 @@ struct _virDomainCapsDeviceDisk {
     bool supported;
     virDomainCapsEnum diskDevice;   /* Info about virDomainDiskDevice enum values */
     virDomainCapsEnum bus;          /* Info about virDomainDiskBus enum values */
+    virDomainCapsEnum model;        /* Info about virDomainDiskModel enum values */
     /* add new fields here */
 };
 
