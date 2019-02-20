@@ -1809,8 +1809,8 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
                                  virBitmapPtr autoCpuset)
 {
     int maxvcpus = virDomainDefGetVcpusMax(def);
-    virBitmapPtr allcpumap = NULL;
     size_t i;
+    VIR_AUTOPTR(virBitmap) allcpumap = NULL;
 
     if (hostcpus < 0)
         return -1;
@@ -1837,7 +1837,6 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
         virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, i), maplen);
     }
 
-    virBitmapFree(allcpumap);
     return i;
 }
 
@@ -2987,7 +2986,7 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
     size_t i;
     ssize_t nxt = -1;
     virDomainIOThreadIDDefPtr iothrid = NULL;
-    virBitmapPtr thrmap = NULL;
+    VIR_AUTOPTR(virBitmap) thrmap = NULL;
 
     /* Same value (either 0 or some number), then we have none to fill in or
      * the iothreadid array was filled from the XML
@@ -3028,7 +3027,6 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
     retval = 0;
 
  error:
-    virBitmapFree(thrmap);
     return retval;
 }
 
@@ -18326,9 +18324,9 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
 {
     int ret = -1;
     virDomainIOThreadIDDefPtr iothrid;
-    virBitmapPtr cpumask = NULL;
     unsigned int iothreadid;
     char *tmp = NULL;
+    VIR_AUTOPTR(virBitmap) cpumask = NULL;
 
     if (!(tmp = virXMLPropString(node, "iothread"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -18384,7 +18382,6 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
 
  cleanup:
     VIR_FREE(tmp);
-    virBitmapFree(cpumask);
     return ret;
 }
 
@@ -18396,9 +18393,9 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
 static virBitmapPtr
 virDomainEmulatorPinDefParseXML(xmlNodePtr node)
 {
-    virBitmapPtr def = NULL;
     virBitmapPtr ret = NULL;
     char *tmp = NULL;
+    VIR_AUTOPTR(virBitmap) def = NULL;
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -18418,7 +18415,6 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
     VIR_STEAL_PTR(ret, def);
 
  cleanup:
-    virBitmapFree(def);
     VIR_FREE(tmp);
     return ret;
 }
@@ -18779,11 +18775,11 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
                                 virDomainDefPtr def)
 {
     ssize_t next = -1;
-    virBitmapPtr map = NULL;
     virDomainThreadSchedParamPtr sched;
     virProcessSchedPolicy policy;
     int priority;
     int ret = -1;
+    VIR_AUTOPTR(virBitmap) map = NULL;
 
     if (!(map = virDomainSchedulerParse(node, name, &policy, &priority)))
         goto cleanup;
@@ -18806,7 +18802,6 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
     ret = 0;
 
  cleanup:
-    virBitmapFree(map);
     return ret;
 }
 
@@ -19510,12 +19505,12 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
 {
     xmlNodePtr oldnode = ctxt->node;
     xmlNodePtr *nodes = NULL;
-    virBitmapPtr vcpus = NULL;
     virResctrlAllocPtr alloc = NULL;
     virDomainResctrlDefPtr resctrl = NULL;
     ssize_t i = 0;
     int n;
     int ret = -1;
+    VIR_AUTOPTR(virBitmap) vcpus = NULL;
 
     ctxt->node = node;
 
@@ -19575,7 +19570,6 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     ctxt->node = oldnode;
     virDomainResctrlDefFree(resctrl);
     virObjectUnref(alloc);
-    virBitmapFree(vcpus);
     VIR_FREE(nodes);
     return ret;
 }
@@ -19729,9 +19723,9 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
 {
     xmlNodePtr oldnode = ctxt->node;
     xmlNodePtr *nodes = NULL;
-    virBitmapPtr vcpus = NULL;
     virResctrlAllocPtr alloc = NULL;
     virDomainResctrlDefPtr resctrl = NULL;
+    VIR_AUTOPTR(virBitmap) vcpus = NULL;
 
     ssize_t i = 0;
     int n;
@@ -19790,7 +19784,6 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
     ctxt->node = oldnode;
     virDomainResctrlDefFree(resctrl);
     virObjectUnref(alloc);
-    virBitmapFree(vcpus);
     VIR_FREE(nodes);
     return ret;
 }
