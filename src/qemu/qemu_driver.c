@@ -17026,13 +17026,10 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
 
     if (qemuProcessAttach(conn, driver, vm, pid,
                           pidfile, monConfig, monJSON) < 0) {
-        monConfig = NULL;
         qemuDomainRemoveInactive(driver, vm);
         qemuDomainObjEndJob(driver, vm);
         goto cleanup;
     }
-
-    monConfig = NULL;
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
@@ -17040,7 +17037,7 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
 
  cleanup:
     virDomainDefFree(def);
-    virDomainChrSourceDefFree(monConfig);
+    virObjectUnref(monConfig);
     virDomainObjEndAPI(&vm);
     VIR_FREE(pidfile);
     virObjectUnref(caps);

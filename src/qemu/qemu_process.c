@@ -7528,8 +7528,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto error;
 
     VIR_DEBUG("Preparing monitor state");
-    priv->monConfig = monConfig;
-    monConfig = NULL;
+    priv->monConfig = virObjectRef(monConfig);
     priv->monJSON = monJSON;
 
     /* Attaching to running QEMU so we need to detect whether it was started
@@ -7648,7 +7647,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_FREE(sec_managers);
     if (seclabelgen)
         virSecurityLabelDefFree(seclabeldef);
-    virDomainChrSourceDefFree(monConfig);
+    virObjectUnref(priv->monConfig);
+    priv->monConfig = NULL;
     virObjectUnref(cfg);
     virObjectUnref(caps);
     return -1;
