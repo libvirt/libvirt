@@ -18397,6 +18397,7 @@ static virBitmapPtr
 virDomainEmulatorPinDefParseXML(xmlNodePtr node)
 {
     virBitmapPtr def = NULL;
+    virBitmapPtr ret = NULL;
     char *tmp = NULL;
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
@@ -18411,14 +18412,15 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
     if (virBitmapIsAllClear(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Invalid value of 'cpuset': %s"), tmp);
-        virBitmapFree(def);
-        def = NULL;
         goto cleanup;
     }
 
+    VIR_STEAL_PTR(ret, def);
+
  cleanup:
+    virBitmapFree(def);
     VIR_FREE(tmp);
-    return def;
+    return ret;
 }
 
 
