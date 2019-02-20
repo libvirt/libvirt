@@ -7137,7 +7137,6 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
     xmlNodePtr alias = NULL;
     xmlNodePtr boot = NULL;
     xmlNodePtr rom = NULL;
-    char *type = NULL;
     char *romenabled = NULL;
     char *rombar = NULL;
     char *aliasStr = NULL;
@@ -7223,7 +7222,6 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
  cleanup:
     if (ret < 0)
         virDomainDeviceInfoClear(info);
-    VIR_FREE(type);
     VIR_FREE(rombar);
     VIR_FREE(romenabled);
     VIR_FREE(aliasStr);
@@ -13011,7 +13009,6 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
                         xmlXPathContextPtr ctxt,
                         unsigned int flags)
 {
-    char *type = NULL;
     char *path = NULL;
     char *model = NULL;
     char *backend = NULL;
@@ -13092,7 +13089,6 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
 
  cleanup:
-    VIR_FREE(type);
     VIR_FREE(path);
     VIR_FREE(model);
     VIR_FREE(backend);
@@ -18547,7 +18543,7 @@ virDomainHugepagesParseXML(xmlNodePtr node,
 {
     int ret = -1;
     xmlNodePtr oldnode = ctxt->node;
-    char *unit = NULL, *nodeset = NULL;
+    char *nodeset = NULL;
 
     ctxt->node = node;
 
@@ -18575,7 +18571,6 @@ virDomainHugepagesParseXML(xmlNodePtr node,
 
     ret = 0;
  cleanup:
-    VIR_FREE(unit);
     VIR_FREE(nodeset);
     ctxt->node = oldnode;
     return ret;
