@@ -1890,7 +1890,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *contAlias;
     char *backendAlias = NULL;
-    char *scsiVPDDeviceId = NULL;
+    VIR_AUTOFREE(char *) scsiVPDDeviceId = NULL;
     int controllerModel;
 
     if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
