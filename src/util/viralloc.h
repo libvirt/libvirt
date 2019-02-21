@@ -613,7 +613,24 @@ void virAllocTestHook(void (*func)(int, void*), void *data);
         if (*_ptr) \
             (func)(*_ptr); \
         *_ptr = NULL; \
-    } \
+    }
+
+# define VIR_AUTOCLEAN_FUNC_NAME(type) type##AutoClean
+
+/**
+ * VIR_DEFINE_AUTOCLEAN_FUNC:
+ * @type: type of the variable to be cleared automatically
+ * @func: cleanup function to be automatically called
+ *
+ * This macro defines a function for automatic clearing of
+ * resources in a stack'd variable of type @type. This newly
+ * defined function works as a necessary wrapper around @func.
+ */
+# define VIR_DEFINE_AUTOCLEAN_FUNC(type, func) \
+    static inline void VIR_AUTOCLEAN_FUNC_NAME(type)(type *_ptr) \
+    { \
+        (func)(_ptr); \
+    }
 
 /**
  * VIR_AUTOFREE:
@@ -636,6 +653,19 @@ void virAllocTestHook(void (*func)(int, void*), void *data);
  */
 # define VIR_AUTOPTR(type) \
     __attribute__((cleanup(VIR_AUTOPTR_FUNC_NAME(type)))) type *
+
+/**
+ * VIR_AUTOCLEAN:
+ * @type: type of the variable to be cleared automatically
+ *
+ * Macro to automatically call clearing function registered for variable of @type
+ * when the variable goes out of scope.
+ * The cleanup function is registered by VIR_DEFINE_AUTOCLEAN_FUNC macro for
+ * the given type.
+ */
+# define VIR_AUTOCLEAN(type) \
+    __attribute__((cleanup(VIR_AUTOCLEAN_FUNC_NAME(type)))) type
+
 
 /**
  * VIR_AUTOUNREF:
