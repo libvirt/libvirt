@@ -643,25 +643,10 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
 }
 
 
-typedef struct _virBufferEscapePair virBufferEscapePair;
-typedef virBufferEscapePair *virBufferEscapePairPtr;
-
-struct _virBufferEscapePair {
+struct virBufferEscapePair {
     char escape;
     char *toescape;
 };
-
-static void
-virBufferEscapePairFree(virBufferEscapePairPtr pair)
-{
-    if (!pair)
-        return;
-
-    VIR_FREE(pair->toescape);
-    VIR_FREE(pair);
-}
-
-VIR_DEFINE_AUTOPTR_FUNC(virBufferEscapePair, virBufferEscapePairFree);
 
 
 /**
@@ -688,8 +673,8 @@ virBufferEscapeN(virBufferPtr buf,
     VIR_AUTOFREE(char *) escaped = NULL;
     char *out;
     const char *cur;
-    virBufferEscapePair escapeItem;
-    VIR_AUTOPTR(virBufferEscapePair) escapeList = NULL;
+    struct virBufferEscapePair escapeItem;
+    struct virBufferEscapePair *escapeList = NULL;
     size_t nescapeList = 0;
     va_list ap;
 
@@ -704,7 +689,7 @@ virBufferEscapeN(virBufferPtr buf,
     va_start(ap, str);
 
     while ((escapeItem.escape = va_arg(ap, int))) {
-        if (VIR_STRDUP(escapeItem.toescape, va_arg(ap, char *)) < 0) {
+        if (!(escapeItem.toescape = va_arg(ap, char *))) {
             virBufferSetError(buf, errno);
             goto cleanup;
         }
@@ -747,6 +732,7 @@ virBufferEscapeN(virBufferPtr buf,
 
  cleanup:
     va_end(ap);
+    VIR_FREE(escapeList);
 }
 
 
