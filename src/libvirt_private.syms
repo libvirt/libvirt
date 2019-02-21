@@ -1488,7 +1488,6 @@ virBufferContentAndReset;
 virBufferCurrentContent;
 virBufferError;
 virBufferEscape;
-virBufferEscapeN;
 virBufferEscapeRegex;
 virBufferEscapeSexpr;
 virBufferEscapeShell;

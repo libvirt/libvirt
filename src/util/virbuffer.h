@@ -84,8 +84,6 @@ void virBufferStrcatVArgs(virBufferPtr buf, va_list ap);
 
 void virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
                      const char *format, const char *str);
-void virBufferEscapeN(virBufferPtr buf, const char *format,
-                      const char *str, ...);
 void virBufferEscapeString(virBufferPtr buf, const char *format,
                            const char *str);
 void virBufferEscapeSexpr(virBufferPtr buf, const char *format,
