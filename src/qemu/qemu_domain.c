@@ -2174,7 +2174,7 @@ static int
 qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
                                    virBufferPtr buf)
 {
-    virBuffer tmp = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) tmp = VIR_BUFFER_INITIALIZER;
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     int ret = -1;
 
@@ -2209,7 +2209,6 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&tmp);
     return ret;
 }
 
@@ -2345,9 +2344,9 @@ static int
 qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
                                                 virStorageSourcePtr src)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer privateDataBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) privateDataBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
@@ -2373,10 +2372,6 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&attrBuf);
-    virBufferFreeAndReset(&childBuf);
-    virBufferFreeAndReset(&privateDataBuf);
-
     return ret;
 }
 
@@ -2385,8 +2380,8 @@ static int
 qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
                                           virDomainObjPtr vm)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
     virDomainDiskDefPtr disk;
     qemuDomainDiskPrivatePtr diskPriv;
@@ -2413,9 +2408,6 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&attrBuf);
-    virBufferFreeAndReset(&childBuf);
-
     return ret;
 }
 
@@ -2425,8 +2417,8 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
                                  virDomainObjPtr vm,
                                  qemuDomainObjPrivatePtr priv)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     qemuDomainJob job = priv->job.active;
     int ret = -1;
 
@@ -2465,9 +2457,6 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&attrBuf);
-    virBufferFreeAndReset(&childBuf);
-
     return ret;
 }
 
