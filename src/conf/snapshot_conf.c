@@ -688,7 +688,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
 
 
 char *
-virDomainSnapshotDefFormat(const char *domain_uuid,
+virDomainSnapshotDefFormat(const char *uuidstr,
                            virDomainSnapshotDefPtr def,
                            virCapsPtr caps,
                            virDomainXMLOptionPtr xmlopt,
@@ -744,10 +744,10 @@ virDomainSnapshotDefFormat(const char *domain_uuid,
     if (def->dom) {
         if (virDomainDefFormatInternal(def->dom, caps, flags, &buf, xmlopt) < 0)
             goto error;
-    } else if (domain_uuid) {
+    } else if (uuidstr) {
         virBufferAddLit(&buf, "<domain>\n");
         virBufferAdjustIndent(&buf, 2);
-        virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", domain_uuid);
+        virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuidstr);
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</domain>\n");
     }
@@ -1224,10 +1224,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     int ret = -1;
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     bool align_match = true;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainSnapshotObjPtr other;
-
-    virUUIDFormat(domain->uuid, uuidstr);
 
     /* Prevent circular chains */
     if (def->parent) {
@@ -1274,6 +1271,9 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
 
     if (def->dom &&
         memcmp(def->dom->uuid, domain->uuid, VIR_UUID_BUFLEN)) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_INVALID_ARG,
                        _("definition for snapshot %s must use uuid %s"),
                        def->name, uuidstr);
