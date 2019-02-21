@@ -412,12 +412,12 @@ testBufEscapeRegex(const void *opaque)
     virBufferEscapeRegex(&buf, "%s", data->data);
 
     if (!(actual = virBufferContentAndReset(&buf))) {
-        VIR_TEST_DEBUG("testBufEscapeN: buf is empty");
+        VIR_TEST_DEBUG("testBufEscapeRegex: buf is empty");
         goto cleanup;
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
-        VIR_TEST_DEBUG("testBufEscapeN: Strings don't match:\n");
+        VIR_TEST_DEBUG("testBufEscapeRegex: Strings don't match:\n");
         virTestDifference(stderr, data->expect, actual);
         goto cleanup;
     }
