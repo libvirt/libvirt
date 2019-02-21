@@ -429,6 +429,17 @@ testBufSetIndent(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
+/* Result of this shows up only in valgrind or similar */
+static int
+testBufferAutoclean(const void *opaque ATTRIBUTE_UNUSED)
+{
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "test test test\n");
+    return 0;
+}
+
+
 static int
 mymain(void)
 {
@@ -448,6 +459,7 @@ mymain(void)
     DO_TEST("Trim", testBufTrim, 0);
     DO_TEST("AddBuffer", testBufAddBuffer, 0);
     DO_TEST("set indent", testBufSetIndent, 0);
+    DO_TEST("autoclean", testBufferAutoclean, 0);
 
 #define DO_TEST_ADD_STR(DATA, EXPECT) \
     do { \

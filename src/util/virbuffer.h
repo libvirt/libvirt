@@ -59,6 +59,9 @@ int virBufferCheckErrorInternal(const virBuffer *buf,
                                 const char *funcname,
                                 size_t linenr)
     ATTRIBUTE_NONNULL(1);
+
+VIR_DEFINE_AUTOCLEAN_FUNC(virBuffer, virBufferFreeAndReset);
+
 /**
  * virBufferCheckError
  *
