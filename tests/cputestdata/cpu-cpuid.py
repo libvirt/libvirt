@@ -301,15 +301,13 @@ def parseFeature(data):
 
 def parseMap():
     path = os.path.dirname(sys.argv[0])
-    path = os.path.join(path, "..", "..", "src", "cpu", "cpu_map.xml")
+    path = os.path.join(path, "..", "..", "src", "cpu_map", "x86_features.xml")
     with open(path, "r") as f:
         data = xmltodict.parse(f)
 
     cpuMap = {}
-    for arch in data["cpus"]["arch"]:
-        if arch["@name"] == "x86":
-            for feature in arch["feature"]:
-                cpuMap[feature["@name"]] = parseFeature(feature["cpuid"])
+    for feature in data["cpus"]["feature"]:
+        cpuMap[feature["@name"]] = parseFeature(feature["cpuid"])
 
     return cpuMap
 
