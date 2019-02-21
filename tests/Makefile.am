@@ -705,6 +705,7 @@ qemusecuritytest_LDADD = $(qemu_LDADDS) $(LDADDS)
 qemufirmwaretest_SOURCES = \
 	qemufirmwaretest.c \
 	testutils.h testutils.c \
+	virfilewrapper.c virfilewrapper.h \
 	$(NULL)
 qemufirmwaretest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
