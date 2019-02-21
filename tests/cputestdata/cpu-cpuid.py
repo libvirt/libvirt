@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -259,7 +259,7 @@ def parseQemu(path, features):
     with open(path, "r") as f:
         data, pos = json.JSONDecoder().raw_decode(f.read())
 
-    for (prop, val) in data["return"]["model"]["props"].iteritems():
+    for (prop, val) in data["return"]["model"]["props"].items():
         if val and prop in features:
             cpuidAdd(cpuid, features[prop])
 
@@ -268,7 +268,7 @@ def parseQemu(path, features):
 
 def parseCpuid(path):
     cpuid = {}
-    with open(path, "r") as f:
+    with open(path, "rb") as f:
         data = xmltodict.parse(f)
 
     for leaf in data["cpudata"]["cpuid"]:
@@ -302,7 +302,7 @@ def parseFeature(data):
 def parseMap():
     path = os.path.dirname(sys.argv[0])
     path = os.path.join(path, "..", "..", "src", "cpu_map", "x86_features.xml")
-    with open(path, "r") as f:
+    with open(path, "rb") as f:
         data = xmltodict.parse(f)
 
     cpuMap = {}
@@ -313,7 +313,7 @@ def parseMap():
 
 
 def formatCpuid(cpuid, path, comment):
-    print path
+    print(path)
     with open(path, "w") as f:
         f.write("<!-- " + comment + " -->\n")
         f.write("<cpudata arch='x86'>\n")
@@ -337,7 +337,7 @@ def convert(path):
         for name in feature["names"]:
             props[name] = value
 
-    print path
+    print(path)
     with open(path, "w") as f:
         json.dump({"return": {"model": {"name": "base", "props": props}},
                    "id": "model-expansion"},
@@ -373,7 +373,7 @@ def diff(cpuMap, path):
 
 
 if len(sys.argv) < 3:
-    print "Usage: %s convert|diff json_file..." % sys.argv[0]
+    print("Usage: %s convert|diff json_file..." % sys.argv[0])
     sys.exit(1)
 
 action = sys.argv[1]
@@ -387,5 +387,5 @@ elif action == "diff":
     for path in args:
         diff(cpuMap, path)
 else:
-    print "Unknown action: " + action
+    print("Unknown action: %s" % action)
     sys.exit(1)
