@@ -1664,7 +1664,7 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
 
     if (*p == '\0')
         return VSH_TK_END;
-    if (*p == ';') {
+    if (*p == ';' || *p == '\n') {
         parser->pos = ++p;             /* = \0 or begin of next command */
         return VSH_TK_SUBCMD_END;
     }
@@ -1672,7 +1672,7 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
     while (*p) {
         /* end of token is blank space or ';' */
         if (!double_quote && !single_quote &&
-            (*p == ' ' || *p == '\t' || *p == ';'))
+            (*p == ' ' || *p == '\t' || *p == ';' || *p == '\n'))
             break;
 
         if (!double_quote && *p == '\'') { /* single quote */

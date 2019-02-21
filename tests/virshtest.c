@@ -411,6 +411,10 @@ mymain(void)
     DO_TEST(34, "hello\n", "echo --str hello");
     DO_TEST(35, "hello\n", "echo --hi");
 
+    /* Tests of multiple commands.  */
+    DO_TEST(36, "a\nb\n", " echo a; echo b;");
+    DO_TEST(37, "a\nb\n", "\necho a\n echo b\n");
+
 # undef DO_TEST
 
     VIR_FREE(custom_uri);
