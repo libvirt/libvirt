@@ -21,9 +21,11 @@
 #include <config.h>
 
 #include "qemu_firmware.h"
+#include "configmake.h"
 #include "qemu_capabilities.h"
 #include "virarch.h"
 #include "virfile.h"
+#include "virhash.h"
 #include "virjson.h"
 #include "virlog.h"
 #include "virstring.h"
@@ -898,4 +900,145 @@ qemuFirmwareFormat(qemuFirmwarePtr fw)
         return NULL;
 
     return virJSONValueToString(doc, true);
+}
+
+
+static int
+qemuFirmwareBuildFileList(virHashTablePtr files, const char *dir)
+{
+    DIR *dirp;
+    struct dirent *ent = NULL;
+    int rc;
+    int ret = -1;
+
+    if ((rc = virDirOpenIfExists(&dirp, dir)) < 0)
+        return -1;
+
+    if (rc == 0)
+        return 0;
+
+    while ((rc = virDirRead(dirp, &ent, dir)) > 0) {
+        VIR_AUTOFREE(char *) filename = NULL;
+        VIR_AUTOFREE(char *) path = NULL;
+
+        if (ent->d_type != DT_REG && ent->d_type != DT_LNK)
+            continue;
+
+        if (STRPREFIX(ent->d_name, "."))
+            continue;
+
+        if (VIR_STRDUP(filename, ent->d_name) < 0)
+            goto cleanup;
+
+        if (virAsprintf(&path, "%s/%s", dir, filename) < 0)
+            goto cleanup;
+
+        if (virHashUpdateEntry(files, filename, path) < 0)
+            goto cleanup;
+
+        path = NULL;
+    }
+
+    if (rc < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virDirClose(&dirp);
+    return ret;
+}
+
+static int
+qemuFirmwareFilesSorter(const virHashKeyValuePair *a,
+                        const virHashKeyValuePair *b)
+{
+    return strcmp(a->key, b->key);
+}
+
+#define QEMU_FIRMWARE_SYSTEM_LOCATION PREFIX "/share/qemu/firmware"
+#define QEMU_FIRMWARE_ETC_LOCATION SYSCONFDIR "/qemu/firmware"
+
+int
+qemuFirmwareFetchConfigs(char ***firmwares,
+                         bool privileged)
+{
+    VIR_AUTOPTR(virHashTable) files = NULL;
+    VIR_AUTOFREE(char *) homeConfig = NULL;
+    VIR_AUTOFREE(char *) xdgConfig = NULL;
+    VIR_AUTOFREE(virHashKeyValuePairPtr) pairs = NULL;
+    virHashKeyValuePairPtr tmp = NULL;
+
+    *firmwares = NULL;
+
+    if (privileged) {
+        /* This is a slight divergence from the specification.
+         * Since the system daemon runs as root, it doesn't make
+         * much sense to parse files in root's home directory. It
+         * makes sense only for session daemon which runs under
+         * regular user. */
+        if (VIR_STRDUP(xdgConfig, virGetEnvBlockSUID("XDG_CONFIG_HOME")) < 0)
+            return -1;
+
+        if (!xdgConfig) {
+            VIR_AUTOFREE(char *) home = virGetUserDirectory();
+
+            if (!home)
+                return -1;
+
+            if (virAsprintf(&xdgConfig, "%s/.config", home) < 0)
+                return -1;
+        }
+
+        if (virAsprintf(&homeConfig, "%s/qemu/firmware", xdgConfig) < 0)
+            return -1;
+    }
+
+    if (!(files = virHashCreate(10, virHashValueFree)))
+        return -1;
+
+    if (qemuFirmwareBuildFileList(files, QEMU_FIRMWARE_SYSTEM_LOCATION) < 0)
+        return -1;
+
+    if (qemuFirmwareBuildFileList(files, QEMU_FIRMWARE_ETC_LOCATION) < 0)
+        return -1;
+
+    if (homeConfig &&
+        qemuFirmwareBuildFileList(files, homeConfig) < 0)
+        return -1;
+
+    /* At this point, the @files hash table contains unique set of filenames
+     * where each filename (as key) has the highest priority full pathname
+     * associated with it. */
+
+    if (virHashSize(files) == 0)
+        return 0;
+
+    if (!(pairs = virHashGetItems(files, qemuFirmwareFilesSorter)))
+        return -1;
+
+    for (tmp = pairs; tmp->key; tmp++) {
+        const char *path = tmp->value;
+        off_t len;
+
+        if ((len = virFileLength(path, -1)) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to get size of '%s'"),
+                                 path);
+            return -1;
+        }
+
+        VIR_DEBUG("firmware description path '%s' len=%jd",
+                  path, (intmax_t) len);
+
+        if (len == 0) {
+            /* Empty files are used to mask less specific instances
+             * of the same file. */
+            continue;
+        }
+
+        if (virStringListAdd(firmwares, path) < 0)
+            return -1;
+    }
+
+    return 0;
 }

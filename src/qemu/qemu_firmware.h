@@ -37,4 +37,8 @@ qemuFirmwareParse(const char *path);
 char *
 qemuFirmwareFormat(qemuFirmwarePtr fw);
 
+int
+qemuFirmwareFetchConfigs(char ***firmwares,
+                         bool privileged);
+
 #endif /* LIBVIRT_QEMU_FIRMWARE_H */
