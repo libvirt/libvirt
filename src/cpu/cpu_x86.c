@@ -1187,6 +1187,39 @@ x86ModelParseAncestor(virCPUx86ModelPtr model,
 
 
 static int
+x86ModelParseSignature(virCPUx86ModelPtr model,
+                       xmlXPathContextPtr ctxt)
+{
+
+    if (virXPathBoolean("boolean(./signature)", ctxt)) {
+        unsigned int sigFamily = 0;
+        unsigned int sigModel = 0;
+        int rc;
+
+        rc = virXPathUInt("string(./signature/@family)", ctxt, &sigFamily);
+        if (rc < 0 || sigFamily == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid CPU signature family in model %s"),
+                           model->name);
+            return -1;
+        }
+
+        rc = virXPathUInt("string(./signature/@model)", ctxt, &sigModel);
+        if (rc < 0 || sigModel == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid CPU signature model in model %s"),
+                           model->name);
+            return -1;
+        }
+
+        model->signature = x86MakeSignature(sigFamily, sigModel, 0);
+    }
+
+    return 0;
+}
+
+
+static int
 x86ModelParse(xmlXPathContextPtr ctxt,
               const char *name,
               void *data)
@@ -1208,29 +1241,8 @@ x86ModelParse(xmlXPathContextPtr ctxt,
     if (x86ModelParseAncestor(model, ctxt, map) < 0)
         goto cleanup;
 
-    if (virXPathBoolean("boolean(./signature)", ctxt)) {
-        unsigned int sigFamily = 0;
-        unsigned int sigModel = 0;
-        int rc;
-
-        rc = virXPathUInt("string(./signature/@family)", ctxt, &sigFamily);
-        if (rc < 0 || sigFamily == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid CPU signature family in model %s"),
-                           model->name);
-            goto cleanup;
-        }
-
-        rc = virXPathUInt("string(./signature/@model)", ctxt, &sigModel);
-        if (rc < 0 || sigModel == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid CPU signature model in model %s"),
-                           model->name);
-            goto cleanup;
-        }
-
-        model->signature = x86MakeSignature(sigFamily, sigModel, 0);
-    }
+    if (x86ModelParseSignature(model, ctxt) < 0)
+        goto cleanup;
 
     if (virXPathBoolean("boolean(./vendor)", ctxt)) {
         vendor = virXPathString("string(./vendor/@name)", ctxt);
