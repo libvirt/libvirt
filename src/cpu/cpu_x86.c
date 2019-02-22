@@ -1250,15 +1250,50 @@ x86ModelParseVendor(virCPUx86ModelPtr model,
 
 
 static int
+x86ModelParseFeatures(virCPUx86ModelPtr model,
+                      xmlXPathContextPtr ctxt,
+                      virCPUx86MapPtr map)
+{
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) <= 0)
+        return n;
+
+    for (i = 0; i < n; i++) {
+        VIR_AUTOFREE(char *) ftname = NULL;
+        virCPUx86FeaturePtr feature;
+
+        if (!(ftname = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Missing feature name for CPU model %s"),
+                           model->name);
+            return -1;
+        }
+
+        if (!(feature = x86FeatureFind(map, ftname))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Feature %s required by CPU model %s not found"),
+                           ftname, model->name);
+            return -1;
+        }
+
+        if (x86DataAdd(&model->data, &feature->data))
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 x86ModelParse(xmlXPathContextPtr ctxt,
               const char *name,
               void *data)
 {
     virCPUx86MapPtr map = data;
-    xmlNodePtr *nodes = NULL;
     virCPUx86ModelPtr model;
-    size_t i;
-    int n;
     int ret = -1;
 
     if (!(model = x86ModelNew()))
@@ -1276,32 +1311,8 @@ x86ModelParse(xmlXPathContextPtr ctxt,
     if (x86ModelParseVendor(model, ctxt, map) < 0)
         goto cleanup;
 
-    n = virXPathNodeSet("./feature", ctxt, &nodes);
-    if (n < 0)
+    if (x86ModelParseFeatures(model, ctxt, map) < 0)
         goto cleanup;
-
-    for (i = 0; i < n; i++) {
-        virCPUx86FeaturePtr feature;
-        char *ftname;
-
-        if (!(ftname = virXMLPropString(nodes[i], "name"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing feature name for CPU model %s"), model->name);
-            goto cleanup;
-        }
-
-        if (!(feature = x86FeatureFind(map, ftname))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Feature %s required by CPU model %s not found"),
-                           ftname, model->name);
-            VIR_FREE(ftname);
-            goto cleanup;
-        }
-        VIR_FREE(ftname);
-
-        if (x86DataAdd(&model->data, &feature->data))
-            goto cleanup;
-    }
 
     if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
         goto cleanup;
@@ -1310,7 +1321,6 @@ x86ModelParse(xmlXPathContextPtr ctxt,
 
  cleanup:
     x86ModelFree(model);
-    VIR_FREE(nodes);
     return ret;
 }
 
