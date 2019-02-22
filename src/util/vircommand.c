@@ -2983,7 +2983,7 @@ virCommandRunRegex(virCommandPtr cmd,
     int totgroups = 0, ngroup = 0, maxvars = 0;
     char **groups;
     VIR_AUTOFREE(char *) outbuf = NULL;
-    VIR_AUTOPTR(virString) lines = NULL;
+    VIR_AUTOSTRINGLIST lines = NULL;
     int ret = -1;
 
     /* Compile all regular expressions */

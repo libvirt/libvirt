@@ -473,7 +473,7 @@ xenHandleConfGetValueStringListErrors(int ret)
 static int
 xenParsePCIList(virConfPtr conf, virDomainDefPtr def)
 {
-    VIR_AUTOPTR(virString) pcis = NULL;
+    VIR_AUTOSTRINGLIST pcis = NULL;
     virString *entries = NULL;
     int rc;
 
@@ -666,7 +666,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
     }
 
     if (!hvm && def->graphics == NULL) { /* New PV guests use this format */
-        VIR_AUTOPTR(virString) vfbs = NULL;
+        VIR_AUTOSTRINGLIST vfbs = NULL;
         int rc;
 
         if ((rc = virConfGetValueStringList(conf, "vfb", false, &vfbs)) == 1) {
@@ -764,7 +764,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
 static int
 xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
 {
-    VIR_AUTOPTR(virString) serials = NULL;
+    VIR_AUTOSTRINGLIST serials = NULL;
     virDomainChrDefPtr chr = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {

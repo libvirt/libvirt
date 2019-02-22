@@ -987,7 +987,7 @@ int virProcessGetStartTime(pid_t pid,
     int len;
     VIR_AUTOFREE(char *) filename = NULL;
     VIR_AUTOFREE(char *) buf = NULL;
-    VIR_AUTOPTR(virString) tokens = NULL;
+    VIR_AUTOSTRINGLIST tokens = NULL;
 
     if (virAsprintf(&filename, "/proc/%llu/stat", (long long) pid) < 0)
         return -1;

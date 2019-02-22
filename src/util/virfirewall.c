@@ -719,7 +719,7 @@ virFirewallApplyRule(virFirewallPtr firewall,
 {
     VIR_AUTOFREE(char *) output = NULL;
     VIR_AUTOFREE(char *) str = virFirewallRuleToString(rule);
-    VIR_AUTOPTR(virString) lines = NULL;
+    VIR_AUTOSTRINGLIST lines = NULL;
     VIR_INFO("Applying rule '%s'", NULLSTR(str));
 
     if (rule->ignoreErrors)

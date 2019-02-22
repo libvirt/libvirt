@@ -1181,7 +1181,7 @@ int virLXCProcessStart(virConnectPtr conn,
     size_t i;
     char *logfile = NULL;
     int logfd = -1;
-    VIR_AUTOPTR(virString) veths = NULL;
+    VIR_AUTOSTRINGLIST veths = NULL;
     int handshakefds[2] = { -1, -1 };
     off_t pos = -1;
     char ebuf[1024];

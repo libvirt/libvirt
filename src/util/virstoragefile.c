@@ -1568,7 +1568,7 @@ virStorageFileParseBackingStoreStr(const char *str,
     size_t nstrings;
     unsigned int idx = 0;
     char *suffix;
-    VIR_AUTOPTR(virString) strings = NULL;
+    VIR_AUTOSTRINGLIST strings = NULL;
 
     *chainIndex = 0;
 
@@ -2652,7 +2652,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
     virURIPtr uri = NULL;
     const char *path = NULL;
     int ret = -1;
-    VIR_AUTOPTR(virString) scheme = NULL;
+    VIR_AUTOSTRINGLIST scheme = NULL;
 
     if (!(uri = virURIParse(uristr))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2756,7 +2756,7 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
 {
     char *port;
     size_t skip;
-    VIR_AUTOPTR(virString) parts = NULL;
+    VIR_AUTOSTRINGLIST parts = NULL;
 
     if (VIR_EXPAND_N(src->hosts, src->nhosts, 1) < 0)
         return -1;
@@ -2912,7 +2912,7 @@ static int
 virStorageSourceParseNBDColonString(const char *nbdstr,
                                     virStorageSourcePtr src)
 {
-    VIR_AUTOPTR(virString) backing = NULL;
+    VIR_AUTOSTRINGLIST backing = NULL;
 
     if (!(backing = virStringSplit(nbdstr, ":", 0)))
         return -1;
@@ -4190,7 +4190,7 @@ int
 virStorageFileCheckCompat(const char *compat)
 {
     unsigned int result;
-    VIR_AUTOPTR(virString) version = NULL;
+    VIR_AUTOSTRINGLIST version = NULL;
 
     if (!compat)
         return 0;
