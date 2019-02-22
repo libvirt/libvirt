@@ -128,7 +128,7 @@
 
 <pre>
 ...
-&lt;os&gt;
+&lt;os firmware='uefi'&gt;
   &lt;type&gt;hvm&lt;/type&gt;
   &lt;loader readonly='yes' secure='no' type='rom'&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
   &lt;nvram template='/usr/share/OVMF/OVMF_VARS.fd'&gt;/var/lib/libvirt/nvram/guest_VARS.fd&lt;/nvram&gt;
@@ -141,6 +141,26 @@
 ...</pre>
 
     <dl>
+      <dt><code>firmware</code></dt>
+      <dd>The <code>firmware</code> attribute allows management
+        applications to automatically fill <code>&lt;loader/&gt;</code>
+        and <code>&lt;nvram/&gt;</code> elements and possibly enable
+        some features required by selected firmware. Accepted values are
+        <code>bios</code> and <code>efi</code>.<br/>
+        The selection process scans for files describing installed
+        firmware images in specified location and uses the most specific
+        one which fulfils domain requirements. The locations in order of
+        preference (from generic to most specific one) are:
+        <ul>
+          <li><code>/usr/share/qemu/firmware</code></li>
+          <li><code>/etc/qemu/firmware</code></li>
+          <li><code>$XDG_CONFIG_HOME/qemu/firmware</code></li>
+        </ul>
+        For more information refer to firmware metadata specification as
+        described in <code>docs/interop/firmware.json</code> in QEMU
+        repository. Regular users do not need to bother.
+        <span class="since">Since 5.2.0 (QEMU and KVM only)</span>
+      </dd>
       <dt><code>type</code></dt>
       <dd>The content of the <code>type</code> element specifies the
         type of operating system to be booted in the virtual machine.

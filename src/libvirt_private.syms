@@ -510,6 +510,8 @@ virDomainObjTaint;
 virDomainObjUpdateModificationImpact;
 virDomainObjWait;
 virDomainObjWaitUntil;
+virDomainOsDefFirmwareTypeFromString;
+virDomainOsDefFirmwareTypeToString;
 virDomainOSTypeFromString;
 virDomainOSTypeToString;
 virDomainParseMemory;

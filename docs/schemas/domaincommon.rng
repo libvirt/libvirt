@@ -256,6 +256,14 @@
     </optional>
     <element name="os">
       <interleave>
+        <optional>
+          <attribute name="firmware">
+            <choice>
+              <value>bios</value>
+              <value>efi</value>
+            </choice>
+          </attribute>
+        </optional>
         <ref name="ostypehvm"/>
         <optional>
           <element name="loader">

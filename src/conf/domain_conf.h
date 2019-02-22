@@ -2005,10 +2005,21 @@ struct _virDomainOSEnv {
     char *value;
 };
 
+typedef enum {
+    VIR_DOMAIN_OS_DEF_FIRMWARE_NONE = 0,
+    VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
+    VIR_DOMAIN_OS_DEF_FIRMWARE_EFI,
+
+    VIR_DOMAIN_OS_DEF_FIRMWARE_LAST
+} virDomainOsDefFirmware;
+
+VIR_ENUM_DECL(virDomainOsDefFirmware);
+
 typedef struct _virDomainOSDef virDomainOSDef;
 typedef virDomainOSDef *virDomainOSDefPtr;
 struct _virDomainOSDef {
     int type;
+    virDomainOsDefFirmware firmware;
     virArch arch;
     char *machine;
     size_t nBootDevs;
@@ -2729,6 +2740,7 @@ typedef enum {
     VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS = (1 << 4),
     VIR_DOMAIN_DEF_FEATURE_USER_ALIAS = (1 << 5),
     VIR_DOMAIN_DEF_FEATURE_NO_BOOT_ORDER = (1 << 6),
+    VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT = (1 << 7),
 } virDomainDefFeatures;
 
 
