@@ -21,7 +21,9 @@
 #ifndef LIBVIRT_QEMU_FIRMWARE_H
 # define LIBVIRT_QEMU_FIRMWARE_H
 
+# include "domain_conf.h"
 # include "viralloc.h"
+# include "qemu_conf.h"
 
 typedef struct _qemuFirmware qemuFirmware;
 typedef qemuFirmware *qemuFirmwarePtr;
@@ -40,5 +42,10 @@ qemuFirmwareFormat(qemuFirmwarePtr fw);
 int
 qemuFirmwareFetchConfigs(char ***firmwares,
                          bool privileged);
+
+int
+qemuFirmwareFillDomain(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       unsigned int flags);
 
 #endif /* LIBVIRT_QEMU_FIRMWARE_H */

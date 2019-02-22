@@ -20,9 +20,13 @@
 
 #include <config.h>
 
+#include <fnmatch.h>
+
 #include "qemu_firmware.h"
 #include "configmake.h"
 #include "qemu_capabilities.h"
+#include "qemu_domain.h"
+#include "qemu_process.h"
 #include "virarch.h"
 #include "virfile.h"
 #include "virhash.h"
@@ -1041,4 +1045,333 @@ qemuFirmwareFetchConfigs(char ***firmwares,
     }
 
     return 0;
+}
+
+
+static bool
+qemuFirmwareMatchDomain(const virDomainDef *def,
+                        const qemuFirmware *fw,
+                        const char *path)
+{
+    size_t i;
+    bool supportsS3 = false;
+    bool supportsS4 = false;
+    bool requiresSMM = false;
+    bool supportsSEV = false;
+
+    for (i = 0; i < fw->ninterfaces; i++) {
+        if ((def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS &&
+             fw->interfaces[i] == QEMU_FIRMWARE_OS_INTERFACE_BIOS) ||
+            (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI &&
+             fw->interfaces[i] == QEMU_FIRMWARE_OS_INTERFACE_UEFI))
+            break;
+    }
+
+    if (i == fw->ninterfaces) {
+        VIR_DEBUG("No matching interface in '%s'", path);
+        return false;
+    }
+
+    for (i = 0; i < fw->ntargets; i++) {
+        size_t j;
+
+        if (def->os.arch != fw->targets[i]->architecture)
+            continue;
+
+        for (j = 0; j < fw->targets[i]->nmachines; j++) {
+            if (fnmatch(fw->targets[i]->machines[j], def->os.machine, 0) == 0)
+                break;
+        }
+
+        if (j == fw->targets[i]->nmachines)
+            continue;
+
+        break;
+    }
+
+    if (i == fw->ntargets) {
+        VIR_DEBUG("No matching machine type in '%s'", path);
+        return false;
+    }
+
+    for (i = 0; i < fw->nfeatures; i++) {
+        switch (fw->features[i]) {
+        case QEMU_FIRMWARE_FEATURE_ACPI_S3:
+            supportsS3 = true;
+            break;
+        case QEMU_FIRMWARE_FEATURE_ACPI_S4:
+            supportsS4 = true;
+            break;
+        case QEMU_FIRMWARE_FEATURE_AMD_SEV:
+            supportsSEV = true;
+            break;
+        case QEMU_FIRMWARE_FEATURE_REQUIRES_SMM:
+            requiresSMM = true;
+            break;
+
+        case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
+        case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
+        case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
+        case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
+        case QEMU_FIRMWARE_FEATURE_NONE:
+        case QEMU_FIRMWARE_FEATURE_LAST:
+            break;
+        }
+    }
+
+    if (def->pm.s3 == VIR_TRISTATE_BOOL_YES &&
+        !supportsS3) {
+        VIR_DEBUG("Domain requires S3, firmware '%s' doesn't support it", path);
+        return false;
+    }
+
+    if (def->pm.s4 == VIR_TRISTATE_BOOL_YES &&
+        !supportsS4) {
+        VIR_DEBUG("Domain requires S4, firmware '%s' doesn't support it", path);
+        return false;
+    }
+
+    if (def->os.loader &&
+        def->os.loader->secure == VIR_TRISTATE_BOOL_YES &&
+        !requiresSMM) {
+        VIR_DEBUG("Domain restricts pflash programming to SMM, "
+                  "but firmware '%s' doesn't support SMM", path);
+        return false;
+    }
+
+    if (def->sev &&
+        def->sev->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV &&
+        !supportsSEV) {
+        VIR_DEBUG("Domain requires SEV, firmware '%s' doesn't support it", path);
+        return false;
+    }
+
+    VIR_DEBUG("Firmware '%s' matches domain requirements", path);
+    return true;
+}
+
+
+static int
+qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
+                           virDomainDefPtr def,
+                           const qemuFirmware *fw)
+{
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
+    const qemuFirmwareMappingKernel *kernel = &fw->mapping.data.kernel;
+    const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
+    size_t i;
+
+    switch (fw->mapping.device) {
+    case QEMU_FIRMWARE_DEVICE_FLASH:
+        if (!def->os.loader &&
+            VIR_ALLOC(def->os.loader) < 0)
+            return -1;
+
+        def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
+        def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
+
+        if (STRNEQ(flash->executable.format, "raw")) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("unsupported flash format '%s'"),
+                           flash->executable.format);
+            return -1;
+        }
+
+        VIR_FREE(def->os.loader->path);
+        if (VIR_STRDUP(def->os.loader->path,
+                       flash->executable.filename) < 0)
+            return -1;
+
+        if (STRNEQ(flash->nvram_template.format, "raw")) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("unsupported nvram template format '%s'"),
+                           flash->nvram_template.format);
+            return -1;
+        }
+
+        VIR_FREE(def->os.loader->templt);
+        if (VIR_STRDUP(def->os.loader->templt,
+                       flash->nvram_template.filename) < 0)
+            return -1;
+
+        if (qemuDomainNVRAMPathGenerate(cfg, def) < 0)
+            return -1;
+
+        VIR_DEBUG("decided on firmware '%s' varstore template '%s'",
+                  def->os.loader->path,
+                  def->os.loader->templt);
+        break;
+
+    case QEMU_FIRMWARE_DEVICE_KERNEL:
+        VIR_FREE(def->os.kernel);
+        if (VIR_STRDUP(def->os.kernel, kernel->filename) < 0)
+            return -1;
+
+        VIR_DEBUG("decided on kernel '%s'",
+                  def->os.kernel);
+        break;
+
+    case QEMU_FIRMWARE_DEVICE_MEMORY:
+        if (!def->os.loader &&
+            VIR_ALLOC(def->os.loader) < 0)
+            return -1;
+
+        def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+        if (VIR_STRDUP(def->os.loader->path, memory->filename) < 0)
+            return -1;
+
+        VIR_DEBUG("decided on loader '%s'",
+                  def->os.loader->path);
+        break;
+
+    case QEMU_FIRMWARE_DEVICE_NONE:
+    case QEMU_FIRMWARE_DEVICE_LAST:
+        break;
+    }
+
+    for (i = 0; i < fw->nfeatures; i++) {
+        switch (fw->features[i]) {
+        case QEMU_FIRMWARE_FEATURE_REQUIRES_SMM:
+            switch (def->features[VIR_DOMAIN_FEATURE_SMM]) {
+            case VIR_TRISTATE_SWITCH_OFF:
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("domain has SMM turned off "
+                                 "but chosen firmware requires it"));
+                return -1;
+                break;
+            case VIR_TRISTATE_SWITCH_ABSENT:
+                VIR_DEBUG("Enabling SMM feature");
+                def->features[VIR_DOMAIN_FEATURE_SMM] = VIR_TRISTATE_SWITCH_ON;
+                break;
+
+            case VIR_TRISTATE_SWITCH_ON:
+            case VIR_TRISTATE_SWITCH_LAST:
+                break;
+            }
+            break;
+
+        case QEMU_FIRMWARE_FEATURE_NONE:
+        case QEMU_FIRMWARE_FEATURE_ACPI_S3:
+        case QEMU_FIRMWARE_FEATURE_ACPI_S4:
+        case QEMU_FIRMWARE_FEATURE_AMD_SEV:
+        case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
+        case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
+        case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
+        case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
+        case QEMU_FIRMWARE_FEATURE_LAST:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static void
+qemuFirmwareSanityCheck(const qemuFirmware *fw,
+                        const char *filename)
+{
+    size_t i;
+    bool requiresSMM = false;
+    bool supportsSecureBoot = false;
+
+    for (i = 0; i < fw->nfeatures; i++) {
+        switch (fw->features[i]) {
+        case QEMU_FIRMWARE_FEATURE_REQUIRES_SMM:
+            requiresSMM = true;
+            break;
+        case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
+            supportsSecureBoot = true;
+            break;
+        case QEMU_FIRMWARE_FEATURE_NONE:
+        case QEMU_FIRMWARE_FEATURE_ACPI_S3:
+        case QEMU_FIRMWARE_FEATURE_ACPI_S4:
+        case QEMU_FIRMWARE_FEATURE_AMD_SEV:
+        case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
+        case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
+        case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
+        case QEMU_FIRMWARE_FEATURE_LAST:
+            break;
+        }
+    }
+
+    if (supportsSecureBoot != requiresSMM) {
+        VIR_WARN("Firmware description '%s' has invalid set of features: "
+                 "%s = %d, %s = %d",
+                 filename,
+                 qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_REQUIRES_SMM),
+                 requiresSMM,
+                 qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_SECURE_BOOT),
+                 supportsSecureBoot);
+    }
+}
+
+
+int
+qemuFirmwareFillDomain(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       unsigned int flags)
+{
+    VIR_AUTOSTRINGLIST paths = NULL;
+    size_t npaths = 0;
+    qemuFirmwarePtr *firmwares = NULL;
+    size_t nfirmwares = 0;
+    const qemuFirmware *theone = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (!(flags & VIR_QEMU_PROCESS_START_NEW))
+        return 0;
+
+    if (vm->def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE)
+        return 0;
+
+    if (qemuFirmwareFetchConfigs(&paths, driver->privileged) < 0)
+        return -1;
+
+    npaths = virStringListLength((const char **)paths);
+
+    if (VIR_ALLOC_N(firmwares, npaths) < 0)
+        return -1;
+
+    nfirmwares = npaths;
+
+    for (i = 0; i < nfirmwares; i++) {
+        if (!(firmwares[i] = qemuFirmwareParse(paths[i])))
+            goto cleanup;
+    }
+
+    for (i = 0; i < nfirmwares; i++) {
+        if (qemuFirmwareMatchDomain(vm->def, firmwares[i], paths[i])) {
+            theone = firmwares[i];
+            VIR_DEBUG("Found matching firmware (description path '%s')",
+                      paths[i]);
+            break;
+        }
+    }
+
+    if (!theone) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Unable to find any firmware to satisfy '%s'"),
+                       virDomainOsDefFirmwareTypeToString(vm->def->os.firmware));
+        goto cleanup;
+    }
+
+    /* Firstly, let's do some sanity checks. If either of these
+     * fail we can still start the domain successfully, but it's
+     * likely that admin/FW manufacturer messed up. */
+    qemuFirmwareSanityCheck(theone, paths[i]);
+
+    if (qemuFirmwareEnableFeatures(driver, vm->def, theone) < 0)
+        goto cleanup;
+
+    vm->def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+
+    ret = 0;
+ cleanup:
+    for (i = 0; i < nfirmwares; i++)
+        qemuFirmwareFree(firmwares[i]);
+    VIR_FREE(firmwares);
+    return ret;
 }
