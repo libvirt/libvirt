@@ -1220,6 +1220,36 @@ x86ModelParseSignature(virCPUx86ModelPtr model,
 
 
 static int
+x86ModelParseVendor(virCPUx86ModelPtr model,
+                    xmlXPathContextPtr ctxt,
+                    virCPUx86MapPtr map)
+{
+    VIR_AUTOFREE(char *) vendor = NULL;
+    int rc;
+
+    if ((rc = virXPathBoolean("boolean(./vendor)", ctxt)) <= 0)
+        return rc;
+
+    vendor = virXPathString("string(./vendor/@name)", ctxt);
+    if (!vendor) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid vendor element in CPU model %s"),
+                       model->name);
+        return -1;
+    }
+
+    if (!(model->vendor = x86VendorFind(map, vendor))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown vendor %s referenced by CPU model %s"),
+                       vendor, model->name);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 x86ModelParse(xmlXPathContextPtr ctxt,
               const char *name,
               void *data)
@@ -1227,7 +1257,6 @@ x86ModelParse(xmlXPathContextPtr ctxt,
     virCPUx86MapPtr map = data;
     xmlNodePtr *nodes = NULL;
     virCPUx86ModelPtr model;
-    char *vendor = NULL;
     size_t i;
     int n;
     int ret = -1;
@@ -1244,22 +1273,8 @@ x86ModelParse(xmlXPathContextPtr ctxt,
     if (x86ModelParseSignature(model, ctxt) < 0)
         goto cleanup;
 
-    if (virXPathBoolean("boolean(./vendor)", ctxt)) {
-        vendor = virXPathString("string(./vendor/@name)", ctxt);
-        if (!vendor) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid vendor element in CPU model %s"),
-                           model->name);
-            goto cleanup;
-        }
-
-        if (!(model->vendor = x86VendorFind(map, vendor))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown vendor %s referenced by CPU model %s"),
-                           vendor, model->name);
-            goto cleanup;
-        }
-    }
+    if (x86ModelParseVendor(model, ctxt, map) < 0)
+        goto cleanup;
 
     n = virXPathNodeSet("./feature", ctxt, &nodes);
     if (n < 0)
@@ -1295,7 +1310,6 @@ x86ModelParse(xmlXPathContextPtr ctxt,
 
  cleanup:
     x86ModelFree(model);
-    VIR_FREE(vendor);
     VIR_FREE(nodes);
     return ret;
 }
