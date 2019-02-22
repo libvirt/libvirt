@@ -217,7 +217,8 @@ int
 virXMLFormatElement(virBufferPtr buf,
                     const char *name,
                     virBufferPtr attrBuf,
-                    virBufferPtr childBuf);
+                    virBufferPtr childBuf)
+    ATTRIBUTE_RETURN_CHECK;
 
 struct _virXPathContextNodeSave {
     xmlXPathContextPtr ctxt;
