@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007, 2010-2011, 2014 Red Hat, Inc.
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2014 David Kiarie Kahurani
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
