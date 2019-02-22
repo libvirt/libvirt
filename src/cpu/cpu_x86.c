@@ -1206,22 +1206,32 @@ x86ModelParseAncestor(virCPUx86ModelPtr model,
 
 
 static int
-x86ModelParseSignature(virCPUx86ModelPtr model,
-                       xmlXPathContextPtr ctxt)
+x86ModelParseSignatures(virCPUx86ModelPtr model,
+                        xmlXPathContextPtr ctxt)
 {
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    xmlNodePtr root = ctxt->node;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./signature", ctxt, &nodes)) <= 0)
+        return n;
+
     /* Remove inherited signatures. */
     VIR_FREE(model->signatures);
 
-    if (virXPathBoolean("boolean(./signature)", ctxt)) {
+    model->nsignatures = n;
+    if (VIR_ALLOC_N(model->signatures, n) < 0)
+       return -1;
+
+    for (i = 0; i < n; i++) {
         unsigned int sigFamily = 0;
         unsigned int sigModel = 0;
         int rc;
 
-        model->nsignatures = 1;
-        if (VIR_ALLOC_N(model->signatures, 1) < 0)
-            return -1;
+        ctxt->node = nodes[i];
 
-        rc = virXPathUInt("string(./signature/@family)", ctxt, &sigFamily);
+        rc = virXPathUInt("string(@family)", ctxt, &sigFamily);
         if (rc < 0 || sigFamily == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid CPU signature family in model %s"),
@@ -1229,7 +1239,7 @@ x86ModelParseSignature(virCPUx86ModelPtr model,
             return -1;
         }
 
-        rc = virXPathUInt("string(./signature/@model)", ctxt, &sigModel);
+        rc = virXPathUInt("string(@model)", ctxt, &sigModel);
         if (rc < 0 || sigModel == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid CPU signature model in model %s"),
@@ -1237,9 +1247,10 @@ x86ModelParseSignature(virCPUx86ModelPtr model,
             return -1;
         }
 
-        model->signatures[0] = x86MakeSignature(sigFamily, sigModel, 0);
+        model->signatures[i] = x86MakeSignature(sigFamily, sigModel, 0);
     }
 
+    ctxt->node = root;
     return 0;
 }
 
@@ -1336,7 +1347,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
     if (x86ModelParseAncestor(model, ctxt, map) < 0)
         goto cleanup;
 
-    if (x86ModelParseSignature(model, ctxt) < 0)
+    if (x86ModelParseSignatures(model, ctxt) < 0)
         goto cleanup;
 
     if (x86ModelParseVendor(model, ctxt, map) < 0)
