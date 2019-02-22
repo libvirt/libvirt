@@ -1151,6 +1151,42 @@ x86ModelCompare(virCPUx86ModelPtr model1,
 
 
 static int
+x86ModelParseAncestor(virCPUx86ModelPtr model,
+                      xmlXPathContextPtr ctxt,
+                      virCPUx86MapPtr map)
+{
+    VIR_AUTOFREE(char *) name = NULL;
+    virCPUx86ModelPtr ancestor;
+    int rc;
+
+    if ((rc = virXPathBoolean("boolean(./model)", ctxt)) <= 0)
+        return rc;
+
+    name = virXPathString("string(./model/@name)", ctxt);
+    if (!name) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing ancestor's name in CPU model %s"),
+                       model->name);
+        return -1;
+    }
+
+    if (!(ancestor = x86ModelFind(map, name))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Ancestor model %s not found for CPU model %s"),
+                       name, model->name);
+        return -1;
+    }
+
+    model->vendor = ancestor->vendor;
+    model->signature = ancestor->signature;
+    if (x86DataCopy(&model->data, &ancestor->data) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 x86ModelParse(xmlXPathContextPtr ctxt,
               const char *name,
               void *data)
@@ -1169,33 +1205,8 @@ x86ModelParse(xmlXPathContextPtr ctxt,
     if (VIR_STRDUP(model->name, name) < 0)
         goto cleanup;
 
-    if (virXPathNode("./model", ctxt)) {
-        virCPUx86ModelPtr ancestor;
-        char *anname;
-
-        anname = virXPathString("string(./model/@name)", ctxt);
-        if (!anname) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing ancestor's name in CPU model %s"),
-                           model->name);
-            goto cleanup;
-        }
-
-        if (!(ancestor = x86ModelFind(map, anname))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Ancestor model %s not found for CPU model %s"),
-                           anname, model->name);
-            VIR_FREE(anname);
-            goto cleanup;
-        }
-
-        VIR_FREE(anname);
-
-        model->vendor = ancestor->vendor;
-        model->signature = ancestor->signature;
-        if (x86DataCopy(&model->data, &ancestor->data) < 0)
-            goto cleanup;
-    }
+    if (x86ModelParseAncestor(model, ctxt, map) < 0)
+        goto cleanup;
 
     if (virXPathBoolean("boolean(./signature)", ctxt)) {
         unsigned int sigFamily = 0;
