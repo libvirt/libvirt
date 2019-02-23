@@ -1225,6 +1225,8 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     bool align_match = true;
     virDomainSnapshotObjPtr other;
+    bool external = def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
+        virDomainSnapshotDefIsExternal(def);
 
     /* Prevent circular chains */
     if (def->parent) {
@@ -1259,14 +1261,12 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     }
 
     /* Check that any replacement is compatible */
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) &&
-        def->state != VIR_DOMAIN_DISK_SNAPSHOT) {
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) && !external) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("disk-only flag for snapshot %s requires "
                          "disk-snapshot state"),
                        def->name);
         goto cleanup;
-
     }
 
     if (def->dom &&
@@ -1315,8 +1315,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
         }
 
         if (def->dom) {
-            if (def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
-                virDomainSnapshotDefIsExternal(def)) {
+            if (external) {
                 align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
                 align_match = false;
             }
@@ -1346,8 +1345,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
         *snap = other;
     } else {
         if (def->dom) {
-            if (def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
-                def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+            if (external) {
                 align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
                 align_match = false;
             }
