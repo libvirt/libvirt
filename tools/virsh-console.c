@@ -137,6 +137,8 @@ virConsoleEventOnStream(virStreamPtr st,
 {
     virConsolePtr con = opaque;
 
+    virObjectLock(con);
+
     if (events & VIR_STREAM_EVENT_READABLE) {
         size_t avail = con->streamToTerminal.length -
             con->streamToTerminal.offset;
@@ -146,7 +148,7 @@ virConsoleEventOnStream(virStreamPtr st,
             if (VIR_REALLOC_N(con->streamToTerminal.data,
                               con->streamToTerminal.length + 1024) < 0) {
                 virConsoleShutdown(con);
-                return;
+                goto cleanup;
             }
             con->streamToTerminal.length += 1024;
             avail += 1024;
@@ -157,10 +159,10 @@ virConsoleEventOnStream(virStreamPtr st,
                             con->streamToTerminal.offset,
                             avail);
         if (got == -2)
-            return; /* blocking */
+            goto cleanup; /* blocking */
         if (got <= 0) {
             virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
         con->streamToTerminal.offset += got;
         if (con->streamToTerminal.offset)
@@ -176,10 +178,10 @@ virConsoleEventOnStream(virStreamPtr st,
                              con->terminalToStream.data,
                              con->terminalToStream.offset);
         if (done == -2)
-            return; /* blocking */
+            goto cleanup; /* blocking */
         if (done < 0) {
             virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
         memmove(con->terminalToStream.data,
                 con->terminalToStream.data + done,
@@ -201,6 +203,9 @@ virConsoleEventOnStream(virStreamPtr st,
         events & VIR_STREAM_EVENT_HANGUP) {
         virConsoleShutdown(con);
     }
+
+ cleanup:
+    virObjectUnlock(con);
 }
 
 
@@ -212,6 +217,8 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
 {
     virConsolePtr con = opaque;
 
+    virObjectLock(con);
+
     if (events & VIR_EVENT_HANDLE_READABLE) {
         size_t avail = con->terminalToStream.length -
             con->terminalToStream.offset;
@@ -221,7 +228,7 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
             if (VIR_REALLOC_N(con->terminalToStream.data,
                               con->terminalToStream.length + 1024) < 0) {
                 virConsoleShutdown(con);
-                return;
+                goto cleanup;
             }
             con->terminalToStream.length += 1024;
             avail += 1024;
@@ -234,15 +241,15 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
         if (got < 0) {
             if (errno != EAGAIN)
                 virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
         if (got == 0) {
             virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
         if (con->terminalToStream.data[con->terminalToStream.offset] == con->escapeChar) {
             virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
 
         con->terminalToStream.offset += got;
@@ -256,6 +263,9 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
         events & VIR_EVENT_HANDLE_HANGUP) {
         virConsoleShutdown(con);
     }
+
+ cleanup:
+    virObjectUnlock(con);
 }
 
 
@@ -267,6 +277,8 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
 {
     virConsolePtr con = opaque;
 
+    virObjectLock(con);
+
     if (events & VIR_EVENT_HANDLE_WRITABLE &&
         con->streamToTerminal.offset) {
         ssize_t done;
@@ -277,7 +289,7 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
         if (done < 0) {
             if (errno != EAGAIN)
                 virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
         memmove(con->streamToTerminal.data,
                 con->streamToTerminal.data + done,
@@ -299,6 +311,9 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
         events & VIR_EVENT_HANDLE_HANGUP) {
         virConsoleShutdown(con);
     }
+
+ cleanup:
+    virObjectUnlock(con);
 }
 
 
