@@ -23,6 +23,8 @@
 # include "virstring.h"
 # include "storage/storage_driver.h"
 # include "virmock.h"
+# include "virfilewrapper.h"
+# include "configmake.h"
 
 # define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 # include "qemu/qemu_capspriv.h"
@@ -705,6 +707,9 @@ mymain(void)
     VIR_FREE(driver.config->memoryBackingDir);
     if (VIR_STRDUP_QUIET(driver.config->memoryBackingDir, "/var/lib/libvirt/qemu/ram") < 0)
         return EXIT_FAILURE;
+    VIR_FREE(driver.config->nvramDir);
+    if (VIR_STRDUP(driver.config->nvramDir, "/var/lib/libvirt/qemu/nvram") < 0)
+        return EXIT_FAILURE;
 
     capslatest = virHashCreate(4, virHashValueFree);
     if (!capslatest)
@@ -723,6 +728,13 @@ mymain(void)
     }
 
     VIR_TEST_VERBOSE("\n");
+
+    virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/etc/qemu/firmware");
+    virFileWrapperAddPrefix(PREFIX "/share/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/usr/share/qemu/firmware");
+    virFileWrapperAddPrefix("/home/user/.config/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/home/user/.config/qemu/firmware");
 
 /**
  * The following set of macros allows testing of XML -> argv conversion with a
@@ -3019,6 +3031,11 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-graphics", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-pc-graphics", "x86_64");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-q35-graphics", "x86_64");
+
+    DO_TEST_CAPS_LATEST("os-firmware-bios");
+    DO_TEST_CAPS_LATEST("os-firmware-efi");
+    DO_TEST_CAPS_LATEST("os-firmware-efi-secboot");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-os-firmware-efi", "aarch64");
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);

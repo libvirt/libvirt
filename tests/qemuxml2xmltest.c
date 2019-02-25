@@ -1023,9 +1023,36 @@ mymain(void)
     DO_TEST("smbios", NONE);
     DO_TEST("smbios-multiple-type2", NONE);
 
+    DO_TEST("os-firmware-bios",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_ICH9_USB_EHCI1,
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("os-firmware-efi",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_ICH9_USB_EHCI1,
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("os-firmware-efi-secboot",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_ICH9_USB_EHCI1,
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_DEVICE_QXL);
+
     DO_TEST("aarch64-aavmf-virtio-mmio",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST("aarch64-os-firmware-efi",
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     DO_TEST("aarch64-virtio-pci-default",
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,

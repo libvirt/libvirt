@@ -585,7 +585,9 @@ qemucpumock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
-	testutils.c testutils.h
+	testutils.c testutils.h \
+	virfilewrapper.c virfilewrapper.h \
+	$(NULL)
 qemuxml2argvtest_LDADD = libqemutestdriver.la \
 	$(LDADDS) $(LIBXML_LIBS)
 
