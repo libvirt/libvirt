@@ -3070,6 +3070,18 @@ virCPUx86DataSetSignature(virCPUDataPtr cpuData,
 }
 
 
+uint32_t
+virCPUx86DataGetSignature(virCPUDataPtr cpuData,
+                          unsigned int *family,
+                          unsigned int *model,
+                          unsigned int *stepping)
+{
+    x86DataToSignatureFull(&cpuData->data.x86, family, model, stepping);
+
+    return x86MakeSignature(*family, *model, *stepping);
+}
+
+
 int
 virCPUx86DataSetVendor(virCPUDataPtr cpuData,
                        const char *vendor)
