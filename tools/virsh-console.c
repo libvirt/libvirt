@@ -139,6 +139,10 @@ virConsoleEventOnStream(virStreamPtr st,
 
     virObjectLock(con);
 
+    /* we got late event after console was shutdown */
+    if (!con->st)
+        goto cleanup;
+
     if (events & VIR_STREAM_EVENT_READABLE) {
         size_t avail = con->streamToTerminal.length -
             con->streamToTerminal.offset;
@@ -219,6 +223,10 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
 
     virObjectLock(con);
 
+    /* we got late event after console was shutdown */
+    if (!con->st)
+        goto cleanup;
+
     if (events & VIR_EVENT_HANDLE_READABLE) {
         size_t avail = con->terminalToStream.length -
             con->terminalToStream.offset;
@@ -278,6 +286,10 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
     virConsolePtr con = opaque;
 
     virObjectLock(con);
+
+    /* we got late event after console was shutdown */
+    if (!con->st)
+        goto cleanup;
 
     if (events & VIR_EVENT_HANDLE_WRITABLE &&
         con->streamToTerminal.offset) {
