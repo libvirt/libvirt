@@ -1107,4 +1107,8 @@ qemuDomainIsUsingNoShutdown(qemuDomainObjPrivatePtr priv);
 bool
 qemuDomainDiskIsMissingLocalOptional(virDomainDiskDefPtr disk);
 
+int
+qemuDomainNVRAMPathGenerate(virQEMUDriverConfigPtr cfg,
+                            virDomainDefPtr def);
+
 #endif /* LIBVIRT_QEMU_DOMAIN_H */
