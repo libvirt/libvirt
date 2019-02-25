@@ -68,6 +68,10 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
 void
 virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps);
 
+qemuMonitorCPUModelInfoPtr
+virQEMUCapsGetCPUModelInfo(virQEMUCapsPtr qemuCaps,
+                           virDomainVirtType type);
+
 void
 virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
                            virDomainVirtType type,
