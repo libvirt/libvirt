@@ -56,6 +56,7 @@
 #include "qemu_interface.h"
 #include "qemu_security.h"
 #include "qemu_extdevice.h"
+#include "qemu_firmware.h"
 
 #include "cpu/cpu.h"
 #include "datatypes.h"
@@ -6080,6 +6081,10 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Prepare device secrets");
     if (qemuDomainSecretPrepare(driver, vm) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Prepare bios/uefi paths");
+    if (qemuFirmwareFillDomain(driver, vm, flags) < 0)
         goto cleanup;
 
     for (i = 0; i < vm->def->nchannels; i++) {
