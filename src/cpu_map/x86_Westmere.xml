@@ -1,6 +1,8 @@
 <cpus>
   <model name='Westmere'>
     <signature family='6' model='44'/> <!-- 0206c0 -->
+    <signature family='6' model='47'/> <!-- 0206f0 -->
+    <signature family='6' model='37'/> <!-- 020650 -->
     <vendor name='Intel'/>
     <feature name='aes'/>
     <feature name='apic'/>
