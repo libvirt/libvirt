@@ -283,7 +283,9 @@
                 </choice>
               </attribute>
             </optional>
-            <ref name="absFilePath"/>
+            <optional>
+              <ref name="absFilePath"/>
+            </optional>
           </element>
         </optional>
         <optional>

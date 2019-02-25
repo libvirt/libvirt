@@ -6591,6 +6591,22 @@ virDomainDefMemtuneValidate(const virDomainDef *def)
 
 
 static int
+virDomainDefOSValidate(const virDomainDef *def)
+{
+    if (!def->os.loader)
+        return 0;
+
+    if (!def->os.loader->path) {
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                       _("no loader path specified"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDefValidateInternal(const virDomainDef *def)
 {
     if (virDomainDefCheckDuplicateDiskInfo(def) < 0)
@@ -6626,6 +6642,9 @@ virDomainDefValidateInternal(const virDomainDef *def)
         return -1;
 
     if (virDomainDefMemtuneValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefOSValidate(def) < 0)
         return -1;
 
     return 0;
@@ -18242,6 +18261,9 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
     type_str = virXMLPropString(node, "type");
     loader->path = (char *) xmlNodeGetContent(node);
 
+    if (STREQ_NULLABLE(loader->path, ""))
+        VIR_FREE(loader->path);
+
     if (readonly_str &&
         (loader->readonly = virTristateBoolTypeFromString(readonly_str)) <= 0) {
         virReportError(VIR_ERR_XML_DETAIL,
@@ -26985,9 +27007,12 @@ virDomainLoaderDefFormat(virBufferPtr buf,
     if (loader->secure)
         virBufferAsprintf(buf, " secure='%s'", secure);
 
-    virBufferAsprintf(buf, " type='%s'>", type);
+    virBufferAsprintf(buf, " type='%s'", type);
 
-    virBufferEscapeString(buf, "%s</loader>\n", loader->path);
+    if (loader->path)
+        virBufferEscapeString(buf, ">%s</loader>\n", loader->path);
+    else
+        virBufferAddLit(buf, "/>\n");
     if (loader->nvram || loader->templt) {
         virBufferAddLit(buf, "<nvram");
         virBufferEscapeString(buf, " template='%s'", loader->templt);
