@@ -1059,6 +1059,7 @@ VIR_ENUM_IMPL(virDomainMemoryAllocation, VIR_DOMAIN_MEMORY_ALLOCATION_LAST,
 
 VIR_ENUM_IMPL(virDomainLoader,
               VIR_DOMAIN_LOADER_TYPE_LAST,
+              "none",
               "rom",
               "pflash",
 );
@@ -4306,6 +4307,20 @@ virDomainDefPostParseMemory(virDomainDefPtr def,
 
 
 static void
+virDomainDefPostParseOs(virDomainDefPtr def)
+{
+    if (!def->os.loader)
+        return;
+
+    if (def->os.loader->path &&
+        def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_NONE) {
+        /* By default, loader is type of 'rom' */
+        def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+    }
+}
+
+
+static void
 virDomainDefPostParseMemtune(virDomainDefPtr def)
 {
     size_t i;
@@ -5479,6 +5494,8 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
 
     if (virDomainDefPostParseMemory(def, data->parseFlags) < 0)
         return -1;
+
+    virDomainDefPostParseOs(def);
 
     virDomainDefPostParseMemtune(def);
 
@@ -18280,7 +18297,7 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
 
     if (type_str) {
         int type;
-        if ((type = virDomainLoaderTypeFromString(type_str)) < 0) {
+        if ((type = virDomainLoaderTypeFromString(type_str)) <= 0) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("unknown type value: %s"), type_str);
             return -1;
@@ -27007,12 +27024,14 @@ virDomainLoaderDefFormat(virBufferPtr buf,
     if (loader->secure)
         virBufferAsprintf(buf, " secure='%s'", secure);
 
-    virBufferAsprintf(buf, " type='%s'", type);
+    if (loader->type != VIR_DOMAIN_LOADER_TYPE_NONE)
+        virBufferAsprintf(buf, " type='%s'", type);
 
     if (loader->path)
         virBufferEscapeString(buf, ">%s</loader>\n", loader->path);
     else
         virBufferAddLit(buf, "/>\n");
+
     if (loader->nvram || loader->templt) {
         virBufferAddLit(buf, "<nvram");
         virBufferEscapeString(buf, " template='%s'", loader->templt);

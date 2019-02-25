@@ -10,6 +10,7 @@
       <value>/foo/bar</value>
       <value>/tmp/my_path</value>
       <enum name='type'>
+        <value>none</value>
         <value>rom</value>
         <value>pflash</value>
       </enum>
