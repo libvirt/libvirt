@@ -2839,27 +2839,16 @@ virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
 }
 
 
-/**
- * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
- *          1 when the caller should fall back to using virCapsPtr->host.cpu,
- *         -1 on error.
- */
-static int
-virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
-                           virDomainVirtType type,
-                           qemuMonitorCPUModelInfoPtr model,
-                           virCPUDefPtr cpu,
-                           bool migratable)
+virCPUDataPtr
+virQEMUCapsGetCPUModelX86Data(qemuMonitorCPUModelInfoPtr model,
+                              bool migratable)
 {
-    virCPUDataPtr data = NULL;
     unsigned long long sigFamily = 0;
     unsigned long long sigModel = 0;
     unsigned long long sigStepping = 0;
-    int ret = -1;
+    virCPUDataPtr data = NULL;
+    virCPUDataPtr ret = NULL;
     size_t i;
-
-    if (!model)
-        return 1;
 
     if (!(data = virCPUDataNew(VIR_ARCH_X86_64)))
         goto cleanup;
@@ -2899,6 +2888,35 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
     }
 
     if (virCPUx86DataSetSignature(data, sigFamily, sigModel, sigStepping) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, data);
+
+ cleanup:
+    virCPUDataFree(data);
+    return ret;
+}
+
+
+/**
+ * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
+ *          1 when the caller should fall back to using virCapsPtr->host.cpu,
+ *         -1 on error.
+ */
+static int
+virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
+                           virDomainVirtType type,
+                           qemuMonitorCPUModelInfoPtr model,
+                           virCPUDefPtr cpu,
+                           bool migratable)
+{
+    virCPUDataPtr data = NULL;
+    int ret = -1;
+
+    if (!model)
+        return 1;
+
+    if (!(data = virQEMUCapsGetCPUModelX86Data(model, migratable)))
         goto cleanup;
 
     if (cpuDecode(cpu, data, virQEMUCapsGetCPUDefinitions(qemuCaps, type)) < 0)
