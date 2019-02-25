@@ -2422,7 +2422,6 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     const char *model;
     qemuMonitorCPUModelExpansionType type;
     virDomainVirtType virtType;
-    virQEMUCapsHostCPUDataPtr cpuData;
     int ret = -1;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
@@ -2435,8 +2434,6 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
         virtType = VIR_DOMAIN_VIRT_KVM;
         model = "host";
     }
-
-    cpuData = virQEMUCapsGetHostCPUData(qemuCaps, virtType);
 
     /* Some x86_64 features defined in cpu_map.xml use spelling which differ
      * from the one preferred by QEMU. Static expansion would give us only the
@@ -2489,7 +2486,8 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
         modelInfo->migratability = true;
     }
 
-    VIR_STEAL_PTR(cpuData->info, modelInfo);
+    virQEMUCapsSetCPUModelInfo(qemuCaps, virtType, modelInfo);
+    modelInfo = NULL;
     ret = 0;
 
  cleanup:
@@ -2514,24 +2512,24 @@ virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
                           bool migratable,
                           char ***features)
 {
-    virQEMUCapsHostCPUDataPtr data;
+    qemuMonitorCPUModelInfoPtr modelInfo;
     char **list;
     size_t i;
     size_t n;
     int ret = -1;
 
     *features = NULL;
-    data = virQEMUCapsGetHostCPUData(qemuCaps, virtType);
+    modelInfo = virQEMUCapsGetCPUModelInfo(qemuCaps, virtType);
 
-    if (!data->info)
+    if (!modelInfo)
         return 0;
 
-    if (VIR_ALLOC_N(list, data->info->nprops + 1) < 0)
+    if (VIR_ALLOC_N(list, modelInfo->nprops + 1) < 0)
         return -1;
 
     n = 0;
-    for (i = 0; i < data->info->nprops; i++) {
-        qemuMonitorCPUPropertyPtr prop = data->info->props + i;
+    for (i = 0; i < modelInfo->nprops; i++) {
+        qemuMonitorCPUPropertyPtr prop = modelInfo->props + i;
 
         if (migratable && prop->migratable == VIR_TRISTATE_BOOL_NO)
             continue;
@@ -2541,7 +2539,7 @@ virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
     }
 
     VIR_STEAL_PTR(*features, list);
-    if (migratable && !data->info->migratability)
+    if (migratable && !modelInfo->migratability)
         ret = 1;
     else
         ret = 0;
@@ -2942,17 +2940,17 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
                         virCPUDefPtr cpu,
                         bool migratable)
 {
-    virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
+    qemuMonitorCPUModelInfoPtr modelInfo = virQEMUCapsGetCPUModelInfo(qemuCaps, type);
     int ret = 1;
 
-    if (migratable && cpuData->info && !cpuData->info->migratability)
+    if (migratable && modelInfo && !modelInfo->migratability)
         return 1;
 
     if (ARCH_IS_S390(qemuCaps->arch)) {
-        ret = virQEMUCapsInitCPUModelS390(qemuCaps, type, cpuData->info,
+        ret = virQEMUCapsInitCPUModelS390(qemuCaps, type, modelInfo,
                                           cpu, migratable);
     } else if (ARCH_IS_X86(qemuCaps->arch)) {
-        ret = virQEMUCapsInitCPUModelX86(qemuCaps, type, cpuData->info,
+        ret = virQEMUCapsInitCPUModelX86(qemuCaps, type, modelInfo,
                                          cpu, migratable);
     }
 
@@ -3668,8 +3666,7 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
                                   virBufferPtr buf,
                                   virDomainVirtType type)
 {
-    virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
-    qemuMonitorCPUModelInfoPtr model = cpuData->info;
+    qemuMonitorCPUModelInfoPtr model = virQEMUCapsGetCPUModelInfo(qemuCaps, type);
     const char *typeStr = type == VIR_DOMAIN_VIRT_KVM ? "kvm" : "tcg";
     size_t i;
 
