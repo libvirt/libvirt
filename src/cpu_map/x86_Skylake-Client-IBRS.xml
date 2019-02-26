@@ -1,6 +1,11 @@
 <cpus>
   <model name='Skylake-Client-IBRS'>
     <signature family='6' model='94'/> <!-- 0506e0 -->
+    <signature family='6' model='78'/> <!-- 0406e0 -->
+    <!-- These are Kaby Lake and Coffee Lake successors to Skylake,
+         but we don't have specific models for them. -->
+    <signature family='6' model='142'/> <!-- 0806e0 -->
+    <signature family='6' model='158'/> <!-- 0906e0 -->
     <vendor name='Intel'/>
     <feature name='3dnowprefetch'/>
     <feature name='abm'/>
