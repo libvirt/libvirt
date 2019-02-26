@@ -1,6 +1,7 @@
 <cpus>
   <model name='SandyBridge'>
     <signature family='6' model='42'/> <!-- 0206a0 -->
+    <signature family='6' model='45'/> <!-- 0206d0 -->
     <vendor name='Intel'/>
     <feature name='aes'/>
     <feature name='apic'/>
