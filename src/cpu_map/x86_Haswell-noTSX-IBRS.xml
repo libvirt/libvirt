@@ -1,6 +1,9 @@
 <cpus>
   <model name='Haswell-noTSX-IBRS'>
     <signature family='6' model='60'/> <!-- 0306c0 -->
+    <signature family='6' model='63'/> <!-- 0306f0 -->
+    <signature family='6' model='69'/> <!-- 040650 -->
+    <signature family='6' model='70'/> <!-- 040660 -->
     <vendor name='Intel'/>
     <feature name='aes'/>
     <feature name='apic'/>
