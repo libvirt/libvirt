@@ -24,7 +24,8 @@ The B<virt-admin> program can be used either to run one I<COMMAND> by giving the
 command and its arguments on the shell command line, or a I<COMMAND_STRING>
 which is a single shell argument consisting of multiple I<COMMAND> actions
 and their arguments joined with whitespace and separated by semicolons or
-newlines between commands.  Within I<COMMAND_STRING>, virt-admin understands the
+newlines between commands, where unquoted backslash-newline pairs are
+elided.  Within I<COMMAND_STRING>, virt-admin understands the
 same single, double, and backslash escapes as the shell, although you must
 add another layer of shell escaping in creating the single shell argument.
 If no command is given in the command line, B<virt-admin> will then start a minimal

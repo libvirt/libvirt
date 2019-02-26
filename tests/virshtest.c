@@ -414,6 +414,9 @@ mymain(void)
     /* Tests of multiple commands.  */
     DO_TEST(36, "a\nb\n", " echo a; echo b;");
     DO_TEST(37, "a\nb\n", "\necho a\n echo b\n");
+    DO_TEST(38, "a\nb\n", "ec\\\nho a\n echo \\\n b;");
+    DO_TEST(39, "a\n b\n", "\"ec\\\nho\" a\n echo \"\\\n b\";");
+    DO_TEST(40, "a\n\\\n b\n", "ec\\\nho a\n echo '\\\n b';");
 
 # undef DO_TEST
 
