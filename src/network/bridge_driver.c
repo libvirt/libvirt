@@ -5349,64 +5349,6 @@ networkNetworkObjTaint(virNetworkObjPtr obj,
 }
 
 
-static bool
-networkBandwidthGenericChecks(virDomainNetDefPtr iface,
-                              virNetDevBandwidthPtr newBandwidth)
-{
-    virNetDevBandwidthPtr ifaceBand;
-    unsigned long long old_floor, new_floor;
-
-    if (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_NETWORK &&
-        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_BRIDGE ||
-         iface->data.network.actual->data.bridge.brname == NULL)) {
-        /* This is not an interface that's plugged into a network.
-         * We don't care. Thus from our POV bandwidth change is allowed. */
-        return false;
-    }
-
-    ifaceBand = virDomainNetGetActualBandwidth(iface);
-    old_floor = new_floor = 0;
-
-    if (ifaceBand && ifaceBand->in)
-        old_floor = ifaceBand->in->floor;
-    if (newBandwidth && newBandwidth->in)
-        new_floor = newBandwidth->in->floor;
-
-    return new_floor != old_floor;
-}
-
-
-static bool
-networkBandwidthChangeAllowed(virDomainNetDefPtr iface,
-                              virNetDevBandwidthPtr newBandwidth)
-{
-    virNetworkDriverStatePtr driver = networkGetDriver();
-    virNetworkObjPtr obj = NULL;
-    virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
-    bool ret = false;
-
-    if (!networkBandwidthGenericChecks(iface, newBandwidth))
-        return true;
-
-    obj = virNetworkObjFindByName(driver->networks, iface->data.network.name);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       _("no network with matching name '%s'"),
-                       iface->data.network.name);
-        return false;
-    }
-
-    if (networkCheckBandwidth(obj, newBandwidth, ifaceBand, &iface->mac, NULL) < 0)
-        goto cleanup;
-
-    ret = true;
-
- cleanup:
-    virNetworkObjEndAPI(&obj);
-    return ret;
-}
-
-
 static int
 networkBandwidthUpdate(virDomainNetDefPtr iface,
                        virNetDevBandwidthPtr newBandwidth)
@@ -5417,6 +5359,7 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
     unsigned long long tmp_floor_sum;
     virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
     unsigned long long new_rate = 0;
+    unsigned long long old_floor, new_floor;
     int plug_ret;
     int ret = -1;
 
@@ -5426,7 +5369,22 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
         return -1;
     }
 
-    if (!networkBandwidthGenericChecks(iface, newBandwidth))
+    if (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_NETWORK &&
+        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_BRIDGE ||
+         iface->data.network.actual->data.bridge.brname != NULL)) {
+        /* This is not an interface that's plugged into a bridge.
+         * We don't care. Thus from our POV bandwidth change is allowed. */
+        return 0;
+    }
+
+    old_floor = new_floor = 0;
+
+    if (ifaceBand && ifaceBand->in)
+        old_floor = ifaceBand->in->floor;
+    if (newBandwidth && newBandwidth->in)
+        new_floor = newBandwidth->in->floor;
+
+    if (new_floor == old_floor)
         return 0;
 
     obj = virNetworkObjFindByName(driver->networks, iface->data.network.name);
@@ -5572,7 +5530,6 @@ networkRegister(void)
         networkAllocateActualDevice,
         networkNotifyActualDevice,
         networkReleaseActualDevice,
-        networkBandwidthChangeAllowed,
         networkBandwidthUpdate);
 
     return 0;
