@@ -372,6 +372,7 @@ virObjectAutoUnref(void *objptr)
 {
     virObjectPtr *obj = objptr;
     virObjectUnref(*obj);
+    *obj = NULL;
 }
 
 
