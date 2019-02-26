@@ -15696,6 +15696,9 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     VIR_REQUIRE_FLAG_RET(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE,
                          VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY,
                          NULL);
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_DOMAIN_SNAPSHOT_CREATE_LIVE,
+                            VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
+                            NULL);
 
     if ((redefine && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA))
@@ -15756,8 +15759,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     /* reject the VIR_DOMAIN_SNAPSHOT_CREATE_LIVE flag where not supported */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE &&
         (!virDomainObjIsActive(vm) ||
-         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
-         redefine)) {
+         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("live snapshot creation is supported only "
                          "during full system snapshots"));
