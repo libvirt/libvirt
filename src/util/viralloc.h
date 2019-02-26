@@ -623,8 +623,8 @@ void virAllocTestHook(void (*func)(int, void*), void *data);
  * @func: cleanup function to be automatically called
  *
  * This macro defines a function for automatic clearing of
- * resources in a stack'd variable of type @type. This newly
- * defined function works as a necessary wrapper around @func.
+ * resources in a stack'd variable of type @type. Note that @func must
+ * take pointer to @type.
  */
 # define VIR_DEFINE_AUTOCLEAN_FUNC(type, func) \
     static inline void VIR_AUTOCLEAN_FUNC_NAME(type)(type *_ptr) \
