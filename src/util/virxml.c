@@ -1398,3 +1398,13 @@ virXMLFormatElement(virBufferPtr buf,
     virBufferFreeAndReset(childBuf);
     return ret;
 }
+
+
+void
+virXPathContextNodeRestore(virXPathContextNodeSavePtr save)
+{
+    if (!save->ctxt)
+        return;
+
+    save->ctxt->node = save->node;
+}
