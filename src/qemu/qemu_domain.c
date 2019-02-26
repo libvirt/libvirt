@@ -10700,7 +10700,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         }
 
         for (j = 0; j < i; j++) {
-            if (info[i].tid == info[j].tid) {
+            if (info[i].tid != 0 && info[i].tid == info[j].tid) {
                 VIR_DEBUG("vCPU[%zu] PID %llu duplicates vCPU[%zu]",
                           i, (unsigned long long)info[i].tid, j);
                 validTIDs = false;
