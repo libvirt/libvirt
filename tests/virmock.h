@@ -292,8 +292,9 @@
 
 # define VIR_MOCK_REAL_INIT_ALT(name1, name2) \
     do { \
-        if (!(real_ ## name1 = dlsym(RTLD_NEXT, #name1)) && \
-            !(real_ ## name2 = dlsym(RTLD_NEXT, #name2))) { \
+        real_ ## name1 = dlsym(RTLD_NEXT, #name1); \
+        real_ ## name2 = dlsym(RTLD_NEXT, #name2); \
+        if (!real_##name1 && !real_##name2) { \
             fprintf(stderr, "Cannot find real '%s' or '%s' symbol\n", \
                     #name1, #name2); \
             abort(); \
