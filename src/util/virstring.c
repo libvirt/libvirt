@@ -318,6 +318,16 @@ void virStringListFree(char **strings)
 }
 
 
+void virStringListAutoFree(char ***strings)
+{
+    if (!*strings)
+        return;
+
+    virStringListFree(*strings);
+    *strings = NULL;
+}
+
+
 /**
  * virStringListFreeCount:
  * @strings: array of strings to free

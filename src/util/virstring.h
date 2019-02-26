@@ -53,6 +53,7 @@ int virStringListCopy(char ***dst,
                       const char **src);
 
 void virStringListFree(char **strings);
+void virStringListAutoFree(char ***strings);
 void virStringListFreeCount(char **strings,
                             size_t count);
 
@@ -306,6 +307,15 @@ void virStringTrimOptionalNewline(char *str);
 int virStringParsePort(const char *str,
                        unsigned int *port)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+/**
+ * VIR_AUTOSTRINGLIST:
+ *
+ * Declares a NULL-terminated list of strings which will be automatically freed
+ * when the pointer goes out of scope.
+ */
+# define VIR_AUTOSTRINGLIST \
+        __attribute__((cleanup(virStringListAutoFree))) char **
 
 VIR_DEFINE_AUTOPTR_FUNC(virString, virStringListFree);
 
