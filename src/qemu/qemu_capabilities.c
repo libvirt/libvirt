@@ -616,7 +616,7 @@ static int virQEMUCapsOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virQEMUCaps);
 
-static virArch virQEMUCapsArchFromString(const char *arch)
+virArch virQEMUCapsArchFromString(const char *arch)
 {
     if (STREQ(arch, "i386"))
         return VIR_ARCH_I686;
@@ -629,7 +629,7 @@ static virArch virQEMUCapsArchFromString(const char *arch)
 }
 
 
-static const char *virQEMUCapsArchToString(virArch arch)
+const char *virQEMUCapsArchToString(virArch arch)
 {
     if (arch == VIR_ARCH_I686)
         return "i386";

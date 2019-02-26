@@ -643,4 +643,7 @@ bool virQEMUCapsCPUFilterFeatures(const char *name,
 virSEVCapabilityPtr
 virQEMUCapsGetSEVCapabilities(virQEMUCapsPtr qemuCaps);
 
+virArch virQEMUCapsArchFromString(const char *arch);
+const char *virQEMUCapsArchToString(virArch arch);
+
 #endif /* LIBVIRT_QEMU_CAPABILITIES_H */
