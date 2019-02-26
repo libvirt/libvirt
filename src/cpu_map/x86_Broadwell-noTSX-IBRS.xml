@@ -1,6 +1,6 @@
 <cpus>
   <model name='Broadwell-noTSX-IBRS'>
-    <signature family='6' model='61'/>
+    <signature family='6' model='61'/> <!-- 0306d0 -->
     <vendor name='Intel'/>
     <feature name='3dnowprefetch'/>
     <feature name='adx'/>

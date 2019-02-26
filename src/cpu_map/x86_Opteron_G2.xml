@@ -1,6 +1,6 @@
 <cpus>
   <model name='Opteron_G2'>
-    <signature family='15' model='6'/>
+    <signature family='15' model='6'/> <!-- 100e60 -->
     <vendor name='AMD'/>
     <feature name='apic'/>
     <feature name='clflush'/>

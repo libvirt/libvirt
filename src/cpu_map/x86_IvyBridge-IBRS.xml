@@ -1,6 +1,6 @@
 <cpus>
   <model name='IvyBridge-IBRS'>
-    <signature family='6' model='58'/>
+    <signature family='6' model='58'/> <!-- 0306a0 -->
     <vendor name='Intel'/>
     <feature name='aes'/>
     <feature name='apic'/>

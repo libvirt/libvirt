@@ -1,6 +1,6 @@
 <cpus>
   <model name='Haswell'>
-    <signature family='6' model='60'/>
+    <signature family='6' model='60'/> <!-- 0306c0 -->
     <vendor name='Intel'/>
     <feature name='aes'/>
     <feature name='apic'/>

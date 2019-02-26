@@ -1,6 +1,6 @@
 <cpus>
   <model name='Nehalem'>
-    <signature family='6' model='26'/>
+    <signature family='6' model='26'/> <!-- 0106a0 -->
     <vendor name='Intel'/>
     <feature name='apic'/>
     <feature name='clflush'/>

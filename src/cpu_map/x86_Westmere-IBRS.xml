@@ -1,6 +1,6 @@
 <cpus>
   <model name='Westmere-IBRS'>
-    <signature family='6' model='44'/>
+    <signature family='6' model='44'/> <!-- 0206c0 -->
     <vendor name='Intel'/>
     <feature name='aes'/>
     <feature name='apic'/>

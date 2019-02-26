@@ -1,6 +1,6 @@
 <cpus>
   <model name='Skylake-Server-IBRS'>
-    <signature family='6' model='85'/>
+    <signature family='6' model='85'/> <!-- 050654 -->
     <vendor name='Intel'/>
     <feature name='3dnowprefetch'/>
     <feature name='abm'/>
