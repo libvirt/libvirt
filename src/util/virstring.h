@@ -24,8 +24,6 @@
 # include "internal.h"
 # include "viralloc.h"
 
-typedef char *virString;
-
 char **virStringSplitCount(const char *string,
                            const char *delim,
                            size_t max_tokens,
@@ -316,7 +314,5 @@ int virStringParsePort(const char *str,
  */
 # define VIR_AUTOSTRINGLIST \
         __attribute__((cleanup(virStringListAutoFree))) char **
-
-VIR_DEFINE_AUTOPTR_FUNC(virString, virStringListFree);
 
 #endif /* LIBVIRT_VIRSTRING_H */
