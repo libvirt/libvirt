@@ -1070,7 +1070,7 @@ sc_prohibit_backslash_alignment:
 # Rule to ensure that variables declared using a cleanup macro are
 # always initialized.
 sc_require_attribute_cleanup_initialization:
-	@prohibit='VIR_AUTO((FREE|PTR)\(.+\)|CLOSE) *[^=]+;' \
+	@prohibit='VIR_AUTO((FREE|PTR|UNREF|CLEAN)\(.+\)|CLOSE|STRINGLIST) *[^=]+;' \
 	in_vc_files='\.[chx]$$' \
 	halt='variable declared with a cleanup macro must be initialized' \
 	  $(_sc_search_regexp)
