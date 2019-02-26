@@ -1293,8 +1293,14 @@ x86ModelParse(xmlXPathContextPtr ctxt,
               void *data)
 {
     virCPUx86MapPtr map = data;
-    virCPUx86ModelPtr model;
+    virCPUx86ModelPtr model = NULL;
     int ret = -1;
+
+    if (x86ModelFind(map, name)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Multiple definitions of CPU model '%s'"), name);
+        goto cleanup;
+    }
 
     if (!(model = x86ModelNew()))
         goto cleanup;
