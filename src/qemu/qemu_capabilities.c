@@ -3042,7 +3042,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
     char *str = NULL;
     xmlNodePtr hostCPUNode;
     xmlNodePtr *nodes = NULL;
-    xmlNodePtr oldnode = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     qemuMonitorCPUModelInfoPtr hostCPU = NULL;
     int ret = -1;
     size_t i;
@@ -3160,7 +3160,6 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
     ret = 0;
 
  cleanup:
-    ctxt->node = oldnode;
     VIR_FREE(str);
     VIR_FREE(nodes);
     qemuMonitorCPUModelInfoFree(hostCPU);

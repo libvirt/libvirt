@@ -946,7 +946,7 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
     int n;
     xmlNodePtr *interfaces = NULL;
     char *vporttype;
-    xmlNodePtr save_ctxt = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     if (VIR_ALLOC(optr) < 0)
         goto error;
@@ -978,7 +978,6 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
     VIR_FREE(interfaces);
 
  cleanup:
-    ctxt->node = save_ctxt;
     return optr;
 
  error:
@@ -997,7 +996,7 @@ qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
     size_t i;
     int n;
     xmlNodePtr *disks = NULL;
-    xmlNodePtr save_ctxt = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     if (VIR_ALLOC(ret) < 0)
         goto error;
@@ -1044,7 +1043,6 @@ qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
     VIR_FREE(port);
     VIR_FREE(capacity);
     VIR_FREE(disks);
-    ctxt->node = save_ctxt;
     return ret;
  error:
     qemuMigrationCookieNBDFree(ret);
@@ -1058,7 +1056,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 {
     qemuDomainJobInfoPtr jobInfo = NULL;
     qemuMonitorMigrationStats *stats;
-    xmlNodePtr save_ctxt = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     if (!(ctxt->node = virXPathNode("./statistics", ctxt)))
         goto cleanup;
@@ -1136,7 +1134,6 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     virXPathInt("string(./" VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE "[1])",
                 ctxt, &stats->cpu_throttle_percentage);
  cleanup:
-    ctxt->node = save_ctxt;
     return jobInfo;
 }
 

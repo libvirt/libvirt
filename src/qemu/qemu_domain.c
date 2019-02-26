@@ -2717,7 +2717,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
                                          xmlXPathContextPtr ctxt,
                                          virDomainDiskDefPtr disk)
 {
-    xmlNodePtr savedNode = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     char *format = NULL;
     char *type = NULL;
@@ -2772,7 +2772,6 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
  cleanup:
     VIR_FREE(format);
     VIR_FREE(type);
-    ctxt->node = savedNode;
     return ret;
 }
 
@@ -2827,7 +2826,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
                                 qemuDomainObjPrivatePtr priv,
                                 xmlXPathContextPtr ctxt)
 {
-    xmlNodePtr savedNode = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     char *tmp = NULL;
     int ret = -1;
 
@@ -2884,7 +2883,6 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
-    ctxt->node = savedNode;
     VIR_FREE(tmp);
     return ret;
 }
