@@ -6316,9 +6316,9 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
     if (online)
-        def->state = VIR_DOMAIN_RUNNING;
+        def->state = VIR_DOMAIN_SNAPSHOT_RUNNING;
     else
-        def->state = VIR_DOMAIN_SHUTOFF;
+        def->state = VIR_DOMAIN_SNAPSHOT_SHUTOFF;
 
     virUUIDFormat(dom->uuid, uuidstr);
     memcpy(def->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);

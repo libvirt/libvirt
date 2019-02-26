@@ -6271,9 +6271,9 @@ testDomainSnapshotAlignDisks(virDomainObjPtr vm,
         align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
         align_match = false;
         if (virDomainObjIsActive(vm))
-            def->state = VIR_DOMAIN_DISK_SNAPSHOT;
+            def->state = VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT;
         else
-            def->state = VIR_DOMAIN_SHUTOFF;
+            def->state = VIR_DOMAIN_SNAPSHOT_SHUTOFF;
         def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
     } else if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
         def->state = virDomainObjGetState(vm, NULL);
@@ -6281,7 +6281,7 @@ testDomainSnapshotAlignDisks(virDomainObjPtr vm,
         align_match = false;
     } else {
         def->state = virDomainObjGetState(vm, NULL);
-        def->memory = def->state == VIR_DOMAIN_SHUTOFF ?
+        def->memory = def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF ?
                       VIR_DOMAIN_SNAPSHOT_LOCATION_NONE :
                       VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     }
@@ -6572,8 +6572,8 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         goto cleanup;
 
     if (!vm->persistent &&
-        snap->def->state != VIR_DOMAIN_RUNNING &&
-        snap->def->state != VIR_DOMAIN_PAUSED &&
+        snap->def->state != VIR_DOMAIN_SNAPSHOT_RUNNING &&
+        snap->def->state != VIR_DOMAIN_SNAPSHOT_PAUSED &&
         (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) == 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -6590,8 +6590,8 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             goto cleanup;
         }
         if (virDomainObjIsActive(vm) &&
-            !(snap->def->state == VIR_DOMAIN_RUNNING
-              || snap->def->state == VIR_DOMAIN_PAUSED) &&
+            !(snap->def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+              snap->def->state == VIR_DOMAIN_SNAPSHOT_PAUSED) &&
             (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                       VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
             virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
@@ -6612,8 +6612,8 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     if (!config)
         goto cleanup;
 
-    if (snap->def->state == VIR_DOMAIN_RUNNING ||
-        snap->def->state == VIR_DOMAIN_PAUSED) {
+    if (snap->def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+        snap->def->state == VIR_DOMAIN_SNAPSHOT_PAUSED) {
         /* Transitions 2, 3, 5, 6, 8, 9 */
         bool was_running = false;
         bool was_stopped = false;
@@ -6672,7 +6672,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
         /* Touch up domain state.  */
         if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
-            (snap->def->state == VIR_DOMAIN_PAUSED ||
+            (snap->def->state == VIR_DOMAIN_SNAPSHOT_PAUSED ||
              (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
             /* Transitions 3, 6, 9 */
             virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,

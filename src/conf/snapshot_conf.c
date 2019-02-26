@@ -58,7 +58,7 @@ VIR_ENUM_IMPL(virDomainSnapshotLocation, VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
 );
 
 /* virDomainSnapshotState is really virDomainState plus one extra state */
-VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_SNAPSHOT_STATE_LAST,
+VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_SNAPSHOT_LAST,
               "nostate",
               "running",
               "blocked",
@@ -257,8 +257,8 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                            state);
             goto cleanup;
         }
-        offline = (def->state == VIR_DOMAIN_SHUTOFF ||
-                   def->state == VIR_DOMAIN_DISK_SNAPSHOT);
+        offline = (def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF ||
+                   def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT);
 
         /* Older snapshots were created with just <domain>/<uuid>, and
          * lack domain/@type.  In that case, leave dom NULL, and
@@ -879,14 +879,14 @@ static int virDomainSnapshotObjListCopyNames(void *payload,
 
     if (data->flags & VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS) {
         if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE) &&
-            obj->def->state == VIR_DOMAIN_SHUTOFF)
+            obj->def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF)
             return 0;
         if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY) &&
-            obj->def->state == VIR_DOMAIN_DISK_SNAPSHOT)
+            obj->def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
             return 0;
         if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE) &&
-            obj->def->state != VIR_DOMAIN_SHUTOFF &&
-            obj->def->state != VIR_DOMAIN_DISK_SNAPSHOT)
+            obj->def->state != VIR_DOMAIN_SNAPSHOT_SHUTOFF &&
+            obj->def->state != VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
             return 0;
     }
 
@@ -1225,7 +1225,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     bool align_match = true;
     virDomainSnapshotObjPtr other;
-    bool external = def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
+    bool external = def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT ||
         virDomainSnapshotDefIsExternal(def);
 
     /* Prevent circular chains */
@@ -1282,10 +1282,10 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
 
     other = virDomainSnapshotFindByName(vm->snapshots, def->name);
     if (other) {
-        if ((other->def->state == VIR_DOMAIN_RUNNING ||
-             other->def->state == VIR_DOMAIN_PAUSED) !=
-            (def->state == VIR_DOMAIN_RUNNING ||
-             def->state == VIR_DOMAIN_PAUSED)) {
+        if ((other->def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+             other->def->state == VIR_DOMAIN_SNAPSHOT_PAUSED) !=
+            (def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+             def->state == VIR_DOMAIN_SNAPSHOT_PAUSED)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("cannot change between online and offline "
                              "snapshot state in snapshot %s"),
@@ -1293,8 +1293,8 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
             goto cleanup;
         }
 
-        if ((other->def->state == VIR_DOMAIN_DISK_SNAPSHOT) !=
-            (def->state == VIR_DOMAIN_DISK_SNAPSHOT)) {
+        if ((other->def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT) !=
+            (def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("cannot change between disk only and "
                              "full system in snapshot %s"),

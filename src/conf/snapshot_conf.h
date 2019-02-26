@@ -1,7 +1,7 @@
 /*
  * snapshot_conf.h: domain snapshot XML processing
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -36,11 +36,26 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_LOCATION_LAST
 } virDomainSnapshotLocation;
 
+/**
+ * This enum has to map all known domain states from the public enum
+ * virDomainState, before adding one additional state possible only
+ * for snapshots.
+ */
 typedef enum {
-    /* Inherit the VIR_DOMAIN_* states from virDomainState.  */
-    VIR_DOMAIN_DISK_SNAPSHOT = VIR_DOMAIN_LAST,
-    VIR_DOMAIN_SNAPSHOT_STATE_LAST
+    /* Mapped to public enum */
+    VIR_DOMAIN_SNAPSHOT_NOSTATE = VIR_DOMAIN_NOSTATE,
+    VIR_DOMAIN_SNAPSHOT_RUNNING = VIR_DOMAIN_RUNNING,
+    VIR_DOMAIN_SNAPSHOT_BLOCKED = VIR_DOMAIN_BLOCKED,
+    VIR_DOMAIN_SNAPSHOT_PAUSED = VIR_DOMAIN_PAUSED,
+    VIR_DOMAIN_SNAPSHOT_SHUTDOWN = VIR_DOMAIN_SHUTDOWN,
+    VIR_DOMAIN_SNAPSHOT_SHUTOFF = VIR_DOMAIN_SHUTOFF,
+    VIR_DOMAIN_SNAPSHOT_CRASHED = VIR_DOMAIN_CRASHED,
+    VIR_DOMAIN_SNAPSHOT_PMSUSPENDED = VIR_DOMAIN_PMSUSPENDED,
+    /* Additional enum values local to snapshots */
+    VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT,
+    VIR_DOMAIN_SNAPSHOT_LAST
 } virDomainSnapshotState;
+verify((int)VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT == VIR_DOMAIN_LAST);
 
 /* Stores disk-snapshot information */
 typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;
