@@ -15693,6 +15693,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
+    virDomainState state;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
@@ -15776,7 +15777,11 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     }
 
     /* allow snapshots only in certain states */
-    switch ((virDomainState) vm->state.state) {
+    state = vm->state.state;
+    if (redefine)
+        state = def->state == VIR_DOMAIN_DISK_SNAPSHOT ? VIR_DOMAIN_SHUTOFF :
+            def->state;
+    switch (state) {
         /* valid states */
     case VIR_DOMAIN_RUNNING:
     case VIR_DOMAIN_PAUSED:
@@ -15796,7 +15801,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     case VIR_DOMAIN_BLOCKED: /* invalid state, unused in qemu */
     case VIR_DOMAIN_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid domain state %s"),
-                       virDomainStateTypeToString(vm->state.state));
+                       virDomainStateTypeToString(state));
         goto cleanup;
     }
 
