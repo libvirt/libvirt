@@ -1208,9 +1208,8 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     /* Now that we have a count, collect the list.  */
     if (from && !priv->useSnapshotOld) {
         if (tree) {
-            if (count)
-                count = virDomainSnapshotListChildrenNames(from, names + 1,
-                                                           count - 1, flags);
+            count = virDomainSnapshotListChildrenNames(from, names + 1,
+                                                       count - 1, flags);
             if (count >= 0) {
                 count++;
                 names[0] = vshStrdup(ctl, fromname);

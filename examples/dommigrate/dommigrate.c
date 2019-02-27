@@ -79,8 +79,7 @@ main(int argc, char *argv[])
  cleanup:
     if (dom != NULL)
         virDomainFree(dom);
-    if (conn != NULL)
-        virConnectClose(conn);
+    virConnectClose(conn);
 
  out:
     return ret;

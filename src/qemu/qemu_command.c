@@ -4340,8 +4340,7 @@ qemuBuildNVRAMCommandLine(virCommandPtr cmd,
         optstr = qemuBuildNVRAMDevStr(def->nvram);
         if (!optstr)
             return -1;
-        if (optstr)
-            virCommandAddArg(cmd, optstr);
+        virCommandAddArg(cmd, optstr);
         VIR_FREE(optstr);
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

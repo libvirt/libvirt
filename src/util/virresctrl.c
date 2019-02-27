@@ -2120,7 +2120,7 @@ virResctrlAllocMemoryBandwidth(virResctrlInfoPtr resctrl,
     if (!mem_bw_alloc)
         return 0;
 
-    if (mem_bw_alloc && !mem_bw_info) {
+    if (!mem_bw_info) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("RDT Memory Bandwidth allocation unsupported"));
         return -1;

@@ -3521,17 +3521,15 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (oldbridge) {
-        ret = virNetDevBridgeRemovePort(oldbridge, olddev->ifname);
-        virDomainAuditNet(vm, olddev, NULL, "detach", ret == 0);
-        if (ret < 0) {
-            /* warn but continue - possibly the old network
-             * had been destroyed and reconstructed, leaving the
-             * tap device orphaned.
-             */
-            VIR_WARN("Unable to detach device %s from bridge %s",
-                     olddev->ifname, oldbridge);
-        }
+    ret = virNetDevBridgeRemovePort(oldbridge, olddev->ifname);
+    virDomainAuditNet(vm, olddev, NULL, "detach", ret == 0);
+    if (ret < 0) {
+        /* warn but continue - possibly the old network
+         * had been destroyed and reconstructed, leaving the
+         * tap device orphaned.
+         */
+        VIR_WARN("Unable to detach device %s from bridge %s",
+                 olddev->ifname, oldbridge);
     }
 
     ret = virNetDevBridgeAddPort(newbridge, olddev->ifname);
