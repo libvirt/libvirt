@@ -3474,6 +3474,26 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
         def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
 
+    if (addDefaultUSBMouse) {
+        bool hasUSBTablet = false;
+        size_t j;
+
+        for (j = 0; j < def->ninputs; j++) {
+            if (def->inputs[j]->type == VIR_DOMAIN_INPUT_TYPE_TABLET &&
+                def->inputs[j]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
+                hasUSBTablet = true;
+                break;
+            }
+        }
+
+        /* Historically, we have automatically added USB keyboard and
+         * mouse to some guests. While the former device is generally
+         * safe to have, adding the latter is undesiderable if a USB
+         * tablet is already present in the guest */
+        if (hasUSBTablet)
+            addDefaultUSBMouse = false;
+    }
+
     if (addDefaultUSBKBD &&
         def->ngraphics > 0 &&
         virDomainDefMaybeAddInput(def,
