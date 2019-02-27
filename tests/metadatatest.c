@@ -167,6 +167,7 @@ struct metadataTest {
     virDomainPtr dom;
 
     const char *data;
+    const char *expect;
     int type;
     bool fail;
 };
@@ -232,7 +233,7 @@ testTextMetadata(const void *data)
 
     actual = virDomainGetMetadata(test->dom, test->type, NULL, 0);
 
-    if (STRNEQ_NULLABLE(test->data, actual)) {
+    if (STRNEQ_NULLABLE(test->expect, actual)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "expected metadata doesn't match actual: "
                        "expected:'%s'\ngot: '%s'",
@@ -248,10 +249,11 @@ testTextMetadata(const void *data)
     return ret;
 }
 
-#define TEST_TEXT_METADATA(INDEX, TYPE, DATA, FAIL) \
+#define TEST_TEXT_METADATA(INDEX, TYPE, DATA, EXPECT, FAIL) \
     do { \
         test.type = VIR_DOMAIN_METADATA_ ## TYPE; \
         test.data = DATA; \
+        test.expect = EXPECT; \
         test.fail = FAIL; \
  \
         if (virTestRun("text metadata: " #TYPE " " INDEX " ", \
@@ -259,9 +261,16 @@ testTextMetadata(const void *data)
             ret = EXIT_FAILURE; \
     } while (0)
 
-#define TEST_TITLE(INDEX, DATA) TEST_TEXT_METADATA(INDEX, TITLE, DATA, false)
-#define TEST_TITLE_FAIL(INDEX, DATA) TEST_TEXT_METADATA(INDEX, TITLE, DATA, true)
-#define TEST_DESCR(INDEX, DATA) TEST_TEXT_METADATA(INDEX, DESCRIPTION, DATA, false)
+#define TEST_TITLE(INDEX, DATA) \
+    TEST_TEXT_METADATA(INDEX, TITLE, DATA, DATA, false)
+#define TEST_TITLE_EXPECT(INDEX, DATA, EXPECT) \
+    TEST_TEXT_METADATA(INDEX, TITLE, DATA, EXPECT, false)
+#define TEST_TITLE_FAIL(INDEX, DATA) \
+    TEST_TEXT_METADATA(INDEX, TITLE, DATA, DATA, true)
+#define TEST_DESCR(INDEX, DATA) \
+    TEST_TEXT_METADATA(INDEX, DESCRIPTION, DATA, DATA, false)
+#define TEST_DESCR_EXPECT(INDEX, DATA, EXPECT) \
+    TEST_TEXT_METADATA(INDEX, DESCRIPTION, DATA, EXPECT, false)
 
 static int
 mymain(void)
@@ -290,7 +299,7 @@ mymain(void)
     TEST_TITLE("2", NULL);
     TEST_TITLE("3", "blah");
     TEST_TITLE_FAIL("4", "qwe\nrt");
-    TEST_TITLE("5", "");
+    TEST_TITLE_EXPECT("5", "", NULL);
     TEST_TITLE_FAIL("6", "qwert\n");
     TEST_TITLE_FAIL("7", "\n");
 
@@ -298,7 +307,7 @@ mymain(void)
     TEST_DESCR("2", NULL);
     TEST_DESCR("3", "qwert");
     TEST_DESCR("4", "\n");
-    TEST_DESCR("5", "");
+    TEST_DESCR_EXPECT("5", "", NULL);
 
     virDomainFree(test.dom);
     virConnectClose(test.conn);
