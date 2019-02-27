@@ -3014,6 +3014,12 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("x86_64-pc-headless", "x86_64");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-q35-headless", "x86_64");
 
+    /* Simple guests with graphics for various architectures */
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-graphics", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-graphics", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("x86_64-pc-graphics", "x86_64");
+    DO_TEST_CAPS_ARCH_LATEST("x86_64-q35-graphics", "x86_64");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
