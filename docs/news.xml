@@ -69,8 +69,94 @@
           Model Specific Registers (MSRs) reads and writes.
         </description>
       </change>
+      <change>
+        <summary>
+          QEMU: add support for encrypted VNC TLS keys
+        </summary>
+        <description>
+          Use the password stored in the secret driver under the uuid
+          specified by the <code>vnc_tls_x509_secret_uuid</code> option
+          in QEMU.conf.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Add storage pool namespace options
+        </summary>
+        <description>
+          Allow for adjustment of RBD configuration options via Storage
+          Pool XML Namespace adjustments.
+        </description>
+      </change>
+      <change>
+        <summary>
+          QEMU: Add support for setting post-copy migration bandwidth
+        </summary>
+        <description>
+          Users can now limit the bandwidth of post-copy migration, e.g.
+          via <code>virsh migrate --postcopy-bandwidth</code>.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          Create private chains for virtual network firewall rules
+        </summary>
+        <description>
+          Historically firewall rules for virtual networks were added
+          straight into the base chains. This works but has a number of
+          bugs and design limitations. To address them, libvirt now puts
+          firewall rules into its own chains.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Detect CEPH and GPFS as shared FS
+        </summary>
+        <description>
+          When starting a migration libvirt performs some sanity checks
+          to make sure domain will be able to run on the destination.
+          One of the requirements is that the disk has to either be
+          migrated too or be accessible from a network filesystem. CEPH
+          and GPFS weren't detected as a network filesystem.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Advertise network MTU via DHCP when specified
+        </summary>
+        <description>
+          If network MTU is set and the network has DHCP enabled,
+          advertise the MTU in DHCP transaction too so that clients can
+          adjust their link accordingly.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Allocate QEMU memory at the configured NUMA nodes from start
+        </summary>
+        <description>
+          Libvirt used to just start QEMU, let it allocate memory for
+          the guest, and then use CGroups to move the memory to
+          configured NUMA nodes. This is suboptimal as huge chunks of
+          memory have to be moved. Moreover, this relies on ability to
+          move memory later which is not always true. A change was made
+          to set process affinity correctly from the start so that memory
+          is allocated on the configured nodes from the beginning.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Support for newer Wireshark
+        </summary>
+        <description>
+          Adapt libvirt to use the more recent release requiring a
+          source build configuration of libvirt
+          <code>--with-wireshark</code> to upgrade to the more recent
+          version.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -131,6 +217,102 @@
           but rather by the new firewalld zone called "libvirt"
           (unless configured otherwise using the new zone
           attribute of the network bridge element).
+        </description>
+      </change>
+      <change>
+        <summary>
+          QEMU: Fix i6300esb watchdog hotplug on Q35
+        </summary>
+        <description>
+          Ensure that libvirt allocates a PCI address for the device so
+          that QEMU did not default to an address that would not allow
+          for device hotplug.
+        </description>
+      </change>
+      <change>
+        <summary>
+          lxc: Don't reboot host on virDomainReboot
+        </summary>
+        <description>
+          If the container is really a simple one (init is just bash and
+          the whole root is passed through) then virDomainReboot and
+          virDomainShutdown would reboot or shutdown the host. The
+          solution is to use different method to reboot or shutdown the
+          container in that case (e.g. signal).
+        </description>
+      </change>
+      <change>
+        <summary>
+          rpc: Various stream fixes
+        </summary>
+        <description>
+          One particular race was fixed, one locking problem and error
+          reporting from streams was made better.
+        </description>
+      </change>
+      <change>
+        <summary>
+          QEMU: Fix guestfwd hotplug/hotunplug
+        </summary>
+        <description>
+          Fixed the generation of the guestfwd hotplug/unplug command
+          sent to QEMU to match the syntax used when creating the
+          initial command line.
+        </description>
+      </change>
+      <change>
+        <summary>
+          QEMU: Forbid CDROMs on virtio bus
+        </summary>
+        <description>
+          Attempting to create an empty virtio-blk drive or attempting
+          to eject it results into an error.  Forbid configurations
+          where users would attempt to use CDROMs in virtio bus.
+        </description>
+      </change>
+      <change>
+        <summary>
+          QEMU: Use 'raw' for 'volume' disks without format
+        </summary>
+        <description>
+          Storage pools might want to specify format of the image when
+          translating the volume thus libvirt can't add any default
+          format when parsing the XML. Add an explicit format when
+          starting the VM and format is not present neither by user
+          specifying it nor by the storage pool translation function.
+        </description>
+      </change>
+      <change>
+        <summary>
+          QEMU: domain: Assume 'raw' default storage format also for network storage
+        </summary>
+        <description>
+          Post parse callback adds the 'raw' type only for local files.
+          Remote files can also have backing store (even local) so we
+          should do this also for network backed storage.
+        </description>
+      </change>
+      <change>
+        <summary>
+          QEMU: Fix block job progress reporting and advocate for READY event
+        </summary>
+        <description>
+          In some cases QEMU can get to 100% and still not reach the
+          synchronised phase. Initiating a pivot in that case will fail.
+          Therefore it is strongly advised to wait for
+          <code>VIR_DOMAIN_BLOCK_JOB_READY</code> event which does not
+          suffer from this problem.
+        </description>
+      </change>
+      <change>
+        <summary>
+          QEMU: Don't format image properties for empty drive
+        </summary>
+        <description>
+          If a <code>-drive</code> has no image, then formatting
+          attributes such as cache, readonly, etc. would cause errors to
+          be reported from QEMU. This was fixed by not supplying the
+          attributes for devices without an image.
         </description>
       </change>
     </section>
