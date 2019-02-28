@@ -760,14 +760,13 @@ virStorageBackendLogicalRefreshPool(virStoragePoolObjPtr pool)
         2
     };
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    int ret = -1;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     virWaitForDevices();
 
     /* Get list of all logical volumes */
     if (virStorageBackendLogicalFindLVs(pool, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     cmd = virCommandNewArgList(VGS,
                                "--separator", ":",
@@ -788,14 +787,9 @@ virStorageBackendLogicalRefreshPool(virStoragePoolObjPtr pool)
                            pool,
                            "vgs",
                            NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    if (ret < 0)
-        virStoragePoolObjClearVols(pool);
-    return ret;
+    return 0;
 }
 
 /*

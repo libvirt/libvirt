@@ -82,6 +82,8 @@ storagePoolRefreshFailCleanup(virStorageBackendPtr backend,
 {
     virErrorPtr orig_err = virSaveLastError();
 
+    virStoragePoolObjClearVols(obj);
+
     if (stateFile)
         unlink(stateFile);
     if (backend->stopPool)

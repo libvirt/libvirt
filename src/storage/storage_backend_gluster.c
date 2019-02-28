@@ -402,8 +402,6 @@ virStorageBackendGlusterRefreshPool(virStoragePoolObjPtr pool)
     if (dir)
         glfs_closedir(dir);
     virStorageBackendGlusterClose(state);
-    if (ret < 0)
-        virStoragePoolObjClearVols(pool);
     return ret;
 }
 

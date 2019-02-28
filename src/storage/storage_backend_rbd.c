@@ -648,10 +648,8 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
             goto cleanup;
         }
 
-        if (virStoragePoolObjAddVol(pool, vol) < 0) {
-            virStoragePoolObjClearVols(pool);
+        if (virStoragePoolObjAddVol(pool, vol) < 0)
             goto cleanup;
-        }
         vol = NULL;
     }
 

@@ -3620,8 +3620,6 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
     ret = 0;
  cleanup:
     VIR_DIR_CLOSE(dir);
-    if (ret < 0)
-        virStoragePoolObjClearVols(pool);
     return ret;
 }
 
