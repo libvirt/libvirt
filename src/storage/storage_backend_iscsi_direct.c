@@ -375,7 +375,6 @@ virISCSIDirectReportLuns(virStoragePoolObjPtr pool,
 
     def->capacity = 0;
     def->allocation = 0;
-    virStoragePoolObjClearVols(pool);
     for (i = 0; i < list->num; i++) {
         if (virISCSIDirectRefreshVol(pool, iscsi, list->luns[i], portal) < 0)
             goto cleanup;
