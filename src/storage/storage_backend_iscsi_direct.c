@@ -341,6 +341,7 @@ virISCSIDirectReportLuns(virStoragePoolObjPtr pool,
                          struct iscsi_context *iscsi,
                          char *portal)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     struct scsi_task *task = NULL;
     struct scsi_reportluns_list *list = NULL;
     int full_size;
@@ -373,6 +374,8 @@ virISCSIDirectReportLuns(virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
+    def->capacity = 0;
+    def->allocation = 0;
     for (i = 0; i < list->num; i++) {
         if (virISCSIDirectRefreshVol(pool, iscsi, list->luns[i], portal) < 0)
             goto cleanup;
