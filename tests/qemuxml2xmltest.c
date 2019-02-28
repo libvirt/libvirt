@@ -375,7 +375,7 @@ mymain(void)
             QEMU_CAPS_CCW);
     DO_TEST("disk-mirror-old", NONE);
     DO_TEST("disk-mirror", NONE);
-    DO_TEST_FULL("disk-active-commit", WHEN_ACTIVE, GIC_NONE, NONE);
+    DO_TEST("disk-active-commit", NONE);
     DO_TEST("graphics-listen-network", NONE);
     DO_TEST("graphics-vnc", NONE);
     DO_TEST("graphics-vnc-websocket", NONE);
@@ -451,7 +451,7 @@ mymain(void)
     DO_TEST("channel-virtio", NONE);
     DO_TEST("channel-virtio-state", NONE);
 
-    DO_TEST_FULL("channel-unix-source-path", WHEN_INACTIVE, GIC_NONE, NONE);
+    DO_TEST("channel-unix-source-path", NONE);
 
     DO_TEST("hostdev-usb-address", NONE);
     DO_TEST("hostdev-pci-address", NONE);
@@ -549,7 +549,7 @@ mymain(void)
     DO_TEST_FULL("seclabel-dynamic-labelskip", WHEN_INACTIVE, GIC_NONE, NONE);
     DO_TEST_FULL("seclabel-dynamic-relabel", WHEN_INACTIVE, GIC_NONE, NONE);
     DO_TEST("seclabel-static", NONE);
-    DO_TEST_FULL("seclabel-static-labelskip", WHEN_ACTIVE, GIC_NONE, NONE);
+    DO_TEST("seclabel-static-labelskip", NONE);
     DO_TEST("seclabel-none", NONE);
     DO_TEST("seclabel-dac-none", NONE);
     DO_TEST("seclabel-dynamic-none", NONE);
