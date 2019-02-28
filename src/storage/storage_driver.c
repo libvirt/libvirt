@@ -2572,11 +2572,16 @@ storageVolWipePattern(virStorageVolPtr vol,
     if (rc < 0)
         goto cleanup;
 
-    /* Instead of using the refreshVol, since much changes on the target
-     * volume, let's update using the same function as refreshPool would
-     * use when it discovers a volume. The only failure to capture is -1,
-     * we can ignore -2. */
-    if (virStorageBackendRefreshVolTargetUpdate(voldef) == -1)
+    /* For local volumes, Instead of using the refreshVol, since
+     * much changes on the target volume, let's update using the
+     * same function as refreshPool would use when it discovers a
+     * volume. The only failure to capture is -1, we can ignore
+     * -2. */
+    if ((backend->type == VIR_STORAGE_POOL_DIR ||
+         backend->type == VIR_STORAGE_POOL_FS ||
+         backend->type == VIR_STORAGE_POOL_NETFS ||
+         backend->type == VIR_STORAGE_POOL_VSTORAGE) &&
+        virStorageBackendRefreshVolTargetUpdate(voldef) == -1)
         goto cleanup;
 
     ret = 0;
