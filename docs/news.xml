@@ -157,6 +157,17 @@
           version.
         </description>
       </change>
+      <change>
+        <summary>
+          Batch mode virsh and virt-admin parsing improvements
+        </summary>
+        <description>
+          When parsing a single-argument command_string in batch mode,
+          virsh and virt-admin now permit newlines in addition to
+          semicolons for splitting commands, and backslash-newline for
+          splitting long lines, to be more like shell parsing.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -313,6 +324,16 @@
           attributes such as cache, readonly, etc. would cause errors to
           be reported from QEMU. This was fixed by not supplying the
           attributes for devices without an image.
+        </description>
+      </change>
+      <change>
+        <summary>
+          External snapshot metadata redefinition is fixed
+        </summary>
+        <description>
+          Attempting to use VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE to
+          reinstate the metadata describing an external snapshot
+          created earlier for an offline domain no longer fails.
         </description>
       </change>
     </section>
