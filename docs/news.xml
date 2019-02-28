@@ -48,7 +48,7 @@
       </change>
       <change>
         <summary>
-          network: support setting a firewalld "zone" for virtual network bridges
+          network: Support setting a firewalld "zone" for virtual network bridges
         </summary>
         <description>
           All libvirt virtual networks with bridges managed by libvirt
@@ -61,7 +61,7 @@
       </change>
       <change>
         <summary>
-          bhyve: support for ignoring unknown MSRs reads and writes
+          bhyve: Support for ignoring unknown MSRs reads and writes
         </summary>
         <description>
           A new &lt;features&gt; element &lt;msrs unknown='ignore'/&gt; was
@@ -71,12 +71,12 @@
       </change>
       <change>
         <summary>
-          QEMU: add support for encrypted VNC TLS keys
+          qemu: Add support for encrypted VNC TLS keys
         </summary>
         <description>
           Use the password stored in the secret driver under the uuid
           specified by the <code>vnc_tls_x509_secret_uuid</code> option
-          in QEMU.conf.
+          in qemu.conf.
         </description>
       </change>
       <change>
@@ -90,7 +90,7 @@
       </change>
       <change>
         <summary>
-          QEMU: Add support for setting post-copy migration bandwidth
+          qemu: Add support for setting post-copy migration bandwidth
         </summary>
         <description>
           Users can now limit the bandwidth of post-copy migration, e.g.
@@ -134,7 +134,7 @@
       </change>
       <change>
         <summary>
-          Allocate QEMU memory at the configured NUMA nodes from start
+          qemu: Allocate memory at the configured NUMA nodes from start
         </summary>
         <description>
           Libvirt used to just start QEMU, let it allocate memory for
@@ -194,7 +194,7 @@
       </change>
       <change>
         <summary>
-          network: fix virtual networks on systems using firewalld+nftables
+          network: Fix virtual networks on systems using firewalld+nftables
         </summary>
         <description>
           Because of the transitional state of firewalld's new support
@@ -221,7 +221,7 @@
       </change>
       <change>
         <summary>
-          QEMU: Fix i6300esb watchdog hotplug on Q35
+          qemu: Fix i6300esb watchdog hotplug on Q35
         </summary>
         <description>
           Ensure that libvirt allocates a PCI address for the device so
@@ -252,7 +252,7 @@
       </change>
       <change>
         <summary>
-          QEMU: Fix guestfwd hotplug/hotunplug
+          qemu: Fix guestfwd hotplug/hotunplug
         </summary>
         <description>
           Fixed the generation of the guestfwd hotplug/unplug command
@@ -262,7 +262,7 @@
       </change>
       <change>
         <summary>
-          QEMU: Forbid CDROMs on virtio bus
+          qemu: Forbid CDROMs on virtio bus
         </summary>
         <description>
           Attempting to create an empty virtio-blk drive or attempting
@@ -272,7 +272,7 @@
       </change>
       <change>
         <summary>
-          QEMU: Use 'raw' for 'volume' disks without format
+          qemu: Use 'raw' for 'volume' disks without format
         </summary>
         <description>
           Storage pools might want to specify format of the image when
@@ -284,7 +284,7 @@
       </change>
       <change>
         <summary>
-          QEMU: domain: Assume 'raw' default storage format also for network storage
+          qemu: Assume 'raw' default storage format also for network storage
         </summary>
         <description>
           Post parse callback adds the 'raw' type only for local files.
@@ -294,7 +294,7 @@
       </change>
       <change>
         <summary>
-          QEMU: Fix block job progress reporting and advocate for READY event
+          qemu: Fix block job progress reporting and advocate for READY event
         </summary>
         <description>
           In some cases QEMU can get to 100% and still not reach the
@@ -306,7 +306,7 @@
       </change>
       <change>
         <summary>
-          QEMU: Don't format image properties for empty drive
+          qemu: Don't format image properties for empty drive
         </summary>
         <description>
           If a <code>-drive</code> has no image, then formatting
