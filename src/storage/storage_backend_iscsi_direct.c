@@ -245,7 +245,7 @@ static int
 virISCSIDirectGetVolumeCapacity(struct iscsi_context *iscsi,
                                 int lun,
                                 uint32_t *block_size,
-                                uint32_t *nb_block)
+                                uint64_t *nb_block)
 {
     struct scsi_task *task = NULL;
     struct scsi_inquiry_standard *inq = NULL;
@@ -267,12 +267,12 @@ virISCSIDirectGetVolumeCapacity(struct iscsi_context *iscsi,
     }
 
     if (inq->device_type == SCSI_INQUIRY_PERIPHERAL_DEVICE_TYPE_DIRECT_ACCESS) {
-        struct scsi_readcapacity10 *rc10 = NULL;
+        struct scsi_readcapacity16 *rc16 = NULL;
 
         scsi_free_scsi_task(task);
         task = NULL;
 
-        if (!(task = iscsi_readcapacity10_sync(iscsi, lun, 0, 0)) ||
+        if (!(task = iscsi_readcapacity16_sync(iscsi, lun)) ||
             task->status != SCSI_STATUS_GOOD) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to get capacity of lun: %s"),
@@ -280,15 +280,15 @@ virISCSIDirectGetVolumeCapacity(struct iscsi_context *iscsi,
             goto cleanup;
         }
 
-        if (!(rc10 = scsi_datain_unmarshall(task))) {
+        if (!(rc16 = scsi_datain_unmarshall(task))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to unmarshall reply: %s"),
                            iscsi_get_error(iscsi));
             goto cleanup;
         }
 
-        *block_size  = rc10->block_size;
-        *nb_block = rc10->lba;
+        *block_size  = rc16->block_length;
+        *nb_block = rc16->returned_lba;
 
     }
 
@@ -306,7 +306,7 @@ virISCSIDirectRefreshVol(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     uint32_t block_size;
-    uint32_t nb_block;
+    uint64_t nb_block;
     VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (virISCSIDirectTestUnitReady(iscsi, lun) < 0)
@@ -627,9 +627,9 @@ static int
 virStorageBackendISCSIDirectVolWipeZero(virStorageVolDefPtr vol,
                                         struct iscsi_context *iscsi)
 {
-    uint32_t lba = 0;
+    uint64_t lba = 0;
     uint32_t block_size;
-    uint32_t nb_block;
+    uint64_t nb_block;
     struct scsi_task *task = NULL;
     int lun = 0;
     int ret = -1;
@@ -647,14 +647,14 @@ virStorageBackendISCSIDirectVolWipeZero(virStorageVolDefPtr vol,
     while (lba < nb_block) {
         if (nb_block - lba > block_size * BLOCK_PER_PACKET) {
 
-            if (!(task = iscsi_write10_sync(iscsi, lun, lba, data,
+            if (!(task = iscsi_write16_sync(iscsi, lun, lba, data,
                                             block_size * BLOCK_PER_PACKET,
                                             block_size, 0, 0, 0, 0, 0)))
                 return -1;
             scsi_free_scsi_task(task);
             lba += BLOCK_PER_PACKET;
         } else {
-            if (!(task = iscsi_write10_sync(iscsi, lun, lba, data, block_size,
+            if (!(task = iscsi_write16_sync(iscsi, lun, lba, data, block_size,
                                         block_size, 0, 0, 0, 0, 0)))
                 return -1;
             scsi_free_scsi_task(task);
