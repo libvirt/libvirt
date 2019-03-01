@@ -1772,7 +1772,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
             goto cleanup;
 
         /* process optional architecture-specific data */
-        if (STREQ_NULLABLE(arch, "s390"))
+        if (STREQ_NULLABLE(arch, "s390") || STREQ_NULLABLE(arch, "s390x"))
             qemuMonitorJSONExtractCPUS390Info(entry, cpus + i);
     }
 
