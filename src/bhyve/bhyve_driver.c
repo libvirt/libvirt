@@ -1269,6 +1269,8 @@ bhyveStateInitialize(bool privileged,
 
     virBhyveProcessReconnectAll(bhyve_driver);
 
+    bhyveAutostartDomains(bhyve_driver);
+
     return 0;
 
  cleanup:
@@ -1294,15 +1296,6 @@ bhyveDriverGetGrubCaps(virConnectPtr conn)
     if (driver != NULL)
         return driver->grubcaps;
     return 0;
-}
-
-static void
-bhyveStateAutoStart(void)
-{
-    if (!bhyve_driver)
-        return;
-
-    bhyveAutostartDomains(bhyve_driver);
 }
 
 static int
@@ -1712,7 +1705,6 @@ static virConnectDriver bhyveConnectDriver = {
 static virStateDriver bhyveStateDriver = {
     .name = "bhyve",
     .stateInitialize = bhyveStateInitialize,
-    .stateAutoStart = bhyveStateAutoStart,
     .stateCleanup = bhyveStateCleanup,
 };
 
