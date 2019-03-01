@@ -30565,8 +30565,6 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
             return -1;
         }
 
-        def->src->srcpool->mode = VIR_STORAGE_SOURCE_POOL_MODE_DIRECT;
-
         if (virDomainDiskTranslateISCSIDirect(def, pooldef) < 0)
             return -1;
 
