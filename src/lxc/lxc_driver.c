@@ -1632,6 +1632,8 @@ static int lxcStateInitialize(bool privileged,
                                        NULL, NULL) < 0)
         goto cleanup;
 
+    virLXCProcessAutostartAll(lxc_driver);
+
     virObjectUnref(caps);
     return 0;
 
@@ -1639,19 +1641,6 @@ static int lxcStateInitialize(bool privileged,
     virObjectUnref(caps);
     lxcStateCleanup();
     return -1;
-}
-
-/**
- * lxcStateAutoStart:
- *
- * Function to autostart the LXC daemons
- */
-static void lxcStateAutoStart(void)
-{
-    if (!lxc_driver)
-        return;
-
-    virLXCProcessAutostartAll(lxc_driver);
 }
 
 static void lxcNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
@@ -5502,7 +5491,6 @@ static virConnectDriver lxcConnectDriver = {
 static virStateDriver lxcStateDriver = {
     .name = LXC_DRIVER_NAME,
     .stateInitialize = lxcStateInitialize,
-    .stateAutoStart = lxcStateAutoStart,
     .stateCleanup = lxcStateCleanup,
     .stateReload = lxcStateReload,
 };

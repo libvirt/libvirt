@@ -660,6 +660,10 @@ networkStateInitialize(bool privileged,
     networkReloadFirewallRules(network_driver, true);
     networkRefreshDaemons(network_driver);
 
+    virNetworkObjListForEach(network_driver->networks,
+                             networkAutostartConfig,
+                             network_driver);
+
     network_driver->networkEventState = virObjectEventStateNew();
 
 #ifdef WITH_FIREWALLD
@@ -696,23 +700,6 @@ networkStateInitialize(bool privileged,
  error:
     networkStateCleanup();
     goto cleanup;
-}
-
-
-/**
- * networkStateAutoStart:
- *
- * Function to AutoStart the bridge configs
- */
-static void
-networkStateAutoStart(void)
-{
-    if (!network_driver)
-        return;
-
-    virNetworkObjListForEach(network_driver->networks,
-                             networkAutostartConfig,
-                             network_driver);
 }
 
 
@@ -5652,7 +5639,6 @@ static virConnectDriver networkConnectDriver = {
 static virStateDriver networkStateDriver = {
     .name = "bridge",
     .stateInitialize  = networkStateInitialize,
-    .stateAutoStart  = networkStateAutoStart,
     .stateCleanup = networkStateCleanup,
     .stateReload = networkStateReload,
 };

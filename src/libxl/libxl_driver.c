@@ -779,6 +779,9 @@ libxlStateInitialize(bool privileged,
                                        NULL, NULL) < 0)
         goto error;
 
+    virDomainObjListForEach(libxl_driver->domains, libxlAutostartDomain,
+                            libxl_driver);
+
     virDomainObjListForEach(libxl_driver->domains, libxlDomainManagedSaveLoad,
                             libxl_driver);
 
@@ -788,16 +791,6 @@ libxlStateInitialize(bool privileged,
     VIR_FREE(driverConf);
     libxlStateCleanup();
     return -1;
-}
-
-static void
-libxlStateAutoStart(void)
-{
-    if (!libxl_driver)
-        return;
-
-    virDomainObjListForEach(libxl_driver->domains, libxlAutostartDomain,
-                            libxl_driver);
 }
 
 static int
@@ -6611,7 +6604,6 @@ static virConnectDriver libxlConnectDriver = {
 static virStateDriver libxlStateDriver = {
     .name = "LIBXL",
     .stateInitialize = libxlStateInitialize,
-    .stateAutoStart = libxlStateAutoStart,
     .stateCleanup = libxlStateCleanup,
     .stateReload = libxlStateReload,
 };

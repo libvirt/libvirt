@@ -914,6 +914,8 @@ qemuStateInitialize(bool privileged,
 
     qemuProcessReconnectAll(qemu_driver);
 
+    qemuAutostartDomains(qemu_driver);
+
     return 0;
 
  error:
@@ -922,20 +924,6 @@ qemuStateInitialize(bool privileged,
     VIR_FREE(memoryBackingPath);
     qemuStateCleanup();
     return -1;
-}
-
-/**
- * qemuStateAutoStart:
- *
- * Function to auto start the QEMU daemons
- */
-static void
-qemuStateAutoStart(void)
-{
-    if (!qemu_driver)
-        return;
-
-    qemuAutostartDomains(qemu_driver);
 }
 
 static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
@@ -22672,7 +22660,6 @@ static virConnectDriver qemuConnectDriver = {
 static virStateDriver qemuStateDriver = {
     .name = QEMU_DRIVER_NAME,
     .stateInitialize = qemuStateInitialize,
-    .stateAutoStart = qemuStateAutoStart,
     .stateCleanup = qemuStateCleanup,
     .stateReload = qemuStateReload,
     .stateStop = qemuStateStop,

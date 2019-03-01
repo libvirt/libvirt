@@ -294,6 +294,8 @@ storageStateInitialize(bool privileged,
 
     storagePoolUpdateAllState();
 
+    storageDriverAutostart();
+
     driver->storageEventState = virObjectEventStateNew();
 
     storageDriverUnlock();
@@ -304,22 +306,6 @@ storageStateInitialize(bool privileged,
     storageDriverUnlock();
     storageStateCleanup();
     return -1;
-}
-
-/**
- * storageStateAutoStart:
- *
- * Function to auto start the storage driver
- */
-static void
-storageStateAutoStart(void)
-{
-    if (!driver)
-        return;
-
-    storageDriverLock();
-    storageDriverAutostart();
-    storageDriverUnlock();
 }
 
 /**
@@ -2832,7 +2818,6 @@ static virConnectDriver storageConnectDriver = {
 static virStateDriver stateDriver = {
     .name = "storage",
     .stateInitialize = storageStateInitialize,
-    .stateAutoStart = storageStateAutoStart,
     .stateCleanup = storageStateCleanup,
     .stateReload = storageStateReload,
 };
