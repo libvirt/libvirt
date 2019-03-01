@@ -1170,31 +1170,25 @@ static int
 virDomainKeyWrapDefParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
 {
     size_t i;
-    int ret = -1;
     int n;
     VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    VIR_AUTOFREE(virDomainKeyWrapDefPtr) keywrap = NULL;
 
     if ((n = virXPathNodeSet("./keywrap/cipher", ctxt, &nodes)) < 0)
         return n;
 
-    if (VIR_ALLOC(def->keywrap) < 0)
-        goto cleanup;
+    if (VIR_ALLOC(keywrap) < 0)
+        return -1;
 
     for (i = 0; i < n; i++) {
-        if (virDomainKeyWrapCipherDefParseXML(def->keywrap, nodes[i]) < 0)
-            goto cleanup;
+        if (virDomainKeyWrapCipherDefParseXML(keywrap, nodes[i]) < 0)
+            return -1;
     }
 
-    if (!def->keywrap->aes &&
-        !def->keywrap->dea)
-        VIR_FREE(def->keywrap);
+    if (keywrap->aes || keywrap->dea)
+        VIR_STEAL_PTR(def->keywrap, keywrap);
 
-    ret = 0;
-
- cleanup:
-    if (ret < 0)
-        VIR_FREE(def->keywrap);
-    return ret;
+    return 0;
 }
 
 
