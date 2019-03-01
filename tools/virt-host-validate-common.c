@@ -337,7 +337,12 @@ int virHostValidateIOMMU(const char *hvname,
     virBitmapPtr flags;
     struct stat sb;
     const char *bootarg = NULL;
-    bool isAMD = false, isIntel = false, isPPC = false;
+    bool isAMD = false, isIntel = false;
+    virArch arch = virArchFromHost();
+    struct dirent *dent;
+    DIR *dir;
+    int rc;
+
     flags = virHostValidateGetCPUFlags();
 
     if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))
@@ -346,8 +351,6 @@ int virHostValidateIOMMU(const char *hvname,
         isAMD = true;
 
     virBitmapFree(flags);
-
-    isPPC = ARCH_IS_PPC64(virArchFromHost());
 
     if (isIntel) {
         virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
@@ -373,8 +376,19 @@ int virHostValidateIOMMU(const char *hvname,
                            "hardware platform");
             return -1;
         }
-    } else if (isPPC) {
+    } else if (ARCH_IS_PPC64(arch)) {
         /* Empty Block */
+    } else if (ARCH_IS_S390(arch)) {
+        /* On s390x, we skip the IOMMU check if there are no PCI
+         * devices (which is quite usual on s390x). If there are
+         * no PCI devices the directory is still there but is
+         * empty. */
+        if (!virDirOpen(&dir, "/sys/bus/pci/devices"))
+            return 0;
+        rc = virDirRead(dir, &dent, NULL);
+        VIR_DIR_CLOSE(dir);
+        if (rc <= 0)
+            return 0;
     } else {
         virHostMsgFail(level,
                        "Unknown if this platform has IOMMU support");
@@ -391,7 +405,7 @@ int virHostValidateIOMMU(const char *hvname,
 
     virHostMsgCheck(hvname, "%s", _("if IOMMU is enabled by kernel"));
     if (sb.st_nlink <= 2) {
-        if (!isPPC)
+        if (bootarg)
             virHostMsgFail(level,
                            "IOMMU appears to be disabled in kernel. "
                            "Add %s to kernel cmdline arguments", bootarg);
