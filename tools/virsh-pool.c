@@ -735,7 +735,7 @@ static const vshCmdInfo info_pool_refresh[] = {
 };
 
 static const vshCmdOptDef opts_pool_refresh[] = {
-    VIRSH_COMMON_OPT_POOL_FULL(0),
+    VIRSH_COMMON_OPT_POOL_FULL(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE),
 
     {.name = NULL}
 };
