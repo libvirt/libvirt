@@ -1279,6 +1279,11 @@ get_files(vahControl * ctl)
         virBufferAddLit(&buf, "  \"/usr/share/drirc.d/{,*.conf}\" r,\n");
         virBufferAddLit(&buf, "  \"/etc/glvnd/egl_vendor.d/{,*}\" r,\n");
         virBufferAddLit(&buf, "  \"/usr/share/glvnd/egl_vendor.d/{,*}\" r,\n");
+        virBufferAddLit(&buf, "  \"/usr/share/egl/egl_external_platform.d/\" r,\n");
+        virBufferAddLit(&buf, "  \"/usr/share/egl/egl_external_platform.d/*\" r,\n");
+        virBufferAddLit(&buf, "  \"/proc/modules\" r,\n");
+        virBufferAddLit(&buf, "  \"/proc/driver/nvidia/params\" r,\n");
+        virBufferAddLit(&buf, "  \"/dev/nvidiactl\" rw,\n");
         virBufferAddLit(&buf, "  # Probe DRI device attributes\n");
         virBufferAddLit(&buf, "  \"/dev/dri/\" r,\n");
         virBufferAddLit(&buf, "  \"/sys/devices/*/*/{uevent,vendor,device,subsystem_vendor,subsystem_device}\" r,\n");
