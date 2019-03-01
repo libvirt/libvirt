@@ -638,21 +638,23 @@ virStorageBackendISCSIDirectVolWipeZero(virStorageVolDefPtr vol,
         return ret;
 
     while (lba < nb_block) {
-        if (nb_block - lba > block_size * BLOCK_PER_PACKET) {
+        const uint64_t to_write = MIN(nb_block - lba + 1, BLOCK_PER_PACKET);
 
-            if (!(task = iscsi_write16_sync(iscsi, lun, lba, data,
-                                            block_size * BLOCK_PER_PACKET,
-                                            block_size, 0, 0, 0, 0, 0)))
-                return -1;
+        task = iscsi_write16_sync(iscsi, lun, lba, data,
+                                  block_size * to_write,
+                                  block_size, 0, 0, 0, 0, 0);
+
+        if (!task ||
+            task->status != SCSI_STATUS_GOOD) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to write to LUN %d: %s"),
+                           lun, iscsi_get_error(iscsi));
             scsi_free_scsi_task(task);
-            lba += BLOCK_PER_PACKET;
-        } else {
-            if (!(task = iscsi_write16_sync(iscsi, lun, lba, data, block_size,
-                                        block_size, 0, 0, 0, 0, 0)))
-                return -1;
-            scsi_free_scsi_task(task);
-            lba++;
+            return -1;
         }
+
+        scsi_free_scsi_task(task);
+        lba += to_write;
     }
 
     return 0;
