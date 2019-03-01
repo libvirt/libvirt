@@ -1587,8 +1587,8 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 static virDomainVcpuDefPtr
 virDomainVcpuDefNew(virDomainXMLOptionPtr xmlopt)
 {
-    virObjectPtr priv = NULL;
     virDomainVcpuDefPtr ret = NULL;
+    VIR_AUTOUNREF(virObjectPtr) priv = NULL;
 
     if (xmlopt && xmlopt->privateData.vcpuNew &&
         !(priv = xmlopt->privateData.vcpuNew()))
@@ -1600,7 +1600,6 @@ virDomainVcpuDefNew(virDomainXMLOptionPtr xmlopt)
     VIR_STEAL_PTR(ret->privateData, priv);
 
  cleanup:
-    virObjectUnref(priv);
     return ret;
 }
 
@@ -19142,13 +19141,13 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
                            unsigned int flags)
 {
     xmlNodePtr oldnode = ctxt->node;
-    virResctrlAllocPtr alloc = NULL;
     virDomainResctrlDefPtr resctrl = NULL;
     ssize_t i = 0;
     int n;
     int ret = -1;
     VIR_AUTOPTR(virBitmap) vcpus = NULL;
     VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    VIR_AUTOUNREF(virResctrlAllocPtr) alloc = NULL;
 
     ctxt->node = node;
 
@@ -19207,7 +19206,6 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
  cleanup:
     ctxt->node = oldnode;
     virDomainResctrlDefFree(resctrl);
-    virObjectUnref(alloc);
     return ret;
 }
 
@@ -19353,10 +19351,10 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
                             unsigned int flags)
 {
     xmlNodePtr oldnode = ctxt->node;
-    virResctrlAllocPtr alloc = NULL;
     virDomainResctrlDefPtr resctrl = NULL;
     VIR_AUTOPTR(virBitmap) vcpus = NULL;
     VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    VIR_AUTOUNREF(virResctrlAllocPtr) alloc = NULL;
 
     ssize_t i = 0;
     int n;
@@ -19414,7 +19412,6 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
  cleanup:
     ctxt->node = oldnode;
     virDomainResctrlDefFree(resctrl);
-    virObjectUnref(alloc);
     return ret;
 }
 
@@ -30460,11 +30457,11 @@ virDomainNetBandwidthUpdate(virDomainNetDefPtr iface,
 int
 virDomainNetResolveActualType(virDomainNetDefPtr iface)
 {
-    virConnectPtr conn = NULL;
-    virNetworkPtr net = NULL;
     virNetworkDefPtr def = NULL;
     int ret = -1;
     VIR_AUTOFREE(char *) xml = NULL;
+    VIR_AUTOUNREF(virConnectPtr) conn = NULL;
+    VIR_AUTOUNREF(virNetworkPtr) net = NULL;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
         return iface->type;
@@ -30531,8 +30528,6 @@ virDomainNetResolveActualType(virDomainNetDefPtr iface)
 
  cleanup:
     virNetworkDefFree(def);
-    virObjectUnref(conn);
-    virObjectUnref(net);
     return ret;
 }
 
@@ -30656,13 +30651,13 @@ virDomainDiskTranslateISCSIDirect(virDomainDiskDefPtr def,
 int
 virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
 {
-    virConnectPtr conn = NULL;
-    virStoragePoolPtr pool = NULL;
-    virStorageVolPtr vol = NULL;
     virStorageVolInfo info;
     int ret = -1;
     VIR_AUTOPTR(virStoragePoolDef) pooldef = NULL;
     VIR_AUTOFREE(char *) poolxml = NULL;
+    VIR_AUTOUNREF(virConnectPtr) conn = NULL;
+    VIR_AUTOUNREF(virStoragePoolPtr) pool = NULL;
+    VIR_AUTOUNREF(virStorageVolPtr) vol = NULL;
 
     if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
         return 0;
@@ -30817,9 +30812,6 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
 
     ret = 0;
  cleanup:
-    virObjectUnref(conn);
-    virObjectUnref(pool);
-    virObjectUnref(vol);
     return ret;
 }
 
