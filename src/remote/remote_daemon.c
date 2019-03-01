@@ -312,16 +312,16 @@ static int daemonInitialize(void)
     if (virDriverLoadModule("interface", "interfaceRegister", false) < 0)
         return -1;
 #endif
+#ifdef WITH_SECRETS
+    if (virDriverLoadModule("secret", "secretRegister", false) < 0)
+        return -1;
+#endif
 #ifdef WITH_STORAGE
     if (virDriverLoadModule("storage", "storageRegister", false) < 0)
         return -1;
 #endif
 #ifdef WITH_NODE_DEVICES
     if (virDriverLoadModule("nodedev", "nodedevRegister", false) < 0)
-        return -1;
-#endif
-#ifdef WITH_SECRETS
-    if (virDriverLoadModule("secret", "secretRegister", false) < 0)
         return -1;
 #endif
 #ifdef WITH_NWFILTER
