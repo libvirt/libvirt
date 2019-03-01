@@ -257,10 +257,16 @@ use_apparmor(void)
     if (access(APPARMOR_PROFILES_PATH, R_OK) != 0)
         goto cleanup;
 
+    /* First check profile status using full binary path. If that fails
+     * check using profile name.
+     */
     rc = profile_status(libvirt_daemon, 1);
-    /* Error or unconfined should all result in -1*/
-    if (rc < 0)
-        rc = -1;
+    if (rc < 0) {
+        rc = profile_status("libvirtd", 1);
+        /* Error or unconfined should all result in -1*/
+        if (rc < 0)
+            rc = -1;
+    }
 
  cleanup:
     VIR_FREE(libvirt_daemon);
