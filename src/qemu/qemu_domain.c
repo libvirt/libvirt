@@ -2668,14 +2668,13 @@ static int
 qemuDomainObjPrivateXMLParseBlockjobs(qemuDomainObjPrivatePtr priv,
                                       xmlXPathContextPtr ctxt)
 {
-    char *active;
+    VIR_AUTOFREE(char *) active = NULL;
     int tmp;
 
     if ((active = virXPathString("string(./blockjobs/@active)", ctxt)) &&
         (tmp = virTristateBoolTypeFromString(active)) > 0)
         priv->reconnectBlockjobs = tmp;
 
-    VIR_FREE(active);
     return 0;
 }
 
