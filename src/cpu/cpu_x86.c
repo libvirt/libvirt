@@ -979,6 +979,16 @@ x86ModelFree(virCPUx86ModelPtr model)
 }
 
 
+static int
+x86ModelCopySignatures(virCPUx86ModelPtr dst,
+                       virCPUx86ModelPtr src)
+{
+    dst->signature = src->signature;
+
+    return 0;
+}
+
+
 static virCPUx86ModelPtr
 x86ModelCopy(virCPUx86ModelPtr model)
 {
@@ -986,13 +996,13 @@ x86ModelCopy(virCPUx86ModelPtr model)
 
     if (VIR_ALLOC(copy) < 0 ||
         VIR_STRDUP(copy->name, model->name) < 0 ||
+        x86ModelCopySignatures(copy, model) < 0 ||
         x86DataCopy(&copy->data, &model->data) < 0) {
         x86ModelFree(copy);
         return NULL;
     }
 
     copy->vendor = model->vendor;
-    copy->signature = model->signature;
 
     return copy;
 }
@@ -1178,8 +1188,8 @@ x86ModelParseAncestor(virCPUx86ModelPtr model,
     }
 
     model->vendor = ancestor->vendor;
-    model->signature = ancestor->signature;
-    if (x86DataCopy(&model->data, &ancestor->data) < 0)
+    if (x86ModelCopySignatures(model, ancestor) < 0 ||
+        x86DataCopy(&model->data, &ancestor->data) < 0)
         return -1;
 
     return 0;
