@@ -122,6 +122,8 @@ void virCommandAddEnvPassAllowSUID(virCommandPtr cmd,
 
 void virCommandAddEnvPassCommon(virCommandPtr cmd);
 
+void virCommandAddEnvXDG(virCommandPtr cmd, const char *baseDir);
+
 void virCommandAddArg(virCommandPtr cmd,
                       const char *val) ATTRIBUTE_NONNULL(2);
 

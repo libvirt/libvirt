@@ -1483,6 +1483,27 @@ virCommandAddEnvPassCommon(virCommandPtr cmd)
     virCommandAddEnvPassBlockSUID(cmd, "TMPDIR", NULL);
 }
 
+
+void
+virCommandAddEnvXDG(virCommandPtr cmd, const char *baseDir)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 3) < 0) {
+        cmd->has_error = ENOMEM;
+        return;
+    }
+
+    virCommandAddEnvFormat(cmd, "XDG_DATA_HOME=%s/%s",
+                           baseDir, ".local/share");
+    virCommandAddEnvFormat(cmd, "XDG_CACHE_HOME=%s/%s",
+                           baseDir, ".cache");
+    virCommandAddEnvFormat(cmd, "XDG_CONFIG_HOME=%s/%s",
+                           baseDir, ".config");
+}
+
+
 /**
  * virCommandAddArg:
  * @cmd: the command to modify
