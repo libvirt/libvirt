@@ -1286,8 +1286,7 @@ get_files(vahControl * ctl)
         virBufferAddLit(&buf, "  \"/dev/nvidiactl\" rw,\n");
         virBufferAddLit(&buf, "  # Probe DRI device attributes\n");
         virBufferAddLit(&buf, "  \"/dev/dri/\" r,\n");
-        virBufferAddLit(&buf, "  \"/sys/devices/*/*/{uevent,vendor,device,subsystem_vendor,subsystem_device}\" r,\n");
-        virBufferAddLit(&buf, "  \"/sys/devices/*/*/drm/*/{uevent,vendor,device,subsystem_vendor,subsystem_device}\" r,\n");
+        virBufferAddLit(&buf, "  \"/sys/devices/**/{uevent,vendor,device,subsystem_vendor,subsystem_device}\" r,\n");
         virBufferAddLit(&buf, "  # dri libs will trigger that, but t is not requited and DAC would deny it anyway\n");
         virBufferAddLit(&buf, "  deny \"/var/lib/libvirt/.cache/\" w,\n");
     }
