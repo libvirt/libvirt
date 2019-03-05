@@ -14606,8 +14606,11 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
                        xmlXPathContextPtr ctxt,
                        virSysinfoBIOSDefPtr *bios)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     int ret = -1;
     virSysinfoBIOSDefPtr def;
+
+    ctxt->node = node;
 
     if (!virXMLNodeNameEqual(node, "bios")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -14666,9 +14669,12 @@ virSysinfoSystemParseXML(xmlNodePtr node,
                          unsigned char *domUUID,
                          bool uuid_generated)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     int ret = -1;
     virSysinfoSystemDefPtr def;
     VIR_AUTOFREE(char *) tmpUUID = NULL;
+
+    ctxt->node = node;
 
     if (!virXMLNodeNameEqual(node, "system")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -14786,14 +14792,18 @@ virSysinfoBaseBoardParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
-virSysinfoOEMStringsParseXML(xmlXPathContextPtr ctxt,
+virSysinfoOEMStringsParseXML(xmlNodePtr node,
+                             xmlXPathContextPtr ctxt,
                              virSysinfoOEMStringsDefPtr *oem)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     int ret = -1;
     virSysinfoOEMStringsDefPtr def;
     int nstrings;
     size_t i;
     VIR_AUTOFREE(xmlNodePtr *) strings = NULL;
+
+    ctxt->node = node;
 
     nstrings = virXPathNodeSet("./entry", ctxt, &strings);
     if (nstrings < 0)
@@ -14824,8 +14834,11 @@ virSysinfoChassisParseXML(xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
                          virSysinfoChassisDefPtr *chassisdef)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     int ret = -1;
     virSysinfoChassisDefPtr def;
+
+    ctxt->node = node;
 
     if (!xmlStrEqual(node->name, BAD_CAST "chassis")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -14868,7 +14881,7 @@ virSysinfoParseXML(xmlNodePtr node,
                   bool uuid_generated)
 {
     virSysinfoDefPtr def;
-    xmlNodePtr oldnode, tmpnode;
+    xmlNodePtr tmpnode;
     VIR_AUTOFREE(char *) type = NULL;
 
     if (!virXMLNodeNameEqual(node, "sysinfo")) {
@@ -14894,25 +14907,15 @@ virSysinfoParseXML(xmlNodePtr node,
 
     /* Extract BIOS related metadata */
     if ((tmpnode = virXPathNode("./bios[1]", ctxt)) != NULL) {
-        oldnode = ctxt->node;
-        ctxt->node = tmpnode;
-        if (virSysinfoBIOSParseXML(tmpnode, ctxt, &def->bios) < 0) {
-            ctxt->node = oldnode;
+        if (virSysinfoBIOSParseXML(tmpnode, ctxt, &def->bios) < 0)
             goto error;
-        }
-        ctxt->node = oldnode;
     }
 
     /* Extract system related metadata */
     if ((tmpnode = virXPathNode("./system[1]", ctxt)) != NULL) {
-        oldnode = ctxt->node;
-        ctxt->node = tmpnode;
         if (virSysinfoSystemParseXML(tmpnode, ctxt, &def->system,
-                                     domUUID, uuid_generated) < 0) {
-            ctxt->node = oldnode;
+                                     domUUID, uuid_generated) < 0)
             goto error;
-        }
-        ctxt->node = oldnode;
     }
 
     /* Extract system base board metadata */
@@ -14921,24 +14924,14 @@ virSysinfoParseXML(xmlNodePtr node,
 
     /* Extract chassis related metadata */
     if ((tmpnode = virXPathNode("./chassis[1]", ctxt)) != NULL) {
-        oldnode = ctxt->node;
-        ctxt->node = tmpnode;
-        if (virSysinfoChassisParseXML(tmpnode, ctxt, &def->chassis) < 0) {
-            ctxt->node = oldnode;
+        if (virSysinfoChassisParseXML(tmpnode, ctxt, &def->chassis) < 0)
             goto error;
-        }
-        ctxt->node = oldnode;
     }
 
     /* Extract system related metadata */
     if ((tmpnode = virXPathNode("./oemStrings[1]", ctxt)) != NULL) {
-        oldnode = ctxt->node;
-        ctxt->node = tmpnode;
-        if (virSysinfoOEMStringsParseXML(ctxt, &def->oemStrings) < 0) {
-            ctxt->node = oldnode;
+        if (virSysinfoOEMStringsParseXML(tmpnode, ctxt, &def->oemStrings) < 0)
             goto error;
-        }
-        ctxt->node = oldnode;
     }
 
  cleanup:
