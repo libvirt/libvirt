@@ -778,14 +778,23 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (!(caps = qemuMigrationCapsToJSON(priv->migrationCaps, migParams->caps)))
-        goto cleanup;
-
-    if (virJSONValueArraySize(caps) > 0) {
-        rc = qemuMonitorSetMigrationCapabilities(priv->mon, caps);
-        caps = NULL;
-        if (rc < 0)
+    if (asyncJob == QEMU_ASYNC_JOB_NONE) {
+        if (!virBitmapIsAllClear(migParams->caps)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Migration capabilities can only be set by "
+                             "a migration job"));
             goto cleanup;
+        }
+    } else {
+        if (!(caps = qemuMigrationCapsToJSON(priv->migrationCaps, migParams->caps)))
+            goto cleanup;
+
+        if (virJSONValueArraySize(caps) > 0) {
+            rc = qemuMonitorSetMigrationCapabilities(priv->mon, caps);
+            caps = NULL;
+            if (rc < 0)
+                goto cleanup;
+        }
     }
 
     /* If QEMU is too old to support xbzrle-cache-size migration parameter,
