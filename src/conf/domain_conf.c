@@ -27814,26 +27814,25 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_FEATURE_SMM:
-            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT) {
-                virTristateSwitch state = def->features[i];
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ABSENT)
+                break;
 
-                virBufferAsprintf(&tmpAttrBuf, " state='%s'",
-                                  virTristateSwitchTypeToString(state));
+            virBufferAsprintf(&tmpAttrBuf, " state='%s'",
+                              virTristateSwitchTypeToString(def->features[i]));
 
-                if (state == VIR_TRISTATE_SWITCH_ON &&
-                    def->tseg_specified) {
-                    const char *unit;
-                    unsigned long long short_size = virFormatIntPretty(def->tseg_size,
-                                                                       &unit);
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ON &&
+                def->tseg_specified) {
+                const char *unit;
+                unsigned long long short_size = virFormatIntPretty(def->tseg_size,
+                                                                   &unit);
 
-                    virBufferSetChildIndent(&tmpChildBuf, buf);
-                    virBufferAsprintf(&tmpChildBuf, "<tseg unit='%s'>%llu</tseg>\n",
-                                      unit, short_size);
-                }
-
-                if (virXMLFormatElement(buf, "smm", &tmpAttrBuf, &tmpChildBuf) < 0)
-                    return -1;
+                virBufferSetChildIndent(&tmpChildBuf, buf);
+                virBufferAsprintf(&tmpChildBuf, "<tseg unit='%s'>%llu</tseg>\n",
+                                  unit, short_size);
             }
+
+            if (virXMLFormatElement(buf, "smm", &tmpAttrBuf, &tmpChildBuf) < 0)
+                return -1;
 
             break;
 
