@@ -1206,13 +1206,16 @@ virDomainSnapshotSetRelations(void *payload,
 }
 
 /* Populate parent link and child count of all snapshots, with all
- * relations starting as 0/NULL.  Return 0 on success, -1 if a parent
- * is missing or if a circular relationship was requested.  */
+ * assigned defs having relations starting as 0/NULL. Return 0 on
+ * success, -1 if a parent is missing or if a circular relationship
+ * was requested. */
 int
 virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
 {
     struct snapshot_set_relation act = { snapshots, 0 };
 
+    snapshots->metaroot.nchildren = 0;
+    snapshots->metaroot.first_child = NULL;
     virHashForEach(snapshots->objs, virDomainSnapshotSetRelations, &act);
     return act.err;
 }

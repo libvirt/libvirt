@@ -8625,6 +8625,10 @@ qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
     rem.err = 0;
     virDomainSnapshotForEach(vm->snapshots, qemuDomainSnapshotDiscardAll,
                              &rem);
+    if (rem.current)
+        vm->current_snapshot = NULL;
+    if (virDomainSnapshotUpdateRelations(vm->snapshots) < 0 && !rem.err)
+        rem.err = -1;
 
     return rem.err;
 }
