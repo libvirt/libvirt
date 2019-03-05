@@ -11,24 +11,30 @@ matrix:
         - docker
       env:
         - IMAGE="ubuntu-18"
-        - DOCKER_CMD="$LINUX_CMD"
+        - MAKE_ARGS="syntax-check distcheck"
+      script:
+        - make -f Makefile.ci ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
     - services:
         - docker
       env:
         - IMAGE="centos-7"
-        - DOCKER_CMD="$LINUX_CMD"
+        - MAKE_ARGS="syntax-check distcheck"
+      script:
+        - make -f Makefile.ci ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
     - services:
         - docker
       env:
         - IMAGE="fedora-rawhide"
         - MINGW="mingw32"
-        - DOCKER_CMD="$MINGW_CMD"
+      script:
+        - make -f Makefile.ci ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
     - services:
         - docker
       env:
         - IMAGE="fedora-rawhide"
         - MINGW="mingw64"
-        - DOCKER_CMD="$MINGW_CMD"
+      script:
+        - make -f Makefile.ci ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
     - compiler: clang
       language: c
       os: osx
@@ -37,43 +43,11 @@ matrix:
       script:
         /bin/sh -xc "$MACOS_CMD"
 
-script:
-  - docker run
-      -v $(pwd):/build
-      -w /build
-      -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
-      -e MINGW="$MINGW"
-      "quay.io/libvirt/buildenv-$IMAGE:master"
-      /bin/sh -xc "$DOCKER_CMD"
-
 git:
   submodules: true
 
 env:
   global:
-    - VIR_TEST_DEBUG=1
-    - LINUX_CMD="
-        ./autogen.sh &&
-        make -j3 syntax-check &&
-        make -j3 distcheck ||
-        (
-          echo '=== LOG FILE(S) START ===';
-          find -name test-suite.log | xargs cat;
-          echo '=== LOG FILE(S) END ===';
-          exit 1
-        )
-      "
-    - MINGW_CMD="
-        NOCONFIGURE=1 ./autogen.sh &&
-        \$MINGW-configure &&
-        make -j3 ||
-        (
-          echo '=== LOG FILE(S) START ===';
-          find -name test-suite.log | xargs cat;
-          echo '=== LOG FILE(S) END ===';
-          exit 1
-        )
-      "
     # We can't run 'distcheck' or 'syntax-check' because they fail on
     # macOS, but doing 'install' and 'dist' gives us some useful coverage
     - MACOS_CMD="
