@@ -27745,8 +27745,8 @@ static int
 virDomainDefFormatFeatures(virBufferPtr buf,
                            virDomainDefPtr def)
 {
-    virBuffer attributeBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer tmpAttrBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer tmpChildBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
@@ -27979,23 +27979,23 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
                 break;
 
-            virBufferFreeAndReset(&attributeBuf);
-            virBufferFreeAndReset(&childrenBuf);
+            virBufferFreeAndReset(&tmpAttrBuf);
+            virBufferFreeAndReset(&tmpChildBuf);
 
             if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
-                virBufferAsprintf(&attributeBuf,
+                virBufferAsprintf(&tmpAttrBuf,
                                   " resizing='%s'",
                                   virDomainHPTResizingTypeToString(def->hpt_resizing));
             }
             if (def->hpt_maxpagesize > 0) {
-                virBufferSetChildIndent(&childrenBuf, buf);
-                virBufferAsprintf(&childrenBuf,
+                virBufferSetChildIndent(&tmpChildBuf, buf);
+                virBufferAsprintf(&tmpChildBuf,
                                   "<maxpagesize unit='KiB'>%llu</maxpagesize>\n",
                                   def->hpt_maxpagesize);
             }
 
             if (virXMLFormatElement(buf, "hpt",
-                                    &attributeBuf, &childrenBuf) < 0) {
+                                    &tmpAttrBuf, &tmpChildBuf) < 0) {
                 goto error;
             }
             break;
@@ -28020,8 +28020,8 @@ virDomainDefFormatFeatures(virBufferPtr buf,
     return 0;
 
  error:
-    virBufferFreeAndReset(&attributeBuf);
-    virBufferFreeAndReset(&childrenBuf);
+    virBufferFreeAndReset(&tmpAttrBuf);
+    virBufferFreeAndReset(&tmpChildBuf);
     return -1;
 }
 
