@@ -6761,8 +6761,8 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
                           unsigned int flags)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) && info->bootIndex) {
@@ -6910,9 +6910,6 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&attrBuf);
-    virBufferFreeAndReset(&childBuf);
-
     return ret;
 }
 
@@ -23738,7 +23735,7 @@ virDomainDiskSourceFormatPrivateData(virBufferPtr buf,
                                      unsigned int flags,
                                      virDomainXMLOptionPtr xmlopt)
 {
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_STATUS) ||
@@ -23756,8 +23753,6 @@ virDomainDiskSourceFormatPrivateData(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&childBuf);
-
     return ret;
 }
 
@@ -23843,8 +23838,8 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
                                   bool attrIndex,
                                   virDomainXMLOptionPtr xmlopt)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
@@ -23869,8 +23864,6 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&attrBuf);
-    virBufferFreeAndReset(&childBuf);
     return ret;
 }
 
@@ -24102,7 +24095,7 @@ virDomainDiskDefFormatPrivateData(virBufferPtr buf,
                                   unsigned int flags,
                                   virDomainXMLOptionPtr xmlopt)
 {
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
 
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_STATUS) ||
         !xmlopt ||
@@ -24112,16 +24105,9 @@ virDomainDiskDefFormatPrivateData(virBufferPtr buf,
     virBufferSetChildIndent(&childBuf, buf);
 
     if (xmlopt->privateData.diskFormat(disk, &childBuf) < 0)
-        goto error;
+        return -1;
 
-    if (virXMLFormatElement(buf, "privateData", NULL, &childBuf) < 0)
-        goto error;
-
-    return 0;
-
- error:
-    virBufferFreeAndReset(&childBuf);
-    return -1;
+    return virXMLFormatElement(buf, "privateData", NULL, &childBuf);
 }
 
 
@@ -24259,7 +24245,7 @@ static int
 virDomainControllerDriverFormat(virBufferPtr buf,
                                 virDomainControllerDefPtr def)
 {
-    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) driverBuf = VIR_BUFFER_INITIALIZER;
 
     if (def->queues)
         virBufferAsprintf(&driverBuf, " queues='%u'", def->queues);
@@ -24454,7 +24440,7 @@ virDomainFSDefFormat(virBufferPtr buf,
     const char *fsdriver = virDomainFSDriverTypeToString(def->fsdriver);
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(def->wrpolicy);
     const char *src = def->src->path;
-    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) driverBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     if (!type) {
@@ -24560,8 +24546,6 @@ virDomainFSDefFormat(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&driverBuf);
-
     return ret;
 }
 
@@ -25382,8 +25366,8 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
                             virDomainChrSourceDefPtr def,
                             unsigned int flags)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferSetChildIndent(&childBuf, buf);
 
@@ -25499,8 +25483,6 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     return 0;
 
  error:
-    virBufferFreeAndReset(&attrBuf);
-    virBufferFreeAndReset(&childBuf);
     return -1;
 }
 
@@ -25669,7 +25651,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
                             unsigned int flags)
 {
     const char *mode = virDomainSmartcardTypeToString(def->type);
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
     int ret = -1;
 
@@ -25727,7 +25709,6 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&childBuf);
     return ret;
 }
 
@@ -25792,7 +25773,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
                         unsigned int flags)
 {
     const char *model = virDomainSoundModelTypeToString(def->model);
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
     int ret = -1;
 
@@ -25825,8 +25806,6 @@ virDomainSoundDefFormat(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&childBuf);
-
     return ret;
 }
 
@@ -26175,7 +26154,7 @@ virDomainVideoDefFormat(virBufferPtr buf,
                         unsigned int flags)
 {
     const char *model = virDomainVideoTypeToString(def->type);
-    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) driverBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     if (!model) {
@@ -26232,8 +26211,6 @@ virDomainVideoDefFormat(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&driverBuf);
-
     return ret;
 }
 
@@ -27236,7 +27213,7 @@ virDomainCachetuneDefFormat(virBufferPtr buf,
                             virDomainResctrlDefPtr resctrl,
                             unsigned int flags)
 {
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
     size_t i = 0;
     int ret = -1;
     VIR_AUTOFREE(char *) vcpus = NULL;
@@ -27282,7 +27259,6 @@ virDomainCachetuneDefFormat(virBufferPtr buf,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&childrenBuf);
     return ret;
 }
 
@@ -27306,7 +27282,7 @@ virDomainMemorytuneDefFormat(virBufferPtr buf,
                             virDomainResctrlDefPtr resctrl,
                             unsigned int flags)
 {
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
     VIR_AUTOFREE(char *) vcpus = NULL;
 
@@ -27344,7 +27320,6 @@ virDomainMemorytuneDefFormat(virBufferPtr buf,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&childrenBuf);
     return ret;
 }
 
@@ -27354,7 +27329,7 @@ virDomainCputuneDefFormat(virBufferPtr buf,
                           unsigned int flags)
 {
     size_t i;
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     virBufferSetChildIndent(&childrenBuf, buf);
@@ -27468,7 +27443,6 @@ virDomainCputuneDefFormat(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&childrenBuf);
     return ret;
 }
 
@@ -27537,9 +27511,9 @@ static int
 virDomainIOMMUDefFormat(virBufferPtr buf,
                         const virDomainIOMMUDef *iommu)
 {
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer driverAttrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
@@ -27573,8 +27547,6 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&childBuf);
-    virBufferFreeAndReset(&driverAttrBuf);
     return ret;
 }
 
@@ -27583,7 +27555,7 @@ static int
 virDomainMemtuneFormat(virBufferPtr buf,
                        const virDomainMemtune *mem)
 {
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
@@ -27637,7 +27609,6 @@ virDomainMemtuneFormat(virBufferPtr buf,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&childBuf);
     return ret;
 }
 
@@ -27646,9 +27617,9 @@ static int
 virDomainVsockDefFormat(virBufferPtr buf,
                         virDomainVsockDefPtr vsock)
 {
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer cidAttrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) cidAttrBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     if (vsock->model) {
@@ -27676,9 +27647,6 @@ virDomainVsockDefFormat(virBufferPtr buf,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&childBuf);
-    virBufferFreeAndReset(&attrBuf);
-    virBufferFreeAndReset(&cidAttrBuf);
     return ret;
 }
 
@@ -28544,7 +28512,7 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
                    virCapsPtr caps,
                    unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int state;
     int reason;
     size_t i;
@@ -28578,7 +28546,6 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -29530,7 +29497,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                        virCapsPtr caps,
                        virDomainXMLOptionPtr xmlopt)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int flags = VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_SECURE;
     int rc = -1;
     char *netprefix;
@@ -30005,7 +29972,7 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
                                          int *nparams,
                                          int maxparams)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *data = NULL;
     size_t i;
 
@@ -30045,7 +30012,6 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
 
  error:
     VIR_FREE(data);
-    virBufferFreeAndReset(&buf);
     return -1;
 }
 
