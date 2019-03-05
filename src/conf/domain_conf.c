@@ -27754,267 +27754,268 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             break;
     }
 
-    if (i != VIR_DOMAIN_FEATURE_LAST ||
-        virDomainDefHasCapabilitiesFeatures(def)) {
-        virBufferAddLit(buf, "<features>\n");
-        virBufferAdjustIndent(buf, 2);
+    if (i == VIR_DOMAIN_FEATURE_LAST &&
+        !virDomainDefHasCapabilitiesFeatures(def))
+        return 0;
 
-        for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
-            const char *name = virDomainFeatureTypeToString(i);
-            size_t j;
+    virBufferAddLit(buf, "<features>\n");
+    virBufferAdjustIndent(buf, 2);
 
-            if (!name) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected feature %zu"), i);
-                goto error;
-            }
+    for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
+        const char *name = virDomainFeatureTypeToString(i);
+        size_t j;
 
-            switch ((virDomainFeature) i) {
-            case VIR_DOMAIN_FEATURE_ACPI:
-            case VIR_DOMAIN_FEATURE_PAE:
-            case VIR_DOMAIN_FEATURE_VIRIDIAN:
-            case VIR_DOMAIN_FEATURE_PRIVNET:
-                /* NOTE: This is for old style <opt/> booleans. New XML
-                 * should use the explicit state=on|off output below */
-                switch ((virTristateSwitch) def->features[i]) {
-                case VIR_TRISTATE_SWITCH_ABSENT:
-                    break;
-
-                case VIR_TRISTATE_SWITCH_ON:
-                   virBufferAsprintf(buf, "<%s/>\n", name);
-                   break;
-
-                case VIR_TRISTATE_SWITCH_LAST:
-                case VIR_TRISTATE_SWITCH_OFF:
-                   virReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("Unexpected state of feature '%s'"), name);
-
-                   goto error;
-                   break;
-                }
-
-                break;
-
-            case VIR_DOMAIN_FEATURE_VMCOREINFO:
-            case VIR_DOMAIN_FEATURE_HAP:
-            case VIR_DOMAIN_FEATURE_PMU:
-            case VIR_DOMAIN_FEATURE_PVSPINLOCK:
-            case VIR_DOMAIN_FEATURE_VMPORT:
-            case VIR_DOMAIN_FEATURE_HTM:
-            case VIR_DOMAIN_FEATURE_NESTED_HV:
-                switch ((virTristateSwitch) def->features[i]) {
-                case VIR_TRISTATE_SWITCH_LAST:
-                case VIR_TRISTATE_SWITCH_ABSENT:
-                    break;
-
-                case VIR_TRISTATE_SWITCH_ON:
-                   virBufferAsprintf(buf, "<%s state='on'/>\n", name);
-                   break;
-
-                case VIR_TRISTATE_SWITCH_OFF:
-                   virBufferAsprintf(buf, "<%s state='off'/>\n", name);
-                   break;
-                }
-
-                break;
-
-            case VIR_DOMAIN_FEATURE_SMM:
-                if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT) {
-                    virTristateSwitch state = def->features[i];
-                    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-                    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-
-                    virBufferAsprintf(&attrBuf, " state='%s'",
-                                      virTristateSwitchTypeToString(state));
-
-                    if (state == VIR_TRISTATE_SWITCH_ON &&
-                        def->tseg_specified) {
-                        const char *unit;
-                        unsigned long long short_size = virFormatIntPretty(def->tseg_size,
-                                                                           &unit);
-
-                        virBufferSetChildIndent(&childBuf, buf);
-                        virBufferAsprintf(&childBuf, "<tseg unit='%s'>%llu</tseg>\n",
-                                          unit, short_size);
-                    }
-
-                    if (virXMLFormatElement(buf, "smm", &attrBuf, &childBuf) < 0)
-                        goto error;
-                }
-
-                break;
-
-            case VIR_DOMAIN_FEATURE_APIC:
-                if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
-                    virBufferAddLit(buf, "<apic");
-                    if (def->apic_eoi) {
-                        virBufferAsprintf(buf, " eoi='%s'",
-                                          virTristateSwitchTypeToString(def->apic_eoi));
-                    }
-                    virBufferAddLit(buf, "/>\n");
-                }
-                break;
-
-            case VIR_DOMAIN_FEATURE_HYPERV:
-                if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                virBufferAddLit(buf, "<hyperv>\n");
-                virBufferAdjustIndent(buf, 2);
-                for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
-                    if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ABSENT)
-                        continue;
-
-                    virBufferAsprintf(buf, "<%s state='%s'",
-                                      virDomainHypervTypeToString(j),
-                                      virTristateSwitchTypeToString(
-                                          def->hyperv_features[j]));
-
-                    switch ((virDomainHyperv) j) {
-                    case VIR_DOMAIN_HYPERV_RELAXED:
-                    case VIR_DOMAIN_HYPERV_VAPIC:
-                    case VIR_DOMAIN_HYPERV_VPINDEX:
-                    case VIR_DOMAIN_HYPERV_RUNTIME:
-                    case VIR_DOMAIN_HYPERV_SYNIC:
-                    case VIR_DOMAIN_HYPERV_STIMER:
-                    case VIR_DOMAIN_HYPERV_RESET:
-                    case VIR_DOMAIN_HYPERV_FREQUENCIES:
-                    case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
-                    case VIR_DOMAIN_HYPERV_TLBFLUSH:
-                    case VIR_DOMAIN_HYPERV_IPI:
-                    case VIR_DOMAIN_HYPERV_EVMCS:
-                        break;
-
-                    case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                        if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
-                            break;
-                        virBufferAsprintf(buf, " retries='%d'",
-                                          def->hyperv_spinlocks);
-                        break;
-
-                    case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                        if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
-                            break;
-                        virBufferEscapeString(buf, " value='%s'",
-                                              def->hyperv_vendor_id);
-                        break;
-
-                    /* coverity[dead_error_begin] */
-                    case VIR_DOMAIN_HYPERV_LAST:
-                        break;
-                    }
-
-                    virBufferAddLit(buf, "/>\n");
-                }
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</hyperv>\n");
-                break;
-
-            case VIR_DOMAIN_FEATURE_KVM:
-                if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                virBufferAddLit(buf, "<kvm>\n");
-                virBufferAdjustIndent(buf, 2);
-                for (j = 0; j < VIR_DOMAIN_KVM_LAST; j++) {
-                    switch ((virDomainKVM) j) {
-                    case VIR_DOMAIN_KVM_HIDDEN:
-                        if (def->kvm_features[j])
-                            virBufferAsprintf(buf, "<%s state='%s'/>\n",
-                                              virDomainKVMTypeToString(j),
-                                              virTristateSwitchTypeToString(
-                                                  def->kvm_features[j]));
-                        break;
-
-                    /* coverity[dead_error_begin] */
-                    case VIR_DOMAIN_KVM_LAST:
-                        break;
-                    }
-                }
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</kvm>\n");
-                break;
-
-            case VIR_DOMAIN_FEATURE_CAPABILITIES:
-                if (def->features[i] == VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT &&
-                    !virDomainDefHasCapabilitiesFeatures(def)) {
-                    break;
-                }
-
-                virBufferAsprintf(buf, "<capabilities policy='%s'>\n",
-                                  virDomainCapabilitiesPolicyTypeToString(def->features[i]));
-                virBufferAdjustIndent(buf, 2);
-                for (j = 0; j < VIR_DOMAIN_CAPS_FEATURE_LAST; j++) {
-                    if (def->caps_features[j] != VIR_TRISTATE_SWITCH_ABSENT)
-                        virBufferAsprintf(buf, "<%s state='%s'/>\n",
-                                          virDomainCapsFeatureTypeToString(j),
-                                          virTristateSwitchTypeToString(
-                                              def->caps_features[j]));
-                }
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</capabilities>\n");
-                break;
-
-            case VIR_DOMAIN_FEATURE_GIC:
-                if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
-                    virBufferAddLit(buf, "<gic");
-                    if (def->gic_version != VIR_GIC_VERSION_NONE)
-                        virBufferAsprintf(buf, " version='%s'",
-                                          virGICVersionTypeToString(def->gic_version));
-                    virBufferAddLit(buf, "/>\n");
-                }
-                break;
-
-            case VIR_DOMAIN_FEATURE_IOAPIC:
-                if (def->features[i] == VIR_DOMAIN_IOAPIC_NONE)
-                    break;
-
-                virBufferAsprintf(buf, "<ioapic driver='%s'/>\n",
-                                  virDomainIOAPICTypeToString(def->features[i]));
-                break;
-
-            case VIR_DOMAIN_FEATURE_HPT:
-                if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                virBufferFreeAndReset(&attributeBuf);
-                virBufferFreeAndReset(&childrenBuf);
-
-                if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
-                    virBufferAsprintf(&attributeBuf,
-                                      " resizing='%s'",
-                                      virDomainHPTResizingTypeToString(def->hpt_resizing));
-                }
-                if (def->hpt_maxpagesize > 0) {
-                    virBufferSetChildIndent(&childrenBuf, buf);
-                    virBufferAsprintf(&childrenBuf,
-                                      "<maxpagesize unit='KiB'>%llu</maxpagesize>\n",
-                                      def->hpt_maxpagesize);
-                }
-
-                if (virXMLFormatElement(buf, "hpt",
-                                        &attributeBuf, &childrenBuf) < 0) {
-                    goto error;
-                }
-                break;
-
-            case VIR_DOMAIN_FEATURE_MSRS:
-                if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                virBufferAsprintf(buf, "<msrs unknown='%s'/>\n",
-                                  virDomainMsrsUnknownTypeToString(def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN]));
-                break;
-
-            /* coverity[dead_error_begin] */
-            case VIR_DOMAIN_FEATURE_LAST:
-                break;
-            }
+        if (!name) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected feature %zu"), i);
+            goto error;
         }
 
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</features>\n");
+        switch ((virDomainFeature) i) {
+        case VIR_DOMAIN_FEATURE_ACPI:
+        case VIR_DOMAIN_FEATURE_PAE:
+        case VIR_DOMAIN_FEATURE_VIRIDIAN:
+        case VIR_DOMAIN_FEATURE_PRIVNET:
+            /* NOTE: This is for old style <opt/> booleans. New XML
+             * should use the explicit state=on|off output below */
+            switch ((virTristateSwitch) def->features[i]) {
+            case VIR_TRISTATE_SWITCH_ABSENT:
+                break;
+
+            case VIR_TRISTATE_SWITCH_ON:
+               virBufferAsprintf(buf, "<%s/>\n", name);
+               break;
+
+            case VIR_TRISTATE_SWITCH_LAST:
+            case VIR_TRISTATE_SWITCH_OFF:
+               virReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("Unexpected state of feature '%s'"), name);
+
+               goto error;
+               break;
+            }
+
+            break;
+
+        case VIR_DOMAIN_FEATURE_VMCOREINFO:
+        case VIR_DOMAIN_FEATURE_HAP:
+        case VIR_DOMAIN_FEATURE_PMU:
+        case VIR_DOMAIN_FEATURE_PVSPINLOCK:
+        case VIR_DOMAIN_FEATURE_VMPORT:
+        case VIR_DOMAIN_FEATURE_HTM:
+        case VIR_DOMAIN_FEATURE_NESTED_HV:
+            switch ((virTristateSwitch) def->features[i]) {
+            case VIR_TRISTATE_SWITCH_LAST:
+            case VIR_TRISTATE_SWITCH_ABSENT:
+                break;
+
+            case VIR_TRISTATE_SWITCH_ON:
+               virBufferAsprintf(buf, "<%s state='on'/>\n", name);
+               break;
+
+            case VIR_TRISTATE_SWITCH_OFF:
+               virBufferAsprintf(buf, "<%s state='off'/>\n", name);
+               break;
+            }
+
+            break;
+
+        case VIR_DOMAIN_FEATURE_SMM:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT) {
+                virTristateSwitch state = def->features[i];
+                virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+                virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+
+                virBufferAsprintf(&attrBuf, " state='%s'",
+                                  virTristateSwitchTypeToString(state));
+
+                if (state == VIR_TRISTATE_SWITCH_ON &&
+                    def->tseg_specified) {
+                    const char *unit;
+                    unsigned long long short_size = virFormatIntPretty(def->tseg_size,
+                                                                       &unit);
+
+                    virBufferSetChildIndent(&childBuf, buf);
+                    virBufferAsprintf(&childBuf, "<tseg unit='%s'>%llu</tseg>\n",
+                                      unit, short_size);
+                }
+
+                if (virXMLFormatElement(buf, "smm", &attrBuf, &childBuf) < 0)
+                    goto error;
+            }
+
+            break;
+
+        case VIR_DOMAIN_FEATURE_APIC:
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
+                virBufferAddLit(buf, "<apic");
+                if (def->apic_eoi) {
+                    virBufferAsprintf(buf, " eoi='%s'",
+                                      virTristateSwitchTypeToString(def->apic_eoi));
+                }
+                virBufferAddLit(buf, "/>\n");
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_HYPERV:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            virBufferAddLit(buf, "<hyperv>\n");
+            virBufferAdjustIndent(buf, 2);
+            for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
+                if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ABSENT)
+                    continue;
+
+                virBufferAsprintf(buf, "<%s state='%s'",
+                                  virDomainHypervTypeToString(j),
+                                  virTristateSwitchTypeToString(
+                                      def->hyperv_features[j]));
+
+                switch ((virDomainHyperv) j) {
+                case VIR_DOMAIN_HYPERV_RELAXED:
+                case VIR_DOMAIN_HYPERV_VAPIC:
+                case VIR_DOMAIN_HYPERV_VPINDEX:
+                case VIR_DOMAIN_HYPERV_RUNTIME:
+                case VIR_DOMAIN_HYPERV_SYNIC:
+                case VIR_DOMAIN_HYPERV_STIMER:
+                case VIR_DOMAIN_HYPERV_RESET:
+                case VIR_DOMAIN_HYPERV_FREQUENCIES:
+                case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+                case VIR_DOMAIN_HYPERV_TLBFLUSH:
+                case VIR_DOMAIN_HYPERV_IPI:
+                case VIR_DOMAIN_HYPERV_EVMCS:
+                    break;
+
+                case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
+                        break;
+                    virBufferAsprintf(buf, " retries='%d'",
+                                      def->hyperv_spinlocks);
+                    break;
+
+                case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
+                        break;
+                    virBufferEscapeString(buf, " value='%s'",
+                                          def->hyperv_vendor_id);
+                    break;
+
+                /* coverity[dead_error_begin] */
+                case VIR_DOMAIN_HYPERV_LAST:
+                    break;
+                }
+
+                virBufferAddLit(buf, "/>\n");
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</hyperv>\n");
+            break;
+
+        case VIR_DOMAIN_FEATURE_KVM:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            virBufferAddLit(buf, "<kvm>\n");
+            virBufferAdjustIndent(buf, 2);
+            for (j = 0; j < VIR_DOMAIN_KVM_LAST; j++) {
+                switch ((virDomainKVM) j) {
+                case VIR_DOMAIN_KVM_HIDDEN:
+                    if (def->kvm_features[j])
+                        virBufferAsprintf(buf, "<%s state='%s'/>\n",
+                                          virDomainKVMTypeToString(j),
+                                          virTristateSwitchTypeToString(
+                                              def->kvm_features[j]));
+                    break;
+
+                /* coverity[dead_error_begin] */
+                case VIR_DOMAIN_KVM_LAST:
+                    break;
+                }
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</kvm>\n");
+            break;
+
+        case VIR_DOMAIN_FEATURE_CAPABILITIES:
+            if (def->features[i] == VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT &&
+                !virDomainDefHasCapabilitiesFeatures(def)) {
+                break;
+            }
+
+            virBufferAsprintf(buf, "<capabilities policy='%s'>\n",
+                              virDomainCapabilitiesPolicyTypeToString(def->features[i]));
+            virBufferAdjustIndent(buf, 2);
+            for (j = 0; j < VIR_DOMAIN_CAPS_FEATURE_LAST; j++) {
+                if (def->caps_features[j] != VIR_TRISTATE_SWITCH_ABSENT)
+                    virBufferAsprintf(buf, "<%s state='%s'/>\n",
+                                      virDomainCapsFeatureTypeToString(j),
+                                      virTristateSwitchTypeToString(
+                                          def->caps_features[j]));
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</capabilities>\n");
+            break;
+
+        case VIR_DOMAIN_FEATURE_GIC:
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
+                virBufferAddLit(buf, "<gic");
+                if (def->gic_version != VIR_GIC_VERSION_NONE)
+                    virBufferAsprintf(buf, " version='%s'",
+                                      virGICVersionTypeToString(def->gic_version));
+                virBufferAddLit(buf, "/>\n");
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_IOAPIC:
+            if (def->features[i] == VIR_DOMAIN_IOAPIC_NONE)
+                break;
+
+            virBufferAsprintf(buf, "<ioapic driver='%s'/>\n",
+                              virDomainIOAPICTypeToString(def->features[i]));
+            break;
+
+        case VIR_DOMAIN_FEATURE_HPT:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            virBufferFreeAndReset(&attributeBuf);
+            virBufferFreeAndReset(&childrenBuf);
+
+            if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
+                virBufferAsprintf(&attributeBuf,
+                                  " resizing='%s'",
+                                  virDomainHPTResizingTypeToString(def->hpt_resizing));
+            }
+            if (def->hpt_maxpagesize > 0) {
+                virBufferSetChildIndent(&childrenBuf, buf);
+                virBufferAsprintf(&childrenBuf,
+                                  "<maxpagesize unit='KiB'>%llu</maxpagesize>\n",
+                                  def->hpt_maxpagesize);
+            }
+
+            if (virXMLFormatElement(buf, "hpt",
+                                    &attributeBuf, &childrenBuf) < 0) {
+                goto error;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_MSRS:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            virBufferAsprintf(buf, "<msrs unknown='%s'/>\n",
+                              virDomainMsrsUnknownTypeToString(def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN]));
+            break;
+
+        /* coverity[dead_error_begin] */
+        case VIR_DOMAIN_FEATURE_LAST:
+            break;
+        }
     }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</features>\n");
 
     return 0;
 
