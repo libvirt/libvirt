@@ -26244,9 +26244,9 @@ virDomainInputDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainInputTypeToString(def->type);
     const char *bus = virDomainInputBusTypeToString(def->bus);
-    virBuffer childbuf = VIR_BUFFER_INITIALIZER;
-    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
     /* don't format keyboard into migratable XML for backward compatibility */
     if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
@@ -26258,16 +26258,15 @@ virDomainInputDefFormat(virBufferPtr buf,
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected input type %d"), def->type);
-        goto cleanup;
+        return -1;
     }
     if (!bus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected input bus type %d"), def->bus);
-        goto cleanup;
+        return -1;
     }
 
-    virBufferAsprintf(buf, "<input type='%s' bus='%s'",
-                      type, bus);
+    virBufferAsprintf(&attrBuf, " type='%s' bus='%s'", type, bus);
 
     if (def->model) {
         const char *model = virDomainInputModelTypeToString(def->model);
@@ -26275,44 +26274,23 @@ virDomainInputDefFormat(virBufferPtr buf,
         if (!model) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected input model %d"), def->model);
-            goto cleanup;
+            return -1;
         }
 
-        virBufferAsprintf(buf, " model='%s'", model);
+        virBufferAsprintf(&attrBuf, " model='%s'", model);
     }
 
-    virBufferSetChildIndent(&childbuf, buf);
-    virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
-    if (virBufferCheckError(&driverBuf) < 0)
-        goto cleanup;
+    virBufferSetChildIndent(&childBuf, buf);
+    virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
-    if (virBufferUse(&driverBuf)) {
-        virBufferAddLit(&childbuf, "<driver");
-        virBufferAddBuffer(&childbuf, &driverBuf);
-        virBufferAddLit(&childbuf, "/>\n");
-    }
-    virBufferEscapeString(&childbuf, "<source evdev='%s'/>\n", def->source.evdev);
-    if (virDomainDeviceInfoFormat(&childbuf, &def->info, flags) < 0)
-        goto cleanup;
+    if (virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL) < 0)
+        return -1;
 
-    if (virBufferCheckError(&childbuf) < 0)
-        goto cleanup;
+    virBufferEscapeString(&childBuf, "<source evdev='%s'/>\n", def->source.evdev);
+    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
+        return -1;
 
-    if (!virBufferUse(&childbuf)) {
-        virBufferAddLit(buf, "/>\n");
-    } else {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childbuf);
-        virBufferAddLit(buf, "</input>\n");
-    }
-
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&childbuf);
-    virBufferFreeAndReset(&driverBuf);
-
-    return ret;
+    return virXMLFormatElement(buf, "input", &attrBuf, &childBuf);
 }
 
 
