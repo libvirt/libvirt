@@ -24255,7 +24255,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 }
 
 
-static void
+static int
 virDomainControllerDriverFormat(virBufferPtr buf,
                                 virDomainControllerDefPtr def)
 {
@@ -24280,11 +24280,7 @@ virDomainControllerDriverFormat(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
-    if (virBufferError(&driverBuf) != 0 || virBufferUse(&driverBuf)) {
-        virBufferAddLit(buf, "<driver");
-        virBufferAddBuffer(buf, &driverBuf);
-        virBufferAddLit(buf, "/>\n");
-    }
+    return virXMLFormatElement(buf, "driver", &driverBuf, NULL);
 }
 
 
@@ -24417,7 +24413,8 @@ virDomainControllerDefFormat(virBufferPtr buf,
         }
     }
 
-    virDomainControllerDriverFormat(&childBuf, def);
+    if (virDomainControllerDriverFormat(&childBuf, def) < 0)
+        goto cleanup;
 
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
         goto cleanup;
