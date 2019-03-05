@@ -27745,8 +27745,8 @@ static int
 virDomainDefFormatFeatures(virBufferPtr buf,
                            virDomainDefPtr def)
 {
-    virBuffer tmpAttrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer tmpChildBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) tmpAttrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) tmpChildBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
@@ -27784,8 +27784,7 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             case VIR_TRISTATE_SWITCH_OFF:
                virReportError(VIR_ERR_INTERNAL_ERROR,
                              _("Unexpected state of feature '%s'"), name);
-
-               goto error;
+               return -1;
                break;
             }
 
@@ -27835,7 +27834,7 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                 }
 
                 if (virXMLFormatElement(buf, "smm", &attrBuf, &childBuf) < 0)
-                    goto error;
+                    return -1;
             }
 
             break;
@@ -27973,9 +27972,6 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
                 break;
 
-            virBufferFreeAndReset(&tmpAttrBuf);
-            virBufferFreeAndReset(&tmpChildBuf);
-
             if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
                 virBufferAsprintf(&tmpAttrBuf,
                                   " resizing='%s'",
@@ -27988,10 +27984,8 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                                   def->hpt_maxpagesize);
             }
 
-            if (virXMLFormatElement(buf, "hpt",
-                                    &tmpAttrBuf, &tmpChildBuf) < 0) {
-                goto error;
-            }
+            if (virXMLFormatElement(buf, "hpt", &tmpAttrBuf, &tmpChildBuf) < 0)
+                return -1;
             break;
 
         case VIR_DOMAIN_FEATURE_MSRS:
@@ -28012,11 +28006,6 @@ virDomainDefFormatFeatures(virBufferPtr buf,
     virBufferAddLit(buf, "</features>\n");
 
     return 0;
-
- error:
-    virBufferFreeAndReset(&tmpAttrBuf);
-    virBufferFreeAndReset(&tmpChildBuf);
-    return -1;
 }
 
 
