@@ -27,6 +27,7 @@
 #include "virsh-nodedev.h"
 #include "virsh-util.h"
 #include "virsh-secret.h"
+#include "virsh-network.h"
 #include "internal.h"
 #include "virutil.h"
 #include "viralloc.h"
@@ -411,6 +412,32 @@ virshNetworkNameCompleter(vshControl *ctl,
     for (i = 0; i < nnets; i++)
         VIR_FREE(ret[i]);
     VIR_FREE(ret);
+    return NULL;
+}
+
+
+char **
+virshNetworkEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
+                               const vshCmd *cmd ATTRIBUTE_UNUSED,
+                               unsigned int flags)
+{
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (VIR_ALLOC_N(ret, VIR_NETWORK_EVENT_ID_LAST + 1) < 0)
+        goto error;
+
+    for (i = 0; i < VIR_NETWORK_EVENT_ID_LAST; i++) {
+        if (VIR_STRDUP(ret[i], virshNetworkEventCallbacks[i].name) < 0)
+            goto error;
+    }
+
+    return ret;
+
+ error:
+    virStringListFree(ret);
     return NULL;
 }
 

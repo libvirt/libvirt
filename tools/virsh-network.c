@@ -1216,6 +1216,7 @@ static const vshCmdOptDef opts_network_event[] = {
     VIRSH_COMMON_OPT_NETWORK_OT_STRING(N_("filter by network name or uuid"), 0),
     {.name = "event",
      .type = VSH_OT_STRING,
+     .completer = virshNetworkEventNameCompleter,
      .help = N_("which event type to wait for")
     },
     {.name = "loop",
