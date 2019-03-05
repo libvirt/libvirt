@@ -26976,38 +26976,23 @@ virDomainHubDefFormat(virBufferPtr buf,
                       unsigned int flags)
 {
     const char *type = virDomainHubTypeToString(def->type);
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected hub type %d"), def->type);
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        goto cleanup;
+        return -1;
 
-    if (virBufferCheckError(&childBuf) < 0)
-        goto cleanup;
+    virBufferAsprintf(&attrBuf, " type='%s'", type);
 
-    virBufferAsprintf(buf, "<hub type='%s'", type);
-    if (virBufferUse(&childBuf)) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childBuf);
-        virBufferAddLit(buf, "</hub>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
-
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&childBuf);
-
-    return ret;
+    return virXMLFormatElement(buf, "hub", &attrBuf, &childBuf);
 }
 
 
