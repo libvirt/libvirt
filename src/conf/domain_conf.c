@@ -18400,9 +18400,9 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
                                 virDomainDefPtr def)
 {
     ssize_t next = -1;
-    virDomainThreadSchedParamPtr sched;
-    virProcessSchedPolicy policy;
-    int priority;
+    virDomainThreadSchedParamPtr sched = NULL;
+    virProcessSchedPolicy policy = 0;
+    int priority = 0;
     VIR_AUTOPTR(virBitmap) map = NULL;
 
     if (!(map = virDomainSchedulerParse(node, name, &policy, &priority)))
