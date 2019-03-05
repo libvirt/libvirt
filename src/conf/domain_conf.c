@@ -25921,36 +25921,18 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
 static int virDomainPanicDefFormat(virBufferPtr buf,
                                    virDomainPanicDefPtr def)
 {
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
-
-    virBufferAddLit(buf, "<panic");
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
 
     if (def->model)
-        virBufferAsprintf(buf, " model='%s'",
+        virBufferAsprintf(&attrBuf, " model='%s'",
                           virDomainPanicModelTypeToString(def->model));
 
     virBufferSetChildIndent(&childrenBuf, buf);
     if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0) < 0)
-        goto cleanup;
+        return -1;
 
-    if (virBufferCheckError(&childrenBuf) < 0)
-        goto cleanup;
-
-    if (virBufferUse(&childrenBuf)) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childrenBuf);
-        virBufferAddLit(buf, "</panic>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
-
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&childrenBuf);
-
-    return ret;
+    return virXMLFormatElement(buf, "panic", &attrBuf, &childrenBuf);
 }
 
 static int
