@@ -27696,6 +27696,51 @@ virDomainVsockDefFormat(virBufferPtr buf,
 }
 
 
+static int
+virDomainDefFormatBlkiotune(virBufferPtr buf,
+                            virDomainDefPtr def)
+{
+    VIR_AUTOCLEAN(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+    ssize_t n;
+
+    virBufferSetChildIndent(&childrenBuf, buf);
+    if (def->blkio.weight)
+        virBufferAsprintf(&childrenBuf, "<weight>%u</weight>\n",
+                          def->blkio.weight);
+
+    for (n = 0; n < def->blkio.ndevices; n++) {
+        virBlkioDevicePtr dev = &def->blkio.devices[n];
+
+        if (!dev->weight && !dev->riops && !dev->wiops &&
+            !dev->rbps && !dev->wbps)
+            continue;
+        virBufferAddLit(&childrenBuf, "<device>\n");
+        virBufferAdjustIndent(&childrenBuf, 2);
+        virBufferEscapeString(&childrenBuf, "<path>%s</path>\n",
+                              dev->path);
+        if (dev->weight)
+            virBufferAsprintf(&childrenBuf, "<weight>%u</weight>\n",
+                              dev->weight);
+        if (dev->riops)
+            virBufferAsprintf(&childrenBuf, "<read_iops_sec>%u</read_iops_sec>\n",
+                              dev->riops);
+        if (dev->wiops)
+            virBufferAsprintf(&childrenBuf, "<write_iops_sec>%u</write_iops_sec>\n",
+                              dev->wiops);
+        if (dev->rbps)
+            virBufferAsprintf(&childrenBuf, "<read_bytes_sec>%llu</read_bytes_sec>\n",
+                              dev->rbps);
+        if (dev->wbps)
+            virBufferAsprintf(&childrenBuf, "<write_bytes_sec>%llu</write_bytes_sec>\n",
+                              dev->wbps);
+        virBufferAdjustIndent(&childrenBuf, -2);
+        virBufferAddLit(&childrenBuf, "</device>\n");
+    }
+
+    return virXMLFormatElement(buf, "blkiotune", NULL, &childrenBuf);
+}
+
+
 /* This internal version appends to an existing buffer
  * (possibly with auto-indent), rather than flattening
  * to string.
@@ -27797,50 +27842,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAsprintf(buf, "<currentMemory unit='KiB'>%llu</currentMemory>\n",
                       def->mem.cur_balloon);
 
-    /* start format blkiotune */
-    virBufferSetChildIndent(&childrenBuf, buf);
-    if (def->blkio.weight)
-        virBufferAsprintf(&childrenBuf, "<weight>%u</weight>\n",
-                          def->blkio.weight);
-
-    for (n = 0; n < def->blkio.ndevices; n++) {
-        virBlkioDevicePtr dev = &def->blkio.devices[n];
-
-        if (!dev->weight && !dev->riops && !dev->wiops &&
-            !dev->rbps && !dev->wbps)
-            continue;
-        virBufferAddLit(&childrenBuf, "<device>\n");
-        virBufferAdjustIndent(&childrenBuf, 2);
-        virBufferEscapeString(&childrenBuf, "<path>%s</path>\n",
-                              dev->path);
-        if (dev->weight)
-            virBufferAsprintf(&childrenBuf, "<weight>%u</weight>\n",
-                              dev->weight);
-        if (dev->riops)
-            virBufferAsprintf(&childrenBuf, "<read_iops_sec>%u</read_iops_sec>\n",
-                              dev->riops);
-        if (dev->wiops)
-            virBufferAsprintf(&childrenBuf, "<write_iops_sec>%u</write_iops_sec>\n",
-                              dev->wiops);
-        if (dev->rbps)
-            virBufferAsprintf(&childrenBuf, "<read_bytes_sec>%llu</read_bytes_sec>\n",
-                              dev->rbps);
-        if (dev->wbps)
-            virBufferAsprintf(&childrenBuf, "<write_bytes_sec>%llu</write_bytes_sec>\n",
-                              dev->wbps);
-        virBufferAdjustIndent(&childrenBuf, -2);
-        virBufferAddLit(&childrenBuf, "</device>\n");
-    }
-
-    if (virBufferCheckError(&childrenBuf) < 0)
+    if (virDomainDefFormatBlkiotune(buf, def) < 0)
         goto error;
-
-    if (virBufferUse(&childrenBuf)) {
-        virBufferAddLit(buf, "<blkiotune>\n");
-        virBufferAddBuffer(buf, &childrenBuf);
-        virBufferAddLit(buf, "</blkiotune>\n");
-    }
-    virBufferFreeAndReset(&childrenBuf);
 
     if (virDomainMemtuneFormat(buf, &def->mem) < 0)
         goto error;
