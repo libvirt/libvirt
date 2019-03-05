@@ -25837,19 +25837,20 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
                              unsigned int flags)
 {
     const char *model = virDomainMemballoonModelTypeToString(def->model);
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected memballoon model %d"), def->model);
-        goto cleanup;
+        return -1;
     }
 
-    virBufferAsprintf(buf, "<memballoon model='%s'", model);
+    virBufferAsprintf(&attrBuf, " model='%s'", model);
 
     if (def->autodeflate != VIR_TRISTATE_SWITCH_ABSENT)
-        virBufferAsprintf(buf, " autodeflate='%s'",
+        virBufferAsprintf(&attrBuf, " autodeflate='%s'",
                           virTristateSwitchTypeToString(def->autodeflate));
 
     virBufferSetChildIndent(&childrenBuf, buf);
@@ -25858,40 +25859,14 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
         virBufferAsprintf(&childrenBuf, "<stats period='%i'/>\n", def->period);
 
     if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, flags) < 0)
-        goto cleanup;
+        return -1;
 
-    if (def->virtio) {
-        virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
-        virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
+    if (virXMLFormatElement(&childrenBuf, "driver", &driverAttrBuf, NULL) < 0)
+        return -1;
 
-        if (virBufferCheckError(&driverBuf) < 0)
-            goto cleanup;
-
-        if (virBufferUse(&driverBuf)) {
-            virBufferAddLit(&childrenBuf, "<driver");
-            virBufferAddBuffer(&childrenBuf, &driverBuf);
-            virBufferAddLit(&childrenBuf, "/>\n");
-        }
-    }
-
-    if (virBufferCheckError(&childrenBuf) < 0)
-        goto cleanup;
-
-    if (!virBufferUse(&childrenBuf)) {
-        virBufferAddLit(buf, "/>\n");
-    } else {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childrenBuf);
-        virBufferAddLit(buf, "</memballoon>\n");
-    }
-
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&childrenBuf);
-
-    return ret;
+    return virXMLFormatElement(buf, "memballoon", &attrBuf, &childrenBuf);
 }
 
 static int
