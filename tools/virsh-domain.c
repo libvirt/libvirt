@@ -12548,6 +12548,7 @@ static const vshCmdOptDef opts_detach_disk[] = {
     {.name = "target",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("target of disk device")
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
