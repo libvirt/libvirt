@@ -27933,8 +27933,15 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                 break;
             }
 
-            virBufferAsprintf(buf, "<capabilities policy='%s'>\n",
+            virBufferAsprintf(buf, "<capabilities policy='%s'",
                               virDomainCapabilitiesPolicyTypeToString(def->features[i]));
+
+            if (!virDomainDefHasCapabilitiesFeatures(def)) {
+                virBufferAddLit(buf, "/>\n");
+                break;
+            } else {
+                virBufferAddLit(buf, ">\n");
+            }
             virBufferAdjustIndent(buf, 2);
             for (j = 0; j < VIR_DOMAIN_CAPS_FEATURE_LAST; j++) {
                 if (def->caps_features[j] != VIR_TRISTATE_SWITCH_ABSENT)
