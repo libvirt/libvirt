@@ -507,6 +507,116 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
 }
 
 
+/* Parse a <snapshots> XML entry into snapshots, which must start empty.
+ * Any <domain> sub-elements of a <domainsnapshot> must match domain_uuid.
+ */
+int
+virDomainSnapshotObjListParse(const char *xmlStr,
+                              const unsigned char *domain_uuid,
+                              virDomainSnapshotObjListPtr snapshots,
+                              virDomainSnapshotObjPtr *current_snap,
+                              virCapsPtr caps,
+                              virDomainXMLOptionPtr xmlopt,
+                              unsigned int flags)
+{
+    int ret = -1;
+    xmlDocPtr xml;
+    xmlNodePtr root;
+    xmlXPathContextPtr ctxt = NULL;
+    int n;
+    size_t i;
+    int keepBlanksDefault = xmlKeepBlanksDefault(0);
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    VIR_AUTOFREE(char *) current = NULL;
+
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) ||
+        (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("incorrect flags for bulk parse"));
+        return -1;
+    }
+    if (snapshots->metaroot.nchildren || *current_snap) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("bulk define of snapshots only possible with "
+                         "no existing snapshot"));
+        return -1;
+    }
+
+    if (!(xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"))))
+        return -1;
+
+    root = xmlDocGetRootElement(xml);
+    if (!virXMLNodeNameEqual(root, "snapshots")) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unexpected root element <%s>, "
+                         "expecting <snapshots>"), root->name);
+        goto cleanup;
+    }
+    ctxt = xmlXPathNewContext(xml);
+    if (ctxt == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    ctxt->node = root;
+    current = virXMLPropString(root, "current");
+
+    if ((n = virXPathNodeSet("./domainsnapshot", ctxt, &nodes)) < 0)
+        goto cleanup;
+    if (!n) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("expected at least one <domainsnapshot> child"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < n; i++) {
+        virDomainSnapshotDefPtr def;
+        virDomainSnapshotObjPtr snap;
+
+        def = virDomainSnapshotDefParseNode(xml, nodes[i], caps, xmlopt, flags);
+        if (!def)
+            goto cleanup;
+        if (!(snap = virDomainSnapshotAssignDef(snapshots, def))) {
+            virDomainSnapshotDefFree(def);
+            goto cleanup;
+        }
+        if (virDomainSnapshotRedefineValidate(def, domain_uuid, NULL, NULL,
+                                              flags) < 0)
+            goto cleanup;
+    }
+
+    if (virDomainSnapshotUpdateRelations(snapshots) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("<snapshots> contains inconsistent parent-child "
+                         "relationships"));
+        goto cleanup;
+    }
+
+    if (current) {
+        if (!(*current_snap = virDomainSnapshotFindByName(snapshots,
+                                                          current))) {
+            virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                           _("no snapshot matching current='%s'"), current);
+            goto cleanup;
+        }
+        (*current_snap)->def->current = true;
+    }
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        /* There were no snapshots before this call; so on error, just
+         * blindly delete anything created before the failure. */
+        virHashRemoveAll(snapshots->objs);
+        snapshots->metaroot.nchildren = 0;
+        snapshots->metaroot.first_child = NULL;
+    }
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    xmlKeepBlanksDefault(keepBlanksDefault);
+    return ret;
+}
+
+
 /**
  * virDomainSnapshotDefAssignExternalNames:
  * @def: snapshot def object
