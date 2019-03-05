@@ -10378,7 +10378,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def)
         unsigned long long maxMemory;
         unsigned long long memory;
         unsigned long long baseLimit;
-        unsigned long long passthroughLimit;
+        unsigned long long passthroughLimit = 0;
         size_t nPCIHostBridges = 0;
         bool usesVFIO = false;
 
@@ -10444,15 +10444,12 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def)
          * kiB pages, less still if the guest is mapped with hugepages (unlike
          * the default 32-bit DMA window, DDW windows can use large IOMMU
          * pages). 8 MiB is for second and further level overheads, like (b) */
-        passthroughLimit = MAX(2 * 1024 * 1024 * nPCIHostBridges,
-                               memory +
-                               memory / 512 * nPCIHostBridges + 8192);
-
         if (usesVFIO)
-            memKB = baseLimit + passthroughLimit;
-        else
-            memKB = baseLimit;
+            passthroughLimit = MAX(2 * 1024 * 1024 * nPCIHostBridges,
+                                   memory +
+                                   memory / 512 * nPCIHostBridges + 8192);
 
+        memKB = baseLimit + passthroughLimit;
         goto done;
     }
 
