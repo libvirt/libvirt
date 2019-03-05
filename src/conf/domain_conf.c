@@ -27928,30 +27928,23 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES:
-            if (def->features[i] == VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT &&
-                !virDomainDefHasCapabilitiesFeatures(def)) {
-                break;
-            }
+            virBufferSetChildIndent(&tmpChildBuf, buf);
 
-            virBufferAsprintf(buf, "<capabilities policy='%s'",
-                              virDomainCapabilitiesPolicyTypeToString(def->features[i]));
-
-            if (!virDomainDefHasCapabilitiesFeatures(def)) {
-                virBufferAddLit(buf, "/>\n");
-                break;
-            } else {
-                virBufferAddLit(buf, ">\n");
-            }
-            virBufferAdjustIndent(buf, 2);
             for (j = 0; j < VIR_DOMAIN_CAPS_FEATURE_LAST; j++) {
                 if (def->caps_features[j] != VIR_TRISTATE_SWITCH_ABSENT)
-                    virBufferAsprintf(buf, "<%s state='%s'/>\n",
+                    virBufferAsprintf(&tmpChildBuf, "<%s state='%s'/>\n",
                                       virDomainCapsFeatureTypeToString(j),
-                                      virTristateSwitchTypeToString(
-                                          def->caps_features[j]));
+                                      virTristateSwitchTypeToString(def->caps_features[j]));
             }
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</capabilities>\n");
+
+            /* the 'default' policy should be printed if any capability is present */
+            if (def->features[i] != VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT ||
+                virBufferUse(&tmpChildBuf))
+                virBufferAsprintf(&tmpAttrBuf, " policy='%s'",
+                                  virDomainCapabilitiesPolicyTypeToString(def->features[i]));
+
+            if (virXMLFormatElement(buf, "capabilities", &tmpAttrBuf, &tmpChildBuf) < 0)
+                return -1;
             break;
 
         case VIR_DOMAIN_FEATURE_GIC:
