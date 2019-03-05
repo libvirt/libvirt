@@ -683,7 +683,7 @@ int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
                                     virDomainSnapshotObjPtr snapshot,
                                     virCapsPtr caps,
                                     virDomainXMLOptionPtr xmlopt,
-                                    char *snapshotDir);
+                                    const char *snapshotDir);
 
 int qemuDomainSnapshotForEachQcow2(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,

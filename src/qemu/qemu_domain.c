@@ -8399,7 +8399,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
                                 virDomainSnapshotObjPtr snapshot,
                                 virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
-                                char *snapshotDir)
+                                const char *snapshotDir)
 {
     char *newxml = NULL;
     int ret = -1;
