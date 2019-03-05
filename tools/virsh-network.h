@@ -32,6 +32,14 @@ virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     virshCommandOptNetworkBy(_ctl, _cmd, _name, \
                              VIRSH_BYUUID | VIRSH_BYNAME)
 
+struct virshNetworkEventCallback {
+    const char *name;
+    virConnectNetworkEventGenericCallback cb;
+};
+typedef struct virshNetworkEventCallback virshNetworkEventCallback;
+
+extern virshNetworkEventCallback virshNetworkEventCallbacks[];
+
 extern const vshCmdDef networkCmds[];
 
 #endif /* LIBVIRT_VIRSH_NETWORK_H */
