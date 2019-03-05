@@ -25893,46 +25893,29 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
 {
     const char *model = virDomainWatchdogModelTypeToString(def->model);
     const char *action = virDomainWatchdogActionTypeToString(def->action);
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected watchdog model %d"), def->model);
-        goto cleanup;
+        return -1;
     }
 
     if (!action) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected watchdog action %d"), def->action);
-        goto cleanup;
+        return -1;
     }
+
+    virBufferAsprintf(&attrBuf, " model='%s' action='%s'", model, action);
 
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        goto cleanup;
+        return -1;
 
-    if (virBufferCheckError(&childBuf) < 0)
-        goto cleanup;
-
-    virBufferAsprintf(buf, "<watchdog model='%s' action='%s'",
-                      model, action);
-
-    if (virBufferUse(&childBuf)) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childBuf);
-        virBufferAddLit(buf, "</watchdog>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
-
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&childBuf);
-
-    return ret;
+    return virXMLFormatElement(buf, "watchdog", &attrBuf, &childBuf);
 }
 
 static int virDomainPanicDefFormat(virBufferPtr buf,
