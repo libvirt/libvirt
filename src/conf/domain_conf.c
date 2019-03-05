@@ -27765,12 +27765,6 @@ virDomainDefFormatFeatures(virBufferPtr buf,
         const char *name = virDomainFeatureTypeToString(i);
         size_t j;
 
-        if (!name) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected feature %zu"), i);
-            goto error;
-        }
-
         switch ((virDomainFeature) i) {
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_PAE:
