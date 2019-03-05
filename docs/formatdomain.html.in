@@ -4127,7 +4127,7 @@
       device when plugged into a PCI Express slot, and like a
       <code>virtio-transitional</code> device otherwise; libvirt will
       pick one or the other based on the machine type. This is the best
-      choice when compatibility with libvirt versions older than 5.1.0
+      choice when compatibility with libvirt versions older than 5.2.0
       is necessary, but it's otherwise not recommended to use it.
       </dd>
     </dl>
