@@ -27741,277 +27741,13 @@ virDomainDefFormatBlkiotune(virBufferPtr buf,
 }
 
 
-/* This internal version appends to an existing buffer
- * (possibly with auto-indent), rather than flattening
- * to string.
- * Return -1 on failure.  */
-int
-virDomainDefFormatInternal(virDomainDefPtr def,
-                           virCapsPtr caps,
-                           unsigned int flags,
-                           virBufferPtr buf,
-                           virDomainXMLOptionPtr xmlopt)
+static int
+virDomainDefFormatFeatures(virBufferPtr buf,
+                           virDomainDefPtr def)
 {
-    unsigned char *uuid;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    const char *type = NULL;
-    int n;
-    size_t i;
     virBuffer attributeBuf = VIR_BUFFER_INITIALIZER;
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
-    char *netprefix = NULL;
-
-    virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS |
-                  VIR_DOMAIN_DEF_FORMAT_STATUS |
-                  VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
-                  VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
-                  VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST,
-                  -1);
-
-    if (!(type = virDomainVirtTypeToString(def->virtType))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected domain type %d"), def->virtType);
-        goto error;
-    }
-
-    if (def->id == -1)
-        flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
-
-    virBufferAsprintf(buf, "<domain type='%s'", type);
-    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
-        virBufferAsprintf(buf, " id='%d'", def->id);
-    if (def->namespaceData && def->ns.href)
-        virBufferAsprintf(buf, " %s", (def->ns.href)());
-    virBufferAddLit(buf, ">\n");
-    virBufferAdjustIndent(buf, 2);
-
-    virBufferEscapeString(buf, "<name>%s</name>\n", def->name);
-
-    uuid = def->uuid;
-    virUUIDFormat(uuid, uuidstr);
-    virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
-
-    if (def->genidRequested) {
-        char genidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(def->genid, genidstr);
-        virBufferAsprintf(buf, "<genid>%s</genid>\n", genidstr);
-    }
-
-    virBufferEscapeString(buf, "<title>%s</title>\n", def->title);
-
-    virBufferEscapeString(buf, "<description>%s</description>\n",
-                          def->description);
-
-    if (def->metadata) {
-        xmlBufferPtr xmlbuf;
-        int oldIndentTreeOutput = xmlIndentTreeOutput;
-
-        /* Indentation on output requires that we previously set
-         * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
-         * spaces per level of indentation of intermediate elements,
-         * but no leading indentation before the starting element.
-         * Thankfully, libxml maps what looks like globals into
-         * thread-local uses, so we are thread-safe.  */
-        xmlIndentTreeOutput = 1;
-        xmlbuf = xmlBufferCreate();
-        if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
-                        virBufferGetIndent(buf, false) / 2, 1) < 0) {
-            xmlBufferFree(xmlbuf);
-            xmlIndentTreeOutput = oldIndentTreeOutput;
-            goto error;
-        }
-        virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
-        xmlBufferFree(xmlbuf);
-        xmlIndentTreeOutput = oldIndentTreeOutput;
-    }
-
-    if (virDomainDefHasMemoryHotplug(def)) {
-        virBufferAsprintf(buf,
-                          "<maxMemory slots='%u' unit='KiB'>%llu</maxMemory>\n",
-                          def->mem.memory_slots, def->mem.max_memory);
-    }
-
-    virBufferAddLit(buf, "<memory");
-    if (def->mem.dump_core)
-        virBufferAsprintf(buf, " dumpCore='%s'",
-                          virTristateSwitchTypeToString(def->mem.dump_core));
-    virBufferAsprintf(buf, " unit='KiB'>%llu</memory>\n",
-                      virDomainDefGetMemoryTotal(def));
-
-    virBufferAsprintf(buf, "<currentMemory unit='KiB'>%llu</currentMemory>\n",
-                      def->mem.cur_balloon);
-
-    if (virDomainDefFormatBlkiotune(buf, def) < 0)
-        goto error;
-
-    if (virDomainMemtuneFormat(buf, &def->mem) < 0)
-        goto error;
-
-    if (virDomainCpuDefFormat(buf, def) < 0)
-        goto error;
-
-    if (def->niothreadids > 0) {
-        virBufferAsprintf(buf, "<iothreads>%zu</iothreads>\n",
-                          def->niothreadids);
-        if (virDomainDefIothreadShouldFormat(def)) {
-            virBufferAddLit(buf, "<iothreadids>\n");
-            virBufferAdjustIndent(buf, 2);
-            for (i = 0; i < def->niothreadids; i++) {
-                virBufferAsprintf(buf, "<iothread id='%u'/>\n",
-                                  def->iothreadids[i]->iothread_id);
-            }
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</iothreadids>\n");
-        }
-    }
-
-    if (virDomainCputuneDefFormat(buf, def, flags) < 0)
-        goto error;
-
-    if (virDomainNumatuneFormatXML(buf, def->numa) < 0)
-        goto error;
-
-    if (def->resource)
-        virDomainResourceDefFormat(buf, def->resource);
-
-    if (def->sysinfo)
-        ignore_value(virSysinfoFormat(buf, def->sysinfo));
-
-    if (def->os.bootloader) {
-        virBufferEscapeString(buf, "<bootloader>%s</bootloader>\n",
-                              def->os.bootloader);
-        virBufferEscapeString(buf,
-                              "<bootloader_args>%s</bootloader_args>\n",
-                              def->os.bootloaderArgs);
-    }
-
-    virBufferAddLit(buf, "<os>\n");
-    virBufferAdjustIndent(buf, 2);
-    virBufferAddLit(buf, "<type");
-    if (def->os.arch)
-        virBufferAsprintf(buf, " arch='%s'", virArchToString(def->os.arch));
-    if (def->os.machine)
-        virBufferAsprintf(buf, " machine='%s'", def->os.machine);
-    /*
-     * HACK: For xen driver we previously used bogus 'linux' as the
-     * os type for paravirt, whereas capabilities declare it to
-     * be 'xen'. So we convert to the former for backcompat
-     */
-    if (def->virtType == VIR_DOMAIN_VIRT_XEN &&
-        def->os.type == VIR_DOMAIN_OSTYPE_XEN)
-        virBufferAsprintf(buf, ">%s</type>\n",
-                          virDomainOSTypeToString(VIR_DOMAIN_OSTYPE_LINUX));
-    else
-        virBufferAsprintf(buf, ">%s</type>\n",
-                          virDomainOSTypeToString(def->os.type));
-
-    virBufferEscapeString(buf, "<init>%s</init>\n",
-                          def->os.init);
-    for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
-        virBufferEscapeString(buf, "<initarg>%s</initarg>\n",
-                              def->os.initargv[i]);
-    for (i = 0; def->os.initenv && def->os.initenv[i]; i++)
-        virBufferAsprintf(buf, "<initenv name='%s'>%s</initenv>\n",
-                          def->os.initenv[i]->name, def->os.initenv[i]->value);
-    if (def->os.initdir)
-        virBufferEscapeString(buf, "<initdir>%s</initdir>\n",
-                              def->os.initdir);
-    if (def->os.inituser)
-        virBufferAsprintf(buf, "<inituser>%s</inituser>\n", def->os.inituser);
-    if (def->os.initgroup)
-        virBufferAsprintf(buf, "<initgroup>%s</initgroup>\n", def->os.initgroup);
-
-    if (def->os.loader)
-        virDomainLoaderDefFormat(buf, def->os.loader);
-    virBufferEscapeString(buf, "<kernel>%s</kernel>\n",
-                          def->os.kernel);
-    virBufferEscapeString(buf, "<initrd>%s</initrd>\n",
-                          def->os.initrd);
-    virBufferEscapeString(buf, "<cmdline>%s</cmdline>\n",
-                          def->os.cmdline);
-    virBufferEscapeString(buf, "<dtb>%s</dtb>\n",
-                          def->os.dtb);
-    virBufferEscapeString(buf, "<root>%s</root>\n",
-                          def->os.root);
-    if (def->os.slic_table) {
-        virBufferAddLit(buf, "<acpi>\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<table type='slic'>%s</table>\n",
-                              def->os.slic_table);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</acpi>\n");
-    }
-
-    if (!def->os.bootloader) {
-        for (n = 0; n < def->os.nBootDevs; n++) {
-            const char *boottype =
-                virDomainBootTypeToString(def->os.bootDevs[n]);
-            if (!boottype) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected boot device type %d"),
-                               def->os.bootDevs[n]);
-                goto error;
-            }
-            virBufferAsprintf(buf, "<boot dev='%s'/>\n", boottype);
-        }
-
-        if (def->os.bootmenu) {
-            virBufferAsprintf(buf, "<bootmenu enable='%s'",
-                              virTristateBoolTypeToString(def->os.bootmenu));
-            if (def->os.bm_timeout_set)
-                virBufferAsprintf(buf, " timeout='%u'", def->os.bm_timeout);
-            virBufferAddLit(buf, "/>\n");
-        }
-
-        if (def->os.bios.useserial || def->os.bios.rt_set) {
-            virBufferAddLit(buf, "<bios");
-            if (def->os.bios.useserial)
-                virBufferAsprintf(buf, " useserial='%s'",
-                                  virTristateBoolTypeToString(def->os.bios.useserial));
-            if (def->os.bios.rt_set)
-                virBufferAsprintf(buf, " rebootTimeout='%d'", def->os.bios.rt_delay);
-
-            virBufferAddLit(buf, "/>\n");
-        }
-    }
-
-    if (def->os.smbios_mode) {
-        const char *mode;
-
-        mode = virDomainSmbiosModeTypeToString(def->os.smbios_mode);
-        if (mode == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected smbios mode %d"), def->os.smbios_mode);
-            goto error;
-        }
-        virBufferAsprintf(buf, "<smbios mode='%s'/>\n", mode);
-    }
-
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</os>\n");
-
-
-    if (def->idmap.uidmap) {
-        virBufferAddLit(buf, "<idmap>\n");
-        virBufferAdjustIndent(buf, 2);
-        for (i = 0; i < def->idmap.nuidmap; i++) {
-            virBufferAsprintf(buf,
-                              "<uid start='%u' target='%u' count='%u'/>\n",
-                              def->idmap.uidmap[i].start,
-                              def->idmap.uidmap[i].target,
-                              def->idmap.uidmap[i].count);
-        }
-        for (i = 0; i < def->idmap.ngidmap; i++) {
-            virBufferAsprintf(buf,
-                              "<gid start='%u' target='%u' count='%u'/>\n",
-                              def->idmap.gidmap[i].start,
-                              def->idmap.gidmap[i].target,
-                              def->idmap.gidmap[i].count);
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</idmap>\n");
-    }
+    size_t i;
 
     for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
         if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT)
@@ -28280,6 +28016,288 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "</features>\n");
     }
 
+    return 0;
+
+ error:
+    virBufferFreeAndReset(&attributeBuf);
+    virBufferFreeAndReset(&childrenBuf);
+    return -1;
+}
+
+
+/* This internal version appends to an existing buffer
+ * (possibly with auto-indent), rather than flattening
+ * to string.
+ * Return -1 on failure.  */
+int
+virDomainDefFormatInternal(virDomainDefPtr def,
+                           virCapsPtr caps,
+                           unsigned int flags,
+                           virBufferPtr buf,
+                           virDomainXMLOptionPtr xmlopt)
+{
+    unsigned char *uuid;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    const char *type = NULL;
+    int n;
+    size_t i;
+    char *netprefix = NULL;
+
+    virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS |
+                  VIR_DOMAIN_DEF_FORMAT_STATUS |
+                  VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
+                  VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
+                  VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST,
+                  -1);
+
+    if (!(type = virDomainVirtTypeToString(def->virtType))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected domain type %d"), def->virtType);
+        goto error;
+    }
+
+    if (def->id == -1)
+        flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+
+    virBufferAsprintf(buf, "<domain type='%s'", type);
+    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
+        virBufferAsprintf(buf, " id='%d'", def->id);
+    if (def->namespaceData && def->ns.href)
+        virBufferAsprintf(buf, " %s", (def->ns.href)());
+    virBufferAddLit(buf, ">\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virBufferEscapeString(buf, "<name>%s</name>\n", def->name);
+
+    uuid = def->uuid;
+    virUUIDFormat(uuid, uuidstr);
+    virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+
+    if (def->genidRequested) {
+        char genidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(def->genid, genidstr);
+        virBufferAsprintf(buf, "<genid>%s</genid>\n", genidstr);
+    }
+
+    virBufferEscapeString(buf, "<title>%s</title>\n", def->title);
+
+    virBufferEscapeString(buf, "<description>%s</description>\n",
+                          def->description);
+
+    if (def->metadata) {
+        xmlBufferPtr xmlbuf;
+        int oldIndentTreeOutput = xmlIndentTreeOutput;
+
+        /* Indentation on output requires that we previously set
+         * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
+         * spaces per level of indentation of intermediate elements,
+         * but no leading indentation before the starting element.
+         * Thankfully, libxml maps what looks like globals into
+         * thread-local uses, so we are thread-safe.  */
+        xmlIndentTreeOutput = 1;
+        xmlbuf = xmlBufferCreate();
+        if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
+                        virBufferGetIndent(buf, false) / 2, 1) < 0) {
+            xmlBufferFree(xmlbuf);
+            xmlIndentTreeOutput = oldIndentTreeOutput;
+            goto error;
+        }
+        virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
+        xmlBufferFree(xmlbuf);
+        xmlIndentTreeOutput = oldIndentTreeOutput;
+    }
+
+    if (virDomainDefHasMemoryHotplug(def)) {
+        virBufferAsprintf(buf,
+                          "<maxMemory slots='%u' unit='KiB'>%llu</maxMemory>\n",
+                          def->mem.memory_slots, def->mem.max_memory);
+    }
+
+    virBufferAddLit(buf, "<memory");
+    if (def->mem.dump_core)
+        virBufferAsprintf(buf, " dumpCore='%s'",
+                          virTristateSwitchTypeToString(def->mem.dump_core));
+    virBufferAsprintf(buf, " unit='KiB'>%llu</memory>\n",
+                      virDomainDefGetMemoryTotal(def));
+
+    virBufferAsprintf(buf, "<currentMemory unit='KiB'>%llu</currentMemory>\n",
+                      def->mem.cur_balloon);
+
+    if (virDomainDefFormatBlkiotune(buf, def) < 0)
+        goto error;
+
+    if (virDomainMemtuneFormat(buf, &def->mem) < 0)
+        goto error;
+
+    if (virDomainCpuDefFormat(buf, def) < 0)
+        goto error;
+
+    if (def->niothreadids > 0) {
+        virBufferAsprintf(buf, "<iothreads>%zu</iothreads>\n",
+                          def->niothreadids);
+        if (virDomainDefIothreadShouldFormat(def)) {
+            virBufferAddLit(buf, "<iothreadids>\n");
+            virBufferAdjustIndent(buf, 2);
+            for (i = 0; i < def->niothreadids; i++) {
+                virBufferAsprintf(buf, "<iothread id='%u'/>\n",
+                                  def->iothreadids[i]->iothread_id);
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</iothreadids>\n");
+        }
+    }
+
+    if (virDomainCputuneDefFormat(buf, def, flags) < 0)
+        goto error;
+
+    if (virDomainNumatuneFormatXML(buf, def->numa) < 0)
+        goto error;
+
+    if (def->resource)
+        virDomainResourceDefFormat(buf, def->resource);
+
+    if (def->sysinfo)
+        ignore_value(virSysinfoFormat(buf, def->sysinfo));
+
+    if (def->os.bootloader) {
+        virBufferEscapeString(buf, "<bootloader>%s</bootloader>\n",
+                              def->os.bootloader);
+        virBufferEscapeString(buf,
+                              "<bootloader_args>%s</bootloader_args>\n",
+                              def->os.bootloaderArgs);
+    }
+
+    virBufferAddLit(buf, "<os>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAddLit(buf, "<type");
+    if (def->os.arch)
+        virBufferAsprintf(buf, " arch='%s'", virArchToString(def->os.arch));
+    if (def->os.machine)
+        virBufferAsprintf(buf, " machine='%s'", def->os.machine);
+    /*
+     * HACK: For xen driver we previously used bogus 'linux' as the
+     * os type for paravirt, whereas capabilities declare it to
+     * be 'xen'. So we convert to the former for backcompat
+     */
+    if (def->virtType == VIR_DOMAIN_VIRT_XEN &&
+        def->os.type == VIR_DOMAIN_OSTYPE_XEN)
+        virBufferAsprintf(buf, ">%s</type>\n",
+                          virDomainOSTypeToString(VIR_DOMAIN_OSTYPE_LINUX));
+    else
+        virBufferAsprintf(buf, ">%s</type>\n",
+                          virDomainOSTypeToString(def->os.type));
+
+    virBufferEscapeString(buf, "<init>%s</init>\n",
+                          def->os.init);
+    for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
+        virBufferEscapeString(buf, "<initarg>%s</initarg>\n",
+                              def->os.initargv[i]);
+    for (i = 0; def->os.initenv && def->os.initenv[i]; i++)
+        virBufferAsprintf(buf, "<initenv name='%s'>%s</initenv>\n",
+                          def->os.initenv[i]->name, def->os.initenv[i]->value);
+    if (def->os.initdir)
+        virBufferEscapeString(buf, "<initdir>%s</initdir>\n",
+                              def->os.initdir);
+    if (def->os.inituser)
+        virBufferAsprintf(buf, "<inituser>%s</inituser>\n", def->os.inituser);
+    if (def->os.initgroup)
+        virBufferAsprintf(buf, "<initgroup>%s</initgroup>\n", def->os.initgroup);
+
+    if (def->os.loader)
+        virDomainLoaderDefFormat(buf, def->os.loader);
+    virBufferEscapeString(buf, "<kernel>%s</kernel>\n",
+                          def->os.kernel);
+    virBufferEscapeString(buf, "<initrd>%s</initrd>\n",
+                          def->os.initrd);
+    virBufferEscapeString(buf, "<cmdline>%s</cmdline>\n",
+                          def->os.cmdline);
+    virBufferEscapeString(buf, "<dtb>%s</dtb>\n",
+                          def->os.dtb);
+    virBufferEscapeString(buf, "<root>%s</root>\n",
+                          def->os.root);
+    if (def->os.slic_table) {
+        virBufferAddLit(buf, "<acpi>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<table type='slic'>%s</table>\n",
+                              def->os.slic_table);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</acpi>\n");
+    }
+
+    if (!def->os.bootloader) {
+        for (n = 0; n < def->os.nBootDevs; n++) {
+            const char *boottype =
+                virDomainBootTypeToString(def->os.bootDevs[n]);
+            if (!boottype) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected boot device type %d"),
+                               def->os.bootDevs[n]);
+                goto error;
+            }
+            virBufferAsprintf(buf, "<boot dev='%s'/>\n", boottype);
+        }
+
+        if (def->os.bootmenu) {
+            virBufferAsprintf(buf, "<bootmenu enable='%s'",
+                              virTristateBoolTypeToString(def->os.bootmenu));
+            if (def->os.bm_timeout_set)
+                virBufferAsprintf(buf, " timeout='%u'", def->os.bm_timeout);
+            virBufferAddLit(buf, "/>\n");
+        }
+
+        if (def->os.bios.useserial || def->os.bios.rt_set) {
+            virBufferAddLit(buf, "<bios");
+            if (def->os.bios.useserial)
+                virBufferAsprintf(buf, " useserial='%s'",
+                                  virTristateBoolTypeToString(def->os.bios.useserial));
+            if (def->os.bios.rt_set)
+                virBufferAsprintf(buf, " rebootTimeout='%d'", def->os.bios.rt_delay);
+
+            virBufferAddLit(buf, "/>\n");
+        }
+    }
+
+    if (def->os.smbios_mode) {
+        const char *mode;
+
+        mode = virDomainSmbiosModeTypeToString(def->os.smbios_mode);
+        if (mode == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected smbios mode %d"), def->os.smbios_mode);
+            goto error;
+        }
+        virBufferAsprintf(buf, "<smbios mode='%s'/>\n", mode);
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</os>\n");
+
+
+    if (def->idmap.uidmap) {
+        virBufferAddLit(buf, "<idmap>\n");
+        virBufferAdjustIndent(buf, 2);
+        for (i = 0; i < def->idmap.nuidmap; i++) {
+            virBufferAsprintf(buf,
+                              "<uid start='%u' target='%u' count='%u'/>\n",
+                              def->idmap.uidmap[i].start,
+                              def->idmap.uidmap[i].target,
+                              def->idmap.uidmap[i].count);
+        }
+        for (i = 0; i < def->idmap.ngidmap; i++) {
+            virBufferAsprintf(buf,
+                              "<gid start='%u' target='%u' count='%u'/>\n",
+                              def->idmap.gidmap[i].start,
+                              def->idmap.gidmap[i].target,
+                              def->idmap.gidmap[i].count);
+        }
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</idmap>\n");
+    }
+
+    if (virDomainDefFormatFeatures(buf, def) < 0)
+        goto error;
+
     if (virCPUDefFormatBufFull(buf, def->cpu, def->numa) < 0)
         goto error;
 
@@ -28528,8 +28546,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
  error:
     virBufferFreeAndReset(buf);
-    virBufferFreeAndReset(&childrenBuf);
-    virBufferFreeAndReset(&attributeBuf);
     return -1;
 }
 
