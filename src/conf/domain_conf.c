@@ -25982,8 +25982,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
 {
     const char *model = virDomainRNGModelTypeToString(def->model);
     const char *backend = virDomainRNGBackendTypeToString(def->backend);
-    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
+    VIR_AUTOCLEAN(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(buf, "<rng model='%s'>\n", model);
     virBufferAdjustIndent(buf, 2);
@@ -26002,11 +26001,11 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
         if (virDomainChrAttrsDefFormat(buf, def->source.chardev, false) < 0)
-            goto cleanup;
+            return -1;
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         if (virDomainChrSourceDefFormat(buf, def->source.chardev, flags) < 0)
-            goto cleanup;
+            return -1;
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</backend>\n");
 
@@ -26014,28 +26013,18 @@ virDomainRNGDefFormat(virBufferPtr buf,
         break;
     }
 
-    virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
-    if (virBufferCheckError(&driverBuf) < 0)
-        goto cleanup;
+    virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
-    if (virBufferUse(&driverBuf)) {
-        virBufferAddLit(buf, "<driver");
-        virBufferAddBuffer(buf, &driverBuf);
-        virBufferAddLit(buf, "/>\n");
-    }
+    if (virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL) < 0)
+        return -1;
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        goto cleanup;
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</rng>\n");
 
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&driverBuf);
-
-    return ret;
+    return 0;
 }
 
 void
