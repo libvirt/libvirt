@@ -24292,15 +24292,15 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *type = virDomainControllerTypeToString(def->type);
     const char *model = NULL;
     const char *modelName = NULL;
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected controller type %d"), def->type);
-        goto cleanup;
+        return -1;
     }
 
     if (def->model != -1) {
@@ -24309,32 +24309,32 @@ virDomainControllerDefFormat(virBufferPtr buf,
         if (!model) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected model type %d"), def->model);
-            goto cleanup;
+            return -1;
         }
     }
 
-    virBufferAsprintf(buf,
-                      "<controller type='%s' index='%d'",
+    virBufferAsprintf(&attrBuf,
+                      " type='%s' index='%d'",
                       type, def->idx);
 
     if (model)
-        virBufferEscapeString(buf, " model='%s'", model);
+        virBufferEscapeString(&attrBuf, " model='%s'", model);
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         if (def->opts.vioserial.ports != -1) {
-            virBufferAsprintf(buf, " ports='%d'",
+            virBufferAsprintf(&attrBuf, " ports='%d'",
                               def->opts.vioserial.ports);
         }
         if (def->opts.vioserial.vectors != -1) {
-            virBufferAsprintf(buf, " vectors='%d'",
+            virBufferAsprintf(&attrBuf, " vectors='%d'",
                               def->opts.vioserial.vectors);
         }
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
         if (def->opts.usbopts.ports != -1) {
-            virBufferAsprintf(buf, " ports='%d'",
+            virBufferAsprintf(&attrBuf, " ports='%d'",
                               def->opts.usbopts.ports);
         }
         break;
@@ -24373,7 +24373,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected model name value %d"),
                                def->opts.pciopts.modelName);
-                goto cleanup;
+                return -1;
             }
             virBufferAsprintf(&childBuf, "<model name='%s'/>\n", modelName);
         }
@@ -24414,10 +24414,10 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     if (virDomainControllerDriverFormat(&childBuf, def) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        goto cleanup;
+        return -1;
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
         def->opts.pciopts.pcihole64) {
@@ -24425,23 +24425,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
                           "pcihole64>\n", def->opts.pciopts.pcihole64size);
     }
 
-    if (virBufferCheckError(&childBuf) < 0)
-        goto cleanup;
-
-    if (virBufferUse(&childBuf)) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childBuf);
-        virBufferAddLit(buf, "</controller>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
-
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&childBuf);
-
-    return ret;
+    return virXMLFormatElement(buf, "controller", &attrBuf, &childBuf);
 }
 
 
