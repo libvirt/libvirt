@@ -57,7 +57,6 @@ test_virStoragePoolCapsFormat(const void *opaque)
     virStoragePoolCapsPtr poolCaps = NULL;
     int ret = -1;
     VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) poolCapsFromFile = NULL;
     VIR_AUTOFREE(char *) poolCapsXML = NULL;
 
 
@@ -68,16 +67,11 @@ test_virStoragePoolCapsFormat(const void *opaque)
                     abs_srcdir, data->filename) < 0)
         goto cleanup;
 
-    if (virFileReadAll(path, 8192, &poolCapsFromFile) < 0)
-        goto cleanup;
-
     if (!(poolCapsXML = virStoragePoolCapsFormat(poolCaps)))
         goto cleanup;
 
-    if (STRNEQ(poolCapsFromFile, poolCapsXML)) {
-        virTestDifference(stderr, poolCapsFromFile, poolCapsXML);
+    if (virTestCompareToFile(poolCapsXML, path) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
