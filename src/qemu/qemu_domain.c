@@ -8689,8 +8689,8 @@ static void
 qemuDomainRemoveInactiveCommon(virQEMUDriverPtr driver,
                                virDomainObjPtr vm)
 {
-    char *snapDir;
     virQEMUDriverConfigPtr cfg;
+    VIR_AUTOFREE(char *) snapDir = NULL;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -8698,15 +8698,12 @@ qemuDomainRemoveInactiveCommon(virQEMUDriverPtr driver,
     if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0) {
         VIR_WARN("unable to remove all snapshots for domain %s",
                  vm->def->name);
-    }
-    else if (virAsprintf(&snapDir, "%s/%s", cfg->snapshotDir,
-                         vm->def->name) < 0) {
+    } else if (virAsprintf(&snapDir, "%s/%s", cfg->snapshotDir,
+                           vm->def->name) < 0) {
         VIR_WARN("unable to remove snapshot directory %s/%s",
                  cfg->snapshotDir, vm->def->name);
-    } else {
-        if (rmdir(snapDir) < 0 && errno != ENOENT)
-            VIR_WARN("unable to remove snapshot directory %s", snapDir);
-        VIR_FREE(snapDir);
+    } else if (rmdir(snapDir) < 0 && errno != ENOENT) {
+        VIR_WARN("unable to remove snapshot directory %s", snapDir);
     }
     qemuExtDevicesCleanupHost(driver, vm->def);
 
