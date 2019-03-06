@@ -330,6 +330,11 @@ virDomainCapsEnumFormat(virBufferPtr buf,
     int ret = -1;
     size_t i;
 
+    if (!capsEnum->report) {
+        ret = 0;
+        goto cleanup;
+    }
+
     virBufferAsprintf(buf, "<enum name='%s'", capsEnumName);
     if (!capsEnum->values) {
         virBufferAddLit(buf, "/>\n");
