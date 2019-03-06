@@ -4919,6 +4919,8 @@ virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
     size_t i;
 
     capsLoader->supported = VIR_TRISTATE_BOOL_YES;
+    capsLoader->type.report = true;
+    capsLoader->readonly.report = true;
 
     if (VIR_ALLOC_N(capsLoader->values.values, nfirmwares) < 0)
         return -1;
@@ -5024,6 +5026,10 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsDeviceDiskPtr disk)
 {
     disk->supported = VIR_TRISTATE_BOOL_YES;
+    disk->diskDevice.report = true;
+    disk->bus.report = true;
+    disk->model.report = true;
+
     /* QEMU supports all of these */
     VIR_DOMAIN_CAPS_ENUM_SET(disk->diskDevice,
                              VIR_DOMAIN_DISK_DEVICE_DISK,
@@ -5069,6 +5075,7 @@ virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCapsPtr qemuCaps,
                                         virDomainCapsDeviceGraphicsPtr dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
+    dev->type.report = true;
 
     VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_SDL);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC))
@@ -5085,6 +5092,7 @@ virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCapsPtr qemuCaps,
                                      virDomainCapsDeviceVideoPtr dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
+    dev->modelType.report = true;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA))
         VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_VGA);
@@ -5109,6 +5117,12 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
 
     hostdev->supported = VIR_TRISTATE_BOOL_YES;
+    hostdev->mode.report = true;
+    hostdev->startupPolicy.report = true;
+    hostdev->subsysType.report = true;
+    hostdev->capsType.report = true;
+    hostdev->pciBackend.report = true;
+
     /* VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES is for containers only */
     VIR_DOMAIN_CAPS_ENUM_SET(hostdev->mode,
                              VIR_DOMAIN_HOSTDEV_MODE_SUBSYS);
@@ -5226,6 +5240,7 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
             continue;
 
         gic->supported = VIR_TRISTATE_BOOL_YES;
+        gic->version.report = true;
         VIR_DOMAIN_CAPS_ENUM_SET(gic->version,
                                  version);
     }
