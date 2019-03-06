@@ -725,7 +725,7 @@ virStorageFileMatchesExtension(const char *extension,
     if (extension == NULL)
         return false;
 
-    if (virFileHasSuffix(path, extension))
+    if (virStringHasCaseSuffix(path, extension))
         return true;
 
     return false;

@@ -41,7 +41,7 @@ static int
 testSchemaFile(const void *args)
 {
     const struct testSchemaData *data = args;
-    bool shouldFail = virFileHasSuffix(data->xml_path, "-invalid.xml");
+    bool shouldFail = virStringHasCaseSuffix(data->xml_path, "-invalid.xml");
     xmlDocPtr xml = NULL;
     int ret = -1;
 
@@ -82,7 +82,7 @@ testSchemaDir(const char *schema,
         return -1;
 
     while ((rc = virDirRead(dir, &ent, dir_path)) > 0) {
-        if (!virFileHasSuffix(ent->d_name, ".xml"))
+        if (!virStringHasCaseSuffix(ent->d_name, ".xml"))
             continue;
         if (ent->d_name[0] == '.')
             continue;

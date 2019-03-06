@@ -525,8 +525,8 @@ virTestRewrapFile(const char *filename)
     char *script = NULL;
     virCommandPtr cmd = NULL;
 
-    if (!(virFileHasSuffix(filename, ".args") ||
-          virFileHasSuffix(filename, ".ldargs")))
+    if (!(virStringHasCaseSuffix(filename, ".args") ||
+          virStringHasCaseSuffix(filename, ".ldargs")))
         return 0;
 
     if (!perl) {

@@ -434,7 +434,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
     if (vmwareParsePath(src, &directoryName, &fileName) < 0)
         goto cleanup;
 
-    if (!virFileHasSuffix(fileName, ".vmdk")) {
+    if (!virStringHasCaseSuffix(fileName, ".vmdk")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting source '%s' of first file-based harddisk "
                          "to be a VMDK image"), src);

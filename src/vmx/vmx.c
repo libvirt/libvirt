@@ -1600,7 +1600,7 @@ virVMXParseConfig(virVMXContext *ctx,
     if (virVMXGetConfigString(conf, "guestOS", &guestOS, true) < 0)
         goto cleanup;
 
-    if (guestOS != NULL && virFileHasSuffix(guestOS, "-64")) {
+    if (guestOS != NULL && virStringHasCaseSuffix(guestOS, "-64")) {
         def->os.arch = VIR_ARCH_X86_64;
     } else {
         def->os.arch = VIR_ARCH_I686;
@@ -2218,7 +2218,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
 
     /* Setup virDomainDiskDef */
     if (device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-        if (virFileHasSuffix(fileName, ".vmdk")) {
+        if (virStringHasCaseSuffix(fileName, ".vmdk")) {
             char *tmp;
 
             if (deviceType != NULL) {
@@ -2254,7 +2254,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             if (mode)
                 (*def)->transient = STRCASEEQ(mode,
                                               "independent-nonpersistent");
-        } else if (virFileHasSuffix(fileName, ".iso") ||
+        } else if (virStringHasCaseSuffix(fileName, ".iso") ||
                    STREQ(fileName, "emptyBackingString") ||
                    (deviceType &&
                     (STRCASEEQ(deviceType, "atapi-cdrom") ||
@@ -2277,7 +2277,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if (virFileHasSuffix(fileName, ".iso")) {
+        if (virStringHasCaseSuffix(fileName, ".iso")) {
             char *tmp;
 
             if (deviceType && STRCASENEQ(deviceType, "cdrom-image")) {
@@ -2295,7 +2295,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 goto cleanup;
             }
             VIR_FREE(tmp);
-        } else if (virFileHasSuffix(fileName, ".vmdk")) {
+        } else if (virStringHasCaseSuffix(fileName, ".vmdk")) {
             /*
              * This function was called in order to parse a CDROM device, but
              * .vmdk files are for harddisk devices only. Just ignore it,
@@ -3585,7 +3585,7 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
         const char *src = virDomainDiskGetSource(def);
 
         if (src) {
-            if (!virFileHasSuffix(src, fileExt)) {
+            if (!virStringHasCaseSuffix(src, fileExt)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Image file for %s %s '%s' has "
                                  "unsupported suffix, expecting '%s'"),

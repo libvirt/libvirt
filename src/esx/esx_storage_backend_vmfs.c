@@ -884,7 +884,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    if (! virFileHasSuffix(def->name, ".vmdk")) {
+    if (!virStringHasCaseSuffix(def->name, ".vmdk")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Volume name '%s' has unsupported suffix, "
                          "expecting '.vmdk'"), def->name);
@@ -1104,7 +1104,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    if (! virFileHasSuffix(def->name, ".vmdk")) {
+    if (!virStringHasCaseSuffix(def->name, ".vmdk")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Volume name '%s' has unsupported suffix, "
                          "expecting '.vmdk'"), def->name);

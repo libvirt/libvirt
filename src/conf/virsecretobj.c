@@ -949,7 +949,7 @@ virSecretLoadAllConfigs(virSecretObjListPtr secrets,
         char *path;
         virSecretObjPtr obj;
 
-        if (!virFileHasSuffix(de->d_name, ".xml"))
+        if (!virStringHasCaseSuffix(de->d_name, ".xml"))
             continue;
 
         if (!(path = virFileBuildPath(configDir, de->d_name, NULL)))

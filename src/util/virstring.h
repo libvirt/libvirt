@@ -288,6 +288,9 @@ char *virStringReplace(const char *haystack,
                        const char *newneedle)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+int virStringHasCaseSuffix(const char *str,
+                           const char *suffix);
+
 void virStringStripIPv6Brackets(char *str);
 bool virStringHasChars(const char *str,
                        const char *chars);

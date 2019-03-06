@@ -1543,19 +1543,6 @@ virFileMatchesNameSuffix(const char *file,
         return 0;
 }
 
-int
-virFileHasSuffix(const char *str,
-                 const char *suffix)
-{
-    int len = strlen(str);
-    int suffixlen = strlen(suffix);
-
-    if (len < suffixlen)
-        return 0;
-
-    return STRCASEEQ(str + len - suffixlen, suffix);
-}
-
 #define SAME_INODE(Stat_buf_1, Stat_buf_2) \
   ((Stat_buf_1).st_ino == (Stat_buf_2).st_ino \
    && (Stat_buf_1).st_dev == (Stat_buf_2).st_dev)
