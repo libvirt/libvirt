@@ -347,6 +347,7 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "ccid",
               "usb",
               "pci",
+              "xenbus",
 );
 
 VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
@@ -2072,6 +2073,9 @@ virDomainControllerDefNew(virDomainControllerType type)
         def->opts.pciopts.busNr = -1;
         def->opts.pciopts.targetIndex = -1;
         def->opts.pciopts.numaNode = -1;
+        break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+        def->opts.xenbusopts.maxGrantFrames = -1;
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
@@ -10718,6 +10722,20 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->opts.pciopts.numaNode = numaNode;
         }
         break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS: {
+        VIR_AUTOFREE(char *) gntframes = virXMLPropString(node, "maxGrantFrames");
+
+        if (gntframes) {
+            int r = virStrToLong_i(gntframes, NULL, 10,
+                                   &def->opts.xenbusopts.maxGrantFrames);
+            if (r != 0 || def->opts.xenbusopts.maxGrantFrames < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid maxGrantFrames: %s"), gntframes);
+                goto error;
+            }
+        }
+        break;
+    }
 
     default:
         break;
@@ -24324,6 +24342,13 @@ virDomainControllerDefFormat(virBufferPtr buf,
         if (def->opts.usbopts.ports != -1) {
             virBufferAsprintf(&attrBuf, " ports='%d'",
                               def->opts.usbopts.ports);
+        }
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+        if (def->opts.xenbusopts.maxGrantFrames != -1) {
+            virBufferAsprintf(&attrBuf, " maxGrantFrames='%d'",
+                              def->opts.xenbusopts.maxGrantFrames);
         }
         break;
 

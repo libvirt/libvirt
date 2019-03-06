@@ -2345,6 +2345,17 @@
               </attribute>
             </optional>
           </group>
+          <!-- xenbus has an optional attribute "maxGrantFrames" -->
+          <group>
+            <attribute name="type">
+              <value>xenbus</value>
+            </attribute>
+            <optional>
+              <attribute name="maxGrantFrames">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </group>
         </choice>
         <optional>
           <element name="driver">

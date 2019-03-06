@@ -709,6 +709,7 @@ typedef enum {
     VIR_DOMAIN_CONTROLLER_TYPE_CCID,
     VIR_DOMAIN_CONTROLLER_TYPE_USB,
     VIR_DOMAIN_CONTROLLER_TYPE_PCI,
+    VIR_DOMAIN_CONTROLLER_TYPE_XENBUS,
 
     VIR_DOMAIN_CONTROLLER_TYPE_LAST
 } virDomainControllerType;
@@ -852,6 +853,12 @@ struct _virDomainUSBControllerOpts {
     int ports;   /* -1 == undef */
 };
 
+typedef struct _virDomainXenbusControllerOpts virDomainXenbusControllerOpts;
+typedef virDomainXenbusControllerOpts *virDomainXenbusControllerOptsPtr;
+struct _virDomainXenbusControllerOpts {
+    int maxGrantFrames;   /* -1 == undef */
+};
+
 /* Stores the virtual disk controller configuration */
 struct _virDomainControllerDef {
     int type;
@@ -866,6 +873,7 @@ struct _virDomainControllerDef {
         virDomainVirtioSerialOpts vioserial;
         virDomainPCIControllerOpts pciopts;
         virDomainUSBControllerOpts usbopts;
+        virDomainXenbusControllerOpts xenbusopts;
     } opts;
     virDomainDeviceInfo info;
     virDomainVirtioOptionsPtr virtio;

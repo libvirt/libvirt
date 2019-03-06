@@ -4201,6 +4201,7 @@
     &lt;driver iothread='4'/&gt;
     &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/&gt;
   &lt;/controller&gt;
+  &lt;controller type='xenbus' maxGrantFrames='64'/&gt;
   ...
 &lt;/devices&gt;
 ...</pre>
@@ -4256,6 +4257,11 @@
         <dd><span class="since">Since 3.10.0</span> for the vbox driver, the
         <code>ide</code> controller has an optional attribute
         <code>model</code>, which is one of "piix3", "piix4" or "ich6".</dd>
+        <dt><code>xenbus</code></dt>
+        <dd><span class="since">Since 5.2.0</span>, the <code>xenbus</code>
+        controller has an optional attribute <code>maxGrantFrames</code>,
+        which specifies the maximum number of grant frames the controller
+        makes available for connected devices.</dd>
       </dl>
 
     <p>
