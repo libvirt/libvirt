@@ -605,22 +605,16 @@ static int
 virStorageBackendISCSIDirectGetLun(virStorageVolDefPtr vol,
                                    int *lun)
 {
-    const char *name = vol->name;
-    int ret = -1;
+    const char *name;
 
-    if (!STRPREFIX(name, VOL_NAME_PREFIX)) {
+    if (!(name = STRSKIP(vol->name, VOL_NAME_PREFIX)) ||
+        virStrToLong_i(name, NULL, 10, lun) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid volume name %s"), name);
-        goto cleanup;
+                       _("Invalid volume name %s"), vol->name);
+        return -1;
     }
 
-    name += strlen(VOL_NAME_PREFIX);
-    if (virStrToLong_i(name, NULL, 10, lun) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
