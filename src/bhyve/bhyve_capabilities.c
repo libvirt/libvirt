@@ -76,6 +76,9 @@ virBhyveDomainCapsFill(virDomainCapsPtr caps,
                        virDomainCapsStringValuesPtr firmwares)
 {
     caps->disk.supported = VIR_TRISTATE_BOOL_YES;
+    caps->disk.diskDevice.report = true;
+    caps->disk.bus.report = true;
+    caps->disk.model.report = true;
     VIR_DOMAIN_CAPS_ENUM_SET(caps->disk.diskDevice,
                              VIR_DOMAIN_DISK_DEVICE_DISK,
                              VIR_DOMAIN_DISK_DEVICE_CDROM);
@@ -88,6 +91,8 @@ virBhyveDomainCapsFill(virDomainCapsPtr caps,
 
     caps->os.loader.supported = VIR_TRISTATE_BOOL_NO;
     if (bhyvecaps & BHYVE_CAP_LPC_BOOTROM) {
+        caps->os.loader.type.report = true;
+        caps->os.loader.readonly.report = true;
         caps->os.loader.supported = VIR_TRISTATE_BOOL_YES;
         VIR_DOMAIN_CAPS_ENUM_SET(caps->os.loader.type,
                                  VIR_DOMAIN_LOADER_TYPE_PFLASH);
@@ -103,7 +108,9 @@ virBhyveDomainCapsFill(virDomainCapsPtr caps,
     caps->video.supported = VIR_TRISTATE_BOOL_NO;
     if (bhyvecaps & BHYVE_CAP_FBUF) {
         caps->graphics.supported = VIR_TRISTATE_BOOL_YES;
+        caps->graphics.type.report = true;
         caps->video.supported = VIR_TRISTATE_BOOL_YES;
+        caps->video.modelType.report = true;
         VIR_DOMAIN_CAPS_ENUM_SET(caps->graphics.type, VIR_DOMAIN_GRAPHICS_TYPE_VNC);
         VIR_DOMAIN_CAPS_ENUM_SET(caps->video.modelType, VIR_DOMAIN_VIDEO_TYPE_GOP);
     }
