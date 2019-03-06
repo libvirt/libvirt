@@ -1,0 +1,11 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+  </os>
+  <devices>
+    <input type='keyboard' bus='virtio' model='virtio-non-transitional'/>
+  </devices>
+</domain>

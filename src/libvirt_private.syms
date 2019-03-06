@@ -420,6 +420,7 @@ virDomainInputBusTypeToString;
 virDomainInputDefFind;
 virDomainInputDefFree;
 virDomainInputDefGetPath;
+virDomainInputTypeToString;
 virDomainIOMMUModelTypeFromString;
 virDomainIOMMUModelTypeToString;
 virDomainIOThreadIDAdd;
