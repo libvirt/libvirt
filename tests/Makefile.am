@@ -643,6 +643,7 @@ qemucommandutiltest_LDADD = libqemumonitortestutils.la \
 qemucaps2xmltest_SOURCES = \
 	qemucaps2xmltest.c \
 	testutils.c testutils.h \
+	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
 qemucaps2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
 

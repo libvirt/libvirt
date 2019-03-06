@@ -19,6 +19,7 @@
 #include <config.h>
 
 #include "testutils.h"
+#include "testutilsqemu.h"
 #include "qemu/qemu_capabilities.h"
 
 
