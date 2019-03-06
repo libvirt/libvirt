@@ -23760,7 +23760,7 @@ virDomainStorageSourceFormat(virBufferPtr attrBuf,
                              virBufferPtr childBuf,
                              virStorageSourcePtr src,
                              unsigned int flags,
-                             bool skipSeclabels)
+                             bool seclabels)
 {
     switch ((virStorageType)src->type) {
     case VIR_STORAGE_TYPE_FILE:
@@ -23800,7 +23800,7 @@ virDomainStorageSourceFormat(virBufferPtr attrBuf,
         return -1;
     }
 
-    if (!skipSeclabels && src->type != VIR_STORAGE_TYPE_NETWORK)
+    if (seclabels && src->type != VIR_STORAGE_TYPE_NETWORK)
         virDomainSourceDefFormatSeclabel(childBuf, src->nseclabels,
                                          src->seclabels, flags);
 
@@ -23832,7 +23832,7 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
                                   virStorageSourcePtr src,
                                   int policy,
                                   unsigned int flags,
-                                  bool skipSeclabels,
+                                  bool seclabels,
                                   bool attrIndex,
                                   virDomainXMLOptionPtr xmlopt)
 {
@@ -23843,7 +23843,7 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
     virBufferSetChildIndent(&childBuf, buf);
 
     if (virDomainStorageSourceFormat(&attrBuf, &childBuf, src, flags,
-                                     skipSeclabels) < 0)
+                                     seclabels) < 0)
         goto cleanup;
 
     if (policy && src->type != VIR_STORAGE_TYPE_NETWORK)
@@ -23873,7 +23873,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
                           unsigned int flags,
                           virDomainXMLOptionPtr xmlopt)
 {
-    return virDomainDiskSourceFormatInternal(buf, src, policy, flags, false,
+    return virDomainDiskSourceFormatInternal(buf, src, policy, flags, true,
                                              false, xmlopt);
 }
 
@@ -23916,7 +23916,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "<format type='%s'/>\n", format);
     /* We currently don't output seclabels for backing chain element */
-    if (virDomainDiskSourceFormatInternal(buf, backingStore, 0, flags, true,
+    if (virDomainDiskSourceFormatInternal(buf, backingStore, 0, flags, false,
                                           false, xmlopt) < 0 ||
         virDomainDiskBackingStoreFormat(buf, backingStore->backingStore,
                                         xmlopt, flags) < 0)
@@ -24175,7 +24175,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virStorageAuthDefFormat(buf, def->src->auth);
 
     if (virDomainDiskSourceFormatInternal(buf, def->src, def->startupPolicy,
-                                          flags, false, true, xmlopt) < 0)
+                                          flags, true, true, xmlopt) < 0)
         return -1;
 
     /* Don't format backingStore to inactive XMLs until the code for

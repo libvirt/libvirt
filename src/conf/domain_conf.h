@@ -3461,7 +3461,7 @@ int virDomainStorageSourceFormat(virBufferPtr attrBuf,
                                  virBufferPtr childBuf,
                                  virStorageSourcePtr src,
                                  unsigned int flags,
-                                 bool skipSeclabels)
+                                 bool seclabels)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int virDomainStorageSourceParse(xmlNodePtr node,
