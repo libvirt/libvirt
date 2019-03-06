@@ -58,6 +58,7 @@ sub fixup_name {
 
     $name =~ s/Nwfilter/NWFilter/;
     $name =~ s/Xml$/XML/;
+    $name =~ s/Xml2$/XML2/;
     $name =~ s/Uri$/URI/;
     $name =~ s/Uuid$/UUID/;
     $name =~ s/Id$/ID/;
@@ -567,18 +568,20 @@ elsif ($mode eq "server") {
                     push(@args_list, "$2");
                     push(@free_list,
                          "    virObjectUnref($2);");
-                } elsif ($args_member =~ m/^remote_nonnull_domain_snapshot (\S+);$/) {
+                } elsif ($args_member =~ m/^remote_nonnull_domain_(checkpoint|snapshot) (\S+);$/) {
+                    my $type_name = name_to_TypeName($1);
+
                     push(@vars_list, "virDomainPtr dom = NULL");
-                    push(@vars_list, "virDomainSnapshotPtr snapshot = NULL");
+                    push(@vars_list, "virDomain${type_name}Ptr ${1} = NULL");
                     push(@getters_list,
-                         "    if (!(dom = get_nonnull_domain($conn, args->${1}.dom)))\n" .
+                         "    if (!(dom = get_nonnull_domain($conn, args->${2}.dom)))\n" .
                          "        goto cleanup;\n" .
                          "\n" .
-                         "    if (!(snapshot = get_nonnull_domain_snapshot(dom, args->${1})))\n" .
+                         "    if (!($1 = get_nonnull_domain_${1}(dom, args->$2)))\n" .
                          "        goto cleanup;\n");
-                    push(@args_list, "snapshot");
+                    push(@args_list, "$1");
                     push(@free_list,
-                         "    virObjectUnref(snapshot);\n" .
+                         "    virObjectUnref($1);\n" .
                          "    virObjectUnref(dom);");
                 } elsif ($args_member =~ m/^(?:(?:admin|remote)_string|remote_uuid) (\S+)<\S+>;/) {
                     push(@args_list, $conn) if !@args_list;
@@ -722,7 +725,7 @@ elsif ($mode eq "server") {
                         if (!$modern_ret_as_list) {
                             push(@ret_list, "ret->$3 = tmp.$3;");
                         }
-                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|nwfilter_binding|node_device|interface|network|network_port|storage_vol|storage_pool|domain_snapshot|domain|server|client) (\S+)<(\S+)>;/) {
+                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|nwfilter_binding|node_device|interface|network|network_port|storage_vol|storage_pool|domain_checkpoint|domain_snapshot|domain|server|client) (\S+)<(\S+)>;/) {
                         $modern_ret_struct_name = $1;
                         $single_ret_list_error_msg_type = $1;
                         $single_ret_list_name = $2;
@@ -780,7 +783,7 @@ elsif ($mode eq "server") {
                     $single_ret_var = $1;
                     $single_ret_by_ref = 0;
                     $single_ret_check = " == NULL";
-                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|interface|node_device|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|interface|node_device|secret|nwfilter|nwfilter_binding|domain_checkpoint|domain_snapshot) (\S+);/) {
                     my $type_name = name_to_TypeName($1);
 
                     if ($call->{ProcName} eq "DomainCreateWithFlags") {
@@ -1328,13 +1331,14 @@ elsif ($mode eq "client") {
                     $priv_src = "dev->conn";
                     push(@args_list, "virNodeDevicePtr dev");
                     push(@setters_list, "args.name = dev->name;");
-                } elsif ($args_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|interface|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
+                } elsif ($args_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|interface|secret|nwfilter|nwfilter_binding|domain_checkpoint|domain_snapshot) (\S+);/) {
                     my $name = $1;
                     my $arg_name = $2;
                     my $type_name = name_to_TypeName($name);
 
                     if ($is_first_arg) {
-                        if ($name eq "domain_snapshot") {
+                        if ($name eq "domain_snapshot" ||
+                            $name eq "domain_checkpoint") {
                             $priv_src = "$arg_name->domain->conn";
                         } elsif ($name eq "network_port") {
                             $priv_src = "$arg_name->net->conn";
@@ -1523,7 +1527,7 @@ elsif ($mode eq "client") {
                         }
 
                         push(@ret_list, "memcpy(result->$3, ret.$3, sizeof(result->$3));");
-                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|nwfilter_binding|node_device|interface|network|network_port|storage_vol|storage_pool|domain_snapshot|domain|server|client) (\S+)<(\S+)>;/) {
+                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|nwfilter_binding|node_device|interface|network|network_port|storage_vol|storage_pool|domain_checkpoint|domain_snapshot|domain|server|client) (\S+)<(\S+)>;/) {
                         my $proc_name = name_to_TypeName($1);
 
                         if ($structprefix eq "admin") {
@@ -1576,7 +1580,7 @@ elsif ($mode eq "client") {
                     push(@ret_list, "VIR_FREE(ret.$1);");
                     $single_ret_var = "char *rv = NULL";
                     $single_ret_type = "char *";
-                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|node_device|interface|secret|nwfilter|nwfilter_binding|domain_snapshot) (\S+);/) {
+                } elsif ($ret_member =~ m/^remote_nonnull_(domain|network|network_port|storage_pool|storage_vol|node_device|interface|secret|nwfilter|nwfilter_binding|domain_checkpoint|domain_snapshot) (\S+);/) {
                     my $name = $1;
                     my $arg_name = $2;
                     my $type_name = name_to_TypeName($name);
@@ -1590,7 +1594,7 @@ elsif ($mode eq "client") {
                         $single_ret_var = "int rv = -1";
                         $single_ret_type = "int";
                     } else {
-                        if ($name eq "domain_snapshot") {
+                        if ($name =~ m/^domain_.*/) {
                             my $dom = "$priv_src";
                             $dom =~ s/->conn//;
                             push(@ret_list, "rv = get_nonnull_$name($dom, ret.$arg_name);");
@@ -1934,7 +1938,7 @@ elsif ($mode eq "client") {
             print "    }\n";
             print "\n";
         } elsif ($modern_ret_as_list) {
-            if ($modern_ret_struct_name =~ m/domain_snapshot|client/) {
+            if ($modern_ret_struct_name =~ m/domain_checkpoint|domain_snapshot|client/) {
                 $priv_src =~ s/->conn//;
             }
             print "    if (result) {\n";

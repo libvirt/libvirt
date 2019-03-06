@@ -90,6 +90,7 @@ static virStorageVolPtr get_nonnull_storage_vol(virConnectPtr conn, remote_nonnu
 static virSecretPtr get_nonnull_secret(virConnectPtr conn, remote_nonnull_secret secret);
 static virNWFilterPtr get_nonnull_nwfilter(virConnectPtr conn, remote_nonnull_nwfilter nwfilter);
 static virNWFilterBindingPtr get_nonnull_nwfilter_binding(virConnectPtr conn, remote_nonnull_nwfilter_binding binding);
+static virDomainCheckpointPtr get_nonnull_domain_checkpoint(virDomainPtr dom, remote_nonnull_domain_checkpoint checkpoint);
 static virDomainSnapshotPtr get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot snapshot);
 static virNodeDevicePtr get_nonnull_node_device(virConnectPtr conn, remote_nonnull_node_device dev);
 static int make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src) ATTRIBUTE_RETURN_CHECK;
@@ -102,6 +103,7 @@ static int make_nonnull_node_device(remote_nonnull_node_device *dev_dst, virNode
 static int make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr secret_src) ATTRIBUTE_RETURN_CHECK;
 static int make_nonnull_nwfilter(remote_nonnull_nwfilter *net_dst, virNWFilterPtr nwfilter_src) ATTRIBUTE_RETURN_CHECK;
 static int make_nonnull_nwfilter_binding(remote_nonnull_nwfilter_binding *binding_dst, virNWFilterBindingPtr binding_src) ATTRIBUTE_RETURN_CHECK;
+static int make_nonnull_domain_checkpoint(remote_nonnull_domain_checkpoint *checkpoint_dst, virDomainCheckpointPtr checkpoint_src) ATTRIBUTE_RETURN_CHECK;
 static int make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src) ATTRIBUTE_RETURN_CHECK;
 
 static int
@@ -7301,6 +7303,12 @@ get_nonnull_nwfilter_binding(virConnectPtr conn, remote_nonnull_nwfilter_binding
     return virGetNWFilterBinding(conn, binding.portdev, binding.filtername);
 }
 
+static virDomainCheckpointPtr
+get_nonnull_domain_checkpoint(virDomainPtr dom, remote_nonnull_domain_checkpoint checkpoint)
+{
+    return virGetDomainCheckpoint(dom, checkpoint.name);
+}
+
 static virDomainSnapshotPtr
 get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot snapshot)
 {
@@ -7416,6 +7424,18 @@ make_nonnull_nwfilter_binding(remote_nonnull_nwfilter_binding *binding_dst, virN
         return -1;
     if (VIR_STRDUP(binding_dst->filtername, binding_src->filtername) < 0) {
         VIR_FREE(binding_dst->portdev);
+        return -1;
+    }
+    return 0;
+}
+
+static int
+make_nonnull_domain_checkpoint(remote_nonnull_domain_checkpoint *checkpoint_dst, virDomainCheckpointPtr checkpoint_src)
+{
+    if (VIR_STRDUP(checkpoint_dst->name, checkpoint_src->name) < 0)
+        return -1;
+    if (make_nonnull_domain(&checkpoint_dst->dom, checkpoint_src->domain) < 0) {
+        VIR_FREE(checkpoint_dst->name);
         return -1;
     }
     return 0;

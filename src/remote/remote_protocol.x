@@ -140,6 +140,9 @@ const REMOTE_AUTH_TYPE_LIST_MAX = 20;
 /* Upper limit on list of memory stats */
 const REMOTE_DOMAIN_MEMORY_STATS_MAX = 1024;
 
+/* Upper limit on lists of domain checkpoints. */
+const REMOTE_DOMAIN_CHECKPOINT_LIST_MAX = 16384;
+
 /* Upper limit on lists of domain snapshots. */
 const REMOTE_DOMAIN_SNAPSHOT_LIST_MAX = 16384;
 
@@ -334,6 +337,12 @@ struct remote_nonnull_secret {
     remote_uuid uuid;
     int usageType;
     remote_nonnull_string usageID;
+};
+
+/* A checkpoint which may not be NULL. */
+struct remote_nonnull_domain_checkpoint {
+    remote_nonnull_string name;
+    remote_nonnull_domain dom;
 };
 
 /* A snapshot which may not be NULL. */
@@ -3649,6 +3658,70 @@ struct remote_network_port_delete_args {
     unsigned int flags;
 };
 
+struct remote_domain_checkpoint_create_xml_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string xml_desc;
+    unsigned int flags;
+};
+
+struct remote_domain_checkpoint_create_xml_ret {
+    remote_nonnull_domain_checkpoint checkpoint;
+};
+
+struct remote_domain_checkpoint_get_xml_desc_args {
+    remote_nonnull_domain_checkpoint checkpoint;
+    unsigned int flags;
+};
+
+struct remote_domain_checkpoint_get_xml_desc_ret {
+    remote_nonnull_string xml;
+};
+
+struct remote_domain_list_all_checkpoints_args {
+    remote_nonnull_domain dom;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_domain_list_all_checkpoints_ret { /* insert@1 */
+    remote_nonnull_domain_checkpoint checkpoints<REMOTE_DOMAIN_CHECKPOINT_LIST_MAX>;
+    int ret;
+};
+
+struct remote_domain_checkpoint_list_all_children_args {
+    remote_nonnull_domain_checkpoint checkpoint;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_domain_checkpoint_list_all_children_ret { /* insert@1 */
+    remote_nonnull_domain_checkpoint checkpoints<REMOTE_DOMAIN_CHECKPOINT_LIST_MAX>;
+    int ret;
+};
+
+struct remote_domain_checkpoint_lookup_by_name_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string name;
+    unsigned int flags;
+};
+
+struct remote_domain_checkpoint_lookup_by_name_ret {
+    remote_nonnull_domain_checkpoint checkpoint;
+};
+
+struct remote_domain_checkpoint_get_parent_args {
+    remote_nonnull_domain_checkpoint checkpoint;
+    unsigned int flags;
+};
+
+struct remote_domain_checkpoint_get_parent_ret {
+    remote_nonnull_domain_checkpoint parent;
+};
+
+struct remote_domain_checkpoint_delete_args {
+    remote_nonnull_domain_checkpoint checkpoint;
+    unsigned int flags;
+};
 
 /*----- Protocol. -----*/
 
@@ -6463,5 +6536,53 @@ enum remote_procedure {
      * @generate: both
      * @acl: network_port:delete
      */
-    REMOTE_PROC_NETWORK_PORT_DELETE = 410
+    REMOTE_PROC_NETWORK_PORT_DELETE = 410,
+
+   /**
+     * @generate: both
+     * @acl: domain:checkpoint
+     * @acl: domain:fs_freeze:VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE
+     */
+    REMOTE_PROC_DOMAIN_CHECKPOINT_CREATE_XML = 411,
+
+    /**
+     * @generate: both
+     * @acl: domain:read
+     * @acl: domain:read_secure:VIR_DOMAIN_CHECKPOINT_XML_SECURE
+     */
+    REMOTE_PROC_DOMAIN_CHECKPOINT_GET_XML_DESC = 412,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_LIST_ALL_CHECKPOINTS = 413,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_CHECKPOINT_LIST_ALL_CHILDREN = 414,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_CHECKPOINT_LOOKUP_BY_NAME = 415,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_CHECKPOINT_GET_PARENT = 416,
+
+    /**
+     * @generate: both
+     * @acl: domain:checkpoint
+     */
+    REMOTE_PROC_DOMAIN_CHECKPOINT_DELETE = 417
 };
