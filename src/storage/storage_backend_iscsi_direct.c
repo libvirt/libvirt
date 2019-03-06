@@ -679,12 +679,8 @@ virStorageBackenISCSIDirectWipeVol(virStoragePoolObjPtr pool,
 
     switch ((virStorageVolWipeAlgorithm) algorithm) {
     case VIR_STORAGE_VOL_WIPE_ALG_ZERO:
-        if (virStorageBackendISCSIDirectVolWipeZero(vol, iscsi) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to wipe volume %s"),
-                           vol->name);
+        if (virStorageBackendISCSIDirectVolWipeZero(vol, iscsi) < 0)
             goto cleanup;
-        }
         break;
     case VIR_STORAGE_VOL_WIPE_ALG_TRIM:
     case VIR_STORAGE_VOL_WIPE_ALG_NNSA:
