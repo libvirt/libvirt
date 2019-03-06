@@ -10673,6 +10673,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         virCommandAddEnvFormat(cmd, "XDG_CACHE_HOME=%s/%s",
                                priv->libDir, ".cache");
     } else {
+        virCommandAddEnvPair(cmd, "HOME", priv->libDir);
         virCommandAddEnvXDG(cmd, priv->libDir);
     }
 

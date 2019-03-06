@@ -1,6 +1,6 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/home/test \
+HOME=/tmp/lib/domain--1-foo=1,bar=2 \
 USER=test \
 LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-foo=1,bar=2/.local/share \
