@@ -37,6 +37,17 @@
     management application to choose an appropriate mode for a pass-through
     host device as well as which adapter to utilize.</p>
 
+    <p>Some XML elements may be entirely omitted from the domaincapabilities
+    XML, depending on what the libvirt driver has filled in. Applications
+    should only act on what is explicitly reported in the domaincapabilities
+    XML. For example, if &lt;disk supported='yes'/&gt; is present, you can safely
+    assume the driver supports &lt;disk&gt; devices. If &lt;disk supported='no'/&gt; is
+    present, you can safely assume the driver does NOT support &lt;disk&gt;
+    devices. If the &lt;disk&gt; block is omitted entirely, the driver is not
+    indicating one way or the other whether it supports &lt;disk&gt; devices, and
+    applications should not interpret the missing block to mean any thing in
+    particular.</p>
+
     <h2><a id="elements">Element and attribute overview</a></h2>
 
     <p> A new query interface was added to the virConnect API's to retrieve the
