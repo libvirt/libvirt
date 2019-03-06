@@ -1585,7 +1585,7 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
     if (!(def = virStoragePoolDefParseFile(path)))
         return NULL;
 
-    if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
+    if (!virStringMatchesNameSuffix(file, def->name, ".xml")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Storage pool config filename '%s' does "
                          "not match pool name '%s'"),

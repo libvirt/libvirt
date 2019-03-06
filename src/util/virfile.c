@@ -1508,23 +1508,6 @@ virFileWriteStr(const char *path, const char *str, mode_t mode)
     return 0;
 }
 
-int
-virFileMatchesNameSuffix(const char *file,
-                         const char *name,
-                         const char *suffix)
-{
-    int filelen = strlen(file);
-    int namelen = strlen(name);
-    int suffixlen = strlen(suffix);
-
-    if (filelen == (namelen + suffixlen) &&
-        STREQLEN(file, name, namelen) &&
-        STREQLEN(file + namelen, suffix, suffixlen))
-        return 1;
-    else
-        return 0;
-}
-
 #define SAME_INODE(Stat_buf_1, Stat_buf_2) \
   ((Stat_buf_1).st_ino == (Stat_buf_2).st_ino \
    && (Stat_buf_1).st_dev == (Stat_buf_2).st_dev)

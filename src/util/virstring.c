@@ -1266,6 +1266,23 @@ virStringStripSuffix(char *str,
     return 1;
 }
 
+int
+virStringMatchesNameSuffix(const char *file,
+                           const char *name,
+                           const char *suffix)
+{
+    int filelen = strlen(file);
+    int namelen = strlen(name);
+    int suffixlen = strlen(suffix);
+
+    if (filelen == (namelen + suffixlen) &&
+        STREQLEN(file, name, namelen) &&
+        STREQLEN(file + namelen, suffix, suffixlen))
+        return 1;
+    else
+        return 0;
+}
+
 /**
  * virStringStripIPv6Brackets:
  * @str: the string to strip

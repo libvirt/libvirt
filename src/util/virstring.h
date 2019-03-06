@@ -292,6 +292,9 @@ int virStringHasCaseSuffix(const char *str,
                            const char *suffix);
 int virStringStripSuffix(char *str,
                          const char *suffix) ATTRIBUTE_RETURN_CHECK;
+int virStringMatchesNameSuffix(const char *file,
+                               const char *name,
+                               const char *suffix);
 
 void virStringStripIPv6Brackets(char *str);
 bool virStringHasChars(const char *str,
