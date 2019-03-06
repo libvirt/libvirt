@@ -84,7 +84,7 @@ test_virStoragePoolCapsFormat(const void *opaque)
 static int
 mymain(void)
 {
-    int ret = -1;
+    int ret = 0;
     virCapsPtr fullCaps = NULL;
     virCapsPtr fsCaps = NULL;
 
@@ -93,20 +93,20 @@ mymain(void)
         struct test_virStoragePoolCapsFormatData data = \
             {.filename = Filename, .driverCaps = DriverCaps }; \
         if (virTestRun(Filename, test_virStoragePoolCapsFormat, &data) < 0) \
-            goto cleanup; \
+            ret = -1; \
     } while (0)
 
     if (!(fullCaps = virCapabilitiesNew(VIR_ARCH_NONE, false, false)) ||
-        !(fsCaps = virCapabilitiesNew(VIR_ARCH_NONE, false, false)))
+        !(fsCaps = virCapabilitiesNew(VIR_ARCH_NONE, false, false))) {
+        ret = -1;
         goto cleanup;
+    }
 
     test_virCapabilitiesAddFullStoragePool(fullCaps);
     test_virCapabilitiesAddFSStoragePool(fsCaps);
 
     DO_TEST("full", fullCaps);
     DO_TEST("fs", fsCaps);
-
-    ret = 0;
 
  cleanup:
     virObjectUnref(fullCaps);
