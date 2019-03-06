@@ -3269,7 +3269,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     virLXCDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     int ret = -1;
-    int rc;
+    int rc = -1;
 
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_INITCTL |
                   VIR_DOMAIN_SHUTDOWN_SIGNAL, -1);
@@ -3298,19 +3298,17 @@ lxcDomainShutdownFlags(virDomainPtr dom,
         (flags & VIR_DOMAIN_SHUTDOWN_INITCTL)) {
         int command = VIR_INITCTL_RUNLEVEL_POWEROFF;
 
-        if ((rc = virLXCDomainSetRunlevel(vm, command)) < 0)
-            goto endjob;
-        if (rc == 0 && flags != 0 &&
-            ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Container does not provide an initctl pipe"));
-            goto endjob;
+        if ((rc = virLXCDomainSetRunlevel(vm, command)) < 0) {
+            if (flags != 0 &&
+                (flags & VIR_DOMAIN_SHUTDOWN_INITCTL)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("Container does not provide an initctl pipe"));
+                goto endjob;
+            }
         }
-    } else {
-        rc = 0;
     }
 
-    if (rc == 0 &&
+    if (rc < 0 &&
         (flags == 0 ||
          (flags & VIR_DOMAIN_SHUTDOWN_SIGNAL))) {
         if (kill(priv->initpid, SIGTERM) < 0 &&
@@ -3347,7 +3345,7 @@ lxcDomainReboot(virDomainPtr dom,
     virLXCDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     int ret = -1;
-    int rc;
+    int rc = -1;
 
     virCheckFlags(VIR_DOMAIN_REBOOT_INITCTL |
                   VIR_DOMAIN_REBOOT_SIGNAL, -1);
@@ -3376,19 +3374,17 @@ lxcDomainReboot(virDomainPtr dom,
         (flags & VIR_DOMAIN_REBOOT_INITCTL)) {
         int command = VIR_INITCTL_RUNLEVEL_REBOOT;
 
-        if ((rc = virLXCDomainSetRunlevel(vm, command)) < 0)
-            goto endjob;
-        if (rc == 0 && flags != 0 &&
-            ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Container does not provide an initctl pipe"));
-            goto endjob;
+        if ((rc = virLXCDomainSetRunlevel(vm, command)) < 0) {
+            if (flags != 0 &&
+                (flags & VIR_DOMAIN_REBOOT_INITCTL)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("Container does not provide an initctl pipe"));
+                goto endjob;
+            }
         }
-    } else {
-        rc = 0;
     }
 
-    if (rc == 0 &&
+    if (rc < 0 &&
         (flags == 0 ||
          (flags & VIR_DOMAIN_REBOOT_SIGNAL))) {
         if (kill(priv->initpid, SIGHUP) < 0 &&
