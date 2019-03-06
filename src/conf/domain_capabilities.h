@@ -33,6 +33,7 @@ typedef virDomainCaps *virDomainCapsPtr;
 typedef struct _virDomainCapsEnum virDomainCapsEnum;
 typedef virDomainCapsEnum *virDomainCapsEnumPtr;
 struct _virDomainCapsEnum {
+    bool report; /* Whether the format the enum at all */
     unsigned int values; /* Bitmask of values supported in the corresponding enum */
 };
 
