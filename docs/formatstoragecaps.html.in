@@ -56,9 +56,6 @@
         &lt;value&gt;ext2&lt;/value&gt;
         ...
       &lt;/enum&gt;
-      &lt;enum name='requiredSourceElements'&gt;
-        &lt;value&gt;device&lt;/value&gt;
-      &lt;/enum&gt;
     &lt;/poolOptions&gt;
     &lt;volOptions&gt;
       &lt;defaultFormat type='raw'&lt;/&gt;
@@ -91,10 +88,6 @@
             <dt><code>sourceFormatType</code></dt>
             <dd>Lists all the possible <code>poolOptions</code> source
             pool format types.
-            </dd>
-            <dt><code>requiredSourceElements</code></dt>
-            <dd>Lists all the required <code>poolOptions</code> source
-            subelements required for a valid source pool element.
             </dd>
             <dt><code>targetFormatType</code></dt>
             <dd>Lists all the possible <code>volOptions</code> target volume

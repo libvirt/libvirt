@@ -41,9 +41,6 @@
         <value>xfs</value>
         <value>ocfs2</value>
       </enum>
-      <enum name='requiredSourceElements'>
-        <value>device</value>
-      </enum>
     </poolOptions>
     <volOptions>
       <defaultFormat type='raw'/>
@@ -77,10 +74,6 @@
         <value>glusterfs</value>
         <value>cifs</value>
       </enum>
-      <enum name='requiredSourceElements'>
-        <value>host</value>
-        <value>dir</value>
-      </enum>
     </poolOptions>
     <volOptions>
       <defaultFormat type='raw'/>
@@ -112,10 +105,6 @@
         <value>unknown</value>
         <value>lvm2</value>
       </enum>
-      <enum name='requiredSourceElements'>
-        <value>device</value>
-        <value>name</value>
-      </enum>
     </poolOptions>
   </pool>
   <pool type='disk' supported='yes'>
@@ -131,9 +120,6 @@
         <value>pc98</value>
         <value>sun</value>
         <value>lvm2</value>
-      </enum>
-      <enum name='requiredSourceElements'>
-        <value>device</value>
       </enum>
     </poolOptions>
     <volOptions>
@@ -151,60 +137,18 @@
     </volOptions>
   </pool>
   <pool type='iscsi' supported='yes'>
-    <poolOptions>
-      <enum name='requiredSourceElements'>
-        <value>host</value>
-        <value>device</value>
-        <value>initiator</value>
-      </enum>
-    </poolOptions>
   </pool>
   <pool type='iscsi-direct' supported='yes'>
-    <poolOptions>
-      <enum name='requiredSourceElements'>
-        <value>host</value>
-        <value>device</value>
-        <value>initiator</value>
-        <value>network</value>
-      </enum>
-    </poolOptions>
   </pool>
   <pool type='scsi' supported='yes'>
-    <poolOptions>
-      <enum name='requiredSourceElements'>
-        <value>adapter</value>
-      </enum>
-    </poolOptions>
   </pool>
   <pool type='mpath' supported='yes'>
   </pool>
   <pool type='rbd' supported='yes'>
-    <poolOptions>
-      <enum name='requiredSourceElements'>
-        <value>host</value>
-        <value>name</value>
-        <value>network</value>
-      </enum>
-    </poolOptions>
   </pool>
   <pool type='sheepdog' supported='yes'>
-    <poolOptions>
-      <enum name='requiredSourceElements'>
-        <value>host</value>
-        <value>name</value>
-        <value>network</value>
-      </enum>
-    </poolOptions>
   </pool>
   <pool type='gluster' supported='yes'>
-    <poolOptions>
-      <enum name='requiredSourceElements'>
-        <value>host</value>
-        <value>dir</value>
-        <value>name</value>
-        <value>network</value>
-      </enum>
-    </poolOptions>
     <volOptions>
       <defaultFormat type='raw'/>
       <enum name='targetFormatType'>
@@ -229,19 +173,8 @@
     </volOptions>
   </pool>
   <pool type='zfs' supported='yes'>
-    <poolOptions>
-      <enum name='requiredSourceElements'>
-        <value>device</value>
-        <value>name</value>
-      </enum>
-    </poolOptions>
   </pool>
   <pool type='vstorage' supported='yes'>
-    <poolOptions>
-      <enum name='requiredSourceElements'>
-        <value>name</value>
-      </enum>
-    </poolOptions>
     <volOptions>
       <defaultFormat type='raw'/>
       <enum name='targetFormatType'>

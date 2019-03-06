@@ -366,7 +366,7 @@ virStoragePoolOptionsFormatPool(virBufferPtr buf,
     if (!(poolOptions = virStoragePoolOptionsForPoolType(type)))
         return -1;
 
-    if (!poolOptions->formatToString && !poolOptions->flags)
+    if (!poolOptions->formatToString)
         return 0;
 
     virBufferAddLit(buf, "<poolOptions>\n");
@@ -384,29 +384,6 @@ virStoragePoolOptionsFormatPool(virBufferPtr buf,
         for (i = 0; i < poolOptions->lastFormat; i++)
             virBufferAsprintf(buf, "<value>%s</value>\n",
                               (poolOptions->formatToString)(i));
-
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</enum>\n");
-    }
-
-    if (poolOptions->flags) {
-        virBufferAddLit(buf, "<enum name='requiredSourceElements'>\n");
-        virBufferAdjustIndent(buf, 2);
-
-        if (poolOptions->flags & VIR_STORAGE_POOL_SOURCE_HOST)
-            virBufferAddLit(buf, "<value>host</value>\n");
-        if (poolOptions->flags & VIR_STORAGE_POOL_SOURCE_DEVICE)
-            virBufferAddLit(buf, "<value>device</value>\n");
-        if (poolOptions->flags & VIR_STORAGE_POOL_SOURCE_DIR)
-            virBufferAddLit(buf, "<value>dir</value>\n");
-        if (poolOptions->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER)
-            virBufferAddLit(buf, "<value>adapter</value>\n");
-        if (poolOptions->flags & VIR_STORAGE_POOL_SOURCE_NAME)
-            virBufferAddLit(buf, "<value>name</value>\n");
-        if (poolOptions->flags & VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN)
-            virBufferAddLit(buf, "<value>initiator</value>\n");
-        if (poolOptions->flags & VIR_STORAGE_POOL_SOURCE_NETWORK)
-            virBufferAddLit(buf, "<value>network</value>\n");
 
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</enum>\n");
