@@ -2966,6 +2966,7 @@ virStringFilterChars;
 virStringHasCaseSuffix;
 virStringHasChars;
 virStringHasControlChars;
+virStringHasSuffix;
 virStringIsEmpty;
 virStringIsPrintable;
 virStringListAdd;

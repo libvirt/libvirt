@@ -288,6 +288,8 @@ char *virStringReplace(const char *haystack,
                        const char *newneedle)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+bool virStringHasSuffix(const char *str,
+                        const char *suffix);
 int virStringHasCaseSuffix(const char *str,
                            const char *suffix);
 int virStringStripSuffix(char *str,

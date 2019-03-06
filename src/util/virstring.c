@@ -1235,6 +1235,19 @@ virStringReplace(const char *haystack,
     return virBufferContentAndReset(&buf);
 }
 
+bool
+virStringHasSuffix(const char *str,
+                   const char *suffix)
+{
+    int len = strlen(str);
+    int suffixlen = strlen(suffix);
+
+    if (len < suffixlen)
+        return false;
+
+    return STREQ(str + len - suffixlen, suffix);
+}
+
 int
 virStringHasCaseSuffix(const char *str,
                        const char *suffix)
