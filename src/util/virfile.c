@@ -1044,24 +1044,6 @@ int virFileDeleteTree(const char *dir)
     return ret;
 }
 
-int
-virFileStripSuffix(char *str, const char *suffix)
-{
-    int len = strlen(str);
-    int suffixlen = strlen(suffix);
-
-    if (len < suffixlen)
-        return 0;
-
-    if (STRNEQ(str + len - suffixlen, suffix))
-        return 0;
-
-    str[len-suffixlen] = '\0';
-
-    return 1;
-}
-
-
 /* Like read(), but restarts after EINTR.  Doesn't play
  * nicely with nonblocking FD and EAGAIN, in which case
  * you want to use bare read(). Or even use virSocket()

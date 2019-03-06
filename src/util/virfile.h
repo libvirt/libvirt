@@ -166,9 +166,6 @@ int virFileMatchesNameSuffix(const char *file,
                              const char *name,
                              const char *suffix);
 
-int virFileStripSuffix(char *str,
-                       const char *suffix) ATTRIBUTE_RETURN_CHECK;
-
 int virFileLinkPointsTo(const char *checkLink,
                         const char *checkDest)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

@@ -1068,7 +1068,7 @@ virNetworkObjLoadAllState(virNetworkObjListPtr nets,
     while ((ret = virDirRead(dir, &entry, stateDir)) > 0) {
         virNetworkObjPtr obj;
 
-        if (!virFileStripSuffix(entry->d_name, ".xml"))
+        if (!virStringStripSuffix(entry->d_name, ".xml"))
             continue;
 
         obj = virNetworkLoadState(nets, stateDir, entry->d_name);
@@ -1096,7 +1096,7 @@ virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virNetworkObjPtr obj;
 
-        if (!virFileStripSuffix(entry->d_name, ".xml"))
+        if (!virStringStripSuffix(entry->d_name, ".xml"))
             continue;
 
         /* NB: ignoring errors, so one malformed config doesn't

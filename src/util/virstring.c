@@ -1248,6 +1248,24 @@ virStringHasCaseSuffix(const char *str,
     return STRCASEEQ(str + len - suffixlen, suffix);
 }
 
+int
+virStringStripSuffix(char *str,
+                     const char *suffix)
+{
+    int len = strlen(str);
+    int suffixlen = strlen(suffix);
+
+    if (len < suffixlen)
+        return 0;
+
+    if (STRNEQ(str + len - suffixlen, suffix))
+        return 0;
+
+    str[len - suffixlen] = '\0';
+
+    return 1;
+}
+
 /**
  * virStringStripIPv6Brackets:
  * @str: the string to strip

@@ -304,7 +304,7 @@ virNWFilterBindingObjListLoadAllConfigs(virNWFilterBindingObjListPtr bindings,
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virNWFilterBindingObjPtr binding;
 
-        if (!virFileStripSuffix(entry->d_name, ".xml"))
+        if (!virStringStripSuffix(entry->d_name, ".xml"))
             continue;
 
         /* NB: ignoring errors, so one malformed config doesn't

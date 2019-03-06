@@ -1688,7 +1688,7 @@ virStoragePoolObjLoadAllState(virStoragePoolObjListPtr pools,
     while ((ret = virDirRead(dir, &entry, stateDir)) > 0) {
         virStoragePoolObjPtr obj;
 
-        if (!virFileStripSuffix(entry->d_name, ".xml"))
+        if (!virStringStripSuffix(entry->d_name, ".xml"))
             continue;
 
         if (!(obj = virStoragePoolObjLoadState(pools, stateDir, entry->d_name)))

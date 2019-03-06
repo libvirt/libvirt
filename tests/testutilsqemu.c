@@ -834,7 +834,7 @@ testQemuGetLatestCapsForArch(const char *dirname,
         if (rc == 0)
             continue;
 
-        if (virFileStripSuffix(tmp, fullsuffix) != 1)
+        if (virStringStripSuffix(tmp, fullsuffix) != 1)
             continue;
 
         if (virParseVersionString(tmp, &ver, false) < 0) {
