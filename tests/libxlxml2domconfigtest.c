@@ -217,6 +217,9 @@ mymain(void)
     DO_TEST("fullvirt-cpuid-legacy-nest");
 # endif
 
+# ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
+    DO_TEST("max-gntframes-hvm");
+# endif
 
     unlink("libxl-driver.log");
 
