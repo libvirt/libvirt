@@ -274,7 +274,7 @@ findLease(const char *name,
     while ((ret = virDirRead(dir, &entry, leaseDir)) > 0) {
         char *path;
 
-        if (virStringHasCaseSuffix(entry->d_name, ".status")) {
+        if (virStringHasSuffix(entry->d_name, ".status")) {
             if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
                 goto cleanup;
 
@@ -285,7 +285,7 @@ findLease(const char *name,
                 goto cleanup;
             }
             VIR_FREE(path);
-        } else if (virStringHasCaseSuffix(entry->d_name, ".macs")) {
+        } else if (virStringHasSuffix(entry->d_name, ".macs")) {
             if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
                 goto cleanup;
 

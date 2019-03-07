@@ -1600,7 +1600,7 @@ virVMXParseConfig(virVMXContext *ctx,
     if (virVMXGetConfigString(conf, "guestOS", &guestOS, true) < 0)
         goto cleanup;
 
-    if (guestOS != NULL && virStringHasCaseSuffix(guestOS, "-64")) {
+    if (guestOS != NULL && virStringHasSuffix(guestOS, "-64")) {
         def->os.arch = VIR_ARCH_X86_64;
     } else {
         def->os.arch = VIR_ARCH_I686;

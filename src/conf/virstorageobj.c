@@ -1719,7 +1719,7 @@ virStoragePoolObjLoadAllConfigs(virStoragePoolObjListPtr pools,
         char *autostartLink;
         virStoragePoolObjPtr obj;
 
-        if (!virStringHasCaseSuffix(entry->d_name, ".xml"))
+        if (!virStringHasSuffix(entry->d_name, ".xml"))
             continue;
 
         if (!(path = virFileBuildPath(configDir, entry->d_name, NULL)))
