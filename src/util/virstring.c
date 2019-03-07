@@ -1248,7 +1248,7 @@ virStringHasSuffix(const char *str,
     return STREQ(str + len - suffixlen, suffix);
 }
 
-int
+bool
 virStringHasCaseSuffix(const char *str,
                        const char *suffix)
 {
@@ -1256,7 +1256,7 @@ virStringHasCaseSuffix(const char *str,
     int suffixlen = strlen(suffix);
 
     if (len < suffixlen)
-        return 0;
+        return false;
 
     return STRCASEEQ(str + len - suffixlen, suffix);
 }

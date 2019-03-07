@@ -290,8 +290,8 @@ char *virStringReplace(const char *haystack,
 
 bool virStringHasSuffix(const char *str,
                         const char *suffix);
-int virStringHasCaseSuffix(const char *str,
-                           const char *suffix);
+bool virStringHasCaseSuffix(const char *str,
+                            const char *suffix);
 int virStringStripSuffix(char *str,
                          const char *suffix) ATTRIBUTE_RETURN_CHECK;
 int virStringMatchesNameSuffix(const char *file,
