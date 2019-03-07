@@ -2914,8 +2914,14 @@ virNetDevRDMAFeature(const char *ifname,
 
     if (virAsprintf(&eth_devpath, SYSFS_NET_DIR "%s/device/resource", ifname) < 0)
         goto cleanup;
-    if (!virFileExists(eth_devpath))
+
+    /* If /sys/class/net/<ifname>/device/resource doesn't exist it is not a PCI
+     * device and therefore it will not have RDMA. */
+    if (!virFileExists(eth_devpath)) {
+        ret = 0;
         goto cleanup;
+    }
+
     if (virFileReadAll(eth_devpath, RESOURCE_FILE_LEN, &eth_res_buf) < 0)
         goto cleanup;
 
