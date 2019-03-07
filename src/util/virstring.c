@@ -1290,7 +1290,7 @@ virStringMatchesNameSuffix(const char *file,
 
     if (filelen == (namelen + suffixlen) &&
         STREQLEN(file, name, namelen) &&
-        STREQLEN(file + namelen, suffix, suffixlen))
+        STREQ(file + namelen, suffix))
         return true;
     else
         return false;
