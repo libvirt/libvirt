@@ -54,30 +54,26 @@ test_virStoragePoolCapsFormat(const void *opaque)
     struct test_virStoragePoolCapsFormatData *data =
         (struct test_virStoragePoolCapsFormatData *) opaque;
     virCapsPtr driverCaps = data->driverCaps;
-    virStoragePoolCapsPtr poolCaps = NULL;
-    int ret = -1;
+    VIR_AUTOUNREF(virStoragePoolCapsPtr) poolCaps = NULL;
     VIR_AUTOFREE(char *) path = NULL;
     VIR_AUTOFREE(char *) poolCapsXML = NULL;
 
 
     if (!(poolCaps = virStoragePoolCapsNew(driverCaps)))
-        goto cleanup;
+        return -1;
 
     if (virAsprintf(&path, "%s/storagepoolcapsschemadata/poolcaps-%s.xml",
-                    abs_srcdir, data->filename) < 0)
-        goto cleanup;
+                    abs_srcdir, data->filename) < 0) {
+        return -1;
+    }
 
     if (!(poolCapsXML = virStoragePoolCapsFormat(poolCaps)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(poolCapsXML, path) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virObjectUnref(poolCaps);
-    return ret;
+    return 0;
 }
 
 
@@ -85,8 +81,8 @@ static int
 mymain(void)
 {
     int ret = 0;
-    virCapsPtr fullCaps = NULL;
-    virCapsPtr fsCaps = NULL;
+    VIR_AUTOUNREF(virCapsPtr) fullCaps = NULL;
+    VIR_AUTOUNREF(virCapsPtr) fsCaps = NULL;
 
 #define DO_TEST(Filename, DriverCaps) \
     do { \
@@ -98,8 +94,7 @@ mymain(void)
 
     if (!(fullCaps = virCapabilitiesNew(VIR_ARCH_NONE, false, false)) ||
         !(fsCaps = virCapabilitiesNew(VIR_ARCH_NONE, false, false))) {
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
     test_virCapabilitiesAddFullStoragePool(fullCaps);
@@ -107,10 +102,6 @@ mymain(void)
 
     DO_TEST("full", fullCaps);
     DO_TEST("fs", fsCaps);
-
- cleanup:
-    virObjectUnref(fullCaps);
-    virObjectUnref(fsCaps);
 
     return ret;
 }
