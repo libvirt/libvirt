@@ -31,6 +31,7 @@
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:16:3e:1b:e8:18'/>

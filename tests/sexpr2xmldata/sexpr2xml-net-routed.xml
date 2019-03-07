@@ -20,6 +20,7 @@
       <source file='/root/some.img'/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <interface type='ethernet'>
       <mac address='00:11:22:33:44:55'/>
       <ip address='172.14.5.6' family='ipv4'/>

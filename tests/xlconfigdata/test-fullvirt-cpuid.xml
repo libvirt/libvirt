@@ -23,6 +23,7 @@
   <on_crash>restart</on_crash>
   <devices>
     <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
+    <controller type='xenbus' index='0'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1'>

@@ -19,6 +19,7 @@
       <source file='/root/some.img'/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <console type='pty'>
       <target type='xen' port='0'/>
     </console>

@@ -417,6 +417,11 @@ libxlDomainDefPostParse(virDomainDefPtr def,
         def->memballoon = memballoon;
     }
 
+    /* add implicit xenbus device */
+    if (virDomainControllerFindByType(def, VIR_DOMAIN_CONTROLLER_TYPE_XENBUS) == -1)
+        if (virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_XENBUS, -1, -1) == NULL)
+            return -1;
+
     return 0;
 }
 

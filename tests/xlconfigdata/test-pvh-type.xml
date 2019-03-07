@@ -15,6 +15,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
+    <controller type='xenbus' index='0'/>
     <console type='pty'>
       <target type='xen' port='0'/>
     </console>

@@ -19,6 +19,7 @@
       <source dev='/dev/vg_dom0test/test2vm'/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <interface type='bridge'>
       <mac address='00:16:36:68:9f:5d'/>
       <source bridge='virbr0'/>

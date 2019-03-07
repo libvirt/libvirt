@@ -21,6 +21,7 @@
       <source file='/xen/rhel5.img'/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <interface type='bridge'>
       <mac address='00:16:3e:1d:06:15'/>
       <source bridge='xenbr0'/>
