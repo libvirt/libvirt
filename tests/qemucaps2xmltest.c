@@ -28,6 +28,8 @@
 typedef struct _testQemuData testQemuData;
 typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
+    const char *inputDir;
+    const char *outputDir;
     const char *base;
     const char *archName;
     int ret;
@@ -36,6 +38,9 @@ struct _testQemuData {
 static int
 testQemuDataInit(testQemuDataPtr data)
 {
+    data->inputDir = abs_srcdir "/qemucapabilitiesdata";
+    data->outputDir = abs_srcdir "/qemucaps2xmloutdata";
+
     data->ret = 0;
 
     return 0;
@@ -137,12 +142,12 @@ testQemuCapsXML(const void *opaque)
     char *capsXml = NULL;
     virCapsPtr capsProvided = NULL;
 
-    if (virAsprintf(&xmlFile, "%s/qemucaps2xmloutdata/caps.%s.xml",
-                    abs_srcdir, data->archName) < 0)
+    if (virAsprintf(&xmlFile, "%s/caps.%s.xml",
+                    data->outputDir, data->archName) < 0)
         goto cleanup;
 
-    if (virAsprintf(&capsFile, "%s/qemucapabilitiesdata/%s.%s.xml",
-                    abs_srcdir, data->base, data->archName) < 0)
+    if (virAsprintf(&capsFile, "%s/%s.%s.xml",
+                    data->inputDir, data->base, data->archName) < 0)
         goto cleanup;
 
     if (virTestLoadFile(capsFile, &capsData) < 0)
