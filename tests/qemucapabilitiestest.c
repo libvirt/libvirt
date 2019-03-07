@@ -196,12 +196,17 @@ mymain(void)
 
 #define DO_TEST(arch, name) \
     do { \
+        VIR_AUTOFREE(char *) title = NULL; \
+        VIR_AUTOFREE(char *) copyTitle = NULL; \
+        if (virAsprintf(&title, "%s (%s)", name, arch) < 0 || \
+            virAsprintf(&copyTitle, "copy %s (%s)", name, arch) < 0) { \
+            return -EXIT_FAILURE; \
+        } \
         data.archName = arch; \
         data.base = name; \
-        if (virTestRun(name "(" arch ")", testQemuCaps, &data) < 0) \
+        if (virTestRun(title, testQemuCaps, &data) < 0) \
             data.ret = -1; \
-        if (virTestRun("copy " name "(" arch ")", \
-                       testQemuCapsCopy, &data) < 0) \
+        if (virTestRun(copyTitle, testQemuCapsCopy, &data) < 0) \
             data.ret = -1; \
     } while (0)
 

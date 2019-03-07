@@ -192,10 +192,15 @@ mymain(void)
         return EXIT_FAILURE;
 
 #define DO_TEST(arch, name) \
-    data.archName = arch; \
-    data.base = name; \
-    if (virTestRun(name "(" arch ")", testQemuCapsXML, &data) < 0) \
-        data.ret = -1
+    do { \
+        VIR_AUTOFREE(char *) title = NULL; \
+        if (virAsprintf(&title, "%s (%s)", name, arch) < 0) \
+            return -EXIT_FAILURE; \
+        data.archName = arch; \
+        data.base = name; \
+        if (virTestRun(title, testQemuCapsXML, &data) < 0) \
+            data.ret = -1; \
+    } while (0)
 
     /* Keep this in sync with qemucapabilitiestest */
     DO_TEST("x86_64", "caps_1.5.3");
