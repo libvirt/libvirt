@@ -987,6 +987,9 @@ x86ModelCopySignatures(virCPUx86ModelPtr dst,
 {
     size_t i;
 
+    if (src->nsignatures == 0)
+        return 0;
+
     if (VIR_ALLOC_N(dst->signatures, src->nsignatures) < 0)
         return -1;
 
