@@ -1279,7 +1279,7 @@ virStringStripSuffix(char *str,
     return true;
 }
 
-int
+bool
 virStringMatchesNameSuffix(const char *file,
                            const char *name,
                            const char *suffix)
@@ -1291,9 +1291,9 @@ virStringMatchesNameSuffix(const char *file,
     if (filelen == (namelen + suffixlen) &&
         STREQLEN(file, name, namelen) &&
         STREQLEN(file + namelen, suffix, suffixlen))
-        return 1;
+        return true;
     else
-        return 0;
+        return false;
 }
 
 /**
