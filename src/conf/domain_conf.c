@@ -23826,7 +23826,6 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
                                 virDomainXMLOptionPtr xmlopt,
                                 unsigned int flags)
 {
-    const char *format;
     bool inactive = flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
     if (!backingStore)
@@ -23841,8 +23840,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
         return 0;
     }
 
-    if (backingStore->format <= 0 ||
-        !(format = virStorageFileFormatTypeToString(backingStore->format))) {
+    if (backingStore->format <= 0 || backingStore->format >= VIR_STORAGE_FILE_LAST) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk backing store format %d"),
                        backingStore->format);
@@ -23856,7 +23854,8 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
-    virBufferAsprintf(buf, "<format type='%s'/>\n", format);
+    virBufferAsprintf(buf, "<format type='%s'/>\n",
+                      virStorageFileFormatTypeToString(backingStore->format));
     if (virDomainDiskSourceFormat(buf, backingStore, 0, false, flags, xmlopt) < 0 ||
         virDomainDiskBackingStoreFormat(buf, backingStore->backingStore,
                                         xmlopt, flags) < 0)
