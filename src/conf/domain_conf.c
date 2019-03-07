@@ -23797,12 +23797,11 @@ virDomainDiskSourceFormat(virBufferPtr buf,
 {
     VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (virDomainStorageSourceFormat(&attrBuf, &childBuf, src, flags) < 0)
-        goto cleanup;
+        return -1;
 
     if (policy && src->type != VIR_STORAGE_TYPE_NETWORK)
         virBufferEscapeString(&attrBuf, " startupPolicy='%s'",
@@ -23812,15 +23811,12 @@ virDomainDiskSourceFormat(virBufferPtr buf,
         virBufferAsprintf(&attrBuf, " index='%u'", src->id);
 
     if (virDomainDiskSourceFormatPrivateData(&childBuf, src, flags, xmlopt) < 0)
-        goto cleanup;
+        return -1;
 
     if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
