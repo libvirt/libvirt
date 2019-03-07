@@ -37,6 +37,7 @@ struct _testQemuData {
     virQEMUDriver driver;
     const char *archName;
     const char *base;
+    int ret;
 };
 
 
@@ -45,6 +46,8 @@ testQemuDataInit(testQemuDataPtr data)
 {
     if (qemuTestDriverInit(&data->driver) < 0)
         return -1;
+
+    data->ret = 0;
 
     return 0;
 }
@@ -173,7 +176,6 @@ testQemuCapsCopy(const void *opaque)
 static int
 mymain(void)
 {
-    int ret = 0;
     testQemuData data;
 
 #if !WITH_YAJL
@@ -194,10 +196,10 @@ mymain(void)
         data.archName = arch; \
         data.base = name; \
         if (virTestRun(name "(" arch ")", testQemuCaps, &data) < 0) \
-            ret = -1; \
+            data.ret = -1; \
         if (virTestRun("copy " name "(" arch ")", \
                        testQemuCapsCopy, &data) < 0) \
-            ret = -1; \
+            data.ret = -1; \
     } while (0)
 
     /* Keep this in sync with qemucaps2xmltest */
@@ -248,7 +250,7 @@ mymain(void)
 
     testQemuDataReset(&data);
 
-    return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return (data.ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)

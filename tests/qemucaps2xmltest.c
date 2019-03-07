@@ -30,11 +30,14 @@ typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     const char *base;
     const char *archName;
+    int ret;
 };
 
 static int
-testQemuDataInit(testQemuDataPtr data ATTRIBUTE_UNUSED)
+testQemuDataInit(testQemuDataPtr data)
 {
+    data->ret = 0;
+
     return 0;
 }
 
@@ -168,8 +171,6 @@ testQemuCapsXML(const void *opaque)
 static int
 mymain(void)
 {
-    int ret = 0;
-
     testQemuData data;
 
 #if !WITH_YAJL
@@ -189,7 +190,7 @@ mymain(void)
     data.archName = arch; \
     data.base = name; \
     if (virTestRun(name "(" arch ")", testQemuCapsXML, &data) < 0) \
-        ret = -1
+        data.ret = -1
 
     /* Keep this in sync with qemucapabilitiestest */
     DO_TEST("x86_64", "caps_1.5.3");
@@ -229,7 +230,7 @@ mymain(void)
     DO_TEST("riscv64", "caps_3.0.0");
     DO_TEST("riscv64", "caps_4.0.0");
 
-    return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return (data.ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/qemucaps2xmlmock.so")
