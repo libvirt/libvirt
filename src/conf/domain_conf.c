@@ -23716,7 +23716,7 @@ virDomainDiskSourceFormatPrivateData(virBufferPtr buf,
 }
 
 
-int
+static int
 virDomainStorageSourceFormat(virBufferPtr attrBuf,
                              virBufferPtr childBuf,
                              virStorageSourcePtr src,
