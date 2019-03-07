@@ -865,3 +865,56 @@ testQemuGetLatestCapsForArch(const char *dirname,
     virDirClose(&dir);
     return ret;
 }
+
+
+int
+testQemuCapsIterate(const char *dirname,
+                    const char *suffix,
+                    testQemuCapsIterateCallback callback,
+                    void *opaque)
+{
+    struct dirent *ent;
+    DIR *dir = NULL;
+    int rc;
+    int ret = -1;
+
+    if (!callback)
+        return 0;
+
+    if (virDirOpen(&dir, dirname) < 0)
+        goto cleanup;
+
+    while ((rc = virDirRead(dir, &ent, dirname) > 0)) {
+        char *tmp = ent->d_name;
+        char *base = NULL;
+        char *archName = NULL;
+
+        /* Strip the trailing suffix, moving on if it's not present */
+        if (!virStringStripSuffix(tmp, suffix))
+            continue;
+
+        /* Find the last dot, moving on if none is present */
+        if (!(archName = strrchr(tmp, '.')))
+            continue;
+
+        /* The base name is everything before the last dot, and
+         * the architecture name everything after it */
+        base = tmp;
+        archName[0] = '\0';
+        archName++;
+
+        /* Run the user-provided callback */
+        if (callback(base, archName, opaque) < 0)
+            goto cleanup;
+    }
+
+    if (rc < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virDirClose(&dir);
+
+    return ret;
+}

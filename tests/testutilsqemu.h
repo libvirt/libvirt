@@ -63,6 +63,14 @@ char *testQemuGetLatestCapsForArch(const char *dirname,
                                    const char *arch,
                                    const char *suffix);
 
+typedef int (*testQemuCapsIterateCallback)(const char *base,
+                                           const char *archName,
+                                           void *opaque);
+int testQemuCapsIterate(const char *dirname,
+                        const char *suffix,
+                        testQemuCapsIterateCallback callback,
+                        void *opaque);
+
 # endif
 
 #endif /* LIBVIRT_TESTUTILSQEMU_H */
