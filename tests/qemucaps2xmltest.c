@@ -32,6 +32,12 @@ struct _testQemuData {
     const char *archName;
 };
 
+static int
+testQemuDataInit(testQemuDataPtr data ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 static virQEMUCapsPtr
 testQemuGetCaps(char *caps)
 {
@@ -175,6 +181,9 @@ mymain(void)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
+
+    if (testQemuDataInit(&data) < 0)
+        return EXIT_FAILURE;
 
 #define DO_TEST(arch, name) \
     data.archName = arch; \

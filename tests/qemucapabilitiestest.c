@@ -41,6 +41,23 @@ struct _testQemuData {
 
 
 static int
+testQemuDataInit(testQemuDataPtr data)
+{
+    if (qemuTestDriverInit(&data->driver) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static void
+testQemuDataReset(testQemuDataPtr data)
+{
+    qemuTestDriverFree(&data->driver);
+}
+
+
+static int
 testQemuCaps(const void *opaque)
 {
     int ret = -1;
@@ -164,11 +181,13 @@ mymain(void)
     return EXIT_AM_SKIP;
 #endif
 
-    if (virThreadInitialize() < 0 ||
-        qemuTestDriverInit(&data.driver) < 0)
+    if (virThreadInitialize() < 0)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
+
+    if (testQemuDataInit(&data) < 0)
+        return EXIT_FAILURE;
 
 #define DO_TEST(arch, name) \
     do { \
@@ -227,7 +246,7 @@ mymain(void)
      * "tests/qemucapsfixreplies foo.replies" to fix the replies ids.
      */
 
-    qemuTestDriverFree(&data.driver);
+    testQemuDataReset(&data);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
