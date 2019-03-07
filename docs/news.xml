@@ -47,6 +47,25 @@
           virConnectGetStoragePoolCapabilites API.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support virtio-{non-}transitional device models
+        </summary>
+        <description>
+          <code>virtio-transitional</code> and
+          <code>virtio-non-transitional</code> <code>model</code> values
+          were added to the QEMU driver for the following devices:
+          <code>disk</code>, <code>interface</code>, <code>filesystem</code>,
+          <code>rng</code>, <code>vsock</code>, <code>memballoon</code>,
+          <code>controller</code> type <code>scsi</code>,
+          <code>controller</code> type <code>virtio-serial</code>,
+          <code>input</code> bus <code>virtio</code>
+          type <code>passthrough</code>,
+          <code>hostdev</code> type <code>scsi_host</code>. These new
+          models can be used to give fine grained control over what
+          virtio device version is presented to the guest.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
