@@ -174,6 +174,25 @@ testQemuCapsXML(const void *opaque)
 }
 
 static int
+doCapsTest(const char *base,
+           const char *archName,
+           testQemuDataPtr data)
+{
+    VIR_AUTOFREE(char *) title = NULL;
+
+    if (virAsprintf(&title, "%s (%s)", base, archName) < 0)
+        return -1;
+
+    data->base = base;
+    data->archName = archName;
+
+    if (virTestRun(title, testQemuCapsXML, data) < 0)
+        data->ret = -1;
+
+    return 0;
+}
+
+static int
 mymain(void)
 {
     testQemuData data;
@@ -193,13 +212,8 @@ mymain(void)
 
 #define DO_TEST(arch, name) \
     do { \
-        VIR_AUTOFREE(char *) title = NULL; \
-        if (virAsprintf(&title, "%s (%s)", name, arch) < 0) \
-            return -EXIT_FAILURE; \
-        data.archName = arch; \
-        data.base = name; \
-        if (virTestRun(title, testQemuCapsXML, &data) < 0) \
-            data.ret = -1; \
+        if (doCapsTest(name, arch, &data) < 0) \
+            return EXIT_FAILURE; \
     } while (0)
 
     /* Keep this in sync with qemucapabilitiestest */
