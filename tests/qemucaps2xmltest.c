@@ -177,8 +177,9 @@ testQemuCapsXML(const void *opaque)
 static int
 doCapsTest(const char *base,
            const char *archName,
-           testQemuDataPtr data)
+           void *opaque)
 {
+    testQemuDataPtr data = (testQemuDataPtr) opaque;
     VIR_AUTOFREE(char *) title = NULL;
 
     if (virAsprintf(&title, "%s (%s)", base, archName) < 0)
@@ -211,49 +212,8 @@ mymain(void)
     if (testQemuDataInit(&data) < 0)
         return EXIT_FAILURE;
 
-#define DO_TEST(arch, name) \
-    do { \
-        if (doCapsTest(name, arch, &data) < 0) \
-            return EXIT_FAILURE; \
-    } while (0)
-
-    /* Keep this in sync with qemucapabilitiestest */
-    DO_TEST("x86_64", "caps_1.5.3");
-    DO_TEST("x86_64", "caps_1.6.0");
-    DO_TEST("x86_64", "caps_1.7.0");
-    DO_TEST("x86_64", "caps_2.1.1");
-    DO_TEST("x86_64", "caps_2.4.0");
-    DO_TEST("x86_64", "caps_2.5.0");
-    DO_TEST("x86_64", "caps_2.6.0");
-    DO_TEST("x86_64", "caps_2.7.0");
-    DO_TEST("x86_64", "caps_2.8.0");
-    DO_TEST("x86_64", "caps_2.9.0");
-    DO_TEST("x86_64", "caps_2.10.0");
-    DO_TEST("x86_64", "caps_2.11.0");
-    DO_TEST("x86_64", "caps_2.12.0");
-    DO_TEST("x86_64", "caps_3.0.0");
-    DO_TEST("x86_64", "caps_3.1.0");
-    DO_TEST("x86_64", "caps_4.0.0");
-    DO_TEST("aarch64", "caps_2.6.0");
-    DO_TEST("aarch64", "caps_2.10.0");
-    DO_TEST("aarch64", "caps_2.12.0");
-    DO_TEST("ppc64", "caps_2.6.0");
-    DO_TEST("ppc64", "caps_2.9.0");
-    DO_TEST("ppc64", "caps_2.10.0");
-    DO_TEST("ppc64", "caps_2.12.0");
-    DO_TEST("ppc64", "caps_3.0.0");
-    DO_TEST("ppc64", "caps_3.1.0");
-    DO_TEST("s390x", "caps_2.7.0");
-    DO_TEST("s390x", "caps_2.8.0");
-    DO_TEST("s390x", "caps_2.9.0");
-    DO_TEST("s390x", "caps_2.10.0");
-    DO_TEST("s390x", "caps_2.11.0");
-    DO_TEST("s390x", "caps_2.12.0");
-    DO_TEST("s390x", "caps_3.0.0");
-    DO_TEST("riscv32", "caps_3.0.0");
-    DO_TEST("riscv32", "caps_4.0.0");
-    DO_TEST("riscv64", "caps_3.0.0");
-    DO_TEST("riscv64", "caps_4.0.0");
+    if (testQemuCapsIterate(data.inputDir, ".xml", doCapsTest, &data) < 0)
+        return EXIT_FAILURE;
 
     return (data.ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
