@@ -426,6 +426,87 @@ virDomainSnapshotDefParseString(const char *xmlStr,
 }
 
 
+/* Perform sanity checking on a redefined snapshot definition. If
+ * @other is non-NULL, this may include swapping def->dom from other
+ * into def. */
+static int
+virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
+                                  const unsigned char *domain_uuid,
+                                  virDomainSnapshotObjPtr other,
+                                  virDomainXMLOptionPtr xmlopt,
+                                  unsigned int flags)
+{
+    int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
+    bool align_match = true;
+    bool external = def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT ||
+        virDomainSnapshotDefIsExternal(def);
+
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) && !external) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("disk-only flag for snapshot %s requires "
+                         "disk-snapshot state"),
+                       def->name);
+        return -1;
+    }
+    if (def->dom && memcmp(def->dom->uuid, domain_uuid, VIR_UUID_BUFLEN)) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(domain_uuid, uuidstr);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("definition for snapshot %s must use uuid %s"),
+                       def->name, uuidstr);
+        return -1;
+    }
+
+    if (other) {
+        if ((other->def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+             other->def->state == VIR_DOMAIN_SNAPSHOT_PAUSED) !=
+            (def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+             def->state == VIR_DOMAIN_SNAPSHOT_PAUSED)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("cannot change between online and offline "
+                             "snapshot state in snapshot %s"),
+                           def->name);
+            return -1;
+        }
+
+        if ((other->def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT) !=
+            (def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("cannot change between disk only and "
+                             "full system in snapshot %s"),
+                           def->name);
+            return -1;
+        }
+
+        if (other->def->dom) {
+            if (def->dom) {
+                if (!virDomainDefCheckABIStability(other->def->dom,
+                                                   def->dom, xmlopt))
+                    return -1;
+            } else {
+                /* Transfer the domain def */
+                def->dom = other->def->dom;
+                other->def->dom = NULL;
+            }
+        }
+    }
+
+    if (def->dom) {
+        if (external) {
+            align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+            align_match = false;
+        }
+        if (virDomainSnapshotAlignDisks(def, align_location,
+                                        align_match) < 0)
+            return -1;
+    }
+
+
+    return 0;
+}
+
+
 /**
  * virDomainSnapshotDefAssignExternalNames:
  * @def: snapshot def object
@@ -1322,12 +1403,8 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
                               unsigned int flags)
 {
     virDomainSnapshotDefPtr def = *defptr;
-    int ret = -1;
-    int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
-    bool align_match = true;
     virDomainSnapshotObjPtr other;
-    bool external = def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT ||
-        virDomainSnapshotDefIsExternal(def);
+    bool check_if_stolen;
 
     /* Prevent circular chains */
     if (def->parent) {
@@ -1335,21 +1412,21 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("cannot set snapshot %s as its own parent"),
                            def->name);
-            goto cleanup;
+            return -1;
         }
         other = virDomainSnapshotFindByName(vm->snapshots, def->parent);
         if (!other) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("parent %s for snapshot %s not found"),
                            def->parent, def->name);
-            goto cleanup;
+            return -1;
         }
         while (other->def->parent) {
             if (STREQ(other->def->parent, def->name)) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("parent %s would create cycle to %s"),
                                other->def->name, def->name);
-                goto cleanup;
+                return -1;
             }
             other = virDomainSnapshotFindByName(vm->snapshots,
                                                 other->def->parent);
@@ -1361,102 +1438,31 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
         }
     }
 
-    /* Check that any replacement is compatible */
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) && !external) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("disk-only flag for snapshot %s requires "
-                         "disk-snapshot state"),
-                       def->name);
-        goto cleanup;
-    }
-
-    if (def->dom &&
-        memcmp(def->dom->uuid, domain->uuid, VIR_UUID_BUFLEN)) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(domain->uuid, uuidstr);
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("definition for snapshot %s must use uuid %s"),
-                       def->name, uuidstr);
-        goto cleanup;
-    }
-
     other = virDomainSnapshotFindByName(vm->snapshots, def->name);
+    check_if_stolen = other && other->def->dom;
+    if (virDomainSnapshotRedefineValidate(def, domain->uuid, other, xmlopt,
+                                          flags) < 0) {
+        /* revert any stealing of the snapshot domain definition */
+        if (check_if_stolen && def->dom && !other->def->dom) {
+            other->def->dom = def->dom;
+            def->dom = NULL;
+        }
+        return -1;
+    }
     if (other) {
-        if ((other->def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
-             other->def->state == VIR_DOMAIN_SNAPSHOT_PAUSED) !=
-            (def->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
-             def->state == VIR_DOMAIN_SNAPSHOT_PAUSED)) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot change between online and offline "
-                             "snapshot state in snapshot %s"),
-                           def->name);
-            goto cleanup;
-        }
-
-        if ((other->def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT) !=
-            (def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot change between disk only and "
-                             "full system in snapshot %s"),
-                           def->name);
-            goto cleanup;
-        }
-
-        if (other->def->dom) {
-            if (def->dom) {
-                if (!virDomainDefCheckABIStability(other->def->dom,
-                                                   def->dom, xmlopt))
-                    goto cleanup;
-            } else {
-                /* Transfer the domain def */
-                def->dom = other->def->dom;
-                other->def->dom = NULL;
-            }
-        }
-
-        if (def->dom) {
-            if (external) {
-                align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-                align_match = false;
-            }
-
-            if (virDomainSnapshotAlignDisks(def, align_location,
-                                            align_match) < 0) {
-                /* revert stealing of the snapshot domain definition */
-                if (def->dom && !other->def->dom) {
-                    other->def->dom = def->dom;
-                    def->dom = NULL;
-                }
-                goto cleanup;
-            }
-        }
-
         if (other == vm->current_snapshot) {
             *update_current = true;
             vm->current_snapshot = NULL;
         }
 
         /* Drop and rebuild the parent relationship, but keep all
-         * child relations by reusing snap.  */
+         * child relations by reusing snap. */
         virDomainSnapshotDropParent(other);
         virDomainSnapshotDefFree(other->def);
         other->def = def;
         *defptr = NULL;
         *snap = other;
-    } else {
-        if (def->dom) {
-            if (external) {
-                align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-                align_match = false;
-            }
-            if (virDomainSnapshotAlignDisks(def, align_location,
-                                            align_match) < 0)
-                goto cleanup;
-        }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
