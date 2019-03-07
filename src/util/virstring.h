@@ -292,8 +292,8 @@ bool virStringHasSuffix(const char *str,
                         const char *suffix);
 bool virStringHasCaseSuffix(const char *str,
                             const char *suffix);
-int virStringStripSuffix(char *str,
-                         const char *suffix) ATTRIBUTE_RETURN_CHECK;
+bool virStringStripSuffix(char *str,
+                          const char *suffix) ATTRIBUTE_RETURN_CHECK;
 int virStringMatchesNameSuffix(const char *file,
                                const char *name,
                                const char *suffix);
