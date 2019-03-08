@@ -135,6 +135,10 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL    = (1 << 9), /* Filter by snapshots
                                                         that use files external
                                                         to disk images */
+
+    VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL = (1 << 10), /* Ensure parents occur
+                                                         before children in
+                                                         the resulting list */
 } virDomainSnapshotListFlags;
 
 /* Return the number of snapshots for this domain */

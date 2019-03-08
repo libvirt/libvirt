@@ -1,7 +1,7 @@
 /*
  * libvirt-domain-snapshot.c: entry points for virDomainSnapshotPtr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -298,6 +298,10 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
  *
  * Provides the number of domain snapshots for this domain.
  *
+ * This function will accept VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL in
+ * @flags only if virDomainSnapshotListNames() can honor it, although
+ * the flag has no other effect here.
+ *
  * By default, this command covers all snapshots; it is also possible to
  * limit things to just snapshots with no parents, when @flags includes
  * VIR_DOMAIN_SNAPSHOT_LIST_ROOTS.  Additional filters are provided in
@@ -368,6 +372,13 @@ virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
  * Collect the list of domain snapshots for the given domain, and store
  * their names in @names.  The value to use for @nameslen can be determined
  * by virDomainSnapshotNum() with the same @flags.
+ *
+ * If @flags contains VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL, and no
+ * other connection is modifying snapshots, then it is guaranteed that
+ * for any snapshot in the resulting list, no snapshots later in the
+ * list can be reached by a sequence of virDomainSnapshotGetParent()
+ * starting from that earlier snapshot; otherwise, the order of
+ * snapshots in the resulting list is unspecified.
  *
  * By default, this command covers all snapshots; it is also possible to
  * limit things to just snapshots with no parents, when @flags includes
@@ -457,6 +468,14 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
  * an array to store those objects.  This API solves the race inherent in
  * virDomainSnapshotListNames().
  *
+ * If @flags contains VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL and @snaps
+ * is non-NULL, and no other connection is modifying snapshots, then
+ * it is guaranteed that for any snapshot in the resulting list, no
+ * snapshots later in the list can be reached by a sequence of
+ * virDomainSnapshotGetParent() starting from that earlier snapshot;
+ * otherwise, the order of snapshots in the resulting list is
+ * unspecified.
+ *
  * By default, this command covers all snapshots; it is also possible to
  * limit things to just snapshots with no parents, when @flags includes
  * VIR_DOMAIN_SNAPSHOT_LIST_ROOTS.  Additional filters are provided in
@@ -533,6 +552,10 @@ virDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
  *
  * Provides the number of child snapshots for this domain snapshot.
  *
+ * This function will accept VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL in
+ * @flags only if virDomainSnapshotListChildrenNames() can honor it,
+ * although the flag has no other effect here.
+ *
  * By default, this command covers only direct children; it is also possible
  * to expand things to cover all descendants, when @flags includes
  * VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS.  Also, some filters are provided in
@@ -604,6 +627,14 @@ virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
  * snapshot, and store their names in @names.  The value to use for
  * @nameslen can be determined by virDomainSnapshotNumChildren() with
  * the same @flags.
+ *
+ * If @flags lacks VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS or contains
+ * VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL, and no other connection is
+ * modifying snapshots, then it is guaranteed that for any snapshot in
+ * the resulting list, no snapshots later in the list can be reached
+ * by a sequence of virDomainSnapshotGetParent() starting from that
+ * earlier snapshot; otherwise, the order of snapshots in the
+ * resulting list is unspecified.
  *
  * By default, this command covers only direct children; it is also possible
  * to expand things to cover all descendants, when @flags includes
@@ -696,6 +727,14 @@ virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
  * Collect the list of domain snapshots that are children of the given
  * snapshot, and allocate an array to store those objects.  This API solves
  * the race inherent in virDomainSnapshotListChildrenNames().
+ *
+ * If @flags lacks VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS or contains
+ * VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL, @snaps is non-NULL, and no
+ * other connection is modifying snapshots, then it is guaranteed that
+ * for any snapshot in the resulting list, no snapshots later in the
+ * list can be reached by a sequence of virDomainSnapshotGetParent()
+ * starting from that earlier snapshot; otherwise, the order of
+ * snapshots in the resulting list is unspecified.
  *
  * By default, this command covers only direct children; it is also possible
  * to expand things to cover all descendants, when @flags includes
