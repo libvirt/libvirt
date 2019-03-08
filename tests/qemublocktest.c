@@ -51,7 +51,6 @@ testBackingXMLjsonXML(const void *args)
     VIR_AUTOFREE(char *) propsstr = NULL;
     VIR_AUTOFREE(char *) protocolwrapper = NULL;
     VIR_AUTOFREE(char *) actualxml = NULL;
-    int ret = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) xmlsrc = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) jsonsrc = NULL;
 
@@ -61,36 +60,36 @@ testBackingXMLjsonXML(const void *args)
     xmlsrc->type = data->type;
 
     if (!(xml = virXMLParseStringCtxt(data->xml, "(test storage source XML)", &ctxt)))
-        goto cleanup;
+        return -1;
 
     if (virDomainDiskSourceParse(ctxt->node, ctxt, xmlsrc, 0, NULL) < 0) {
         fprintf(stderr, "failed to parse disk source xml\n");
-        goto cleanup;
+        return -1;
     }
 
     if (!(backendprops = qemuBlockStorageSourceGetBackendProps(xmlsrc, true))) {
         fprintf(stderr, "failed to format disk source json\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virJSONValueObjectCreate(&wrapper, "a:file", &backendprops, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(propsstr = virJSONValueToString(wrapper, false)))
-        goto cleanup;
+        return -1;
 
     if (virAsprintf(&protocolwrapper, "json:%s", propsstr) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(jsonsrc = virStorageSourceNewFromBackingAbsolute(protocolwrapper))) {
         fprintf(stderr, "failed to parse disk json\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainDiskSourceFormat(&buf, jsonsrc, 0, 0, NULL) < 0 ||
         !(actualxml = virBufferContentAndReset(&buf))) {
         fprintf(stderr, "failed to format disk source xml\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(actualxml, data->xml)) {
@@ -98,13 +97,10 @@ testBackingXMLjsonXML(const void *args)
                         "actual storage source xml:\n%s\n"
                         "intermediate json:\n%s\n",
                         data->xml, actualxml, protocolwrapper);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
