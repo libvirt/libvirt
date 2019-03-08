@@ -98,11 +98,11 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
 /**
  * virDomainSnapshotCreateXML:
  * @domain: a domain object
- * @xmlDesc: string containing an XML description of the domain
+ * @xmlDesc: string containing an XML description of the domain snapshot
  * @flags: bitwise-OR of virDomainSnapshotCreateFlags
  *
  * Creates a new snapshot of a domain based on the snapshot xml
- * contained in xmlDesc.
+ * contained in xmlDesc, with a top-level element <domainsnapshot>.
  *
  * If @flags is 0, the domain can be active, in which case the
  * snapshot will be a full system snapshot (capturing both disk state,
@@ -247,7 +247,8 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
  * @snapshot: a domain snapshot object
  * @flags: bitwise-OR of supported virDomainSnapshotXMLFlags
  *
- * Provide an XML description of the domain snapshot.
+ * Provide an XML description of the domain snapshot, with a top-level
+ * element of <domainsnapshot>.
  *
  * No security-sensitive data will be included unless @flags contains
  * VIR_DOMAIN_SNAPSHOT_XML_SECURE; this flag is rejected on read-only
