@@ -9081,7 +9081,6 @@ virDomainStorageSourceParse(xmlNodePtr node,
                             virStorageSourcePtr src,
                             unsigned int flags)
 {
-    int ret = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr tmp;
 
@@ -9099,34 +9098,34 @@ virDomainStorageSourceParse(xmlNodePtr node,
         break;
     case VIR_STORAGE_TYPE_NETWORK:
         if (virDomainDiskSourceNetworkParse(node, ctxt, src, flags) < 0)
-            goto cleanup;
+            return -1;
         break;
     case VIR_STORAGE_TYPE_VOLUME:
         if (virDomainDiskSourcePoolDefParse(node, &src->srcpool) < 0)
-            goto cleanup;
+            return -1;
         break;
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk type %s"),
                        virStorageTypeToString(src->type));
-        goto cleanup;
+        return -1;
     }
 
     if ((tmp = virXPathNode("./auth", ctxt)) &&
         !(src->auth = virStorageAuthDefParse(tmp, ctxt)))
-        goto cleanup;
+        return -1;
 
     if ((tmp = virXPathNode("./encryption", ctxt)) &&
         !(src->encryption = virStorageEncryptionParseNode(tmp, ctxt)))
-        goto cleanup;
+        return -1;
 
     if (virDomainDiskSourcePRParse(node, ctxt, &src->pr) < 0)
-        goto cleanup;
+        return -1;
 
     if (virSecurityDeviceLabelDefParseXML(&src->seclabels, &src->nseclabels,
                                           ctxt, flags) < 0)
-        goto cleanup;
+        return -1;
 
     /* People sometimes pass a bogus '' source path when they mean to omit the
      * source element completely (e.g. CDROM without media). This is just a
@@ -9134,10 +9133,7 @@ virDomainStorageSourceParse(xmlNodePtr node,
     if (src->path && !*src->path)
         VIR_FREE(src->path);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
