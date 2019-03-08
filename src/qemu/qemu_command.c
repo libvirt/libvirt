@@ -10660,6 +10660,22 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 
     virCommandAddEnvPassCommon(cmd);
 
+    /* For system QEMU we want to set both HOME and all the XDG variables to
+     * libDir/qemu otherwise apps QEMU links to might try to access the default
+     * home dir '/' which would always result in a permission issue.
+     *
+     * For session QEMU, we only want to set XDG_CACHE_HOME as cache data
+     * may be purged at any time and that should not affect any app. We
+     * do want VMs to integrate with services in user's session so we're
+     * not re-setting any other env variables
+     */
+    if (!driver->privileged) {
+        virCommandAddEnvFormat(cmd, "XDG_CACHE_HOME=%s/%s",
+                               priv->libDir, ".cache");
+    } else {
+        virCommandAddEnvXDG(cmd, priv->libDir);
+    }
+
     if (qemuBuildNameCommandLine(cmd, cfg, def, qemuCaps) < 0)
         goto error;
 

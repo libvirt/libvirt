@@ -3,6 +3,9 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest=guest,debug-threads=on \

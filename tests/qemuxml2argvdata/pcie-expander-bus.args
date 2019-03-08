@@ -3,6 +3,9 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name pcie-expander-bus-test \

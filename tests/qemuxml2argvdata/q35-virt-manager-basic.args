@@ -3,6 +3,9 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-virt-manager-basic/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-virt-manager-basic/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-virt-manager-basic/.config \
 QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu-system-x86_64 \
 -name virt-manager-basic \

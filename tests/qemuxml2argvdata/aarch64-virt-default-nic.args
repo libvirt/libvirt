@@ -3,6 +3,9 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-aarch64-virt-default/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-aarch64-virt-default/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64-virt-default/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name aarch64-virt-default-nic \

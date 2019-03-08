@@ -3,6 +3,9 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-q35/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-q35/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-q35/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name q35 \
