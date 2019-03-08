@@ -244,4 +244,7 @@ VIR_DEFINE_AUTOCLEAN_FUNC(virXPathContextNodeSave, virXPathContextNodeRestore);
                                                                  .node = _ctxt->node}; \
     ignore_value(&_ctxt ## CtxtSave)
 
+VIR_DEFINE_AUTOPTR_FUNC(xmlDoc, xmlFreeDoc);
+VIR_DEFINE_AUTOPTR_FUNC(xmlXPathContext, xmlXPathFreeContext);
+
 #endif /* LIBVIRT_VIRXML_H */
