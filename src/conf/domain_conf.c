@@ -9028,7 +9028,6 @@ virDomainDiskSourcePrivateDataParse(xmlNodePtr node,
                                     virDomainXMLOptionPtr xmlopt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
-    int ret = -1;
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
         !xmlopt || !xmlopt->privateData.storageParse)
@@ -9036,18 +9035,13 @@ virDomainDiskSourcePrivateDataParse(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (!(ctxt->node = virXPathNode("./privateData", ctxt))) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!(ctxt->node = virXPathNode("./privateData", ctxt)))
+        return 0;
 
     if (xmlopt->privateData.storageParse(ctxt, src) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -9057,21 +9051,16 @@ virDomainDiskSourcePRParse(xmlNodePtr node,
                            virStoragePRDefPtr *pr)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
-    int ret = -1;
 
     ctxt->node = node;
 
-    if (!(ctxt->node = virXPathNode("./reservations", ctxt))) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!(ctxt->node = virXPathNode("./reservations", ctxt)))
+        return 0;
 
     if (!(*pr = virStoragePRDefParseXML(ctxt)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
