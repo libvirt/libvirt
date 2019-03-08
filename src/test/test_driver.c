@@ -5960,6 +5960,7 @@ testDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
     int n;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromDomain(domain)))
@@ -5981,6 +5982,7 @@ testDomainSnapshotListNames(virDomainPtr domain,
     int n;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromDomain(domain)))
@@ -6002,6 +6004,7 @@ testDomainListAllSnapshots(virDomainPtr domain,
     int n;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromDomain(domain)))
@@ -6024,6 +6027,7 @@ testDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
@@ -6049,6 +6053,7 @@ testDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
@@ -6074,6 +6079,7 @@ testDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
