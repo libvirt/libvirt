@@ -4726,13 +4726,18 @@ Output basic information about a named <snapshot>, or the current snapshot
 with I<--current>.
 
 =item B<snapshot-list> I<domain> [I<--metadata>] [I<--no-metadata>]
-[{I<--parent> | I<--roots> | [{I<--tree> | I<--name>}]}]
+[{I<--parent> | I<--roots> | [{I<--tree> | I<--name>}]}] [I<--topological>]
 [{[I<--from>] B<snapshot> | I<--current>} [I<--descendants>]]
 [I<--leaves>] [I<--no-leaves>] [I<--inactive>] [I<--active>]
 [I<--disk-only>] [I<--internal>] [I<--external>]
 
 List all of the available snapshots for the given domain, defaulting
 to show columns for the snapshot name, creation time, and domain state.
+
+Normally, table form output is sorted by snapshot name; using
+I<--topological> instead sorts so that no child is listed before its
+ancestors (although there may be more than one possible ordering with
+this property).
 
 If I<--parent> is specified, add a column to the output table giving
 the name of the parent of each snapshot.  If I<--roots> is specified,
