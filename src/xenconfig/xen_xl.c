@@ -607,6 +607,34 @@ xenParseXLVnuma(virConfPtr conf,
 }
 #endif
 
+#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
+static int
+xenParseXLGntLimits(virConfPtr conf, virDomainDefPtr def)
+{
+    unsigned long max_gntframes;
+    int ctlr_idx;
+    virDomainControllerDefPtr xenbus_ctlr;
+
+    if (xenConfigGetULong(conf, "max_grant_frames", &max_gntframes, 0) < 0)
+        return -1;
+
+    if (max_gntframes <= 0)
+        return 0;
+
+    ctlr_idx = virDomainControllerFindByType(def, VIR_DOMAIN_CONTROLLER_TYPE_XENBUS);
+    if (ctlr_idx == -1)
+        xenbus_ctlr = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_XENBUS, -1, -1);
+    else
+        xenbus_ctlr = def->controllers[ctlr_idx];
+
+    if (xenbus_ctlr == NULL)
+        return -1;
+
+    xenbus_ctlr->opts.xenbusopts.maxGrantFrames = max_gntframes;
+    return 0;
+}
+#endif
+
 static int
 xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
 {
@@ -1165,6 +1193,11 @@ xenParseXL(virConfPtr conf,
         goto cleanup;
 #endif
 
+#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
+    if (xenParseXLGntLimits(conf, def) < 0)
+        goto cleanup;
+#endif
+
     if (xenParseXLCPUID(conf, def) < 0)
         goto cleanup;
 
@@ -1514,6 +1547,24 @@ xenFormatXLDomainVnuma(virConfPtr conf,
  cleanup:
     virConfFreeValue(vnumaVal);
     return -1;
+}
+#endif
+
+#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
+static int
+xenFormatXLGntLimits(virConfPtr conf, virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_XENBUS &&
+            def->controllers[i]->opts.xenbusopts.maxGrantFrames > 0) {
+            if (xenConfigSetInt(conf, "max_grant_frames",
+                                def->controllers[i]->opts.xenbusopts.maxGrantFrames) < 0)
+                return -1;
+        }
+    }
+    return 0;
 }
 #endif
 
@@ -2163,6 +2214,11 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
 
 #ifdef LIBXL_HAVE_VNUMA
     if (xenFormatXLDomainVnuma(conf, def) < 0)
+        goto cleanup;
+#endif
+
+#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
+    if (xenFormatXLGntLimits(conf, def) < 0)
         goto cleanup;
 #endif
 

@@ -1,0 +1,32 @@
+<domain type='xen'>
+  <name>XenGuest1</name>
+  <uuid>45b60f51-88a9-47a8-a3b3-5e66d71b2283</uuid>
+  <memory unit='KiB'>524288</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <bootloader>/usr/bin/pygrub</bootloader>
+  <os>
+    <type arch='x86_64' machine='xenpv'>linux</type>
+  </os>
+  <clock offset='utc' adjustment='reset'/>
+  <on_poweroff>preserve</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>preserve</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/xen/images/debian/disk.qcow2'/>
+      <target dev='xvda' bus='xen'/>
+    </disk>
+    <controller type='xenbus' index='0' maxGrantFrames='64'/>
+    <interface type='ethernet'>
+      <mac address='5a:36:0e:be:00:09'/>
+    </interface>
+    <console type='pty'>
+      <target type='xen' port='0'/>
+    </console>
+    <input type='mouse' bus='xen'/>
+    <input type='keyboard' bus='xen'/>
+    <memballoon model='xen'/>
+  </devices>
+</domain>

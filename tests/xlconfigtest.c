@@ -299,6 +299,10 @@ mymain(void)
     DO_TEST_FORMAT("fullvirt-direct-kernel-boot-extra", false);
     DO_TEST_FORMAT("fullvirt-direct-kernel-boot-bogus-extra", false);
 #endif
+#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
+    DO_TEST("max-gntframes");
+#endif
+
     DO_TEST("vif-typename");
     DO_TEST("vif-multi-ip");
     DO_TEST("usb");
