@@ -43,14 +43,14 @@ static int
 testBackingXMLjsonXML(const void *args)
 {
     const struct testBackingXMLjsonXMLdata *data = args;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virJSONValuePtr backendprops = NULL;
-    virJSONValuePtr wrapper = NULL;
-    char *propsstr = NULL;
-    char *protocolwrapper = NULL;
-    char *actualxml = NULL;
+    VIR_AUTOPTR(xmlDoc) xml = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOPTR(virJSONValue) backendprops = NULL;
+    VIR_AUTOPTR(virJSONValue) wrapper = NULL;
+    VIR_AUTOFREE(char *) propsstr = NULL;
+    VIR_AUTOFREE(char *) protocolwrapper = NULL;
+    VIR_AUTOFREE(char *) actualxml = NULL;
     int ret = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) xmlsrc = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) jsonsrc = NULL;
@@ -104,15 +104,6 @@ testBackingXMLjsonXML(const void *args)
     ret = 0;
 
  cleanup:
-    VIR_FREE(propsstr);
-    VIR_FREE(protocolwrapper);
-    VIR_FREE(actualxml);
-    virJSONValueFree(backendprops);
-    virJSONValueFree(wrapper);
-    virBufferFreeAndReset(&buf);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-
     return ret;
 }
 
