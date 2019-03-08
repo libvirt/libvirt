@@ -1213,9 +1213,10 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
         from = &snapshots->metaroot;
     }
 
-    /* We handle LIST_ROOT/LIST_DESCENDANTS directly, mask that bit
-     * out to determine when we must use the filter callback.  */
-    data.flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+    /* We handle LIST_ROOT/LIST_DESCENDANTS and LIST_TOPOLOGICAL directly,
+     * mask those bits out to determine when we must use the filter callback. */
+    data.flags &= ~(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                    VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL);
 
     /* If this common code is being used, we assume that all snapshots
      * have metadata, and thus can handle METADATA up front as an
@@ -1240,7 +1241,11 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
         data.flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) {
-        if (from->def)
+        /* We could just always do a topological visit; but it is
+         * possible to optimize for less stack usage and time when a
+         * simpler full hashtable visit or counter will do. */
+        if (from->def || (names &&
+                          (flags & VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL)))
             virDomainSnapshotForEachDescendant(from,
                                                virDomainSnapshotObjListCopyNames,
                                                &data);
@@ -1327,10 +1332,10 @@ virDomainSnapshotActOnDescendant(void *payload,
     virDomainSnapshotObjPtr obj = payload;
     struct snapshot_act_on_descendant *curr = data;
 
+    (curr->iter)(payload, name, curr->data);
     curr->number += 1 + virDomainSnapshotForEachDescendant(obj,
                                                            curr->iter,
                                                            curr->data);
-    (curr->iter)(payload, name, curr->data);
     return 0;
 }
 
