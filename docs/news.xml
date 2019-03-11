@@ -124,6 +124,18 @@
           Report class information for PCI node device capability.
         </summary>
       </change>
+      <change>
+        <summary>
+          Split setup of IPv4 and IPv6 top level chain
+        </summary>
+        <description>
+          The requirement resulting from private chains improvement done
+          in <code>v5.1.0</code> was refined so that only tables from
+          corresponding IP version are required. This means that if a
+          network doesn't have <code>IPv6</code> enabled then those
+          tables are not required.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
@@ -202,7 +214,9 @@
           Historically firewall rules for virtual networks were added
           straight into the base chains. This works but has a number of
           bugs and design limitations. To address them, libvirt now puts
-          firewall rules into its own chains.
+          firewall rules into its own chains. Note that with this change the
+          <code>filter</code>, <code>nat</code> and <code>mangle</code> tables
+          are required for both <code>IPv4</code> and <code>IPv6</code>.
         </description>
       </change>
       <change>
