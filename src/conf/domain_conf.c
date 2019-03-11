@@ -9162,19 +9162,16 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr source;
-    int ret = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) backingStore = NULL;
     VIR_AUTOFREE(char *) type = NULL;
     VIR_AUTOFREE(char *) format = NULL;
     VIR_AUTOFREE(char *) idx = NULL;
 
-    if (!(ctxt->node = virXPathNode("./backingStore", ctxt))) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!(ctxt->node = virXPathNode("./backingStore", ctxt)))
+        return 0;
 
     if (!(backingStore = virStorageSourceNew()))
-        goto cleanup;
+        return -1;
 
     /* backing store is always read-only */
     backingStore->readonly = true;
@@ -9182,52 +9179,49 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     /* terminator does not have a type */
     if (!(type = virXMLPropString(ctxt->node, "type"))) {
         VIR_STEAL_PTR(src->backingStore, backingStore);
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
         (idx = virXMLPropString(ctxt->node, "index")) &&
         virStrToLong_uip(idx, NULL, 10, &backingStore->id) < 0) {
         virReportError(VIR_ERR_XML_ERROR, _("invalid disk index '%s'"), idx);
-        goto cleanup;
+        return -1;
     }
 
     backingStore->type = virStorageTypeFromString(type);
     if (backingStore->type <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown disk backing store type '%s'"), type);
-        goto cleanup;
+        return -1;
     }
 
     if (!(format = virXPathString("string(./format/@type)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing disk backing store format"));
-        goto cleanup;
+        return -1;
     }
 
     backingStore->format = virStorageFileFormatTypeFromString(format);
     if (backingStore->format <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown disk backing store format '%s'"), format);
-        goto cleanup;
+        return -1;
     }
 
     if (!(source = virXPathNode("./source", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing disk backing store source"));
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainDiskSourceParse(source, ctxt, backingStore, flags, xmlopt) < 0 ||
         virDomainDiskBackingStoreParse(ctxt, backingStore, flags, xmlopt) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_STEAL_PTR(src->backingStore, backingStore);
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 #define PARSE_IOTUNE(val) \
