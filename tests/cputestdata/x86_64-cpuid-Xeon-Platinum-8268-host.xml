@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Skylake-Server-IBRS</model>
+  <model>Cascadelake-Server</model>
   <vendor>Intel</vendor>
   <feature name='ds'/>
   <feature name='acpi'/>
@@ -21,14 +21,11 @@
   <feature name='osxsave'/>
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
-  <feature name='clflushopt'/>
   <feature name='intel-pt'/>
   <feature name='pku'/>
   <feature name='ospke'/>
-  <feature name='avx512vnni'/>
   <feature name='stibp'/>
   <feature name='arch-capabilities'/>
-  <feature name='ssbd'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>

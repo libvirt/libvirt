@@ -46,6 +46,7 @@
     <include filename="x86_Skylake-Client-IBRS.xml"/>
     <include filename="x86_Skylake-Server.xml"/>
     <include filename="x86_Skylake-Server-IBRS.xml"/>
+    <include filename="x86_Cascadelake-Server.xml"/>
     <include filename="x86_Icelake-Client.xml"/>
     <include filename="x86_Icelake-Server.xml"/>
 
