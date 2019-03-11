@@ -43,8 +43,10 @@ struct _virDomainSnapshotObjList {
 };
 
 
-/* Parse a <snapshots> XML entry into snapshots, which must start empty.
- * Any <domain> sub-elements of a <domainsnapshot> must match domain_uuid.
+/* Parse a <snapshots> XML entry into snapshots, which must start
+ * empty.  Any <domain> sub-elements of a <domainsnapshot> must match
+ * domain_uuid.  @flags is virDomainSnapshotParseFlags. Return the
+ * number of snapshots parsed, or -1 on error.
  */
 int
 virDomainSnapshotObjListParse(const char *xmlStr,
@@ -98,11 +100,6 @@ virDomainSnapshotObjListParse(const char *xmlStr,
 
     if ((n = virXPathNodeSet("./domainsnapshot", ctxt, &nodes)) < 0)
         goto cleanup;
-    if (!n) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("expected at least one <domainsnapshot> child"));
-        goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virDomainSnapshotDefPtr def;
@@ -137,7 +134,7 @@ virDomainSnapshotObjListParse(const char *xmlStr,
         (*current_snap)->def->current = true;
     }
 
-    ret = 0;
+    ret = n;
  cleanup:
     if (ret < 0) {
         /* There were no snapshots before this call; so on error, just
@@ -177,8 +174,9 @@ virDomainSnapshotFormatOne(void *payload,
 }
 
 
-/* Format the XML for all snapshots in the list into buf. On error,
- * clear the buffer and return -1. */
+/* Format the XML for all snapshots in the list into buf. @flags is
+ * virDomainSnapshotFormatFlags. On error, clear the buffer and return
+ * -1. */
 int
 virDomainSnapshotObjListFormat(virBufferPtr buf,
                                const char *uuidstr,
@@ -196,6 +194,7 @@ virDomainSnapshotObjListFormat(virBufferPtr buf,
         .flags = flags,
     };
 
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE, -1);
     virBufferAddLit(buf, "<snapshots");
     if (current_snapshot)
         virBufferEscapeString(buf, " current='%s'",
