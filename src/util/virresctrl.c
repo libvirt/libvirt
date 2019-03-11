@@ -2144,6 +2144,42 @@ virResctrlAllocMemoryBandwidth(virResctrlInfoPtr resctrl,
 
 
 static int
+virResctrlAllocCopyMemBW(virResctrlAllocPtr dst,
+                         virResctrlAllocPtr src)
+{
+    size_t i = 0;
+    virResctrlAllocMemBWPtr dst_bw = NULL;
+    virResctrlAllocMemBWPtr src_bw = src->mem_bw;
+
+    if (!src->mem_bw)
+        return 0;
+
+    if (!dst->mem_bw &&
+        VIR_ALLOC(dst->mem_bw) < 0)
+        return -1;
+
+    dst_bw = dst->mem_bw;
+
+    if (src_bw->nbandwidths > dst_bw->nbandwidths &&
+        VIR_EXPAND_N(dst_bw->bandwidths, dst_bw->nbandwidths,
+                     src_bw->nbandwidths - dst_bw->nbandwidths) < 0)
+        return -1;
+
+    for (i = 0; i < src_bw->nbandwidths; i++) {
+        if (dst_bw->bandwidths[i]) {
+            *dst_bw->bandwidths[i] = 123;
+            continue;
+        }
+        if (VIR_ALLOC(dst_bw->bandwidths[i]) < 0)
+            return -1;
+        *dst_bw->bandwidths[i] = *src_bw->bandwidths[i];
+    }
+
+    return 0;
+}
+
+
+static int
 virResctrlAllocCopyMasks(virResctrlAllocPtr dst,
                          virResctrlAllocPtr src)
 {
@@ -2208,6 +2244,9 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
         goto cleanup;
 
     if (virResctrlAllocCopyMasks(alloc, alloc_default) < 0)
+        goto cleanup;
+
+    if (virResctrlAllocCopyMemBW(alloc, alloc_default) < 0)
         goto cleanup;
 
     for (level = 0; level < alloc->nlevels; level++) {
