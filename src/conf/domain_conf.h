@@ -3067,11 +3067,6 @@ virDomainDiskDefPtr
 virDomainDiskRemove(virDomainDefPtr def, size_t i);
 virDomainDiskDefPtr
 virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
-int virDomainDiskSourceParse(xmlNodePtr node,
-                             xmlXPathContextPtr ctxt,
-                             virStorageSourcePtr src,
-                             unsigned int flags,
-                             virDomainXMLOptionPtr xmlopt);
 
 int virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net);
 virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def, const char *device);

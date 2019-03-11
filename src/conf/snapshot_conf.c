@@ -146,7 +146,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     }
 
     if ((cur = virXPathNode("./source", ctxt)) &&
-        virDomainDiskSourceParse(cur, ctxt, def->src, flags, xmlopt) < 0)
+        virDomainStorageSourceParse(cur, ctxt, def->src, flags, xmlopt) < 0)
         goto cleanup;
 
     if ((driver = virXPathString("string(./driver/@type)", ctxt)) &&
