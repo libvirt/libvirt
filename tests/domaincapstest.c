@@ -432,6 +432,10 @@ mymain(void)
                  "/usr/bin/qemu-system-s390x", NULL,
                  "s390x", VIR_DOMAIN_VIRT_KVM);
 
+    DO_TEST_QEMU("3.1.0", "caps_3.1.0",
+                 "/usr/bin/qemu-system-x86_64", NULL,
+                 "x86_64", VIR_DOMAIN_VIRT_KVM);
+
     DO_TEST_QEMU("4.0.0", "caps_4.0.0",
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
