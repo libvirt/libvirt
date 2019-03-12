@@ -385,7 +385,7 @@ vshCmddefCheckInternals(vshControl *ctl,
             }
             if ((p = strchr(name, '=')) &&
                 VIR_STRNDUP(name, name, p - name) < 0)
-                assert(false); /* Allocation failure during self-test is bad */
+                vshErrorOOM();
             for (j = i + 1; cmd->opts[j].name; j++) {
                 if (STREQ(name, cmd->opts[j].name) &&
                     cmd->opts[j].type != VSH_OT_ALIAS)
