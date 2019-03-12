@@ -486,7 +486,6 @@ TESTS_ENVIRONMENT = \
   abs_top_srcdir=`cd '$(top_srcdir)'; pwd` \
   abs_builddir=$(abs_builddir) \
   abs_srcdir=$(abs_srcdir) \
-  CONFIG_HEADER="$(lv_abs_top_builddir)/config.h" \
   SHELL="$(SHELL)" \
   LIBVIRT_DRIVER_DIR="$(lv_abs_top_builddir)/src/.libs" \
   LIBVIRT_AUTOSTART=0 \
