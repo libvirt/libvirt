@@ -46,21 +46,16 @@ VIR_LOG_INIT("tests.storagetest");
  * sub/link2: symlink to wrap
  *
  * Relative names to these files are known at compile time, but absolute
- * and canonical names depend on where the test is run; for convenience,
+ * names depend on where the test is run; for convenience,
  * we pre-populate the computation of these names for use during the test.
 */
 
 static char *qemuimg;
 static char *absraw;
-static char *canonraw;
 static char *absqcow2;
-static char *canonqcow2;
 static char *abswrap;
-static char *canonwrap;
 static char *absqed;
-static char *canonqed;
 static char *absdir;
-static char *canondir;
 static char *abslink2;
 
 static void
@@ -68,15 +63,10 @@ testCleanupImages(void)
 {
     VIR_FREE(qemuimg);
     VIR_FREE(absraw);
-    VIR_FREE(canonraw);
     VIR_FREE(absqcow2);
-    VIR_FREE(canonqcow2);
     VIR_FREE(abswrap);
-    VIR_FREE(canonwrap);
     VIR_FREE(absqed);
-    VIR_FREE(canonqed);
     VIR_FREE(absdir);
-    VIR_FREE(canondir);
     VIR_FREE(abslink2);
 
     if (chdir(abs_builddir) < 0) {
@@ -165,10 +155,6 @@ testPrepImages(void)
         fprintf(stderr, "unable to create directory %s\n", datadir "/dir");
         goto cleanup;
     }
-    if (!(canondir = virFileCanonicalizePath(absdir))) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
     if (chdir(datadir) < 0) {
         fprintf(stderr, "unable to test relative backing chains\n");
@@ -178,10 +164,6 @@ testPrepImages(void)
     if (virAsprintf(&buf, "%1024d", 0) < 0 ||
         virFileWriteStr("raw", buf, 0600) < 0) {
         fprintf(stderr, "unable to create raw file\n");
-        goto cleanup;
-    }
-    if (!(canonraw = virFileCanonicalizePath(absraw))) {
-        virReportOOMError();
         goto cleanup;
     }
 
@@ -200,10 +182,6 @@ testPrepImages(void)
                                "-F", "raw", "-b", "raw", "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
-    if (!(canonqcow2 = virFileCanonicalizePath(absqcow2))) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
     /* Create a second qcow2 wrapping the first, to be sure that we
      * can correctly avoid insecure probing.  */
@@ -214,10 +192,6 @@ testPrepImages(void)
     virCommandAddArg(cmd, "wrap");
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
-    if (!(canonwrap = virFileCanonicalizePath(abswrap))) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
     /* Create a qed file. */
     virCommandFree(cmd);
@@ -227,10 +201,6 @@ testPrepImages(void)
     virCommandAddArg(cmd, "qed");
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
-    if (!(canonqed = virFileCanonicalizePath(absqed))) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
 #ifdef HAVE_SYMLINK
     /* Create some symlinks in a sub-directory. */
@@ -731,7 +701,7 @@ mymain(void)
 
     /* Raw image, whether with right format or no specified format */
     testFileData raw = {
-        .path = canonraw,
+        .path = absraw,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
@@ -743,12 +713,12 @@ mymain(void)
     testFileData qcow2 = {
         .expBackingStoreRaw = "raw",
         .expCapacity = 1024,
-        .path = canonqcow2,
+        .path = absqcow2,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
     testFileData qcow2_as_raw = {
-        .path = canonqcow2,
+        .path = absqcow2,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
@@ -772,7 +742,7 @@ mymain(void)
     testFileData wrap = {
         .expBackingStoreRaw = absqcow2,
         .expCapacity = 1024,
-        .path = canonwrap,
+        .path = abswrap,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
@@ -795,7 +765,7 @@ mymain(void)
     testFileData wrap_as_raw = {
         .expBackingStoreRaw = absqcow2,
         .expCapacity = 1024,
-        .path = canonwrap,
+        .path = abswrap,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QCOW2,
     };
@@ -878,12 +848,12 @@ mymain(void)
     testFileData qed = {
         .expBackingStoreRaw = absraw,
         .expCapacity = 1024,
-        .path = canonqed,
+        .path = absqed,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_QED,
     };
     testFileData qed_as_raw = {
-        .path = canonqed,
+        .path = absqed,
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
@@ -892,12 +862,12 @@ mymain(void)
 
     /* directory */
     testFileData dir = {
-        .path = canondir,
+        .path = absdir,
         .type = VIR_STORAGE_TYPE_DIR,
         .format = VIR_STORAGE_FILE_DIR,
     };
     testFileData dir_as_raw = {
-        .path = canondir,
+        .path = absdir,
         .type = VIR_STORAGE_TYPE_DIR,
         .format = VIR_STORAGE_FILE_RAW,
     };
