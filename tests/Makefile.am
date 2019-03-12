@@ -469,20 +469,12 @@ endif ! WITH_TESTS
 TESTS = $(test_programs) \
 	$(test_scripts)
 
-# NB, automake < 1.10 does not provide the real
-# abs_top_{src/build}dir or builddir variables, so don't rely
-# on them here. Fake them with 'pwd'
-# Also, BSD sh doesn't like 'a=b b=$$a', so we can't use an
-# intermediate shell variable, but must do all the expansion in make
-
-lv_abs_top_builddir=$(shell cd '$(top_builddir)' && pwd)
-
 VIR_TEST_EXPENSIVE ?= $(VIR_TEST_EXPENSIVE_DEFAULT)
 TESTS_ENVIRONMENT = \
-  abs_top_builddir=$(lv_abs_top_builddir) \
-  abs_top_srcdir=`cd '$(top_srcdir)'; pwd` \
-  abs_builddir=$(abs_builddir) \
-  abs_srcdir=$(abs_srcdir) \
+  abs_top_builddir="$(abs_top_builddir)" \
+  abs_top_srcdir="$(abs_top_srcdir)" \
+  abs_builddir="$(abs_builddir)" \
+  abs_srcdir="$(abs_srcdir)" \
   SHELL="$(SHELL)" \
   LIBVIRT_AUTOSTART=0 \
   LC_ALL=C \
