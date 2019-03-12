@@ -5457,11 +5457,11 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (detach->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-        qemuDomainDetachExtensionDevice(priv->mon, &detach->info)) {
+        qemuDomainDetachExtensionDevice(priv->mon, &detach->info) < 0) {
         goto exit_monitor;
     }
 
-    if (qemuMonitorDelDevice(priv->mon, detach->info.alias)) {
+    if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto cleanup;
     }
@@ -6975,7 +6975,7 @@ qemuDomainDetachInputDevice(virDomainObjPtr vm,
         qemuDomainMarkDeviceForRemoval(vm, &input->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (qemuMonitorDelDevice(priv->mon, input->info.alias)) {
+    if (qemuMonitorDelDevice(priv->mon, input->info.alias) < 0) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto cleanup;
     }
@@ -7018,7 +7018,7 @@ qemuDomainDetachVsockDevice(virDomainObjPtr vm,
         qemuDomainMarkDeviceForRemoval(vm, &vsock->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (qemuMonitorDelDevice(priv->mon, vsock->info.alias)) {
+    if (qemuMonitorDelDevice(priv->mon, vsock->info.alias) < 0) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto cleanup;
     }
