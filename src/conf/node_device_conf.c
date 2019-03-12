@@ -346,7 +346,7 @@ virNodeDeviceCapUSBInterfaceDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<number>%d</number>\n",
                       data->usb_if.number);
     virBufferAsprintf(buf, "<class>%d</class>\n",
-                      data->usb_if._class);
+                      data->usb_if.klass);
     virBufferAsprintf(buf, "<subclass>%d</subclass>\n",
                       data->usb_if.subclass);
     virBufferAsprintf(buf, "<protocol>%d</protocol>\n",
@@ -1216,7 +1216,7 @@ virNodeDevCapUSBInterfaceParseXML(xmlXPathContextPtr ctxt,
         goto out;
 
     if (virNodeDevCapsDefParseULong("number(./class[1])", ctxt,
-                                    &usb_if->_class, def,
+                                    &usb_if->klass, def,
                                     _("no USB interface class supplied for '%s'"),
                                     _("invalid USB interface class supplied for '%s'")) < 0)
         goto out;

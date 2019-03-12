@@ -153,7 +153,7 @@ struct _virNodeDevCapPCIDev {
     unsigned int function;
     unsigned int product;
     unsigned int vendor;
-    unsigned int class;
+    unsigned int klass;
     char *product_name;
     char *vendor_name;
     virPCIDeviceAddressPtr physical_function;
@@ -186,7 +186,7 @@ typedef struct _virNodeDevCapUSBIf virNodeDevCapUSBIf;
 typedef virNodeDevCapUSBIf *virNodeDevCapUSBIfPtr;
 struct _virNodeDevCapUSBIf {
     unsigned int number;
-    unsigned int _class;                /* "class" is reserved in C */
+    unsigned int klass;
     unsigned int subclass;
     unsigned int protocol;
     char *description;

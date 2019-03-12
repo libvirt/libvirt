@@ -122,7 +122,7 @@ struct pciDevice {
     char *id;
     int vendor;
     int device;
-    int class;
+    int klass;
     int iommuGroup;
     struct pciDriver *driver;   /* Driver attached. NULL if attached to no driver */
 };
@@ -404,7 +404,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
         ABORT("@tmp overflow");
     make_file(devpath, "device", tmp, -1);
 
-    if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->class) < 0)
+    if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->klass) < 0)
         ABORT("@tmp overflow");
     make_file(devpath, "class", tmp, -1);
 
@@ -858,10 +858,10 @@ init_env(void)
     MAKE_PCI_DEVICE("0000:00:01.0", 0x8086, 0x0044);
     MAKE_PCI_DEVICE("0000:00:02.0", 0x8086, 0x0046);
     MAKE_PCI_DEVICE("0000:00:03.0", 0x8086, 0x0048);
-    MAKE_PCI_DEVICE("0001:00:00.0", 0x1014, 0x03b9, .class = 0x060400);
+    MAKE_PCI_DEVICE("0001:00:00.0", 0x1014, 0x03b9, .klass = 0x060400);
     MAKE_PCI_DEVICE("0001:01:00.0", 0x8086, 0x105e, .iommuGroup = 0);
     MAKE_PCI_DEVICE("0001:01:00.1", 0x8086, 0x105e, .iommuGroup = 0);
-    MAKE_PCI_DEVICE("0005:80:00.0", 0x10b5, 0x8112, .class = 0x060400);
+    MAKE_PCI_DEVICE("0005:80:00.0", 0x10b5, 0x8112, .klass = 0x060400);
     MAKE_PCI_DEVICE("0005:90:01.0", 0x1033, 0x0035, .iommuGroup = 1);
     MAKE_PCI_DEVICE("0005:90:01.1", 0x1033, 0x0035, .iommuGroup = 1);
     MAKE_PCI_DEVICE("0005:90:01.2", 0x1033, 0x00e0, .iommuGroup = 1);

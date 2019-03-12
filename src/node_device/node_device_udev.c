@@ -402,7 +402,7 @@ udevProcessPCI(struct udev_device *device,
     privileged = driver->privileged;
     nodeDeviceUnlock();
 
-    if (udevGetUintProperty(device, "PCI_CLASS", &pci_dev->class, 16) < 0)
+    if (udevGetUintProperty(device, "PCI_CLASS", &pci_dev->klass, 16) < 0)
         goto cleanup;
 
     if ((p = strrchr(def->sysfs_path, '/')) == NULL ||
@@ -582,7 +582,7 @@ udevProcessUSBInterface(struct udev_device *device,
         return -1;
 
     if (udevGetUintSysfsAttr(device, "bInterfaceClass",
-                             &usb_if->_class, 16) < 0)
+                             &usb_if->klass, 16) < 0)
         return -1;
 
     if (udevGetUintSysfsAttr(device, "bInterfaceSubClass",
