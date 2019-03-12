@@ -30,9 +30,6 @@ struct testInfo {
     char *outActiveName;
     char *outInactiveName;
 
-    virBitmapPtr activeVcpus;
-    bool blockjobs;
-
     virQEMUCapsPtr qemuCaps;
 };
 
@@ -107,9 +104,6 @@ testInfoClear(struct testInfo *info)
     VIR_FREE(info->inName);
     VIR_FREE(info->outActiveName);
     VIR_FREE(info->outInactiveName);
-
-    virBitmapFree(info->activeVcpus);
-    info->activeVcpus = NULL;
 
     virObjectUnref(info->qemuCaps);
 }
