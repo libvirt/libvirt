@@ -161,8 +161,8 @@ checkPath(const char *path,
     }
 
 
-    if (!STRPREFIX(path, abs_topsrcdir) &&
-        !STRPREFIX(path, abs_topbuilddir)) {
+    if (!STRPREFIX(path, abs_top_srcdir) &&
+        !STRPREFIX(path, abs_top_builddir)) {
         printFile(path, func);
     }
 

@@ -18,9 +18,9 @@
 
 # old automake does not provide abs_{src,build}dir variables
 abs_builddir = $(shell pwd)
-abs_topbuilddir = $(shell cd .. && pwd)
+abs_top_builddir = $(shell cd .. && pwd)
 abs_srcdir = $(shell cd $(srcdir) && pwd)
-abs_topsrcdir = $(shell cd $(top_srcdir) && pwd)
+abs_top_srcdir = $(shell cd $(top_srcdir) && pwd)
 
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
@@ -33,8 +33,8 @@ AM_CPPFLAGS =	-I../gnulib/lib \
 		-I$(srcdir)/util \
 		-I./util \
 		-DIN_LIBVIRT \
-		-Dabs_topbuilddir="\"$(abs_topbuilddir)\"" \
-		-Dabs_topsrcdir="\"$(abs_topsrcdir)\"" \
+		-Dabs_top_builddir="\"$(abs_top_builddir)\"" \
+		-Dabs_top_srcdir="\"$(abs_top_srcdir)\"" \
 		$(NULL)
 
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)

@@ -94,7 +94,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
     }
 
     if (!(lxc_path = virFileFindResource("libvirt_lxc",
-                                         abs_topbuilddir "/src",
+                                         abs_top_builddir "/src",
                                          LIBEXECDIR)))
         goto error;
 

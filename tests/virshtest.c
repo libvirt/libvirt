@@ -82,13 +82,13 @@ testCompareOutputLit(const char *expectData,
     return result;
 }
 
-# define VIRSH_DEFAULT abs_topbuilddir "/tools/virsh", \
+# define VIRSH_DEFAULT abs_top_builddir "/tools/virsh", \
     "--connect", \
     "test:///default"
 
 static char *custom_uri;
 
-# define VIRSH_CUSTOM  abs_topbuilddir "/tools/virsh", \
+# define VIRSH_CUSTOM  abs_top_builddir "/tools/virsh", \
     "--connect", \
     custom_uri
 

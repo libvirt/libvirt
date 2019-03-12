@@ -1488,7 +1488,7 @@ networkBuildDhcpDaemonCommandLine(virNetworkDriverStatePtr driver,
 
     /* This helper is used to create custom leases file for libvirt */
     if (!(leaseshelper_path = virFileFindResource("libvirt_leaseshelper",
-                                                  abs_topbuilddir "/src",
+                                                  abs_top_builddir "/src",
                                                   LIBEXECDIR)))
         goto cleanup;
 

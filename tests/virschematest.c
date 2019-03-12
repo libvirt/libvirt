@@ -148,7 +148,7 @@ testSchemaGrammar(const void *opaque)
     int ret = -1;
 
     if (virAsprintf(&schema_path, "%s/docs/schemas/%s",
-                    abs_topsrcdir, data->schema) < 0)
+                    abs_top_srcdir, data->schema) < 0)
         return -1;
 
     if (!(data->validator = virXMLValidatorInit(schema_path)))

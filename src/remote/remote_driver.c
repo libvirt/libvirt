@@ -1079,7 +1079,7 @@ doRemoteOpen(virConnectPtr conn,
         if ((flags & VIR_DRV_OPEN_REMOTE_AUTOSTART) &&
             !(daemonPath = virFileFindResourceFull("libvirtd",
                                                    NULL, NULL,
-                                                   abs_topbuilddir "/src",
+                                                   abs_top_builddir "/src",
                                                    SBINDIR,
                                                    "LIBVIRTD_PATH")))
             goto failed;

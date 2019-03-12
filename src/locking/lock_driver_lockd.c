@@ -221,7 +221,7 @@ static virNetClientPtr virLockManagerLockDaemonConnectionNew(bool privileged,
     if (!privileged &&
         !(daemonPath = virFileFindResourceFull("virtlockd",
                                                NULL, NULL,
-                                               abs_topbuilddir "/src",
+                                               abs_top_builddir "/src",
                                                SBINDIR,
                                                "VIRTLOCKD_PATH")))
         goto error;

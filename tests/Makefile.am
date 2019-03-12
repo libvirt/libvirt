@@ -18,9 +18,9 @@
 
 # old automake does not provide abs_{src,build}dir variables
 abs_builddir = $(shell pwd)
-abs_topbuilddir = $(shell cd .. && pwd)
+abs_top_builddir = $(shell cd .. && pwd)
 abs_srcdir = $(shell cd $(srcdir) && pwd)
-abs_topsrcdir = $(shell cd $(top_srcdir) && pwd)
+abs_top_srcdir = $(shell cd $(top_srcdir) && pwd)
 
 SHELL = $(PREFERABLY_POSIX_SHELL)
 
@@ -37,9 +37,9 @@ WARN_CFLAGS += $(RELAXED_FRAME_LIMIT_CFLAGS)
 
 AM_CFLAGS = \
 	-Dabs_builddir="\"$(abs_builddir)\"" \
-	-Dabs_topbuilddir="\"$(abs_topbuilddir)\"" \
+	-Dabs_top_builddir="\"$(abs_top_builddir)\"" \
 	-Dabs_srcdir="\"$(abs_srcdir)\"" \
-	-Dabs_topsrcdir="\"$(abs_topsrcdir)\"" \
+	-Dabs_top_srcdir="\"$(abs_top_srcdir)\"" \
 	$(LIBXML_CFLAGS) \
 	$(LIBNL_CFLAGS) \
 	$(GNUTLS_CFLAGS) \

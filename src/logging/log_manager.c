@@ -80,7 +80,7 @@ virLogManagerConnect(bool privileged,
     if (!privileged &&
         !(daemonPath = virFileFindResourceFull("virtlogd",
                                                NULL, NULL,
-                                               abs_topbuilddir "/src",
+                                               abs_top_builddir "/src",
                                                SBINDIR,
                                                "VIRTLOGD_PATH")))
         goto error;

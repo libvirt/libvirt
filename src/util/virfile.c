@@ -260,7 +260,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     }
 
     if (!(iohelper_path = virFileFindResource("libvirt_iohelper",
-                                              abs_topbuilddir "/src",
+                                              abs_top_builddir "/src",
                                               LIBEXECDIR)))
         goto error;
 
@@ -1704,7 +1704,7 @@ static bool useDirOverride;
  * @prefix: optional string to prepend to filename
  * @suffix: optional string to append to filename
  * @builddir: location of the filename in the build tree including
- *            abs_topsrcdir or abs_topbuilddir prefix
+ *            abs_top_srcdir or abs_top_builddir prefix
  * @installdir: location of the installed binary
  * @envname: environment variable used to override all dirs
  *

@@ -363,7 +363,7 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
-                                                abs_topbuilddir "/src",
+                                                abs_top_builddir "/src",
                                                 LIBEXECDIR)))
         return -1;
 
@@ -417,7 +417,7 @@ virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
-                                                abs_topbuilddir "/src",
+                                                abs_top_builddir "/src",
                                                 LIBEXECDIR)))
         return -1;
 

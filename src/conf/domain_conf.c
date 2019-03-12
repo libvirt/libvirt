@@ -19415,7 +19415,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_AUTOFREE(char *) schema = NULL;
 
         schema = virFileFindResource("domain.rng",
-                                     abs_topsrcdir "/docs/schemas",
+                                     abs_top_srcdir "/docs/schemas",
                                      PKGDATADIR "/schemas");
         if (!schema)
             return NULL;

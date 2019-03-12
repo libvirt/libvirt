@@ -57,7 +57,7 @@ virStorageFileLoadBackendModule(const char *name,
     if (!(modfile = virFileFindResourceFull(name,
                                             "libvirt_storage_file_",
                                             ".so",
-                                            abs_topbuilddir "/src/.libs",
+                                            abs_top_builddir "/src/.libs",
                                             STORAGE_FILE_MODULE_DIR,
                                             "LIBVIRT_STORAGE_FILE_DIR")))
         return -1;
