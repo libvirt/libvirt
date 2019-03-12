@@ -36,8 +36,6 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
-static const char *abs_top_srcdir;
-
 # ifdef __linux__
 #  define RULESTYPE "linux"
 # else
@@ -135,10 +133,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-        abs_top_srcdir = abs_srcdir "/..";
 
 # define DO_TEST(name) \
     do { \

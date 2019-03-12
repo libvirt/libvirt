@@ -33,7 +33,6 @@
 
 # define VIR_FROM_THIS VIR_FROM_QEMU
 
-static const char *abs_top_srcdir;
 static virQEMUDriver driver;
 
 static unsigned char *
@@ -652,10 +651,6 @@ mymain(void)
     }
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
-
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-        abs_top_srcdir = abs_srcdir "/..";
 
     /* Set the timezone because we are mocking the time() function.
      * If we don't do that, then localtime() may return unpredictable

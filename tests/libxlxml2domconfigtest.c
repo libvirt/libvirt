@@ -41,7 +41,6 @@
 
 # define VIR_FROM_THIS VIR_FROM_LIBXL
 
-static const char *abs_top_srcdir;
 static virCapsPtr caps;
 
 static int
@@ -171,10 +170,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-        abs_top_srcdir = abs_srcdir "/..";
 
     /* Set the timezone because we are mocking the time() function.
      * If we don't do that, then localtime() may return unpredictable

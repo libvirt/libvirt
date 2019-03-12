@@ -30,7 +30,6 @@
 
 VIR_LOG_INIT("tests.scsitest");
 
-static const char *abs_top_srcdir;
 static char *virscsi_prefix;
 
 static int
@@ -194,10 +193,6 @@ mymain(void)
     int ret = 0;
     char *tmpdir = NULL;
     char template[] = "/tmp/libvirt_XXXXXX";
-
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-        abs_top_srcdir = abs_srcdir "/..";
 
     if (virAsprintf(&virscsi_prefix, "%s" VIR_SCSI_DATA, abs_srcdir) < 0) {
         ret = -1;
