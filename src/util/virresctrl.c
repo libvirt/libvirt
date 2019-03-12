@@ -2166,10 +2166,8 @@ virResctrlAllocCopyMemBW(virResctrlAllocPtr dst,
         return -1;
 
     for (i = 0; i < src_bw->nbandwidths; i++) {
-        if (dst_bw->bandwidths[i]) {
-            *dst_bw->bandwidths[i] = 123;
+        if (dst_bw->bandwidths[i])
             continue;
-        }
         if (VIR_ALLOC(dst_bw->bandwidths[i]) < 0)
             return -1;
         *dst_bw->bandwidths[i] = *src_bw->bandwidths[i];
