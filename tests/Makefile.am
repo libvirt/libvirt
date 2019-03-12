@@ -16,12 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-# old automake does not provide abs_{src,build}dir variables
-abs_builddir = $(shell pwd)
-abs_top_builddir = $(shell cd .. && pwd)
-abs_srcdir = $(shell cd $(srcdir) && pwd)
-abs_top_srcdir = $(shell cd $(top_srcdir) && pwd)
-
 SHELL = $(PREFERABLY_POSIX_SHELL)
 
 AM_CPPFLAGS = \

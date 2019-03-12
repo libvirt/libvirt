@@ -16,12 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-# old automake does not provide abs_{src,build}dir variables
-abs_builddir = $(shell pwd)
-abs_top_builddir = $(shell cd .. && pwd)
-abs_srcdir = $(shell cd $(srcdir) && pwd)
-abs_top_srcdir = $(shell cd $(top_srcdir) && pwd)
-
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them.
