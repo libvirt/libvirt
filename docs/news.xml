@@ -119,6 +119,11 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          Report class information for PCI node device capability.
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
