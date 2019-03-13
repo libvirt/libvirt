@@ -316,6 +316,9 @@ int virStringParsePort(const char *str,
                        unsigned int *port)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
+int virStringParseYesNo(const char *str,
+                        bool *result)
+    ATTRIBUTE_RETURN_CHECK;
 /**
  * VIR_AUTOSTRINGLIST:
  *

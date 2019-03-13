@@ -2988,6 +2988,7 @@ virStringListRemove;
 virStringMatch;
 virStringMatchesNameSuffix;
 virStringParsePort;
+virStringParseYesNo;
 virStringReplace;
 virStringSearch;
 virStringSortCompare;

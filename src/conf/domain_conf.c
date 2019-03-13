@@ -8465,11 +8465,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     p = virXMLPropStringLimit(ctxt->node, "relabel",
                               VIR_SECURITY_LABEL_BUFLEN-1);
     if (p) {
-        if (STREQ(p, "yes")) {
-            seclabel->relabel = true;
-        } else if (STREQ(p, "no")) {
-            seclabel->relabel = false;
-        } else {
+        if (virStringParseYesNo(p, &seclabel->relabel) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid security relabel value %s"), p);
             goto error;
@@ -8699,11 +8695,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
 
         relabel = virXMLPropString(list[i], "relabel");
         if (relabel != NULL) {
-            if (STREQ(relabel, "yes")) {
-                seclabels[i]->relabel = true;
-            } else if (STREQ(relabel, "no")) {
-                seclabels[i]->relabel = false;
-            } else {
+            if (virStringParseYesNo(relabel, &seclabels[i]->relabel) < 0) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("invalid security relabel value %s"),
                                relabel);
@@ -13706,11 +13698,7 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDefPtr def,
     ctxt->node = node;
 
     if (fullscreen != NULL) {
-        if (STREQ(fullscreen, "yes")) {
-            def->data.sdl.fullscreen = true;
-        } else if (STREQ(fullscreen, "no")) {
-            def->data.sdl.fullscreen = false;
-        } else {
+        if (virStringParseYesNo(fullscreen, &def->data.sdl.fullscreen) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown fullscreen value '%s'"), fullscreen);
             goto cleanup;
@@ -13798,11 +13786,7 @@ virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDefPtr def,
     VIR_AUTOFREE(char *) fullscreen = virXMLPropString(node, "fullscreen");
 
     if (fullscreen != NULL) {
-        if (STREQ(fullscreen, "yes")) {
-            def->data.desktop.fullscreen = true;
-        } else if (STREQ(fullscreen, "no")) {
-            def->data.desktop.fullscreen = false;
-        } else {
+        if (virStringParseYesNo(fullscreen, &def->data.desktop.fullscreen) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown fullscreen value '%s'"), fullscreen);
             return -1;
@@ -15511,11 +15495,7 @@ virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
 
     allow = virXMLPropString(node, "allow");
     if (allow) {
-        if (STREQ(allow, "yes")) {
-            def->allow = true;
-        } else if (STREQ(allow, "no")) {
-            def->allow = false;
-        } else {
+        if (virStringParseYesNo(allow, &def->allow) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Invalid allow value, either 'yes' or 'no'"));
             goto error;
