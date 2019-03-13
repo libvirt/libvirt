@@ -379,25 +379,6 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 
 
 static int
-testInitQEMUCaps(struct testInfo *info,
-                 int gic)
-{
-    int ret = -1;
-
-    if (!(info->qemuCaps = virQEMUCapsNew()))
-        goto cleanup;
-
-    if (testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    return ret;
-}
-
-
-static int
 testUpdateQEMUCaps(const struct testInfo *info,
                    virDomainObjPtr vm,
                    virCapsPtr caps)
@@ -853,7 +834,9 @@ mymain(void)
         static struct testInfo info = { \
             name, NULL, NULL, migrateFrom, migrateFd, (flags), parseFlags, \
         }; \
-        if (testInitQEMUCaps(&info, gic) < 0) \
+        if (!(info.qemuCaps = virQEMUCapsNew())) \
+            return EXIT_FAILURE; \
+        if (testQemuCapsSetGIC(info.qemuCaps, gic) < 0) \
             return EXIT_FAILURE; \
         if (testInfoSetArgs(&info, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END) < 0) \
             return EXIT_FAILURE; \
