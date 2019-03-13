@@ -974,7 +974,7 @@ qemuFirmwareFetchConfigs(char ***firmwares,
 
     *firmwares = NULL;
 
-    if (privileged) {
+    if (!privileged) {
         /* This is a slight divergence from the specification.
          * Since the system daemon runs as root, it doesn't make
          * much sense to parse files in root's home directory. It
