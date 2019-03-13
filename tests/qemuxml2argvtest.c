@@ -624,14 +624,47 @@ testCompareXMLToArgv(const void *data)
     return ret;
 }
 
+typedef enum {
+    ARG_QEMU_CAPS,
+
+    /* ARG_END is our va_args sentinel. The value QEMU_CAPS_LATEST is
+     * necessary to handle the DO_TEST(..., NONE) case, which through macro
+     * magic will give the va_args list:
+     *
+     *   ARG_QEMU_CAPS, NONE, QEMU_CAPS_LAST, ARG_END
+     *
+     * SetArgs consumes the first item, hands off control to virQEMUCapsX
+     * virQEMUCapsX sees NONE aka QEMU_CAPS_LAST, returns to SetArgs.
+     * SetArgs sees QEMU_CAPS_LAST aka ARG_END, and exits the parse loop.
+     * If ARG_END != QEMU_CAPS_LAST, this last step would generate an error.
+     */
+    ARG_END = QEMU_CAPS_LAST,
+} testInfoArgName;
+
 static int
 testInfoSetArgs(struct testInfo *info, ...)
 {
     va_list argptr;
-    int ret = 0;
+    testInfoArgName argname;
+    int ret = -1;
 
     va_start(argptr, info);
-    virQEMUCapsSetVAList(info->qemuCaps, argptr);
+    while ((argname = va_arg(argptr, testInfoArgName)) < ARG_END) {
+        switch (argname) {
+        case ARG_QEMU_CAPS:
+            virQEMUCapsSetVAList(info->qemuCaps, argptr);
+            break;
+
+        case ARG_END:
+        default:
+            fprintf(stderr, "Unexpected test info argument");
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
     va_end(argptr);
 
     return ret;
@@ -822,7 +855,8 @@ mymain(void)
         }; \
         if (testInitQEMUCaps(&info, gic) < 0) \
             return EXIT_FAILURE; \
-        if (testInfoSetArgs(&info, __VA_ARGS__, QEMU_CAPS_LAST) < 0) \
+        if (testInfoSetArgs(&info, ARG_QEMU_CAPS, \
+                            __VA_ARGS__, QEMU_CAPS_LAST, ARG_END) < 0) \
             return EXIT_FAILURE; \
         if (virTestRun("QEMU XML-2-ARGV " name, \
                        testCompareXMLToArgv, &info) < 0) \
