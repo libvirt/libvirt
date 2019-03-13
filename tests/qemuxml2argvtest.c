@@ -799,18 +799,20 @@ mymain(void)
  * the test cases should be forked using DO_TEST_CAPS_VER with the appropriate
  * version.
  */
-# define DO_TEST_CAPS_INTERNAL(name, suffix, flags, parseFlags, \
-                               arch, capsfile, stripmachinealiases) \
+# define DO_TEST_CAPS_INTERNAL(name, suffix, \
+                               arch, capsfile, stripmachinealiases, ...) \
     do { \
         static struct testInfo info = { \
-            name, "." suffix, NULL, NULL, -1,\
-            (flags | FLAG_REAL_CAPS), parseFlags, \
+            name, "." suffix, NULL, NULL, -1, 0, 0, \
         }; \
         if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
                                                             capsfile))) \
             return EXIT_FAILURE; \
         if (stripmachinealiases) \
             virQEMUCapsStripMachineAliases(info.qemuCaps); \
+        if (testInfoSetArgs(&info, __VA_ARGS__, ARG_END) < 0) \
+            return EXIT_FAILURE; \
+        info.flags |= FLAG_REAL_CAPS; \
         if (virTestRun("QEMU XML-2-ARGV " name "." suffix, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
@@ -819,31 +821,35 @@ mymain(void)
 
 # define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata/caps_"
 
-# define DO_TEST_CAPS_ARCH_VER_FULL(name, flags, parseFlags, arch, ver) \
-    DO_TEST_CAPS_INTERNAL(name, arch "-" ver, flags, parseFlags, \
-                          arch, TEST_CAPS_PATH ver "." arch ".xml", false)
+# define DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ...) \
+    DO_TEST_CAPS_INTERNAL(name, arch "-" ver, \
+                          arch, TEST_CAPS_PATH ver "." arch ".xml", false, \
+                          __VA_ARGS__)
 
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
-    DO_TEST_CAPS_ARCH_VER_FULL(name, 0, 0, arch, ver)
+    DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ARG_END)
 
 # define DO_TEST_CAPS_VER(name, ver) \
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
-# define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, flags, parseFlags) \
-    DO_TEST_CAPS_INTERNAL(name, arch "-latest", flags, parseFlags, arch, \
-                          virHashLookup(capslatest, arch), true)
+# define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
+    DO_TEST_CAPS_INTERNAL(name, arch "-latest", arch, \
+                          virHashLookup(capslatest, arch), true, \
+                          __VA_ARGS__)
 
 # define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
-    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, 0, 0)
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
 
 # define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
 
 # define DO_TEST_CAPS_LATEST_FAILURE(name) \
-    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", FLAG_EXPECT_FAILURE, 0)
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", \
+                                  ARG_FLAGS, FLAG_EXPECT_FAILURE)
 
 # define DO_TEST_CAPS_LATEST_PARSE_ERROR(name) \
-    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", FLAG_EXPECT_PARSE_ERROR, 0)
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", \
+                                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
 
 
 # define DO_TEST_FULL(name, ...) \
