@@ -5676,6 +5676,7 @@
           </choice>
         </attribute>
       </optional>
+      <ref name="diskBackingChain"/>
     </element>
   </define>
   <define name="diskAuth">

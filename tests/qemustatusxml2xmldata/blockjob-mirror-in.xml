@@ -65,6 +65,7 @@
         <mirror type='file' file='/tmp/copy.img' format='qcow2' job='copy'>
           <format type='qcow2'/>
           <source file='/tmp/copy.img'/>
+          <backingStore/>
         </mirror>
         <target dev='vda' bus='virtio'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
@@ -76,6 +77,18 @@
         <mirror type='file' file='/tmp/logcopy.img' format='qcow2' job='copy' ready='abort'>
           <format type='qcow2'/>
           <source file='/tmp/logcopy.img'/>
+          <backingStore type='block' index='1'>
+            <format type='raw'/>
+            <source dev='/dev/HostVG/backing'>
+              <privateData>
+                <nodenames>
+                  <nodename type='storage' name='test-backing-storage'/>
+                  <nodename type='format' name='test-backing-format'/>
+                </nodenames>
+              </privateData>
+            </source>
+            <backingStore/>
+          </backingStore>
         </mirror>
         <target dev='vdb' bus='virtio'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>

@@ -36,6 +36,7 @@
       <mirror type='file' file='/tmp/copy.img' format='qcow2' job='copy'>
         <format type='qcow2'/>
         <source file='/tmp/copy.img'/>
+        <backingStore/>
       </mirror>
       <target dev='vda' bus='virtio'/>
     </disk>
@@ -45,6 +46,11 @@
       <mirror type='file' file='/tmp/logcopy.img' format='qcow2' job='copy' ready='abort'>
         <format type='qcow2'/>
         <source file='/tmp/logcopy.img'/>
+        <backingStore type='block' index='1'>
+          <format type='raw'/>
+          <source dev='/dev/HostVG/backing'/>
+          <backingStore/>
+        </backingStore>
       </mirror>
       <target dev='vdb' bus='virtio'/>
     </disk>

@@ -9349,6 +9349,8 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
         if (virDomainStorageSourceParse(mirrorNode, ctxt, def->mirror, flags,
                                         xmlopt) < 0)
             return -1;
+        if (virDomainDiskBackingStoreParse(ctxt, def->mirror, flags, xmlopt) < 0)
+            return -1;
     } else {
         /* For back-compat reasons, we handle a file name encoded as
          * attributes, even though we prefer modern output in the style of
@@ -24029,6 +24031,9 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
 
     virBufferEscapeString(&childBuf, "<format type='%s'/>\n", formatStr);
     if (virDomainDiskSourceFormat(&childBuf, disk->mirror, 0, false, flags, xmlopt) < 0)
+        return -1;
+
+    if (virDomainDiskBackingStoreFormat(&childBuf, disk->mirror, xmlopt, flags) < 0)
         return -1;
 
     if (virXMLFormatElement(buf, "mirror", &attrBuf, &childBuf) < 0)
