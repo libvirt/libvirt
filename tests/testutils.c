@@ -443,7 +443,6 @@ void virTestCaptureProgramExecChild(const char *const argv[],
     int stdinfd = -1;
     const char *const env[] = {
         "LANG=C",
-        "LIBVIRT_DRIVER_DIR=" TEST_DRIVER_DIR,
         NULL
     };
 
