@@ -3044,6 +3044,7 @@ mymain(void)
     qemuTestDriverFree(&driver);
     VIR_FREE(fakerootdir);
     virHashFree(capslatest);
+    virFileWrapperClearPrefixes();
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

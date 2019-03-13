@@ -128,6 +128,8 @@ mymain(void)
     if (virTestRun("QEMU FW precedence test", testFWPrecedence, NULL) < 0)
         ret = -1;
 
+    virFileWrapperClearPrefixes();
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
