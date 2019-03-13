@@ -2108,6 +2108,10 @@ static void
 networkReloadFirewallRules(virNetworkDriverStatePtr driver, bool startup)
 {
     VIR_INFO("Reloading iptables rules");
+    /* Ideally we'd not even register the driver when unprivilegd
+     * but until we untangle the virt driver that's not viable */
+    if (!driver->privileged)
+        return;
     networkPreReloadFirewallRules(startup);
     virNetworkObjListForEach(driver->networks,
                              networkReloadFirewallRulesHelper,
