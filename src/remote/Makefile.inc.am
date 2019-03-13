@@ -136,7 +136,6 @@ libvirtd_CFLAGS = \
 	$(LIBNL_CFLAGS) \
 	$(WARN_CFLAGS) \
 	$(PIE_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
 	-I$(srcdir)/access \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/rpc \
@@ -145,7 +144,6 @@ libvirtd_CFLAGS = \
 libvirtd_LDFLAGS = \
 	$(RELRO_LDFLAGS) \
 	$(PIE_LDFLAGS) \
-	$(COVERAGE_LDFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(NO_UNDEFINED_LDFLAGS) \
 	$(NULL)
