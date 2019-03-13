@@ -23,6 +23,7 @@
 
 
 typedef struct _virCPUx86CPUID virCPUx86CPUID;
+typedef virCPUx86CPUID *virCPUx86CPUIDPtr;
 struct _virCPUx86CPUID {
     uint32_t eax_in;
     uint32_t ecx_in;
@@ -68,10 +69,16 @@ struct _virCPUx86CPUID {
 
 # define VIR_CPU_X86_DATA_INIT { 0 }
 
+typedef struct _virCPUx86DataItem virCPUx86DataItem;
+typedef virCPUx86DataItem *virCPUx86DataItemPtr;
+struct _virCPUx86DataItem {
+    virCPUx86CPUID cpuid;
+};
+
 typedef struct _virCPUx86Data virCPUx86Data;
 struct _virCPUx86Data {
     size_t len;
-    virCPUx86CPUID *data;
+    virCPUx86DataItem *items;
 };
 
 #endif /* LIBVIRT_CPU_X86_DATA_H */
