@@ -924,6 +924,13 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     if (n < 0)
         goto cleanup;
 
+    if (n == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing cpuid for feature %s"),
+                       feature->name);
+        goto cleanup;
+    }
+
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
         if (x86ParseCPUID(ctxt, &cpuid) < 0) {
