@@ -152,110 +152,74 @@ virFileWrapperOverridePrefix(const char *path)
 
 FILE *fopen(const char *path, const char *mode)
 {
-    FILE *ret = NULL;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real_fopen(newpath, mode);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real_fopen(newpath, mode);
 }
 
 int access(const char *path, int mode)
 {
-    int ret = -1;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real_access(newpath, mode);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real_access(newpath, mode);
 }
 
 # ifdef HAVE___LXSTAT
 int __lxstat(int ver, const char *path, struct stat *sb)
 {
-    int ret = -1;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real___lxstat(ver, newpath, sb);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real___lxstat(ver, newpath, sb);
 }
 # endif /* HAVE___LXSTAT */
 
 int lstat(const char *path, struct stat *sb)
 {
-    int ret = -1;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real_lstat(newpath, sb);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real_lstat(newpath, sb);
 }
 
 # ifdef HAVE___XSTAT
 int __xstat(int ver, const char *path, struct stat *sb)
 {
-    int ret = -1;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real___xstat(ver, newpath, sb);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real___xstat(ver, newpath, sb);
 }
 # endif /* HAVE___XSTAT */
 
 int stat(const char *path, struct stat *sb)
 {
-    int ret = -1;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real_stat(newpath, sb);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real_stat(newpath, sb);
 }
 
 int mkdir(const char *path, mode_t mode)
 {
-    int ret = -1;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real_mkdir(newpath, mode);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real_mkdir(newpath, mode);
 }
 
 int open(const char *path, int flags, ...)
 {
-    int ret = -1;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
     va_list ap;
     mode_t mode = 0;
 
@@ -270,24 +234,15 @@ int open(const char *path, int flags, ...)
         va_end(ap);
     }
 
-    ret = real_open(newpath, flags, mode);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real_open(newpath, flags, mode);
 }
 
 DIR *opendir(const char *path)
 {
-    DIR *ret = NULL;
-    char *newpath = NULL;
+    VIR_AUTOFREE(char *) newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real_opendir(newpath);
-
-    VIR_FREE(newpath);
-
-    return ret;
+    return real_opendir(newpath);
 }
 #endif
