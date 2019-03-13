@@ -799,11 +799,11 @@ mymain(void)
  * the test cases should be forked using DO_TEST_CAPS_VER with the appropriate
  * version.
  */
-# define DO_TEST_CAPS_INTERNAL(name, suffix, migrateFrom, flags, parseFlags, \
+# define DO_TEST_CAPS_INTERNAL(name, suffix, flags, parseFlags, \
                                arch, capsfile, stripmachinealiases) \
     do { \
         static struct testInfo info = { \
-            name, "." suffix, NULL, migrateFrom, migrateFrom ? 7 : -1,\
+            name, "." suffix, NULL, NULL, -1,\
             (flags | FLAG_REAL_CAPS), parseFlags, \
         }; \
         if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
@@ -820,7 +820,7 @@ mymain(void)
 # define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata/caps_"
 
 # define DO_TEST_CAPS_ARCH_VER_FULL(name, flags, parseFlags, arch, ver) \
-    DO_TEST_CAPS_INTERNAL(name, arch "-" ver, NULL, flags, parseFlags, \
+    DO_TEST_CAPS_INTERNAL(name, arch "-" ver, flags, parseFlags, \
                           arch, TEST_CAPS_PATH ver "." arch ".xml", false)
 
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
@@ -830,7 +830,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
 # define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, flags, parseFlags) \
-    DO_TEST_CAPS_INTERNAL(name, arch "-latest", NULL, flags, parseFlags, arch, \
+    DO_TEST_CAPS_INTERNAL(name, arch "-latest", flags, parseFlags, arch, \
                           virHashLookup(capslatest, arch), true)
 
 # define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
