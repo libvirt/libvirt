@@ -799,12 +799,12 @@ mymain(void)
  * the test cases should be forked using DO_TEST_CAPS_VER with the appropriate
  * version.
  */
-# define DO_TEST_CAPS_INTERNAL(_name, _suffix, \
-                               arch, capsfile, stripmachinealiases, ...) \
+# define DO_TEST_CAPS_INTERNAL(_name, arch, ver, \
+                               capsfile, stripmachinealiases, ...) \
     do { \
         static struct testInfo info = { \
             .name = _name, \
-            .suffix = "." _suffix, \
+            .suffix = "." arch "-" ver, \
         }; \
         if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
                                                             capsfile))) \
@@ -814,7 +814,7 @@ mymain(void)
         if (testInfoSetArgs(&info, __VA_ARGS__, ARG_END) < 0) \
             return EXIT_FAILURE; \
         info.flags |= FLAG_REAL_CAPS; \
-        if (virTestRun("QEMU XML-2-ARGV " _name "." _suffix, \
+        if (virTestRun("QEMU XML-2-ARGV " _name "." arch "-" ver, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
         virObjectUnref(info.qemuCaps); \
@@ -823,8 +823,8 @@ mymain(void)
 # define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata/caps_"
 
 # define DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ...) \
-    DO_TEST_CAPS_INTERNAL(name, arch "-" ver, \
-                          arch, TEST_CAPS_PATH ver "." arch ".xml", false, \
+    DO_TEST_CAPS_INTERNAL(name, arch, ver, \
+                          TEST_CAPS_PATH ver "." arch ".xml", false, \
                           __VA_ARGS__)
 
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
@@ -834,7 +834,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
 # define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
-    DO_TEST_CAPS_INTERNAL(name, arch "-latest", arch, \
+    DO_TEST_CAPS_INTERNAL(name, arch, "latest", \
                           virHashLookup(capslatest, arch), true, \
                           __VA_ARGS__)
 
