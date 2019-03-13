@@ -66,6 +66,22 @@
           virtio device version is presented to the guest.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Enable firmware autoselection
+        </summary>
+        <description>
+          Libvirt allows users to provide loader path for some time now.
+          However, this puts some burden on users because they need to
+          know what firmware meets their requirements. Now that QEMU
+          ships firmware description files this burden can be moved onto
+          libvirt. It is as easy as setting the <code>firmware</code>
+          attribute in the <code>os</code> element (accepted values are
+          <code>bios</code> and <code>efi</code>). Moreover, libvirt
+          automatically enables domain features needed for firmware it
+          chooses.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
