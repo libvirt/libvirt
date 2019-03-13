@@ -29503,13 +29503,19 @@ int
 virDomainNetSetModelString(virDomainNetDefPtr net,
                            const char *model)
 {
-    VIR_FREE(net->modelstr);
-    if ((net->model = virDomainNetModelTypeFromString(model)) >= 0)
-        return 0;
+    size_t i;
 
+    VIR_FREE(net->modelstr);
     net->model = VIR_DOMAIN_NET_MODEL_UNKNOWN;
     if (!model)
         return 0;
+
+    for (i = 0; i < ARRAY_CARDINALITY(virDomainNetModelTypeList); i++) {
+        if (STRCASEEQ(virDomainNetModelTypeList[i], model)) {
+            net->model = i;
+            return 0;
+        }
+    }
 
     if (strspn(model, NET_MODEL_CHARS) < strlen(model)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
