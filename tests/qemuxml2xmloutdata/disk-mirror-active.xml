@@ -51,8 +51,8 @@
       <backingStore/>
       <mirror type='file' file='/tmp/logcopy.img' format='qcow2' job='copy' ready='abort'>
         <format type='qcow2'/>
-        <source file='/tmp/logcopy.img'/>
-        <backingStore type='block' index='1'>
+        <source file='/tmp/logcopy.img' index='1'/>
+        <backingStore type='block' index='2'>
           <format type='raw'/>
           <source dev='/dev/HostVG/backing'/>
           <backingStore/>

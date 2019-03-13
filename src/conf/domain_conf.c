@@ -9311,6 +9311,7 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
     VIR_AUTOFREE(char *) mirrorType = NULL;
     VIR_AUTOFREE(char *) ready = NULL;
     VIR_AUTOFREE(char *) blockJob = NULL;
+    VIR_AUTOFREE(char *) index = NULL;
 
     ctxt->node = cur;
 
@@ -9326,6 +9327,7 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
 
     if ((mirrorType = virXMLPropString(cur, "type"))) {
         mirrorFormat = virXPathString("string(./format/@type)", ctxt);
+        index = virXPathString("string(./source/@index)", ctxt);
     } else {
         if (def->mirrorJob != VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -9336,7 +9338,8 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
         mirrorFormat = virXMLPropString(cur, "format");
     }
 
-    if (!(def->mirror = virDomainStorageSourceParseBase(mirrorType, mirrorFormat, NULL)))
+    if (!(def->mirror = virDomainStorageSourceParseBase(mirrorType, mirrorFormat,
+                                                        index)))
         return -1;
 
     if (mirrorType) {
@@ -24030,7 +24033,7 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
                               virDomainDiskMirrorStateTypeToString(disk->mirrorState));
 
     virBufferEscapeString(&childBuf, "<format type='%s'/>\n", formatStr);
-    if (virDomainDiskSourceFormat(&childBuf, disk->mirror, 0, false, flags, xmlopt) < 0)
+    if (virDomainDiskSourceFormat(&childBuf, disk->mirror, 0, true, flags, xmlopt) < 0)
         return -1;
 
     if (virDomainDiskBackingStoreFormat(&childBuf, disk->mirror, xmlopt, flags) < 0)
