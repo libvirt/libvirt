@@ -26,6 +26,7 @@ debugsym = None
 included_files = {
   "libvirt-common.h": "header with general libvirt API definitions",
   "libvirt-domain.h": "header with general libvirt API definitions",
+  "libvirt-domain-checkpoint.h": "header with general libvirt API definitions",
   "libvirt-domain-snapshot.h": "header with general libvirt API definitions",
   "libvirt-event.h": "header with general libvirt API definitions",
   "libvirt-host.h": "header with general libvirt API definitions",
@@ -39,6 +40,7 @@ included_files = {
   "virterror.h": "header with error specific API definitions",
   "libvirt.c": "Main interfaces for the libvirt library",
   "libvirt-domain.c": "Domain interfaces for the libvirt library",
+  "libvirt-domain-checkpoint.c": "Domain checkpoint interfaces for the libvirt library",
   "libvirt-domain-snapshot.c": "Domain snapshot interfaces for the libvirt library",
   "libvirt-host.c": "Host interfaces for the libvirt library",
   "libvirt-interface.c": "Interface interfaces for the libvirt library",

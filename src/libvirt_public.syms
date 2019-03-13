@@ -836,4 +836,20 @@ LIBVIRT_5.5.0 {
         virNetworkPortSetParameters;
 } LIBVIRT_5.2.0;
 
+LIBVIRT_5.6.0 {
+    global:
+        virDomainCheckpointCreateXML;
+        virDomainCheckpointDelete;
+        virDomainCheckpointFree;
+        virDomainCheckpointGetConnect;
+        virDomainCheckpointGetDomain;
+        virDomainCheckpointGetName;
+        virDomainCheckpointGetParent;
+        virDomainCheckpointGetXMLDesc;
+        virDomainCheckpointListAllChildren;
+        virDomainCheckpointLookupByName;
+        virDomainCheckpointRef;
+        virDomainListAllCheckpoints;
+} LIBVIRT_5.5.0;
+
 # .... define new API here using predicted next version number ....

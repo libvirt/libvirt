@@ -1862,6 +1862,7 @@ exit 0
 %{_includedir}/libvirt/libvirt-admin.h
 %{_includedir}/libvirt/libvirt-common.h
 %{_includedir}/libvirt/libvirt-domain.h
+%{_includedir}/libvirt/libvirt-domain-checkpoint.h
 %{_includedir}/libvirt/libvirt-domain-snapshot.h
 %{_includedir}/libvirt/libvirt-event.h
 %{_includedir}/libvirt/libvirt-host.h

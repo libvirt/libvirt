@@ -6218,8 +6218,9 @@ virDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
  *
  * If the domain has a managed save image (see
  * virDomainHasManagedSaveImage()), or if it is inactive and has any
- * snapshot metadata (see virDomainSnapshotNum()), then the undefine will
- * fail. See virDomainUndefineFlags() for more control.
+ * snapshot metadata (see virDomainSnapshotNum()) or checkpoint
+ * metadata (see virDomainListAllCheckpoints()), then the undefine
+ * will fail. See virDomainUndefineFlags() for more control.
  *
  * Returns 0 in case of success, -1 in case of error
  */
@@ -6275,6 +6276,16 @@ virDomainUndefine(virDomainPtr domain)
  * regardless of whether this flag is present.  On hypervisors that
  * support snapshots, but where snapshots do not use libvirt metadata,
  * this flag has no effect.
+ *
+ * If the domain is inactive and has any checkpoint metadata (see
+ * virDomainListAllCheckpoints()), then including
+ * VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA in @flags will also remove
+ * that metadata. Omitting the flag will cause the undefine of an
+ * inactive domain with checkpoints to fail. Active domains will
+ * retain checkpoint metadata until the (now-transient) domain halts,
+ * regardless of whether this flag is present. On hypervisors that
+ * support checkpoints, but where checkpoints do not use libvirt
+ * metadata, this flag has no effect.
  *
  * If the domain has any nvram specified, the undefine process will fail
  * unless VIR_DOMAIN_UNDEFINE_KEEP_NVRAM is specified, or if
@@ -6436,7 +6447,9 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
  * VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART, for filtering based on autostart;
  * VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT and
  * VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT, for filtering based on whether
- * a domain has snapshots.
+ * a domain has snapshots; VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT and
+ * VIR_CONNECT_LIST_DOMAINS_NO_CHECKPOINT, for filtering based on whether
+ * a domain has checkpoints.
  *
  * Example of usage:
  *

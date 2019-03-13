@@ -22,6 +22,7 @@ DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 modules = \
 	libvirt-common \
 	libvirt-domain \
+	libvirt-domain-checkpoint \
 	libvirt-domain-snapshot \
 	libvirt-event \
 	libvirt-host \
@@ -313,6 +314,7 @@ $(python_generated_files): $(APIBUILD_STAMP)
 $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(top_srcdir)/include/libvirt/libvirt.h \
 		$(top_srcdir)/include/libvirt/libvirt-common.h.in \
+		$(top_srcdir)/include/libvirt/libvirt-domain-checkpoint.h \
 		$(top_srcdir)/include/libvirt/libvirt-domain-snapshot.h \
 		$(top_srcdir)/include/libvirt/libvirt-domain.h \
 		$(top_srcdir)/include/libvirt/libvirt-event.h \
@@ -329,6 +331,7 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(top_srcdir)/include/libvirt/libvirt-admin.h \
 		$(top_srcdir)/include/libvirt/virterror.h \
 		$(top_srcdir)/src/libvirt.c \
+		$(top_srcdir)/src/libvirt-domain-checkpoint.c \
 		$(top_srcdir)/src/libvirt-domain-snapshot.c \
 		$(top_srcdir)/src/libvirt-domain.c \
 		$(top_srcdir)/src/libvirt-host.c \

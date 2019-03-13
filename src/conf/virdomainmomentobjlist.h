@@ -70,8 +70,9 @@ virDomainMomentObjPtr virDomainMomentAssignDef(virDomainMomentObjListPtr moments
                                                virDomainMomentDefPtr def);
 
 /* Various enum bits that map to public API filters. Note that the
- * values of the internal bits are not necessarily the same as the
- * public ones. */
+ * values of the internal bits are not the same as the public ones for
+ * snapshot, however, this list should be kept in sync with the public
+ * ones for checkpoint. */
 typedef enum {
     VIR_DOMAIN_MOMENT_LIST_ROOTS       = (1 << 0),
     VIR_DOMAIN_MOMENT_LIST_DESCENDANTS = (1 << 0),

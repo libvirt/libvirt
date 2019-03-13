@@ -94,6 +94,7 @@
         <dd>Reference manual for the C public API, split in
           <a href="html/libvirt-libvirt-common.html">common</a>,
           <a href="html/libvirt-libvirt-domain.html">domain</a>,
+          <a href="html/libvirt-libvirt-domain-checkpoint.html">domain checkpoint</a>,
           <a href="html/libvirt-libvirt-domain-snapshot.html">domain snapshot</a>,
           <a href="html/libvirt-virterror.html">error</a>,
           <a href="html/libvirt-libvirt-event.html">event</a>,
