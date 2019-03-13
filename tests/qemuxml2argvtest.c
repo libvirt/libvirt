@@ -611,6 +611,7 @@ typedef enum {
     ARG_MIGRATE_FROM,
     ARG_MIGRATE_FD,
     ARG_FLAGS,
+    ARG_PARSEFLAGS,
 
     /* ARG_END is our va_args sentinel. The value QEMU_CAPS_LATEST is
      * necessary to handle the DO_TEST(..., NONE) case, which through macro
@@ -656,6 +657,10 @@ testInfoSetArgs(struct testInfo *info, ...)
 
         case ARG_FLAGS:
             info->flags = va_arg(argptr, int);
+            break;
+
+        case ARG_PARSEFLAGS:
+            info->parseFlags = va_arg(argptr, int);
             break;
 
         case ARG_END:
@@ -850,10 +855,10 @@ mymain(void)
 # define DO_TEST_CAPS(name, ver) \
     DO_TEST_CAPS_FULL(name, 0, 0, ver)
 
-# define DO_TEST_FULL(name, parseFlags, ...) \
+# define DO_TEST_FULL(name, ...) \
     do { \
         static struct testInfo info = { \
-            name, NULL, NULL, NULL, -1, 0, parseFlags, \
+            name, NULL, NULL, NULL, -1, 0, 0, \
         }; \
         if (!(info.qemuCaps = virQEMUCapsNew())) \
             return EXIT_FAILURE; \
@@ -866,29 +871,27 @@ mymain(void)
     } while (0)
 
 # define DO_TEST(name, ...) \
-    DO_TEST_FULL(name, 0, \
+    DO_TEST_FULL(name, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define DO_TEST_GIC(name, gic, ...) \
-    DO_TEST_FULL(name, 0, \
+    DO_TEST_FULL(name, \
                  ARG_GIC, gic, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define DO_TEST_FAILURE(name, ...) \
     DO_TEST_FULL(name, \
-                 0, \
                  ARG_FLAGS, FLAG_EXPECT_FAILURE, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define DO_TEST_PARSE_ERROR(name, ...) \
     DO_TEST_FULL(name, \
-                 0, \
                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define DO_TEST_PARSE_FLAGS_ERROR(name, parseFlags, ...) \
     DO_TEST_FULL(name, \
-                 parseFlags, \
+                 ARG_PARSEFLAGS, parseFlags, \
                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
@@ -1728,23 +1731,23 @@ mymain(void)
             QEMU_CAPS_CCW_CSSID_UNRESTRICTED,
             QEMU_CAPS_DEVICE_VFIO_CCW);
 
-    DO_TEST_FULL("restore-v2", 0,
+    DO_TEST_FULL("restore-v2",
                  ARG_MIGRATE_FROM, "exec:cat",
                  ARG_MIGRATE_FD, 7,
                  ARG_QEMU_CAPS, NONE);
-    DO_TEST_FULL("restore-v2-fd", 0,
+    DO_TEST_FULL("restore-v2-fd",
                  ARG_MIGRATE_FROM, "stdio",
                  ARG_MIGRATE_FD, 7,
                  ARG_QEMU_CAPS, NONE);
-    DO_TEST_FULL("restore-v2-fd", 0,
+    DO_TEST_FULL("restore-v2-fd",
                  ARG_MIGRATE_FROM, "fd:7",
                  ARG_MIGRATE_FD, 7,
                  ARG_QEMU_CAPS, NONE);
-    DO_TEST_FULL("migrate", 0,
+    DO_TEST_FULL("migrate",
                  ARG_MIGRATE_FROM, "tcp:10.0.0.1:5000",
                  ARG_QEMU_CAPS, NONE);
 
-    DO_TEST_FULL("migrate-numa-unaligned", 0,
+    DO_TEST_FULL("migrate-numa-unaligned",
                  ARG_MIGRATE_FROM, "stdio",
                  ARG_MIGRATE_FD, 7,
                  ARG_QEMU_CAPS,
@@ -1790,11 +1793,9 @@ mymain(void)
     DO_TEST("cpu-host-model", NONE);
     DO_TEST("cpu-host-model-vendor", NONE);
     DO_TEST_FULL("cpu-host-model-fallback",
-                 0,
                  ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS,
                  ARG_QEMU_CAPS, NONE);
     DO_TEST_FULL("cpu-host-model-nofallback",
-                 0,
                  ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS | FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS, NONE);
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
@@ -2885,7 +2886,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST_FULL("ppc64-usb-controller-qemu-xhci",
-                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                  QEMU_CAPS_NEC_USB_XHCI,
