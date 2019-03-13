@@ -63,9 +63,6 @@ DRIVERLIB_LDFLAGS = \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
 	$(MINGW_EXTRA_LDFLAGS)
 
-AM_CPPFLAGS += \
-	-DTEST_DRIVER_DIR=\"$(top_builddir)/src/.libs\"
-
 PROBES_O =
 if WITH_DTRACE_PROBES
 PROBES_O += ../src/libvirt_probes.lo
