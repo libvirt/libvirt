@@ -487,7 +487,6 @@ TESTS_ENVIRONMENT = \
   abs_builddir=$(abs_builddir) \
   abs_srcdir=$(abs_srcdir) \
   SHELL="$(SHELL)" \
-  LIBVIRT_DRIVER_DIR="$(lv_abs_top_builddir)/src/.libs" \
   LIBVIRT_AUTOSTART=0 \
   LC_ALL=C \
   VIR_TEST_EXPENSIVE=$(VIR_TEST_EXPENSIVE) \
