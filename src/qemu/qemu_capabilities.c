@@ -1664,14 +1664,23 @@ virQEMUCapsSet(virQEMUCapsPtr qemuCaps,
 
 
 void
+virQEMUCapsSetVAList(virQEMUCapsPtr qemuCaps,
+                     va_list list)
+{
+    int flag;
+
+    while ((flag = va_arg(list, int)) < QEMU_CAPS_LAST)
+        ignore_value(virBitmapSetBit(qemuCaps->flags, flag));
+}
+
+
+void
 virQEMUCapsSetList(virQEMUCapsPtr qemuCaps, ...)
 {
     va_list list;
-    int flag;
 
     va_start(list, qemuCaps);
-    while ((flag = va_arg(list, int)) < QEMU_CAPS_LAST)
-        ignore_value(virBitmapSetBit(qemuCaps->flags, flag));
+    virQEMUCapsSetVAList(qemuCaps, list);
     va_end(list);
 }
 
