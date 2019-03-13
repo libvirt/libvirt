@@ -229,6 +229,17 @@ virshDomainFree(virDomainPtr dom)
 
 
 void
+virshDomainCheckpointFree(virDomainCheckpointPtr chk)
+{
+    if (!chk)
+        return;
+
+    vshSaveLibvirtHelperError();
+    virDomainCheckpointFree(chk); /* sc_prohibit_obj_free_apis_in_virsh */
+}
+
+
+void
 virshDomainSnapshotFree(virDomainSnapshotPtr snap)
 {
     if (!snap)

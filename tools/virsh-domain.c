@@ -3633,6 +3633,10 @@ static const vshCmdOptDef opts_undefine[] = {
      .type = VSH_OT_BOOL,
      .help = N_("remove all domain snapshot metadata (vm must be inactive)")
     },
+    {.name = "checkpoints-metadata",
+     .type = VSH_OT_BOOL,
+     .help = N_("remove all domain checkpoint metadata (vm must be inactive)")
+    },
     {.name = "nvram",
      .type = VSH_OT_BOOL,
      .help = N_("remove nvram file, if inactive")
@@ -3662,6 +3666,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     /* User-requested actions.  */
     bool managed_save = vshCommandOptBool(cmd, "managed-save");
     bool snapshots_metadata = vshCommandOptBool(cmd, "snapshots-metadata");
+    bool checkpoints_metadata = vshCommandOptBool(cmd, "checkpoints-metadata");
     bool wipe_storage = vshCommandOptBool(cmd, "wipe-storage");
     bool remove_all_storage = vshCommandOptBool(cmd, "remove-all-storage");
     bool delete_snapshots = vshCommandOptBool(cmd, "delete-snapshots");
@@ -3716,6 +3721,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA;
         snapshots_safe = true;
     }
+    if (checkpoints_metadata)
+        flags |= VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA;
     if (nvram)
         flags |= VIR_DOMAIN_UNDEFINE_NVRAM;
     if (keep_nvram)

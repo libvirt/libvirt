@@ -296,6 +296,7 @@ src/xenconfig/xen_xl.c
 src/xenconfig/xen_xm.c
 tests/virpolkittest.c
 tools/libvirt-guests.sh.in
+tools/virsh-checkpoint.c
 tools/virsh-console.c
 tools/virsh-domain-monitor.c
 tools/virsh-domain.c

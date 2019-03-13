@@ -40,6 +40,7 @@
 /*
  * Command group types
  */
+#define VIRSH_CMD_GRP_CHECKPOINT       "Checkpoint"
 #define VIRSH_CMD_GRP_DOM_MANAGEMENT   "Domain Management"
 #define VIRSH_CMD_GRP_DOM_MONITORING   "Domain Monitoring"
 #define VIRSH_CMD_GRP_STORAGE_POOL     "Storage Pool"

@@ -216,6 +216,7 @@ virt_login_shell_CFLAGS = \
 
 virsh_SOURCES = \
 		virsh.c virsh.h \
+		virsh-checkpoint.c virsh-checkpoint.h \
 		virsh-completer.c virsh-completer.h \
 		virsh-console.c virsh-console.h \
 		virsh-domain.c virsh-domain.h \

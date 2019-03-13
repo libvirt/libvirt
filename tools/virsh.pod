@@ -409,6 +409,7 @@ Inject NMI to the guest.
               [I<--with-managed-save>] [I<--without-managed-save>]
               [I<--autostart>] [I<--no-autostart>]
               [I<--with-snapshot>] [I<--without-snapshot>]
+              [I<--with-checkpoint>] [I<--without-checkpoint>]
               [I<--state-running>] [I<--state-paused>]
               [I<--state-shutoff>] [I<--state-other>]
 
@@ -513,6 +514,11 @@ this feature disabled use I<--no-autostart>.
 
 Domains that have snapshot images can be listed using flag I<--with-snapshot>,
 domains without a snapshot I<--without-snapshot>.
+
+=item B<Checkpoint existence>
+
+Domains that have checkpoints can be listed using flag I<--with-checkpoint>,
+domains without a checkpoint I<--without-checkpoint>.
 
 =back
 
@@ -809,7 +815,8 @@ can be restarted later.
 If I<domain> is transient, then the metadata of any snapshots will
 be lost once the guest stops running, but the snapshot contents still
 exist, and a new domain with the same name and UUID can restore the
-snapshot metadata with B<snapshot-create>.
+snapshot metadata with B<snapshot-create>.  Similarly, the metadata of
+any checkpoints will be lost, but can be restored with B<checkpoint-create>.
 
 If I<--graceful> is specified, don't resort to extreme measures
 (e.g. SIGKILL) when the guest doesn't stop after a reasonable timeout;
@@ -1574,7 +1581,7 @@ Convert a domain Id (or UUID) to domain name
 Rename a domain. This command changes current domain name to the new name
 specified in the second argument.
 
-B<Note>: Domain must be inactive and without snapshots.
+B<Note>: Domain must be inactive and without snapshots or checkpoints.
 
 =item B<domstate> I<domain> [I<--reason>]
 
@@ -2815,10 +2822,11 @@ services must be shutdown in the domain.
 The exact behavior of a domain when it shuts down is set by the
 I<on_poweroff> parameter in the domain's XML definition.
 
-If I<domain> is transient, then the metadata of any snapshots will
-be lost once the guest stops running, but the snapshot contents still
-exist, and a new domain with the same name and UUID can restore the
-snapshot metadata with B<snapshot-create>.
+If I<domain> is transient, then the metadata of any snapshots and
+checkpoints will be lost once the guest stops running, but the underlying
+contents still exist, and a new domain with the same name and UUID can
+restore the snapshot metadata with B<snapshot-create>, and the checkpoint
+metadata with B<checkpoint-create>.
 
 By default the hypervisor will try to pick a suitable shutdown
 method. To specify an alternative method, the I<--mode> parameter
@@ -2895,7 +2903,7 @@ Output the device used for the TTY console of the domain. If the information
 is not available the processes will provide an exit code of 1.
 
 =item B<undefine> I<domain> [I<--managed-save>] [I<--snapshots-metadata>]
-[I<--nvram>] [I<--keep-nvram>]
+[I<--checkpoints-metadata>] [I<--nvram>] [I<--keep-nvram>]
 [ {I<--storage> B<volumes> | I<--remove-all-storage>
 [I<--delete-storage-volume-snapshots>]} I<--wipe-storage>]
 
@@ -2911,6 +2919,12 @@ The I<--snapshots-metadata> flag guarantees that any snapshots (see the
 B<snapshot-list> command) are also cleaned up when undefining an inactive
 domain.  Without the flag, attempts to undefine an inactive domain with
 snapshot metadata will fail.  If the domain is active, this flag is
+ignored.
+
+The I<--checkpoints-metadata> flag guarantees that any checkpoints (see the
+B<checkpoint-list> command) are also cleaned up when undefining an inactive
+domain.  Without the flag, attempts to undefine an inactive domain with
+checkpoint metadata will fail.  If the domain is active, this flag is
 ignored.
 
 I<--nvram> and I<--keep-nvram> specify accordingly to delete or keep nvram
@@ -4887,6 +4901,163 @@ If I<--metadata> is specified, then only delete the snapshot metadata
 maintained by libvirt, while leaving the snapshot contents intact for
 access by external tools; otherwise deleting a snapshot also removes
 the data contents from that point in time.
+
+=back
+
+=head1 CHECKPOINT COMMANDS
+
+The following commands manipulate domain checkpoints.  Checkpoints serve as
+a point in time to identify which portions of a guest's disks have changed
+after that time, making it possible to perform incremental and differential
+backups.  Checkpoints are identified with a unique name.  See
+L<https://libvirt.org/formatcheckpoint.html> for documentation of the XML
+format used to represent properties of checkpoints.
+
+=over 4
+
+=item B<checkpoint-create> I<domain> [I<xmlfile>] { I<--redefine>
+| [I<--quiesce>]}
+
+Create a checkpoint for domain I<domain> with the properties specified
+in I<xmlfile> describing a <domaincheckpoint> top-level element. The
+format of the input XML file will be validated against an internal RNG
+schema (idential to using the L<virt-xml-validate(1)> tool). If
+I<xmlfile> is completely omitted, then libvirt will create a
+checkpoint with a name based on the current time.
+
+If I<--redefine> is specified, then all XML elements produced by
+B<checkpoint-dumpxml> are valid; this can be used to migrate
+checkpoint hierarchy from one machine to another, to recreate
+hierarchy for the case of a transient domain that goes away and is
+later recreated with the same name and UUID, or to make slight
+alterations in the checkpoint metadata (such as host-specific aspects
+of the domain XML embedded in the checkpoint).  When this flag is
+supplied, the I<xmlfile> argument is mandatory.
+
+If I<--quiesce> is specified, libvirt will try to use guest agent
+to freeze and unfreeze domain's mounted file systems. However,
+if domain has no guest agent, checkpoint creation will fail.
+
+Existence of checkpoint metadata will prevent attempts to B<undefine>
+a persistent domain.  However, for transient domains, checkpoint
+metadata is silently lost when the domain quits running (whether
+by command such as B<destroy> or by internal guest action).
+
+=item B<checkpoint-create-as> I<domain> [I<--print-xml>]
+[I<name>] [I<description>] [I<--quiesce>] [I<--diskspec>] B<diskspec>]...
+
+Create a checkpoint for domain I<domain> with the given <name> and
+<description>; if either value is omitted, libvirt will choose a
+value.  If I<--print-xml> is specified, then XML appropriate for
+I<checkpoint-create> is output, rather than actually creating a
+checkpoint.
+
+The I<--diskspec> option can be used to control which guest disks
+participate in the checkpoint. This option can occur multiple times,
+according to the number of <disk> elements in the domain xml.  Each
+<diskspec> is in the form B<disk[,checkpoint=type][,bitmap=name]>. A
+literal I<--diskspec> must precede each B<diskspec> unless
+all three of I<domain>, I<name>, and I<description> are also present.
+For example, a diskspec of "vda,checkpoint=bitmap,bitmap=map1"
+results in the following XML:
+  <disk name='vda' checkpoint='bitmap' bitmap='map1'/>
+
+If I<--quiesce> is specified, libvirt will try to use guest agent
+to freeze and unfreeze domain's mounted file systems. However,
+if domain has no guest agent, checkpoint creation will fail.
+
+=item B<checkpoint-edit> I<domain> I<checkpointname>
+
+Edit the XML configuration file for I<checkpointname> of a domain.
+
+This is equivalent to:
+
+ virsh checkpoint-dumpxml dom name > checkpoint.xml
+ vi checkpoint.xml (or make changes with your other text editor)
+ virsh checkpoint-create dom checkpoint.xml --redefine
+
+except that it does some error checking, including that the edits
+should not attempt to change the checkpoint name.
+
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
+
+=item B<checkpoint-info> I<domain> I<checkpoint>
+
+Output basic information about a named <checkpoint>.
+
+=item B<checkpoint-list> I<domain> [{I<--parent> | I<--roots> |
+[{I<--tree> | I<--name>}]}] [I<--topological>]
+[[I<--from>] B<checkpoint> | [I<--descendants>]]
+[I<--leaves>] [I<--no-leaves>]
+
+List all of the available checkpoints for the given domain, defaulting
+to show columns for the checkpoint name and creation time.
+
+Normally, table form output is sorted by checkpoint name; using
+I<--topological> instead sorts so that no child is listed before its
+ancestors (although there may be more than one possible ordering with
+this property).
+
+If I<--parent> is specified, add a column to the output table giving
+the name of the parent of each checkpoint.  If I<--roots> is
+specified, the list will be filtered to just checkpoints that have no
+parents.  If I<--tree> is specified, the output will be in a tree
+format, listing just checkpoint names.  These three options are
+mutually exclusive. If I<--name> is specified only the checkpoint name
+is printed. This option is mutually exclusive with I<--tree>.
+
+If I<--from> is provided, filter the list to checkpoints which are
+children of the given B<checkpoint>.  When used in isolation or with
+I<--parent>, the list is limited to direct children unless
+I<--descendants> is also present.  When used with I<--tree>, the use
+of I<--descendants> is implied.  This option is not compatible with
+I<--roots>.  Note that the starting point of I<--from>
+is not included in the list unless the I<--tree> option is also
+present.
+
+If I<--leaves> is specified, the list will be filtered to just
+checkpoints that have no children.  Likewise, if I<--no-leaves> is
+specified, the list will be filtered to just checkpoints with
+children.  (Note that omitting both options does no filtering, while
+providing both options will either produce the same list or error out
+depending on whether the server recognizes the flags).  Filtering
+options are not compatible with I<--tree>.
+
+=item B<checkpoint-dumpxml> I<domain> I<checkpoint>
+[I<--security-info>] [I<--no-domain>] [I<--size>]
+
+Output the checkpoint XML for the domain's checkpoint named
+I<checkpoint>.  Using
+I<--security-info> will also include security sensitive information.
+Using I<--size> will add XML indicating the current size in bytes of
+guest data that has changed since the checkpoint was created (although
+remember that guest activity between a size check and actually
+creating a backup can result in the backup needing slightly more
+space).  Using I<--no-domain> will omit the <domain> element from the
+output for a more compact view.
+
+=item B<checkpoint-parent> I<domain> I<checkpoint>
+
+Output the name of the parent checkpoint, if any, for the given
+I<checkpoint>.
+
+=item B<checkpoint-delete> I<domain> I<checkpoint>
+[I<--metadata>] [{I<--children> | I<--children-only>}]
+
+Delete the checkpoint for the domain named I<checkpoint>.  The
+record of which portions of
+the disk changed since the checkpoint are merged into the parent
+checkpoint (if any). If I<--children> is passed, then delete this
+checkpoint and any children of this checkpoint.  If I<--children-only>
+is passed, then delete any children of this checkpoint, but leave this
+checkpoint intact. These two flags are mutually exclusive.
+
+If I<--metadata> is specified, then only delete the checkpoint
+metadata maintained by libvirt, while leaving the checkpoint contents
+intact for access by external tools; otherwise deleting a checkpoint
+also removes the ability to perform an incremental backup from that
+point in time.
 
 =back
 

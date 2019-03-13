@@ -47,6 +47,7 @@
 #include "virstring.h"
 #include "virgettext.h"
 
+#include "virsh-checkpoint.h"
 #include "virsh-console.h"
 #include "virsh-domain.h"
 #include "virsh-domain-monitor.h"
@@ -829,6 +830,7 @@ static const vshCmdGrp cmdGroups[] = {
     {VIRSH_CMD_GRP_DOM_MANAGEMENT, "domain", domManagementCmds},
     {VIRSH_CMD_GRP_DOM_MONITORING, "monitor", domMonitoringCmds},
     {VIRSH_CMD_GRP_HOST_AND_HV, "host", hostAndHypervisorCmds},
+    {VIRSH_CMD_GRP_CHECKPOINT, "checkpoint", checkpointCmds},
     {VIRSH_CMD_GRP_IFACE, "interface", ifaceCmds},
     {VIRSH_CMD_GRP_NWFILTER, "filter", nwfilterCmds},
     {VIRSH_CMD_GRP_NETWORK, "network", networkCmds},
