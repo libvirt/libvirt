@@ -624,6 +624,19 @@ testCompareXMLToArgv(const void *data)
     return ret;
 }
 
+static int
+testInfoSetArgs(struct testInfo *info, ...)
+{
+    va_list argptr;
+    int ret = 0;
+
+    va_start(argptr, info);
+    virQEMUCapsSetVAList(info->qemuCaps, argptr);
+    va_end(argptr);
+
+    return ret;
+}
+
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
 static int
@@ -809,7 +822,8 @@ mymain(void)
         }; \
         if (testInitQEMUCaps(&info, gic) < 0) \
             return EXIT_FAILURE; \
-        virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST); \
+        if (testInfoSetArgs(&info, __VA_ARGS__, QEMU_CAPS_LAST) < 0) \
+            return EXIT_FAILURE; \
         if (virTestRun("QEMU XML-2-ARGV " name, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
