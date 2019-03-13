@@ -607,6 +607,7 @@ testCompareXMLToArgv(const void *data)
 
 typedef enum {
     ARG_QEMU_CAPS,
+    ARG_GIC,
 
     /* ARG_END is our va_args sentinel. The value QEMU_CAPS_LATEST is
      * necessary to handle the DO_TEST(..., NONE) case, which through macro
@@ -634,6 +635,12 @@ testInfoSetArgs(struct testInfo *info, ...)
         switch (argname) {
         case ARG_QEMU_CAPS:
             virQEMUCapsSetVAList(info->qemuCaps, argptr);
+            break;
+
+        case ARG_GIC:
+            if (testQemuCapsSetGIC(info->qemuCaps,
+                                   va_arg(argptr, int)) < 0)
+                goto cleanup;
             break;
 
         case ARG_END:
@@ -829,14 +836,12 @@ mymain(void)
     DO_TEST_CAPS_FULL(name, 0, 0, ver)
 
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, flags, \
-                      parseFlags, gic, ...) \
+                      parseFlags, ...) \
     do { \
         static struct testInfo info = { \
             name, NULL, NULL, migrateFrom, migrateFd, (flags), parseFlags, \
         }; \
         if (!(info.qemuCaps = virQEMUCapsNew())) \
-            return EXIT_FAILURE; \
-        if (testQemuCapsSetGIC(info.qemuCaps, gic) < 0) \
             return EXIT_FAILURE; \
         if (testInfoSetArgs(&info, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END) < 0) \
             return EXIT_FAILURE; \
@@ -847,28 +852,29 @@ mymain(void)
     } while (0)
 
 # define DO_TEST(name, ...) \
-    DO_TEST_FULL(name, NULL, -1, 0, 0, GIC_NONE, \
+    DO_TEST_FULL(name, NULL, -1, 0, 0, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define DO_TEST_GIC(name, gic, ...) \
-    DO_TEST_FULL(name, NULL, -1, 0, 0, gic, \
+    DO_TEST_FULL(name, NULL, -1, 0, 0, \
+                 ARG_GIC, gic, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define DO_TEST_FAILURE(name, ...) \
     DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE, \
-                 0, GIC_NONE, \
+                 0, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define DO_TEST_PARSE_ERROR(name, ...) \
     DO_TEST_FULL(name, NULL, -1, \
                  FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE, \
-                 0, GIC_NONE, \
+                 0, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define DO_TEST_PARSE_FLAGS_ERROR(name, parseFlags, ...) \
     DO_TEST_FULL(name, NULL, -1, \
                  FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE, \
-                 parseFlags, GIC_NONE, \
+                 parseFlags, \
                  ARG_QEMU_CAPS, __VA_ARGS__)
 
 # define NONE QEMU_CAPS_LAST
@@ -1707,16 +1713,16 @@ mymain(void)
             QEMU_CAPS_CCW_CSSID_UNRESTRICTED,
             QEMU_CAPS_DEVICE_VFIO_CCW);
 
-    DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, GIC_NONE,
+    DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0,
                  ARG_QEMU_CAPS, NONE);
-    DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0, GIC_NONE,
+    DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0,
                  ARG_QEMU_CAPS, NONE);
-    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, 0, GIC_NONE,
+    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, 0,
                  ARG_QEMU_CAPS, NONE);
-    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0, 0, GIC_NONE,
+    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0, 0,
                  ARG_QEMU_CAPS, NONE);
 
-    DO_TEST_FULL("migrate-numa-unaligned", "stdio", 7, 0, 0, GIC_NONE,
+    DO_TEST_FULL("migrate-numa-unaligned", "stdio", 7, 0, 0,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_NUMA,
                  QEMU_CAPS_OBJECT_MEMORY_RAM);
@@ -1761,11 +1767,10 @@ mymain(void)
     DO_TEST("cpu-host-model-vendor", NONE);
     DO_TEST_FULL("cpu-host-model-fallback", NULL, -1,
                  FLAG_SKIP_LEGACY_CPUS, 0,
-                 GIC_NONE,
                  ARG_QEMU_CAPS, NONE);
     DO_TEST_FULL("cpu-host-model-nofallback", NULL, -1,
                  FLAG_SKIP_LEGACY_CPUS | FLAG_EXPECT_FAILURE,
-                 0, GIC_NONE,
+                 0,
                  ARG_QEMU_CAPS, NONE);
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
@@ -2855,7 +2860,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST_FULL("ppc64-usb-controller-qemu-xhci", NULL, -1, 0,
-                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, GIC_NONE,
+                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                  QEMU_CAPS_NEC_USB_XHCI,
