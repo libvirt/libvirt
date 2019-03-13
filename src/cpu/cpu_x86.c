@@ -45,7 +45,7 @@ typedef struct _virCPUx86Vendor virCPUx86Vendor;
 typedef virCPUx86Vendor *virCPUx86VendorPtr;
 struct _virCPUx86Vendor {
     char *name;
-    virCPUx86DataItem cpuid;
+    virCPUx86DataItem data;
 };
 
 typedef struct _virCPUx86Feature virCPUx86Feature;
@@ -515,9 +515,9 @@ x86DataToVendor(const virCPUx86Data *data,
 
     for (i = 0; i < map->nvendors; i++) {
         virCPUx86VendorPtr vendor = map->vendors[i];
-        if ((cpuid = x86DataCpuid(data, &vendor->cpuid)) &&
-            x86cpuidMatchMasked(&cpuid->cpuid, &vendor->cpuid.cpuid)) {
-            x86cpuidClearBits(&cpuid->cpuid, &vendor->cpuid.cpuid);
+        if ((cpuid = x86DataCpuid(data, &vendor->data)) &&
+            x86cpuidMatchMasked(&cpuid->cpuid, &vendor->data.cpuid)) {
+            x86cpuidClearBits(&cpuid->cpuid, &vendor->data.cpuid);
             return vendor;
         }
     }
@@ -760,7 +760,7 @@ x86VendorParse(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    if (virCPUx86VendorToCPUID(string, &vendor->cpuid) < 0)
+    if (virCPUx86VendorToCPUID(string, &vendor->data) < 0)
         goto cleanup;
 
     if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
@@ -1666,7 +1666,7 @@ x86Compute(virCPUDefPtr host,
 
         if (cpu->vendor && host_model->vendor &&
             virCPUx86DataAddCPUIDInt(&guest_model->data,
-                                     &host_model->vendor->cpuid) < 0)
+                                     &host_model->vendor->data) < 0)
             goto error;
 
         if (host_model->signatures &&
@@ -2154,7 +2154,7 @@ x86Encode(virArch arch,
         if (!(data_vendor = virCPUDataNew(arch)))
             goto error;
 
-        if (v && virCPUx86DataAddCPUID(data_vendor, &v->cpuid) < 0)
+        if (v && virCPUx86DataAddCPUID(data_vendor, &v->data) < 0)
             goto error;
     }
 
@@ -2651,7 +2651,7 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
     }
 
     if (vendor &&
-        virCPUx86DataAddCPUIDInt(&base_model->data, &vendor->cpuid) < 0)
+        virCPUx86DataAddCPUIDInt(&base_model->data, &vendor->data) < 0)
         goto error;
 
     if (x86Decode(cpu, &base_model->data, models, modelName, migratable) < 0)
@@ -2950,7 +2950,7 @@ virCPUx86Translate(virCPUDefPtr cpu,
         goto cleanup;
 
     if (model->vendor &&
-        virCPUx86DataAddCPUIDInt(&model->data, &model->vendor->cpuid) < 0)
+        virCPUx86DataAddCPUIDInt(&model->data, &model->vendor->data) < 0)
         goto cleanup;
 
     if (model->signatures &&
