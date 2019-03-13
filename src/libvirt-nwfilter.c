@@ -453,8 +453,8 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
  * Provide an XML description of the network filter. The description may be
  * reused later to redefine the network filter with virNWFilterCreateXML().
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
@@ -770,8 +770,8 @@ virNWFilterBindingDelete(virNWFilterBindingPtr binding)
  * Provide an XML description of the network filter. The description may be
  * reused later to redefine the network filter with virNWFilterCreateXML().
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virNWFilterBindingGetXMLDesc(virNWFilterBindingPtr binding, unsigned int flags)

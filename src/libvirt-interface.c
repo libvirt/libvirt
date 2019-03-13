@@ -403,8 +403,8 @@ virInterfaceGetMACString(virInterfacePtr iface)
  * is not set, the ip address and netmask will be the current live
  * setting of the interface, not the settings from the config files.
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)

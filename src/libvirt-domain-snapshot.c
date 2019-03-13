@@ -254,8 +254,8 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
  * VIR_DOMAIN_SNAPSHOT_XML_SECURE; this flag is rejected on read-only
  * connections.
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,

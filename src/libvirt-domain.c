@@ -2570,8 +2570,8 @@ virDomainGetControlInfo(virDomainPtr domain,
  * XML might not validate against the schema, so it is mainly for
  * internal use.
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
@@ -2619,8 +2619,8 @@ virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
  * generates libvirt domain XML. The format of the native
  * data is hypervisor dependent.
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virConnectDomainXMLFromNative(virConnectPtr conn,
@@ -2669,8 +2669,8 @@ virConnectDomainXMLFromNative(virConnectPtr conn,
  * a native configuration file describing the domain.
  * The format of the native data is hypervisor dependent.
  *
- * Returns a 0 terminated UTF-8 encoded native config datafile, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded native config datafile, or
+ * NULL in case of error. The caller must free() the returned value.
  */
 char *
 virConnectDomainXMLToNative(virConnectPtr conn,

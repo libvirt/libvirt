@@ -783,8 +783,8 @@ virNetworkGetUUIDString(virNetworkPtr network, char *buf)
  * VIR_NETWORK_XML_INACTIVE, then the expansion of virtual interfaces is
  * not performed.
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
@@ -820,8 +820,8 @@ virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
  * Provides a bridge interface name to which a domain may connect
  * a network interface in order to join the network.
  *
- * Returns a 0 terminated interface name, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated interface name, or NULL in case of
+ * error. The caller must free() the returned value.
  */
 char *
 virNetworkGetBridgeName(virNetworkPtr network)
