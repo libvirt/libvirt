@@ -94,6 +94,16 @@
           that parents occur before children.
         </description>
       </change>
+      <change>
+        <summary>
+          Xen: Add support for max grant frames setting
+        </summary>
+        <description>
+          Add support for Xen's max_grant_frames setting by adding a
+          new xenbus controller type with a maxGrantFrames attribute.
+          E.g. <code>&lt;controller type='xenbus' maxGrantFrames='64'/&gt;</code>
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
