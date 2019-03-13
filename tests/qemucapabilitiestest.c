@@ -230,6 +230,14 @@ mymain(void)
      *
      * If you manually edit replies files you can run
      * "tests/qemucapsfixreplies foo.replies" to fix the replies ids.
+     *
+     * Once a replies file has been generated and tweaked if necessary,
+     * you can drop it into tests/qemucapabilitiesdata/ (with a sensible
+     * name - look at what's already there for inspiration) and test
+     * programs will automatically pick it up.
+     *
+     * To generate the corresponding output files after a new replies
+     * file has been added, run "VIR_TEST_REGENERATE_OUTPUT=1 make check".
      */
 
     testQemuDataReset(&data);
