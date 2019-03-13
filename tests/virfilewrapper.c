@@ -66,13 +66,15 @@ static void init_syms(void)
 }
 
 
-int
+void
 virFileWrapperAddPrefix(const char *prefix,
                         const char *override)
 {
     /* Both parameters are mandatory */
-    if (!prefix || !override)
-        return -1;
+    if (!prefix || !override) {
+        fprintf(stderr, "Attempt to add invalid path override\n");
+        abort();
+    }
 
     init_syms();
 
@@ -80,10 +82,9 @@ virFileWrapperAddPrefix(const char *prefix,
         VIR_APPEND_ELEMENT_QUIET(overrides, noverrides, override) < 0) {
         VIR_FREE(prefixes);
         VIR_FREE(overrides);
-        return -1;
+        fprintf(stderr, "Unable to add path override for '%s'\n", prefix);
+        abort();
     }
-
-    return 0;
 }
 
 
