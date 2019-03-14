@@ -309,7 +309,7 @@ virCPUx86CPUIDSorter(const void *a, const void *b)
 
 /* skips all zero CPUID leaves */
 static virCPUx86DataItemPtr
-x86DataCpuidNext(virCPUx86DataIteratorPtr iterator)
+virCPUx86DataNext(virCPUx86DataIteratorPtr iterator)
 {
     const virCPUx86Data *data = iterator->data;
 
@@ -408,7 +408,7 @@ x86DataAdd(virCPUx86Data *data1,
     virCPUx86DataItemPtr item1;
     virCPUx86DataItemPtr item2;
 
-    while ((item2 = x86DataCpuidNext(&iter))) {
+    while ((item2 = virCPUx86DataNext(&iter))) {
         item1 = x86DataCpuid(data1, item2);
 
         if (item1) {
@@ -431,7 +431,7 @@ x86DataSubtract(virCPUx86Data *data1,
     virCPUx86DataItemPtr item1;
     virCPUx86DataItemPtr item2;
 
-    while ((item1 = x86DataCpuidNext(&iter))) {
+    while ((item1 = virCPUx86DataNext(&iter))) {
         if ((item2 = x86DataCpuid(data2, item1)))
             x86cpuidClearBits(&item1->cpuid, &item2->cpuid);
     }
@@ -446,7 +446,7 @@ x86DataIntersect(virCPUx86Data *data1,
     virCPUx86DataItemPtr item1;
     virCPUx86DataItemPtr item2;
 
-    while ((item1 = x86DataCpuidNext(&iter))) {
+    while ((item1 = virCPUx86DataNext(&iter))) {
         item2 = x86DataCpuid(data2, item1);
         if (item2)
             x86cpuidAndBits(&item1->cpuid, &item2->cpuid);
@@ -461,7 +461,7 @@ x86DataIsEmpty(virCPUx86Data *data)
 {
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data);
 
-    return !x86DataCpuidNext(&iter);
+    return !virCPUx86DataNext(&iter);
 }
 
 
@@ -473,7 +473,7 @@ x86DataIsSubset(const virCPUx86Data *data,
     const virCPUx86DataItem *item;
     const virCPUx86DataItem *itemSubset;
 
-    while ((itemSubset = x86DataCpuidNext(&iter))) {
+    while ((itemSubset = virCPUx86DataNext(&iter))) {
         if (!(item = x86DataCpuid(data, itemSubset)) ||
             !x86cpuidMatchMasked(&item->cpuid, &itemSubset->cpuid))
             return false;
@@ -1152,7 +1152,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
     virCPUx86DataItemPtr item1;
     virCPUx86DataItemPtr item2;
 
-    while ((item1 = x86DataCpuidNext(&iter1))) {
+    while ((item1 = virCPUx86DataNext(&iter1))) {
         virCPUx86CompareResult match = SUPERSET;
 
         if ((item2 = x86DataCpuid(&model2->data, item1))) {
@@ -1168,7 +1168,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
             return UNRELATED;
     }
 
-    while ((item2 = x86DataCpuidNext(&iter2))) {
+    while ((item2 = virCPUx86DataNext(&iter2))) {
         virCPUx86CompareResult match = SUBSET;
 
         if ((item1 = x86DataCpuid(&model1->data, item2))) {
@@ -1462,7 +1462,7 @@ virCPUx86DataFormat(const virCPUData *data)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "<cpudata arch='x86'>\n");
-    while ((item = x86DataCpuidNext(&iter))) {
+    while ((item = virCPUx86DataNext(&iter))) {
         virCPUx86CPUIDPtr cpuid = &item->cpuid;
         virBufferAsprintf(&buf,
                           "  <cpuid eax_in='0x%08x' ecx_in='0x%08x'"
