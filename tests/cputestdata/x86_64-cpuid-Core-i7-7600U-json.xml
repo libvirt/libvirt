@@ -10,4 +10,5 @@
   <feature policy='require' name='ssbd'/>
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='pdpe1gb'/>
+  <feature policy='require' name='skip-l1dfl-vmentry'/>
 </cpu>

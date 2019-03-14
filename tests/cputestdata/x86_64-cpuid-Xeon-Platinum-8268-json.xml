@@ -7,4 +7,7 @@
   <feature policy='require' name='umip'/>
   <feature policy='require' name='pku'/>
   <feature policy='require' name='xsaves'/>
+  <feature policy='require' name='rdctl-no'/>
+  <feature policy='require' name='ibrs-all'/>
+  <feature policy='require' name='skip-l1dfl-vmentry'/>
 </cpu>
