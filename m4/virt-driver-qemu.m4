@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_QEMU], [
-  LIBVIRT_ARG_WITH_FEATURE([QEMU], [QEMU/KVM], [yes])
+  LIBVIRT_ARG_WITH_FEATURE([QEMU], [QEMU/KVM], [check])
   LIBVIRT_ARG_WITH([QEMU_USER], [username to run QEMU system instance as],
                    ['platform dependent'])
   LIBVIRT_ARG_WITH([QEMU_GROUP], [groupname to run QEMU system instance as],
