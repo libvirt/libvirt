@@ -678,6 +678,12 @@ testInfoSetArgs(struct testInfo *info, ...)
     return ret;
 }
 
+static void
+testInfoClear(struct testInfo *info)
+{
+    virObjectUnref(info->qemuCaps);
+}
+
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
 static int
@@ -824,9 +830,8 @@ mymain(void)
         if (virTestRun("QEMU XML-2-ARGV " _name "." arch "-" ver, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
-        virObjectUnref(info.qemuCaps); \
+        testInfoClear(&info); \
     } while (0)
-
 
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
     DO_TEST_CAPS_INTERNAL(name, arch, ver, ARG_END)
@@ -864,7 +869,7 @@ mymain(void)
         if (virTestRun("QEMU XML-2-ARGV " _name, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
-        virObjectUnref(info.qemuCaps); \
+        testInfoClear(&info); \
     } while (0)
 
 /* All the following macros require an explicit QEMU_CAPS_* list
