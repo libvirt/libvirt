@@ -82,6 +82,18 @@
           chooses.
         </description>
       </change>
+      <change>
+        <summary>
+          snapshots: Add support for topological listings
+        </summary>
+        <description>
+          A new flag VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL is available
+          for the various snapshot listing APIs such as
+          virDomainListAllSnapshots(). For drivers that support the
+          flag, the listed snapshots are guaranteed to be sorted such
+          that parents occur before children.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
