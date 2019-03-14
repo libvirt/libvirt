@@ -380,8 +380,8 @@ x86DataCopy(virCPUx86Data *dst, const virCPUx86Data *src)
 
 
 static int
-virCPUx86DataAddCPUIDInt(virCPUx86Data *data,
-                         const virCPUx86DataItem *item)
+virCPUx86DataAddItem(virCPUx86Data *data,
+                     const virCPUx86DataItem *item)
 {
     virCPUx86DataItemPtr existing;
 
@@ -414,7 +414,7 @@ x86DataAdd(virCPUx86Data *data1,
         if (item1) {
             x86cpuidSetBits(&item1->cpuid, &item2->cpuid);
         } else {
-            if (virCPUx86DataAddCPUIDInt(data1, item2) < 0)
+            if (virCPUx86DataAddItem(data1, item2) < 0)
                 return -1;
         }
     }
@@ -642,7 +642,7 @@ x86DataAddSignature(virCPUx86Data *data,
 {
     virCPUx86DataItem leaf1 = CPUID(.eax_in = 0x1, .eax = signature);
 
-    return virCPUx86DataAddCPUIDInt(data, &leaf1);
+    return virCPUx86DataAddItem(data, &leaf1);
 }
 
 
@@ -949,7 +949,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
                            i, feature->name);
             goto cleanup;
         }
-        if (virCPUx86DataAddCPUIDInt(&feature->data, &item))
+        if (virCPUx86DataAddItem(&feature->data, &item))
             goto cleanup;
     }
 
@@ -1665,8 +1665,8 @@ x86Compute(virCPUDefPtr host,
             goto error;
 
         if (cpu->vendor && host_model->vendor &&
-            virCPUx86DataAddCPUIDInt(&guest_model->data,
-                                     &host_model->vendor->data) < 0)
+            virCPUx86DataAddItem(&guest_model->data,
+                                 &host_model->vendor->data) < 0)
             goto error;
 
         if (host_model->signatures &&
@@ -2651,7 +2651,7 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
     }
 
     if (vendor &&
-        virCPUx86DataAddCPUIDInt(&base_model->data, &vendor->data) < 0)
+        virCPUx86DataAddItem(&base_model->data, &vendor->data) < 0)
         goto error;
 
     if (x86Decode(cpu, &base_model->data, models, modelName, migratable) < 0)
@@ -2950,7 +2950,7 @@ virCPUx86Translate(virCPUDefPtr cpu,
         goto cleanup;
 
     if (model->vendor &&
-        virCPUx86DataAddCPUIDInt(&model->data, &model->vendor->data) < 0)
+        virCPUx86DataAddItem(&model->data, &model->vendor->data) < 0)
         goto cleanup;
 
     if (model->signatures &&
@@ -3081,7 +3081,7 @@ int
 virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
                       const virCPUx86DataItem *item)
 {
-    return virCPUx86DataAddCPUIDInt(&cpuData->data.x86, item);
+    return virCPUx86DataAddItem(&cpuData->data.x86, item);
 }
 
 
