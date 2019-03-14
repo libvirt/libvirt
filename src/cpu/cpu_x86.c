@@ -288,7 +288,7 @@ x86FeatureFindInternal(const char *name)
 
 
 static int
-virCPUx86CPUIDSorter(const void *a, const void *b)
+virCPUx86DataSorter(const void *a, const void *b)
 {
     virCPUx86DataItemPtr da = (virCPUx86DataItemPtr) a;
     virCPUx86DataItemPtr db = (virCPUx86DataItemPtr) b;
@@ -393,7 +393,7 @@ virCPUx86DataAddCPUIDInt(virCPUx86Data *data,
             return -1;
 
         qsort(data->items, data->len,
-              sizeof(virCPUx86DataItem), virCPUx86CPUIDSorter);
+              sizeof(virCPUx86DataItem), virCPUx86DataSorter);
     }
 
     return 0;
