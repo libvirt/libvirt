@@ -1506,7 +1506,7 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
                            _("failed to parse cpuid[%zu]"), i);
             goto error;
         }
-        if (virCPUx86DataAddCPUID(cpuData, &item) < 0)
+        if (virCPUx86DataAdd(cpuData, &item) < 0)
             goto error;
     }
 
@@ -2154,7 +2154,7 @@ x86Encode(virArch arch,
         if (!(data_vendor = virCPUDataNew(arch)))
             goto error;
 
-        if (v && virCPUx86DataAddCPUID(data_vendor, &v->data) < 0)
+        if (v && virCPUx86DataAdd(data_vendor, &v->data) < 0)
             goto error;
     }
 
@@ -2230,13 +2230,13 @@ cpuidSetLeaf4(virCPUDataPtr data,
     virCPUx86DataItem item = *subLeaf0;
     virCPUx86CPUIDPtr cpuid = &item.cpuid;
 
-    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+    if (virCPUx86DataAdd(data, subLeaf0) < 0)
         return -1;
 
     while (cpuid->eax & 0x1f) {
         cpuid->ecx_in++;
         cpuidCall(cpuid);
-        if (virCPUx86DataAddCPUID(data, &item) < 0)
+        if (virCPUx86DataAdd(data, &item) < 0)
             return -1;
     }
     return 0;
@@ -2255,13 +2255,13 @@ cpuidSetLeaf7(virCPUDataPtr data,
     virCPUx86CPUIDPtr cpuid = &item.cpuid;
     uint32_t sub;
 
-    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+    if (virCPUx86DataAdd(data, subLeaf0) < 0)
         return -1;
 
     for (sub = 1; sub <= subLeaf0->cpuid.eax; sub++) {
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAddCPUID(data, &item) < 0)
+        if (virCPUx86DataAdd(data, &item) < 0)
             return -1;
     }
     return 0;
@@ -2283,7 +2283,7 @@ cpuidSetLeafB(virCPUDataPtr data,
     virCPUx86CPUIDPtr cpuid = &item.cpuid;
 
     while (cpuid->ecx & 0xff00) {
-        if (virCPUx86DataAddCPUID(data, &item) < 0)
+        if (virCPUx86DataAdd(data, &item) < 0)
             return -1;
         cpuid->ecx_in++;
         cpuidCall(cpuid);
@@ -2310,12 +2310,12 @@ cpuidSetLeafD(virCPUDataPtr data,
     virCPUx86CPUID sub1;
     uint32_t sub;
 
-    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+    if (virCPUx86DataAdd(data, subLeaf0) < 0)
         return -1;
 
     cpuid->ecx_in = 1;
     cpuidCall(cpuid);
-    if (virCPUx86DataAddCPUID(data, &item) < 0)
+    if (virCPUx86DataAdd(data, &item) < 0)
         return -1;
 
     sub0 = subLeaf0->cpuid;
@@ -2332,7 +2332,7 @@ cpuidSetLeafD(virCPUDataPtr data,
 
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAddCPUID(data, &item) < 0)
+        if (virCPUx86DataAdd(data, &item) < 0)
             return -1;
     }
     return 0;
@@ -2357,7 +2357,7 @@ cpuidSetLeafResID(virCPUDataPtr data,
     virCPUx86CPUIDPtr cpuid = &item.cpuid;
     uint32_t sub;
 
-    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+    if (virCPUx86DataAdd(data, subLeaf0) < 0)
         return -1;
 
     for (sub = 1; sub < 32; sub++) {
@@ -2365,7 +2365,7 @@ cpuidSetLeafResID(virCPUDataPtr data,
             continue;
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAddCPUID(data, &item) < 0)
+        if (virCPUx86DataAdd(data, &item) < 0)
             return -1;
     }
     return 0;
@@ -2389,19 +2389,19 @@ cpuidSetLeaf12(virCPUDataPtr data,
         !(leaf7->cpuid.ebx & (1 << 2)))
         return 0;
 
-    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+    if (virCPUx86DataAdd(data, subLeaf0) < 0)
         return -1;
 
     cpuid->eax_in = 0x12;
     cpuid->ecx_in = 1;
     cpuidCall(cpuid);
-    if (virCPUx86DataAddCPUID(data, &item) < 0)
+    if (virCPUx86DataAdd(data, &item) < 0)
         return -1;
 
     cpuid->ecx_in = 2;
     cpuidCall(cpuid);
     while (cpuid->eax & 0xf) {
-        if (virCPUx86DataAddCPUID(data, &item) < 0)
+        if (virCPUx86DataAdd(data, &item) < 0)
             return -1;
         cpuid->ecx_in++;
         cpuidCall(cpuid);
@@ -2422,13 +2422,13 @@ cpuidSetLeaf14(virCPUDataPtr data,
     virCPUx86CPUIDPtr cpuid = &item.cpuid;
     uint32_t sub;
 
-    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+    if (virCPUx86DataAdd(data, subLeaf0) < 0)
         return -1;
 
     for (sub = 1; sub <= subLeaf0->cpuid.eax; sub++) {
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAddCPUID(data, &item) < 0)
+        if (virCPUx86DataAdd(data, &item) < 0)
             return -1;
     }
     return 0;
@@ -2451,13 +2451,13 @@ cpuidSetLeaf17(virCPUDataPtr data,
     if (subLeaf0->cpuid.eax < 3)
         return 0;
 
-    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+    if (virCPUx86DataAdd(data, subLeaf0) < 0)
         return -1;
 
     for (sub = 1; sub <= subLeaf0->cpuid.eax; sub++) {
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAddCPUID(data, &item) < 0)
+        if (virCPUx86DataAdd(data, &item) < 0)
             return -1;
     }
     return 0;
@@ -2503,7 +2503,7 @@ cpuidSet(uint32_t base, virCPUDataPtr data)
         else if (leaf == 0x17)
             rc = cpuidSetLeaf17(data, &item);
         else
-            rc = virCPUx86DataAddCPUID(data, &item);
+            rc = virCPUx86DataAdd(data, &item);
 
         if (rc < 0)
             return -1;
@@ -3078,8 +3078,8 @@ virCPUx86ValidateFeatures(virCPUDefPtr cpu)
 
 
 int
-virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
-                      const virCPUx86DataItem *item)
+virCPUx86DataAdd(virCPUDataPtr cpuData,
+                 const virCPUx86DataItem *item)
 {
     return virCPUx86DataAddItem(&cpuData->data.x86, item);
 }
@@ -3118,7 +3118,7 @@ virCPUx86DataSetVendor(virCPUDataPtr cpuData,
     if (virCPUx86VendorToCPUID(vendor, &item) < 0)
         return -1;
 
-    return virCPUx86DataAddCPUID(cpuData, &item);
+    return virCPUx86DataAdd(cpuData, &item);
 }
 
 

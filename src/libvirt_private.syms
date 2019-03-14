@@ -1238,7 +1238,7 @@ virCPUValidateFeatures;
 
 
 # cpu/cpu_x86.h
-virCPUx86DataAddCPUID;
+virCPUx86DataAdd;
 virCPUx86DataAddFeature;
 virCPUx86DataGetSignature;
 virCPUx86DataSetSignature;
