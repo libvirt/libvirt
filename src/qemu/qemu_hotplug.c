@@ -67,6 +67,9 @@ VIR_LOG_INIT("qemu.qemu_hotplug");
 unsigned long long qemuDomainRemoveDeviceWaitTime = 1000ull * 5;
 
 
+static void
+qemuDomainResetDeviceRemoval(virDomainObjPtr vm);
+
 /**
  * qemuDomainDeleteDevice:
  * @vm: domain object
@@ -99,8 +102,31 @@ qemuDomainDeleteDevice(virDomainObjPtr vm,
 
     rc = qemuMonitorDelDevice(priv->mon, alias);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        rc = -1;
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        /* Domain is no longer running. No cleanup needed. */
+        return -1;
+    }
+
+    if (rc < 0) {
+        /* Deleting device failed. Let's check if DEVICE_DELETED
+         * even arrived. If it did, we need to claim success to
+         * make the caller remove device from domain XML. */
+
+        if (priv->unplug.eventSeen) {
+            /* The event arrived. Return success. */
+            VIR_DEBUG("Detaching of device %s failed, but event arrived", alias);
+            qemuDomainResetDeviceRemoval(vm);
+            rc = 0;
+        } else if (rc == -2) {
+            /* The device does not exist in qemu, but it still
+             * exists in libvirt. Claim success to make caller
+             * qemuDomainWaitForDeviceRemoval(). Otherwise if
+             * domain XML is queried right after detach API the
+             * device would still be there.  */
+            VIR_DEBUG("Detaching of device %s failed and no event arrived", alias);
+            rc = 0;
+        }
+    }
 
     return rc;
 }
@@ -5182,6 +5208,7 @@ qemuDomainResetDeviceRemoval(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     priv->unplug.alias = NULL;
+    priv->unplug.eventSeen = false;
 }
 
 /* Returns:
@@ -5241,6 +5268,7 @@ qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
         VIR_DEBUG("Removal of device '%s' continues in waiting thread", devAlias);
         qemuDomainResetDeviceRemoval(vm);
         priv->unplug.status = status;
+        priv->unplug.eventSeen = true;
         virDomainObjBroadcast(vm);
         return true;
     }

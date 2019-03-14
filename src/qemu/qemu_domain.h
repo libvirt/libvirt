@@ -218,6 +218,7 @@ typedef qemuDomainUnpluggingDevice *qemuDomainUnpluggingDevicePtr;
 struct _qemuDomainUnpluggingDevice {
     const char *alias;
     qemuDomainUnpluggingDeviceStatus status;
+    bool eventSeen; /* True if DEVICE_DELETED event arrived. */
 };
 
 
