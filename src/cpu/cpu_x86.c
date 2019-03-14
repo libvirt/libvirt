@@ -328,8 +328,8 @@ virCPUx86DataNext(virCPUx86DataIteratorPtr iterator)
 
 
 static virCPUx86DataItemPtr
-x86DataCpuid(const virCPUx86Data *data,
-             const virCPUx86DataItem *item)
+virCPUx86DataGet(const virCPUx86Data *data,
+                 const virCPUx86DataItem *item)
 {
     size_t i;
 
@@ -385,7 +385,7 @@ virCPUx86DataAddCPUIDInt(virCPUx86Data *data,
 {
     virCPUx86DataItemPtr existing;
 
-    if ((existing = x86DataCpuid(data, item))) {
+    if ((existing = virCPUx86DataGet(data, item))) {
         x86cpuidSetBits(&existing->cpuid, &item->cpuid);
     } else {
         if (VIR_APPEND_ELEMENT_COPY(data->items, data->len,
@@ -409,7 +409,7 @@ x86DataAdd(virCPUx86Data *data1,
     virCPUx86DataItemPtr item2;
 
     while ((item2 = virCPUx86DataNext(&iter))) {
-        item1 = x86DataCpuid(data1, item2);
+        item1 = virCPUx86DataGet(data1, item2);
 
         if (item1) {
             x86cpuidSetBits(&item1->cpuid, &item2->cpuid);
@@ -432,7 +432,7 @@ x86DataSubtract(virCPUx86Data *data1,
     virCPUx86DataItemPtr item2;
 
     while ((item1 = virCPUx86DataNext(&iter))) {
-        if ((item2 = x86DataCpuid(data2, item1)))
+        if ((item2 = virCPUx86DataGet(data2, item1)))
             x86cpuidClearBits(&item1->cpuid, &item2->cpuid);
     }
 }
@@ -447,7 +447,7 @@ x86DataIntersect(virCPUx86Data *data1,
     virCPUx86DataItemPtr item2;
 
     while ((item1 = virCPUx86DataNext(&iter))) {
-        item2 = x86DataCpuid(data2, item1);
+        item2 = virCPUx86DataGet(data2, item1);
         if (item2)
             x86cpuidAndBits(&item1->cpuid, &item2->cpuid);
         else
@@ -474,7 +474,7 @@ x86DataIsSubset(const virCPUx86Data *data,
     const virCPUx86DataItem *itemSubset;
 
     while ((itemSubset = virCPUx86DataNext(&iter))) {
-        if (!(item = x86DataCpuid(data, itemSubset)) ||
+        if (!(item = virCPUx86DataGet(data, itemSubset)) ||
             !x86cpuidMatchMasked(&item->cpuid, &itemSubset->cpuid))
             return false;
     }
@@ -515,7 +515,7 @@ x86DataToVendor(const virCPUx86Data *data,
 
     for (i = 0; i < map->nvendors; i++) {
         virCPUx86VendorPtr vendor = map->vendors[i];
-        if ((item = x86DataCpuid(data, &vendor->data)) &&
+        if ((item = virCPUx86DataGet(data, &vendor->data)) &&
             x86cpuidMatchMasked(&item->cpuid, &vendor->data.cpuid)) {
             x86cpuidClearBits(&item->cpuid, &vendor->data.cpuid);
             return vendor;
@@ -610,7 +610,7 @@ x86DataToSignatureFull(const virCPUx86Data *data,
 
     *family = *model = *stepping = 0;
 
-    if (!(item = x86DataCpuid(data, &leaf1)))
+    if (!(item = virCPUx86DataGet(data, &leaf1)))
         return;
 
     cpuid = &item->cpuid;
@@ -629,7 +629,7 @@ x86DataToSignature(const virCPUx86Data *data)
     virCPUx86DataItem leaf1 = CPUID(.eax_in = 0x1);
     virCPUx86DataItemPtr item;
 
-    if (!(item = x86DataCpuid(data, &leaf1)))
+    if (!(item = virCPUx86DataGet(data, &leaf1)))
         return 0;
 
     return item->cpuid.eax & SIGNATURE_MASK;
@@ -1155,7 +1155,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
     while ((item1 = virCPUx86DataNext(&iter1))) {
         virCPUx86CompareResult match = SUPERSET;
 
-        if ((item2 = x86DataCpuid(&model2->data, item1))) {
+        if ((item2 = virCPUx86DataGet(&model2->data, item1))) {
             if (x86cpuidMatch(&item1->cpuid, &item2->cpuid))
                 continue;
             else if (!x86cpuidMatchMasked(&item1->cpuid, &item2->cpuid))
@@ -1171,7 +1171,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
     while ((item2 = virCPUx86DataNext(&iter2))) {
         virCPUx86CompareResult match = SUBSET;
 
-        if ((item1 = x86DataCpuid(&model1->data, item2))) {
+        if ((item1 = virCPUx86DataGet(&model1->data, item2))) {
             if (x86cpuidMatch(&item2->cpuid, &item1->cpuid))
                 continue;
             else if (!x86cpuidMatchMasked(&item2->cpuid, &item1->cpuid))
@@ -2385,7 +2385,7 @@ cpuidSetLeaf12(virCPUDataPtr data,
     virCPUx86CPUIDPtr cpuid = &item.cpuid;
     virCPUx86DataItemPtr leaf7;
 
-    if (!(leaf7 = x86DataCpuid(&data->data.x86, &item)) ||
+    if (!(leaf7 = virCPUx86DataGet(&data->data.x86, &item)) ||
         !(leaf7->cpuid.ebx & (1 << 2)))
         return 0;
 
