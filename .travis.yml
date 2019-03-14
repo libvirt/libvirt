@@ -11,13 +11,11 @@ matrix:
         - docker
       env:
         - IMAGE="ubuntu-18"
-        - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=systemd"
         - DOCKER_CMD="$LINUX_CMD"
     - services:
         - docker
       env:
         - IMAGE="centos-7"
-        - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=upstart"
         - DOCKER_CMD="$LINUX_CMD"
     - services:
         - docker
