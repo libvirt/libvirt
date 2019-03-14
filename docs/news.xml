@@ -95,6 +95,19 @@
         </description>
       </change>
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          Drop support for Upstart and "Red Hat" init scripts
+        </summary>
+        <description>
+          Not a single one of the platforms we target still uses Upstart,
+          and the Upstart project itself has been abandoned for several years
+          now; the same is true for the "Red Hat" (really System V) init
+          scripts, since RHEL 7 and later releases use systemd.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
