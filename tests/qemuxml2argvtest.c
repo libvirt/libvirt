@@ -845,16 +845,6 @@ mymain(void)
 # define DO_TEST_CAPS_LATEST_PARSE_ERROR(name) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", FLAG_EXPECT_PARSE_ERROR, 0)
 
-/**
- * The following test macros should be used only in cases when the tests require
- * testing of some non-standard combination of capability flags
- */
-# define DO_TEST_CAPS_FULL(name, flags, parseFlags, ver) \
-    DO_TEST_CAPS_ARCH(name, NULL, flags, parseFlags, GIC_NONE, "x86_64", ver)
-
-# define DO_TEST_CAPS(name, ver) \
-    DO_TEST_CAPS_FULL(name, 0, 0, ver)
-
 # define DO_TEST_FULL(name, ...) \
     do { \
         static struct testInfo info = { \
