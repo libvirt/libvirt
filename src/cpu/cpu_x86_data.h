@@ -69,10 +69,18 @@ struct _virCPUx86CPUID {
 
 # define VIR_CPU_X86_DATA_INIT { 0 }
 
+typedef enum {
+    VIR_CPU_X86_DATA_NONE = 0,
+    VIR_CPU_X86_DATA_CPUID,
+} virCPUx86DataType;
+
 typedef struct _virCPUx86DataItem virCPUx86DataItem;
 typedef virCPUx86DataItem *virCPUx86DataItemPtr;
 struct _virCPUx86DataItem {
-    virCPUx86CPUID cpuid;
+    virCPUx86DataType type;
+    union {
+        virCPUx86CPUID cpuid;
+    } data;
 };
 
 typedef struct _virCPUx86Data virCPUx86Data;
