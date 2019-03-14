@@ -85,7 +85,6 @@ PODFILES =
 MANINFILES =
 SYSTEMD_UNIT_FILES_IN =
 SYSVINIT_FILES_IN =
-UPSTART_FILES =
 SYSCONF_FILES =
 sbin_PROGRAMS =
 man8_MANS =
@@ -869,34 +868,6 @@ uninstall-systemd: uninstall-sysconfig
 INSTALL_DATA_LOCAL += install-systemd
 UNINSTALL_LOCAL += uninstall-systemd
 endif LIBVIRT_INIT_SCRIPT_SYSTEMD
-endif WITH_LIBVIRTD
-
-
-EXTRA_DIST += $(UPSTART_FILES)
-
-if WITH_LIBVIRTD
-if LIBVIRT_INIT_SCRIPT_UPSTART
-
-install-upstart: install-sysconfig
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/event.d
-	for f in $(UPSTART_FILES:%.upstart=%); \
-	do \
-	  tgt=`basename $$f` ; \
-	  $(INSTALL_SCRIPT) $(srcdir)/$$f.upstart \
-	      $(DESTDIR)$(sysconfdir)/event.d/$$tgt ; \
-	done
-
-uninstall-upstart: uninstall-sysconfig
-	for f in $(UPSTART_FILES:%.upstart=%); \
-	do \
-	  tgt=`basename $$f` ; \
-	  rm -f $(DESTDIR)$(sysconfdir)/event.d/$$tgt ; \
-	done
-	rmdir $(DESTDIR)$(sysconfdir)/event.d || :
-
-INSTALL_DATA_LOCAL += install-upstart
-UNINSTALL_LOCAL += uninstall-upstart
-endif LIBVIRT_INIT_SCRIPT_UPSTART
 endif WITH_LIBVIRTD
 
 

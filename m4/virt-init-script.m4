@@ -20,7 +20,7 @@ dnl
 AC_DEFUN([LIBVIRT_ARG_INIT_SCRIPT],[
     LIBVIRT_ARG_WITH([INIT_SCRIPT],
                      [Style of init script to install: redhat, systemd,
-                      systemd+redhat, upstart, check, none], [check])
+                      systemd+redhat, check, none], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
@@ -28,7 +28,6 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
 
     init_redhat=no
     init_systemd=no
-    init_upstart=no
 
     if test "$with_init_script" = check && test "$cross_compiling" = yes; then
         with_init_script=none
@@ -51,9 +50,6 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
         [systemd],[
             init_systemd=yes
         ],
-        [upstart],[
-            init_upstart=yes
-        ],
         [redhat],[
             init_redhat=yes
         ],
@@ -64,7 +60,6 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
     )
 
     AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_RED_HAT], test "$init_redhat" = "yes")
-    AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_UPSTART], test "$init_upstart" = "yes")
     AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD], test "$init_systemd" = "yes")
 
     AC_MSG_RESULT($with_init_script)

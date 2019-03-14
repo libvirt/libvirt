@@ -54,8 +54,6 @@ SYSTEMD_UNIT_FILES_IN += \
 	remote/virt-guest-shutdown.target.in \
 	$(NULL)
 
-UPSTART_FILES += remote/libvirtd.upstart
-
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
 LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x
 QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
