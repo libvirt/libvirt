@@ -6566,6 +6566,48 @@ virDomainDefLifecycleActionValidate(const virDomainDef *def)
 }
 
 
+#define CPUTUNE_VALIDATE_PERIOD(name) \
+    do { \
+        if (def->cputune.name > 0 && \
+            (def->cputune.name < 1000 || def->cputune.name > 1000000)) { \
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
+                           _("Value of cputune '%s' must be in range " \
+                           "[1000, 1000000]"), #name); \
+            return -1; \
+        } \
+    } while (0)
+
+#define CPUTUNE_VALIDATE_QUOTA(name) \
+    do { \
+        if (def->cputune.name > 0 && \
+            (def->cputune.name < 1000 || \
+            def->cputune.name > 18446744073709551LL)) { \
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
+                           _("Value of cputune '%s' must be in range " \
+                           "[1000, 18446744073709551]"), #name); \
+            return -1; \
+        } \
+    } while (0)
+
+static int
+virDomainDefCputuneValidate(const virDomainDef *def)
+{
+    CPUTUNE_VALIDATE_PERIOD(period);
+    CPUTUNE_VALIDATE_PERIOD(global_period);
+    CPUTUNE_VALIDATE_PERIOD(emulator_period);
+    CPUTUNE_VALIDATE_PERIOD(iothread_period);
+
+    CPUTUNE_VALIDATE_QUOTA(quota);
+    CPUTUNE_VALIDATE_QUOTA(global_quota);
+    CPUTUNE_VALIDATE_QUOTA(emulator_quota);
+    CPUTUNE_VALIDATE_QUOTA(iothread_quota);
+
+    return 0;
+}
+#undef CPUTUNE_VALIDATE_PERIOD
+#undef CPUTUNE_VALIDATE_QUOTA
+
+
 static int
 virDomainDefMemtuneValidate(const virDomainDef *def)
 {
@@ -6683,6 +6725,9 @@ virDomainDefValidateInternal(const virDomainDef *def,
         return -1;
 
     if (virDomainDefOSValidate(def, xmlopt) < 0)
+        return -1;
+
+    if (virDomainDefCputuneValidate(def) < 0)
         return -1;
 
     return 0;
@@ -19673,27 +19718,10 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (def->cputune.period > 0 &&
-        (def->cputune.period < 1000 || def->cputune.period > 1000000)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Value of cputune period must be in range "
-                         "[1000, 1000000]"));
-        goto error;
-    }
-
     if (virXPathLongLong("string(./cputune/quota[1])", ctxt,
                          &def->cputune.quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune quota value"));
-        goto error;
-    }
-
-    if (def->cputune.quota > 0 &&
-        (def->cputune.quota < 1000 ||
-         def->cputune.quota > 18446744073709551LL)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Value of cputune quota must be in range "
-                         "[1000, 18446744073709551]"));
         goto error;
     }
 
@@ -19704,27 +19732,10 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (def->cputune.global_period > 0 &&
-        (def->cputune.global_period < 1000 || def->cputune.global_period > 1000000)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Value of cputune global period must be in range "
-                         "[1000, 1000000]"));
-        goto error;
-    }
-
     if (virXPathLongLong("string(./cputune/global_quota[1])", ctxt,
                          &def->cputune.global_quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune global quota value"));
-        goto error;
-    }
-
-    if (def->cputune.global_quota > 0 &&
-        (def->cputune.global_quota < 1000 ||
-         def->cputune.global_quota > 18446744073709551LL)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Value of cputune global quota must be in range "
-                         "[1000, 18446744073709551]"));
         goto error;
     }
 
@@ -19735,15 +19746,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (def->cputune.emulator_period > 0 &&
-        (def->cputune.emulator_period < 1000 ||
-         def->cputune.emulator_period > 1000000)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Value of cputune emulator_period must be in range "
-                         "[1000, 1000000]"));
-        goto error;
-    }
-
     if (virXPathLongLong("string(./cputune/emulator_quota[1])", ctxt,
                          &def->cputune.emulator_quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -19751,14 +19753,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (def->cputune.emulator_quota > 0 &&
-        (def->cputune.emulator_quota < 1000 ||
-         def->cputune.emulator_quota > 18446744073709551LL)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Value of cputune emulator_quota must be in range "
-                         "[1000, 18446744073709551]"));
-        goto error;
-    }
 
     if (virXPathULongLong("string(./cputune/iothread_period[1])", ctxt,
                           &def->cputune.iothread_period) < -1) {
@@ -19767,28 +19761,10 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (def->cputune.iothread_period > 0 &&
-        (def->cputune.iothread_period < 1000 ||
-         def->cputune.iothread_period > 1000000)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Value of cputune iothread_period must be in range "
-                         "[1000, 1000000]"));
-        goto error;
-    }
-
     if (virXPathLongLong("string(./cputune/iothread_quota[1])", ctxt,
                          &def->cputune.iothread_quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune iothread quota value"));
-        goto error;
-    }
-
-    if (def->cputune.iothread_quota > 0 &&
-        (def->cputune.iothread_quota < 1000 ||
-         def->cputune.iothread_quota > 18446744073709551LL)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Value of cputune iothread_quota must be in range "
-                         "[1000, 18446744073709551]"));
         goto error;
     }
 
