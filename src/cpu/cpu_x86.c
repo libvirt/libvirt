@@ -527,8 +527,8 @@ x86DataToVendor(const virCPUx86Data *data,
 
 
 static int
-virCPUx86VendorToCPUID(const char *vendor,
-                       virCPUx86DataItemPtr data)
+virCPUx86VendorToData(const char *vendor,
+                      virCPUx86DataItemPtr data)
 {
     virCPUx86CPUIDPtr cpuid = &data->cpuid;
 
@@ -760,7 +760,7 @@ x86VendorParse(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    if (virCPUx86VendorToCPUID(string, &vendor->data) < 0)
+    if (virCPUx86VendorToData(string, &vendor->data) < 0)
         goto cleanup;
 
     if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
@@ -3115,7 +3115,7 @@ virCPUx86DataSetVendor(virCPUDataPtr cpuData,
 {
     virCPUx86DataItem item = CPUID(0);
 
-    if (virCPUx86VendorToCPUID(vendor, &item) < 0)
+    if (virCPUx86VendorToData(vendor, &item) < 0)
         return -1;
 
     return virCPUx86DataAdd(cpuData, &item);
