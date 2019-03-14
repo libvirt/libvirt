@@ -117,15 +117,21 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE, then this
  * is a request to reinstate snapshot metadata that was previously
- * discarded, rather than creating a new snapshot.  This can be used
- * to recreate a snapshot hierarchy on a destination, then remove it
- * on the source, in order to allow migration (since migration
- * normally fails if snapshot metadata still remains on the source
- * machine).  When redefining snapshot metadata, the current snapshot
- * will not be altered unless the VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT
- * flag is also present.  It is an error to request the
- * VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT flag without
- * VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.  On some hypervisors,
+ * captured from virDomainSnapshotGetXMLDesc() before removing that
+ * metadata, rather than creating a new snapshot.  This can be used to
+ * recreate a snapshot hierarchy on a destination, then remove it on
+ * the source, in order to allow migration (since migration normally
+ * fails if snapshot metadata still remains on the source machine).
+ * Note that while original creation can omit a number of elements
+ * from @xmlDesc (and libvirt will supply sane defaults based on the
+ * domain state at that point in time), a redefinition must supply
+ * more elements (as the domain may have changed in the meantime, so
+ * that libvirt no longer has a way to resupply correct
+ * defaults). When redefining snapshot metadata, the domain's current
+ * snapshot will not be altered unless the
+ * VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT flag is also present.  It is an
+ * error to request the VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT flag
+ * without VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.  On some hypervisors,
  * redefining an existing snapshot can be used to alter host-specific
  * portions of the domain XML to be used during revert (such as
  * backing filenames associated with disk devices), but must not alter

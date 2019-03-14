@@ -79,7 +79,8 @@
       redefining a snapshot (<span class="since">since 0.9.5</span>),
       with the <code>VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE</code> flag
       of <code>virDomainSnapshotCreateXML()</code>, all of the XML
-      described here is relevant.
+      described here is relevant on input, even the fields that are
+      normally described as readonly for output.
     </p>
     <p>
       Snapshots are maintained in a hierarchy.  A domain can have a
