@@ -605,6 +605,8 @@ testCompareXMLToArgv(const void *data)
     return ret;
 }
 
+# define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
+
 typedef enum {
     ARG_QEMU_CAPS,
     ARG_GIC,
@@ -612,6 +614,8 @@ typedef enum {
     ARG_MIGRATE_FD,
     ARG_FLAGS,
     ARG_PARSEFLAGS,
+    ARG_CAPS_ARCH,
+    ARG_CAPS_VER,
 
     /* ARG_END is our va_args sentinel. The value QEMU_CAPS_LATEST is
      * necessary to handle the DO_TEST(..., NONE) case, which through macro
@@ -628,15 +632,19 @@ typedef enum {
 } testInfoArgName;
 
 static int
-testInfoSetArgs(struct testInfo *info, ...)
+testInfoSetArgs(struct testInfo *info,
+                virHashTablePtr capslatest, ...)
 {
     va_list argptr;
     testInfoArgName argname;
     virQEMUCapsPtr qemuCaps = NULL;
     int gic = GIC_NONE;
+    char *capsarch = NULL;
+    char *capsver = NULL;
+    VIR_AUTOFREE(char *) capsfile = NULL;
     int ret = -1;
 
-    va_start(argptr, info);
+    va_start(argptr, capslatest);
     while ((argname = va_arg(argptr, testInfoArgName)) < ARG_END) {
         switch (argname) {
         case ARG_QEMU_CAPS:
@@ -665,6 +673,14 @@ testInfoSetArgs(struct testInfo *info, ...)
             info->parseFlags = va_arg(argptr, int);
             break;
 
+        case ARG_CAPS_ARCH:
+            capsarch = va_arg(argptr, char *);
+            break;
+
+        case ARG_CAPS_VER:
+            capsver = va_arg(argptr, char *);
+            break;
+
         case ARG_END:
         default:
             fprintf(stderr, "Unexpected test info argument");
@@ -672,13 +688,33 @@ testInfoSetArgs(struct testInfo *info, ...)
         }
     }
 
-    if (!info->qemuCaps) {
-        if (!qemuCaps) {
-            fprintf(stderr, "No qemuCaps generated\n");
+    if (!qemuCaps && capsarch && capsver) {
+        bool stripmachinealiases = false;
+
+        if (STREQ(capsver, "latest")) {
+            if (VIR_STRDUP(capsfile, virHashLookup(capslatest, capsarch)) < 0)
+                goto cleanup;
+            stripmachinealiases = true;
+        } else if (virAsprintf(&capsfile, "%s/caps_%s.%s.xml",
+                               TEST_CAPS_PATH, capsver, capsarch) < 0) {
             goto cleanup;
         }
-        VIR_STEAL_PTR(info->qemuCaps, qemuCaps);
+
+        if (!(qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(capsarch),
+                                                       capsfile))) {
+            goto cleanup;
+        }
+
+        if (stripmachinealiases)
+            virQEMUCapsStripMachineAliases(qemuCaps);
+        info->flags |= FLAG_REAL_CAPS;
     }
+
+    if (!qemuCaps) {
+        fprintf(stderr, "No qemuCaps generated\n");
+        goto cleanup;
+    }
+    VIR_STEAL_PTR(info->qemuCaps, qemuCaps);
 
     if (gic != GIC_NONE && testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
         goto cleanup;
@@ -819,28 +855,18 @@ mymain(void)
  * the test cases should be forked using DO_TEST_CAPS_VER with the appropriate
  * version.
  */
-# define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
-
 # define DO_TEST_CAPS_INTERNAL(_name, arch, ver, ...) \
     do { \
         static struct testInfo info = { \
             .name = _name, \
             .suffix = "." arch "-" ver, \
         }; \
-        static const char *capsfile = TEST_CAPS_PATH "/caps_" ver "." arch ".xml"; \
-        static bool stripmachinealiases; \
-        if (STREQ(ver, "latest")) { \
-            capsfile = virHashLookup(capslatest, arch); \
-            stripmachinealiases = true; \
-        } \
-        if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
-                                                            capsfile))) \
+        if (testInfoSetArgs(&info, capslatest, \
+                            ARG_CAPS_ARCH, arch, \
+                            ARG_CAPS_VER, ver, \
+                            __VA_ARGS__, \
+                            ARG_END) < 0) \
             return EXIT_FAILURE; \
-        if (stripmachinealiases) \
-            virQEMUCapsStripMachineAliases(info.qemuCaps); \
-        if (testInfoSetArgs(&info, __VA_ARGS__, ARG_END) < 0) \
-            return EXIT_FAILURE; \
-        info.flags |= FLAG_REAL_CAPS; \
         if (virTestRun("QEMU XML-2-ARGV " _name "." arch "-" ver, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
@@ -876,7 +902,9 @@ mymain(void)
         static struct testInfo info = { \
             .name = _name, \
         }; \
-        if (testInfoSetArgs(&info, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END) < 0) \
+        if (testInfoSetArgs(&info, capslatest, \
+                            __VA_ARGS__, QEMU_CAPS_LAST, \
+                            ARG_END) < 0) \
             return EXIT_FAILURE; \
         if (virTestRun("QEMU XML-2-ARGV " _name, \
                        testCompareXMLToArgv, &info) < 0) \
