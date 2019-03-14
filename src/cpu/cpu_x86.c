@@ -329,13 +329,13 @@ x86DataCpuidNext(virCPUx86DataIteratorPtr iterator)
 
 static virCPUx86DataItemPtr
 x86DataCpuid(const virCPUx86Data *data,
-             const virCPUx86DataItem *cpuid)
+             const virCPUx86DataItem *item)
 {
     size_t i;
 
     for (i = 0; i < data->len; i++) {
-        if (data->items[i].cpuid.eax_in == cpuid->cpuid.eax_in &&
-            data->items[i].cpuid.ecx_in == cpuid->cpuid.ecx_in)
+        if (data->items[i].cpuid.eax_in == item->cpuid.eax_in &&
+            data->items[i].cpuid.ecx_in == item->cpuid.ecx_in)
             return data->items + i;
     }
 
@@ -381,15 +381,15 @@ x86DataCopy(virCPUx86Data *dst, const virCPUx86Data *src)
 
 static int
 virCPUx86DataAddCPUIDInt(virCPUx86Data *data,
-                         const virCPUx86DataItem *cpuid)
+                         const virCPUx86DataItem *item)
 {
     virCPUx86DataItemPtr existing;
 
-    if ((existing = x86DataCpuid(data, cpuid))) {
-        x86cpuidSetBits(&existing->cpuid, &cpuid->cpuid);
+    if ((existing = x86DataCpuid(data, item))) {
+        x86cpuidSetBits(&existing->cpuid, &item->cpuid);
     } else {
         if (VIR_APPEND_ELEMENT_COPY(data->items, data->len,
-                                    *((virCPUx86DataItemPtr)cpuid)) < 0)
+                                    *((virCPUx86DataItemPtr)item)) < 0)
             return -1;
 
         qsort(data->items, data->len,
@@ -405,16 +405,16 @@ x86DataAdd(virCPUx86Data *data1,
            const virCPUx86Data *data2)
 {
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data2);
-    virCPUx86DataItemPtr cpuid1;
-    virCPUx86DataItemPtr cpuid2;
+    virCPUx86DataItemPtr item1;
+    virCPUx86DataItemPtr item2;
 
-    while ((cpuid2 = x86DataCpuidNext(&iter))) {
-        cpuid1 = x86DataCpuid(data1, cpuid2);
+    while ((item2 = x86DataCpuidNext(&iter))) {
+        item1 = x86DataCpuid(data1, item2);
 
-        if (cpuid1) {
-            x86cpuidSetBits(&cpuid1->cpuid, &cpuid2->cpuid);
+        if (item1) {
+            x86cpuidSetBits(&item1->cpuid, &item2->cpuid);
         } else {
-            if (virCPUx86DataAddCPUIDInt(data1, cpuid2) < 0)
+            if (virCPUx86DataAddCPUIDInt(data1, item2) < 0)
                 return -1;
         }
     }
@@ -428,12 +428,12 @@ x86DataSubtract(virCPUx86Data *data1,
                 const virCPUx86Data *data2)
 {
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data1);
-    virCPUx86DataItemPtr cpuid1;
-    virCPUx86DataItemPtr cpuid2;
+    virCPUx86DataItemPtr item1;
+    virCPUx86DataItemPtr item2;
 
-    while ((cpuid1 = x86DataCpuidNext(&iter))) {
-        if ((cpuid2 = x86DataCpuid(data2, cpuid1)))
-            x86cpuidClearBits(&cpuid1->cpuid, &cpuid2->cpuid);
+    while ((item1 = x86DataCpuidNext(&iter))) {
+        if ((item2 = x86DataCpuid(data2, item1)))
+            x86cpuidClearBits(&item1->cpuid, &item2->cpuid);
     }
 }
 
@@ -443,15 +443,15 @@ x86DataIntersect(virCPUx86Data *data1,
                  const virCPUx86Data *data2)
 {
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data1);
-    virCPUx86DataItemPtr cpuid1;
-    virCPUx86DataItemPtr cpuid2;
+    virCPUx86DataItemPtr item1;
+    virCPUx86DataItemPtr item2;
 
-    while ((cpuid1 = x86DataCpuidNext(&iter))) {
-        cpuid2 = x86DataCpuid(data2, cpuid1);
-        if (cpuid2)
-            x86cpuidAndBits(&cpuid1->cpuid, &cpuid2->cpuid);
+    while ((item1 = x86DataCpuidNext(&iter))) {
+        item2 = x86DataCpuid(data2, item1);
+        if (item2)
+            x86cpuidAndBits(&item1->cpuid, &item2->cpuid);
         else
-            x86cpuidClearBits(&cpuid1->cpuid, &cpuid1->cpuid);
+            x86cpuidClearBits(&item1->cpuid, &item1->cpuid);
     }
 }
 
@@ -470,12 +470,12 @@ x86DataIsSubset(const virCPUx86Data *data,
                 const virCPUx86Data *subset)
 {
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit((virCPUx86Data *)subset);
-    const virCPUx86DataItem *cpuid;
-    const virCPUx86DataItem *cpuidSubset;
+    const virCPUx86DataItem *item;
+    const virCPUx86DataItem *itemSubset;
 
-    while ((cpuidSubset = x86DataCpuidNext(&iter))) {
-        if (!(cpuid = x86DataCpuid(data, cpuidSubset)) ||
-            !x86cpuidMatchMasked(&cpuid->cpuid, &cpuidSubset->cpuid))
+    while ((itemSubset = x86DataCpuidNext(&iter))) {
+        if (!(item = x86DataCpuid(data, itemSubset)) ||
+            !x86cpuidMatchMasked(&item->cpuid, &itemSubset->cpuid))
             return false;
     }
 
@@ -510,14 +510,14 @@ static virCPUx86VendorPtr
 x86DataToVendor(const virCPUx86Data *data,
                 virCPUx86MapPtr map)
 {
-    virCPUx86DataItemPtr cpuid;
+    virCPUx86DataItemPtr item;
     size_t i;
 
     for (i = 0; i < map->nvendors; i++) {
         virCPUx86VendorPtr vendor = map->vendors[i];
-        if ((cpuid = x86DataCpuid(data, &vendor->data)) &&
-            x86cpuidMatchMasked(&cpuid->cpuid, &vendor->data.cpuid)) {
-            x86cpuidClearBits(&cpuid->cpuid, &vendor->data.cpuid);
+        if ((item = x86DataCpuid(data, &vendor->data)) &&
+            x86cpuidMatchMasked(&item->cpuid, &vendor->data.cpuid)) {
+            x86cpuidClearBits(&item->cpuid, &vendor->data.cpuid);
             return vendor;
         }
     }
@@ -627,12 +627,12 @@ static uint32_t
 x86DataToSignature(const virCPUx86Data *data)
 {
     virCPUx86DataItem leaf1 = CPUID(.eax_in = 0x1);
-    virCPUx86DataItemPtr cpuid;
+    virCPUx86DataItemPtr item;
 
-    if (!(cpuid = x86DataCpuid(data, &leaf1)))
+    if (!(item = x86DataCpuid(data, &leaf1)))
         return 0;
 
-    return cpuid->cpuid.eax & SIGNATURE_MASK;
+    return item->cpuid.eax & SIGNATURE_MASK;
 }
 
 
@@ -640,9 +640,9 @@ static int
 x86DataAddSignature(virCPUx86Data *data,
                     uint32_t signature)
 {
-    virCPUx86DataItem cpuid = CPUID(.eax_in = 0x1, .eax = signature);
+    virCPUx86DataItem leaf1 = CPUID(.eax_in = 0x1, .eax = signature);
 
-    return virCPUx86DataAddCPUIDInt(data, &cpuid);
+    return virCPUx86DataAddCPUIDInt(data, &leaf1);
 }
 
 
@@ -906,7 +906,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     virCPUx86MapPtr map = data;
     xmlNodePtr *nodes = NULL;
     virCPUx86FeaturePtr feature;
-    virCPUx86DataItem cpuid;
+    virCPUx86DataItem item;
     size_t i;
     int n;
     char *str = NULL;
@@ -943,13 +943,13 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
-        if (x86ParseCPUID(ctxt, &cpuid) < 0) {
+        if (x86ParseCPUID(ctxt, &item) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid cpuid[%zu] in %s feature"),
                            i, feature->name);
             goto cleanup;
         }
-        if (virCPUx86DataAddCPUIDInt(&feature->data, &cpuid))
+        if (virCPUx86DataAddCPUIDInt(&feature->data, &item))
             goto cleanup;
     }
 
@@ -1149,16 +1149,16 @@ x86ModelCompare(virCPUx86ModelPtr model1,
     virCPUx86CompareResult result = EQUAL;
     virCPUx86DataIterator iter1 = virCPUx86DataIteratorInit(&model1->data);
     virCPUx86DataIterator iter2 = virCPUx86DataIteratorInit(&model2->data);
-    virCPUx86DataItemPtr cpuid1;
-    virCPUx86DataItemPtr cpuid2;
+    virCPUx86DataItemPtr item1;
+    virCPUx86DataItemPtr item2;
 
-    while ((cpuid1 = x86DataCpuidNext(&iter1))) {
+    while ((item1 = x86DataCpuidNext(&iter1))) {
         virCPUx86CompareResult match = SUPERSET;
 
-        if ((cpuid2 = x86DataCpuid(&model2->data, cpuid1))) {
-            if (x86cpuidMatch(&cpuid1->cpuid, &cpuid2->cpuid))
+        if ((item2 = x86DataCpuid(&model2->data, item1))) {
+            if (x86cpuidMatch(&item1->cpuid, &item2->cpuid))
                 continue;
-            else if (!x86cpuidMatchMasked(&cpuid1->cpuid, &cpuid2->cpuid))
+            else if (!x86cpuidMatchMasked(&item1->cpuid, &item2->cpuid))
                 match = SUBSET;
         }
 
@@ -1168,13 +1168,13 @@ x86ModelCompare(virCPUx86ModelPtr model1,
             return UNRELATED;
     }
 
-    while ((cpuid2 = x86DataCpuidNext(&iter2))) {
+    while ((item2 = x86DataCpuidNext(&iter2))) {
         virCPUx86CompareResult match = SUBSET;
 
-        if ((cpuid1 = x86DataCpuid(&model1->data, cpuid2))) {
-            if (x86cpuidMatch(&cpuid2->cpuid, &cpuid1->cpuid))
+        if ((item1 = x86DataCpuid(&model1->data, item2))) {
+            if (x86cpuidMatch(&item2->cpuid, &item1->cpuid))
                 continue;
-            else if (!x86cpuidMatchMasked(&cpuid2->cpuid, &cpuid1->cpuid))
+            else if (!x86cpuidMatchMasked(&item2->cpuid, &item1->cpuid))
                 match = SUPERSET;
         }
 
@@ -1485,7 +1485,7 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
     virCPUDataPtr cpuData = NULL;
-    virCPUx86DataItem cpuid;
+    virCPUx86DataItem item;
     size_t i;
     int n;
 
@@ -1501,12 +1501,12 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
-        if (x86ParseCPUID(ctxt, &cpuid) < 0) {
+        if (x86ParseCPUID(ctxt, &item) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse cpuid[%zu]"), i);
             goto error;
         }
-        if (virCPUx86DataAddCPUID(cpuData, &cpuid) < 0)
+        if (virCPUx86DataAddCPUID(cpuData, &item) < 0)
             goto error;
     }
 
@@ -2383,10 +2383,10 @@ cpuidSetLeaf12(virCPUDataPtr data,
 {
     virCPUx86DataItem item = CPUID(.eax_in = 0x7);
     virCPUx86CPUIDPtr cpuid = &item.cpuid;
-    virCPUx86DataItemPtr cpuid7;
+    virCPUx86DataItemPtr leaf7;
 
-    if (!(cpuid7 = x86DataCpuid(&data->data.x86, &item)) ||
-        !(cpuid7->cpuid.ebx & (1 << 2)))
+    if (!(leaf7 = x86DataCpuid(&data->data.x86, &item)) ||
+        !(leaf7->cpuid.ebx & (1 << 2)))
         return 0;
 
     if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
@@ -3079,9 +3079,9 @@ virCPUx86ValidateFeatures(virCPUDefPtr cpu)
 
 int
 virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
-                      const virCPUx86DataItem *cpuid)
+                      const virCPUx86DataItem *item)
 {
-    return virCPUx86DataAddCPUIDInt(&cpuData->data.x86, cpuid);
+    return virCPUx86DataAddCPUIDInt(&cpuData->data.x86, item);
 }
 
 
@@ -3113,12 +3113,12 @@ int
 virCPUx86DataSetVendor(virCPUDataPtr cpuData,
                        const char *vendor)
 {
-    virCPUx86DataItem cpuid = CPUID(0);
+    virCPUx86DataItem item = CPUID(0);
 
-    if (virCPUx86VendorToCPUID(vendor, &cpuid) < 0)
+    if (virCPUx86VendorToCPUID(vendor, &item) < 0)
         return -1;
 
-    return virCPUx86DataAddCPUID(cpuData, &cpuid);
+    return virCPUx86DataAddCPUID(cpuData, &item);
 }
 
 
