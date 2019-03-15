@@ -216,16 +216,16 @@ x86cpuidMatchMasked(const virCPUx86CPUID *cpuid,
 
 
 static void
-x86cpuidSetBits(virCPUx86CPUID *cpuid,
-                const virCPUx86CPUID *mask)
+virCPUx86DataItemSetBits(virCPUx86DataItemPtr item,
+                         const virCPUx86DataItem *mask)
 {
     if (!mask)
         return;
 
-    cpuid->eax |= mask->eax;
-    cpuid->ebx |= mask->ebx;
-    cpuid->ecx |= mask->ecx;
-    cpuid->edx |= mask->edx;
+    item->cpuid.eax |= mask->cpuid.eax;
+    item->cpuid.ebx |= mask->cpuid.ebx;
+    item->cpuid.ecx |= mask->cpuid.ecx;
+    item->cpuid.edx |= mask->cpuid.edx;
 }
 
 
@@ -393,7 +393,7 @@ virCPUx86DataAddItem(virCPUx86Data *data,
     virCPUx86DataItemPtr existing;
 
     if ((existing = virCPUx86DataGet(data, item))) {
-        x86cpuidSetBits(&existing->cpuid, &item->cpuid);
+        virCPUx86DataItemSetBits(existing, item);
     } else {
         if (VIR_APPEND_ELEMENT_COPY(data->items, data->len,
                                     *((virCPUx86DataItemPtr)item)) < 0)
