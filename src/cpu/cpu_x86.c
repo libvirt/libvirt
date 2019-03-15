@@ -306,6 +306,13 @@ virCPUx86DataSorter(const void *a, const void *b)
     return 0;
 }
 
+static int
+virCPUx86DataItemCmp(const virCPUx86DataItem *item1,
+                     const virCPUx86DataItem *item2)
+{
+    return virCPUx86DataSorter(item1, item2);
+}
+
 
 /* skips all zero CPUID leaves */
 static virCPUx86DataItemPtr
@@ -334,9 +341,9 @@ virCPUx86DataGet(const virCPUx86Data *data,
     size_t i;
 
     for (i = 0; i < data->len; i++) {
-        if (data->items[i].cpuid.eax_in == item->cpuid.eax_in &&
-            data->items[i].cpuid.ecx_in == item->cpuid.ecx_in)
-            return data->items + i;
+        virCPUx86DataItemPtr di = data->items + i;
+        if (virCPUx86DataItemCmp(di, item) == 0)
+            return di;
     }
 
     return NULL;
