@@ -82,12 +82,15 @@ virClassPtr virClassForObjectRWLockable(void);
  */
 # define VIR_CLASS_NEW(name, prnt) \
     verify_expr(offsetof(name, parent) == 0, \
-      (name##Class = virClassNew(prnt, #name, sizeof(name), name##Dispose)))
+      (name##Class = virClassNew(prnt, #name, sizeof(name), \
+                                 sizeof(((name *)NULL)->parent), \
+                                 name##Dispose)))
 
 virClassPtr
 virClassNew(virClassPtr parent,
             const char *name,
             size_t objectSize,
+            size_t parentSize,
             virObjectDisposeCallback dispose)
     VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(2);
 

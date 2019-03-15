@@ -78,6 +78,7 @@ virObjectOnceInit(void)
     if (!(virObjectClass = virClassNew(NULL,
                                        "virObject",
                                        sizeof(virObject),
+                                       0,
                                        NULL)))
         return -1;
 
@@ -159,6 +160,7 @@ virClassPtr
 virClassNew(virClassPtr parent,
             const char *name,
             size_t objectSize,
+            size_t parentSize,
             virObjectDisposeCallback dispose)
 {
     virClassPtr klass;
@@ -167,10 +169,11 @@ virClassNew(virClassPtr parent,
         STRNEQ(name, "virObject")) {
         virReportInvalidNonNullArg(parent);
         return NULL;
-    } else if (parent &&
-               objectSize <= parent->objectSize) {
+    } else if (objectSize <= parentSize ||
+               parentSize != (parent ? parent->objectSize : 0)) {
+        sa_assert(parent);
         virReportInvalidArg(objectSize,
-                            _("object size %zu of %s is smaller than parent class %zu"),
+                            _("object size %zu of %s is not larger than parent class %zu"),
                             objectSize, name, parent->objectSize);
         return NULL;
     }
