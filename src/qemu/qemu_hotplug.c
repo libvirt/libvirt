@@ -5366,7 +5366,6 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
                                bool async)
 {
     virDomainDiskDefPtr disk;
-    int ret = -1;
     int idx;
 
     if ((idx = qemuFindDisk(vm->def, dev->data.disk->dst)) < 0) {
@@ -5380,10 +5379,10 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
-            ret = qemuDomainDetachVirtioDiskDevice(driver, vm, disk, async);
+            return qemuDomainDetachVirtioDiskDevice(driver, vm, disk, async);
         else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
                  disk->bus == VIR_DOMAIN_DISK_BUS_USB)
-            ret = qemuDomainDetachDiskDevice(driver, vm, disk, async);
+            return qemuDomainDetachDiskDevice(driver, vm, disk, async);
         else
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("This type of disk cannot be hot unplugged"));
@@ -5395,7 +5394,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
         break;
     }
 
-    return ret;
+    return -1;
 }
 
 
