@@ -26,8 +26,6 @@ AC_DEFUN([LIBVIRT_ARG_INIT_SCRIPT],[
 AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
     AC_MSG_CHECKING([for init script type])
 
-    init_systemd=no
-
     if test "$with_init_script" = check && test "$cross_compiling" = yes; then
         with_init_script=none
     fi
@@ -39,16 +37,15 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
     fi
 
     AS_CASE([$with_init_script],
-        [systemd],[
-            init_systemd=yes
-        ],
+        [systemd],[],
         [none],[],
         [*],[
             AC_MSG_ERROR([Unknown initscript flavour $with_init_script])
         ]
     )
 
-    AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD], test "$init_systemd" = "yes")
+    AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD],
+                   [test "$with_init_script" = "systemd"])
 
     AC_MSG_RESULT($with_init_script)
 ])
