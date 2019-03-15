@@ -147,10 +147,11 @@ virClassForObjectRWLockable(void)
  *
  * Register a new object class with @name. The @objectSize
  * should give the total size of the object struct, which
- * is expected to have a 'virObject object;' field as its
- * first member. When the last reference on the object is
- * released, the @dispose callback will be invoked to free
- * memory of the object fields
+ * is expected to have a 'virObject parent;' field as (or
+ * contained in) its first member. When the last reference
+ * on the object is released, the @dispose callback will be
+ * invoked to free memory of the local object fields, as
+ * well as the dispose callbacks of the parent classes.
  *
  * Returns a new class instance
  */
@@ -326,8 +327,9 @@ virObjectRWLockableDispose(void *anyobj)
  * @anyobj: any instance of virObjectPtr
  *
  * Decrement the reference count on @anyobj and if
- * it hits zero, runs the "dispose" callback associated
- * with the object class and frees @anyobj.
+ * it hits zero, runs the "dispose" callbacks associated
+ * with the object class and its parents before freeing
+ * @anyobj.
  *
  * Returns true if the remaining reference count is
  * non-zero, false if the object was disposed of

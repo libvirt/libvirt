@@ -75,6 +75,11 @@ virClassPtr virClassForObjectRWLockable(void);
 #  define VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(1)
 # endif
 
+/* Assign the class description nameClass to represent struct @name
+ * (which must have an object-based 'parent' member at offset 0), and
+ * with parent class @prnt. nameDispose must exist as either a
+ * function or as a macro defined to NULL.
+ */
 # define VIR_CLASS_NEW(name, prnt) \
     verify_expr(offsetof(name, parent) == 0, \
       (name##Class = virClassNew(prnt, #name, sizeof(name), name##Dispose)))
