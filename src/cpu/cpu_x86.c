@@ -205,13 +205,13 @@ x86cpuidMatch(const virCPUx86CPUID *cpuid1,
 
 
 static bool
-x86cpuidMatchMasked(const virCPUx86CPUID *cpuid,
-                    const virCPUx86CPUID *mask)
+virCPUx86DataItemMatchMasked(const virCPUx86DataItem *item,
+                             const virCPUx86DataItem *mask)
 {
-    return ((cpuid->eax & mask->eax) == mask->eax &&
-            (cpuid->ebx & mask->ebx) == mask->ebx &&
-            (cpuid->ecx & mask->ecx) == mask->ecx &&
-            (cpuid->edx & mask->edx) == mask->edx);
+    return ((item->cpuid.eax & mask->cpuid.eax) == mask->cpuid.eax &&
+            (item->cpuid.ebx & mask->cpuid.ebx) == mask->cpuid.ebx &&
+            (item->cpuid.ecx & mask->cpuid.ecx) == mask->cpuid.ecx &&
+            (item->cpuid.edx & mask->cpuid.edx) == mask->cpuid.edx);
 }
 
 
@@ -475,7 +475,7 @@ x86DataIsSubset(const virCPUx86Data *data,
 
     while ((itemSubset = virCPUx86DataNext(&iter))) {
         if (!(item = virCPUx86DataGet(data, itemSubset)) ||
-            !x86cpuidMatchMasked(&item->cpuid, &itemSubset->cpuid))
+            !virCPUx86DataItemMatchMasked(item, itemSubset))
             return false;
     }
 
@@ -516,7 +516,7 @@ x86DataToVendor(const virCPUx86Data *data,
     for (i = 0; i < map->nvendors; i++) {
         virCPUx86VendorPtr vendor = map->vendors[i];
         if ((item = virCPUx86DataGet(data, &vendor->data)) &&
-            x86cpuidMatchMasked(&item->cpuid, &vendor->data.cpuid)) {
+            virCPUx86DataItemMatchMasked(item, &vendor->data)) {
             virCPUx86DataItemClearBits(item, &vendor->data);
             return vendor;
         }
@@ -1158,7 +1158,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
         if ((item2 = virCPUx86DataGet(&model2->data, item1))) {
             if (x86cpuidMatch(&item1->cpuid, &item2->cpuid))
                 continue;
-            else if (!x86cpuidMatchMasked(&item1->cpuid, &item2->cpuid))
+            else if (!virCPUx86DataItemMatchMasked(item1, item2))
                 match = SUBSET;
         }
 
@@ -1174,7 +1174,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
         if ((item1 = virCPUx86DataGet(&model1->data, item2))) {
             if (x86cpuidMatch(&item2->cpuid, &item1->cpuid))
                 continue;
-            else if (!x86cpuidMatchMasked(&item2->cpuid, &item1->cpuid))
+            else if (!virCPUx86DataItemMatchMasked(item2, item1))
                 match = SUPERSET;
         }
 
