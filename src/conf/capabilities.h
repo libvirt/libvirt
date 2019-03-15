@@ -1,7 +1,7 @@
 /*
  * capabilities.h: hypervisor capabilities
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
 # define LIBVIRT_CAPABILITIES_H
 
 # include "internal.h"
+# include "virconftypes.h"
 # include "virbuffer.h"
 # include "cpu_conf.h"
 # include "virarch.h"
@@ -32,24 +33,18 @@
 
 # include <libxml/xpath.h>
 
-typedef struct _virCapsGuestFeature virCapsGuestFeature;
-typedef virCapsGuestFeature *virCapsGuestFeaturePtr;
 struct _virCapsGuestFeature {
     char *name;
     bool defaultOn;
     bool toggle;
 };
 
-typedef struct _virCapsGuestMachine virCapsGuestMachine;
-typedef virCapsGuestMachine *virCapsGuestMachinePtr;
 struct _virCapsGuestMachine {
     char *name;
     char *canonical;
     unsigned int maxCpus;
 };
 
-typedef struct _virCapsGuestDomainInfo virCapsGuestDomainInfo;
-typedef virCapsGuestDomainInfo *virCapsGuestDomainInfoPtr;
 struct _virCapsGuestDomainInfo {
     char *emulator;
     char *loader;
@@ -57,15 +52,11 @@ struct _virCapsGuestDomainInfo {
     virCapsGuestMachinePtr *machines;
 };
 
-typedef struct _virCapsGuestDomain virCapsGuestDomain;
-typedef virCapsGuestDomain *virCapsGuestDomainPtr;
 struct _virCapsGuestDomain {
     int type; /* virDomainVirtType */
     virCapsGuestDomainInfo info;
 };
 
-typedef struct _virCapsGuestArch virCapsGuestArch;
-typedef virCapsGuestArch *virCapsGuestArchptr;
 struct _virCapsGuestArch {
     virArch id;
     unsigned int wordsize;
@@ -75,8 +66,6 @@ struct _virCapsGuestArch {
     virCapsGuestDomainPtr *domains;
 };
 
-typedef struct _virCapsGuest virCapsGuest;
-typedef virCapsGuest *virCapsGuestPtr;
 struct _virCapsGuest {
     int ostype;
     virCapsGuestArch arch;
@@ -85,8 +74,6 @@ struct _virCapsGuest {
     virCapsGuestFeaturePtr *features;
 };
 
-typedef struct _virCapsHostNUMACellCPU virCapsHostNUMACellCPU;
-typedef virCapsHostNUMACellCPU *virCapsHostNUMACellCPUPtr;
 struct _virCapsHostNUMACellCPU {
     unsigned int id;
     unsigned int socket_id;
@@ -94,22 +81,16 @@ struct _virCapsHostNUMACellCPU {
     virBitmapPtr siblings;
 };
 
-typedef struct _virCapsHostNUMACellSiblingInfo virCapsHostNUMACellSiblingInfo;
-typedef virCapsHostNUMACellSiblingInfo *virCapsHostNUMACellSiblingInfoPtr;
 struct _virCapsHostNUMACellSiblingInfo {
     int node;               /* foreign NUMA node */
     unsigned int distance;  /* distance to the node */
 };
 
-typedef struct _virCapsHostNUMACellPageInfo virCapsHostNUMACellPageInfo;
-typedef virCapsHostNUMACellPageInfo *virCapsHostNUMACellPageInfoPtr;
 struct _virCapsHostNUMACellPageInfo {
     unsigned int size;      /* page size in kibibytes */
     unsigned long long avail;           /* the size of pool */
 };
 
-typedef struct _virCapsHostNUMACell virCapsHostNUMACell;
-typedef virCapsHostNUMACell *virCapsHostNUMACellPtr;
 struct _virCapsHostNUMACell {
     int num;
     int ncpus;
@@ -121,15 +102,11 @@ struct _virCapsHostNUMACell {
     virCapsHostNUMACellPageInfoPtr pageinfo;
 };
 
-typedef struct _virCapsHostSecModelLabel virCapsHostSecModelLabel;
-typedef virCapsHostSecModelLabel *virCapsHostSecModelLabelPtr;
 struct _virCapsHostSecModelLabel {
     char *type;
     char *label;
 };
 
-typedef struct _virCapsHostSecModel virCapsHostSecModel;
-typedef virCapsHostSecModel *virCapsHostSecModelPtr;
 struct _virCapsHostSecModel {
     char *model;
     char *doi;
@@ -137,8 +114,6 @@ struct _virCapsHostSecModel {
     virCapsHostSecModelLabelPtr labels;
 };
 
-typedef struct _virCapsHostCacheBank virCapsHostCacheBank;
-typedef virCapsHostCacheBank *virCapsHostCacheBankPtr;
 struct _virCapsHostCacheBank {
     unsigned int id;
     unsigned int level; /* 1=L1, 2=L2, 3=L3, etc. */
@@ -149,8 +124,6 @@ struct _virCapsHostCacheBank {
     virResctrlInfoPerCachePtr *controls;
 };
 
-typedef struct _virCapsHostCache virCapsHostCache;
-typedef virCapsHostCache *virCapsHostCachePtr;
 struct _virCapsHostCache {
     size_t nbanks;
     virCapsHostCacheBankPtr *banks;
@@ -158,16 +131,12 @@ struct _virCapsHostCache {
     virResctrlInfoMonPtr monitor;
 };
 
-typedef struct _virCapsHostMemBWNode virCapsHostMemBWNode;
-typedef virCapsHostMemBWNode *virCapsHostMemBWNodePtr;
 struct _virCapsHostMemBWNode {
     unsigned int id;
     virBitmapPtr cpus;  /* All CPUs that belong to this node*/
     virResctrlInfoMemBWPerNode control;
 };
 
-typedef struct _virCapsHostMemBW virCapsHostMemBW;
-typedef virCapsHostMemBW *virCapsHostMemBWPtr;
 struct _virCapsHostMemBW {
     size_t nnodes;
     virCapsHostMemBWNodePtr *nodes;
@@ -175,8 +144,6 @@ struct _virCapsHostMemBW {
     virResctrlInfoMonPtr monitor;
 };
 
-typedef struct _virCapsHost virCapsHost;
-typedef virCapsHost *virCapsHostPtr;
 struct _virCapsHost {
     virArch arch;
     size_t nfeatures;
@@ -211,8 +178,6 @@ struct _virCapsHost {
     bool iommu;
 };
 
-typedef struct _virCapsStoragePool virCapsStoragePool;
-typedef virCapsStoragePool *virCapsStoragePoolPtr;
 struct _virCapsStoragePool {
     int type;
 };
@@ -224,8 +189,6 @@ typedef void (*virDomainDefNamespaceFree)(void *);
 typedef int (*virDomainDefNamespaceXMLFormat)(virBufferPtr, void *);
 typedef const char *(*virDomainDefNamespaceHref)(void);
 
-typedef struct _virDomainXMLNamespace virDomainXMLNamespace;
-typedef virDomainXMLNamespace *virDomainXMLNamespacePtr;
 struct _virDomainXMLNamespace {
     virDomainDefNamespaceParse parse;
     virDomainDefNamespaceFree free;
@@ -233,8 +196,6 @@ struct _virDomainXMLNamespace {
     virDomainDefNamespaceHref href;
 };
 
-typedef struct _virCaps virCaps;
-typedef virCaps *virCapsPtr;
 struct _virCaps {
     virObject parent;
 
@@ -248,8 +209,6 @@ struct _virCaps {
     virCapsStoragePoolPtr *pools;
 };
 
-typedef struct _virCapsDomainData virCapsDomainData;
-typedef virCapsDomainData *virCapsDomainDataPtr;
 struct _virCapsDomainData {
     int ostype;
     int arch;

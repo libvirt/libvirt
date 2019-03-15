@@ -274,4 +274,67 @@ typedef virDomainXMLPrivateDataCallbacks *virDomainXMLPrivateDataCallbacksPtr;
 typedef struct _virDomainABIStability virDomainABIStability;
 typedef virDomainABIStability *virDomainABIStabilityPtr;
 
+typedef struct _virCapsGuestFeature virCapsGuestFeature;
+typedef virCapsGuestFeature *virCapsGuestFeaturePtr;
+
+typedef struct _virCapsGuestMachine virCapsGuestMachine;
+typedef virCapsGuestMachine *virCapsGuestMachinePtr;
+
+typedef struct _virCapsGuestDomainInfo virCapsGuestDomainInfo;
+typedef virCapsGuestDomainInfo *virCapsGuestDomainInfoPtr;
+
+typedef struct _virCapsGuestDomain virCapsGuestDomain;
+typedef virCapsGuestDomain *virCapsGuestDomainPtr;
+
+typedef struct _virCapsGuestArch virCapsGuestArch;
+typedef virCapsGuestArch *virCapsGuestArchptr;
+
+typedef struct _virCapsGuest virCapsGuest;
+typedef virCapsGuest *virCapsGuestPtr;
+
+typedef struct _virCapsHostNUMACellCPU virCapsHostNUMACellCPU;
+typedef virCapsHostNUMACellCPU *virCapsHostNUMACellCPUPtr;
+
+typedef struct _virCapsHostNUMACellSiblingInfo virCapsHostNUMACellSiblingInfo;
+typedef virCapsHostNUMACellSiblingInfo *virCapsHostNUMACellSiblingInfoPtr;
+
+typedef struct _virCapsHostNUMACellPageInfo virCapsHostNUMACellPageInfo;
+typedef virCapsHostNUMACellPageInfo *virCapsHostNUMACellPageInfoPtr;
+
+typedef struct _virCapsHostNUMACell virCapsHostNUMACell;
+typedef virCapsHostNUMACell *virCapsHostNUMACellPtr;
+
+typedef struct _virCapsHostSecModelLabel virCapsHostSecModelLabel;
+typedef virCapsHostSecModelLabel *virCapsHostSecModelLabelPtr;
+
+typedef struct _virCapsHostSecModel virCapsHostSecModel;
+typedef virCapsHostSecModel *virCapsHostSecModelPtr;
+
+typedef struct _virCapsHostCacheBank virCapsHostCacheBank;
+typedef virCapsHostCacheBank *virCapsHostCacheBankPtr;
+
+typedef struct _virCapsHostCache virCapsHostCache;
+typedef virCapsHostCache *virCapsHostCachePtr;
+
+typedef struct _virCapsHostMemBWNode virCapsHostMemBWNode;
+typedef virCapsHostMemBWNode *virCapsHostMemBWNodePtr;
+
+typedef struct _virCapsHostMemBW virCapsHostMemBW;
+typedef virCapsHostMemBW *virCapsHostMemBWPtr;
+
+typedef struct _virCapsHost virCapsHost;
+typedef virCapsHost *virCapsHostPtr;
+
+typedef struct _virCapsStoragePool virCapsStoragePool;
+typedef virCapsStoragePool *virCapsStoragePoolPtr;
+
+typedef struct _virDomainXMLNamespace virDomainXMLNamespace;
+typedef virDomainXMLNamespace *virDomainXMLNamespacePtr;
+
+typedef struct _virCaps virCaps;
+typedef virCaps *virCapsPtr;
+
+typedef struct _virCapsDomainData virCapsDomainData;
+typedef virCapsDomainData *virCapsDomainDataPtr;
+
 #endif /* LIBVIRT_VIRCONFTYPES_H */
