@@ -5277,43 +5277,6 @@ qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
 
 
 static int
-qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 virDomainDiskDefPtr detach,
-                                 bool async)
-{
-    int ret = -1;
-
-    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot hot unplug multifunction PCI device: %s"),
-                       detach->dst);
-        goto cleanup;
-    }
-
-    if (!async)
-        qemuDomainMarkDeviceForRemoval(vm, &detach->info);
-
-    if (qemuDomainDeleteDevice(vm, detach->info.alias) < 0) {
-        if (virDomainObjIsActive(vm))
-            virDomainAuditDisk(vm, detach->src, NULL, "detach", false);
-        goto cleanup;
-    }
-
-    if (async) {
-        ret = 0;
-    } else {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-            ret = qemuDomainRemoveDiskDevice(driver, vm, detach);
-    }
-
- cleanup:
-    if (!async)
-        qemuDomainResetDeviceRemoval(vm);
-    return ret;
-}
-
-static int
 qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainDiskDefPtr detach,
@@ -5322,7 +5285,15 @@ qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
     int ret = -1;
 
     if (qemuDomainDiskBlockJobIsActive(detach))
-        goto cleanup;
+        return -1;
+
+    if (detach->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
+        qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("cannot hot unplug multifunction PCI device: %s"),
+                       detach->dst);
+        return -1;
+    }
 
     if (!async)
         qemuDomainMarkDeviceForRemoval(vm, &detach->info);
@@ -5381,8 +5352,6 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
 
         switch ((virDomainDiskBus) disk->bus) {
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
-            return qemuDomainDetachVirtioDiskDevice(driver, vm, disk, async);
-
         case VIR_DOMAIN_DISK_BUS_USB:
         case VIR_DOMAIN_DISK_BUS_SCSI:
             return qemuDomainDetachDiskDevice(driver, vm, disk, async);
