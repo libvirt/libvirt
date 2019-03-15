@@ -230,16 +230,16 @@ virCPUx86DataItemSetBits(virCPUx86DataItemPtr item,
 
 
 static void
-x86cpuidClearBits(virCPUx86CPUID *cpuid,
-                  const virCPUx86CPUID *mask)
+virCPUx86DataItemClearBits(virCPUx86DataItemPtr item,
+                           const virCPUx86DataItem *mask)
 {
     if (!mask)
         return;
 
-    cpuid->eax &= ~mask->eax;
-    cpuid->ebx &= ~mask->ebx;
-    cpuid->ecx &= ~mask->ecx;
-    cpuid->edx &= ~mask->edx;
+    item->cpuid.eax &= ~mask->cpuid.eax;
+    item->cpuid.ebx &= ~mask->cpuid.ebx;
+    item->cpuid.ecx &= ~mask->cpuid.ecx;
+    item->cpuid.edx &= ~mask->cpuid.edx;
 }
 
 
@@ -432,8 +432,8 @@ x86DataSubtract(virCPUx86Data *data1,
     virCPUx86DataItemPtr item2;
 
     while ((item1 = virCPUx86DataNext(&iter))) {
-        if ((item2 = virCPUx86DataGet(data2, item1)))
-            x86cpuidClearBits(&item1->cpuid, &item2->cpuid);
+        item2 = virCPUx86DataGet(data2, item1);
+        virCPUx86DataItemClearBits(item1, item2);
     }
 }
 
@@ -451,7 +451,7 @@ x86DataIntersect(virCPUx86Data *data1,
         if (item2)
             x86cpuidAndBits(&item1->cpuid, &item2->cpuid);
         else
-            x86cpuidClearBits(&item1->cpuid, &item1->cpuid);
+            virCPUx86DataItemClearBits(item1, item1);
     }
 }
 
@@ -517,7 +517,7 @@ x86DataToVendor(const virCPUx86Data *data,
         virCPUx86VendorPtr vendor = map->vendors[i];
         if ((item = virCPUx86DataGet(data, &vendor->data)) &&
             x86cpuidMatchMasked(&item->cpuid, &vendor->data.cpuid)) {
-            x86cpuidClearBits(&item->cpuid, &vendor->data.cpuid);
+            virCPUx86DataItemClearBits(item, &vendor->data);
             return vendor;
         }
     }
