@@ -890,11 +890,8 @@ virDomainSnapshotDefFormat;
 virDomainSnapshotDefFree;
 virDomainSnapshotDefIsExternal;
 virDomainSnapshotDefParseString;
-virDomainSnapshotDropParent;
 virDomainSnapshotFindByName;
 virDomainSnapshotForEach;
-virDomainSnapshotForEachChild;
-virDomainSnapshotForEachDescendant;
 virDomainSnapshotFormatConvertXMLFlags;
 virDomainSnapshotIsExternal;
 virDomainSnapshotLocationTypeFromString;
@@ -990,6 +987,12 @@ virDomainObjListNumOfDomains;
 virDomainObjListRemove;
 virDomainObjListRemoveLocked;
 virDomainObjListRename;
+
+
+# conf/virdomainsnapshotobj.h
+virDomainSnapshotDropParent;
+virDomainSnapshotForEachChild;
+virDomainSnapshotForEachDescendant;
 
 
 # conf/virinterfaceobj.h

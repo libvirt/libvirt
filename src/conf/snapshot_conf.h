@@ -24,6 +24,7 @@
 
 # include "internal.h"
 # include "domain_conf.h"
+# include "virdomainsnapshotobj.h"
 
 /* Items related to snapshot state */
 
@@ -71,8 +72,6 @@ struct _virDomainSnapshotDiskDef {
 };
 
 /* Stores the complete snapshot metadata */
-typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
-typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
 struct _virDomainSnapshotDef {
     /* Public XML.  */
     char *name;
@@ -95,16 +94,6 @@ struct _virDomainSnapshotDef {
     bool current; /* At most one snapshot in the list should have this set */
 };
 
-struct _virDomainSnapshotObj {
-    virDomainSnapshotDefPtr def; /* non-NULL except for metaroot */
-
-    virDomainSnapshotObjPtr parent; /* non-NULL except for metaroot, before
-                                       virDomainSnapshotUpdateRelations, or
-                                       after virDomainSnapshotDropParent */
-    virDomainSnapshotObjPtr sibling; /* NULL if last child of parent */
-    size_t nchildren;
-    virDomainSnapshotObjPtr first_child; /* NULL if no children */
-};
 
 virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
 void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
@@ -172,14 +161,7 @@ void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
 int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
                              virHashIterator iter,
                              void *data);
-int virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
-                                  virHashIterator iter,
-                                  void *data);
-int virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
-                                       virHashIterator iter,
-                                       void *data);
 int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
-void virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot);
 
 # define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA \
                (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \

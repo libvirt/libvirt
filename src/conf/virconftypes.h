@@ -274,6 +274,9 @@ typedef virDomainShmemDef *virDomainShmemDefPtr;
 typedef struct _virDomainSmartcardDef virDomainSmartcardDef;
 typedef virDomainSmartcardDef *virDomainSmartcardDefPtr;
 
+typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
+typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
+
 typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
 typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
 

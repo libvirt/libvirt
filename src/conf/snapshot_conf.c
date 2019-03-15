@@ -1299,64 +1299,6 @@ virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
     return virHashForEach(snapshots->objs, iter, data);
 }
 
-/* Run iter(data) on all direct children of snapshot, while ignoring all
- * other entries in snapshots.  Return the number of children
- * visited.  No particular ordering is guaranteed.  */
-int
-virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
-                              virHashIterator iter,
-                              void *data)
-{
-    virDomainSnapshotObjPtr child = snapshot->first_child;
-
-    while (child) {
-        virDomainSnapshotObjPtr next = child->sibling;
-        (iter)(child, child->def->name, data);
-        child = next;
-    }
-
-    return snapshot->nchildren;
-}
-
-struct snapshot_act_on_descendant {
-    int number;
-    virHashIterator iter;
-    void *data;
-};
-
-static int
-virDomainSnapshotActOnDescendant(void *payload,
-                                 const void *name,
-                                 void *data)
-{
-    virDomainSnapshotObjPtr obj = payload;
-    struct snapshot_act_on_descendant *curr = data;
-
-    (curr->iter)(payload, name, curr->data);
-    curr->number += 1 + virDomainSnapshotForEachDescendant(obj,
-                                                           curr->iter,
-                                                           curr->data);
-    return 0;
-}
-
-/* Run iter(data) on all descendants of snapshot, while ignoring all
- * other entries in snapshots.  Return the number of descendants
- * visited.  No particular ordering is guaranteed.  */
-int
-virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
-                                   virHashIterator iter,
-                                   void *data)
-{
-    struct snapshot_act_on_descendant act;
-
-    act.number = 0;
-    act.iter = iter;
-    act.data = data;
-    virDomainSnapshotForEachChild(snapshot,
-                                  virDomainSnapshotActOnDescendant, &act);
-
-    return act.number;
-}
 
 /* Struct and callback function used as a hash table callback; each call
  * inspects the pre-existing snapshot->def->parent field, and adjusts
@@ -1416,33 +1358,6 @@ virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
     return act.err;
 }
 
-/* Prepare to reparent or delete snapshot, by removing it from its
- * current listed parent.  Note that when bulk removing all children
- * of a parent, it is faster to just 0 the count rather than calling
- * this function on each child.  */
-void
-virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot)
-{
-    virDomainSnapshotObjPtr prev = NULL;
-    virDomainSnapshotObjPtr curr = NULL;
-
-    snapshot->parent->nchildren--;
-    curr = snapshot->parent->first_child;
-    while (curr != snapshot) {
-        if (!curr) {
-            VIR_WARN("inconsistent snapshot relations");
-            return;
-        }
-        prev = curr;
-        curr = curr->sibling;
-    }
-    if (prev)
-        prev->sibling = snapshot->sibling;
-    else
-        snapshot->parent->first_child = snapshot->sibling;
-    snapshot->parent = NULL;
-    snapshot->sibling = NULL;
-}
 
 int
 virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
