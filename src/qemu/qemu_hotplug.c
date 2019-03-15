@@ -5375,7 +5375,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     }
     disk = vm->def->disks[idx];
 
-    switch (disk->device) {
+    switch ((virDomainDiskDevice) disk->device) {
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
@@ -5387,10 +5387,17 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("This type of disk cannot be hot unplugged"));
         break;
-    default:
+
+    case VIR_DOMAIN_DISK_DEVICE_CDROM:
+    case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk device type '%s' cannot be detached"),
                        virDomainDiskDeviceTypeToString(disk->device));
+        break;
+
+    case VIR_DOMAIN_DISK_DEVICE_LAST:
+    default:
+        virReportEnumRangeError(virDomainDiskDevice, disk->device);
         break;
     }
 
