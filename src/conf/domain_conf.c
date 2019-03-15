@@ -9021,31 +9021,6 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
 
 static int
-virDomainDiskSourcePrivateDataParse(xmlNodePtr node,
-                                    xmlXPathContextPtr ctxt,
-                                    virStorageSourcePtr src,
-                                    unsigned int flags,
-                                    virDomainXMLOptionPtr xmlopt)
-{
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
-
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
-        !xmlopt || !xmlopt->privateData.storageParse)
-        return 0;
-
-    ctxt->node = node;
-
-    if (!(ctxt->node = virXPathNode("./privateData", ctxt)))
-        return 0;
-
-    if (xmlopt->privateData.storageParse(ctxt, src) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
 virDomainDiskSourcePRParse(xmlNodePtr node,
                            xmlXPathContextPtr ctxt,
                            virStoragePRDefPtr *pr)
@@ -9068,7 +9043,8 @@ int
 virDomainStorageSourceParse(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             virStorageSourcePtr src,
-                            unsigned int flags)
+                            unsigned int flags,
+                            virDomainXMLOptionPtr xmlopt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr tmp;
@@ -9122,6 +9098,15 @@ virDomainStorageSourceParse(xmlNodePtr node,
     if (src->path && !*src->path)
         VIR_FREE(src->path);
 
+    if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
+        xmlopt && xmlopt->privateData.storageParse &&
+        (tmp = virXPathNode("./privateData", ctxt))) {
+        ctxt->node = tmp;
+
+        if (xmlopt->privateData.storageParse(ctxt, src) < 0)
+            return -1;
+    }
+
     return 0;
 }
 
@@ -9133,10 +9118,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
                          unsigned int flags,
                          virDomainXMLOptionPtr xmlopt)
 {
-    if (virDomainStorageSourceParse(node, ctxt, src, flags) < 0)
-        return -1;
-
-    if (virDomainDiskSourcePrivateDataParse(node, ctxt, src, flags, xmlopt) < 0)
+    if (virDomainStorageSourceParse(node, ctxt, src, flags, xmlopt) < 0)
         return -1;
 
     return 0;

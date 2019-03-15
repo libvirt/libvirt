@@ -2760,7 +2760,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
     }
 
     if (virDomainStorageSourceParse(ctxt->node, ctxt, migrSource,
-                                    VIR_DOMAIN_DEF_PARSE_STATUS) < 0)
+                                    VIR_DOMAIN_DEF_PARSE_STATUS, NULL) < 0)
         goto cleanup;
 
     if ((ctxt->node = virXPathNode("./privateData", ctxt)) &&
