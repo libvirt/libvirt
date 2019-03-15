@@ -244,16 +244,16 @@ virCPUx86DataItemClearBits(virCPUx86DataItemPtr item,
 
 
 static void
-x86cpuidAndBits(virCPUx86CPUID *cpuid,
-                const virCPUx86CPUID *mask)
+virCPUx86DataItemAndBits(virCPUx86DataItemPtr item,
+                         const virCPUx86DataItem *mask)
 {
     if (!mask)
         return;
 
-    cpuid->eax &= mask->eax;
-    cpuid->ebx &= mask->ebx;
-    cpuid->ecx &= mask->ecx;
-    cpuid->edx &= mask->edx;
+    item->cpuid.eax &= mask->cpuid.eax;
+    item->cpuid.ebx &= mask->cpuid.ebx;
+    item->cpuid.ecx &= mask->cpuid.ecx;
+    item->cpuid.edx &= mask->cpuid.edx;
 }
 
 
@@ -449,7 +449,7 @@ x86DataIntersect(virCPUx86Data *data1,
     while ((item1 = virCPUx86DataNext(&iter))) {
         item2 = virCPUx86DataGet(data2, item1);
         if (item2)
-            x86cpuidAndBits(&item1->cpuid, &item2->cpuid);
+            virCPUx86DataItemAndBits(item1, item2);
         else
             virCPUx86DataItemClearBits(item1, item1);
     }
