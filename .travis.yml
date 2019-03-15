@@ -43,7 +43,6 @@ script:
       -w /build
       -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
       -e MINGW="$MINGW"
-      -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
       "quay.io/libvirt/buildenv-$IMAGE:master"
       /bin/sh -xc "$DOCKER_CMD"
 
@@ -56,7 +55,7 @@ env:
     - LINUX_CMD="
         ./autogen.sh &&
         make -j3 syntax-check &&
-        make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=\"\$DISTCHECK_CONFIGURE_FLAGS\" ||
+        make -j3 distcheck ||
         (
           echo '=== LOG FILE(S) START ===';
           find -name test-suite.log | xargs cat;
