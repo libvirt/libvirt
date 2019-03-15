@@ -84,7 +84,6 @@ LOGROTATE_FILES_IN =
 PODFILES =
 MANINFILES =
 SYSTEMD_UNIT_FILES_IN =
-SYSVINIT_FILES_IN =
 SYSCONF_FILES =
 sbin_PROGRAMS =
 man8_MANS =
@@ -765,14 +764,6 @@ uninstall-sysconfig:
 	done
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
-SYSVINIT_FILES_IN += \
-	locking/virtlockd.init.in \
-	$(NULL)
-
-SYSVINIT_FILES = $(notdir $(SYSVINIT_FILES_IN:%.in=%))
-
-EXTRA_DIST += $(SYSVINIT_FILES_IN)
-
 LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
 
 EXTRA_DIST += $(LOGROTATE_FILES_IN)
@@ -802,29 +793,6 @@ uninstall-logrotate:
 
 INSTALL_DATA_LOCAL += install-logrotate
 UNINSTALL_LOCAL += uninstall-logrotate
-endif WITH_LIBVIRTD
-
-if WITH_LIBVIRTD
-if LIBVIRT_INIT_SCRIPT_RED_HAT
-initdir = $(sysconfdir)/rc.d/init.d
-
-install-init: $(SYSVINIT_FILES) install-sysconfig
-	$(MKDIR_P) $(DESTDIR)$(initdir)
-	for f in $(SYSVINIT_FILES:%.init=%) ; \
-	do \
-	  $(INSTALL_SCRIPT) $$f.init $(DESTDIR)$(initdir)/$$f; \
-	done
-
-uninstall-init: uninstall-sysconfig
-	rm -f $(SYSVINIT_FILES:%.init=$(DESTDIR)$(initdir)/%)
-	rmdir $(DESTDIR)$(initdir) || :
-
-BUILT_SOURCES += $(SYSVINIT_FILES)
-DISTCLEANFILES += $(SYSVINIT_FILES)
-
-INSTALL_DATA_LOCAL += install-init
-UNINSTALL_LOCAL += uninstall-init
-endif LIBVIRT_INIT_SCRIPT_RED_HAT
 endif WITH_LIBVIRTD
 
 

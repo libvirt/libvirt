@@ -26,8 +26,6 @@ LOG_DAEMON_SOURCES = \
 
 LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
 
-SYSVINIT_FILES_IN += logging/virtlogd.init.in
-
 EXTRA_DIST += \
 	$(LOG_PROTOCOL) \
 	$(LOG_PROTOCOL_GENERATED) \
@@ -115,15 +113,6 @@ logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	    virLogManagerProtocol VIR_LOG_MANAGER_PROTOCOL \
 	    $(LOG_PROTOCOL) > $(srcdir)/logging/log_daemon_dispatch_stubs.h
-
-virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    chmod a+x $@-t && \
-	    mv $@-t $@
 
 virtlogd.8.in: logging/virtlogd.pod
 	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \

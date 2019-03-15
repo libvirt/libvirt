@@ -305,15 +305,6 @@ virtlockd-admin.socket: locking/virtlockd-admin.socket.in \
 	    < $< > $@-t && \
 	    mv $@-t $@
 
-virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    chmod a+x $@-t && \
-	    mv $@-t $@
-
 virtlockd.8.in: locking/virtlockd.pod
 	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
 	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \

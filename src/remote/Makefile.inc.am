@@ -42,8 +42,6 @@ LOGROTATE_FILES_IN += \
 	remote/libvirtd.logrotate.in \
 	$(NULL)
 
-SYSVINIT_FILES_IN += remote/libvirtd.init.in
-
 SYSCONF_FILES += remote/libvirtd.sysconf
 
 PODFILES += remote/libvirtd.pod
