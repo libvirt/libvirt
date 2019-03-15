@@ -24,7 +24,6 @@
 
 # include "internal.h"
 # include "domain_conf.h"
-# include "virdomainsnapshotobj.h"
 
 /* Items related to snapshot state */
 
@@ -94,10 +93,6 @@ struct _virDomainSnapshotDef {
     bool current; /* At most one snapshot in the list should have this set */
 };
 
-
-virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
-void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
-
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE = 1 << 0,
     VIR_DOMAIN_SNAPSHOT_PARSE_DISKS    = 1 << 1,
@@ -121,13 +116,6 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseNode(xmlDocPtr xml,
                                                       virCapsPtr caps,
                                                       virDomainXMLOptionPtr xmlopt,
                                                       unsigned int flags);
-int virDomainSnapshotObjListParse(const char *xmlStr,
-                                  const unsigned char *domain_uuid,
-                                  virDomainSnapshotObjListPtr snapshots,
-                                  virDomainSnapshotObjPtr *current_snap,
-                                  virCapsPtr caps,
-                                  virDomainXMLOptionPtr xmlopt,
-                                  unsigned int flags);
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
 char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  virDomainSnapshotDefPtr def,
@@ -141,34 +129,9 @@ int virDomainSnapshotDefFormatInternal(virBufferPtr buf,
                                        virDomainXMLOptionPtr xmlopt,
                                        unsigned int flags);
 
-int virDomainSnapshotObjListFormat(virBufferPtr buf,
-                                   const char *uuidstr,
-                                   virDomainSnapshotObjListPtr snapshots,
-                                   virDomainSnapshotObjPtr current_snapshot,
-                                   virCapsPtr caps,
-                                   virDomainXMLOptionPtr xmlopt,
-                                   unsigned int flags);
 int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
                                 int default_snapshot,
                                 bool require_match);
-virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
-                                                   virDomainSnapshotDefPtr def);
-
-int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                     virDomainSnapshotObjPtr from,
-                                     char **const names, int maxnames,
-                                     unsigned int flags);
-int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
-                                virDomainSnapshotObjPtr from,
-                                unsigned int flags);
-virDomainSnapshotObjPtr virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
-                                                    const char *name);
-void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
-                                    virDomainSnapshotObjPtr snapshot);
-int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
-                             virHashIterator iter,
-                             void *data);
-int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
 
 # define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA \
                (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \
@@ -192,12 +155,6 @@ int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
                 VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES    | \
                 VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS    | \
                 VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION)
-
-int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
-                           virDomainSnapshotObjPtr from,
-                           virDomainPtr dom,
-                           virDomainSnapshotPtr **snaps,
-                           unsigned int flags);
 
 bool virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def);
 bool virDomainSnapshotIsExternal(virDomainSnapshotObjPtr snap);

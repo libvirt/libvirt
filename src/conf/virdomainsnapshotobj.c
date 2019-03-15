@@ -25,6 +25,7 @@
 #include "internal.h"
 #include "virdomainsnapshotobj.h"
 #include "snapshot_conf.h"
+#include "virdomainsnapshotobjlist.h"
 #include "virlog.h"
 #include "virerror.h"
 

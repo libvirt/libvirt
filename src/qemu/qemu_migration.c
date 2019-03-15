@@ -60,6 +60,7 @@
 #include "virtypedparam.h"
 #include "virprocess.h"
 #include "nwfilter_conf.h"
+#include "virdomainsnapshotobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

@@ -57,6 +57,7 @@
 #include "virnetdevmacvlan.h"
 #include "virhostdev.h"
 #include "virmdev.h"
+#include "virdomainsnapshotobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

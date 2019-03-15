@@ -55,6 +55,7 @@
 #include "secret_util.h"
 #include "logging/log_manager.h"
 #include "locking/domain_lock.h"
+#include "virdomainsnapshotobjlist.h"
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>

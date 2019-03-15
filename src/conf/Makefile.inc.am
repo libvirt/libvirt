@@ -31,6 +31,8 @@ DOMAIN_CONF_SOURCES = \
 	conf/virdomainobjlist.h \
 	conf/virdomainsnapshotobj.c \
 	conf/virdomainsnapshotobj.h \
+	conf/virdomainsnapshotobjlist.c \
+	conf/virdomainsnapshotobjlist.h \
 	$(NULL)
 
 OBJECT_EVENT_SOURCES = \

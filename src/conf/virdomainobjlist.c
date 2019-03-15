@@ -30,6 +30,7 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virdomainsnapshotobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

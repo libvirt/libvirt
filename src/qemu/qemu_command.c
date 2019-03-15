@@ -58,6 +58,7 @@
 #include "virnuma.h"
 #include "virgic.h"
 #include "virmdev.h"
+#include "virdomainsnapshotobjlist.h"
 #if defined(__linux__)
 # include <linux/capability.h>
 #endif

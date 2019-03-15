@@ -883,30 +883,18 @@ virSecretEventValueChangedNew;
 
 
 # conf/snapshot_conf.h
-virDomainListSnapshots;
 virDomainSnapshotAlignDisks;
-virDomainSnapshotAssignDef;
 virDomainSnapshotDefFormat;
 virDomainSnapshotDefFree;
 virDomainSnapshotDefIsExternal;
 virDomainSnapshotDefParseString;
-virDomainSnapshotFindByName;
-virDomainSnapshotForEach;
 virDomainSnapshotFormatConvertXMLFlags;
 virDomainSnapshotIsExternal;
 virDomainSnapshotLocationTypeFromString;
 virDomainSnapshotLocationTypeToString;
-virDomainSnapshotObjListFormat;
-virDomainSnapshotObjListFree;
-virDomainSnapshotObjListGetNames;
-virDomainSnapshotObjListNew;
-virDomainSnapshotObjListNum;
-virDomainSnapshotObjListParse;
-virDomainSnapshotObjListRemove;
 virDomainSnapshotRedefinePrep;
 virDomainSnapshotStateTypeFromString;
 virDomainSnapshotStateTypeToString;
-virDomainSnapshotUpdateRelations;
 
 
 # conf/storage_adapter_conf.h
@@ -993,6 +981,21 @@ virDomainObjListRename;
 virDomainSnapshotDropParent;
 virDomainSnapshotForEachChild;
 virDomainSnapshotForEachDescendant;
+
+
+# conf/virdomainsnapshotobjlist.h
+virDomainListSnapshots;
+virDomainSnapshotAssignDef;
+virDomainSnapshotFindByName;
+virDomainSnapshotForEach;
+virDomainSnapshotObjListFormat;
+virDomainSnapshotObjListFree;
+virDomainSnapshotObjListGetNames;
+virDomainSnapshotObjListNew;
+virDomainSnapshotObjListNum;
+virDomainSnapshotObjListParse;
+virDomainSnapshotObjListRemove;
+virDomainSnapshotUpdateRelations;
 
 
 # conf/virinterfaceobj.h
