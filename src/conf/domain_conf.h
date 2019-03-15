@@ -1,7 +1,7 @@
 /*
  * domain_conf.h: domain XML processing
  *
- * Copyright (C) 2006-2016 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -28,6 +28,7 @@
 # include <libxml/xpath.h>
 
 # include "internal.h"
+# include "virconftypes.h"
 # include "capabilities.h"
 # include "virstorageencryption.h"
 # include "cpu_conf.h"
@@ -55,111 +56,6 @@
 # include "virtypedparam.h"
 # include "virsavecookie.h"
 # include "virresctrl.h"
-
-/* forward declarations of all device types, required by
- * virDomainDeviceDef
- */
-typedef struct _virDomainDiskDef virDomainDiskDef;
-typedef virDomainDiskDef *virDomainDiskDefPtr;
-
-typedef struct _virDomainControllerDef virDomainControllerDef;
-typedef virDomainControllerDef *virDomainControllerDefPtr;
-
-typedef struct _virDomainLeaseDef virDomainLeaseDef;
-typedef virDomainLeaseDef *virDomainLeaseDefPtr;
-
-typedef struct _virDomainFSDef virDomainFSDef;
-typedef virDomainFSDef *virDomainFSDefPtr;
-
-typedef struct _virDomainNetDef virDomainNetDef;
-typedef virDomainNetDef *virDomainNetDefPtr;
-
-typedef struct _virDomainInputDef virDomainInputDef;
-typedef virDomainInputDef *virDomainInputDefPtr;
-
-typedef struct _virDomainSoundCodecDef virDomainSoundCodecDef;
-typedef virDomainSoundCodecDef *virDomainSoundCodecDefPtr;
-
-typedef struct _virDomainSoundDef virDomainSoundDef;
-typedef virDomainSoundDef *virDomainSoundDefPtr;
-
-typedef struct _virDomainVideoDef virDomainVideoDef;
-typedef virDomainVideoDef *virDomainVideoDefPtr;
-
-typedef struct _virDomainHostdevDef virDomainHostdevDef;
-typedef virDomainHostdevDef *virDomainHostdevDefPtr;
-
-typedef struct _virDomainWatchdogDef virDomainWatchdogDef;
-typedef virDomainWatchdogDef *virDomainWatchdogDefPtr;
-
-typedef struct _virDomainGraphicsDef virDomainGraphicsDef;
-typedef virDomainGraphicsDef *virDomainGraphicsDefPtr;
-
-typedef struct _virDomainHubDef virDomainHubDef;
-typedef virDomainHubDef *virDomainHubDefPtr;
-
-typedef struct _virDomainRedirdevDef virDomainRedirdevDef;
-typedef virDomainRedirdevDef *virDomainRedirdevDefPtr;
-
-typedef struct _virDomainRedirFilterUSBDevDef virDomainRedirFilterUSBDevDef;
-typedef virDomainRedirFilterUSBDevDef *virDomainRedirFilterUSBDevDefPtr;
-
-typedef struct _virDomainRedirFilterDef virDomainRedirFilterDef;
-typedef virDomainRedirFilterDef *virDomainRedirFilterDefPtr;
-
-typedef struct _virDomainSmartcardDef virDomainSmartcardDef;
-typedef virDomainSmartcardDef *virDomainSmartcardDefPtr;
-
-typedef struct _virDomainChrDef virDomainChrDef;
-typedef virDomainChrDef *virDomainChrDefPtr;
-
-typedef struct _virDomainMemballoonDef virDomainMemballoonDef;
-typedef virDomainMemballoonDef *virDomainMemballoonDefPtr;
-
-typedef struct _virDomainNVRAMDef virDomainNVRAMDef;
-typedef virDomainNVRAMDef *virDomainNVRAMDefPtr;
-
-typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
-typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
-
-typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
-typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
-
-typedef struct _virDomainRNGDef virDomainRNGDef;
-typedef virDomainRNGDef *virDomainRNGDefPtr;
-
-typedef struct _virDomainIdMapEntry virDomainIdMapEntry;
-typedef virDomainIdMapEntry *virDomainIdMapEntryPtr;
-
-typedef struct _virDomainIdMapDef virDomainIdMapDef;
-typedef virDomainIdMapDef *virDomainIdMapDefPtr;
-
-typedef struct _virDomainPanicDef virDomainPanicDef;
-typedef virDomainPanicDef *virDomainPanicDefPtr;
-
-typedef struct _virDomainMemoryDef virDomainMemoryDef;
-typedef virDomainMemoryDef *virDomainMemoryDefPtr;
-
-/* forward declarations virDomainChrSourceDef, required by
- * virDomainNetDef
- */
-typedef struct _virDomainChrSourceDef virDomainChrSourceDef;
-typedef virDomainChrSourceDef *virDomainChrSourceDefPtr;
-
-typedef struct _virDomainShmemDef virDomainShmemDef;
-typedef virDomainShmemDef *virDomainShmemDefPtr;
-
-typedef struct _virDomainTPMDef virDomainTPMDef;
-typedef virDomainTPMDef *virDomainTPMDefPtr;
-
-typedef struct _virDomainIOMMUDef virDomainIOMMUDef;
-typedef virDomainIOMMUDef *virDomainIOMMUDefPtr;
-
-typedef struct _virDomainVsockDef virDomainVsockDef;
-typedef virDomainVsockDef *virDomainVsockDefPtr;
-
-typedef struct _virDomainVirtioOptions virDomainVirtioOptions;
-typedef virDomainVirtioOptions *virDomainVirtioOptionsPtr;
 
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
@@ -192,8 +88,6 @@ typedef enum {
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
 
-typedef struct _virDomainDeviceDef virDomainDeviceDef;
-typedef virDomainDeviceDef *virDomainDeviceDefPtr;
 struct _virDomainDeviceDef {
     int type; /* enum virDomainDeviceType */
     union {
@@ -260,8 +154,6 @@ typedef enum {
 VIR_ENUM_DECL(virDomainOS);
 
 
-typedef struct _virDomainHostdevOrigStates virDomainHostdevOrigStates;
-typedef virDomainHostdevOrigStates *virDomainHostdevOrigStatesPtr;
 struct _virDomainHostdevOrigStates {
     union {
         struct {
@@ -331,8 +223,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainHostdevSubsysSCSIProtocol);
 
-typedef struct _virDomainHostdevSubsysUSB virDomainHostdevSubsysUSB;
-typedef virDomainHostdevSubsysUSB *virDomainHostdevSubsysUSBPtr;
 struct _virDomainHostdevSubsysUSB {
     bool autoAddress; /* bus/device were filled automatically based
                          on vendor/product */
@@ -343,15 +233,11 @@ struct _virDomainHostdevSubsysUSB {
     unsigned product;
 };
 
-typedef struct _virDomainHostdevSubsysPCI virDomainHostdevSubsysPCI;
-typedef virDomainHostdevSubsysPCI *virDomainHostdevSubsysPCIPtr;
 struct _virDomainHostdevSubsysPCI {
     virPCIDeviceAddress addr; /* host address */
     int backend; /* enum virDomainHostdevSubsysPCIBackendType */
 };
 
-typedef struct _virDomainHostdevSubsysSCSIHost virDomainHostdevSubsysSCSIHost;
-typedef virDomainHostdevSubsysSCSIHost *virDomainHostdevSubsysSCSIHostPtr;
 struct _virDomainHostdevSubsysSCSIHost {
     char *adapter;
     unsigned bus;
@@ -359,14 +245,10 @@ struct _virDomainHostdevSubsysSCSIHost {
     unsigned long long unit;
 };
 
-typedef struct _virDomainHostdevSubsysSCSIiSCSI virDomainHostdevSubsysSCSIiSCSI;
-typedef virDomainHostdevSubsysSCSIiSCSI *virDomainHostdevSubsysSCSIiSCSIPtr;
 struct _virDomainHostdevSubsysSCSIiSCSI {
     virStorageSourcePtr src;
 };
 
-typedef struct _virDomainHostdevSubsysSCSI virDomainHostdevSubsysSCSI;
-typedef virDomainHostdevSubsysSCSI *virDomainHostdevSubsysSCSIPtr;
 struct _virDomainHostdevSubsysSCSI {
     int protocol; /* enum virDomainHostdevSCSIProtocolType */
     int sgio; /* enum virDomainDeviceSGIO */
@@ -377,8 +259,6 @@ struct _virDomainHostdevSubsysSCSI {
     } u;
 };
 
-typedef struct _virDomainHostdevSubsysMediatedDev virDomainHostdevSubsysMediatedDev;
-typedef virDomainHostdevSubsysMediatedDev *virDomainHostdevSubsysMediatedDevPtr;
 struct _virDomainHostdevSubsysMediatedDev {
     int model;                          /* enum virMediatedDeviceModelType */
     int display; /* virTristateSwitch */
@@ -405,16 +285,12 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainHostdevSubsysSCSIVHostModel);
 
-typedef struct _virDomainHostdevSubsysSCSIVHost virDomainHostdevSubsysSCSIVHost;
-typedef virDomainHostdevSubsysSCSIVHost *virDomainHostdevSubsysSCSIVHostPtr;
 struct _virDomainHostdevSubsysSCSIVHost {
     int protocol; /* enum virDomainHostdevSubsysSCSIHostProtocolType */
     char *wwpn;
     int model; /* enum virDomainHostdevSubsysSCSIVHostModelType */
 };
 
-typedef struct _virDomainHostdevSubsys virDomainHostdevSubsys;
-typedef virDomainHostdevSubsys *virDomainHostdevSubsysPtr;
 struct _virDomainHostdevSubsys {
     int type; /* enum virDomainHostdevSubsysType */
     union {
@@ -435,8 +311,6 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST
 } virDomainHostdevCapsType;
 
-typedef struct _virDomainHostdevCaps virDomainHostdevCaps;
-typedef virDomainHostdevCaps *virDomainHostdevCapsPtr;
 struct _virDomainHostdevCaps {
     int type; /* enum virDOmainHostdevCapsType */
     union {
@@ -588,7 +462,6 @@ typedef enum {
     VIR_DOMAIN_DISK_MODEL_LAST
 } virDomainDiskModel;
 
-typedef struct _virDomainBlockIoTuneInfo virDomainBlockIoTuneInfo;
 struct _virDomainBlockIoTuneInfo {
     unsigned long long total_bytes_sec;
     unsigned long long read_bytes_sec;
@@ -611,7 +484,6 @@ struct _virDomainBlockIoTuneInfo {
     unsigned long long read_iops_sec_max_length;
     unsigned long long write_iops_sec_max_length;
 };
-typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 
 
 typedef enum {
@@ -808,15 +680,11 @@ typedef enum {
       (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2 || \
       (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3))
 
-typedef struct _virDomainVirtioSerialOpts virDomainVirtioSerialOpts;
-typedef virDomainVirtioSerialOpts *virDomainVirtioSerialOptsPtr;
 struct _virDomainVirtioSerialOpts {
     int ports;   /* -1 == undef */
     int vectors; /* -1 == undef */
 };
 
-typedef struct _virDomainPCIControllerOpts virDomainPCIControllerOpts;
-typedef virDomainPCIControllerOpts *virDomainPCIControllerOptsPtr;
 struct _virDomainPCIControllerOpts {
     bool pcihole64;
     unsigned long pcihole64size;
@@ -847,14 +715,10 @@ struct _virDomainPCIControllerOpts {
     int numaNode;
 };
 
-typedef struct _virDomainUSBControllerOpts virDomainUSBControllerOpts;
-typedef virDomainUSBControllerOpts *virDomainUSBControllerOptsPtr;
 struct _virDomainUSBControllerOpts {
     int ports;   /* -1 == undef */
 };
 
-typedef struct _virDomainXenbusControllerOpts virDomainXenbusControllerOpts;
-typedef virDomainXenbusControllerOpts *virDomainXenbusControllerOptsPtr;
 struct _virDomainXenbusControllerOpts {
     int maxGrantFrames;   /* -1 == undef */
 };
@@ -1000,8 +864,6 @@ typedef enum {
  * libvirt, but still must maintain backward compatibility, because
  * different versions of libvirt may read the same data file.
  */
-typedef struct _virDomainActualNetDef virDomainActualNetDef;
-typedef virDomainActualNetDef *virDomainActualNetDefPtr;
 struct _virDomainActualNetDef {
     int type; /* enum virDomainNetType */
     union {
@@ -1231,8 +1093,6 @@ struct _virDomainChrSourceReconnectDef {
     virTristateBool enabled;
     unsigned int timeout;
 };
-typedef struct _virDomainChrSourceReconnectDef virDomainChrSourceReconnectDef;
-typedef virDomainChrSourceReconnectDef *virDomainChrSourceReconnectDefPtr;
 
 
 /* The host side information for a character device.  */
@@ -1502,16 +1362,12 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainVideoVGAConf);
 
-typedef struct _virDomainVideoAccelDef virDomainVideoAccelDef;
-typedef virDomainVideoAccelDef *virDomainVideoAccelDefPtr;
 struct _virDomainVideoAccelDef {
     int accel2d; /* enum virTristateBool */
     int accel3d; /* enum virTristateBool */
 };
 
 
-typedef struct _virDomainVideoDriverDef virDomainVideoDriverDef;
-typedef virDomainVideoDriverDef *virDomainVideoDriverDefPtr;
 struct _virDomainVideoDriverDef {
    virDomainVideoVGAConf vgaconf;
 };
@@ -1560,8 +1416,6 @@ typedef enum {
     VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_LAST
 } virDomainGraphicsAuthConnectedType;
 
-typedef struct _virDomainGraphicsAuthDef virDomainGraphicsAuthDef;
-typedef virDomainGraphicsAuthDef *virDomainGraphicsAuthDefPtr;
 struct _virDomainGraphicsAuthDef {
     char *passwd;
     bool expires; /* Whether there is an expiry time set */
@@ -1652,8 +1506,6 @@ typedef enum {
     VIR_DOMAIN_HUB_TYPE_LAST
 } virDomainHubType;
 
-typedef struct _virDomainGraphicsListenDef virDomainGraphicsListenDef;
-typedef virDomainGraphicsListenDef *virDomainGraphicsListenDefPtr;
 struct _virDomainGraphicsListenDef {
     virDomainGraphicsListenType type;
     char *address;
@@ -1952,8 +1804,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainLockFailure);
 
-typedef struct _virDomainBIOSDef virDomainBIOSDef;
-typedef virDomainBIOSDef *virDomainBIOSDefPtr;
 struct _virDomainBIOSDef {
     int useserial; /* enum virTristateBool */
     /* reboot-timeout parameters */
@@ -1971,8 +1821,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainLoader);
 
-typedef struct _virDomainLoaderDef virDomainLoaderDef;
-typedef virDomainLoaderDef *virDomainLoaderDefPtr;
 struct _virDomainLoaderDef {
     char *path;
     int readonly;   /* enum virTristateBool */
@@ -2006,8 +1854,6 @@ typedef enum {
 VIR_ENUM_DECL(virDomainHPTResizing);
 
 /* Operating system configuration data & machine / arch */
-typedef struct _virDomainOSEnv virDomainOSEnv;
-typedef virDomainOSEnv *virDomainOSEnvPtr;
 struct _virDomainOSEnv {
     char *name;
     char *value;
@@ -2023,8 +1869,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainOsDefFirmware);
 
-typedef struct _virDomainOSDef virDomainOSDef;
-typedef virDomainOSDef *virDomainOSDefPtr;
 struct _virDomainOSDef {
     int type;
     virDomainOsDefFirmware firmware;
@@ -2101,23 +1945,17 @@ typedef enum {
     VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST
 } virDomainCpuPlacementMode;
 
-typedef struct _virDomainThreadSchedParam virDomainThreadSchedParam;
-typedef virDomainThreadSchedParam *virDomainThreadSchedParamPtr;
 struct _virDomainThreadSchedParam {
     virProcessSchedPolicy policy;
     int priority;
 };
 
-typedef struct _virDomainTimerCatchupDef virDomainTimerCatchupDef;
-typedef virDomainTimerCatchupDef *virDomainTimerCatchupDefPtr;
 struct _virDomainTimerCatchupDef {
     unsigned long threshold;
     unsigned long slew;
     unsigned long limit;
 };
 
-typedef struct _virDomainTimerDef virDomainTimerDef;
-typedef virDomainTimerDef *virDomainTimerDefPtr;
 struct _virDomainTimerDef {
     int name;
     int present;    /* unspecified = -1, no = 0, yes = 1 */
@@ -2149,8 +1987,6 @@ typedef enum {
     VIR_DOMAIN_CLOCK_BASIS_LAST
 } virDomainClockBasis;
 
-typedef struct _virDomainClockDef virDomainClockDef;
-typedef virDomainClockDef *virDomainClockDefPtr;
 struct _virDomainClockDef {
     int offset;
 
@@ -2181,8 +2017,6 @@ struct _virDomainClockDef {
 };
 
 
-typedef struct _virBlkioDevice virBlkioDevice;
-typedef virBlkioDevice *virBlkioDevicePtr;
 struct _virBlkioDevice {
     char *path;
     unsigned int weight;
@@ -2289,14 +2123,9 @@ struct _virDomainPanicDef {
 void virBlkioDeviceArrayClear(virBlkioDevicePtr deviceWeights,
                               int ndevices);
 
-typedef struct _virDomainResourceDef virDomainResourceDef;
-typedef virDomainResourceDef *virDomainResourceDefPtr;
 struct _virDomainResourceDef {
     char *partition;
 };
-
-typedef struct _virDomainHugePage virDomainHugePage;
-typedef virDomainHugePage *virDomainHugePagePtr;
 
 struct _virDomainHugePage {
     virBitmapPtr nodemask;      /* guest's NUMA node mask */
@@ -2304,9 +2133,6 @@ struct _virDomainHugePage {
 };
 
 # define VIR_DOMAIN_CPUMASK_LEN 1024
-
-typedef struct _virDomainIOThreadIDDef virDomainIOThreadIDDef;
-typedef virDomainIOThreadIDDef *virDomainIOThreadIDDefPtr;
 
 struct _virDomainIOThreadIDDef {
     bool autofill;
@@ -2319,9 +2145,6 @@ struct _virDomainIOThreadIDDef {
 
 void virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def);
 
-
-typedef struct _virDomainCputune virDomainCputune;
-typedef virDomainCputune *virDomainCputunePtr;
 
 struct _virDomainCputune {
     unsigned long long shares;
@@ -2338,16 +2161,11 @@ struct _virDomainCputune {
 };
 
 
-typedef struct _virDomainResctrlMonDef virDomainResctrlMonDef;
-typedef virDomainResctrlMonDef *virDomainResctrlMonDefPtr;
 struct _virDomainResctrlMonDef {
     virBitmapPtr vcpus;
     virResctrlMonitorType tag;
     virResctrlMonitorPtr instance;
 };
-
-typedef struct _virDomainResctrlDef virDomainResctrlDef;
-typedef virDomainResctrlDef *virDomainResctrlDefPtr;
 
 struct _virDomainResctrlDef {
     virBitmapPtr vcpus;
@@ -2357,9 +2175,6 @@ struct _virDomainResctrlDef {
     size_t nmonitors;
 };
 
-
-typedef struct _virDomainVcpuDef virDomainVcpuDef;
-typedef virDomainVcpuDef *virDomainVcpuDefPtr;
 
 struct _virDomainVcpuDef {
     bool online;
@@ -2373,18 +2188,12 @@ struct _virDomainVcpuDef {
     virObjectPtr privateData;
 };
 
-typedef struct _virDomainBlkiotune virDomainBlkiotune;
-typedef virDomainBlkiotune *virDomainBlkiotunePtr;
-
 struct _virDomainBlkiotune {
     unsigned int weight;
 
     size_t ndevices;
     virBlkioDevicePtr devices;
 };
-
-typedef struct _virDomainMemtune virDomainMemtune;
-typedef virDomainMemtune *virDomainMemtunePtr;
 
 struct _virDomainMemtune {
     /* total memory size including memory modules in kibibytes, this field
@@ -2415,24 +2224,17 @@ struct _virDomainMemtune {
     virTristateBool discard;
 };
 
-typedef struct _virDomainPowerManagement virDomainPowerManagement;
-typedef virDomainPowerManagement *virDomainPowerManagementPtr;
-
 struct _virDomainPowerManagement {
     /* These options are of type enum virTristateBool */
     int s3;
     int s4;
 };
 
-typedef struct _virDomainPerfDef virDomainPerfDef;
-typedef virDomainPerfDef *virDomainPerfDefPtr;
 struct _virDomainPerfDef {
     /* These options are of type enum virTristateBool */
     int events[VIR_PERF_EVENT_LAST];
 };
 
-typedef struct _virDomainKeyWrapDef virDomainKeyWrapDef;
-typedef virDomainKeyWrapDef *virDomainKeyWrapDefPtr;
 struct _virDomainKeyWrapDef {
     int aes; /* enum virTristateSwitch */
     int dea; /* enum virTristateSwitch */
@@ -2445,8 +2247,6 @@ typedef enum {
     VIR_DOMAIN_LAUNCH_SECURITY_LAST,
 } virDomainLaunchSecurity;
 
-typedef struct _virDomainSEVDef virDomainSEVDef;
-typedef virDomainSEVDef *virDomainSEVDefPtr;
 
 struct _virDomainSEVDef {
     int sectype; /* enum virDomainLaunchSecurity */
@@ -2502,8 +2302,6 @@ struct _virDomainVirtioOptions {
  * NB: if adding to this struct, virDomainDefCheckABIStability
  * may well need an update
  */
-typedef struct _virDomainDef virDomainDef;
-typedef virDomainDef *virDomainDefPtr;
 struct _virDomainDef {
     int virtType; /* enum virDomainVirtType */
     int id;
@@ -2703,8 +2501,6 @@ struct _virDomainStateReason {
     int reason;
 };
 
-typedef struct _virDomainObj virDomainObj;
-typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
     virObjectLockable parent;
     virCond cond;
@@ -2750,12 +2546,6 @@ typedef enum {
     VIR_DOMAIN_DEF_FEATURE_NO_BOOT_ORDER = (1 << 6),
     VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT = (1 << 7),
 } virDomainDefFeatures;
-
-
-/* This structure holds various callbacks and data needed
- * while parsing and creating domain XMLs */
-typedef struct _virDomainXMLOption virDomainXMLOption;
-typedef virDomainXMLOption *virDomainXMLOptionPtr;
 
 
 /* Called after everything else has been parsed, for adjusting basics.
@@ -2821,8 +2611,6 @@ typedef int (*virDomainDeviceDefValidateCallback)(const virDomainDeviceDef *dev,
                                                   const virDomainDef *def,
                                                   void *opaque);
 
-typedef struct _virDomainDefParserConfig virDomainDefParserConfig;
-typedef virDomainDefParserConfig *virDomainDefParserConfigPtr;
 struct _virDomainDefParserConfig {
     /* driver domain definition callbacks */
     virDomainDefPostParseBasicCallback domainPostParseBasicCallback;
@@ -2867,8 +2655,6 @@ typedef int (*virDomainXMLPrivateDataStorageSourceFormatFunc)(virStorageSourcePt
                                                               virBufferPtr buf);
 
 
-typedef struct _virDomainXMLPrivateDataCallbacks virDomainXMLPrivateDataCallbacks;
-typedef virDomainXMLPrivateDataCallbacks *virDomainXMLPrivateDataCallbacksPtr;
 struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataAllocFunc  alloc;
     virDomainXMLPrivateDataFreeFunc   free;
@@ -2893,8 +2679,6 @@ struct _virDomainXMLPrivateDataCallbacks {
 typedef bool (*virDomainABIStabilityDomain)(const virDomainDef *src,
                                             const virDomainDef *dst);
 
-typedef struct _virDomainABIStability virDomainABIStability;
-typedef virDomainABIStability *virDomainABIStabilityPtr;
 struct _virDomainABIStability {
     virDomainABIStabilityDomain domain;
 };

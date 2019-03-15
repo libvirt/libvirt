@@ -26,6 +26,7 @@ DOMAIN_CONF_SOURCES = \
 	conf/snapshot_conf.h \
 	conf/numa_conf.c \
 	conf/numa_conf.h \
+	conf/virconftypes.h \
 	conf/virdomainobjlist.c \
 	conf/virdomainobjlist.h \
 	$(NULL)
