@@ -134,6 +134,13 @@ char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  virCapsPtr caps,
                                  virDomainXMLOptionPtr xmlopt,
                                  unsigned int flags);
+int virDomainSnapshotDefFormatInternal(virBufferPtr buf,
+                                       const char *uuidstr,
+                                       virDomainSnapshotDefPtr def,
+                                       virCapsPtr caps,
+                                       virDomainXMLOptionPtr xmlopt,
+                                       unsigned int flags);
+
 int virDomainSnapshotObjListFormat(virBufferPtr buf,
                                    const char *uuidstr,
                                    virDomainSnapshotObjListPtr snapshots,
@@ -202,6 +209,12 @@ int virDomainSnapshotRedefinePrep(virDomainPtr domain,
                                   virDomainXMLOptionPtr xmlopt,
                                   bool *update_current,
                                   unsigned int flags);
+
+int virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
+                                      const unsigned char *domain_uuid,
+                                      virDomainSnapshotObjPtr other,
+                                      virDomainXMLOptionPtr xmlopt,
+                                      unsigned int flags);
 
 VIR_ENUM_DECL(virDomainSnapshotLocation);
 VIR_ENUM_DECL(virDomainSnapshotState);

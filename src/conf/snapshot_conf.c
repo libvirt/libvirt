@@ -429,7 +429,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
 /* Perform sanity checking on a redefined snapshot definition. If
  * @other is non-NULL, this may include swapping def->dom from other
  * into def. */
-static int
+int
 virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
                                   const unsigned char *domain_uuid,
                                   virDomainSnapshotObjPtr other,
@@ -896,7 +896,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
 
 /* Append XML describing def into buf. Return 0 on success, or -1 on
  * failure with buf cleared. */
-static int
+int
 virDomainSnapshotDefFormatInternal(virBufferPtr buf,
                                    const char *uuidstr,
                                    virDomainSnapshotDefPtr def,
