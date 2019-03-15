@@ -405,18 +405,11 @@ x86DataAdd(virCPUx86Data *data1,
            const virCPUx86Data *data2)
 {
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data2);
-    virCPUx86DataItemPtr item1;
-    virCPUx86DataItemPtr item2;
+    virCPUx86DataItemPtr item;
 
-    while ((item2 = virCPUx86DataNext(&iter))) {
-        item1 = virCPUx86DataGet(data1, item2);
-
-        if (item1) {
-            x86cpuidSetBits(&item1->cpuid, &item2->cpuid);
-        } else {
-            if (virCPUx86DataAddItem(data1, item2) < 0)
-                return -1;
-        }
+    while ((item = virCPUx86DataNext(&iter))) {
+        if (virCPUx86DataAddItem(data1, item) < 0)
+            return -1;
     }
 
     return 0;
