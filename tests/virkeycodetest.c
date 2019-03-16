@@ -83,7 +83,8 @@ static int testKeycodeStrings(const void *data ATTRIBUTE_UNUSED)
 
     TRANSLATE(LINUX, "KEY_DELETE", 111);
     TRANSLATE(LINUX, "KEY_RFKILL", 524);
-    TRANSLATE(LINUX, "KEY_WIBBLE", -1);
+    TRANSLATE(LINUX, "KEY_WIBBLE",
+              -1);
     TRANSLATE(OSX, "Function", 0x3f);
     TRANSLATE(WIN32, "VK_UP", 0x26);
 

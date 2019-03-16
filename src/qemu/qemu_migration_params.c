@@ -72,12 +72,14 @@ typedef enum {
     QEMU_MIGRATION_COMPRESS_LAST
 } qemuMigrationCompressMethod;
 VIR_ENUM_DECL(qemuMigrationCompressMethod);
-VIR_ENUM_IMPL(qemuMigrationCompressMethod, QEMU_MIGRATION_COMPRESS_LAST,
+VIR_ENUM_IMPL(qemuMigrationCompressMethod,
+              QEMU_MIGRATION_COMPRESS_LAST,
               "xbzrle",
               "mt",
 );
 
-VIR_ENUM_IMPL(qemuMigrationCapability, QEMU_MIGRATION_CAP_LAST,
+VIR_ENUM_IMPL(qemuMigrationCapability,
+              QEMU_MIGRATION_CAP_LAST,
               "xbzrle",
               "auto-converge",
               "rdma-pin-all",
@@ -91,7 +93,8 @@ VIR_ENUM_IMPL(qemuMigrationCapability, QEMU_MIGRATION_CAP_LAST,
 
 
 VIR_ENUM_DECL(qemuMigrationParam);
-VIR_ENUM_IMPL(qemuMigrationParam, QEMU_MIGRATION_PARAM_LAST,
+VIR_ENUM_IMPL(qemuMigrationParam,
+              QEMU_MIGRATION_PARAM_LAST,
               "compress-level",
               "compress-threads",
               "decompress-threads",

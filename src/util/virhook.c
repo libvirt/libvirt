@@ -58,19 +58,22 @@ VIR_ENUM_IMPL(virHookDriver,
               "libxl",
 );
 
-VIR_ENUM_IMPL(virHookDaemonOp, VIR_HOOK_DAEMON_OP_LAST,
+VIR_ENUM_IMPL(virHookDaemonOp,
+              VIR_HOOK_DAEMON_OP_LAST,
               "start",
               "shutdown",
               "reload",
 );
 
-VIR_ENUM_IMPL(virHookSubop, VIR_HOOK_SUBOP_LAST,
+VIR_ENUM_IMPL(virHookSubop,
+              VIR_HOOK_SUBOP_LAST,
               "-",
               "begin",
               "end",
 );
 
-VIR_ENUM_IMPL(virHookQemuOp, VIR_HOOK_QEMU_OP_LAST,
+VIR_ENUM_IMPL(virHookQemuOp,
+              VIR_HOOK_QEMU_OP_LAST,
               "start",
               "stopped",
               "prepare",
@@ -82,7 +85,8 @@ VIR_ENUM_IMPL(virHookQemuOp, VIR_HOOK_QEMU_OP_LAST,
               "restore",
 );
 
-VIR_ENUM_IMPL(virHookLxcOp, VIR_HOOK_LXC_OP_LAST,
+VIR_ENUM_IMPL(virHookLxcOp,
+              VIR_HOOK_LXC_OP_LAST,
               "start",
               "stopped",
               "prepare",
@@ -91,7 +95,8 @@ VIR_ENUM_IMPL(virHookLxcOp, VIR_HOOK_LXC_OP_LAST,
               "reconnect",
 );
 
-VIR_ENUM_IMPL(virHookNetworkOp, VIR_HOOK_NETWORK_OP_LAST,
+VIR_ENUM_IMPL(virHookNetworkOp,
+              VIR_HOOK_NETWORK_OP_LAST,
               "start",
               "started",
               "stopped",
@@ -100,7 +105,8 @@ VIR_ENUM_IMPL(virHookNetworkOp, VIR_HOOK_NETWORK_OP_LAST,
               "updated",
 );
 
-VIR_ENUM_IMPL(virHookLibxlOp, VIR_HOOK_LIBXL_OP_LAST,
+VIR_ENUM_IMPL(virHookLibxlOp,
+              VIR_HOOK_LIBXL_OP_LAST,
               "start",
               "stopped",
               "prepare",

@@ -24,7 +24,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-VIR_ENUM_IMPL(virNativeVlanMode, VIR_NATIVE_VLAN_MODE_LAST,
+VIR_ENUM_IMPL(virNativeVlanMode,
+              VIR_NATIVE_VLAN_MODE_LAST,
               "default", "tagged", "untagged",
 );
 

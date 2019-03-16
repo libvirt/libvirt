@@ -49,7 +49,8 @@ VIR_LOG_INIT("util.storagefile");
 
 static virClassPtr virStorageSourceClass;
 
-VIR_ENUM_IMPL(virStorage, VIR_STORAGE_TYPE_LAST,
+VIR_ENUM_IMPL(virStorage,
+              VIR_STORAGE_TYPE_LAST,
               "none",
               "file",
               "block",
@@ -75,7 +76,8 @@ VIR_ENUM_IMPL(virStorageFileFeature,
               "lazy_refcounts",
 );
 
-VIR_ENUM_IMPL(virStorageNetProtocol, VIR_STORAGE_NET_PROTOCOL_LAST,
+VIR_ENUM_IMPL(virStorageNetProtocol,
+              VIR_STORAGE_NET_PROTOCOL_LAST,
               "none",
               "nbd",
               "rbd",
@@ -91,7 +93,8 @@ VIR_ENUM_IMPL(virStorageNetProtocol, VIR_STORAGE_NET_PROTOCOL_LAST,
               "vxhs",
 );
 
-VIR_ENUM_IMPL(virStorageNetHostTransport, VIR_STORAGE_NET_HOST_TRANS_LAST,
+VIR_ENUM_IMPL(virStorageNetHostTransport,
+              VIR_STORAGE_NET_HOST_TRANS_LAST,
               "tcp",
               "unix",
               "rdma",

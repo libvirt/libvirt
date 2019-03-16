@@ -41,7 +41,8 @@ VIR_LOG_INIT("util.firewalld");
  * understood by the firewalld.direct "passthrough" method
  */
 VIR_ENUM_DECL(virFirewallLayerFirewallD);
-VIR_ENUM_IMPL(virFirewallLayerFirewallD, VIR_FIREWALL_LAYER_LAST,
+VIR_ENUM_IMPL(virFirewallLayerFirewallD,
+              VIR_FIREWALL_LAYER_LAST,
               "eb",
               "ipv4",
               "ipv6",
@@ -49,7 +50,8 @@ VIR_ENUM_IMPL(virFirewallLayerFirewallD, VIR_FIREWALL_LAYER_LAST,
 
 
 VIR_ENUM_DECL(virFirewallDBackend);
-VIR_ENUM_IMPL(virFirewallDBackend, VIR_FIREWALLD_BACKEND_LAST,
+VIR_ENUM_IMPL(virFirewallDBackend,
+              VIR_FIREWALLD_BACKEND_LAST,
               "",
               "iptables",
               "nftables",

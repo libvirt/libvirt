@@ -63,7 +63,8 @@ VIR_LOG_INIT("qemu.qemu_capabilities");
  * are used in domain status files which are read on
  * daemon restarts
  */
-VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
+VIR_ENUM_IMPL(virQEMUCaps,
+              QEMU_CAPS_LAST, /* virQEMUCaps grouping marker */
               /* 0 */
               "kqemu",
               "vnc-colon",

@@ -76,7 +76,8 @@ static char virLogHostname[HOST_NAME_MAX+1];
     VIR_LOG_PID_REGEX ": " VIR_LOG_LEVEL_REGEX " : "
 
 VIR_ENUM_DECL(virLogDestination);
-VIR_ENUM_IMPL(virLogDestination, VIR_LOG_TO_OUTPUT_LAST,
+VIR_ENUM_IMPL(virLogDestination,
+              VIR_LOG_TO_OUTPUT_LAST,
               "stderr", "syslog", "file", "journald",
 );
 

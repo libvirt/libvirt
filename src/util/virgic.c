@@ -23,7 +23,8 @@
 #include "virgic.h"
 #include "virutil.h"
 
-VIR_ENUM_IMPL(virGICVersion, VIR_GIC_VERSION_LAST,
+VIR_ENUM_IMPL(virGICVersion,
+              VIR_GIC_VERSION_LAST,
               "none",
               "host",
               "2",

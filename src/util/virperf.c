@@ -34,7 +34,8 @@ VIR_LOG_INIT("util.perf");
 
 #define VIR_FROM_THIS VIR_FROM_PERF
 
-VIR_ENUM_IMPL(virPerfEvent, VIR_PERF_EVENT_LAST,
+VIR_ENUM_IMPL(virPerfEvent,
+              VIR_PERF_EVENT_LAST,
               "cmt", "mbmt", "mbml",
               "cpu_cycles", "instructions",
               "cache_references", "cache_misses",

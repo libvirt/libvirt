@@ -42,7 +42,8 @@ typedef struct _virFirewallGroup virFirewallGroup;
 typedef virFirewallGroup *virFirewallGroupPtr;
 
 VIR_ENUM_DECL(virFirewallLayerCommand);
-VIR_ENUM_IMPL(virFirewallLayerCommand, VIR_FIREWALL_LAYER_LAST,
+VIR_ENUM_IMPL(virFirewallLayerCommand,
+              VIR_FIREWALL_LAYER_LAST,
               EBTABLES_PATH,
               IPTABLES_PATH,
               IP6TABLES_PATH,

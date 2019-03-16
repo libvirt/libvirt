@@ -37,7 +37,8 @@
 #define VIR_FROM_THIS VIR_FROM_LXC
 #define LXC_NAMESPACE_HREF "http://libvirt.org/schemas/domain/lxc/1.0"
 
-VIR_ENUM_IMPL(virLXCDomainJob, LXC_JOB_LAST,
+VIR_ENUM_IMPL(virLXCDomainJob,
+              LXC_JOB_LAST,
               "none",
               "query",
               "destroy",

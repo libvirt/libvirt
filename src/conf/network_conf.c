@@ -68,7 +68,8 @@ VIR_ENUM_IMPL(virNetworkForwardDriverName,
               "vfio",
 );
 
-VIR_ENUM_IMPL(virNetworkTaint, VIR_NETWORK_TAINT_LAST,
+VIR_ENUM_IMPL(virNetworkTaint,
+              VIR_NETWORK_TAINT_LAST,
               "hook-script",
 );
 

@@ -2715,7 +2715,8 @@ typedef enum {
 } virQEMUSaveFormat;
 
 VIR_ENUM_DECL(qemuSaveCompression);
-VIR_ENUM_IMPL(qemuSaveCompression, QEMU_SAVE_FORMAT_LAST,
+VIR_ENUM_IMPL(qemuSaveCompression,
+              QEMU_SAVE_FORMAT_LAST,
               "raw",
               "gzip",
               "bzip2",
@@ -2724,7 +2725,8 @@ VIR_ENUM_IMPL(qemuSaveCompression, QEMU_SAVE_FORMAT_LAST,
 );
 
 VIR_ENUM_DECL(qemuDumpFormat);
-VIR_ENUM_IMPL(qemuDumpFormat, VIR_DOMAIN_CORE_DUMP_FORMAT_LAST,
+VIR_ENUM_IMPL(qemuDumpFormat,
+              VIR_DOMAIN_CORE_DUMP_FORMAT_LAST,
               "elf",
               "kdump-zlib",
               "kdump-lzo",

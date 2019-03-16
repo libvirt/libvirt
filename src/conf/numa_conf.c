@@ -52,7 +52,8 @@ VIR_ENUM_IMPL(virDomainNumatunePlacement,
               "auto",
 );
 
-VIR_ENUM_IMPL(virDomainMemoryAccess, VIR_DOMAIN_MEMORY_ACCESS_LAST,
+VIR_ENUM_IMPL(virDomainMemoryAccess,
+              VIR_DOMAIN_MEMORY_ACCESS_LAST,
               "default",
               "shared",
               "private",

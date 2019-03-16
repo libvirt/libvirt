@@ -39,7 +39,7 @@ if (defined $ARGV[0]) {
 
 my $ret = 0;
 if (&regroup_caps($prefix . 'src/qemu/qemu_capabilities.c',
-                  '^VIR_ENUM_IMPL\(virQEMUCaps,',
+                  'virQEMUCaps grouping marker',
                   '\);',
                   0,
                   "              ") < 0) {

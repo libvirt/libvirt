@@ -44,7 +44,8 @@ VIR_LOG_INIT("util.cgroup");
 #define VIR_FROM_THIS VIR_FROM_CGROUP
 
 VIR_ENUM_DECL(virCgroupV2Controller);
-VIR_ENUM_IMPL(virCgroupV2Controller, VIR_CGROUP_CONTROLLER_LAST,
+VIR_ENUM_IMPL(virCgroupV2Controller,
+              VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
               "freezer", "io", "net_cls", "perf_event", "name=systemd",
 );

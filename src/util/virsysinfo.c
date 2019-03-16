@@ -41,7 +41,8 @@
 
 VIR_LOG_INIT("util.sysinfo");
 
-VIR_ENUM_IMPL(virSysinfo, VIR_SYSINFO_LAST,
+VIR_ENUM_IMPL(virSysinfo,
+              VIR_SYSINFO_LAST,
               "smbios",
 );
 

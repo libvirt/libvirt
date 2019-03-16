@@ -5645,12 +5645,14 @@ static const vshCmdOptDef opts_setLifecycleAction[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
+VIR_ENUM_IMPL(virDomainLifecycle,
+              VIR_DOMAIN_LIFECYCLE_LAST,
               "poweroff",
               "reboot",
               "crash");
 
-VIR_ENUM_IMPL(virDomainLifecycleAction, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
+VIR_ENUM_IMPL(virDomainLifecycleAction,
+              VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "destroy",
               "restart",
               "rename-restart",

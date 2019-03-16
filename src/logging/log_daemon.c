@@ -81,7 +81,8 @@ enum {
 };
 
 VIR_ENUM_DECL(virDaemonErr);
-VIR_ENUM_IMPL(virDaemonErr, VIR_LOG_DAEMON_ERR_LAST,
+VIR_ENUM_IMPL(virDaemonErr,
+              VIR_LOG_DAEMON_ERR_LAST,
               "Initialization successful",
               "Unable to obtain pidfile",
               "Unable to create rundir",

@@ -906,11 +906,13 @@ static const vshCmdOptDef opts_network_update[] = {
 };
 
 VIR_ENUM_DECL(virNetworkUpdateCommand);
-VIR_ENUM_IMPL(virNetworkUpdateCommand, VIR_NETWORK_UPDATE_COMMAND_LAST,
+VIR_ENUM_IMPL(virNetworkUpdateCommand,
+              VIR_NETWORK_UPDATE_COMMAND_LAST,
               "none", "modify", "delete", "add-last", "add-first");
 
 VIR_ENUM_DECL(virNetworkSection);
-VIR_ENUM_IMPL(virNetworkSection, VIR_NETWORK_SECTION_LAST,
+VIR_ENUM_IMPL(virNetworkSection,
+              VIR_NETWORK_SECTION_LAST,
               "none", "bridge", "domain", "ip", "ip-dhcp-host",
               "ip-dhcp-range", "forward", "forward-interface",
               "forward-pf", "portgroup", "dns-host", "dns-txt",

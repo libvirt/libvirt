@@ -49,7 +49,8 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 
-VIR_ENUM_IMPL(virNWFilterRuleAction, VIR_NWFILTER_RULE_ACTION_LAST,
+VIR_ENUM_IMPL(virNWFilterRuleAction,
+              VIR_NWFILTER_RULE_ACTION_LAST,
               "drop",
               "accept",
               "reject",
@@ -57,7 +58,8 @@ VIR_ENUM_IMPL(virNWFilterRuleAction, VIR_NWFILTER_RULE_ACTION_LAST,
               "continue",
 );
 
-VIR_ENUM_IMPL(virNWFilterJumpTarget, VIR_NWFILTER_RULE_ACTION_LAST,
+VIR_ENUM_IMPL(virNWFilterJumpTarget,
+              VIR_NWFILTER_RULE_ACTION_LAST,
               "DROP",
               "ACCEPT",
               "REJECT",
@@ -65,24 +67,28 @@ VIR_ENUM_IMPL(virNWFilterJumpTarget, VIR_NWFILTER_RULE_ACTION_LAST,
               "CONTINUE",
 );
 
-VIR_ENUM_IMPL(virNWFilterRuleDirection, VIR_NWFILTER_RULE_DIRECTION_LAST,
+VIR_ENUM_IMPL(virNWFilterRuleDirection,
+              VIR_NWFILTER_RULE_DIRECTION_LAST,
               "in",
               "out",
               "inout",
 );
 
-VIR_ENUM_IMPL(virNWFilterChainPolicy, VIR_NWFILTER_CHAIN_POLICY_LAST,
+VIR_ENUM_IMPL(virNWFilterChainPolicy,
+              VIR_NWFILTER_CHAIN_POLICY_LAST,
               "ACCEPT",
               "DROP",
 );
 
-VIR_ENUM_IMPL(virNWFilterEbtablesTable, VIR_NWFILTER_EBTABLES_TABLE_LAST,
+VIR_ENUM_IMPL(virNWFilterEbtablesTable,
+              VIR_NWFILTER_EBTABLES_TABLE_LAST,
               "filter",
               "nat",
               "broute",
 );
 
-VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
+VIR_ENUM_IMPL(virNWFilterChainSuffix,
+              VIR_NWFILTER_CHAINSUFFIX_LAST,
               "root",
               "mac",
               "vlan",
@@ -93,7 +99,8 @@ VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "ipv6",
 );
 
-VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
+VIR_ENUM_IMPL(virNWFilterRuleProtocol,
+              VIR_NWFILTER_RULE_PROTOCOL_LAST,
               "none",
               "mac",
               "vlan",

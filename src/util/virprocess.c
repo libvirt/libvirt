@@ -107,7 +107,8 @@ static inline int setns(int fd ATTRIBUTE_UNUSED, int nstype ATTRIBUTE_UNUSED)
 }
 #endif
 
-VIR_ENUM_IMPL(virProcessSchedPolicy, VIR_PROC_POLICY_LAST,
+VIR_ENUM_IMPL(virProcessSchedPolicy,
+              VIR_PROC_POLICY_LAST,
               "none",
               "batch",
               "idle",

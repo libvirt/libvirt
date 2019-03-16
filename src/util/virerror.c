@@ -57,7 +57,8 @@ static virLogPriority virErrorLevelPriority(virErrorLevel level)
 
 
 VIR_ENUM_DECL(virErrorDomain);
-VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
+VIR_ENUM_IMPL(virErrorDomain,
+              VIR_ERR_DOMAIN_LAST,
               "", /* 0 */
               "Xen Driver",
               "Xen Daemon",

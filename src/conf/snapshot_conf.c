@@ -51,7 +51,8 @@
 
 VIR_LOG_INIT("conf.snapshot_conf");
 
-VIR_ENUM_IMPL(virDomainSnapshotLocation, VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
+VIR_ENUM_IMPL(virDomainSnapshotLocation,
+              VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
               "default",
               "no",
               "internal",
@@ -59,7 +60,8 @@ VIR_ENUM_IMPL(virDomainSnapshotLocation, VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
 );
 
 /* virDomainSnapshotState is really virDomainState plus one extra state */
-VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_SNAPSHOT_LAST,
+VIR_ENUM_IMPL(virDomainSnapshotState,
+              VIR_DOMAIN_SNAPSHOT_LAST,
               "nostate",
               "running",
               "blocked",
