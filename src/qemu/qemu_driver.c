@@ -15926,10 +15926,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         } else {
             other = virDomainSnapshotFindByName(vm->snapshots,
                                                 snap->def->parent);
-            snap->parent = other;
-            other->nchildren++;
-            snap->sibling = other->first_child;
-            other->first_child = snap;
+            virDomainSnapshotSetParent(snap, other);
         }
     } else if (snap) {
         virDomainSnapshotObjListRemove(vm->snapshots, snap);
@@ -16883,8 +16880,7 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
-        snap->nchildren = 0;
-        snap->first_child = NULL;
+        virDomainSnapshotDropChildren(snap);
         ret = 0;
     } else {
         ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);

@@ -6416,10 +6416,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
                 virDomainSnapshotSetCurrent(vm->snapshots, snap);
             other = virDomainSnapshotFindByName(vm->snapshots,
                                                 snap->def->parent);
-            snap->parent = other;
-            other->nchildren++;
-            snap->sibling = other->first_child;
-            other->first_child = snap;
+            virDomainSnapshotSetParent(snap, other);
         }
         virDomainObjEndAPI(&vm);
     }
@@ -6521,8 +6518,7 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
-        snap->nchildren = 0;
-        snap->first_child = NULL;
+        virDomainSnapshotDropChildren(snap);
     } else {
         virDomainSnapshotDropParent(snap);
         if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {

@@ -55,6 +55,7 @@ int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
                                 unsigned int flags);
 virDomainSnapshotObjPtr virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
                                                     const char *name);
+int virDomainSnapshotObjListSize(virDomainSnapshotObjListPtr snapshots);
 virDomainSnapshotObjPtr virDomainSnapshotGetCurrent(virDomainSnapshotObjListPtr snapshots);
 const char *virDomainSnapshotGetCurrentName(virDomainSnapshotObjListPtr snapshots);
 bool virDomainSnapshotIsCurrentName(virDomainSnapshotObjListPtr snapshots,
@@ -63,6 +64,7 @@ void virDomainSnapshotSetCurrent(virDomainSnapshotObjListPtr snapshots,
                                  virDomainSnapshotObjPtr snapshot);
 bool virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot);
+void virDomainSnapshotObjListRemoveAll(virDomainSnapshotObjListPtr snapshots);
 int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
                              virHashIterator iter,
                              void *data);

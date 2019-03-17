@@ -74,7 +74,7 @@ virDomainSnapshotObjListParse(const char *xmlStr,
                        _("incorrect flags for bulk parse"));
         return -1;
     }
-    if (snapshots->metaroot.nchildren || snapshots->current) {
+    if (virDomainSnapshotObjListSize(snapshots) != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bulk define of snapshots only possible with "
                          "no existing snapshot"));
@@ -140,9 +140,7 @@ virDomainSnapshotObjListParse(const char *xmlStr,
     if (ret < 0) {
         /* There were no snapshots before this call; so on error, just
          * blindly delete anything created before the failure. */
-        virHashRemoveAll(snapshots->objs);
-        snapshots->metaroot.nchildren = 0;
-        snapshots->metaroot.first_child = NULL;
+        virDomainSnapshotObjListRemoveAll(snapshots);
     }
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
@@ -436,6 +434,14 @@ virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
 }
 
 
+/* Return the number of objects currently in the list */
+int
+virDomainSnapshotObjListSize(virDomainSnapshotObjListPtr snapshots)
+{
+    return virHashSize(snapshots->objs);
+}
+
+
 /* Return the current snapshot, or NULL */
 virDomainSnapshotObjPtr
 virDomainSnapshotGetCurrent(virDomainSnapshotObjListPtr snapshots)
@@ -484,6 +490,15 @@ virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
     return ret;
 }
 
+/* Remove all snapshots tracked in the list */
+void
+virDomainSnapshotObjListRemoveAll(virDomainSnapshotObjListPtr snapshots)
+{
+    virHashRemoveAll(snapshots->objs);
+    virDomainSnapshotDropChildren(&snapshots->metaroot);
+}
+
+
 int
 virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
                          virHashIterator iter,
@@ -511,28 +526,26 @@ virDomainSnapshotSetRelations(void *payload,
     virDomainSnapshotObjPtr obj = payload;
     struct snapshot_set_relation *curr = data;
     virDomainSnapshotObjPtr tmp;
+    virDomainSnapshotObjPtr parent;
 
-    obj->parent = virDomainSnapshotFindByName(curr->snapshots,
-                                              obj->def->parent);
-    if (!obj->parent) {
+    parent = virDomainSnapshotFindByName(curr->snapshots, obj->def->parent);
+    if (!parent) {
         curr->err = -1;
-        obj->parent = &curr->snapshots->metaroot;
+        parent = &curr->snapshots->metaroot;
         VIR_WARN("snapshot %s lacks parent", obj->def->name);
     } else {
-        tmp = obj->parent;
+        tmp = parent;
         while (tmp && tmp->def) {
             if (tmp == obj) {
                 curr->err = -1;
-                obj->parent = &curr->snapshots->metaroot;
+                parent = &curr->snapshots->metaroot;
                 VIR_WARN("snapshot %s in circular chain", obj->def->name);
                 break;
             }
             tmp = tmp->parent;
         }
     }
-    obj->parent->nchildren++;
-    obj->sibling = obj->parent->first_child;
-    obj->parent->first_child = obj;
+    virDomainSnapshotSetParent(obj, parent);
     return 0;
 }
 
@@ -545,8 +558,7 @@ virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
 {
     struct snapshot_set_relation act = { snapshots, 0 };
 
-    snapshots->metaroot.nchildren = 0;
-    snapshots->metaroot.first_child = NULL;
+    virDomainSnapshotDropChildren(&snapshots->metaroot);
     virHashForEach(snapshots->objs, virDomainSnapshotSetRelations, &act);
     if (act.err)
         snapshots->current = NULL;
