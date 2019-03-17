@@ -1,7 +1,7 @@
 /*
  * test_driver.c: A "mock" hypervisor for use by application unit tests
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -6441,7 +6441,7 @@ testDomainSnapshotDiscardAll(void *payload,
     virDomainSnapshotObjPtr snap = payload;
     testSnapRemoveDataPtr curr = data;
 
-    if (snap->def->current)
+    if (curr->vm->current_snapshot == snap)
         curr->current = true;
     virDomainSnapshotObjListRemove(curr->vm->snapshots, snap);
     return 0;
@@ -6507,11 +6507,8 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         virDomainSnapshotForEachDescendant(snap,
                                            testDomainSnapshotDiscardAll,
                                            &rem);
-        if (rem.current) {
-            if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
-                snap->def->current = true;
+        if (rem.current)
             vm->current_snapshot = snap;
-        }
     } else if (snap->nchildren) {
         testSnapReparentData rep;
         rep.parent = snap->parent;
@@ -6539,12 +6536,9 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             if (snap->def->parent) {
                 parentsnap = virDomainSnapshotFindByName(vm->snapshots,
                                                          snap->def->parent);
-                if (!parentsnap) {
+                if (!parentsnap)
                     VIR_WARN("missing parent snapshot matching name '%s'",
                              snap->def->parent);
-                } else {
-                    parentsnap->def->current = true;
-                }
             }
             vm->current_snapshot = parentsnap;
         }
@@ -6623,12 +6617,9 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     }
 
 
-    if (vm->current_snapshot) {
-        vm->current_snapshot->def->current = false;
+    if (vm->current_snapshot)
         vm->current_snapshot = NULL;
-    }
 
-    snap->def->current = true;
     config = virDomainDefCopy(snap->def->dom, privconn->caps,
                               privconn->xmlopt, NULL, true);
     if (!config)
