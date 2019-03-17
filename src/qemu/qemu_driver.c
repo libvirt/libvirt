@@ -6445,13 +6445,6 @@ static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secl
     if (virDomainGetSecurityLabelEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!virDomainVirtTypeToString(vm->def->virtType)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown virt type in domain definition '%d'"),
-                       vm->def->virtType);
-        goto cleanup;
-    }
-
     /*
      * Theoretically, the pid can be replaced during this operation and
      * return the label of a different process.  If atomicity is needed,
@@ -6492,13 +6485,6 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
 
     if (virDomainGetSecurityLabelListEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
-
-    if (!virDomainVirtTypeToString(vm->def->virtType)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown virt type in domain definition '%d'"),
-                       vm->def->virtType);
-        goto cleanup;
-    }
 
     /*
      * Check the comment in qemuDomainGetSecurityLabel function.

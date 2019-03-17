@@ -1268,13 +1268,6 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
     if (virDomainGetSecurityLabelEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!virDomainVirtTypeToString(vm->def->virtType)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown virt type in domain definition '%d'"),
-                       vm->def->virtType);
-        goto cleanup;
-    }
-
     /*
      * Theoretically, the pid can be replaced during this operation and
      * return the label of a different process.  If atomicity is needed,
