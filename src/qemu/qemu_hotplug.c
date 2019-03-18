@@ -4380,12 +4380,12 @@ static int qemuComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 static bool qemuIsMultiFunctionDevice(virDomainDefPtr def,
-                                      virDomainDeviceInfoPtr dev)
+                                      virDomainDeviceInfoPtr info)
 {
-    if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
         return false;
 
-    if (virDomainDeviceInfoIterate(def, qemuComparePCIDevice, dev) < 0)
+    if (virDomainDeviceInfoIterate(def, qemuComparePCIDevice, info) < 0)
         return true;
     return false;
 }
