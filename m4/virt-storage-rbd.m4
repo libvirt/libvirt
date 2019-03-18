@@ -33,6 +33,7 @@ AC_DEFUN([LIBVIRT_STORAGE_CHECK_RBD], [
       old_LIBS="$LIBS"
       LIBS="$LIBS $LIBRBD_LIBS"
       AC_CHECK_FUNCS([rbd_get_features],[],[LIBRBD_FOUND=no])
+      AC_CHECK_FUNCS([rbd_list2])
       LIBS="$old_LIBS"
     fi
 

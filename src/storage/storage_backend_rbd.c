@@ -566,6 +566,48 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
 }
 
 
+#ifdef HAVE_RBD_LIST2
+static char **
+virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
+{
+    char **names = NULL;
+    size_t nnames = 0;
+    int rc;
+    rbd_image_spec_t *images = NULL;
+    size_t nimages = 16;
+    size_t i;
+
+    while (true) {
+        if (VIR_ALLOC_N(images, nimages) < 0)
+            goto error;
+
+        rc = rbd_list2(ptr->ioctx, images, &nimages);
+        if (rc >= 0)
+            break;
+        if (rc != -ERANGE) {
+            virReportSystemError(-rc, "%s", _("Unable to list RBD images"));
+            goto error;
+        }
+    }
+
+    if (VIR_ALLOC_N(names, nimages + 1) < 0)
+        goto error;
+    nnames = nimages;
+
+    for (i = 0; i < nimages; i++)
+        VIR_STEAL_PTR(names[i], images->name);
+
+    return names;
+
+ error:
+    virStringListFreeCount(names, nnames);
+    rbd_image_spec_list_cleanup(images, nimages);
+    VIR_FREE(images);
+    return NULL;
+}
+
+#else /* ! HAVE_RBD_LIST2 */
+
 static char **
 virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
 {
@@ -614,6 +656,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
     virStringListFreeCount(names, nnames);
     return NULL;
 }
+#endif /* ! HAVE_RBD_LIST2 */
 
 
 static int
