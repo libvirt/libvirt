@@ -19,9 +19,8 @@
 
 #include <config.h>
 
-int networkPreReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
+void networkPreReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
 {
-    return 0;
 }
 
 

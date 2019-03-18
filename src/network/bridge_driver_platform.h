@@ -58,7 +58,7 @@ struct _virNetworkDriverState {
 typedef struct _virNetworkDriverState virNetworkDriverState;
 typedef virNetworkDriverState *virNetworkDriverStatePtr;
 
-int networkPreReloadFirewallRules(bool startup);
+void networkPreReloadFirewallRules(bool startup);
 void networkPostReloadFirewallRules(bool startup);
 
 int networkCheckRouteCollision(virNetworkDefPtr def);
