@@ -171,7 +171,7 @@ gather_usb_cap(LibHalContext *ctx, const char *udi,
     (void)get_int_prop(ctx, udi, "usb.interface.number",
                        (int *)&d->usb_if.number);
     (void)get_int_prop(ctx, udi, "usb.interface.class",
-                       (int *)&d->usb_if._class);
+                       (int *)&d->usb_if.klass);
     (void)get_int_prop(ctx, udi, "usb.interface.subclass",
                        (int *)&d->usb_if.subclass);
     (void)get_int_prop(ctx, udi, "usb.interface.protocol",
