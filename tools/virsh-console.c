@@ -112,8 +112,10 @@ virConsoleShutdown(virConsolePtr con)
         virEventRemoveHandle(con->stdoutWatch);
     con->stdinWatch = -1;
     con->stdoutWatch = -1;
-    con->quit = true;
-    virCondSignal(&con->cond);
+    if (!con->quit) {
+        con->quit = true;
+        virCondSignal(&con->cond);
+    }
 }
 
 
@@ -388,22 +390,35 @@ virshRunConsole(vshControl *ctl,
     if (virDomainOpenConsole(dom, dev_name, con->st, flags) < 0)
         goto cleanup;
 
-    con->stdinWatch = virEventAddHandle(STDIN_FILENO,
-                                        VIR_EVENT_HANDLE_READABLE,
-                                        virConsoleEventOnStdin,
-                                        con,
-                                        NULL);
-    con->stdoutWatch = virEventAddHandle(STDOUT_FILENO,
-                                         0,
-                                         virConsoleEventOnStdout,
-                                         con,
-                                         NULL);
+    virObjectRef(con);
+    if ((con->stdinWatch = virEventAddHandle(STDIN_FILENO,
+                                             VIR_EVENT_HANDLE_READABLE,
+                                             virConsoleEventOnStdin,
+                                             con,
+                                             virObjectFreeCallback)) < 0) {
+        virObjectUnref(con);
+        goto cleanup;
+    }
 
-    virStreamEventAddCallback(con->st,
-                              VIR_STREAM_EVENT_READABLE,
-                              virConsoleEventOnStream,
-                              con,
-                              NULL);
+    virObjectRef(con);
+    if ((con->stdoutWatch = virEventAddHandle(STDOUT_FILENO,
+                                              0,
+                                              virConsoleEventOnStdout,
+                                              con,
+                                              virObjectFreeCallback)) < 0) {
+        virObjectUnref(con);
+        goto cleanup;
+    }
+
+    virObjectRef(con);
+    if (virStreamEventAddCallback(con->st,
+                                  VIR_STREAM_EVENT_READABLE,
+                                  virConsoleEventOnStream,
+                                  con,
+                                  virObjectFreeCallback) < 0) {
+        virObjectUnref(con);
+        goto cleanup;
+    }
 
     while (!con->quit) {
         if (virCondWait(&con->cond, &con->parent.lock) < 0) {
@@ -415,6 +430,7 @@ virshRunConsole(vshControl *ctl,
     ret = 0;
 
  cleanup:
+    virConsoleShutdown(con);
     virObjectUnlock(con);
     virObjectUnref(con);
 
