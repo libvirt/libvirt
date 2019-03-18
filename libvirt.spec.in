@@ -1447,16 +1447,6 @@ fi
 rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
 
 
-%triggerun -- libvirt < 0.9.4
-%{_bindir}/systemd-sysv-convert --save libvirtd >/dev/null 2>&1 ||:
-
-# If the package is allowed to autostart:
-/bin/systemctl --no-reload enable libvirtd.service >/dev/null 2>&1 ||:
-
-# Run these because the SysV package being removed won't do them
-/sbin/chkconfig --del libvirtd >/dev/null 2>&1 || :
-/bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
-
 %if %{with_qemu}
 %pre daemon-driver-qemu
 # We want soft static allocation of well-known ids, as disk images
@@ -1491,15 +1481,6 @@ exit 0
 /sbin/ldconfig
 %endif
 %systemd_postun libvirt-guests.service
-
-%triggerun client -- libvirt < 0.9.4
-%{_bindir}/systemd-sysv-convert --save libvirt-guests >/dev/null 2>&1 ||:
-
-# If the package is allowed to autostart:
-/bin/systemctl --no-reload enable libvirt-guests.service >/dev/null 2>&1 ||:
-
-# Run this because the SysV package being removed won't do them
-/sbin/chkconfig --del libvirt-guests >/dev/null 2>&1 || :
 
 %if %{with_sanlock}
 %post lock-sanlock
