@@ -23876,8 +23876,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     virBufferAsprintf(buf, "<format type='%s'/>\n", format);
-    /* We currently don't output seclabels for backing chain element */
-    if (virDomainDiskSourceFormatInternal(buf, backingStore, 0, flags, false,
+    if (virDomainDiskSourceFormatInternal(buf, backingStore, 0, flags, true,
                                           false, xmlopt) < 0 ||
         virDomainDiskBackingStoreFormat(buf, backingStore->backingStore,
                                         xmlopt, flags) < 0)
