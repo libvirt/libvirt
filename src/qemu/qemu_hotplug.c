@@ -5274,47 +5274,6 @@ qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
 
 
 static int
-qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           virDomainDiskDefPtr detach,
-                           bool async)
-{
-    int ret = -1;
-
-    if (qemuDomainDiskBlockJobIsActive(detach))
-        return -1;
-
-    if (detach->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
-        qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot hot unplug multifunction PCI device: %s"),
-                       detach->dst);
-        return -1;
-    }
-
-    if (!async)
-        qemuDomainMarkDeviceForRemoval(vm, &detach->info);
-
-    if (qemuDomainDeleteDevice(vm, detach->info.alias) < 0) {
-        if (virDomainObjIsActive(vm))
-            virDomainAuditDisk(vm, detach->src, NULL, "detach", false);
-        goto cleanup;
-    }
-
-    if (async) {
-        ret = 0;
-    } else {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-            ret = qemuDomainRemoveDiskDevice(driver, vm, detach);
-    }
-
- cleanup:
-    if (!async)
-        qemuDomainResetDeviceRemoval(vm);
-    return ret;
-}
-
-static int
 qemuFindDisk(virDomainDefPtr def, const char *dst)
 {
     size_t i;
@@ -5335,6 +5294,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
 {
     virDomainDiskDefPtr disk;
     int idx;
+    int ret = -1;
 
     if ((idx = qemuFindDisk(vm->def, dev->data.disk->dst)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -5351,7 +5311,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
         case VIR_DOMAIN_DISK_BUS_USB:
         case VIR_DOMAIN_DISK_BUS_SCSI:
-            return qemuDomainDetachDiskDevice(driver, vm, disk, async);
+            break;
 
         case VIR_DOMAIN_DISK_BUS_IDE:
         case VIR_DOMAIN_DISK_BUS_FDC:
@@ -5361,12 +5321,12 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
         case VIR_DOMAIN_DISK_BUS_SD:
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("This type of disk cannot be hot unplugged"));
-            break;
+            return -1;
 
         case VIR_DOMAIN_DISK_BUS_LAST:
         default:
             virReportEnumRangeError(virDomainDiskBus, disk->bus);
-            break;
+            return -1;
         }
         break;
 
@@ -5375,15 +5335,45 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk device type '%s' cannot be detached"),
                        virDomainDiskDeviceTypeToString(disk->device));
-        break;
+        return -1;
 
     case VIR_DOMAIN_DISK_DEVICE_LAST:
     default:
         virReportEnumRangeError(virDomainDiskDevice, disk->device);
-        break;
+        return -1;
     }
 
-    return -1;
+    if (qemuDomainDiskBlockJobIsActive(disk))
+        return -1;
+
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
+        qemuIsMultiFunctionDevice(vm->def, &disk->info)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("cannot hot unplug multifunction PCI device: %s"),
+                       disk->dst);
+        return -1;
+    }
+
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &disk->info);
+
+    if (qemuDomainDeleteDevice(vm, disk->info.alias) < 0) {
+        if (virDomainObjIsActive(vm))
+            virDomainAuditDisk(vm, disk->src, NULL, "detach", false);
+        goto cleanup;
+    }
+
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveDiskDevice(driver, vm, disk);
+    }
+
+ cleanup:
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
+    return ret;
 }
 
 
