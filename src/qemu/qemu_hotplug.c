@@ -5637,13 +5637,7 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    /* If this is a network hostdev, we need to use the higher-level detach
-     * function so that mac address / virtualport are reset
-     */
-    if (detach->parent.type == VIR_DOMAIN_DEVICE_NET)
-        return qemuDomainDetachNetDevice(driver, vm, &detach->parent, async);
-    else
-        return qemuDomainDetachThisHostDevice(driver, vm, detach, async);
+    return qemuDomainDetachThisHostDevice(driver, vm, detach, async);
 }
 
 
