@@ -24,6 +24,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+#if WITH_QEMU || WITH_BHYVE
 static int ATTRIBUTE_SENTINEL
 fillStringValues(virDomainCapsStringValuesPtr values, ...)
 {
@@ -44,6 +45,7 @@ fillStringValues(virDomainCapsStringValuesPtr values, ...)
 
     return ret;
 }
+#endif /* WITH_QEMU || WITH_BHYVE */
 
 #if WITH_QEMU
 # include "testutilsqemu.h"
