@@ -2095,8 +2095,7 @@ static void
 networkReloadFirewallRules(virNetworkDriverStatePtr driver, bool startup)
 {
     VIR_INFO("Reloading iptables rules");
-    if (networkPreReloadFirewallRules(startup) < 0)
-        return;
+    networkPreReloadFirewallRules(startup);
     virNetworkObjListForEach(driver->networks,
                              networkReloadFirewallRulesHelper,
                              NULL);
