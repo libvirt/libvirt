@@ -8460,12 +8460,12 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     unsigned int flags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE |
         VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL;
+    virDomainSnapshotDefPtr def = virDomainSnapshotObjGetDef(snapshot);
 
     if (virDomainSnapshotGetCurrent(vm->snapshots) == snapshot)
         flags |= VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT;
     virUUIDFormat(vm->def->uuid, uuidstr);
-    newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def, caps, xmlopt,
-                                        flags);
+    newxml = virDomainSnapshotDefFormat(uuidstr, def, caps, xmlopt, flags);
     if (newxml == NULL)
         return -1;
 
@@ -8477,7 +8477,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, snapshot->def->name) < 0)
+    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, def->name) < 0)
         goto cleanup;
 
     ret = virXMLSaveFile(snapFile, NULL, "snapshot-edit", newxml);

@@ -168,8 +168,9 @@ virDomainSnapshotFormatOne(void *payload,
     virDomainSnapshotObjPtr snap = payload;
     struct virDomainSnapshotFormatData *data = opaque;
     return virDomainSnapshotDefFormatInternal(data->buf, data->uuidstr,
-                                              snap->def, data->caps,
-                                              data->xmlopt, data->flags);
+                                              virDomainSnapshotObjGetDef(snap),
+                                              data->caps, data->xmlopt,
+                                              data->flags);
 }
 
 
@@ -229,7 +230,7 @@ static void virDomainSnapshotObjFree(virDomainSnapshotObjPtr snapshot)
 
     VIR_DEBUG("obj=%p", snapshot);
 
-    virDomainSnapshotDefFree(snapshot->def);
+    virDomainSnapshotDefFree(virDomainSnapshotObjGetDef(snapshot));
     VIR_FREE(snapshot);
 }
 
@@ -315,15 +316,17 @@ static int virDomainSnapshotObjListCopyNames(void *payload,
         return 0;
 
     if (data->flags & VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS) {
+        virDomainSnapshotDefPtr def = virDomainSnapshotObjGetDef(obj);
+
         if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE) &&
-            obj->def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF)
+            def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF)
             return 0;
         if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY) &&
-            obj->def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
+            def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
             return 0;
         if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE) &&
-            obj->def->state != VIR_DOMAIN_SNAPSHOT_SHUTOFF &&
-            obj->def->state != VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
+            def->state != VIR_DOMAIN_SNAPSHOT_SHUTOFF &&
+            def->state != VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
             return 0;
     }
 

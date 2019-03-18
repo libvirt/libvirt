@@ -76,4 +76,11 @@ int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
                            virDomainSnapshotPtr **snaps,
                            unsigned int flags);
 
+/* Access the snapshot-specific definition from a given list member. */
+static inline virDomainSnapshotDefPtr
+virDomainSnapshotObjGetDef(virDomainSnapshotObjPtr obj)
+{
+    return obj->def;
+}
+
 #endif /* LIBVIRT_VIRDOMAINSNAPSHOTOBJLIST_H */
