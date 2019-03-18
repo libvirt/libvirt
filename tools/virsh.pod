@@ -3290,7 +3290,10 @@ I<--persistent>.
 =item B<detach-device-alias> I<domain> I<alias>
 [[[I<--live>] [I<--config>] | [I<--current>]]]]
 
-Detach a device with given I<alias> from the I<domain>.
+Detach a device with given I<alias> from the I<domain>. This command returns
+successfully after the unplug request was sent to the hypervisor. The actual
+removal of the device is notified asynchronously via libvirt events
+(see virsh event).
 
 If I<--live> is specified, affect a running domain.
 If I<--config> is specified, affect the next startup of a persistent domain.
