@@ -565,19 +565,68 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     return ret;
 }
 
+
+static char **
+virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
+{
+    char **names = NULL;
+    size_t nnames = 0;
+    int rc;
+    size_t max_size = 1024;
+    VIR_AUTOFREE(char *) namebuf = NULL;
+    const char *name;
+
+    while (true) {
+        if (VIR_ALLOC_N(namebuf, max_size) < 0)
+            goto error;
+
+        rc = rbd_list(ptr->ioctx, namebuf, &max_size);
+        if (rc >= 0)
+            break;
+        if (rc != -ERANGE) {
+            virReportSystemError(-rc, "%s", _("Unable to list RBD images"));
+            goto error;
+        }
+        VIR_FREE(namebuf);
+    }
+
+    for (name = namebuf; name < namebuf + max_size;) {
+        VIR_AUTOFREE(char *) namedup = NULL;
+
+        if (STREQ(name, ""))
+            break;
+
+        if (VIR_STRDUP(namedup, name) < 0)
+            goto error;
+
+        if (VIR_APPEND_ELEMENT(names, nnames, namedup) < 0)
+            goto error;
+
+        name += strlen(name) + 1;
+    }
+
+    if (VIR_EXPAND_N(names, nnames, 1) < 0)
+        goto error;
+
+    return names;
+
+ error:
+    virStringListFreeCount(names, nnames);
+    return NULL;
+}
+
+
 static int
 virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
 {
-    size_t max_size = 1024;
     int ret = -1;
-    int len = -1;
     int r = 0;
-    char *name;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageBackendRBDStatePtr ptr = NULL;
     struct rados_cluster_stat_t clusterstat;
     struct rados_pool_stat_t poolstat;
-    VIR_AUTOFREE(char *) names = NULL;
+    char **names = NULL;
+    size_t i;
 
     if (!(ptr = virStorageBackendRBDNewState(pool)))
         goto cleanup;
@@ -602,33 +651,16 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
               def->source.name, clusterstat.kb, clusterstat.kb_avail,
               poolstat.num_bytes);
 
-    while (true) {
-        if (VIR_ALLOC_N(names, max_size) < 0)
-            goto cleanup;
+    if (!(names = virStorageBackendRBDGetVolNames(ptr)))
+        goto cleanup;
 
-        len = rbd_list(ptr->ioctx, names, &max_size);
-        if (len >= 0)
-            break;
-        if (len != -ERANGE) {
-            VIR_WARN("%s", "A problem occurred while listing RBD images");
-            goto cleanup;
-        }
-        VIR_FREE(names);
-    }
-
-    for (name = names; name < names + max_size;) {
+    for (i = 0; names[i] != NULL; i++) {
         VIR_AUTOPTR(virStorageVolDef) vol = NULL;
-
-        if (STREQ(name, ""))
-            break;
 
         if (VIR_ALLOC(vol) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(vol->name, name) < 0)
-            goto cleanup;
-
-        name += strlen(name) + 1;
+        VIR_STEAL_PTR(vol->name, names[i]);
 
         r = volStorageBackendRBDRefreshVolInfo(vol, pool, ptr);
 
@@ -661,6 +693,7 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
     ret = 0;
 
  cleanup:
+    virStringListFree(names);
     virStorageBackendRBDFreeState(&ptr);
     return ret;
 }
