@@ -1480,12 +1480,16 @@ exit 0
 
 %post client
 
+%if 0%{?rhel} == 7
 /sbin/ldconfig
+%endif
 %systemd_post libvirt-guests.service
 
 %postun client
 
+%if 0%{?rhel} == 7
 /sbin/ldconfig
+%endif
 %systemd_postun libvirt-guests.service
 
 %triggerun client -- libvirt < 0.9.4
