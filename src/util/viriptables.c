@@ -127,7 +127,7 @@ iptablesPrivateChainCreate(virFirewallPtr fw,
 
 
 int
-iptablesSetupPrivateChains(void)
+iptablesSetupPrivateChains(virFirewallLayer layer)
 {
     virFirewallPtr fw = NULL;
     int ret = -1;
@@ -143,17 +143,11 @@ iptablesSetupPrivateChains(void)
     };
     bool changed = false;
     iptablesGlobalChainData data[] = {
-        { VIR_FIREWALL_LAYER_IPV4, "filter",
+        { layer, "filter",
           filter_chains, ARRAY_CARDINALITY(filter_chains), &changed },
-        { VIR_FIREWALL_LAYER_IPV4, "nat",
+        { layer, "nat",
           natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
-        { VIR_FIREWALL_LAYER_IPV4, "mangle",
-          natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
-        { VIR_FIREWALL_LAYER_IPV6, "filter",
-          filter_chains, ARRAY_CARDINALITY(filter_chains), &changed },
-        { VIR_FIREWALL_LAYER_IPV6, "nat",
-          natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
-        { VIR_FIREWALL_LAYER_IPV6, "mangle",
+        { layer, "mangle",
           natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
     };
     size_t i;

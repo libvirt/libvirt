@@ -24,7 +24,7 @@
 # include "virsocketaddr.h"
 # include "virfirewall.h"
 
-int              iptablesSetupPrivateChains      (void);
+int              iptablesSetupPrivateChains      (virFirewallLayer layer);
 
 void             iptablesSetDeletePrivate        (bool pvt);
 

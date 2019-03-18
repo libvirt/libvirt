@@ -35,10 +35,12 @@ VIR_LOG_INIT("network.bridge_driver_linux");
 
 #define PROC_NET_ROUTE "/proc/net/route"
 
-static virErrorPtr errInit;
+static virErrorPtr errInitV4;
+static virErrorPtr errInitV6;
 
 void networkPreReloadFirewallRules(bool startup)
 {
+    bool created = false;
     int rc;
 
     /* We create global rules upfront as we don't want
@@ -49,11 +51,21 @@ void networkPreReloadFirewallRules(bool startup)
      * of starting the network though as that makes them
      * more likely to be seen by a human
      */
-    rc = iptablesSetupPrivateChains();
+    rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV4);
     if (rc < 0) {
-        errInit = virSaveLastError();
+        errInitV4 = virSaveLastError();
         virResetLastError();
     }
+    if (rc)
+        created = true;
+
+    rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV6);
+    if (rc < 0) {
+        errInitV6 = virSaveLastError();
+        virResetLastError();
+    }
+    if (rc)
+        created = true;
 
     /*
      * If this is initial startup, and we just created the
@@ -68,7 +80,7 @@ void networkPreReloadFirewallRules(bool startup)
      * rules will be present. Thus we can safely just tell it
      * to always delete from the builin chain
      */
-    if (startup && rc == 1)
+    if (startup && created)
         iptablesSetDeletePrivate(false);
 }
 
@@ -683,8 +695,18 @@ int networkAddFirewallRules(virNetworkDefPtr def)
     virFirewallPtr fw = NULL;
     int ret = -1;
 
-    if (errInit) {
-        virSetError(errInit);
+    if (errInitV4 &&
+        (virNetworkDefGetIPByIndex(def, AF_INET, 0) ||
+         virNetworkDefGetRouteByIndex(def, AF_INET, 0))) {
+        virSetError(errInitV4);
+        return -1;
+    }
+
+    if (errInitV6 &&
+        (virNetworkDefGetIPByIndex(def, AF_INET6, 0) ||
+         virNetworkDefGetRouteByIndex(def, AF_INET6, 0) ||
+         def->ipv6nogw)) {
+        virSetError(errInitV6);
         return -1;
     }
 
