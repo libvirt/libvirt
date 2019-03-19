@@ -5457,7 +5457,6 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
 {
     int idx, ret = -1;
     virDomainControllerDefPtr detach = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if ((idx = virDomainControllerFind(vm->def,
                                        dev->data.controller->type,
@@ -5502,17 +5501,6 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
 
     if (!async)
         qemuDomainMarkDeviceForRemoval(vm, &detach->info);
-
-    if (detach->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-        int rc;
-        qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuDomainDetachExtensionDevice(priv->mon, &detach->info);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            rc = -1;
-
-        if (rc < 0)
-            goto cleanup;
-    }
 
     if (qemuDomainDeleteDevice(vm, detach->info.alias) < 0)
         goto cleanup;
