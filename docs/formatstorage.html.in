@@ -508,6 +508,32 @@
       device, measured in bytes.  <span class="since">Since 0.4.1</span>
     </p>
 
+    <h3><a id="StoragePoolRefresh">Refresh overrides</a></h3>
+
+    <p>
+      The optional <code>refresh</code> element can control how the pool and
+      associated volumes are refreshed (pool type <code>rbd</code>). The
+      <code>allocation</code> attribute of the <code>volume</code> child element
+      controls the method used for computing the allocation of a volume. The
+      valid attribute values are <code>default</code> to compute the actual
+      usage or <code>capacity</code> to use the logical capacity for cases where
+      computing the allocation is too expensive. The following XML snippet
+      shows the syntax:
+      <pre>
+&lt;pool type="rbd"&gt;
+  &lt;name&gt;myrbdpool&lt;/name&gt;
+...
+  &lt;source/&gt;
+...
+  &lt;refresh&gt;
+    &lt;volume allocation='capacity'/&gt;
+  &lt;/refresh&gt;
+...
+&lt;/pool&gt;
+</pre>
+      <span class="since">Since 5.2.0</span>
+    </p>
+
     <h3><a id="StoragePoolNamespaces">Storage Pool Namespaces</a></h3>
 
     <p>

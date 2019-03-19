@@ -94,6 +94,11 @@ VIR_ENUM_IMPL(virStorageVolFormatDisk,
               "extended",
 );
 
+VIR_ENUM_IMPL(virStorageVolDefRefreshAllocation,
+              VIR_STORAGE_VOL_DEF_REFRESH_ALLOCATION_LAST,
+              "default", "capacity",
+);
+
 VIR_ENUM_IMPL(virStoragePartedFs,
               VIR_STORAGE_PARTED_FS_TYPE_LAST,
               "ext2", "ext2", "fat16",
@@ -789,6 +794,51 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
 }
 
 
+static int
+virStoragePoolDefRefreshParse(xmlXPathContextPtr ctxt,
+                              virStoragePoolDefPtr def)
+{
+    VIR_AUTOFREE(virStoragePoolDefRefreshPtr) refresh = NULL;
+    VIR_AUTOFREE(char *) allocation = NULL;
+    int tmp;
+
+    allocation = virXPathString("string(./refresh/volume/@allocation)", ctxt);
+
+    if (!allocation)
+        return 0;
+
+    if ((tmp = virStorageVolDefRefreshAllocationTypeFromString(allocation)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown storage pool volume refresh allocation type %s"),
+                       allocation);
+        return -1;
+    }
+
+    if (VIR_ALLOC(refresh) < 0)
+        return -1;
+
+    refresh->volume.allocation = tmp;
+    VIR_STEAL_PTR(def->refresh, refresh);
+    return 0;
+}
+
+
+static void
+virStoragePoolDefRefreshFormat(virBufferPtr buf,
+                               virStoragePoolDefRefreshPtr refresh)
+{
+    if (!refresh)
+        return;
+
+    virBufferAddLit(buf, "<refresh>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(buf, "<volume allocation='%s'/>\n",
+                      virStorageVolDefRefreshAllocationTypeToString(refresh->volume.allocation));
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</refresh>\n");
+}
+
+
 virStoragePoolDefPtr
 virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 {
@@ -799,6 +849,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     VIR_AUTOFREE(char *) type = NULL;
     VIR_AUTOFREE(char *) uuid = NULL;
     VIR_AUTOFREE(char *) target_path = NULL;
+    VIR_AUTOFREE(char *) refresh_volume_allocation = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -930,6 +981,9 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
                        _("missing initiator IQN"));
         return NULL;
     }
+
+    if (virStoragePoolDefRefreshParse(ctxt, def) < 0)
+        return NULL;
 
     /* Make a copy of all the callback pointers here for easier use,
      * especially during the virStoragePoolSourceClear method */
@@ -1162,6 +1216,8 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</target>\n");
     }
+
+    virStoragePoolDefRefreshFormat(buf, def->refresh);
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)

@@ -942,6 +942,8 @@ virStorageVolDefFree;
 virStorageVolDefParseFile;
 virStorageVolDefParseNode;
 virStorageVolDefParseString;
+virStorageVolDefRefreshAllocationTypeFromString;
+virStorageVolDefRefreshAllocationTypeToString;
 virStorageVolTypeFromString;
 virStorageVolTypeToString;
 

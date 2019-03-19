@@ -155,6 +155,7 @@
       <ref name='commonMetadataNameOptional'/>
       <ref name='sizing'/>
       <ref name='sourcerbd'/>
+      <ref name='refresh'/>
     </interleave>
     <optional>
       <ref name='rbd_config_opts'/>
@@ -689,6 +690,28 @@
     <data type='string'>
       <param name="pattern">iqn\.[0-9]{4}-(0[1-9]|1[0-2])\.[a-zA-Z0-9\.\-]+(:.+)?</param>
     </data>
+  </define>
+
+  <define name='refresh'>
+    <optional>
+      <element name='refresh'>
+        <interleave>
+          <ref name='refreshVolume'/>
+        </interleave>
+      </element>
+    </optional>
+  </define>
+
+  <define name='refreshVolume'>
+    <optional>
+      <element name='volume'>
+        <optional>
+          <attribute name='allocation'>
+            <ref name="refreshVolumeAllocation"/>
+          </attribute>
+        </optional>
+      </element>
+    </optional>
   </define>
 
   <!--

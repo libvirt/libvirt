@@ -236,4 +236,11 @@
     </optional>
   </define>
 
+  <define name='refreshVolumeAllocation'>
+    <choice>
+      <value>default</value>
+      <value>capacity</value>
+    </choice>
+  </define>
+
 </grammar>

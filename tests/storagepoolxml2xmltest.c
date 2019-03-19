@@ -95,6 +95,7 @@ mymain(void)
     DO_TEST("pool-zfs-sourcedev");
     DO_TEST("pool-rbd");
 #ifdef WITH_STORAGE_RBD
+    DO_TEST("pool-rbd-refresh-volume-allocation");
     DO_TEST("pool-rbd-ns-configopts");
 #endif
     DO_TEST("pool-vstorage");
