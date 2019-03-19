@@ -588,6 +588,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                     goto cleanup;
                 }
             }
+            VIR_FREE(port);
         }
     }
 
