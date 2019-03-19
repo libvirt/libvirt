@@ -147,16 +147,10 @@ testQemuHotplugDetach(virDomainObjPtr vm,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuDomainDetachDeviceDiskLive(&driver, vm, dev, async);
-        break;
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainDetachChrDevice(&driver, vm, dev->data.chr, async);
-        break;
     case VIR_DOMAIN_DEVICE_SHMEM:
-        ret = qemuDomainDetachShmemDevice(&driver, vm, dev->data.shmem, async);
-        break;
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-        ret = qemuDomainDetachWatchdog(&driver, vm, dev->data.watchdog, async);
+        ret = qemuDomainDetachDeviceLive(vm, dev, &driver, async);
         break;
     default:
         VIR_TEST_VERBOSE("device type '%s' cannot be detached\n",
