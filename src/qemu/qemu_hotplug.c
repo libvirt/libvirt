@@ -6099,6 +6099,93 @@ qemuDomainDetachMemoryDevice(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuDomainDetachInputDevice(virDomainObjPtr vm,
+                            virDomainInputDefPtr def,
+                            bool async)
+{
+    virDomainInputDefPtr input;
+    int ret = -1;
+    int idx;
+
+    if ((idx = virDomainInputDefFind(vm->def, def)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("matching input device not found"));
+        return -1;
+    }
+    input = vm->def->inputs[idx];
+
+    switch ((virDomainInputBus) input->bus) {
+    case VIR_DOMAIN_INPUT_BUS_PS2:
+    case VIR_DOMAIN_INPUT_BUS_XEN:
+    case VIR_DOMAIN_INPUT_BUS_PARALLELS:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("input device on bus '%s' cannot be detached"),
+                       virDomainInputBusTypeToString(input->bus));
+        return -1;
+
+    case VIR_DOMAIN_INPUT_BUS_LAST:
+    case VIR_DOMAIN_INPUT_BUS_USB:
+    case VIR_DOMAIN_INPUT_BUS_VIRTIO:
+        break;
+    }
+
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &input->info);
+
+    if (qemuDomainDeleteDevice(vm, input->info.alias) < 0)
+        goto cleanup;
+
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveInputDevice(vm, input);
+    }
+
+ cleanup:
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
+    return ret;
+}
+
+
+int
+qemuDomainDetachVsockDevice(virDomainObjPtr vm,
+                            virDomainVsockDefPtr dev,
+                            bool async)
+{
+    virDomainVsockDefPtr vsock = vm->def->vsock;
+    int ret = -1;
+
+
+    if (!vsock ||
+        !virDomainVsockDefEquals(dev, vsock)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("matching vsock device not found"));
+        return -1;
+    }
+
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &vsock->info);
+
+    if (qemuDomainDeleteDevice(vm, vsock->info.alias) < 0)
+        goto cleanup;
+
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveVsockDevice(vm, vsock);
+    }
+
+ cleanup:
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
+    return ret;
+}
+
+
 static int
 qemuDomainRemoveVcpu(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -6750,92 +6837,5 @@ qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
  cleanup:
     virBitmapFree(livevcpus);
     virObjectUnref(cfg);
-    return ret;
-}
-
-
-int
-qemuDomainDetachInputDevice(virDomainObjPtr vm,
-                            virDomainInputDefPtr def,
-                            bool async)
-{
-    virDomainInputDefPtr input;
-    int ret = -1;
-    int idx;
-
-    if ((idx = virDomainInputDefFind(vm->def, def)) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("matching input device not found"));
-        return -1;
-    }
-    input = vm->def->inputs[idx];
-
-    switch ((virDomainInputBus) input->bus) {
-    case VIR_DOMAIN_INPUT_BUS_PS2:
-    case VIR_DOMAIN_INPUT_BUS_XEN:
-    case VIR_DOMAIN_INPUT_BUS_PARALLELS:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("input device on bus '%s' cannot be detached"),
-                       virDomainInputBusTypeToString(input->bus));
-        return -1;
-
-    case VIR_DOMAIN_INPUT_BUS_LAST:
-    case VIR_DOMAIN_INPUT_BUS_USB:
-    case VIR_DOMAIN_INPUT_BUS_VIRTIO:
-        break;
-    }
-
-    if (!async)
-        qemuDomainMarkDeviceForRemoval(vm, &input->info);
-
-    if (qemuDomainDeleteDevice(vm, input->info.alias) < 0)
-        goto cleanup;
-
-    if (async) {
-        ret = 0;
-    } else {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-            ret = qemuDomainRemoveInputDevice(vm, input);
-    }
-
- cleanup:
-    if (!async)
-        qemuDomainResetDeviceRemoval(vm);
-    return ret;
-}
-
-
-int
-qemuDomainDetachVsockDevice(virDomainObjPtr vm,
-                            virDomainVsockDefPtr dev,
-                            bool async)
-{
-    virDomainVsockDefPtr vsock = vm->def->vsock;
-    int ret = -1;
-
-
-    if (!vsock ||
-        !virDomainVsockDefEquals(dev, vsock)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("matching vsock device not found"));
-        return -1;
-    }
-
-    if (!async)
-        qemuDomainMarkDeviceForRemoval(vm, &vsock->info);
-
-    if (qemuDomainDeleteDevice(vm, vsock->info.alias) < 0)
-        goto cleanup;
-
-    if (async) {
-        ret = 0;
-    } else {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-            ret = qemuDomainRemoveVsockDevice(vm, vsock);
-    }
-
- cleanup:
-    if (!async)
-        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
