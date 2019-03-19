@@ -33,6 +33,14 @@ struct _virCPUx86CPUID {
     uint32_t edx;
 };
 
+typedef struct _virCPUx86MSR virCPUx86MSR;
+typedef virCPUx86MSR *virCPUx86MSRPtr;
+struct _virCPUx86MSR {
+    uint32_t index;
+    uint32_t eax;
+    uint32_t edx;
+};
+
 # define CPUX86_BASIC    0x0
 # define CPUX86_KVM      0x40000000
 # define CPUX86_EXTENDED 0x80000000
@@ -72,6 +80,7 @@ struct _virCPUx86CPUID {
 typedef enum {
     VIR_CPU_X86_DATA_NONE = 0,
     VIR_CPU_X86_DATA_CPUID,
+    VIR_CPU_X86_DATA_MSR,
 } virCPUx86DataType;
 
 typedef struct _virCPUx86DataItem virCPUx86DataItem;
@@ -80,6 +89,7 @@ struct _virCPUx86DataItem {
     virCPUx86DataType type;
     union {
         virCPUx86CPUID cpuid;
+        virCPUx86MSR msr;
     } data;
 };
 

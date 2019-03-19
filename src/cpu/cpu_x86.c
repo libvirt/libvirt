@@ -199,6 +199,8 @@ virCPUx86DataItemMatch(const virCPUx86DataItem *item1,
 {
     const virCPUx86CPUID *cpuid1;
     const virCPUx86CPUID *cpuid2;
+    const virCPUx86MSR *msr1;
+    const virCPUx86MSR *msr2;
 
     switch (item1->type) {
     case VIR_CPU_X86_DATA_CPUID:
@@ -208,6 +210,12 @@ virCPUx86DataItemMatch(const virCPUx86DataItem *item1,
                 cpuid1->ebx == cpuid2->ebx &&
                 cpuid1->ecx == cpuid2->ecx &&
                 cpuid1->edx == cpuid2->edx);
+
+    case VIR_CPU_X86_DATA_MSR:
+        msr1 = &item1->data.msr;
+        msr2 = &item2->data.msr;
+        return (msr1->eax == msr2->eax &&
+                msr1->edx == msr2->edx);
 
     case VIR_CPU_X86_DATA_NONE:
     default:
@@ -222,6 +230,8 @@ virCPUx86DataItemMatchMasked(const virCPUx86DataItem *item,
 {
     const virCPUx86CPUID *cpuid;
     const virCPUx86CPUID *cpuidMask;
+    const virCPUx86MSR *msr;
+    const virCPUx86MSR *msrMask;
 
     switch (item->type) {
     case VIR_CPU_X86_DATA_CPUID:
@@ -231,6 +241,12 @@ virCPUx86DataItemMatchMasked(const virCPUx86DataItem *item,
                 (cpuid->ebx & cpuidMask->ebx) == cpuidMask->ebx &&
                 (cpuid->ecx & cpuidMask->ecx) == cpuidMask->ecx &&
                 (cpuid->edx & cpuidMask->edx) == cpuidMask->edx);
+
+    case VIR_CPU_X86_DATA_MSR:
+        msr = &item->data.msr;
+        msrMask = &mask->data.msr;
+        return ((msr->eax & msrMask->eax) == msrMask->eax &&
+                (msr->edx & msrMask->edx) == msrMask->edx);
 
     case VIR_CPU_X86_DATA_NONE:
     default:
@@ -245,6 +261,8 @@ virCPUx86DataItemSetBits(virCPUx86DataItemPtr item,
 {
     virCPUx86CPUIDPtr cpuid;
     const virCPUx86CPUID *cpuidMask;
+    virCPUx86MSRPtr msr;
+    const virCPUx86MSR *msrMask;
 
     if (!mask)
         return;
@@ -257,6 +275,13 @@ virCPUx86DataItemSetBits(virCPUx86DataItemPtr item,
         cpuid->ebx |= cpuidMask->ebx;
         cpuid->ecx |= cpuidMask->ecx;
         cpuid->edx |= cpuidMask->edx;
+        break;
+
+    case VIR_CPU_X86_DATA_MSR:
+        msr = &item->data.msr;
+        msrMask = &mask->data.msr;
+        msr->eax |= msrMask->eax;
+        msr->edx |= msrMask->edx;
         break;
 
     case VIR_CPU_X86_DATA_NONE:
@@ -272,6 +297,8 @@ virCPUx86DataItemClearBits(virCPUx86DataItemPtr item,
 {
     virCPUx86CPUIDPtr cpuid;
     const virCPUx86CPUID *cpuidMask;
+    virCPUx86MSRPtr msr;
+    const virCPUx86MSR *msrMask;
 
     if (!mask)
         return;
@@ -284,6 +311,13 @@ virCPUx86DataItemClearBits(virCPUx86DataItemPtr item,
         cpuid->ebx &= ~cpuidMask->ebx;
         cpuid->ecx &= ~cpuidMask->ecx;
         cpuid->edx &= ~cpuidMask->edx;
+        break;
+
+    case VIR_CPU_X86_DATA_MSR:
+        msr = &item->data.msr;
+        msrMask = &mask->data.msr;
+        msr->eax &= ~msrMask->eax;
+        msr->edx &= ~msrMask->edx;
         break;
 
     case VIR_CPU_X86_DATA_NONE:
@@ -299,6 +333,8 @@ virCPUx86DataItemAndBits(virCPUx86DataItemPtr item,
 {
     virCPUx86CPUIDPtr cpuid;
     const virCPUx86CPUID *cpuidMask;
+    virCPUx86MSRPtr msr;
+    const virCPUx86MSR *msrMask;
 
     if (!mask)
         return;
@@ -311,6 +347,13 @@ virCPUx86DataItemAndBits(virCPUx86DataItemPtr item,
         cpuid->ebx &= cpuidMask->ebx;
         cpuid->ecx &= cpuidMask->ecx;
         cpuid->edx &= cpuidMask->edx;
+        break;
+
+    case VIR_CPU_X86_DATA_MSR:
+        msr = &item->data.msr;
+        msrMask = &mask->data.msr;
+        msr->eax &= msrMask->eax;
+        msr->edx &= msrMask->edx;
         break;
 
     case VIR_CPU_X86_DATA_NONE:
@@ -371,6 +414,14 @@ virCPUx86DataSorter(const void *a, const void *b)
         if (da->data.cpuid.ecx_in > db->data.cpuid.ecx_in)
             return 1;
         else if (da->data.cpuid.ecx_in < db->data.cpuid.ecx_in)
+            return -1;
+
+        break;
+
+    case VIR_CPU_X86_DATA_MSR:
+        if (da->data.msr.index > db->data.msr.index)
+            return 1;
+        else if (da->data.msr.index < db->data.msr.index)
             return -1;
 
         break;
@@ -980,6 +1031,31 @@ x86ParseCPUID(xmlXPathContextPtr ctxt,
 
 
 static int
+x86ParseMSR(xmlXPathContextPtr ctxt,
+            virCPUx86DataItemPtr item)
+{
+    virCPUx86MSRPtr msr;
+    unsigned long index;
+    unsigned long eax;
+    unsigned long edx;
+
+    memset(item, 0, sizeof(*item));
+
+    if (virXPathULongHex("string(@index)", ctxt, &index) < 0 ||
+        virXPathULongHex("string(@eax)", ctxt, &eax) < 0 ||
+        virXPathULongHex("string(@edx)", ctxt, &edx) < 0)
+        return -1;
+
+    item->type = VIR_CPU_X86_DATA_MSR;
+    msr = &item->data.msr;
+    msr->index = index;
+    msr->eax = eax;
+    msr->edx = edx;
+    return 0;
+}
+
+
+static int
 x86FeatureParse(xmlXPathContextPtr ctxt,
                 const char *name,
                 void *data)
@@ -1011,25 +1087,35 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     if (STREQ_NULLABLE(str, "no"))
         feature->migratable = false;
 
-    n = virXPathNodeSet("./cpuid", ctxt, &nodes);
+    n = virXPathNodeSet("./cpuid|./msr", ctxt, &nodes);
     if (n < 0)
         goto cleanup;
 
     if (n == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing cpuid for feature %s"),
+                       _("Missing cpuid or msr element in feature %s"),
                        feature->name);
         goto cleanup;
     }
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
-        if (x86ParseCPUID(ctxt, &item) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid cpuid[%zu] in %s feature"),
-                           i, feature->name);
-            goto cleanup;
+        if (virXMLNodeNameEqual(nodes[i], "cpuid")) {
+            if (x86ParseCPUID(ctxt, &item) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid cpuid[%zu] in %s feature"),
+                               i, feature->name);
+                goto cleanup;
+            }
+        } else {
+            if (x86ParseMSR(ctxt, &item) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid msr[%zu] in %s feature"),
+                               i, feature->name);
+                goto cleanup;
+            }
         }
+
         if (virCPUx86DataAddItem(&feature->data, &item))
             goto cleanup;
     }
@@ -1545,6 +1631,7 @@ virCPUx86DataFormat(const virCPUData *data)
     virBufferAddLit(&buf, "<cpudata arch='x86'>\n");
     while ((item = virCPUx86DataNext(&iter))) {
         virCPUx86CPUIDPtr cpuid;
+        virCPUx86MSRPtr msr;
 
         switch (item->type) {
         case VIR_CPU_X86_DATA_CPUID:
@@ -1555,6 +1642,13 @@ virCPUx86DataFormat(const virCPUData *data)
                               " ecx='0x%08x' edx='0x%08x'/>\n",
                               cpuid->eax_in, cpuid->ecx_in,
                               cpuid->eax, cpuid->ebx, cpuid->ecx, cpuid->edx);
+            break;
+
+        case VIR_CPU_X86_DATA_MSR:
+            msr = &item->data.msr;
+            virBufferAsprintf(&buf,
+                              "  <msr index='0x%x' eax='0x%08x' edx='0x%08x'/>\n",
+                              msr->index, msr->eax, msr->edx);
             break;
 
         case VIR_CPU_X86_DATA_NONE:
@@ -1580,7 +1674,7 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
     size_t i;
     int n;
 
-    n = virXPathNodeSet("/cpudata/cpuid", ctxt, &nodes);
+    n = virXPathNodeSet("/cpudata/cpuid|/cpudata/msr", ctxt, &nodes);
     if (n <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no x86 CPU data found"));
@@ -1592,11 +1686,20 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
-        if (x86ParseCPUID(ctxt, &item) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse cpuid[%zu]"), i);
-            goto error;
+        if (virXMLNodeNameEqual(nodes[i], "cpuid")) {
+            if (x86ParseCPUID(ctxt, &item) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("failed to parse cpuid[%zu]"), i);
+                goto error;
+            }
+        } else {
+            if (x86ParseMSR(ctxt, &item) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("failed to parse msr[%zu]"), i);
+                goto error;
+            }
         }
+
         if (virCPUx86DataAdd(cpuData, &item) < 0)
             goto error;
     }

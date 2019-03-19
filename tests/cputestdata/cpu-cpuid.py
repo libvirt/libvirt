@@ -307,7 +307,8 @@ def parseMap():
 
     cpuMap = {}
     for feature in data["cpus"]["feature"]:
-        cpuMap[feature["@name"]] = parseFeature(feature["cpuid"])
+        if "cpuid" in feature:
+            cpuMap[feature["@name"]] = parseFeature(feature["cpuid"])
 
     return cpuMap
 
