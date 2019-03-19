@@ -849,7 +849,6 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     VIR_AUTOFREE(char *) type = NULL;
     VIR_AUTOFREE(char *) uuid = NULL;
     VIR_AUTOFREE(char *) target_path = NULL;
-    VIR_AUTOFREE(char *) refresh_volume_allocation = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
