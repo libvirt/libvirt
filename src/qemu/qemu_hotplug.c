@@ -5467,22 +5467,6 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
 
     detach = vm->def->controllers[idx];
 
-    if (detach->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-        detach->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-        detach->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("device with '%s' address cannot be detached"),
-                       virDomainDeviceAddressTypeToString(detach->info.type));
-        goto cleanup;
-    }
-
-    if (!virDomainDeviceAddressIsValid(&detach->info, detach->info.type)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("device with invalid '%s' address cannot be detached"),
-                       virDomainDeviceAddressTypeToString(detach->info.type));
-        goto cleanup;
-    }
-
     if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %s"),
