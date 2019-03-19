@@ -75,6 +75,8 @@ struct _qemuBlockJobData {
     char *name;
 
     virDomainDiskDefPtr disk; /* may be NULL, if blockjob does not correspond to any disk */
+    virStorageSourcePtr chain; /* Reference to the chain the job operates on. */
+    virStorageSourcePtr mirrorChain; /* reference to 'mirror' part of the job */
 
     int type; /* qemuBlockJobType */
     int state; /* qemuBlockjobState */

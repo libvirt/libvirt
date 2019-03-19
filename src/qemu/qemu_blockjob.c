@@ -72,6 +72,9 @@ qemuBlockJobDataDispose(void *obj)
 {
     qemuBlockJobDataPtr job = obj;
 
+    virObjectUnref(job->chain);
+    virObjectUnref(job->mirrorChain);
+
     VIR_FREE(job->name);
     VIR_FREE(job->errmsg);
 }
@@ -127,6 +130,8 @@ qemuBlockJobRegister(qemuBlockJobDataPtr job,
 
     if (disk) {
         job->disk = disk;
+        job->chain = virObjectRef(disk->src);
+        job->mirrorChain = virObjectRef(disk->mirror);
         QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = virObjectRef(job);
     }
 

@@ -2306,22 +2306,59 @@ qemuDomainObjPrivateXMLFormatAutomaticPlacement(virBufferPtr buf,
 }
 
 
+typedef struct qemuDomainPrivateBlockJobFormatData {
+    virDomainXMLOptionPtr xmlopt;
+    virBufferPtr buf;
+} qemuDomainPrivateBlockJobFormatData;
+
+
 static int
-qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
-                                              const void *name ATTRIBUTE_UNUSED,
-                                              void *data)
+qemuDomainObjPrivateXMLFormatBlockjobFormatChain(virBufferPtr buf,
+                                                 const char *chainname,
+                                                 virStorageSourcePtr src,
+                                                 virDomainXMLOptionPtr xmlopt)
 {
     VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    unsigned int xmlflags = VIR_DOMAIN_DEF_FORMAT_STATUS;
+
+    virBufferSetChildIndent(&childBuf, buf);
+
+    virBufferAsprintf(&attrBuf, " type='%s' format='%s'",
+                      virStorageTypeToString(src->type),
+                      virStorageFileFormatTypeToString(src->format));
+
+    if (virDomainDiskSourceFormat(&childBuf, src, "source", 0, true, xmlflags, xmlopt) < 0)
+        return -1;
+
+    if (virDomainDiskBackingStoreFormat(&childBuf, src, xmlopt, xmlflags) < 0)
+        return -1;
+
+    if (virXMLFormatElement(buf, chainname, &attrBuf, &childBuf) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
+                                              const void *name ATTRIBUTE_UNUSED,
+                                              void *opaque)
+{
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) chainsBuf = VIR_BUFFER_INITIALIZER;
     qemuBlockJobDataPtr job = payload;
-    virBufferPtr buf = data;
     const char *state = qemuBlockjobStateTypeToString(job->state);
     const char *newstate = NULL;
+    struct qemuDomainPrivateBlockJobFormatData *data = opaque;
 
     if (job->newstate != -1)
         newstate = qemuBlockjobStateTypeToString(job->newstate);
 
-    virBufferSetChildIndent(&childBuf, buf);
+    virBufferSetChildIndent(&childBuf, data->buf);
+    virBufferSetChildIndent(&chainsBuf, &childBuf);
 
     virBufferEscapeString(&attrBuf, " name='%s'", job->name);
     virBufferEscapeString(&attrBuf, " type='%s'", qemuBlockjobTypeToString(job->type));
@@ -2329,10 +2366,28 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
     virBufferEscapeString(&attrBuf, " newstate='%s'", newstate);
     virBufferEscapeString(&childBuf, "<errmsg>%s</errmsg>", job->errmsg);
 
-    if (job->disk)
+    if (job->disk) {
         virBufferEscapeString(&childBuf, "<disk dst='%s'/>\n", job->disk->dst);
+    } else {
+        if (job->chain &&
+            qemuDomainObjPrivateXMLFormatBlockjobFormatChain(&chainsBuf,
+                                                             "disk",
+                                                             job->chain,
+                                                             data->xmlopt) < 0)
+            return -1;
 
-    return virXMLFormatElement(buf, "blockjob", &attrBuf, &childBuf);
+        if (job->mirrorChain &&
+            qemuDomainObjPrivateXMLFormatBlockjobFormatChain(&chainsBuf,
+                                                             "mirror",
+                                                             job->mirrorChain,
+                                                             data->xmlopt) < 0)
+            return -1;
+
+        if (virXMLFormatElement(&childBuf, "chains", NULL, &chainsBuf) < 0)
+            return -1;
+    }
+
+    return virXMLFormatElement(data->buf, "blockjob", &attrBuf, &childBuf);
 }
 
 
@@ -2344,6 +2399,8 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
     VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     bool bj = qemuDomainHasBlockjob(vm, false);
+    struct qemuDomainPrivateBlockJobFormatData iterdata = { priv->driver->xmlopt,
+                                                            &childBuf };
 
     virBufferAsprintf(&attrBuf, " active='%s'",
                       virTristateBoolTypeToString(virTristateBoolFromBool(bj)));
@@ -2353,7 +2410,7 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
         virHashForEach(priv->blockjobs,
                        qemuDomainObjPrivateXMLFormatBlockjobIterator,
-                       &childBuf) < 0)
+                       &iterdata) < 0)
         return -1;
 
     return virXMLFormatElement(buf, "blockjobs", &attrBuf, &childBuf);
@@ -2695,10 +2752,49 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
 }
 
 
+static virStorageSourcePtr
+qemuDomainObjPrivateXMLParseBlockjobChain(xmlNodePtr node,
+                                          xmlXPathContextPtr ctxt,
+                                          virDomainXMLOptionPtr xmlopt)
+
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_AUTOFREE(char *) format = NULL;
+    VIR_AUTOFREE(char *) type = NULL;
+    VIR_AUTOFREE(char *) index = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
+    xmlNodePtr sourceNode;
+    unsigned int xmlflags = VIR_DOMAIN_DEF_PARSE_STATUS;
+
+    ctxt->node = node;
+
+    if (!(type = virXMLPropString(ctxt->node, "type")) ||
+        !(format = virXMLPropString(ctxt->node, "format")) ||
+        !(index = virXPathString("string(./source/@index)", ctxt)) ||
+        !(sourceNode = virXPathNode("./source", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing job chain data"));
+        return NULL;
+    }
+
+    if (!(src = virDomainStorageSourceParseBase(type, format, index)))
+        return NULL;
+
+    if (virDomainStorageSourceParse(sourceNode, ctxt, src, xmlflags, xmlopt) < 0)
+        return NULL;
+
+    if (virDomainDiskBackingStoreParse(ctxt, src, xmlflags, xmlopt) < 0)
+        return NULL;
+
+    VIR_RETURN_PTR(src);
+}
+
+
 static int
 qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
                                          xmlNodePtr node,
-                                         xmlXPathContextPtr ctxt)
+                                         xmlXPathContextPtr ctxt,
+                                         virDomainXMLOptionPtr xmlopt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virDomainDiskDefPtr disk = NULL;
@@ -2712,6 +2808,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     VIR_AUTOFREE(char *) newstatestr = NULL;
     int newstate = -1;
     bool invalidData = false;
+    xmlNodePtr tmp;
 
     ctxt->node = node;
 
@@ -2742,6 +2839,16 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     if ((diskdst = virXPathString("string(./disk/@dst)", ctxt)) &&
         !(disk = virDomainDiskByName(vm->def, diskdst, false)))
         invalidData = true;
+
+    if (!disk && !invalidData) {
+        if ((tmp = virXPathNode("./chains/disk", ctxt)) &&
+            !(job->chain = qemuDomainObjPrivateXMLParseBlockjobChain(tmp, ctxt, xmlopt)))
+            invalidData = true;
+
+        if ((tmp = virXPathNode("./chains/mirror", ctxt)) &&
+            !(job->mirrorChain = qemuDomainObjPrivateXMLParseBlockjobChain(tmp, ctxt, xmlopt)))
+            invalidData = true;
+    }
 
     job->state = state;
     job->newstate = newstate;
@@ -2775,7 +2882,8 @@ qemuDomainObjPrivateXMLParseBlockjobs(virDomainObjPtr vm,
             return -1;
 
         for (i = 0; i < nnodes; i++) {
-            if (qemuDomainObjPrivateXMLParseBlockjobData(vm, nodes[i], ctxt) < 0)
+            if (qemuDomainObjPrivateXMLParseBlockjobData(vm, nodes[i], ctxt,
+                                                         priv->driver->xmlopt) < 0)
                 return -1;
         }
     }

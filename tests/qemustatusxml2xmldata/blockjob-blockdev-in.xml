@@ -237,6 +237,43 @@
     <blockjob name='drive-virtio-disk0' type='copy' state='ready'>
       <disk dst='vda'/>
     </blockjob>
+    <blockjob name='test-orphan-job0' type='copy' state='ready'>
+      <chains>
+        <disk type='file' format='qcow2'>
+          <source file='/orphan/source/top.qcow2' index='123'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='orphan-source-top-storage'/>
+                <nodename type='format' name='orphan-source-top-format'/>
+              </nodenames>
+            </privateData>
+          </source>
+          <backingStore type='file' index='321'>
+            <format type='qcow2'/>
+            <source file='/orphan/source/base.qcow2'>
+              <privateData>
+                <nodenames>
+                  <nodename type='storage' name='orphan-source-base-storage'/>
+                  <nodename type='format' name='orphan-source-base-format'/>
+                </nodenames>
+              </privateData>
+            </source>
+            <backingStore/>
+          </backingStore>
+        </disk>
+        <mirror type='file' format='raw'>
+          <source file='/orphan/mirror/raw' index='42'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='orphan-mirror-raw-storage'/>
+                <nodename type='format' name='orphan-mirror-raw-format'/>
+              </nodenames>
+            </privateData>
+          </source>
+          <backingStore/>
+        </mirror>
+      </chains>
+    </blockjob>
   </blockjobs>
   <domain type='kvm' id='4'>
     <name>copy</name>
