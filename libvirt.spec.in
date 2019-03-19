@@ -550,6 +550,9 @@ Requires: util-linux
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img
 %endif
+%if !%{with_storage_rbd}
+Obsoletes: libvirt-daemon-driver-storage-rbd < %{version}-%{release}
+%endif
 
 %description daemon-driver-storage-core
 The storage driver plugin for the libvirtd daemon, providing
