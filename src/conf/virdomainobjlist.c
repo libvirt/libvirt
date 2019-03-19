@@ -141,14 +141,9 @@ virDomainObjListFindByUUIDLocked(virDomainObjListPtr doms,
 
     virUUIDFormat(uuid, uuidstr);
     obj = virHashLookup(doms->objs, uuidstr);
-    virObjectRef(obj);
     if (obj) {
+        virObjectRef(obj);
         virObjectLock(obj);
-        if (obj->removing) {
-            virObjectUnlock(obj);
-            virObjectUnref(obj);
-            obj = NULL;
-        }
     }
     return obj;
 }
@@ -172,6 +167,12 @@ virDomainObjListFindByUUID(virDomainObjListPtr doms,
     obj = virDomainObjListFindByUUIDLocked(doms, uuid);
     virObjectRWUnlock(doms);
 
+    if (obj && obj->removing) {
+        virObjectUnlock(obj);
+        virObjectUnref(obj);
+        obj = NULL;
+    }
+
     return obj;
 }
 
@@ -183,14 +184,9 @@ virDomainObjListFindByNameLocked(virDomainObjListPtr doms,
     virDomainObjPtr obj;
 
     obj = virHashLookup(doms->objsName, name);
-    virObjectRef(obj);
     if (obj) {
+        virObjectRef(obj);
         virObjectLock(obj);
-        if (obj->removing) {
-            virObjectUnlock(obj);
-            virObjectUnref(obj);
-            obj = NULL;
-        }
     }
     return obj;
 }
@@ -213,6 +209,12 @@ virDomainObjListFindByName(virDomainObjListPtr doms,
     virObjectRWLockRead(doms);
     obj = virDomainObjListFindByNameLocked(doms, name);
     virObjectRWUnlock(doms);
+
+    if (obj && obj->removing) {
+        virObjectUnlock(obj);
+        virObjectUnref(obj);
+        obj = NULL;
+    }
 
     return obj;
 }
@@ -285,8 +287,13 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
 
     /* See if a VM with matching UUID already exists */
     if ((vm = virDomainObjListFindByUUIDLocked(doms, def->uuid))) {
-        /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(vm->def->name, def->name)) {
+        if (vm->removing) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("domain '%s' is already being removed"),
+                           vm->def->name);
+            goto error;
+        } else if (STRNEQ(vm->def->name, def->name)) {
+            /* UUID matches, but if names don't match, refuse it */
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("domain '%s' is already defined with uuid %s"),
