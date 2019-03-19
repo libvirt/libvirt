@@ -563,7 +563,9 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     vol->type = VIR_STORAGE_VOL_NETWORK;
     vol->target.format = VIR_STORAGE_FILE_RAW;
 
-    if (volStorageBackendRBDUseFastDiff(features, flags)) {
+    if (def->refresh &&
+        def->refresh->volume.allocation == VIR_STORAGE_VOL_DEF_REFRESH_ALLOCATION_DEFAULT &&
+        volStorageBackendRBDUseFastDiff(features, flags)) {
         VIR_DEBUG("RBD image %s/%s has fast-diff feature enabled. "
                   "Querying for actual allocation",
                   def->source.name, vol->name);
