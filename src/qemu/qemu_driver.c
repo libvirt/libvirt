@@ -419,6 +419,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotObjPtr current = NULL;
+    bool cur;
     unsigned int flags = (VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE |
                           VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                           VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
@@ -465,7 +466,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         }
 
         def = virDomainSnapshotDefParseString(xmlStr, caps,
-                                              qemu_driver->xmlopt,
+                                              qemu_driver->xmlopt, &cur,
                                               flags);
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
@@ -480,7 +481,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         snap = virDomainSnapshotAssignDef(vm->snapshots, def);
         if (snap == NULL) {
             virDomainSnapshotDefFree(def);
-        } else if (snap->def->current) {
+        } else if (cur) {
             current = snap;
             if (!vm->current_snapshot)
                 vm->current_snapshot = snap;
@@ -15661,6 +15662,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     virDomainSnapshotDefPtr def = NULL;
+    virDomainSnapshotObjPtr current = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
@@ -15722,7 +15724,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, caps, driver->xmlopt,
-                                                parse_flags)))
+                                                NULL, parse_flags)))
         goto cleanup;
 
     /* reject snapshot names containing slashes or starting with dot as
@@ -15856,19 +15858,17 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         def = NULL;
     }
 
-    if (update_current)
-        snap->def->current = true;
-    if (vm->current_snapshot) {
+    current = vm->current_snapshot;
+    if (current) {
         if (!redefine &&
-            VIR_STRDUP(snap->def->parent, vm->current_snapshot->def->name) < 0)
+            VIR_STRDUP(snap->def->parent, current->def->name) < 0)
                 goto endjob;
         if (update_current) {
-            vm->current_snapshot->def->current = false;
-            if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+            vm->current_snapshot = NULL;
+            if (qemuDomainSnapshotWriteMetadata(vm, current,
                                                 driver->caps, driver->xmlopt,
                                                 cfg->snapshotDir) < 0)
                 goto endjob;
-            vm->current_snapshot = NULL;
         }
     }
 
@@ -15914,6 +15914,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
  endjob:
     if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+        if (update_current)
+            vm->current_snapshot = snap;
         if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->caps,
                                             driver->xmlopt,
                                             cfg->snapshotDir) < 0) {
@@ -15925,9 +15927,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                            _("unable to save metadata for snapshot %s"),
                            snap->def->name);
             virDomainSnapshotObjListRemove(vm->snapshots, snap);
+            vm->current_snapshot = NULL;
         } else {
-            if (update_current)
-                vm->current_snapshot = snap;
             other = virDomainSnapshotFindByName(vm->snapshots,
                                                 snap->def->parent);
             snap->parent = other;
@@ -16347,6 +16348,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainObjPtr vm = NULL;
     int ret = -1;
     virDomainSnapshotObjPtr snap = NULL;
+    virDomainSnapshotObjPtr current = NULL;
     virObjectEventPtr event = NULL;
     virObjectEventPtr event2 = NULL;
     int detail;
@@ -16441,14 +16443,13 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         }
     }
 
-
-    if (vm->current_snapshot) {
-        vm->current_snapshot->def->current = false;
-        if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+    current = vm->current_snapshot;
+    if (current) {
+        vm->current_snapshot = NULL;
+        if (qemuDomainSnapshotWriteMetadata(vm, current,
                                             driver->caps, driver->xmlopt,
                                             cfg->snapshotDir) < 0)
             goto endjob;
-        vm->current_snapshot = NULL;
         /* XXX Should we restore vm->current_snapshot after this point
          * in the failure cases where we know there was no change?  */
     }
@@ -16458,7 +16459,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
      *
      * XXX Should domain snapshots track live xml rather
      * than inactive xml?  */
-    snap->def->current = true;
+    vm->current_snapshot = snap;
     if (snap->def->dom) {
         config = virDomainDefCopy(snap->def->dom, caps,
                                   driver->xmlopt, NULL, true);
@@ -16729,14 +16730,15 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
  cleanup:
     if (ret == 0) {
+        vm->current_snapshot = snap;
         if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->caps,
                                             driver->xmlopt,
-                                            cfg->snapshotDir) < 0)
+                                            cfg->snapshotDir) < 0) {
+            vm->current_snapshot = NULL;
             ret = -1;
-        else
-            vm->current_snapshot = snap;
+        }
     } else if (snap) {
-        snap->def->current = false;
+        vm->current_snapshot = NULL;
     }
     if (ret == 0 && config && vm->persistent &&
         !(ret = virDomainSaveConfig(cfg->configDir, driver->caps,
@@ -16864,19 +16866,18 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         if (rem.err < 0)
             goto endjob;
         if (rem.current) {
+            vm->current_snapshot = snap;
             if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
-                snap->def->current = true;
                 if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->caps,
                                                     driver->xmlopt,
                                                     cfg->snapshotDir) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("failed to set snapshot '%s' as current"),
                                    snap->def->name);
-                    snap->def->current = false;
+                    vm->current_snapshot = NULL;
                     goto endjob;
                 }
             }
-            vm->current_snapshot = snap;
         }
     } else if (snap->nchildren) {
         rep.cfg = cfg;

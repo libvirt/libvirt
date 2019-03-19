@@ -184,12 +184,14 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
 
 /* flags is bitwise-or of virDomainSnapshotParseFlags.
  * If flags does not include VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE, then
- * caps are ignored.
+ * caps are ignored. If flags does not include
+ * VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL, then current is ignored.
  */
 static virDomainSnapshotDefPtr
 virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                           virCapsPtr caps,
                           virDomainXMLOptionPtr xmlopt,
+                          bool *current,
                           unsigned int flags)
 {
     virDomainSnapshotDefPtr def = NULL;
@@ -345,12 +347,17 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL) {
+        if (!current) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("internal parse requested with NULL current"));
+            goto cleanup;
+        }
         if (virXPathInt("string(./active)", ctxt, &active) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not find 'active' element"));
             goto cleanup;
         }
-        def->current = active != 0;
+        *current = active != 0;
     }
 
     if (!offline && virSaveCookieParse(ctxt, &def->cookie, saveCookie) < 0)
@@ -374,6 +381,7 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
                               xmlNodePtr root,
                               virCapsPtr caps,
                               virDomainXMLOptionPtr xmlopt,
+                              bool *current,
                               unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
@@ -391,7 +399,7 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    def = virDomainSnapshotDefParse(ctxt, caps, xmlopt, flags);
+    def = virDomainSnapshotDefParse(ctxt, caps, xmlopt, current, flags);
  cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
@@ -401,6 +409,7 @@ virDomainSnapshotDefPtr
 virDomainSnapshotDefParseString(const char *xmlStr,
                                 virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
+                                bool *current,
                                 unsigned int flags)
 {
     virDomainSnapshotDefPtr ret = NULL;
@@ -410,7 +419,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)")))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainSnapshotDefParseNode(xml, xmlDocGetRootElement(xml),
-                                            caps, xmlopt, flags);
+                                            caps, xmlopt, current, flags);
         xmlFreeDoc(xml);
     }
     xmlKeepBlanksDefault(keepBlanksDefault);
@@ -849,7 +858,8 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
         goto error;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL)
-        virBufferAsprintf(buf, "<active>%d</active>\n", def->current);
+        virBufferAsprintf(buf, "<active>%d</active>\n",
+                          !!(flags & VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT));
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</domainsnapshot>\n");
@@ -875,7 +885,8 @@ virDomainSnapshotDefFormat(const char *uuidstr,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE |
-                  VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL, NULL);
+                  VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL |
+                  VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT, NULL);
     if (virDomainSnapshotDefFormatInternal(&buf, uuidstr, def, caps,
                                            xmlopt, flags) < 0)
         return NULL;

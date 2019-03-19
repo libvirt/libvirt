@@ -88,9 +88,6 @@ struct _virDomainSnapshotDef {
     virDomainDefPtr dom;
 
     virObjectPtr cookie;
-
-    /* Internal use.  */
-    bool current; /* At most one snapshot in the list should have this set */
 };
 
 typedef enum {
@@ -103,6 +100,7 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE   = 1 << 0,
     VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL = 1 << 1,
+    VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT  = 1 << 2,
 } virDomainSnapshotFormatFlags;
 
 unsigned int virDomainSnapshotFormatConvertXMLFlags(unsigned int flags);
@@ -110,11 +108,13 @@ unsigned int virDomainSnapshotFormatConvertXMLFlags(unsigned int flags);
 virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
                                                         virCapsPtr caps,
                                                         virDomainXMLOptionPtr xmlopt,
+                                                        bool *current,
                                                         unsigned int flags);
 virDomainSnapshotDefPtr virDomainSnapshotDefParseNode(xmlDocPtr xml,
                                                       xmlNodePtr root,
                                                       virCapsPtr caps,
                                                       virDomainXMLOptionPtr xmlopt,
+                                                      bool *current,
                                                       unsigned int flags);
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
 char *virDomainSnapshotDefFormat(const char *uuidstr,

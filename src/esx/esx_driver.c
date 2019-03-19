@@ -4102,7 +4102,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
         return NULL;
 
     def = virDomainSnapshotDefParseString(xmlDesc, priv->caps,
-                                          priv->xmlopt, 0);
+                                          priv->xmlopt, NULL, 0);
 
     if (!def)
         return NULL;

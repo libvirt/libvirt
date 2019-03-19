@@ -2618,7 +2618,8 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
         goto cleanup;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->caps,
-                                                driver->xmlopt, parse_flags)))
+                                                driver->xmlopt, NULL,
+                                                parse_flags)))
         goto cleanup;
 
     if (def->ndisks > 0) {

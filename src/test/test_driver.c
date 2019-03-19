@@ -819,6 +819,7 @@ testParseDomainSnapshots(testDriverPtr privconn,
     int ret = -1;
     testDomainNamespaceDefPtr nsdata = domobj->def->namespaceData;
     xmlNodePtr *nodes = nsdata->snap_nodes;
+    bool cur;
 
     for (i = 0; i < nsdata->num_snap_nodes; i++) {
         virDomainSnapshotObjPtr snap;
@@ -831,6 +832,7 @@ testParseDomainSnapshots(testDriverPtr privconn,
         def = virDomainSnapshotDefParseNode(ctxt->doc, node,
                                             privconn->caps,
                                             privconn->xmlopt,
+                                            &cur,
                                             VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                             VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL |
                                             VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
@@ -842,7 +844,7 @@ testParseDomainSnapshots(testDriverPtr privconn,
             goto error;
         }
 
-        if (def->current) {
+        if (cur) {
             if (domobj->current_snapshot) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("more than one snapshot claims to be active"));
@@ -6363,6 +6365,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     if (!(def = virDomainSnapshotDefParseString(xmlDesc,
                                                 privconn->caps,
                                                 privconn->xmlopt,
+                                                NULL,
                                                 parse_flags)))
         goto cleanup;
 

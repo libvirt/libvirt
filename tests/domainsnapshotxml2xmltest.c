@@ -80,6 +80,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     virDomainSnapshotDefPtr def = NULL;
     unsigned int parseflags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     unsigned int formatflags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE;
+    bool cur;
 
     if (internal) {
         parseflags |= VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL;
@@ -96,9 +97,11 @@ testCompareXMLToXMLFiles(const char *inxml,
         goto cleanup;
 
     if (!(def = virDomainSnapshotDefParseString(inXmlData, driver.caps,
-                                                driver.xmlopt,
+                                                driver.xmlopt, &cur,
                                                 parseflags)))
         goto cleanup;
+    if (cur)
+        formatflags |= VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT;
 
     if (!(actual = virDomainSnapshotDefFormat(uuid, def, driver.caps,
                                               driver.xmlopt,
