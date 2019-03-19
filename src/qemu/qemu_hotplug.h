@@ -158,6 +158,11 @@ int qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
                               virDomainRNGDefPtr rng,
                               bool async);
 
+int qemuDomainDetachDeviceLive(virDomainObjPtr vm,
+                               virDomainDeviceDefPtr dev,
+                               virQEMUDriverPtr driver,
+                               bool async);
+
 void qemuDomainRemoveVcpuAlias(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                const char *alias);
