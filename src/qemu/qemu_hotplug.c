@@ -5490,68 +5490,6 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virDomainHostdevDefPtr detach,
-                               bool async)
-{
-    int ret = -1;
-
-    if (qemuIsMultiFunctionDevice(vm->def, detach->info)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot hot unplug multifunction PCI device with guest address: "
-                         "%.4x:%.2x:%.2x.%.1x"),
-                       detach->info->addr.pci.domain, detach->info->addr.pci.bus,
-                       detach->info->addr.pci.slot, detach->info->addr.pci.function);
-        return -1;
-    }
-
-    if (!detach->info->alias) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("device cannot be detached without a device alias"));
-        return -1;
-    }
-
-    switch (detach->source.subsys.type) {
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-       /* we support detach of all these types of hostdev */
-       break;
-
-    default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hot unplug is not supported for hostdev subsys type '%s'"),
-                       virDomainHostdevSubsysTypeToString(detach->source.subsys.type));
-        return -1;
-    }
-
-    if (!async)
-        qemuDomainMarkDeviceForRemoval(vm, detach->info);
-
-    if (qemuDomainDeleteDevice(vm, detach->info->alias) < 0) {
-        if (virDomainObjIsActive(vm))
-            virDomainAuditHostdev(vm, detach, "detach", false);
-        goto cleanup;
-    }
-
-    if (async) {
-        ret = 0;
-    } else {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-            ret = qemuDomainRemoveHostDevice(driver, vm, detach);
-    }
-
- cleanup:
-    if (!async)
-        qemuDomainResetDeviceRemoval(vm);
-
-    return ret;
-}
-
 /* search for a hostdev matching dev and detach it */
 int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
@@ -5566,6 +5504,7 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
     virDomainHostdevSubsysMediatedDevPtr mdevsrc = &subsys->u.mdev;
     virDomainHostdevDefPtr detach = NULL;
     int idx;
+    int ret = -1;
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -5627,7 +5566,43 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    return qemuDomainDetachThisHostDevice(driver, vm, detach, async);
+    if (qemuIsMultiFunctionDevice(vm->def, detach->info)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("cannot hot unplug multifunction PCI device with guest address: "
+                         "%.4x:%.2x:%.2x.%.1x"),
+                       detach->info->addr.pci.domain, detach->info->addr.pci.bus,
+                       detach->info->addr.pci.slot, detach->info->addr.pci.function);
+        return -1;
+    }
+
+    if (!detach->info->alias) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("device cannot be detached without a device alias"));
+        return -1;
+    }
+
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, detach->info);
+
+    if (qemuDomainDeleteDevice(vm, detach->info->alias) < 0) {
+        if (virDomainObjIsActive(vm))
+            virDomainAuditHostdev(vm, detach, "detach", false);
+        goto cleanup;
+    }
+
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveHostDevice(driver, vm, detach);
+    }
+
+ cleanup:
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
+
+    return ret;
+
 }
 
 
