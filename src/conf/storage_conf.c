@@ -509,6 +509,7 @@ virStoragePoolDefFree(virStoragePoolDefPtr def)
 
     VIR_FREE(def->target.path);
     VIR_FREE(def->target.perms.label);
+    VIR_FREE(def->refresh);
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
     VIR_FREE(def);
