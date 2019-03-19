@@ -4884,9 +4884,6 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (qemuDomainDetachExtensionDevice(priv->mon, &rng->info) < 0)
-        rc = -1;
-
     if (rc == 0 &&
         qemuMonitorDelObject(priv->mon, objAlias) < 0)
         rc = -1;
