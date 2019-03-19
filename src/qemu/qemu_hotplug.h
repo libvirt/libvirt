@@ -115,7 +115,7 @@ int qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
                               virDomainRNGDefPtr rng);
 
 int qemuDomainDetachDeviceLive(virDomainObjPtr vm,
-                               virDomainDeviceDefPtr dev,
+                               virDomainDeviceDefPtr match,
                                virQEMUDriverPtr driver,
                                bool async);
 
