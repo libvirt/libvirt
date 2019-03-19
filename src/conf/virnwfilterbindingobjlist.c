@@ -91,14 +91,9 @@ virNWFilterBindingObjListFindByPortDevLocked(virNWFilterBindingObjListPtr bindin
     virNWFilterBindingObjPtr obj;
 
     obj = virHashLookup(bindings->objs, name);
-    virObjectRef(obj);
     if (obj) {
+        virObjectRef(obj);
         virObjectLock(obj);
-        if (virNWFilterBindingObjGetRemoving(obj)) {
-            virObjectUnlock(obj);
-            virObjectUnref(obj);
-            obj = NULL;
-        }
     }
     return obj;
 }
@@ -121,6 +116,12 @@ virNWFilterBindingObjListFindByPortDev(virNWFilterBindingObjListPtr bindings,
     virObjectRWLockRead(bindings);
     obj = virNWFilterBindingObjListFindByPortDevLocked(bindings, name);
     virObjectRWUnlock(bindings);
+
+    if (obj && virNWFilterBindingObjGetRemoving(obj)) {
+        virObjectUnlock(obj);
+        virObjectUnref(obj);
+        obj = NULL;
+    }
 
     return obj;
 }
@@ -170,11 +171,17 @@ virNWFilterBindingObjListAddLocked(virNWFilterBindingObjListPtr bindings,
     bool stealDef = false;
 
     /* See if a binding with matching portdev already exists */
-    if ((binding = virNWFilterBindingObjListFindByPortDevLocked(
-             bindings, def->portdevname))) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("binding '%s' already exists"),
-                       def->portdevname);
+    binding = virNWFilterBindingObjListFindByPortDevLocked(bindings, def->portdevname);
+    if (binding) {
+        if (virNWFilterBindingObjGetRemoving(binding)) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("binding '%s' is already being removed"),
+                           def->portdevname);
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("binding '%s' already exists"),
+                           def->portdevname);
+        }
         goto error;
     }
 
