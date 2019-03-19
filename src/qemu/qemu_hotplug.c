@@ -5798,13 +5798,6 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
 
     detach = vm->def->nets[detachidx];
 
-    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-        ret = qemuDomainDetachThisHostDevice(driver, vm,
-                                             virDomainNetGetActualHostdev(detach),
-                                             async);
-        goto cleanup;
-    }
-
     if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %s"),
@@ -5833,8 +5826,13 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
         qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     if (qemuDomainDeleteDevice(vm, detach->info.alias) < 0) {
-        if (virDomainObjIsActive(vm))
-            virDomainAuditNet(vm, detach, NULL, "detach", false);
+        if (virDomainObjIsActive(vm)) {
+            /* the audit message has a different format for hostdev network devices */
+            if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV)
+                virDomainAuditHostdev(vm, virDomainNetGetActualHostdev(detach), "detach", false);
+            else
+                virDomainAuditNet(vm, detach, NULL, "detach", false);
+        }
         goto cleanup;
     }
 
