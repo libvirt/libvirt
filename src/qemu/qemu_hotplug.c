@@ -4170,6 +4170,83 @@ qemuDomainFindGraphicsIndex(virDomainDefPtr def,
     return -1;
 }
 
+
+int
+qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  int type,
+                                  virDomainGraphicsAuthDefPtr auth,
+                                  const char *defaultPasswd,
+                                  int asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    time_t now = time(NULL);
+    const char *expire;
+    char *validTo = NULL;
+    const char *connected = NULL;
+    const char *password;
+    int ret = -1;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    if (!auth->passwd && !defaultPasswd) {
+        ret = 0;
+        goto cleanup;
+    }
+    password = auth->passwd ? auth->passwd : defaultPasswd;
+
+    if (auth->connected)
+        connected = virDomainGraphicsAuthConnectedTypeToString(auth->connected);
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+    ret = qemuMonitorSetPassword(priv->mon, type, password, connected);
+
+    if (ret == -2) {
+        if (type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Graphics password only supported for VNC"));
+            ret = -1;
+        } else {
+            ret = qemuMonitorSetVNCPassword(priv->mon, password);
+        }
+    }
+    if (ret != 0)
+        goto end_job;
+
+    if (password[0] == '\0' ||
+        (auth->expires && auth->validTo <= now)) {
+        expire = "now";
+    } else if (auth->expires) {
+        if (virAsprintf(&validTo, "%lu", (unsigned long)auth->validTo) < 0)
+            goto end_job;
+        expire = validTo;
+    } else {
+        expire = "never";
+    }
+
+    ret = qemuMonitorExpirePassword(priv->mon, type, expire);
+
+    if (ret == -2) {
+        /* XXX we could fake this with a timer */
+        if (auth->expires) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Expiry of passwords is not supported"));
+            ret = -1;
+        } else {
+            ret = 0;
+        }
+    }
+
+ end_job:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+ cleanup:
+    VIR_FREE(validTo);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 int
 qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
@@ -5824,80 +5901,6 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
     return ret;
 }
 
-int
-qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  int type,
-                                  virDomainGraphicsAuthDefPtr auth,
-                                  const char *defaultPasswd,
-                                  int asyncJob)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    time_t now = time(NULL);
-    const char *expire;
-    char *validTo = NULL;
-    const char *connected = NULL;
-    const char *password;
-    int ret = -1;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-
-    if (!auth->passwd && !defaultPasswd) {
-        ret = 0;
-        goto cleanup;
-    }
-    password = auth->passwd ? auth->passwd : defaultPasswd;
-
-    if (auth->connected)
-        connected = virDomainGraphicsAuthConnectedTypeToString(auth->connected);
-
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto cleanup;
-    ret = qemuMonitorSetPassword(priv->mon, type, password, connected);
-
-    if (ret == -2) {
-        if (type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Graphics password only supported for VNC"));
-            ret = -1;
-        } else {
-            ret = qemuMonitorSetVNCPassword(priv->mon, password);
-        }
-    }
-    if (ret != 0)
-        goto end_job;
-
-    if (password[0] == '\0' ||
-        (auth->expires && auth->validTo <= now)) {
-        expire = "now";
-    } else if (auth->expires) {
-        if (virAsprintf(&validTo, "%lu", (unsigned long)auth->validTo) < 0)
-            goto end_job;
-        expire = validTo;
-    } else {
-        expire = "never";
-    }
-
-    ret = qemuMonitorExpirePassword(priv->mon, type, expire);
-
-    if (ret == -2) {
-        /* XXX we could fake this with a timer */
-        if (auth->expires) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Expiry of passwords is not supported"));
-            ret = -1;
-        } else {
-            ret = 0;
-        }
-    }
-
- end_job:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
- cleanup:
-    VIR_FREE(validTo);
-    virObjectUnref(cfg);
-    return ret;
-}
 
 int qemuDomainAttachLease(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
