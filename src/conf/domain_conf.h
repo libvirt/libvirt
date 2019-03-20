@@ -3459,8 +3459,7 @@ int virDomainDiskDefCheckDuplicateInfo(const virDomainDiskDef *a,
 int virDomainStorageSourceFormat(virBufferPtr attrBuf,
                                  virBufferPtr childBuf,
                                  virStorageSourcePtr src,
-                                 unsigned int flags,
-                                 bool seclabels)
+                                 unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int virDomainStorageSourceParse(xmlNodePtr node,

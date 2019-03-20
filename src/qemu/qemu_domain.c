@@ -2358,7 +2358,7 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
                       virStorageFileFormatTypeToString(src->format));
 
     if (virDomainStorageSourceFormat(&attrBuf, &childBuf, src,
-                                     VIR_DOMAIN_DEF_FORMAT_STATUS, true) < 0)
+                                     VIR_DOMAIN_DEF_FORMAT_STATUS) < 0)
         goto cleanup;
 
     if (qemuStorageSourcePrivateDataFormat(src, &privateDataBuf) < 0)
