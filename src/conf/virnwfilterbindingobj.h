@@ -39,6 +39,9 @@ void
 virNWFilterBindingObjSetDef(virNWFilterBindingObjPtr obj,
                             virNWFilterBindingDefPtr def);
 
+virNWFilterBindingDefPtr
+virNWFilterBindingObjStealDef(virNWFilterBindingObjPtr obj);
+
 bool
 virNWFilterBindingObjGetRemoving(virNWFilterBindingObjPtr obj);
 

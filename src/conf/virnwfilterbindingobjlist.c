@@ -167,6 +167,7 @@ virNWFilterBindingObjListAddLocked(virNWFilterBindingObjListPtr bindings,
                                    virNWFilterBindingDefPtr def)
 {
     virNWFilterBindingObjPtr binding;
+    bool stealDef = false;
 
     /* See if a binding with matching portdev already exists */
     if ((binding = virNWFilterBindingObjListFindByPortDevLocked(
@@ -181,6 +182,7 @@ virNWFilterBindingObjListAddLocked(virNWFilterBindingObjListPtr bindings,
         goto error;
 
     virNWFilterBindingObjSetDef(binding, def);
+    stealDef = true;
 
     if (virNWFilterBindingObjListAddObjLocked(bindings, binding) < 0)
         goto error;
@@ -188,6 +190,8 @@ virNWFilterBindingObjListAddLocked(virNWFilterBindingObjListPtr bindings,
     return binding;
 
  error:
+    if (stealDef)
+        virNWFilterBindingObjStealDef(binding);
     virNWFilterBindingObjEndAPI(&binding);
     return NULL;
 }

@@ -1101,6 +1101,7 @@ virNWFilterBindingObjParseFile;
 virNWFilterBindingObjSave;
 virNWFilterBindingObjSetDef;
 virNWFilterBindingObjSetRemoving;
+virNWFilterBindingObjStealDef;
 
 
 # conf/virnwfilterbindingobjlist.h
