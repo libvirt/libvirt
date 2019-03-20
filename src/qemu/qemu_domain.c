@@ -2724,9 +2724,6 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
     if (!(ctxt->node = virXPathNode("./migrationSource", ctxt)))
         return 0;
 
-    if (!(migrSource = virStorageSourceNew()))
-        return -1;
-
     if (!(type = virXMLPropString(ctxt->node, "type"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing storage source type"));
@@ -2739,17 +2736,8 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
         return -1;
     }
 
-    if ((migrSource->type = virStorageTypeFromString(type)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown storage source type '%s'"), type);
+    if (!(migrSource = virDomainStorageSourceParseBase(type, format, NULL)))
         return -1;
-    }
-
-    if ((migrSource->format = virStorageFileFormatTypeFromString(format)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown storage source format '%s'"), format);
-        return -1;
-    }
 
     /* newer libvirt uses the <source> subelement instead of formatting the
      * source directly into <migrationSource> */
