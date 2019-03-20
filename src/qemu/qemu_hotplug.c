@@ -5188,6 +5188,61 @@ qemuDomainRemoveRedirdevDevice(virQEMUDriverPtr driver,
 }
 
 
+static void ATTRIBUTE_UNUSED
+qemuDomainRemoveAuditDevice(virDomainObjPtr vm,
+                            virDomainDeviceDefPtr detach,
+                            bool success)
+{
+    switch ((virDomainDeviceType)detach->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        virDomainAuditDisk(vm, detach->data.disk->src, NULL, "detach", success);
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        virDomainAuditNet(vm, detach->data.net, NULL, "detach", success);
+        break;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        virDomainAuditHostdev(vm, detach->data.hostdev, "detach", success);
+        break;
+
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+       /*
+        * These devices are supposed to be audited, but current code
+        * doesn't audit on failure to remove the device.
+        */
+       break;
+
+
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        /* These devices don't have associated audit logs */
+        break;
+
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_LAST:
+        /* libvirt doesn't yet support detaching these devices */
+        break;
+    }
+}
+
+
 int
 qemuDomainRemoveDevice(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
