@@ -9306,13 +9306,13 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
                             virDomainXMLOptionPtr xmlopt)
 {
     xmlNodePtr mirrorNode;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     VIR_AUTOFREE(char *) mirrorFormat = NULL;
     VIR_AUTOFREE(char *) mirrorType = NULL;
     VIR_AUTOFREE(char *) ready = NULL;
     VIR_AUTOFREE(char *) blockJob = NULL;
 
-    if (!(def->mirror = virStorageSourceNew()))
-        return -1;
+    ctxt->node = cur;
 
     if ((blockJob = virXMLPropString(cur, "job"))) {
         if ((def->mirrorJob = virDomainBlockJobTypeFromString(blockJob)) <= 0) {
@@ -9325,35 +9325,8 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
     }
 
     if ((mirrorType = virXMLPropString(cur, "type"))) {
-        if ((def->mirror->type = virStorageTypeFromString(mirrorType)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown mirror backing store type '%s'"),
-                           mirrorType);
-            return -1;
-        }
-
-        mirrorFormat = virXPathString("string(./mirror/format/@type)", ctxt);
-
-        if (!(mirrorNode = virXPathNode("./mirror/source", ctxt))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("mirror requires source element"));
-            return -1;
-        }
-
-        if (virDomainStorageSourceParse(mirrorNode, ctxt, def->mirror,
-                                        flags, xmlopt) < 0)
-            return -1;
+        mirrorFormat = virXPathString("string(./format/@type)", ctxt);
     } else {
-        /* For back-compat reasons, we handle a file name
-         * encoded as attributes, even though we prefer
-         * modern output in the style of backingStore */
-        def->mirror->type = VIR_STORAGE_TYPE_FILE;
-        def->mirror->path = virXMLPropString(cur, "file");
-        if (!def->mirror->path) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("mirror requires file name"));
-            return -1;
-        }
         if (def->mirrorJob != VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("mirror without type only supported "
@@ -9363,11 +9336,26 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
         mirrorFormat = virXMLPropString(cur, "format");
     }
 
-    if (mirrorFormat) {
-        def->mirror->format = virStorageFileFormatTypeFromString(mirrorFormat);
-        if (def->mirror->format <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown mirror format value '%s'"), mirrorFormat);
+    if (!(def->mirror = virDomainStorageSourceParseBase(mirrorType, mirrorFormat, NULL)))
+        return -1;
+
+    if (mirrorType) {
+        if (!(mirrorNode = virXPathNode("./source", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("mirror requires source element"));
+            return -1;
+        }
+
+        if (virDomainStorageSourceParse(mirrorNode, ctxt, def->mirror, flags,
+                                        xmlopt) < 0)
+            return -1;
+    } else {
+        /* For back-compat reasons, we handle a file name encoded as
+         * attributes, even though we prefer modern output in the style of
+         * backingStore */
+        if (!(def->mirror->path = virXMLPropString(cur, "file"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("mirror requires file name"));
             return -1;
         }
     }
