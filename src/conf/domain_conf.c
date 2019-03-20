@@ -9078,6 +9078,18 @@ virDomainStorageSourceParseBase(const char *type,
 }
 
 
+/**
+ * virDomainStorageSourceParse:
+ * @node: XML node pointing to the source element to parse
+ * @ctxt: XPath context
+ * @src: filled with parsed data
+ * @flags: XML parser flags
+ * @xmlopt: XML parser callbacks
+ *
+ * Parses @src definition from element pointed to by @node. Note that this
+ * does not parse the 'type' and 'format' attributes of @src and 'type' needs
+ * to be set correctly prior to calling this function.
+ */
 int
 virDomainStorageSourceParse(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
