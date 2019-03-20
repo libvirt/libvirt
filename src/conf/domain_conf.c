@@ -23716,6 +23716,18 @@ virDomainDiskSourceFormatPrivateData(virBufferPtr buf,
 }
 
 
+/**
+ * virDomainDiskSourceFormat:
+ * @buf: output buffer
+ * @src: storage source definition to format
+ * @policy: startup policy attribute value, if necessary
+ * @attrIndex: the 'index' attribute of <source> is formatted if true
+ * @flags: XML formatter flags
+ * @xmlopt: XML formatter callbacks
+ *
+ * Formats @src into a <source> element. Note that this doesn't format the
+ * 'type' and 'format' properties of @src.
+ */
 int
 virDomainDiskSourceFormat(virBufferPtr buf,
                           virStorageSourcePtr src,
