@@ -9039,6 +9039,45 @@ virDomainDiskSourcePRParse(xmlNodePtr node,
 }
 
 
+virStorageSourcePtr
+virDomainStorageSourceParseBase(const char *type,
+                                const char *format,
+                                const char *index)
+{
+    VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
+    virStorageSourcePtr ret = NULL;
+
+    if (!(src = virStorageSourceNew()))
+        return NULL;
+
+    src->type = VIR_STORAGE_TYPE_FILE;
+
+    if (type &&
+        (src->type = virStorageTypeFromString(type)) <= 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown storage source type '%s'"), type);
+        return NULL;
+    }
+
+    if (format &&
+        (src->format = virStorageFileFormatTypeFromString(format)) <= 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown storage source format '%s'"), format);
+        return NULL;
+    }
+
+    if (index &&
+        virStrToLong_uip(index, NULL, 10, &src->id) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid storage source index '%s'"), index);
+        return NULL;
+    }
+
+    VIR_STEAL_PTR(ret, src);
+    return ret;
+}
+
+
 int
 virDomainStorageSourceParse(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,

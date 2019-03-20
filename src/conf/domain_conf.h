@@ -3452,6 +3452,11 @@ int virDomainDiskDefCheckDuplicateInfo(const virDomainDiskDef *a,
                                        const virDomainDiskDef *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+virStorageSourcePtr
+virDomainStorageSourceParseBase(const char *type,
+                                const char *format,
+                                const char *index)
+    ATTRIBUTE_RETURN_CHECK;
 
 int virDomainStorageSourceParse(xmlNodePtr node,
                                 xmlXPathContextPtr ctxt,
