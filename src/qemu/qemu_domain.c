@@ -2710,7 +2710,8 @@ qemuDomainObjPrivateXMLParsePR(xmlXPathContextPtr ctxt,
 static int
 qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
                                          xmlXPathContextPtr ctxt,
-                                         virDomainDiskDefPtr disk)
+                                         virDomainDiskDefPtr disk,
+                                         virDomainXMLOptionPtr xmlopt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
@@ -2745,11 +2746,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
         ctxt->node = sourceNode;
 
     if (virDomainStorageSourceParse(ctxt->node, ctxt, migrSource,
-                                    VIR_DOMAIN_DEF_PARSE_STATUS, NULL) < 0)
-        return -1;
-
-    if ((ctxt->node = virXPathNode("./privateData", ctxt)) &&
-        qemuStorageSourcePrivateDataParse(ctxt, migrSource) < 0)
+                                    VIR_DOMAIN_DEF_PARSE_STATUS, xmlopt) < 0)
         return -1;
 
     VIR_STEAL_PTR(diskPriv->migrSource, migrSource);
@@ -2785,7 +2782,8 @@ qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
                 QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating = true;
 
                 if (qemuDomainObjPrivateXMLParseJobNBDSource(nodes[i], ctxt,
-                                                             disk) < 0)
+                                                             disk,
+                                                             priv->driver->xmlopt) < 0)
                     goto cleanup;
             }
 
