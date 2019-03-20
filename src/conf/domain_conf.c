@@ -9166,42 +9166,19 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     if (!(ctxt->node = virXPathNode("./backingStore", ctxt)))
         return 0;
 
-    if (!(backingStore = virStorageSourceNew()))
-        return -1;
-
-    /* backing store is always read-only */
-    backingStore->readonly = true;
-
     /* terminator does not have a type */
     if (!(type = virXMLPropString(ctxt->node, "type"))) {
-        VIR_STEAL_PTR(src->backingStore, backingStore);
+        if (!(src->backingStore = virStorageSourceNew()))
+            return -1;
         return 0;
     }
 
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-        (idx = virXMLPropString(ctxt->node, "index")) &&
-        virStrToLong_uip(idx, NULL, 10, &backingStore->id) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, _("invalid disk index '%s'"), idx);
-        return -1;
-    }
-
-    backingStore->type = virStorageTypeFromString(type);
-    if (backingStore->type <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk backing store type '%s'"), type);
-        return -1;
-    }
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+        idx = virXMLPropString(ctxt->node, "index");
 
     if (!(format = virXPathString("string(./format/@type)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing disk backing store format"));
-        return -1;
-    }
-
-    backingStore->format = virStorageFileFormatTypeFromString(format);
-    if (backingStore->format <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk backing store format '%s'"), format);
         return -1;
     }
 
@@ -9210,6 +9187,12 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
                        _("missing disk backing store source"));
         return -1;
     }
+
+    if (!(backingStore = virDomainStorageSourceParseBase(type, format, idx)))
+        return -1;
+
+    /* backing store is always read-only */
+    backingStore->readonly = true;
 
     if (virDomainStorageSourceParse(source, ctxt, backingStore, flags, xmlopt) < 0 ||
         virDomainDiskBackingStoreParse(ctxt, backingStore, flags, xmlopt) < 0)
