@@ -2716,42 +2716,39 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     VIR_AUTOFREE(char *) format = NULL;
     VIR_AUTOFREE(char *) type = NULL;
-    int ret = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) migrSource = NULL;
     xmlNodePtr sourceNode;
 
     ctxt->node = node;
 
-    if (!(ctxt->node = virXPathNode("./migrationSource", ctxt))) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!(ctxt->node = virXPathNode("./migrationSource", ctxt)))
+        return 0;
 
     if (!(migrSource = virStorageSourceNew()))
-        goto cleanup;
+        return -1;
 
     if (!(type = virXMLPropString(ctxt->node, "type"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing storage source type"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(format = virXMLPropString(ctxt->node, "format"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing storage source format"));
-        goto cleanup;
+        return -1;
     }
 
     if ((migrSource->type = virStorageTypeFromString(type)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown storage source type '%s'"), type);
-        goto cleanup;
+        return -1;
     }
 
     if ((migrSource->format = virStorageFileFormatTypeFromString(format)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown storage source format '%s'"), format);
-        goto cleanup;
+        return -1;
     }
 
     /* newer libvirt uses the <source> subelement instead of formatting the
@@ -2761,17 +2758,14 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
 
     if (virDomainStorageSourceParse(ctxt->node, ctxt, migrSource,
                                     VIR_DOMAIN_DEF_PARSE_STATUS, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if ((ctxt->node = virXPathNode("./privateData", ctxt)) &&
         qemuStorageSourcePrivateDataParse(ctxt, migrSource) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_STEAL_PTR(diskPriv->migrSource, migrSource);
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
