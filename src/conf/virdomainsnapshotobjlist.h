@@ -27,6 +27,10 @@
 # include "virdomainsnapshotobj.h"
 # include "virbuffer.h"
 
+/* Filter that returns true if a given snapshot matches the filter flags */
+typedef bool (*virDomainSnapshotObjListFilter)(virDomainSnapshotObjPtr obj,
+                                               unsigned int flags);
+
 virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
 void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
 
@@ -69,6 +73,29 @@ int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
                              virHashIterator iter,
                              void *data);
 int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA \
+               (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \
+                VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES \
+               (VIR_DOMAIN_SNAPSHOT_LIST_LEAVES       | \
+                VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS \
+               (VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE     | \
+                VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE       | \
+                VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION \
+               (VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL     | \
+                VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL \
+               (VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA  | \
+                VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES    | \
+                VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS    | \
+                VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION)
 
 int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
                            virDomainSnapshotObjPtr from,

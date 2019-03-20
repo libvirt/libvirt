@@ -259,6 +259,38 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 }
 
 /* Snapshot Obj List functions */
+static bool
+virDomainSnapshotFilter(virDomainSnapshotObjPtr obj,
+                        unsigned int flags)
+{
+    virDomainSnapshotDefPtr def = virDomainSnapshotObjGetDef(obj);
+
+    /* Caller has already sanitized flags and performed filtering on
+     * DESCENDANTS and LEAVES. */
+    if (flags & VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS) {
+        if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE) &&
+            def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF)
+            return false;
+        if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY) &&
+            def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
+            return false;
+        if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE) &&
+            def->state != VIR_DOMAIN_SNAPSHOT_SHUTOFF &&
+            def->state != VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
+            return false;
+    }
+
+    if ((flags & VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL) &&
+        virDomainSnapshotIsExternal(obj))
+        return false;
+    if ((flags & VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL) &&
+        !virDomainSnapshotIsExternal(obj))
+        return false;
+
+    return true;
+}
+
+
 static void
 virDomainSnapshotObjListDataFree(void *payload,
                                  const void *name ATTRIBUTE_UNUSED)
@@ -291,12 +323,14 @@ virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots)
     VIR_FREE(snapshots);
 }
 
+
 struct virDomainSnapshotNameData {
     char **const names;
     int maxnames;
     unsigned int flags;
     int count;
     bool error;
+    virDomainSnapshotObjListFilter filter;
 };
 
 static int virDomainSnapshotObjListCopyNames(void *payload,
@@ -315,26 +349,7 @@ static int virDomainSnapshotObjListCopyNames(void *payload,
     if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES) && !obj->nchildren)
         return 0;
 
-    if (data->flags & VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS) {
-        virDomainSnapshotDefPtr def = virDomainSnapshotObjGetDef(obj);
-
-        if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE) &&
-            def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF)
-            return 0;
-        if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY) &&
-            def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
-            return 0;
-        if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE) &&
-            def->state != VIR_DOMAIN_SNAPSHOT_SHUTOFF &&
-            def->state != VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT)
-            return 0;
-    }
-
-    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL) &&
-        virDomainSnapshotIsExternal(obj))
-        return 0;
-    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL) &&
-        !virDomainSnapshotIsExternal(obj))
+    if (data->filter(obj, data->flags))
         return 0;
 
     if (data->names && data->count < data->maxnames &&
@@ -349,11 +364,12 @@ static int virDomainSnapshotObjListCopyNames(void *payload,
 int
 virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
                                  virDomainSnapshotObjPtr from,
-                                 char **const names, int maxnames,
+                                 char **const names,
+                                 int maxnames,
                                  unsigned int flags)
 {
     struct virDomainSnapshotNameData data = { names, maxnames, flags, 0,
-                                              false };
+                                              false, virDomainSnapshotFilter };
     size_t i;
 
     if (!from) {

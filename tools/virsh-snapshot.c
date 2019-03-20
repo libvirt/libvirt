@@ -35,7 +35,7 @@
 #include "virsh-util.h"
 #include "virstring.h"
 #include "virxml.h"
-#include "conf/snapshot_conf.h"
+#include "conf/virdomainsnapshotobjlist.h"
 #include "vsh-table.h"
 
 /* Helper for snapshot-create and snapshot-create-as */
