@@ -35,6 +35,8 @@
   <flag name='reboot-timeout'/>
   <flag name='vnc'/>
   <flag name='VGA'/>
+  <flag name='cirrus-vga'/>
+  <flag name='vmware-svga'/>
   <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
   <flag name='nbd-server'/>
@@ -42,12 +44,12 @@
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
   <flag name='megasas'/>
-  <flag name='tpm-passthrough'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
   <flag name='mem-merge'/>
   <flag name='drive-discard'/>
   <flag name='mlock'/>
+  <flag name='dmi-to-pci-bridge'/>
   <flag name='usb-storage'/>
   <flag name='usb-storage.removable'/>
   <flag name='virtio-mmio'/>
@@ -67,6 +69,7 @@
   <flag name='migrate-rdma'/>
   <flag name='drive-iotune-max'/>
   <flag name='VGA.vgamem_mb'/>
+  <flag name='vmware-svga.vgamem_mb'/>
   <flag name='machine-vmport-opt'/>
   <flag name='aes-key-wrap'/>
   <flag name='dea-key-wrap'/>
@@ -74,6 +77,9 @@
   <flag name='vhost-user-multiqueue'/>
   <flag name='migration-event'/>
   <flag name='gpex-pcihost'/>
+  <flag name='ioh3420'/>
+  <flag name='x3130-upstream'/>
+  <flag name='xio3130-downstream'/>
   <flag name='rtl8139'/>
   <flag name='e1000'/>
   <flag name='virtio-net'/>
@@ -112,6 +118,7 @@
   <flag name='drive-iotune-group'/>
   <flag name='virtio-net.host_mtu'/>
   <flag name='spice-rendernode'/>
+  <flag name='pcie-root-port'/>
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
   <flag name='qemu-xhci'/>
@@ -129,9 +136,9 @@
   <flag name='numa.dist'/>
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
-  <flag name='isa-serial'/>
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
+  <flag name='pcie-pci-bridge'/>
   <flag name='seccomp-blacklist'/>
   <flag name='query-cpus-fast'/>
   <flag name='disk-write-cache'/>
@@ -145,7 +152,6 @@
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='chardev-fd-pass'/>
-  <flag name='tpm-emulator'/>
   <flag name='usb-storage.werror'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
@@ -155,15 +161,16 @@
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
+  <flag name='scsi-disk.device_id'/>
   <flag name='virtio-pci-non-transitional'/>
-  <version>3001050</version>
+  <version>3001091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
-  <package>v3.1.0-1281-g006dce5f8f</package>
+  <package>v4.0.0-rc1-33-ga04d91c701</package>
   <arch>riscv64</arch>
   <machine name='spike_v1.10' maxCpus='1' default='yes'/>
   <machine name='virt' maxCpus='8'/>
-  <machine name='sifive_u' maxCpus='1'/>
+  <machine name='sifive_u' maxCpus='4'/>
   <machine name='sifive_e' maxCpus='1'/>
   <machine name='spike_v1.9.1' maxCpus='1'/>
 </qemuCaps>
