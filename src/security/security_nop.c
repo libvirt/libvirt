@@ -225,6 +225,15 @@ virSecurityDomainSetImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 }
 
 static int
+virSecurityDomainMoveImageMetadataNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                      pid_t pid ATTRIBUTE_UNUSED,
+                                      virStorageSourcePtr src ATTRIBUTE_UNUSED,
+                                      virStorageSourcePtr dst ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
 virSecurityDomainSetMemoryLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                    virDomainDefPtr def ATTRIBUTE_UNUSED,
                                    virDomainMemoryDefPtr mem ATTRIBUTE_UNUSED)
@@ -280,6 +289,7 @@ virSecurityDriver virSecurityDriverNop = {
 
     .domainSetSecurityImageLabel        = virSecurityDomainSetImageLabelNop,
     .domainRestoreSecurityImageLabel    = virSecurityDomainRestoreImageLabelNop,
+    .domainMoveImageMetadata            = virSecurityDomainMoveImageMetadataNop,
 
     .domainSetSecurityMemoryLabel       = virSecurityDomainSetMemoryLabelNop,
     .domainRestoreSecurityMemoryLabel   = virSecurityDomainRestoreMemoryLabelNop,

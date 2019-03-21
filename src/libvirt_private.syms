@@ -1409,6 +1409,7 @@ virSecurityManagerGetModel;
 virSecurityManagerGetMountOptions;
 virSecurityManagerGetNested;
 virSecurityManagerGetProcessLabel;
+virSecurityManagerMoveImageMetadata;
 virSecurityManagerNew;
 virSecurityManagerNewDAC;
 virSecurityManagerNewStack;

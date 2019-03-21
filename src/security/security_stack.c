@@ -600,6 +600,25 @@ virSecurityStackRestoreImageLabel(virSecurityManagerPtr mgr,
 }
 
 static int
+virSecurityStackMoveImageMetadata(virSecurityManagerPtr mgr,
+                                  pid_t pid,
+                                  virStorageSourcePtr src,
+                                  virStorageSourcePtr dst)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerMoveImageMetadata(item->securityManager,
+                                                pid, src, dst) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+static int
 virSecurityStackSetMemoryLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr vm,
                                virDomainMemoryDefPtr mem)
@@ -785,6 +804,7 @@ virSecurityDriver virSecurityDriverStack = {
 
     .domainSetSecurityImageLabel        = virSecurityStackSetImageLabel,
     .domainRestoreSecurityImageLabel    = virSecurityStackRestoreImageLabel,
+    .domainMoveImageMetadata            = virSecurityStackMoveImageMetadata,
 
     .domainSetSecurityMemoryLabel       = virSecurityStackSetMemoryLabel,
     .domainRestoreSecurityMemoryLabel   = virSecurityStackRestoreMemoryLabel,

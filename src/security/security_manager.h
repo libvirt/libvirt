@@ -159,6 +159,10 @@ int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm,
                                         virStorageSourcePtr src,
                                         virSecurityDomainImageLabelFlags flags);
+int virSecurityManagerMoveImageMetadata(virSecurityManagerPtr mgr,
+                                        pid_t pid,
+                                        virStorageSourcePtr src,
+                                        virStorageSourcePtr dst);
 
 int virSecurityManagerSetMemoryLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr vm,

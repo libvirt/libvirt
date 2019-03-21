@@ -432,6 +432,45 @@ virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
 }
 
 
+/**
+ * virSecurityManagerMoveImageMetadata:
+ * @mgr: security manager
+ * @pid: domain's PID
+ * @src: source of metadata
+ * @dst: destination to move metadata to
+ *
+ * For given source @src, metadata is moved to destination @dst.
+ *
+ * If @dst is NULL then metadata is removed from @src and not
+ * stored anywhere.
+ *
+ * If @pid is not -1 enther the @pid mount namespace (usually
+ * @pid refers to a domain) and perform the move from there. If
+ * @pid is -1 then the move is performed from the caller's
+ * namespace.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+int
+virSecurityManagerMoveImageMetadata(virSecurityManagerPtr mgr,
+                                    pid_t pid,
+                                    virStorageSourcePtr src,
+                                    virStorageSourcePtr dst)
+{
+    if (mgr->drv->domainMoveImageMetadata) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainMoveImageMetadata(mgr, pid, src, dst);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
 int
 virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
                                        virDomainDefPtr vm)
