@@ -37,12 +37,11 @@ addr=0x1 \
 -device pcie-root-port,port=0xd,chassis=6,id=pci.6,bus=pcie.0,addr=0x1.0x5 \
 -device pcie-root-port,port=0xe,chassis=7,id=pci.7,bus=pcie.0,addr=0x1.0x6 \
 -device qemu-xhci,p2=15,p3=15,id=usb,bus=pci.2,addr=0x0 \
--device virtio-scsi-pci,id=scsi0,bus=pci.3,addr=0x0 \
--device virtio-serial-pci,id=virtio-serial0,bus=pci.4,addr=0x0 \
+-device virtio-serial-pci,id=virtio-serial0,bus=pci.3,addr=0x0 \
 -drive file=/var/lib/libvirt/images/guest.qcow2,format=qcow2,if=none,\
-id=drive-scsi0-0-0-0 \
--device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,\
-id=scsi0-0-0-0,bootindex=1 \
+id=drive-virtio-disk0 \
+-device virtio-blk-pci,scsi=off,bus=pci.4,addr=0x0,drive=drive-virtio-disk0,\
+id=virtio-disk0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:53:45:a5,bus=pci.1,\
 addr=0x0 \
