@@ -397,7 +397,7 @@ qemuHotplugRemoveManagedPR(virQEMUDriverPtr driver,
     virErrorPtr orig_err;
     int ret = -1;
 
-    if (virDomainDefHasManagedPR(vm->def))
+    if (qemuDomainDefHasManagedPR(vm))
         return 0;
 
     virErrorPreserveLast(&orig_err);

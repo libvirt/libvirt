@@ -1146,6 +1146,8 @@ qemuDomainDiskCachemodeFlags(int cachemode,
 
 char * qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivatePtr priv);
 
+bool qemuDomainDefHasManagedPR(virDomainObjPtr vm);
+
 unsigned int qemuDomainStorageIdNew(qemuDomainObjPrivatePtr priv);
 void qemuDomainStorageIdReset(qemuDomainObjPrivatePtr priv);
 

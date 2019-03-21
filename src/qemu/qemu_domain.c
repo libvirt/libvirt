@@ -14780,3 +14780,44 @@ qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason)
 
     return VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
 }
+
+
+static int
+qemuDomainDefHasManagedPRBlockjobIterator(void *payload,
+                                          const void *name ATTRIBUTE_UNUSED,
+                                          void *opaque)
+{
+    qemuBlockJobDataPtr job = payload;
+    bool *hasPR = opaque;
+
+    if (job->disk)
+        return 0;
+
+    if ((job->chain && virStorageSourceChainHasManagedPR(job->chain)) ||
+        (job->mirrorChain && virStorageSourceChainHasManagedPR(job->mirrorChain)))
+        *hasPR = true;
+
+    return 0;
+}
+
+
+/**
+ * qemuDomainDefHasManagedPR:
+ * @vm: domain object
+ *
+ * @vm must be an active VM. Returns true if @vm has any storage source with
+ * managed persistent reservations.
+ */
+bool
+qemuDomainDefHasManagedPR(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool jobPR = false;
+
+    if (virDomainDefHasManagedPR(vm->def))
+        return true;
+
+    virHashForEach(priv->blockjobs, qemuDomainDefHasManagedPRBlockjobIterator, &jobPR);
+
+    return jobPR;
+}

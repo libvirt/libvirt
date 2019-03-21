@@ -4792,7 +4792,7 @@ processPRDisconnectEvent(virDomainObjPtr vm)
         return;
 
     if (!priv->prDaemonRunning &&
-        virDomainDefHasManagedPR(vm->def))
+        qemuDomainDefHasManagedPR(vm))
         qemuProcessStartManagedPRDaemon(vm);
 }
 

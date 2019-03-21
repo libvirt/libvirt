@@ -2309,7 +2309,7 @@ qemuRefreshPRManagerState(virQEMUDriverPtr driver,
     int ret = -1;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER) ||
-        !virDomainDefHasManagedPR(vm->def))
+        !qemuDomainDefHasManagedPR(vm))
         return 0;
 
     qemuDomainObjEnterMonitor(driver, vm);
