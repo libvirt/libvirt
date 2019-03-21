@@ -9327,7 +9327,7 @@ virDomainStorageSourceParse(xmlNodePtr node,
 }
 
 
-static int
+int
 virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
                                virStorageSourcePtr src,
                                unsigned int flags,

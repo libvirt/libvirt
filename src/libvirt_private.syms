@@ -311,6 +311,7 @@ virDomainDeviceInfoIterate;
 virDomainDeviceSetData;
 virDomainDeviceTypeToString;
 virDomainDeviceValidateAliasForHotplug;
+virDomainDiskBackingStoreParse;
 virDomainDiskBusTypeToString;
 virDomainDiskByAddress;
 virDomainDiskByName;
