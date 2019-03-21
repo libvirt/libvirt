@@ -24058,7 +24058,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
 }
 
 
-static int
+int
 virDomainDiskBackingStoreFormat(virBufferPtr buf,
                                 virStorageSourcePtr src,
                                 virDomainXMLOptionPtr xmlopt,

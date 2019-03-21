@@ -3073,6 +3073,12 @@ int virDomainDiskSourceFormat(virBufferPtr buf,
                               unsigned int flags,
                               virDomainXMLOptionPtr xmlopt);
 
+int
+virDomainDiskBackingStoreFormat(virBufferPtr buf,
+                                virStorageSourcePtr src,
+                                virDomainXMLOptionPtr xmlopt,
+                                unsigned int flags);
+
 int virDomainNetDefFormat(virBufferPtr buf,
                           virDomainNetDefPtr def,
                           char *prefix,
