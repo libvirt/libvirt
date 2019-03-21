@@ -819,7 +819,7 @@ mymain(void)
  * the test cases should be forked using DO_TEST_CAPS_VER with the appropriate
  * version.
  */
-# define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata/caps_"
+# define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
 
 # define DO_TEST_CAPS_INTERNAL(_name, arch, ver, ...) \
     do { \
@@ -827,7 +827,7 @@ mymain(void)
             .name = _name, \
             .suffix = "." arch "-" ver, \
         }; \
-        static const char *capsfile = TEST_CAPS_PATH ver "." arch ".xml"; \
+        static const char *capsfile = TEST_CAPS_PATH "/caps_" ver "." arch ".xml"; \
         static bool stripmachinealiases; \
         if (STREQ(ver, "latest")) { \
             capsfile = virHashLookup(capslatest, arch); \
