@@ -27,3 +27,8 @@ int
 virSecuritySetRememberedLabel(const char *name,
                               const char *path,
                               const char *label);
+
+int
+virSecurityMoveRememberedLabel(const char *name,
+                               const char *src,
+                               const char *dst);
