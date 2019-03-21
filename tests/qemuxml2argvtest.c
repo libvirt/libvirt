@@ -688,6 +688,18 @@ testInfoSetArgs(struct testInfo *info,
         }
     }
 
+    if (!!capsarch ^ !!capsver) {
+        fprintf(stderr, "ARG_CAPS_ARCH and ARG_CAPS_VER "
+                        "must be specified together.\n");
+        goto cleanup;
+    }
+
+    if (qemuCaps && (capsarch || capsver)) {
+        fprintf(stderr, "ARG_QEMU_CAPS can not be combined with ARG_CAPS_ARCH "
+                        "or ARG_CAPS_VER\n");
+        goto cleanup;
+    }
+
     if (!qemuCaps && capsarch && capsver) {
         bool stripmachinealiases = false;
 
