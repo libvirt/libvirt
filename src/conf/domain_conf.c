@@ -24007,7 +24007,11 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
                              unsigned int flags,
                              virDomainXMLOptionPtr xmlopt)
 {
+    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     const char *formatStr = NULL;
+
+    virBufferSetChildIndent(&childBuf, buf);
 
     /* For now, mirroring is currently output-only: we only output it
      * for live domains, therefore we ignore it on input except for
@@ -24022,28 +24026,25 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
 
     if (disk->mirror->format)
         formatStr = virStorageFileFormatTypeToString(disk->mirror->format);
-    virBufferAsprintf(buf, "<mirror type='%s'",
+    virBufferAsprintf(&attrBuf, " type='%s'",
                       virStorageTypeToString(disk->mirror->type));
     if (disk->mirror->type == VIR_STORAGE_TYPE_FILE &&
         disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
-        virBufferEscapeString(buf, " file='%s'", disk->mirror->path);
-        virBufferEscapeString(buf, " format='%s'", formatStr);
+        virBufferEscapeString(&attrBuf, " file='%s'", disk->mirror->path);
+        virBufferEscapeString(&attrBuf, " format='%s'", formatStr);
     }
-    virBufferEscapeString(buf, " job='%s'",
+    virBufferEscapeString(&attrBuf, " job='%s'",
                           virDomainBlockJobTypeToString(disk->mirrorJob));
-    if (disk->mirrorState) {
-        const char *mirror;
+    if (disk->mirrorState)
+        virBufferEscapeString(&attrBuf, " ready='%s'",
+                              virDomainDiskMirrorStateTypeToString(disk->mirrorState));
 
-        mirror = virDomainDiskMirrorStateTypeToString(disk->mirrorState);
-        virBufferEscapeString(buf, " ready='%s'", mirror);
-    }
-    virBufferAddLit(buf, ">\n");
-    virBufferAdjustIndent(buf, 2);
-    virBufferEscapeString(buf, "<format type='%s'/>\n", formatStr);
-    if (virDomainDiskSourceFormat(buf, disk->mirror, 0, false, 0, xmlopt) < 0)
+    virBufferEscapeString(&childBuf, "<format type='%s'/>\n", formatStr);
+    if (virDomainDiskSourceFormat(&childBuf, disk->mirror, 0, false, 0, xmlopt) < 0)
         return -1;
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</mirror>\n");
+
+    if (virXMLFormatElement(buf, "mirror", &attrBuf, &childBuf) < 0)
+        return -1;
 
     return 0;
 }
