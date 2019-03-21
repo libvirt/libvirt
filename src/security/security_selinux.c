@@ -1926,6 +1926,62 @@ virSecuritySELinuxSetImageLabel(virSecurityManagerPtr mgr,
 }
 
 
+struct virSecuritySELinuxMoveImageMetadataData {
+    virSecurityManagerPtr mgr;
+    const char *src;
+    const char *dst;
+};
+
+
+static int
+virSecuritySELinuxMoveImageMetadataHelper(pid_t pid ATTRIBUTE_UNUSED,
+                                          void *opaque)
+{
+    struct virSecuritySELinuxMoveImageMetadataData *data = opaque;
+    const char *paths[2] = { data->src, data->dst };
+    virSecurityManagerMetadataLockStatePtr state;
+    int ret;
+
+    if (!(state = virSecurityManagerMetadataLock(data->mgr, paths, ARRAY_CARDINALITY(paths))))
+        return -1;
+
+    ret = virSecurityMoveRememberedLabel(SECURITY_SELINUX_NAME, data->src, data->dst);
+    virSecurityManagerMetadataUnlock(data->mgr, &state);
+    return ret;
+}
+
+
+static int
+virSecuritySELinuxMoveImageMetadata(virSecurityManagerPtr mgr,
+                                    pid_t pid,
+                                    virStorageSourcePtr src,
+                                    virStorageSourcePtr dst)
+{
+    struct virSecuritySELinuxMoveImageMetadataData data = { .mgr = mgr, 0 };
+    int rc;
+
+    if (src && virStorageSourceIsLocalStorage(src))
+        data.src = src->path;
+
+    if (dst && virStorageSourceIsLocalStorage(dst))
+        data.dst = dst->path;
+
+    if (!data.src)
+        return 0;
+
+    if (pid == -1) {
+        rc = virProcessRunInFork(virSecuritySELinuxMoveImageMetadataHelper,
+                                 &data);
+    } else {
+        rc = virProcessRunInMountNamespace(pid,
+                                           virSecuritySELinuxMoveImageMetadataHelper,
+                                           &data);
+    }
+
+    return rc;
+}
+
+
 static int
 virSecuritySELinuxSetHostdevLabelHelper(const char *file, void *opaque)
 {
@@ -3475,6 +3531,7 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     .domainSetSecurityImageLabel        = virSecuritySELinuxSetImageLabel,
     .domainRestoreSecurityImageLabel    = virSecuritySELinuxRestoreImageLabel,
+    .domainMoveImageMetadata            = virSecuritySELinuxMoveImageMetadata,
 
     .domainSetSecurityMemoryLabel       = virSecuritySELinuxSetMemoryLabel,
     .domainRestoreSecurityMemoryLabel   = virSecuritySELinuxRestoreMemoryLabel,
