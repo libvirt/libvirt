@@ -402,7 +402,8 @@ udevProcessPCI(struct udev_device *device,
     privileged = driver->privileged;
     nodeDeviceUnlock();
 
-    if (udevGetUintProperty(device, "PCI_CLASS", &pci_dev->klass, 16) < 0)
+    pci_dev->klass = -1;
+    if (udevGetIntProperty(device, "PCI_CLASS", &pci_dev->klass, 16) < 0)
         goto cleanup;
 
     if ((p = strrchr(def->sysfs_path, '/')) == NULL ||

@@ -153,7 +153,7 @@ struct _virNodeDevCapPCIDev {
     unsigned int function;
     unsigned int product;
     unsigned int vendor;
-    unsigned int klass;
+    int klass;
     char *product_name;
     char *vendor_name;
     virPCIDeviceAddressPtr physical_function;

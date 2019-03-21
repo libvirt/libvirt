@@ -133,11 +133,13 @@
       <value>pci</value>
     </attribute>
 
-    <element name='class'>
-      <data type="string">
-        <param name="pattern">0x[0-9a-fA-F]{6}</param>
-      </data>
-    </element>
+    <optional>
+      <element name='class'>
+        <data type="string">
+          <param name="pattern">0x[0-9a-fA-F]{6}</param>
+        </data>
+      </element>
+    </optional>
     <element name='domain'>
       <ref name='unsignedLong'/>
     </element>

@@ -71,7 +71,7 @@
             include:
             <dl>
               <dt><code>class</code></dt>
-              <dd>Combined class, subclass and
+              <dd>Optional element for combined class, subclass and
                 programming interface codes as 6-digit hexadecimal number.
                 <span class="since">Since 5.2.0</span></dd>
               <dt><code>domain</code></dt>
