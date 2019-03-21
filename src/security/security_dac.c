@@ -1015,6 +1015,67 @@ virSecurityDACRestoreImageLabel(virSecurityManagerPtr mgr,
 }
 
 
+struct virSecurityDACMoveImageMetadataData {
+    virSecurityManagerPtr mgr;
+    const char *src;
+    const char *dst;
+};
+
+
+static int
+virSecurityDACMoveImageMetadataHelper(pid_t pid ATTRIBUTE_UNUSED,
+                                      void *opaque)
+{
+    struct virSecurityDACMoveImageMetadataData *data = opaque;
+    const char *paths[2] = { data->src, data->dst };
+    virSecurityManagerMetadataLockStatePtr state;
+    int ret;
+
+    if (!(state = virSecurityManagerMetadataLock(data->mgr, paths, ARRAY_CARDINALITY(paths))))
+        return -1;
+
+    ret = virSecurityMoveRememberedLabel(SECURITY_DAC_NAME, data->src, data->dst);
+    virSecurityManagerMetadataUnlock(data->mgr, &state);
+    return ret;
+}
+
+
+static int
+virSecurityDACMoveImageMetadata(virSecurityManagerPtr mgr,
+                                pid_t pid,
+                                virStorageSourcePtr src,
+                                virStorageSourcePtr dst)
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    struct virSecurityDACMoveImageMetadataData data = { .mgr = mgr, 0 };
+    int rc;
+
+    /* If dynamicOwnership is turned off, or owner remembering is
+     * not enabled there's nothing for us to do. */
+    if (!priv->dynamicOwnership)
+        return 0;
+
+    if (src && virStorageSourceIsLocalStorage(src))
+        data.src = src->path;
+
+    if (dst && virStorageSourceIsLocalStorage(dst))
+        data.dst = dst->path;
+
+    if (!data.src)
+        return 0;
+
+    if (pid == -1) {
+        rc = virProcessRunInFork(virSecurityDACMoveImageMetadataHelper, &data);
+    } else {
+        rc = virProcessRunInMountNamespace(pid,
+                                           virSecurityDACMoveImageMetadataHelper,
+                                           &data);
+    }
+
+    return rc;
+}
+
+
 static int
 virSecurityDACSetHostdevLabelHelper(const char *file,
                                     void *opaque)
@@ -2384,6 +2445,7 @@ virSecurityDriver virSecurityDriverDAC = {
 
     .domainSetSecurityImageLabel        = virSecurityDACSetImageLabel,
     .domainRestoreSecurityImageLabel    = virSecurityDACRestoreImageLabel,
+    .domainMoveImageMetadata            = virSecurityDACMoveImageMetadata,
 
     .domainSetSecurityMemoryLabel       = virSecurityDACSetMemoryLabel,
     .domainRestoreSecurityMemoryLabel   = virSecurityDACRestoreMemoryLabel,
