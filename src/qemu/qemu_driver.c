@@ -1,7 +1,7 @@
 /*
  * qemu_driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006-2016 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -482,9 +482,11 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         if (snap == NULL) {
             virDomainSnapshotDefFree(def);
         } else if (cur) {
+            if (current)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Too many snapshots claiming to be current for domain %s"),
+                               vm->def->name);
             current = snap;
-            if (!vm->current_snapshot)
-                vm->current_snapshot = snap;
         }
 
         VIR_FREE(fullpath);
@@ -495,13 +497,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
                        _("Failed to fully read directory %s"),
                        snapDir);
 
-    if (vm->current_snapshot != current) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Too many snapshots claiming to be current for domain %s"),
-                       vm->def->name);
-        vm->current_snapshot = NULL;
-    }
-
+    vm->current_snapshot = current;
     if (virDomainSnapshotUpdateRelations(vm->snapshots) < 0)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Snapshots have inconsistent relations for domain %s"),
