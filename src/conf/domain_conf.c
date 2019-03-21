@@ -24040,7 +24040,7 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
                               virDomainDiskMirrorStateTypeToString(disk->mirrorState));
 
     virBufferEscapeString(&childBuf, "<format type='%s'/>\n", formatStr);
-    if (virDomainDiskSourceFormat(&childBuf, disk->mirror, 0, false, 0, xmlopt) < 0)
+    if (virDomainDiskSourceFormat(&childBuf, disk->mirror, 0, false, flags, xmlopt) < 0)
         return -1;
 
     if (virXMLFormatElement(buf, "mirror", &attrBuf, &childBuf) < 0)
