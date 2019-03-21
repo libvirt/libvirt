@@ -163,6 +163,25 @@ qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
 
 
 int
+qemuSecurityMoveImageMetadata(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virStorageSourcePtr src,
+                              virStorageSourcePtr dst)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    pid_t pid = -1;
+
+    if (!priv->rememberOwner)
+        return 0;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        pid = vm->pid;
+
+    return virSecurityManagerMoveImageMetadata(driver->securityManager, pid, src, dst);
+}
+
+
+int
 qemuSecuritySetHostdevLabel(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virDomainHostdevDefPtr hostdev)

@@ -42,6 +42,11 @@ int qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
                                   virStorageSourcePtr src,
                                   bool backingChain);
 
+int qemuSecurityMoveImageMetadata(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  virStorageSourcePtr src,
+                                  virStorageSourcePtr dst);
+
 int qemuSecuritySetHostdevLabel(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 virDomainHostdevDefPtr hostdev);
