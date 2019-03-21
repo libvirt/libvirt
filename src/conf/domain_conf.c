@@ -23840,13 +23840,14 @@ virDomainDiskSourceFormat(virBufferPtr buf,
 
 static int
 virDomainDiskBackingStoreFormat(virBufferPtr buf,
-                                virStorageSourcePtr backingStore,
+                                virStorageSourcePtr src,
                                 virDomainXMLOptionPtr xmlopt,
                                 unsigned int flags)
 {
     VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     bool inactive = flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+    virStorageSourcePtr backingStore = src->backingStore;
 
     virBufferSetChildIndent(&childBuf, buf);
 
@@ -23879,8 +23880,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     if (virDomainDiskSourceFormat(&childBuf, backingStore, 0, false, flags, xmlopt) < 0)
         return -1;
 
-    if (virDomainDiskBackingStoreFormat(&childBuf, backingStore->backingStore,
-                                        xmlopt, flags) < 0)
+    if (virDomainDiskBackingStoreFormat(&childBuf, backingStore, xmlopt, flags) < 0)
         return -1;
 
     if (virXMLFormatElement(buf, "backingStore", &attrBuf, &childBuf) < 0)
@@ -24142,8 +24142,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     /* Don't format backingStore to inactive XMLs until the code for
      * persistent storage of backing chains is ready. */
-    if (virDomainDiskBackingStoreFormat(buf, def->src->backingStore,
-                                        xmlopt, flags) < 0)
+    if (virDomainDiskBackingStoreFormat(buf, def->src, xmlopt, flags) < 0)
         return -1;
 
     virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
