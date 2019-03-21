@@ -974,9 +974,9 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
         return -1;
     }
     if (other) {
-        if (other == vm->current_snapshot) {
+        if (other == virDomainSnapshotGetCurrent(vm->snapshots)) {
             *update_current = true;
-            vm->current_snapshot = NULL;
+            virDomainSnapshotSetCurrent(vm->snapshots, NULL);
         }
 
         /* Drop and rebuild the parent relationship, but keep all

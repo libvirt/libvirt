@@ -990,6 +990,9 @@ virDomainListSnapshots;
 virDomainSnapshotAssignDef;
 virDomainSnapshotFindByName;
 virDomainSnapshotForEach;
+virDomainSnapshotGetCurrent;
+virDomainSnapshotGetCurrentName;
+virDomainSnapshotIsCurrentName;
 virDomainSnapshotObjListFormat;
 virDomainSnapshotObjListFree;
 virDomainSnapshotObjListGetNames;
@@ -997,6 +1000,7 @@ virDomainSnapshotObjListNew;
 virDomainSnapshotObjListNum;
 virDomainSnapshotObjListParse;
 virDomainSnapshotObjListRemove;
+virDomainSnapshotSetCurrent;
 virDomainSnapshotUpdateRelations;
 
 

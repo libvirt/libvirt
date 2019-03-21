@@ -40,6 +40,7 @@ struct _virDomainSnapshotObjList {
     virHashTable *objs;
 
     virDomainSnapshotObj metaroot; /* Special parent of all root snapshots */
+    virDomainSnapshotObjPtr current; /* The current snapshot, if any */
 };
 
 
@@ -52,7 +53,6 @@ int
 virDomainSnapshotObjListParse(const char *xmlStr,
                               const unsigned char *domain_uuid,
                               virDomainSnapshotObjListPtr snapshots,
-                              virDomainSnapshotObjPtr *current_snap,
                               virCapsPtr caps,
                               virDomainXMLOptionPtr xmlopt,
                               unsigned int flags)
@@ -64,6 +64,7 @@ virDomainSnapshotObjListParse(const char *xmlStr,
     int n;
     size_t i;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
+    virDomainSnapshotObjPtr snap;
     VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
     VIR_AUTOFREE(char *) current = NULL;
 
@@ -73,7 +74,7 @@ virDomainSnapshotObjListParse(const char *xmlStr,
                        _("incorrect flags for bulk parse"));
         return -1;
     }
-    if (snapshots->metaroot.nchildren || *current_snap) {
+    if (snapshots->metaroot.nchildren || snapshots->current) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bulk define of snapshots only possible with "
                          "no existing snapshot"));
@@ -103,7 +104,6 @@ virDomainSnapshotObjListParse(const char *xmlStr,
 
     for (i = 0; i < n; i++) {
         virDomainSnapshotDefPtr def;
-        virDomainSnapshotObjPtr snap;
 
         def = virDomainSnapshotDefParseNode(xml, nodes[i], caps, xmlopt, NULL,
                                             flags);
@@ -126,12 +126,13 @@ virDomainSnapshotObjListParse(const char *xmlStr,
     }
 
     if (current) {
-        if (!(*current_snap = virDomainSnapshotFindByName(snapshots,
-                                                          current))) {
+        snap = virDomainSnapshotFindByName(snapshots, current);
+        if (!snap) {
             virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                            _("no snapshot matching current='%s'"), current);
             goto cleanup;
         }
+        virDomainSnapshotSetCurrent(snapshots, snap);
     }
 
     ret = n;
@@ -181,7 +182,6 @@ int
 virDomainSnapshotObjListFormat(virBufferPtr buf,
                                const char *uuidstr,
                                virDomainSnapshotObjListPtr snapshots,
-                               virDomainSnapshotObjPtr current_snapshot,
                                virCapsPtr caps,
                                virDomainXMLOptionPtr xmlopt,
                                unsigned int flags)
@@ -196,9 +196,8 @@ virDomainSnapshotObjListFormat(virBufferPtr buf,
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE, -1);
     virBufferAddLit(buf, "<snapshots");
-    if (current_snapshot)
-        virBufferEscapeString(buf, " current='%s'",
-                              current_snapshot->def->name);
+    virBufferEscapeString(buf, " current='%s'",
+                          virDomainSnapshotGetCurrentName(snapshots));
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
     if (virDomainSnapshotForEach(snapshots, virDomainSnapshotFormatOne,
@@ -436,10 +435,53 @@ virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
     return name ? virHashLookup(snapshots->objs, name) : &snapshots->metaroot;
 }
 
-void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
-                                    virDomainSnapshotObjPtr snapshot)
+
+/* Return the current snapshot, or NULL */
+virDomainSnapshotObjPtr
+virDomainSnapshotGetCurrent(virDomainSnapshotObjListPtr snapshots)
 {
+    return snapshots->current;
+}
+
+
+/* Return the current snapshot's name, or NULL */
+const char *
+virDomainSnapshotGetCurrentName(virDomainSnapshotObjListPtr snapshots)
+{
+    if (snapshots->current)
+        return snapshots->current->def->name;
+    return NULL;
+}
+
+
+/* Return true if name matches the current snapshot */
+bool
+virDomainSnapshotIsCurrentName(virDomainSnapshotObjListPtr snapshots,
+                               const char *name)
+{
+    return snapshots->current && STREQ(snapshots->current->def->name, name);
+}
+
+
+/* Update the current snapshot, using NULL if no current remains */
+void
+virDomainSnapshotSetCurrent(virDomainSnapshotObjListPtr snapshots,
+                            virDomainSnapshotObjPtr snapshot)
+{
+    snapshots->current = snapshot;
+}
+
+
+/* Remove snapshot from the list; return true if it was current */
+bool
+virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
+                               virDomainSnapshotObjPtr snapshot)
+{
+    bool ret = snapshots->current == snapshot;
     virHashRemoveEntry(snapshots->objs, snapshot->def->name);
+    if (ret)
+        snapshots->current = NULL;
+    return ret;
 }
 
 int
@@ -506,6 +548,8 @@ virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
     snapshots->metaroot.nchildren = 0;
     snapshots->metaroot.first_child = NULL;
     virHashForEach(snapshots->objs, virDomainSnapshotSetRelations, &act);
+    if (act.err)
+        snapshots->current = NULL;
     return act.err;
 }
 

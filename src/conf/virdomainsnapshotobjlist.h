@@ -33,14 +33,12 @@ void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
 int virDomainSnapshotObjListParse(const char *xmlStr,
                                   const unsigned char *domain_uuid,
                                   virDomainSnapshotObjListPtr snapshots,
-                                  virDomainSnapshotObjPtr *current_snap,
                                   virCapsPtr caps,
                                   virDomainXMLOptionPtr xmlopt,
                                   unsigned int flags);
 int virDomainSnapshotObjListFormat(virBufferPtr buf,
                                    const char *uuidstr,
                                    virDomainSnapshotObjListPtr snapshots,
-                                   virDomainSnapshotObjPtr current_snapshot,
                                    virCapsPtr caps,
                                    virDomainXMLOptionPtr xmlopt,
                                    unsigned int flags);
@@ -57,7 +55,13 @@ int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
                                 unsigned int flags);
 virDomainSnapshotObjPtr virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
                                                     const char *name);
-void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
+virDomainSnapshotObjPtr virDomainSnapshotGetCurrent(virDomainSnapshotObjListPtr snapshots);
+const char *virDomainSnapshotGetCurrentName(virDomainSnapshotObjListPtr snapshots);
+bool virDomainSnapshotIsCurrentName(virDomainSnapshotObjListPtr snapshots,
+                                    const char *name);
+void virDomainSnapshotSetCurrent(virDomainSnapshotObjListPtr snapshots,
+                                 virDomainSnapshotObjPtr snapshot);
+bool virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot);
 int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
                              virHashIterator iter,

@@ -2517,7 +2517,6 @@ struct _virDomainObj {
     virDomainDefPtr newDef; /* New definition to activate at shutdown */
 
     virDomainSnapshotObjListPtr snapshots;
-    virDomainSnapshotObjPtr current_snapshot;
 
     bool hasManagedSave;
 

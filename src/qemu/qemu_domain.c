@@ -8461,7 +8461,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     unsigned int flags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE |
         VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL;
 
-    if (vm->current_snapshot == snapshot)
+    if (virDomainSnapshotGetCurrent(vm->snapshots) == snapshot)
         flags |= VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT;
     virUUIDFormat(vm->def->uuid, uuidstr);
     newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def, caps, xmlopt,
@@ -8614,8 +8614,8 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                     vm->def->name, snap->def->name) < 0)
         goto cleanup;
 
-    if (snap == vm->current_snapshot) {
-        vm->current_snapshot = NULL;
+    if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {
+        virDomainSnapshotSetCurrent(vm->snapshots, NULL);
         if (update_parent && snap->def->parent) {
             parentsnap = virDomainSnapshotFindByName(vm->snapshots,
                                                      snap->def->parent);
@@ -8623,13 +8623,13 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                 VIR_WARN("missing parent snapshot matching name '%s'",
                          snap->def->parent);
             } else {
-                vm->current_snapshot = parentsnap;
+                virDomainSnapshotSetCurrent(vm->snapshots, parentsnap);
                 if (qemuDomainSnapshotWriteMetadata(vm, parentsnap, driver->caps,
                                                     driver->xmlopt,
                                                     cfg->snapshotDir) < 0) {
                     VIR_WARN("failed to set parent snapshot '%s' as current",
                              snap->def->parent);
-                    vm->current_snapshot = NULL;
+                    virDomainSnapshotSetCurrent(vm->snapshots, NULL);
                 }
             }
         }
@@ -8658,7 +8658,7 @@ int qemuDomainSnapshotDiscardAll(void *payload,
     virQEMUSnapRemovePtr curr = data;
     int err;
 
-    if (curr->vm->current_snapshot == snap)
+    if (virDomainSnapshotGetCurrent(curr->vm->snapshots) == snap)
         curr->current = true;
     err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap, false,
                                     curr->metadata_only);
@@ -8679,8 +8679,6 @@ qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
     rem.err = 0;
     virDomainSnapshotForEach(vm->snapshots, qemuDomainSnapshotDiscardAll,
                              &rem);
-    if (rem.current)
-        vm->current_snapshot = NULL;
     if (virDomainSnapshotUpdateRelations(vm->snapshots) < 0 && !rem.err)
         rem.err = -1;
 
