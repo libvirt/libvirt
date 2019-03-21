@@ -983,6 +983,7 @@ virDomainObjListRename;
 virDomainSnapshotDropParent;
 virDomainSnapshotForEachChild;
 virDomainSnapshotForEachDescendant;
+virDomainSnapshotMoveChildren;
 
 
 # conf/virdomainsnapshotobjlist.h

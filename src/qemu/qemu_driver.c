@@ -16763,7 +16763,6 @@ struct _virQEMUSnapReparent {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     int err;
-    virDomainSnapshotObjPtr last;
 };
 
 
@@ -16779,16 +16778,12 @@ qemuDomainSnapshotReparentChildren(void *payload,
         return 0;
 
     VIR_FREE(snap->def->parent);
-    snap->parent = rep->parent;
 
     if (rep->parent->def &&
         VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
         rep->err = -1;
         return 0;
     }
-
-    if (!snap->sibling)
-        rep->last = snap;
 
     rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap,
                                                rep->caps, rep->xmlopt,
@@ -16877,7 +16872,6 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rep.parent = snap->parent;
         rep.vm = vm;
         rep.err = 0;
-        rep.last = NULL;
         rep.caps = driver->caps;
         rep.xmlopt = driver->xmlopt;
         virDomainSnapshotForEachChild(snap,
@@ -16885,10 +16879,7 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                                       &rep);
         if (rep.err < 0)
             goto endjob;
-        /* Can't modify siblings during ForEachChild, so do it now.  */
-        snap->parent->nchildren += snap->nchildren;
-        rep.last->sibling = snap->parent->first_child;
-        snap->parent->first_child = snap->first_child;
+        virDomainSnapshotMoveChildren(snap, snap->parent);
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {

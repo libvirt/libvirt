@@ -46,5 +46,7 @@ int virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
                                        virHashIterator iter,
                                        void *data);
 void virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot);
+void virDomainSnapshotMoveChildren(virDomainSnapshotObjPtr from,
+                                   virDomainSnapshotObjPtr to);
 
 #endif /* LIBVIRT_VIRDOMAINSNAPSHOTOBJ_H */

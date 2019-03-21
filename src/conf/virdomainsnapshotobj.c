@@ -121,3 +121,26 @@ virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot)
     snapshot->parent = NULL;
     snapshot->sibling = NULL;
 }
+
+
+/* Take all children of @from and convert them into children of @to. */
+void
+virDomainSnapshotMoveChildren(virDomainSnapshotObjPtr from,
+                              virDomainSnapshotObjPtr to)
+{
+    virDomainSnapshotObjPtr child;
+    virDomainSnapshotObjPtr last;
+
+    if (!from->first_child)
+        return;
+    for (child = from->first_child; child; child = child->sibling) {
+        child->parent = to;
+        if (!child->sibling)
+            last = child;
+    }
+    to->nchildren += from->nchildren;
+    last->sibling = to->first_child;
+    to->first_child = from->first_child;
+    from->nchildren = 0;
+    from->first_child = NULL;
+}

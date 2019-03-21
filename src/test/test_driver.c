@@ -6454,7 +6454,6 @@ struct _testSnapReparentData {
     virDomainSnapshotObjPtr parent;
     virDomainObjPtr vm;
     int err;
-    virDomainSnapshotObjPtr last;
 };
 
 static int
@@ -6469,7 +6468,6 @@ testDomainSnapshotReparentChildren(void *payload,
         return 0;
 
     VIR_FREE(snap->def->parent);
-    snap->parent = rep->parent;
 
     if (rep->parent->def &&
         VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
@@ -6477,8 +6475,6 @@ testDomainSnapshotReparentChildren(void *payload,
         return 0;
     }
 
-    if (!snap->sibling)
-        rep->last = snap;
     return 0;
 }
 
@@ -6515,17 +6511,13 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rep.parent = snap->parent;
         rep.vm = vm;
         rep.err = 0;
-        rep.last = NULL;
         virDomainSnapshotForEachChild(snap,
                                       testDomainSnapshotReparentChildren,
                                       &rep);
         if (rep.err < 0)
             goto cleanup;
 
-        /* Can't modify siblings during ForEachChild, so do it now.  */
-        snap->parent->nchildren += snap->nchildren;
-        rep.last->sibling = snap->parent->first_child;
-        snap->parent->first_child = snap->first_child;
+        virDomainSnapshotMoveChildren(snap, snap->parent);
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
