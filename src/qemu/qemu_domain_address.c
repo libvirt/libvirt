@@ -473,9 +473,12 @@ qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
         return;
 
     /* We use virtio-mmio by default on mach-virt guests only if they already
-     * have at least one virtio-mmio device: in all other cases, we prefer
-     * virtio-pci */
+     * have at least one virtio-mmio device: in all other cases, assuming
+     * the QEMU binary supports all necessary capabilities (PCIe Root plus
+     * some kind of PCIe Root Port), we prefer virtio-pci */
     if (qemuDomainHasPCIeRoot(def) &&
+        (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCIE_ROOT_PORT) ||
+         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IOH3420)) &&
         !qemuDomainHasVirtioMMIODevices(def)) {
         qemuDomainPrimeVirtioDeviceAddresses(def,
                                              VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI);
