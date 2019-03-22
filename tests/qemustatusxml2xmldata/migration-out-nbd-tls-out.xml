@@ -237,25 +237,29 @@
   </qemuCaps>
   <job type='none' async='migration out' phase='perform3' flags='0x0'>
     <disk dev='vdb' migrating='yes'>
-      <migrationSource type='network' format='raw' protocol='nbd' name='drive-virtio-disk1' tlsFromConfig='0'>
-        <host name='andariel.usersys.redhat.com' port='49152'/>
-        <privateData>
-          <nodenames>
-            <nodename type='storage' name='migration-vdb-storage'/>
-            <nodename type='format' name='migration-vdb-format'/>
-          </nodenames>
-        </privateData>
+      <migrationSource type='network' format='raw'>
+        <source protocol='nbd' name='drive-virtio-disk1' tlsFromConfig='0'>
+          <host name='andariel.usersys.redhat.com' port='49152'/>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='migration-vdb-storage'/>
+              <nodename type='format' name='migration-vdb-format'/>
+            </nodenames>
+          </privateData>
+        </source>
       </migrationSource>
     </disk>
     <disk dev='vdc' migrating='yes'>
-      <migrationSource type='network' format='raw' protocol='nbd' name='drive-virtio-disk2' tlsFromConfig='0'>
-        <host name='andariel.usersys.redhat.com' port='49152'/>
-        <privateData>
-          <nodenames>
-            <nodename type='storage' name='migration-vdc-storage'/>
-            <nodename type='format' name='migration-vdc-format'/>
-          </nodenames>
-        </privateData>
+      <migrationSource type='network' format='raw'>
+        <source protocol='nbd' name='drive-virtio-disk2' tlsFromConfig='0'>
+          <host name='andariel.usersys.redhat.com' port='49152'/>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='migration-vdc-storage'/>
+              <nodename type='format' name='migration-vdc-format'/>
+            </nodenames>
+          </privateData>
+        </source>
       </migrationSource>
     </disk>
     <disk dev='hda' migrating='no'/>

@@ -2343,28 +2343,21 @@ qemuDomainObjPrivateXMLFormatPR(virBufferPtr buf,
 
 static int
 qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
-                                                virStorageSourcePtr src)
+                                                virStorageSourcePtr src,
+                                                virDomainXMLOptionPtr xmlopt)
 {
     VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) privateDataBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
-    virBufferSetChildIndent(&privateDataBuf, &childBuf);
 
     virBufferAsprintf(&attrBuf, " type='%s' format='%s'",
                       virStorageTypeToString(src->type),
                       virStorageFileFormatTypeToString(src->format));
 
-    if (virDomainStorageSourceFormat(&attrBuf, &childBuf, src,
-                                     VIR_DOMAIN_DEF_FORMAT_STATUS) < 0)
-        goto cleanup;
-
-    if (qemuStorageSourcePrivateDataFormat(src, &privateDataBuf) < 0)
-        goto cleanup;
-
-    if (virXMLFormatElement(&childBuf, "privateData", NULL, &privateDataBuf) < 0)
+    if (virDomainDiskSourceFormat(&childBuf, src, 0, false,
+                                  VIR_DOMAIN_DEF_FORMAT_STATUS, xmlopt) < 0)
         goto cleanup;
 
     if (virXMLFormatElement(buf, "migrationSource", &attrBuf, &childBuf) < 0)
@@ -2381,6 +2374,7 @@ static int
 qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
                                           virDomainObjPtr vm)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
@@ -2399,7 +2393,8 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
 
         if (diskPriv->migrSource &&
             qemuDomainObjPrivateXMLFormatNBDMigrationSource(&childBuf,
-                                                            diskPriv->migrSource) < 0)
+                                                            diskPriv->migrSource,
+                                                            priv->driver->xmlopt) < 0)
             goto cleanup;
 
         if (virXMLFormatElement(buf, "disk", &attrBuf, &childBuf) < 0)
@@ -2723,6 +2718,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
     char *type = NULL;
     int ret = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) migrSource = NULL;
+    xmlNodePtr sourceNode;
 
     ctxt->node = node;
 
@@ -2757,6 +2753,11 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
                        _("unknown storage source format '%s'"), format);
         goto cleanup;
     }
+
+    /* newer libvirt uses the <source> subelement instead of formatting the
+     * source directly into <migrationSource> */
+    if ((sourceNode = virXPathNode("./source", ctxt)))
+        ctxt->node = sourceNode;
 
     if (virDomainStorageSourceParse(ctxt->node, ctxt, migrSource,
                                     VIR_DOMAIN_DEF_PARSE_STATUS, NULL) < 0)
