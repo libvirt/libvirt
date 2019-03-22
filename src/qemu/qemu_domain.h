@@ -681,20 +681,20 @@ int qemuDomainLogAppendMessage(virQEMUDriverPtr driver,
 const char *qemuFindQemuImgBinary(virQEMUDriverPtr driver);
 
 int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
-                                    virDomainSnapshotObjPtr snapshot,
+                                    virDomainMomentObjPtr snapshot,
                                     virCapsPtr caps,
                                     virDomainXMLOptionPtr xmlopt,
                                     const char *snapshotDir);
 
 int qemuDomainSnapshotForEachQcow2(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
-                                   virDomainSnapshotObjPtr snap,
+                                   virDomainMomentObjPtr snap,
                                    const char *op,
                                    bool try_all);
 
 int qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virDomainSnapshotObjPtr snap,
+                              virDomainMomentObjPtr snap,
                               bool update_current,
                               bool metadata_only);
 

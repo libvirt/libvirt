@@ -822,7 +822,7 @@ testParseDomainSnapshots(testDriverPtr privconn,
     bool cur;
 
     for (i = 0; i < nsdata->num_snap_nodes; i++) {
-        virDomainSnapshotObjPtr snap;
+        virDomainMomentObjPtr snap;
         virDomainSnapshotDefPtr def;
         xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
                                                   "domainsnapshot");
@@ -5946,11 +5946,11 @@ testDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
  * Snapshot APIs
  */
 
-static virDomainSnapshotObjPtr
+static virDomainMomentObjPtr
 testSnapObjFromName(virDomainObjPtr vm,
                     const char *name)
 {
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     snap = virDomainSnapshotFindByName(vm->snapshots, name);
     if (!snap)
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
@@ -5959,7 +5959,7 @@ testSnapObjFromName(virDomainObjPtr vm,
     return snap;
 }
 
-static virDomainSnapshotObjPtr
+static virDomainMomentObjPtr
 testSnapObjFromSnapshot(virDomainObjPtr vm,
                         virDomainSnapshotPtr snapshot)
 {
@@ -6042,7 +6042,7 @@ testDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
                                     unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
@@ -6068,7 +6068,7 @@ testDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
                               unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
@@ -6094,7 +6094,7 @@ testDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
                                   unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
@@ -6121,7 +6121,7 @@ testDomainSnapshotLookupByName(virDomainPtr domain,
                                unsigned int flags)
 {
     virDomainObjPtr vm;
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
 
     virCheckFlags(0, NULL);
@@ -6162,7 +6162,7 @@ testDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
                             unsigned int flags)
 {
     virDomainObjPtr vm;
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     virDomainSnapshotPtr parent = NULL;
 
     virCheckFlags(0, NULL);
@@ -6193,7 +6193,7 @@ testDomainSnapshotCurrent(virDomainPtr domain,
 {
     virDomainObjPtr vm;
     virDomainSnapshotPtr snapshot = NULL;
-    virDomainSnapshotObjPtr current;
+    virDomainMomentObjPtr current;
 
     virCheckFlags(0, NULL);
 
@@ -6220,7 +6220,7 @@ testDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 {
     virDomainObjPtr vm = NULL;
     char *xml = NULL;
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     testDriverPtr privconn = snapshot->domain->conn->privateData;
 
@@ -6322,7 +6322,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainSnapshotDefPtr def = NULL;
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     virObjectEventPtr event = NULL;
     bool update_current = true;
@@ -6411,12 +6411,12 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
  cleanup:
     if (vm) {
         if (snapshot) {
-            virDomainSnapshotObjPtr other;
+            virDomainMomentObjPtr other;
             if (update_current)
                 virDomainSnapshotSetCurrent(vm->snapshots, snap);
             other = virDomainSnapshotFindByName(vm->snapshots,
                                                 snap->def->parent);
-            virDomainSnapshotSetParent(snap, other);
+            virDomainMomentSetParent(snap, other);
         }
         virDomainObjEndAPI(&vm);
     }
@@ -6438,7 +6438,7 @@ testDomainSnapshotDiscardAll(void *payload,
                              const void *name ATTRIBUTE_UNUSED,
                              void *data)
 {
-    virDomainSnapshotObjPtr snap = payload;
+    virDomainMomentObjPtr snap = payload;
     testSnapRemoveDataPtr curr = data;
 
     curr->current |= virDomainSnapshotObjListRemove(curr->vm->snapshots, snap);
@@ -6448,7 +6448,7 @@ testDomainSnapshotDiscardAll(void *payload,
 typedef struct _testSnapReparentData testSnapReparentData;
 typedef testSnapReparentData *testSnapReparentDataPtr;
 struct _testSnapReparentData {
-    virDomainSnapshotObjPtr parent;
+    virDomainMomentObjPtr parent;
     virDomainObjPtr vm;
     int err;
 };
@@ -6458,7 +6458,7 @@ testDomainSnapshotReparentChildren(void *payload,
                                    const void *name ATTRIBUTE_UNUSED,
                                    void *data)
 {
-    virDomainSnapshotObjPtr snap = payload;
+    virDomainMomentObjPtr snap = payload;
     testSnapReparentDataPtr rep = data;
 
     if (rep->err < 0)
@@ -6480,8 +6480,8 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                          unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
-    virDomainSnapshotObjPtr snap = NULL;
-    virDomainSnapshotObjPtr parentsnap = NULL;
+    virDomainMomentObjPtr snap = NULL;
+    virDomainMomentObjPtr parentsnap = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
@@ -6498,9 +6498,9 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         testSnapRemoveData rem;
         rem.vm = vm;
         rem.current = false;
-        virDomainSnapshotForEachDescendant(snap,
-                                           testDomainSnapshotDiscardAll,
-                                           &rem);
+        virDomainMomentForEachDescendant(snap,
+                                         testDomainSnapshotDiscardAll,
+                                         &rem);
         if (rem.current)
             virDomainSnapshotSetCurrent(vm->snapshots, snap);
     } else if (snap->nchildren) {
@@ -6508,19 +6508,19 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rep.parent = snap->parent;
         rep.vm = vm;
         rep.err = 0;
-        virDomainSnapshotForEachChild(snap,
-                                      testDomainSnapshotReparentChildren,
-                                      &rep);
+        virDomainMomentForEachChild(snap,
+                                    testDomainSnapshotReparentChildren,
+                                    &rep);
         if (rep.err < 0)
             goto cleanup;
 
-        virDomainSnapshotMoveChildren(snap, snap->parent);
+        virDomainMomentMoveChildren(snap, snap->parent);
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
-        virDomainSnapshotDropChildren(snap);
+        virDomainMomentDropChildren(snap);
     } else {
-        virDomainSnapshotDropParent(snap);
+        virDomainMomentDropParent(snap);
         if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {
             if (snap->def->parent) {
                 parentsnap = virDomainSnapshotFindByName(vm->snapshots,
@@ -6546,7 +6546,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 {
     testDriverPtr privconn = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     virObjectEventPtr event = NULL;
     virObjectEventPtr event2 = NULL;
     virDomainDefPtr config = NULL;

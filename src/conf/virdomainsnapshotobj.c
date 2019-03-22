@@ -33,80 +33,80 @@
 
 VIR_LOG_INIT("conf.virdomainsnapshotobj");
 
-/* Run iter(data) on all direct children of snapshot, while ignoring all
- * other entries in snapshots.  Return the number of children
+/* Run iter(data) on all direct children of moment, while ignoring all
+ * other entries in moments.  Return the number of children
  * visited.  No particular ordering is guaranteed.  */
 int
-virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
-                              virHashIterator iter,
-                              void *data)
+virDomainMomentForEachChild(virDomainMomentObjPtr moment,
+                            virHashIterator iter,
+                            void *data)
 {
-    virDomainSnapshotObjPtr child = snapshot->first_child;
+    virDomainMomentObjPtr child = moment->first_child;
 
     while (child) {
-        virDomainSnapshotObjPtr next = child->sibling;
+        virDomainMomentObjPtr next = child->sibling;
         (iter)(child, child->def->name, data);
         child = next;
     }
 
-    return snapshot->nchildren;
+    return moment->nchildren;
 }
 
-struct snapshot_act_on_descendant {
+struct moment_act_on_descendant {
     int number;
     virHashIterator iter;
     void *data;
 };
 
 static int
-virDomainSnapshotActOnDescendant(void *payload,
-                                 const void *name,
-                                 void *data)
+virDomainMomentActOnDescendant(void *payload,
+                               const void *name,
+                               void *data)
 {
-    virDomainSnapshotObjPtr obj = payload;
-    struct snapshot_act_on_descendant *curr = data;
+    virDomainMomentObjPtr obj = payload;
+    struct moment_act_on_descendant *curr = data;
 
     (curr->iter)(payload, name, curr->data);
-    curr->number += 1 + virDomainSnapshotForEachDescendant(obj,
+    curr->number += 1 + virDomainMomentForEachDescendant(obj,
                                                            curr->iter,
                                                            curr->data);
     return 0;
 }
 
-/* Run iter(data) on all descendants of snapshot, while ignoring all
- * other entries in snapshots.  Return the number of descendants
+/* Run iter(data) on all descendants of moment, while ignoring all
+ * other entries in moments.  Return the number of descendants
  * visited.  The visit is guaranteed to be topological, but no
  * particular order between siblings is guaranteed.  */
 int
-virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
-                                   virHashIterator iter,
-                                   void *data)
+virDomainMomentForEachDescendant(virDomainMomentObjPtr moment,
+                                 virHashIterator iter,
+                                 void *data)
 {
-    struct snapshot_act_on_descendant act;
+    struct moment_act_on_descendant act;
 
     act.number = 0;
     act.iter = iter;
     act.data = data;
-    virDomainSnapshotForEachChild(snapshot,
-                                  virDomainSnapshotActOnDescendant, &act);
+    virDomainMomentForEachChild(moment,
+                                virDomainMomentActOnDescendant, &act);
 
     return act.number;
 }
 
 
-/* Prepare to reparent or delete snapshot, by removing it from its
+/* Prepare to reparent or delete moment, by removing it from its
  * current listed parent.  Note that when bulk removing all children
  * of a parent, it is faster to just 0 the count rather than calling
  * this function on each child.  */
 void
-virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot)
+virDomainMomentDropParent(virDomainMomentObjPtr moment)
 {
-    virDomainSnapshotObjPtr prev = NULL;
-    virDomainSnapshotObjPtr curr = NULL;
+    virDomainMomentObjPtr prev = NULL;
+    virDomainMomentObjPtr curr = NULL;
 
-    snapshot->parent->nchildren--;
-    curr = snapshot->parent->first_child;
-    while (curr != snapshot) {
+    moment->parent->nchildren--;
+    curr = moment->parent->first_child;
+    while (curr != moment) {
         if (!curr) {
             VIR_WARN("inconsistent snapshot relations");
             return;
@@ -115,42 +115,42 @@ virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot)
         curr = curr->sibling;
     }
     if (prev)
-        prev->sibling = snapshot->sibling;
+        prev->sibling = moment->sibling;
     else
-        snapshot->parent->first_child = snapshot->sibling;
-    snapshot->parent = NULL;
-    snapshot->sibling = NULL;
+        moment->parent->first_child = moment->sibling;
+    moment->parent = NULL;
+    moment->sibling = NULL;
 }
 
 
-/* Update @snapshot to no longer have children. */
+/* Update @moment to no longer have children. */
 void
-virDomainSnapshotDropChildren(virDomainSnapshotObjPtr snapshot)
+virDomainMomentDropChildren(virDomainMomentObjPtr moment)
 {
-    snapshot->nchildren = 0;
-    snapshot->first_child = NULL;
+    moment->nchildren = 0;
+    moment->first_child = NULL;
 }
 
 
-/* Add @snapshot to @parent's list of children. */
+/* Add @moment to @parent's list of children. */
 void
-virDomainSnapshotSetParent(virDomainSnapshotObjPtr snapshot,
-                           virDomainSnapshotObjPtr parent)
+virDomainMomentSetParent(virDomainMomentObjPtr moment,
+                         virDomainMomentObjPtr parent)
 {
-    snapshot->parent = parent;
+    moment->parent = parent;
     parent->nchildren++;
-    snapshot->sibling = parent->first_child;
-    parent->first_child = snapshot;
+    moment->sibling = parent->first_child;
+    parent->first_child = moment;
 }
 
 
 /* Take all children of @from and convert them into children of @to. */
 void
-virDomainSnapshotMoveChildren(virDomainSnapshotObjPtr from,
-                              virDomainSnapshotObjPtr to)
+virDomainMomentMoveChildren(virDomainMomentObjPtr from,
+                            virDomainMomentObjPtr to)
 {
-    virDomainSnapshotObjPtr child;
-    virDomainSnapshotObjPtr last;
+    virDomainMomentObjPtr child;
+    virDomainMomentObjPtr last;
 
     if (!from->first_child)
         return;

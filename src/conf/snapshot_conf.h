@@ -131,19 +131,19 @@ int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
                                 bool require_match);
 
 bool virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def);
-bool virDomainSnapshotIsExternal(virDomainSnapshotObjPtr snap);
+bool virDomainSnapshotIsExternal(virDomainMomentObjPtr snap);
 
 int virDomainSnapshotRedefinePrep(virDomainPtr domain,
                                   virDomainObjPtr vm,
                                   virDomainSnapshotDefPtr *def,
-                                  virDomainSnapshotObjPtr *snap,
+                                  virDomainMomentObjPtr *snap,
                                   virDomainXMLOptionPtr xmlopt,
                                   bool *update_current,
                                   unsigned int flags);
 
 int virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
                                       const unsigned char *domain_uuid,
-                                      virDomainSnapshotObjPtr other,
+                                      virDomainMomentObjPtr other,
                                       virDomainXMLOptionPtr xmlopt,
                                       unsigned int flags);
 

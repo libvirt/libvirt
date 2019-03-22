@@ -6469,7 +6469,7 @@ qemuProcessLaunch(virConnectPtr conn,
                   virDomainObjPtr vm,
                   qemuDomainAsyncJob asyncJob,
                   qemuProcessIncomingDefPtr incoming,
-                  virDomainSnapshotObjPtr snapshot,
+                  virDomainMomentObjPtr snapshot,
                   virNetDevVPortProfileOp vmop,
                   unsigned int flags)
 {
@@ -6882,7 +6882,7 @@ qemuProcessStart(virConnectPtr conn,
                  const char *migrateFrom,
                  int migrateFd,
                  const char *migratePath,
-                 virDomainSnapshotObjPtr snapshot,
+                 virDomainMomentObjPtr snapshot,
                  virNetDevVPortProfileOp vmop,
                  unsigned int flags)
 {

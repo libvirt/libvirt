@@ -220,6 +220,9 @@ typedef virDomainMemtune *virDomainMemtunePtr;
 typedef struct _virDomainMomentDef virDomainMomentDef;
 typedef virDomainMomentDef *virDomainMomentDefPtr;
 
+typedef struct _virDomainMomentObj virDomainMomentObj;
+typedef virDomainMomentObj *virDomainMomentObjPtr;
+
 typedef struct _virDomainNVRAMDef virDomainNVRAMDef;
 typedef virDomainNVRAMDef *virDomainNVRAMDefPtr;
 
@@ -279,9 +282,6 @@ typedef virDomainSmartcardDef *virDomainSmartcardDefPtr;
 
 typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
 typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
-
-typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
-typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
 
 typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
 typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;

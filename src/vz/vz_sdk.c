@@ -4655,8 +4655,8 @@ prlsdkParseSnapshotTree(const char *treexml)
     xmlNodePtr root;
     xmlNodePtr *nodes = NULL;
     virDomainSnapshotDefPtr def = NULL;
-    virDomainSnapshotObjPtr snapshot;
-    virDomainSnapshotObjPtr current = NULL;
+    virDomainMomentObjPtr snapshot;
+    virDomainMomentObjPtr current = NULL;
     virDomainSnapshotObjListPtr snapshots = NULL;
     char *xmlstr = NULL;
     int n;

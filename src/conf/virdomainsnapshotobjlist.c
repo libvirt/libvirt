@@ -35,12 +35,12 @@
 VIR_LOG_INIT("conf.virdomainsnapshotobjlist");
 
 struct _virDomainSnapshotObjList {
-    /* name string -> virDomainSnapshotObj  mapping
+    /* name string -> virDomainMomentObj  mapping
      * for O(1), lockless lookup-by-name */
     virHashTable *objs;
 
-    virDomainSnapshotObj metaroot; /* Special parent of all root snapshots */
-    virDomainSnapshotObjPtr current; /* The current snapshot, if any */
+    virDomainMomentObj metaroot; /* Special parent of all root snapshots */
+    virDomainMomentObjPtr current; /* The current snapshot, if any */
 };
 
 
@@ -64,7 +64,7 @@ virDomainSnapshotObjListParse(const char *xmlStr,
     int n;
     size_t i;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
     VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
     VIR_AUTOFREE(char *) current = NULL;
 
@@ -165,7 +165,7 @@ virDomainSnapshotFormatOne(void *payload,
                            const void *name ATTRIBUTE_UNUSED,
                            void *opaque)
 {
-    virDomainSnapshotObjPtr snap = payload;
+    virDomainMomentObjPtr snap = payload;
     struct virDomainSnapshotFormatData *data = opaque;
     return virDomainSnapshotDefFormatInternal(data->buf, data->uuidstr,
                                               virDomainSnapshotObjGetDef(snap),
@@ -211,9 +211,9 @@ virDomainSnapshotObjListFormat(virBufferPtr buf,
 
 
 /* Snapshot Obj functions */
-static virDomainSnapshotObjPtr virDomainSnapshotObjNew(void)
+static virDomainMomentObjPtr virDomainMomentObjNew(void)
 {
-    virDomainSnapshotObjPtr snapshot;
+    virDomainMomentObjPtr snapshot;
 
     if (VIR_ALLOC(snapshot) < 0)
         return NULL;
@@ -223,7 +223,7 @@ static virDomainSnapshotObjPtr virDomainSnapshotObjNew(void)
     return snapshot;
 }
 
-static void virDomainSnapshotObjFree(virDomainSnapshotObjPtr snapshot)
+static void virDomainMomentObjFree(virDomainMomentObjPtr snapshot)
 {
     if (!snapshot)
         return;
@@ -234,10 +234,10 @@ static void virDomainSnapshotObjFree(virDomainSnapshotObjPtr snapshot)
     VIR_FREE(snapshot);
 }
 
-virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
-                                                   virDomainSnapshotDefPtr def)
+virDomainMomentObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
+                                                 virDomainSnapshotDefPtr def)
 {
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
 
     if (virHashLookup(snapshots->objs, def->common.name) != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -246,7 +246,7 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
         return NULL;
     }
 
-    if (!(snap = virDomainSnapshotObjNew()))
+    if (!(snap = virDomainMomentObjNew()))
         return NULL;
 
     if (virHashAddEntry(snapshots->objs, snap->def->name, snap) < 0) {
@@ -260,7 +260,7 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 
 /* Snapshot Obj List functions */
 static bool
-virDomainSnapshotFilter(virDomainSnapshotObjPtr obj,
+virDomainSnapshotFilter(virDomainMomentObjPtr obj,
                         unsigned int flags)
 {
     virDomainSnapshotDefPtr def = virDomainSnapshotObjGetDef(obj);
@@ -295,9 +295,9 @@ static void
 virDomainSnapshotObjListDataFree(void *payload,
                                  const void *name ATTRIBUTE_UNUSED)
 {
-    virDomainSnapshotObjPtr obj = payload;
+    virDomainMomentObjPtr obj = payload;
 
-    virDomainSnapshotObjFree(obj);
+    virDomainMomentObjFree(obj);
 }
 
 virDomainSnapshotObjListPtr
@@ -324,21 +324,21 @@ virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots)
 }
 
 
-struct virDomainSnapshotNameData {
+struct virDomainMomentNameData {
     char **const names;
     int maxnames;
     unsigned int flags;
     int count;
     bool error;
-    virDomainSnapshotObjListFilter filter;
+    virDomainMomentObjListFilter filter;
 };
 
-static int virDomainSnapshotObjListCopyNames(void *payload,
-                                             const void *name ATTRIBUTE_UNUSED,
-                                             void *opaque)
+static int virDomainMomentObjListCopyNames(void *payload,
+                                           const void *name ATTRIBUTE_UNUSED,
+                                           void *opaque)
 {
-    virDomainSnapshotObjPtr obj = payload;
-    struct virDomainSnapshotNameData *data = opaque;
+    virDomainMomentObjPtr obj = payload;
+    struct virDomainMomentNameData *data = opaque;
 
     if (data->error)
         return 0;
@@ -363,13 +363,13 @@ static int virDomainSnapshotObjListCopyNames(void *payload,
 
 int
 virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                 virDomainSnapshotObjPtr from,
+                                 virDomainMomentObjPtr from,
                                  char **const names,
                                  int maxnames,
                                  unsigned int flags)
 {
-    struct virDomainSnapshotNameData data = { names, maxnames, flags, 0,
-                                              false, virDomainSnapshotFilter };
+    struct virDomainMomentNameData data = { names, maxnames, flags, 0,
+                                            false, virDomainSnapshotFilter };
     size_t i;
 
     if (!from) {
@@ -413,17 +413,17 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
          * simpler full hashtable visit or counter will do. */
         if (from->def || (names &&
                           (flags & VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL)))
-            virDomainSnapshotForEachDescendant(from,
-                                               virDomainSnapshotObjListCopyNames,
-                                               &data);
+            virDomainMomentForEachDescendant(from,
+                                             virDomainMomentObjListCopyNames,
+                                             &data);
         else if (names || data.flags)
-            virHashForEach(snapshots->objs, virDomainSnapshotObjListCopyNames,
+            virHashForEach(snapshots->objs, virDomainMomentObjListCopyNames,
                            &data);
         else
             data.count = virHashSize(snapshots->objs);
     } else if (names || data.flags) {
-        virDomainSnapshotForEachChild(from,
-                                      virDomainSnapshotObjListCopyNames, &data);
+        virDomainMomentForEachChild(from,
+                                    virDomainMomentObjListCopyNames, &data);
     } else {
         data.count = from->nchildren;
     }
@@ -439,13 +439,13 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
 
 int
 virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
-                            virDomainSnapshotObjPtr from,
+                            virDomainMomentObjPtr from,
                             unsigned int flags)
 {
     return virDomainSnapshotObjListGetNames(snapshots, from, NULL, 0, flags);
 }
 
-virDomainSnapshotObjPtr
+virDomainMomentObjPtr
 virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
                             const char *name)
 {
@@ -462,7 +462,7 @@ virDomainSnapshotObjListSize(virDomainSnapshotObjListPtr snapshots)
 
 
 /* Return the current snapshot, or NULL */
-virDomainSnapshotObjPtr
+virDomainMomentObjPtr
 virDomainSnapshotGetCurrent(virDomainSnapshotObjListPtr snapshots)
 {
     return snapshots->current;
@@ -491,7 +491,7 @@ virDomainSnapshotIsCurrentName(virDomainSnapshotObjListPtr snapshots,
 /* Update the current snapshot, using NULL if no current remains */
 void
 virDomainSnapshotSetCurrent(virDomainSnapshotObjListPtr snapshots,
-                            virDomainSnapshotObjPtr snapshot)
+                            virDomainMomentObjPtr snapshot)
 {
     snapshots->current = snapshot;
 }
@@ -500,7 +500,7 @@ virDomainSnapshotSetCurrent(virDomainSnapshotObjListPtr snapshots,
 /* Remove snapshot from the list; return true if it was current */
 bool
 virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
-                               virDomainSnapshotObjPtr snapshot)
+                               virDomainMomentObjPtr snapshot)
 {
     bool ret = snapshots->current == snapshot;
     virHashRemoveEntry(snapshots->objs, snapshot->def->name);
@@ -514,7 +514,7 @@ void
 virDomainSnapshotObjListRemoveAll(virDomainSnapshotObjListPtr snapshots)
 {
     virHashRemoveAll(snapshots->objs);
-    virDomainSnapshotDropChildren(&snapshots->metaroot);
+    virDomainMomentDropChildren(&snapshots->metaroot);
 }
 
 
@@ -533,19 +533,19 @@ virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
  * wire up the hierarchical relations for the given snapshot.  The error
  * indicator gets set if a parent is missing or a requested parent would
  * cause a circular parent chain.  */
-struct snapshot_set_relation {
+struct moment_set_relation {
     virDomainSnapshotObjListPtr snapshots;
     int err;
 };
 static int
-virDomainSnapshotSetRelations(void *payload,
-                              const void *name ATTRIBUTE_UNUSED,
-                              void *data)
+virDomainMomentSetRelations(void *payload,
+                            const void *name ATTRIBUTE_UNUSED,
+                            void *data)
 {
-    virDomainSnapshotObjPtr obj = payload;
-    struct snapshot_set_relation *curr = data;
-    virDomainSnapshotObjPtr tmp;
-    virDomainSnapshotObjPtr parent;
+    virDomainMomentObjPtr obj = payload;
+    struct moment_set_relation *curr = data;
+    virDomainMomentObjPtr tmp;
+    virDomainMomentObjPtr parent;
 
     parent = virDomainSnapshotFindByName(curr->snapshots, obj->def->parent);
     if (!parent) {
@@ -564,7 +564,7 @@ virDomainSnapshotSetRelations(void *payload,
             tmp = tmp->parent;
         }
     }
-    virDomainSnapshotSetParent(obj, parent);
+    virDomainMomentSetParent(obj, parent);
     return 0;
 }
 
@@ -575,10 +575,10 @@ virDomainSnapshotSetRelations(void *payload,
 int
 virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
 {
-    struct snapshot_set_relation act = { snapshots, 0 };
+    struct moment_set_relation act = { snapshots, 0 };
 
-    virDomainSnapshotDropChildren(&snapshots->metaroot);
-    virHashForEach(snapshots->objs, virDomainSnapshotSetRelations, &act);
+    virDomainMomentDropChildren(&snapshots->metaroot);
+    virHashForEach(snapshots->objs, virDomainMomentSetRelations, &act);
     if (act.err)
         snapshots->current = NULL;
     return act.err;
@@ -587,7 +587,7 @@ virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
 
 int
 virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
-                       virDomainSnapshotObjPtr from,
+                       virDomainMomentObjPtr from,
                        virDomainPtr dom,
                        virDomainSnapshotPtr **snaps,
                        unsigned int flags)

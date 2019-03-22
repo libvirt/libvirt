@@ -27,29 +27,29 @@
 # include "virconftypes.h"
 # include "virhash.h"
 
-struct _virDomainSnapshotObj {
+struct _virDomainMomentObj {
     virDomainMomentDefPtr def; /* non-NULL except for metaroot */
 
-    virDomainSnapshotObjPtr parent; /* non-NULL except for metaroot, before
-                                       virDomainSnapshotUpdateRelations, or
-                                       after virDomainSnapshotDropParent */
-    virDomainSnapshotObjPtr sibling; /* NULL if last child of parent */
+    virDomainMomentObjPtr parent; /* non-NULL except for metaroot, before
+                                     virDomainSnapshotUpdateRelations, or
+                                     after virDomainMomentDropParent */
+    virDomainMomentObjPtr sibling; /* NULL if last child of parent */
     size_t nchildren;
-    virDomainSnapshotObjPtr first_child; /* NULL if no children */
+    virDomainMomentObjPtr first_child; /* NULL if no children */
 };
 
 
-int virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
-                                  virHashIterator iter,
-                                  void *data);
-int virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
-                                       virHashIterator iter,
-                                       void *data);
-void virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot);
-void virDomainSnapshotDropChildren(virDomainSnapshotObjPtr snapshot);
-void virDomainSnapshotMoveChildren(virDomainSnapshotObjPtr from,
-                                   virDomainSnapshotObjPtr to);
-void virDomainSnapshotSetParent(virDomainSnapshotObjPtr snapshot,
-                                virDomainSnapshotObjPtr parent);
+int virDomainMomentForEachChild(virDomainMomentObjPtr moment,
+                                virHashIterator iter,
+                                void *data);
+int virDomainMomentForEachDescendant(virDomainMomentObjPtr moment,
+                                     virHashIterator iter,
+                                     void *data);
+void virDomainMomentDropParent(virDomainMomentObjPtr moment);
+void virDomainMomentDropChildren(virDomainMomentObjPtr moment);
+void virDomainMomentMoveChildren(virDomainMomentObjPtr from,
+                                 virDomainMomentObjPtr to);
+void virDomainMomentSetParent(virDomainMomentObjPtr moment,
+                              virDomainMomentObjPtr parent);
 
 #endif /* LIBVIRT_VIRDOMAINSNAPSHOTOBJ_H */

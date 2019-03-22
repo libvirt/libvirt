@@ -8448,7 +8448,7 @@ qemuFindQemuImgBinary(virQEMUDriverPtr driver)
 
 int
 qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
-                                virDomainSnapshotObjPtr snapshot,
+                                virDomainMomentObjPtr snapshot,
                                 virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
                                 const char *snapshotDir)
@@ -8566,7 +8566,7 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
 int
 qemuDomainSnapshotForEachQcow2(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainSnapshotObjPtr snap,
+                               virDomainMomentObjPtr snap,
                                const char *op,
                                bool try_all)
 {
@@ -8585,14 +8585,14 @@ qemuDomainSnapshotForEachQcow2(virQEMUDriverPtr driver,
 int
 qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          virDomainSnapshotObjPtr snap,
+                          virDomainMomentObjPtr snap,
                           bool update_parent,
                           bool metadata_only)
 {
     char *snapFile = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
-    virDomainSnapshotObjPtr parentsnap = NULL;
+    virDomainMomentObjPtr parentsnap = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!metadata_only) {
@@ -8638,7 +8638,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
     if (unlink(snapFile) < 0)
         VIR_WARN("Failed to unlink %s", snapFile);
     if (update_parent)
-        virDomainSnapshotDropParent(snap);
+        virDomainMomentDropParent(snap);
     virDomainSnapshotObjListRemove(vm->snapshots, snap);
 
     ret = 0;
@@ -8654,7 +8654,7 @@ int qemuDomainSnapshotDiscardAll(void *payload,
                                  const void *name ATTRIBUTE_UNUSED,
                                  void *data)
 {
-    virDomainSnapshotObjPtr snap = payload;
+    virDomainMomentObjPtr snap = payload;
     virQEMUSnapRemovePtr curr = data;
     int err;
 

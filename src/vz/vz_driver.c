@@ -2132,10 +2132,10 @@ static int vzDomainSetMemory(virDomainPtr domain, unsigned long memory)
     return ret;
 }
 
-static virDomainSnapshotObjPtr
+static virDomainMomentObjPtr
 vzSnapObjFromName(virDomainSnapshotObjListPtr snapshots, const char *name)
 {
-    virDomainSnapshotObjPtr snap = NULL;
+    virDomainMomentObjPtr snap = NULL;
     snap = virDomainSnapshotFindByName(snapshots, name);
     if (!snap)
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
@@ -2144,7 +2144,7 @@ vzSnapObjFromName(virDomainSnapshotObjListPtr snapshots, const char *name)
     return snap;
 }
 
-static virDomainSnapshotObjPtr
+static virDomainMomentObjPtr
 vzSnapObjFromSnapshot(virDomainSnapshotObjListPtr snapshots,
                       virDomainSnapshotPtr snapshot)
 {
@@ -2156,8 +2156,8 @@ vzCurrentSnapshotIterator(void *payload,
                               const void *name ATTRIBUTE_UNUSED,
                               void *data)
 {
-    virDomainSnapshotObjPtr snapshot = payload;
-    virDomainSnapshotObjPtr *current = data;
+    virDomainMomentObjPtr snapshot = payload;
+    virDomainMomentObjPtr *current = data;
 
     if (snapshot->def->current)
         *current = snapshot;
@@ -2165,10 +2165,10 @@ vzCurrentSnapshotIterator(void *payload,
     return 0;
 }
 
-static virDomainSnapshotObjPtr
+static virDomainMomentObjPtr
 vzFindCurrentSnapshot(virDomainSnapshotObjListPtr snapshots)
 {
-    virDomainSnapshotObjPtr current = NULL;
+    virDomainMomentObjPtr current = NULL;
 
     virDomainSnapshotForEach(snapshots, vzCurrentSnapshotIterator, &current);
     return current;
@@ -2268,7 +2268,7 @@ vzDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot, unsigned int flags)
 {
     virDomainObjPtr dom;
     char *xml = NULL;
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainSnapshotObjListPtr snapshots = NULL;
     vzConnPtr privconn = snapshot->domain->conn->privateData;
@@ -2304,7 +2304,7 @@ static int
 vzDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
 {
     virDomainObjPtr dom;
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
     virDomainSnapshotObjListPtr snapshots = NULL;
     int n = -1;
 
@@ -2339,7 +2339,7 @@ vzDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
                                   unsigned int flags)
 {
     virDomainObjPtr dom;
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
     virDomainSnapshotObjListPtr snapshots = NULL;
     int n = -1;
 
@@ -2373,7 +2373,7 @@ vzDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
                                 unsigned int flags)
 {
     virDomainObjPtr dom;
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
     virDomainSnapshotObjListPtr snapshots = NULL;
     int n = -1;
 
@@ -2407,7 +2407,7 @@ vzDomainSnapshotLookupByName(virDomainPtr domain,
                              unsigned int flags)
 {
     virDomainObjPtr dom;
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
     virDomainSnapshotPtr snapshot = NULL;
     virDomainSnapshotObjListPtr snapshots = NULL;
 
@@ -2465,7 +2465,7 @@ static virDomainSnapshotPtr
 vzDomainSnapshotGetParent(virDomainSnapshotPtr snapshot, unsigned int flags)
 {
     virDomainObjPtr dom;
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
     virDomainSnapshotPtr parent = NULL;
     virDomainSnapshotObjListPtr snapshots = NULL;
 
@@ -2505,7 +2505,7 @@ vzDomainSnapshotCurrent(virDomainPtr domain, unsigned int flags)
     virDomainObjPtr dom;
     virDomainSnapshotPtr snapshot = NULL;
     virDomainSnapshotObjListPtr snapshots = NULL;
-    virDomainSnapshotObjPtr current;
+    virDomainMomentObjPtr current;
 
     virCheckFlags(0, NULL);
 
@@ -2539,7 +2539,7 @@ vzDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot, unsigned int flags)
     virDomainObjPtr dom;
     int ret = -1;
     virDomainSnapshotObjListPtr snapshots = NULL;
-    virDomainSnapshotObjPtr current;
+    virDomainMomentObjPtr current;
 
     virCheckFlags(0, -1);
 
@@ -2568,7 +2568,7 @@ vzDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 {
     virDomainObjPtr dom;
     int ret = -1;
-    virDomainSnapshotObjPtr snap;
+    virDomainMomentObjPtr snap;
     virDomainSnapshotObjListPtr snapshots = NULL;
 
     virCheckFlags(0, -1);
@@ -2606,7 +2606,7 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
     vzDriverPtr driver = privconn->driver;
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     virDomainSnapshotObjListPtr snapshots = NULL;
-    virDomainSnapshotObjPtr current;
+    virDomainMomentObjPtr current;
     bool job = false;
 
     virCheckFlags(0, NULL);
