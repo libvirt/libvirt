@@ -250,12 +250,12 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 
     if (!(snap = virDomainSnapshotObjNew()))
         return NULL;
-    snap->def = def;
 
     if (virHashAddEntry(snapshots->objs, snap->def->name, snap) < 0) {
         VIR_FREE(snap);
         return NULL;
     }
+    snap->def = def;
 
     return snap;
 }
