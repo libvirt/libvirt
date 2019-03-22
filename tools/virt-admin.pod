@@ -27,7 +27,8 @@ and their arguments joined with whitespace and separated by semicolons or
 newlines between commands, where unquoted backslash-newline pairs are
 elided.  Within I<COMMAND_STRING>, virt-admin understands the
 same single, double, and backslash escapes as the shell, although you must
-add another layer of shell escaping in creating the single shell argument.
+add another layer of shell escaping in creating the single shell argument,
+and any word starting with unquoted I<#> begins a comment that ends at newline.
 If no command is given in the command line, B<virt-admin> will then start a minimal
 interpreter waiting for your commands, and the B<quit> command will then exit
 the program.

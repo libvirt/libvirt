@@ -1,7 +1,7 @@
 /*
  * vsh.c: common data to be used by clients to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2005-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1691,6 +1691,12 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
         return VSH_TK_END;
     if (*p == ';' || *p == '\n') {
         parser->pos = ++p;             /* = \0 or begin of next command */
+        return VSH_TK_SUBCMD_END;
+    }
+    if (*p == '#') { /* Argument starting with # is comment to end of line */
+        while (*p && *p != '\n')
+            p++;
+        parser->pos = p + !!*p;
         return VSH_TK_SUBCMD_END;
     }
 

@@ -417,6 +417,12 @@ mymain(void)
     DO_TEST(38, "a\nb\n", "ec\\\nho a\n echo \\\n b;");
     DO_TEST(39, "a\n b\n", "\"ec\\\nho\" a\n echo \"\\\n b\";");
     DO_TEST(40, "a\n\\\n b\n", "ec\\\nho a\n echo '\\\n b';");
+    DO_TEST(41, "a\n", "echo a # b");
+    DO_TEST(42, "a\nc\n", "echo a #b\necho c");
+    DO_TEST(43, "a\nc\n", "echo a # b\\\necho c");
+    DO_TEST(44, "a # b\n", "echo a '#' b");
+    DO_TEST(45, "a # b\n", "echo a \\# b");
+    DO_TEST(46, "a\n", "#unbalanced; 'quotes\"\necho a # b");
 
 # undef DO_TEST
 
