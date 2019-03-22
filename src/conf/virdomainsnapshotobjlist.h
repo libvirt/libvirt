@@ -27,10 +27,6 @@
 # include "virdomainmomentobjlist.h"
 # include "virbuffer.h"
 
-/* Filter that returns true if a given moment matches the filter flags */
-typedef bool (*virDomainMomentObjListFilter)(virDomainMomentObjPtr obj,
-                                             unsigned int flags);
-
 virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
 void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
 
@@ -59,7 +55,6 @@ int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
                                 unsigned int flags);
 virDomainMomentObjPtr virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
                                                   const char *name);
-int virDomainSnapshotObjListSize(virDomainSnapshotObjListPtr snapshots);
 virDomainMomentObjPtr virDomainSnapshotGetCurrent(virDomainSnapshotObjListPtr snapshots);
 const char *virDomainSnapshotGetCurrentName(virDomainSnapshotObjListPtr snapshots);
 bool virDomainSnapshotIsCurrentName(virDomainSnapshotObjListPtr snapshots,
