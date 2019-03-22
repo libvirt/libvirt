@@ -123,7 +123,7 @@ virSecurityGetRememberedLabel(const char *name,
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
         goto cleanup;
 
-    if (virFileGetXAttr(path, ref_name, &value) < 0) {
+    if (virFileGetXAttrQuiet(path, ref_name, &value) < 0) {
         if (errno == ENOSYS || errno == ENODATA || errno == ENOTSUP) {
             ret = 0;
         } else {
@@ -208,7 +208,7 @@ virSecuritySetRememberedLabel(const char *name,
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
         goto cleanup;
 
-    if (virFileGetXAttr(path, ref_name, &value) < 0) {
+    if (virFileGetXAttrQuiet(path, ref_name, &value) < 0) {
         if (errno == ENOSYS || errno == ENOTSUP) {
             ret = 0;
             goto cleanup;

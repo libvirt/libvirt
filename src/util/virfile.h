@@ -383,6 +383,11 @@ int virFileGetXAttr(const char *path,
                     char **value)
     ATTRIBUTE_NOINLINE;
 
+int virFileGetXAttrQuiet(const char *path,
+                         const char *name,
+                         char **value)
+    ATTRIBUTE_NOINLINE;
+
 int virFileSetXAttr(const char *path,
                     const char *name,
                     const char *value)

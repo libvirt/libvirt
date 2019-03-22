@@ -126,9 +126,9 @@ get_key(const char *path,
 
 
 int
-virFileGetXAttr(const char *path,
-                const char *name,
-                char **value)
+virFileGetXAttrQuiet(const char *path,
+                     const char *name,
+                     char **value)
 {
     int ret = -1;
     char *key;
