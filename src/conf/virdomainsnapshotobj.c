@@ -45,7 +45,7 @@ virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
 
     while (child) {
         virDomainSnapshotObjPtr next = child->sibling;
-        (iter)(child, child->def->common.name, data);
+        (iter)(child, child->def->name, data);
         child = next;
     }
 

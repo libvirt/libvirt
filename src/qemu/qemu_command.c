@@ -10859,7 +10859,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         goto error;
 
     if (snapshot)
-        virCommandAddArgList(cmd, "-loadvm", snapshot->def->common.name, NULL);
+        virCommandAddArgList(cmd, "-loadvm", snapshot->def->name, NULL);
 
     if (def->namespaceData) {
         qemuDomainCmdlineDefPtr qemucmd;

@@ -249,11 +249,11 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
     if (!(snap = virDomainSnapshotObjNew()))
         return NULL;
 
-    if (virHashAddEntry(snapshots->objs, snap->def->common.name, snap) < 0) {
+    if (virHashAddEntry(snapshots->objs, snap->def->name, snap) < 0) {
         VIR_FREE(snap);
         return NULL;
     }
-    snap->def = def;
+    snap->def = &def->common;
 
     return snap;
 }
@@ -353,7 +353,7 @@ static int virDomainSnapshotObjListCopyNames(void *payload,
         return 0;
 
     if (data->names && data->count < data->maxnames &&
-        VIR_STRDUP(data->names[data->count], obj->def->common.name) < 0) {
+        VIR_STRDUP(data->names[data->count], obj->def->name) < 0) {
         data->error = true;
         return 0;
     }
@@ -474,7 +474,7 @@ const char *
 virDomainSnapshotGetCurrentName(virDomainSnapshotObjListPtr snapshots)
 {
     if (snapshots->current)
-        return snapshots->current->def->common.name;
+        return snapshots->current->def->name;
     return NULL;
 }
 
@@ -484,8 +484,7 @@ bool
 virDomainSnapshotIsCurrentName(virDomainSnapshotObjListPtr snapshots,
                                const char *name)
 {
-    return snapshots->current && STREQ(snapshots->current->def->common.name,
-                                       name);
+    return snapshots->current && STREQ(snapshots->current->def->name, name);
 }
 
 
@@ -504,7 +503,7 @@ virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                virDomainSnapshotObjPtr snapshot)
 {
     bool ret = snapshots->current == snapshot;
-    virHashRemoveEntry(snapshots->objs, snapshot->def->common.name);
+    virHashRemoveEntry(snapshots->objs, snapshot->def->name);
     if (ret)
         snapshots->current = NULL;
     return ret;
@@ -548,18 +547,18 @@ virDomainSnapshotSetRelations(void *payload,
     virDomainSnapshotObjPtr tmp;
     virDomainSnapshotObjPtr parent;
 
-    parent = virDomainSnapshotFindByName(curr->snapshots, obj->def->common.parent);
+    parent = virDomainSnapshotFindByName(curr->snapshots, obj->def->parent);
     if (!parent) {
         curr->err = -1;
         parent = &curr->snapshots->metaroot;
-        VIR_WARN("snapshot %s lacks parent", obj->def->common.name);
+        VIR_WARN("snapshot %s lacks parent", obj->def->name);
     } else {
         tmp = parent;
         while (tmp && tmp->def) {
             if (tmp == obj) {
                 curr->err = -1;
                 parent = &curr->snapshots->metaroot;
-                VIR_WARN("snapshot %s in circular chain", obj->def->common.name);
+                VIR_WARN("snapshot %s in circular chain", obj->def->name);
                 break;
             }
             tmp = tmp->parent;

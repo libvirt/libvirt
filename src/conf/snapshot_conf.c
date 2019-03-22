@@ -985,7 +985,8 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
          * child relations by reusing snap. */
         virDomainSnapshotDropParent(other);
         virDomainSnapshotDefFree(otherdef);
-        VIR_STEAL_PTR(other->def, *defptr);
+        other->def = &(*defptr)->common;
+        *defptr = NULL;
         *snap = other;
     }
 

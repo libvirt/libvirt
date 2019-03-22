@@ -28,7 +28,7 @@
 # include "virhash.h"
 
 struct _virDomainSnapshotObj {
-    virDomainSnapshotDefPtr def; /* non-NULL except for metaroot */
+    virDomainMomentDefPtr def; /* non-NULL except for metaroot */
 
     virDomainSnapshotObjPtr parent; /* non-NULL except for metaroot, before
                                        virDomainSnapshotUpdateRelations, or
