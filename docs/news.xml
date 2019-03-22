@@ -37,6 +37,18 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Use PCI by default for RISC-V guests
+        </summary>
+        <description>
+          PCI support for RISC-V guests was already available in libvirt
+          5.1.0, but it required the user to opt-in by manually assigning
+          PCI addresses: with this release, RISC-V guests will use PCI
+          automatically when running against a recent enough (4.0.0+) QEMU
+          release.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
