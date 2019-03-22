@@ -281,6 +281,7 @@ struct virDomainMomentNameData {
     int count;
     bool error;
     virDomainMomentObjListFilter filter;
+    unsigned int filter_flags;
 };
 
 
@@ -295,13 +296,12 @@ static int virDomainMomentObjListCopyNames(void *payload,
         return 0;
     /* Caller already sanitized flags.  Filtering on DESCENDANTS was
      * done by choice of iteration in the caller.  */
-    /* TODO: Create VIR_DOMAIN_MOMENT_LIST names */
-    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) && obj->nchildren)
+    if ((data->flags & VIR_DOMAIN_MOMENT_LIST_LEAVES) && obj->nchildren)
         return 0;
-    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES) && !obj->nchildren)
+    if ((data->flags & VIR_DOMAIN_MOMENT_LIST_NO_LEAVES) && !obj->nchildren)
         return 0;
 
-    if (!data->filter(obj, data->flags))
+    if (!data->filter(obj, data->filter_flags))
         return 0;
 
     if (data->names && data->count < data->maxnames &&
@@ -320,25 +320,26 @@ virDomainMomentObjListGetNames(virDomainMomentObjListPtr moments,
                                char **const names,
                                int maxnames,
                                unsigned int flags,
-                               virDomainMomentObjListFilter filter)
+                               virDomainMomentObjListFilter filter,
+                               unsigned int filter_flags)
 {
     struct virDomainMomentNameData data = { names, maxnames, flags, 0,
-                                            false, filter };
+                                            false, filter, filter_flags };
     size_t i;
 
+    virCheckFlags(VIR_DOMAIN_MOMENT_FILTERS_ALL, -1);
     if (!from) {
         /* LIST_ROOTS and LIST_DESCENDANTS have the same bit value,
          * but opposite semantics.  Toggle here to get the correct
          * traversal on the metaroot.  */
-        /* TODO: Create VIR_DOMAIN_MOMENT_LIST names */
-        flags ^= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+        flags ^= VIR_DOMAIN_MOMENT_LIST_ROOTS;
         from = &moments->metaroot;
     }
 
     /* We handle LIST_ROOT/LIST_DESCENDANTS and LIST_TOPOLOGICAL directly,
      * mask those bits out to determine when we must use the filter callback. */
-    data.flags &= ~(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
-                    VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL);
+    data.flags &= ~(VIR_DOMAIN_MOMENT_LIST_DESCENDANTS |
+                    VIR_DOMAIN_MOMENT_LIST_TOPOLOGICAL);
 
     /* If this common code is being used, we assume that all moments
      * have metadata, and thus can handle METADATA up front as an
@@ -346,26 +347,26 @@ virDomainMomentObjListGetNames(virDomainMomentObjListPtr moments,
      * add the ability to track qcow2 internal snapshots without the
      * use of metadata, in which case this check should move into the
      * filter callback.  */
-    if ((data.flags & VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA) ==
-        VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA)
+    if ((data.flags & VIR_DOMAIN_MOMENT_FILTERS_METADATA) ==
+        VIR_DOMAIN_MOMENT_LIST_NO_METADATA)
         return 0;
-    data.flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA;
+    data.flags &= ~VIR_DOMAIN_MOMENT_FILTERS_METADATA;
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) {
+    if (flags & VIR_DOMAIN_MOMENT_LIST_DESCENDANTS) {
         /* We could just always do a topological visit; but it is
          * possible to optimize for less stack usage and time when a
          * simpler full hashtable visit or counter will do. */
         if (from->def || (names &&
-                          (flags & VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL)))
+                          (flags & VIR_DOMAIN_MOMENT_LIST_TOPOLOGICAL)))
             virDomainMomentForEachDescendant(from,
                                              virDomainMomentObjListCopyNames,
                                              &data);
-        else if (names || data.flags)
+        else if (names || data.flags || filter_flags)
             virHashForEach(moments->objs, virDomainMomentObjListCopyNames,
                            &data);
         else
             data.count = virHashSize(moments->objs);
-    } else if (names || data.flags) {
+    } else if (names || data.flags || filter_flags) {
         virDomainMomentForEachChild(from,
                                     virDomainMomentObjListCopyNames, &data);
     } else {

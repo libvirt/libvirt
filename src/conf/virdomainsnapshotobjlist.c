@@ -278,6 +278,31 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
                                  int maxnames,
                                  unsigned int flags)
 {
+    /* Convert public flags into common flags */
+    unsigned int moment_flags = 0;
+    struct { int snap_flag; int moment_flag; } map[] = {
+        { VIR_DOMAIN_SNAPSHOT_LIST_ROOTS,
+          VIR_DOMAIN_MOMENT_LIST_ROOTS, },
+        { VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL,
+          VIR_DOMAIN_MOMENT_LIST_TOPOLOGICAL, },
+        { VIR_DOMAIN_SNAPSHOT_LIST_LEAVES,
+          VIR_DOMAIN_MOMENT_LIST_LEAVES, },
+        { VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES,
+          VIR_DOMAIN_MOMENT_LIST_NO_LEAVES, },
+        { VIR_DOMAIN_SNAPSHOT_LIST_METADATA,
+          VIR_DOMAIN_MOMENT_LIST_METADATA, },
+        { VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA,
+          VIR_DOMAIN_MOMENT_LIST_NO_METADATA, },
+    };
+    size_t i;
+
+    for (i = 0; i < ARRAY_CARDINALITY(map); i++) {
+        if (flags & map[i].snap_flag) {
+            flags &= ~map[i].snap_flag;
+            moment_flags |= map[i].moment_flag;
+        }
+    }
+
     /* For ease of coding the visitor, it is easier to zero each group
      * where all of the bits are set.  */
     if ((flags & VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES) ==
@@ -290,8 +315,8 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
         VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION)
         flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION;
     return virDomainMomentObjListGetNames(snapshots->base, from, names,
-                                          maxnames, flags,
-                                          virDomainSnapshotFilter);
+                                          maxnames, moment_flags,
+                                          virDomainSnapshotFilter, flags);
 }
 
 

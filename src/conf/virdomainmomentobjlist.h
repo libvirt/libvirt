@@ -70,12 +70,40 @@ void virDomainMomentObjListFree(virDomainMomentObjListPtr moments);
 virDomainMomentObjPtr virDomainMomentAssignDef(virDomainMomentObjListPtr moments,
                                                virDomainMomentDefPtr def);
 
+/* Various enum bits that map to public API filters. Note that the
+ * values of the internal bits are not necessarily the same as the
+ * public ones. */
+typedef enum {
+    VIR_DOMAIN_MOMENT_LIST_ROOTS       = (1 << 0),
+    VIR_DOMAIN_MOMENT_LIST_DESCENDANTS = (1 << 0),
+    VIR_DOMAIN_MOMENT_LIST_TOPOLOGICAL = (1 << 1),
+    VIR_DOMAIN_MOMENT_LIST_LEAVES      = (1 << 2),
+    VIR_DOMAIN_MOMENT_LIST_NO_LEAVES   = (1 << 3),
+    VIR_DOMAIN_MOMENT_LIST_METADATA    = (1 << 4),
+    VIR_DOMAIN_MOMENT_LIST_NO_METADATA = (1 << 5),
+} virDomainMomentFilters;
+
+# define VIR_DOMAIN_MOMENT_FILTERS_METADATA \
+               (VIR_DOMAIN_MOMENT_LIST_METADATA | \
+                VIR_DOMAIN_MOMENT_LIST_NO_METADATA)
+
+# define VIR_DOMAIN_MOMENT_FILTERS_LEAVES \
+               (VIR_DOMAIN_MOMENT_LIST_LEAVES | \
+                VIR_DOMAIN_MOMENT_LIST_NO_LEAVES)
+
+# define VIR_DOMAIN_MOMENT_FILTERS_ALL \
+               (VIR_DOMAIN_MOMENT_LIST_ROOTS | \
+                VIR_DOMAIN_MOMENT_LIST_TOPOLOGICAL | \
+                VIR_DOMAIN_MOMENT_FILTERS_METADATA | \
+                VIR_DOMAIN_MOMENT_FILTERS_LEAVES)
+
 int virDomainMomentObjListGetNames(virDomainMomentObjListPtr moments,
                                    virDomainMomentObjPtr from,
                                    char **const names,
                                    int maxnames,
-                                   unsigned int flags,
-                                   virDomainMomentObjListFilter filter);
+                                   unsigned int moment_flags,
+                                   virDomainMomentObjListFilter filter,
+                                   unsigned int filter_flags);
 virDomainMomentObjPtr virDomainMomentFindByName(virDomainMomentObjListPtr moments,
                                                 const char *name);
 int virDomainMomentObjListSize(virDomainMomentObjListPtr moments);
