@@ -4421,14 +4421,21 @@ virFileGetXAttrQuiet(const char *path,
  * Sets xattr of @name and @value on @path.
  *
  * Returns: 0 on success,
- *         -1 otherwise (with errno set).
+ *         -1 otherwise (with errno set AND error reported).
  */
 int
 virFileSetXAttr(const char *path,
                 const char *name,
                 const char *value)
 {
-    return setxattr(path, name, value, strlen(value), 0);
+    if (setxattr(path, name, value, strlen(value), 0) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to set XATTR %s on %s"),
+                             name, path);
+        return -1;
+    }
+
+    return 0;
 }
 
 /**
@@ -4460,11 +4467,14 @@ virFileGetXAttrQuiet(const char *path ATTRIBUTE_UNUSED,
 }
 
 int
-virFileSetXAttr(const char *path ATTRIBUTE_UNUSED,
-                const char *name ATTRIBUTE_UNUSED,
+virFileSetXAttr(const char *path,
+                const char *name,
                 const char *value ATTRIBUTE_UNUSED)
 {
     errno = ENOSYS;
+    virReportSystemError(errno,
+                         _("Unable to set XATTR %s on %s"),
+                         name, path);
     return -1;
 }
 
