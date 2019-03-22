@@ -227,7 +227,7 @@ virDomainMomentAssignDef(virDomainMomentObjListPtr moments,
     if (!(moment = virDomainMomentObjNew()))
         return NULL;
 
-    if (virHashAddEntry(moments->objs, moment->def->name, moment) < 0) {
+    if (virHashAddEntry(moments->objs, def->name, moment) < 0) {
         VIR_FREE(moment);
         return NULL;
     }
