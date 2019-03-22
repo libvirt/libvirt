@@ -960,6 +960,15 @@ virChrdevFree;
 virChrdevOpen;
 
 
+# conf/virdomainmomentobjlist.h
+virDomainMomentDropChildren;
+virDomainMomentDropParent;
+virDomainMomentForEachChild;
+virDomainMomentForEachDescendant;
+virDomainMomentMoveChildren;
+virDomainMomentSetParent;
+
+
 # conf/virdomainobjlist.h
 virDomainObjListAdd;
 virDomainObjListCollect;
@@ -977,15 +986,6 @@ virDomainObjListNumOfDomains;
 virDomainObjListRemove;
 virDomainObjListRemoveLocked;
 virDomainObjListRename;
-
-
-# conf/virdomainsnapshotobj.h
-virDomainMomentDropChildren;
-virDomainMomentDropParent;
-virDomainMomentForEachChild;
-virDomainMomentForEachDescendant;
-virDomainMomentMoveChildren;
-virDomainMomentSetParent;
 
 
 # conf/virdomainsnapshotobjlist.h

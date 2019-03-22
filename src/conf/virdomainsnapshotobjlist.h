@@ -24,7 +24,7 @@
 # define LIBVIRT_VIRDOMAINSNAPSHOTOBJLIST_H
 
 # include "internal.h"
-# include "virdomainsnapshotobj.h"
+# include "virdomainmomentobjlist.h"
 # include "virbuffer.h"
 
 /* Filter that returns true if a given moment matches the filter flags */

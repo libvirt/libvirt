@@ -1,5 +1,5 @@
 /*
- * virdomainsnapshotobj.h: handle snapshot objects
+ * virdomainmomentobjlist.h: handle a tree of moment objects
  *                  (derived from snapshot_conf.h)
  *
  * Copyright (C) 2006-2019 Red Hat, Inc.
@@ -20,24 +20,32 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRDOMAINSNAPSHOTOBJ_H
-# define LIBVIRT_VIRDOMAINSNAPSHOTOBJ_H
+#ifndef LIBVIRT_VIRDOMAINMOMENTOBJLIST_H
+# define LIBVIRT_VIRDOMAINMOMENTOBJLIST_H
 
 # include "internal.h"
 # include "virconftypes.h"
 # include "virhash.h"
 
+/* Struct that allows tracing hierarchical relationships between
+ * multiple virDomainMoment objects. The opaque type
+ * virDomainMomentObjList then maintains both a hash of these structs
+ * (for quick lookup by name) and a metaroot (which is the parent of
+ * all user-visible roots), so that all other objects always have a
+ * valid parent object; the tree structure is currently maintained via
+ * a linked list. */
 struct _virDomainMomentObj {
+    /* Public field */
     virDomainMomentDefPtr def; /* non-NULL except for metaroot */
 
+    /* Private fields, use accessors instead */
     virDomainMomentObjPtr parent; /* non-NULL except for metaroot, before
-                                     virDomainSnapshotUpdateRelations, or
+                                     virDomainMomentUpdateRelations, or
                                      after virDomainMomentDropParent */
     virDomainMomentObjPtr sibling; /* NULL if last child of parent */
     size_t nchildren;
     virDomainMomentObjPtr first_child; /* NULL if no children */
 };
-
 
 int virDomainMomentForEachChild(virDomainMomentObjPtr moment,
                                 virHashIterator iter,
@@ -52,4 +60,4 @@ void virDomainMomentMoveChildren(virDomainMomentObjPtr from,
 void virDomainMomentSetParent(virDomainMomentObjPtr moment,
                               virDomainMomentObjPtr parent);
 
-#endif /* LIBVIRT_VIRDOMAINSNAPSHOTOBJ_H */
+#endif /* LIBVIRT_VIRDOMAINMOMENTOBJLIST_H */
