@@ -22,6 +22,8 @@ DOMAIN_CONF_SOURCES = \
 	conf/domain_nwfilter.h \
 	conf/virsavecookie.c \
 	conf/virsavecookie.h \
+	conf/moment_conf.c \
+	conf/moment_conf.h \
 	conf/snapshot_conf.c \
 	conf/snapshot_conf.h \
 	conf/numa_conf.c \

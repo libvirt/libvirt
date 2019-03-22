@@ -14547,7 +14547,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
      * create them correctly.  */
     for (i = 0; i < snap->def->ndisks && !reuse; i++) {
         snapdisk = &(snap->def->disks[i]);
-        defdisk = snap->def->dom->disks[snapdisk->idx];
+        defdisk = snap->def->common.dom->disks[snapdisk->idx];
         if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             continue;
 
@@ -14663,7 +14663,7 @@ qemuDomainSnapshotCreateActiveInternal(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
+    ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->common.name);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
     if (ret < 0)
@@ -15726,19 +15726,19 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     /* reject snapshot names containing slashes or starting with dot as
      * snapshot definitions are saved in files named by the snapshot name */
     if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        if (strchr(def->name, '/')) {
+        if (strchr(def->common.name, '/')) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("invalid snapshot name '%s': "
                              "name can't contain '/'"),
-                           def->name);
+                           def->common.name);
             goto cleanup;
         }
 
-        if (def->name[0] == '.') {
+        if (def->common.name[0] == '.') {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("invalid snapshot name '%s': "
                              "name can't start with '.'"),
-                           def->name);
+                           def->common.name);
             goto cleanup;
         }
     }
@@ -15809,9 +15809,9 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
          * conversion in and back out of xml.  */
         if (!(xml = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU,
                                             true, true)) ||
-            !(def->dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
-                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+            !(def->common.dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
+                                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
 
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
@@ -15857,7 +15857,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     current = virDomainSnapshotGetCurrent(vm->snapshots);
     if (current) {
         if (!redefine &&
-            VIR_STRDUP(snap->def->parent, current->def->name) < 0)
+            VIR_STRDUP(snap->def->common.parent, current->def->common.name) < 0)
                 goto endjob;
         if (update_current) {
             virDomainSnapshotSetCurrent(vm->snapshots, NULL);
@@ -15906,7 +15906,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
      * do; we've successfully taken the snapshot, and we are now running
      * on it, so we have to go forward the best we can
      */
-    snapshot = virGetDomainSnapshot(domain, snap->def->name);
+    snapshot = virGetDomainSnapshot(domain, snap->def->common.name);
 
  endjob:
     if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
@@ -15921,11 +15921,11 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             snapshot = NULL;
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to save metadata for snapshot %s"),
-                           snap->def->name);
+                           snap->def->common.name);
             virDomainSnapshotObjListRemove(vm->snapshots, snap);
         } else {
             other = virDomainSnapshotFindByName(vm->snapshots,
-                                                snap->def->parent);
+                                                snap->def->common.parent);
             virDomainSnapshotSetParent(snap, other);
         }
     } else if (snap) {
@@ -16135,7 +16135,7 @@ qemuDomainSnapshotLookupByName(virDomainPtr domain,
     if (!(snap = qemuSnapObjFromName(vm, name)))
         goto cleanup;
 
-    snapshot = virGetDomainSnapshot(domain, snap->def->name);
+    snapshot = virGetDomainSnapshot(domain, snap->def->common.name);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -16185,14 +16185,14 @@ qemuDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
 
-    if (!snap->def->parent) {
+    if (!snap->def->common.parent) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("snapshot '%s' does not have a parent"),
-                       snap->def->name);
+                       snap->def->common.name);
         goto cleanup;
     }
 
-    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
+    parent = virGetDomainSnapshot(snapshot->domain, snap->def->common.parent);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -16417,10 +16417,10 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     }
 
     if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-        if (!snap->def->dom) {
+        if (!snap->def->common.dom) {
             virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
                            _("snapshot '%s' lacks domain '%s' rollback info"),
-                           snap->def->name, vm->def->name);
+                           snap->def->common.name, vm->def->name);
             goto endjob;
         }
         if (virDomainObjIsActive(vm) &&
@@ -16450,8 +16450,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
      *
      * XXX Should domain snapshots track live xml rather
      * than inactive xml?  */
-    if (snap->def->dom) {
-        config = virDomainDefCopy(snap->def->dom, caps,
+    if (snap->def->common.dom) {
+        config = virDomainDefCopy(snap->def->common.dom, caps,
                                   driver->xmlopt, NULL, true);
         if (!config)
             goto endjob;
@@ -16557,7 +16557,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                                QEMU_ASYNC_JOB_START) < 0)
                 goto endjob;
-            rc = qemuMonitorLoadSnapshot(priv->mon, snap->def->name);
+            rc = qemuMonitorLoadSnapshot(priv->mon, snap->def->common.name);
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
                 goto endjob;
             if (rc < 0) {
@@ -16774,10 +16774,10 @@ qemuDomainSnapshotReparentChildren(void *payload,
     if (rep->err < 0)
         return 0;
 
-    VIR_FREE(snap->def->parent);
+    VIR_FREE(snap->def->common.parent);
 
     if (rep->parent->def &&
-        VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
+        VIR_STRDUP(snap->def->common.parent, rep->parent->def->common.name) < 0) {
         rep->err = -1;
         return 0;
     }
@@ -16858,7 +16858,7 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                                                     cfg->snapshotDir) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("failed to set snapshot '%s' as current"),
-                                   snap->def->name);
+                                   snap->def->common.name);
                     virDomainSnapshotSetCurrent(vm->snapshots, NULL);
                     goto endjob;
                 }

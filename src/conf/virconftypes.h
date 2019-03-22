@@ -217,6 +217,9 @@ typedef virDomainMemoryDef *virDomainMemoryDefPtr;
 typedef struct _virDomainMemtune virDomainMemtune;
 typedef virDomainMemtune *virDomainMemtunePtr;
 
+typedef struct _virDomainMomentDef virDomainMomentDef;
+typedef virDomainMomentDef *virDomainMomentDefPtr;
+
 typedef struct _virDomainNVRAMDef virDomainNVRAMDef;
 typedef virDomainNVRAMDef *virDomainNVRAMDefPtr;
 

@@ -8477,7 +8477,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, def->name) < 0)
+    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, def->common.name) < 0)
         goto cleanup;
 
     ret = virXMLSaveFile(snapFile, NULL, "snapshot-edit", newxml);
@@ -8573,11 +8573,11 @@ qemuDomainSnapshotForEachQcow2(virQEMUDriverPtr driver,
     /* Prefer action on the disks in use at the time the snapshot was
      * created; but fall back to current definition if dealing with a
      * snapshot created prior to libvirt 0.9.5.  */
-    virDomainDefPtr def = snap->def->dom;
+    virDomainDefPtr def = snap->def->common.dom;
 
     if (!def)
         def = vm->def;
-    return qemuDomainSnapshotForEachQcow2Raw(driver, def, snap->def->name,
+    return qemuDomainSnapshotForEachQcow2Raw(driver, def, snap->def->common.name,
                                              op, try_all, def->ndisks);
 }
 
@@ -8605,30 +8605,30 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
             priv = vm->privateData;
             qemuDomainObjEnterMonitor(driver, vm);
             /* we continue on even in the face of error */
-            qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
+            qemuMonitorDeleteSnapshot(priv->mon, snap->def->common.name);
             ignore_value(qemuDomainObjExitMonitor(driver, vm));
         }
     }
 
     if (virAsprintf(&snapFile, "%s/%s/%s.xml", cfg->snapshotDir,
-                    vm->def->name, snap->def->name) < 0)
+                    vm->def->name, snap->def->common.name) < 0)
         goto cleanup;
 
     if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {
         virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-        if (update_parent && snap->def->parent) {
+        if (update_parent && snap->def->common.parent) {
             parentsnap = virDomainSnapshotFindByName(vm->snapshots,
-                                                     snap->def->parent);
+                                                     snap->def->common.parent);
             if (!parentsnap) {
                 VIR_WARN("missing parent snapshot matching name '%s'",
-                         snap->def->parent);
+                         snap->def->common.parent);
             } else {
                 virDomainSnapshotSetCurrent(vm->snapshots, parentsnap);
                 if (qemuDomainSnapshotWriteMetadata(vm, parentsnap, driver->caps,
                                                     driver->xmlopt,
                                                     cfg->snapshotDir) < 0) {
                     VIR_WARN("failed to set parent snapshot '%s' as current",
-                             snap->def->parent);
+                             snap->def->common.parent);
                     virDomainSnapshotSetCurrent(vm->snapshots, NULL);
                 }
             }

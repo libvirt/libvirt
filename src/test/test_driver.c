@@ -6132,7 +6132,7 @@ testDomainSnapshotLookupByName(virDomainPtr domain,
     if (!(snap = testSnapObjFromName(vm, name)))
         goto cleanup;
 
-    snapshot = virGetDomainSnapshot(domain, snap->def->name);
+    snapshot = virGetDomainSnapshot(domain, snap->def->common.name);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -6173,14 +6173,14 @@ testDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
 
-    if (!snap->def->parent) {
+    if (!snap->def->common.parent) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("snapshot '%s' does not have a parent"),
-                       snap->def->name);
+                       snap->def->common.name);
         goto cleanup;
     }
 
-    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
+    parent = virGetDomainSnapshot(snapshot->domain, snap->def->common.parent);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -6207,7 +6207,7 @@ testDomainSnapshotCurrent(virDomainPtr domain,
         goto cleanup;
     }
 
-    snapshot = virGetDomainSnapshot(domain, current->def->name);
+    snapshot = virGetDomainSnapshot(domain, current->def->common.name);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -6376,11 +6376,11 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
                                           &update_current, flags) < 0)
             goto cleanup;
     } else {
-        if (!(def->dom = virDomainDefCopy(vm->def,
-                                          privconn->caps,
-                                          privconn->xmlopt,
-                                          NULL,
-                                          true)))
+        if (!(def->common.dom = virDomainDefCopy(vm->def,
+                                                 privconn->caps,
+                                                 privconn->xmlopt,
+                                                 NULL,
+                                                 true)))
             goto cleanup;
 
         if (testDomainSnapshotAlignDisks(vm, def, flags) < 0)
@@ -6394,7 +6394,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     }
 
     if (!redefine) {
-        if (VIR_STRDUP(snap->def->parent,
+        if (VIR_STRDUP(snap->def->common.parent,
                        virDomainSnapshotGetCurrentName(vm->snapshots)) < 0)
             goto cleanup;
 
@@ -6407,7 +6407,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
         }
     }
 
-    snapshot = virGetDomainSnapshot(domain, snap->def->name);
+    snapshot = virGetDomainSnapshot(domain, snap->def->common.name);
  cleanup:
     if (vm) {
         if (snapshot) {
@@ -6415,7 +6415,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
             if (update_current)
                 virDomainSnapshotSetCurrent(vm->snapshots, snap);
             other = virDomainSnapshotFindByName(vm->snapshots,
-                                                snap->def->parent);
+                                                snap->def->common.parent);
             virDomainSnapshotSetParent(snap, other);
         }
         virDomainObjEndAPI(&vm);
@@ -6464,10 +6464,10 @@ testDomainSnapshotReparentChildren(void *payload,
     if (rep->err < 0)
         return 0;
 
-    VIR_FREE(snap->def->parent);
+    VIR_FREE(snap->def->common.parent);
 
     if (rep->parent->def &&
-        VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
+        VIR_STRDUP(snap->def->common.parent, rep->parent->def->common.name) < 0) {
         rep->err = -1;
         return 0;
     }
@@ -6522,12 +6522,12 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     } else {
         virDomainSnapshotDropParent(snap);
         if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {
-            if (snap->def->parent) {
+            if (snap->def->common.parent) {
                 parentsnap = virDomainSnapshotFindByName(vm->snapshots,
-                                                         snap->def->parent);
+                                                         snap->def->common.parent);
                 if (!parentsnap)
                     VIR_WARN("missing parent snapshot matching name '%s'",
-                             snap->def->parent);
+                             snap->def->common.parent);
             }
             virDomainSnapshotSetCurrent(vm->snapshots, parentsnap);
         }
@@ -6588,10 +6588,10 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     }
 
     if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-        if (!snap->def->dom) {
+        if (!snap->def->common.dom) {
             virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
                            _("snapshot '%s' lacks domain '%s' rollback info"),
-                           snap->def->name, vm->def->name);
+                           snap->def->common.name, vm->def->name);
             goto cleanup;
         }
         if (virDomainObjIsActive(vm) &&
@@ -6607,7 +6607,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     virDomainSnapshotSetCurrent(vm->snapshots, NULL);
 
-    config = virDomainDefCopy(snap->def->dom, privconn->caps,
+    config = virDomainDefCopy(snap->def->common.dom, privconn->caps,
                               privconn->xmlopt, NULL, true);
     if (!config)
         goto cleanup;

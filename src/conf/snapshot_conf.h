@@ -24,6 +24,7 @@
 
 # include "internal.h"
 # include "domain_conf.h"
+# include "moment_conf.h"
 
 /* Items related to snapshot state */
 
@@ -72,11 +73,9 @@ struct _virDomainSnapshotDiskDef {
 
 /* Stores the complete snapshot metadata */
 struct _virDomainSnapshotDef {
-    /* Public XML.  */
-    char *name;
-    char *description;
-    char *parent;
-    long long creationTime; /* in seconds */
+    virDomainMomentDef common;
+
+    /* Additional public XML.  */
     int state; /* virDomainSnapshotState */
 
     int memory; /* virDomainMemorySnapshot */
@@ -84,8 +83,6 @@ struct _virDomainSnapshotDef {
 
     size_t ndisks; /* should not exceed dom->ndisks */
     virDomainSnapshotDiskDef *disks;
-
-    virDomainDefPtr dom;
 
     virObjectPtr cookie;
 };
