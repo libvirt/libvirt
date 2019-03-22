@@ -4446,13 +4446,20 @@ virFileSetXAttr(const char *path,
  * Remove xattr of @name on @path.
  *
  * Returns: 0 on success,
- *         -1 otherwise (with errno set).
+ *         -1 otherwise (with errno set AND error reported).
  */
 int
 virFileRemoveXAttr(const char *path,
                    const char *name)
 {
-    return removexattr(path, name);
+    if (removexattr(path, name) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to remove XATTR %s on %s"),
+                             name, path);
+        return -1;
+    }
+
+    return 0;
 }
 
 #else /* !HAVE_LIBATTR */
@@ -4479,10 +4486,13 @@ virFileSetXAttr(const char *path,
 }
 
 int
-virFileRemoveXAttr(const char *path ATTRIBUTE_UNUSED,
-                   const char *name ATTRIBUTE_UNUSED)
+virFileRemoveXAttr(const char *path,
+                   const char *name)
 {
     errno = ENOSYS;
+    virReportSystemError(errno,
+                         _("Unable to remove XATTR %s on %s"),
+                         name, path);
     return -1;
 }
 
