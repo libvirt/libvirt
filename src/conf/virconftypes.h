@@ -223,6 +223,9 @@ typedef virDomainMomentDef *virDomainMomentDefPtr;
 typedef struct _virDomainMomentObj virDomainMomentObj;
 typedef virDomainMomentObj *virDomainMomentObjPtr;
 
+typedef struct _virDomainMomentObjList virDomainMomentObjList;
+typedef virDomainMomentObjList *virDomainMomentObjListPtr;
+
 typedef struct _virDomainNVRAMDef virDomainNVRAMDef;
 typedef virDomainNVRAMDef *virDomainNVRAMDefPtr;
 

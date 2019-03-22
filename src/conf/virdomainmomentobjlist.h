@@ -27,6 +27,10 @@
 # include "virconftypes.h"
 # include "virhash.h"
 
+/* Filter that returns true if a given moment matches the filter flags */
+typedef bool (*virDomainMomentObjListFilter)(virDomainMomentObjPtr obj,
+                                             unsigned int flags);
+
 /* Struct that allows tracing hierarchical relationships between
  * multiple virDomainMoment objects. The opaque type
  * virDomainMomentObjList then maintains both a hash of these structs
@@ -59,5 +63,34 @@ void virDomainMomentMoveChildren(virDomainMomentObjPtr from,
                                  virDomainMomentObjPtr to);
 void virDomainMomentSetParent(virDomainMomentObjPtr moment,
                               virDomainMomentObjPtr parent);
+
+virDomainMomentObjListPtr virDomainMomentObjListNew(void);
+void virDomainMomentObjListFree(virDomainMomentObjListPtr moments);
+
+virDomainMomentObjPtr virDomainMomentAssignDef(virDomainMomentObjListPtr moments,
+                                               virDomainMomentDefPtr def);
+
+int virDomainMomentObjListGetNames(virDomainMomentObjListPtr moments,
+                                   virDomainMomentObjPtr from,
+                                   char **const names,
+                                   int maxnames,
+                                   unsigned int flags,
+                                   virDomainMomentObjListFilter filter);
+virDomainMomentObjPtr virDomainMomentFindByName(virDomainMomentObjListPtr moments,
+                                                const char *name);
+int virDomainMomentObjListSize(virDomainMomentObjListPtr moments);
+virDomainMomentObjPtr virDomainMomentGetCurrent(virDomainMomentObjListPtr moments);
+const char *virDomainMomentGetCurrentName(virDomainMomentObjListPtr moments);
+bool virDomainMomentIsCurrentName(virDomainMomentObjListPtr moments,
+                                  const char *name);
+void virDomainMomentSetCurrent(virDomainMomentObjListPtr moments,
+                               virDomainMomentObjPtr moment);
+bool virDomainMomentObjListRemove(virDomainMomentObjListPtr moments,
+                                  virDomainMomentObjPtr moment);
+void virDomainMomentObjListRemoveAll(virDomainMomentObjListPtr moments);
+int virDomainMomentForEach(virDomainMomentObjListPtr moments,
+                           virHashIterator iter,
+                           void *data);
+int virDomainMomentUpdateRelations(virDomainMomentObjListPtr moments);
 
 #endif /* LIBVIRT_VIRDOMAINMOMENTOBJLIST_H */
