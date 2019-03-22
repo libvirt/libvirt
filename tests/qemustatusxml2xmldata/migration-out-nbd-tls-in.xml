@@ -247,6 +247,17 @@
         </privateData>
       </migrationSource>
     </disk>
+    <disk dev='vdc' migrating='yes'>
+      <migrationSource type='network' format='raw' protocol='nbd' name='drive-virtio-disk2' tlsFromConfig='0'>
+        <host name='andariel.usersys.redhat.com' port='49152'/>
+        <privateData>
+          <nodenames>
+            <nodename type='storage' name='migration-vdc-storage'/>
+            <nodename type='format' name='migration-vdc-format'/>
+          </nodenames>
+        </privateData>
+      </migrationSource>
+    </disk>
     <disk dev='hda' migrating='no'/>
   </job>
   <devices>
@@ -333,6 +344,14 @@
         <target dev='vdb' bus='virtio'/>
         <alias name='virtio-disk1'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+      </disk>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2'/>
+        <source file='/var/lib/libvirt/images/b.qcow2'/>
+        <backingStore/>
+        <target dev='vdc' bus='virtio'/>
+        <alias name='virtio-disk2'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
       </disk>
       <disk type='file' device='cdrom'>
         <driver name='qemu' type='raw'/>
