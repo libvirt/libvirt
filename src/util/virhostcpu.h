@@ -66,4 +66,7 @@ int virHostCPUGetOnline(unsigned int cpu, bool *online);
 
 unsigned int virHostCPUGetMicrocodeVersion(void);
 
+int virHostCPUGetMSR(unsigned long index,
+                     uint64_t *msr);
+
 #endif /* LIBVIRT_VIRHOSTCPU_H */

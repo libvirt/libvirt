@@ -58,6 +58,7 @@
 VIR_LOG_INIT("util.hostcpu");
 
 #define KVM_DEVICE "/dev/kvm"
+#define MSR_DEVICE "/dev/cpu/0/msr"
 
 
 #if defined(__FreeBSD__) || defined(__APPLE__)
@@ -1254,3 +1255,82 @@ virHostCPUGetMicrocodeVersion(void)
 }
 
 #endif /* __linux__ */
+
+
+#if HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS)
+static int
+virHostCPUGetMSRFromKVM(unsigned long index,
+                        uint64_t *result)
+{
+    VIR_AUTOCLOSE fd = -1;
+    struct {
+        struct kvm_msrs header;
+        struct kvm_msr_entry entry;
+    } msr = {
+        .header = { .nmsrs = 1 },
+        .entry = { .index = index },
+    };
+
+    if ((fd = open(KVM_DEVICE, O_RDONLY)) < 0) {
+        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
+        return -1;
+    }
+
+    if (ioctl(fd, KVM_GET_MSRS, &msr) < 0) {
+        VIR_DEBUG("Cannot get MSR 0x%lx from KVM", index);
+        return 1;
+    }
+
+    *result = msr.entry.data;
+    return 0;
+}
+
+#else
+
+static int
+virHostCPUGetMSRFromKVM(unsigned long index ATTRIBUTE_UNUSED,
+                        uint64_t *result ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Reading MSRs via KVM is not supported on this platform"));
+    return -1;
+}
+#endif /* HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS) */
+
+
+/*
+ * Returns 0 on success,
+ *         1 when the MSR is not supported by the host CPU,
+*         -1 on error.
+ */
+int
+virHostCPUGetMSR(unsigned long index,
+                 uint64_t *msr)
+{
+    VIR_AUTOCLOSE fd = -1;
+    char ebuf[1024];
+
+    *msr = 0;
+
+    if ((fd = open(MSR_DEVICE, O_RDONLY)) < 0) {
+        VIR_DEBUG("Unable to open %s: %s",
+                  MSR_DEVICE, virStrerror(errno, ebuf, sizeof(ebuf)));
+    } else {
+        int rc = pread(fd, msr, sizeof(*msr), index);
+
+        if (rc == sizeof(*msr))
+            return 0;
+
+        if (rc < 0 && errno == EIO) {
+            VIR_DEBUG("CPU does not support MSR 0x%lx", index);
+            return 1;
+        }
+
+        VIR_DEBUG("Cannot read MSR 0x%lx from %s: %s",
+                  index, MSR_DEVICE, virStrerror(errno, ebuf, sizeof(ebuf)));
+    }
+
+    VIR_DEBUG("Falling back to KVM ioctl");
+
+    return virHostCPUGetMSRFromKVM(index, msr);
+}
