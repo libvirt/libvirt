@@ -1437,8 +1437,15 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
             }
 
             if (cmd == NULL) {
-                /* first token must be command name */
-                if (!(cmd = vshCmddefSearch(tkdata))) {
+                /* first token must be command name or comment */
+                if (*tkdata == '#') {
+                    do {
+                        VIR_FREE(tkdata);
+                        tk = parser->getNextArg(ctl, parser, &tkdata, false);
+                    } while (tk == VSH_TK_ARG);
+                    VIR_FREE(tkdata);
+                    break;
+                } else if (!(cmd = vshCmddefSearch(tkdata))) {
                     if (!partial)
                         vshError(ctl, _("unknown command: '%s'"), tkdata);
                     goto syntaxError;   /* ... or ignore this command only? */

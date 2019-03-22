@@ -18,7 +18,9 @@ The basic structure of most virt-admin usage is:
 
   virt-admin [OPTION]... <command> [ARG]...
 
-Where I<command> is one of the commands listed below.
+Where I<command> is one of the commands listed below. Any I<command>
+starting with B<#> is treated as a comment and silently ignored, all
+other unrecognized I<command>s are diagnosed.
 
 The B<virt-admin> program can be used either to run one I<COMMAND> by giving the
 command and its arguments on the shell command line, or a I<COMMAND_STRING>

@@ -423,6 +423,7 @@ mymain(void)
     DO_TEST(44, "a # b\n", "echo a '#' b");
     DO_TEST(45, "a # b\n", "echo a \\# b");
     DO_TEST(46, "a\n", "#unbalanced; 'quotes\"\necho a # b");
+    DO_TEST(47, "a\n", "\\# ignored;echo a\n'#also' ignored");
 
 # undef DO_TEST
 

@@ -35,7 +35,8 @@ will be clear for each of those commands.  Note: it is permissible to
 give numeric names to domains, however, doing so will result in a
 domain that can only be identified by domain id. In other words, if a
 numeric value is supplied it will be interpreted as a domain id, not
-as a name.
+as a name. Any I<command> starting with B<#> is treated as a comment
+and silently ignored, all other unrecognized I<command>s are diagnosed.
 
 The B<virsh> program can be used either to run one I<COMMAND> by giving the
 command and its arguments on the shell command line, or a I<COMMAND_STRING>
