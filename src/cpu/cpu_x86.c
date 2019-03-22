@@ -2708,6 +2708,41 @@ cpuidSet(uint32_t base, virCPUDataPtr data)
 
 
 static int
+virCPUx86CheckFeature(const virCPUDef *cpu,
+                      const char *name)
+{
+    int ret = -1;
+    virCPUx86MapPtr map;
+    virCPUx86ModelPtr model = NULL;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    if (!(model = x86ModelFromCPU(cpu, map, -1)))
+        goto cleanup;
+
+    ret = x86FeatureInData(name, &model->data, map);
+
+ cleanup:
+    x86ModelFree(model);
+    return ret;
+}
+
+
+static int
+virCPUx86DataCheckFeature(const virCPUData *data,
+                          const char *name)
+{
+    virCPUx86MapPtr map;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    return x86FeatureInData(name, &data->data.x86, map);
+}
+
+
+static int
 virCPUx86GetHost(virCPUDefPtr cpu,
                  virDomainCapsCPUModelsPtr models)
 {
@@ -3062,40 +3097,6 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
     return ret;
 }
 
-
-static int
-virCPUx86CheckFeature(const virCPUDef *cpu,
-                      const char *name)
-{
-    int ret = -1;
-    virCPUx86MapPtr map;
-    virCPUx86ModelPtr model = NULL;
-
-    if (!(map = virCPUx86GetMap()))
-        return -1;
-
-    if (!(model = x86ModelFromCPU(cpu, map, -1)))
-        goto cleanup;
-
-    ret = x86FeatureInData(name, &model->data, map);
-
- cleanup:
-    x86ModelFree(model);
-    return ret;
-}
-
-
-static int
-virCPUx86DataCheckFeature(const virCPUData *data,
-                          const char *name)
-{
-    virCPUx86MapPtr map;
-
-    if (!(map = virCPUx86GetMap()))
-        return -1;
-
-    return x86FeatureInData(name, &data->data.x86, map);
-}
 
 static int
 virCPUx86GetModels(char ***models)
