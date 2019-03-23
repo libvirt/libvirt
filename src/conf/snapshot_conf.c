@@ -962,6 +962,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
                          vm->def->name);
                 break;
             }
+            otherdef = virDomainSnapshotObjGetDef(other);
         }
     }
 
