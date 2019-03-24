@@ -623,12 +623,14 @@ the usable CPU models are only limited by the hypervisor. This command will
 print that all CPU models are accepted for these architectures and the actual
 list of supported CPU models can be checked in the domain capabilities XML.
 
-=item B<echo> [I<--shell>] [I<--xml>] [I<arg>...]
+=item B<echo> [I<--shell>] [I<--xml>] [I<err>...] [I<arg>...]
 
 Echo back each I<arg>, separated by space.  If I<--shell> is
 specified, then the output will be single-quoted where needed, so that
 it is suitable for reuse in a shell context.  If I<--xml> is
 specified, then the output will be escaped for use in XML.
+If I<--err> is specified, prefix B<"error: "> and output to stderr
+instead of stdout.
 
 =item B<hypervisor-cpu-compare> I<FILE> [I<virttype>] [I<emulator>] [I<arch>]
 [I<machine>] [I<--error>]

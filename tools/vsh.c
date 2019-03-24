@@ -3296,6 +3296,10 @@ const vshCmdOptDef opts_echo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("escape for XML use")
     },
+    {.name = "err",
+     .type = VSH_OT_BOOL,
+     .help = N_("output to stderr"),
+    },
     {.name = "str",
      .type = VSH_OT_ALIAS,
      .help = "string"
@@ -3329,6 +3333,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
 {
     bool shell = false;
     bool xml = false;
+    bool err = false;
     int count = 0;
     const vshCmdOpt *opt = NULL;
     char *arg;
@@ -3338,6 +3343,8 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
         shell = true;
     if (vshCommandOptBool(cmd, "xml"))
         xml = true;
+    if (vshCommandOptBool(cmd, "err"))
+        err = true;
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
         char *str;
@@ -3372,8 +3379,12 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
     arg = virBufferContentAndReset(&buf);
-    if (arg)
-        vshPrint(ctl, "%s", arg);
+    if (arg) {
+        if (err)
+            vshError(ctl, "%s", arg);
+        else
+            vshPrint(ctl, "%s", arg);
+    }
     VIR_FREE(arg);
     return true;
 }
