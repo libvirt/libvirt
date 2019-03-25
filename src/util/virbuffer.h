@@ -35,19 +35,15 @@
 typedef struct _virBuffer virBuffer;
 typedef virBuffer *virBufferPtr;
 
-# ifndef __VIR_BUFFER_C__
-#  define VIR_BUFFER_INITIALIZER { 0, 0, 0, 0, NULL }
+# define VIR_BUFFER_INITIALIZER { 0, 0, 0, 0, NULL }
 
-/* This struct must be kept in sync with the real struct
-   in the buf.c impl file */
 struct _virBuffer {
-    unsigned int a;
-    unsigned int b;
-    unsigned int c;
-    int d;
-    char *e;
+    unsigned int size;
+    unsigned int use;
+    unsigned int error; /* errno value, or -1 for usage error */
+    int indent;
+    char *content;
 };
-# endif
 
 const char *virBufferCurrentContent(virBufferPtr buf);
 char *virBufferContentAndReset(virBufferPtr buf);
