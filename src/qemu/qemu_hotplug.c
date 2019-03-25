@@ -6189,23 +6189,35 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
     int ret = -1;
 
     switch ((virDomainDeviceType)match->type) {
+        /*
+         * lease and chr devices don't follow the standard pattern of
+         * the others, so they must have their own self-contained
+         * Detach functions.
+         */
+    case VIR_DOMAIN_DEVICE_LEASE:
+        return qemuDomainDetachLease(driver, vm, match->data.lease);
+
+    case VIR_DOMAIN_DEVICE_CHR:
+        return qemuDomainDetachChrDevice(driver, vm, match->data.chr, async);
+
+        /*
+         * All the other device types follow a very similar pattern -
+         * First we call type-specific functions to 1) locate the
+         * device we want to detach (based on the prototype device in
+         * match) and 2) do any device-type-specific validation to
+         * assure it is okay to detach the device.
+         */
     case VIR_DOMAIN_DEVICE_DISK:
         ret = qemuDomainDetachDeviceDiskLive(driver, vm, match, async);
         break;
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         ret = qemuDomainDetachControllerDevice(driver, vm, match, async);
         break;
-    case VIR_DOMAIN_DEVICE_LEASE:
-        ret = qemuDomainDetachLease(driver, vm, match->data.lease);
-        break;
     case VIR_DOMAIN_DEVICE_NET:
         ret = qemuDomainDetachNetDevice(driver, vm, match, async);
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         ret = qemuDomainDetachHostDevice(driver, vm, match, async);
-        break;
-    case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainDetachChrDevice(driver, vm, match->data.chr, async);
         break;
     case VIR_DOMAIN_DEVICE_RNG:
         ret = qemuDomainDetachRNGDevice(driver, vm, match->data.rng, async);
@@ -6246,7 +6258,7 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("live detach of device '%s' is not supported"),
                        virDomainDeviceTypeToString(match->type));
-        break;
+        return -1;
     }
 
     return ret;
