@@ -37,6 +37,7 @@
 #include "locking/domain_lock.h"
 #include "viralloc.h"
 #include "virstring.h"
+#include "qemu_security.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -275,6 +276,11 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
          * want to only revoke the non-shared portion of the chain); so for
          * now, we leak the access to the original.  */
         virDomainLockImageDetach(driver->lockManager, vm, disk->src);
+
+        /* Move secret driver metadata */
+        if (qemuSecurityMoveImageMetadata(driver, vm, disk->src, disk->mirror) < 0)
+            VIR_WARN("Unable to move disk metadata on vm %s", vm->def->name);
+
         virObjectUnref(disk->src);
         disk->src = disk->mirror;
     } else {
