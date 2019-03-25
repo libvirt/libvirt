@@ -1001,7 +1001,6 @@ virDomainSnapshotObjListFree;
 virDomainSnapshotObjListGetNames;
 virDomainSnapshotObjListNew;
 virDomainSnapshotObjListNum;
-virDomainSnapshotObjListParse;
 virDomainSnapshotObjListRemove;
 virDomainSnapshotObjListRemoveAll;
 virDomainSnapshotSetCurrent;

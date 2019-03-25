@@ -30,12 +30,6 @@
 virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
 void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
 
-int virDomainSnapshotObjListParse(const char *xmlStr,
-                                  const unsigned char *domain_uuid,
-                                  virDomainSnapshotObjListPtr snapshots,
-                                  virCapsPtr caps,
-                                  virDomainXMLOptionPtr xmlopt,
-                                  unsigned int flags);
 int virDomainSnapshotObjListFormat(virBufferPtr buf,
                                    const char *uuidstr,
                                    virDomainSnapshotObjListPtr snapshots,
