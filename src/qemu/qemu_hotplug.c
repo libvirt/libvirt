@@ -5203,19 +5203,28 @@ qemuDomainRemoveAuditDevice(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         virDomainAuditHostdev(vm, detach->data.hostdev, "detach", success);
         break;
-
     case VIR_DOMAIN_DEVICE_INPUT:
+        virDomainAuditInput(vm, detach->data.input, "detach", success);
+        break;
     case VIR_DOMAIN_DEVICE_CHR:
+        virDomainAuditChardev(vm, detach->data.chr, NULL, "detach", success);
+        break;
     case VIR_DOMAIN_DEVICE_RNG:
-    case VIR_DOMAIN_DEVICE_MEMORY:
-    case VIR_DOMAIN_DEVICE_SHMEM:
-    case VIR_DOMAIN_DEVICE_REDIRDEV:
-       /*
-        * These devices are supposed to be audited, but current code
-        * doesn't audit on failure to remove the device.
-        */
-       break;
+        virDomainAuditRNG(vm, detach->data.rng, NULL, "detach", success);
+        break;
+    case VIR_DOMAIN_DEVICE_MEMORY: {
+        unsigned long long oldmem = virDomainDefGetMemoryTotal(vm->def);
+        unsigned long long newmem = oldmem - detach->data.memory->size;
 
+        virDomainAuditMemory(vm, oldmem, newmem, "update", success);
+        break;
+    }
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        virDomainAuditShmem(vm, detach->data.shmem, "detach", success);
+        break;
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        virDomainAuditRedirdev(vm, detach->data.redirdev, "detach", success);
+        break;
 
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_CONTROLLER:
