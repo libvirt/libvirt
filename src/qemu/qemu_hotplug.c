@@ -4228,8 +4228,15 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         if (VIR_STRDUP(corAlias, diskPriv->nodeCopyOnRead) < 0)
             goto cleanup;
 
-        if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareBlockdev(disk->src)))
-            goto cleanup;
+        if (diskPriv->blockjob) {
+            /* the block job keeps reference to the disk chain */
+            diskPriv->blockjob->disk = NULL;
+            virObjectUnref(diskPriv->blockjob);
+            diskPriv->blockjob = NULL;
+        } else {
+            if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareBlockdev(disk->src)))
+                goto cleanup;
+        }
     } else {
         char *driveAlias;
 
@@ -4252,7 +4259,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     if (corAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, corAlias));
 
-    qemuBlockStorageSourceChainDetach(priv->mon, diskBackend);
+    if (diskBackend)
+        qemuBlockStorageSourceChainDetach(priv->mon, diskBackend);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
@@ -4262,7 +4270,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     qemuDomainReleaseDeviceAddress(vm, &disk->info);
 
     /* tear down disk security access */
-    qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src);
+    if (diskBackend)
+        qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src);
 
     dev.type = VIR_DOMAIN_DEVICE_DISK;
     dev.data.disk = disk;
