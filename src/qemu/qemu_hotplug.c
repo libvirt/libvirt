@@ -4801,6 +4801,17 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
         !(charDevAlias = qemuAliasChardevFromDevAlias(net->info.alias)))
         goto cleanup;
 
+    if (virDomainNetGetActualBandwidth(net) &&
+        virNetDevSupportBandwidth(virDomainNetGetActualType(net)) &&
+        virNetDevBandwidthClear(net->ifname) < 0)
+        VIR_WARN("cannot clear bandwidth setting for device : %s",
+                 net->ifname);
+
+    /* deactivate the tap/macvtap device on the host, which could also
+     * affect the parent device (e.g. macvtap passthrough mode sets
+     * the parent device offline)
+     */
+    ignore_value(qemuInterfaceStopDevice(net));
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
@@ -5770,34 +5781,6 @@ qemuDomainDetachPrepNet(virDomainObjPtr vm,
 }
 
 
-static void
-qemuDomainDetachShutdownNet(virDomainNetDefPtr net)
-{
-/*
- * These operations are in a separate function from
- * qemuDomainDetachPrepNet() because they can't be done until after
- * we've validated that this device really can be removed - in
- * particular we need to check for multifunction PCI devices and
- * presence of a device alias, which isn't done until *after* the
- * return from qemuDomainDetachPrepNet(). Since we've already passed
- * the "point of no return", we ignore any errors, and trudge ahead
- * with shutting down and detaching the device even if there is an
- * error in one of these functions.
- */
-    if (virDomainNetGetActualBandwidth(net) &&
-        virNetDevSupportBandwidth(virDomainNetGetActualType(net)) &&
-        virNetDevBandwidthClear(net->ifname) < 0)
-        VIR_WARN("cannot clear bandwidth setting for device : %s",
-                 net->ifname);
-
-    /* deactivate the tap/macvtap device on the host, which could also
-     * affect the parent device (e.g. macvtap passthrough mode sets
-     * the parent device offline)
-     */
-    ignore_value(qemuInterfaceStopDevice(net));
-}
-
-
 static int
 qemuDomainDetachDeviceChr(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
@@ -6127,17 +6110,6 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
                        info->addr.pci.slot, info->addr.pci.function);
         return -1;
     }
-
-
-    /*
-     * Do any device-specific shutdown that should be
-     * done after all validation checks, but before issuing the qemu
-     * command to delete the device. For now, the only type of device
-     * that has such shutdown needs is the net device.
-     */
-    if (detach.type == VIR_DOMAIN_DEVICE_NET)
-        qemuDomainDetachShutdownNet(detach.data.net);
-
 
     /*
      * Issue the qemu monitor command to delete the device (based on
