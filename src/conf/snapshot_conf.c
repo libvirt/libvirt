@@ -787,7 +787,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
 
 /* Append XML describing def into buf. Return 0 on success, or -1 on
  * failure with buf cleared. */
-int
+static int
 virDomainSnapshotDefFormatInternal(virBufferPtr buf,
                                    const char *uuidstr,
                                    virDomainSnapshotDefPtr def,

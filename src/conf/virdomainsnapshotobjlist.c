@@ -39,67 +39,6 @@ struct _virDomainSnapshotObjList {
 };
 
 
-/* Struct and callback function used as a hash table callback; each call
- * appends another snapshot XML to buf, with the caller clearing the
- * buffer if any callback fails. */
-struct virDomainSnapshotFormatData {
-    virBufferPtr buf;
-    const char *uuidstr;
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
-    unsigned int flags;
-};
-
-static int
-virDomainSnapshotFormatOne(void *payload,
-                           const void *name ATTRIBUTE_UNUSED,
-                           void *opaque)
-{
-    virDomainMomentObjPtr snap = payload;
-    struct virDomainSnapshotFormatData *data = opaque;
-    return virDomainSnapshotDefFormatInternal(data->buf, data->uuidstr,
-                                              virDomainSnapshotObjGetDef(snap),
-                                              data->caps, data->xmlopt,
-                                              data->flags);
-}
-
-
-/* Format the XML for all snapshots in the list into buf. @flags is
- * virDomainSnapshotFormatFlags. On error, clear the buffer and return
- * -1. */
-int
-virDomainSnapshotObjListFormat(virBufferPtr buf,
-                               const char *uuidstr,
-                               virDomainSnapshotObjListPtr snapshots,
-                               virCapsPtr caps,
-                               virDomainXMLOptionPtr xmlopt,
-                               unsigned int flags)
-{
-    struct virDomainSnapshotFormatData data = {
-        .buf = buf,
-        .uuidstr = uuidstr,
-        .caps = caps,
-        .xmlopt = xmlopt,
-        .flags = flags,
-    };
-
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE, -1);
-    virBufferAddLit(buf, "<snapshots");
-    virBufferEscapeString(buf, " current='%s'",
-                          virDomainSnapshotGetCurrentName(snapshots));
-    virBufferAddLit(buf, ">\n");
-    virBufferAdjustIndent(buf, 2);
-    if (virDomainSnapshotForEach(snapshots, virDomainSnapshotFormatOne,
-                                 &data) < 0) {
-        virBufferFreeAndReset(buf);
-        return -1;
-    }
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</snapshots>\n");
-    return 0;
-}
-
-
 virDomainMomentObjPtr
 virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
                            virDomainSnapshotDefPtr def)

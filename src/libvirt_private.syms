@@ -996,7 +996,6 @@ virDomainSnapshotForEach;
 virDomainSnapshotGetCurrent;
 virDomainSnapshotGetCurrentName;
 virDomainSnapshotIsCurrentName;
-virDomainSnapshotObjListFormat;
 virDomainSnapshotObjListFree;
 virDomainSnapshotObjListGetNames;
 virDomainSnapshotObjListNew;
