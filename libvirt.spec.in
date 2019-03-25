@@ -1328,6 +1328,16 @@ then
   exit 1
 fi
 
+%post libs
+%if 0%{?rhel} == 7
+/sbin/ldconfig
+%endif
+
+%postun libs
+%if 0%{?rhel} == 7
+/sbin/ldconfig
+%endif
+
 %pre daemon
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
@@ -1469,17 +1479,9 @@ exit 0
 %systemd_preun libvirt-guests.service
 
 %post client
-
-%if 0%{?rhel} == 7
-/sbin/ldconfig
-%endif
 %systemd_post libvirt-guests.service
 
 %postun client
-
-%if 0%{?rhel} == 7
-/sbin/ldconfig
-%endif
 %systemd_postun libvirt-guests.service
 
 %if %{with_sanlock}
