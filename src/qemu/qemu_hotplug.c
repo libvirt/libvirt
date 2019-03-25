@@ -5924,7 +5924,7 @@ qemuDomainDetachPrepNet(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
+qemuDomainDetachDeviceChr(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainChrDefPtr chr,
                           bool async)
@@ -6168,9 +6168,9 @@ qemuDomainDetachPrepVsock(virDomainObjPtr vm,
 
 
 static int
-qemuDomainDetachLease(virQEMUDriverPtr driver,
-                      virDomainObjPtr vm,
-                      virDomainLeaseDefPtr lease)
+qemuDomainDetachDeviceLease(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainLeaseDefPtr lease)
 {
     virDomainLeaseDefPtr det_lease;
     int idx;
@@ -6207,10 +6207,10 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
          * Detach functions.
          */
     case VIR_DOMAIN_DEVICE_LEASE:
-        return qemuDomainDetachLease(driver, vm, match->data.lease);
+        return qemuDomainDetachDeviceLease(driver, vm, match->data.lease);
 
     case VIR_DOMAIN_DEVICE_CHR:
-        return qemuDomainDetachChrDevice(driver, vm, match->data.chr, async);
+        return qemuDomainDetachDeviceChr(driver, vm, match->data.chr, async);
 
         /*
          * All the other device types follow a very similar pattern -
