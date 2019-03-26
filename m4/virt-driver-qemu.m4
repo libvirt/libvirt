@@ -112,5 +112,10 @@ AC_DEFUN([LIBVIRT_DRIVER_RESULT_QEMU], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_QEMU_PRIVILEGES], [
-  LIBVIRT_RESULT([QEMU], [$QEMU_USER:$QEMU_GROUP])
+  if test "$QEMU_USER" = "root"; then
+    LIBVIRT_RESULT([QEMU], [$QEMU_USER:$QEMU_GROUP],
+                   [!!! running QEMU as root is strongly discouraged !!!])
+  else
+    LIBVIRT_RESULT([QEMU], [$QEMU_USER:$QEMU_GROUP])
+  fi
 ])
