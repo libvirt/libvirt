@@ -460,8 +460,10 @@ FILE *fopen(const char *path, const char *mode)
     }
 
     if (type) {
-        if (!filename)
-            abort();
+        if (!filename) {
+            errno = EACCES;
+            return NULL;
+        }
         if (virAsprintfQuiet(&filepath, "%s/vircgroupdata/%s.%s",
                              abs_srcdir, filename, type) < 0) {
             abort();
