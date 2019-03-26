@@ -44,8 +44,42 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_QEMU], [
     default_qemu_user=root
     default_qemu_group=wheel
   else
-    default_qemu_user=root
-    default_qemu_group=root
+    # Try to integrate gracefully with downstream packages by running QEMU
+    # processes using the same user and group they would
+    case $(grep ^ID= /etc/os-release 2>/dev/null) in
+      *arch*)
+        default_qemu_user=nobody
+        default_qemu_group=nobody
+        ;;
+      *centos*|*fedora*|*gentoo*|*rhel*|*suse*)
+        default_qemu_user=qemu
+        default_qemu_group=qemu
+        ;;
+      *debian*)
+        default_qemu_user=libvirt-qemu
+        default_qemu_group=libvirt-qemu
+        ;;
+      *ubuntu*)
+        default_qemu_user=libvirt-qemu
+        default_qemu_group=kvm
+        ;;
+      *)
+        default_qemu_user=root
+        default_qemu_group=root
+        ;;
+    esac
+    # If the expected user and group don't exist, or we haven't hit any
+    # of the cases above because we're running on an unknown OS, the only
+    # sensible fallback is root:root
+    AC_MSG_CHECKING([for QEMU credentials ($default_qemu_user:$default_qemu_group)])
+    if getent passwd "$default_qemu_user" >/dev/null 2>&1 && \
+       getent group "$default_qemu_group" >/dev/null 2>&1; then
+      AC_MSG_RESULT([ok])
+    else
+      AC_MSG_RESULT([not found, using root:root instead])
+      default_qemu_user=root
+      default_qemu_group=root
+    fi
   fi
 
   if test "x$with_qemu_user" = "xplatform dependent" ; then
