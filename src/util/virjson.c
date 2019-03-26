@@ -28,6 +28,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virbuffer.h"
 
 #if WITH_YAJL
 # include <yajl/yajl_gen.h>
@@ -1969,17 +1970,18 @@ virJSONValueToStringOne(virJSONValuePtr object,
 }
 
 
-char *
-virJSONValueToString(virJSONValuePtr object,
+static int
+virJSONValueToBuffer(virJSONValuePtr object,
+                     virBufferPtr buf,
                      bool pretty)
 {
     yajl_gen g;
     const unsigned char *str;
-    char *ret = NULL;
     yajl_size_t len;
 # ifndef WITH_YAJL2
     yajl_gen_config conf = { pretty ? 1 : 0, pretty ? "  " : " "};
 # endif
+    int ret = -1;
 
     VIR_DEBUG("object=%p", object);
 
@@ -2009,12 +2011,11 @@ virJSONValueToString(virJSONValuePtr object,
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, (const char *)str));
+    virBufferAdd(buf, (const char *) str, len);
+    ret = 0;
 
  cleanup:
     yajl_gen_free(g);
-
-    VIR_DEBUG("result=%s", NULLSTR(ret));
 
     return ret;
 }
@@ -2030,15 +2031,34 @@ virJSONValueFromString(const char *jsonstring ATTRIBUTE_UNUSED)
 }
 
 
-char *
-virJSONValueToString(virJSONValuePtr object ATTRIBUTE_UNUSED,
+static int
+virJSONValueToBuffer(virJSONValuePtr object ATTRIBUTE_UNUSED,
+                     virBufferPtr buf ATTRIBUTE_UNUSED,
                      bool pretty ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("No JSON parser implementation is available"));
-    return NULL;
+    return -1;
 }
 #endif
+
+
+char *
+virJSONValueToString(virJSONValuePtr object,
+                     bool pretty)
+{
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    char *ret = NULL;
+
+    if (virJSONValueToBuffer(object, &buf, pretty) < 0)
+        return NULL;
+
+    ret = virBufferContentAndReset(&buf);
+
+    VIR_DEBUG("result=%s", NULLSTR(ret));
+
+    return ret;
+}
 
 
 /**
