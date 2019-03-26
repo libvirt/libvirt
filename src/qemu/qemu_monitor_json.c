@@ -277,7 +277,7 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
 {
     int ret = -1;
     qemuMonitorMessage msg;
-    char *cmdstr = NULL;
+    VIR_AUTOCLEAN(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     char *id = NULL;
 
     *reply = NULL;
@@ -294,11 +294,15 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
         }
     }
 
-    if (!(cmdstr = virJSONValueToString(cmd, false)))
+    if (virJSONValueToBuffer(cmd, &cmdbuf, false) < 0)
         goto cleanup;
-    if (virAsprintf(&msg.txBuffer, "%s\r\n", cmdstr) < 0)
+    virBufferAddLit(&cmdbuf, "\r\n");
+
+    if (virBufferCheckError(&cmdbuf) < 0)
         goto cleanup;
-    msg.txLength = strlen(msg.txBuffer);
+
+    msg.txLength = virBufferUse(&cmdbuf);
+    msg.txBuffer = virBufferContentAndReset(&cmdbuf);
     msg.txFD = scm_fd;
 
     ret = qemuMonitorSend(mon, &msg);
@@ -315,7 +319,6 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
 
  cleanup:
     VIR_FREE(id);
-    VIR_FREE(cmdstr);
     VIR_FREE(msg.txBuffer);
 
     return ret;
