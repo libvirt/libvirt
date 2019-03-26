@@ -301,13 +301,7 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
     msg.txLength = strlen(msg.txBuffer);
     msg.txFD = scm_fd;
 
-    VIR_DEBUG("Send command '%s' for write with FD %d", cmdstr, scm_fd);
-
     ret = qemuMonitorSend(mon, &msg);
-
-    VIR_DEBUG("Receive command reply ret=%d rxObject=%p",
-              ret, msg.rxObject);
-
 
     if (ret == 0) {
         if (!msg.rxObject) {
