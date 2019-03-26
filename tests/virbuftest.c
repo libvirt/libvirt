@@ -20,6 +20,7 @@ static int testBufInfiniteLoop(const void *data)
     char *addstr = NULL, *bufret = NULL;
     int ret = -1;
     const struct testInfo *info = data;
+    int len;
 
     virBufferAddChar(buf, 'a');
 
@@ -29,7 +30,8 @@ static int testBufInfiniteLoop(const void *data)
      * which was the case after the above addchar at the time of the bug.
      * This test is a bit fragile, since it relies on virBuffer internals.
      */
-    if (virAsprintf(&addstr, "%*s", buf->size - buf->use - 1, "a") < 0)
+    len = buf->size - buf->use - 1;
+    if (virAsprintf(&addstr, "%*s", len, "a") < 0)
         goto out;
 
     if (info->doEscape)

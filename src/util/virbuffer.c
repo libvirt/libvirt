@@ -339,7 +339,7 @@ virBufferCheckErrorInternal(const virBuffer *buf,
  *
  * Return the string usage in bytes
  */
-unsigned int
+size_t
 virBufferUse(const virBuffer *buf)
 {
     if (buf == NULL)

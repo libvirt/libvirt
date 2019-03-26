@@ -38,8 +38,8 @@ typedef virBuffer *virBufferPtr;
 # define VIR_BUFFER_INITIALIZER { 0, 0, 0, 0, NULL }
 
 struct _virBuffer {
-    unsigned int size;
-    unsigned int use;
+    size_t size;
+    size_t use;
     unsigned int error; /* errno value, or -1 for usage error */
     int indent;
     char *content;
@@ -69,7 +69,7 @@ VIR_DEFINE_AUTOCLEAN_FUNC(virBuffer, virBufferFreeAndReset);
 # define virBufferCheckError(buf) \
     virBufferCheckErrorInternal(buf, VIR_FROM_THIS, __FILE__, __FUNCTION__, \
     __LINE__)
-unsigned int virBufferUse(const virBuffer *buf);
+size_t virBufferUse(const virBuffer *buf);
 void virBufferAdd(virBufferPtr buf, const char *str, int len);
 void virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd);
 void virBufferAddChar(virBufferPtr buf, char c);
