@@ -2395,7 +2395,6 @@ qemuMonitorTypeToProtocol(int type)
 }
 
 
-/* Returns -2 if not supported with this monitor connection */
 int
 qemuMonitorSetPassword(qemuMonitorPtr mon,
                        int type,

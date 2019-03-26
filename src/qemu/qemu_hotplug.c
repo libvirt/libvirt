@@ -4227,15 +4227,6 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
         goto cleanup;
     ret = qemuMonitorSetPassword(priv->mon, type, password, connected);
 
-    if (ret == -2) {
-        if (type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Graphics password only supported for VNC"));
-            ret = -1;
-        } else {
-            ret = qemuMonitorSetVNCPassword(priv->mon, password);
-        }
-    }
     if (ret != 0)
         goto end_job;
 
@@ -4251,17 +4242,6 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
     }
 
     ret = qemuMonitorExpirePassword(priv->mon, type, expire);
-
-    if (ret == -2) {
-        /* XXX we could fake this with a timer */
-        if (auth->expires) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Expiry of passwords is not supported"));
-            ret = -1;
-        } else {
-            ret = 0;
-        }
-    }
 
  end_job:
     if (qemuDomainObjExitMonitor(driver, vm) < 0)

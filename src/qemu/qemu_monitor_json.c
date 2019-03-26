@@ -2781,7 +2781,6 @@ int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,
     return ret;
 }
 
-/* Returns -1 on error, -2 if not supported */
 int qemuMonitorJSONSetPassword(qemuMonitorPtr mon,
                                const char *protocol,
                                const char *password,
@@ -2800,11 +2799,6 @@ int qemuMonitorJSONSetPassword(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        ret = -2;
-        goto cleanup;
-    }
-
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
 
@@ -2815,7 +2809,6 @@ int qemuMonitorJSONSetPassword(qemuMonitorPtr mon,
     return ret;
 }
 
-/* Returns -1 on error, -2 if not supported */
 int qemuMonitorJSONExpirePassword(qemuMonitorPtr mon,
                                   const char *protocol,
                                   const char *expire_time)
@@ -2831,11 +2824,6 @@ int qemuMonitorJSONExpirePassword(qemuMonitorPtr mon,
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        ret = -2;
-        goto cleanup;
-    }
 
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
