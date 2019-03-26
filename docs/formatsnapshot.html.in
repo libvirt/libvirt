@@ -99,16 +99,14 @@
     </p>
     <dl>
       <dt><code>name</code></dt>
-      <dd>The name for this snapshot.  If the name is specified when
-        initially creating the snapshot, then the snapshot will have
-        that particular name.  If the name is omitted when initially
-        creating the snapshot, then libvirt will make up a name for
-        the snapshot, based on the time when it was created.
+      <dd>The optional name for this snapshot.  If the name is
+        omitted, libvirt will create a name based on the time of the
+        creation.
       </dd>
       <dt><code>description</code></dt>
-      <dd>A human-readable description of the snapshot.  If the
-        description is omitted when initially creating the snapshot,
-        then this field will be empty.
+      <dd>An optional human-readable description of the snapshot.  If
+        the description is omitted when initially creating the
+        snapshot, then this field will be empty.
       </dd>
       <dt><code>memory</code></dt>
       <dd>On input, this is an optional request for how to handle VM
@@ -200,46 +198,52 @@
         </dl>
       </dd>
       <dt><code>creationTime</code></dt>
-      <dd>The time this snapshot was created.  The time is specified
-        in seconds since the Epoch, UTC (i.e. Unix time).  Readonly.
+      <dd>A readonly representation of the time this snapshot was
+        created.  The time is specified in seconds since the Epoch,
+        UTC (i.e. Unix time).
       </dd>
       <dt><code>state</code></dt>
-      <dd>The state of the domain at the time this snapshot was taken.
-        If a full system snapshot was created, then this
-        is the state of the domain at that time. When the domain is
-        reverted to this snapshot, the domain's state will default to
-        this state, unless overridden
+      <dd>A readonly representation of the state of the domain at the
+        time this snapshot was taken.  If a full system snapshot was
+        created, then this is the state of the domain at that
+        time. When the domain is reverted to this snapshot, the
+        domain's state will default to this state, unless overridden
         by <code>virDomainRevertToSnapshot()</code> flags to revert to
-        a running or paused state. Additionally,
-        this field can be the value "disk-snapshot"
-        (<span class="since">since 0.9.5</span>) when it represents
-        only a disk snapshot (no VM memory state), and reverting to this
-        snapshot will default to an inactive guest.  Readonly.
+        a running or paused state. Additionally, this field can be the
+        value "disk-snapshot" (<span class="since">since 0.9.5</span>)
+        when it represents only a disk snapshot (no VM memory state),
+        and reverting to this snapshot will default to an inactive
+        guest.
       </dd>
       <dt><code>parent</code></dt>
-      <dd>The parent of this snapshot.  If present, this element
-        contains exactly one child element, name.  This specifies the
-        name of the parent snapshot of this snapshot, and is used to
-        represent trees of snapshots.  Readonly.
+      <dd>An optional readonly representation of the parent of this
+        snapshot.  If present, this element contains exactly one child
+        element, <code>name</code>.  This specifies the name of the
+        parent snapshot of this snapshot, and is used to represent
+        trees of snapshots.
       </dd>
       <dt><code>domain</code></dt>
-      <dd>The domain that this snapshot was taken against.  Older
-        versions of libvirt stored only a single child element, uuid;
-        reverting to a snapshot like this is risky if the current
-        state of the domain differs from the state that the domain was
-        created in, and requires the use of the
-        <code>VIR_DOMAIN_SNAPSHOT_REVERT_FORCE</code> flag
+      <dd>A readonly representation of the domain that this snapshot
+        was taken against.  Older versions of libvirt stored only a
+        single child element, uuid; reverting to a snapshot like this
+        is risky if the current state of the domain differs from the
+        state that the domain was created in, and requires the use of
+        the <code>VIR_DOMAIN_SNAPSHOT_REVERT_FORCE</code> flag
         in <code>virDomainRevertToSnapshot()</code>.  Newer versions
-        of libvirt (<span class="since">since 0.9.5</span>) store the entire
-        inactive <a href="formatdomain.html">domain configuration</a>
-        at the time of the snapshot (<span class="since">since
-        0.9.5</span>).  Readonly.
+        of libvirt (<span class="since">since 0.9.5</span>) store the
+        entire inactive <a href="formatdomain.html">domain
+        configuration</a> at the time of the snapshot
+        (<span class="since">since 0.9.5</span>). The domain will have
+        security-sensitive information omitted
+        unless the flag <code>VIR_DOMAIN_SNAPSHOT_XML_SECURE</code> is
+        provided on a read-write connection.
       </dd>
       <dt><code>cookie</code></dt>
-      <dd>Save image cookie containing additional data libvirt may need to
-        properly restore a domain from an active snapshot when such data
-        cannot be stored directly in the <code>domain</code> to maintain
-        compatibility with older libvirt or hypervisor. Readonly.
+      <dd>An optional readonly representation of a save image cookie
+        containing additional data libvirt may need to properly
+        restore a domain from an active snapshot when such data cannot
+        be stored directly in the <code>domain</code> to maintain
+        compatibility with older libvirt or hypervisor.
       </dd>
     </dl>
 
