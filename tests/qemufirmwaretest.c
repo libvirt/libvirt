@@ -66,6 +66,7 @@ testFWPrecedence(const void *opaque ATTRIBUTE_UNUSED)
         PREFIX "/share/qemu/firmware/61-ovmf.json",
         PREFIX "/share/qemu/firmware/70-aavmf.json",
     };
+    const size_t nexpected = ARRAY_CARDINALITY(expected);
 
     if (VIR_STRDUP(fakehome, abs_srcdir "/qemufirmwaredata/home/user/.config") < 0)
         return -1;
@@ -81,17 +82,15 @@ testFWPrecedence(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     nfwList = virStringListLength((const char **)fwList);
-    if (nfwList != ARRAY_CARDINALITY(expected)) {
-        fprintf(stderr, "Expected %zu paths, got %zu\n",
-                ARRAY_CARDINALITY(expected), nfwList);
-        return -1;
-    }
 
-    for (i = 0; i < ARRAY_CARDINALITY(expected); i++) {
-        if (STRNEQ_NULLABLE(expected[i], fwList[i])) {
+    for (i = 0; i < MAX(nfwList, nexpected); i++) {
+        const char *e = i < nexpected ? expected[i] : NULL;
+        const char *f = i < nfwList ? fwList[i] : NULL;
+
+        if (STRNEQ_NULLABLE(e, f)) {
             fprintf(stderr,
                     "Unexpected path (i=%zu). Expected %s got %s \n",
-                    i, expected[i], NULLSTR(fwList[i]));
+                    i, NULLSTR(e), NULLSTR(f));
             return -1;
         }
     }
