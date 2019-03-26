@@ -26,6 +26,7 @@
 # include "internal.h"
 # include "virbitmap.h"
 # include "viralloc.h"
+# include "virbuffer.h"
 
 # include <stdarg.h>
 
@@ -143,6 +144,10 @@ int virJSONValueArrayAppendString(virJSONValuePtr object, const char *value);
 virJSONValuePtr virJSONValueFromString(const char *jsonstring);
 char *virJSONValueToString(virJSONValuePtr object,
                            bool pretty);
+int virJSONValueToBuffer(virJSONValuePtr object,
+                         virBufferPtr buf,
+                         bool pretty)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 typedef int (*virJSONValueObjectIteratorFunc)(const char *key,
                                               virJSONValuePtr value,

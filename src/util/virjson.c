@@ -1970,7 +1970,7 @@ virJSONValueToStringOne(virJSONValuePtr object,
 }
 
 
-static int
+int
 virJSONValueToBuffer(virJSONValuePtr object,
                      virBufferPtr buf,
                      bool pretty)
@@ -2031,7 +2031,7 @@ virJSONValueFromString(const char *jsonstring ATTRIBUTE_UNUSED)
 }
 
 
-static int
+int
 virJSONValueToBuffer(virJSONValuePtr object ATTRIBUTE_UNUSED,
                      virBufferPtr buf ATTRIBUTE_UNUSED,
                      bool pretty ATTRIBUTE_UNUSED)
