@@ -98,8 +98,6 @@ int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
                                const char *nodename,
                                unsigned long long size);
 
-int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,
-                                  const char *password);
 int qemuMonitorJSONSetPassword(qemuMonitorPtr mon,
                                const char *protocol,
                                const char *password,

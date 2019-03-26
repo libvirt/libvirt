@@ -1322,7 +1322,6 @@ cleanup: \
 
 GEN_TEST_FUNC(qemuMonitorJSONSetLink, "vnet0", VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN)
 GEN_TEST_FUNC(qemuMonitorJSONBlockResize, "vda", "asdf", 123456)
-GEN_TEST_FUNC(qemuMonitorJSONSetVNCPassword, "secret_password")
 GEN_TEST_FUNC(qemuMonitorJSONSetPassword, "spice", "secret_password", "disconnect")
 GEN_TEST_FUNC(qemuMonitorJSONExpirePassword, "spice", "123456")
 GEN_TEST_FUNC(qemuMonitorJSONSetBalloon, 1024)
@@ -2974,7 +2973,6 @@ mymain(void)
     DO_TEST_SIMPLE("rtc-reset-reinjection", qemuMonitorJSONRTCResetReinjection);
     DO_TEST_GEN(qemuMonitorJSONSetLink);
     DO_TEST_GEN(qemuMonitorJSONBlockResize);
-    DO_TEST_GEN(qemuMonitorJSONSetVNCPassword);
     DO_TEST_GEN(qemuMonitorJSONSetPassword);
     DO_TEST_GEN(qemuMonitorJSONExpirePassword);
     DO_TEST_GEN(qemuMonitorJSONSetBalloon);
