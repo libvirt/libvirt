@@ -616,19 +616,7 @@ typedef enum {
     ARG_PARSEFLAGS,
     ARG_CAPS_ARCH,
     ARG_CAPS_VER,
-
-    /* ARG_END is our va_args sentinel. The value QEMU_CAPS_LATEST is
-     * necessary to handle the DO_TEST(..., NONE) case, which through macro
-     * magic will give the va_args list:
-     *
-     *   ARG_QEMU_CAPS, NONE, QEMU_CAPS_LAST, ARG_END
-     *
-     * SetArgs consumes the first item, hands off control to virQEMUCapsX
-     * virQEMUCapsX sees NONE aka QEMU_CAPS_LAST, returns to SetArgs.
-     * SetArgs sees QEMU_CAPS_LAST aka ARG_END, and exits the parse loop.
-     * If ARG_END != QEMU_CAPS_LAST, this last step would generate an error.
-     */
-    ARG_END = QEMU_CAPS_LAST,
+    ARG_END,
 } testInfoArgName;
 
 static int
@@ -646,7 +634,8 @@ testInfoSetArgs(struct testInfo *info,
     int ret = -1;
 
     va_start(argptr, capslatest);
-    while ((argname = va_arg(argptr, testInfoArgName)) < ARG_END) {
+    argname = va_arg(argptr, testInfoArgName);
+    while (argname != ARG_END) {
         switch (argname) {
         case ARG_QEMU_CAPS:
             if (qemuCaps || !(qemuCaps = virQEMUCapsNew()))
@@ -654,6 +643,22 @@ testInfoSetArgs(struct testInfo *info,
 
             while ((flag = va_arg(argptr, int)) < QEMU_CAPS_LAST)
                 virQEMUCapsSet(qemuCaps, flag);
+
+            /* Some tests are run with NONE capabilities, which is just
+             * another name for QEMU_CAPS_LAST. If that is the case the
+             * arguments look like this :
+             *
+             *   ARG_QEMU_CAPS, NONE, QEMU_CAPS_LAST, ARG_END
+             *
+             * Fetch one argument more and if it is QEMU_CAPS_LAST then
+             * break from the switch() to force getting next argument
+             * in the line. If it is not QEMU_CAPS_LAST then we've
+             * fetched real ARG_* and we must process it.
+             */
+            if ((flag = va_arg(argptr, int)) != QEMU_CAPS_LAST) {
+                argname = flag;
+                continue;
+            }
 
             break;
 
@@ -690,6 +695,8 @@ testInfoSetArgs(struct testInfo *info,
             fprintf(stderr, "Unexpected test info argument");
             goto cleanup;
         }
+
+        argname = va_arg(argptr, testInfoArgName);
     }
 
     if (!!capsarch ^ !!capsver) {
