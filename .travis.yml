@@ -5,6 +5,15 @@ branches:
   except:
     - /^.*-maint$/
 
+addons:
+  homebrew:
+    update: true
+    packages:
+      - ccache
+      - rpcgen
+      - xz
+      - yajl
+
 matrix:
   include:
     - services:
@@ -51,8 +60,6 @@ env:
     # We can't run 'distcheck' or 'syntax-check' because they fail on
     # macOS, but doing 'install' and 'dist' gives us some useful coverage
     - MACOS_CMD="
-        brew update &&
-        brew install ccache rpcgen xz yajl &&
         ./autogen.sh --prefix=\$(pwd)/install-root &&
         make -j3 &&
         make -j3 install &&
