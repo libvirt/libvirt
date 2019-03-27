@@ -967,7 +967,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     }
 
     other = virDomainSnapshotFindByName(vm->snapshots, def->common.name);
-    otherdef = other ? virDomainSnapshotObjGetDef(other) : NULL;
+    otherdef = virDomainSnapshotObjGetDef(other);
     check_if_stolen = other && otherdef->common.dom;
     if (virDomainSnapshotRedefineValidate(def, domain->uuid, other, xmlopt,
                                           flags) < 0) {

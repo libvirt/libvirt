@@ -87,7 +87,7 @@ int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
 static inline virDomainSnapshotDefPtr
 virDomainSnapshotObjGetDef(virDomainMomentObjPtr obj)
 {
-    return (virDomainSnapshotDefPtr) obj->def;
+    return obj ? (virDomainSnapshotDefPtr) obj->def : NULL;
 }
 
 #endif /* LIBVIRT_VIRDOMAINSNAPSHOTOBJLIST_H */
