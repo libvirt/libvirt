@@ -104,6 +104,18 @@
           E.g. <code>&lt;controller type='xenbus' maxGrantFrames='64'/&gt;</code>
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for parallel migration
+        </summary>
+        <description>
+          With QEMU 4.0.0 libvirt can enable parallel migration which causes
+          the memory pages to be processed in parallel by several threads and
+          sent to the destination host using several connections at the same
+          time. This may increase migration speed in case a single thread is
+          unable to saturate the network link.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
