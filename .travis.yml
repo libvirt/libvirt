@@ -63,13 +63,7 @@ env:
         ./autogen.sh --prefix=\$(pwd)/install-root &&
         make -j3 &&
         make -j3 install &&
-        make -j3 dist ||
-        (
-          echo '=== LOG FILE(S) START ===';
-          find -name test-suite.log | xargs cat;
-          echo '=== LOG FILE(S) END ===';
-          exit 1
-        )
+        make -j3 dist
       "
 
 notifications:
