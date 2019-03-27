@@ -187,15 +187,6 @@ virDomainSnapshotGetCurrentName(virDomainSnapshotObjListPtr snapshots)
 }
 
 
-/* Return true if name matches the current snapshot */
-bool
-virDomainSnapshotIsCurrentName(virDomainSnapshotObjListPtr snapshots,
-                               const char *name)
-{
-    return virDomainMomentIsCurrentName(snapshots->base, name);
-}
-
-
 /* Update the current snapshot, using NULL if no current remains */
 void
 virDomainSnapshotSetCurrent(virDomainSnapshotObjListPtr snapshots,

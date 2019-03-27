@@ -409,15 +409,6 @@ virDomainMomentGetCurrentName(virDomainMomentObjListPtr moments)
 }
 
 
-/* Return true if name matches the current moment */
-bool
-virDomainMomentIsCurrentName(virDomainMomentObjListPtr moments,
-                             const char *name)
-{
-    return moments->current && STREQ(moments->current->def->name, name);
-}
-
-
 /* Update the current moment, using NULL if no current remains */
 void
 virDomainMomentSetCurrent(virDomainMomentObjListPtr moments,

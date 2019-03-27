@@ -109,8 +109,6 @@ virDomainMomentObjPtr virDomainMomentFindByName(virDomainMomentObjListPtr moment
 int virDomainMomentObjListSize(virDomainMomentObjListPtr moments);
 virDomainMomentObjPtr virDomainMomentGetCurrent(virDomainMomentObjListPtr moments);
 const char *virDomainMomentGetCurrentName(virDomainMomentObjListPtr moments);
-bool virDomainMomentIsCurrentName(virDomainMomentObjListPtr moments,
-                                  const char *name);
 void virDomainMomentSetCurrent(virDomainMomentObjListPtr moments,
                                virDomainMomentObjPtr moment);
 bool virDomainMomentObjListRemove(virDomainMomentObjListPtr moments,

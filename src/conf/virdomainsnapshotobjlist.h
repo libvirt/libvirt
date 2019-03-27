@@ -44,8 +44,6 @@ virDomainMomentObjPtr virDomainSnapshotFindByName(virDomainSnapshotObjListPtr sn
                                                   const char *name);
 virDomainMomentObjPtr virDomainSnapshotGetCurrent(virDomainSnapshotObjListPtr snapshots);
 const char *virDomainSnapshotGetCurrentName(virDomainSnapshotObjListPtr snapshots);
-bool virDomainSnapshotIsCurrentName(virDomainSnapshotObjListPtr snapshots,
-                                    const char *name);
 void virDomainSnapshotSetCurrent(virDomainSnapshotObjListPtr snapshots,
                                  virDomainMomentObjPtr snapshot);
 bool virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,

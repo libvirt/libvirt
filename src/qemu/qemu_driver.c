@@ -16201,7 +16201,7 @@ qemuDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
 
-    ret = virDomainSnapshotIsCurrentName(vm->snapshots, snapshot->name);
+    ret = snap == virDomainSnapshotGetCurrent(vm->snapshots);
 
  cleanup:
     virDomainObjEndAPI(&vm);
