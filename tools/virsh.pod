@@ -1772,7 +1772,10 @@ reach the maximum polling time. If a 0 (zero) is provided, then the
 default factor will be used. The I<--poll-shrink> is the quotient
 by which the current polling time will be reduced in order to get
 below the maximum polling interval. If a 0 (zero) is provided, then
-the default quotient will be used.
+the default quotient will be used. The polling values are purely dynamic
+for a running guest. Saving, destroying, stopping, etc. the guest will
+result in the polling values returning to hypervisor defaults at the
+next start, restore, etc.
 
 If I<--live> is specified, affect a running guest. If the guest is not
 running an error is returned.
