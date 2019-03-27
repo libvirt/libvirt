@@ -11031,6 +11031,8 @@ virDomainGetHostname(virDomainPtr domain, unsigned int flags)
     virCheckDomainReturn(domain, NULL);
     conn = domain->conn;
 
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
     if (conn->driver->domainGetHostname) {
         char *ret;
         ret = conn->driver->domainGetHostname(domain, flags);
