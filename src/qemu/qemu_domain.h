@@ -1,7 +1,7 @@
 /*
  * qemu_domain.h: QEMU domain private state
  *
- * Copyright (C) 2006-2016 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -38,6 +38,7 @@
 # include "virchrdev.h"
 # include "virobject.h"
 # include "logging/log_manager.h"
+# include "virdomainmomentobjlist.h"
 
 # define QEMU_DOMAIN_FORMAT_LIVE_FLAGS \
     (VIR_DOMAIN_XML_SECURE)
@@ -698,19 +699,22 @@ int qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                               bool update_current,
                               bool metadata_only);
 
-typedef struct _virQEMUSnapRemove virQEMUSnapRemove;
-typedef virQEMUSnapRemove *virQEMUSnapRemovePtr;
-struct _virQEMUSnapRemove {
+typedef struct _virQEMUMomentRemove virQEMUMomentRemove;
+typedef virQEMUMomentRemove *virQEMUMomentRemovePtr;
+struct _virQEMUMomentRemove {
     virQEMUDriverPtr driver;
     virDomainObjPtr vm;
     int err;
     bool metadata_only;
-    bool current;
+    virDomainMomentObjPtr current;
+    bool found;
+    int (*momentDiscard)(virQEMUDriverPtr, virDomainObjPtr,
+                         virDomainMomentObjPtr, bool, bool);
 };
 
-int qemuDomainSnapshotDiscardAll(void *payload,
-                                 const void *name,
-                                 void *data);
+int qemuDomainMomentDiscardAll(void *payload,
+                               const void *name,
+                               void *data);
 
 int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm);

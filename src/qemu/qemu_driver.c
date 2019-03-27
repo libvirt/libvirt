@@ -16126,6 +16126,7 @@ qemuDomainSnapshotCurrent(virDomainPtr domain,
 {
     virDomainObjPtr vm;
     virDomainSnapshotPtr snapshot = NULL;
+    const char *name;
 
     virCheckFlags(0, NULL);
 
@@ -16135,13 +16136,14 @@ qemuDomainSnapshotCurrent(virDomainPtr domain,
     if (virDomainSnapshotCurrentEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!virDomainSnapshotGetCurrent(vm->snapshots)) {
+    name = virDomainSnapshotGetCurrentName(vm->snapshots);
+    if (!name) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT, "%s",
                        _("the domain does not have a current snapshot"));
         goto cleanup;
     }
 
-    snapshot = virGetDomainSnapshot(domain, virDomainSnapshotGetCurrentName(vm->snapshots));
+    snapshot = virGetDomainSnapshot(domain, name);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -16673,40 +16675,41 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 }
 
 
-typedef struct _virQEMUSnapReparent virQEMUSnapReparent;
-typedef virQEMUSnapReparent *virQEMUSnapReparentPtr;
-struct _virQEMUSnapReparent {
-    virQEMUDriverConfigPtr cfg;
+typedef struct _virQEMUMomentReparent virQEMUMomentReparent;
+typedef virQEMUMomentReparent *virQEMUMomentReparentPtr;
+struct _virQEMUMomentReparent {
+    const char *dir;
     virDomainMomentObjPtr parent;
     virDomainObjPtr vm;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     int err;
+    int (*writeMetadata)(virDomainObjPtr, virDomainMomentObjPtr,
+                         virCapsPtr, virDomainXMLOptionPtr, const char *);
 };
 
 
 static int
-qemuDomainSnapshotReparentChildren(void *payload,
-                                   const void *name ATTRIBUTE_UNUSED,
-                                   void *data)
+qemuDomainMomentReparentChildren(void *payload,
+                                 const void *name ATTRIBUTE_UNUSED,
+                                 void *data)
 {
-    virDomainMomentObjPtr snap = payload;
-    virQEMUSnapReparentPtr rep = data;
+    virDomainMomentObjPtr moment = payload;
+    virQEMUMomentReparentPtr rep = data;
 
     if (rep->err < 0)
         return 0;
 
-    VIR_FREE(snap->def->parent);
+    VIR_FREE(moment->def->parent);
 
     if (rep->parent->def &&
-        VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
+        VIR_STRDUP(moment->def->parent, rep->parent->def->name) < 0) {
         rep->err = -1;
         return 0;
     }
 
-    rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap,
-                                               rep->caps, rep->xmlopt,
-                                               rep->cfg->snapshotDir);
+    rep->err = rep->writeMetadata(rep->vm, moment, rep->caps, rep->xmlopt,
+                                  rep->dir);
     return 0;
 }
 
@@ -16719,8 +16722,8 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     virDomainObjPtr vm = NULL;
     int ret = -1;
     virDomainMomentObjPtr snap = NULL;
-    virQEMUSnapRemove rem;
-    virQEMUSnapReparent rep;
+    virQEMUMomentRemove rem;
+    virQEMUMomentReparent rep;
     bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
     int external = 0;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -16766,13 +16769,14 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rem.vm = vm;
         rem.metadata_only = metadata_only;
         rem.err = 0;
-        rem.current = false;
-        virDomainMomentForEachDescendant(snap,
-                                         qemuDomainSnapshotDiscardAll,
+        rem.current = virDomainSnapshotGetCurrent(vm->snapshots);
+        rem.found = false;
+        rem.momentDiscard = qemuDomainSnapshotDiscard;
+        virDomainMomentForEachDescendant(snap, qemuDomainMomentDiscardAll,
                                          &rem);
         if (rem.err < 0)
             goto endjob;
-        if (rem.current) {
+        if (rem.found) {
             virDomainSnapshotSetCurrent(vm->snapshots, snap);
             if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
                 if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->caps,
@@ -16787,14 +16791,15 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             }
         }
     } else if (snap->nchildren) {
-        rep.cfg = cfg;
+        rep.dir = cfg->snapshotDir;
         rep.parent = snap->parent;
         rep.vm = vm;
         rep.err = 0;
         rep.caps = driver->caps;
         rep.xmlopt = driver->xmlopt;
+        rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
         virDomainMomentForEachChild(snap,
-                                    qemuDomainSnapshotReparentChildren,
+                                    qemuDomainMomentReparentChildren,
                                     &rep);
         if (rep.err < 0)
             goto endjob;

@@ -1,7 +1,7 @@
 /*
  * qemu_domain.c: QEMU domain private state
  *
- * Copyright (C) 2006-2016 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -8650,18 +8650,18 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
 }
 
 /* Hash iterator callback to discard multiple snapshots.  */
-int qemuDomainSnapshotDiscardAll(void *payload,
-                                 const void *name ATTRIBUTE_UNUSED,
-                                 void *data)
+int qemuDomainMomentDiscardAll(void *payload,
+                               const void *name ATTRIBUTE_UNUSED,
+                               void *data)
 {
-    virDomainMomentObjPtr snap = payload;
-    virQEMUSnapRemovePtr curr = data;
+    virDomainMomentObjPtr moment = payload;
+    virQEMUMomentRemovePtr curr = data;
     int err;
 
-    if (virDomainSnapshotGetCurrent(curr->vm->snapshots) == snap)
-        curr->current = true;
-    err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap, false,
-                                    curr->metadata_only);
+    if (!curr->found && curr->current == moment)
+        curr->found = true;
+    err = curr->momentDiscard(curr->driver, curr->vm, moment, false,
+                              curr->metadata_only);
     if (err && !curr->err)
         curr->err = err;
     return 0;
@@ -8671,14 +8671,13 @@ int
 qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm)
 {
-    virQEMUSnapRemove rem;
+    virQEMUMomentRemove rem = {
+        .driver = driver,
+        .vm = vm,
+        .metadata_only = true
+    };
 
-    rem.driver = driver;
-    rem.vm = vm;
-    rem.metadata_only = true;
-    rem.err = 0;
-    virDomainSnapshotForEach(vm->snapshots, qemuDomainSnapshotDiscardAll,
-                             &rem);
+    virDomainSnapshotForEach(vm->snapshots, qemuDomainMomentDiscardAll, &rem);
     virDomainSnapshotObjListRemoveAll(vm->snapshots);
 
     return rem.err;
