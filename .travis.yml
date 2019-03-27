@@ -50,21 +50,12 @@ matrix:
       env:
         - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/ccache/libexec:/usr/local/opt/rpcgen/bin:$PATH"
       script:
-        /bin/sh -xc "$MACOS_CMD"
+        # We can't run 'distcheck' or 'syntax-check' because they fail on
+        # macOS, but doing 'install' and 'dist' gives us some useful coverage
+        - ./autogen.sh --prefix=$(pwd)/install-root && make -j3 && make -j3 install && make -j3 dist
 
 git:
   submodules: true
-
-env:
-  global:
-    # We can't run 'distcheck' or 'syntax-check' because they fail on
-    # macOS, but doing 'install' and 'dist' gives us some useful coverage
-    - MACOS_CMD="
-        ./autogen.sh --prefix=\$(pwd)/install-root &&
-        make -j3 &&
-        make -j3 install &&
-        make -j3 dist
-      "
 
 notifications:
   irc:
