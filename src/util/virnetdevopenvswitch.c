@@ -335,10 +335,10 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
         virCommandFree(cmd); \
         cmd = virCommandNew(OVSVSCTL); \
         virNetDevOpenvswitchAddTimeout(cmd); \
-        virCommandAddArgList(cmd, "get", "Interface", ifname, \
-                             "statistics:" name, NULL); \
+        virCommandAddArgList(cmd, "--if-exists", "get", "Interface", \
+                             ifname, "statistics:" name, NULL); \
         virCommandSetOutputBuffer(cmd, &output); \
-        if (virCommandRun(cmd, NULL) < 0) { \
+        if (virCommandRun(cmd, NULL) < 0 || !output || !*output || *output == '\n') { \
             stats->member = -1; \
         } else { \
             if (virStrToLong_ll(output, &tmp, 10, &stats->member) < 0 || \
