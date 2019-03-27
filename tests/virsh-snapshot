@@ -26,6 +26,8 @@ fi
 
 fail=0
 
+mock_xdg_ || framework_failure
+
 # The test driver loses states between restarts, so we perform a script
 # with some convenient markers for later post-processing of output.
 $abs_top_builddir/tools/virsh --connect test:///default >out 2>err '
