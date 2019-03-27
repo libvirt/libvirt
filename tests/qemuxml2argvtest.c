@@ -642,6 +642,7 @@ testInfoSetArgs(struct testInfo *info,
     char *capsarch = NULL;
     char *capsver = NULL;
     VIR_AUTOFREE(char *) capsfile = NULL;
+    int flag;
     int ret = -1;
 
     va_start(argptr, capslatest);
@@ -650,7 +651,10 @@ testInfoSetArgs(struct testInfo *info,
         case ARG_QEMU_CAPS:
             if (qemuCaps || !(qemuCaps = virQEMUCapsNew()))
                 goto cleanup;
-            virQEMUCapsSetVAList(qemuCaps, argptr);
+
+            while ((flag = va_arg(argptr, int)) < QEMU_CAPS_LAST)
+                virQEMUCapsSet(qemuCaps, flag);
+
             break;
 
         case ARG_GIC:
