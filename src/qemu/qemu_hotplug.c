@@ -491,6 +491,9 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
     if (rc == 0)
         rc = qemuMonitorBlockdevTrayClose(priv->mon, diskPriv->qomName);
 
+    if (rc < 0 && newbackend)
+        qemuBlockStorageSourceChainDetach(priv->mon, newbackend);
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto cleanup;
 
