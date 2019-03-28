@@ -111,6 +111,7 @@ virshDomainNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -120,7 +121,7 @@ virshDomainNameCompleter(vshControl *ctl,
     for (i = 0; i < ndomains; i++)
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -263,6 +264,7 @@ virshStoragePoolNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -272,7 +274,7 @@ virshStoragePoolNameCompleter(vshControl *ctl,
     for (i = 0; i < npools; i++)
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -319,6 +321,7 @@ virshStorageVolNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -329,7 +332,7 @@ virshStorageVolNameCompleter(vshControl *ctl,
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
     virStoragePoolFree(pool);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -370,6 +373,7 @@ virshInterfaceNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -379,7 +383,7 @@ virshInterfaceNameCompleter(vshControl *ctl,
     for (i = 0; i < nifaces; i++)
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -421,6 +425,7 @@ virshNetworkNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -430,7 +435,7 @@ virshNetworkNameCompleter(vshControl *ctl,
     for (i = 0; i < nnets; i++)
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -455,11 +460,12 @@ virshNetworkEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
     virStringListFree(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -498,6 +504,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -507,7 +514,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
     for (i = 0; i < ndevs; i++)
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -546,6 +553,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -555,7 +563,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
     for (i = 0; i < nnwfilters; i++)
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -594,6 +602,7 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -603,7 +612,7 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
     for (i = 0; i < nbindings; i++)
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -643,6 +652,7 @@ virshSecretUUIDCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -652,7 +662,7 @@ virshSecretUUIDCompleter(vshControl *ctl,
     for (i = 0; i < nsecrets; i++)
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -698,6 +708,7 @@ virshSnapshotNameCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
@@ -708,7 +719,7 @@ virshSnapshotNameCompleter(vshControl *ctl,
         VIR_FREE(tmp[i]);
     VIR_FREE(tmp);
     virshDomainFree(dom);
-    return NULL;
+    goto cleanup;
 }
 
 char **
@@ -820,11 +831,12 @@ virshSecretEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
     virStringListFree(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -849,11 +861,12 @@ virshDomainEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
     virStringListFree(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -878,11 +891,12 @@ virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
     virStringListFree(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -982,11 +996,12 @@ virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     VIR_STEAL_PTR(ret, tmp);
 
+ cleanup:
     return ret;
 
  error:
     virStringListFree(tmp);
-    return NULL;
+    goto cleanup;
 }
 
 
