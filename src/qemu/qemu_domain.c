@@ -9400,33 +9400,14 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
     CHECK_STREQ_NULLABLE(blkdeviotune.group_name,
                          "blkdeviotune group name");
 
-    if (disk->serial && STRNEQ_NULLABLE(disk->serial, orig_disk->serial)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot modify field '%s' of the disk"),
-                       "serial");
-        return false;
-    }
-
-    if (disk->wwn && STRNEQ_NULLABLE(disk->wwn, orig_disk->wwn)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot modify field '%s' of the disk"),
-                       "wwn");
-        return false;
-    }
-
-    if (disk->vendor && STRNEQ_NULLABLE(disk->vendor, orig_disk->vendor)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot modify field '%s' of the disk"),
-                       "vendor");
-        return false;
-    }
-
-    if (disk->product && STRNEQ_NULLABLE(disk->product, orig_disk->product)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot modify field '%s' of the disk"),
-                       "product");
-        return false;
-    }
+    CHECK_STREQ_NULLABLE(serial,
+                         "serial");
+    CHECK_STREQ_NULLABLE(wwn,
+                         "wwn");
+    CHECK_STREQ_NULLABLE(vendor,
+                         "vendor");
+    CHECK_STREQ_NULLABLE(product,
+                         "product");
 
     CHECK_EQ(cachemode, "cache", true);
     CHECK_EQ(error_policy, "error_policy", true);
@@ -9459,13 +9440,8 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
     CHECK_EQ(discard, "discard", true);
     CHECK_EQ(iothread, "iothread", true);
 
-    if (disk->domain_name &&
-        STRNEQ_NULLABLE(disk->domain_name, orig_disk->domain_name)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot modify field '%s' of the disk"),
-                       "backenddomain");
-        return false;
-    }
+    CHECK_STREQ_NULLABLE(domain_name,
+                         "backenddomain");
 
     /* checks for fields stored in disk->src */
     /* unfortunately 'readonly' and 'shared' can't be converted to tristate
