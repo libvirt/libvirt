@@ -79,6 +79,7 @@ virshDomainNameCompleter(vshControl *ctl,
     int ndomains = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_ACTIVE |
                   VIR_CONNECT_LIST_DOMAINS_INACTIVE |
@@ -95,18 +96,20 @@ virshDomainNameCompleter(vshControl *ctl,
     if ((ndomains = virConnectListAllDomains(priv->conn, &domains, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, ndomains + 1) < 0)
+    if (VIR_ALLOC_N(tmp, ndomains + 1) < 0)
         goto error;
 
     for (i = 0; i < ndomains; i++) {
         const char *name = virDomainGetName(domains[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virshDomainFree(domains[i]);
     }
     VIR_FREE(domains);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -115,8 +118,8 @@ virshDomainNameCompleter(vshControl *ctl,
         virshDomainFree(domains[i]);
     VIR_FREE(domains);
     for (i = 0; i < ndomains; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -232,6 +235,7 @@ virshStoragePoolNameCompleter(vshControl *ctl,
     int npools = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE |
                   VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE |
@@ -244,18 +248,20 @@ virshStoragePoolNameCompleter(vshControl *ctl,
     if ((npools = virConnectListAllStoragePools(priv->conn, &pools, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, npools + 1) < 0)
+    if (VIR_ALLOC_N(tmp, npools + 1) < 0)
         goto error;
 
     for (i = 0; i < npools; i++) {
         const char *name = virStoragePoolGetName(pools[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virStoragePoolFree(pools[i]);
     }
     VIR_FREE(pools);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -264,8 +270,8 @@ virshStoragePoolNameCompleter(vshControl *ctl,
         virStoragePoolFree(pools[i]);
     VIR_FREE(pools);
     for (i = 0; i < npools; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -282,6 +288,7 @@ virshStorageVolNameCompleter(vshControl *ctl,
     int nvols = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -295,19 +302,22 @@ virshStorageVolNameCompleter(vshControl *ctl,
         goto error;
     nvols = rc;
 
-    if (VIR_ALLOC_N(ret, nvols + 1) < 0)
+    if (VIR_ALLOC_N(tmp, nvols + 1) < 0)
         goto error;
 
     for (i = 0; i < nvols; i++) {
         const char *name = virStorageVolGetName(vols[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virStorageVolFree(vols[i]);
     }
+
     VIR_FREE(vols);
     virStoragePoolFree(pool);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -316,8 +326,8 @@ virshStorageVolNameCompleter(vshControl *ctl,
         virStorageVolFree(vols[i]);
     VIR_FREE(vols);
     for (i = 0; i < nvols; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     virStoragePoolFree(pool);
     return NULL;
 }
@@ -333,6 +343,7 @@ virshInterfaceNameCompleter(vshControl *ctl,
     int nifaces = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_INTERFACES_ACTIVE |
                   VIR_CONNECT_LIST_INTERFACES_INACTIVE,
@@ -344,18 +355,20 @@ virshInterfaceNameCompleter(vshControl *ctl,
     if ((nifaces = virConnectListAllInterfaces(priv->conn, &ifaces, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, nifaces + 1) < 0)
+    if (VIR_ALLOC_N(tmp, nifaces + 1) < 0)
         goto error;
 
     for (i = 0; i < nifaces; i++) {
         const char *name = virInterfaceGetName(ifaces[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virInterfaceFree(ifaces[i]);
     }
     VIR_FREE(ifaces);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -364,8 +377,8 @@ virshInterfaceNameCompleter(vshControl *ctl,
         virInterfaceFree(ifaces[i]);
     VIR_FREE(ifaces);
     for (i = 0; i < nifaces; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -380,6 +393,7 @@ virshNetworkNameCompleter(vshControl *ctl,
     int nnets = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_INACTIVE |
                   VIR_CONNECT_LIST_NETWORKS_ACTIVE |
@@ -392,18 +406,20 @@ virshNetworkNameCompleter(vshControl *ctl,
     if ((nnets = virConnectListAllNetworks(priv->conn, &nets, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, nnets + 1) < 0)
+    if (VIR_ALLOC_N(tmp, nnets + 1) < 0)
         goto error;
 
     for (i = 0; i < nnets; i++) {
         const char *name = virNetworkGetName(nets[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virNetworkFree(nets[i]);
     }
     VIR_FREE(nets);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -412,8 +428,8 @@ virshNetworkNameCompleter(vshControl *ctl,
         virNetworkFree(nets[i]);
     VIR_FREE(nets);
     for (i = 0; i < nnets; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -425,21 +441,24 @@ virshNetworkEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 {
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(ret, VIR_NETWORK_EVENT_ID_LAST + 1) < 0)
+    if (VIR_ALLOC_N(tmp, VIR_NETWORK_EVENT_ID_LAST + 1) < 0)
         goto error;
 
     for (i = 0; i < VIR_NETWORK_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(ret[i], virshNetworkEventCallbacks[i].name) < 0)
+        if (VIR_STRDUP(tmp[i], virshNetworkEventCallbacks[i].name) < 0)
             goto error;
     }
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
  error:
-    virStringListFree(ret);
+    virStringListFree(tmp);
     return NULL;
 }
 
@@ -454,6 +473,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
     int ndevs = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -463,18 +483,20 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
     if ((ndevs = virConnectListAllNodeDevices(priv->conn, &devs, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, ndevs + 1) < 0)
+    if (VIR_ALLOC_N(tmp, ndevs + 1) < 0)
         goto error;
 
     for (i = 0; i < ndevs; i++) {
         const char *name = virNodeDeviceGetName(devs[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virNodeDeviceFree(devs[i]);
     }
     VIR_FREE(devs);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -483,8 +505,8 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
         virNodeDeviceFree(devs[i]);
     VIR_FREE(devs);
     for (i = 0; i < ndevs; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -499,6 +521,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
     int nnwfilters = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -508,18 +531,20 @@ virshNWFilterNameCompleter(vshControl *ctl,
     if ((nnwfilters = virConnectListAllNWFilters(priv->conn, &nwfilters, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, nnwfilters + 1) < 0)
+    if (VIR_ALLOC_N(tmp, nnwfilters + 1) < 0)
         goto error;
 
     for (i = 0; i < nnwfilters; i++) {
         const char *name = virNWFilterGetName(nwfilters[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virNWFilterFree(nwfilters[i]);
     }
     VIR_FREE(nwfilters);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -528,8 +553,8 @@ virshNWFilterNameCompleter(vshControl *ctl,
         virNWFilterFree(nwfilters[i]);
     VIR_FREE(nwfilters);
     for (i = 0; i < nnwfilters; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -544,6 +569,7 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
     int nbindings = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -553,18 +579,20 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
     if ((nbindings = virConnectListAllNWFilterBindings(priv->conn, &bindings, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, nbindings + 1) < 0)
+    if (VIR_ALLOC_N(tmp, nbindings + 1) < 0)
         goto error;
 
     for (i = 0; i < nbindings; i++) {
         const char *name = virNWFilterBindingGetPortDev(bindings[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virNWFilterBindingFree(bindings[i]);
     }
     VIR_FREE(bindings);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -573,8 +601,8 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
         virNWFilterBindingFree(bindings[i]);
     VIR_FREE(bindings);
     for (i = 0; i < nbindings; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -589,6 +617,7 @@ virshSecretUUIDCompleter(vshControl *ctl,
     int nsecrets = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -598,19 +627,21 @@ virshSecretUUIDCompleter(vshControl *ctl,
     if ((nsecrets = virConnectListAllSecrets(priv->conn, &secrets, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, nsecrets + 1) < 0)
+    if (VIR_ALLOC_N(tmp, nsecrets + 1) < 0)
         goto error;
 
     for (i = 0; i < nsecrets; i++) {
         char uuid[VIR_UUID_STRING_BUFLEN];
 
         if (virSecretGetUUIDString(secrets[i], uuid) < 0 ||
-            VIR_STRDUP(ret[i], uuid) < 0)
+            VIR_STRDUP(tmp[i], uuid) < 0)
             goto error;
 
         virSecretFree(secrets[i]);
     }
     VIR_FREE(secrets);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -619,8 +650,8 @@ virshSecretUUIDCompleter(vshControl *ctl,
         virSecretFree(secrets[i]);
     VIR_FREE(secrets);
     for (i = 0; i < nsecrets; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -637,6 +668,7 @@ virshSnapshotNameCompleter(vshControl *ctl,
     int nsnapshots = 0;
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -650,19 +682,21 @@ virshSnapshotNameCompleter(vshControl *ctl,
         goto error;
     nsnapshots = rc;
 
-    if (VIR_ALLOC_N(ret, nsnapshots + 1) < 0)
+    if (VIR_ALLOC_N(tmp, nsnapshots + 1) < 0)
         goto error;
 
     for (i = 0; i < nsnapshots; i++) {
         const char *name = virDomainSnapshotGetName(snapshots[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
+        if (VIR_STRDUP(tmp[i], name) < 0)
             goto error;
 
         virshDomainSnapshotFree(snapshots[i]);
     }
     VIR_FREE(snapshots);
     virshDomainFree(dom);
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
@@ -671,8 +705,8 @@ virshSnapshotNameCompleter(vshControl *ctl,
         virshDomainSnapshotFree(snapshots[i]);
     VIR_FREE(snapshots);
     for (i = 0; i < nsnapshots; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        VIR_FREE(tmp[i]);
+    VIR_FREE(tmp);
     virshDomainFree(dom);
     return NULL;
 }
@@ -698,6 +732,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     char *cap_xml = NULL;
     char **ret = NULL;
     char *unit = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -724,7 +759,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     if (npages <= 0)
         goto error;
 
-    if (VIR_ALLOC_N(ret, npages + 1) < 0)
+    if (VIR_ALLOC_N(tmp, npages + 1) < 0)
         goto error;
 
     for (i = 0; i < npages; i++) {
@@ -737,9 +772,11 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
         if (virScaleInteger(&byteval, unit, 1024, UINT_MAX) < 0)
             goto error;
         size = vshPrettyCapacity(byteval, &suffix);
-        if (virAsprintf(&ret[i], "%.0f%s", size, suffix) < 0)
+        if (virAsprintf(&tmp[i], "%.0f%s", size, suffix) < 0)
             goto error;
     }
+
+    VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -753,11 +790,11 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     return ret;
 
  error:
-    if (ret) {
+    if (tmp) {
         for (i = 0; i < npages; i++)
-            VIR_FREE(ret[i]);
+            VIR_FREE(tmp[i]);
     }
-    VIR_FREE(ret);
+    VIR_FREE(tmp);
     goto cleanup;
 }
 
@@ -769,21 +806,24 @@ virshSecretEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 {
     size_t i;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(ret, VIR_SECRET_EVENT_ID_LAST + 1) < 0)
+    if (VIR_ALLOC_N(tmp, VIR_SECRET_EVENT_ID_LAST + 1) < 0)
         goto error;
 
     for (i = 0; i < VIR_SECRET_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(ret[i], virshSecretEventCallbacks[i].name) < 0)
+        if (VIR_STRDUP(tmp[i], virshSecretEventCallbacks[i].name) < 0)
             goto error;
     }
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
  error:
-    virStringListFree(ret);
+    virStringListFree(tmp);
     return NULL;
 }
 
@@ -795,21 +835,24 @@ virshDomainEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 {
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(ret, VIR_DOMAIN_EVENT_ID_LAST + 1) < 0)
+    if (VIR_ALLOC_N(tmp, VIR_DOMAIN_EVENT_ID_LAST + 1) < 0)
         goto error;
 
     for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(ret[i], virshDomainEventCallbacks[i].name) < 0)
+        if (VIR_STRDUP(tmp[i], virshDomainEventCallbacks[i].name) < 0)
             goto error;
     }
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
  error:
-    virStringListFree(ret);
+    virStringListFree(tmp);
     return NULL;
 }
 
@@ -821,21 +864,24 @@ virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 {
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(ret, VIR_STORAGE_POOL_EVENT_ID_LAST + 1) < 0)
+    if (VIR_ALLOC_N(tmp, VIR_STORAGE_POOL_EVENT_ID_LAST + 1) < 0)
         goto error;
 
     for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(ret[i], virshPoolEventCallbacks[i].name) < 0)
+        if (VIR_STRDUP(tmp[i], virshPoolEventCallbacks[i].name) < 0)
             goto error;
     }
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
  error:
-    virStringListFree(ret);
+    virStringListFree(tmp);
     return NULL;
 }
 
@@ -856,6 +902,7 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     xmlNodePtr *interfaces = NULL;
     char *xpath = NULL;
     char *state = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -885,17 +932,19 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
 
     ctxt->node = interfaces[0];
 
-    if (VIR_ALLOC_N(ret, 2) < 0)
+    if (VIR_ALLOC_N(tmp, 2) < 0)
         goto error;
 
     if ((state = virXPathString("string(./link/@state)", ctxt)) &&
         STREQ(state, "down")) {
-        if (VIR_STRDUP(ret[0], "up") < 0)
+        if (VIR_STRDUP(tmp[0], "up") < 0)
             goto error;
     } else {
-        if (VIR_STRDUP(ret[0], "down") < 0)
+        if (VIR_STRDUP(tmp[0], "down") < 0)
             goto error;
     }
+
+    VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
     VIR_FREE(state);
@@ -906,8 +955,8 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     return ret;
 
  error:
-    virStringListFree(ret);
-    ret = NULL;
+    virStringListFree(tmp);
+    tmp = NULL;
     goto cleanup;
 }
 
@@ -919,21 +968,24 @@ virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 {
     size_t i = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(ret, VIR_NODE_DEVICE_EVENT_ID_LAST + 1) < 0)
+    if (VIR_ALLOC_N(tmp, VIR_NODE_DEVICE_EVENT_ID_LAST + 1) < 0)
         goto error;
 
     for (i = 0; i < VIR_NODE_DEVICE_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(ret[i], virshNodedevEventCallbacks[i].name) < 0)
+        if (VIR_STRDUP(tmp[i], virshNodedevEventCallbacks[i].name) < 0)
             goto error;
     }
+
+    VIR_STEAL_PTR(ret, tmp);
 
     return ret;
 
  error:
-    virStringListFree(ret);
+    virStringListFree(tmp);
     return NULL;
 }
 
@@ -951,6 +1003,7 @@ virshCellnoCompleter(vshControl *ctl,
     size_t i = 0;
     char *cap_xml = NULL;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -967,13 +1020,15 @@ virshCellnoCompleter(vshControl *ctl,
     if (ncells <= 0)
         goto error;
 
-    if (VIR_ALLOC_N(ret, ncells + 1))
+    if (VIR_ALLOC_N(tmp, ncells + 1))
         goto error;
 
     for (i = 0; i < ncells; i++) {
-        if (!(ret[i] = virXMLPropString(cells[i], "id")))
+        if (!(tmp[i] = virXMLPropString(cells[i], "id")))
             goto error;
     }
+
+    VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -984,11 +1039,11 @@ virshCellnoCompleter(vshControl *ctl,
     return ret;
 
  error:
-    if (ret) {
+    if (tmp) {
         for (i = 0; i < ncells; i++)
-            VIR_FREE(ret[i]);
+            VIR_FREE(tmp[i]);
     }
-    VIR_FREE(ret);
+    VIR_FREE(tmp);
     goto cleanup;
 }
 
