@@ -3264,8 +3264,7 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
         virDomainPCIAddressExtensionReleaseAddr(priv->pciaddrs, &info->addr.pci);
     }
 
-    if (virDomainUSBAddressRelease(priv->usbaddrs, info) < 0)
-        VIR_WARN("Unable to release USB address on %s", NULLSTR(info->alias));
+    virDomainUSBAddressRelease(priv->usbaddrs, info);
 }
 
 
