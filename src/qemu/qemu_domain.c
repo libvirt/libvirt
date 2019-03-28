@@ -5041,11 +5041,21 @@ qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
         return -1;
     }
 
-    if (disk->src->readonly && disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("copy_on_read is not compatible with read-only disk '%s'"),
-                       disk->dst);
-        return -1;
+    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
+        if (disk->src->readonly) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("copy_on_read is not compatible with read-only disk '%s'"),
+                           disk->dst);
+            return -1;
+        }
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
+            disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("copy_on_read is not supported with removable disk '%s'"),
+                           disk->dst);
+            return -1;
+        }
     }
 
     if (disk->geometry.cylinders > 0 &&
