@@ -4212,7 +4212,6 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
     const char *connected = NULL;
     const char *password;
     int ret = -1;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!auth->passwd && !defaultPasswd) {
         ret = 0;
@@ -4248,7 +4247,6 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
         ret = -1;
  cleanup:
     VIR_FREE(validTo);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -4657,7 +4655,6 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainHostdevDefPtr hostdev)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainNetDefPtr net = NULL;
     size_t i;
     int ret = -1;
@@ -4768,7 +4765,6 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
  cleanup:
     VIR_FREE(drivealias);
     VIR_FREE(objAlias);
-    virObjectUnref(cfg);
     return ret;
 }
 
