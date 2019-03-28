@@ -278,6 +278,7 @@ virshStorageVolNameCompleter(vshControl *ctl,
     virshControlPtr priv = ctl->privData;
     virStoragePoolPtr pool = NULL;
     virStorageVolPtr *vols = NULL;
+    int rc;
     int nvols = 0;
     size_t i = 0;
     char **ret = NULL;
@@ -290,8 +291,9 @@ virshStorageVolNameCompleter(vshControl *ctl,
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
         return NULL;
 
-    if ((nvols = virStoragePoolListAllVolumes(pool, &vols, flags)) < 0)
+    if ((rc = virStoragePoolListAllVolumes(pool, &vols, flags)) < 0)
         goto error;
+    nvols = rc;
 
     if (VIR_ALLOC_N(ret, nvols + 1) < 0)
         goto error;
@@ -631,6 +633,7 @@ virshSnapshotNameCompleter(vshControl *ctl,
     virshControlPtr priv = ctl->privData;
     virDomainPtr dom = NULL;
     virDomainSnapshotPtr *snapshots = NULL;
+    int rc;
     int nsnapshots = 0;
     size_t i = 0;
     char **ret = NULL;
@@ -643,8 +646,9 @@ virshSnapshotNameCompleter(vshControl *ctl,
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return NULL;
 
-    if ((nsnapshots = virDomainListAllSnapshots(dom, &snapshots, flags)) < 0)
+    if ((rc = virDomainListAllSnapshots(dom, &snapshots, flags)) < 0)
         goto error;
+    nsnapshots = rc;
 
     if (VIR_ALLOC_N(ret, nsnapshots + 1) < 0)
         goto error;
