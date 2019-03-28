@@ -164,18 +164,19 @@ void
 virDomainMomentMoveChildren(virDomainMomentObjPtr from,
                             virDomainMomentObjPtr to)
 {
-    virDomainMomentObjPtr child;
-    virDomainMomentObjPtr last;
+    virDomainMomentObjPtr child = from->first_child;
 
-    if (!from->first_child)
+    if (!from->nchildren)
         return;
-    for (child = from->first_child; child; child = child->sibling) {
+    while (child) {
         child->parent = to;
-        if (!child->sibling)
-            last = child;
+        if (!child->sibling) {
+            child->sibling = to->first_child;
+            break;
+        }
+        child = child->sibling;
     }
     to->nchildren += from->nchildren;
-    last->sibling = to->first_child;
     to->first_child = from->first_child;
     from->nchildren = 0;
     from->first_child = NULL;
