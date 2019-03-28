@@ -1020,7 +1020,7 @@ qemuDomainAttachVirtioDiskDevice(virQEMUDriverPtr driver,
 
     if ((rv = qemuDomainAttachDiskGeneric(driver, vm, disk)) < 0) {
         if (rv == -1 && releaseaddr)
-            qemuDomainReleaseDeviceAddress(vm, &disk->info, disk->dst);
+            qemuDomainReleaseDeviceAddress(vm, &disk->info);
 
         return -1;
     }
@@ -1100,7 +1100,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
 
  cleanup:
     if (ret != 0 && releaseaddr)
-        qemuDomainReleaseDeviceAddress(vm, &controller->info, NULL);
+        qemuDomainReleaseDeviceAddress(vm, &controller->info);
 
     VIR_FREE(devstr);
     return ret;
@@ -1666,7 +1666,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         vm->def->nets[vm->def->nnets++] = net;
     } else {
         if (releaseaddr)
-            qemuDomainReleaseDeviceAddress(vm, &net->info, NULL);
+            qemuDomainReleaseDeviceAddress(vm, &net->info);
 
         if (iface_connected) {
             virErrorPreserveLast(&originalError);
@@ -1883,7 +1883,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
         VIR_WARN("Unable to remove host device from /dev");
 
     if (releaseaddr)
-        qemuDomainReleaseDeviceAddress(vm, info, NULL);
+        qemuDomainReleaseDeviceAddress(vm, info);
 
     qemuHostdevReAttachPCIDevices(driver, vm->def->name, &hostdev, 1);
 
@@ -2160,7 +2160,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     virDomainAuditRedirdev(vm, redirdev, "attach", ret == 0);
  cleanup:
     if (ret < 0 && need_release)
-        qemuDomainReleaseDeviceAddress(vm, &redirdev->info, NULL);
+        qemuDomainReleaseDeviceAddress(vm, &redirdev->info);
     VIR_FREE(tlsAlias);
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
@@ -2427,7 +2427,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         if (virDomainObjIsActive(vm))
             qemuDomainChrInsertPreAllocCleanup(vmdef, chr);
         if (need_release)
-            qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
+            qemuDomainReleaseDeviceAddress(vm, &chr->info);
         if (teardowncgroup && qemuTeardownChardevCgroup(vm, chr) < 0)
             VIR_WARN("Unable to remove chr device cgroup ACL on hotplug fail");
         if (teardownlabel && qemuSecurityRestoreChardevLabel(driver, vm, chr) < 0)
@@ -2544,7 +2544,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     virJSONValueFree(props);
     if (ret < 0) {
         if (releaseaddr)
-            qemuDomainReleaseDeviceAddress(vm, &rng->info, NULL);
+            qemuDomainReleaseDeviceAddress(vm, &rng->info);
         if (teardowncgroup && qemuTeardownRNGCgroup(vm, rng) < 0)
             VIR_WARN("Unable to remove RNG device cgroup ACL on hotplug fail");
         if (teardowndevice && qemuDomainNamespaceTeardownRNG(vm, rng) < 0)
@@ -3038,7 +3038,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
             qemuDomainNamespaceTeardownHostdev(vm, hostdev) < 0)
             VIR_WARN("Unable to remove host device from /dev");
         if (releaseaddr)
-            qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+            qemuDomainReleaseDeviceAddress(vm, hostdev->info);
     }
 
     virDomainCCWAddressSetFree(ccwaddrs);
@@ -3132,7 +3132,7 @@ qemuDomainAttachMediatedDevice(virQEMUDriverPtr driver,
                                                vm->def->name,
                                                &hostdev,
                                                1);
-        qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+        qemuDomainReleaseDeviceAddress(vm, hostdev->info);
     }
     VIR_FREE(devstr);
     return ret;
@@ -3287,7 +3287,7 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
 
  cleanup:
     if (release_address)
-        qemuDomainReleaseDeviceAddress(vm, &shmem->info, NULL);
+        qemuDomainReleaseDeviceAddress(vm, &shmem->info);
 
     virJSONValueFree(props);
     VIR_FREE(memAlias);
@@ -3380,7 +3380,7 @@ qemuDomainAttachWatchdog(virQEMUDriverPtr driver,
 
  cleanup:
     if (releaseAddress)
-        qemuDomainReleaseDeviceAddress(vm, &watchdog->info, NULL);
+        qemuDomainReleaseDeviceAddress(vm, &watchdog->info);
     VIR_FREE(watchdogstr);
     return ret;
 }
@@ -3472,7 +3472,7 @@ qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
         if (teardowndevice)
             qemuDomainNamespaceTeardownInput(vm, input);
         if (releaseaddr)
-            qemuDomainReleaseDeviceAddress(vm, &input->info, NULL);
+            qemuDomainReleaseDeviceAddress(vm, &input->info);
         virErrorRestore(&originalError);
     }
 
@@ -3548,7 +3548,7 @@ qemuDomainAttachVsockDevice(virQEMUDriverPtr driver,
     if (ret < 0) {
         virErrorPreserveLast(&originalError);
         if (releaseaddr)
-            qemuDomainReleaseDeviceAddress(vm, &vsock->info, NULL);
+            qemuDomainReleaseDeviceAddress(vm, &vsock->info);
         virErrorRestore(&originalError);
     }
 
@@ -4508,7 +4508,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     virDomainAuditDisk(vm, disk->src, NULL, "detach", true);
 
-    qemuDomainReleaseDeviceAddress(vm, &disk->info, virDomainDiskGetSource(disk));
+    qemuDomainReleaseDeviceAddress(vm, &disk->info);
 
     /* tear down disk security access */
     qemuHotplugPrepareDiskSourceAccess(driver, vm, disk->src, true);
@@ -4545,7 +4545,7 @@ qemuDomainRemoveControllerDevice(virDomainObjPtr vm,
         }
     }
 
-    qemuDomainReleaseDeviceAddress(vm, &controller->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &controller->info);
     virDomainControllerDefFree(controller);
     return 0;
 }
@@ -4613,7 +4613,7 @@ qemuDomainRemovePCIHostDevice(virQEMUDriverPtr driver,
                               virDomainHostdevDefPtr hostdev)
 {
     qemuHostdevReAttachPCIDevices(driver, vm->def->name, &hostdev, 1);
-    qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, hostdev->info);
 }
 
 static void
@@ -4622,7 +4622,7 @@ qemuDomainRemoveUSBHostDevice(virQEMUDriverPtr driver,
                               virDomainHostdevDefPtr hostdev)
 {
     qemuHostdevReAttachUSBDevices(driver, vm->def->name, &hostdev, 1);
-    qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, hostdev->info);
 }
 
 static void
@@ -4648,7 +4648,7 @@ qemuDomainRemoveMediatedDevice(virQEMUDriverPtr driver,
                                virDomainHostdevDefPtr hostdev)
 {
     qemuHostdevReAttachMediatedDevices(driver, vm->def->name, &hostdev, 1);
-    qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, hostdev->info);
 }
 
 
@@ -4842,7 +4842,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
         }
     }
 
-    qemuDomainReleaseDeviceAddress(vm, &net->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &net->info);
     virDomainConfNWFilterTeardown(net);
 
     if (cfg->macFilter && (net->ifname != NULL)) {
@@ -4917,7 +4917,7 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
     if (qemuDomainNamespaceTeardownChardev(vm, chr) < 0)
         VIR_WARN("Unable to remove chr device from /dev");
 
-    qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &chr->info);
     qemuDomainChrRemove(vm->def, chr);
 
     /* The caller does not emit the event, so we must do it here. Note
@@ -4991,7 +4991,7 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
 
     if ((idx = virDomainRNGFind(vm->def, rng)) >= 0)
         virDomainRNGRemove(vm->def, idx);
-    qemuDomainReleaseDeviceAddress(vm, &rng->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &rng->info);
     virDomainRNGDefFree(rng);
     ret = 0;
 
@@ -5042,7 +5042,7 @@ qemuDomainRemoveShmemDevice(virQEMUDriverPtr driver,
 
     if ((idx = virDomainShmemDefFind(vm->def, shmem)) >= 0)
         virDomainShmemDefRemove(vm->def, idx);
-    qemuDomainReleaseDeviceAddress(vm, &shmem->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &shmem->info);
     virDomainShmemDefFree(shmem);
 
     ret = 0;
@@ -5061,7 +5061,7 @@ qemuDomainRemoveWatchdog(virDomainObjPtr vm,
     VIR_DEBUG("Removing watchdog %s from domain %p %s",
               watchdog->info.alias, vm, vm->def->name);
 
-    qemuDomainReleaseDeviceAddress(vm, &watchdog->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &watchdog->info);
     virDomainWatchdogDefFree(vm->def->watchdog);
     vm->def->watchdog = NULL;
     return 0;
@@ -5081,7 +5081,7 @@ qemuDomainRemoveInputDevice(virDomainObjPtr vm,
         if (vm->def->inputs[i] == dev)
             break;
     }
-    qemuDomainReleaseDeviceAddress(vm, &dev->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &dev->info);
     if (qemuSecurityRestoreInputLabel(vm, dev) < 0)
         VIR_WARN("Unable to restore security label on input device");
 
@@ -5104,7 +5104,7 @@ qemuDomainRemoveVsockDevice(virDomainObjPtr vm,
     VIR_DEBUG("Removing vsock device %s from domain %p %s",
               dev->info.alias, vm, vm->def->name);
 
-    qemuDomainReleaseDeviceAddress(vm, &dev->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &dev->info);
     virDomainVsockDefFree(vm->def->vsock);
     vm->def->vsock = NULL;
     return 0;
@@ -5143,7 +5143,7 @@ qemuDomainRemoveRedirdevDevice(virQEMUDriverPtr driver,
 
     if ((idx = virDomainRedirdevDefFind(vm->def, dev)) >= 0)
         virDomainRedirdevDefRemove(vm->def, idx);
-    qemuDomainReleaseDeviceAddress(vm, &dev->info, NULL);
+    qemuDomainReleaseDeviceAddress(vm, &dev->info);
     virDomainRedirdevDefFree(dev);
 
     ret = 0;
