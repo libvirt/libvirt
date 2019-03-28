@@ -852,9 +852,16 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virStorageSourcePtr oldsrc = disk->src;
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     bool sharedAdded = false;
     int ret = -1;
     int rc;
+
+    if (diskPriv->blockjob && qemuBlockJobIsRunning(diskPriv->blockjob)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("can't change media while a block job is running on the device"));
+        return -1;
+    }
 
     disk->src = newsrc;
 
