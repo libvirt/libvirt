@@ -58,7 +58,7 @@
  *
  * The @flags contains a .completer_flags value defined for each
  * use or 0 if no .completer_flags were specified. If a completer
- * is generic enough @flags can be used to alter it's behaviour.
+ * is generic enough @flags can be used to alter its behaviour.
  * For instance, a completer to fetch names of domains can use
  * @flags to return names of only domains in a particular state
  * that the command accepts.
