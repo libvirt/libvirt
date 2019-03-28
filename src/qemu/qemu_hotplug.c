@@ -4516,7 +4516,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     dev.type = VIR_DOMAIN_DEVICE_DISK;
     dev.data.disk = disk;
     ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
-    virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
 
     if (qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
