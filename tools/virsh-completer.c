@@ -666,11 +666,11 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     const char *suffix = NULL;
     const char *cellnum = NULL;
     bool cellno = vshCommandOptBool(cmd, "cellno");
-    char *path = NULL;
-    char *pagesize = NULL;
-    char *cap_xml = NULL;
+    VIR_AUTOFREE(char *) path = NULL;
+    VIR_AUTOFREE(char *) pagesize = NULL;
+    VIR_AUTOFREE(char *) cap_xml = NULL;
     char **ret = NULL;
-    char *unit = NULL;
+    VIR_AUTOFREE(char *) unit = NULL;
     VIR_AUTOSTRINGLIST tmp = NULL;
 
     virCheckFlags(0, NULL);
@@ -718,10 +718,6 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
-    VIR_FREE(path);
-    VIR_FREE(pagesize);
-    VIR_FREE(cap_xml);
-    VIR_FREE(unit);
     return ret;
 
  error:
@@ -830,8 +826,8 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     char macstr[VIR_MAC_STRING_BUFLEN] = "";
     int ninterfaces;
     VIR_AUTOFREE(xmlNodePtr *) interfaces = NULL;
-    char *xpath = NULL;
-    char *state = NULL;
+    VIR_AUTOFREE(char *) xpath = NULL;
+    VIR_AUTOFREE(char *) state = NULL;
     VIR_AUTOSTRINGLIST tmp = NULL;
 
     virCheckFlags(0, NULL);
@@ -877,8 +873,6 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
-    VIR_FREE(state);
-    VIR_FREE(xpath);
     return ret;
 
  error:
@@ -926,7 +920,7 @@ virshCellnoCompleter(vshControl *ctl,
     VIR_AUTOFREE(xmlNodePtr *) cells = NULL;
     VIR_AUTOPTR(xmlDoc) doc = NULL;
     size_t i = 0;
-    char *cap_xml = NULL;
+    VIR_AUTOFREE(char *) cap_xml = NULL;
     char **ret = NULL;
     VIR_AUTOSTRINGLIST tmp = NULL;
 
@@ -956,7 +950,6 @@ virshCellnoCompleter(vshControl *ctl,
     VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
-    VIR_FREE(cap_xml);
     return ret;
 
  error:
