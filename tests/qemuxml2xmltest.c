@@ -1158,8 +1158,6 @@ mymain(void)
             QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM,
             QEMU_CAPS_VIRTIO_PCI_ATS);
 
-    virObjectUnref(cfg);
-
     DO_TEST("acpi-table", NONE);
 
     DO_TEST("video-device-pciaddr-default",
@@ -1297,6 +1295,7 @@ mymain(void)
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
+    virObjectUnref(cfg);
     qemuTestDriverFree(&driver);
     VIR_FREE(fakerootdir);
 
