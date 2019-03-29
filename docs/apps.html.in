@@ -353,12 +353,6 @@
         metrics. It supports pCPU, vCPU, memory, block device, network interface,
         and performance event metrics for each virtual guest.
       </dd>
-      <dt><a href="https://community.zenoss.org/docs/DOC-4687">Zenoss</a></dt>
-      <dd>
-        The Zenoss libvirt Zenpack adds support for monitoring virtualization
-        servers.  It has been tested with KVM, QEMU, VMware ESX, and VMware
-        GSX.
-      </dd>
     </dl>
 
     <h2><a id="provisioning">Provisioning</a></h2>
