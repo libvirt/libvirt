@@ -4322,7 +4322,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 {
     int ret = -1;
     int major, minor, micro;
-    char *package = NULL;
+    VIR_AUTOFREE(char *) package = NULL;
 
     /* @mon is supposed to be locked by callee */
 
@@ -4347,7 +4347,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     }
 
     qemuCaps->version = major * 1000000 + minor * 1000 + micro;
-    qemuCaps->package = package;
+    VIR_STEAL_PTR(qemuCaps->package, package);
     qemuCaps->usedQMP = true;
 
     if (virQEMUCapsInitQMPArch(qemuCaps, mon) < 0)
