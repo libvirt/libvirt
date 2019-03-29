@@ -125,8 +125,8 @@ virshDomainInterfaceCompleter(vshControl *ctl,
                               unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    VIR_AUTOPTR(xmlDoc) xmldoc = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     int ninterfaces;
     VIR_AUTOFREE(xmlNodePtr *) interfaces = NULL;
     size_t i;
@@ -167,8 +167,6 @@ virshDomainInterfaceCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
  cleanup:
-    xmlFreeDoc(xmldoc);
-    xmlXPathFreeContext(ctxt);
     return ret;
 }
 
@@ -179,8 +177,8 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
                                unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    VIR_AUTOPTR(xmlDoc) xmldoc = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     VIR_AUTOFREE(xmlNodePtr *) disks = NULL;
     int ndisks;
     size_t i;
@@ -210,8 +208,6 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
  cleanup:
-    xmlFreeDoc(xmldoc);
-    xmlXPathFreeContext(ctxt);
     return ret;
 }
 
@@ -660,11 +656,11 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
                                  unsigned int flags)
 {
     unsigned long long byteval = 0;
-    xmlXPathContextPtr ctxt = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     virshControlPtr priv = ctl->privData;
     unsigned int npages = 0;
     VIR_AUTOFREE(xmlNodePtr *) pages = NULL;
-    xmlDocPtr doc = NULL;
+    VIR_AUTOPTR(xmlDoc) doc = NULL;
     double size = 0;
     size_t i = 0;
     const char *suffix = NULL;
@@ -722,8 +718,6 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(doc);
     VIR_FREE(path);
     VIR_FREE(pagesize);
     VIR_FREE(cap_xml);
@@ -830,8 +824,8 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     virshControlPtr priv = ctl->privData;
     const char *iface = NULL;
     char **ret = NULL;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    VIR_AUTOPTR(xmlDoc) xml = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     virMacAddr macaddr;
     char macstr[VIR_MAC_STRING_BUFLEN] = "";
     int ninterfaces;
@@ -885,8 +879,6 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
  cleanup:
     VIR_FREE(state);
     VIR_FREE(xpath);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
     return ret;
 
  error:
@@ -928,11 +920,11 @@ virshCellnoCompleter(vshControl *ctl,
                      const vshCmd *cmd ATTRIBUTE_UNUSED,
                      unsigned int flags)
 {
-    xmlXPathContextPtr ctxt = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     virshControlPtr priv = ctl->privData;
     unsigned int ncells = 0;
     VIR_AUTOFREE(xmlNodePtr *) cells = NULL;
-    xmlDocPtr doc = NULL;
+    VIR_AUTOPTR(xmlDoc) doc = NULL;
     size_t i = 0;
     char *cap_xml = NULL;
     char **ret = NULL;
@@ -964,8 +956,6 @@ virshCellnoCompleter(vshControl *ctl,
     VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(doc);
     VIR_FREE(cap_xml);
     return ret;
 
@@ -980,8 +970,8 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
                                 unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    VIR_AUTOPTR(xmlDoc) xmldoc = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     int naliases;
     VIR_AUTOFREE(xmlNodePtr *) aliases = NULL;
     size_t i;
@@ -1014,7 +1004,5 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
 
     VIR_STEAL_PTR(ret, tmp);
  cleanup:
-    xmlFreeDoc(xmldoc);
-    xmlXPathFreeContext(ctxt);
     return ret;
 }
