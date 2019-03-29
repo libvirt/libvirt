@@ -148,8 +148,45 @@
           tables are not required.
         </description>
       </change>
+      <change>
+        <summary>
+          Don't default to building the QEMU driver
+        </summary>
+        <description>
+          Historically, the QEMU driver has been special in that it was
+          enabled by default, with the option to explicitly opt-out of it;
+          starting now, we're enabling it opportunistically if we detect that
+          all requirements are available, just like we do with other drivers.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          virt-host-validate: Fix IOMMU check on s390x
+        </summary>
+      </change>
+      <change>
+        <summary>
+          qemu: Allow creating pSeries guests with graphics and no USB mouse
+        </summary>
+        <description>
+          It's now possible to prevent libvirt from automatically adding a
+          USB mouse to pSeries guests by including a USB tablet in the input
+          XML: doing so is desiderable as using a tablet results in a much
+          better user experience when working with GUIs.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Set $HOME and XGD variables for qemu:///system guests
+        </summary>
+        <description>
+          This avoids files being accidentally created under <code>/</code> or
+          the guests not being able to start because they lack the necessary
+          permissions to write to that location.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.1.0" date="2019-03-04">
