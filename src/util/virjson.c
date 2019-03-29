@@ -2048,16 +2048,11 @@ virJSONValueToString(virJSONValuePtr object,
                      bool pretty)
 {
     VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *ret = NULL;
 
     if (virJSONValueToBuffer(object, &buf, pretty) < 0)
         return NULL;
 
-    ret = virBufferContentAndReset(&buf);
-
-    VIR_DEBUG("result=%s", NULLSTR(ret));
-
-    return ret;
+    return virBufferContentAndReset(&buf);
 }
 
 
