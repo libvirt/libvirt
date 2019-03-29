@@ -1158,6 +1158,20 @@ mymain(void)
             QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM,
             QEMU_CAPS_VIRTIO_PCI_ATS);
 
+    DO_TEST("fd-memory-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_KVM);
+    DO_TEST("fd-memory-numa-topology2", QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_KVM);
+    DO_TEST("fd-memory-numa-topology3", QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_KVM);
+
+    DO_TEST("fd-memory-no-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_KVM);
+
+    DO_TEST("memfd-memory-numa",
+            QEMU_CAPS_OBJECT_MEMORY_MEMFD,
+            QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB);
+
     DO_TEST("acpi-table", NONE);
 
     DO_TEST("video-device-pciaddr-default",
