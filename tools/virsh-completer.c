@@ -615,27 +615,44 @@ virshSnapshotNameCompleter(vshControl *ctl,
     return ret;
 }
 
+static char *
+virshPagesizeNodeToString(xmlNodePtr node)
+{
+    VIR_AUTOFREE(char *) pagesize = NULL;
+    VIR_AUTOFREE(char *) unit = NULL;
+    unsigned long long byteval = 0;
+    const char *suffix = NULL;
+    double size = 0;
+    char *ret;
+
+    pagesize = virXMLPropString(node, "size");
+    unit = virXMLPropString(node, "unit");
+    if (virStrToLong_ull(pagesize, NULL, 10, &byteval) < 0)
+        return NULL;
+    if (virScaleInteger(&byteval, unit, 1024, UINT_MAX) < 0)
+        return NULL;
+    size = vshPrettyCapacity(byteval, &suffix);
+    if (virAsprintf(&ret, "%.0f%s", size, suffix) < 0)
+        return NULL;
+    return ret;
+}
+
 char **
 virshAllocpagesPagesizeCompleter(vshControl *ctl,
                                  const vshCmd *cmd ATTRIBUTE_UNUSED,
                                  unsigned int flags)
 {
-    unsigned long long byteval = 0;
     VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     virshControlPtr priv = ctl->privData;
     unsigned int npages = 0;
     VIR_AUTOFREE(xmlNodePtr *) pages = NULL;
     VIR_AUTOPTR(xmlDoc) doc = NULL;
-    double size = 0;
     size_t i = 0;
-    const char *suffix = NULL;
     const char *cellnum = NULL;
     bool cellno = vshCommandOptBool(cmd, "cellno");
     VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) pagesize = NULL;
     VIR_AUTOFREE(char *) cap_xml = NULL;
     char **ret = NULL;
-    VIR_AUTOFREE(char *) unit = NULL;
     VIR_AUTOSTRINGLIST tmp = NULL;
 
     virCheckFlags(0, NULL);
@@ -667,16 +684,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
         return NULL;
 
     for (i = 0; i < npages; i++) {
-        VIR_FREE(pagesize);
-        VIR_FREE(unit);
-        pagesize = virXMLPropString(pages[i], "size");
-        unit = virXMLPropString(pages[i], "unit");
-        if (virStrToLong_ull(pagesize, NULL, 10, &byteval) < 0)
-            return NULL;
-        if (virScaleInteger(&byteval, unit, 1024, UINT_MAX) < 0)
-            return NULL;
-        size = vshPrettyCapacity(byteval, &suffix);
-        if (virAsprintf(&tmp[i], "%.0f%s", size, suffix) < 0)
+        if (!(tmp[i] = virshPagesizeNodeToString(pages[i])))
             return NULL;
     }
 
