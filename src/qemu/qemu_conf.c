@@ -1914,16 +1914,12 @@ qemuGetDomainDefaultHugepath(const virDomainDef *def,
                              virHugeTLBFSPtr hugetlbfs,
                              size_t nhugetlbfs)
 {
-    size_t i;
+    virHugeTLBFSPtr p;
 
-    for (i = 0; i < nhugetlbfs; i++)
-        if (hugetlbfs[i].deflt)
-            break;
+    if (!(p = virFileGetDefaultHugepage(hugetlbfs, nhugetlbfs)))
+        p = &hugetlbfs[0];
 
-    if (i == nhugetlbfs)
-        i = 0;
-
-    return qemuGetDomainHugepagePath(def, &hugetlbfs[i]);
+    return qemuGetDomainHugepagePath(def, p);
 }
 
 

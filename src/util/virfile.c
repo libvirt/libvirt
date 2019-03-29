@@ -3735,6 +3735,31 @@ virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs ATTRIBUTE_UNUSED,
 }
 #endif /* defined __linux__ */
 
+/**
+ * virFileGetDefaultHugepage:
+ * @fs: array of hugetlbfs mount points
+ * @nfs: number of items in @fs
+ *
+ * In the passed array of hugetlbfs mount points @fs find the
+ * default one. It's the one which has no '-o pagesize'.
+ *
+ * Returns: default hugepage, or
+ *          NULL if none found
+ */
+virHugeTLBFSPtr
+virFileGetDefaultHugepage(virHugeTLBFSPtr fs,
+                          size_t nfs)
+{
+    size_t i;
+
+    for (i = 0; i < nfs; i++) {
+        if (fs[i].deflt)
+            return &fs[i];
+    }
+
+    return NULL;
+}
+
 int virFileIsSharedFS(const char *path)
 {
     return virFileIsSharedFSType(path,

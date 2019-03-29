@@ -334,6 +334,9 @@ int virFileGetHugepageSize(const char *path,
 int virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
                          size_t *ret_nfs);
 
+virHugeTLBFSPtr virFileGetDefaultHugepage(virHugeTLBFSPtr fs,
+                                          size_t nfs);
+
 int virFileSetupDev(const char *path,
                     const char *mount_options);
 
