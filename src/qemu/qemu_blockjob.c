@@ -537,6 +537,28 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
 
 
 static void
+qemuBlockJobEventProcessConcludedRemoveChain(virQEMUDriverPtr driver,
+                                             virDomainObjPtr vm,
+                                             qemuDomainAsyncJob asyncJob,
+                                             virStorageSourcePtr chain)
+{
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+
+    if (!(data = qemuBlockStorageSourceChainDetachPrepareBlockdev(chain)))
+        return;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return;
+
+    qemuBlockStorageSourceChainDetach(qemuDomainGetMonitor(vm), data);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return;
+
+    qemuDomainStorageSourceChainAccessRevoke(driver, vm, chain);
+}
+
+
+static void
 qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
                                             virQEMUDriverPtr driver,
                                             virDomainObjPtr vm,
@@ -651,6 +673,16 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
     VIR_DEBUG("handling job '%s' state '%d' newstate '%d'", job->name, job->state, job->newstate);
 
     qemuBlockJobEventProcessConcludedTransition(job, driver, vm, asyncJob);
+
+    /* unplug the backing chains in case the job inherited them */
+    if (!job->disk) {
+        if (job->chain)
+            qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob,
+                                                         job->chain);
+        if (job->mirrorChain)
+            qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob,
+                                                         job->mirrorChain);
+    }
 
  cleanup:
     if (dismissed) {
