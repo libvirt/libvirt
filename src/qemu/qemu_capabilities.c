@@ -4325,13 +4325,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     /* @mon is supposed to be locked by callee */
 
-    if (qemuMonitorGetVersion(mon,
-                              &major, &minor, &micro,
-                              &package) < 0) {
-        VIR_DEBUG("Failed to query monitor version %s",
-                  virGetLastErrorMessage());
+    if (qemuMonitorGetVersion(mon, &major, &minor, &micro, &package) < 0)
         return -1;
-    }
 
     VIR_DEBUG("Got version %d.%d.%d (%s)",
               major, minor, micro, NULLSTR(package));
