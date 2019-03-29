@@ -4320,7 +4320,6 @@ int
 virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                           qemuMonitorPtr mon)
 {
-    int ret = -1;
     int major, minor, micro;
     VIR_AUTOFREE(char *) package = NULL;
 
@@ -4331,7 +4330,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                               &package) < 0) {
         VIR_DEBUG("Failed to query monitor version %s",
                   virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
 
     VIR_DEBUG("Got version %d.%d.%d (%s)",
@@ -4343,7 +4342,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                        _("QEMU version >= %d.%d.%d is required, but %d.%d.%d found"),
                        QEMU_MIN_MAJOR, QEMU_MIN_MINOR, QEMU_MIN_MICRO,
                        major, minor, micro);
-        goto cleanup;
+        return -1;
     }
 
     qemuCaps->version = major * 1000000 + minor * 1000 + micro;
@@ -4351,7 +4350,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     qemuCaps->usedQMP = true;
 
     if (virQEMUCapsInitQMPArch(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
 
     virQEMUCapsInitQMPBasicArch(qemuCaps);
 
@@ -4359,40 +4358,38 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     virQEMUCapsInitQMPVersionCaps(qemuCaps);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
 
     /* Some capabilities may differ depending on KVM state */
     if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPDevices(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon, false) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPMigrationCapabilities(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon, false) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
     if (virQEMUCapsProbeQMPSEVCapabilities(qemuCaps, mon) < 0)
-        goto cleanup;
+        return -1;
 
     virQEMUCapsInitProcessCaps(qemuCaps);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
