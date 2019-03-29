@@ -97,13 +97,13 @@ virshDomainNameCompleter(vshControl *ctl,
         return NULL;
 
     if (VIR_ALLOC_N(tmp, ndomains + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < ndomains; i++) {
         const char *name = virDomainGetName(domains[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -113,9 +113,6 @@ virshDomainNameCompleter(vshControl *ctl,
         virshDomainFree(domains[i]);
     VIR_FREE(domains);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -143,14 +140,14 @@ virshDomainInterfaceCompleter(vshControl *ctl,
         domainXMLFlags = VIR_DOMAIN_XML_INACTIVE;
 
     if (virshDomainGetXML(ctl, cmd, domainXMLFlags, &xmldoc, &ctxt) < 0)
-        goto cleanup;
+        return NULL;
 
     ninterfaces = virXPathNodeSet("./devices/interface", ctxt, &interfaces);
     if (ninterfaces < 0)
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC_N(tmp, ninterfaces + 1) < 0)
-        goto cleanup;
+        return NULL;
 
     for (i = 0; i < ninterfaces; i++) {
         ctxt->node = interfaces[i];
@@ -162,11 +159,10 @@ virshDomainInterfaceCompleter(vshControl *ctl,
         /* In case we are dealing with inactive domain XML there's no
          * <target dev=''/>. Offer MAC addresses then. */
         if (!(tmp[i] = virXPathString("string(./mac/@address)", ctxt)))
-            goto cleanup;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
- cleanup:
     return ret;
 }
 
@@ -191,23 +187,22 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
         return NULL;
 
     if (virshDomainGetXML(ctl, cmd, 0, &xmldoc, &ctxt) < 0)
-        goto cleanup;
+        return NULL;
 
     ndisks = virXPathNodeSet("./devices/disk", ctxt, &disks);
     if (ndisks < 0)
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC_N(tmp, ndisks + 1) < 0)
-        goto cleanup;
+        return NULL;
 
     for (i = 0; i < ndisks; i++) {
         ctxt->node = disks[i];
         if (!(tmp[i] = virXPathString("string(./target/@dev)", ctxt)))
-            goto cleanup;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
- cleanup:
     return ret;
 }
 
@@ -236,13 +231,13 @@ virshStoragePoolNameCompleter(vshControl *ctl,
         return NULL;
 
     if (VIR_ALLOC_N(tmp, npools + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < npools; i++) {
         const char *name = virStoragePoolGetName(pools[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -252,9 +247,6 @@ virshStoragePoolNameCompleter(vshControl *ctl,
         virStoragePoolFree(pools[i]);
     VIR_FREE(pools);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -281,17 +273,17 @@ virshStorageVolNameCompleter(vshControl *ctl,
         return NULL;
 
     if ((rc = virStoragePoolListAllVolumes(pool, &vols, flags)) < 0)
-        goto error;
+        goto cleanup;
     nvols = rc;
 
     if (VIR_ALLOC_N(tmp, nvols + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < nvols; i++) {
         const char *name = virStorageVolGetName(vols[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -302,9 +294,6 @@ virshStorageVolNameCompleter(vshControl *ctl,
         virStorageVolFree(vols[i]);
     VIR_FREE(vols);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -331,13 +320,13 @@ virshInterfaceNameCompleter(vshControl *ctl,
         return NULL;
 
     if (VIR_ALLOC_N(tmp, nifaces + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < nifaces; i++) {
         const char *name = virInterfaceGetName(ifaces[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -347,9 +336,6 @@ virshInterfaceNameCompleter(vshControl *ctl,
         virInterfaceFree(ifaces[i]);
     VIR_FREE(ifaces);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -377,13 +363,13 @@ virshNetworkNameCompleter(vshControl *ctl,
         return NULL;
 
     if (VIR_ALLOC_N(tmp, nnets + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < nnets; i++) {
         const char *name = virNetworkGetName(nets[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -393,9 +379,6 @@ virshNetworkNameCompleter(vshControl *ctl,
         virNetworkFree(nets[i]);
     VIR_FREE(nets);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -411,20 +394,17 @@ virshNetworkEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
     virCheckFlags(0, NULL);
 
     if (VIR_ALLOC_N(tmp, VIR_NETWORK_EVENT_ID_LAST + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < VIR_NETWORK_EVENT_ID_LAST; i++) {
         if (VIR_STRDUP(tmp[i], virshNetworkEventCallbacks[i].name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
 
  cleanup:
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -449,13 +429,13 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
         return NULL;
 
     if (VIR_ALLOC_N(tmp, ndevs + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < ndevs; i++) {
         const char *name = virNodeDeviceGetName(devs[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -465,9 +445,6 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
         virNodeDeviceFree(devs[i]);
     VIR_FREE(devs);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -492,13 +469,13 @@ virshNWFilterNameCompleter(vshControl *ctl,
         return NULL;
 
     if (VIR_ALLOC_N(tmp, nnwfilters + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < nnwfilters; i++) {
         const char *name = virNWFilterGetName(nwfilters[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -508,9 +485,6 @@ virshNWFilterNameCompleter(vshControl *ctl,
         virNWFilterFree(nwfilters[i]);
     VIR_FREE(nwfilters);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -535,13 +509,13 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
         return NULL;
 
     if (VIR_ALLOC_N(tmp, nbindings + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < nbindings; i++) {
         const char *name = virNWFilterBindingGetPortDev(bindings[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -551,9 +525,6 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
         virNWFilterBindingFree(bindings[i]);
     VIR_FREE(bindings);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -578,14 +549,14 @@ virshSecretUUIDCompleter(vshControl *ctl,
         return NULL;
 
     if (VIR_ALLOC_N(tmp, nsecrets + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < nsecrets; i++) {
         char uuid[VIR_UUID_STRING_BUFLEN];
 
         if (virSecretGetUUIDString(secrets[i], uuid) < 0 ||
             VIR_STRDUP(tmp[i], uuid) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -595,9 +566,6 @@ virshSecretUUIDCompleter(vshControl *ctl,
         virSecretFree(secrets[i]);
     VIR_FREE(secrets);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -624,17 +592,17 @@ virshSnapshotNameCompleter(vshControl *ctl,
         return NULL;
 
     if ((rc = virDomainListAllSnapshots(dom, &snapshots, flags)) < 0)
-        goto error;
+        goto cleanup;
     nsnapshots = rc;
 
     if (VIR_ALLOC_N(tmp, nsnapshots + 1) < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < nsnapshots; i++) {
         const char *name = virDomainSnapshotGetName(snapshots[i]);
 
         if (VIR_STRDUP(tmp[i], name) < 0)
-            goto error;
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, tmp);
@@ -645,9 +613,6 @@ virshSnapshotNameCompleter(vshControl *ctl,
         virshDomainSnapshotFree(snapshots[i]);
     VIR_FREE(snapshots);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 char **
@@ -676,30 +641,30 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     virCheckFlags(0, NULL);
 
     if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
-        goto error;
+        return NULL;
 
     if (!(cap_xml = virConnectGetCapabilities(priv->conn)))
-        goto error;
+        return NULL;
 
     if (!(doc = virXMLParseStringCtxt(cap_xml, _("capabilities"), &ctxt)))
-        goto error;
+        return NULL;
 
     if (cellno && vshCommandOptStringQuiet(ctl, cmd, "cellno", &cellnum) > 0) {
         if (virAsprintf(&path,
                         "/capabilities/host/topology/cells/cell[@id=\"%s\"]/pages",
                         cellnum) < 0)
-            goto error;
+            return NULL;
     } else {
         if (virAsprintf(&path, "/capabilities/host/cpu/pages") < 0)
-            goto error;
+            return NULL;
     }
 
     npages = virXPathNodeSet(path, ctxt, &pages);
     if (npages <= 0)
-        goto error;
+        return NULL;
 
     if (VIR_ALLOC_N(tmp, npages + 1) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < npages; i++) {
         VIR_FREE(pagesize);
@@ -707,21 +672,16 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
         pagesize = virXMLPropString(pages[i], "size");
         unit = virXMLPropString(pages[i], "unit");
         if (virStrToLong_ull(pagesize, NULL, 10, &byteval) < 0)
-            goto error;
+            return NULL;
         if (virScaleInteger(&byteval, unit, 1024, UINT_MAX) < 0)
-            goto error;
+            return NULL;
         size = vshPrettyCapacity(byteval, &suffix);
         if (virAsprintf(&tmp[i], "%.0f%s", size, suffix) < 0)
-            goto error;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -737,20 +697,15 @@ virshSecretEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
     virCheckFlags(0, NULL);
 
     if (VIR_ALLOC_N(tmp, VIR_SECRET_EVENT_ID_LAST + 1) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < VIR_SECRET_EVENT_ID_LAST; i++) {
         if (VIR_STRDUP(tmp[i], virshSecretEventCallbacks[i].name) < 0)
-            goto error;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -766,20 +721,15 @@ virshDomainEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
     virCheckFlags(0, NULL);
 
     if (VIR_ALLOC_N(tmp, VIR_DOMAIN_EVENT_ID_LAST + 1) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
         if (VIR_STRDUP(tmp[i], virshDomainEventCallbacks[i].name) < 0)
-            goto error;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -795,20 +745,15 @@ virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
     virCheckFlags(0, NULL);
 
     if (VIR_ALLOC_N(tmp, VIR_STORAGE_POOL_EVENT_ID_LAST + 1) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++) {
         if (VIR_STRDUP(tmp[i], virshPoolEventCallbacks[i].name) < 0)
-            goto error;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -836,10 +781,10 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
         return NULL;
 
     if (virshDomainGetXML(ctl, cmd, flags, &xml, &ctxt) < 0)
-        goto cleanup;
+        return NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
-        goto cleanup;
+        return NULL;
 
     /* normalize the mac addr */
     if (virMacAddrParse(iface, &macaddr) == 0)
@@ -848,35 +793,30 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     if (virAsprintf(&xpath, "/domain/devices/interface[(mac/@address = '%s') or "
                             "                          (target/@dev = '%s')]",
                            macstr, iface) < 0)
-        goto cleanup;
+        return NULL;
 
     if ((ninterfaces = virXPathNodeSet(xpath, ctxt, &interfaces)) < 0)
-        goto cleanup;
+        return NULL;
 
     if (ninterfaces != 1)
-        goto cleanup;
+        return NULL;
 
     ctxt->node = interfaces[0];
 
     if (VIR_ALLOC_N(tmp, 2) < 0)
-        goto error;
+        return NULL;
 
     if ((state = virXPathString("string(./link/@state)", ctxt)) &&
         STREQ(state, "down")) {
         if (VIR_STRDUP(tmp[0], "up") < 0)
-            goto error;
+            return NULL;
     } else {
         if (VIR_STRDUP(tmp[0], "down") < 0)
-            goto error;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -892,20 +832,15 @@ virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
     virCheckFlags(0, NULL);
 
     if (VIR_ALLOC_N(tmp, VIR_NODE_DEVICE_EVENT_ID_LAST + 1) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < VIR_NODE_DEVICE_EVENT_ID_LAST; i++) {
         if (VIR_STRDUP(tmp[i], virshNodedevEventCallbacks[i].name) < 0)
-            goto error;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -927,33 +862,28 @@ virshCellnoCompleter(vshControl *ctl,
     virCheckFlags(0, NULL);
 
     if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
-        goto error;
+        return NULL;
 
     if (!(cap_xml = virConnectGetCapabilities(priv->conn)))
-        goto error;
+        return NULL;
 
     if (!(doc = virXMLParseStringCtxt(cap_xml, _("capabilities"), &ctxt)))
-        goto error;
+        return NULL;
 
     ncells = virXPathNodeSet("/capabilities/host/topology/cells/cell", ctxt, &cells);
     if (ncells <= 0)
-        goto error;
+        return NULL;
 
     if (VIR_ALLOC_N(tmp, ncells + 1))
-        goto error;
+        return NULL;
 
     for (i = 0; i < ncells; i++) {
         if (!(tmp[i] = virXMLPropString(cells[i], "id")))
-            goto error;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
     return ret;
-
- error:
-    goto cleanup;
 }
 
 
@@ -981,21 +911,20 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
         domainXMLFlags = VIR_DOMAIN_XML_INACTIVE;
 
     if (virshDomainGetXML(ctl, cmd, domainXMLFlags, &xmldoc, &ctxt) < 0)
-        goto cleanup;
+        return NULL;
 
     naliases = virXPathNodeSet("./devices//alias/@name", ctxt, &aliases);
     if (naliases < 0)
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC_N(tmp, naliases + 1) < 0)
-        goto cleanup;
+        return NULL;
 
     for (i = 0; i < naliases; i++) {
         if (!(tmp[i] = virXMLNodeContentString(aliases[i])))
-            goto cleanup;
+            return NULL;
     }
 
     VIR_STEAL_PTR(ret, tmp);
- cleanup:
     return ret;
 }
