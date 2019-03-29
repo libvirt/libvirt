@@ -30,26 +30,6 @@
       <img src="logos/logo-square-powered-256.png" alt="libvirt powered"/>
     </p>
 
-    <h2><a id="clientserver">Client/Server applications</a></h2>
-
-    <dl>
-      <dt><a href="http://archipelproject.org">Archipel</a></dt>
-      <dd>
-        Archipel is a libvirt-based solution to manage and supervise virtual
-        machines.  It uses XMPP for all communication. There is no web
-        service or custom protocol.  You just need at least one XMPP server,
-        like eJabberd, to start playing with it.  This allows Archipel to
-        work completely real time.  You never have to refresh the user
-        interface, you'll be notified as soon as something happens. You can
-        even use your favorite chat clients to command your infrastructure.
-      </dd>
-      <dd>
-        Isn't it great to be able to open a chat conversation with your
-        virtual machine and say things like "How are you today?" or "Hey,
-        please reboot"?
-      </dd>
-    </dl>
-
     <h2><a id="command">Command line tools</a></h2>
 
     <dl>
