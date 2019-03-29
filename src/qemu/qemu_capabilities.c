@@ -4212,6 +4212,55 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCapsPtr qemuCaps)
 }
 
 
+/**
+ * virQEMUCapsInitProcessCaps:
+ * @qemuCaps: QEMU capabilities
+ *
+ * Some capability bits are enabled or disabled according to specific logic.
+ * This function collects all capability processing after the capabilities
+ * are detected.
+ */
+static void
+virQEMUCapsInitProcessCaps(virQEMUCapsPtr qemuCaps)
+{
+    /* 'intel-iommu' shows up as a device since 2.2.0, but can
+     * not be used with -device until 2.7.0. Before that it
+     * requires -machine iommu=on. So we must clear the device
+     * capability we detected on older QEMUs
+     */
+    if (qemuCaps->version < 2007000 &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU)) {
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU);
+    }
+
+    /* Prealloc on NVDIMMs is broken on older QEMUs leading to
+     * user data corruption. If we are dealing with such version
+     * of QEMU pretend we don't know how to NVDIMM. */
+    if (qemuCaps->version < 2009000 &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM))
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM);
+
+    if (ARCH_IS_X86(qemuCaps->arch) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
+
+    if (ARCH_IS_S390(qemuCaps->arch)) {
+        /* Legacy assurance for QEMU_CAPS_CCW */
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW))
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_CCW);
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW_CSSID_UNRESTRICTED))
+            virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW);
+    }
+
+    /* To avoid guest ABI regression, blockdev shall be enabled only when
+     * we are able to pass the custom 'device_id' for SCSI disks and cdroms. */
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID))
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_BLOCKDEV);
+}
+
+
 static int
 virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
                                       qemuMonitorPtr mon)
@@ -4320,43 +4369,12 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon, false) < 0)
         goto cleanup;
 
-    /* 'intel-iommu' shows up as a device since 2.2.0, but can
-     * not be used with -device until 2.7.0. Before that it
-     * requires -machine iommu=on. So we must clear the device
-     * capability we detected on older QEMUs
-     */
-    if (qemuCaps->version < 2007000 &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU)) {
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU);
-    }
-
     /* GIC capabilities, eg. available GIC versions */
     if ((qemuCaps->arch == VIR_ARCH_AARCH64 ||
          qemuCaps->arch == VIR_ARCH_ARMV6L ||
          qemuCaps->arch == VIR_ARCH_ARMV7L) &&
         virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
         goto cleanup;
-
-    /* Prealloc on NVDIMMs is broken on older QEMUs leading to
-     * user data corruption. If we are dealing with such version
-     * of QEMU pretend we don't know how to NVDIMM. */
-    if (qemuCaps->version < 2009000 &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM);
-
-    if (ARCH_IS_X86(qemuCaps->arch) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
-
-    if (ARCH_IS_S390(qemuCaps->arch)) {
-        /* Legacy assurance for QEMU_CAPS_CCW */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_CCW);
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW_CSSID_UNRESTRICTED))
-            virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW);
-    }
 
     /* Probe for SEV capabilities */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST)) {
@@ -4369,10 +4387,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
             virQEMUCapsClear(qemuCaps, QEMU_CAPS_SEV_GUEST);
     }
 
-    /* To avoid guest ABI regression, blockdev shall be enabled only when
-     * we are able to pass the custom 'device_id' for SCSI disks and cdroms. */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_BLOCKDEV);
+    virQEMUCapsInitProcessCaps(qemuCaps);
 
     ret = 0;
  cleanup:
