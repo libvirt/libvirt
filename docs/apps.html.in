@@ -122,7 +122,7 @@
     <h2><a id="continuousintegration">Continuous Integration</a></h2>
 
     <dl>
-      <dt><a href="https://buildbot.net/buildbot/docs/current/Libvirt.html">BuildBot</a></dt>
+      <dt><a href="http://docs.buildbot.net/latest/manual/configuration/workers-libvirt.html">BuildBot</a></dt>
       <dd>
         BuildBot is a system to automate the compile/test cycle required
         by most software projects.  CVS commits trigger new builds, run on
