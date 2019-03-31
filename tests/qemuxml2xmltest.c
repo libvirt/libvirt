@@ -129,16 +129,11 @@ testInfoSetCommon(struct testInfo *info,
     return -1;
 }
 
-
 static int
-testInfoSet(struct testInfo *info,
-            const char *name,
-            int when,
-            int gic)
+testInfoSetPaths(struct testInfo *info,
+                 const char *name,
+                 int when)
 {
-    if (testInfoSetCommon(info, gic) < 0)
-        return -1;
-
     if (virAsprintf(&info->inName, "%s/qemuxml2argvdata/%s.xml",
                     abs_srcdir, name) < 0)
         goto error;
@@ -186,13 +181,9 @@ testInfoSet(struct testInfo *info,
 static const char *statusPath = abs_srcdir "/qemustatusxml2xmldata/";
 
 static int
-testInfoSetStatus(struct testInfo *info,
-                  const char *name,
-                  int gic)
+testInfoSetStatusPaths(struct testInfo *info,
+                       const char *name)
 {
-    if (testInfoSetCommon(info, gic) < 0)
-        return -1;
-
     if (virAsprintf(&info->inName, "%s%s-in.xml", statusPath, name) < 0 ||
         virAsprintf(&info->outActiveName, "%s%s-out.xml", statusPath, name) < 0)
         goto error;
@@ -236,7 +227,8 @@ mymain(void)
 
 # define DO_TEST_FULL(name, when, gic, ...) \
     do { \
-        if (testInfoSet(&info, name, when, gic) < 0) { \
+        if (testInfoSetCommon(&info, gic) < 0 || \
+            testInfoSetPaths(&info, name, when) < 0) { \
             VIR_TEST_DEBUG("Failed to generate test data for '%s'", name); \
             return -1; \
         } \
@@ -1256,7 +1248,8 @@ mymain(void)
 
 # define DO_TEST_STATUS(name) \
     do { \
-        if (testInfoSetStatus(&info, name, GIC_NONE) < 0) { \
+        if (testInfoSetCommon(&info, GIC_NONE) < 0 || \
+            testInfoSetStatusPaths(&info, name) < 0) { \
             VIR_TEST_DEBUG("Failed to generate status test data for '%s'", name); \
             return -1; \
         } \
