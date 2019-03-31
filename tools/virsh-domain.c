@@ -4805,13 +4805,13 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
  * "managedsave-edit" command
  */
 static const vshCmdInfo info_managed_save_edit[] = {
-   {.name = "help",
-    .data = N_("edit XML for a domain's managed save state file")
-   },
-   {.name = "desc",
-    .data = N_("Edit the domain XML associated with the managed save state file")
-   },
-   {.name = NULL}
+    {.name = "help",
+     .data = N_("edit XML for a domain's managed save state file")
+    },
+    {.name = "desc",
+     .data = N_("Edit the domain XML associated with the managed save state file")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_managed_save_edit[] = {
