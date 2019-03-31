@@ -298,7 +298,6 @@ typedef enum {
 
 struct testInfo {
     const char *name;
-    const char *suffix;
     char *infile;
     char *outfile;
     virQEMUCapsPtr qemuCaps;
@@ -431,7 +430,6 @@ testCompareXMLToArgv(const void *data)
     struct testInfo *info = (void *) data;
     char *migrateURI = NULL;
     char *actualargv = NULL;
-    const char *suffix = info->suffix;
     unsigned int flags = info->flags;
     unsigned int parseFlags = info->parseFlags;
     int ret = -1;
@@ -447,9 +445,6 @@ testCompareXMLToArgv(const void *data)
 
     if (!(conn = virGetConnect()))
         goto cleanup;
-
-    if (!suffix)
-        suffix = "";
 
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
@@ -469,12 +464,6 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
-        goto cleanup;
-
-    if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&info->outfile, "%s/qemuxml2argvdata/%s%s.args",
-                    abs_srcdir, info->name, suffix) < 0)
         goto cleanup;
 
     if (info->migrateFrom &&
@@ -758,6 +747,20 @@ testInfoClear(struct testInfo *info)
     virObjectUnref(info->qemuCaps);
 }
 
+static int
+testInfoSetPaths(struct testInfo *info,
+                 const char *suffix)
+{
+    if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
+                    abs_srcdir, info->name) < 0 ||
+        virAsprintf(&info->outfile, "%s/qemuxml2argvdata/%s%s.args",
+                    abs_srcdir, info->name, suffix ? suffix : "") < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
 static int
@@ -883,11 +886,14 @@ mymain(void)
     do { \
         static struct testInfo info = { \
             .name = _name, \
-            .suffix = _suffix, \
         }; \
         if (testInfoSetArgs(&info, capslatest, \
                             __VA_ARGS__, ARG_END) < 0) \
             return EXIT_FAILURE; \
+        if (testInfoSetPaths(&info, _suffix) < 0) { \
+            VIR_TEST_DEBUG("Failed to generate paths for '%s'", _name); \
+            return EXIT_FAILURE; \
+        } \
         if (virTestRun("QEMU XML-2-ARGV " _name _suffix, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
