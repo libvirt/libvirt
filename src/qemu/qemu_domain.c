@@ -41,6 +41,7 @@
 #include "viruuid.h"
 #include "virfile.h"
 #include "domain_addr.h"
+#include "domain_capabilities.h"
 #include "domain_event.h"
 #include "virtime.h"
 #include "virnetdevopenvswitch.h"
@@ -6737,12 +6738,22 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     int ret = 0;
     virQEMUDriverPtr driver = opaque;
     virQEMUCapsPtr qemuCaps = NULL;
+    virDomainCapsPtr domCaps = NULL;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
         return -1;
 
+    if (!(domCaps = virQEMUDriverGetDomainCapabilities(driver, qemuCaps,
+                                                       def->os.machine,
+                                                       def->os.arch,
+                                                       def->virtType)))
+        goto cleanup;
+
     if ((ret = qemuDomainDeviceDefValidateAddress(dev, qemuCaps)) < 0)
+        goto cleanup;
+
+    if (virDomainCapsDeviceDefValidate(domCaps, dev, def) < 0)
         goto cleanup;
 
     switch ((virDomainDeviceType)dev->type) {
@@ -6831,6 +6842,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
  cleanup:
     virObjectUnref(qemuCaps);
+    virObjectUnref(domCaps);
     return ret;
 }
 
