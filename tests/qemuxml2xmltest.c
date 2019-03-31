@@ -26,8 +26,8 @@ enum {
 };
 
 struct testInfo {
-    char *inName;
-    char *outActiveName;
+    char *infile;
+    char *outfile;
     char *outInactiveName;
 
     virQEMUCapsPtr qemuCaps;
@@ -40,8 +40,7 @@ testXML2XMLActive(const void *opaque)
     const struct testInfo *info = opaque;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
-                                      info->inName, info->outActiveName, true,
-                                      0,
+                                      info->infile, info->outfile, true, 0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
 
@@ -51,7 +50,7 @@ testXML2XMLInactive(const void *opaque)
 {
     const struct testInfo *info = opaque;
 
-    return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, info->inName,
+    return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, info->infile,
                                       info->outInactiveName, false,
                                       0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
@@ -66,13 +65,13 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     char *actual = NULL;
     int ret = -1;
 
-    if (!(obj = virDomainObjParseFile(data->inName, driver.caps, driver.xmlopt,
+    if (!(obj = virDomainObjParseFile(data->infile, driver.caps, driver.xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
                                       VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL))) {
-        VIR_TEST_DEBUG("\nfailed to parse '%s'\n", data->inName);
+        VIR_TEST_DEBUG("\nfailed to parse '%s'\n", data->infile);
         goto cleanup;
     }
 
@@ -82,11 +81,11 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
                                       VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
                                       VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST))) {
-        VIR_TEST_DEBUG("\nfailed to format back '%s'\n", data->inName);
+        VIR_TEST_DEBUG("\nfailed to format back '%s'\n", data->infile);
         goto cleanup;
     }
 
-    if (virTestCompareToFile(actual, data->outActiveName) < 0)
+    if (virTestCompareToFile(actual, data->outfile) < 0)
         goto cleanup;
 
     ret = 0;
@@ -101,8 +100,8 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 static void
 testInfoClear(struct testInfo *info)
 {
-    VIR_FREE(info->inName);
-    VIR_FREE(info->outActiveName);
+    VIR_FREE(info->infile);
+    VIR_FREE(info->outfile);
     VIR_FREE(info->outInactiveName);
 
     virObjectUnref(info->qemuCaps);
@@ -134,7 +133,7 @@ testInfoSetPaths(struct testInfo *info,
                  const char *name,
                  int when)
 {
-    if (virAsprintf(&info->inName, "%s/qemuxml2argvdata/%s.xml",
+    if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
                     abs_srcdir, name) < 0)
         goto error;
 
@@ -155,15 +154,15 @@ testInfoSetPaths(struct testInfo *info,
     }
 
     if (when & WHEN_ACTIVE) {
-        if (virAsprintf(&info->outActiveName,
+        if (virAsprintf(&info->outfile,
                         "%s/qemuxml2xmloutdata/%s-active.xml",
                         abs_srcdir, name) < 0)
             goto error;
 
-        if (!virFileExists(info->outActiveName)) {
-            VIR_FREE(info->outActiveName);
+        if (!virFileExists(info->outfile)) {
+            VIR_FREE(info->outfile);
 
-            if (virAsprintf(&info->outActiveName,
+            if (virAsprintf(&info->outfile,
                             "%s/qemuxml2xmloutdata/%s.xml",
                             abs_srcdir, name) < 0)
                 goto error;
@@ -184,8 +183,8 @@ static int
 testInfoSetStatusPaths(struct testInfo *info,
                        const char *name)
 {
-    if (virAsprintf(&info->inName, "%s%s-in.xml", statusPath, name) < 0 ||
-        virAsprintf(&info->outActiveName, "%s%s-out.xml", statusPath, name) < 0)
+    if (virAsprintf(&info->infile, "%s%s-in.xml", statusPath, name) < 0 ||
+        virAsprintf(&info->outfile, "%s%s-out.xml", statusPath, name) < 0)
         goto error;
 
     return 0;
@@ -240,7 +239,7 @@ mymain(void)
                 ret = -1; \
         } \
  \
-        if (info.outActiveName) { \
+        if (info.outfile) { \
             if (virTestRun("QEMU XML-2-XML-active " name, \
                             testXML2XMLActive, &info) < 0) \
                 ret = -1; \
