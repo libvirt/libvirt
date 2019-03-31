@@ -867,6 +867,43 @@ testQemuGetLatestCapsForArch(const char *dirname,
 }
 
 
+virHashTablePtr
+testQemuGetLatestCaps(void)
+{
+    const char *archs[] = {
+        "aarch64",
+        "ppc64",
+        "riscv64",
+        "s390x",
+        "x86_64",
+    };
+    virHashTablePtr capslatest;
+    size_t i;
+
+    if (!(capslatest = virHashCreate(4, virHashValueFree)))
+        goto error;
+
+    VIR_TEST_VERBOSE("\n");
+
+    for (i = 0; i < ARRAY_CARDINALITY(archs); ++i) {
+        char *cap = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
+                                                 archs[i], "xml");
+
+        if (!cap || virHashAddEntry(capslatest, archs[i], cap) < 0)
+            goto error;
+
+        VIR_TEST_VERBOSE("latest caps for %s: %s\n", archs[i], cap);
+    }
+
+    VIR_TEST_VERBOSE("\n");
+    return capslatest;
+
+ error:
+    virHashFree(capslatest);
+    return NULL;
+}
+
+
 int
 testQemuCapsIterate(const char *dirname,
                     const char *suffix,

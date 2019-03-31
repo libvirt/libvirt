@@ -593,15 +593,8 @@ testInfoSetPaths(struct testQemuInfo *info,
 static int
 mymain(void)
 {
-    int ret = 0, i;
+    int ret = 0;
     char *fakerootdir;
-    const char *archs[] = {
-        "aarch64",
-        "ppc64",
-        "riscv64",
-        "s390x",
-        "x86_64",
-    };
     virHashTablePtr capslatest = NULL;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
@@ -670,23 +663,9 @@ mymain(void)
     if (VIR_STRDUP(driver.config->nvramDir, "/var/lib/libvirt/qemu/nvram") < 0)
         return EXIT_FAILURE;
 
-    capslatest = virHashCreate(4, virHashValueFree);
+    capslatest = testQemuGetLatestCaps();
     if (!capslatest)
         return EXIT_FAILURE;
-
-    VIR_TEST_VERBOSE("\n");
-
-    for (i = 0; i < ARRAY_CARDINALITY(archs); ++i) {
-        char *cap = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
-                                                 archs[i], "xml");
-
-        if (!cap || virHashAddEntry(capslatest, archs[i], cap) < 0)
-            return EXIT_FAILURE;
-
-        VIR_TEST_VERBOSE("latest caps for %s: %s\n", archs[i], cap);
-    }
-
-    VIR_TEST_VERBOSE("\n");
 
     virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/etc/qemu/firmware");

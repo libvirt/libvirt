@@ -93,6 +93,7 @@ int testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
 char *testQemuGetLatestCapsForArch(const char *dirname,
                                    const char *arch,
                                    const char *suffix);
+virHashTablePtr testQemuGetLatestCaps(void);
 
 typedef int (*testQemuCapsIterateCallback)(const char *base,
                                            const char *archName,
