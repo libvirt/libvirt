@@ -89,26 +89,6 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 
 
 static int
-testInfoSetCommon(struct testQemuInfo *info,
-                  int gic)
-{
-    if (!(info->qemuCaps = virQEMUCapsNew()))
-        goto error;
-
-    if (testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
-        goto error;
-
-    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
-        goto error;
-
-    return 0;
-
- error:
-    testQemuInfoClear(info);
-    return -1;
-}
-
-static int
 testInfoSetPaths(struct testQemuInfo *info,
                  const char *name,
                  int when)
@@ -170,6 +150,11 @@ mymain(void)
     char *fakerootdir;
     struct testQemuInfo info;
     virQEMUDriverConfigPtr cfg = NULL;
+    virHashTablePtr capslatest = NULL;
+
+    capslatest = testQemuGetLatestCaps();
+    if (!capslatest)
+        return EXIT_FAILURE;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
         fprintf(stderr, "Out of memory\n");
@@ -192,11 +177,14 @@ mymain(void)
 
 # define DO_TEST_FULL(name, when, gic, ...) \
     do { \
-        if (testInfoSetCommon(&info, gic) < 0) { \
+        if (testQemuInfoSetArgs(&info, capslatest, \
+                                ARG_GIC, gic, \
+                                ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, \
+                                ARG_END) < 0 || \
+            qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
             VIR_TEST_DEBUG("Failed to generate test data for '%s'", name); \
             return -1; \
         } \
-        virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST); \
  \
         if (when & WHEN_INACTIVE) { \
             if (testInfoSetPaths(&info, name, WHEN_INACTIVE) < 0) { \
@@ -1220,7 +1208,10 @@ mymain(void)
 
 # define DO_TEST_STATUS(name) \
     do { \
-        if (testInfoSetCommon(&info, GIC_NONE) < 0 || \
+        if (testQemuInfoSetArgs(&info, capslatest, \
+                                ARG_QEMU_CAPS, QEMU_CAPS_LAST, \
+                                ARG_END) < 0 || \
+            qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0 || \
             testInfoSetStatusPaths(&info, name) < 0) { \
             VIR_TEST_DEBUG("Failed to generate status test data for '%s'", name); \
             return -1; \
@@ -1277,7 +1268,7 @@ mymain(void)
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
-    virObjectUnref(cfg);
+    virHashFree(capslatest);
     qemuTestDriverFree(&driver);
     VIR_FREE(fakerootdir);
 
