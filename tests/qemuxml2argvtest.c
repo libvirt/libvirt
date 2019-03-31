@@ -294,9 +294,9 @@ typedef enum {
     FLAG_FIPS               = 1 << 2,
     FLAG_REAL_CAPS          = 1 << 3,
     FLAG_SKIP_LEGACY_CPUS   = 1 << 4,
-} virQemuXML2ArgvTestFlags;
+} testQemuInfoFlags;
 
-struct testInfo {
+struct testQemuInfo {
     const char *name;
     char *infile;
     char *outfile;
@@ -380,7 +380,7 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 
 
 static int
-testUpdateQEMUCaps(const struct testInfo *info,
+testUpdateQEMUCaps(const struct testQemuInfo *info,
                    virDomainObjPtr vm,
                    virCapsPtr caps)
 {
@@ -427,7 +427,7 @@ testCheckExclusiveFlags(int flags)
 static int
 testCompareXMLToArgv(const void *data)
 {
-    struct testInfo *info = (void *) data;
+    struct testQemuInfo *info = (void *) data;
     char *migrateURI = NULL;
     char *actualargv = NULL;
     unsigned int flags = info->flags;
@@ -605,14 +605,14 @@ typedef enum {
     ARG_CAPS_ARCH,
     ARG_CAPS_VER,
     ARG_END,
-} testInfoArgName;
+} testQemuInfoArgName;
 
 static int
-testInfoSetArgs(struct testInfo *info,
-                virHashTablePtr capslatest, ...)
+testQemuInfoSetArgs(struct testQemuInfo *info,
+                    virHashTablePtr capslatest, ...)
 {
     va_list argptr;
-    testInfoArgName argname;
+    testQemuInfoArgName argname;
     virQEMUCapsPtr qemuCaps = NULL;
     int gic = GIC_NONE;
     char *capsarch = NULL;
@@ -622,7 +622,7 @@ testInfoSetArgs(struct testInfo *info,
     int ret = -1;
 
     va_start(argptr, capslatest);
-    argname = va_arg(argptr, testInfoArgName);
+    argname = va_arg(argptr, testQemuInfoArgName);
     while (argname != ARG_END) {
         switch (argname) {
         case ARG_QEMU_CAPS:
@@ -684,7 +684,7 @@ testInfoSetArgs(struct testInfo *info,
             goto cleanup;
         }
 
-        argname = va_arg(argptr, testInfoArgName);
+        argname = va_arg(argptr, testQemuInfoArgName);
     }
 
     if (!!capsarch ^ !!capsver) {
@@ -740,7 +740,7 @@ testInfoSetArgs(struct testInfo *info,
 }
 
 static void
-testInfoClear(struct testInfo *info)
+testQemuInfoClear(struct testQemuInfo *info)
 {
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
@@ -748,7 +748,7 @@ testInfoClear(struct testInfo *info)
 }
 
 static int
-testInfoSetPaths(struct testInfo *info,
+testInfoSetPaths(struct testQemuInfo *info,
                  const char *suffix)
 {
     if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
@@ -884,11 +884,11 @@ mymain(void)
  */
 # define DO_TEST_INTERNAL(_name, _suffix, ...) \
     do { \
-        static struct testInfo info = { \
+        static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        if (testInfoSetArgs(&info, capslatest, \
-                            __VA_ARGS__, ARG_END) < 0) \
+        if (testQemuInfoSetArgs(&info, capslatest, \
+                                __VA_ARGS__, ARG_END) < 0) \
             return EXIT_FAILURE; \
         if (testInfoSetPaths(&info, _suffix) < 0) { \
             VIR_TEST_DEBUG("Failed to generate paths for '%s'", _name); \
@@ -897,7 +897,7 @@ mymain(void)
         if (virTestRun("QEMU XML-2-ARGV " _name _suffix, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
-        testInfoClear(&info); \
+        testQemuInfoClear(&info); \
     } while (0)
 
 # define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
