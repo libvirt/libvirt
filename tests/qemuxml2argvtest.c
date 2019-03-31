@@ -299,6 +299,8 @@ typedef enum {
 struct testInfo {
     const char *name;
     const char *suffix;
+    char *infile;
+    char *outfile;
     virQEMUCapsPtr qemuCaps;
     const char *migrateFrom;
     int migrateFd;
@@ -427,8 +429,6 @@ static int
 testCompareXMLToArgv(const void *data)
 {
     struct testInfo *info = (void *) data;
-    char *xml = NULL;
-    char *args = NULL;
     char *migrateURI = NULL;
     char *actualargv = NULL;
     const char *suffix = info->suffix;
@@ -471,9 +471,9 @@ testCompareXMLToArgv(const void *data)
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto cleanup;
 
-    if (virAsprintf(&xml, "%s/qemuxml2argvdata/%s.xml",
+    if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
                     abs_srcdir, info->name) < 0 ||
-        virAsprintf(&args, "%s/qemuxml2argvdata/%s%s.args",
+        virAsprintf(&info->outfile, "%s/qemuxml2argvdata/%s%s.args",
                     abs_srcdir, info->name, suffix) < 0)
         goto cleanup;
 
@@ -486,7 +486,8 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
 
     parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
-    if (!(vm->def = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
+    if (!(vm->def = virDomainDefParseFile(info->infile,
+                                          driver.caps, driver.xmlopt,
                                           NULL, parseFlags))) {
         if (flags & FLAG_EXPECT_PARSE_ERROR)
             goto ok;
@@ -502,7 +503,7 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
 
     if (!virDomainDefCheckABIStability(vm->def, vm->def, driver.xmlopt)) {
-        VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
+        VIR_TEST_DEBUG("ABI stability check failed on %s", info->infile);
         goto cleanup;
     }
 
@@ -570,7 +571,7 @@ testCompareXMLToArgv(const void *data)
     if (!(actualargv = virCommandToString(cmd, false)))
         goto cleanup;
 
-    if (virTestCompareToFile(actualargv, args) < 0)
+    if (virTestCompareToFile(actualargv, info->outfile) < 0)
         goto cleanup;
 
     ret = 0;
@@ -600,8 +601,6 @@ testCompareXMLToArgv(const void *data)
     virSetConnectStorage(NULL);
     virObjectUnref(conn);
     VIR_FREE(migrateURI);
-    VIR_FREE(xml);
-    VIR_FREE(args);
     return ret;
 }
 
@@ -754,6 +753,8 @@ testInfoSetArgs(struct testInfo *info,
 static void
 testInfoClear(struct testInfo *info)
 {
+    VIR_FREE(info->infile);
+    VIR_FREE(info->outfile);
     virObjectUnref(info->qemuCaps);
 }
 
