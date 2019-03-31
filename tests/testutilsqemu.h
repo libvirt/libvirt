@@ -32,6 +32,37 @@ enum {
     GIC_BOTH,
 };
 
+typedef enum {
+    ARG_QEMU_CAPS,
+    ARG_GIC,
+    ARG_MIGRATE_FROM,
+    ARG_MIGRATE_FD,
+    ARG_FLAGS,
+    ARG_PARSEFLAGS,
+    ARG_CAPS_ARCH,
+    ARG_CAPS_VER,
+    ARG_END,
+} testQemuInfoArgName;
+
+typedef enum {
+    FLAG_EXPECT_FAILURE     = 1 << 0,
+    FLAG_EXPECT_PARSE_ERROR = 1 << 1,
+    FLAG_FIPS               = 1 << 2,
+    FLAG_REAL_CAPS          = 1 << 3,
+    FLAG_SKIP_LEGACY_CPUS   = 1 << 4,
+} testQemuInfoFlags;
+
+struct testQemuInfo {
+    const char *name;
+    char *infile;
+    char *outfile;
+    virQEMUCapsPtr qemuCaps;
+    const char *migrateFrom;
+    int migrateFd;
+    unsigned int flags;
+    unsigned int parseFlags;
+};
+
 virCapsPtr testQemuCapsInit(void);
 virDomainXMLOptionPtr testQemuXMLConfInit(void);
 
@@ -70,6 +101,10 @@ int testQemuCapsIterate(const char *dirname,
                         const char *suffix,
                         testQemuCapsIterateCallback callback,
                         void *opaque);
+
+int testQemuInfoSetArgs(struct testQemuInfo *info,
+                        virHashTablePtr capslatest, ...);
+void testQemuInfoClear(struct testQemuInfo *info);
 
 # endif
 
