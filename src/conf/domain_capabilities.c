@@ -663,19 +663,48 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
 }
 
 
+#define ENUM_VALUE_MISSING(capsEnum, value) !(capsEnum.values & (1 << value))
+
+#define ENUM_VALUE_ERROR(valueLabel, valueString) \
+    do { \
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
+                       _("domain configuration does not support '%s' value '%s'"), \
+                       valueLabel, valueString); \
+    } while (0)
+
+
+static int
+virDomainCapsDeviceRNGDefValidate(virDomainCapsPtr const caps,
+                                  const virDomainRNGDef *dev)
+{
+    if (ENUM_VALUE_MISSING(caps->rng.model, dev->model)) {
+        ENUM_VALUE_ERROR("rng model",
+                         virDomainRNGModelTypeToString(dev->model));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int
-virDomainCapsDeviceDefValidate(virDomainCapsPtr const caps ATTRIBUTE_UNUSED,
+virDomainCapsDeviceDefValidate(virDomainCapsPtr const caps,
                                const virDomainDeviceDef *dev,
                                const virDomainDef *def ATTRIBUTE_UNUSED)
 {
+    int ret = 0;
+
     switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_RNG:
+        ret = virDomainCapsDeviceRNGDefValidate(caps, dev->data.rng);
+        break;
+
     case VIR_DOMAIN_DEVICE_DISK:
     case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
-    case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_HOSTDEV:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_MEMORY:
@@ -698,5 +727,5 @@ virDomainCapsDeviceDefValidate(virDomainCapsPtr const caps ATTRIBUTE_UNUSED,
         break;
     }
 
-    return 0;
+    return ret;
 }

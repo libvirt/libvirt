@@ -217,6 +217,7 @@ virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
                              __nvalues, __values); \
     } while (0)
 
+
 int virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,
                          const char *capsEnumName,
                          size_t nvalues,
