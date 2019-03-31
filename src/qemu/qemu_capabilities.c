@@ -5370,6 +5370,34 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
 }
 
 
+static int
+virQEMUCapsFillDomainDeviceRNGCaps(virQEMUCapsPtr qemuCaps,
+                                   virDomainCapsDeviceRNGPtr rng)
+{
+    rng->supported = VIR_TRISTATE_BOOL_YES;
+    rng->model.report = true;
+    rng->backendModel.report = true;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_RNG)) {
+        VIR_DOMAIN_CAPS_ENUM_SET(rng->model, VIR_DOMAIN_RNG_MODEL_VIRTIO);
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL) ||
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+            VIR_DOMAIN_CAPS_ENUM_SET(rng->model,
+                                     VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL,
+                                     VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL);
+        }
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_EGD))
+        VIR_DOMAIN_CAPS_ENUM_SET(rng->backendModel, VIR_DOMAIN_RNG_BACKEND_EGD);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM))
+        VIR_DOMAIN_CAPS_ENUM_SET(rng->backendModel, VIR_DOMAIN_RNG_BACKEND_RANDOM);
+
+    return 0;
+}
+
+
 /**
  * virQEMUCapsSupportsGICVersion:
  * @qemuCaps: QEMU capabilities
@@ -5512,6 +5540,7 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
     virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
     virDomainCapsDeviceGraphicsPtr graphics = &domCaps->graphics;
     virDomainCapsDeviceVideoPtr video = &domCaps->video;
+    virDomainCapsDeviceRNGPtr rng = &domCaps->rng;
 
     domCaps->maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps,
                                                      domCaps->machine);
@@ -5542,6 +5571,7 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
         virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics) < 0 ||
         virQEMUCapsFillDomainDeviceVideoCaps(qemuCaps, video) < 0 ||
         virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0 ||
+        virQEMUCapsFillDomainDeviceRNGCaps(qemuCaps, rng) < 0 ||
         virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps) < 0 ||
         virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps) < 0)
         return -1;
