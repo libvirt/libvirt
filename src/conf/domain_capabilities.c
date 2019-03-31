@@ -547,6 +547,19 @@ virDomainCapsDeviceHostdevFormat(virBufferPtr buf,
 }
 
 
+static void
+virDomainCapsDeviceRNGFormat(virBufferPtr buf,
+                             virDomainCapsDeviceRNGPtr const rng)
+{
+    FORMAT_PROLOGUE(rng);
+
+    ENUM_PROCESS(rng, model, virDomainRNGModelTypeToString);
+    ENUM_PROCESS(rng, backendModel, virDomainRNGBackendTypeToString);
+
+    FORMAT_EPILOGUE(rng);
+}
+
+
 /**
  * virDomainCapsFeatureGICFormat:
  * @buf: target buffer
@@ -625,6 +638,7 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
     virDomainCapsDeviceGraphicsFormat(&buf, &caps->graphics);
     virDomainCapsDeviceVideoFormat(&buf, &caps->video);
     virDomainCapsDeviceHostdevFormat(&buf, &caps->hostdev);
+    virDomainCapsDeviceRNGFormat(&buf, &caps->rng);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</devices>\n");

@@ -450,6 +450,41 @@
       element.</dd>
     </dl>
 
+
+    <h4><a id="elementsRNG">RNG device</a></h4>
+    <p>RNG device capabilities are exposed under the
+    <code>rng</code> element. For instance:</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;devices&gt;
+    &lt;rng supported='yes'&gt;
+      &lt;enum name='model'&gt;
+        &lt;value&gt;virtio&lt;/value&gt;
+        &lt;value&gt;virtio-transitional&lt;/value&gt;
+        &lt;value&gt;virtio-non-transitional&lt;/value&gt;
+      &lt;/enum&gt;
+      &lt;enum name='backendModel'&gt;
+        &lt;value&gt;random&lt;/value&gt;
+        &lt;value&gt;egd&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/rng&gt;
+    ...
+  &lt;/devices&gt;
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <dl>
+      <dt><code>model</code></dt>
+      <dd>Options for the <code>model</code> attribute of the
+      &lt;rng&gt; element.</dd>
+      <dt><code>backendModel</code></dt>
+      <dd>Options for the <code>model</code> attribute of the
+      &lt;rng&gt;&lt;backend&gt; element.</dd>
+    </dl>
+
+
     <h3><a id="elementsFeatures">Features</a></h3>
 
     <p>One more set of XML elements describe the supported features and

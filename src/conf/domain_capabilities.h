@@ -98,6 +98,14 @@ struct _virDomainCapsDeviceHostdev {
     /* add new fields here */
 };
 
+typedef struct _virDomainCapsDeviceRNG virDomainCapsDeviceRNG;
+typedef virDomainCapsDeviceRNG *virDomainCapsDeviceRNGPtr;
+struct _virDomainCapsDeviceRNG {
+    virTristateBool supported;
+    virDomainCapsEnum model;   /* virDomainRNGModel */
+    virDomainCapsEnum backendModel;   /* virDomainRNGBackend */
+};
+
 typedef struct _virDomainCapsFeatureGIC virDomainCapsFeatureGIC;
 typedef virDomainCapsFeatureGIC *virDomainCapsFeatureGICPtr;
 struct _virDomainCapsFeatureGIC {
@@ -167,6 +175,7 @@ struct _virDomainCaps {
     virDomainCapsDeviceGraphics graphics;
     virDomainCapsDeviceVideo video;
     virDomainCapsDeviceHostdev hostdev;
+    virDomainCapsDeviceRNG rng;
     /* add new domain devices here */
 
     virDomainCapsFeatureGIC gic;
