@@ -25,18 +25,11 @@ enum {
     WHEN_BOTH = 3,
 };
 
-struct testInfo {
-    char *infile;
-    char *outfile;
-
-    virQEMUCapsPtr qemuCaps;
-};
-
 
 static int
 testXML2XMLActive(const void *opaque)
 {
-    const struct testInfo *info = opaque;
+    const struct testQemuInfo *info = opaque;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                       info->infile, info->outfile, true, 0,
@@ -47,7 +40,7 @@ testXML2XMLActive(const void *opaque)
 static int
 testXML2XMLInactive(const void *opaque)
 {
-    const struct testInfo *info = opaque;
+    const struct testQemuInfo *info = opaque;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                       info->infile, info->outfile, false, 0,
@@ -58,7 +51,7 @@ testXML2XMLInactive(const void *opaque)
 static int
 testCompareStatusXMLToXMLFiles(const void *opaque)
 {
-    const struct testInfo *data = opaque;
+    const struct testQemuInfo *data = opaque;
     virDomainObjPtr obj = NULL;
     char *actual = NULL;
     int ret = -1;
@@ -95,18 +88,8 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 }
 
 
-static void
-testInfoClear(struct testInfo *info)
-{
-    VIR_FREE(info->infile);
-    VIR_FREE(info->outfile);
-
-    virObjectUnref(info->qemuCaps);
-}
-
-
 static int
-testInfoSetCommon(struct testInfo *info,
+testInfoSetCommon(struct testQemuInfo *info,
                   int gic)
 {
     if (!(info->qemuCaps = virQEMUCapsNew()))
@@ -121,12 +104,12 @@ testInfoSetCommon(struct testInfo *info,
     return 0;
 
  error:
-    testInfoClear(info);
+    testQemuInfoClear(info);
     return -1;
 }
 
 static int
-testInfoSetPaths(struct testInfo *info,
+testInfoSetPaths(struct testQemuInfo *info,
                  const char *name,
                  int when)
 {
@@ -155,7 +138,7 @@ testInfoSetPaths(struct testInfo *info,
     return 0;
 
  error:
-    testInfoClear(info);
+    testQemuInfoClear(info);
     return -1;
 }
 
@@ -163,7 +146,7 @@ testInfoSetPaths(struct testInfo *info,
 static const char *statusPath = abs_srcdir "/qemustatusxml2xmldata/";
 
 static int
-testInfoSetStatusPaths(struct testInfo *info,
+testInfoSetStatusPaths(struct testQemuInfo *info,
                        const char *name)
 {
     if (virAsprintf(&info->infile, "%s%s-in.xml", statusPath, name) < 0 ||
@@ -173,7 +156,7 @@ testInfoSetStatusPaths(struct testInfo *info,
     return 0;
 
  error:
-    testInfoClear(info);
+    testQemuInfoClear(info);
     return -1;
 }
 
@@ -185,7 +168,7 @@ mymain(void)
 {
     int ret = 0;
     char *fakerootdir;
-    struct testInfo info;
+    struct testQemuInfo info;
     virQEMUDriverConfigPtr cfg = NULL;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
@@ -234,7 +217,7 @@ mymain(void)
                             testXML2XMLActive, &info) < 0) \
                 ret = -1; \
         } \
-        testInfoClear(&info); \
+        testQemuInfoClear(&info); \
     } while (0)
 
 # define NONE QEMU_CAPS_LAST
@@ -1247,7 +1230,7 @@ mymain(void)
                        testCompareStatusXMLToXMLFiles, &info) < 0) \
             ret = -1; \
 \
-        testInfoClear(&info); \
+        testQemuInfoClear(&info); \
     } while (0)
 
 
