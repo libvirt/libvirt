@@ -28,7 +28,6 @@ enum {
 struct testInfo {
     char *infile;
     char *outfile;
-    char *outInactiveName;
 
     virQEMUCapsPtr qemuCaps;
 };
@@ -50,9 +49,8 @@ testXML2XMLInactive(const void *opaque)
 {
     const struct testInfo *info = opaque;
 
-    return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, info->infile,
-                                      info->outInactiveName, false,
-                                      0,
+    return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
+                                      info->infile, info->outfile, false, 0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
 
@@ -102,7 +100,6 @@ testInfoClear(struct testInfo *info)
 {
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
-    VIR_FREE(info->outInactiveName);
 
     virObjectUnref(info->qemuCaps);
 }
@@ -133,40 +130,26 @@ testInfoSetPaths(struct testInfo *info,
                  const char *name,
                  int when)
 {
+    VIR_FREE(info->infile);
+    VIR_FREE(info->outfile);
+
     if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
                     abs_srcdir, name) < 0)
         goto error;
 
-    if (when & WHEN_INACTIVE) {
-        if (virAsprintf(&info->outInactiveName,
-                        "%s/qemuxml2xmloutdata/%s-inactive.xml",
-                        abs_srcdir, name) < 0)
-            goto error;
+    if (virAsprintf(&info->outfile,
+                    "%s/qemuxml2xmloutdata/%s-%s.xml",
+                    abs_srcdir, name,
+                    when == WHEN_ACTIVE ? "active" : "inactive") < 0)
+        goto error;
 
-        if (!virFileExists(info->outInactiveName)) {
-            VIR_FREE(info->outInactiveName);
+    if (!virFileExists(info->outfile)) {
+        VIR_FREE(info->outfile);
 
-            if (virAsprintf(&info->outInactiveName,
-                            "%s/qemuxml2xmloutdata/%s.xml",
-                            abs_srcdir, name) < 0)
-                goto error;
-        }
-    }
-
-    if (when & WHEN_ACTIVE) {
         if (virAsprintf(&info->outfile,
-                        "%s/qemuxml2xmloutdata/%s-active.xml",
+                        "%s/qemuxml2xmloutdata/%s.xml",
                         abs_srcdir, name) < 0)
             goto error;
-
-        if (!virFileExists(info->outfile)) {
-            VIR_FREE(info->outfile);
-
-            if (virAsprintf(&info->outfile,
-                            "%s/qemuxml2xmloutdata/%s.xml",
-                            abs_srcdir, name) < 0)
-                goto error;
-        }
     }
 
     return 0;
@@ -226,20 +209,27 @@ mymain(void)
 
 # define DO_TEST_FULL(name, when, gic, ...) \
     do { \
-        if (testInfoSetCommon(&info, gic) < 0 || \
-            testInfoSetPaths(&info, name, when) < 0) { \
+        if (testInfoSetCommon(&info, gic) < 0) { \
             VIR_TEST_DEBUG("Failed to generate test data for '%s'", name); \
             return -1; \
         } \
         virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST); \
  \
-        if (info.outInactiveName) { \
+        if (when & WHEN_INACTIVE) { \
+            if (testInfoSetPaths(&info, name, WHEN_INACTIVE) < 0) { \
+                VIR_TEST_DEBUG("Failed to generate inactive paths for '%s'", name); \
+                return -1; \
+            } \
             if (virTestRun("QEMU XML-2-XML-inactive " name, \
                             testXML2XMLInactive, &info) < 0) \
                 ret = -1; \
         } \
  \
-        if (info.outfile) { \
+        if (when & WHEN_ACTIVE) { \
+            if (testInfoSetPaths(&info, name, WHEN_ACTIVE) < 0) { \
+                VIR_TEST_DEBUG("Failed to generate active paths for '%s'", name); \
+                return -1; \
+            } \
             if (virTestRun("QEMU XML-2-XML-active " name, \
                             testXML2XMLActive, &info) < 0) \
                 ret = -1; \
