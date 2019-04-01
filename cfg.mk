@@ -1113,7 +1113,7 @@ maint.mk Makefile: _autogen_error
   # though, as it would be quite pointless
   ifeq (2,$(_dry_run_result)$(_clean_requested))
     $(info INFO: running autogen.sh is required, running it now...)
-    $(shell touch $(srcdir)/AUTHORS $(srcdir)/ChangeLog)
+    $(shell touch $(srcdir)/AUTHORS)
 maint.mk Makefile: _autogen
   endif
 endif
