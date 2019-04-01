@@ -15,12 +15,12 @@ def checkFeature(cpuid, feature):
 
     if in_eax not in cpuid or in_ecx not in cpuid[in_eax]:
         return False
-    else:
-        leaf = cpuid[in_eax][in_ecx]
-        return ((eax > 0 and leaf["eax"] & eax > 0) or
-                (ebx > 0 and leaf["ebx"] & ebx > 0) or
-                (ecx > 0 and leaf["ecx"] & ecx > 0) or
-                (edx > 0 and leaf["edx"] & edx > 0))
+
+    leaf = cpuid[in_eax][in_ecx]
+    return ((eax > 0 and leaf["eax"] & eax == eax) or
+            (ebx > 0 and leaf["ebx"] & ebx == ebx) or
+            (ecx > 0 and leaf["ecx"] & ecx == ecx) or
+            (edx > 0 and leaf["edx"] & edx == edx))
 
 
 def addFeature(cpuid, feature):
