@@ -25,6 +25,7 @@
 #define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 #include "virfirewallpriv.h"
 #include "virfirewalld.h"
+#include "viralloc.h"
 #include "virerror.h"
 #include "virutil.h"
 #include "virstring.h"

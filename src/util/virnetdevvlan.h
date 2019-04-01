@@ -21,7 +21,6 @@
 
 # include <virutil.h>
 
-# include "viralloc.h"
 # include "virautoclean.h"
 
 typedef enum {

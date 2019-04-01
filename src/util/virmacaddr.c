@@ -25,6 +25,7 @@
 #include "virmacaddr.h"
 #include "virrandom.h"
 #include "virutil.h"
+#include "viralloc.h"
 
 static const unsigned char virMacAddrBroadcastAddrRaw[VIR_MAC_BUFLEN] =
     { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };

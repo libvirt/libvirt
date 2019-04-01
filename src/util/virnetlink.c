@@ -33,6 +33,7 @@
 #include "virthread.h"
 #include "virmacaddr.h"
 #include "virerror.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 

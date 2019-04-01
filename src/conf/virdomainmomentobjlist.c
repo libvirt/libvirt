@@ -28,6 +28,7 @@
 #include "virerror.h"
 #include "virstring.h"
 #include "moment_conf.h"
+#include "viralloc.h"
 
 /* FIXME: using virObject would allow us to not need this */
 #include "snapshot_conf.h"

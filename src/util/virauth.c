@@ -24,6 +24,7 @@
 
 
 #include "virauth.h"
+#include "viralloc.h"
 #include "virutil.h"
 #include "virlog.h"
 #include "datatypes.h"

@@ -22,7 +22,6 @@
 # define LIBVIRT_QEMU_FIRMWARE_H
 
 # include "domain_conf.h"
-# include "viralloc.h"
 # include "qemu_conf.h"
 # include "virautoclean.h"
 

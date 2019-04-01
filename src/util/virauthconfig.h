@@ -22,7 +22,6 @@
 # define LIBVIRT_VIRAUTHCONFIG_H
 
 # include "internal.h"
-# include "viralloc.h"
 # include "virautoclean.h"
 
 typedef struct _virAuthConfig virAuthConfig;

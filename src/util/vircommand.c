@@ -42,6 +42,7 @@
 #endif
 
 #define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
+#include "viralloc.h"
 #include "vircommandpriv.h"
 #include "virerror.h"
 #include "virutil.h"

@@ -39,6 +39,7 @@
 #include "virstring.h"
 #include "virsystemd.h"
 #include "virerror.h"
+#include "viralloc.h"
 
 VIR_LOG_INIT("util.cgroup");
 

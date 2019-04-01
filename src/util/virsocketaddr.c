@@ -22,6 +22,7 @@
 #include "virerror.h"
 #include "virstring.h"
 #include "virbuffer.h"
+#include "viralloc.h"
 
 #include <netdb.h>
 

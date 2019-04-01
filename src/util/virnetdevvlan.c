@@ -21,6 +21,7 @@
 #include "internal.h"
 #include "virerror.h"
 #include "virnetdevvlan.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

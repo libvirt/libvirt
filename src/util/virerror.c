@@ -24,6 +24,7 @@
 
 #include "virerror.h"
 #include "datatypes.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virthread.h"
 #include "virutil.h"

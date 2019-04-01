@@ -25,6 +25,7 @@
 #include "virscsihost.h"
 #include "virstring.h"
 #include "virvhba.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 

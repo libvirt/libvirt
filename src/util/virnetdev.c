@@ -20,6 +20,7 @@
 
 #include "dirname.h"
 #include "virnetdev.h"
+#include "viralloc.h"
 #include "virnetlink.h"
 #include "virmacaddr.h"
 #include "virfile.h"

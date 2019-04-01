@@ -30,7 +30,6 @@
 # include "internal.h"
 # include "virbitmap.h"
 # include "virstoragefile.h"
-# include "viralloc.h"
 # include "virautoclean.h"
 
 typedef enum {

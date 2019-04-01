@@ -29,6 +29,7 @@
 #include "virthread.h"
 #include "virhash.h"
 #include "virstring.h"
+#include "viralloc.h"
 #include "qemusecuritytest.h"
 #include "security/security_manager.h"
 

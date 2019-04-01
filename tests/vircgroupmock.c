@@ -34,6 +34,7 @@
 # include "testutilslxc.h"
 # include "virstring.h"
 # include "virfile.h"
+# include "viralloc.h"
 
 static int (*real_open)(const char *path, int flags, ...);
 static FILE *(*real_fopen)(const char *path, const char *mode);

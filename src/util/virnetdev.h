@@ -26,7 +26,6 @@
 # include "virmacaddr.h"
 # include "virpci.h"
 # include "virnetdevvlan.h"
-# include "viralloc.h"
 # include "virautoclean.h"
 
 # ifdef HAVE_STRUCT_IFREQ

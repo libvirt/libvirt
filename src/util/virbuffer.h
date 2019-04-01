@@ -24,7 +24,6 @@
 # include <stdarg.h>
 
 # include "internal.h"
-# include "viralloc.h"
 # include "virautoclean.h"
 
 

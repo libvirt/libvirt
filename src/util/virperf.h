@@ -20,7 +20,6 @@
 # define LIBVIRT_VIRPERF_H
 
 # include "virutil.h"
-# include "viralloc.h"
 # include "virautoclean.h"
 
 /* Some Intel processor families introduced some RDT (Resource Director

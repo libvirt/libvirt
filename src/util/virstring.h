@@ -22,7 +22,6 @@
 # include <stdarg.h>
 
 # include "internal.h"
-# include "viralloc.h"
 
 char **virStringSplitCount(const char *string,
                            const char *delim,

@@ -33,6 +33,7 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "viralloc.h"
 
 #define USB_SYSFS "/sys/bus/usb"
 #define USB_ID_LEN 10 /* "1234 5678" */

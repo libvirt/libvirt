@@ -28,7 +28,6 @@
 # endif
 
 # include "lxc_conf.h"
-# include "viralloc.h"
 
 struct virLXCMeminfo {
     unsigned long long memtotal;

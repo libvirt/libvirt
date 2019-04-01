@@ -26,6 +26,7 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "viralloc.h"
 
 /* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE

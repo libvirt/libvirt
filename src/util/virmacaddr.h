@@ -22,7 +22,6 @@
 # define LIBVIRT_VIRMACADDR_H
 
 # include "internal.h"
-# include "viralloc.h"
 # include "virautoclean.h"
 
 # define VIR_MAC_BUFLEN 6

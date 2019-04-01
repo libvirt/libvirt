@@ -27,6 +27,7 @@
 #include "virstring.h"
 #include "virutil.h"
 #include "vircommand.h"
+#include "viralloc.h"
 
 #if HAVE_GETIFADDRS
 # include <ifaddrs.h>

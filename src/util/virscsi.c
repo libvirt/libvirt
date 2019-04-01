@@ -34,6 +34,7 @@
 #include "virutil.h"
 #include "virstring.h"
 #include "virerror.h"
+#include "viralloc.h"
 
 #define SYSFS_SCSI_DEVICES "/sys/bus/scsi/devices"
 
