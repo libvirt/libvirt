@@ -35,6 +35,7 @@
 #include "virxml.h"
 #include "virstring.h"
 #include "vsh-table.h"
+#include "virenum.h"
 
 VIR_ENUM_DECL(virshDomainIOError);
 VIR_ENUM_IMPL(virshDomainIOError,

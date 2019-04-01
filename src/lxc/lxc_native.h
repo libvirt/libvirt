@@ -22,6 +22,7 @@
 # define LIBVIRT_LXC_NATIVE_H
 
 # include "domain_conf.h"
+# include "virenum.h"
 
 # define LXC_CONFIG_FORMAT "lxc-tools"
 

@@ -48,6 +48,7 @@
 #include "xen_common.h"
 #include "xen_xl.h"
 #include "virnetdevvportprofile.h"
+#include "virenum.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL

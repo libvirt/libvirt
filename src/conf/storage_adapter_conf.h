@@ -22,6 +22,7 @@
 
 # include "virpci.h"
 # include "virxml.h"
+# include "virenum.h"
 
 
 typedef enum {

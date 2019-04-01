@@ -26,6 +26,7 @@
 
 # include "virutil.h"
 # include "virxml.h"
+# include "virenum.h"
 
 VIR_ENUM_DECL(virSecretUsage);
 

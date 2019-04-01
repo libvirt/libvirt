@@ -102,6 +102,7 @@
 #include "netdev_bandwidth_conf.h"
 #include "virqemu.h"
 #include "virdomainsnapshotobjlist.h"
+#include "virenum.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

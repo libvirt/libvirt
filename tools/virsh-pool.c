@@ -29,6 +29,7 @@
 #include "virstring.h"
 #include "virtime.h"
 #include "vsh-table.h"
+#include "virenum.h"
 
 #define VIRSH_COMMON_OPT_POOL_FULL(cflags) \
     VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"), cflags)

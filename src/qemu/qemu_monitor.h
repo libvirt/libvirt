@@ -32,6 +32,7 @@
 # include "device_conf.h"
 # include "cpu/cpu.h"
 # include "util/virgic.h"
+# include "virenum.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;

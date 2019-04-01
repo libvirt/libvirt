@@ -31,6 +31,7 @@
 #include "virutil.h"
 #include "virlog.h"
 #include "virdbus.h"
+#include "virenum.h"
 
 #define VIR_FROM_THIS VIR_FROM_FIREWALLD
 

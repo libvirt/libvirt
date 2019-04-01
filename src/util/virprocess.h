@@ -27,6 +27,7 @@
 # include "internal.h"
 # include "virbitmap.h"
 # include "virutil.h"
+# include "virenum.h"
 
 typedef enum {
     VIR_PROC_POLICY_NONE = 0,

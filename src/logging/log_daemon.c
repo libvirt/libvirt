@@ -44,6 +44,7 @@
 #include "viruuid.h"
 #include "virstring.h"
 #include "virgettext.h"
+#include "virenum.h"
 
 #include "log_daemon_dispatch.h"
 #include "log_protocol.h"

@@ -29,6 +29,7 @@
 # include "domain_capabilities.h"
 # include "virfirmware.h"
 # include "virfilecache.h"
+# include "virenum.h"
 
 /*
  * Internal flags to keep track of qemu command line capabilities

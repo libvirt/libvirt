@@ -39,6 +39,7 @@
 # include "virobject.h"
 # include "logging/log_manager.h"
 # include "virdomainmomentobjlist.h"
+# include "virenum.h"
 
 # define QEMU_DOMAIN_FORMAT_LIVE_FLAGS \
     (VIR_DOMAIN_XML_SECURE)

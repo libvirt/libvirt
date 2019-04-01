@@ -84,38 +84,6 @@ verify(sizeof(gid_t) <= sizeof(unsigned int) &&
 
 VIR_LOG_INIT("util.util");
 
-VIR_ENUM_IMPL(virTristateBool, VIR_TRISTATE_BOOL_LAST,
-              "default",
-              "yes",
-              "no",
-);
-
-VIR_ENUM_IMPL(virTristateSwitch, VIR_TRISTATE_SWITCH_LAST,
-              "default",
-              "on",
-              "off",
-);
-
-
-virTristateBool
-virTristateBoolFromBool(bool val)
-{
-    if (val)
-        return VIR_TRISTATE_BOOL_YES;
-    else
-        return VIR_TRISTATE_BOOL_NO;
-}
-
-
-virTristateSwitch
-virTristateSwitchFromBool(bool val)
-{
-    if (val)
-        return VIR_TRISTATE_SWITCH_ON;
-    else
-        return VIR_TRISTATE_SWITCH_OFF;
-}
-
 
 #ifndef WIN32
 
@@ -324,22 +292,6 @@ virParseVersionString(const char *str, unsigned long *version,
     return 0;
 }
 
-int virEnumFromString(const char *const*types,
-                      unsigned int ntypes,
-                      const char *type)
-{
-    size_t i;
-    if (!type)
-        return -1;
-
-    for (i = 0; i < ntypes; i++)
-        if (STREQ(types[i], type))
-            return i;
-
-    return -1;
-}
-
-
 /**
  * Format @val as a base-10 decimal number, in the
  * buffer @buf of size @buflen. To allocate a suitable
@@ -418,16 +370,6 @@ virFormatIntPretty(unsigned long long val,
     return val / (limit / 1024);
 }
 
-
-const char *virEnumToString(const char *const*types,
-                            unsigned int ntypes,
-                            int type)
-{
-    if (type < 0 || type >= ntypes)
-        return NULL;
-
-    return types[type];
-}
 
 /* Translates a device name of the form (regex) /^[fhv]d[a-z]+[0-9]*$/
  * into the corresponding index and partition number

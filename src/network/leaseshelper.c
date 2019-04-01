@@ -32,6 +32,7 @@
 #include "viralloc.h"
 #include "virjson.h"
 #include "virlease.h"
+#include "virenum.h"
 #include "configmake.h"
 #include "virgettext.h"
 

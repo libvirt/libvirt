@@ -672,6 +672,7 @@ libvirt_setuid_rpc_client_la_SOURCES = \
 		util/vircommand.c \
 		util/virconf.c \
 		util/virdbus.c \
+		util/virenum.c \
 		util/virerror.c \
 		util/virevent.c \
 		util/vireventpoll.c \
@@ -882,6 +883,8 @@ libvirt_nss_la_SOURCES = \
 		util/virbuffer.h \
 		util/vircommand.c \
 		util/vircommand.h \
+		util/virenum.c \
+		util/virenum.h \
 		util/virerror.c \
 		util/virerror.h \
 		util/virfile.c \

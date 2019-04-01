@@ -25,6 +25,7 @@
 # include "internal.h"
 # include "virutil.h"
 # include "virbitmap.h"
+# include "virenum.h"
 
 typedef enum {
     VIR_HOST_VALIDATE_FAIL,

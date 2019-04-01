@@ -34,6 +34,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "viralloc.h"
+#include "virenum.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

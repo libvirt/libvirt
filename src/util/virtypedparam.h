@@ -24,6 +24,7 @@
 
 # include "internal.h"
 # include "virutil.h"
+# include "virenum.h"
 
 /**
  * VIR_TYPED_PARAM_MULTIPLE:

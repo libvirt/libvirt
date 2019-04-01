@@ -26,6 +26,7 @@
 # include "virobject.h"
 # include "virutil.h"
 # include "virautoclean.h"
+# include "virenum.h"
 
 typedef struct _virPCIDevice virPCIDevice;
 typedef virPCIDevice *virPCIDevicePtr;

@@ -34,6 +34,7 @@
 #include "virtypedparam.h"
 #include "virstring.h"
 #include "virfile.h"
+#include "virenum.h"
 
 /*
  * "capabilities" command

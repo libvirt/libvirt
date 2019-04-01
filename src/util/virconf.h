@@ -22,6 +22,7 @@
 # define LIBVIRT_VIRCONF_H
 
 # include "virutil.h"
+# include "virenum.h"
 
 /**
  * virConfType:

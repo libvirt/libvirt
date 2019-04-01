@@ -27,6 +27,7 @@
 # include "virbitmap.h"
 # include "virarch.h"
 # include "numa_conf.h"
+# include "virenum.h"
 
 # define VIR_CPU_VENDOR_ID_LENGTH 12
 

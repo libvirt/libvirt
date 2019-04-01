@@ -25,6 +25,7 @@
 # include "domain_addr.h"
 # include "domain_conf.h"
 # include "vircommand.h"
+# include "virenum.h"
 # include "capabilities.h"
 # include "qemu_block.h"
 # include "qemu_conf.h"

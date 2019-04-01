@@ -29,6 +29,7 @@
 #include "virtime.h"
 #include "conf/network_conf.h"
 #include "vsh-table.h"
+#include "virenum.h"
 
 #define VIRSH_COMMON_OPT_NETWORK(_helpstr, cflags) \
     {.name = "network", \

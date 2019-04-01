@@ -27,6 +27,7 @@
 # include "virutil.h"
 # include "virbitmap.h"
 # include "virbuffer.h"
+# include "virenum.h"
 
 
 typedef struct _virDomainNuma virDomainNuma;

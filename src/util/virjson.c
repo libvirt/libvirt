@@ -30,6 +30,7 @@
 #include "virstring.h"
 #include "virutil.h"
 #include "virbuffer.h"
+#include "virenum.h"
 
 #if WITH_YAJL
 # include <yajl/yajl_gen.h>

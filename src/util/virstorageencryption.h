@@ -25,6 +25,7 @@
 # include "virbuffer.h"
 # include "virsecret.h"
 # include "virutil.h"
+# include "virenum.h"
 
 # include <libxml/tree.h>
 

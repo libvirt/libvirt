@@ -1784,6 +1784,17 @@ ebtablesContextNew;
 ebtablesRemoveForwardAllowIn;
 
 
+# util/virenum.h
+virEnumFromString;
+virEnumToString;
+virTristateBoolFromBool;
+virTristateBoolTypeFromString;
+virTristateBoolTypeToString;
+virTristateSwitchFromBool;
+virTristateSwitchTypeFromString;
+virTristateSwitchTypeToString;
+
+
 # util/virerror.h
 virDispatchError;
 virErrorCopyNew;
@@ -3187,8 +3198,6 @@ virUSBDeviceSetUsedBy;
 virDoesGroupExist;
 virDoesUserExist;
 virDoubleToStr;
-virEnumFromString;
-virEnumToString;
 virFormatIntDecimal;
 virFormatIntPretty;
 virGetDeviceID;
@@ -3234,12 +3243,6 @@ virSetNonBlock;
 virSetSockReuseAddr;
 virSetUIDGID;
 virSetUIDGIDWithCaps;
-virTristateBoolFromBool;
-virTristateBoolTypeFromString;
-virTristateBoolTypeToString;
-virTristateSwitchFromBool;
-virTristateSwitchTypeFromString;
-virTristateSwitchTypeToString;
 virUpdateSelfLastChanged;
 virValidateWWN;
 virWaitForDevices;

@@ -38,6 +38,7 @@
 #include "virxml.h"
 #include "virstring.h"
 #include "vsh-table.h"
+#include "virenum.h"
 
 #define VIRSH_COMMON_OPT_POOL_FULL \
     VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"), \

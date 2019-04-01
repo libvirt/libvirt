@@ -56,6 +56,7 @@
 # include "virtypedparam.h"
 # include "virsavecookie.h"
 # include "virresctrl.h"
+# include "virenum.h"
 
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {

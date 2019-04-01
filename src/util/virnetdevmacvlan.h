@@ -26,6 +26,7 @@
 # include "virnetdevbandwidth.h"
 # include "virnetdevvportprofile.h"
 # include "virnetdevvlan.h"
+# include "virenum.h"
 
 /* the mode type for macvtap devices */
 typedef enum {

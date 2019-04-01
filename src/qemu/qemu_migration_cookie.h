@@ -20,6 +20,7 @@
 # define LIBVIRT_QEMU_MIGRATION_COOKIE_H
 
 # include "qemu_migration_params.h"
+# include "virenum.h"
 
 typedef enum {
     QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,

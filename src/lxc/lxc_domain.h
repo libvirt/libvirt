@@ -25,6 +25,7 @@
 # include "vircgroup.h"
 # include "lxc_conf.h"
 # include "lxc_monitor.h"
+# include "virenum.h"
 
 
 typedef enum {

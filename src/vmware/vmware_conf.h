@@ -26,6 +26,7 @@
 # include "internal.h"
 # include "virdomainobjlist.h"
 # include "virthread.h"
+# include "virenum.h"
 
 # define VIR_FROM_THIS VIR_FROM_VMWARE
 # define PROGRAM_SENTINEL ((char *)0x1)

@@ -23,6 +23,7 @@
 # include "viruuid.h"
 # include "virutil.h"
 # include "virmacaddr.h"
+# include "virenum.h"
 
 # define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40
 

@@ -40,6 +40,7 @@
 # include "networkcommon_conf.h"
 # include "virobject.h"
 # include "virmacmap.h"
+# include "virenum.h"
 
 typedef enum {
     VIR_NETWORK_FORWARD_NONE   = 0,

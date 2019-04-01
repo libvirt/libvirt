@@ -23,6 +23,7 @@
 # define LIBVIRT_VIRKEYCODE_H
 
 # include "virutil.h"
+# include "virenum.h"
 
 VIR_ENUM_DECL(virKeycodeSet);
 int virKeycodeValueFromString(virKeycodeSet codeset, const char *keyname);

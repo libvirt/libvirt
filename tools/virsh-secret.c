@@ -31,6 +31,7 @@
 #include "virstring.h"
 #include "virtime.h"
 #include "vsh-table.h"
+#include "virenum.h"
 
 static virSecretPtr
 virshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)

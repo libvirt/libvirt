@@ -31,6 +31,7 @@
 # include "virbuffer.h"
 # include "virpci.h"
 # include "virnetdev.h"
+# include "virenum.h"
 
 typedef enum {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE,

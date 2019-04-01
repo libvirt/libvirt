@@ -25,6 +25,7 @@
 # include "internal.h"
 # include "virutil.h"
 # include "virbuffer.h"
+# include "virenum.h"
 
 typedef enum {
     VIR_SYSINFO_SMBIOS,

@@ -49,6 +49,8 @@ UTIL_SOURCES = \
 	util/virebtables.c \
 	util/virebtables.h \
 	util/virendian.h \
+	util/virenum.h \
+	util/virenum.c \
 	util/virerror.c \
 	util/virerror.h \
 	util/virerrorpriv.h \

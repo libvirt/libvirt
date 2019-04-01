@@ -33,6 +33,7 @@
 # include "virsocketaddr.h"
 # include "virmacaddr.h"
 # include "virdomainobjlist.h"
+# include "virenum.h"
 
 /* XXX
  * The config parser/structs should not be using platform specific

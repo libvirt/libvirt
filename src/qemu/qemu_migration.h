@@ -25,6 +25,7 @@
 # include "qemu_conf.h"
 # include "qemu_domain.h"
 # include "qemu_migration_params.h"
+# include "virenum.h"
 
 /*
  * General function naming conventions:

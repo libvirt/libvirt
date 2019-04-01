@@ -22,6 +22,7 @@
 # define LIBVIRT_VIRGIC_H
 
 # include "virutil.h"
+# include "virenum.h"
 
 typedef enum {
     VIR_GIC_VERSION_NONE = 0,

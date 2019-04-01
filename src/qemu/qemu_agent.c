@@ -40,6 +40,7 @@
 #include "virobject.h"
 #include "virstring.h"
 #include "base64.h"
+#include "virenum.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

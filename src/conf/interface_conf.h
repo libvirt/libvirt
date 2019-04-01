@@ -29,6 +29,7 @@
 # include "virutil.h"
 # include "virthread.h"
 # include "device_conf.h"
+# include "virenum.h"
 
 /* There is currently 3 types of interfaces */
 

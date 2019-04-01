@@ -23,7 +23,7 @@
 
 # include "virbitmap.h"
 # include "virutil.h"
-
+# include "virenum.h"
 
 typedef enum {
     VIR_CACHE_TYPE_BOTH,

@@ -25,6 +25,7 @@
 # include "internal.h"
 # include "domain_conf.h"
 # include "moment_conf.h"
+# include "virenum.h"
 
 /* Items related to snapshot state */
 

@@ -24,6 +24,7 @@
 
 # include "virutil.h"
 # include "virbitmap.h"
+# include "virenum.h"
 
 struct _virCgroup;
 typedef struct _virCgroup virCgroup;

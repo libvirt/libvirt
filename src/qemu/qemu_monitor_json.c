@@ -43,6 +43,7 @@
 #include "virstring.h"
 #include "cpu/cpu_x86.h"
 #include "c-strcasestr.h"
+#include "virenum.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"

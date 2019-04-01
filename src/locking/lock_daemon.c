@@ -45,6 +45,7 @@
 #include "viruuid.h"
 #include "virstring.h"
 #include "virgettext.h"
+#include "virenum.h"
 
 #include "locking/lock_daemon_dispatch.h"
 #include "locking/lock_protocol.h"

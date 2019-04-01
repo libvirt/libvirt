@@ -55,6 +55,7 @@
 #include "virsh-nodedev.h"
 #include "viruri.h"
 #include "vsh-table.h"
+#include "virenum.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO

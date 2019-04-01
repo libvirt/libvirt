@@ -38,6 +38,7 @@
 #include "virtime.h"
 #include "virt-admin-completer.h"
 #include "vsh-table.h"
+#include "virenum.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO
