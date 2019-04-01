@@ -39,15 +39,9 @@ static size_t nprefixes;
 static const char **prefixes;
 
 /* TODO: callbacks */
-
-
 static int (*real_open)(const char *path, int flags, ...);
 static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
-static int (*real_stat)(const char *path, struct stat *sb);
-static int (*real___xstat)(int ver, const char *path, struct stat *sb);
-static int (*real_lstat)(const char *path, struct stat *sb);
-static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
 static int (*real_mkdir)(const char *path, mode_t mode);
 static DIR *(*real_opendir)(const char *path);
 
@@ -58,8 +52,6 @@ static void init_syms(void)
 
     VIR_MOCK_REAL_INIT(fopen);
     VIR_MOCK_REAL_INIT(access);
-    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
-    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
     VIR_MOCK_REAL_INIT(mkdir);
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(opendir);
@@ -115,10 +107,11 @@ virFileWrapperClearPrefixes(void)
     VIR_FREE(overrides);
 }
 
-static char *
-virFileWrapperOverridePrefix(const char *path)
+# include "virmockstathelpers.c"
+
+int
+virMockStatRedirect(const char *path, char **newpath)
 {
-    char *ret = NULL;
     size_t i = 0;
 
     for (i = 0; i < noverrides; i++) {
@@ -127,16 +120,13 @@ virFileWrapperOverridePrefix(const char *path)
         if (!tmp)
             continue;
 
-        if (virAsprintfQuiet(&ret, "%s%s", overrides[i], tmp) < 0)
-            return NULL;
+        if (virAsprintfQuiet(newpath, "%s%s", overrides[i], tmp) < 0)
+            return -1;
 
         break;
     }
 
-    if (!ret)
-        ignore_value(VIR_STRDUP_QUIET(ret, path));
-
-    return ret;
+    return 0;
 }
 
 
@@ -144,8 +134,7 @@ virFileWrapperOverridePrefix(const char *path)
     do { \
         init_syms(); \
  \
-        newpath = virFileWrapperOverridePrefix(path); \
-        if (!newpath) \
+        if (virMockStatRedirect(path, &newpath) < 0) \
             abort(); \
     } while (0)
 
@@ -156,7 +145,7 @@ FILE *fopen(const char *path, const char *mode)
 
     PATH_OVERRIDE(newpath, path);
 
-    return real_fopen(newpath, mode);
+    return real_fopen(newpath ? newpath : path, mode);
 }
 
 int access(const char *path, int mode)
@@ -165,56 +154,7 @@ int access(const char *path, int mode)
 
     PATH_OVERRIDE(newpath, path);
 
-    return real_access(newpath, mode);
-}
-
-# ifdef HAVE___LXSTAT
-int __lxstat(int ver, const char *path, struct stat *sb)
-{
-    VIR_AUTOFREE(char *) newpath = NULL;
-
-    PATH_OVERRIDE(newpath, path);
-
-    return real___lxstat(ver, newpath, sb);
-}
-# endif /* HAVE___LXSTAT */
-
-int lstat(const char *path, struct stat *sb)
-{
-    VIR_AUTOFREE(char *) newpath = NULL;
-
-    PATH_OVERRIDE(newpath, path);
-
-    return real_lstat(newpath, sb);
-}
-
-# ifdef HAVE___XSTAT
-int __xstat(int ver, const char *path, struct stat *sb)
-{
-    VIR_AUTOFREE(char *) newpath = NULL;
-
-    PATH_OVERRIDE(newpath, path);
-
-    return real___xstat(ver, newpath, sb);
-}
-# endif /* HAVE___XSTAT */
-
-int stat(const char *path, struct stat *sb)
-{
-    VIR_AUTOFREE(char *) newpath = NULL;
-
-    PATH_OVERRIDE(newpath, path);
-
-    return real_stat(newpath, sb);
-}
-
-int mkdir(const char *path, mode_t mode)
-{
-    VIR_AUTOFREE(char *) newpath = NULL;
-
-    PATH_OVERRIDE(newpath, path);
-
-    return real_mkdir(newpath, mode);
+    return real_access(newpath ? newpath : path, mode);
 }
 
 int open(const char *path, int flags, ...)
@@ -234,7 +174,7 @@ int open(const char *path, int flags, ...)
         va_end(ap);
     }
 
-    return real_open(newpath, flags, mode);
+    return real_open(newpath ? newpath : path, flags, mode);
 }
 
 DIR *opendir(const char *path)
@@ -243,6 +183,7 @@ DIR *opendir(const char *path)
 
     PATH_OVERRIDE(newpath, path);
 
-    return real_opendir(newpath);
+    return real_opendir(newpath ? newpath : path);
 }
+
 #endif

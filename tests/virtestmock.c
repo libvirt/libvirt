@@ -36,33 +36,9 @@
 #include "viralloc.h"
 #include "virfile.h"
 
-/* stat can be a macro as follows:
- *
- *   #define stat stat64
- *
- * This wouldn't fly with our mock. Make sure that the macro (and
- * all its friends) are undefined. We don't want anybody mangling
- * our code. */
-#undef stat
-#undef stat64
-#undef __xstat
-#undef __xstat64
-#undef lstat
-#undef lstat64
-#undef __lxstat
-#undef __lxstat64
-
 static int (*real_open)(const char *path, int flags, ...);
 static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
-static int (*real_stat)(const char *path, struct stat *sb);
-static int (*real_stat64)(const char *path, void *sb);
-static int (*real___xstat)(int ver, const char *path, struct stat *sb);
-static int (*real___xstat64)(int ver, const char *path, void *sb);
-static int (*real_lstat)(const char *path, struct stat *sb);
-static int (*real_lstat64)(const char *path, void *sb);
-static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
-static int (*real___lxstat64)(int ver, const char *path, void *sb);
 static int (*real_connect)(int fd, const struct sockaddr *addr, socklen_t addrlen);
 
 static const char *progname;
@@ -78,10 +54,6 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(fopen);
     VIR_MOCK_REAL_INIT(access);
-    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
-    VIR_MOCK_REAL_INIT_ALT(stat64, __xstat64);
-    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
-    VIR_MOCK_REAL_INIT_ALT(lstat64, __lxstat64);
     VIR_MOCK_REAL_INIT(connect);
 }
 
@@ -217,119 +189,15 @@ int access(const char *path, int mode)
     return real_access(path, mode);
 }
 
-/* Okay, the following ifdef rain forest may look messy at a
- * first glance. But here's the thing: during run time linking of
- * a binary, stat() may not be actually needing symbol stat. It
- * might as well not had been stat() in the first place (see the
- * reasoning at the beginning of this file). However, if we would
- * expose stat symbol here, we will poison the well and trick
- * dynamic linker into thinking we are some old binary that still
- * uses the symbol. So whenever code from upper layers calls
- * stat(), the control would get here, but real_stat can actually
- * be a NULL pointer because newer glibc have __xstat instead.
- * Worse, it can have __xstat64 instead __xstat.
- *
- * Anyway, these ifdefs are there to implement the following
- * preference function:
- *
- * stat < stat64 < __xstat < __xstat64
- *
- * It's the same story with lstat.
- * Also, I feel sorry for you that you had to read this.
- */
-#if defined(HAVE_STAT) && !defined(HAVE___XSTAT)
-int stat(const char *path, struct stat *sb)
+
+#define VIR_MOCK_STAT_HOOK CHECK_PATH(path)
+
+#include "virmockstathelpers.c"
+
+static int virMockStatRedirect(const char *path ATTRIBUTE_UNUSED, char **newpath ATTRIBUTE_UNUSED)
 {
-    init_syms();
-
-    checkPath(path, "stat");
-
-    return real_stat(path, sb);
+    return 0;
 }
-#endif
-
-#if defined(HAVE_STAT64) && !defined(HAVE___XSTAT64)
-int stat64(const char *path, struct stat64 *sb)
-{
-    init_syms();
-
-    checkPath(path, "stat");
-
-    return real_stat64(path, sb);
-}
-#endif
-
-#if defined(HAVE___XSTAT) && !defined(HAVE___XSTAT64)
-int
-__xstat(int ver, const char *path, struct stat *sb)
-{
-    init_syms();
-
-    checkPath(path, "stat");
-
-    return real___xstat(ver, path, sb);
-}
-#endif
-
-#if defined(HAVE___XSTAT64)
-int
-__xstat64(int ver, const char *path, struct stat64 *sb)
-{
-    init_syms();
-
-    checkPath(path, "stat");
-
-    return real___xstat64(ver, path, sb);
-}
-#endif
-
-#if defined(HAVE_LSTAT) && !defined(HAVE___LXSTAT)
-int
-lstat(const char *path, struct stat *sb)
-{
-    init_syms();
-
-    checkPath(path, "lstat");
-
-    return real_lstat(path, sb);
-}
-#endif
-
-#if defined(HAVE_LSTAT64) && !defined(HAVE___LXSTAT64)
-int
-lstat64(const char *path, struct stat64 *sb)
-{
-    init_syms();
-
-    checkPath(path, "lstat");
-
-    return real_lstat64(path, sb);
-}
-#endif
-
-#if defined(HAVE___LXSTAT) && !defined(HAVE___LXSTAT64)
-int
-__lxstat(int ver, const char *path, struct stat *sb)
-{
-    init_syms();
-
-    checkPath(path, "lstat");
-
-    return real___lxstat(ver, path, sb);
-}
-#endif
-
-#if defined(HAVE___LXSTAT64)
-int
-__lxstat64(int ver, const char *path, struct stat64 *sb)
-{
-    init_syms();
-
-    checkPath(path, "lstat");
-
-    return real___lxstat64(ver, path, sb);
-}
-#endif
 
 
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)

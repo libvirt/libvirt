@@ -31,10 +31,6 @@
 # include "dirname.h"
 
 static int (*real_access)(const char *path, int mode);
-static int (*real_lstat)(const char *path, struct stat *sb);
-static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
-static int (*real_stat)(const char *path, struct stat *sb);
-static int (*real___xstat)(int ver, const char *path, struct stat *sb);
 static int (*real_open)(const char *path, int flags, ...);
 static int (*real_close)(int fd);
 static DIR * (*real_opendir)(const char *name);
@@ -365,14 +361,8 @@ pci_device_new_from_stub(const struct pciDevice *data)
     if (virFileMakePath(devpath) < 0)
         ABORT("Unable to create: %s", devpath);
 
-    if (real_stat && real_stat(configSrc, &sb) == 0)
+    if (stat(configSrc, &sb) == 0)
         configSrcExists = true;
-
-# ifdef HAVE___XSTAT
-    if (!configSrcExists &&
-        real___xstat && real___xstat(_STAT_VER, configSrc, &sb) == 0)
-        configSrcExists = true;
-# endif
 
     /* If there is a config file for the device within virpcitestdata dir,
      * symlink it. Otherwise create a dummy config file. */
@@ -813,8 +803,6 @@ init_syms(void)
         return;
 
     VIR_MOCK_REAL_INIT(access);
-    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
-    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(close);
     VIR_MOCK_REAL_INIT(opendir);
@@ -896,85 +884,17 @@ access(const char *path, int mode)
     return ret;
 }
 
-# ifdef HAVE___LXSTAT
-int
-__lxstat(int ver, const char *path, struct stat *sb)
+
+static int
+virMockStatRedirect(const char *path, char **newpath)
 {
-    int ret;
-
-    init_syms();
-
     if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
-        char *newpath;
-        if (getrealpath(&newpath, path) < 0)
+        if (getrealpath(newpath, path) < 0)
             return -1;
-        ret = real___lxstat(ver, newpath, sb);
-        VIR_FREE(newpath);
-    } else {
-        ret = real___lxstat(ver, path, sb);
     }
-    return ret;
-}
-# endif /* HAVE___LXSTAT */
-
-int
-lstat(const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
-        char *newpath;
-        if (getrealpath(&newpath, path) < 0)
-            return -1;
-        ret = real_lstat(newpath, sb);
-        VIR_FREE(newpath);
-    } else {
-        ret = real_lstat(path, sb);
-    }
-    return ret;
+    return 0;
 }
 
-# ifdef HAVE___XSTAT
-int
-__xstat(int ver, const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
-        char *newpath;
-        if (getrealpath(&newpath, path) < 0)
-            return -1;
-        ret = real___xstat(ver, newpath, sb);
-        VIR_FREE(newpath);
-    } else {
-        ret = real___xstat(ver, path, sb);
-    }
-    return ret;
-}
-# endif /* HAVE___XSTAT */
-
-int
-stat(const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
-        char *newpath;
-        if (getrealpath(&newpath, path) < 0)
-            return -1;
-        ret = real_stat(newpath, sb);
-        VIR_FREE(newpath);
-    } else {
-        ret = real_stat(path, sb);
-    }
-    return ret;
-}
 
 int
 open(const char *path, int flags, ...)
@@ -1058,6 +978,9 @@ virFileCanonicalizePath(const char *path)
 
     return ret;
 }
+
+# include "virmockstathelpers.c"
+
 #else
 /* Nothing to override on this platform */
 #endif

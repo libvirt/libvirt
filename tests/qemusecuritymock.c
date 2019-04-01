@@ -50,10 +50,6 @@
 
 
 static int (*real_chown)(const char *path, uid_t uid, gid_t gid);
-static int (*real_lstat)(const char *path, struct stat *sb);
-static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
-static int (*real_stat)(const char *path, struct stat *sb);
-static int (*real___xstat)(int ver, const char *path, struct stat *sb);
 static int (*real_open)(const char *path, int flags, ...);
 static int (*real_close)(int fd);
 
@@ -106,8 +102,6 @@ init_syms(void)
         return;
 
     VIR_MOCK_REAL_INIT(chown);
-    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
-    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(close);
 
@@ -211,36 +205,35 @@ int virFileRemoveXAttr(const char *path,
 }
 
 
-static int
-mock_stat(const char *path,
-          struct stat *sb)
-{
-    uint32_t *val;
-
-    virMutexLock(&m);
-    init_hash();
-
-    memset(sb, 0, sizeof(*sb));
-
-    sb->st_mode = S_IFREG | 0666;
-    sb->st_size = 123456;
-    sb->st_ino = 1;
-
-    if (!(val = virHashLookup(chown_paths, path))) {
-        /* New path. Set the defaults */
-        sb->st_uid = DEFAULT_UID;
-        sb->st_gid = DEFAULT_GID;
-    } else {
-        /* Known path. Set values passed to chown() earlier */
-        sb->st_uid = *val % 16;
-        sb->st_gid = *val >> 16;
-    }
-
-    virMutexUnlock(&m);
-
-    return 0;
-}
-
+#define VIR_MOCK_STAT_HOOK \
+    do { \
+        if (getenv(ENVVAR)) { \
+            uint32_t *val; \
+\
+            virMutexLock(&m); \
+            init_hash(); \
+\
+            memset(sb, 0, sizeof(*sb)); \
+\
+            sb->st_mode = S_IFREG | 0666; \
+            sb->st_size = 123456; \
+            sb->st_ino = 1; \
+\
+            if (!(val = virHashLookup(chown_paths, path))) { \
+                /* New path. Set the defaults */ \
+                sb->st_uid = DEFAULT_UID; \
+                sb->st_gid = DEFAULT_GID; \
+            } else { \
+                /* Known path. Set values passed to chown() earlier */ \
+                sb->st_uid = *val % 16; \
+                sb->st_gid = *val >> 16; \
+            } \
+\
+            virMutexUnlock(&m); \
+\
+            return 0; \
+        } \
+    } while (0)
 
 static int
 mock_chown(const char *path,
@@ -276,68 +269,12 @@ mock_chown(const char *path,
 }
 
 
-#ifdef HAVE___LXSTAT
-int
-__lxstat(int ver, const char *path, struct stat *sb)
+#include "virmockstathelpers.c"
+
+static int
+virMockStatRedirect(const char *path ATTRIBUTE_UNUSED, char **newpath ATTRIBUTE_UNUSED)
 {
-    int ret;
-
-    init_syms();
-
-    if (getenv(ENVVAR))
-        ret = mock_stat(path, sb);
-    else
-        ret = real___lxstat(ver, path, sb);
-
-    return ret;
-}
-#endif /* HAVE___LXSTAT */
-
-int
-lstat(const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (getenv(ENVVAR))
-        ret = mock_stat(path, sb);
-    else
-        ret = real_lstat(path, sb);
-
-    return ret;
-}
-
-#ifdef HAVE___XSTAT
-int
-__xstat(int ver, const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (getenv(ENVVAR))
-        ret = mock_stat(path, sb);
-    else
-        ret = real___xstat(ver, path, sb);
-
-    return ret;
-}
-#endif /* HAVE___XSTAT */
-
-int
-stat(const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (getenv(ENVVAR))
-        ret = mock_stat(path, sb);
-    else
-        ret = real_stat(path, sb);
-
-    return ret;
+    return 0;
 }
 
 
@@ -385,6 +322,8 @@ int
 close(int fd)
 {
     int ret;
+
+    init_syms();
 
     if (fd == 42 && getenv(ENVVAR))
         ret = 0;

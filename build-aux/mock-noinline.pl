@@ -6,6 +6,9 @@ my %mocked;
 # Functions in public header don't get the noinline annotation
 # so whitelist them here
 $noninlined{"virEventAddTimeout"} = 1;
+# This one confuses the script as its defined in the mock file
+# but is actually just a local helper
+$noninlined{"virMockStatRedirect"} = 1;
 
 foreach my $arg (@ARGV) {
     if ($arg =~ /\.h$/) {

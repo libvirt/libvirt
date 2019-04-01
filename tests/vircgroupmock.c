@@ -38,10 +38,6 @@
 static int (*real_open)(const char *path, int flags, ...);
 static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
-static int (*real_stat)(const char *path, struct stat *sb);
-static int (*real___xstat)(int ver, const char *path, struct stat *sb);
-static int (*real_lstat)(const char *path, struct stat *sb);
-static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
 static int (*real_mkdir)(const char *path, mode_t mode);
 
 /* Don't make static, since it causes problems with clang
@@ -317,8 +313,6 @@ static void init_syms(void)
 
     VIR_MOCK_REAL_INIT(fopen);
     VIR_MOCK_REAL_INIT(access);
-    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
-    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
     VIR_MOCK_REAL_INIT(mkdir);
     VIR_MOCK_REAL_INIT(open);
 }
@@ -508,138 +502,40 @@ int access(const char *path, int mode)
     return ret;
 }
 
-int __lxstat(int ver, const char *path, struct stat *sb)
+# define VIR_MOCK_STAT_HOOK \
+    do { \
+        if (STRPREFIX(path, fakedevicedir0)) { \
+            sb->st_mode = S_IFBLK; \
+            sb->st_rdev = makedev(8, 0); \
+            return 0; \
+        } else if (STRPREFIX(path, fakedevicedir1)) { \
+            sb->st_mode = S_IFBLK; \
+            sb->st_rdev = makedev(9, 0); \
+            return 0; \
+        } \
+    } while (0)
+
+# include "virmockstathelpers.c"
+
+static int
+virMockStatRedirect(const char *path, char **newpath)
 {
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
-        init_sysfs();
-        char *newpath;
-        if (asprintf(&newpath, "%s%s",
-                     fakesysfscgroupdir,
-                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
-            errno = ENOMEM;
-            return -1;
-        }
-        ret = real___lxstat(ver, newpath, sb);
-        free(newpath);
-    } else if (STRPREFIX(path, fakedevicedir0)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(8, 0);
-        return 0;
-    } else if (STRPREFIX(path, fakedevicedir1)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(9, 0);
-        return 0;
-    } else {
-        ret = real___lxstat(ver, path, sb);
-    }
-    return ret;
-}
-
-int lstat(const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
-        init_sysfs();
-        char *newpath;
-        if (asprintf(&newpath, "%s%s",
-                     fakesysfscgroupdir,
-                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
-            errno = ENOMEM;
-            return -1;
-        }
-        ret = real_lstat(newpath, sb);
-        free(newpath);
-    } else if (STRPREFIX(path, fakedevicedir0)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(8, 0);
-        return 0;
-    } else if (STRPREFIX(path, fakedevicedir1)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(9, 0);
-        return 0;
-    } else {
-        ret = real_lstat(path, sb);
-    }
-    return ret;
-}
-
-int __xstat(int ver, const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
-        init_sysfs();
-        char *newpath;
-        if (asprintf(&newpath, "%s%s",
-                     fakesysfscgroupdir,
-                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
-            errno = ENOMEM;
-            return -1;
-        }
-        ret = real___xstat(ver, newpath, sb);
-        free(newpath);
-    } else if (STRPREFIX(path, fakedevicedir0)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(8, 0);
-        return 0;
-    } else if (STRPREFIX(path, fakedevicedir1)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(9, 0);
-        return 0;
-    } else {
-        ret = real___xstat(ver, path, sb);
-    }
-    return ret;
-}
-
-int stat(const char *path, struct stat *sb)
-{
-    char *newpath = NULL;
-    int ret;
-
-    init_syms();
-
     if (STREQ(path, SYSFS_CPU_PRESENT)) {
         init_sysfs();
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(newpath, "%s/%s",
                      fakesysfscgroupdir,
-                     SYSFS_CPU_PRESENT_MOCKED) < 0) {
-            errno = ENOMEM;
+                     SYSFS_CPU_PRESENT_MOCKED) < 0)
             return -1;
-        }
     } else if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
-        if (asprintf(&newpath, "%s%s",
+        if (asprintf(newpath, "%s%s",
                      fakesysfscgroupdir,
-                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
-            errno = ENOMEM;
-            return -1;
-        }
-    } else if (STRPREFIX(path, fakedevicedir0)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(8, 0);
-        return 0;
-    } else if (STRPREFIX(path, fakedevicedir1)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(9, 0);
-        return 0;
-    } else {
-        if (!(newpath = strdup(path)))
+                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0)
             return -1;
     }
-    ret = real_stat(newpath, sb);
-    free(newpath);
-    return ret;
+    return 0;
 }
+
 
 int mkdir(const char *path, mode_t mode)
 {
