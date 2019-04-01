@@ -12550,7 +12550,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
                          unsigned long resource)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm;
+    virDomainObjPtr vm = NULL;
     int ret = -1;
     const char *dconnuri = NULL;
     qemuMigrationParamsPtr migParams = NULL;
@@ -12571,10 +12571,8 @@ qemuDomainMigratePerform(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainMigratePerformEnsureACL(dom->conn, vm->def) < 0) {
-        virDomainObjEndAPI(&vm);
+    if (virDomainMigratePerformEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
-    }
 
     if (flags & VIR_MIGRATE_PEER2PEER)
         VIR_STEAL_PTR(dconnuri, uri);
@@ -12592,6 +12590,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
                                   flags, dname, resource, false);
 
  cleanup:
+    virDomainObjEndAPI(&vm);
     qemuMigrationParamsFree(migParams);
     return ret;
 }
@@ -12988,7 +12987,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
                           unsigned long resource)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm;
+    virDomainObjPtr vm = NULL;
     qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
@@ -13001,10 +13000,8 @@ qemuDomainMigratePerform3(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainMigratePerform3EnsureACL(dom->conn, vm->def) < 0) {
-        virDomainObjEndAPI(&vm);
+    if (virDomainMigratePerform3EnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
-    }
 
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, xmlin, NULL,
                                   dconnuri, uri, NULL, NULL, 0, NULL, 0,
@@ -13014,6 +13011,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
                                   flags, dname, resource, true);
 
  cleanup:
+    virDomainObjEndAPI(&vm);
     qemuMigrationParamsFree(migParams);
     return ret;
 }
@@ -13030,7 +13028,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                 unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm;
+    virDomainObjPtr vm = NULL;
     const char *dom_xml = NULL;
     const char *persist_xml = NULL;
     const char *dname = NULL;
@@ -13088,10 +13086,8 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainMigratePerform3ParamsEnsureACL(dom->conn, vm->def) < 0) {
-        virDomainObjEndAPI(&vm);
+    if (virDomainMigratePerform3ParamsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
-    }
 
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, dom_xml, persist_xml,
                                   dconnuri, uri, graphicsuri, listenAddress,
@@ -13100,6 +13096,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                   cookiein, cookieinlen, cookieout, cookieoutlen,
                                   flags, dname, bandwidth, true);
  cleanup:
+    virDomainObjEndAPI(&vm);
     qemuMigrationParamsFree(migParams);
     VIR_FREE(migrate_disks);
     return ret;

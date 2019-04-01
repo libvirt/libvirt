@@ -4675,7 +4675,6 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
@@ -4746,7 +4745,6 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
         qemuDomainRemoveInactiveJob(driver, vm);
 
  cleanup:
-    virDomainObjEndAPI(&vm);
     return ret;
 }
 
