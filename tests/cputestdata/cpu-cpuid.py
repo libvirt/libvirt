@@ -6,17 +6,17 @@ import json
 import xmltodict
 
 def checkFeature(cpuid, feature):
-    in_eax = feature["in_eax"]
-    in_ecx = feature["in_ecx"]
+    eax_in = feature["eax_in"]
+    ecx_in = feature["ecx_in"]
     eax = feature["eax"]
     ebx = feature["ebx"]
     ecx = feature["ecx"]
     edx = feature["edx"]
 
-    if in_eax not in cpuid or in_ecx not in cpuid[in_eax]:
+    if eax_in not in cpuid or ecx_in not in cpuid[eax_in]:
         return False
 
-    leaf = cpuid[in_eax][in_ecx]
+    leaf = cpuid[eax_in][ecx_in]
     return ((eax > 0 and leaf["eax"] & eax == eax) or
             (ebx > 0 and leaf["ebx"] & ebx == ebx) or
             (ecx > 0 and leaf["ecx"] & ecx == ecx) or
@@ -24,13 +24,13 @@ def checkFeature(cpuid, feature):
 
 
 def addFeature(cpuid, feature):
-    if feature["in_eax"] not in cpuid:
-        cpuid[feature["in_eax"]] = {}
-    leaf = cpuid[feature["in_eax"]]
+    if feature["eax_in"] not in cpuid:
+        cpuid[feature["eax_in"]] = {}
+    leaf = cpuid[feature["eax_in"]]
 
-    if feature["in_ecx"] not in leaf:
-        leaf[feature["in_ecx"]] = {"eax": 0, "ebx": 0, "ecx": 0, "edx": 0}
-    leaf = leaf[feature["in_ecx"]]
+    if feature["ecx_in"] not in leaf:
+        leaf[feature["ecx_in"]] = {"eax": 0, "ebx": 0, "ecx": 0, "edx": 0}
+    leaf = leaf[feature["ecx_in"]]
 
     for reg in ["eax", "ebx", "ecx", "edx"]:
         leaf[reg] |= feature[reg]
@@ -55,8 +55,8 @@ def parseCPUData(path):
 
     for leaf in data["cpudata"]["cpuid"]:
         feature = {}
-        feature["in_eax"] = int(leaf["@eax_in"], 0)
-        feature["in_ecx"] = int(leaf["@ecx_in"], 0)
+        feature["eax_in"] = int(leaf["@eax_in"], 0)
+        feature["ecx_in"] = int(leaf["@ecx_in"], 0)
         for reg in ["eax", "ebx", "ecx", "edx"]:
             feature[reg] = int(leaf["@" + reg], 0)
 
@@ -67,11 +67,8 @@ def parseCPUData(path):
 
 def parseMapFeature(data):
     cpuid = {}
-    for reg in ["in_eax", "in_ecx", "eax", "ebx", "ecx", "edx"]:
-        if reg.startswith("in_"):
-            attr = "@%s_in" % reg[3:]
-        else:
-            attr = "@%s" % reg
+    for reg in ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]:
+        attr = "@%s" % reg
 
         if attr in data:
             cpuid[reg] = int(data[attr], 0)
@@ -100,14 +97,14 @@ def formatCPUData(cpuid, path, comment):
     with open(path, "w") as f:
         f.write("<!-- " + comment + " -->\n")
         f.write("<cpudata arch='x86'>\n")
-        for in_eax in sorted(cpuid.keys()):
-            for in_ecx in sorted(cpuid[in_eax].keys()):
-                leaf = cpuid[in_eax][in_ecx]
+        for eax_in in sorted(cpuid.keys()):
+            for ecx_in in sorted(cpuid[eax_in].keys()):
+                leaf = cpuid[eax_in][ecx_in]
                 line = ("  <cpuid eax_in='0x%08x' ecx_in='0x%02x' "
                         "eax='0x%08x' ebx='0x%08x' "
                         "ecx='0x%08x' edx='0x%08x'/>\n")
                 f.write(line % (
-                        in_eax, in_ecx,
+                        eax_in, ecx_in,
                         leaf["eax"], leaf["ebx"], leaf["ecx"], leaf["edx"]))
         f.write("</cpudata>\n")
 
