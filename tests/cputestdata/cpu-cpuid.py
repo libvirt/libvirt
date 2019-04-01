@@ -27,11 +27,29 @@ def checkCPUIDFeature(cpuData, feature):
             (edx > 0 and leaf["edx"] & edx == edx))
 
 
+def checkMSRFeature(cpuData, feature):
+    index = feature["index"]
+    edx = feature["edx"]
+    eax = feature["eax"]
+
+    if "msr" not in cpuData:
+        return False
+
+    msr = cpuData["msr"]
+    if index not in msr:
+        return False
+
+    msr = msr[index]
+    return ((edx > 0 and msr["edx"] & edx == edx) or
+            (eax > 0 and msr["eax"] & eax == eax))
+
+
 def checkFeature(cpuData, feature):
     if feature["type"] == "cpuid":
         return checkCPUIDFeature(cpuData, feature)
 
-    return False
+    if feature["type"] == "msr":
+        return checkMSRFeature(cpuData, feature)
 
 
 def addCPUIDFeature(cpuData, feature):
@@ -51,9 +69,24 @@ def addCPUIDFeature(cpuData, feature):
         leaf[reg] |= feature[reg]
 
 
+def addMSRFeature(cpuData, feature):
+    if "msr" not in cpuData:
+        cpuData["msr"] = {}
+    msr = cpuData["msr"]
+
+    if feature["index"] not in msr:
+        msr[feature["index"]] = {"edx": 0, "eax": 0}
+    msr = msr[feature["index"]]
+
+    for reg in ["edx", "eax"]:
+        msr[reg] |= feature[reg]
+
+
 def addFeature(cpuData, feature):
     if feature["type"] == "cpuid":
         addCPUIDFeature(cpuData, feature)
+    elif feature["type"] == "msr":
+        addMSRFeature(cpuData, feature)
 
 
 def parseQemu(path, features):
@@ -82,6 +115,18 @@ def parseCPUData(path):
 
         addFeature(cpuData, feature)
 
+    if "msr" in data["cpudata"]:
+        if not isinstance(data["cpudata"]["msr"], list):
+            data["cpudata"]["msr"] = [data["cpudata"]["msr"]]
+
+        for msr in data["cpudata"]["msr"]:
+            feature = {"type": "msr"}
+            feature["index"] = int(msr["@index"], 0)
+            feature["edx"] = int(msr["@edx"], 0)
+            feature["eax"] = int(msr["@eax"], 0)
+
+            addFeature(cpuData, feature)
+
     return cpuData
 
 
@@ -90,6 +135,8 @@ def parseMapFeature(fType, data):
 
     if fType == "cpuid":
         fields = ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]
+    elif fType == "msr":
+        fields = ["index", "edx", "eax"]
 
     for field in fields:
         attr = "@%s" % field
@@ -109,7 +156,7 @@ def parseMap():
 
     cpuMap = {}
     for feature in data["cpus"]["feature"]:
-        for fType in ["cpuid"]:
+        for fType in ["cpuid", "msr"]:
             if fType in feature:
                 cpuMap[feature["@name"]] = parseMapFeature(fType, feature[fType])
 
@@ -132,6 +179,13 @@ def formatCPUData(cpuData, path, comment):
                 f.write(line % (
                         eax_in, ecx_in,
                         leaf["eax"], leaf["ebx"], leaf["ecx"], leaf["edx"]))
+
+        if "msr" in cpuData:
+            msr = cpuData["msr"]
+            for index in sorted(msr.keys()):
+                f.write("  <msr index='0x%x' edx='0x%08x' eax='0x%08x'/>\n" %(
+                        index, msr[index]['edx'], msr[index]['eax']))
+
         f.write("</cpudata>\n")
 
 
