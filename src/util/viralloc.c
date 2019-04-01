@@ -618,3 +618,19 @@ void virDispose(void *ptrptr,
         *countptr = 0;
     errno = save_errno;
 }
+
+
+/**
+ * virDisposeString:
+ * @ptrptr: pointer to pointer for a string which should be sanitized and cleared
+ *
+ * See virDispose.
+ */
+void
+virDisposeString(char **strptr)
+{
+    if (!*strptr)
+        return;
+
+    virDispose(strptr, strlen(*strptr), sizeof(char), NULL);
+}
