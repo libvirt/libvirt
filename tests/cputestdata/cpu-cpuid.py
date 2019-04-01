@@ -5,7 +5,7 @@ import sys
 import json
 import xmltodict
 
-def cpuidIsSet(cpuid, feature):
+def checkFeature(cpuid, feature):
     in_eax = feature["in_eax"]
     in_ecx = feature["in_ecx"]
     eax = feature["eax"]
@@ -23,7 +23,7 @@ def cpuidIsSet(cpuid, feature):
                 (edx > 0 and leaf["edx"] & edx > 0))
 
 
-def cpuidAdd(cpuid, feature):
+def addFeature(cpuid, feature):
     if feature["in_eax"] not in cpuid:
         cpuid[feature["in_eax"]] = {}
     leaf = cpuid[feature["in_eax"]]
@@ -37,19 +37,19 @@ def cpuidAdd(cpuid, feature):
 
 
 def parseQemu(path, features):
-    cpuid = {}
+    cpuData = {}
     with open(path, "r") as f:
         data, pos = json.JSONDecoder().raw_decode(f.read())
 
     for (prop, val) in data["return"]["model"]["props"].items():
         if val and prop in features:
-            cpuidAdd(cpuid, features[prop])
+            addFeature(cpuData, features[prop])
 
-    return cpuid
+    return cpuData
 
 
-def parseCpuid(path):
-    cpuid = {}
+def parseCPUData(path):
+    cpuData = {}
     with open(path, "rb") as f:
         data = xmltodict.parse(f)
 
@@ -60,12 +60,12 @@ def parseCpuid(path):
         for reg in ["eax", "ebx", "ecx", "edx"]:
             feature[reg] = int(leaf["@" + reg], 0)
 
-        cpuidAdd(cpuid, feature)
+        addFeature(cpuData, feature)
 
-    return cpuid
+    return cpuData
 
 
-def parseFeature(data):
+def parseMapFeature(data):
     cpuid = {}
     for reg in ["in_eax", "in_ecx", "eax", "ebx", "ecx", "edx"]:
         if reg.startswith("in_"):
@@ -90,12 +90,12 @@ def parseMap():
     cpuMap = {}
     for feature in data["cpus"]["feature"]:
         if "cpuid" in feature:
-            cpuMap[feature["@name"]] = parseFeature(feature["cpuid"])
+            cpuMap[feature["@name"]] = parseMapFeature(feature["cpuid"])
 
     return cpuMap
 
 
-def formatCpuid(cpuid, path, comment):
+def formatCPUData(cpuid, path, comment):
     print(path)
     with open(path, "w") as f:
         f.write("<!-- " + comment + " -->\n")
@@ -115,23 +115,23 @@ def formatCpuid(cpuid, path, comment):
 def diff(cpuMap, path):
     base = path.replace(".json", "")
     jsonFile = path
-    cpuidFile = base + ".xml"
+    cpuDataFile = base + ".xml"
     enabledFile = base + "-enabled.xml"
     disabledFile = base + "-disabled.xml"
 
-    cpuid = parseCpuid(cpuidFile)
+    cpuData = parseCPUData(cpuDataFile)
     qemu = parseQemu(jsonFile, cpuMap)
 
     enabled = {}
     disabled = {}
     for feature in cpuMap.values():
-        if cpuidIsSet(qemu, feature):
-            cpuidAdd(enabled, feature)
-        elif cpuidIsSet(cpuid, feature):
-            cpuidAdd(disabled, feature)
+        if checkFeature(qemu, feature):
+            addFeature(enabled, feature)
+        elif checkFeature(cpuData, feature):
+            addFeature(disabled, feature)
 
-    formatCpuid(enabled, enabledFile, "Features enabled by QEMU")
-    formatCpuid(disabled, disabledFile, "Features disabled by QEMU")
+    formatCPUData(enabled, enabledFile, "Features enabled by QEMU")
+    formatCPUData(disabled, disabledFile, "Features disabled by QEMU")
 
 
 if len(sys.argv) < 3:
