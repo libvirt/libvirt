@@ -53,7 +53,8 @@ json <<<"$data" >$fname.json
 if [[ -s $fname.json ]]; then
     echo $fname.json
     if ! grep -q model-expansion $fname.json; then
-        $(dirname $0)/cpu-cpuid.py convert $fname.json
+        echo "Missing query-cpu-model-expansion reply in $name.json" >&2
+        exit 1
     fi
     $(dirname $0)/cpu-cpuid.py diff $fname.json
 else
