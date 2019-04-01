@@ -21,6 +21,7 @@
 #include <config.h>
 
 #ifdef __linux__
+# include <unistd.h>
 # include <mntent.h>
 # include <sys/stat.h>
 # include <sys/mount.h>

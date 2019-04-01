@@ -21,6 +21,7 @@
 
 #include <config.h>
 #include <poll.h>
+#include <unistd.h>
 
 #include "virpolkit.h"
 #include "virerror.h"

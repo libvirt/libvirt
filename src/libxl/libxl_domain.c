@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "libxl_domain.h"
 #include "libxl_capabilities.h"

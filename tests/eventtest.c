@@ -22,6 +22,7 @@
 
 #include <signal.h>
 #include <time.h>
+#include <unistd.h>
 
 #if HAVE_MACH_CLOCK_ROUTINES
 # include <mach/clock.h>

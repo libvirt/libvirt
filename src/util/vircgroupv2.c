@@ -20,6 +20,7 @@
 #include <config.h>
 
 #ifdef __linux__
+# include <unistd.h>
 # include <mntent.h>
 # include <sys/mount.h>
 #endif /* __linux__ */
