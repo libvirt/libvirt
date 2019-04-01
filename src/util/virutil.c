@@ -279,37 +279,6 @@ virScaleInteger(unsigned long long *value, const char *suffix,
 
 
 /**
- * virParseNumber:
- * @str: pointer to the char pointer used
- *
- * Parse an unsigned number
- *
- * Returns the unsigned number or -1 in case of error. @str will be
- *         updated to skip the number.
- */
-int
-virParseNumber(const char **str)
-{
-    int ret = 0;
-    const char *cur = *str;
-
-    if ((*cur < '0') || (*cur > '9'))
-        return -1;
-
-    while (c_isdigit(*cur)) {
-        unsigned int c = *cur - '0';
-
-        if ((ret > INT_MAX / 10) ||
-            ((ret == INT_MAX / 10) && (c > INT_MAX % 10)))
-            return -1;
-        ret = ret * 10 + c;
-        cur++;
-    }
-    *str = cur;
-    return ret;
-}
-
-/**
  * virParseVersionString:
  * @str: const char pointer to the version string
  * @version: unsigned long pointer to output the version number

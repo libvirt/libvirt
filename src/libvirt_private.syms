@@ -3223,7 +3223,6 @@ virIsSUID;
 virMemoryLimitIsSet;
 virMemoryLimitTruncate;
 virMemoryMaxValue;
-virParseNumber;
 virParseOwnershipIds;
 virParseVersionString;
 virScaleInteger;

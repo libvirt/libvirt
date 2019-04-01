@@ -54,7 +54,6 @@ int virScaleInteger(unsigned long long *value, const char *suffix,
 
 int virHexToBin(unsigned char c);
 
-int virParseNumber(const char **str);
 int virParseVersionString(const char *str, unsigned long *version,
                           bool allowMissing);
 
