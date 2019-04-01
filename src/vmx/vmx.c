@@ -1301,7 +1301,6 @@ virVMXParseConfig(virVMXContext *ctx,
     int unit;
     bool hgfs_disabled = true;
     long long sharedFolder_maxNum = 0;
-    int cpumasklen;
     struct virVMXConfigScanResults results = { -1 };
     long long coresPerSocket = 0;
     virCPUDefPtr cpu = NULL;
@@ -1504,8 +1503,6 @@ virVMXParseConfig(virVMXContext *ctx,
         const char *current = sched_cpu_affinity;
         int number, count = 0;
 
-        cpumasklen = 0;
-
         def->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
         if (!def->cpumask)
             goto cleanup;
@@ -1529,9 +1526,6 @@ virVMXParseConfig(virVMXContext *ctx,
                                  "this value is too large"), number);
                 goto cleanup;
             }
-
-            if (number + 1 > cpumasklen)
-                cpumasklen = number + 1;
 
             ignore_value(virBitmapSetBit(def->cpumask, number));
             ++count;
