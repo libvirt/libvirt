@@ -24,6 +24,7 @@
 
 # include "internal.h"
 # include "viralloc.h"
+# include "virautoclean.h"
 
 # define VIR_ERROR_MAX_LENGTH 1024
 

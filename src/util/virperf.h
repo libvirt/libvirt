@@ -21,6 +21,7 @@
 
 # include "virutil.h"
 # include "viralloc.h"
+# include "virautoclean.h"
 
 /* Some Intel processor families introduced some RDT (Resource Director
  * Technology) features to monitor or control shared resource based on

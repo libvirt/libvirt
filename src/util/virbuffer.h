@@ -25,6 +25,7 @@
 
 # include "internal.h"
 # include "viralloc.h"
+# include "virautoclean.h"
 
 
 /**

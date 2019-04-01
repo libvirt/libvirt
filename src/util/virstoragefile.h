@@ -30,6 +30,7 @@
 # include "virstorageencryption.h"
 # include "virutil.h"
 # include "virsecret.h"
+# include "virautoclean.h"
 
 /* Minimum header size required to probe all known formats with
  * virStorageFileProbeFormat, or obtain metadata from a known format.

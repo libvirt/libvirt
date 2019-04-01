@@ -22,6 +22,7 @@
 # include <virutil.h>
 
 # include "viralloc.h"
+# include "virautoclean.h"
 
 typedef enum {
     VIR_NATIVE_VLAN_MODE_DEFAULT = 0,

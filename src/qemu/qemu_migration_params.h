@@ -28,6 +28,7 @@
 # include "virxml.h"
 # include "qemu_monitor.h"
 # include "qemu_conf.h"
+# include "virautoclean.h"
 
 typedef enum {
     QEMU_MIGRATION_CAP_XBZRLE,

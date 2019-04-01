@@ -27,6 +27,7 @@
 # include "virbitmap.h"
 # include "viralloc.h"
 # include "virbuffer.h"
+# include "virautoclean.h"
 
 # include <stdarg.h>
 

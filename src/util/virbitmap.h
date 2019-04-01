@@ -24,6 +24,7 @@
 
 # include "internal.h"
 # include "viralloc.h"
+# include "virautoclean.h"
 
 # include <sys/types.h>
 

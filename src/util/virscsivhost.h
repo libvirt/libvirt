@@ -25,6 +25,7 @@
 # include "virobject.h"
 # include "virutil.h"
 # include "viralloc.h"
+# include "virautoclean.h"
 
 typedef struct _virSCSIVHostDevice virSCSIVHostDevice;
 typedef virSCSIVHostDevice *virSCSIVHostDevicePtr;

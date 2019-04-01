@@ -24,6 +24,7 @@
 # include "domain_conf.h"
 # include "viralloc.h"
 # include "qemu_conf.h"
+# include "virautoclean.h"
 
 typedef struct _qemuFirmware qemuFirmware;
 typedef qemuFirmware *qemuFirmwarePtr;

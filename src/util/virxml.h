@@ -29,6 +29,7 @@
 # include <libxml/relaxng.h>
 
 # include "virbuffer.h"
+# include "virautoclean.h"
 
 int              virXPathBoolean(const char *xpath,
                                  xmlXPathContextPtr ctxt);

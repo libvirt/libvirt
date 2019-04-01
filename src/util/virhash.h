@@ -12,6 +12,7 @@
 
 
 # include "viralloc.h"
+# include "virautoclean.h"
 
 /*
  * The hash table.

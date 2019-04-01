@@ -662,6 +662,7 @@ libvirt_setuid_rpc_client_la_SOURCES = \
 		util/virarch.c \
 		util/viratomic.c \
 		util/viratomic.h \
+		util/virautoclean.h \
 		util/virbitmap.c \
 		util/virbuffer.c \
 		util/vircgroup.c \
@@ -874,6 +875,7 @@ libvirt_nss_la_SOURCES = \
 		util/viralloc.h \
 		util/viratomic.c \
 		util/viratomic.h \
+		util/virautoclean.h \
 		util/virbitmap.c \
 		util/virbitmap.h \
 		util/virbuffer.c \
