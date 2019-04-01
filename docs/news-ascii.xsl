@@ -15,7 +15,8 @@
     <xsl:text>
 ==============================================================================
 Older libvirt releases didn't have proper release notes: if you are interested
-in changes between them, you should check out ChangeLog* and docs/news-*.html.
+in changes between them, you should check out docs/news-*.html or the full git
+log (see instructions in ChangeLog).
 </xsl:text>
   </xsl:template>
 
