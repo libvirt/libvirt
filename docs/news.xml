@@ -701,8 +701,6 @@
         </description>
       </change>
     </section>
-    <section title="Improvements">
-    </section>
     <section title="Bug fixes">
       <change>
         <summary>
@@ -1009,8 +1007,6 @@
           sata address as &lt;controller&gt;.&lt;bus&gt;.&lt;unit&gt;.
         </description>
       </change>
-    </section>
-    <section title="Bug fixes">
     </section>
   </release>
   <release version="v4.5.0" date="2018-07-02">
@@ -1324,8 +1320,6 @@
           secret-event, pool-event and nodedev-event)
         </description>
       </change>
-    </section>
-    <section title="Bug fixes">
     </section>
   </release>
   <release version="v4.3.0" date="2018-05-02">
