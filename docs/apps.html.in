@@ -99,6 +99,12 @@
         machines. It is a command line tool for developers that makes it very
         fast and easy to deploy and re-deploy an environment of vm's.
       </dd>
+      <dt><a href="https://github.com/virt-lightning/virt-lightning">virt-lightning</a></dt>
+      <dd>
+        Virt-Lightning uses libvirt, cloud-init and libguestfs to allow anyone
+        to quickly start a new VM. Very much like a container CLI, but with a
+        virtual machine.
+      </dd>
     </dl>
 
     <h2><a id="configmgmt">Configuration Management</a></h2>
