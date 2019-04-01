@@ -425,13 +425,8 @@ virStorageBackendExecuteMKFS(const char *device,
 
     virCommandAddArg(cmd, device);
 
-    if (virCommandRun(cmd, NULL) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to make filesystem of "
-                               "type '%s' on device '%s'"),
-                             format, device);
+    if (virCommandRun(cmd, NULL) < 0)
         return -1;
-    }
 
     return 0;
 }
