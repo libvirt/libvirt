@@ -41,9 +41,6 @@ int virSetInherit(int fd, bool inherit) ATTRIBUTE_RETURN_CHECK;
 int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
 int virSetSockReuseAddr(int fd, bool fatal) ATTRIBUTE_RETURN_CHECK;
 
-int virPipeReadUntilEOF(int outfd, int errfd,
-                        char **outbuf, char **errbuf);
-
 int virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups, int ngroups);
 int virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
                          unsigned long long capBits,
