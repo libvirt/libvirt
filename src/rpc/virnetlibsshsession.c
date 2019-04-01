@@ -157,6 +157,7 @@ static int
 virNetLibsshSessionOnceInit(void)
 {
     const char *dbgLevelStr;
+    int dbgLevel;
 
     if (!VIR_CLASS_NEW(virNetLibsshSession, virClassForObjectLockable()))
         return -1;
@@ -172,10 +173,9 @@ virNetLibsshSessionOnceInit(void)
 #endif
 
     dbgLevelStr = virGetEnvAllowSUID("LIBVIRT_LIBSSH_DEBUG");
-    if (dbgLevelStr) {
-        int dbgLevel = virParseNumber(&dbgLevelStr);
+    if (dbgLevelStr &&
+        virStrToLong_i(dbgLevelStr, NULL, 10, &dbgLevel) >= 0)
         ssh_set_log_level(dbgLevel);
-    }
 
     return 0;
 }
