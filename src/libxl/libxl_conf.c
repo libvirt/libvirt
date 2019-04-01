@@ -980,7 +980,7 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
 {
     virConnectPtr conn = NULL;
     uint8_t *secret = NULL;
-    char *base64secret = NULL;
+    VIR_AUTODISPOSE_STR base64secret = NULL;
     size_t secretlen = 0;
     char *username = NULL;
     int ret = -1;
@@ -1008,7 +1008,6 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
 
  cleanup:
     VIR_DISPOSE_N(secret, secretlen);
-    VIR_DISPOSE_STRING(base64secret);
     virObjectUnref(conn);
     return ret;
 }

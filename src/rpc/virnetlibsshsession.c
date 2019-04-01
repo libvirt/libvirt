@@ -605,7 +605,6 @@ static int
 virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
                                  virNetLibsshAuthMethodPtr priv)
 {
-    char *password = NULL;
     const char *errmsg;
     int ret = -1;
 
@@ -631,6 +630,8 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
         /* Try the authenticating the set amount of times. The server breaks the
          * connection if maximum number of bad auth tries is exceeded */
         while (true) {
+            VIR_AUTODISPOSE_STR password = NULL;
+
             if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
                                                     "ssh", sess->username,
                                                     sess->hostname))) {
@@ -645,8 +646,6 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
                 goto cleanup;
             }
 
-            VIR_DISPOSE_STRING(password);
-
             if (ret != SSH_AUTH_DENIED)
                 break;
         }
@@ -657,10 +656,7 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
     virReportError(VIR_ERR_AUTH_FAILED,
                    _("authentication failed: %s"), errmsg);
 
-    return ret;
-
  cleanup:
-    VIR_DISPOSE_STRING(password);
     return ret;
 }
 
@@ -1052,7 +1048,7 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
 {
     int ret;
     virNetLibsshAuthMethodPtr auth;
-    char *pass = NULL;
+    VIR_AUTODISPOSE_STR pass = NULL;
     char *file = NULL;
 
     if (!keyfile) {
@@ -1076,7 +1072,7 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
         goto error;
     }
 
-    auth->password = pass;
+    VIR_STEAL_PTR(auth->password, pass);
     auth->filename = file;
     auth->method = VIR_NET_LIBSSH_AUTH_PRIVKEY;
     auth->ssh_flags = SSH_AUTH_METHOD_PUBLICKEY;
@@ -1088,7 +1084,6 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
     return ret;
 
  error:
-    VIR_DISPOSE_STRING(pass);
     VIR_FREE(file);
     goto cleanup;
 }

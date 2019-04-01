@@ -253,7 +253,7 @@ static bool
 cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
 {
     virSecretPtr secret;
-    char *base64 = NULL;
+    VIR_AUTODISPOSE_STR base64 = NULL;
     unsigned char *value;
     size_t value_size;
     bool ret = false;
@@ -274,7 +274,6 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_DISPOSE_N(value, value_size);
-    VIR_DISPOSE_STRING(base64);
     virSecretFree(secret);
     return ret;
 }

@@ -209,7 +209,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     virStorageAuthDefPtr authdef = source->auth;
     unsigned char *secret_value = NULL;
     size_t secret_value_size = 0;
-    char *rados_key = NULL;
+    VIR_AUTODISPOSE_STR rados_key = NULL;
     virBuffer mon_host = VIR_BUFFER_INITIALIZER;
     size_t i;
     const char *client_mount_timeout = "30";
@@ -343,7 +343,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
 
  cleanup:
     VIR_DISPOSE_N(secret_value, secret_value_size);
-    VIR_DISPOSE_STRING(rados_key);
 
     virObjectUnref(conn);
     virBufferFreeAndReset(&mon_host);
