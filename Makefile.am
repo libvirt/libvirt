@@ -29,7 +29,6 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = \
   config-post.h \
-  ChangeLog-old \
   libvirt.spec libvirt.spec.in \
   mingw-libvirt.spec.in \
   libvirt.pc.in \
