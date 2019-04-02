@@ -29,16 +29,16 @@ testJSONFromString(const void *data)
 
     if (!json) {
         if (info->pass) {
-            VIR_TEST_VERBOSE("Fail to parse %s\n", info->doc);
+            VIR_TEST_VERBOSE("Failed to parse %s\n", info->doc);
             goto cleanup;
         } else {
-            VIR_TEST_DEBUG("Fail to parse %s\n", info->doc);
+            VIR_TEST_DEBUG("As expected, failed to parse %s\n", info->doc);
             ret = 0;
             goto cleanup;
         }
     } else {
         if (!info->pass) {
-            VIR_TEST_VERBOSE("Should not have parsed %s\n", info->name);
+            VIR_TEST_VERBOSE("Unexpected success while parsing %s\n", info->doc);
             goto cleanup;
         }
     }
