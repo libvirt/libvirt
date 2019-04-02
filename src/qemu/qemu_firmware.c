@@ -924,9 +924,7 @@ qemuFirmwareBuildFileList(virHashTablePtr files, const char *dir)
     while ((rc = virDirRead(dirp, &ent, dir)) > 0) {
         VIR_AUTOFREE(char *) filename = NULL;
         VIR_AUTOFREE(char *) path = NULL;
-
-        if (ent->d_type != DT_REG && ent->d_type != DT_LNK)
-            continue;
+        struct stat sb;
 
         if (STRPREFIX(ent->d_name, "."))
             continue;
@@ -936,6 +934,14 @@ qemuFirmwareBuildFileList(virHashTablePtr files, const char *dir)
 
         if (virAsprintf(&path, "%s/%s", dir, filename) < 0)
             goto cleanup;
+
+        if (stat(path, &sb) < 0) {
+            virReportSystemError(errno, _("Unable to access %s"), path);
+            goto cleanup;
+        }
+
+        if (!S_ISREG(sb.st_mode) && !S_ISLNK(sb.st_mode))
+            continue;
 
         if (virHashUpdateEntry(files, filename, path) < 0)
             goto cleanup;
