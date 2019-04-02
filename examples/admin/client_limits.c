@@ -9,6 +9,7 @@ int main(int argc, char **argv)
     virAdmServerPtr srv = NULL;     /* which server to work with */
     virTypedParameterPtr params = NULL;
     int nparams = 0;
+    int maxparams = 0;
     ssize_t i;
 
     if (argc != 2) {
@@ -39,7 +40,6 @@ int main(int argc, char **argv)
     nparams = 0;
 
     /* set nclients_max to 100 and nclients_unauth_max to 20 */
-    int maxparams = 0;
     if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
                               VIR_SERVER_CLIENTS_MAX, 100) < 0 ||
         virTypedParamsAddUInt(&params, &nparams, &maxparams,

@@ -9,6 +9,7 @@ int main(int argc, char **argv)
     virAdmServerPtr srv = NULL;     /* which server to work with */
     virTypedParameterPtr params = NULL;
     int nparams = 0;
+    int maxparams = 0;
     ssize_t i;
 
     if (argc != 2) {
@@ -39,7 +40,6 @@ int main(int argc, char **argv)
     nparams = 0;
 
     /* let's set minWorkers to 10, maxWorkers to 15 and prioWorkers to 10 */
-    int maxparams = 0;
     if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
                               VIR_THREADPOOL_WORKERS_MIN, 10) < 0 ||
         virTypedParamsAddUInt(&params, &nparams, &maxparams,
