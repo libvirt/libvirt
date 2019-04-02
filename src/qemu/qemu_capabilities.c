@@ -4283,6 +4283,9 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
     virHashTablePtr schema = NULL;
     size_t i;
 
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA))
+        return 0;
+
     if (!(schemareply = qemuMonitorQueryQMPSchema(mon)))
         return -1;
 
@@ -4376,8 +4379,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     if (virQEMUCapsProbeQMPMigrationCapabilities(qemuCaps, mon) < 0)
         goto cleanup;
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA) &&
-        virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
+    if (virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
         goto cleanup;
     if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon, false) < 0)
         goto cleanup;
