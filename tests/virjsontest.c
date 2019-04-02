@@ -20,7 +20,7 @@ static int
 testJSONFromString(const void *data)
 {
     const struct testInfo *info = data;
-    virJSONValuePtr json;
+    VIR_AUTOPTR(virJSONValue) json = NULL;
     const char *expectstr = info->expect ? info->expect : info->doc;
     char *formatted = NULL;
     int ret = -1;
@@ -59,7 +59,6 @@ testJSONFromString(const void *data)
 
  cleanup:
     VIR_FREE(formatted);
-    virJSONValueFree(json);
     return ret;
 }
 
@@ -68,8 +67,8 @@ static int
 testJSONAddRemove(const void *data)
 {
     const struct testInfo *info = data;
-    virJSONValuePtr json = NULL;
-    virJSONValuePtr name = NULL;
+    VIR_AUTOPTR(virJSONValue) json = NULL;
+    VIR_AUTOPTR(virJSONValue) name = NULL;
     VIR_AUTOFREE(char *) infile = NULL;
     VIR_AUTOFREE(char *) indata = NULL;
     VIR_AUTOFREE(char *) outfile = NULL;
@@ -135,8 +134,6 @@ testJSONAddRemove(const void *data)
     ret = 0;
 
  cleanup:
-    virJSONValueFree(json);
-    virJSONValueFree(name);
     return ret;
 }
 
@@ -145,7 +142,7 @@ static int
 testJSONLookup(const void *data)
 {
     const struct testInfo *info = data;
-    virJSONValuePtr json;
+    VIR_AUTOPTR(virJSONValue) json = NULL;
     virJSONValuePtr value = NULL;
     char *result = NULL;
     int rc;
@@ -243,7 +240,6 @@ testJSONLookup(const void *data)
     ret = 0;
 
  cleanup:
-    virJSONValueFree(json);
     VIR_FREE(result);
     return ret;
 }
@@ -253,8 +249,8 @@ static int
 testJSONCopy(const void *data)
 {
     const struct testInfo *info = data;
-    virJSONValuePtr json = NULL;
-    virJSONValuePtr jsonCopy = NULL;
+    VIR_AUTOPTR(virJSONValue) json = NULL;
+    VIR_AUTOPTR(virJSONValue) jsonCopy = NULL;
     char *result = NULL;
     char *resultCopy = NULL;
     int ret = -1;
@@ -314,8 +310,6 @@ testJSONCopy(const void *data)
  cleanup:
     VIR_FREE(result);
     VIR_FREE(resultCopy);
-    virJSONValueFree(json);
-    virJSONValueFree(jsonCopy);
     return ret;
 }
 
@@ -324,8 +318,8 @@ static int
 testJSONDeflatten(const void *data)
 {
     const struct testInfo *info = data;
-    virJSONValuePtr injson = NULL;
-    virJSONValuePtr deflattened = NULL;
+    VIR_AUTOPTR(virJSONValue) injson = NULL;
+    VIR_AUTOPTR(virJSONValue) deflattened = NULL;
     char *infile = NULL;
     char *indata = NULL;
     char *outfile = NULL;
@@ -365,8 +359,6 @@ testJSONDeflatten(const void *data)
     ret = 0;
 
  cleanup:
-    virJSONValueFree(injson);
-    virJSONValueFree(deflattened);
     VIR_FREE(infile);
     VIR_FREE(indata);
     VIR_FREE(outfile);
@@ -379,9 +371,9 @@ testJSONDeflatten(const void *data)
 static int
 testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
 {
-    virJSONValuePtr json = NULL;
-    virJSONValuePtr nestjson = NULL;
-    virJSONValuePtr parsejson = NULL;
+    VIR_AUTOPTR(virJSONValue) json = NULL;
+    VIR_AUTOPTR(virJSONValue) nestjson = NULL;
+    VIR_AUTOPTR(virJSONValue) parsejson = NULL;
     char *neststr = NULL;
     char *result = NULL;
     const char *parsednestedstr;
@@ -430,9 +422,6 @@ testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
  cleanup:
     VIR_FREE(neststr);
     VIR_FREE(result);
-    virJSONValueFree(json);
-    virJSONValueFree(nestjson);
-    virJSONValueFree(parsejson);
     return ret;
 }
 
@@ -440,10 +429,10 @@ testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
 static int
 testJSONObjectFormatSteal(const void *opaque ATTRIBUTE_UNUSED)
 {
-    virJSONValuePtr a1 = NULL;
-    virJSONValuePtr a2 = NULL;
-    virJSONValuePtr t1 = NULL;
-    virJSONValuePtr t2 = NULL;
+    VIR_AUTOPTR(virJSONValue) a1 = NULL;
+    VIR_AUTOPTR(virJSONValue) a2 = NULL;
+    VIR_AUTOPTR(virJSONValue) t1 = NULL;
+    VIR_AUTOPTR(virJSONValue) t2 = NULL;
     int ret = -1;
 
     if (!(a1 = virJSONValueNewString("test")) ||
@@ -474,10 +463,6 @@ testJSONObjectFormatSteal(const void *opaque ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
-    virJSONValueFree(a1);
-    virJSONValueFree(a2);
-    virJSONValueFree(t1);
-    virJSONValueFree(t2);
     return ret;
 }
 
