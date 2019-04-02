@@ -23,23 +23,21 @@ testJSONFromString(const void *data)
     VIR_AUTOPTR(virJSONValue) json = NULL;
     const char *expectstr = info->expect ? info->expect : info->doc;
     VIR_AUTOFREE(char *) formatted = NULL;
-    int ret = -1;
 
     json = virJSONValueFromString(info->doc);
 
     if (!json) {
         if (info->pass) {
             VIR_TEST_VERBOSE("Failed to parse %s\n", info->doc);
-            goto cleanup;
+            return -1;
         } else {
             VIR_TEST_DEBUG("As expected, failed to parse %s\n", info->doc);
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
     } else {
         if (!info->pass) {
             VIR_TEST_VERBOSE("Unexpected success while parsing %s\n", info->doc);
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -47,18 +45,15 @@ testJSONFromString(const void *data)
 
     if (!(formatted = virJSONValueToString(json, false))) {
         VIR_TEST_VERBOSE("Failed to format json data\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(expectstr, formatted)) {
         virTestDifference(stderr, expectstr, formatted);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -72,22 +67,20 @@ testJSONAddRemove(const void *data)
     VIR_AUTOFREE(char *) indata = NULL;
     VIR_AUTOFREE(char *) outfile = NULL;
     VIR_AUTOFREE(char *) actual = NULL;
-    int ret = -1;
 
     if (virAsprintf(&infile, "%s/virjsondata/add-remove-%s-in.json",
                     abs_srcdir, info->name) < 0 ||
         virAsprintf(&outfile, "%s/virjsondata/add-remove-%s-out.json",
                     abs_srcdir, info->name) < 0)
-        goto cleanup;
+        return -1;
 
     if (virTestLoadFile(infile, &indata) < 0)
-        goto cleanup;
+        return -1;
 
     json = virJSONValueFromString(indata);
     if (!json) {
         VIR_TEST_VERBOSE("Fail to parse %s\n", info->name);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
     switch (virJSONValueObjectRemoveKey(json, "name", &name)) {
@@ -95,45 +88,43 @@ testJSONAddRemove(const void *data)
         if (!info->pass) {
             VIR_TEST_VERBOSE("should not remove from non-object %s\n",
                              info->name);
-            goto cleanup;
+            return -1;
         }
         break;
     case -1:
         if (!info->pass)
-            ret = 0;
+            return 0;
         else
             VIR_TEST_VERBOSE("Fail to recognize non-object %s\n", info->name);
-        goto cleanup;
+        return -1;
     default:
         VIR_TEST_VERBOSE("unexpected result when removing from %s\n",
                          info->name);
-        goto cleanup;
+        return -1;
     }
     if (STRNEQ_NULLABLE(virJSONValueGetString(name), "sample")) {
         VIR_TEST_VERBOSE("unexpected value after removing name: %s\n",
                          NULLSTR(virJSONValueGetString(name)));
-        goto cleanup;
+        return -1;
     }
     if (virJSONValueObjectRemoveKey(json, "name", NULL)) {
         VIR_TEST_VERBOSE("%s",
                          "unexpected success when removing missing key\n");
-        goto cleanup;
+        return -1;
     }
     if (virJSONValueObjectAppendString(json, "newname", "foo") < 0) {
         VIR_TEST_VERBOSE("%s", "unexpected failure adding new key\n");
-        goto cleanup;
+        return -1;
     }
     if (!(actual = virJSONValueToString(json, false))) {
         VIR_TEST_VERBOSE("%s", "failed to stringize result\n");
-        goto cleanup;
+        return -1;
     }
+
     if (virTestCompareToFile(actual, outfile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -147,13 +138,11 @@ testJSONLookup(const void *data)
     int rc;
     int number;
     const char *str;
-    int ret = -1;
 
     json = virJSONValueFromString(info->doc);
     if (!json) {
         VIR_TEST_VERBOSE("Fail to parse %s\n", info->doc);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
     value = virJSONValueObjectGetObject(json, "a");
@@ -161,21 +150,21 @@ testJSONLookup(const void *data)
         if (!info->pass) {
             VIR_TEST_VERBOSE("lookup for 'a' in '%s' should have failed\n",
                              info->doc);
-            goto cleanup;
+            return -1;
         } else {
             result = virJSONValueToString(value, false);
             if (STRNEQ_NULLABLE(result, "{}")) {
                 VIR_TEST_VERBOSE("lookup for 'a' in '%s' found '%s' but "
                                  "should have found '{}'\n",
                                  info->doc, NULLSTR(result));
-                goto cleanup;
+                return -1;
             }
             VIR_FREE(result);
         }
     } else if (info->pass) {
         VIR_TEST_VERBOSE("lookup for 'a' in '%s' should have succeeded\n",
                          info->doc);
-        goto cleanup;
+        return -1;
     }
 
     number = 2;
@@ -184,17 +173,17 @@ testJSONLookup(const void *data)
         if (!info->pass) {
             VIR_TEST_VERBOSE("lookup for 'b' in '%s' should have failed\n",
                              info->doc);
-            goto cleanup;
+            return -1;
         } else if (number != 1) {
             VIR_TEST_VERBOSE("lookup for 'b' in '%s' found %d but "
                              "should have found 1\n",
                              info->doc, number);
-            goto cleanup;
+            return -1;
         }
     } else if (info->pass) {
         VIR_TEST_VERBOSE("lookup for 'b' in '%s' should have succeeded\n",
                          info->doc);
-        goto cleanup;
+        return -1;
     }
 
     str = virJSONValueObjectGetString(json, "c");
@@ -202,16 +191,16 @@ testJSONLookup(const void *data)
         if (!info->pass) {
             VIR_TEST_VERBOSE("lookup for 'c' in '%s' should have failed\n",
                              info->doc);
-            goto cleanup;
+            return -1;
         } else if (STRNEQ(str, "str")) {
             VIR_TEST_VERBOSE("lookup for 'c' in '%s' found '%s' but "
                              "should have found 'str'\n", info->doc, str);
-                goto cleanup;
+                return -1;
         }
     } else if (info->pass) {
         VIR_TEST_VERBOSE("lookup for 'c' in '%s' should have succeeded\n",
                          info->doc);
-        goto cleanup;
+        return -1;
     }
 
     value = virJSONValueObjectGetArray(json, "d");
@@ -219,27 +208,24 @@ testJSONLookup(const void *data)
         if (!info->pass) {
             VIR_TEST_VERBOSE("lookup for 'd' in '%s' should have failed\n",
                              info->doc);
-            goto cleanup;
+            return -1;
         } else {
             result = virJSONValueToString(value, false);
             if (STRNEQ_NULLABLE(result, "[]")) {
                 VIR_TEST_VERBOSE("lookup for 'd' in '%s' found '%s' but "
                                  "should have found '[]'\n",
                                  info->doc, NULLSTR(result));
-                goto cleanup;
+                return -1;
             }
             VIR_FREE(result);
         }
     } else if (info->pass) {
         VIR_TEST_VERBOSE("lookup for 'd' in '%s' should have succeeded\n",
                          info->doc);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -251,36 +237,35 @@ testJSONCopy(const void *data)
     VIR_AUTOPTR(virJSONValue) jsonCopy = NULL;
     VIR_AUTOFREE(char *) result = NULL;
     VIR_AUTOFREE(char *) resultCopy = NULL;
-    int ret = -1;
 
     json = virJSONValueFromString(info->doc);
     if (!json) {
         VIR_TEST_VERBOSE("Failed to parse %s\n", info->doc);
-        goto cleanup;
+        return -1;
     }
 
     jsonCopy = virJSONValueCopy(json);
     if (!jsonCopy) {
         VIR_TEST_VERBOSE("Failed to copy JSON data\n");
-        goto cleanup;
+        return -1;
     }
 
     result = virJSONValueToString(json, false);
     if (!result) {
         VIR_TEST_VERBOSE("Failed to format original JSON data\n");
-        goto cleanup;
+        return -1;
     }
 
     resultCopy = virJSONValueToString(json, false);
     if (!resultCopy) {
         VIR_TEST_VERBOSE("Failed to format copied JSON data\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(result, resultCopy)) {
         if (virTestGetVerbose())
             virTestDifference(stderr, result, resultCopy);
-        goto cleanup;
+        return -1;
     }
 
     VIR_FREE(result);
@@ -289,24 +274,22 @@ testJSONCopy(const void *data)
     result = virJSONValueToString(json, true);
     if (!result) {
         VIR_TEST_VERBOSE("Failed to format original JSON data\n");
-        goto cleanup;
+        return -1;
     }
 
     resultCopy = virJSONValueToString(json, true);
     if (!resultCopy) {
         VIR_TEST_VERBOSE("Failed to format copied JSON data\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(result, resultCopy)) {
         if (virTestGetVerbose())
             virTestDifference(stderr, result, resultCopy);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -320,43 +303,38 @@ testJSONDeflatten(const void *data)
     VIR_AUTOFREE(char *) indata = NULL;
     VIR_AUTOFREE(char *) outfile = NULL;
     VIR_AUTOFREE(char *) actual = NULL;
-    int ret = -1;
 
     if (virAsprintf(&infile, "%s/virjsondata/deflatten-%s-in.json",
                     abs_srcdir, info->name) < 0 ||
         virAsprintf(&outfile, "%s/virjsondata/deflatten-%s-out.json",
                     abs_srcdir, info->name) < 0)
-        goto cleanup;
+        return -1;
 
     if (virTestLoadFile(infile, &indata) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(injson = virJSONValueFromString(indata)))
-        goto cleanup;
+        return -1;
 
     if ((deflattened = virJSONValueObjectDeflatten(injson))) {
         if (!info->pass) {
             VIR_TEST_VERBOSE("%s: deflattening should have failed\n", info->name);
-            goto cleanup;
+            return -1;
         }
     } else {
         if (!info->pass)
-            ret = 0;
+            return 0;
 
-        goto cleanup;
+        return -1;
     }
 
     if (!(actual = virJSONValueToString(deflattened, true)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(actual, outfile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-
-    return ret;
+    return 0;
 }
 
 
@@ -369,50 +347,46 @@ testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
     VIR_AUTOFREE(char *) neststr = NULL;
     VIR_AUTOFREE(char *) result = NULL;
     const char *parsednestedstr;
-    int ret = -1;
 
     if (virJSONValueObjectCreate(&nestjson,
                                  "s:stringkey", "stringvalue",
                                  "i:numberkey", 1234,
                                  "b:booleankey", false, NULL) < 0) {
         VIR_TEST_VERBOSE("failed to create nested json object");
-        goto cleanup;
+        return -1;
     }
 
     if (!(neststr = virJSONValueToString(nestjson, false))) {
         VIR_TEST_VERBOSE("failed to format nested json object");
-        goto cleanup;
+        return -1;
     }
 
     if (virJSONValueObjectCreate(&json, "s:test", neststr, NULL) < 0) {
         VIR_TEST_VERBOSE("Failed to create json object");
-        goto cleanup;
+        return -1;
     }
 
     if (!(result = virJSONValueToString(json, false))) {
         VIR_TEST_VERBOSE("Failed to format json object");
-        goto cleanup;
+        return -1;
     }
 
     if (!(parsejson = virJSONValueFromString(result))) {
         VIR_TEST_VERBOSE("Failed to parse JSON with nested JSON in string");
-        goto cleanup;
+        return -1;
     }
 
     if (!(parsednestedstr = virJSONValueObjectGetString(parsejson, "test"))) {
         VIR_TEST_VERBOSE("Failed to retrieve string containing nested json");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(parsednestedstr, neststr)) {
         virTestDifference(stderr, neststr, parsednestedstr);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -423,7 +397,6 @@ testJSONObjectFormatSteal(const void *opaque ATTRIBUTE_UNUSED)
     VIR_AUTOPTR(virJSONValue) a2 = NULL;
     VIR_AUTOPTR(virJSONValue) t1 = NULL;
     VIR_AUTOPTR(virJSONValue) t2 = NULL;
-    int ret = -1;
 
     if (!(a1 = virJSONValueNewString("test")) ||
         !(a2 = virJSONValueNewString("test"))) {
@@ -432,28 +405,25 @@ testJSONObjectFormatSteal(const void *opaque ATTRIBUTE_UNUSED)
 
     if (virJSONValueObjectCreate(&t1, "a:t", &a1, "s:f", NULL, NULL) != -1) {
         VIR_TEST_VERBOSE("virJSONValueObjectCreate(t1) should have failed\n");
-        goto cleanup;
+        return -1;
     }
 
     if (a1) {
         VIR_TEST_VERBOSE("appended object a1 was not consumed\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virJSONValueObjectCreate(&t2, "s:f", NULL, "a:t", &a1, NULL) != -1) {
         VIR_TEST_VERBOSE("virJSONValueObjectCreate(t2) should have failed\n");
-        goto cleanup;
+        return -1;
     }
 
     if (!a2) {
         VIR_TEST_VERBOSE("appended object a2 was consumed\n");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
