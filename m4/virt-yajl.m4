@@ -25,7 +25,6 @@ AC_DEFUN([LIBVIRT_CHECK_YAJL],[
   dnl YAJL JSON library http://lloyd.github.com/yajl/
 
   LIBVIRT_CHECK_PKG([YAJL], [yajl], [2.0.3])
-  AC_DEFINE_UNQUOTED([WITH_YAJL2], 1, [whether YAJL2 is enabled])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_YAJL],[
