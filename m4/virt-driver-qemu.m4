@@ -29,7 +29,7 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_QEMU], [
   dnl There is no way qemu driver will work without JSON support
   AC_REQUIRE([LIBVIRT_CHECK_YAJL])
   if test "$with_qemu:$with_yajl" = "yes:no"; then
-    AC_MSG_ERROR([YAJL or YAJL2 is required to build QEMU driver])
+    AC_MSG_ERROR([YAJL 2 is required to build QEMU driver])
   fi
   if test "$with_qemu" = "check"; then
     with_qemu=$with_yajl

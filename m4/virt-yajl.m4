@@ -24,10 +24,8 @@ AC_DEFUN([LIBVIRT_ARG_YAJL],[
 AC_DEFUN([LIBVIRT_CHECK_YAJL],[
   dnl YAJL JSON library http://lloyd.github.com/yajl/
 
-  LIBVIRT_CHECK_LIB_ALT([YAJL], [yajl],
-                        [yajl_parse_complete], [yajl/yajl_common.h],
-                        [YAJL2], [yajl],
-                        [yajl_tree_parse], [yajl/yajl_common.h])
+  LIBVIRT_CHECK_PKG([YAJL], [yajl], [2.0.3])
+  AC_DEFINE_UNQUOTED([WITH_YAJL2], 1, [whether YAJL2 is enabled])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_YAJL],[
