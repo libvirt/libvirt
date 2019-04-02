@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <inttypes.h>
 #include <libvirt/libvirt-admin.h>
 
 static const char *
@@ -66,11 +67,11 @@ exampleGetTypedParamValue(virTypedParameterPtr item)
         break;
 
     case VIR_TYPED_PARAM_LLONG:
-        ret = asprintf(&str, "%lld", item->value.l);
+        ret = asprintf(&str, "%" PRId64, (int64_t)item->value.l);
         break;
 
     case VIR_TYPED_PARAM_ULLONG:
-        ret = asprintf(&str, "%llu", item->value.ul);
+        ret = asprintf(&str, "%" PRIu64, (uint64_t)item->value.ul);
         break;
 
     case VIR_TYPED_PARAM_DOUBLE:
@@ -143,7 +144,7 @@ int main(int argc, char **argv)
     if (!(timestr = exampleGetTimeStr(virAdmClientGetTimestamp(clnt))))
         goto cleanup;
 
-    printf("%-15s: %llu\n", "id", virAdmClientGetID(clnt));
+    printf("%-15s: %" PRIu64 "\n", "id", (uint64_t)virAdmClientGetID(clnt));
     printf("%-15s: %s\n", "connection_time", timestr);
     printf("%-15s: %s\n", "transport",
              exampleTransportToString(virAdmClientGetTransport(clnt)));

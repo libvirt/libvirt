@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <inttypes.h>
 #include <libvirt/libvirt-admin.h>
 
 static const char *
@@ -96,7 +97,7 @@ int main(int argc, char **argv)
                 exampleGetTimeStr(virAdmClientGetTimestamp(client))))
             goto cleanup;
 
-        printf(" %-5llu %-15s %-15s\n", id,
+        printf(" %-5" PRIu64 " %-15s %-15s\n", (uint64_t)id,
                exampleTransportToString(transport), timestr);
         free(timestr);
     }

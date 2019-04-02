@@ -29,6 +29,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <inttypes.h>
 
 static bool debug;
 static bool run_top;
@@ -226,8 +227,11 @@ print_cpu_usage(const char *dom_name,
             return;
         }
 
-        DEBUG("now_params=%llu then_params=%llu now=%llu then=%llu",
-              now_params[pos].value.ul, then_params[pos].value.ul, now, then);
+        DEBUG("now_params=%" PRIu64 " then_params=%" PRIu64
+              " now=%" PRIu64 " then=%" PRIu64,
+              (uint64_t)now_params[pos].value.ul,
+              (uint64_t)then_params[pos].value.ul,
+              (uint64_t)now, (uint64_t)then);
 
         /* @now_params and @then_params are in nanoseconds, @now and @then are
          * in microseconds. In ideal world, we would translate them both into
