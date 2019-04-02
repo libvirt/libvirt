@@ -1083,6 +1083,19 @@ sc_prohibit_class:
 	halt='use klass instead of class or _class' \
 	  $(_sc_search_regexp)
 
+# The dirent "d_type" field is non-portable and even when it
+# exists some filesystems will only ever return DT_UNKNOWN.
+# This field should only be used by code which is exclusively
+# run platforms supporting "d_type" and must expect DT_UNKNOWN.
+# We blacklist it to discourage accidental usage which has
+# happened many times. Add an exclude rule if it is genuinely
+# needed and the above restrictions are acceptable.
+sc_prohibit_dirent_d_type:
+	@prohibit='(->|\.)d_type' \
+	in_vc_files='\.[chx]$$' \
+	halt='do not use the d_type field in "struct dirent"' \
+	  $(_sc_search_regexp)
+
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
@@ -1337,3 +1350,6 @@ exclude_file_name_regexp--sc_prohibit_readdir = \
 
 exclude_file_name_regexp--sc_prohibit_cross_inclusion = \
   ^(src/util/virclosecallbacks\.h|src/util/virhostdev\.h)$$
+
+exclude_file_name_regexp--sc_prohibit_dirent_d_type = \
+  ^(src/util/vircgroup.c)$
