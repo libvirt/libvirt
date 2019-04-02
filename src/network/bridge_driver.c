@@ -4832,17 +4832,6 @@ networkNotifyActualDevice(virNetworkPtr net,
         goto error;
     }
 
-    /* if we're restarting libvirtd after an upgrade from a version
-     * that didn't save bridge name in actualNetDef for
-     * actualType==network, we need to copy it in so that it will be
-     * available in all cases
-     */
-    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        !iface->data.network.actual->data.bridge.brname &&
-        (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
-                    netdef->bridge) < 0))
-            goto error;
-
     /* see if we're connected to the correct bridge */
     if (netdef->bridge) {
         bool useOVS = false;
