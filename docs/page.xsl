@@ -155,11 +155,10 @@
             </ul>
           </div>
           <div id="search">
-            <form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
-              <div>
-                <input name="query" type="text" size="12" value=""/>
-                <input name="submit" type="submit" value="Go"/>
-              </div>
+            <form action="https://www.google.com/search" enctype="application/x-www-form-urlencoded" method="get">
+              <input name="sitesearch" type="hidden" value="libvirt.org"/>
+              <input name="q" type="text" size="12" value=""/>
+              <input type="submit" value="Go"/>
             </form>
           </div>
         </div>
