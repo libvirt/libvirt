@@ -1941,16 +1941,14 @@ virJSONValueToBuffer(virJSONValuePtr object,
     VIR_DEBUG("object=%p", object);
 
     g = yajl_gen_alloc(NULL);
-    if (g) {
-        yajl_gen_config(g, yajl_gen_beautify, pretty ? 1 : 0);
-        yajl_gen_config(g, yajl_gen_indent_string, pretty ? "  " : " ");
-        yajl_gen_config(g, yajl_gen_validate_utf8, 1);
-    }
     if (!g) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to create JSON formatter"));
         goto cleanup;
     }
+    yajl_gen_config(g, yajl_gen_beautify, pretty ? 1 : 0);
+    yajl_gen_config(g, yajl_gen_indent_string, pretty ? "  " : " ");
+    yajl_gen_config(g, yajl_gen_validate_utf8, 1);
 
     if (virJSONValueToStringOne(object, g) < 0) {
         virReportOOMError();
