@@ -3282,9 +3282,6 @@ virSecuritySELinuxSetFileLabels(virSecurityManagerPtr mgr,
         return -1;
 
     while ((ret = virDirRead(dir, &ent, path)) > 0) {
-        if (ent->d_type != DT_REG)
-            continue;
-
         if (virAsprintf(&filename, "%s/%s", path, ent->d_name) < 0) {
             ret = -1;
             break;
@@ -3334,9 +3331,6 @@ virSecuritySELinuxRestoreFileLabels(virSecurityManagerPtr mgr,
         return -1;
 
     while ((ret = virDirRead(dir, &ent, path)) > 0) {
-        if (ent->d_type != DT_REG)
-            continue;
-
         if (virAsprintf(&filename, "%s/%s", path, ent->d_name) < 0) {
             ret = -1;
             break;
