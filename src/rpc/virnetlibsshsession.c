@@ -606,25 +606,22 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
                                  virNetLibsshAuthMethodPtr priv)
 {
     const char *errmsg;
-    int ret = -1;
+    int rc = SSH_AUTH_ERROR;
 
     VIR_DEBUG("sess=%p", sess);
 
     if (priv->password) {
         /* tunelled password authentication */
-        if ((ret = ssh_userauth_password(sess->session, NULL,
-                                         priv->password)) == 0) {
-            ret = SSH_AUTH_SUCCESS;
-            goto cleanup;
-        }
+        if ((rc = ssh_userauth_password(sess->session, NULL,
+                                        priv->password)) == 0)
+            return SSH_AUTH_SUCCESS;
     } else {
         /* password authentication with interactive password request */
         if (!sess->cred || !sess->cred->cb) {
             virReportError(VIR_ERR_LIBSSH, "%s",
                            _("Can't perform authentication: "
                              "Authentication callback not provided"));
-            ret = SSH_AUTH_ERROR;
-            goto cleanup;
+            return SSH_AUTH_ERROR;
         }
 
         /* Try the authenticating the set amount of times. The server breaks the
@@ -634,19 +631,15 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
 
             if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
                                                     "ssh", sess->username,
-                                                    sess->hostname))) {
-                ret = SSH_AUTH_ERROR;
-                goto cleanup;
-            }
+                                                    sess->hostname)))
+                return SSH_AUTH_ERROR;
 
             /* tunelled password authentication */
-            if ((ret = ssh_userauth_password(sess->session, NULL,
-                                             password)) == 0) {
-                ret = SSH_AUTH_SUCCESS;
-                goto cleanup;
-            }
+            if ((rc = ssh_userauth_password(sess->session, NULL,
+                                            password)) == 0)
+                return SSH_AUTH_SUCCESS;
 
-            if (ret != SSH_AUTH_DENIED)
+            if (rc != SSH_AUTH_DENIED)
                 break;
         }
     }
@@ -655,9 +648,7 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
     errmsg = ssh_get_error(sess->session);
     virReportError(VIR_ERR_AUTH_FAILED,
                    _("authentication failed: %s"), errmsg);
-
- cleanup:
-    return ret;
+    return rc;
 }
 
 /* perform keyboard interactive authentication
