@@ -34,16 +34,8 @@
 # include <yajl/yajl_gen.h>
 # include <yajl/yajl_parse.h>
 
-# ifdef WITH_YAJL2
-#  define yajl_size_t size_t
-#  define VIR_YAJL_STATUS_OK(status) ((status) == yajl_status_ok)
-# else
-#  define yajl_size_t unsigned int
-#  define yajl_complete_parse yajl_parse_complete
-#  define VIR_YAJL_STATUS_OK(status) \
-    ((status) == yajl_status_ok || (status) == yajl_status_insufficient_data)
-# endif
-
+# define yajl_size_t size_t
+# define VIR_YAJL_STATUS_OK(status) ((status) == yajl_status_ok)
 #endif
 
 /* XXX fixme */
@@ -1820,41 +1812,18 @@ virJSONValueFromString(const char *jsonstring)
     virJSONValuePtr ret = NULL;
     int rc;
     size_t len = strlen(jsonstring);
-# ifndef WITH_YAJL2
-    yajl_parser_config cfg = { 0, 1 }; /* Match yajl 2 default behavior */
-    VIR_AUTOPTR(virJSONValue) tmp = NULL;
-# endif
 
     VIR_DEBUG("string=%s", jsonstring);
 
-# ifdef WITH_YAJL2
     hand = yajl_alloc(&parserCallbacks, NULL, &parser);
-# else
-    hand = yajl_alloc(&parserCallbacks, &cfg, NULL, &parser);
-# endif
     if (!hand) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to create JSON parser"));
         goto cleanup;
     }
 
-    /* Yajl 2 is nice enough to default to rejecting trailing garbage.
-     * Yajl 1.0.12 has yajl_get_bytes_consumed to make that detection
-     * simpler.  But we're stuck with yajl 1.0.7 on RHEL 6, which
-     * happily quits parsing at the end of a valid JSON construct,
-     * with no visibility into how much more input remains.  Wrapping
-     * things in an array forces yajl to confess the truth.  */
-# ifdef WITH_YAJL2
+    /* Yajl 2 is nice enough to default to rejecting trailing garbage. */
     rc = yajl_parse(hand, (const unsigned char *)jsonstring, len);
-# else
-    rc = yajl_parse(hand, (const unsigned char *)"[", 1);
-    parser.wrap = 1;
-    if (VIR_YAJL_STATUS_OK(rc))
-        rc = yajl_parse(hand, (const unsigned char *)jsonstring, len);
-    parser.wrap = 0;
-    if (VIR_YAJL_STATUS_OK(rc))
-        rc = yajl_parse(hand, (const unsigned char *)"]", 1);
-# endif
     if (!VIR_YAJL_STATUS_OK(rc) ||
         yajl_complete_parse(hand) != yajl_status_ok) {
         unsigned char *errstr = yajl_get_error(hand, 1,
@@ -1876,17 +1845,6 @@ virJSONValueFromString(const char *jsonstring)
         virJSONValueFree(parser.head);
     } else {
         ret = parser.head;
-# ifndef WITH_YAJL2
-        /* Undo the array wrapping above */
-        tmp = ret;
-        ret = NULL;
-        if (virJSONValueArraySize(tmp) > 1)
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse json %s: too many items present"),
-                           jsonstring);
-        else
-            ret = virJSONValueArraySteal(tmp, 0);
-# endif
     }
 
  cleanup:
@@ -1978,23 +1936,16 @@ virJSONValueToBuffer(virJSONValuePtr object,
     yajl_gen g;
     const unsigned char *str;
     yajl_size_t len;
-# ifndef WITH_YAJL2
-    yajl_gen_config conf = { pretty ? 1 : 0, pretty ? "  " : " "};
-# endif
     int ret = -1;
 
     VIR_DEBUG("object=%p", object);
 
-# ifdef WITH_YAJL2
     g = yajl_gen_alloc(NULL);
     if (g) {
         yajl_gen_config(g, yajl_gen_beautify, pretty ? 1 : 0);
         yajl_gen_config(g, yajl_gen_indent_string, pretty ? "  " : " ");
         yajl_gen_config(g, yajl_gen_validate_utf8, 1);
     }
-# else
-    g = yajl_gen_alloc(&conf, NULL);
-# endif
     if (!g) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to create JSON formatter"));
