@@ -186,8 +186,7 @@ fetch_domains(virConnectPtr conn)
 }
 
 static void
-print_cpu_usage(const char *dom_name,
-                size_t cpu,
+print_cpu_usage(size_t cpu,
                 size_t ncpus,
                 unsigned long long then,
                 virTypedParameterPtr then_params,
@@ -333,7 +332,7 @@ do_top(virConnectPtr conn,
             goto cleanup;
         }
 
-        print_cpu_usage(dom_name, 0, max_id,
+        print_cpu_usage(0, max_id,
                         then.tv_sec * 1000000 + then.tv_usec,
                         then_params, then_nparams,
                         now.tv_sec * 1000000 + now.tv_usec,
