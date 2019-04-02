@@ -23,27 +23,36 @@ AC_DEFUN([LIBVIRT_ARG_READLINE],[
 
 AC_DEFUN([LIBVIRT_CHECK_READLINE],[
 
-  # This function is present in all reasonable (5.0+) readline versions;
-  # however, the macOS base system contains a library called libedit which
-  # takes over the readline name despite lacking many of its features. We
-  # want to make sure we only enable readline support when linking against
-  # the actual readline library, and the availability of this specific
-  # functions is as good a witness for that fact as any.
-  AC_CHECK_DECLS([rl_completion_quote_character],
-                 [], [],
-                 [[#include <stdio.h>
-                   #include <readline/readline.h>]])
+  # We have to check for readline.pc's presence beforehand because for
+  # the longest time the library didn't ship a .pc file at all
+  PKG_CHECK_EXISTS([readline], [use_pkgconfig=1], [use_pkgconfig=0])
 
-  if test "$ac_cv_have_decl_rl_completion_quote_character" = "no" ; then
-    if test "$with_readline" = "yes" ; then
-      AC_MSG_ERROR([readline is missing rl_completion_quote_character])
-    else
-      with_readline=no;
+  if test $use_pkgconfig = 1; then
+    # readline 7.0 is the first version which includes pkg-config support
+    LIBVIRT_CHECK_PKG([READLINE], [readline], [7.0])
+  else
+    # This function is present in all reasonable (5.0+) readline versions;
+    # however, the macOS base system contains a library called libedit which
+    # takes over the readline name despite lacking many of its features. We
+    # want to make sure we only enable readline support when linking against
+    # the actual readline library, and the availability of this specific
+    # functions is as good a witness for that fact as any.
+    AC_CHECK_DECLS([rl_completion_quote_character],
+                   [], [],
+                   [[#include <stdio.h>
+                     #include <readline/readline.h>]])
+
+    if test "$ac_cv_have_decl_rl_completion_quote_character" = "no" ; then
+      if test "$with_readline" = "yes" ; then
+        AC_MSG_ERROR([readline is missing rl_completion_quote_character])
+      else
+        with_readline=no;
+      fi
     fi
-  fi
 
-  # The normal library check...
-  LIBVIRT_CHECK_LIB([READLINE], [readline], [readline], [readline/readline.h])
+    # The normal library check...
+    LIBVIRT_CHECK_LIB([READLINE], [readline], [readline], [readline/readline.h])
+  fi
 
   # We need this to avoid compilation issues with modern compilers.
   # See 9ea3424a178 for a more detailed explanation
