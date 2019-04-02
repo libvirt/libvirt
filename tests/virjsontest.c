@@ -36,11 +36,11 @@ testJSONFromString(const void *data)
             ret = 0;
             goto cleanup;
         }
-    }
-
-    if (!info->pass) {
-        VIR_TEST_VERBOSE("Should not have parsed %s\n", info->doc);
-        goto cleanup;
+    } else {
+        if (!info->pass) {
+            VIR_TEST_VERBOSE("Should not have parsed %s\n", info->name);
+            goto cleanup;
+        }
     }
 
     VIR_TEST_DEBUG("Parsed %s\n", info->doc);
