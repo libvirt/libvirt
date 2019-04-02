@@ -13,40 +13,39 @@
 
 /**
  * getDomainInfo:
- * @id: the id of the domain
+ * @name: the name of the domain
  *
  * extract the domain 0 information
  */
 static void
-getDomainInfo(int id)
+getDomainInfo(const char *uri, const char *name)
 {
     virConnectPtr conn = NULL; /* the hypervisor connection */
     virDomainPtr dom = NULL;   /* the domain being checked */
     virDomainInfo info;        /* the information being fetched */
     int ret;
 
-    /* NULL means connect to local Xen hypervisor */
-    conn = virConnectOpenReadOnly(NULL);
+    conn = virConnectOpenReadOnly(uri);
     if (conn == NULL) {
         fprintf(stderr, "Failed to connect to hypervisor\n");
         goto error;
     }
 
-    /* Find the domain of the given id */
-    dom = virDomainLookupByID(conn, id);
+    /* Find the domain of the given name */
+    dom = virDomainLookupByName(conn, name);
     if (dom == NULL) {
-        fprintf(stderr, "Failed to find Domain %d\n", id);
+        fprintf(stderr, "Failed to find Domain %s\n", name);
         goto error;
     }
 
     /* Get the information */
     ret = virDomainGetInfo(dom, &info);
     if (ret < 0) {
-        fprintf(stderr, "Failed to get information for Domain %d\n", id);
+        fprintf(stderr, "Failed to get information for Domain %s\n", name);
         goto error;
     }
 
-    printf("Domains %d: %d CPUs\n", id, info.nrVirtCpu);
+    printf("Domain %s: %d CPUs\n", name, info.nrVirtCpu);
 
  error:
     if (dom != NULL)
@@ -55,9 +54,13 @@ getDomainInfo(int id)
         virConnectClose(conn);
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    getDomainInfo(0);
+    if (argc != 3) {
+        fprintf(stderr, "syntax: %s: URI NAME\n", argv[0]);
+        return 1;
+    }
+    getDomainInfo(argv[1], argv[2]);
 
     return 0;
 }
