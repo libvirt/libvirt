@@ -28,7 +28,8 @@ EXTRA_DIST = \
 
 
 AM_CPPFLAGS = \
-	-I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir)
+	-I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir) \
+	$(WARN_CFLAGS)
 LDADD = $(STATIC_BINARIES) $(WARN_CFLAGS) \
 	$(top_builddir)/src/libvirt.la \
 	$(top_builddir)/src/libvirt-admin.la
