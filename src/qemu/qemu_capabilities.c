@@ -4392,17 +4392,13 @@ int
 virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps,
                              qemuMonitorPtr mon)
 {
-    int ret = -1;
-
     if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon, true) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
