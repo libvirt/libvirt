@@ -2945,32 +2945,15 @@ vshReadlineInit(vshControl *ctl)
     /* Opaque data for autocomplete callbacks. */
     autoCompleteOpaque = ctl;
 
-    /* Allow conditional parsing of the ~/.inputrc file.
-     * Work around ancient readline 4.1 (hello Mac OS X),
-     * which declared it as 'char *' instead of 'const char *'.
-     */
-# if defined(RL_READLINE_VERSION) && RL_READLINE_VERSION > 0x0402
     rl_readline_name = ctl->name;
-# else
-    rl_readline_name = (char *) ctl->name;
-# endif
 
     /* Tell the completer that we want a crack first. */
     rl_attempted_completion_function = vshReadlineCompletion;
 
-# if defined(RL_READLINE_VERSION) && RL_READLINE_VERSION > 0x0402
     rl_basic_word_break_characters = break_characters;
-# else
-    rl_basic_word_break_characters = (char *) break_characters;
-# endif
 
-# if defined(RL_READLINE_VERSION) && RL_READLINE_VERSION > 0x0402
     rl_completer_quote_characters = quote_characters;
     rl_char_is_quoted_p = vshReadlineCharIsQuoted;
-# else
-    rl_completer_quote_characters = (char *) quote_characters;
-    rl_char_is_quoted_p = (Function *) vshReadlineCharIsQuoted;
-# endif
 
     if (virAsprintf(&histsize_env, "%s_HISTSIZE", ctl->env_prefix) < 0)
         goto cleanup;
