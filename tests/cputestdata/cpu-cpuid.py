@@ -85,17 +85,20 @@ def parseCPUData(path):
     return cpuData
 
 
-def parseMapFeature(data):
-    cpuid = {"type": "cpuid"}
-    for reg in ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]:
-        attr = "@%s" % reg
+def parseMapFeature(fType, data):
+    ret = {"type": fType}
 
+    if fType == "cpuid":
+        fields = ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]
+
+    for field in fields:
+        attr = "@%s" % field
         if attr in data:
-            cpuid[reg] = int(data[attr], 0)
+            ret[field] = int(data[attr], 0)
         else:
-            cpuid[reg] = 0
+            ret[field] = 0
 
-    return cpuid
+    return ret
 
 
 def parseMap():
@@ -106,8 +109,9 @@ def parseMap():
 
     cpuMap = {}
     for feature in data["cpus"]["feature"]:
-        if "cpuid" in feature:
-            cpuMap[feature["@name"]] = parseMapFeature(feature["cpuid"])
+        for fType in ["cpuid"]:
+            if fType in feature:
+                cpuMap[feature["@name"]] = parseMapFeature(fType, feature[fType])
 
     return cpuMap
 
