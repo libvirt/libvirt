@@ -5,7 +5,7 @@ import sys
 import json
 import xmltodict
 
-def checkFeature(cpuid, feature):
+def checkCPUIDFeature(cpuData, feature):
     eax_in = feature["eax_in"]
     ecx_in = feature["ecx_in"]
     eax = feature["eax"]
@@ -13,6 +13,10 @@ def checkFeature(cpuid, feature):
     ecx = feature["ecx"]
     edx = feature["edx"]
 
+    if "cpuid" not in cpuData:
+        return False
+
+    cpuid = cpuData["cpuid"]
     if eax_in not in cpuid or ecx_in not in cpuid[eax_in]:
         return False
 
@@ -23,7 +27,18 @@ def checkFeature(cpuid, feature):
             (edx > 0 and leaf["edx"] & edx == edx))
 
 
-def addFeature(cpuid, feature):
+def checkFeature(cpuData, feature):
+    if feature["type"] == "cpuid":
+        return checkCPUIDFeature(cpuData, feature)
+
+    return False
+
+
+def addCPUIDFeature(cpuData, feature):
+    if "cpuid" not in cpuData:
+        cpuData["cpuid"] = {}
+    cpuid = cpuData["cpuid"]
+
     if feature["eax_in"] not in cpuid:
         cpuid[feature["eax_in"]] = {}
     leaf = cpuid[feature["eax_in"]]
@@ -34,6 +49,11 @@ def addFeature(cpuid, feature):
 
     for reg in ["eax", "ebx", "ecx", "edx"]:
         leaf[reg] |= feature[reg]
+
+
+def addFeature(cpuData, feature):
+    if feature["type"] == "cpuid":
+        addCPUIDFeature(cpuData, feature)
 
 
 def parseQemu(path, features):
@@ -54,7 +74,7 @@ def parseCPUData(path):
         data = xmltodict.parse(f)
 
     for leaf in data["cpudata"]["cpuid"]:
-        feature = {}
+        feature = {"type": "cpuid"}
         feature["eax_in"] = int(leaf["@eax_in"], 0)
         feature["ecx_in"] = int(leaf["@ecx_in"], 0)
         for reg in ["eax", "ebx", "ecx", "edx"]:
@@ -66,7 +86,7 @@ def parseCPUData(path):
 
 
 def parseMapFeature(data):
-    cpuid = {}
+    cpuid = {"type": "cpuid"}
     for reg in ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]:
         attr = "@%s" % reg
 
@@ -92,11 +112,13 @@ def parseMap():
     return cpuMap
 
 
-def formatCPUData(cpuid, path, comment):
+def formatCPUData(cpuData, path, comment):
     print(path)
     with open(path, "w") as f:
         f.write("<!-- " + comment + " -->\n")
         f.write("<cpudata arch='x86'>\n")
+
+        cpuid = cpuData["cpuid"]
         for eax_in in sorted(cpuid.keys()):
             for ecx_in in sorted(cpuid[eax_in].keys()):
                 leaf = cpuid[eax_in][ecx_in]
@@ -119,8 +141,8 @@ def diff(cpuMap, path):
     cpuData = parseCPUData(cpuDataFile)
     qemu = parseQemu(jsonFile, cpuMap)
 
-    enabled = {}
-    disabled = {}
+    enabled = {"cpuid": {}}
+    disabled = {"cpuid": {}}
     for feature in cpuMap.values():
         if checkFeature(qemu, feature):
             addFeature(enabled, feature)
