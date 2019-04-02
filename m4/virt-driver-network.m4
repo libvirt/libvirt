@@ -27,9 +27,9 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_NETWORK], [
   AC_REQUIRE([LIBVIRT_DRIVER_CHECK_LXC])
 
   dnl there's no use compiling the network driver without the libvirt
-  dnl daemon, nor compiling it for MacOS X, where it breaks the compile
+  dnl daemon, nor compiling it for macOS, where it breaks the compile
 
-  if test "$with_libvirtd" = "no" || test "$with_osx" = "yes"; then
+  if test "$with_libvirtd" = "no" || test "$with_macos" = "yes"; then
     with_network=no
   fi
 

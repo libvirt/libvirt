@@ -180,13 +180,13 @@ want_ifconfig=no
 dnl Make some notes about which OS we're compiling for, as the lxc and qemu
 dnl drivers require linux headers, and storage_mpath, dtrace, and nwfilter
 dnl are also linux specific.  The "network" and storage_fs drivers are known
-dnl to not work on MacOS X presently, so we also make a note if compiling
+dnl to not work on macOS presently, so we also make a note if compiling
 dnl for that
 
-with_linux=no with_osx=no with_freebsd=no with_win=no with_cygwin=no
+with_linux=no with_macos=no with_freebsd=no with_win=no with_cygwin=no
 case $host in
   *-*-linux*) with_linux=yes ;;
-  *-*-darwin*) with_osx=yes ;;
+  *-*-darwin*) with_macos=yes ;;
   *-*-freebsd*) with_freebsd=yes ;;
   *-*-mingw* | *-*-msvc* ) with_win=yes ;;
   *-*-cygwin*) with_cygwin=yes ;;
@@ -627,9 +627,9 @@ if test "$with_libvirtd" = "no"; then
   with_storage_vstorage=no
 fi
 
-dnl storage-fs does not work on MacOS X
+dnl storage-fs does not work on macOS
 
-if test "$with_osx" = "yes"; then
+if test "$with_macos" = "yes"; then
   with_storage_fs=no
 fi
 

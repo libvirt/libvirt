@@ -2389,8 +2389,8 @@ See L<virkeycode-atset3(7)>
 
 =item B<os_x>
 
-The numeric values are those defined by the OS-X keyboard input
-subsystem. The symbolic names match the corresponding OS-X key
+The numeric values are those defined by the macOS keyboard input
+subsystem. The symbolic names match the corresponding macOS key
 constant macro names
 
 See L<virkeycode-osx(7)> and L<virkeyname-osx(7)>
