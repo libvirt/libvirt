@@ -146,7 +146,7 @@ EXTRA_DIST = \
 	virjsondata \
 	virmacmaptestdata \
 	virmock.h \
-	virmockstathelpers.h \
+	virmockstathelpers.c \
 	virnetdaemondata \
 	virnetdevtestdata \
 	virnwfilterbindingxml2xmldata \
