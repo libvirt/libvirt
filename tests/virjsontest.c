@@ -22,7 +22,7 @@ testJSONFromString(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) json = NULL;
     const char *expectstr = info->expect ? info->expect : info->doc;
-    char *formatted = NULL;
+    VIR_AUTOFREE(char *) formatted = NULL;
     int ret = -1;
 
     json = virJSONValueFromString(info->doc);
@@ -58,7 +58,6 @@ testJSONFromString(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(formatted);
     return ret;
 }
 
@@ -144,7 +143,7 @@ testJSONLookup(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) json = NULL;
     virJSONValuePtr value = NULL;
-    char *result = NULL;
+    VIR_AUTOFREE(char *) result = NULL;
     int rc;
     int number;
     const char *str;
@@ -240,7 +239,6 @@ testJSONLookup(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(result);
     return ret;
 }
 
@@ -251,8 +249,8 @@ testJSONCopy(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) json = NULL;
     VIR_AUTOPTR(virJSONValue) jsonCopy = NULL;
-    char *result = NULL;
-    char *resultCopy = NULL;
+    VIR_AUTOFREE(char *) result = NULL;
+    VIR_AUTOFREE(char *) resultCopy = NULL;
     int ret = -1;
 
     json = virJSONValueFromString(info->doc);
@@ -308,8 +306,6 @@ testJSONCopy(const void *data)
 
     ret = 0;
  cleanup:
-    VIR_FREE(result);
-    VIR_FREE(resultCopy);
     return ret;
 }
 
@@ -320,10 +316,10 @@ testJSONDeflatten(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) injson = NULL;
     VIR_AUTOPTR(virJSONValue) deflattened = NULL;
-    char *infile = NULL;
-    char *indata = NULL;
-    char *outfile = NULL;
-    char *actual = NULL;
+    VIR_AUTOFREE(char *) infile = NULL;
+    VIR_AUTOFREE(char *) indata = NULL;
+    VIR_AUTOFREE(char *) outfile = NULL;
+    VIR_AUTOFREE(char *) actual = NULL;
     int ret = -1;
 
     if (virAsprintf(&infile, "%s/virjsondata/deflatten-%s-in.json",
@@ -359,10 +355,6 @@ testJSONDeflatten(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(infile);
-    VIR_FREE(indata);
-    VIR_FREE(outfile);
-    VIR_FREE(actual);
 
     return ret;
 }
@@ -374,8 +366,8 @@ testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
     VIR_AUTOPTR(virJSONValue) json = NULL;
     VIR_AUTOPTR(virJSONValue) nestjson = NULL;
     VIR_AUTOPTR(virJSONValue) parsejson = NULL;
-    char *neststr = NULL;
-    char *result = NULL;
+    VIR_AUTOFREE(char *) neststr = NULL;
+    VIR_AUTOFREE(char *) result = NULL;
     const char *parsednestedstr;
     int ret = -1;
 
@@ -420,8 +412,6 @@ testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
-    VIR_FREE(neststr);
-    VIR_FREE(result);
     return ret;
 }
 
