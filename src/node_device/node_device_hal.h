@@ -19,7 +19,4 @@
  *
  */
 
-#ifndef LIBVIRT_NODE_DEVICE_HAL_H
-# define LIBVIRT_NODE_DEVICE_HAL_H
-
-#endif /* LIBVIRT_NODE_DEVICE_HAL_H */
+#pragma once
