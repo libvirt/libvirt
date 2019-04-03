@@ -34,8 +34,6 @@
 # include <yajl/yajl_gen.h>
 # include <yajl/yajl_parse.h>
 
-# define yajl_size_t size_t
-# define VIR_YAJL_STATUS_OK(status) ((status) == yajl_status_ok)
 #endif
 
 /* XXX fixme */
@@ -1615,7 +1613,7 @@ virJSONParserHandleBoolean(void *ctx,
 static int
 virJSONParserHandleNumber(void *ctx,
                           const char *s,
-                          yajl_size_t l)
+                          size_t l)
 {
     virJSONParserPtr parser = ctx;
     char *str;
@@ -1643,7 +1641,7 @@ virJSONParserHandleNumber(void *ctx,
 static int
 virJSONParserHandleString(void *ctx,
                           const unsigned char *stringVal,
-                          yajl_size_t stringLen)
+                          size_t stringLen)
 {
     virJSONParserPtr parser = ctx;
     virJSONValuePtr value = virJSONValueNewStringLen((const char *)stringVal,
@@ -1666,7 +1664,7 @@ virJSONParserHandleString(void *ctx,
 static int
 virJSONParserHandleMapKey(void *ctx,
                           const unsigned char *stringVal,
-                          yajl_size_t stringLen)
+                          size_t stringLen)
 {
     virJSONParserPtr parser = ctx;
     virJSONParserStatePtr state;
@@ -1824,7 +1822,7 @@ virJSONValueFromString(const char *jsonstring)
 
     /* Yajl 2 is nice enough to default to rejecting trailing garbage. */
     rc = yajl_parse(hand, (const unsigned char *)jsonstring, len);
-    if (!VIR_YAJL_STATUS_OK(rc) ||
+    if (rc != yajl_status_ok ||
         yajl_complete_parse(hand) != yajl_status_ok) {
         unsigned char *errstr = yajl_get_error(hand, 1,
                                                (const unsigned char*)jsonstring,
@@ -1935,7 +1933,7 @@ virJSONValueToBuffer(virJSONValuePtr object,
 {
     yajl_gen g;
     const unsigned char *str;
-    yajl_size_t len;
+    size_t len;
     int ret = -1;
 
     VIR_DEBUG("object=%p", object);
