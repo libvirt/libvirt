@@ -85,10 +85,8 @@ BuildRequires: gettext-devel
 BuildRequires: libtool
 %endif
 
-%if %{with_phyp}
 BuildRequires: mingw32-libssh2
 BuildRequires: mingw64-libssh2
-%endif
 %if %{with_esx}
 BuildRequires: mingw32-curl
 BuildRequires: mingw64-curl
