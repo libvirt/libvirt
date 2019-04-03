@@ -501,8 +501,8 @@ virStorageBackendRBDSetAllocation(virStorageVolDefPtr vol,
 
 #else
 static int
-volStorageBackendRBDGetFlags(rbd_image_t image,
-                             const char *volname,
+volStorageBackendRBDGetFlags(rbd_image_t image ATTRIBUTE_UNUSED,
+                             const char *volname ATTRIBUTE_UNUSED,
                              uint64_t *flags)
 {
     *flags = 0;
