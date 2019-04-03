@@ -24,6 +24,7 @@ AH_BOTTOM([#include <config-post.h>])
 AC_CONFIG_MACRO_DIR([m4])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms
 AM_INIT_AUTOMAKE([
+    foreign
     -Wno-portability
     tar-pax
     no-dist-gzip
