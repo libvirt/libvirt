@@ -23,11 +23,10 @@
 # error "vircgrouppriv.h may only be included by vircgroup.c or its test suite"
 #endif /* LIBVIRT_VIRCGROUPPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRCGROUPPRIV_H
-# define LIBVIRT_VIRCGROUPPRIV_H
+#pragma once
 
-# include "vircgroup.h"
-# include "vircgroupbackend.h"
+#include "vircgroup.h"
+#include "vircgroupbackend.h"
 
 struct _virCgroupV1Controller {
     int type;
@@ -127,5 +126,3 @@ int virCgroupKillRecursiveInternal(virCgroupPtr group,
                                    int controller,
                                    const char *taskFile,
                                    bool dormdir);
-
-#endif /* LIBVIRT_VIRCGROUPPRIV_H */
