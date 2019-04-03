@@ -404,7 +404,6 @@ check-local: check-augeas
 check-augeas: $(AUGEAS_DIRS:%=check-augeas-%)
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
-EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
 
 
 #

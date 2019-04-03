@@ -40,7 +40,17 @@ EXTRA_DIST = \
   cfg.mk \
   run.in \
   README.md \
-  AUTHORS.in
+  AUTHORS.in \
+  build-aux/augeas-gentest.pl \
+  build-aux/check-spacing.pl \
+  build-aux/gitlog-to-changelog \
+  build-aux/header-ifdef.pl \
+  build-aux/minimize-po.pl \
+  build-aux/mock-noinline.pl \
+  build-aux/prohibit-duplicate-header.pl \
+  build-aux/useless-if-before-free \
+  build-aux/vc-list-files \
+  $(NULL)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc libvirt-admin.pc
