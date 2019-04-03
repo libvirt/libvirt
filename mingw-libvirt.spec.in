@@ -39,7 +39,6 @@ Release:        1%{?dist}
 Summary:        MinGW Windows libvirt virtualization library
 
 License:        LGPLv2+
-Group:          Development/Libraries
 URL:            https://libvirt.org/
 
 %if %(echo %{version} | grep -q "\.0$"; echo $?) == 1
