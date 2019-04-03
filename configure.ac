@@ -24,7 +24,14 @@ AH_BOTTOM([#include <config-post.h>])
 AC_CONFIG_MACRO_DIR([m4])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms; also keep
 dnl quiet about the fact that we intentionally cater to automake 1.9
-AM_INIT_AUTOMAKE([-Wno-portability -Wno-obsolete tar-pax no-dist-gzip dist-xz subdir-objects])
+AM_INIT_AUTOMAKE([
+    -Wno-portability
+    -Wno-obsolete
+    tar-pax
+    no-dist-gzip
+    dist-xz
+    subdir-objects
+    ])
 dnl older automake's default of ARFLAGS=cru is noisy on newer binutils;
 dnl we don't really need the 'u' even in older toolchains.  Then there is
 dnl older libtool, which spelled it AR_FLAGS
