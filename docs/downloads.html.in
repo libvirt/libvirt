@@ -105,7 +105,7 @@
         <tr>
           <td>Perl (Sys::Virt)</td>
           <td>
-            <a href="http://search.cpan.org/dist/Sys-Virt/">cpan</a>
+            <a href="https://metacpan.org/release/Sys-Virt/">cpan</a>
           </td>
           <td>
             <a href="https://libvirt.org/git/?p=libvirt-perl.git;a=summary">libvirt</a>
@@ -115,7 +115,7 @@
             <a href="https://github.com/libvirt/libvirt-perl">github</a>
           </td>
           <td>
-            <a href="http://search.cpan.org/dist/Sys-Virt/">api ref</a>
+            <a href="https://metacpan.org/release/Sys-Virt/">api ref</a>
             <a href="https://libvirt.org/git/?p=libvirt-perl.git;a=blob;f=Changes;hb=HEAD">changes</a>
           </td>
         </tr>
