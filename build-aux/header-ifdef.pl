@@ -106,7 +106,7 @@ while (<>) {
         }
     } elsif ($state == $STATE_PRIV_START) {
         if (/^$/) {
-            &mistake("$file: too many blank lines after coyright header");
+            &mistake("$file: too many blank lines after copyright header");
         } elsif (/#ifndef $ifdefpriv$/) {
             $state = $STATE_PRIV_ERROR;
         } else {
@@ -116,7 +116,7 @@ while (<>) {
         if (/# error ".*"$/) {
             $state = $STATE_PRIV_END;
         } else {
-            &mistake("$file: missing '#error ...priv allow...'");
+            &mistake("$file: missing '# error ...priv allow...'");
         }
     } elsif ($state == $STATE_PRIV_END) {
         if (m,#endif /\* $ifdefpriv \*/,) {
@@ -131,7 +131,7 @@ while (<>) {
         $state = $STATE_GUARD_START;
     } elsif ($state == $STATE_GUARD_START) {
         if (/^$/) {
-            &mistake("$file: too many blank lines after coyright header");
+            &mistake("$file: too many blank lines after copyright header");
         } elsif (/#ifndef $ifdef$/) {
             $state = $STATE_GUARD_DEFINE;
         } else {
