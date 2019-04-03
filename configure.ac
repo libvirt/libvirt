@@ -22,11 +22,9 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AH_BOTTOM([#include <config-post.h>])
 AC_CONFIG_MACRO_DIR([m4])
-dnl Make automake keep quiet about wildcards & other GNUmake-isms; also keep
-dnl quiet about the fact that we intentionally cater to automake 1.9
+dnl Make automake keep quiet about wildcards & other GNUmake-isms
 AM_INIT_AUTOMAKE([
     -Wno-portability
-    -Wno-obsolete
     tar-pax
     no-dist-gzip
     dist-xz
