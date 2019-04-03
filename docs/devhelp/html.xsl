@@ -565,10 +565,6 @@ by a Linux instance. The library aim at providing long term stable C API
 initially for the <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen
 paravirtualization</a> but should be able to integrate other virtualization
 mechanisms if needed.</p>
-<p> If you get lost searching for some specific API use, try
-<a href="https://libvirt.org/search.php">the online search
-engine</a> hosted on <a href="https://libvirt.org/">libvirt.org</a>
-it indexes the project page, the APIs as well as the mailing-list archives. </p>
 	</body>
       </html>
     </xsl:document>

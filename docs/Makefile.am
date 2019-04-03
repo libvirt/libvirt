@@ -128,10 +128,6 @@ dot_html_in = \
   $(notdir $(wildcard $(srcdir)/*.html.in))
 dot_html = $(dot_html_in:%.html.in=%.html)
 
-dot_php_in = $(notdir $(wildcard $(srcdir)/*.php.in))
-dot_php_code_in = $(dot_php_in:%.php.in=%.php.code.in)
-dot_php = $(dot_php_in:%.php.in=%.php)
-
 xml = \
   libvirt-api.xml \
   libvirt-refs.xml
@@ -175,7 +171,7 @@ EXTRA_DIST= \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
-  $(logofiles) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
+  $(logofiles) \
   $(internals_html_in) $(internals_html) $(fonts) \
   aclperms.htmlinc \
   hvsupport.pl \
@@ -192,7 +188,6 @@ MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(apihtml)) \
   $(addprefix $(srcdir)/,$(devhelphtml)) \
   $(addprefix $(srcdir)/,$(internals_html)) \
-  $(addprefix $(srcdir)/,$(dot_php)) \
   $(srcdir)/hvsupport.html.in $(srcdir)/aclperms.htmlinc
 
 timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
@@ -209,8 +204,7 @@ qemu_api: $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 lxc_api: $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
 admin_api: $(srcdir)/libvirt-admin-api.xml $(srcdir)/libvirt-admin-refs.xml
 
-web: $(dot_html) $(internals_html) html/index.html devhelp/index.html \
-  $(dot_php)
+web: $(dot_html) $(internals_html) html/index.html devhelp/index.html
 
 hvsupport.html: $(srcdir)/hvsupport.html.in
 
@@ -264,18 +258,6 @@ MAINTAINERCLEANFILES += \
 %.html: %.html.tmp
 	$(AM_V_GEN)$(XMLLINT) --nonet --format $< > $(srcdir)/$@ \
 	  || { rm $(srcdir)/$@ && exit 1; }
-
-%.php.tmp: %.php.in site.xsl page.xsl
-	$(AM_V_GEN)$(XSLTPROC) --stringparam pagename $(@:.tmp=) \
-	    --stringparam timestamp $(timestamp) --nonet \
-	    $(top_srcdir)/docs/site.xsl $< > $@ \
-	    || { rm $@ && exit 1; }
-
-%.php: %.php.tmp %.php.code.in
-	$(AM_V_GEN)sed \
-	    -e '/<span id="php_placeholder"><\/span>/r '"$(srcdir)/$@.code.in" \
-	    -e /php_placeholder/d < $@.tmp > $(srcdir)/$@ \
-	    || { rm $(srcdir)/$@ && exit 1; }
 
 $(apihtml_generated): html/index.html
 
