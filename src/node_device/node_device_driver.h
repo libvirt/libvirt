@@ -19,24 +19,23 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NODE_DEVICE_DRIVER_H
-# define LIBVIRT_NODE_DEVICE_DRIVER_H
+#pragma once
 
-# include "internal.h"
-# include "driver.h"
-# include "virnodedeviceobj.h"
+#include "internal.h"
+#include "driver.h"
+#include "virnodedeviceobj.h"
 
-# define LINUX_NEW_DEVICE_WAIT_TIME 60
+#define LINUX_NEW_DEVICE_WAIT_TIME 60
 
-# ifdef WITH_HAL
+#ifdef WITH_HAL
 int
 halNodeRegister(void);
-# endif
+#endif
 
-# ifdef WITH_UDEV
+#ifdef WITH_UDEV
 int
 udevNodeRegister(void);
-# endif
+#endif
 
 void
 nodeDeviceLock(void);
@@ -117,5 +116,3 @@ nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
 int
 nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
                                         int callbackID);
-
-#endif /* LIBVIRT_NODE_DEVICE_DRIVER_H */
