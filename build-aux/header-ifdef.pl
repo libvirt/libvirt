@@ -32,6 +32,7 @@ my $STATE_GUARD_START = 6;
 my $STATE_GUARD_DEFINE = 7;
 my $STATE_GUARD_END = 8;
 my $STATE_EOF = 9;
+my $STATE_PRAGMA = 10;
 
 my $file = " ";
 my $ret = 0;
@@ -132,6 +133,8 @@ while (<>) {
     } elsif ($state == $STATE_GUARD_START) {
         if (/^$/) {
             &mistake("$file: too many blank lines after copyright header");
+        } elsif(/#pragma once/) {
+            $state = $STATE_PRAGMA;
         } elsif (/#ifndef $ifdef$/) {
             $state = $STATE_GUARD_DEFINE;
         } else {
@@ -147,6 +150,8 @@ while (<>) {
         if (m,#endif /\* $ifdef \*/$,) {
             $state = $STATE_EOF;
         }
+    } elsif ($state == $STATE_PRAGMA) {
+        next;
     } elsif ($state == $STATE_EOF) {
         die "$file: unexpected content after '#endif /* $ifdef */'";
     } else {
