@@ -18,13 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NODE_DEVICE_UDEV_H
-# define LIBVIRT_NODE_DEVICE_UDEV_H
+#pragma once
 
-# include <libudev.h>
+#include <libudev.h>
 
-# define SYSFS_DATA_SIZE 4096
-# define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
-# define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"
-
-#endif /* LIBVIRT_NODE_DEVICE_UDEV_H */
+#define SYSFS_DATA_SIZE 4096
+#define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
+#define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"
