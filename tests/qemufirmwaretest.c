@@ -1,5 +1,7 @@
 #include <config.h>
 
+#include <inttypes.h>
+
 #include "testutils.h"
 #include "virfilewrapper.h"
 #include "qemu/qemu_firmware.h"
@@ -99,6 +101,53 @@ testFWPrecedence(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
+struct supportedData {
+    const char *machine;
+    virArch arch;
+    bool secure;
+    unsigned int *interfaces;
+    size_t ninterfaces;
+};
+
+
+static int
+testSupportedFW(const void *opaque)
+{
+    const struct supportedData *data = opaque;
+    uint64_t actualInterfaces;
+    uint64_t expectedInterfaces = 0;
+    bool actualSecure;
+    size_t i;
+
+    for (i = 0; i < data->ninterfaces; i++)
+        expectedInterfaces |= 1ULL << data->interfaces[i];
+
+    if (qemuFirmwareGetSupported(data->machine, data->arch, false,
+                                 &actualInterfaces, &actualSecure) < 0) {
+        fprintf(stderr, "Unable to get list of supported interfaces\n");
+        return -1;
+    }
+
+    if (actualInterfaces != expectedInterfaces) {
+        fprintf(stderr,
+                "Mismatch in supported interfaces. "
+                "Expected 0x%" PRIx64 " got 0x%" PRIx64 "\n",
+                expectedInterfaces, actualInterfaces);
+        return -1;
+    }
+
+    if (actualSecure != data->secure) {
+        fprintf(stderr,
+                "Mismatch in SMM requirement/support. "
+                "Expected %d got %d\n",
+                data->secure, actualSecure);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 mymain(void)
 {
@@ -126,6 +175,29 @@ mymain(void)
 
     if (virTestRun("QEMU FW precedence test", testFWPrecedence, NULL) < 0)
         ret = -1;
+
+#define DO_SUPPORTED_TEST(machine, arch, secure, ...) \
+    do { \
+        unsigned int interfaces[] = {__VA_ARGS__}; \
+        struct supportedData data = {machine, arch, secure, \
+                                     interfaces, ARRAY_CARDINALITY(interfaces)}; \
+        if (virTestRun("QEMU FW SUPPORTED " machine " " #arch, \
+                       testSupportedFW, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_X86_64, false,
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
+    DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_I686, false,
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
+    DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_X86_64, true,
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
+    DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_I686, false,
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
+    DO_SUPPORTED_TEST("virt-3.1", VIR_ARCH_AARCH64, false,
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
 
     virFileWrapperClearPrefixes();
 

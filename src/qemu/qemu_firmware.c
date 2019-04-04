@@ -1346,7 +1346,8 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
     }
 
     VIR_STEAL_PTR(*firmwaresRet, firmwares);
-    VIR_STEAL_PTR(*pathsRet, paths);
+    if (pathsRet)
+        VIR_STEAL_PTR(*pathsRet, paths);
     return npaths;
 
  error:
@@ -1411,4 +1412,72 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
         qemuFirmwareFree(firmwares[i]);
     VIR_FREE(firmwares);
     return ret;
+}
+
+
+int
+qemuFirmwareGetSupported(const char *machine,
+                         virArch arch,
+                         bool privileged,
+                         uint64_t *supported,
+                         bool *secure)
+{
+    qemuFirmwarePtr *firmwares = NULL;
+    ssize_t nfirmwares = 0;
+    size_t i;
+
+    *supported = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+    *secure = false;
+
+    if ((nfirmwares = qemuFirmwareFetchParsedConfigs(privileged,
+                                                     &firmwares, NULL)) < 0)
+        return -1;
+
+    for (i = 0; i < nfirmwares; i++) {
+        qemuFirmwarePtr fw = firmwares[i];
+        size_t j;
+
+        if (!qemuFirmwareMatchesMachineArch(fw, machine, arch))
+            continue;
+
+        for (j = 0; j < fw->ninterfaces; j++) {
+            switch (fw->interfaces[j]) {
+            case QEMU_FIRMWARE_OS_INTERFACE_UEFI:
+                *supported |= 1ULL << VIR_DOMAIN_OS_DEF_FIRMWARE_EFI;
+                break;
+            case QEMU_FIRMWARE_OS_INTERFACE_BIOS:
+                *supported |= 1ULL << VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS;
+                break;
+            case QEMU_FIRMWARE_OS_INTERFACE_NONE:
+            case QEMU_FIRMWARE_OS_INTERFACE_OPENFIRMWARE:
+            case QEMU_FIRMWARE_OS_INTERFACE_UBOOT:
+            case QEMU_FIRMWARE_OS_INTERFACE_LAST:
+            default:
+                break;
+            }
+        }
+
+        for (j = 0; j < fw->nfeatures; j++) {
+            switch (fw->features[j]) {
+            case QEMU_FIRMWARE_FEATURE_REQUIRES_SMM:
+                *secure = true;
+                break;
+            case QEMU_FIRMWARE_FEATURE_NONE:
+            case QEMU_FIRMWARE_FEATURE_ACPI_S3:
+            case QEMU_FIRMWARE_FEATURE_ACPI_S4:
+            case QEMU_FIRMWARE_FEATURE_AMD_SEV:
+            case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
+            case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
+            case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
+            case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
+            case QEMU_FIRMWARE_FEATURE_LAST:
+                break;
+            }
+        }
+    }
+
+    for (i = 0; i < nfirmwares; i++)
+        qemuFirmwareFree(firmwares[i]);
+    VIR_FREE(firmwares);
+    return 0;
 }

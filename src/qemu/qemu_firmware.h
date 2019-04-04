@@ -24,6 +24,7 @@
 # include "domain_conf.h"
 # include "qemu_conf.h"
 # include "virautoclean.h"
+# include "virarch.h"
 
 typedef struct _qemuFirmware qemuFirmware;
 typedef qemuFirmware *qemuFirmwarePtr;
@@ -47,5 +48,14 @@ int
 qemuFirmwareFillDomain(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        unsigned int flags);
+
+int
+qemuFirmwareGetSupported(const char *machine,
+                         virArch arch,
+                         bool privileged,
+                         uint64_t *supported,
+                         bool *secure);
+
+verify(VIR_DOMAIN_OS_DEF_FIRMWARE_LAST <= 64);
 
 #endif /* LIBVIRT_QEMU_FIRMWARE_H */
