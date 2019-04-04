@@ -1926,8 +1926,6 @@ qemuGetDomainDefaultHugepath(const virDomainDef *def,
 /**
  * qemuGetDomainHupageMemPath: Construct HP enabled memory backend path
  *
- * If no specific hugepage size is requested (@pagesize is zero)
- * the default hugepage size is used).
  * The resulting path is stored at @memPath.
  *
  * Returns 0 on success,
@@ -1948,28 +1946,21 @@ qemuGetDomainHupageMemPath(const virDomainDef *def,
         return -1;
     }
 
-    if (!pagesize) {
-        if (!(*memPath = qemuGetDomainDefaultHugepath(def,
-                                                      cfg->hugetlbfs,
-                                                      cfg->nhugetlbfs)))
-            return -1;
-    } else {
-        for (i = 0; i < cfg->nhugetlbfs; i++) {
-            if (cfg->hugetlbfs[i].size == pagesize)
-                break;
-        }
-
-        if (i == cfg->nhugetlbfs) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find any usable hugetlbfs "
-                             "mount for %llu KiB"),
-                           pagesize);
-            return -1;
-        }
-
-        if (!(*memPath = qemuGetDomainHugepagePath(def, &cfg->hugetlbfs[i])))
-            return -1;
+    for (i = 0; i < cfg->nhugetlbfs; i++) {
+        if (cfg->hugetlbfs[i].size == pagesize)
+            break;
     }
+
+    if (i == cfg->nhugetlbfs) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to find any usable hugetlbfs "
+                         "mount for %llu KiB"),
+                       pagesize);
+        return -1;
+    }
+
+    if (!(*memPath = qemuGetDomainHugepagePath(def, &cfg->hugetlbfs[i])))
+        return -1;
 
     return 0;
 }

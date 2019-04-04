@@ -7847,9 +7847,11 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
      * if user requested file allocation. */
     if (def->mem.nhugepages &&
         def->mem.hugepages[0].size != system_page_size) {
-        if (qemuGetDomainHupageMemPath(def, cfg,
-                                       def->mem.hugepages[0].size,
-                                       &mem_path) < 0)
+        unsigned long long pagesize = def->mem.hugepages[0].size;
+        if (!pagesize &&
+            qemuBuildMemoryGetDefaultPagesize(cfg, &pagesize) < 0)
+            return -1;
+        if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &mem_path) < 0)
             return -1;
     } else if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
         if (qemuGetMemoryBackingPath(def, cfg, "ram", &mem_path) < 0)
