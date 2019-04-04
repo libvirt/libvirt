@@ -88,6 +88,9 @@ qemuBlockNodeNameBackingChainDataFree(qemuBlockNodeNameBackingChainDataPtr data)
     VIR_FREE(data);
 }
 
+VIR_DEFINE_AUTOPTR_FUNC(qemuBlockNodeNameBackingChainData,
+                        qemuBlockNodeNameBackingChainDataFree);
+
 
 static void
 qemuBlockNodeNameBackingChainDataHashEntryFree(void *opaque,
@@ -128,7 +131,7 @@ qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
                                         virHashTablePtr nodenamestable,
                                         qemuBlockNodeNameBackingChainDataPtr *nodenamedata)
 {
-    qemuBlockNodeNameBackingChainDataPtr data = NULL;
+    VIR_AUTOPTR(qemuBlockNodeNameBackingChainData) data = NULL;
     qemuBlockNodeNameBackingChainDataPtr backingdata = NULL;
     virJSONValuePtr backing = virJSONValueObjectGetObject(next, "backing");
     virJSONValuePtr parent = virJSONValueObjectGetObject(next, "parent");
@@ -189,7 +192,6 @@ qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
     ret = 0;
 
  cleanup:
-    qemuBlockNodeNameBackingChainDataFree(data);
     return ret;
 }
 
@@ -201,7 +203,7 @@ qemuBlockNodeNameGetBackingChainDisk(size_t pos ATTRIBUTE_UNUSED,
 {
     struct qemuBlockNodeNameGetBackingChainData *data = opaque;
     const char *device = virJSONValueObjectGetString(item, "device");
-    qemuBlockNodeNameBackingChainDataPtr devicedata = NULL;
+    VIR_AUTOPTR(qemuBlockNodeNameBackingChainData) devicedata = NULL;
     int ret = -1;
 
     if (qemuBlockNodeNameGetBackingChainBacking(item, data->nodenamestable,
@@ -216,7 +218,6 @@ qemuBlockNodeNameGetBackingChainDisk(size_t pos ATTRIBUTE_UNUSED,
     ret = 1; /* we don't really want to steal @item */
 
  cleanup:
-    qemuBlockNodeNameBackingChainDataFree(devicedata);
 
     return ret;
 }
