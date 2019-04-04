@@ -1316,15 +1316,49 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
 }
 
 
+static ssize_t
+qemuFirmwareFetchParsedConfigs(bool privileged,
+                               qemuFirmwarePtr **firmwaresRet,
+                               char ***pathsRet)
+{
+    VIR_AUTOSTRINGLIST paths = NULL;
+    size_t npaths;
+    qemuFirmwarePtr *firmwares = NULL;
+    size_t i;
+
+    if (qemuFirmwareFetchConfigs(&paths, privileged) < 0)
+        return -1;
+
+    npaths = virStringListLength((const char **)paths);
+
+    if (VIR_ALLOC_N(firmwares, npaths) < 0)
+        return -1;
+
+    for (i = 0; i < npaths; i++) {
+        if (!(firmwares[i] = qemuFirmwareParse(paths[i])))
+            goto error;
+    }
+
+    VIR_STEAL_PTR(*firmwaresRet, firmwares);
+    VIR_STEAL_PTR(*pathsRet, paths);
+    return npaths;
+
+ error:
+    while (i > 0)
+        qemuFirmwareFree(firmwares[--i]);
+    VIR_FREE(firmwares);
+    return -1;
+}
+
+
 int
 qemuFirmwareFillDomain(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        unsigned int flags)
 {
     VIR_AUTOSTRINGLIST paths = NULL;
-    size_t npaths = 0;
     qemuFirmwarePtr *firmwares = NULL;
-    size_t nfirmwares = 0;
+    ssize_t nfirmwares = 0;
     const qemuFirmware *theone = NULL;
     size_t i;
     int ret = -1;
@@ -1335,20 +1369,9 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
     if (vm->def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE)
         return 0;
 
-    if (qemuFirmwareFetchConfigs(&paths, driver->privileged) < 0)
+    if ((nfirmwares = qemuFirmwareFetchParsedConfigs(driver->privileged,
+                                                     &firmwares, &paths)) < 0)
         return -1;
-
-    npaths = virStringListLength((const char **)paths);
-
-    if (VIR_ALLOC_N(firmwares, npaths) < 0)
-        return -1;
-
-    nfirmwares = npaths;
-
-    for (i = 0; i < nfirmwares; i++) {
-        if (!(firmwares[i] = qemuFirmwareParse(paths[i])))
-            goto cleanup;
-    }
 
     for (i = 0; i < nfirmwares; i++) {
         if (qemuFirmwareMatchDomain(vm->def, firmwares[i], paths[i])) {
