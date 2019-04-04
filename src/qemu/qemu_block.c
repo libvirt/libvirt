@@ -1622,6 +1622,123 @@ qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
 }
 
 
+void
+qemuBlockStorageSourceChainDataFree(qemuBlockStorageSourceChainDataPtr data)
+{
+    size_t i;
+
+    if (!data)
+        return;
+
+    for (i = 0; i < data->nsrcdata; i++)
+        qemuBlockStorageSourceAttachDataFree(data->srcdata[i]);
+
+    VIR_FREE(data->srcdata);
+    VIR_FREE(data);
+}
+
+
+/**
+ * qemuBlockStorageSourceChainDetachPrepareBlockdev
+ * @src: storage source chain to remove
+ *
+ * Prepares qemuBlockStorageSourceChainDataPtr for detaching @src and its
+ * backingStore if -blockdev was used.
+ */
+qemuBlockStorageSourceChainDataPtr
+qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSourcePtr src)
+{
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) backend = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    virStorageSourcePtr n;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (!(backend = qemuBlockStorageSourceDetachPrepare(n, NULL)))
+            return NULL;
+
+        if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend) < 0)
+            return NULL;
+    }
+
+    VIR_RETURN_PTR(data);
+}
+
+
+/**
+ * qemuBlockStorageSourceChainDetachPrepareLegacy
+ * @src: storage source chain to remove
+ * @driveAlias: Alias of the 'drive' backend (always consumed)
+ *
+ * Prepares qemuBlockStorageSourceChainDataPtr for detaching @src and its
+ * backingStore if -drive was used.
+ */
+qemuBlockStorageSourceChainDataPtr
+qemuBlockStorageSourceChainDetachPrepareDrive(virStorageSourcePtr src,
+                                              char *driveAlias)
+{
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) backend = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    if (!(backend = qemuBlockStorageSourceDetachPrepare(src, driveAlias)))
+        return NULL;
+
+    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend) < 0)
+        return NULL;
+
+    VIR_RETURN_PTR(data);
+}
+
+
+/**
+ * qemuBlockStorageSourceChainAttach:
+ * @mon: monitor object
+ * @data: storage source chain data
+ *
+ * Attach a storage source including its backing chain and supporting objects.
+ * Caller must enter @mon prior calling this function. In case of error this
+ * function returns -1. @data is updated so that qemuBlockStorageSourceChainDetach
+ * can be used to roll-back the changes.
+ */
+int
+qemuBlockStorageSourceChainAttach(qemuMonitorPtr mon,
+                                  qemuBlockStorageSourceChainDataPtr data)
+{
+    size_t i;
+
+    for (i = data->nsrcdata; i > 0; i--) {
+        if (qemuBlockStorageSourceAttachApply(mon, data->srcdata[i - 1]) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuBlockStorageSourceChainDetach:
+ * @mon: monitor object
+ * @data: storage source chain data
+ *
+ * Detach a unused storage source including all its backing chain and related
+ * objects described by @data.
+ */
+void
+qemuBlockStorageSourceChainDetach(qemuMonitorPtr mon,
+                                  qemuBlockStorageSourceChainDataPtr data)
+{
+    size_t i;
+
+    for (i = 0; i < data->nsrcdata; i++)
+        qemuBlockStorageSourceAttachRollback(mon, data->srcdata[i]);
+}
+
+
 /**
  * qemuBlockStorageSourceDetachOneBlockdev:
  * @driver: qemu driver object

@@ -125,6 +125,35 @@ qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriverPtr driver,
                                         qemuDomainAsyncJob asyncJob,
                                         virStorageSourcePtr src);
 
+struct _qemuBlockStorageSourceChainData {
+    qemuBlockStorageSourceAttachDataPtr *srcdata;
+    size_t nsrcdata;
+};
+
+typedef struct _qemuBlockStorageSourceChainData qemuBlockStorageSourceChainData;
+typedef qemuBlockStorageSourceChainData *qemuBlockStorageSourceChainDataPtr;
+
+void
+qemuBlockStorageSourceChainDataFree(qemuBlockStorageSourceChainDataPtr data);
+
+qemuBlockStorageSourceChainDataPtr
+qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSourcePtr src);
+qemuBlockStorageSourceChainDataPtr
+qemuBlockStorageSourceChainDetachPrepareDrive(virStorageSourcePtr src,
+                                              char *driveAlias);
+
+int
+qemuBlockStorageSourceChainAttach(qemuMonitorPtr mon,
+                                  qemuBlockStorageSourceChainDataPtr data);
+
+void
+qemuBlockStorageSourceChainDetach(qemuMonitorPtr mon,
+                                  qemuBlockStorageSourceChainDataPtr data);
+
+
+VIR_DEFINE_AUTOPTR_FUNC(qemuBlockStorageSourceChainData,
+                        qemuBlockStorageSourceChainDataFree);
+
 int
 qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
                            virDomainDiskDefPtr disk,

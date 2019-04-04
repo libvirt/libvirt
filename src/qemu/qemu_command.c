@@ -11184,3 +11184,66 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
 
     return 0;
 }
+
+
+/**
+ * qemuBuildStorageSourceChainAttachPrepareDrive:
+ * @disk: disk definition
+ * @qemuCaps: qemu capabilities object
+ *
+ * Prepares qemuBlockStorageSourceChainDataPtr for attaching @disk via -drive.
+ */
+qemuBlockStorageSourceChainDataPtr
+qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
+                                              virQEMUCapsPtr qemuCaps)
+{
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) elem = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
+        return NULL;
+
+    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, elem, qemuCaps) < 0)
+        return NULL;
+
+    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
+        return NULL;
+
+    VIR_RETURN_PTR(data);
+}
+
+
+/**
+ * qemuBuildStorageSourceChainAttachPrepareDrive:
+ * @top: storage source chain
+ * @qemuCaps: qemu capabilities object
+ *
+ * Prepares qemuBlockStorageSourceChainDataPtr for attaching @top via -blockdev.
+ */
+qemuBlockStorageSourceChainDataPtr
+qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
+                                                 virQEMUCapsPtr qemuCaps)
+{
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) elem = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    virStorageSourcePtr n;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    for (n = top; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(n)))
+            return NULL;
+
+        if (qemuBuildStorageSourceAttachPrepareCommon(n, elem, qemuCaps) < 0)
+            return NULL;
+
+        if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
+            return NULL;
+    }
+
+    VIR_RETURN_PTR(data);
+}
