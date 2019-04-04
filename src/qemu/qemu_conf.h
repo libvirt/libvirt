@@ -315,6 +315,13 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver);
 virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
                                         bool refresh);
 
+virDomainCapsPtr
+virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
+                                   virQEMUCapsPtr qemuCaps,
+                                   const char *machine,
+                                   virArch arch,
+                                   virDomainVirtType virttype);
+
 typedef struct _qemuSharedDeviceEntry qemuSharedDeviceEntry;
 typedef qemuSharedDeviceEntry *qemuSharedDeviceEntryPtr;
 

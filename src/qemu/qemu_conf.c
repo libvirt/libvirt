@@ -1363,6 +1363,45 @@ virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+/**
+ * virQEMUDriverGetDomainCapabilities:
+ *
+ * Build a virDomainCapsPtr instance for the passed data.
+ *
+ * Returns: a reference to a virDomainCapsPtr instance or NULL
+ */
+virDomainCapsPtr
+virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
+                                   virQEMUCapsPtr qemuCaps,
+                                   const char *machine,
+                                   virArch arch,
+                                   virDomainVirtType virttype)
+{
+    virDomainCapsPtr ret = NULL, domCaps = NULL;
+    virCapsPtr caps = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(domCaps = virDomainCapsNew(virQEMUCapsGetBinary(qemuCaps), machine,
+                                     arch, virttype)))
+        goto cleanup;
+
+    if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps, driver->privileged,
+                                  cfg->firmwares, cfg->nfirmwares) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, domCaps);
+ cleanup:
+    virObjectUnref(domCaps);
+    virObjectUnref(cfg);
+    virObjectUnref(caps);
+    return ret;
+}
+
+
 struct _qemuSharedDeviceEntry {
     size_t ref;
     char **domains; /* array of domain names */

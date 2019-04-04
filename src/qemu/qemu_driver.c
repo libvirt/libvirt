@@ -20606,18 +20606,11 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     virArch arch;
     virDomainVirtType virttype;
     virDomainCapsPtr domCaps = NULL;
-    virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
 
     virCheckFlags(0, ret);
 
     if (virConnectGetDomainCapabilitiesEnsureACL(conn) < 0)
         return ret;
-
-    cfg = virQEMUDriverGetConfig(driver);
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     qemuCaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
                                              emulatorbin,
@@ -20628,19 +20621,13 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     if (!qemuCaps)
         goto cleanup;
 
-    if (!(domCaps = virDomainCapsNew(virQEMUCapsGetBinary(qemuCaps), machine,
-                                     arch, virttype)))
-        goto cleanup;
-
-    if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
-                                  driver->privileged,
-                                  cfg->firmwares, cfg->nfirmwares) < 0)
+    if (!(domCaps = virQEMUDriverGetDomainCapabilities(driver,
+                                                       qemuCaps, machine,
+                                                       arch, virttype)))
         goto cleanup;
 
     ret = virDomainCapsFormat(domCaps);
  cleanup:
-    virObjectUnref(cfg);
-    virObjectUnref(caps);
     virObjectUnref(domCaps);
     virObjectUnref(qemuCaps);
     return ret;
