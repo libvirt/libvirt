@@ -1057,6 +1057,29 @@ qemuFirmwareFetchConfigs(char ***firmwares,
 
 
 static bool
+qemuFirmwareMatchesMachineArch(const qemuFirmware *fw,
+                               const char *machine,
+                               virArch arch)
+{
+    size_t i;
+
+    for (i = 0; i < fw->ntargets; i++) {
+        size_t j;
+
+        if (arch != fw->targets[i]->architecture)
+            continue;
+
+        for (j = 0; j < fw->targets[i]->nmachines; j++) {
+            if (fnmatch(fw->targets[i]->machines[j], machine, 0) == 0)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+
+static bool
 qemuFirmwareMatchDomain(const virDomainDef *def,
                         const qemuFirmware *fw,
                         const char *path)
@@ -1080,24 +1103,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         return false;
     }
 
-    for (i = 0; i < fw->ntargets; i++) {
-        size_t j;
-
-        if (def->os.arch != fw->targets[i]->architecture)
-            continue;
-
-        for (j = 0; j < fw->targets[i]->nmachines; j++) {
-            if (fnmatch(fw->targets[i]->machines[j], def->os.machine, 0) == 0)
-                break;
-        }
-
-        if (j == fw->targets[i]->nmachines)
-            continue;
-
-        break;
-    }
-
-    if (i == fw->ntargets) {
+    if (!qemuFirmwareMatchesMachineArch(fw, def->os.machine, def->os.arch)) {
         VIR_DEBUG("No matching machine type in '%s'", path);
         return false;
     }
