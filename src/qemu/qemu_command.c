@@ -3409,8 +3409,8 @@ qemuBuildMemoryBackendPropsShare(virJSONValuePtr props,
 
 
 static int
-qemuqemuBuildMemoryBackendPropsGetPagesize(virQEMUDriverConfigPtr cfg,
-                                           unsigned long long *pagesize)
+qemuBuildMemoryGetDefaultPagesize(virQEMUDriverConfigPtr cfg,
+                                  unsigned long long *pagesize)
 {
     virHugeTLBFSPtr p;
 
@@ -3568,7 +3568,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         needHugepage = false;
         useHugepage = false;
     } else if (pagesize == 0) {
-        if (qemuqemuBuildMemoryBackendPropsGetPagesize(cfg, &pagesize) < 0)
+        if (qemuBuildMemoryGetDefaultPagesize(cfg, &pagesize) < 0)
             goto cleanup;
     }
 
