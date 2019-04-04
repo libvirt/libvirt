@@ -20,6 +20,8 @@
 
 #include "testutils.h"
 #include "domain_capabilities.h"
+#include "virfilewrapper.h"
+#include "configmake.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -104,6 +106,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
         goto cleanup;
 
     if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
+                                  false,
                                   cfg->firmwares,
                                   cfg->nfirmwares) < 0)
         goto cleanup;
@@ -364,6 +367,13 @@ mymain(void)
 
 #if WITH_QEMU
 
+    virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/etc/qemu/firmware");
+    virFileWrapperAddPrefix(PREFIX "/share/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/usr/share/qemu/firmware");
+    virFileWrapperAddPrefix("/home/user/.config/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/home/user/.config/qemu/firmware");
+
     DO_TEST_QEMU("1.7.0", "caps_1.7.0",
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
@@ -441,6 +451,10 @@ mymain(void)
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
     virObjectUnref(cfg);
 
+    virFileWrapperRemovePrefix(SYSCONFDIR "/qemu/firmware");
+    virFileWrapperRemovePrefix(PREFIX "/share/qemu/firmware");
+    virFileWrapperRemovePrefix("/home/user/.config/qemu/firmware");
+
 #endif /* WITH_QEMU */
 
 #if WITH_LIBXL
@@ -461,6 +475,8 @@ mymain(void)
     bhyve_caps |= BHYVE_CAP_FBUF;
     DO_TEST_BHYVE("fbuf", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
 #endif /* WITH_BHYVE */
+
+    virFileWrapperClearPrefixes();
 
     return ret;
 }

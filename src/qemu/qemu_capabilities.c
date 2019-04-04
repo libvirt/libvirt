@@ -46,6 +46,7 @@
 #include "qemu_capspriv.h"
 #include "qemu_qapi.h"
 #include "qemu_process.h"
+#include "qemu_firmware.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -4920,6 +4921,7 @@ virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps)
 
 static int
 virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
+                                bool secure,
                                 virFirmwarePtr *firmwares,
                                 size_t nfirmwares)
 {
@@ -4928,6 +4930,7 @@ virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
     capsLoader->supported = VIR_TRISTATE_BOOL_YES;
     capsLoader->type.report = true;
     capsLoader->readonly.report = true;
+    capsLoader->secure.report = true;
 
     if (VIR_ALLOC_N(capsLoader->values.values, nfirmwares) < 0)
         return -1;
@@ -4956,19 +4959,42 @@ virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
     VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->readonly,
                              VIR_TRISTATE_BOOL_YES,
                              VIR_TRISTATE_BOOL_NO);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->secure,
+                             VIR_TRISTATE_BOOL_NO);
+
+    if (secure)
+        VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->secure,
+                                 VIR_TRISTATE_BOOL_YES);
+
     return 0;
 }
 
 
 static int
 virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
+                            const char *machine,
+                            virArch arch,
+                            bool privileged,
                             virFirmwarePtr *firmwares,
                             size_t nfirmwares)
 {
     virDomainCapsLoaderPtr capsLoader = &os->loader;
+    uint64_t autoFirmwares = 0;
+    bool secure = false;
 
     os->supported = VIR_TRISTATE_BOOL_YES;
-    if (virQEMUCapsFillDomainLoaderCaps(capsLoader, firmwares, nfirmwares) < 0)
+    os->firmware.report = true;
+
+    if (qemuFirmwareGetSupported(machine, arch, privileged, &autoFirmwares, &secure) < 0)
+        return -1;
+
+    if (autoFirmwares & (1ULL << VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS))
+        VIR_DOMAIN_CAPS_ENUM_SET(os->firmware, VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
+    if (autoFirmwares & (1ULL << VIR_DOMAIN_OS_DEF_FIRMWARE_EFI))
+        VIR_DOMAIN_CAPS_ENUM_SET(os->firmware, VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
+
+    if (virQEMUCapsFillDomainLoaderCaps(capsLoader, secure, firmwares, nfirmwares) < 0)
         return -1;
     return 0;
 }
@@ -5298,6 +5324,7 @@ int
 virQEMUCapsFillDomainCaps(virCapsPtr caps,
                           virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps,
+                          bool privileged,
                           virFirmwarePtr *firmwares,
                           size_t nfirmwares)
 {
@@ -5324,7 +5351,11 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
     domCaps->genid = virTristateBoolFromBool(
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMGENID));
 
-    if (virQEMUCapsFillDomainOSCaps(os, firmwares, nfirmwares) < 0 ||
+    if (virQEMUCapsFillDomainOSCaps(os,
+                                    domCaps->machine,
+                                    domCaps->arch,
+                                    privileged,
+                                    firmwares, nfirmwares) < 0 ||
         virQEMUCapsFillDomainCPUCaps(caps, qemuCaps, domCaps) < 0 ||
         virQEMUCapsFillDomainIOThreadCaps(qemuCaps, domCaps) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps,

@@ -415,6 +415,7 @@ virDomainCapsLoaderFormat(virBufferPtr buf,
     virDomainCapsStringValuesFormat(buf, &loader->values);
     ENUM_PROCESS(loader, type, virDomainLoaderTypeToString);
     ENUM_PROCESS(loader, readonly, virTristateBoolTypeToString);
+    ENUM_PROCESS(loader, secure, virTristateBoolTypeToString);
 
     FORMAT_EPILOGUE(loader);
 }
@@ -426,6 +427,8 @@ virDomainCapsOSFormat(virBufferPtr buf,
     virDomainCapsLoaderPtr loader = &os->loader;
 
     FORMAT_PROLOGUE(os);
+
+    ENUM_PROCESS(os, firmware, virDomainOsDefFirmwareTypeToString);
 
     virDomainCapsLoaderFormat(buf, loader);
 

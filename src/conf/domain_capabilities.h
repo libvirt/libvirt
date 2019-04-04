@@ -52,12 +52,14 @@ struct _virDomainCapsLoader {
     virDomainCapsStringValues values;   /* Info about values for the element */
     virDomainCapsEnum type;     /* Info about virDomainLoader */
     virDomainCapsEnum readonly; /* Info about readonly:virTristateBool */
+    virDomainCapsEnum secure;   /* Info about secure:virTristateBool */
 };
 
 typedef struct _virDomainCapsOS virDomainCapsOS;
 typedef virDomainCapsOS *virDomainCapsOSPtr;
 struct _virDomainCapsOS {
     virTristateBool supported;
+    virDomainCapsEnum firmware;     /* Info about virDomainOsDefFirmware */
     virDomainCapsLoader loader;     /* Info about virDomainLoaderDef */
 };
 

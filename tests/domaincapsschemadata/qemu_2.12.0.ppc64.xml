@@ -6,6 +6,7 @@
   <vcpu max='1024'/>
   <iothreads supported='yes'/>
   <os supported='yes'>
+    <enum name='firmware'/>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>
       <value>/usr/share/AAVMF/AAVMF32_CODE.fd</value>
@@ -16,6 +17,9 @@
       </enum>
       <enum name='readonly'>
         <value>yes</value>
+        <value>no</value>
+      </enum>
+      <enum name='secure'>
         <value>no</value>
       </enum>
     </loader>

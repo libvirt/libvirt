@@ -19857,6 +19857,7 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
         goto cleanup;
 
     if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
+                                  driver->privileged,
                                   cfg->firmwares, cfg->nfirmwares) < 0)
         goto cleanup;
 

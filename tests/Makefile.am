@@ -1033,7 +1033,9 @@ domaincapsmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 domaincapsmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 domaincapstest_SOURCES = \
-	domaincapstest.c testutils.h testutils.c
+	domaincapstest.c testutils.h testutils.c \
+	virfilewrapper.c virfilewrapper.h \
+	$(NULL)
 domaincapstest_LDADD = $(LDADDS)
 
 if WITH_QEMU

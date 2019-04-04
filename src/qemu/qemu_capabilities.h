@@ -632,6 +632,7 @@ int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 int virQEMUCapsFillDomainCaps(virCapsPtr caps,
                               virDomainCapsPtr domCaps,
                               virQEMUCapsPtr qemuCaps,
+                              bool privileged,
                               virFirmwarePtr *firmwares,
                               size_t nfirmwares);
 
