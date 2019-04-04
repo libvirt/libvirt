@@ -2559,11 +2559,8 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
                                virDomainDiskDefPtr disk,
                                virQEMUCapsPtr qemuCaps)
 {
-    qemuBlockStorageSourceAttachDataPtr *data = NULL;
-    size_t ndata = 0;
-    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) tmp = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
     virJSONValuePtr copyOnReadProps = NULL;
-    virStorageSourcePtr n;
     char *str = NULL;
     size_t i;
     int ret = -1;
@@ -2574,35 +2571,21 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
             goto cleanup;
         }
 
-        for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
-            if (!(tmp = qemuBlockStorageSourceAttachPrepareBlockdev(n)))
-                goto cleanup;
-
-            if (qemuBuildStorageSourceAttachPrepareCommon(n, tmp, qemuCaps) < 0)
-                goto cleanup;
-
-            if (VIR_APPEND_ELEMENT(data, ndata, tmp) < 0)
-                goto cleanup;
-        }
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src,
+                                                                      qemuCaps)))
+            goto cleanup;
 
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
             !(copyOnReadProps = qemuBlockStorageGetCopyOnReadProps(disk)))
             goto cleanup;
     } else {
-        if (!(tmp = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
-            goto cleanup;
-
-        if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, tmp,
-                                                      qemuCaps) < 0)
-            goto cleanup;
-
-        if (VIR_APPEND_ELEMENT(data, ndata, tmp) < 0)
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk, qemuCaps)))
             goto cleanup;
     }
 
-    for (i = ndata; i > 0; i--) {
+    for (i = data->nsrcdata; i > 0; i--) {
         if (qemuBuildBlockStorageSourceAttachDataCommandline(cmd,
-                                                             data[i - 1]) < 0)
+                                                             data->srcdata[i - 1]) < 0)
             goto cleanup;
     }
 
@@ -2617,9 +2600,6 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
     ret = 0;
 
  cleanup:
-    for (i = 0; i < ndata; i++)
-        qemuBlockStorageSourceAttachDataFree(data[i]);
-    VIR_FREE(data);
     virJSONValueFree(copyOnReadProps);
     VIR_FREE(str);
     return ret;
