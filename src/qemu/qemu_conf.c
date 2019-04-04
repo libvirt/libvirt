@@ -1364,10 +1364,39 @@ virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
 }
 
 
+struct virQEMUDriverSearchDomcapsData {
+    const char *path;
+    const char *machine;
+    virArch arch;
+    virDomainVirtType virttype;
+};
+
+
+static int
+virQEMUDriverSearchDomcaps(const void *payload,
+                           const void *name ATTRIBUTE_UNUSED,
+                           const void *opaque)
+{
+    virDomainCapsPtr domCaps = (virDomainCapsPtr) payload;
+    struct virQEMUDriverSearchDomcapsData *data = (struct virQEMUDriverSearchDomcapsData *) opaque;
+
+    if (STREQ_NULLABLE(data->path, domCaps->path) &&
+        STREQ_NULLABLE(data->machine, domCaps->machine) &&
+        data->arch == domCaps->arch &&
+        data->virttype == domCaps->virttype)
+        return 1;
+
+    return 0;
+}
+
 /**
  * virQEMUDriverGetDomainCapabilities:
  *
- * Build a virDomainCapsPtr instance for the passed data.
+ * Get a reference to the virDomainCapsPtr instance from the virQEMUCapsPtr
+ * domCapsCache. If there's no domcaps in the cache, create a new instance,
+ * add it to the cache, and return a reference.
+ *
+ * The caller must release the reference with virObjetUnref
  *
  * Returns: a reference to a virDomainCapsPtr instance or NULL
  */
@@ -1381,18 +1410,35 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
     virDomainCapsPtr ret = NULL, domCaps = NULL;
     virCapsPtr caps = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virHashTablePtr domCapsCache = virQEMUCapsGetDomainCapsCache(qemuCaps);
+    struct virQEMUDriverSearchDomcapsData data = {
+        .path = virQEMUCapsGetBinary(qemuCaps),
+        .machine = machine,
+        .arch = arch,
+        .virttype = virttype,
+    };
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!(domCaps = virDomainCapsNew(virQEMUCapsGetBinary(qemuCaps), machine,
-                                     arch, virttype)))
-        goto cleanup;
+    domCaps = virHashSearch(domCapsCache,
+                            virQEMUDriverSearchDomcaps, &data, NULL);
+    if (!domCaps) {
+        /* hash miss, build new domcaps */
+        if (!(domCaps = virDomainCapsNew(data.path, data.machine,
+                                         data.arch, data.virttype)))
+            goto cleanup;
 
-    if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps, driver->privileged,
-                                  cfg->firmwares, cfg->nfirmwares) < 0)
-        goto cleanup;
+        if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
+                                      driver->privileged,
+                                      cfg->firmwares, cfg->nfirmwares) < 0)
+            goto cleanup;
 
+        if (virHashAddEntry(domCapsCache, machine, domCaps) < 0)
+            goto cleanup;
+    }
+
+    virObjectRef(domCaps);
     VIR_STEAL_PTR(ret, domCaps);
  cleanup:
     virObjectUnref(domCaps);
