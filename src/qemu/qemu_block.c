@@ -240,8 +240,8 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodes,
                                  virJSONValuePtr blockstats)
 {
     struct qemuBlockNodeNameGetBackingChainData data;
-    virHashTablePtr namednodestable = NULL;
-    virHashTablePtr disks = NULL;
+    VIR_AUTOPTR(virHashTable) namednodestable = NULL;
+    VIR_AUTOPTR(virHashTable) disks = NULL;
     virHashTablePtr ret = NULL;
 
     memset(&data, 0, sizeof(data));
@@ -268,8 +268,6 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodes,
     VIR_STEAL_PTR(ret, disks);
 
  cleanup:
-     virHashFree(namednodestable);
-     virHashFree(disks);
 
      return ret;
 }
@@ -344,7 +342,7 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
                          qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virHashTablePtr disktable = NULL;
+    VIR_AUTOPTR(virHashTable) disktable = NULL;
     VIR_AUTOPTR(virJSONValue) data = NULL;
     VIR_AUTOPTR(virJSONValue) blockstats = NULL;
     virDomainDiskDefPtr disk;
@@ -376,7 +374,6 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    virHashFree(disktable);
 
     return ret;
 }
@@ -394,19 +391,20 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
 virHashTablePtr
 qemuBlockGetNodeData(virJSONValuePtr data)
 {
+    VIR_AUTOPTR(virHashTable) nodedata = NULL;
     virHashTablePtr ret = NULL;
 
-    if (!(ret = virHashCreate(50, virJSONValueHashFree)))
+    if (!(nodedata = virHashCreate(50, virJSONValueHashFree)))
         return NULL;
 
     if (virJSONValueArrayForeachSteal(data,
-                                      qemuBlockNamedNodesArrayToHash, ret) < 0)
+                                      qemuBlockNamedNodesArrayToHash, nodedata) < 0)
         goto error;
 
+    VIR_STEAL_PTR(ret, nodedata);
     return ret;
 
  error:
-    virHashFree(ret);
     return NULL;
 }
 
