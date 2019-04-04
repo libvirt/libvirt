@@ -435,7 +435,7 @@ qemuBlockStorageSourceSupportsConcurrentAccess(virStorageSourcePtr src)
 virURIPtr
 qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
 {
-    virURIPtr uri = NULL;
+    VIR_AUTOPTR(virURI) uri = NULL;
     virURIPtr ret = NULL;
 
     if (src->nhosts != 1) {
@@ -480,7 +480,6 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
     VIR_STEAL_PTR(ret, uri);
 
  cleanup:
-    virURIFree(uri);
     return ret;
 }
 
@@ -745,7 +744,7 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src)
     const char *passwordalias = NULL;
     const char *username = NULL;
     virJSONValuePtr ret = NULL;
-    virURIPtr uri = NULL;
+    VIR_AUTOPTR(virURI) uri = NULL;
     char *uristr = NULL;
     const char *driver;
 
@@ -782,7 +781,6 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src)
                                           NULL));
 
  cleanup:
-    virURIFree(uri);
     VIR_FREE(uristr);
 
     return ret;
