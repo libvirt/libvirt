@@ -102,6 +102,9 @@ struct qemuBlockStorageSourceAttachData {
 void
 qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data);
 
+VIR_DEFINE_AUTOPTR_FUNC(qemuBlockStorageSourceAttachData,
+                        qemuBlockStorageSourceAttachDataFree);
+
 qemuBlockStorageSourceAttachDataPtr
 qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src);
 

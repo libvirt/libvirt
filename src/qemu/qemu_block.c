@@ -1543,7 +1543,7 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
 qemuBlockStorageSourceAttachDataPtr
 qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
 {
-    qemuBlockStorageSourceAttachDataPtr data;
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
     qemuBlockStorageSourceAttachDataPtr ret = NULL;
 
     if (VIR_ALLOC(data) < 0)
@@ -1559,7 +1559,6 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
     VIR_STEAL_PTR(ret, data);
 
  cleanup:
-    qemuBlockStorageSourceAttachDataFree(data);
     return ret;
 }
 

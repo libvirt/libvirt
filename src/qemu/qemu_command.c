@@ -2554,7 +2554,7 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
 {
     qemuBlockStorageSourceAttachDataPtr *data = NULL;
     size_t ndata = 0;
-    qemuBlockStorageSourceAttachDataPtr tmp = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) tmp = NULL;
     virJSONValuePtr copyOnReadProps = NULL;
     virStorageSourcePtr n;
     char *str = NULL;
@@ -2613,7 +2613,6 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
     for (i = 0; i < ndata; i++)
         qemuBlockStorageSourceAttachDataFree(data[i]);
     VIR_FREE(data);
-    qemuBlockStorageSourceAttachDataFree(tmp);
     virJSONValueFree(copyOnReadProps);
     VIR_FREE(str);
     return ret;
@@ -11162,18 +11161,19 @@ qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
                                          virQEMUCapsPtr qemuCaps)
 {
-    qemuBlockStorageSourceAttachDataPtr data = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
+    qemuBlockStorageSourceAttachDataPtr ret = NULL;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
     if (!(data->driveCmd = qemuBuildDriveStr(disk, qemuCaps)) ||
-        !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk))) {
-        qemuBlockStorageSourceAttachDataFree(data);
+        !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk)))
         return NULL;
-    }
 
-    return data;
+    VIR_STEAL_PTR(ret, data);
+
+    return ret;
 }
 
 

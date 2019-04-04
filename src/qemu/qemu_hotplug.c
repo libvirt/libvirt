@@ -531,7 +531,7 @@ qemuHotplugRemoveStorageSourcePrepareData(virStorageSourcePtr src,
 
 {
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-    qemuBlockStorageSourceAttachDataPtr data;
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
     qemuBlockStorageSourceAttachDataPtr ret = NULL;
 
     if (VIR_ALLOC(data) < 0)
@@ -571,7 +571,6 @@ qemuHotplugRemoveStorageSourcePrepareData(virStorageSourcePtr src,
 
  cleanup:
     VIR_FREE(driveAlias);
-    qemuBlockStorageSourceAttachDataFree(data);
     return ret;
 }
 
@@ -582,7 +581,7 @@ qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
                                    virQEMUCapsPtr qemuCaps)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    qemuBlockStorageSourceAttachDataPtr backend = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) backend = NULL;
     qemuHotplugDiskSourceDataPtr data = NULL;
     qemuHotplugDiskSourceDataPtr ret = NULL;
     char *drivealias = NULL;
@@ -617,7 +616,6 @@ qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
     VIR_STEAL_PTR(ret, data);
 
  cleanup:
-    qemuBlockStorageSourceAttachDataFree(backend);
     qemuHotplugDiskSourceDataFree(data);
     return ret;
 }
@@ -637,7 +635,7 @@ qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
                                    virStorageSourcePtr src,
                                    virQEMUCapsPtr qemuCaps)
 {
-    qemuBlockStorageSourceAttachDataPtr backend = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) backend = NULL;
     qemuHotplugDiskSourceDataPtr data;
     qemuHotplugDiskSourceDataPtr ret = NULL;
     virStorageSourcePtr savesrc = NULL;
@@ -683,7 +681,6 @@ qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
     if (savesrc)
         VIR_STEAL_PTR(disk->src, savesrc);
 
-    qemuBlockStorageSourceAttachDataFree(backend);
     qemuHotplugDiskSourceDataFree(data);
     return ret;
 }
