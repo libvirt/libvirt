@@ -772,7 +772,8 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
     if (disk->src->format > 0)
         virBufferEscapeString(buf, "<driver type='%s'/>\n",
                               virStorageFileFormatTypeToString(disk->src->format));
-    if (virDomainDiskSourceFormat(buf, disk->src, 0, false, 0, xmlopt) < 0)
+    if (virDomainDiskSourceFormat(buf, disk->src, "source", 0, false, 0,
+                                  xmlopt) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);

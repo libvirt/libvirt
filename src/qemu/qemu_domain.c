@@ -2360,7 +2360,7 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
                       virStorageTypeToString(src->type),
                       virStorageFileFormatTypeToString(src->format));
 
-    if (virDomainDiskSourceFormat(&childBuf, src, 0, false,
+    if (virDomainDiskSourceFormat(&childBuf, src, "source", 0, false,
                                   VIR_DOMAIN_DEF_FORMAT_STATUS, xmlopt) < 0)
         goto cleanup;
 

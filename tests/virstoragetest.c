@@ -627,7 +627,7 @@ testBackingParse(const void *args)
         goto cleanup;
     }
 
-    if (virDomainDiskSourceFormat(&buf, src, 0, false, 0, NULL) < 0 ||
+    if (virDomainDiskSourceFormat(&buf, src, "source", 0, false, 0, NULL) < 0 ||
         !(xml = virBufferContentAndReset(&buf))) {
         fprintf(stderr, "failed to format disk source xml\n");
         goto cleanup;
