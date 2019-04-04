@@ -786,9 +786,9 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virDomainDiskDefPtr disk)
 {
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuHotplugDiskSourceDataPtr diskdata = NULL;
     char *devstr = NULL;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOPTR(virJSONValue) corProps = NULL;
@@ -807,11 +807,15 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
             !(corProps = qemuBlockStorageGetCopyOnReadProps(disk)))
         goto cleanup;
-    }
 
-    if (!(diskdata = qemuHotplugDiskSourceAttachPrepare(disk, disk->src,
-                                                        priv->qemuCaps)))
-        goto error;
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src,
+                                                                      priv->qemuCaps)))
+            goto cleanup;
+    } else {
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk,
+                                                                   priv->qemuCaps)))
+            goto cleanup;
+    }
 
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, 0, priv->qemuCaps)))
         goto error;
@@ -824,7 +828,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (qemuHotplugDiskSourceAttach(priv->mon, diskdata) < 0)
+    if (qemuBlockStorageSourceChainAttach(priv->mon, data) < 0)
         goto exit_monitor;
 
     if (corProps &&
@@ -850,7 +854,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuHotplugDiskSourceDataFree(diskdata);
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(devstr);
     return ret;
@@ -858,7 +861,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
  exit_monitor:
     if (corAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, corAlias));
-    qemuHotplugDiskSourceRemove(priv->mon, diskdata);
+    qemuBlockStorageSourceChainDetach(priv->mon, data);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -2;
