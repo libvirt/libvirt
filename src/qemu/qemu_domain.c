@@ -10351,6 +10351,36 @@ qemuDomainUpdateCurrentMemorySize(virDomainObjPtr vm)
 
 
 /**
+ * ppc64VFIODeviceIsNV2Bridge:
+ * @device: string with the PCI device address
+ *
+ * This function receives a string that represents a PCI device,
+ * such as '0004:04:00.0', and tells if the device is a NVLink2
+ * bridge.
+ */
+static ATTRIBUTE_UNUSED bool
+ppc64VFIODeviceIsNV2Bridge(const char *device)
+{
+    const char *nvlink2Files[] = {"ibm,gpu", "ibm,nvlink",
+                                  "ibm,nvlink-speed", "memory-region"};
+    size_t i;
+
+    for (i = 0; i < ARRAY_CARDINALITY(nvlink2Files); i++) {
+        VIR_AUTOFREE(char *) file = NULL;
+
+        if ((virAsprintf(&file, "/sys/bus/pci/devices/%s/of_node/%s",
+                         device, nvlink2Files[i])) < 0)
+            return false;
+
+        if (!virFileExists(file))
+            return false;
+    }
+
+    return true;
+}
+
+
+/**
  * getPPC64MemLockLimitBytes:
  * @def: domain definition
  *
