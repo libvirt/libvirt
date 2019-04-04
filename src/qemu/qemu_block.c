@@ -293,7 +293,7 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
 {
     qemuBlockNodeNameBackingChainDataPtr entry = NULL;
     virStorageSourcePtr src = disk->src;
-    char *alias = NULL;
+    VIR_AUTOFREE(char *) alias = NULL;
     int ret = -1;
 
     /* don't attempt the detection if the top level already has node names */
@@ -328,7 +328,6 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
     ret = 0;
 
  cleanup:
-    VIR_FREE(alias);
     if (ret < 0)
         qemuBlockDiskClearDetectedNodes(disk);
 
@@ -503,7 +502,7 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDefPtr host,
     virJSONValuePtr ret = NULL;
     const char *transport;
     const char *field;
-    char *port = NULL;
+    VIR_AUTOFREE(char *) port = NULL;
 
     switch ((virStorageNetHostTransport) host->transport) {
     case VIR_STORAGE_NET_HOST_TRANS_TCP:
@@ -547,7 +546,6 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDefPtr host,
     VIR_STEAL_PTR(ret, server);
 
  cleanup:
-    VIR_FREE(port);
 
     return ret;
 }
@@ -607,7 +605,7 @@ static virJSONValuePtr
 qemuBlockStorageSourceBuildJSONInetSocketAddress(virStorageNetHostDefPtr host)
 {
     virJSONValuePtr ret = NULL;
-    char *port = NULL;
+    VIR_AUTOFREE(char *) port = NULL;
 
     if (host->transport != VIR_STORAGE_NET_HOST_TRANS_TCP) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -623,7 +621,6 @@ qemuBlockStorageSourceBuildJSONInetSocketAddress(virStorageNetHostDefPtr host)
                                           "s:port", port,
                                           NULL));
 
-    VIR_FREE(port);
     return ret;
 }
 
@@ -743,7 +740,7 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src)
     const char *username = NULL;
     virJSONValuePtr ret = NULL;
     VIR_AUTOPTR(virURI) uri = NULL;
-    char *uristr = NULL;
+    VIR_AUTOFREE(char *) uristr = NULL;
     const char *driver;
 
     /**
@@ -779,7 +776,6 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src)
                                           NULL));
 
  cleanup:
-    VIR_FREE(uristr);
 
     return ret;
 }
@@ -790,11 +786,11 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src)
 {
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
-    char *target = NULL;
+    VIR_AUTOFREE(char *) target = NULL;
     char *lunStr = NULL;
     char *username = NULL;
     char *objalias = NULL;
-    char *portal = NULL;
+    VIR_AUTOFREE(char *) portal = NULL;
     unsigned int lun = 0;
     virJSONValuePtr ret = NULL;
 
@@ -852,8 +848,6 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src)
         goto cleanup;
 
  cleanup:
-    VIR_FREE(target);
-    VIR_FREE(portal);
     return ret;
 }
 
@@ -1693,8 +1687,8 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
                            bool reuse)
 {
     const char *format = virStorageFileFormatTypeToString(newsrc->format);
-    char *device = NULL;
-    char *source = NULL;
+    VIR_AUTOFREE(char *) device = NULL;
+    VIR_AUTOFREE(char *) source = NULL;
     int ret = -1;
 
     if (!(device = qemuAliasDiskDriveFromDisk(disk)))
@@ -1714,8 +1708,6 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
     ret = 0;
 
  cleanup:
-    VIR_FREE(device);
-    VIR_FREE(source);
     return ret;
 }
 
