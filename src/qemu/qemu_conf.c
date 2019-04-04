@@ -1900,30 +1900,6 @@ qemuGetDomainHugepagePath(const virDomainDef *def,
 
 
 /**
- * qemuGetDomainDefaultHugepath:
- * @def: domain definition
- * @hugetlbfs: array of configured hugepages
- * @nhugetlbfs: number of item in the array
- *
- * Callers must ensure that @hugetlbfs contains at least one entry.
- *
- * Returns 0 on success, -1 otherwise.
- * */
-char *
-qemuGetDomainDefaultHugepath(const virDomainDef *def,
-                             virHugeTLBFSPtr hugetlbfs,
-                             size_t nhugetlbfs)
-{
-    virHugeTLBFSPtr p;
-
-    if (!(p = virFileGetDefaultHugepage(hugetlbfs, nhugetlbfs)))
-        p = &hugetlbfs[0];
-
-    return qemuGetDomainHugepagePath(def, p);
-}
-
-
-/**
  * qemuGetDomainHupageMemPath: Construct HP enabled memory backend path
  *
  * The resulting path is stored at @memPath.

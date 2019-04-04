@@ -374,9 +374,6 @@ int qemuTranslateSnapshotDiskSourcePool(virDomainSnapshotDiskDefPtr def);
 char * qemuGetBaseHugepagePath(virHugeTLBFSPtr hugepage);
 char * qemuGetDomainHugepagePath(const virDomainDef *def,
                                  virHugeTLBFSPtr hugepage);
-char * qemuGetDomainDefaultHugepath(const virDomainDef *def,
-                                    virHugeTLBFSPtr hugetlbfs,
-                                    size_t nhugetlbfs);
 
 int qemuGetDomainHupageMemPath(const virDomainDef *def,
                                virQEMUDriverConfigPtr cfg,
