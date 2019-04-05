@@ -2151,29 +2151,6 @@ vzSnapObjFromSnapshot(virDomainSnapshotObjListPtr snapshots,
 }
 
 static int
-vzCurrentSnapshotIterator(void *payload,
-                              const void *name ATTRIBUTE_UNUSED,
-                              void *data)
-{
-    virDomainMomentObjPtr snapshot = payload;
-    virDomainMomentObjPtr *current = data;
-
-    if (snapshot->def->current)
-        *current = snapshot;
-
-    return 0;
-}
-
-static virDomainMomentObjPtr
-vzFindCurrentSnapshot(virDomainSnapshotObjListPtr snapshots)
-{
-    virDomainMomentObjPtr current = NULL;
-
-    virDomainSnapshotForEach(snapshots, vzCurrentSnapshotIterator, &current);
-    return current;
-}
-
-static int
 vzDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
 {
     virDomainObjPtr dom;
@@ -2451,7 +2428,7 @@ vzDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
         goto cleanup;
 
-    ret = vzFindCurrentSnapshot(snapshots) != NULL;
+    ret = virDomainSnapshotGetCurrent(snapshots) != NULL;
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
@@ -2517,7 +2494,7 @@ vzDomainSnapshotCurrent(virDomainPtr domain, unsigned int flags)
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
         goto cleanup;
 
-    if (!(current = vzFindCurrentSnapshot(snapshots))) {
+    if (!(current = virDomainSnapshotGetCurrent(snapshots))) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT, "%s",
                        _("the domain does not have a current snapshot"));
         goto cleanup;
@@ -2551,7 +2528,7 @@ vzDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot, unsigned int flags)
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
         goto cleanup;
 
-    current = vzFindCurrentSnapshot(snapshots);
+    current = virDomainSnapshotGetCurrent(snapshots);
     ret = current && STREQ(snapshot->name, current->def->name);
 
  cleanup:
@@ -2647,7 +2624,7 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
         goto cleanup;
 
-    if (!(current = vzFindCurrentSnapshot(snapshots))) {
+    if (!(current = virDomainSnapshotGetCurrent(snapshots))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("can't find created snapshot"));
         goto cleanup;

@@ -4653,7 +4653,6 @@ prlsdkParseSnapshotTree(const char *treexml)
     xmlNodePtr *nodes = NULL;
     virDomainSnapshotDefPtr def = NULL;
     virDomainMomentObjPtr snapshot;
-    virDomainMomentObjPtr current = NULL;
     virDomainSnapshotObjListPtr snapshots = NULL;
     char *xmlstr = NULL;
     int n;
@@ -4740,22 +4739,21 @@ prlsdkParseSnapshotTree(const char *treexml)
         }
         VIR_FREE(xmlstr);
 
-        xmlstr = virXPathString("string(./@current)", ctxt);
-        def->current = xmlstr && STREQ("yes", xmlstr);
-        VIR_FREE(xmlstr);
-
         if (!(snapshot = virDomainSnapshotAssignDef(snapshots, def)))
             goto cleanup;
         def = NULL;
 
-        if (snapshot->def->current) {
-            if (current) {
+        xmlstr = virXPathString("string(./@current)", ctxt);
+        if (xmlstr && STREQ("yes", xmlstr)) {
+            if (virDomainSnapshotGetCurrent(snapshots)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("too many current snapshots"));
+                VIR_FREE(xmlstr);
                 goto cleanup;
             }
-            current = snapshot;
+            virDomainSnapshotSetCurrent(snapshots, snapshot);
         }
+        VIR_FREE(xmlstr);
     }
 
     if (virDomainSnapshotUpdateRelations(snapshots) < 0) {
