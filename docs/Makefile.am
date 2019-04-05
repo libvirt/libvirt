@@ -55,6 +55,12 @@ css = \
   mobile.css \
   main.css
 
+javascript = \
+  js/jquery-3.1.1.min.js \
+  js/jquery.rss.min.js \
+  js/moment.min.js
+
+
 fonts = \
   fonts/LICENSE.md \
   fonts/stylesheet.css \
@@ -171,7 +177,7 @@ EXTRA_DIST= \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
-  $(logofiles) \
+  $(javascript) $(logofiles) \
   $(internals_html_in) $(internals_html) $(fonts) \
   aclperms.htmlinc \
   hvsupport.pl \
@@ -353,6 +359,9 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
 	for f in $(css) $(dot_html) $(gif) $(png); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR); done
+	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/js
+	for f in $(javascript); do \
+	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/js/; done
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/logos
 	for f in $(logofiles); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/logos; done
@@ -378,6 +387,9 @@ uninstall-local:
 	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
 	done
 	for f in $(logofiles); do \
+	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
+	done
+	for f in $(javascript); do \
 	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
 	done
 	for h in $(apihtml); do rm -f $(DESTDIR)$(HTML_DIR)/$$h; done
