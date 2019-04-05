@@ -163,7 +163,6 @@ struct _virCPUx86Map {
 };
 
 static virCPUx86MapPtr cpuMap;
-static unsigned int microcodeVersion;
 
 int virCPUx86DriverOnceInit(void);
 VIR_ONCE_GLOBAL_INIT(virCPUx86Driver);
@@ -1331,8 +1330,6 @@ virCPUx86DriverOnceInit(void)
     if (!(cpuMap = virCPUx86LoadMap()))
         return -1;
 
-    microcodeVersion = virHostCPUGetMicrocodeVersion();
-
     return 0;
 }
 
@@ -2372,7 +2369,7 @@ virCPUx86GetHost(virCPUDefPtr cpu,
         goto cleanup;
 
     ret = x86DecodeCPUData(cpu, cpuData, models);
-    cpu->microcodeVersion = microcodeVersion;
+    cpu->microcodeVersion = virHostCPUGetMicrocodeVersion();
 
  cleanup:
     virCPUx86DataFree(cpuData);
