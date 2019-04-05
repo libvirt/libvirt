@@ -99,40 +99,11 @@
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
         <xsl:apply-templates select="/html:html/html:head/*" mode="content"/>
 
-        <script type="text/javascript">
-          <xsl:comment>
-          <![CDATA[
-      function init() {
-          window.addEventListener('scroll', function(e){
-              var distanceY = window.pageYOffset || document.documentElement.scrollTop,
-              shrinkOn = 94
-              home = document.getElementById("home");
-              links = document.getElementById("jumplinks");
-              search = document.getElementById("search");
-              body = document.getElementById("body");
-              if (distanceY > shrinkOn) {
-                  if (home.className != "navhide") {
-                      body.className = "navhide"
-                      home.className = "navhide"
-                      links.className = "navhide"
-                      search.className = "navhide"
-                  }
-              } else {
-                  if (home.className == "navhide") {
-                      body.className = ""
-                      home.className = ""
-                      links.className = ""
-                      search.className = ""
-                  }
-              }
-          });
-      }
-      window.onload = init();
-           ]]>
-          </xsl:comment>
+        <script type="text/javascript" src="{$href_base}js/main.js">
+          <xsl:comment>// forces non-empty element</xsl:comment>
         </script>
       </head>
-      <body>
+      <body onload="pageload()">
         <xsl:if test="html:html/html:body/@class">
           <xsl:attribute name="class">
             <xsl:value-of select="html:html/html:body/@class"/>
