@@ -234,7 +234,6 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodes,
     struct qemuBlockNodeNameGetBackingChainData data;
     VIR_AUTOPTR(virHashTable) namednodestable = NULL;
     VIR_AUTOPTR(virHashTable) disks = NULL;
-    virHashTablePtr ret = NULL;
 
     memset(&data, 0, sizeof(data));
 
@@ -257,8 +256,7 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodes,
                                       &data) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, disks);
-    return ret;
+    VIR_RETURN_PTR(disks);
 }
 
 
@@ -375,7 +373,6 @@ virHashTablePtr
 qemuBlockGetNodeData(virJSONValuePtr data)
 {
     VIR_AUTOPTR(virHashTable) nodedata = NULL;
-    virHashTablePtr ret = NULL;
 
     if (!(nodedata = virHashCreate(50, virJSONValueHashFree)))
         return NULL;
@@ -384,8 +381,7 @@ qemuBlockGetNodeData(virJSONValuePtr data)
                                       qemuBlockNamedNodesArrayToHash, nodedata) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, nodedata);
-    return ret;
+    VIR_RETURN_PTR(nodedata);
 }
 
 
@@ -414,7 +410,6 @@ virURIPtr
 qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
 {
     VIR_AUTOPTR(virURI) uri = NULL;
-    virURIPtr ret = NULL;
 
     if (src->nhosts != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -455,8 +450,7 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
     if (VIR_STRDUP(uri->server, src->hosts->name) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, uri);
-    return ret;
+    VIR_RETURN_PTR(uri);
 }
 
 
@@ -478,7 +472,6 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDefPtr host,
                                              bool legacy)
 {
     VIR_AUTOPTR(virJSONValue) server = NULL;
-    virJSONValuePtr ret = NULL;
     const char *transport;
     const char *field;
     VIR_AUTOFREE(char *) port = NULL;
@@ -522,8 +515,7 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDefPtr host,
         return NULL;
     }
 
-    VIR_STEAL_PTR(ret, server);
-    return ret;
+    VIR_RETURN_PTR(server);
 }
 
 
@@ -541,7 +533,6 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
 {
     VIR_AUTOPTR(virJSONValue) servers = NULL;
     VIR_AUTOPTR(virJSONValue) server = NULL;
-    virJSONValuePtr ret = NULL;
     virStorageNetHostDefPtr host;
     size_t i;
 
@@ -560,8 +551,7 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
         server = NULL;
     }
 
-    VIR_STEAL_PTR(ret, servers);
-    return ret;
+    VIR_RETURN_PTR(servers);
 }
 
 
@@ -610,7 +600,6 @@ qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(virStorageSourcePtr src)
 {
     VIR_AUTOPTR(virJSONValue) servers = NULL;
     VIR_AUTOPTR(virJSONValue) server = NULL;
-    virJSONValuePtr ret = NULL;
     virStorageNetHostDefPtr host;
     size_t i;
 
@@ -629,8 +618,7 @@ qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(virStorageSourcePtr src)
         server = NULL;
     }
 
-    VIR_STEAL_PTR(ret, servers);
-    return ret;
+    VIR_RETURN_PTR(servers);
 }
 
 
@@ -640,7 +628,6 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src,
 {
     VIR_AUTOPTR(virJSONValue) servers = NULL;
     VIR_AUTOPTR(virJSONValue) props = NULL;
-    virJSONValuePtr ret = NULL;
 
     if (!(servers = qemuBlockStorageSourceBuildHostsJSONSocketAddress(src, legacy)))
         return NULL;
@@ -662,8 +649,7 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src,
         virJSONValueObjectAdd(props, "u:debug", src->debugLevel, NULL) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, props);
-    return ret;
+    VIR_RETURN_PTR(props);
 }
 
 
@@ -1048,7 +1034,6 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
 {
     int actualType = virStorageSourceGetActualType(src);
     VIR_AUTOPTR(virJSONValue) fileprops = NULL;
-    virJSONValuePtr ret = NULL;
 
     switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -1137,8 +1122,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, fileprops);
-    return ret;
+    VIR_RETURN_PTR(fileprops);
 }
 
 
@@ -1266,7 +1250,6 @@ qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSourcePtr src)
     int detectZeroesMode = virDomainDiskGetDetectZeroesMode(src->discard,
                                                             src->detect_zeroes);
     VIR_AUTOPTR(virJSONValue) props = NULL;
-    virJSONValuePtr ret = NULL;
 
     if (qemuBlockNodeNameValidate(src->nodeformat) < 0)
         return NULL;
@@ -1292,8 +1275,7 @@ qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSourcePtr src)
     if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, props) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, props);
-    return ret;
+    VIR_RETURN_PTR(props);
 }
 
 
@@ -1302,7 +1284,6 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSourcePtr src)
 {
     const char *driver = NULL;
     VIR_AUTOPTR(virJSONValue) props = NULL;
-    virJSONValuePtr ret = NULL;
 
     if (!(props = qemuBlockStorageSourceGetBlockdevFormatCommonProps(src)))
         return NULL;
@@ -1366,8 +1347,7 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSourcePtr src)
         virJSONValueObjectAdd(props, "s:driver", driver, NULL) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, props);
-    return ret;
+    VIR_RETURN_PTR(props);
 }
 
 
@@ -1385,7 +1365,6 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src)
 {
     bool backingSupported = src->format >= VIR_STORAGE_FILE_BACKING;
     VIR_AUTOPTR(virJSONValue) props = NULL;
-    virJSONValuePtr ret = NULL;
 
     if (virStorageSourceHasBacking(src) && !backingSupported) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1413,8 +1392,7 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src)
         }
     }
 
-    VIR_STEAL_PTR(ret, props);
-    return ret;
+    VIR_RETURN_PTR(props);
 }
 
 
@@ -1457,7 +1435,6 @@ qemuBlockStorageSourceAttachDataPtr
 qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
-    qemuBlockStorageSourceAttachDataPtr ret = NULL;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
@@ -1469,8 +1446,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
     data->storageNodeName = src->nodestorage;
     data->formatNodeName = src->nodeformat;
 
-    VIR_STEAL_PTR(ret, data);
-    return ret;
+    VIR_RETURN_PTR(data);
 }
 
 
