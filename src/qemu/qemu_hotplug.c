@@ -417,177 +417,6 @@ qemuHotplugRemoveManagedPR(virQEMUDriverPtr driver,
 }
 
 
-struct _qemuHotplugDiskSourceData {
-    qemuBlockStorageSourceAttachDataPtr *backends;
-    size_t nbackends;
-};
-typedef struct _qemuHotplugDiskSourceData qemuHotplugDiskSourceData;
-typedef qemuHotplugDiskSourceData *qemuHotplugDiskSourceDataPtr;
-
-
-static void
-qemuHotplugDiskSourceDataFree(qemuHotplugDiskSourceDataPtr data)
-{
-    size_t i;
-
-    if (!data)
-        return;
-
-    for (i = 0; i < data->nbackends; i++)
-        qemuBlockStorageSourceAttachDataFree(data->backends[i]);
-
-    VIR_FREE(data->backends);
-    VIR_FREE(data);
-}
-
-
-static qemuHotplugDiskSourceDataPtr
-qemuHotplugDiskSourceRemovePrepare(virDomainDiskDefPtr disk,
-                                   virStorageSourcePtr src,
-                                   virQEMUCapsPtr qemuCaps)
-{
-    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) backend = NULL;
-    qemuHotplugDiskSourceDataPtr data = NULL;
-    qemuHotplugDiskSourceDataPtr ret = NULL;
-    char *drivealias = NULL;
-    virStorageSourcePtr n;
-
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-            if (!(backend = qemuBlockStorageSourceDetachPrepare(n, NULL)))
-                goto cleanup;
-
-            if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
-                goto cleanup;
-        }
-    } else {
-        if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
-            goto cleanup;
-
-        if (!(backend = qemuBlockStorageSourceDetachPrepare(src, drivealias)))
-            goto cleanup;
-
-        if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
-            goto cleanup;
-    }
-
-    VIR_STEAL_PTR(ret, data);
-
- cleanup:
-    qemuHotplugDiskSourceDataFree(data);
-    return ret;
-}
-
-
-/**
- * qemuHotplugDiskSourceAttachPrepare:
- * @disk: disk to generate attachment data for
- * @src: disk source to prepare attachment
- * @qemuCaps: capabilities of the qemu process
- *
- * Prepares and returns qemuHotplugDiskSourceData structure filled with all data
- * which will fully attach the source backend of the disk to a given VM.
- */
-static qemuHotplugDiskSourceDataPtr
-qemuHotplugDiskSourceAttachPrepare(virDomainDiskDefPtr disk,
-                                   virStorageSourcePtr src,
-                                   virQEMUCapsPtr qemuCaps)
-{
-    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) backend = NULL;
-    qemuHotplugDiskSourceDataPtr data;
-    qemuHotplugDiskSourceDataPtr ret = NULL;
-    virStorageSourcePtr savesrc = NULL;
-    virStorageSourcePtr n;
-
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-            if (!(backend = qemuBlockStorageSourceAttachPrepareBlockdev(n)))
-                goto cleanup;
-
-            if (qemuBuildStorageSourceAttachPrepareCommon(n, backend, qemuCaps) < 0)
-                goto cleanup;
-
-            if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
-                goto cleanup;
-        }
-    } else {
-        VIR_STEAL_PTR(savesrc, disk->src);
-        disk->src = src;
-
-        if (!(backend = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
-            goto cleanup;
-
-        VIR_STEAL_PTR(disk->src, savesrc);
-
-        if (qemuBuildStorageSourceAttachPrepareCommon(src, backend, qemuCaps) < 0)
-            goto cleanup;
-
-        if (VIR_APPEND_ELEMENT(data->backends, data->nbackends, backend) < 0)
-            goto cleanup;
-    }
-
-    VIR_STEAL_PTR(ret, data);
-
- cleanup:
-    if (savesrc)
-        VIR_STEAL_PTR(disk->src, savesrc);
-
-    qemuHotplugDiskSourceDataFree(data);
-    return ret;
-}
-
-
-/**
- * qemuHotplugDiskSourceAttach:
- * @mon: monitor object
- * @data: disk backend data object describing what to remove
- *
- * Attach a disk source backend with all relevant pieces. Caller must enter the
- * monitor context for @mon.
- */
-static int
-qemuHotplugDiskSourceAttach(qemuMonitorPtr mon,
-                            qemuHotplugDiskSourceDataPtr data)
-{
-    size_t i;
-
-    for (i = data->nbackends; i > 0; i--) {
-        if (qemuBlockStorageSourceAttachApply(mon, data->backends[i - 1]) < 0)
-            return -1;
-    }
-
-
-    return 0;
-}
-
-
-/**
- * qemuHotplugDiskSourceRemove:
- * @mon: monitor object
- * @data: disk backend data object describing what to remove
- *
- * Remove a disk source backend with all relevant pieces. This function
- * preserves the error which was set prior to calling it. Caller must enter the
- * monitor context for @mon.
- */
-static void
-qemuHotplugDiskSourceRemove(qemuMonitorPtr mon,
-                            qemuHotplugDiskSourceDataPtr data)
-
-{
-    size_t i;
-
-    for (i = 0; i < data->nbackends; i++)
-        qemuBlockStorageSourceAttachRollback(mon, data->backends[i]);
-}
-
-
 /**
  * qemuDomainChangeMediaBlockdev:
  * @driver: qemu driver structure
@@ -614,20 +443,19 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    qemuHotplugDiskSourceDataPtr newbackend = NULL;
-    qemuHotplugDiskSourceDataPtr oldbackend = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) newbackend = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) oldbackend = NULL;
     char *nodename = NULL;
     int rc;
     int ret = -1;
 
     if (!virStorageSourceIsEmpty(oldsrc) &&
-        !(oldbackend = qemuHotplugDiskSourceRemovePrepare(disk, oldsrc,
-                                                          priv->qemuCaps)))
+        !(oldbackend = qemuBlockStorageSourceChainDetachPrepareBlockdev(oldsrc)))
         goto cleanup;
 
     if (!virStorageSourceIsEmpty(newsrc)) {
-        if (!(newbackend = qemuHotplugDiskSourceAttachPrepare(disk, newsrc,
-                                                              priv->qemuCaps)))
+        if (!(newbackend = qemuBuildStorageSourceChainAttachPrepareBlockdev(newsrc,
+                                                                            priv->qemuCaps)))
             goto cleanup;
 
         if (qemuDomainDiskGetBackendAlias(disk, priv->qemuCaps, &nodename) < 0)
@@ -649,11 +477,11 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
     rc = qemuMonitorBlockdevMediumRemove(priv->mon, diskPriv->qomName);
 
     if (rc == 0 && oldbackend)
-        qemuHotplugDiskSourceRemove(priv->mon, oldbackend);
+        qemuBlockStorageSourceChainDetach(priv->mon, oldbackend);
 
     if (newbackend && nodename) {
         if (rc == 0)
-            rc = qemuHotplugDiskSourceAttach(priv->mon, newbackend);
+            rc = qemuBlockStorageSourceChainAttach(priv->mon, newbackend);
 
         if (rc == 0)
             rc = qemuMonitorBlockdevMediumInsert(priv->mon, diskPriv->qomName,
@@ -669,8 +497,6 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuHotplugDiskSourceDataFree(newbackend);
-    qemuHotplugDiskSourceDataFree(oldbackend);
     VIR_FREE(nodename);
     return ret;
 }
