@@ -4381,7 +4381,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
                            virDomainDiskDefPtr disk)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    qemuHotplugDiskSourceDataPtr diskbackend = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) diskBackend = NULL;
     virDomainDeviceDef dev;
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -4392,12 +4392,20 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
 
-    if (!(diskbackend = qemuHotplugDiskSourceRemovePrepare(disk, disk->src,
-                                                           priv->qemuCaps)))
-        return -1;
 
     if (blockdev) {
         if (VIR_STRDUP(corAlias, diskPriv->nodeCopyOnRead) < 0)
+            goto cleanup;
+
+        if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareBlockdev(disk->src)))
+            goto cleanup;
+    } else {
+        char *driveAlias;
+
+        if (!(driveAlias = qemuAliasDiskDriveFromDisk(disk)))
+            goto cleanup;
+
+        if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareDrive(disk->src, driveAlias)))
             goto cleanup;
     }
 
@@ -4413,7 +4421,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     if (corAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, corAlias));
 
-    qemuHotplugDiskSourceRemove(priv->mon, diskbackend);
+    qemuBlockStorageSourceChainDetach(priv->mon, diskBackend);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
@@ -4435,7 +4443,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuHotplugDiskSourceDataFree(diskbackend);
     virDomainDiskDefFree(disk);
     return ret;
 }
