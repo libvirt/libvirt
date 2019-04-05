@@ -23,6 +23,7 @@
   <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='pku'/>
   <feature policy='require' name='ospke'/>
+  <feature policy='require' name='md-clear'/>
   <feature policy='require' name='stibp'/>
   <feature policy='require' name='arch-capabilities'/>
   <feature policy='require' name='xsaves'/>
