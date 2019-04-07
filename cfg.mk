@@ -809,11 +809,11 @@ sc_prohibit_cross_inclusion:
 sc_require_enum_last_marker:
 	@$(VC_LIST_EXCEPT) | xargs \
 		$(GREP) -A1 -nE '^[^#]*VIR_ENUM_IMPL *\(' /dev/null \
-	   | $(SED) -ne '/VIR_ENUM_IMPL[^,]*,$$/N' \
-	     -e '/VIR_ENUM_IMPL[^,]*,[^,]*[^_,][^L,][^A,][^S,][^T,],/p' \
+	   | $(SED) -ne '/VIR_ENUM_IMPL.*,$$/N' \
+	     -e '/VIR_ENUM_IMPL[^,]*,[^,]*,[^,]*[^_,][^L,][^A,][^S,][^T,],/p' \
 	     -e '/VIR_ENUM_IMPL[^,]*,[^,]\{0,4\},/p' \
 	   | $(GREP) . && \
-	  { echo '$(ME): enum impl needs to use _LAST marker' 1>&2; \
+	  { echo '$(ME): enum impl needs _LAST marker on second line' 1>&2; \
 	    exit 1; } || :
 
 # In Python files we don't want to end lines with a semicolon like in C
