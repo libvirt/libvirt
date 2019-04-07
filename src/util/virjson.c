@@ -24,25 +24,15 @@
 #include <config.h>
 
 #include "virjson.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virbuffer.h"
 
 #if WITH_YAJL
 # include <yajl/yajl_gen.h>
 # include <yajl/yajl_parse.h>
-
-# ifdef WITH_YAJL2
-#  define yajl_size_t size_t
-#  define VIR_YAJL_STATUS_OK(status) ((status) == yajl_status_ok)
-# else
-#  define yajl_size_t unsigned int
-#  define yajl_complete_parse yajl_parse_complete
-#  define VIR_YAJL_STATUS_OK(status) \
-    ((status) == yajl_status_ok || (status) == yajl_status_insufficient_data)
-# endif
 
 #endif
 
@@ -50,6 +40,44 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.json");
+
+typedef struct _virJSONObject virJSONObject;
+typedef virJSONObject *virJSONObjectPtr;
+
+typedef struct _virJSONObjectPair virJSONObjectPair;
+typedef virJSONObjectPair *virJSONObjectPairPtr;
+
+typedef struct _virJSONArray virJSONArray;
+typedef virJSONArray *virJSONArrayPtr;
+
+
+struct _virJSONObjectPair {
+    char *key;
+    virJSONValuePtr value;
+};
+
+struct _virJSONObject {
+    size_t npairs;
+    virJSONObjectPairPtr pairs;
+};
+
+struct _virJSONArray {
+    size_t nvalues;
+    virJSONValuePtr *values;
+};
+
+struct _virJSONValue {
+    int type; /* enum virJSONType */
+
+    union {
+        virJSONObject object;
+        virJSONArray array;
+        char *string;
+        char *number; /* int/float/etc format is context defined so we can't parse it here :-( */
+        int boolean;
+    } data;
+};
+
 
 typedef struct _virJSONParserState virJSONParserState;
 typedef virJSONParserState *virJSONParserStatePtr;
@@ -66,6 +94,13 @@ struct _virJSONParser {
     size_t nstate;
     int wrap;
 };
+
+
+virJSONType
+virJSONValueGetType(const virJSONValue *value)
+{
+    return value->type;
+}
 
 
 /**
@@ -98,12 +133,17 @@ struct _virJSONParser {
  *
  * b: boolean value
  * B: boolean value, omitted if false
+ * T: boolean value specified by a virTristate(Bool|Switch) value, omitted on
+ * the _ABSENT value
  *
  * d: double precision floating point number
  * n: json null value
  *
+ * The following two cases take a pointer to a pointer to a virJSONValuePtr. The
+ * pointer is cleared when the virJSONValuePtr is stolen into the object.
  * a: json object, must be non-NULL
  * A: json object, omitted if NULL
+ *
  * m: a bitmap represented as a JSON array, must be non-NULL
  * M: a bitmap represented as a JSON array, omitted if NULL
  *
@@ -218,12 +258,23 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
             rc = virJSONValueObjectAppendNumberDouble(obj, key, val);
         }   break;
 
+        case 'T':
         case 'B':
         case 'b': {
             int val = va_arg(args, int);
 
             if (!val && type == 'B')
                 continue;
+
+            if (type == 'T') {
+                if (val == VIR_TRISTATE_BOOL_ABSENT)
+                    continue;
+
+                if (val == VIR_TRISTATE_BOOL_NO)
+                    val = 0;
+                else
+                    val = 1;
+            }
 
             rc = virJSONValueObjectAppendBoolean(obj, key, val);
         }   break;
@@ -234,9 +285,9 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
 
         case 'A':
         case 'a': {
-            virJSONValuePtr val = va_arg(args, virJSONValuePtr);
+            virJSONValuePtr *val = va_arg(args, virJSONValuePtr *);
 
-            if (!val) {
+            if (!(*val)) {
                 if (type == 'A')
                     continue;
 
@@ -246,7 +297,8 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 goto cleanup;
             }
 
-            rc = virJSONValueObjectAppend(obj, key, val);
+            if ((rc = virJSONValueObjectAppend(obj, key, *val)) == 0)
+                *val = NULL;
         }   break;
 
         case 'M':
@@ -345,7 +397,7 @@ void
 virJSONValueFree(virJSONValuePtr value)
 {
     size_t i;
-    if (!value || value->protect)
+    if (!value)
         return;
 
     switch ((virJSONType) value->type) {
@@ -373,6 +425,14 @@ virJSONValueFree(virJSONValuePtr value)
     }
 
     VIR_FREE(value);
+}
+
+
+void
+virJSONValueHashFree(void *opaque,
+                     const void *name ATTRIBUTE_UNUSED)
+{
+    virJSONValueFree(opaque);
 }
 
 
@@ -440,65 +500,50 @@ virJSONValueNewNumber(const char *data)
 virJSONValuePtr
 virJSONValueNewNumberInt(int data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virAsprintf(&str, "%i", data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberUint(unsigned int data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virAsprintf(&str, "%u", data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberLong(long long data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virAsprintf(&str, "%lld", data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberUlong(unsigned long long data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virAsprintf(&str, "%llu", data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberDouble(double data)
 {
-    virJSONValuePtr val = NULL;
-    char *str;
+    VIR_AUTOFREE(char *) str = NULL;
     if (virDoubleToStr(&str, data) < 0)
         return NULL;
-    val = virJSONValueNewNumber(str);
-    VIR_FREE(str);
-    return val;
+    return virJSONValueNewNumber(str);
 }
 
 
@@ -566,11 +611,16 @@ virJSONValueObjectAppend(virJSONValuePtr object,
 {
     char *newkey;
 
-    if (object->type != VIR_JSON_TYPE_OBJECT)
+    if (object->type != VIR_JSON_TYPE_OBJECT) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("expecting JSON object"));
         return -1;
+    }
 
-    if (virJSONValueObjectHasKey(object, key))
+    if (virJSONValueObjectHasKey(object, key)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("duplicate key '%s'"), key);
         return -1;
+    }
 
     if (VIR_STRDUP(newkey, key) < 0)
         return -1;
@@ -720,8 +770,10 @@ int
 virJSONValueArrayAppend(virJSONValuePtr array,
                         virJSONValuePtr value)
 {
-    if (array->type != VIR_JSON_TYPE_ARRAY)
+    if (array->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("expecting JSON array"));
         return -1;
+    }
 
     if (VIR_REALLOC_N(array->data.array.values,
                       array->data.array.nvalues + 1) < 0)
@@ -730,6 +782,21 @@ virJSONValueArrayAppend(virJSONValuePtr array,
     array->data.array.values[array->data.array.nvalues] = value;
     array->data.array.nvalues++;
 
+    return 0;
+}
+
+
+int
+virJSONValueArrayAppendString(virJSONValuePtr object,
+                              const char *value)
+{
+    virJSONValuePtr jvalue = virJSONValueNewString(value);
+    if (!jvalue)
+        return -1;
+    if (virJSONValueArrayAppend(object, jvalue) < 0) {
+        virJSONValueFree(jvalue);
+        return -1;
+    }
     return 0;
 }
 
@@ -897,18 +964,25 @@ virJSONValueObjectGetValue(virJSONValuePtr object,
 
 
 bool
+virJSONValueIsObject(virJSONValuePtr object)
+{
+    if (object)
+        return object->type == VIR_JSON_TYPE_OBJECT;
+    else
+        return false;
+}
+
+
+bool
 virJSONValueIsArray(virJSONValuePtr array)
 {
     return array->type == VIR_JSON_TYPE_ARRAY;
 }
 
 
-ssize_t
+size_t
 virJSONValueArraySize(const virJSONValue *array)
 {
-    if (array->type != VIR_JSON_TYPE_ARRAY)
-        return -1;
-
     return array->data.array.nvalues;
 }
 
@@ -1014,6 +1088,16 @@ virJSONValueGetString(virJSONValuePtr string)
 }
 
 
+const char *
+virJSONValueGetNumberString(virJSONValuePtr number)
+{
+    if (number->type != VIR_JSON_TYPE_NUMBER)
+        return NULL;
+
+    return number->data.number;
+}
+
+
 int
 virJSONValueGetNumberInt(virJSONValuePtr number,
                          int *value)
@@ -1098,10 +1182,9 @@ int
 virJSONValueGetArrayAsBitmap(const virJSONValue *val,
                              virBitmapPtr *bitmap)
 {
-    int ret = -1;
     virJSONValuePtr elem;
     size_t i;
-    unsigned long long *elems = NULL;
+    VIR_AUTOFREE(unsigned long long *) elems = NULL;
     unsigned long long maxelem = 0;
 
     *bitmap = NULL;
@@ -1118,25 +1201,20 @@ virJSONValueGetArrayAsBitmap(const virJSONValue *val,
 
         if (elem->type != VIR_JSON_TYPE_NUMBER ||
             virStrToLong_ullp(elem->data.number, NULL, 10, &elems[i]) < 0)
-            goto cleanup;
+            return -1;
 
         if (elems[i] > maxelem)
             maxelem = elems[i];
     }
 
     if (!(*bitmap = virBitmapNewQuiet(maxelem + 1)))
-        goto cleanup;
+        return -1;
 
     /* second pass sets the correct bits in the map */
     for (i = 0; i < val->data.array.nvalues; i++)
         ignore_value(virBitmapSetBit(*bitmap, elems[i]));
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(elems);
-
-    return ret;
+    return 0;
 }
 
 
@@ -1187,6 +1265,33 @@ virJSONValueObjectGetString(virJSONValuePtr object,
         return NULL;
 
     return virJSONValueGetString(val);
+}
+
+
+/**
+ * virJSONValueObjectGetStringOrNumber:
+ * @object: JSON value object
+ * @key: name of the property in @object to get
+ *
+ * Gets a property named @key from the JSON object @object. The value may be
+ * a number or a string and is returned as a string. In cases when the property
+ * is not present or is not a string or number NULL is returned.
+ */
+const char *
+virJSONValueObjectGetStringOrNumber(virJSONValuePtr object,
+                                    const char *key)
+{
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+
+    if (!val)
+        return NULL;
+
+    if (val->type == VIR_JSON_TYPE_STRING)
+        return val->data.string;
+    else if (val->type == VIR_JSON_TYPE_NUMBER)
+        return val->data.number;
+
+    return NULL;
 }
 
 
@@ -1292,6 +1397,14 @@ virJSONValuePtr
 virJSONValueObjectStealArray(virJSONValuePtr object, const char *key)
 {
     return virJSONValueObjectStealByType(object, key, VIR_JSON_TYPE_ARRAY);
+}
+
+
+virJSONValuePtr
+virJSONValueObjectStealObject(virJSONValuePtr object,
+                              const char *key)
+{
+    return virJSONValueObjectStealByType(object, key, VIR_JSON_TYPE_OBJECT);
 }
 
 
@@ -1500,7 +1613,7 @@ virJSONParserHandleBoolean(void *ctx,
 static int
 virJSONParserHandleNumber(void *ctx,
                           const char *s,
-                          yajl_size_t l)
+                          size_t l)
 {
     virJSONParserPtr parser = ctx;
     char *str;
@@ -1528,7 +1641,7 @@ virJSONParserHandleNumber(void *ctx,
 static int
 virJSONParserHandleString(void *ctx,
                           const unsigned char *stringVal,
-                          yajl_size_t stringLen)
+                          size_t stringLen)
 {
     virJSONParserPtr parser = ctx;
     virJSONValuePtr value = virJSONValueNewStringLen((const char *)stringVal,
@@ -1551,7 +1664,7 @@ virJSONParserHandleString(void *ctx,
 static int
 virJSONParserHandleMapKey(void *ctx,
                           const unsigned char *stringVal,
-                          yajl_size_t stringLen)
+                          size_t stringLen)
 {
     virJSONParserPtr parser = ctx;
     virJSONParserStatePtr state;
@@ -1697,42 +1810,19 @@ virJSONValueFromString(const char *jsonstring)
     virJSONValuePtr ret = NULL;
     int rc;
     size_t len = strlen(jsonstring);
-# ifndef WITH_YAJL2
-    yajl_parser_config cfg = { 0, 1 }; /* Match yajl 2 default behavior */
-    virJSONValuePtr tmp;
-# endif
 
     VIR_DEBUG("string=%s", jsonstring);
 
-# ifdef WITH_YAJL2
     hand = yajl_alloc(&parserCallbacks, NULL, &parser);
-# else
-    hand = yajl_alloc(&parserCallbacks, &cfg, NULL, &parser);
-# endif
     if (!hand) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to create JSON parser"));
         goto cleanup;
     }
 
-    /* Yajl 2 is nice enough to default to rejecting trailing garbage.
-     * Yajl 1.0.12 has yajl_get_bytes_consumed to make that detection
-     * simpler.  But we're stuck with yajl 1.0.7 on RHEL 6, which
-     * happily quits parsing at the end of a valid JSON construct,
-     * with no visibility into how much more input remains.  Wrapping
-     * things in an array forces yajl to confess the truth.  */
-# ifdef WITH_YAJL2
+    /* Yajl 2 is nice enough to default to rejecting trailing garbage. */
     rc = yajl_parse(hand, (const unsigned char *)jsonstring, len);
-# else
-    rc = yajl_parse(hand, (const unsigned char *)"[", 1);
-    parser.wrap = 1;
-    if (VIR_YAJL_STATUS_OK(rc))
-        rc = yajl_parse(hand, (const unsigned char *)jsonstring, len);
-    parser.wrap = 0;
-    if (VIR_YAJL_STATUS_OK(rc))
-        rc = yajl_parse(hand, (const unsigned char *)"]", 1);
-# endif
-    if (!VIR_YAJL_STATUS_OK(rc) ||
+    if (rc != yajl_status_ok ||
         yajl_complete_parse(hand) != yajl_status_ok) {
         unsigned char *errstr = yajl_get_error(hand, 1,
                                                (const unsigned char*)jsonstring,
@@ -1753,18 +1843,6 @@ virJSONValueFromString(const char *jsonstring)
         virJSONValueFree(parser.head);
     } else {
         ret = parser.head;
-# ifndef WITH_YAJL2
-        /* Undo the array wrapping above */
-        tmp = ret;
-        ret = NULL;
-        if (virJSONValueArraySize(tmp) > 1)
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse json %s: too many items present"),
-                           jsonstring);
-        else
-            ret = virJSONValueArraySteal(tmp, 0);
-        virJSONValueFree(tmp);
-# endif
     }
 
  cleanup:
@@ -1799,7 +1877,7 @@ virJSONValueToStringOne(virJSONValuePtr object,
             if (yajl_gen_string(g,
                                 (unsigned char *)object->data.object.pairs[i].key,
                                 strlen(object->data.object.pairs[i].key))
-                                != yajl_gen_status_ok)
+                != yajl_gen_status_ok)
                 return -1;
             if (virJSONValueToStringOne(object->data.object.pairs[i].value, g) < 0)
                 return -1;
@@ -1848,35 +1926,27 @@ virJSONValueToStringOne(virJSONValuePtr object,
 }
 
 
-char *
-virJSONValueToString(virJSONValuePtr object,
+int
+virJSONValueToBuffer(virJSONValuePtr object,
+                     virBufferPtr buf,
                      bool pretty)
 {
     yajl_gen g;
     const unsigned char *str;
-    char *ret = NULL;
-    yajl_size_t len;
-# ifndef WITH_YAJL2
-    yajl_gen_config conf = { pretty ? 1 : 0, pretty ? "  " : " "};
-# endif
+    size_t len;
+    int ret = -1;
 
     VIR_DEBUG("object=%p", object);
 
-# ifdef WITH_YAJL2
     g = yajl_gen_alloc(NULL);
-    if (g) {
-        yajl_gen_config(g, yajl_gen_beautify, pretty ? 1 : 0);
-        yajl_gen_config(g, yajl_gen_indent_string, pretty ? "  " : " ");
-        yajl_gen_config(g, yajl_gen_validate_utf8, 1);
-    }
-# else
-    g = yajl_gen_alloc(&conf, NULL);
-# endif
     if (!g) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to create JSON formatter"));
         goto cleanup;
     }
+    yajl_gen_config(g, yajl_gen_beautify, pretty ? 1 : 0);
+    yajl_gen_config(g, yajl_gen_indent_string, pretty ? "  " : " ");
+    yajl_gen_config(g, yajl_gen_validate_utf8, 1);
 
     if (virJSONValueToStringOne(object, g) < 0) {
         virReportOOMError();
@@ -1888,12 +1958,11 @@ virJSONValueToString(virJSONValuePtr object,
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, (const char *)str));
+    virBufferAdd(buf, (const char *) str, len);
+    ret = 0;
 
  cleanup:
     yajl_gen_free(g);
-
-    VIR_DEBUG("result=%s", NULLSTR(ret));
 
     return ret;
 }
@@ -1909,12 +1978,153 @@ virJSONValueFromString(const char *jsonstring ATTRIBUTE_UNUSED)
 }
 
 
-char *
-virJSONValueToString(virJSONValuePtr object ATTRIBUTE_UNUSED,
+int
+virJSONValueToBuffer(virJSONValuePtr object ATTRIBUTE_UNUSED,
+                     virBufferPtr buf ATTRIBUTE_UNUSED,
                      bool pretty ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("No JSON parser implementation is available"));
-    return NULL;
+    return -1;
 }
 #endif
+
+
+char *
+virJSONValueToString(virJSONValuePtr object,
+                     bool pretty)
+{
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    if (virJSONValueToBuffer(object, &buf, pretty) < 0)
+        return NULL;
+
+    return virBufferContentAndReset(&buf);
+}
+
+
+/**
+ * virJSONStringReformat:
+ * @jsonstr: string to reformat
+ * @pretty: use the pretty formatter
+ *
+ * Reformats a JSON string by passing it to the parser and then to the
+ * formatter. If @pretty is true the JSON is formatted for human eye
+ * compatibility.
+ *
+ * Returns the reformatted JSON string on success; NULL and a libvirt error on
+ * failure.
+ */
+char *
+virJSONStringReformat(const char *jsonstr,
+                      bool pretty)
+{
+    VIR_AUTOPTR(virJSONValue) json = NULL;
+
+    if (!(json = virJSONValueFromString(jsonstr)))
+        return NULL;
+
+    return virJSONValueToString(json, pretty);
+}
+
+
+static int
+virJSONValueObjectDeflattenWorker(const char *key,
+                                  virJSONValuePtr value,
+                                  void *opaque)
+{
+    virJSONValuePtr retobj = opaque;
+    virJSONValuePtr newval = NULL;
+    virJSONValuePtr existobj;
+    char **tokens = NULL;
+    size_t ntokens = 0;
+    int ret = -1;
+
+    /* non-nested keys only need to be copied */
+    if (!strchr(key, '.')) {
+
+        if (virJSONValueIsObject(value))
+            newval = virJSONValueObjectDeflatten(value);
+        else
+            newval = virJSONValueCopy(value);
+
+        if (!newval)
+            return -1;
+
+        if (virJSONValueObjectHasKey(retobj, key)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("can't deflatten colliding key '%s'"), key);
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectAppend(retobj, key, newval) < 0)
+            goto cleanup;
+
+        return 0;
+    }
+
+    if (!(tokens = virStringSplitCount(key, ".", 2, &ntokens)))
+        goto cleanup;
+
+    if (ntokens != 2) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid nested value key '%s'"), key);
+        goto cleanup;
+    }
+
+    if (!(existobj = virJSONValueObjectGet(retobj, tokens[0]))) {
+        if (!(existobj = virJSONValueNewObject()))
+            goto cleanup;
+
+        if (virJSONValueObjectAppend(retobj, tokens[0], existobj) < 0)
+            goto cleanup;
+
+    } else {
+        if (!virJSONValueIsObject(existobj)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("mixing nested objects and values is forbidden in "
+                             "JSON deflattening"));
+            goto cleanup;
+        }
+    }
+
+    ret = virJSONValueObjectDeflattenWorker(tokens[1], value, existobj);
+
+ cleanup:
+    virStringListFreeCount(tokens, ntokens);
+    virJSONValueFree(newval);
+
+    return ret;
+}
+
+
+/**
+ * virJSONValueObjectDeflatten:
+ *
+ * In some cases it's possible to nest JSON objects by prefixing object members
+ * with the parent object name followed by the dot and then the attribute name
+ * rather than directly using a nested value object (e.g qemu's JSON
+ * pseudo-protocol in backing file definition).
+ *
+ * This function will attempt to reverse the process and provide a nested json
+ * hierarchy so that the parsers can be kept simple and we still can use the
+ * weird syntax some users might use.
+ */
+virJSONValuePtr
+virJSONValueObjectDeflatten(virJSONValuePtr json)
+{
+    VIR_AUTOPTR(virJSONValue) deflattened = NULL;
+    virJSONValuePtr ret = NULL;
+
+    if (!(deflattened = virJSONValueNewObject()))
+        return NULL;
+
+    if (virJSONValueObjectForeachKeyValue(json,
+                                          virJSONValueObjectDeflattenWorker,
+                                          deflattened) < 0)
+        return NULL;
+
+    VIR_STEAL_PTR(ret, deflattened);
+
+    return ret;
+}

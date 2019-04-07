@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <stdio.h>
 #include <virtypedparam.h>
 
 #include "testutils.h"
@@ -307,4 +306,4 @@ mymain(void)
     return EXIT_SUCCESS;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

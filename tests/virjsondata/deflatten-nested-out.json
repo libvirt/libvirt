@@ -1,0 +1,28 @@
+{
+  "file": {
+    "nest": {
+      "even": {
+        "objects": "can",
+        "contain": "some",
+        "more": {
+          "deeply": {
+            "nested": "objects",
+            "needing": "deflattening",
+            "some": {
+              "even": "more",
+              "than": {
+                "others": {
+                  "thought": {
+                    "was": "even",
+                    "completely": "necessary"
+                  }
+                }
+              }
+            }
+          },
+          "perhaps": "flat value"
+        }
+      }
+    }
+  }
+}

@@ -4,9 +4,6 @@
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
  *
- * Authors:
- *  Eduardo Otubo <otubo at linux.vnet.ibm.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -22,9 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHYP_DRIVER_H
-# define PHYP_DRIVER_H
+#ifndef LIBVIRT_PHYP_DRIVER_H
+# define LIBVIRT_PHYP_DRIVER_H
 
 int phypRegister(void);
 
-#endif /* PHYP_DRIVER_H */
+#endif /* LIBVIRT_PHYP_DRIVER_H */

@@ -21,14 +21,11 @@
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #include <selinux/selinux.h>
 #include <selinux/context.h>
-#include <attr/xattr.h>
+#include <sys/xattr.h>
 
 #include "internal.h"
 #include "testutils.h"
@@ -45,7 +42,6 @@
 
 VIR_LOG_INIT("tests.securityselinuxlabeltest");
 
-static virCapsPtr caps;
 static virQEMUDriver driver;
 
 static virSecurityManagerPtr mgr;
@@ -189,7 +185,8 @@ testSELinuxLoadDef(const char *testname)
                     abs_srcdir, testname) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseFile(xmlfile, caps, driver.xmlopt, NULL, 0)))
+    if (!(def = virDomainDefParseFile(xmlfile, driver.caps, driver.xmlopt,
+                                      NULL, 0)))
         goto cleanup;
 
     for (i = 0; i < def->ndisks; i++) {
@@ -284,7 +281,7 @@ testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
         }
         if (STRNEQ_NULLABLE(files[i].context, ctx)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "File %s context '%s' did not match epected '%s'",
+                           "File %s context '%s' did not match expected '%s'",
                            files[i].file, ctx, files[i].context);
             VIR_FREE(ctx);
             return -1;
@@ -313,7 +310,7 @@ testSELinuxLabeling(const void *opaque)
     if (!(def = testSELinuxLoadDef(testname)))
         goto cleanup;
 
-    if (virSecurityManagerSetAllLabel(mgr, def, NULL) < 0)
+    if (virSecurityManagerSetAllLabel(mgr, def, NULL, false) < 0)
         goto cleanup;
 
     if (testSELinuxCheckLabels(files, nfiles) < 0)
@@ -357,14 +354,11 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-    if ((caps = testQemuCapsInit()) == NULL)
-        return EXIT_FAILURE;
-
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-#define DO_TEST_LABELING(name)                                           \
-    if (virTestRun("Labelling " # name, testSELinuxLabeling, name) < 0)  \
+#define DO_TEST_LABELING(name) \
+    if (virTestRun("Labelling " # name, testSELinuxLabeling, name) < 0) \
         ret = -1;
 
     setcon((security_context_t)"system_r:system_u:libvirtd_t:s0:c0.c1023");
@@ -379,4 +373,4 @@ mymain(void)
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libsecurityselinuxhelper.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libsecurityselinuxhelper.so")

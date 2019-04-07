@@ -16,19 +16,34 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Cedric Bosdonnat <cbosdonnat@suse.com>
  */
 
-#ifndef __LXC_NATIVE_H__
-# define __LXC_NATIVE_H__
+#ifndef LIBVIRT_LXC_NATIVE_H
+# define LIBVIRT_LXC_NATIVE_H
 
 # include "domain_conf.h"
 
 # define LXC_CONFIG_FORMAT "lxc-tools"
 
+typedef enum {
+    VIR_LXC_NETWORK_CONFIG_NAME,
+    VIR_LXC_NETWORK_CONFIG_TYPE,
+    VIR_LXC_NETWORK_CONFIG_LINK,
+    VIR_LXC_NETWORK_CONFIG_HWADDR,
+    VIR_LXC_NETWORK_CONFIG_FLAGS,
+    VIR_LXC_NETWORK_CONFIG_MACVLAN_MODE,
+    VIR_LXC_NETWORK_CONFIG_VLAN_ID,
+    VIR_LXC_NETWORK_CONFIG_IPV4,
+    VIR_LXC_NETWORK_CONFIG_IPV4_GATEWAY,
+    VIR_LXC_NETWORK_CONFIG_IPV6,
+    VIR_LXC_NETWORK_CONFIG_IPV6_GATEWAY,
+    VIR_LXC_NETWORK_CONFIG_LAST,
+} virLXCNetworkConfigEntry;
+
+VIR_ENUM_DECL(virLXCNetworkConfigEntry);
+
 virDomainDefPtr lxcParseConfigString(const char *config,
                                      virCapsPtr caps,
                                      virDomainXMLOptionPtr xmlopt);
 
-#endif /* __LXC_NATIVE_H__ */
+#endif /* LIBVIRT_LXC_NATIVE_H */

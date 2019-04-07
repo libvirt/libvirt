@@ -1,0 +1,1157 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel  <veillard@redhat.com>, 2011.
+# Miroslav Ivanov <kiro.kopeleto@gmail.com>, 2007.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-26 07:16+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Bulgarian (http://www.transifex.com/projects/p/fedora/"
+"language/bg/)\n"
+"Language: bg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  (specify help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (укажете help <команда> за помощ за тази команда)\n"
+"\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  ОПИСАНИЕ\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  ОПЦИИ\n"
+
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  РЕЗЮМЕ\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Време: %.3f мили секунди)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  ИМЕ\n"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: неуспешно заделяне на %d байта"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s: %d: неуспешно заделяне на %lu байта"
+
+msgid "(re)connect to hypervisor"
+msgstr "(повторно) свързване към хипервайзор"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <число>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <низ>"
+
+msgid "Attach device from an XML <file>."
+msgstr "Прикачане на устройство от XML <файл>."
+
+msgid "Attach new disk device."
+msgstr "Закачане на ново дисково устройство."
+
+msgid "Attach new network interface."
+msgstr "Закачане на нов мрежов интерфейс."
+
+msgid "Autostart"
+msgstr "Автостартиране"
+
+msgid "CPU Affinity:"
+msgstr "Афинитет на ЦП:"
+
+msgid "CPU frequency:"
+msgstr "ЦП честота:"
+
+msgid "CPU model:"
+msgstr "ЦП модел:"
+
+msgid "CPU socket(s):"
+msgstr "ЦП порт(ове):"
+
+msgid "CPU time:"
+msgstr "Процесорно време:"
+
+msgid "CPU(s):"
+msgstr "Процесори:"
+
+msgid "CPU:"
+msgstr "ЦП:"
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Не може да се извлече версията на работещия %s хипервайзор\n"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Промяна на текущото заделяне на памет в домейна гост."
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "Промяна на максималния обем заделена памет за домейна гост."
+
+msgid "Configure a domain to be automatically started at boot."
+msgstr "Настройване на домейна за автоматично стартиране при зареждане."
+
+msgid "Configure a network to be automatically started at boot."
+msgstr "Настройване на мрежата за автоматично стартиране при зареждане."
+
+msgid "Connect the virtual serial console for the guest"
+msgstr "Свързване към виртуалната серийна конзола за госта"
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Свързване с локален хипервайзор. Това е вградената команда след стартиране "
+"на обвивката."
+
+msgid "Core dump a domain."
+msgstr "Запис ядрото на домейн."
+
+msgid "Core(s) per socket:"
+msgstr "Ядра на порт:"
+
+msgid "Create a domain."
+msgstr "Създаване на домейн."
+
+msgid "Create a network."
+msgstr "Създаване на мрежа."
+
+msgid "Define a domain."
+msgstr "Дефиниране на домейн."
+
+msgid "Detach device from an XML <file>"
+msgstr "Откачане на устройство от XML <файл>"
+
+msgid "Detach disk device."
+msgstr "Разкачане на дисковото устройство."
+
+msgid "Detach network interface."
+msgstr "Разкачане на мрежов интерфейс."
+
+msgid "Display the system version information."
+msgstr "Показва информацията за версия на системата."
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "Домейн %s бе създаден от %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Домейн %s дефиниран от %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "Домейна %s бе унищожен\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "Дефиницията на домейн %s бе премахната\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "Домейн %s се рестартира\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "Домейн %s се изключва\n"
+
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "Домейна %s е маркиран като авто-стартиращ се\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "Домейн %s бе събуден\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "Домейна %s бе стартиран\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "Домейна %s приспан\n"
+
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "Домейна %s е размаркиран като авто-стартиращ се\n"
+
+msgid "Domain is already active"
+msgstr "Домейна вече е активен"
+
+msgid "Domain is already running"
+msgstr "Домейнът вече е активен"
+
+msgid "Domain not found"
+msgstr "Не е открит домейна"
+
+#, c-format
+msgid "Domain not found: %s"
+msgstr "Не е открит домейна: %s"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "Домейна бе възстановен от %s\n"
+
+msgid "Failed to allocate memory"
+msgstr "Неуспешно заделяне на памет"
+
+#, c-format
+msgid "Failed to attach device from %s"
+msgstr "Неуспешно прикачане на устройство от %s"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Неуспешен запис на ядрото на домейн %s в %s"
+
+msgid "Failed to create XML"
+msgstr "Неуспех при опит за създаване на XML файл"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Неуспех при създаване на домейн от %s"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "Неуспех при създаване на мрежа от %s"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Неуспешно дефиниране на домейн от %s"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "Неуспешно дефиниране на мрежа от %s"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "Неуспешно унищожаване на домейн %s"
+
+#, c-format
+msgid "Failed to destroy network %s"
+msgstr "Неуспешно унищожаване на мрежа %s"
+
+#, c-format
+msgid "Failed to detach device from %s"
+msgstr "Неуспешно откачане на устройство от %s"
+
+msgid "Failed to find the network"
+msgstr "Не може да бъде намерена мрежата"
+
+#, c-format
+msgid "Failed to find the network: %s"
+msgstr "Не може да бъде намерена мрежата: %s"
+
+#, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "Неуспешно извличане състоянието на блоковете %s %s"
+
+msgid "Failed to get disk information"
+msgstr "Неуспешно получаване на информация за диска"
+
+msgid "Failed to get interface information"
+msgstr "Неуспешно извличане на информация за интерфейса"
+
+#, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "Неуспешно извличане състоянието на интерфейс %s %s"
+
+msgid "Failed to list active domains"
+msgstr "Грешка при извеждане на списък с активните домейни"
+
+msgid "Failed to list active networks"
+msgstr "Грешка при извеждане на списък с активните мрежи"
+
+msgid "Failed to list inactive domains"
+msgstr "Грешка при извеждане на списък с неактивните домейни"
+
+msgid "Failed to list inactive networks"
+msgstr "Грешка при извеждане на списък с неактивните мрежи"
+
+#, c-format
+msgid "Failed to mark domain %s as autostarted"
+msgstr "Неуспешно маркиране на домейна %s като авто-стартиращ се"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Неуспешно рестартиране на домейн %s"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Неуспех при възстановяване на домейн от %s"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "Неуспешно събуждане на домейн %s"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Неуспешно изключване на домейн %s"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Неуспешно стартиране на домейн %s"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Неуспешно стартиране на мрежа %s"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "Неуспешно приспиване на домейн %s"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Неуспешно премахване дефиницията на домейн %s"
+
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "Неуспешно премахване дефиницията на мрежа %s"
+
+#, c-format
+msgid "Failed to unmark domain %s as autostarted"
+msgstr "Неуспешно размаркиране на домейна %s като авто-стартиращ се"
+
+msgid "GET operation failed"
+msgstr "грешка при GET операцията"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "грешка при GET операция: %s"
+
+msgid "GNUTLS call error"
+msgstr "грешка в извикване към GNUTLS"
+
+msgid "Get network interface stats for a running domain."
+msgstr "Извличане състоянието на мрежов интерфейс за работещ домейн."
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+msgid "Max memory:"
+msgstr "Максимална памет:"
+
+msgid "Memory size:"
+msgstr "Обем на паметта:"
+
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr ""
+"Mигриране на домейна на друга машина.  Добавете --live за мигриране по време "
+"на работа."
+
+msgid "NUMA cell(s):"
+msgstr "NUMA клетки:"
+
+msgid "Name"
+msgstr "Име"
+
+msgid "Name:"
+msgstr "Име:"
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "Мрежа %s бе създадена от %s\n"
+
+#, c-format
+msgid "Network %s defined from %s\n"
+msgstr "Мрежа %s дефинирана от %s\n"
+
+#, c-format
+msgid "Network %s destroyed\n"
+msgstr "Мрежата %s бе унищожена\n"
+
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "Дефиницията на мрежа %s бе премахната\n"
+
+#, c-format
+msgid "Network %s marked as autostarted\n"
+msgstr "Мрежа %s e маркирана като авто-стартирана\n"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "Мрежа %s бе стартирана\n"
+
+#, c-format
+msgid "Network %s unmarked as autostarted\n"
+msgstr "Мрежа %s e размаркирана като авто-стартирана\n"
+
+msgid "Network not found"
+msgstr "Не е открита мрежата"
+
+#, c-format
+msgid "Network not found: %s"
+msgstr "Не е открита мрежата: %s"
+
+msgid "No error message provided"
+msgstr "Няма зададено съобщение за грешка"
+
+msgid "OS Type:"
+msgstr "Тип ОС:"
+
+msgid "Output the IP address and port number for the VNC display."
+msgstr "Извеждане на IP адрес и номер на порт за VNC дисплея."
+
+msgid "Output the device for the TTY console."
+msgstr "Извеждане на устройството за TTY конзолата."
+
+msgid "Output the domain information as an XML dump to stdout."
+msgstr "Запис на информацията за домейна като XML на стандартния изход."
+
+msgid "Output the network information as an XML dump to stdout."
+msgstr "Запис на информацията за мрежата като XML на стандартния изход."
+
+msgid "POST operation failed"
+msgstr "грешка при POST операцията"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "грешка при POST операция: %s"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Ограничаване виртуалните централни процесори към физически такива."
+
+msgid "RPC error"
+msgstr "RPC грешка"
+
+msgid "Restore a domain."
+msgstr "Възстановяване на домейн."
+
+msgid "Resume a previously suspended domain."
+msgstr "Събуждане на преди това приспан домейн."
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr ""
+"Връща основна информация за виртуалните централни процесори на домейна."
+
+msgid "Returns basic information about the domain."
+msgstr "Връща основна информация за домейна."
+
+msgid "Returns basic information about the node."
+msgstr "Връща основна информация за възела."
+
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Връща възможностите на хипервизор/драйвер."
+
+msgid "Returns list of domains."
+msgstr "Връща списък с домейните."
+
+msgid "Returns list of networks."
+msgstr "Връща списък с мрежите."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Изпълнение на команда за рестартиране в избрания домейн."
+
+msgid "Run shutdown in the target domain."
+msgstr "Изпълнение на команда за изключване в избрания домейна."
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Работещ хипервайзор: %s %d.%d.%d\n"
+
+msgid "Scheduler"
+msgstr "Разпределител"
+
+msgid "Show/Set scheduler parameters."
+msgstr "Преглед/Задаване параметрте на разпределителя."
+
+msgid "Start a network."
+msgstr "Стартиране на мрежа."
+
+msgid "State"
+msgstr "Състояние"
+
+msgid "State:"
+msgstr "Състояние:"
+
+msgid "Suspend a running domain."
+msgstr "Приспива работещ домейн."
+
+msgid "Thread(s) per core:"
+msgstr "Нишки на ядро:"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Напишете:  'help' за помощна информация за командите\n"
+"       'quit' за изход\n"
+"\n"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Unable to change MaxMemorySize"
+msgstr "Не може да се промени MaxMemorySize"
+
+msgid "Unknown"
+msgstr "Непозната"
+
+msgid "Used memory:"
+msgstr "Ползвана памет:"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Ползва се API: %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "ВЦП:"
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Добре дошли в %s, интерактивния терминал за виртуализация.\n"
+"\n"
+
+msgid "XML file"
+msgstr "XML файл"
+
+msgid "active"
+msgstr "активност"
+
+msgid "attach device from an XML file"
+msgstr "прикачане на устройство от XML файл"
+
+msgid "attach disk device"
+msgstr "закачане на ново дисково устройство"
+
+msgid "attach network interface"
+msgstr "закачане на мрежов интерфейс"
+
+msgid "autostart a domain"
+msgstr "автоматично стартиране на домейн"
+
+msgid "autostart a network"
+msgstr "автоматично стартиране на мрежа"
+
+msgid "block device"
+msgstr "блоково устройство"
+
+msgid "cannot parse vbd filename, missing driver name"
+msgstr "грешка при разбор името на файла на vbd, липсва име на драйвер"
+
+msgid "cannot parse vbd filename, missing driver type"
+msgstr "грешка при разбор името на файла на vbd, липсва тип на драйвер"
+
+msgid "cap for XEN_CREDIT"
+msgstr "граница за XEN_CREDIT"
+
+msgid "capabilities"
+msgstr "възможности"
+
+msgid "change maximum memory limit"
+msgstr "промяна горната граница на паметта"
+
+msgid "change memory allocation"
+msgstr "промяна заделянето на памет"
+
+msgid "change number of virtual CPUs"
+msgstr "промяна броя виртуални ЦП"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "команда '%s' не поддържа опция --%s"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "команда '%s' изисква опция --%s"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "команда '%s' изисква опция <%s>"
+
+msgid "configuration file syntax error"
+msgstr "синтактична грешка в конфигурационния файл"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "синтактична грешка в конфигурационния файл: %s"
+
+msgid "connect to the guest console"
+msgstr "закачане към конзолата за гости"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "конвертиране на id или UUID на домейн до име"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "конвертиране на име или UUID на домейн до id"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "конвертиране на име или id на домейн до UUID"
+
+msgid "convert a network UUID to network name"
+msgstr "конвертиране на UUID на мрежа до име на мрежа"
+
+msgid "convert a network name to network UUID"
+msgstr "конвертиране на име на мрежа до UUID"
+
+msgid "could not connect to Xen Store"
+msgstr "не може да се осъществи връзка с Xen хранилище"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "не може да се осъществи връзка с Xen хранилище %s"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "не може да се ползва елемент от Xen хипервайзора"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "не може да се ползва елемент %s от Xen хипервайзора"
+
+msgid "crashed"
+msgstr "аварирал"
+
+msgid "create a domain from an XML file"
+msgstr "създаване на домейн от XML файл"
+
+msgid "create a network from an XML file"
+msgstr "създаване на мрежа от XML файл"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "дефиниране (но не и стартиране) на домейн от XML файл"
+
+msgid "detach device from an XML file"
+msgstr "откачане на устройство от XML файл"
+
+msgid "detach disk device"
+msgstr "разкачане на дисковото устройство"
+
+msgid "detach network interface"
+msgstr "разкачане на мрежов интерфейс"
+
+msgid "disable autostarting"
+msgstr "деактивиране на автостартирането"
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "домейна %s вече съществува"
+
+msgid "domain id or name"
+msgstr "id или име на домейн"
+
+msgid "domain id or uuid"
+msgstr "id или uuid на домейн"
+
+msgid "domain information"
+msgstr "информация за домейн"
+
+msgid "domain information in XML"
+msgstr "информация за домейн в XML"
+
+msgid "domain information incomplete, missing kernel & bootloader"
+msgstr ""
+"информацията за домейна е непълна, липсва ядро и програма за начално "
+"зареждане"
+
+msgid "domain information incomplete, missing name"
+msgstr "информацията за домейна е непълна, липсва име"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "информацията за домейна е непълна, vbd няма dev"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "информацията за домейна е непълна, vbd няма src"
+
+msgid "domain name or uuid"
+msgstr "име на домейн или uuid"
+
+msgid "domain state"
+msgstr "състояние на домейна"
+
+msgid "driver of disk device"
+msgstr "драйвер на дисковото устройство"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "запис ядрото на домейн във файл за анализ"
+
+msgid "error"
+msgstr "грешка"
+
+msgid "error: "
+msgstr "грешка: "
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "очакван синтаксис: --%s <%s>"
+
+msgid "expecting a name"
+msgstr "очаква се име"
+
+msgid "expecting a separator"
+msgstr "очаква се разделител"
+
+msgid "expecting a separator in list"
+msgstr "очаква се разделител в списъка"
+
+msgid "expecting a value"
+msgstr "очаква се стойност"
+
+msgid "expecting an assignment"
+msgstr "очаква се присвояване"
+
+msgid "failed to connect to the hypervisor"
+msgstr "неуспех при свързване с хипервайзора"
+
+msgid "failed to get URI"
+msgstr "неуспешно получаване на УРИ"
+
+msgid "failed to get capabilities"
+msgstr "неуспешно получаване на възможностите"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "неуспешно получаване на домейн '%s'"
+
+msgid "failed to get domain UUID"
+msgstr "неуспешно получаване на UUID на домейна"
+
+msgid "failed to get hostname"
+msgstr "неуспешно получаване на името на машината"
+
+msgid "failed to get hypervisor type"
+msgstr "неуспешно получаване типа на хипервайзора"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "неуспешно получаване на мрежа '%s'"
+
+msgid "failed to get network UUID"
+msgstr "неуспешно получаване на UUID на мрежата"
+
+msgid "failed to get node information"
+msgstr "неуспешно получаване на информация за възела"
+
+msgid "failed to get the hypervisor version"
+msgstr "неуспешно получаване на версията на хипервайзора"
+
+msgid "failed to get the library version"
+msgstr "неуспешно получаване версията на библиотеката"
+
+#, c-format
+msgid "failed to mark network %s as autostarted"
+msgstr "Неуспешно маркиране на мрежата %s като авто-стартирана"
+
+msgid "failed to open file"
+msgstr "неуспешно отваряне на файл"
+
+msgid "failed to open the log file. check the log file path"
+msgstr "неуспех при отваряне на дневника. проверете пътя на файла"
+
+msgid "failed to parse configuration file"
+msgstr "грешка при разбор на конфигурационния файл"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "грешка при разбор на конфигурационния файл %s"
+
+msgid "failed to read configuration file"
+msgstr "грешка при четене на конфигурационния файл"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "грешка при четене на конфигурационния файл %s"
+
+msgid "failed to save content"
+msgstr "неуспешен запис на файл"
+
+msgid "failed to serialize S-Expr"
+msgstr "неуспешно сериализиране на S-Expr"
+
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "неуспешно сериализиране на S-Expr: %s"
+
+#, c-format
+msgid "failed to unmark network %s as autostarted"
+msgstr "Неуспешно размаркиране на мрежата %s като авто-стартирана"
+
+msgid "failed to write configuration file"
+msgstr "грешка при запис на конфигурационния файл"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "грешка при запис на конфигурационния файл: %s"
+
+msgid "failed to write the log file"
+msgstr "неуспех при запис в дневника"
+
+msgid "file containing an XML domain description"
+msgstr "съдържащ XML описание на домейн файл"
+
+msgid "file containing an XML network description"
+msgstr "файл, съдържащ XML описание на мрежата"
+
+msgid "get device block stats for a domain"
+msgstr "извличане състоянието на блоковете на устройство за домейн"
+
+msgid "get network interface stats for a domain"
+msgstr "извличане състоянието на мрежов интерфейс за домейн"
+
+msgid "getting time of day"
+msgstr "вземане на времето"
+
+msgid "gracefully shutdown a domain"
+msgstr "внимателно изключване на домейн"
+
+msgid "hypervisor connection URI"
+msgstr "УРИ за връзка с хипервайзора"
+
+msgid "in shutdown"
+msgstr "изключва се"
+
+msgid "inactive"
+msgstr "неактивност"
+
+msgid "internal error"
+msgstr "вътрешна грешка"
+
+msgid "invalid connection pointer in"
+msgstr "невалиден указател за връзка в"
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "невалиден указател за връзка в %s"
+
+msgid "invalid domain pointer in"
+msgstr "невалиден указател за домейн в"
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "невалиден указател за домейн в %s"
+
+msgid "invalid network pointer in"
+msgstr "невалиден мрежов указател за връзка в"
+
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "невалиден мрежов указател за връзка в %s"
+
+msgid "list domains"
+msgstr "показване на домейните"
+
+msgid "list inactive & active domains"
+msgstr "списък на активни и неактивни домейни"
+
+msgid "list inactive & active networks"
+msgstr "списък на активни и неактивни мрежи"
+
+msgid "list inactive domains"
+msgstr "показване на неактивните домейни"
+
+msgid "list inactive networks"
+msgstr "показване на неактивните мрежи"
+
+msgid "list networks"
+msgstr "списък с мрежите"
+
+msgid "live migration"
+msgstr "мигриране по време на работа"
+
+msgid "migrate domain to another host"
+msgstr "мигриране на домейна на друга машина"
+
+msgid "migration URI, usually can be omitted"
+msgstr "УРИ на миграция, обикновено може да се пропусне"
+
+msgid "missing \""
+msgstr "липсва \""
+
+msgid "missing devices information"
+msgstr "липсва информация за устройство"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "липсва информация за устройство за %s"
+
+msgid "missing kernel information"
+msgstr "липсва информация за ядрото"
+
+msgid "missing operating system information"
+msgstr "липсва информация за операционна система"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "липсва информация за операционна система за %s"
+
+msgid "missing root device information"
+msgstr "липсва информация за главното устройство"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "липсва информация за главното устройство в %s"
+
+msgid "missing source information for device"
+msgstr "липсва информация за източника на устройство"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "липсва информация за източника на устройство %s"
+
+msgid "missing target information for device"
+msgstr "липсва информация за целта на устройство"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "липсва информация за целта на устройство %s"
+
+msgid "mode of device reading and writing"
+msgstr "режим на четене и запис на устройството"
+
+msgid "name of the inactive domain"
+msgstr "име на неактивния домейн"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "мрежата %s вече съществува"
+
+msgid "network information in XML"
+msgstr "информация за мрежа в XML"
+
+msgid "network interface type"
+msgstr "тип на интерфейса на мрежата"
+
+msgid "network name"
+msgstr "име на мрежа"
+
+msgid "network name or uuid"
+msgstr "име на мрежата или uuid"
+
+msgid "network uuid"
+msgstr "uuid на мрежа"
+
+msgid "no autostart"
+msgstr "без автостартиране"
+
+msgid "no limit"
+msgstr "без лимит"
+
+msgid "no state"
+msgstr "без състояние"
+
+msgid "no valid connection"
+msgstr "няма валидна връзка"
+
+msgid "node information"
+msgstr "информация за възела"
+
+msgid "number"
+msgstr "число"
+
+msgid "number of virtual CPUs"
+msgstr "брой виртуални ЦП"
+
+msgid "offline"
+msgstr "изключен"
+
+msgid "operation failed"
+msgstr "грешка при операцията"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "грешка при операция: %s"
+
+msgid "operation forbidden for read only access"
+msgstr "операцията е забранена при достъп само за четене"
+
+msgid "out of memory"
+msgstr "свърши паметта"
+
+msgid "parser error"
+msgstr "грешка при разбора"
+
+msgid "paused"
+msgstr "в пауза"
+
+msgid "print help"
+msgstr "печат на помощ"
+
+msgid "print the hypervisor canonical URI"
+msgstr "извеждане каноничния УРИ на хипервайзора"
+
+msgid "print the hypervisor hostname"
+msgstr "извеждане името на машината на хипервайзора"
+
+msgid "quit this interactive terminal"
+msgstr "изход от този интерактивен терминал"
+
+msgid "read-only connection"
+msgstr "връзка само за четене"
+
+msgid "reboot a domain"
+msgstr "рестартиране на домейн"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "възстановяване на домейн към запазено във файл състояние"
+
+msgid "resume a domain"
+msgstr "събуждане на домейн"
+
+msgid "running"
+msgstr "работи"
+
+msgid "save a domain state to a file"
+msgstr "запис състоянието на домейн във файл"
+
+msgid "script used to bridge network interface"
+msgstr "скрипт, който се ползва за закачане на мрежовия интерфейс в мост"
+
+msgid "show version"
+msgstr "показване на версия"
+
+msgid "show/set scheduler parameters"
+msgstr "преглед/задаване параметрте на разпределителя"
+
+msgid "shut off"
+msgstr "спиране"
+
+msgid "source of disk device"
+msgstr "източник на дисковото устройство"
+
+msgid "source of network interface"
+msgstr "източник на мрежовия интерфейс"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "стартиране на (предварително дефиниран) неактивен домейн"
+
+msgid "start a (previously defined) inactive network"
+msgstr "стартиране на (предварително дефинирана) неактивена мрежа"
+
+msgid "string"
+msgstr "низ"
+
+msgid "subdriver of disk device"
+msgstr "поддрайвер на дисковото устройство"
+
+msgid "suspend a domain"
+msgstr "приспиване на домейн"
+
+msgid "system call error"
+msgstr "грешка в системно извикване"
+
+msgid "target device type"
+msgstr "тип на целевото устройство"
+
+msgid "target network name"
+msgstr "име на целевата мрежа"
+
+msgid "target of disk device"
+msgstr "цел на дисковото устройство"
+
+msgid "testOpen: supply a path or use test:///default"
+msgstr "testOpen: задайте път или ползвайте test:///default"
+
+msgid "the state to restore"
+msgstr "състояние за възстановяване"
+
+msgid "this domain exists already"
+msgstr "този домейн вече съществува"
+
+msgid "this network exists already"
+msgstr "тази мрежа вече съществува"
+
+msgid "too many drivers registered"
+msgstr "регистрирани са твърде много устройства"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "регистрирани са твърде много устройства в %s"
+
+msgid "tty console"
+msgstr "tty конзола"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "неочаквани данни '%s'"
+
+msgid "unknown OS type"
+msgstr "непознат тип ОС"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "непознат тип ОС %s"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "непозната команда: '%s'"
+
+msgid "unknown host"
+msgstr "непозната машина"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "непозната машина %s"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "неподдържана опция '-%c'. Вижте --help."
+
+msgid "unterminated number"
+msgstr "незавършено число"
+
+msgid "unterminated string"
+msgstr "незавършен низ"
+
+msgid "vcpu number"
+msgstr "номер на ВЦП"
+
+msgid "vnc display"
+msgstr "vnc дисплей"
+
+msgid "warning"
+msgstr "предупреждение"
+
+msgid "weight for XEN_CREDIT"
+msgstr "тегло за XEN_CREDIT"
+
+msgid "where to dump the core"
+msgstr "къде да се запише ядрото"
+
+msgid "where to save the data"
+msgstr "къде да се запишат данните"

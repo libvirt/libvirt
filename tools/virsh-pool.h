@@ -16,15 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
-#ifndef VIRSH_POOL_H
-# define VIRSH_POOL_H
+#ifndef LIBVIRT_VIRSH_POOL_H
+# define LIBVIRT_VIRSH_POOL_H
 
 # include "virsh.h"
 
@@ -33,10 +28,18 @@ virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
                       const char **name, unsigned int flags);
 
 /* default is lookup by Name and UUID */
-# define virshCommandOptPool(_ctl, _cmd, _optname, _name)           \
-    virshCommandOptPoolBy(_ctl, _cmd, _optname, _name,              \
+# define virshCommandOptPool(_ctl, _cmd, _optname, _name) \
+    virshCommandOptPoolBy(_ctl, _cmd, _optname, _name, \
                           VIRSH_BYUUID | VIRSH_BYNAME)
+
+struct virshPoolEventCallback {
+    const char *name;
+    virConnectStoragePoolEventGenericCallback cb;
+};
+typedef struct virshPoolEventCallback virshPoolEventCallback;
+
+extern virshPoolEventCallback virshPoolEventCallbacks[];
 
 extern const vshCmdDef storagePoolCmds[];
 
-#endif /* VIRSH_POOL_H */
+#endif /* LIBVIRT_VIRSH_POOL_H */

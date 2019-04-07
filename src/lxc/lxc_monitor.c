@@ -51,16 +51,13 @@ static void virLXCMonitorDispose(void *obj);
 
 static int virLXCMonitorOnceInit(void)
 {
-    if (!(virLXCMonitorClass = virClassNew(virClassForObjectLockable(),
-                                           "virLXCMonitor",
-                                           sizeof(virLXCMonitor),
-                                           virLXCMonitorDispose)))
+    if (!VIR_CLASS_NEW(virLXCMonitor, virClassForObjectLockable()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virLXCMonitor)
+VIR_ONCE_GLOBAL_INIT(virLXCMonitor);
 
 static void
 virLXCMonitorHandleEventExit(virNetClientProgramPtr prog,
@@ -105,7 +102,7 @@ virLXCMonitorHandleEventInit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     virLXCMonitorPtr mon = opaque;
     virLXCMonitorInitEventMsg *msg = evdata;
 
-    VIR_DEBUG("Event init %lld", (long long) msg->initpid);
+    VIR_DEBUG("Event init %lld", (long long)msg->initpid);
     if (mon->cb.initNotify)
         mon->cb.initNotify(mon, (pid_t)msg->initpid, mon->vm);
 }
@@ -164,6 +161,13 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
     if (virNetClientRegisterAsyncIO(mon->client) < 0)
         goto error;
 
+    /* avoid deadlock by making this call before assigning virLXCMonitorEvents */
+    virNetClientSetCloseCallback(mon->client, virLXCMonitorEOFNotify, mon,
+                                 virLXCMonitorCloseFreeCallback);
+
+    /* close callback now has its own reference */
+    virObjectRef(mon);
+
     if (!(mon->program = virNetClientProgramNew(VIR_LXC_MONITOR_PROGRAM,
                                                 VIR_LXC_MONITOR_PROGRAM_VERSION,
                                                 virLXCMonitorEvents,
@@ -177,10 +181,6 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
 
     mon->vm = virObjectRef(vm);
     memcpy(&mon->cb, cb, sizeof(mon->cb));
-
-    virObjectRef(mon);
-    virNetClientSetCloseCallback(mon->client, virLXCMonitorEOFNotify, mon,
-                                 virLXCMonitorCloseFreeCallback);
 
  cleanup:
     VIR_FREE(sockpath);

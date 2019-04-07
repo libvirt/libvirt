@@ -21,9 +21,7 @@
 
 #include <config.h>
 
-#include <stdio.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -32,6 +30,7 @@
 #include <unistd.h>
 #include <execinfo.h>
 #include <regex.h>
+#include <sys/uio.h>
 #if HAVE_SYSLOG_H
 # include <syslog.h>
 #endif
@@ -39,6 +38,7 @@
 #if HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif
+#include <fnmatch.h>
 
 #include "virerror.h"
 #include "virlog.h"
@@ -63,6 +63,7 @@
 VIR_LOG_INIT("util.log");
 
 static regex_t *virLogRegex;
+static char virLogHostname[HOST_NAME_MAX+1];
 
 
 #define VIR_LOG_DATE_REGEX "[0-9]{4}-[0-9]{2}-[0-9]{2}"
@@ -76,7 +77,8 @@ static regex_t *virLogRegex;
 
 VIR_ENUM_DECL(virLogDestination);
 VIR_ENUM_IMPL(virLogDestination, VIR_LOG_TO_OUTPUT_LAST,
-              "stderr", "syslog", "file", "journald");
+              "stderr", "syslog", "file", "journald",
+);
 
 /*
  * Filters are used to refine the rules on what to keep or drop
@@ -85,7 +87,7 @@ VIR_ENUM_IMPL(virLogDestination, VIR_LOG_TO_OUTPUT_LAST,
 struct _virLogFilter {
     char *match;
     virLogPriority priority;
-    unsigned int flags;
+    unsigned int flags; /* bitwise OR of virLogFilterFlags */
 };
 
 static int virLogFiltersSerial = 1;
@@ -222,11 +224,17 @@ virLogSetDefaultOutputToFile(const char *filename, bool privileged)
 int
 virLogSetDefaultOutput(const char *filename, bool godaemon, bool privileged)
 {
-    if (!godaemon)
-        return virLogSetDefaultOutputToStderr();
+    bool have_journald = access("/run/systemd/journal/socket", W_OK) >= 0;
 
-    if (access("/run/systemd/journal/socket", W_OK) >= 0)
-        return virLogSetDefaultOutputToJournald();
+    if (godaemon) {
+        if (have_journald)
+            return virLogSetDefaultOutputToJournald();
+    } else {
+        if (!isatty(STDIN_FILENO) && have_journald)
+            return virLogSetDefaultOutputToJournald();
+
+        return virLogSetDefaultOutputToStderr();
+    }
 
     return virLogSetDefaultOutputToFile(filename, privileged);
 }
@@ -259,6 +267,8 @@ virLogPriorityString(virLogPriority lvl)
 static int
 virLogOnceInit(void)
 {
+    int r;
+
     if (virMutexInit(&virLogMutex) < 0)
         return -1;
 
@@ -270,11 +280,25 @@ virLogOnceInit(void)
             VIR_FREE(virLogRegex);
     }
 
+    /* We get and remember the hostname early, because at later time
+     * it might not be possible to load NSS modules via getaddrinfo()
+     * (e.g. at container startup the host filesystem will not be
+     * accessible anymore.
+     * Must not use virGetHostname though as that causes re-entrancy
+     * problems if it triggers logging codepaths
+     */
+    r = gethostname(virLogHostname, sizeof(virLogHostname));
+    if (r == -1) {
+        ignore_value(virStrcpyStatic(virLogHostname, "(unknown)"));
+    } else {
+        NUL_TERMINATE(virLogHostname);
+    }
+
     virLogUnlock();
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virLog)
+VIR_ONCE_GLOBAL_INIT(virLog);
 
 
 /**
@@ -465,17 +489,10 @@ static int
 virLogHostnameString(char **rawmsg,
                      char **msg)
 {
-    char *hostname = virGetHostnameQuiet();
     char *hoststr;
 
-    if (!hostname)
+    if (virAsprintfQuiet(&hoststr, "hostname: %s", virLogHostname) < 0)
         return -1;
-
-    if (virAsprintfQuiet(&hoststr, "hostname: %s", hostname) < 0) {
-        VIR_FREE(hostname);
-        return -1;
-    }
-    VIR_FREE(hostname);
 
     if (virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, hoststr) < 0) {
         VIR_FREE(hoststr);
@@ -496,7 +513,7 @@ virLogSourceUpdate(virLogSourcePtr source)
         size_t i;
 
         for (i = 0; i < virLogNbFilters; i++) {
-            if (strstr(source->name, virLogFilters[i]->match)) {
+            if (fnmatch(virLogFilters[i]->match, source->name, 0) == 0) {
                 priority = virLogFilters[i]->priority;
                 flags = virLogFilters[i]->flags;
                 break;
@@ -622,23 +639,23 @@ virLogVMessage(virLogSourcePtr source,
                 char *initmsg = NULL;
                 if (virLogVersionString(&rawinitmsg, &initmsg) >= 0)
                     virLogOutputs[i]->f(&virLogSelf, VIR_LOG_INFO,
-                                       __FILE__, __LINE__, __func__,
-                                       timestamp, NULL, 0, rawinitmsg, initmsg,
-                                       virLogOutputs[i]->data);
+                                        __FILE__, __LINE__, __func__,
+                                        timestamp, NULL, 0, rawinitmsg, initmsg,
+                                        virLogOutputs[i]->data);
                 VIR_FREE(initmsg);
                 if (virLogHostnameString(&hoststr, &initmsg) >= 0)
                     virLogOutputs[i]->f(&virLogSelf, VIR_LOG_INFO,
-                                       __FILE__, __LINE__, __func__,
-                                       timestamp, NULL, 0, hoststr, initmsg,
-                                       virLogOutputs[i]->data);
+                                        __FILE__, __LINE__, __func__,
+                                        timestamp, NULL, 0, hoststr, initmsg,
+                                        virLogOutputs[i]->data);
                 VIR_FREE(hoststr);
                 VIR_FREE(initmsg);
                 virLogOutputs[i]->logInitMessage = false;
             }
             virLogOutputs[i]->f(source, priority,
-                               filename, linenr, funcname,
-                               timestamp, metadata, filterflags,
-                               str, msg, virLogOutputs[i]->data);
+                                filename, linenr, funcname,
+                                timestamp, metadata, filterflags,
+                                str, msg, virLogOutputs[i]->data);
         }
     }
     if (virLogNbOutputs == 0) {
@@ -750,8 +767,10 @@ virLogNewOutputToFile(virLogPriority priority,
     virLogOutputPtr ret = NULL;
 
     fd = open(file, O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR);
-    if (fd < 0)
+    if (fd < 0) {
+        virReportSystemError(errno, _("failed to open %s"), file);
         return NULL;
+    }
 
     if (!(ret = virLogOutputNew(virLogOutputToFd, virLogCloseFd,
                                 (void *)(intptr_t)fd,
@@ -874,11 +893,11 @@ virLogNewOutputToSyslog(virLogPriority priority,
 
 
 # if USE_JOURNALD
-#  define IOVEC_SET(iov, data, size)            \
-    do {                                        \
-        struct iovec *_i = &(iov);              \
-        _i->iov_base = (void*)(data);           \
-        _i->iov_len = (size);                   \
+#  define IOVEC_SET(iov, data, size) \
+    do { \
+        struct iovec *_i = &(iov); \
+        _i->iov_base = (void*)(data); \
+        _i->iov_len = (size); \
     } while (0)
 
 #  define IOVEC_SET_STRING(iov, str) IOVEC_SET(iov, str, strlen(str))
@@ -1012,7 +1031,7 @@ virLogOutputToJournald(virLogSourcePtr source,
 
     memset(&sa, 0, sizeof(sa));
     sa.sun_family = AF_UNIX;
-    if (!virStrcpy(sa.sun_path, "/run/systemd/journal/socket", sizeof(sa.sun_path)))
+    if (virStrcpyStatic(sa.sun_path, "/run/systemd/journal/socket") < 0)
         return;
 
     memset(&mh, 0, sizeof(mh));
@@ -1192,20 +1211,29 @@ virLogGetOutputs(void)
                                   virLogDestinationTypeToString(dest),
                                   virLogOutputs[i]->name);
                 break;
-            default:
+            case VIR_LOG_TO_STDERR:
+            case VIR_LOG_TO_JOURNALD:
                 virBufferAsprintf(&outputbuf, "%d:%s",
                                   virLogOutputs[i]->priority,
                                   virLogDestinationTypeToString(dest));
+                break;
+            case VIR_LOG_TO_OUTPUT_LAST:
+            default:
+                virReportEnumRangeError(virLogDestination, dest);
+                goto error;
         }
     }
+
+    if (virBufferError(&outputbuf))
+        goto error;
+
     virLogUnlock();
-
-    if (virBufferError(&outputbuf)) {
-        virBufferFreeAndReset(&outputbuf);
-        return NULL;
-    }
-
     return virBufferContentAndReset(&outputbuf);
+
+ error:
+    virLogUnlock();
+    virBufferFreeAndReset(&outputbuf);
+    return NULL;
 }
 
 
@@ -1385,6 +1413,7 @@ virLogFilterNew(const char *match,
 {
     virLogFilterPtr ret = NULL;
     char *mdup = NULL;
+    size_t mlen = strlen(match);
 
     virCheckFlags(VIR_LOG_STACK_TRACE, NULL);
 
@@ -1394,8 +1423,15 @@ virLogFilterNew(const char *match,
         return NULL;
     }
 
-    if (VIR_STRDUP_QUIET(mdup, match) < 0)
+    /* We must treat 'foo' as equiv to '*foo*' for fnmatch
+     * todo substring matches, so add 2 extra bytes
+     */
+    if (VIR_ALLOC_N_QUIET(mdup, mlen + 3) < 0)
         return NULL;
+
+    mdup[0] = '*';
+    memcpy(mdup + 1, match, mlen);
+    mdup[mlen + 1] = '*';
 
     if (VIR_ALLOC_QUIET(ret) < 0) {
         VIR_FREE(mdup);
@@ -1676,7 +1712,7 @@ virLogParseFilter(const char *src)
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
         (prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid priority '%s' for output '%s'"),
+                       _("Invalid priority '%s' for filter '%s'"),
                        tokens[0], src);
         goto cleanup;
     }
@@ -1836,6 +1872,13 @@ virLogSetOutputs(const char *src)
 
     if (src && *src)
         outputstr = src;
+
+    /* This can only happen during daemon init when the default output is not
+     * determined yet. It's safe to do, since it's the only place setting the
+     * default output.
+     */
+    if (!outputstr)
+        return 0;
 
     if ((noutputs = virLogParseOutputs(outputstr, &outputs)) < 0)
         goto cleanup;

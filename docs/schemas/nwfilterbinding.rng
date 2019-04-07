@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!-- domain-related definitions used in multiple grammars -->
+  <include href='basictypes.rng'/>
+  <include href='nwfilter_params.rng'/>
+
+  <start>
+    <ref name="filterbinding"/>
+  </start>
+
+  <define name="filterbinding">
+    <element name="filterbinding">
+      <interleave>
+        <element name="owner">
+          <element name="name">
+            <text/>
+          </element>
+          <element name="uuid">
+            <ref name="UUID"/>
+          </element>
+        </element>
+
+        <element name="portdev">
+          <attribute name="name"/>
+          <empty/>
+        </element>
+
+        <optional>
+          <element name="linkdev">
+            <attribute name="name"/>
+            <empty/>
+          </element>
+        </optional>
+
+        <element name="mac">
+          <attribute name="address">
+            <ref name="uniMacAddr"/>
+          </attribute>
+          <empty/>
+        </element>
+
+        <element name="filterref">
+          <ref name="filterref-node-attributes"/>
+        </element>
+      </interleave>
+    </element>
+  </define>
+
+</grammar>

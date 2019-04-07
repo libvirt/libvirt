@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Project governance</h1>
@@ -14,7 +14,7 @@
       influence, within the community.
     </p>
 
-    <h2><a name="codeofconduct">Code of conduct</a></h2>
+    <h2><a id="codeofconduct">Code of conduct</a></h2>
 
     <p>
       The libvirt project community covers people from a wide variety of
@@ -49,7 +49,7 @@
         from them. Playing a blame game doesn't help anyone.</li>
     </ul>
 
-    <h2><a name="roles">Roles and responsibilities</a></h2>
+    <h2><a id="roles">Roles and responsibilities</a></h2>
 
     <h3><a href="users">Users</a></h3>
 
@@ -91,7 +91,7 @@
       ways listed in the next section.
     </p>
 
-    <h3><a name="contributors">Contributors</a></h3>
+    <h3><a id="contributors">Contributors</a></h3>
 
     <p>
       The contributors are community members who have some concrete impact
@@ -141,22 +141,26 @@
       than having the interest and ability to provide a contribution. The
       libvirt project <strong>does not require</strong> any
       <em>"Contributor License Agreement"</em>
-      to be signed prior to engagement with the community.
+      to be signed prior to engagement with the community. However for
+      contributing patches, providing a 'Signed-off-by' line with the
+      author's legal name and e-mail address to demonstrate agreement
+      and compliance with the <a href="https://developercertificate.org/">
+      Developer Certificate of Origin</a> is required.
     </p>
 
     <p>
-      In making a contribution to the project, the community member is
-      implicitly stating that they accept the terms of the license under
-      which the work they are contributing to is distributed. They are
+      In making a non-patch contribution to the project, the community
+      member is implicitly stating that they accept the terms of the license
+      under which the work they are contributing to is distributed. They are
       also implicitly stating that they have the legal right to make the
       contribution, if doing so on behalf of a broader organization /
       company. Most of the project's code is distributed under the GNU
-      Lesser General Public License, version 2 or later. Details of the
+      Lesser General Public License, version 2.1 or later. Details of the
       exact license under which contributions will be presumed to be
       covered are found in the source repositories, or website in question.
     </p>
 
-    <h3><a name="committers">Committers</a></h3>
+    <h3><a id="committers">Committers</a></h3>
 
     <p>
       The committers are the subset of contributors who have direct access
@@ -227,7 +231,7 @@
       to retain their role as a committer.
     </p>
 
-    <h3><a name="secteam">Security team</a></h3>
+    <h3><a id="secteam">Security team</a></h3>
 
     <p>
       The security team consists of a subset of the project committers
@@ -252,7 +256,7 @@
       before disclosing a private issue.
     </p>
 
-    <h2><a name="roughconsensus">Rough consensus</a></h2>
+    <h2><a id="roughconsensus">Rough consensus</a></h2>
 
     <p>
       A core concept for governance of the project described above is

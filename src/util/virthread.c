@@ -268,7 +268,7 @@ bool virThreadIsSelf(virThreadPtr thread)
  * the pthread_self() id on Linux.  */
 unsigned long long virThreadSelfID(void)
 {
-#if defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)
+#if defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid) && defined(__linux__)
     pid_t tid = syscall(SYS_gettid);
     return tid;
 #else

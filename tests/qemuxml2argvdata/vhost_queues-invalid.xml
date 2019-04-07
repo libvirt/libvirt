@@ -1,0 +1,32 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>bba65c0e-c049-934f-b6aa-4e2c0582acdf</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='disk'>
+      <source file='/dev/HostVG/QEMUGuest1'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <interface type='user'>
+      <mac address='52:54:00:e5:48:58'/>
+      <model type='virtio'/>
+      <driver name='vhost' queues='-5'/>
+    </interface>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

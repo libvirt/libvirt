@@ -6,6 +6,7 @@
       <arch>x86_64</arch>
       <model>Westmere</model>
       <vendor>Intel</vendor>
+      <microcode version='36'/>
       <topology sockets='1' cores='6' threads='2'/>
       <feature name='rdtscp'/>
       <feature name='pdpe1gb'/>
@@ -27,6 +28,9 @@
       <feature name='acpi'/>
       <feature name='ds'/>
       <feature name='vme'/>
+      <pages unit='KiB' size='4'/>
+      <pages unit='KiB' size='2048'/>
+      <pages unit='KiB' size='1048576'/>
     </cpu>
     <power_management>
       <suspend_disk/>
@@ -41,6 +45,9 @@
       <cells num='2'>
         <cell id='0'>
           <memory unit='KiB'>12572412</memory>
+          <pages unit='KiB' size='4'>4011249</pages>
+          <pages unit='KiB' size='2048'>0</pages>
+          <pages unit='KiB' size='1048576'>0</pages>
           <cpus num='12'>
             <cpu id='0'/>
             <cpu id='2'/>

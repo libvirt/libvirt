@@ -1,0 +1,29 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <channel type='unix'>
+      <source mode='bind' path='/tmp/channel/QEMUGuest1.org.qemu.guest_agent.0'/>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/tmp/channel/domain-QEMUGuest1/org.qemu.guest_agent.1'/>
+      <target type='virtio' name='org.qemu.guest_agent.1'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/tmp/channel/domain-1-QEMUGuest1/org.qemu.guest_agent.2'/>
+      <target type='virtio' name='org.qemu.guest_agent.2'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/tmp/channel/QEMUGuest1/org.qemu.guest_agent.3'/>
+      <target type='virtio' name='org.qemu.guest_agent.3'/>
+    </channel>
+    <memballoon model='none'/>
+  </devices>
+</domain>

@@ -27,15 +27,13 @@
 # include "nwfilter/nwfilter_ebiptables_driver.h"
 # include "virbuffer.h"
 
-# define __VIR_FIREWALL_PRIV_H_ALLOW__
+# define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 # include "virfirewallpriv.h"
 
-# define __VIR_COMMAND_PRIV_H_ALLOW__
+# define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
-
-static const char *abs_top_srcdir;
 
 # ifdef __linux__
 #  define RULESTYPE "linux"
@@ -147,11 +145,11 @@ static const char *commonRules[] = {
 };
 
 
-static virNWFilterHashTablePtr
-virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
-                          virNWFilterHashTablePtr vars2)
+static virHashTablePtr
+virNWFilterCreateVarsFrom(virHashTablePtr vars1,
+                          virHashTablePtr vars2)
 {
-    virNWFilterHashTablePtr res = virNWFilterHashTableCreate(0);
+    virHashTablePtr res = virNWFilterHashTableCreate(0);
     if (!res)
         return NULL;
 
@@ -164,7 +162,7 @@ virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
     return res;
 
  err_exit:
-    virNWFilterHashTableFree(res);
+    virHashFree(res);
     return NULL;
 }
 
@@ -175,7 +173,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
     if (!inst)
         return;
 
-    virNWFilterHashTableFree(inst->vars);
+    virHashFree(inst->vars);
     VIR_FREE(inst);
 }
 
@@ -199,13 +197,13 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 
 static int
 virNWFilterDefToInst(const char *xml,
-                     virNWFilterHashTablePtr vars,
+                     virHashTablePtr vars,
                      virNWFilterInstPtr inst);
 
 static int
 virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
                              virNWFilterRuleDefPtr rule,
-                             virNWFilterHashTablePtr vars,
+                             virHashTablePtr vars,
                              virNWFilterInstPtr inst)
 {
     virNWFilterRuleInstPtr ruleinst;
@@ -238,10 +236,10 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
 
 static int
 virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
-                                virNWFilterHashTablePtr vars,
+                                virHashTablePtr vars,
                                 virNWFilterInstPtr inst)
 {
-    virNWFilterHashTablePtr tmpvars = NULL;
+    virHashTablePtr tmpvars = NULL;
     int ret = -1;
     char *xml;
 
@@ -263,14 +261,14 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
  cleanup:
     if (ret < 0)
         virNWFilterInstReset(inst);
-    virNWFilterHashTableFree(tmpvars);
+    virHashFree(tmpvars);
     VIR_FREE(xml);
     return ret;
 }
 
 static int
 virNWFilterDefToInst(const char *xml,
-                     virNWFilterHashTablePtr vars,
+                     virHashTablePtr vars,
                      virNWFilterInstPtr inst)
 {
     size_t i;
@@ -326,18 +324,18 @@ static void testRemoveCommonRules(char *rules)
 }
 
 
-static int testSetOneParameter(virNWFilterHashTablePtr vars,
+static int testSetOneParameter(virHashTablePtr vars,
                                const char *name,
                                const char *value)
 {
     int ret = -1;
     virNWFilterVarValuePtr val;
 
-    if ((val = virHashLookup(vars->hashTable, name)) == NULL) {
+    if ((val = virHashLookup(vars, name)) == NULL) {
         val = virNWFilterVarValueCreateSimpleCopyValue(value);
         if (!val)
             goto cleanup;
-        if (virNWFilterHashTablePut(vars, name, val) < 0) {
+        if (virHashUpdateEntry(vars, name, val) < 0) {
             virNWFilterVarValueFree(val);
             goto cleanup;
         }
@@ -350,7 +348,7 @@ static int testSetOneParameter(virNWFilterHashTablePtr vars,
     return ret;
 }
 
-static int testSetDefaultParameters(virNWFilterHashTablePtr vars)
+static int testSetDefaultParameters(virHashTablePtr vars)
 {
     if (testSetOneParameter(vars, "IPSETNAME", "tck_test") < 0 ||
         testSetOneParameter(vars, "A", "1.1.1.1") ||
@@ -374,7 +372,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 {
     char *actualargv = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virNWFilterHashTablePtr vars = virNWFilterHashTableCreate(0);
+    virHashTablePtr vars = virNWFilterHashTableCreate(0);
     virNWFilterInst inst;
     int ret = -1;
 
@@ -414,7 +412,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virBufferFreeAndReset(&buf);
     VIR_FREE(actualargv);
     virNWFilterInstReset(&inst);
-    virNWFilterHashTableFree(vars);
+    virHashFree(vars);
     return ret;
 }
 
@@ -445,29 +443,37 @@ testCompareXMLToIPTablesHelper(const void *data)
     return result;
 }
 
+static bool
+hasNetfilterTools(void)
+{
+    return virFileIsExecutable(IPTABLES_PATH) &&
+        virFileIsExecutable(IP6TABLES_PATH) &&
+        virFileIsExecutable(EBTABLES_PATH);
+}
+
 
 static int
 mymain(void)
 {
     int ret = 0;
 
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-        abs_top_srcdir = abs_srcdir "/..";
-
-# define DO_TEST(name)                                                  \
-    do {                                                                \
-        static struct testInfo info = {                                 \
-            name,                                                       \
-        };                                                              \
-        if (virTestRun("NWFilter XML-2-firewall " name,                 \
-                       testCompareXMLToIPTablesHelper, &info) < 0)      \
-            ret = -1;                                                   \
+# define DO_TEST(name) \
+    do { \
+        static struct testInfo info = { \
+            name, \
+        }; \
+        if (virTestRun("NWFilter XML-2-firewall " name, \
+                       testCompareXMLToIPTablesHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     virFirewallSetLockOverride(true);
 
     if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0) {
+        if (!hasNetfilterTools()) {
+            fprintf(stderr, "iptables/ip6tables/ebtables tools not present");
+            return EXIT_AM_SKIP;
+        }
         ret = -1;
         goto cleanup;
     }
@@ -516,7 +522,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else /* ! defined (__linux__) */
 

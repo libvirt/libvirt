@@ -1,0 +1,30 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>Skylake-Server</model>
+  <vendor>Intel</vendor>
+  <feature policy='require' name='ds'/>
+  <feature policy='require' name='acpi'/>
+  <feature policy='require' name='ss'/>
+  <feature policy='require' name='ht'/>
+  <feature policy='require' name='tm'/>
+  <feature policy='require' name='pbe'/>
+  <feature policy='require' name='dtes64'/>
+  <feature policy='require' name='monitor'/>
+  <feature policy='require' name='ds_cpl'/>
+  <feature policy='require' name='vmx'/>
+  <feature policy='require' name='smx'/>
+  <feature policy='require' name='est'/>
+  <feature policy='require' name='tm2'/>
+  <feature policy='require' name='xtpr'/>
+  <feature policy='require' name='pdcm'/>
+  <feature policy='require' name='dca'/>
+  <feature policy='require' name='osxsave'/>
+  <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='cmt'/>
+  <feature policy='require' name='clflushopt'/>
+  <feature policy='require' name='intel-pt'/>
+  <feature policy='require' name='pku'/>
+  <feature policy='require' name='xsaves'/>
+  <feature policy='require' name='mbm_total'/>
+  <feature policy='require' name='mbm_local'/>
+  <feature policy='require' name='invtsc'/>
+</cpu>

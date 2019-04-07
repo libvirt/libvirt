@@ -33,7 +33,6 @@
 #if HAVE_DLFCN_H
 # include <dlfcn.h>
 #endif
-#include <stdlib.h>
 #include <unistd.h>
 
 #include "configmake.h"
@@ -42,20 +41,20 @@
 
 VIR_LOG_INIT("locking.lock_manager");
 
-#define CHECK_DRIVER(field, errret)                                  \
-    if (!driver->field) {                                            \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                       \
+#define CHECK_DRIVER(field, errret) \
+    if (!driver->field) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
                      _("Missing '%s' field in lock manager driver"), \
-                     #field);                                        \
-        return errret;                                               \
+                     #field); \
+        return errret; \
     }
 
-#define CHECK_MANAGER(field, errret)                                 \
-    if (!lock->driver->field) {                                      \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                         \
+#define CHECK_MANAGER(field, errret) \
+    if (!lock->driver->field) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
                        _("Missing '%s' field in lock manager driver"), \
-                       #field);                                        \
-        return errret;                                               \
+                       #field); \
+        return errret; \
     }
 
 struct _virLockManagerPlugin {
@@ -129,7 +128,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     char *modfile = NULL;
     char *configFile = NULL;
 
-    VIR_DEBUG("name=%s driverName=%s configDir=%s flags=%x",
+    VIR_DEBUG("name=%s driverName=%s configDir=%s flags=0x%x",
               name, driverName, configDir, flags);
 
     if (virAsprintf(&configFile, "%s/%s-%s.conf",
@@ -142,7 +141,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
         if (!(modfile = virFileFindResourceFull(name,
                                                 NULL,
                                                 ".so",
-                                                abs_topbuilddir "/src/.libs",
+                                                abs_top_builddir "/src/.libs",
                                                 LIBDIR "/libvirt/lock-driver",
                                                 "LIBVIRT_LOCK_MANAGER_PLUGIN_DIR")))
             goto cleanup;
@@ -301,7 +300,7 @@ virLockManagerPtr virLockManagerNew(virLockDriverPtr driver,
                                     unsigned int flags)
 {
     virLockManagerPtr lock;
-    VIR_DEBUG("driver=%p type=%u nparams=%zu params=%p flags=%x",
+    VIR_DEBUG("driver=%p type=%u nparams=%zu params=%p flags=0x%x",
               driver, type, nparams, params, flags);
     virLockManagerLogParams(nparams, params);
 
@@ -328,7 +327,7 @@ int virLockManagerAddResource(virLockManagerPtr lock,
                               virLockManagerParamPtr params,
                               unsigned int flags)
 {
-    VIR_DEBUG("lock=%p type=%u name=%s nparams=%zu params=%p flags=%x",
+    VIR_DEBUG("lock=%p type=%u name=%s nparams=%zu params=%p flags=0x%x",
               lock, type, name, nparams, params, flags);
     virLockManagerLogParams(nparams, params);
 
@@ -346,7 +345,7 @@ int virLockManagerAcquire(virLockManagerPtr lock,
                           virDomainLockFailureAction action,
                           int *fd)
 {
-    VIR_DEBUG("lock=%p state='%s' flags=%x action=%d fd=%p",
+    VIR_DEBUG("lock=%p state='%s' flags=0x%x action=%d fd=%p",
               lock, NULLSTR(state), flags, action, fd);
 
     CHECK_MANAGER(drvAcquire, -1);
@@ -362,7 +361,7 @@ int virLockManagerRelease(virLockManagerPtr lock,
                           char **state,
                           unsigned int flags)
 {
-    VIR_DEBUG("lock=%p state=%p flags=%x", lock, state, flags);
+    VIR_DEBUG("lock=%p state=%p flags=0x%x", lock, state, flags);
 
     CHECK_MANAGER(drvRelease, -1);
 
@@ -374,7 +373,7 @@ int virLockManagerInquire(virLockManagerPtr lock,
                           char **state,
                           unsigned int flags)
 {
-    VIR_DEBUG("lock=%p state=%p flags=%x", lock, state, flags);
+    VIR_DEBUG("lock=%p state=%p flags=0x%x", lock, state, flags);
 
     CHECK_MANAGER(drvInquire, -1);
 

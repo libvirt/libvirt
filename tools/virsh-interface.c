@@ -16,19 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
-#define VIRSH_COMMON_OPT_INTERFACE                     \
-    {.name = "interface",                              \
-     .type = VSH_OT_DATA,                              \
-     .flags = VSH_OFLAG_REQ,                           \
-     .help = N_("interface name or MAC address")       \
-    }                                                  \
+#define VIRSH_COMMON_OPT_INTERFACE(cflags) \
+    {.name = "interface", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("interface name or MAC address"), \
+     .completer = virshInterfaceNameCompleter, \
+     .completer_flags = cflags, \
+    }
 
 #include <config.h>
 #include "virsh-interface.h"
@@ -46,6 +43,7 @@
 #include "virutil.h"
 #include "virxml.h"
 #include "virstring.h"
+#include "vsh-table.h"
 
 virInterfacePtr
 virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
@@ -107,7 +105,7 @@ static const vshCmdInfo info_interface_edit[] = {
 };
 
 static const vshCmdOptDef opts_interface_edit[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(0),
     {.name = NULL}
 };
 
@@ -125,12 +123,12 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virInterfaceGetXMLDesc(iface, flags)
-#define EDIT_NOT_CHANGED                                                       \
-    do {                                                                       \
+#define EDIT_NOT_CHANGED \
+    do { \
         vshPrintExtra(ctl, _("Interface %s XML configuration not changed.\n"), \
-                 virInterfaceGetName(iface));                                  \
-        ret = true;                                                            \
-        goto edit_cleanup;                                                     \
+                 virInterfaceGetName(iface)); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (iface_edited = virInterfaceDefineXML(priv->conn, doc_edited, 0))
@@ -354,6 +352,8 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     unsigned int flags = VIR_CONNECT_LIST_INTERFACES_ACTIVE;
     virshInterfaceListPtr list = NULL;
     size_t i;
+    bool ret = false;
+    vshTablePtr table = NULL;
 
     if (inactive)
         flags = VIR_CONNECT_LIST_INTERFACES_INACTIVE;
@@ -364,21 +364,29 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (!(list = virshInterfaceListCollect(ctl, flags)))
         return false;
 
-    vshPrintExtra(ctl, " %-20s %-10s %s\n", _("Name"), _("State"),
-                  _("MAC Address"));
-    vshPrintExtra(ctl, "---------------------------------------------------\n");
+    table = vshTableNew(_("Name"), _("State"), _("MAC Address"), NULL);
+    if (!table)
+        goto cleanup;
 
     for (i = 0; i < list->nifaces; i++) {
         virInterfacePtr iface = list->ifaces[i];
 
-        vshPrint(ctl, " %-20s %-10s %s\n",
-                 virInterfaceGetName(iface),
-                 virInterfaceIsActive(iface) ? _("active") : _("inactive"),
-                 virInterfaceGetMACString(iface));
+        if (vshTableRowAppend(table,
+                              virInterfaceGetName(iface),
+                              virInterfaceIsActive(iface) ? _("active")
+                              : _("inactive"),
+                              virInterfaceGetMACString(iface),
+                              NULL) < 0)
+            goto cleanup;
     }
 
+    vshTablePrintToStdout(table, ctl);
+
+    ret = true;
+ cleanup:
+    vshTableFree(table);
     virshInterfaceListFree(list);
-    return true;
+    return ret;
 }
 
 /*
@@ -467,7 +475,7 @@ static const vshCmdInfo info_interface_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_interface_dumpxml[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(0),
     {.name = "inactive",
      .type = VSH_OT_BOOL,
      .help = N_("show inactive defined XML")
@@ -564,7 +572,7 @@ static const vshCmdInfo info_interface_undefine[] = {
 };
 
 static const vshCmdOptDef opts_interface_undefine[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(0),
     {.name = NULL}
 };
 
@@ -603,7 +611,7 @@ static const vshCmdInfo info_interface_start[] = {
 };
 
 static const vshCmdOptDef opts_interface_start[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(VIR_CONNECT_LIST_INTERFACES_INACTIVE),
     {.name = NULL}
 };
 
@@ -642,7 +650,7 @@ static const vshCmdInfo info_interface_destroy[] = {
 };
 
 static const vshCmdOptDef opts_interface_destroy[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(VIR_CONNECT_LIST_INTERFACES_ACTIVE),
     {.name = NULL}
 };
 
@@ -939,9 +947,9 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
 
         cur = cur->next;
         if ((old->type == XML_ELEMENT_NODE) &&
-            (xmlStrEqual(old->name, BAD_CAST "mac") ||  /* ethernet stuff to move down */
-             xmlStrEqual(old->name, BAD_CAST "bond") || /* bond stuff to move down */
-             xmlStrEqual(old->name, BAD_CAST "vlan"))) { /* vlan stuff to move down */
+            (virXMLNodeNameEqual(old, "mac") ||  /* ethernet stuff to move down */
+             virXMLNodeNameEqual(old, "bond") || /* bond stuff to move down */
+             virXMLNodeNameEqual(old, "vlan"))) { /* vlan stuff to move down */
             xmlUnlinkNode(old);
             if (!xmlAddChild(if_node, old)) {
                 vshError(ctl, _("Failed to move '%s' element in xml document"), old->name);
@@ -1130,9 +1138,9 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
 
         cur = cur->next;
         if ((old->type == XML_ELEMENT_NODE) &&
-            (xmlStrEqual(old->name, BAD_CAST "mac") ||  /* ethernet stuff to move down */
-             xmlStrEqual(old->name, BAD_CAST "bond") || /* bond stuff to move down */
-             xmlStrEqual(old->name, BAD_CAST "vlan"))) { /* vlan stuff to move down */
+            (virXMLNodeNameEqual(old, "mac") ||  /* ethernet stuff to move down */
+             virXMLNodeNameEqual(old, "bond") || /* bond stuff to move down */
+             virXMLNodeNameEqual(old, "vlan"))) { /* vlan stuff to move down */
             xmlUnlinkNode(old);
             if (!xmlAddChild(top_node, old)) {
                 vshError(ctl, _("Failed to move '%s' element in xml document"), old->name);

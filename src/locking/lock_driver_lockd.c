@@ -221,7 +221,7 @@ static virNetClientPtr virLockManagerLockDaemonConnectionNew(bool privileged,
     if (!privileged &&
         !(daemonPath = virFileFindResourceFull("virtlockd",
                                                NULL, NULL,
-                                               abs_topbuilddir "/src",
+                                               abs_top_builddir "/src",
                                                SBINDIR,
                                                "VIRTLOCKD_PATH")))
         goto error;
@@ -302,8 +302,7 @@ static int virLockManagerLockDaemonSetupLockspace(const char *path)
                                 0, NULL, NULL, NULL,
                                 (xdrproc_t)xdr_virLockSpaceProtocolCreateLockSpaceArgs, (char*)&args,
                                 (xdrproc_t)xdr_void, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        if (err && err->code == VIR_ERR_OPERATION_INVALID) {
+        if (virGetLastErrorCode() == VIR_ERR_OPERATION_INVALID) {
             /* The lockspace already exists */
             virResetLastError();
             rv = 0;
@@ -328,7 +327,7 @@ static int virLockManagerLockDaemonInit(unsigned int version,
                                         const char *configFile,
                                         unsigned int flags)
 {
-    VIR_DEBUG("version=%u configFile=%s flags=%x", version, NULLSTR(configFile), flags);
+    VIR_DEBUG("version=%u configFile=%s flags=0x%x", version, NULLSTR(configFile), flags);
 
     virCheckFlags(0, -1);
 
@@ -370,21 +369,21 @@ static int virLockManagerLockDaemonDeinit(void)
     if (!driver)
         return 0;
 
+    VIR_FREE(driver->scsiLockSpaceDir);
+    VIR_FREE(driver->lvmLockSpaceDir);
     VIR_FREE(driver->fileLockSpaceDir);
     VIR_FREE(driver);
 
     return 0;
 }
 
-static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
+static void
+virLockManagerLockDaemonPrivateFree(virLockManagerLockDaemonPrivatePtr priv)
 {
-    virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
     size_t i;
 
     if (!priv)
         return;
-
-    lock->privateData = NULL;
 
     for (i = 0; i < priv->nresources; i++) {
         VIR_FREE(priv->resources[i].lockspace);
@@ -393,8 +392,16 @@ static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
     VIR_FREE(priv->resources);
 
     VIR_FREE(priv->name);
-
     VIR_FREE(priv);
+}
+
+static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
+{
+    if (!lock)
+        return;
+
+    virLockManagerLockDaemonPrivateFree(lock->privateData);
+    lock->privateData = NULL;
 }
 
 
@@ -404,14 +411,14 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                                        virLockManagerParamPtr params,
                                        unsigned int flags)
 {
-    virLockManagerLockDaemonPrivatePtr priv;
+    virLockManagerLockDaemonPrivatePtr priv = NULL;
     size_t i;
+    int ret = -1;
 
     virCheckFlags(VIR_LOCK_MANAGER_NEW_STARTED, -1);
 
     if (VIR_ALLOC(priv) < 0)
         return -1;
-    lock->privateData = priv;
 
     switch (type) {
     case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
@@ -420,7 +427,7 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                 memcpy(priv->uuid, params[i].value.uuid, VIR_UUID_BUFLEN);
             } else if (STREQ(params[i].key, "name")) {
                 if (VIR_STRDUP(priv->name, params[i].value.str) < 0)
-                    return -1;
+                    goto cleanup;
             } else if (STREQ(params[i].key, "id")) {
                 priv->id = params[i].value.iv;
             } else if (STREQ(params[i].key, "pid")) {
@@ -431,24 +438,25 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected parameter %s for object"),
                                params[i].key);
+                goto cleanup;
             }
         }
         if (priv->id == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing ID parameter for domain object"));
-            return -1;
+            goto cleanup;
         }
         if (priv->pid == 0)
             VIR_DEBUG("Missing PID parameter for domain object");
         if (!priv->name) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing name parameter for domain object"));
-            return -1;
+            goto cleanup;
         }
         if (!virUUIDIsValid(priv->uuid)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing UUID parameter for domain object"));
-            return -1;
+            goto cleanup;
         }
         break;
 
@@ -456,10 +464,14 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown lock manager object type %d"),
                        type);
-        return -1;
+        goto cleanup;
     }
 
-    return 0;
+    VIR_STEAL_PTR(lock->privateData, priv);
+    ret = 0;
+ cleanup:
+    virLockManagerLockDaemonPrivateFree(priv);
+    return ret;
 }
 
 
@@ -474,6 +486,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
     char *newName = NULL;
     char *newLockspace = NULL;
     bool autoCreate = false;
+    int ret = -1;
 
     virCheckFlags(VIR_LOCK_MANAGER_RESOURCE_READONLY |
                   VIR_LOCK_MANAGER_RESOURCE_SHARED, -1);
@@ -486,7 +499,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         if (params || nparams) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unexpected parameters for disk resource"));
-            return -1;
+            goto cleanup;
         }
         if (!driver->autoDiskLease) {
             if (!(flags & (VIR_LOCK_MANAGER_RESOURCE_SHARED |
@@ -502,12 +515,12 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             driver->lvmLockSpaceDir) {
             VIR_DEBUG("Trying to find an LVM UUID for %s", name);
             if (virStorageFileGetLVMKey(name, &newName) < 0)
-                goto error;
+                goto cleanup;
 
             if (newName) {
                 VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
                 if (VIR_STRDUP(newLockspace, driver->lvmLockSpaceDir) < 0)
-                    goto error;
+                    goto cleanup;
                 autoCreate = true;
                 break;
             }
@@ -518,13 +531,13 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         if (STRPREFIX(name, "/dev") &&
             driver->scsiLockSpaceDir) {
             VIR_DEBUG("Trying to find an SCSI ID for %s", name);
-            if (virStorageFileGetSCSIKey(name, &newName) < 0)
-                goto error;
+            if (virStorageFileGetSCSIKey(name, &newName, false) < 0)
+                goto cleanup;
 
             if (newName) {
                 VIR_DEBUG("Got an SCSI ID %s for %s", newName, name);
                 if (VIR_STRDUP(newLockspace, driver->scsiLockSpaceDir) < 0)
-                    goto error;
+                    goto cleanup;
                 autoCreate = true;
                 break;
             }
@@ -534,16 +547,16 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
         if (driver->fileLockSpaceDir) {
             if (VIR_STRDUP(newLockspace, driver->fileLockSpaceDir) < 0)
-                goto error;
+                goto cleanup;
             if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &newName) < 0)
-                goto error;
+                goto cleanup;
             autoCreate = true;
             VIR_DEBUG("Using indirect lease %s for %s", newName, name);
         } else {
             if (VIR_STRDUP(newLockspace, "") < 0)
-                goto error;
+                goto cleanup;
             if (VIR_STRDUP(newName, name) < 0)
-                goto error;
+                goto cleanup;
             VIR_DEBUG("Using direct lease for %s", name);
         }
 
@@ -557,7 +570,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                 if (params[i].value.ul != 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Offset must be zero for this lock manager"));
-                    return -1;
+                    goto cleanup;
                 }
             } else if (STREQ(params[i].key, "lockspace")) {
                 lockspace = params[i].value.str;
@@ -567,33 +580,33 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected parameter %s for lease resource"),
                                params[i].key);
-                return -1;
+                goto cleanup;
             }
         }
         if (!path || !lockspace) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing path or lockspace for lease resource"));
-            return -1;
+            goto cleanup;
         }
         if (virAsprintf(&newLockspace, "%s/%s",
                         path, lockspace) < 0)
-            return -1;
+            goto cleanup;
         if (VIR_STRDUP(newName, name) < 0)
-            goto error;
+            goto cleanup;
 
     }   break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown lock manager object type %d"),
                        type);
-        return -1;
+        goto cleanup;
     }
 
     if (VIR_EXPAND_N(priv->resources, priv->nresources, 1) < 0)
-        goto error;
+        goto cleanup;
 
-    priv->resources[priv->nresources-1].lockspace = newLockspace;
-    priv->resources[priv->nresources-1].name = newName;
+    VIR_STEAL_PTR(priv->resources[priv->nresources-1].lockspace, newLockspace);
+    VIR_STEAL_PTR(priv->resources[priv->nresources-1].name, newName);
 
     if (flags & VIR_LOCK_MANAGER_RESOURCE_SHARED)
         priv->resources[priv->nresources-1].flags |=
@@ -603,12 +616,11 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         priv->resources[priv->nresources-1].flags |=
             VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE;
 
-    return 0;
-
- error:
+    ret = 0;
+ cleanup:
     VIR_FREE(newLockspace);
     VIR_FREE(newName);
-    return -1;
+    return ret;
 }
 
 
@@ -649,8 +661,7 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
 
             memset(&args, 0, sizeof(args));
 
-            if (priv->resources[i].lockspace)
-                args.path = priv->resources[i].lockspace;
+            args.path = priv->resources[i].lockspace;
             args.name = priv->resources[i].name;
             args.flags = priv->resources[i].flags;
 

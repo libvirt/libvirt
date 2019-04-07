@@ -1,0 +1,7 @@
+<cpus>
+  <model name='486'>
+    <feature name='fpu'/>
+    <feature name='pse'/>
+    <feature name='vme'/>
+  </model>
+</cpus>

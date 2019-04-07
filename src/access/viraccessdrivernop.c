@@ -76,6 +76,15 @@ virAccessDriverNopCheckNWFilter(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
 }
 
 static int
+virAccessDriverNopCheckNWFilterBinding(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
+                                       const char *driverName ATTRIBUTE_UNUSED,
+                                       virNWFilterBindingDefPtr binding ATTRIBUTE_UNUSED,
+                                       virAccessPermNWFilterBinding perm ATTRIBUTE_UNUSED)
+{
+    return 1; /* Allow */
+}
+
+static int
 virAccessDriverNopCheckSecret(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
                               const char *driverName ATTRIBUTE_UNUSED,
                               virSecretDefPtr secret ATTRIBUTE_UNUSED,
@@ -112,6 +121,7 @@ virAccessDriver accessDriverNop = {
     .checkNetwork = virAccessDriverNopCheckNetwork,
     .checkNodeDevice = virAccessDriverNopCheckNodeDevice,
     .checkNWFilter = virAccessDriverNopCheckNWFilter,
+    .checkNWFilterBinding = virAccessDriverNopCheckNWFilterBinding,
     .checkSecret = virAccessDriverNopCheckSecret,
     .checkStoragePool = virAccessDriverNopCheckStoragePool,
     .checkStorageVol = virAccessDriverNopCheckStorageVol,

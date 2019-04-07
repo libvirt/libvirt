@@ -1,0 +1,14 @@
+{
+  "node-name": "test1",
+  "read-only": false,
+  "driver": "luks",
+  "key-secret": "test1-encalias",
+  "file": "test2"
+}
+{
+  "driver": "file",
+  "filename": "/path/luks.img",
+  "node-name": "test2",
+  "read-only": false,
+  "discard": "unmap"
+}

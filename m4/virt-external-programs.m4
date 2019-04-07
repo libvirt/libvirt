@@ -23,9 +23,16 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
   AM_CONDITIONAL([HAVE_RPCGEN], [test "x$ac_cv_path_RPCGEN" != "xno"])
 
   dnl Miscellaneous external programs.
-  AC_PATH_PROG([XMLLINT], [xmllint], [/usr/bin/xmllint])
-  AC_PATH_PROG([XMLCATALOG], [xmlcatalog], [/usr/bin/xmlcatalog])
-  AC_PATH_PROG([XSLTPROC], [xsltproc], [/usr/bin/xsltproc])
+  AC_PATH_PROG([XMLLINT], [xmllint], [])
+  if test -z "$XMLLINT"
+  then
+    AC_MSG_ERROR("xmllint is required to build libvirt")
+  fi
+  AC_PATH_PROG([XSLTPROC], [xsltproc], [])
+  if test -z "$XSLTPROC"
+  then
+    AC_MSG_ERROR("xsltproc is required to build libvirt")
+  fi
   AC_PATH_PROG([AUGPARSE], [augparse], [/usr/bin/augparse])
   AC_PROG_MKDIR_P
   AC_PROG_LN_S

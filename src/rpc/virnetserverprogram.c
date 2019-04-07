@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -37,7 +35,7 @@
 VIR_LOG_INIT("rpc.netserverprogram");
 
 struct _virNetServerProgram {
-    virObject object;
+    virObject parent;
 
     unsigned program;
     unsigned version;
@@ -51,16 +49,13 @@ static void virNetServerProgramDispose(void *obj);
 
 static int virNetServerProgramOnceInit(void)
 {
-    if (!(virNetServerProgramClass = virClassNew(virClassForObject(),
-                                                 "virNetServerProgram",
-                                                 sizeof(virNetServerProgram),
-                                                 virNetServerProgramDispose)))
+    if (!VIR_CLASS_NEW(virNetServerProgram, virClassForObject()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetServerProgram)
+VIR_ONCE_GLOBAL_INIT(virNetServerProgram);
 
 
 virNetServerProgramPtr virNetServerProgramNew(unsigned program,
@@ -324,6 +319,10 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
         ret = 0;
         break;
 
+    case VIR_NET_REPLY:
+    case VIR_NET_REPLY_WITH_FDS:
+    case VIR_NET_MESSAGE:
+    case VIR_NET_STREAM_HOLE:
     default:
         virReportError(VIR_ERR_RPC,
                        _("Unexpected message type %u"),
@@ -397,11 +396,10 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
         goto error;
     }
 
-    /* If client is marked as needing auth, don't allow any RPC ops
-     * which are except for authentication ones
-     */
-    if (virNetServerClientNeedAuth(client) &&
-        dispatcher->needAuth) {
+    /* If the client is not authenticated, don't allow any RPC ops
+     * which are except for authentication ones */
+    if (dispatcher->needAuth &&
+        !virNetServerClientIsAuthenticated(client)) {
         /* Explicitly *NOT* calling  remoteDispatchAuthError() because
            we want back-compatibility with libvirt clients which don't
            support the VIR_ERR_AUTH_FAILED error code */
@@ -543,6 +541,41 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
             return -1;
     }
     VIR_DEBUG("Total %zu", msg->bufferLength);
+
+    return virNetServerClientSendMessage(client, msg);
+}
+
+
+int virNetServerProgramSendStreamHole(virNetServerProgramPtr prog,
+                                      virNetServerClientPtr client,
+                                      virNetMessagePtr msg,
+                                      int procedure,
+                                      unsigned int serial,
+                                      long long length,
+                                      unsigned int flags)
+{
+    virNetStreamHole data;
+
+    VIR_DEBUG("client=%p msg=%p length=%lld", client, msg, length);
+
+    memset(&data, 0, sizeof(data));
+    data.length = length;
+    data.flags = flags;
+
+    msg->header.prog = prog->program;
+    msg->header.vers = prog->version;
+    msg->header.proc = procedure;
+    msg->header.type = VIR_NET_STREAM_HOLE;
+    msg->header.serial = serial;
+    msg->header.status = VIR_NET_CONTINUE;
+
+    if (virNetMessageEncodeHeader(msg) < 0)
+        return -1;
+
+    if (virNetMessageEncodePayload(msg,
+                                   (xdrproc_t)xdr_virNetStreamHole,
+                                   &data) < 0)
+        return -1;
 
     return virNetServerClientSendMessage(client, msg);
 }

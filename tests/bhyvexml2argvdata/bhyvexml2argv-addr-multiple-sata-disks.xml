@@ -1,0 +1,31 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory>219136</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd1.img'/>
+      <target dev='hda' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd2.img'/>
+      <target dev='hdb' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd2.img'/>
+      <target dev='hdc' bus='sata'/>
+    </disk>
+    <interface type='bridge'>
+      <mac address='52:54:00:b9:94:02'/>
+      <model type='virtio'/>
+      <source bridge="virbr0"/>
+    </interface>
+  </devices>
+</domain>

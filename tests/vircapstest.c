@@ -18,73 +18,15 @@
  */
 
 #include <config.h>
-#include <stdlib.h>
 
 #include "testutils.h"
 #include "testutilslxc.h"
-#include "testutilsxen.h"
 #include "testutilsqemu.h"
 #include "capabilities.h"
 #include "virbitmap.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
-
-#define MAX_CELLS 4
-#define MAX_CPUS_IN_CELL 2
-#define MAX_MEM_IN_CELL 2097152
-
-
-/*
- * Build  NUMA Toplogy with cell id starting from (0 + seq)
- * for testing
- */
-static virCapsPtr
-buildNUMATopology(int seq)
-{
-    virCapsPtr caps;
-    virCapsHostNUMACellCPUPtr cell_cpus = NULL;
-    int core_id, cell_id;
-    int id;
-
-    if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64, false, false)) == NULL)
-        goto error;
-
-    id = 0;
-    for (cell_id = 0; cell_id < MAX_CELLS; cell_id++) {
-        if (VIR_ALLOC_N(cell_cpus, MAX_CPUS_IN_CELL) < 0)
-            goto error;
-
-        for (core_id = 0; core_id < MAX_CPUS_IN_CELL; core_id++) {
-            cell_cpus[core_id].id = id + core_id;
-            cell_cpus[core_id].socket_id = cell_id + seq;
-            cell_cpus[core_id].core_id = id + core_id;
-            if (!(cell_cpus[core_id].siblings =
-                  virBitmapNew(MAX_CPUS_IN_CELL)))
-                goto error;
-            ignore_value(virBitmapSetBit(cell_cpus[core_id].siblings, id));
-        }
-        id++;
-
-        if (virCapabilitiesAddHostNUMACell(caps, cell_id + seq,
-                                           MAX_MEM_IN_CELL,
-                                           MAX_CPUS_IN_CELL, cell_cpus,
-                                           VIR_ARCH_NONE, NULL,
-                                           VIR_ARCH_NONE, NULL) < 0)
-           goto error;
-
-        cell_cpus = NULL;
-    }
-
-    return caps;
-
- error:
-    virCapabilitiesClearHostNUMACellCPUTopology(cell_cpus, MAX_CPUS_IN_CELL);
-    VIR_FREE(cell_cpus);
-    virObjectUnref(caps);
-    return NULL;
-
-}
 
 
 static int
@@ -97,11 +39,11 @@ test_virCapabilitiesGetCpusForNodemask(const void *data ATTRIBUTE_UNUSED)
     int mask_size = 8;
     int ret = -1;
 
-    /*
-     * Build a NUMA topology with cell_id (NUMA node id
-     * being 3(0 + 3),4(1 + 3), 5 and 6
-     */
-    if (!(caps = buildNUMATopology(3)))
+
+    if (!(caps = virCapabilitiesNew(VIR_ARCH_X86_64, false, false)))
+        goto error;
+
+    if (virTestCapsBuildNUMATopology(caps, 3) < 0)
         goto error;
 
     if (virBitmapParse(nodestr, &nodemask, mask_size) < 0)
@@ -188,11 +130,10 @@ doCapsCompare(virCapsPtr caps,
         goto error;
     }
 
-    if (data->machinetype != expect_machinetype &&
-        STRNEQ(data->machinetype, expect_machinetype)) {
+    if (STRNEQ_NULLABLE(data->machinetype, expect_machinetype)) {
         fprintf(stderr, "data->machinetype=%s doesn't match "
                 "expect_machinetype=%s\n",
-                data->machinetype, expect_machinetype);
+                NULLSTR(data->machinetype), NULLSTR(expect_machinetype));
         goto error;
     }
 
@@ -234,10 +175,16 @@ test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-aarch64", "virt");
     CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_KVM, NULL, NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
-        VIR_DOMAIN_VIRT_KVM, "/usr/bin/kvm", "pc");
+        VIR_DOMAIN_VIRT_KVM, "/usr/bin/qemu-system-x86_64", "pc");
     CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, "/usr/bin/qemu-system-ppc64", NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
+    CAPSCOMP(-1, VIR_ARCH_RISCV32, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_RISCV32,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-riscv32", "spike_v1.10");
+    CAPSCOMP(-1, VIR_ARCH_RISCV64, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_RISCV64,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-riscv64", "spike_v1.10");
     CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, "s390-virtio",
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_S390X,
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-s390x",
@@ -253,8 +200,6 @@ test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
     CAPS_EXPECT_ERR(VIR_DOMAIN_OSTYPE_LINUX, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL);
     CAPS_EXPECT_ERR(-1, VIR_ARCH_PPC64LE, VIR_DOMAIN_VIRT_NONE, NULL, "pc");
     CAPS_EXPECT_ERR(-1, VIR_ARCH_MIPS, VIR_DOMAIN_VIRT_NONE, NULL, NULL);
-    CAPS_EXPECT_ERR(-1, VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_KVM,
-        "/usr/bin/qemu-system-aarch64", NULL);
     CAPS_EXPECT_ERR(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE,
         "/usr/bin/qemu-system-aarch64", "pc");
     CAPS_EXPECT_ERR(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_VMWARE, NULL, "pc");
@@ -264,34 +209,6 @@ test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 #endif /* WITH_QEMU */
-
-#ifdef WITH_XEN
-static int
-test_virCapsDomainDataLookupXen(const void *data ATTRIBUTE_UNUSED)
-{
-    int ret = -1;
-    virCapsPtr caps = NULL;
-
-    if (!(caps = testXenCapsInit())) {
-        ret = -1;
-        goto out;
-    }
-
-    CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686, VIR_DOMAIN_VIRT_XEN,
-        "/usr/lib/xen/bin/qemu-dm", "xenfv");
-    CAPSCOMP(VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_I686, VIR_DOMAIN_VIRT_XEN,
-        "/usr/lib/xen/bin/qemu-dm", "xenpv");
-
-    CAPS_EXPECT_ERR(VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, "xenfv");
-
-    ret = 0;
- out:
-    virObjectUnref(caps);
-    return ret;
-}
-#endif /* WITH_XEN */
 
 #ifdef WITH_LXC
 static int
@@ -331,11 +248,6 @@ mymain(void)
                    test_virCapsDomainDataLookupQEMU, NULL) < 0)
         ret = -1;
 #endif
-#ifdef WITH_XEN
-    if (virTestRun("virCapsDomainDataLookupXen",
-                   test_virCapsDomainDataLookupXen, NULL) < 0)
-        ret = -1;
-#endif
 #ifdef WITH_LXC
     if (virTestRun("virCapsDomainDataLookupLXC",
                    test_virCapsDomainDataLookupLXC, NULL) < 0)
@@ -345,4 +257,4 @@ mymain(void)
     return ret;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

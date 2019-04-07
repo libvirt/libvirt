@@ -3,9 +3,11 @@
 #
 
 # util/virhostcpu.h
+virHostCPUGetCore;
 virHostCPUGetInfoPopulateLinux;
+virHostCPUGetSiblingsList;
+virHostCPUGetSocket;
 virHostCPUGetStatsLinux;
-virHostCPUSetSysFSSystemPathLinux;
 
 # Let emacs know we want case-insensitive sorting
 # Local Variables:

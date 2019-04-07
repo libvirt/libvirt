@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -184,7 +184,7 @@ foreach my $drivertable (@drivertable) {
                 my $api;
                 if (exists $apis{"vir$name"}) {
                     $api = "vir$name";
-                } elsif ($name =~ /\w+(Open|Close)/) {
+                } elsif ($name =~ /\w+(Open|Close|URIProbe)/) {
                     next;
                 } else {
                     die "driver $name does not have a public API";
@@ -241,12 +241,12 @@ foreach my $src (@srcs) {
 
                 next if $api eq "no" || $api eq "name";
 
-                die "Method $meth in $src is missing version" unless defined $vers;
+                die "Method $meth in $src is missing version" unless defined $vers || $api eq "connectURIProbe";
 
                 die "Driver method for $api is NULL in $src" if $meth eq "NULL";
 
                 if (!exists($groups{$ingrp}->{apis}->{$api})) {
-                    next if $api =~ /\w(Open|Close)/;
+                    next if $api =~ /\w(Open|Close|URIProbe)/;
 
                     die "Found unexpected method $api in $ingrp\n";
                 }
@@ -332,7 +332,7 @@ foreach my $drv (keys %{$groups{"virHypervisorDriver"}->{drivers}}) {
 
 print <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <body class="hvsupport">
 <h1>libvirt API support matrix</h1>

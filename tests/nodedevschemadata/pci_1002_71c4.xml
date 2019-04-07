@@ -2,6 +2,7 @@
   <name>pci_1002_71c4</name>
   <parent>pci_8086_27a1</parent>
   <capability type='pci'>
+    <class>0xffffff</class>
     <domain>0</domain>
     <bus>1</bus>
     <slot>0</slot>

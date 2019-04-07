@@ -19,11 +19,12 @@
  *
  */
 
-#ifndef __VIR_COMMAND_H__
-# define __VIR_COMMAND_H__
+#ifndef LIBVIRT_VIRCOMMAND_H
+# define LIBVIRT_VIRCOMMAND_H
 
 # include "internal.h"
 # include "virbuffer.h"
+# include "viralloc.h"
 
 typedef struct _virCommand virCommand;
 typedef virCommand *virCommandPtr;
@@ -51,14 +52,14 @@ virCommandPtr virCommandNewVAList(const char *binary, va_list list)
  * delayed until the Run/RunAsync methods
  */
 
-enum {
+typedef enum {
     /* Close the FD in the parent */
     VIR_COMMAND_PASS_FD_CLOSE_PARENT = (1 << 0),
-};
+} virCommandPassFDFlags;
 
 void virCommandPassFD(virCommandPtr cmd,
                       int fd,
-                      unsigned int flags);
+                      unsigned int flags) ATTRIBUTE_NOINLINE;
 
 void virCommandPassListenFDs(virCommandPtr cmd);
 
@@ -67,6 +68,10 @@ int virCommandPassFDGetFDIndex(virCommandPtr cmd,
 
 void virCommandSetPidFile(virCommandPtr cmd,
                           const char *pidfile) ATTRIBUTE_NONNULL(2);
+
+gid_t virCommandGetGID(virCommandPtr cmd) ATTRIBUTE_NONNULL(1);
+
+uid_t virCommandGetUID(virCommandPtr cmd) ATTRIBUTE_NONNULL(1);
 
 void virCommandSetGID(virCommandPtr cmd, gid_t gid);
 
@@ -116,6 +121,8 @@ void virCommandAddEnvPassAllowSUID(virCommandPtr cmd,
                                    const char *name) ATTRIBUTE_NONNULL(2);
 
 void virCommandAddEnvPassCommon(virCommandPtr cmd);
+
+void virCommandAddEnvXDG(virCommandPtr cmd, const char *baseDir);
 
 void virCommandAddArg(virCommandPtr cmd,
                       const char *val) ATTRIBUTE_NONNULL(2);
@@ -167,9 +174,9 @@ void virCommandSetPreExecHook(virCommandPtr cmd,
 void virCommandWriteArgLog(virCommandPtr cmd,
                            int logfd);
 
-char *virCommandToString(virCommandPtr cmd) ATTRIBUTE_RETURN_CHECK;
+char *virCommandToString(virCommandPtr cmd, bool linebreaks) ATTRIBUTE_RETURN_CHECK;
 
-int virCommandExec(virCommandPtr cmd) ATTRIBUTE_RETURN_CHECK;
+int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups) ATTRIBUTE_RETURN_CHECK;
 
 int virCommandRun(virCommandPtr cmd,
                   int *exitstatus) ATTRIBUTE_RETURN_CHECK;
@@ -214,5 +221,6 @@ int virCommandRunNul(virCommandPtr cmd,
                      virCommandRunNulFunc func,
                      void *data);
 
+VIR_DEFINE_AUTOPTR_FUNC(virCommand, virCommandFree);
 
-#endif /* __VIR_COMMAND_H__ */
+#endif /* LIBVIRT_VIRCOMMAND_H */

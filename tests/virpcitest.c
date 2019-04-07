@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -24,8 +22,6 @@
 
 #ifdef __linux__
 
-# include <stdlib.h>
-# include <stdio.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
@@ -82,12 +78,12 @@ testVirPCIDeviceNew(const void *opaque ATTRIBUTE_UNUSED)
     return ret;
 }
 
-# define CHECK_LIST_COUNT(list, cnt)                                    \
-    if ((count = virPCIDeviceListCount(list)) != cnt) {                 \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                       "Unexpected count of items in " #list ": %d, "   \
-                       "expecting %zu", count, (size_t) cnt);           \
-        goto cleanup;                                                   \
+# define CHECK_LIST_COUNT(list, cnt) \
+    if ((count = virPCIDeviceListCount(list)) != cnt) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       "Unexpected count of items in " #list ": %d, " \
+                       "expecting %zu", count, (size_t) cnt); \
+        goto cleanup; \
     }
 
 static int
@@ -374,44 +370,44 @@ mymain(void)
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
 
-# define DO_TEST(fnc)                                   \
-    do {                                                \
-        if (virTestRun(#fnc, fnc, NULL) < 0)            \
-            ret = -1;                                   \
+# define DO_TEST(fnc) \
+    do { \
+        if (virTestRun(#fnc, fnc, NULL) < 0) \
+            ret = -1; \
     } while (0)
 
-# define DO_TEST_PCI(fnc, domain, bus, slot, function)                  \
-    do {                                                                \
-        struct testPCIDevData data = {                                  \
-            domain, bus, slot, function, NULL                           \
-        };                                                              \
-        char *label = NULL;                                             \
-        if (virAsprintf(&label, "%s(%04x:%02x:%02x.%x)",                \
-                        #fnc, domain, bus, slot, function) < 0) {       \
-            ret = -1;                                                   \
-            break;                                                      \
-        }                                                               \
-        if (virTestRun(label, fnc, &data) < 0)                          \
-            ret = -1;                                                   \
-        VIR_FREE(label);                                                \
+# define DO_TEST_PCI(fnc, domain, bus, slot, function) \
+    do { \
+        struct testPCIDevData data = { \
+            domain, bus, slot, function, NULL \
+        }; \
+        char *label = NULL; \
+        if (virAsprintf(&label, "%s(%04x:%02x:%02x.%x)", \
+                        #fnc, domain, bus, slot, function) < 0) { \
+            ret = -1; \
+            break; \
+        } \
+        if (virTestRun(label, fnc, &data) < 0) \
+            ret = -1; \
+        VIR_FREE(label); \
     } while (0)
 
-# define DO_TEST_PCI_DRIVER(domain, bus, slot, function, driver)        \
-    do {                                                                \
-        struct testPCIDevData data = {                                  \
-            domain, bus, slot, function, driver                         \
-        };                                                              \
-        char *label = NULL;                                             \
-        if (virAsprintf(&label, "PCI driver %04x:%02x:%02x.%x is %s",   \
-                        domain, bus, slot, function,                    \
-                        NULLSTR(driver)) < 0) {                         \
-            ret = -1;                                                   \
-            break;                                                      \
-        }                                                               \
-        if (virTestRun(label, testVirPCIDeviceCheckDriverTest,          \
-                       &data) < 0)                                      \
-            ret = -1;                                                   \
-        VIR_FREE(label);                                                \
+# define DO_TEST_PCI_DRIVER(domain, bus, slot, function, driver) \
+    do { \
+        struct testPCIDevData data = { \
+            domain, bus, slot, function, driver \
+        }; \
+        char *label = NULL; \
+        if (virAsprintf(&label, "PCI driver %04x:%02x:%02x.%x is %s", \
+                        domain, bus, slot, function, \
+                        NULLSTR(driver)) < 0) { \
+            ret = -1; \
+            break; \
+        } \
+        if (virTestRun(label, testVirPCIDeviceCheckDriverTest, \
+                       &data) < 0) \
+            ret = -1; \
+        VIR_FREE(label); \
     } while (0)
 
     /* Changes made to individual devices are persistent and the
@@ -456,7 +452,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virpcimock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virpcimock.so")
 #else
 int
 main(void)

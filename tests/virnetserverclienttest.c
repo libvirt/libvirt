@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -27,6 +25,26 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 #ifdef HAVE_SOCKETPAIR
+
+static void *
+testClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+              void *opaque ATTRIBUTE_UNUSED)
+{
+    char *dummy;
+
+    if (VIR_ALLOC(dummy) < 0)
+        return NULL;
+
+    return dummy;
+}
+
+
+static void
+testClientFree(void *opaque)
+{
+    VIR_FREE(opaque);
+}
+
 static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
 {
     int sv[2];
@@ -53,10 +71,11 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
     sv[0] = -1;
 
     if (!(client = virNetServerClientNew(1, sock, 0, false, 1,
-# ifdef WITH_GNUTLS
                                          NULL,
-# endif
-                                         NULL, NULL, NULL, NULL))) {
+                                         testClientNew,
+                                         NULL,
+                                         testClientFree,
+                                         NULL))) {
         virDispatchError(NULL);
         goto cleanup;
     }
@@ -129,6 +148,8 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
     ret = 0;
  cleanup:
     virObjectUnref(sock);
+    if (client)
+        virNetServerClientClose(client);
     virObjectUnref(client);
     virObjectUnref(ident);
     VIR_FORCE_CLOSE(sv[0]);
@@ -149,12 +170,12 @@ mymain(void)
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetserverclientmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetserverclientmock.so")
 #else
 static int
 mymain(void)
 {
     return EXIT_AM_SKIP;
 }
-VIRT_TEST_MAIN(mymain);
+VIR_TEST_MAIN(mymain);
 #endif

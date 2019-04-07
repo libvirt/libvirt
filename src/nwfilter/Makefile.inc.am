@@ -1,0 +1,42 @@
+NWFILTER_DRIVER_SOURCES = \
+	nwfilter/nwfilter_driver.h \
+	nwfilter/nwfilter_driver.c \
+	nwfilter/nwfilter_tech_driver.h \
+	nwfilter/nwfilter_gentech_driver.c \
+	nwfilter/nwfilter_gentech_driver.h \
+	nwfilter/nwfilter_dhcpsnoop.c \
+	nwfilter/nwfilter_dhcpsnoop.h \
+	nwfilter/nwfilter_ebiptables_driver.c \
+	nwfilter/nwfilter_ebiptables_driver.h \
+	nwfilter/nwfilter_learnipaddr.c \
+	nwfilter/nwfilter_learnipaddr.h \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(NWFILTER_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += $(NWFILTER_DRIVER_SOURCES)
+EXTRA_DIST += $(NWFILTER_DRIVER_SOURCES)
+
+if WITH_NWFILTER
+noinst_LTLIBRARIES += libvirt_driver_nwfilter_impl.la
+libvirt_driver_nwfilter_la_SOURCES =
+libvirt_driver_nwfilter_la_LIBADD = libvirt_driver_nwfilter_impl.la
+mod_LTLIBRARIES += libvirt_driver_nwfilter.la
+libvirt_driver_nwfilter_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+libvirt_driver_nwfilter_impl_la_CFLAGS = \
+	$(LIBPCAP_CFLAGS) \
+	$(LIBNL_CFLAGS) \
+	$(DBUS_CFLAGS) \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_nwfilter_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_nwfilter_impl_la_LIBADD = \
+	libvirt.la \
+	$(LIBPCAP_LIBS) \
+	$(LIBNL_LIBS) \
+	$(DBUS_LIBS) \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+libvirt_driver_nwfilter_impl_la_SOURCES = $(NWFILTER_DRIVER_SOURCES)
+endif WITH_NWFILTER

@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -87,7 +85,7 @@ open(const char *path, int flags, ...)
         va_list ap;
         mode_t mode;
         va_start(ap, flags);
-        mode = va_arg(ap, int);
+        mode = (mode_t) va_arg(ap, int);
         va_end(ap);
         ret = real_open(newpath ? newpath : path, flags, mode);
     } else {

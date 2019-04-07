@@ -17,18 +17,15 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_HOSTCPU_H__
-# define __VIR_HOSTCPU_H__
+#ifndef LIBVIRT_VIRHOSTCPU_H
+# define LIBVIRT_VIRHOSTCPU_H
 
 # include "internal.h"
 # include "virarch.h"
 # include "virbitmap.h"
 
-# define VIR_HOST_CPU_MASK_LEN 1024
 
 int virHostCPUGetStats(int cpuNum,
                        virNodeCPUStatsPtr params,
@@ -39,7 +36,7 @@ bool virHostCPUHasBitmap(void);
 virBitmapPtr virHostCPUGetPresentBitmap(void);
 virBitmapPtr virHostCPUGetOnlineBitmap(void);
 int virHostCPUGetCount(void);
-int virHostCPUGetThreadsPerSubcore(virArch arch);
+int virHostCPUGetThreadsPerSubcore(virArch arch) ATTRIBUTE_NOINLINE;
 
 int virHostCPUGetMap(unsigned char **cpumap,
                      unsigned int *online,
@@ -52,10 +49,21 @@ int virHostCPUGetInfo(virArch hostarch,
                       unsigned int *cores,
                       unsigned int *threads);
 
-int virHostCPUGetKVMMaxVCPUs(void);
+int virHostCPUGetKVMMaxVCPUs(void) ATTRIBUTE_NOINLINE;
 
 int virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                           const char *name,
                           unsigned long long value);
 
-#endif /* __VIR_HOSTCPU_H__*/
+# ifdef __linux__
+int virHostCPUGetSocket(unsigned int cpu, unsigned int *socket);
+int virHostCPUGetCore(unsigned int cpu, unsigned int *core);
+
+virBitmapPtr virHostCPUGetSiblingsList(unsigned int cpu);
+# endif
+
+int virHostCPUGetOnline(unsigned int cpu, bool *online);
+
+unsigned int virHostCPUGetMicrocodeVersion(void);
+
+#endif /* LIBVIRT_VIRHOSTCPU_H */

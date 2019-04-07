@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Contributing to libvirt</h1>
@@ -11,7 +11,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="skills">Contributions required</a></h2>
+    <h2><a id="skills">Contributions required</a></h2>
 
     <p>
       The libvirt project is always looking for new contributors to
@@ -36,7 +36,9 @@
         language bindings written in Python, Perl, Java, Ruby,
         Php, OCaml and Go. There are also higher level wrappers
         mapping libvirt into other object frameworks, such GLib,
-        CIM and SNMP</li>
+        CIM and SNMP. For those interested in working on the core parts of
+        libvirt, the <a href="hacking.html">contributor guidelines</a> are
+        mandatory reading</li>
       <li><strong>Translation</strong>. All the libvirt modules aim to support
         translations where appropriate. All translation is
         handling outside of the normal libvirt review process,
@@ -78,7 +80,7 @@
         and future growth of the project, that there are a people
         who evangalise the work created by the project. This can
         take many forms, writing blog posts (about usage of features,
-        personal user experiances, areas for future work, and more),
+        personal user experiences, areas for future work, and more),
         syndicating docs and blogs via social media, giving user
         group and/or conference talks about libvirt.</li>
       <li><strong>User assistance</strong>. Since documentation
@@ -95,7 +97,7 @@
         these help forums.</li>
     </ul>
 
-    <h2><a name="comms">Communication</a></h2>
+    <h2><a id="comms">Communication</a></h2>
 
     <p>
       For full details on contacting other project contributors
@@ -104,7 +106,7 @@
       between contributors:
     </p>
 
-    <h3><a name="email">Mailing lists</a></h3>
+    <h3><a id="email">Mailing lists</a></h3>
 
     <p>
       The project has a number of
@@ -116,7 +118,7 @@
       to follow the traffic.
     </p>
 
-    <h3><a name="irc">Instant messaging / chat</a></h3>
+    <h3><a id="irc">Instant messaging / chat</a></h3>
 
     <p>
       Contributors to libvirt are encouraged to join the
@@ -125,7 +127,7 @@
       with others members.
     </p>
 
-    <h2><a name="outreach">Student / outreach coding programs</a></h2>
+    <h2><a id="outreach">Student / outreach coding programs</a></h2>
 
     <p>
       Since 2016, the libvirt project directly participates as an

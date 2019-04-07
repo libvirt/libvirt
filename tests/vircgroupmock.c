@@ -14,16 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
 #ifdef __linux__
 # include "virmock.h"
-# include <stdio.h>
-# include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/stat.h>
@@ -42,10 +38,6 @@
 static int (*real_open)(const char *path, int flags, ...);
 static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
-static int (*real_stat)(const char *path, struct stat *sb);
-static int (*real___xstat)(int ver, const char *path, struct stat *sb);
-static int (*real_lstat)(const char *path, struct stat *sb);
-static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
 static int (*real_mkdir)(const char *path, mode_t mode);
 
 /* Don't make static, since it causes problems with clang
@@ -58,7 +50,7 @@ const char *fakedevicedir0 = FAKEDEVDIR0;
 const char *fakedevicedir1 = FAKEDEVDIR1;
 
 
-# define SYSFS_CGROUP_PREFIX "/not/really/sys/fs/cgroup/"
+# define SYSFS_CGROUP_PREFIX "/not/really/sys/fs/cgroup"
 # define SYSFS_CPU_PRESENT "/sys/devices/system/cpu/present"
 # define SYSFS_CPU_PRESENT_MOCKED "devices_system_cpu_present"
 
@@ -80,85 +72,6 @@ const char *fakedevicedir1 = FAKEDEVDIR1;
  * whereby creating the directory auto-creates a bunch
  * of files beneath it
  */
-
-/*
- * Intentionally missing the 'devices' mount.
- * Co-mounting cpu & cpuacct controllers
- * An anonymous controller for systemd
- */
-const char *procmounts =
-    "rootfs / rootfs rw 0 0\n"
-    "tmpfs /run tmpfs rw,seclabel,nosuid,nodev,mode=755 0 0\n"
-    "tmpfs /not/really/sys/fs/cgroup tmpfs rw,seclabel,nosuid,nodev,noexec,mode=755 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/cpuset cgroup rw,nosuid,nodev,noexec,relatime,cpuset 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/cpu,cpuacct cgroup rw,nosuid,nodev,noexec,relatime,cpuacct,cpu 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/freezer cgroup rw,nosuid,nodev,noexec,relatime,freezer 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/blkio cgroup rw,nosuid,nodev,noexec,relatime,blkio 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup/memory cgroup rw,nosuid,nodev,noexec,relatime,memory 0 0\n"
-    "/dev/sda1 /boot ext4 rw,seclabel,relatime,data=ordered 0 0\n"
-    "tmpfs /tmp tmpfs rw,seclabel,relatime,size=1024000k 0 0\n";
-
-const char *procselfcgroups =
-    "115:memory:/\n"
-    "8:blkio:/\n"
-    "6:freezer:/\n"
-    "3:cpuacct,cpu:/system\n"
-    "2:cpuset:/\n"
-    "1:name=systemd:/user/berrange/123\n";
-
-const char *proccgroups =
-    "#subsys_name    hierarchy       num_cgroups     enabled\n"
-    "cpuset  2       4       1\n"
-    "cpu     3       48      1\n"
-    "cpuacct 3       48      1\n"
-    "memory  4       4       1\n"
-    "devices 5       4       1\n"
-    "freezer 6       4       1\n"
-    "blkio   8       4       1\n";
-
-
-const char *procmountsallinone =
-    "rootfs / rootfs rw 0 0\n"
-    "sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0\n"
-    "proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0\n"
-    "udev /dev devtmpfs rw,relatime,size=16458560k,nr_inodes=4114640,mode=755 0 0\n"
-    "devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0\n"
-    "nfsd /proc/fs/nfsd nfsd rw,relatime 0 0\n"
-    "cgroup /not/really/sys/fs/cgroup cgroup rw,relatime,blkio,devices,memory,cpuacct,cpu,cpuset 0 0\n";
-
-const char *procselfcgroupsallinone =
-    "6:blkio,devices,memory,cpuacct,cpu,cpuset:/";
-
-const char *proccgroupsallinone =
-    "#subsys_name    hierarchy       num_cgroups     enabled\n"
-    "cpuset   6   1  1\n"
-    "cpu      6   1  1\n"
-    "cpuacct  6   1  1\n"
-    "memory   6   1  1\n"
-    "devices  6   1  1\n"
-    "blkio    6   1  1\n";
-
-const char *procmountslogind =
-    "none /not/really/sys/fs/cgroup tmpfs rw,rootcontext=system_u:object_r:sysfs_t:s0,seclabel,relatime,size=4k,mode=755 0 0\n"
-    "systemd /not/really/sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,name=systemd 0 0\n";
-
-const char *procselfcgroupslogind =
-    "1:name=systemd:/\n";
-
-const char *proccgroupslogind =
-    "#subsys_name    hierarchy       num_cgroups     enabled\n"
-    "cpuset    0  1  1\n"
-    "cpu       0  1  1\n"
-    "cpuacct   0  1  1\n"
-    "memory    0  1  0\n"
-    "devices   0  1  1\n"
-    "freezer   0  1  1\n"
-    "net_cls   0  1  1\n"
-    "blkio     0  1  1\n"
-    "perf_event  0  1  1\n";
-
-
 
 static int make_file(const char *path,
                      const char *name,
@@ -186,7 +99,8 @@ static int make_file(const char *path,
     return ret;
 }
 
-static int make_controller(const char *path, mode_t mode)
+
+static int make_controller_v1(const char *path, mode_t mode)
 {
     int ret = -1;
     const char *controller;
@@ -205,22 +119,16 @@ static int make_controller(const char *path, mode_t mode)
     if (real_mkdir(path, mode) < 0)
         goto cleanup;
 
-# define MAKE_FILE(name, value)                 \
-    do {                                        \
-        if (make_file(path, name, value) < 0)   \
-            goto cleanup;                       \
+# define MAKE_FILE(name, value) \
+    do { \
+        if (make_file(path, name, value) < 0) \
+            goto cleanup; \
     } while (0)
 
     if (STRPREFIX(controller, "cpu,cpuacct")) {
         MAKE_FILE("cpu.cfs_period_us", "100000\n");
         MAKE_FILE("cpu.cfs_quota_us", "-1\n");
-        MAKE_FILE("cpu.rt_period_us", "1000000\n");
-        MAKE_FILE("cpu.rt_runtime_us", "950000\n");
         MAKE_FILE("cpu.shares", "1024\n");
-        MAKE_FILE("cpu.stat",
-                  "nr_periods 0\n"
-                  "nr_throttled 0\n"
-                  "throttled_time 0\n");
         MAKE_FILE("cpuacct.stat",
                   "user 216687025\n"
                   "system 43421396\n");
@@ -235,46 +143,19 @@ static int make_controller(const char *path, mode_t mode)
                   "709566900 0 0 0 0 0 0 0 444777342 0 0 0 0 0 0 0 "
                   "5683512916 0 0 0 0 0 0 0 635751356 0 0 0 0 0 0 0\n");
     } else if (STRPREFIX(controller, "cpuset")) {
-        MAKE_FILE("cpuset.cpu_exclusive", "1\n");
         if (STREQ(controller, "cpuset"))
             MAKE_FILE("cpuset.cpus", "0-1");
         else
             MAKE_FILE("cpuset.cpus", ""); /* Values don't inherit */
-        MAKE_FILE("cpuset.mem_exclusive", "1\n");
-        MAKE_FILE("cpuset.mem_hardwall", "0\n");
         MAKE_FILE("cpuset.memory_migrate", "0\n");
-        MAKE_FILE("cpuset.memory_pressure", "0\n");
-        MAKE_FILE("cpuset.memory_pressure_enabled", "0\n");
-        MAKE_FILE("cpuset.memory_spread_page", "0\n");
-        MAKE_FILE("cpuset.memory_spread_slab", "0\n");
         if (STREQ(controller, "cpuset"))
             MAKE_FILE("cpuset.mems", "0");
         else
             MAKE_FILE("cpuset.mems", ""); /* Values don't inherit */
-        MAKE_FILE("cpuset.sched_load_balance", "1\n");
-        MAKE_FILE("cpuset.sched_relax_domain_level", "-1\n");
     } else if (STRPREFIX(controller, "memory")) {
-        MAKE_FILE("memory.failcnt", "0\n");
-        MAKE_FILE("memory.force_empty", ""); /* Write only */
-        MAKE_FILE("memory.kmem.tcp.failcnt", "0\n");
-        MAKE_FILE("memory.kmem.tcp.limit_in_bytes", "9223372036854775807\n");
-        MAKE_FILE("memory.kmem.tcp.max_usage_in_bytes", "0\n");
-        MAKE_FILE("memory.kmem.tcp.usage_in_bytes", "16384\n");
         MAKE_FILE("memory.limit_in_bytes", "9223372036854775807\n");
-        MAKE_FILE("memory.max_usage_in_bytes", "0\n");
-        MAKE_FILE("memory.memsw.failcnt", ""); /* Not supported */
         MAKE_FILE("memory.memsw.limit_in_bytes", ""); /* Not supported */
-        MAKE_FILE("memory.memsw.max_usage_in_bytes", ""); /* Not supported */
         MAKE_FILE("memory.memsw.usage_in_bytes", ""); /* Not supported */
-        MAKE_FILE("memory.move_charge_at_immigrate", "0\n");
-        MAKE_FILE("memory.numa_stat",
-                  "total=367664 N0=367664\n"
-                  "file=314764 N0=314764\n"
-                  "anon=51999 N0=51999\n"
-                  "unevictable=901 N0=901\n");
-        MAKE_FILE("memory.oom_control",
-                  "oom_kill_disable 0\n"
-                  "under_oom 0\n");
         MAKE_FILE("memory.soft_limit_in_bytes", "9223372036854775807\n");
         MAKE_FILE("memory.stat",
                   "cache 1336619008\n"
@@ -306,50 +187,11 @@ static int make_controller(const char *path, mode_t mode)
                   "recent_rotated_file 2547948\n"
                   "recent_scanned_anon 113796164\n"
                   "recent_scanned_file 8199863\n");
-        MAKE_FILE("memory.swappiness", "60\n");
         MAKE_FILE("memory.usage_in_bytes", "1455321088\n");
         MAKE_FILE("memory.use_hierarchy", "0\n");
     } else if (STRPREFIX(controller, "freezer")) {
         MAKE_FILE("freezer.state", "THAWED");
     } else if (STRPREFIX(controller, "blkio")) {
-        MAKE_FILE("blkio.io_merged",
-                  "8:0 Read 1100949\n"
-                  "8:0 Write 2248076\n"
-                  "8:0 Sync 63063\n"
-                  "8:0 Async 3285962\n"
-                  "8:0 Total 3349025\n");
-        MAKE_FILE("blkio.io_queued",
-                  "8:0 Read 0\n"
-                  "8:0 Write 0\n"
-                  "8:0 Sync 0\n"
-                  "8:0 Async 0\n"
-                  "8:0 Total 0\n");
-        MAKE_FILE("blkio.io_service_bytes",
-                  "8:0 Read 59542078464\n"
-                  "8:0 Write 397369182208\n"
-                  "8:0 Sync 234080922624\n"
-                  "8:0 Async 222830338048\n"
-                  "8:0 Total 456911260672\n");
-        MAKE_FILE("blkio.io_serviced",
-                  "8:0 Read 3402504\n"
-                  "8:0 Write 14966516\n"
-                  "8:0 Sync 12064031\n"
-                  "8:0 Async 6304989\n"
-                  "8:0 Total 18369020\n");
-        MAKE_FILE("blkio.io_service_time",
-                  "8:0 Read 10747537542349\n"
-                  "8:0 Write 9200028590575\n"
-                  "8:0 Sync 6449319855381\n"
-                  "8:0 Async 13498246277543\n"
-                  "8:0 Total 19947566132924\n");
-        MAKE_FILE("blkio.io_wait_time",
-                  "8:0 Read 14687514824889\n"
-                  "8:0 Write 357748452187691\n"
-                  "8:0 Sync 55296974349413\n"
-                  "8:0 Async 317138992663167\n"
-                  "8:0 Total 372435967012580\n");
-        MAKE_FILE("blkio.reset_stats", ""); /* Write only */
-        MAKE_FILE("blkio.sectors", "8:0 892404806\n");
         MAKE_FILE("blkio.throttle.io_service_bytes",
                   "8:0 Read 59542107136\n"
                   "8:0 Write 411440480256\n"
@@ -376,7 +218,6 @@ static int make_controller(const char *path, mode_t mode)
         MAKE_FILE("blkio.throttle.read_iops_device", "");
         MAKE_FILE("blkio.throttle.write_bps_device", "");
         MAKE_FILE("blkio.throttle.write_iops_device", "");
-        MAKE_FILE("blkio.time", "8:0 61019089\n");
         MAKE_FILE("blkio.weight", "1000\n");
         MAKE_FILE("blkio.weight_device", "");
 
@@ -385,10 +226,85 @@ static int make_controller(const char *path, mode_t mode)
         goto cleanup;
     }
 
+# undef MAKE_FILE
+
     ret = 0;
  cleanup:
     return ret;
 }
+
+
+static int make_controller_v2(const char *path, mode_t mode)
+{
+    if (!STRPREFIX(path, fakesysfscgroupdir)) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if (real_mkdir(path, mode) < 0 && errno != EEXIST)
+        return -1;
+
+# define MAKE_FILE(name, value) \
+    do { \
+        if (make_file(path, name, value) < 0) \
+            return -1; \
+    } while (0)
+
+    MAKE_FILE("cgroup.controllers", "cpu io memory\n");
+    MAKE_FILE("cgroup.subtree_control", "");
+    MAKE_FILE("cgroup.type", "domain\n");
+    MAKE_FILE("cpu.max", "max 100000\n");
+    MAKE_FILE("cpu.stat",
+              "usage_usec 0\n"
+              "user_usec 0\n"
+              "system_usec 0\n"
+              "nr_periods 0\n"
+              "nr_throttled 0\n"
+              "throttled_usec 0\n");
+    MAKE_FILE("cpu.weight", "100\n");
+    MAKE_FILE("memory.current", "1455321088\n");
+    MAKE_FILE("memory.high", "max\n");
+    MAKE_FILE("memory.max", "max\n");
+    MAKE_FILE("memory.stat",
+              "anon 0\n"
+              "file 0\n"
+              "kernel_stack 0\n"
+              "slab 0\n"
+              "sock 0\n"
+              "shmem 0\n"
+              "file_mapped 0\n"
+              "file_dirty 0\n"
+              "file_writeback 0\n"
+              "inactive_anon 0\n"
+              "active_anon 0\n"
+              "inactive_file 0\n"
+              "active_file 0\n"
+              "unevictable 0\n"
+              "slab_reclaimable 0\n"
+              "slab_unreclaimable 0\n"
+              "pgfault 0\n"
+              "pgmajfault 0\n"
+              "pgrefill 0\n"
+              "pgscan 0\n"
+              "pgsteal 0\n"
+              "pgactivate 0\n"
+              "pgdeactivate 0\n"
+              "pglazyfree 0\n"
+              "pglazyfreed 0\n"
+              "workingset_refault 0\n"
+              "workingset_activate 0\n"
+              "workingset_nodereclaim 0\n");
+    MAKE_FILE("memory.swap.current", "0\n");
+    MAKE_FILE("memory.swap.max", "max\n");
+    MAKE_FILE("io.stat", "8:0 rbytes=26828800 wbytes=77062144 rios=2256 wios=7849 dbytes=0 dios=0\n");
+    MAKE_FILE("io.max", "");
+    MAKE_FILE("io.weight", "default 100\n");
+
+# undef MAKE_FILE
+
+    return 0;
+}
+
 
 static void init_syms(void)
 {
@@ -397,21 +313,67 @@ static void init_syms(void)
 
     VIR_MOCK_REAL_INIT(fopen);
     VIR_MOCK_REAL_INIT(access);
-    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
-    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
     VIR_MOCK_REAL_INIT(mkdir);
     VIR_MOCK_REAL_INIT(open);
 }
 
+
+static int make_controller(const char *path, mode_t mode)
+{
+    const char *mock;
+    bool unified = false;
+    bool hybrid = false;
+
+    mock = getenv("VIR_CGROUP_MOCK_MODE");
+    if (mock) {
+        if (STREQ(mock, "unified")) {
+            unified = true;
+        } else if (STREQ(mock, "hybrid")) {
+            hybrid = true;
+        } else {
+            fprintf(stderr, "invalid mode '%s'\n", mock);
+            abort();
+        }
+    }
+
+    if (unified || (hybrid && strstr(path, "unified"))) {
+        return make_controller_v2(path, mode);
+    } else {
+        return make_controller_v1(path, mode);
+    }
+}
+
+
 static void init_sysfs(void)
 {
-    if (fakerootdir && fakesysfscgroupdir)
-        return;
+    const char *mock;
+    char *newfakerootdir;
+    bool unified = false;
+    bool hybrid = false;
 
-    if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
+    if (!(newfakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
         fprintf(stderr, "Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
         abort();
     }
+
+    if (fakerootdir && STREQ(fakerootdir, newfakerootdir))
+        return;
+
+    fakerootdir = newfakerootdir;
+
+    mock = getenv("VIR_CGROUP_MOCK_MODE");
+    if (mock) {
+        if (STREQ(mock, "unified")) {
+            unified = true;
+        } else if (STREQ(mock, "hybrid")) {
+            hybrid = true;
+        } else {
+            fprintf(stderr, "invalid mode '%s'\n", mock);
+            abort();
+        }
+    }
+
+    VIR_FREE(fakesysfscgroupdir);
 
     if (virAsprintfQuiet(&fakesysfscgroupdir, "%s%s",
                          fakerootdir, SYSFS_CGROUP_PREFIX) < 0)
@@ -422,56 +384,53 @@ static void init_sysfs(void)
         abort();
     }
 
-# define MAKE_CONTROLLER(subpath)                                      \
-    do {                                                               \
-        char *path;                                                    \
+# define MAKE_CONTROLLER(subpath) \
+    do { \
+        char *path; \
         if (asprintf(&path, "%s/%s", fakesysfscgroupdir, subpath) < 0) \
-            abort();                                                   \
-        if (make_controller(path, 0755) < 0) {                         \
-            fprintf(stderr, "Cannot initialize %s\n", path);           \
-            abort();                                                   \
-        }                                                              \
+            abort(); \
+        if (make_controller(path, 0755) < 0) { \
+            fprintf(stderr, "Cannot initialize %s\n", path); \
+            free(path); \
+            abort(); \
+        } \
+        free(path); \
     } while (0)
 
-    MAKE_CONTROLLER("cpu");
-    MAKE_CONTROLLER("cpuacct");
-    MAKE_CONTROLLER("cpu,cpuacct");
-    MAKE_CONTROLLER("cpu,cpuacct/system");
-    MAKE_CONTROLLER("cpuset");
-    MAKE_CONTROLLER("blkio");
-    MAKE_CONTROLLER("memory");
-    MAKE_CONTROLLER("freezer");
+    if (unified) {
+        MAKE_CONTROLLER("");
+    } else if (hybrid) {
+        MAKE_CONTROLLER("unified");
+        MAKE_CONTROLLER("cpuset");
+        MAKE_CONTROLLER("freezer");
+    } else {
+        MAKE_CONTROLLER("cpu");
+        MAKE_CONTROLLER("cpuacct");
+        MAKE_CONTROLLER("cpu,cpuacct");
+        MAKE_CONTROLLER("cpuset");
+        MAKE_CONTROLLER("blkio");
+        MAKE_CONTROLLER("memory");
+        MAKE_CONTROLLER("freezer");
 
-    if (make_file(fakesysfscgroupdir,
-                  SYSFS_CPU_PRESENT_MOCKED, "8-23,48-159\n") < 0)
-        abort();
+        if (make_file(fakesysfscgroupdir,
+                      SYSFS_CPU_PRESENT_MOCKED, "8-23,48-159\n") < 0)
+            abort();
+    }
 }
 
 
 FILE *fopen(const char *path, const char *mode)
 {
-    const char *mock;
-    bool allinone = false, logind = false;
-    init_syms();
+    char *filepath = NULL;
+    const char *type = NULL;
+    FILE *rc = NULL;
+    const char *filename = getenv("VIR_CGROUP_MOCK_FILENAME");
 
-    mock = getenv("VIR_CGROUP_MOCK_MODE");
-    if (mock) {
-        if (STREQ(mock, "allinone"))
-            allinone = true;
-        else if (STREQ(mock, "logind"))
-            logind = true;
-    }
+    init_syms();
 
     if (STREQ(path, "/proc/mounts")) {
         if (STREQ(mode, "r")) {
-            if (allinone)
-                return fmemopen((void *)procmountsallinone,
-                                strlen(procmountsallinone), mode);
-            else if (logind)
-                return fmemopen((void *)procmountslogind,
-                                strlen(procmountslogind), mode);
-            else
-                return fmemopen((void *)procmounts, strlen(procmounts), mode);
+            type = "mounts";
         } else {
             errno = EACCES;
             return NULL;
@@ -479,14 +438,7 @@ FILE *fopen(const char *path, const char *mode)
     }
     if (STREQ(path, "/proc/cgroups")) {
         if (STREQ(mode, "r")) {
-            if (allinone)
-                return fmemopen((void *)proccgroupsallinone,
-                                strlen(proccgroupsallinone), mode);
-            else if (logind)
-                return fmemopen((void *)proccgroupslogind,
-                                strlen(proccgroupslogind), mode);
-            else
-                return fmemopen((void *)proccgroups, strlen(proccgroups), mode);
+            type = "cgroups";
         } else {
             errno = EACCES;
             return NULL;
@@ -494,18 +446,25 @@ FILE *fopen(const char *path, const char *mode)
     }
     if (STREQ(path, "/proc/self/cgroup")) {
         if (STREQ(mode, "r")) {
-            if (allinone)
-                return fmemopen((void *)procselfcgroupsallinone,
-                                strlen(procselfcgroupsallinone), mode);
-            else if (logind)
-                return fmemopen((void *)procselfcgroupslogind,
-                                strlen(procselfcgroupslogind), mode);
-            else
-                return fmemopen((void *)procselfcgroups, strlen(procselfcgroups), mode);
+            type = "self.cgroup";
         } else {
             errno = EACCES;
             return NULL;
         }
+    }
+
+    if (type) {
+        if (!filename) {
+            errno = EACCES;
+            return NULL;
+        }
+        if (virAsprintfQuiet(&filepath, "%s/vircgroupdata/%s.%s",
+                             abs_srcdir, filename, type) < 0) {
+            abort();
+        }
+        rc = real_fopen(filepath, mode);
+        free(filepath);
+        return rc;
     }
 
     return real_fopen(path, mode);
@@ -520,7 +479,7 @@ int access(const char *path, int mode)
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
         char *newpath;
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -543,138 +502,40 @@ int access(const char *path, int mode)
     return ret;
 }
 
-int __lxstat(int ver, const char *path, struct stat *sb)
+# define VIR_MOCK_STAT_HOOK \
+    do { \
+        if (STRPREFIX(path, fakedevicedir0)) { \
+            sb->st_mode = S_IFBLK; \
+            sb->st_rdev = makedev(8, 0); \
+            return 0; \
+        } else if (STRPREFIX(path, fakedevicedir1)) { \
+            sb->st_mode = S_IFBLK; \
+            sb->st_rdev = makedev(9, 0); \
+            return 0; \
+        } \
+    } while (0)
+
+# include "virmockstathelpers.c"
+
+static int
+virMockStatRedirect(const char *path, char **newpath)
 {
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
-        init_sysfs();
-        char *newpath;
-        if (asprintf(&newpath, "%s/%s",
-                     fakesysfscgroupdir,
-                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
-            errno = ENOMEM;
-            return -1;
-        }
-        ret = real___lxstat(ver, newpath, sb);
-        free(newpath);
-    } else if (STRPREFIX(path, fakedevicedir0)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(8, 0);
-        return 0;
-    } else if (STRPREFIX(path, fakedevicedir1)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(9, 0);
-        return 0;
-    } else {
-        ret = real___lxstat(ver, path, sb);
-    }
-    return ret;
-}
-
-int lstat(const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
-        init_sysfs();
-        char *newpath;
-        if (asprintf(&newpath, "%s/%s",
-                     fakesysfscgroupdir,
-                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
-            errno = ENOMEM;
-            return -1;
-        }
-        ret = real_lstat(newpath, sb);
-        free(newpath);
-    } else if (STRPREFIX(path, fakedevicedir0)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(8, 0);
-        return 0;
-    } else if (STRPREFIX(path, fakedevicedir1)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(9, 0);
-        return 0;
-    } else {
-        ret = real_lstat(path, sb);
-    }
-    return ret;
-}
-
-int __xstat(int ver, const char *path, struct stat *sb)
-{
-    int ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
-        init_sysfs();
-        char *newpath;
-        if (asprintf(&newpath, "%s/%s",
-                     fakesysfscgroupdir,
-                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
-            errno = ENOMEM;
-            return -1;
-        }
-        ret = real___xstat(ver, newpath, sb);
-        free(newpath);
-    } else if (STRPREFIX(path, fakedevicedir0)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(8, 0);
-        return 0;
-    } else if (STRPREFIX(path, fakedevicedir1)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(9, 0);
-        return 0;
-    } else {
-        ret = real___xstat(ver, path, sb);
-    }
-    return ret;
-}
-
-int stat(const char *path, struct stat *sb)
-{
-    char *newpath = NULL;
-    int ret;
-
-    init_syms();
-
     if (STREQ(path, SYSFS_CPU_PRESENT)) {
         init_sysfs();
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(newpath, "%s/%s",
                      fakesysfscgroupdir,
-                     SYSFS_CPU_PRESENT_MOCKED) < 0) {
-            errno = ENOMEM;
+                     SYSFS_CPU_PRESENT_MOCKED) < 0)
             return -1;
-        }
     } else if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(newpath, "%s%s",
                      fakesysfscgroupdir,
-                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
-            errno = ENOMEM;
-            return -1;
-        }
-    } else if (STRPREFIX(path, fakedevicedir0)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(8, 0);
-        return 0;
-    } else if (STRPREFIX(path, fakedevicedir1)) {
-        sb->st_mode = S_IFBLK;
-        sb->st_rdev = makedev(9, 0);
-        return 0;
-    } else {
-        if (!(newpath = strdup(path)))
+                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0)
             return -1;
     }
-    ret = real_stat(newpath, sb);
-    free(newpath);
-    return ret;
+    return 0;
 }
+
 
 int mkdir(const char *path, mode_t mode)
 {
@@ -685,7 +546,7 @@ int mkdir(const char *path, mode_t mode)
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
         char *newpath;
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -718,7 +579,7 @@ int open(const char *path, int flags, ...)
 
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
         init_sysfs();
-        if (asprintf(&newpath, "%s/%s",
+        if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
             errno = ENOMEM;
@@ -729,7 +590,7 @@ int open(const char *path, int flags, ...)
         va_list ap;
         mode_t mode;
         va_start(ap, flags);
-        mode = va_arg(ap, mode_t);
+        mode = (mode_t) va_arg(ap, int);
         va_end(ap);
         ret = real_open(newpath ? newpath : path, flags, mode);
     } else {

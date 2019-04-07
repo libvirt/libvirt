@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#define LIBVIRT_VIRDBUSPRIV_H_ALLOW
 #include "virdbuspriv.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -144,6 +145,7 @@ void virDBusCloseSystemBus(void)
 {
     if (systembus && !sharedBus) {
         dbus_connection_close(systembus);
+        dbus_connection_unref(systembus);
         systembus = NULL;
     }
 }
@@ -196,10 +198,13 @@ static void virDBusWatchCallback(int fdatch ATTRIBUTE_UNUSED,
     if (events & VIR_EVENT_HANDLE_HANGUP)
         dbus_flags |= DBUS_WATCH_HANGUP;
 
-    (void)dbus_watch_handle(watch, dbus_flags);
+    if (dbus_watch_handle(watch, dbus_flags) == FALSE)
+        VIR_DEBUG("dbus_watch_handle() returned FALSE");
 
+    dbus_connection_ref(info->bus);
     while (dbus_connection_dispatch(info->bus) == DBUS_DISPATCH_DATA_REMAINS)
         /* keep dispatching while data remains */;
+    dbus_connection_unref(info->bus);
 }
 
 
@@ -232,7 +237,7 @@ static dbus_bool_t virDBusAddWatch(DBusWatch *watch,
     struct virDBusWatch *info;
 
     if (VIR_ALLOC(info) < 0)
-        return 0;
+        return FALSE;
 
     if (dbus_watch_get_enabled(watch))
         flags = virDBusTranslateWatchFlags(dbus_watch_get_flags(watch));
@@ -249,10 +254,10 @@ static dbus_bool_t virDBusAddWatch(DBusWatch *watch,
                                     watch, NULL);
     if (info->watch < 0) {
         dbus_watch_set_data(watch, NULL, NULL);
-        return 0;
+        return FALSE;
     }
 
-    return 1;
+    return TRUE;
 }
 
 
@@ -579,24 +584,24 @@ virDBusIsAllowedRefType(const char *sig)
 }
 
 
-# define SET_NEXT_VAL(dbustype, vargtype, arrtype, sigtype, fmt)        \
-    do {                                                                \
-        dbustype x;                                                     \
-        if (arrayref) {                                                 \
-            arrtype valarray = arrayptr;                                \
-            x = (dbustype)*valarray;                                    \
-            valarray++;                                                 \
-            arrayptr = valarray;                                        \
-        } else {                                                        \
-            x = (dbustype)va_arg(args, vargtype);                       \
-        }                                                               \
-        if (!dbus_message_iter_append_basic(iter, sigtype, &x)) {       \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+# define SET_NEXT_VAL(dbustype, vargtype, arrtype, sigtype, fmt) \
+    do { \
+        dbustype x; \
+        if (arrayref) { \
+            arrtype valarray = arrayptr; \
+            x = (dbustype)*valarray; \
+            valarray++; \
+            arrayptr = valarray; \
+        } else { \
+            x = (dbustype)va_arg(args, vargtype); \
+        } \
+        if (!dbus_message_iter_append_basic(iter, sigtype, &x)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("Cannot append basic type %s"), #vargtype);\
-            goto cleanup;                                               \
-        }                                                               \
+            goto cleanup; \
+        } \
         VIR_DEBUG("Appended basic type '" #dbustype "' varg '" #vargtype\
-                  "' sig '%c' val '" fmt "'", sigtype, (vargtype)x);    \
+                  "' sig '%c' val '" fmt "'", sigtype, (vargtype)x); \
     } while (0)
 
 
@@ -757,8 +762,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 goto cleanup;
             }
             VIR_FREE(contsig);
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = t + 1;
             nstruct = skiplen;
             narray = (size_t)va_arg(args, int);
@@ -784,8 +788,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 VIR_FREE(newiter);
                 goto cleanup;
             }
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = vsig;
             nstruct = strlen(types);
             narray = (size_t)-1;
@@ -816,8 +819,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 goto cleanup;
             }
             VIR_FREE(contsig);
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = t + 1;
             nstruct = skiplen - 2;
             narray = (size_t)-1;
@@ -854,25 +856,25 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
 # undef SET_NEXT_VAL
 
 
-# define GET_NEXT_VAL(dbustype, member, vargtype, fmt)                  \
-    do {                                                                \
-        DBusBasicValue v;                                               \
-        dbustype *x = (dbustype *)&v.member;                            \
-        vargtype *y;                                                    \
-        if (arrayref) {                                                 \
-            VIR_DEBUG("Use arrayref");                                  \
-            vargtype **xptrptr = arrayptr;                              \
-            if (VIR_EXPAND_N(*xptrptr, *narrayptr, 1) < 0)              \
-                goto cleanup;                                           \
-            y = (*xptrptr + (*narrayptr - 1));                          \
-            VIR_DEBUG("Expanded to %zu", *narrayptr);                   \
-        } else {                                                        \
-            y = va_arg(args, vargtype *);                               \
-        }                                                               \
-        dbus_message_iter_get_basic(iter, x);                           \
-        *y = *x;                                                        \
-        VIR_DEBUG("Read basic type '" #dbustype "' varg '" #vargtype    \
-                  "' val '" fmt "'", (vargtype)*y);                     \
+# define GET_NEXT_VAL(dbustype, member, vargtype, fmt) \
+    do { \
+        DBusBasicValue v; \
+        dbustype *x = (dbustype *)&v.member; \
+        vargtype *y; \
+        if (arrayref) { \
+            VIR_DEBUG("Use arrayref"); \
+            vargtype **xptrptr = arrayptr; \
+            if (VIR_EXPAND_N(*xptrptr, *narrayptr, 1) < 0) \
+                goto cleanup; \
+            y = (*xptrptr + (*narrayptr - 1)); \
+            VIR_DEBUG("Expanded to %zu", *narrayptr); \
+        } else { \
+            y = va_arg(args, vargtype *); \
+        } \
+        dbus_message_iter_get_basic(iter, x); \
+        *y = *x; \
+        VIR_DEBUG("Read basic type '" #dbustype "' varg '" #vargtype \
+                  "' val '" fmt "'", (vargtype)*y); \
     } while (0)
 
 
@@ -1054,8 +1056,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                                      nstruct, narray) < 0)
                 goto cleanup;
             VIR_FREE(contsig);
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = t + 1;
             nstruct = skiplen;
             if (arrayref) {
@@ -1085,8 +1086,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                 VIR_DEBUG("Push failed");
                 goto cleanup;
             }
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = vsig;
             nstruct = strlen(types);
             narray = (size_t)-1;
@@ -1113,8 +1113,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                                      nstruct, narray) < 0)
                 goto cleanup;
             VIR_FREE(contsig);
-            iter = newiter;
-            newiter = NULL;
+            VIR_STEAL_PTR(iter, newiter);
             types = t + 1;
             nstruct = skiplen - 2;
             narray = (size_t)-1;
@@ -1567,7 +1566,7 @@ virDBusCall(DBusConnection *conn,
             ret = 0;
         } else {
             virReportError(VIR_ERR_DBUS_SERVICE, _("%s: %s"), member,
-                localerror.message ? localerror.message : _("unknown error"));
+                           localerror.message ? : _("unknown error"));
         }
         goto cleanup;
     }

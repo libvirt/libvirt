@@ -16,15 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <stdio.h>
 
 #include "c-ctype.h"
 #include "virmacaddr.h"
@@ -169,7 +164,7 @@ virMacAddrParse(const char* str, virMacAddrPtr addr)
 
         addr->addr[i] = (unsigned char) result;
 
-        if ((i == 5) && (*end_ptr == '\0'))
+        if ((i == 5) && (*end_ptr <= ' '))
             return 0;
         if (*end_ptr != ':')
             break;
@@ -251,4 +246,10 @@ bool
 virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN])
 {
     return memcmp(virMacAddrBroadcastAddrRaw, s, sizeof(*s)) == 0;
+}
+
+void
+virMacAddrFree(virMacAddrPtr addr)
+{
+    VIR_FREE(addr);
 }

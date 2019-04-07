@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef __VIR_COMMAND_PRIV_H_ALLOW__
+#ifndef LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # error "vircommandpriv.h may only be included by vircommand.c or test suites"
-#endif
+#endif /* LIBVIRT_VIRCOMMANDPRIV_H_ALLOW */
 
-#ifndef __VIR_COMMAND_PRIV_H__
-# define __VIR_COMMAND_PRIV_H__
+#ifndef LIBVIRT_VIRCOMMANDPRIV_H
+# define LIBVIRT_VIRCOMMANDPRIV_H
 
 # include "vircommand.h"
 
@@ -40,4 +40,4 @@ void virCommandSetDryRun(virBufferPtr buf,
                          virCommandDryRunCallback cb,
                          void *opaque);
 
-#endif /* __VIR_COMMAND_PRIV_H__ */
+#endif /* LIBVIRT_VIRCOMMANDPRIV_H */

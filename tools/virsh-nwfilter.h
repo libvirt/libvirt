@@ -16,15 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
-#ifndef VIRSH_NWFILTER_H
-# define VIRSH_NWFILTER_H
+#ifndef LIBVIRT_VIRSH_NWFILTER_H
+# define LIBVIRT_VIRSH_NWFILTER_H
 
 # include "virsh.h"
 
@@ -32,11 +27,19 @@ virNWFilterPtr
 virshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
                           const char **name, unsigned int flags);
 
+virNWFilterBindingPtr
+virshCommandOptNWFilterBindingBy(vshControl *ctl, const vshCmd *cmd,
+                                 const char **name, unsigned int flags);
+
 /* default is lookup by Name and UUID */
-# define virshCommandOptNWFilter(_ctl, _cmd, _name)                    \
-    virshCommandOptNWFilterBy(_ctl, _cmd, _name,                       \
+# define virshCommandOptNWFilter(_ctl, _cmd, _name) \
+    virshCommandOptNWFilterBy(_ctl, _cmd, _name, \
                               VIRSH_BYUUID | VIRSH_BYNAME)
+
+/* default is lookup by port dev */
+# define virshCommandOptNWFilterBinding(_ctl, _cmd, _name) \
+    virshCommandOptNWFilterBindingBy(_ctl, _cmd, _name, 0)
 
 extern const vshCmdDef nwfilterCmds[];
 
-#endif /* VIRSH_NWFILTER_H */
+#endif /* LIBVIRT_VIRSH_NWFILTER_H */

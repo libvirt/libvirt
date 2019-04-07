@@ -1,0 +1,92 @@
+<domain type='vmware'>
+  <name>RHEL7_10_NICs</name>
+  <uuid>42359420-99dc-4261-5264-ba58ddae20e4</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>8</vcpu>
+  <cputune>
+    <shares>8000</shares>
+  </cputune>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <cpu>
+    <topology sockets='4' cores='2' threads='1'/>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/RHEL7_6.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/RHEL7_6_1.vmdk'/>
+      <target dev='sdb' bus='scsi'/>
+      <transient/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[5669422e-699d77db-c144-00e0815e303e] block4/block4.vmdk'/>
+      <target dev='sdc' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
+    <controller type='scsi' index='0' model='vmpvscsi'/>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:01:55'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:85'/>
+      <source bridge='VM Network'/>
+      <model type='e1000'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:82'/>
+      <source bridge='VM Network'/>
+      <model type='e1000e'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:69'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:80'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:a3'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:a8'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:a9'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:78'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:1a:4a:16:21:81'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='8192' primary='yes'/>
+    </video>
+  </devices>
+</domain>

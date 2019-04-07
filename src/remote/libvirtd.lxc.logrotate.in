@@ -1,0 +1,8 @@
+@localstatedir@/log/libvirt/lxc/*.log {
+        weekly
+        missingok
+        rotate 4
+        compress
+        delaycompress
+        copytruncate
+}

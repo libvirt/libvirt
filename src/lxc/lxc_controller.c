@@ -4,9 +4,6 @@
  *
  * lxc_controller.c: linux container process controller
  *
- * Authors:
- *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -38,7 +35,6 @@
 #include <sys/un.h>
 #include <sys/personality.h>
 #include <unistd.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <getopt.h>
@@ -284,7 +280,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 
     VIR_FREE(ctrl->devptmx);
 
-    virObjectUnref(ctrl->vm);
+    virDomainObjEndAPI(&ctrl->vm);
     VIR_FREE(ctrl->name);
 
     if (ctrl->timerShutdown != -1)
@@ -365,10 +361,22 @@ static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
     size_t i;
     int ret = -1;
 
+    /* Gather the ifindexes of the "parent" veths for all interfaces
+     * implemented with a veth pair. These will be used when calling
+     * virCgroupNewMachine (and eventually the dbus method
+     * CreateMachineWithNetwork). ifindexes for the child veths, and
+     * for macvlan interfaces, *should not* be in this list, as they
+     * will be moved into the container. Only the interfaces that will
+     * remain outside the container, but are used for communication
+     * with the container, should be added to the list.
+     */
+
     VIR_DEBUG("Getting nic indexes");
     for (i = 0; i < ctrl->def->nnets; i++) {
         int nicindex = -1;
-        switch (ctrl->def->nets[i]->type) {
+        virDomainNetType actualType = virDomainNetGetActualType(ctrl->def->nets[i]);
+
+        switch (actualType) {
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -386,6 +394,9 @@ static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
             ctrl->nicindexes[ctrl->nnicindexes-1] = nicindex;
             break;
 
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+           break;
+
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -393,10 +404,15 @@ static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
         case VIR_DOMAIN_NET_TYPE_MCAST:
         case VIR_DOMAIN_NET_TYPE_UDP:
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        case VIR_DOMAIN_NET_TYPE_DIRECT:
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported net type %s"),
+                           virDomainNetTypeToString(actualType));
+            goto cleanup;
+        case VIR_DOMAIN_NET_TYPE_LAST:
         default:
-            break;
+            virReportEnumRangeError(virDomainNetType, actualType);
+            goto cleanup;
         }
     }
 
@@ -869,12 +885,12 @@ static int virLXCControllerSetupCgroupLimits(virLXCControllerPtr ctrl)
                                             ctrl->nicindexes)))
         goto cleanup;
 
-    if (virCgroupAddTask(ctrl->cgroup, getpid()) < 0)
+    if (virCgroupAddMachineProcess(ctrl->cgroup, getpid()) < 0)
         goto cleanup;
 
     /* Add all qemu-nbd tasks to the cgroup */
     for (i = 0; i < ctrl->nnbdpids; i++) {
-        if (virCgroupAddTask(ctrl->cgroup, ctrl->nbdpids[i]) < 0)
+        if (virCgroupAddMachineProcess(ctrl->cgroup, ctrl->nbdpids[i]) < 0)
             goto cleanup;
     }
 
@@ -951,9 +967,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
                                            0700,
                                            0,
                                            0,
-#if WITH_GNUTLS
                                            NULL,
-#endif
                                            false,
                                            0,
                                            5)))
@@ -1022,7 +1036,7 @@ static void virLXCControllerSignalChildIO(virNetDaemonPtr dmn,
     int status;
 
     ret = waitpid(-1, &status, WNOHANG);
-    VIR_DEBUG("Got sig child %d vs %lld", ret, (long long) ctrl->initpid);
+    VIR_DEBUG("Got sig child %d vs %lld", ret, (long long)ctrl->initpid);
     if (ret == ctrl->initpid) {
         virNetDaemonQuit(dmn);
         virMutexLock(&lock);
@@ -1291,7 +1305,6 @@ static void virLXCControllerConsoleIO(int watch, int fd, int events, void *opaqu
  */
 static int virLXCControllerMain(virLXCControllerPtr ctrl)
 {
-    virErrorPtr err;
     int rc = -1;
     size_t i;
 
@@ -1343,8 +1356,7 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
 
     virNetDaemonRun(ctrl->daemon);
 
-    err = virGetLastError();
-    if (!err || err->code == VIR_ERR_OK)
+    if (virGetLastErrorCode() == VIR_ERR_OK)
         rc = wantReboot ? 1 : 0;
 
  cleanup:
@@ -1377,6 +1389,13 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
     virBuffer map_value = VIR_BUFFER_INITIALIZER;
     size_t i;
     int ret = -1;
+
+    /* The kernel supports up to 340 lines in /proc/<pid>/{g,u}id_map */
+    if (num > 340) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Too many id mappings defined."));
+        goto cleanup;
+    }
 
     for (i = 0; i < num; i++)
         virBufferAsprintf(&map_value, "%u %u %u\n",
@@ -1800,7 +1819,7 @@ virLXCControllerSetupHostdevCaps(virDomainDefPtr vmDef,
                                                     securityDriver);
 
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
-        return 0; // case is handled in virLXCControllerMoveInterfaces
+        return 0; /* case is handled in virLXCControllerMoveInterfaces */
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1913,7 +1932,8 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
     /* Labelling normally operates on src, but we need
      * to actually label the dst here, so hack the config */
     def->src->path = dst;
-    if (virSecurityManagerSetDiskLabel(securityDriver, ctrl->def, def) < 0)
+    if (virSecurityManagerSetImageLabel(securityDriver, ctrl->def, def->src,
+                                        VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2140,10 +2160,10 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
     /* XXX should we support gid=X for X!=5 for distros which use
      * a different gid for tty?  */
     if (virAsprintf(&opts, "newinstance,ptmxmode=0666,mode=0620,gid=%u%s",
-                    ptsgid, (mount_options ? mount_options : "")) < 0)
+                    ptsgid, NULLSTR_EMPTY(mount_options)) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Mount devpts on %s type=tmpfs flags=%x, opts=%s",
+    VIR_DEBUG("Mount devpts on %s type=tmpfs flags=0x%x, opts=%s",
               devpts, MS_NOSUID, opts);
     if (mount("devpts", devpts, "devpts", MS_NOSUID, opts) < 0) {
         virReportSystemError(errno,
@@ -2247,7 +2267,8 @@ virLXCControllerEventSend(virLXCControllerPtr ctrl,
         goto error;
 
     VIR_DEBUG("Queue event %d %zu", procnr, msg->bufferLength);
-    virNetServerClientSendMessage(ctrl->client, msg);
+    if (virNetServerClientSendMessage(ctrl->client, msg) < 0)
+        goto error;
 
     xdr_free(proc, data);
     return;
@@ -2300,7 +2321,7 @@ virLXCControllerEventSendInit(virLXCControllerPtr ctrl,
 {
     virLXCMonitorInitEventMsg msg;
 
-    VIR_DEBUG("Init pid %lld", (long long) initpid);
+    VIR_DEBUG("Init pid %lld", (long long)initpid);
     memset(&msg, 0, sizeof(msg));
     msg.initpid = initpid;
 

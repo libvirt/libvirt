@@ -16,16 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Dave Allan <dallan@redhat.com>
  */
 
-#include <libudev.h>
-#include <stdint.h>
+#pragma once
 
-typedef struct _udevPrivate udevPrivate;
+#include <libudev.h>
 
 #define SYSFS_DATA_SIZE 4096
-#define DRV_STATE_UDEV_MONITOR(ds) (((udevPrivate *)((ds)->privateData))->udev_monitor)
 #define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
 #define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"

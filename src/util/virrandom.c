@@ -14,14 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <inttypes.h>
 #include <math.h>
 #include <strings.h>
@@ -29,6 +25,10 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#ifdef WITH_GNUTLS
+# include <gnutls/gnutls.h>
+# include <gnutls/crypto.h>
+#endif
 
 #include "virrandom.h"
 #include "virthread.h"
@@ -43,56 +43,11 @@
 
 VIR_LOG_INIT("util.random");
 
-/* The algorithm of virRandomBits relies on gnulib's guarantee that
- * 'random_r' matches the POSIX requirements on 'random' of being
- * evenly distributed among exactly [0, 2**31) (that is, we always get
- * exactly 31 bits).  While this happens to be the value of RAND_MAX
- * on glibc, note that POSIX only requires RAND_MAX to be tied to the
- * weaker 'rand', so there are platforms where RAND_MAX is smaller
- * than the range of 'random_r'.  For the results to be evenly
- * distributed among up to 64 bits, we also rely on the period of
- * 'random_r' to be at least 2**64, which POSIX only guarantees for
- * 'random' if you use 256 bytes of state.  */
-enum {
-    RANDOM_BITS_PER_ITER = 31,
-    RANDOM_BITS_MASK = (1U << RANDOM_BITS_PER_ITER) - 1,
-    RANDOM_STATE_SIZE = 256,
-};
-
-static char randomState[RANDOM_STATE_SIZE];
-static struct random_data randomData;
-static virMutex randomLock = VIR_MUTEX_INITIALIZER;
-
-
-static int
-virRandomOnceInit(void)
-{
-    unsigned int seed = time(NULL) ^ getpid();
-
-#if 0
-    /* Normally we want a decent seed.  But if reproducible debugging
-     * of a fixed pseudo-random sequence is ever required, uncomment
-     * this block to let an environment variable force the seed.  */
-    const char *debug = virGetEnvBlockSUID("VIR_DEBUG_RANDOM_SEED");
-
-    if (debug && virStrToLong_ui(debug, NULL, 0, &seed) < 0)
-        return -1;
-#endif
-
-    if (initstate_r(seed,
-                    randomState,
-                    sizeof(randomState),
-                    &randomData) < 0)
-        return -1;
-
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(virRandom)
+#define RANDOM_SOURCE "/dev/urandom"
 
 /**
  * virRandomBits:
- * @nbits: Number of bits of randommess required
+ * @nbits: Number of bits of randomness required
  *
  * Generate an evenly distributed random number between [0,2^nbits), where
  * @nbits must be in the range (0,64].
@@ -102,27 +57,16 @@ VIR_ONCE_GLOBAL_INIT(virRandom)
 uint64_t virRandomBits(int nbits)
 {
     uint64_t ret = 0;
-    int32_t bits;
 
-    if (virRandomInitialize() < 0) {
+    if (virRandomBytes((unsigned char *) &ret, sizeof(ret)) < 0) {
         /* You're already hosed, so this particular non-random value
          * isn't any worse.  */
-        VIR_WARN("random number generation is broken");
         return 0;
     }
 
-    virMutexLock(&randomLock);
+    if (nbits < 64)
+        ret &= (1ULL << nbits) - 1;
 
-    while (nbits > RANDOM_BITS_PER_ITER) {
-        random_r(&randomData, &bits);
-        ret = (ret << RANDOM_BITS_PER_ITER) | (bits & RANDOM_BITS_MASK);
-        nbits -= RANDOM_BITS_PER_ITER;
-    }
-
-    random_r(&randomData, &bits);
-    ret = (ret << nbits) | (bits & ((1 << nbits) - 1));
-
-    virMutexUnlock(&randomLock);
     return ret;
 }
 
@@ -165,28 +109,46 @@ uint32_t virRandomInt(uint32_t max)
  * @buf: Pointer to location to store bytes
  * @buflen: Number of bytes to store
  *
- * Generate a stream of random bytes from /dev/urandom
+ * Generate a stream of random bytes from RANDOM_SOURCE
  * into @buf of size @buflen
  *
- * Returns 0 on success or an errno on failure
+ * Returns 0 on success or -1 (with error reported)
  */
 int
 virRandomBytes(unsigned char *buf,
                size_t buflen)
 {
+#if WITH_GNUTLS
+    int rv;
+
+    /* Generate the byte stream using gnutls_rnd() if possible */
+    if ((rv = gnutls_rnd(GNUTLS_RND_RANDOM, buf, buflen)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to generate byte stream: %s"),
+                       gnutls_strerror(rv));
+        return -1;
+    }
+
+#else /* !WITH_GNUTLS */
+
     int fd;
 
-    if ((fd = open("/dev/urandom", O_RDONLY)) < 0)
-        return errno;
+    if ((fd = open(RANDOM_SOURCE, O_RDONLY)) < 0) {
+        virReportSystemError(errno,
+                             _("unable to open %s"),
+                             RANDOM_SOURCE);
+        return -1;
+    }
 
     while (buflen > 0) {
         ssize_t n;
 
-        if ((n = read(fd, buf, buflen)) <= 0) {
-            if (errno == EINTR)
-                continue;
+        if ((n = saferead(fd, buf, buflen)) <= 0) {
+            virReportSystemError(errno,
+                                 _("unable to read from %s"),
+                                 RANDOM_SOURCE);
             VIR_FORCE_CLOSE(fd);
-            return n < 0 ? errno : ENODATA;
+            return n < 0 ? -errno : -ENODATA;
         }
 
         buf += n;
@@ -194,6 +156,7 @@ virRandomBytes(unsigned char *buf,
     }
 
     VIR_FORCE_CLOSE(fd);
+#endif /* !WITH_GNUTLS */
 
     return 0;
 }

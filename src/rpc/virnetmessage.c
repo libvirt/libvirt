@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <unistd.h>
 
 #include "virnetmessage.h"
@@ -327,11 +326,13 @@ int virNetMessageDecodeNumFDs(virNetMessagePtr msg)
         goto cleanup;
     }
 
-    msg->nfds = numFDs;
-    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
-        goto cleanup;
-    for (i = 0; i < msg->nfds; i++)
-        msg->fds[i] = -1;
+    if (msg->nfds == 0) {
+        msg->nfds = numFDs;
+        if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
+            goto cleanup;
+        for (i = 0; i < msg->nfds; i++)
+            msg->fds[i] = -1;
+    }
 
     VIR_DEBUG("Got %zu FDs from peer", msg->nfds);
 
@@ -358,7 +359,8 @@ int virNetMessageEncodePayload(virNetMessagePtr msg,
 
     /* Try to encode the payload. If the buffer is too small increase it. */
     while (!(*filter)(&xdr, data, 0)) {
-        unsigned int newlen = (msg->bufferLength - VIR_NET_MESSAGE_LEN_MAX) * 4;
+        unsigned int newlen = msg->bufferLength - VIR_NET_MESSAGE_LEN_MAX;
+        newlen *= 2;
 
         if (newlen > VIR_NET_MESSAGE_MAX) {
             virReportError(VIR_ERR_RPC, "%s", _("Unable to encode message payload"));

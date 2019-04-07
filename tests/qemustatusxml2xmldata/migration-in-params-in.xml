@@ -1,0 +1,401 @@
+<domstatus state='paused' reason='migration' pid='2296'>
+  <taint flag='high-privileges'/>
+  <taint flag='host-cpu'/>
+  <monitor path='/var/lib/libvirt/qemu/domain-1-nest/monitor.sock' json='1' type='unix'/>
+  <namespaces>
+    <mount/>
+  </namespaces>
+  <vcpus>
+    <vcpu id='0' pid='2329'/>
+    <vcpu id='1' pid='2330'/>
+  </vcpus>
+  <qemuCaps>
+    <flag name='kvm'/>
+    <flag name='mem-path'/>
+    <flag name='drive-serial'/>
+    <flag name='monitor-json'/>
+    <flag name='sdl'/>
+    <flag name='netdev'/>
+    <flag name='rtc'/>
+    <flag name='vhost-net'/>
+    <flag name='no-hpet'/>
+    <flag name='no-kvm-pit'/>
+    <flag name='pci-configfd'/>
+    <flag name='nodefconfig'/>
+    <flag name='boot-menu'/>
+    <flag name='fsdev'/>
+    <flag name='name-process'/>
+    <flag name='smbios-type'/>
+    <flag name='spice'/>
+    <flag name='vga-none'/>
+    <flag name='boot-index'/>
+    <flag name='hda-duplex'/>
+    <flag name='drive-aio'/>
+    <flag name='pci-bootindex'/>
+    <flag name='ccid-emulated'/>
+    <flag name='ccid-passthru'/>
+    <flag name='chardev-spicevmc'/>
+    <flag name='virtio-tx-alg'/>
+    <flag name='pci-multifunction'/>
+    <flag name='virtio-blk-pci.ioeventfd'/>
+    <flag name='sga'/>
+    <flag name='virtio-blk-pci.event_idx'/>
+    <flag name='virtio-net-pci.event_idx'/>
+    <flag name='cache-directsync'/>
+    <flag name='piix3-usb-uhci'/>
+    <flag name='piix4-usb-uhci'/>
+    <flag name='usb-ehci'/>
+    <flag name='ich9-usb-ehci1'/>
+    <flag name='vt82c686b-usb-uhci'/>
+    <flag name='pci-ohci'/>
+    <flag name='usb-redir'/>
+    <flag name='usb-hub'/>
+    <flag name='no-shutdown'/>
+    <flag name='cache-unsafe'/>
+    <flag name='ich9-ahci'/>
+    <flag name='no-acpi'/>
+    <flag name='fsdev-readonly'/>
+    <flag name='virtio-blk-pci.scsi'/>
+    <flag name='drive-copy-on-read'/>
+    <flag name='fsdev-writeout'/>
+    <flag name='drive-iotune'/>
+    <flag name='system_wakeup'/>
+    <flag name='scsi-disk.channel'/>
+    <flag name='scsi-block'/>
+    <flag name='transaction'/>
+    <flag name='block-job-async'/>
+    <flag name='scsi-cd'/>
+    <flag name='ide-cd'/>
+    <flag name='no-user-config'/>
+    <flag name='hda-micro'/>
+    <flag name='dump-guest-memory'/>
+    <flag name='nec-usb-xhci'/>
+    <flag name='balloon-event'/>
+    <flag name='bridge'/>
+    <flag name='lsi'/>
+    <flag name='virtio-scsi-pci'/>
+    <flag name='blockio'/>
+    <flag name='disable-s3'/>
+    <flag name='disable-s4'/>
+    <flag name='usb-redir.filter'/>
+    <flag name='ide-drive.wwn'/>
+    <flag name='scsi-disk.wwn'/>
+    <flag name='seccomp-sandbox'/>
+    <flag name='reboot-timeout'/>
+    <flag name='dump-guest-core'/>
+    <flag name='seamless-migration'/>
+    <flag name='block-commit'/>
+    <flag name='vnc'/>
+    <flag name='drive-mirror'/>
+    <flag name='usb-redir.bootindex'/>
+    <flag name='usb-host.bootindex'/>
+    <flag name='blockdev-snapshot-sync'/>
+    <flag name='qxl'/>
+    <flag name='VGA'/>
+    <flag name='cirrus-vga'/>
+    <flag name='vmware-svga'/>
+    <flag name='device-video-primary'/>
+    <flag name='usb-serial'/>
+    <flag name='usb-net'/>
+    <flag name='add-fd'/>
+    <flag name='nbd-server'/>
+    <flag name='virtio-rng'/>
+    <flag name='rng-random'/>
+    <flag name='rng-egd'/>
+    <flag name='dtb'/>
+    <flag name='megasas'/>
+    <flag name='ipv6-migration'/>
+    <flag name='machine-opt'/>
+    <flag name='machine-usb-opt'/>
+    <flag name='tpm-passthrough'/>
+    <flag name='tpm-tis'/>
+    <flag name='pci-bridge'/>
+    <flag name='vfio-pci'/>
+    <flag name='vfio-pci.bootindex'/>
+    <flag name='scsi-generic'/>
+    <flag name='scsi-generic.bootindex'/>
+    <flag name='mem-merge'/>
+    <flag name='vnc-websocket'/>
+    <flag name='drive-discard'/>
+    <flag name='mlock'/>
+    <flag name='vnc-share-policy'/>
+    <flag name='device-del-event'/>
+    <flag name='dmi-to-pci-bridge'/>
+    <flag name='i440fx-pci-hole64-size'/>
+    <flag name='q35-pci-hole64-size'/>
+    <flag name='usb-storage'/>
+    <flag name='usb-storage.removable'/>
+    <flag name='virtio-mmio'/>
+    <flag name='ich9-intel-hda'/>
+    <flag name='kvm-pit-lost-tick-policy'/>
+    <flag name='boot-strict'/>
+    <flag name='pvpanic'/>
+    <flag name='spice-file-xfer-disable'/>
+    <flag name='spiceport'/>
+    <flag name='usb-kbd'/>
+    <flag name='host-pci-multidomain'/>
+    <flag name='msg-timestamp'/>
+    <flag name='active-commit'/>
+    <flag name='change-backing-file'/>
+    <flag name='memory-backend-ram'/>
+    <flag name='numa'/>
+    <flag name='memory-backend-file'/>
+    <flag name='usb-audio'/>
+    <flag name='rtc-reset-reinjection'/>
+    <flag name='splash-timeout'/>
+    <flag name='iothread'/>
+    <flag name='migrate-rdma'/>
+    <flag name='ivshmem'/>
+    <flag name='drive-iotune-max'/>
+    <flag name='VGA.vgamem_mb'/>
+    <flag name='vmware-svga.vgamem_mb'/>
+    <flag name='qxl.vgamem_mb'/>
+    <flag name='pc-dimm'/>
+    <flag name='machine-vmport-opt'/>
+    <flag name='aes-key-wrap'/>
+    <flag name='dea-key-wrap'/>
+    <flag name='pci-serial'/>
+    <flag name='vhost-user-multiqueue'/>
+    <flag name='migration-event'/>
+    <flag name='ioh3420'/>
+    <flag name='x3130-upstream'/>
+    <flag name='xio3130-downstream'/>
+    <flag name='rtl8139'/>
+    <flag name='e1000'/>
+    <flag name='virtio-net'/>
+    <flag name='gic-version'/>
+    <flag name='incoming-defer'/>
+    <flag name='virtio-gpu'/>
+    <flag name='virtio-gpu.virgl'/>
+    <flag name='virtio-keyboard'/>
+    <flag name='virtio-mouse'/>
+    <flag name='virtio-tablet'/>
+    <flag name='virtio-input-host'/>
+    <flag name='chardev-file-append'/>
+    <flag name='ich9-disable-s3'/>
+    <flag name='ich9-disable-s4'/>
+    <flag name='vserport-change-event'/>
+    <flag name='virtio-balloon-pci.deflate-on-oom'/>
+    <flag name='mptsas1068'/>
+    <flag name='spice-gl'/>
+    <flag name='qxl.vram64_size_mb'/>
+    <flag name='chardev-logfile'/>
+    <flag name='debug-threads'/>
+    <flag name='secret'/>
+    <flag name='pxb'/>
+    <flag name='pxb-pcie'/>
+    <flag name='device-tray-moved-event'/>
+    <flag name='nec-usb-xhci-ports'/>
+    <flag name='virtio-scsi-pci.iothread'/>
+    <flag name='name-guest'/>
+    <flag name='qxl.max_outputs'/>
+    <flag name='spice-unix'/>
+    <flag name='drive-detect-zeroes'/>
+    <flag name='tls-creds-x509'/>
+    <flag name='display'/>
+    <flag name='intel-iommu'/>
+    <flag name='smm'/>
+    <flag name='virtio-pci-disable-legacy'/>
+    <flag name='query-hotpluggable-cpus'/>
+    <flag name='virtio-net.rx_queue_size'/>
+    <flag name='virtio-vga'/>
+    <flag name='drive-iotune-max-length'/>
+    <flag name='ivshmem-plain'/>
+    <flag name='ivshmem-doorbell'/>
+    <flag name='query-qmp-schema'/>
+    <flag name='gluster.debug_level'/>
+    <flag name='vhost-scsi'/>
+    <flag name='drive-iotune-group'/>
+    <flag name='query-cpu-model-expansion'/>
+    <flag name='virtio-net.host_mtu'/>
+    <flag name='spice-rendernode'/>
+    <flag name='nvdimm'/>
+    <flag name='pcie-root-port'/>
+    <flag name='query-cpu-definitions'/>
+    <flag name='block-write-threshold'/>
+    <flag name='query-named-block-nodes'/>
+    <flag name='cpu-cache'/>
+    <flag name='qemu-xhci'/>
+    <flag name='kernel-irqchip'/>
+    <flag name='kernel-irqchip.split'/>
+    <flag name='intel-iommu.intremap'/>
+    <flag name='intel-iommu.caching-mode'/>
+    <flag name='intel-iommu.eim'/>
+    <flag name='intel-iommu.device-iotlb'/>
+    <flag name='virtio.iommu_platform'/>
+    <flag name='virtio.ats'/>
+    <flag name='loadparm'/>
+    <flag name='vnc-multi-servers'/>
+    <flag name='virtio-net.tx_queue_size'/>
+    <flag name='chardev-reconnect'/>
+    <flag name='virtio-gpu.max_outputs'/>
+    <flag name='vxhs'/>
+    <flag name='virtio-blk.num-queues'/>
+    <flag name='numa.dist'/>
+    <flag name='disk-share-rw'/>
+    <flag name='iscsi.password-secret'/>
+    <flag name='isa-serial'/>
+    <flag name='dump-completed'/>
+    <flag name='hda-output'/>
+  </qemuCaps>
+  <job type='none' async='migration in' phase='prepare' flags='0x900'>
+    <migParams>
+      <param name='compress-level' value='1'/>
+      <param name='compress-threads' value='8'/>
+      <param name='decompress-threads' value='2'/>
+      <param name='cpu-throttle-initial' value='20'/>
+      <param name='cpu-throttle-increment' value='10'/>
+      <param name='tls-creds' value=''/>
+      <param name='tls-hostname' value=''/>
+      <param name='max-bandwidth' value='33554432'/>
+      <param name='downtime-limit' value='300'/>
+      <param name='block-incremental' value='no'/>
+    </migParams>
+  </job>
+  <libDir path='/var/lib/libvirt/qemu/domain-1-nest'/>
+  <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-1-nest'/>
+  <chardevStdioLogd/>
+  <allowReboot value='yes'/>
+  <blockjobs active='no'/>
+  <domain type='kvm' id='1'>
+    <name>nest</name>
+    <uuid>994cee0d-2a70-4937-9693-0431e39d20f7</uuid>
+    <description>virt-builder</description>
+    <memory unit='KiB'>524288</memory>
+    <currentMemory unit='KiB'>524288</currentMemory>
+    <vcpu placement='static'>2</vcpu>
+    <resource>
+      <partition>/machine</partition>
+    </resource>
+    <os>
+      <type arch='x86_64' machine='pc-i440fx-2.10'>hvm</type>
+      <bios useserial='yes'/>
+    </os>
+    <features>
+      <acpi/>
+      <apic/>
+      <vmport state='off'/>
+    </features>
+    <cpu mode='host-passthrough' check='none'/>
+    <clock offset='utc'>
+      <timer name='rtc' tickpolicy='catchup'/>
+      <timer name='pit' tickpolicy='delay'/>
+      <timer name='hpet' present='no'/>
+    </clock>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>restart</on_crash>
+    <pm>
+      <suspend-to-mem enabled='no'/>
+      <suspend-to-disk enabled='no'/>
+    </pm>
+    <devices>
+      <emulator>/usr/bin/qemu-kvm</emulator>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2' cache='none' io='native'/>
+        <source file='/vm/nest.qcow'/>
+        <backingStore/>
+        <target dev='vda' bus='virtio'/>
+        <boot order='1'/>
+        <alias name='virtio-disk0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      </disk>
+      <controller type='usb' index='0' model='ich9-ehci1'>
+        <alias name='usb'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x7'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci1'>
+        <alias name='usb'/>
+        <master startport='0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0' multifunction='on'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci2'>
+        <alias name='usb'/>
+        <master startport='2'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x1'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci3'>
+        <alias name='usb'/>
+        <master startport='4'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x2'/>
+      </controller>
+      <controller type='virtio-serial' index='0'>
+        <alias name='virtio-serial0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      </controller>
+      <controller type='pci' index='0' model='pci-root'>
+        <alias name='pci.0'/>
+      </controller>
+      <interface type='network'>
+        <mac address='52:54:00:59:59:91'/>
+        <source network='default'/>
+        <actual type='network'>
+          <source bridge='virbr0'/>
+        </actual>
+        <target dev='vnet0'/>
+        <model type='virtio'/>
+        <alias name='net0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      </interface>
+      <serial type='pty'>
+        <source path='/dev/pts/1'/>
+        <target type='isa-serial' port='0'>
+          <model name='isa-serial'/>
+        </target>
+        <alias name='serial0'/>
+      </serial>
+      <console type='pty' tty='/dev/pts/1'>
+        <source path='/dev/pts/1'/>
+        <target type='serial' port='0'/>
+        <alias name='serial0'/>
+      </console>
+      <channel type='unix'>
+        <source mode='bind' path='/var/lib/libvirt/qemu/channel/target/domain-1-nest/org.qemu.guest_agent.0'/>
+        <target type='virtio' name='org.qemu.guest_agent.0' state='disconnected'/>
+        <alias name='channel0'/>
+        <address type='virtio-serial' controller='0' bus='0' port='1'/>
+      </channel>
+      <channel type='spicevmc'>
+        <target type='virtio' name='com.redhat.spice.0' state='disconnected'/>
+        <alias name='channel1'/>
+        <address type='virtio-serial' controller='0' bus='0' port='2'/>
+      </channel>
+      <input type='tablet' bus='usb'>
+        <alias name='input0'/>
+        <address type='usb' bus='0' port='1'/>
+      </input>
+      <input type='mouse' bus='ps2'>
+        <alias name='input1'/>
+      </input>
+      <input type='keyboard' bus='ps2'>
+        <alias name='input2'/>
+      </input>
+      <graphics type='spice' port='5900' autoport='yes' listen='0.0.0.0'>
+        <listen type='address' address='0.0.0.0' fromConfig='1' autoGenerated='no'/>
+        <image compression='off'/>
+      </graphics>
+      <video>
+        <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
+        <alias name='video0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      </video>
+      <redirdev bus='usb' type='spicevmc'>
+        <alias name='redir0'/>
+        <address type='usb' bus='0' port='2'/>
+      </redirdev>
+      <redirdev bus='usb' type='spicevmc'>
+        <alias name='redir1'/>
+        <address type='usb' bus='0' port='3'/>
+      </redirdev>
+      <memballoon model='none'/>
+    </devices>
+    <seclabel type='dynamic' model='selinux' relabel='yes'>
+      <label>unconfined_u:unconfined_r:svirt_t:s0:c708,c793</label>
+      <imagelabel>unconfined_u:object_r:svirt_image_t:s0:c708,c793</imagelabel>
+    </seclabel>
+    <seclabel type='dynamic' model='dac' relabel='yes'>
+      <label>+0:+0</label>
+      <imagelabel>+0:+0</imagelabel>
+    </seclabel>
+  </domain>
+</domstatus>

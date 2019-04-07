@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Polkit access control</h1>
@@ -14,7 +14,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="intro">Introduction</a></h2>
+    <h2><a id="intro">Introduction</a></h2>
 
     <p>
       A default install of libvirt will typically use
@@ -27,7 +27,7 @@
       object.
     </p>
 
-    <h2><a name="perms">Permission names</a></h2>
+    <h2><a id="perms">Permission names</a></h2>
 
     <p>
       The libvirt <a href="acl.html#perms">object names and permission names</a>
@@ -53,7 +53,7 @@
       permissions default to deny access.
     </p>
 
-    <h2><a name="attrs">Object identity attributes</a></h2>
+    <h2><a id="attrs">Object identity attributes</a></h2>
 
     <p>
       To allow polkit authorization rules to be written to match
@@ -63,7 +63,7 @@
       of object being checked
     </p>
 
-    <h3><a name="object_connect">virConnectPtr</a></h3>
+    <h3><a id="object_connect">virConnectPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -79,7 +79,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_domain">virDomainPtr</a></h3>
+    <h3><a id="object_domain">virDomainPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -103,7 +103,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_interface">virInterfacePtr</a></h3>
+    <h3><a id="object_interface">virInterfacePtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -127,7 +127,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_network">virNetworkPtr</a></h3>
+    <h3><a id="object_network">virNetworkPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -151,7 +151,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_node_device">virNodeDevicePtr</a></h3>
+    <h3><a id="object_node_device">virNodeDevicePtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -171,7 +171,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_nwfilter">virNWFilterPtr</a></h3>
+    <h3><a id="object_nwfilter">virNWFilterPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -195,7 +195,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_secret">virSecretPtr</a></h3>
+    <h3><a id="object_secret">virSecretPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -231,7 +231,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_storage_pool">virStoragePoolPtr</a></h3>
+    <h3><a id="object_storage_pool">virStoragePoolPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -255,7 +255,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_storage_vol">virStorageVolPtr</a></h3>
+    <h3><a id="object_storage_vol">virStorageVolPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -287,8 +287,121 @@
       </tbody>
     </table>
 
+    <h2><a id="connect_driver">Hypervisor Driver connect_driver</a></h2>
+    <p>
+      The <code>connect_driver</code> parameter describes the
+      client's <a href="remote.html">remote Connection Driver</a>
+      name based on the <a href="uri.html">URI</a> used for the
+      connection.
+    </p>
+    <p>
+      <span class="since">Since 4.1.0</span>, when calling an API
+      outside the scope of the primary connection driver, the
+      primary driver will attempt to open a secondary connection
+      to the specific API driver in order to process the API. For
+      example, when hypervisor domain processing needs to make an
+      API call within the storage driver or the network filter driver
+      an attempt to open a connection to the "storage" or "nwfilter"
+      driver will be made. Similarly, a "storage" primary connection
+      may need to create a connection to the "secret" driver in order
+      to process secrets for the API. If successful, then calls to
+      those API's will occur in the <code>connect_driver</code> context
+      of the secondary connection driver rather than in the context of
+      the primary driver. This affects the <code>connect_driver</code>
+      returned from rule generation from the <code>action.loookup</code>
+      function. The following table provides a list of the various
+      connection drivers and the <code>connect_driver</code> name
+      used by each regardless of primary or secondary connection.
+      The access denied error message from libvirt will list the
+      connection driver by name that denied the access.
+    </p>
 
-    <h2><a name="user">User identity attributes</a></h2>
+    <h3><a id="object_connect_driver">Connection Driver Name</a></h3>
+    <table class="acl">
+      <thead>
+        <tr>
+          <th>Connection Driver</th>
+          <th><code>connect_driver</code> name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>bhyve</td>
+          <td>bhyve</td>
+        </tr>
+        <tr>
+          <td>esx</td>
+          <td>ESX</td>
+        </tr>
+        <tr>
+          <td>hyperv</td>
+          <td>Hyper-V</td>
+        </tr>
+        <tr>
+          <td>interface</td>
+          <td>interface</td>
+        </tr>
+        <tr>
+          <td>libxl</td>
+          <td>xenlight</td>
+        </tr>
+        <tr>
+          <td>lxc</td>
+          <td>LXC</td>
+        </tr>
+        <tr>
+          <td>network</td>
+          <td>network</td>
+        </tr>
+        <tr>
+          <td>nodedev</td>
+          <td>nodedev</td>
+        </tr>
+        <tr>
+          <td>nwfilter</td>
+          <td>NWFilter</td>
+        </tr>
+        <tr>
+          <td>openvz</td>
+          <td>OPENVZ</td>
+        </tr>
+        <tr>
+          <td>phyp</td>
+          <td>PHYP</td>
+        </tr>
+        <tr>
+          <td>qemu</td>
+          <td>QEMU</td>
+        </tr>
+        <tr>
+          <td>secret</td>
+          <td>secret</td>
+        </tr>
+        <tr>
+          <td>storage</td>
+          <td>storage</td>
+        </tr>
+        <tr>
+          <td>vbox</td>
+          <td>VBOX</td>
+        </tr>
+        <tr>
+          <td>vmware</td>
+          <td>VMWARE</td>
+        </tr>
+        <tr>
+          <td>vz</td>
+          <td>vz</td>
+        </tr>
+        <tr>
+          <td>xenapi</td>
+          <td>XenAPI</td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <h2><a id="user">User identity attributes</a></h2>
 
     <p>
       At this point in time, the only attribute provided by
@@ -307,7 +420,7 @@
     </p>
 
 
-    <h2><a name="checks">Writing access control policies</a></h2>
+    <h2><a id="checks">Writing access control policies</a></h2>
 
     <p>
       If using versions of polkit prior to 0.106 then it is only
@@ -354,11 +467,11 @@ polkit.addRule(function(action, subject) {
 
     <p>
     See
-    <a href="http://libvirt.org/git/?p=libvirt.git;a=tree;f=examples/polkit;hb=HEAD">source code</a>
+    <a href="https://libvirt.org/git/?p=libvirt.git;a=tree;f=examples/polkit;hb=HEAD">source code</a>
     for a more complex example.
     </p>
 
-    <h3><a name="exconnect">Example: restricting ability to connect to drivers</a></h3>
+    <h3><a id="exconnect">Example: restricting ability to connect to drivers</a></h3>
 
     <p>
       Consider a local user <code>berrange</code>
@@ -386,7 +499,7 @@ polkit.addRule(function(action, subject) {
 });
     </pre>
 
-    <h3><a name="exdomain">Example: restricting access to a single domain</a></h3>
+    <h3><a id="exdomain">Example: restricting access to a single domain</a></h3>
 
     <p>
       Consider a local user <code>berrange</code>
@@ -396,7 +509,7 @@ polkit.addRule(function(action, subject) {
       To achieve this we need to write a rule which checks
       whether the <code>connect_driver</code> attribute
       is <code>LXC</code> and the <code>domain_name</code>
-      attribute is <code>demo</code>, and match on a action
+      attribute is <code>demo</code>, and match on an action
       name of <code>org.libvirt.api.domain.getattr</code>. Using
       the javascript rules format, this ends up written as
     </p>

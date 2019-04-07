@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NET_PROGRAM_H__
-# define __VIR_NET_PROGRAM_H__
+#ifndef LIBVIRT_VIRNETSERVERPROGRAM_H
+# define LIBVIRT_VIRNETSERVERPROGRAM_H
 
 # include "virnetmessage.h"
 # include "virnetserverclient.h"
@@ -30,9 +28,6 @@
 
 typedef struct _virNetDaemon virNetDaemon;
 typedef virNetDaemon *virNetDaemonPtr;
-
-typedef struct _virNetServer virNetServer;
-typedef virNetServer *virNetServerPtr;
 
 typedef struct _virNetServerService virNetServerService;
 typedef virNetServerService *virNetServerServicePtr;
@@ -104,4 +99,12 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
                                       const char *data,
                                       size_t len);
 
-#endif /* __VIR_NET_SERVER_PROGRAM_H__ */
+int virNetServerProgramSendStreamHole(virNetServerProgramPtr prog,
+                                      virNetServerClientPtr client,
+                                      virNetMessagePtr msg,
+                                      int procedure,
+                                      unsigned int serial,
+                                      long long length,
+                                      unsigned int flags);
+
+#endif /* LIBVIRT_VIRNETSERVERPROGRAM_H */

@@ -23,7 +23,6 @@
  * detected. */
 
 #include "virmock.h"
-#include <errno.h>
 #if HAVE_LINUX_MAGIC_H
 # include <linux/magic.h>
 #endif
@@ -31,10 +30,9 @@
 #if HAVE_SELINUX_LABEL_H
 # include <selinux/label.h>
 #endif
-#include <string.h>
 #include <sys/vfs.h>
 #include <unistd.h>
-#include <attr/xattr.h>
+#include <sys/xattr.h>
 
 #ifndef NFS_SUPER_MAGIC
 # define NFS_SUPER_MAGIC 0x6969

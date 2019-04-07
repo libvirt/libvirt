@@ -27,4 +27,4 @@ noinst_LTLIBRARIES =
 
 include gnulib.mk
 
-INCLUDES = -I$(top_srcdir) $(GETTEXT_CPPFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)

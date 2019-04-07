@@ -16,17 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author:  Laine Stump <laine@redhat.com>
  */
 
-
-#ifndef __VIR_INTERFACE__DRIVER_H
-# define __VIR_INTERFACE__DRIVER_H
+#ifndef LIBVIRT_INTERFACE_DRIVER_H
+# define LIBVIRT_INTERFACE_DRIVER_H
 
 int interfaceRegister(void);
 
 int netcfIfaceRegister(void);
 int udevIfaceRegister(void);
 
-#endif /* __VIR_INTERFACE__DRIVER_H */
+#endif /* LIBVIRT_INTERFACE_DRIVER_H */

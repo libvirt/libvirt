@@ -1,9 +1,6 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -109,12 +106,12 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(name, flags, expectResult)                         \
-    do {                                                                \
-        const struct testInfo info = {name, flags, expectResult};       \
-        if (virTestRun("Network XML-2-XML " name,                       \
-                       testCompareXMLToXMLHelper, &info) < 0)           \
-            ret = -1;                                                   \
+#define DO_TEST_FULL(name, flags, expectResult) \
+    do { \
+        const struct testInfo info = {name, flags, expectResult}; \
+        if (virTestRun("Network XML-2-XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 #define DO_TEST(name) \
     DO_TEST_FULL(name, 0, TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS)
@@ -141,8 +138,10 @@ mymain(void)
     DO_TEST("nat-network-dns-hosts");
     DO_TEST("nat-network-dns-forward-plain");
     DO_TEST("nat-network-dns-forwarders");
+    DO_TEST("nat-network-dns-forwarder-no-resolv");
     DO_TEST("nat-network-forward-nat-address");
     DO_TEST("nat-network-forward-nat-no-address");
+    DO_TEST("nat-network-mtu");
     DO_TEST("8021Qbh-net");
     DO_TEST("direct-net");
     DO_TEST("host-bridge-net");
@@ -158,8 +157,9 @@ mymain(void)
     DO_TEST_PARSE_ERROR("hostdev-duplicate");
     DO_TEST_PARSE_ERROR("passthrough-duplicate");
     DO_TEST("metadata");
+    DO_TEST("set-mtu");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

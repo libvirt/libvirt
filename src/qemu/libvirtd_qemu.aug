@@ -35,6 +35,7 @@ module Libvirtd_qemu =
                  | bool_entry "vnc_auto_unix_socket"
                  | bool_entry "vnc_tls"
                  | str_entry "vnc_tls_x509_cert_dir"
+                 | str_entry "vnc_tls_x509_secret_uuid"
                  | bool_entry "vnc_tls_x509_verify"
                  | str_entry "vnc_password"
                  | bool_entry "vnc_sasl"
@@ -54,6 +55,10 @@ module Libvirtd_qemu =
                  | bool_entry "chardev_tls_x509_verify"
                  | str_entry "chardev_tls_x509_secret_uuid"
 
+   let migrate_entry = str_entry "migrate_tls_x509_cert_dir"
+                 | bool_entry "migrate_tls_x509_verify"
+                 | str_entry "migrate_tls_x509_secret_uuid"
+
    let nogfx_entry = bool_entry "nographics_allow_host_audio"
 
    let remote_display_entry = int_entry "remote_display_port_min"
@@ -72,7 +77,7 @@ module Libvirtd_qemu =
                  | int_entry "seccomp_sandbox"
                  | str_array_entry "namespaces"
 
-   let save_entry =  str_entry "save_image_format"
+   let save_entry = str_entry "save_image_format"
                  | str_entry "dump_image_format"
                  | str_entry "snapshot_image_format"
                  | str_entry "auto_dump_path"
@@ -82,6 +87,7 @@ module Libvirtd_qemu =
    let process_entry = str_entry "hugetlbfs_mount"
                  | bool_entry "clear_emulator_capabilities"
                  | str_entry "bridge_helper"
+                 | str_entry "pr_helper"
                  | bool_entry "set_process_name"
                  | int_entry "max_processes"
                  | int_entry "max_files"
@@ -109,11 +115,23 @@ module Libvirtd_qemu =
 
    let gluster_debug_level_entry = int_entry "gluster_debug_level"
 
+   let memory_entry = str_entry "memory_backing_dir"
+
+   let vxhs_entry = bool_entry "vxhs_tls"
+                 | str_entry "vxhs_tls_x509_cert_dir"
+
+   let nbd_entry = bool_entry "nbd_tls"
+                | str_entry "nbd_tls_x509_cert_dir"
+
+   let swtpm_entry = str_entry "swtpm_user"
+                | str_entry "swtpm_group"
+
    (* Each entry in the config is one of the following ... *)
    let entry = default_tls_entry
              | vnc_entry
              | spice_entry
              | chardev_entry
+             | migrate_entry
              | nogfx_entry
              | remote_display_entry
              | security_entry
@@ -125,6 +143,10 @@ module Libvirtd_qemu =
              | log_entry
              | nvram_entry
              | gluster_debug_level_entry
+             | memory_entry
+             | vxhs_entry
+             | nbd_entry
+             | swtpm_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

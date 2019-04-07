@@ -18,8 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -32,6 +30,7 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virdomainsnapshotobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -42,7 +41,7 @@ static void virDomainObjListDispose(void *obj);
 
 
 struct _virDomainObjList {
-    virObjectLockable parent;
+    virObjectRWLockable parent;
 
     /* uuid string -> virDomainObj  mapping
      * for O(1), lockless lookup-by-uuid */
@@ -56,16 +55,13 @@ struct _virDomainObjList {
 
 static int virDomainObjListOnceInit(void)
 {
-    if (!(virDomainObjListClass = virClassNew(virClassForObjectLockable(),
-                                              "virDomainObjList",
-                                              sizeof(virDomainObjList),
-                                              virDomainObjListDispose)))
+    if (!VIR_CLASS_NEW(virDomainObjList, virClassForObjectRWLockable()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virDomainObjList)
+VIR_ONCE_GLOBAL_INIT(virDomainObjList);
 
 virDomainObjListPtr virDomainObjListNew(void)
 {
@@ -74,7 +70,7 @@ virDomainObjListPtr virDomainObjListNew(void)
     if (virDomainObjListInitialize() < 0)
         return NULL;
 
-    if (!(doms = virObjectLockableNew(virDomainObjListClass)))
+    if (!(doms = virObjectRWLockableNew(virDomainObjListClass)))
         return NULL;
 
     if (!(doms->objs = virHashCreate(50, virObjectFreeHashData)) ||
@@ -112,102 +108,17 @@ static int virDomainObjListSearchID(const void *payload,
     return want;
 }
 
-static virDomainObjPtr
-virDomainObjListFindByIDInternal(virDomainObjListPtr doms,
-                                 int id,
-                                 bool ref)
-{
-    virDomainObjPtr obj;
-    virObjectLock(doms);
-    obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id);
-    if (ref) {
-        virObjectRef(obj);
-        virObjectUnlock(doms);
-    }
-    if (obj) {
-        virObjectLock(obj);
-        if (obj->removing) {
-            virObjectUnlock(obj);
-            if (ref)
-                virObjectUnref(obj);
-            obj = NULL;
-        }
-    }
-    if (!ref)
-        virObjectUnlock(doms);
-    return obj;
-}
 
 virDomainObjPtr
 virDomainObjListFindByID(virDomainObjListPtr doms,
                          int id)
 {
-    return virDomainObjListFindByIDInternal(doms, id, false);
-}
-
-virDomainObjPtr
-virDomainObjListFindByIDRef(virDomainObjListPtr doms,
-                            int id)
-{
-    return virDomainObjListFindByIDInternal(doms, id, true);
-}
-
-static virDomainObjPtr
-virDomainObjListFindByUUIDInternal(virDomainObjListPtr doms,
-                                   const unsigned char *uuid,
-                                   bool ref)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObjPtr obj;
 
-    virObjectLock(doms);
-    virUUIDFormat(uuid, uuidstr);
-
-    obj = virHashLookup(doms->objs, uuidstr);
-    if (ref) {
-        virObjectRef(obj);
-        virObjectUnlock(doms);
-    }
-    if (obj) {
-        virObjectLock(obj);
-        if (obj->removing) {
-            virObjectUnlock(obj);
-            if (ref)
-                virObjectUnref(obj);
-            obj = NULL;
-        }
-    }
-    if (!ref)
-        virObjectUnlock(doms);
-    return obj;
-}
-
-
-virDomainObjPtr
-virDomainObjListFindByUUID(virDomainObjListPtr doms,
-                           const unsigned char *uuid)
-{
-    return virDomainObjListFindByUUIDInternal(doms, uuid, false);
-}
-
-
-virDomainObjPtr
-virDomainObjListFindByUUIDRef(virDomainObjListPtr doms,
-                              const unsigned char *uuid)
-{
-    return virDomainObjListFindByUUIDInternal(doms, uuid, true);
-}
-
-
-virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
-                                           const char *name)
-{
-    virDomainObjPtr obj;
-
-    virObjectLock(doms);
-    obj = virHashLookup(doms->objsName, name);
+    virObjectRWLockRead(doms);
+    obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id, NULL);
     virObjectRef(obj);
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
     if (obj) {
         virObjectLock(obj);
         if (obj->removing) {
@@ -216,7 +127,133 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
             obj = NULL;
         }
     }
+
     return obj;
+}
+
+
+static virDomainObjPtr
+virDomainObjListFindByUUIDLocked(virDomainObjListPtr doms,
+                                 const unsigned char *uuid)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virDomainObjPtr obj;
+
+    virUUIDFormat(uuid, uuidstr);
+    obj = virHashLookup(doms->objs, uuidstr);
+    if (obj) {
+        virObjectRef(obj);
+        virObjectLock(obj);
+    }
+    return obj;
+}
+
+
+/**
+ * @doms: Domain object list
+ * @uuid: UUID to search the doms->objs table
+ *
+ * Lookup the @uuid in the doms->objs hash table and return a
+ * locked and ref counted domain object if found. Caller is
+ * expected to use the virDomainObjEndAPI when done with the object.
+ */
+virDomainObjPtr
+virDomainObjListFindByUUID(virDomainObjListPtr doms,
+                           const unsigned char *uuid)
+{
+    virDomainObjPtr obj;
+
+    virObjectRWLockRead(doms);
+    obj = virDomainObjListFindByUUIDLocked(doms, uuid);
+    virObjectRWUnlock(doms);
+
+    if (obj && obj->removing) {
+        virObjectUnlock(obj);
+        virObjectUnref(obj);
+        obj = NULL;
+    }
+
+    return obj;
+}
+
+
+static virDomainObjPtr
+virDomainObjListFindByNameLocked(virDomainObjListPtr doms,
+                                 const char *name)
+{
+    virDomainObjPtr obj;
+
+    obj = virHashLookup(doms->objsName, name);
+    if (obj) {
+        virObjectRef(obj);
+        virObjectLock(obj);
+    }
+    return obj;
+}
+
+
+/**
+ * @doms: Domain object list
+ * @name: Name to search the doms->objsName table
+ *
+ * Lookup the @name in the doms->objsName hash table and return a
+ * locked and ref counted domain object if found. Caller is expected
+ * to use the virDomainObjEndAPI when done with the object.
+ */
+virDomainObjPtr
+virDomainObjListFindByName(virDomainObjListPtr doms,
+                           const char *name)
+{
+    virDomainObjPtr obj;
+
+    virObjectRWLockRead(doms);
+    obj = virDomainObjListFindByNameLocked(doms, name);
+    virObjectRWUnlock(doms);
+
+    if (obj && obj->removing) {
+        virObjectUnlock(obj);
+        virObjectUnref(obj);
+        obj = NULL;
+    }
+
+    return obj;
+}
+
+
+/**
+ * @doms: Domain object list pointer
+ * @vm: Domain object to be added
+ *
+ * Upon entry @vm should have at least 1 ref and be locked.
+ *
+ * Add the @vm into the @doms->objs and @doms->objsName hash
+ * tables. Once successfully added into a table, increase the
+ * reference count since upon removal in virHashRemoveEntry
+ * the virObjectUnref will be called since the hash tables were
+ * configured to call virObjectFreeHashData when the object is
+ * removed from the hash table.
+ *
+ * Returns 0 on success with 3 references and locked
+ *        -1 on failure with 1 reference and locked
+ */
+static int
+virDomainObjListAddObjLocked(virDomainObjListPtr doms,
+                             virDomainObjPtr vm)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (virHashAddEntry(doms->objs, uuidstr, vm) < 0)
+        return -1;
+    virObjectRef(vm);
+
+    if (virHashAddEntry(doms->objsName, vm->def->name, vm) < 0) {
+        virHashRemoveEntry(doms->objs, uuidstr);
+        return -1;
+    }
+    virObjectRef(vm);
+
+    return 0;
 }
 
 
@@ -231,6 +268,9 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
  * the @def being added is assumed to represent a
  * live config, not a future inactive config
  *
+ * The returned @vm from this function will be locked and ref
+ * counted. The caller is expected to use virDomainObjEndAPI
+ * when it completes usage.
  */
 static virDomainObjPtr
 virDomainObjListAddLocked(virDomainObjListPtr doms,
@@ -245,13 +285,15 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
     if (oldDef)
         *oldDef = NULL;
 
-    virUUIDFormat(def->uuid, uuidstr);
-
     /* See if a VM with matching UUID already exists */
-    if ((vm = virHashLookup(doms->objs, uuidstr))) {
-        virObjectLock(vm);
-        /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(vm->def->name, def->name)) {
+    if ((vm = virDomainObjListFindByUUIDLocked(doms, def->uuid))) {
+        if (vm->removing) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("domain '%s' is already being removed"),
+                           vm->def->name);
+            goto error;
+        } else if (STRNEQ(vm->def->name, def->name)) {
+            /* UUID matches, but if names don't match, refuse it */
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("domain '%s' is already defined with uuid %s"),
@@ -281,8 +323,7 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
                               oldDef);
     } else {
         /* UUID does not match, but if a name matches, refuse it */
-        if ((vm = virHashLookup(doms->objsName, def->name))) {
-            virObjectLock(vm);
+        if ((vm = virDomainObjListFindByNameLocked(doms, def->name))) {
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("domain '%s' already exists with uuid %s"),
@@ -294,28 +335,17 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
             goto cleanup;
         vm->def = def;
 
-        virUUIDFormat(def->uuid, uuidstr);
-        if (virHashAddEntry(doms->objs, uuidstr, vm) < 0) {
-            virObjectUnref(vm);
-            return NULL;
+        if (virDomainObjListAddObjLocked(doms, vm) < 0) {
+            vm->def = NULL;
+            goto error;
         }
-
-        if (virHashAddEntry(doms->objsName, def->name, vm) < 0) {
-            virHashRemoveEntry(doms->objs, uuidstr);
-            return NULL;
-        }
-
-        /* Since domain is in two hash tables, increment the
-         * reference counter */
-        virObjectRef(vm);
     }
  cleanup:
     return vm;
 
  error:
-    virObjectUnlock(vm);
-    vm = NULL;
-    goto cleanup;
+    virDomainObjEndAPI(&vm);
+    return NULL;
 }
 
 
@@ -327,35 +357,57 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
 {
     virDomainObjPtr ret;
 
-    virObjectLock(doms);
+    virObjectRWLockWrite(doms);
     ret = virDomainObjListAddLocked(doms, def, xmlopt, flags, oldDef);
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
     return ret;
 }
 
 
-/*
- * The caller must hold a lock on the driver owning 'doms',
- * and must also have locked 'dom', to ensure no one else
- * is either waiting for 'dom' or still using it
+/* The caller must hold lock on 'doms' in addition to 'virDomainObjListRemove'
+ * requirements
+ *
+ * Can be used to remove current element while iterating with
+ * virDomainObjListForEach
  */
-void virDomainObjListRemove(virDomainObjListPtr doms,
-                            virDomainObjPtr dom)
+void
+virDomainObjListRemoveLocked(virDomainObjListPtr doms,
+                             virDomainObjPtr dom)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    dom->removing = true;
     virUUIDFormat(dom->def->uuid, uuidstr);
-    virObjectRef(dom);
-    virObjectUnlock(dom);
 
-    virObjectLock(doms);
-    virObjectLock(dom);
     virHashRemoveEntry(doms->objs, uuidstr);
     virHashRemoveEntry(doms->objsName, dom->def->name);
+}
+
+
+/**
+ * @doms: Pointer to the domain object list
+ * @dom: Domain pointer from either after Add or FindBy* API where the
+ *       @dom was successfully added to both the doms->objs and ->objsName
+ *       hash tables that now would need to be removed.
+ *
+ * The caller must hold a lock on the driver owning 'doms',
+ * and must also have locked and ref counted 'dom', to ensure
+ * no one else is either waiting for 'dom' or still using it.
+ *
+ * When this function returns, @dom will be removed from the hash
+ * tables and returned with lock and refcnt that was present upon entry.
+ */
+void
+virDomainObjListRemove(virDomainObjListPtr doms,
+                       virDomainObjPtr dom)
+{
+    dom->removing = true;
+    virObjectRef(dom);
     virObjectUnlock(dom);
+    virObjectRWLockWrite(doms);
+    virObjectLock(dom);
+    virDomainObjListRemoveLocked(doms, dom);
     virObjectUnref(dom);
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
 }
 
 
@@ -394,7 +446,7 @@ virDomainObjListRename(virDomainObjListPtr doms,
      * hold a lock on dom but not refcount it. */
     virObjectRef(dom);
     virObjectUnlock(dom);
-    virObjectLock(doms);
+    virObjectRWLockWrite(doms);
     virObjectLock(dom);
     virObjectUnref(dom);
 
@@ -408,9 +460,11 @@ virDomainObjListRename(virDomainObjListPtr doms,
     if (virHashAddEntry(doms->objsName, new_name, dom) < 0)
         goto cleanup;
 
-    /* Okay, this is crazy. virHashAddEntry() does not increment
-     * the refcounter of @dom, but virHashRemoveEntry() does
-     * decrement it. We need to work around it. */
+    /* Increment the refcnt for @new_name. We're about to remove
+     * the @old_name which will cause the refcnt to be decremented
+     * via the virObjectUnref call made during the virObjectFreeHashData
+     * as a result of removing something from the object list hash
+     * table as set up during virDomainObjListNew. */
     virObjectRef(dom);
 
     rc = callback(dom, new_name, flags, opaque);
@@ -420,27 +474,9 @@ virDomainObjListRename(virDomainObjListPtr doms,
 
     ret = 0;
  cleanup:
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
     VIR_FREE(old_name);
     return ret;
-}
-
-/* The caller must hold lock on 'doms' in addition to 'virDomainObjListRemove'
- * requirements
- *
- * Can be used to remove current element while iterating with
- * virDomainObjListForEach
- */
-void virDomainObjListRemoveLocked(virDomainObjListPtr doms,
-                                  virDomainObjPtr dom)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    virUUIDFormat(dom->def->uuid, uuidstr);
-
-    virHashRemoveEntry(doms->objs, uuidstr);
-    virHashRemoveEntry(doms->objsName, dom->def->name);
-    virObjectUnlock(dom);
 }
 
 
@@ -464,8 +500,8 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
         goto error;
     if (!(def = virDomainDefParseFile(configFile, caps, xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+                                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
+                                      VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL)))
         goto error;
 
     if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
@@ -515,8 +551,8 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+                                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
+                                      VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);
@@ -528,17 +564,8 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
         goto error;
     }
 
-    if (virHashAddEntry(doms->objs, uuidstr, obj) < 0)
+    if (virDomainObjListAddObjLocked(doms, obj) < 0)
         goto error;
-
-    if (virHashAddEntry(doms->objsName, obj->def->name, obj) < 0) {
-        virHashRemoveEntry(doms->objs, uuidstr);
-        goto error;
-    }
-
-    /* Since domain is in two hash tables, increment the
-     * reference counter */
-    virObjectRef(obj);
 
     if (notify)
         (*notify)(obj, 1, opaque);
@@ -547,7 +574,7 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
     return obj;
 
  error:
-    virObjectUnref(obj);
+    virDomainObjEndAPI(&obj);
     VIR_FREE(statusFile);
     return NULL;
 }
@@ -557,7 +584,7 @@ int
 virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                const char *configDir,
                                const char *autostartDir,
-                               int liveStatus,
+                               bool liveStatus,
                                virCapsPtr caps,
                                virDomainXMLOptionPtr xmlopt,
                                virDomainLoadConfigNotify notify,
@@ -573,12 +600,12 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
     if ((rc = virDirOpenIfExists(&dir, configDir)) <= 0)
         return rc;
 
-    virObjectLock(doms);
+    virObjectRWLockWrite(doms);
 
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virDomainObjPtr dom;
 
-        if (!virFileStripSuffix(entry->d_name, ".xml"))
+        if (!virStringStripSuffix(entry->d_name, ".xml"))
             continue;
 
         /* NB: ignoring errors, so one malformed config doesn't
@@ -604,12 +631,14 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
         if (dom) {
             if (!liveStatus)
                 dom->persistent = 1;
-            virObjectUnlock(dom);
+            virDomainObjEndAPI(&dom);
+        } else {
+            VIR_ERROR(_("Failed to load config for domain '%s'"), entry->d_name);
         }
     }
 
     VIR_DIR_CLOSE(dir);
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
     return ret;
 }
 
@@ -653,9 +682,9 @@ virDomainObjListNumOfDomains(virDomainObjListPtr doms,
                              virConnectPtr conn)
 {
     struct virDomainObjListData data = { filter, conn, active, 0 };
-    virObjectLock(doms);
+    virObjectRWLockRead(doms);
     virHashForEach(doms->objs, virDomainObjListCount, &data);
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
     return data.count;
 }
 
@@ -697,9 +726,9 @@ virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
 {
     struct virDomainIDData data = { filter, conn,
                                     0, maxids, ids };
-    virObjectLock(doms);
+    virObjectRWLockRead(doms);
     virHashForEach(doms->objs, virDomainObjListCopyActiveIDs, &data);
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
     return data.numids;
 }
 
@@ -751,9 +780,9 @@ virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
     struct virDomainNameData data = { filter, conn,
                                       0, 0, maxnames, names };
     size_t i;
-    virObjectLock(doms);
+    virObjectRWLockRead(doms);
     virHashForEach(doms->objs, virDomainObjListCopyInactiveNames, &data);
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
     if (data.oom) {
         for (i = 0; i < data.numnames; i++)
             VIR_FREE(data.names[i]);
@@ -792,9 +821,9 @@ virDomainObjListForEach(virDomainObjListPtr doms,
     struct virDomainListIterData data = {
         callback, opaque, 0,
     };
-    virObjectLock(doms);
+    virObjectRWLockRead(doms);
     virHashForEach(doms->objs, virDomainObjListHelper, &data);
-    virObjectUnlock(doms);
+    virObjectRWUnlock(doms);
     return data.ret;
 }
 
@@ -925,15 +954,15 @@ virDomainObjListCollect(virDomainObjListPtr domlist,
 {
     struct virDomainListData data = { NULL, 0 };
 
-    virObjectLock(domlist);
+    virObjectRWLockRead(domlist);
     sa_assert(domlist->objs);
     if (VIR_ALLOC_N(data.vms, virHashSize(domlist->objs)) < 0) {
-        virObjectUnlock(domlist);
+        virObjectRWUnlock(domlist);
         return -1;
     }
 
     virHashForEach(domlist->objs, virDomainObjListCollectIterator, &data);
-    virObjectUnlock(domlist);
+    virObjectRWUnlock(domlist);
 
     virDomainObjListFilter(&data.vms, &data.nvms, conn, filter, flags);
 
@@ -962,7 +991,7 @@ virDomainObjListConvert(virDomainObjListPtr domlist,
     *nvms = 0;
     *vms = NULL;
 
-    virObjectLock(domlist);
+    virObjectRWLockRead(domlist);
     for (i = 0; i < ndoms; i++) {
         virDomainPtr dom = doms[i];
 
@@ -972,7 +1001,7 @@ virDomainObjListConvert(virDomainObjListPtr domlist,
             if (skip_missing)
                 continue;
 
-            virObjectUnlock(domlist);
+            virObjectRWUnlock(domlist);
             virReportError(VIR_ERR_NO_DOMAIN,
                            _("no domain with matching uuid '%s' (%s)"),
                            uuidstr, dom->name);
@@ -982,12 +1011,12 @@ virDomainObjListConvert(virDomainObjListPtr domlist,
         virObjectRef(vm);
 
         if (VIR_APPEND_ELEMENT(*vms, *nvms, vm) < 0) {
-            virObjectUnlock(domlist);
+            virObjectRWUnlock(domlist);
             virObjectUnref(vm);
             goto error;
         }
     }
-    virObjectUnlock(domlist);
+    virObjectRWUnlock(domlist);
 
     sa_assert(*vms);
     virDomainObjListFilter(vms, nvms, conn, filter, flags);
@@ -1027,15 +1056,11 @@ virDomainObjListExport(virDomainObjListPtr domlist,
             virDomainObjPtr vm = vms[i];
 
             virObjectLock(vm);
-
-            if (!(doms[i] = virGetDomain(conn, vm->def->name, vm->def->uuid))) {
-                virObjectUnlock(vm);
-                goto cleanup;
-            }
-
-            doms[i]->id = vm->def->id;
-
+            doms[i] = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
             virObjectUnlock(vm);
+
+            if (!doms[i])
+                goto cleanup;
         }
 
         *domains = doms;

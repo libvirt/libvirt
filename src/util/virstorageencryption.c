@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Red Hat Author: Miloslav Trmač <mitr@redhat.com>
  */
 
 #include <config.h>
@@ -40,11 +38,14 @@
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 VIR_ENUM_IMPL(virStorageEncryptionSecret,
-              VIR_STORAGE_ENCRYPTION_SECRET_TYPE_LAST, "passphrase")
+              VIR_STORAGE_ENCRYPTION_SECRET_TYPE_LAST,
+              "passphrase",
+);
 
 VIR_ENUM_IMPL(virStorageEncryptionFormat,
               VIR_STORAGE_ENCRYPTION_FORMAT_LAST,
-              "default", "qcow", "luks")
+              "default", "qcow", "luks",
+);
 
 static void
 virStorageEncryptionInfoDefFree(virStorageEncryptionInfoDefPtr def)
@@ -242,17 +243,22 @@ virStorageEncryptionInfoParseIvgen(xmlNodePtr info_node,
 }
 
 
-static virStorageEncryptionPtr
-virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
+virStorageEncryptionPtr
+virStorageEncryptionParseNode(xmlNodePtr node,
+                              xmlXPathContextPtr ctxt)
 {
+    xmlNodePtr saveNode = ctxt->node;
     xmlNodePtr *nodes = NULL;
-    virStorageEncryptionPtr ret;
+    virStorageEncryptionPtr encdef = NULL;
+    virStorageEncryptionPtr ret = NULL;
     char *format_str = NULL;
     int n;
     size_t i;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ctxt->node = node;
+
+    if (VIR_ALLOC(encdef) < 0)
+        goto cleanup;
 
     if (!(format_str = virXPathString("string(./@format)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -260,87 +266,59 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
         goto cleanup;
     }
 
-    if ((ret->format =
+    if ((encdef->format =
          virStorageEncryptionFormatTypeFromString(format_str)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown volume encryption format type %s"),
                        format_str);
         goto cleanup;
     }
-    VIR_FREE(format_str);
 
     if ((n = virXPathNodeSet("./secret", ctxt, &nodes)) < 0)
         goto cleanup;
 
     if (n > 0) {
-        if (VIR_ALLOC_N(ret->secrets, n) < 0)
+        if (VIR_ALLOC_N(encdef->secrets, n) < 0)
             goto cleanup;
-        ret->nsecrets = n;
+        encdef->nsecrets = n;
 
         for (i = 0; i < n; i++) {
-            if (!(ret->secrets[i] =
+            if (!(encdef->secrets[i] =
                   virStorageEncryptionSecretParse(ctxt, nodes[i])))
                 goto cleanup;
         }
-        VIR_FREE(nodes);
     }
 
-    if (ret->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+    if (encdef->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
         xmlNodePtr tmpnode;
 
         if ((tmpnode = virXPathNode("./cipher[1]", ctxt))) {
-            if (virStorageEncryptionInfoParseCipher(tmpnode, &ret->encinfo) < 0)
+            if (virStorageEncryptionInfoParseCipher(tmpnode, &encdef->encinfo) < 0)
                 goto cleanup;
         }
 
         if ((tmpnode = virXPathNode("./ivgen[1]", ctxt))) {
             /* If no cipher node, then fail */
-            if (!ret->encinfo.cipher_name) {
+            if (!encdef->encinfo.cipher_name) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                                _("ivgen element found, but cipher is missing"));
+                               _("ivgen element found, but cipher is missing"));
                 goto cleanup;
             }
 
-            if (virStorageEncryptionInfoParseIvgen(tmpnode, &ret->encinfo) < 0)
+            if (virStorageEncryptionInfoParseIvgen(tmpnode, &encdef->encinfo) < 0)
                 goto cleanup;
         }
     }
 
-
-    return ret;
+    VIR_STEAL_PTR(ret, encdef);
 
  cleanup:
     VIR_FREE(format_str);
     VIR_FREE(nodes);
-    virStorageEncryptionFree(ret);
-    return NULL;
-}
+    virStorageEncryptionFree(encdef);
+    ctxt->node = saveNode;
 
-virStorageEncryptionPtr
-virStorageEncryptionParseNode(xmlDocPtr xml, xmlNodePtr root)
-{
-    xmlXPathContextPtr ctxt = NULL;
-    virStorageEncryptionPtr enc = NULL;
-
-    if (STRNEQ((const char *) root->name, "encryption")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("unknown root element for volume "
-                               "encryption information"));
-        goto cleanup;
-    }
-
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ctxt->node = root;
-    enc = virStorageEncryptionParseXML(ctxt);
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    return enc;
+    return ret;
 }
 
 

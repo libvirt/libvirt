@@ -14,12 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Jan Tomko <jtomko@redhat.com>
  */
 
 #include <config.h>
-#include <stdlib.h>
 
 #include "viralloc.h"
 #include "virerror.h"
@@ -173,7 +170,7 @@ testUSBList(const void *opaque ATTRIBUTE_UNUSED)
         dev = virUSBDeviceListGet(devlist, 0);
         dev = virUSBDeviceListSteal(devlist, dev);
 
-        if (virUSBDeviceListAdd(list, dev) < 0)
+        if (virUSBDeviceListAdd(list, &dev) < 0)
             goto cleanup;
         dev = NULL;
     }
@@ -196,7 +193,7 @@ testUSBList(const void *opaque ATTRIBUTE_UNUSED)
         dev = virUSBDeviceListGet(devlist, 0);
         dev = virUSBDeviceListSteal(devlist, dev);
 
-        if (virUSBDeviceListAdd(list, dev) < 0)
+        if (virUSBDeviceListAdd(list, &dev) < 0)
             goto cleanup;
         dev = NULL;
     }
@@ -217,6 +214,7 @@ testUSBList(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     virUSBDeviceListDel(list, dev);
+    virUSBDeviceFree(dev);
     dev = NULL;
 
     if (testCheckNdevs("After deleting one",
@@ -240,33 +238,33 @@ mymain(void)
     int rv = 0;
 
 #define DO_TEST_FIND_FULL(name, vend, prod, bus, devno, vroot, mand, how, fail) \
-    do {                                                                        \
-        struct findTestInfo data = { name, vend, prod, bus,                     \
-            devno, vroot, mand, how, fail                                       \
-        };                                                                      \
-        if (virTestRun("USBDeviceFind " name, testDeviceFind, &data) < 0)       \
-            rv = -1;                                                            \
+    do { \
+        struct findTestInfo data = { name, vend, prod, bus, \
+            devno, vroot, mand, how, fail \
+        }; \
+        if (virTestRun("USBDeviceFind " name, testDeviceFind, &data) < 0) \
+            rv = -1; \
     } while (0)
 
-#define DO_TEST_FIND(name, vend, prod, bus, devno)                          \
-    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true,             \
+#define DO_TEST_FIND(name, vend, prod, bus, devno) \
+    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true, \
                       FIND_BY_ALL, false)
-#define DO_TEST_FIND_FAIL(name, vend, prod, bus, devno)                     \
-    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true,             \
+#define DO_TEST_FIND_FAIL(name, vend, prod, bus, devno) \
+    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true, \
                       FIND_BY_ALL, true)
 
-#define DO_TEST_FIND_BY_BUS(name, bus, devno)                               \
-    DO_TEST_FIND_FULL(name, 101, 202, bus, devno, NULL, true,               \
+#define DO_TEST_FIND_BY_BUS(name, bus, devno) \
+    DO_TEST_FIND_FULL(name, 101, 202, bus, devno, NULL, true, \
                       FIND_BY_BUS, false)
-#define DO_TEST_FIND_BY_BUS_FAIL(name, bus, devno)                          \
-    DO_TEST_FIND_FULL(name, 101, 202, bus, devno, NULL, true,               \
+#define DO_TEST_FIND_BY_BUS_FAIL(name, bus, devno) \
+    DO_TEST_FIND_FULL(name, 101, 202, bus, devno, NULL, true, \
                       FIND_BY_BUS, true)
 
-#define DO_TEST_FIND_BY_VENDOR(name, vend, prod)                            \
-    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true,               \
+#define DO_TEST_FIND_BY_VENDOR(name, vend, prod) \
+    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true, \
                       FIND_BY_VENDOR, false)
-#define DO_TEST_FIND_BY_VENDOR_FAIL(name, vend, prod)                       \
-    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true,               \
+#define DO_TEST_FIND_BY_VENDOR_FAIL(name, vend, prod) \
+    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true, \
                       FIND_BY_VENDOR, true)
 
     DO_TEST_FIND("Nexus", 0x18d1, 0x4e22, 1, 20);
@@ -290,4 +288,4 @@ mymain(void)
     return EXIT_SUCCESS;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virusbmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virusbmock.so")

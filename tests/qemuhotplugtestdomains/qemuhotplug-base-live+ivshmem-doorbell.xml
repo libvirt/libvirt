@@ -18,7 +18,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <controller type='usb' index='0'>
       <alias name='usb'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
@@ -44,9 +44,7 @@
     <input type='keyboard' bus='ps2'>
       <alias name='input1'/>
     </input>
-    <memballoon model='none'>
-      <alias name='balloon0'/>
-    </memballoon>
+    <memballoon model='none'/>
     <shmem name='shmem0'>
       <model type='ivshmem-plain'/>
       <size unit='M'>4</size>

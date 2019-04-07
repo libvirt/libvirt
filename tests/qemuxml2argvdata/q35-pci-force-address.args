@@ -1,0 +1,33 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-q35-test \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-q35-test/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-q35-test/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name q35-test \
+-S \
+-machine q35,accel=tcg,usb=off,dump-guest-core=off \
+-m 2048 \
+-smp 2,sockets=2,cores=1,threads=1 \
+-uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35-test/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
+-device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
+-device ioh3420,port=0x10,chassis=3,id=pci.3,bus=pcie.0,addr=0x2 \
+-netdev user,id=hostnet0 \
+-device e1000e,netdev=hostnet0,id=net0,mac=52:54:00:aa:bf:ef,bus=pci.2,\
+addr=0x1 \
+-device intel-hda,id=sound0,bus=pci.3,addr=0x0 \
+-device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0

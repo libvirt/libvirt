@@ -14,9 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *  Ren Qiaowei <qiaowei.ren@intel.com>
  */
 #include <config.h>
 
@@ -26,7 +23,6 @@
 #endif
 
 #include "virperf.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
@@ -43,10 +39,14 @@ VIR_ENUM_IMPL(virPerfEvent, VIR_PERF_EVENT_LAST,
               "cache_references", "cache_misses",
               "branch_instructions", "branch_misses",
               "bus_cycles", "stalled_cycles_frontend",
-              "stalled_cycles_backend", "ref_cpu_cycles");
+              "stalled_cycles_backend", "ref_cpu_cycles",
+              "cpu_clock", "task_clock", "page_faults",
+              "context_switches", "cpu_migrations",
+              "page_faults_min", "page_faults_maj",
+              "alignment_faults", "emulation_faults",
+);
 
 struct virPerfEvent {
-    int type;
     int fd;
     bool enabled;
     union {
@@ -58,7 +58,7 @@ struct virPerfEvent {
 };
 typedef struct virPerfEvent *virPerfEventPtr;
 
-struct virPerf {
+struct _virPerf {
     struct virPerfEvent events[VIR_PERF_EVENT_LAST];
 };
 
@@ -67,84 +67,118 @@ struct virPerf {
 # include <linux/perf_event.h>
 
 struct virPerfEventAttr {
-    int type;
     unsigned int attrType;
     unsigned long long attrConfig;
 };
 
 static struct virPerfEventAttr attrs[] = {
-    {.type = VIR_PERF_EVENT_CMT, .attrType = 0, .attrConfig = 1},
-    {.type = VIR_PERF_EVENT_MBMT, .attrType = 0, .attrConfig = 2},
-    {.type = VIR_PERF_EVENT_MBML, .attrType = 0, .attrConfig = 3},
-    {.type = VIR_PERF_EVENT_CPU_CYCLES,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_CPU_CYCLES},
-    {.type = VIR_PERF_EVENT_INSTRUCTIONS,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_INSTRUCTIONS},
-    {.type = VIR_PERF_EVENT_CACHE_REFERENCES,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_CACHE_REFERENCES},
-    {.type = VIR_PERF_EVENT_CACHE_MISSES,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_CACHE_MISSES},
-    {.type = VIR_PERF_EVENT_BRANCH_INSTRUCTIONS,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_BRANCH_INSTRUCTIONS},
-    {.type = VIR_PERF_EVENT_BRANCH_MISSES,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_BRANCH_MISSES},
-    {.type = VIR_PERF_EVENT_BUS_CYCLES,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_BUS_CYCLES},
-    {.type = VIR_PERF_EVENT_STALLED_CYCLES_FRONTEND,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_STALLED_CYCLES_FRONTEND},
-    {.type = VIR_PERF_EVENT_STALLED_CYCLES_BACKEND,
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_STALLED_CYCLES_BACKEND},
-    {.type = VIR_PERF_EVENT_REF_CPU_CYCLES,
+    [VIR_PERF_EVENT_CMT] = {
+        .attrType = 0,
+        .attrConfig = 1
+    },
+    [VIR_PERF_EVENT_MBMT] = {
+        .attrType = 0,
+        .attrConfig = 2
+    },
+    [VIR_PERF_EVENT_MBML] = {
+        .attrType = 0,
+        .attrConfig = 3
+    },
+    [VIR_PERF_EVENT_CPU_CYCLES] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_CPU_CYCLES
+    },
+    [VIR_PERF_EVENT_INSTRUCTIONS] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_INSTRUCTIONS
+    },
+    [VIR_PERF_EVENT_CACHE_REFERENCES] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_CACHE_REFERENCES
+    },
+    [VIR_PERF_EVENT_CACHE_MISSES] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_CACHE_MISSES
+    },
+    [VIR_PERF_EVENT_BRANCH_INSTRUCTIONS] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_BRANCH_INSTRUCTIONS
+    },
+    [VIR_PERF_EVENT_BRANCH_MISSES] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_BRANCH_MISSES
+    },
+    [VIR_PERF_EVENT_BUS_CYCLES] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_BUS_CYCLES
+    },
+    [VIR_PERF_EVENT_STALLED_CYCLES_FRONTEND] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_STALLED_CYCLES_FRONTEND
+    },
+    [VIR_PERF_EVENT_STALLED_CYCLES_BACKEND] = {
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_STALLED_CYCLES_BACKEND
+    },
+    [VIR_PERF_EVENT_REF_CPU_CYCLES] = {
 # ifdef PERF_COUNT_HW_REF_CPU_CYCLES
-     .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_REF_CPU_CYCLES
+        .attrType = PERF_TYPE_HARDWARE,
+        .attrConfig = PERF_COUNT_HW_REF_CPU_CYCLES
 # else
-     .attrType = 0,
-     .attrConfig = 0,
+        .attrType = 0,
+        .attrConfig = 0,
 # endif
     },
+    [VIR_PERF_EVENT_CPU_CLOCK] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_CPU_CLOCK
+    },
+    [VIR_PERF_EVENT_TASK_CLOCK] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_TASK_CLOCK
+    },
+    [VIR_PERF_EVENT_PAGE_FAULTS] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_PAGE_FAULTS
+    },
+    [VIR_PERF_EVENT_CONTEXT_SWITCHES] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_CONTEXT_SWITCHES
+    },
+    [VIR_PERF_EVENT_CPU_MIGRATIONS] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_CPU_MIGRATIONS
+    },
+    [VIR_PERF_EVENT_PAGE_FAULTS_MIN] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_PAGE_FAULTS_MIN
+    },
+    [VIR_PERF_EVENT_PAGE_FAULTS_MAJ] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_PAGE_FAULTS_MAJ
+    },
+    [VIR_PERF_EVENT_ALIGNMENT_FAULTS] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_ALIGNMENT_FAULTS
+    },
+    [VIR_PERF_EVENT_EMULATION_FAULTS] = {
+        .attrType = PERF_TYPE_SOFTWARE,
+        .attrConfig = PERF_COUNT_SW_EMULATION_FAULTS
+    },
 };
+verify(ARRAY_CARDINALITY(attrs) == VIR_PERF_EVENT_LAST);
 typedef struct virPerfEventAttr *virPerfEventAttrPtr;
-
-
-static virPerfEventAttrPtr
-virPerfGetEventAttr(virPerfEventType type)
-{
-    size_t i;
-    if (type >= VIR_PERF_EVENT_LAST) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Event '%d' is not supported"),
-                       type);
-        return NULL;
-    }
-
-    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
-        if (i == type)
-            return attrs + i;
-    }
-
-    return NULL;
-}
 
 
 static int
 virPerfRdtAttrInit(void)
 {
-    char *buf = NULL;
     char *tmp = NULL;
     unsigned int attr_type = 0;
+    VIR_AUTOFREE(char *) buf = NULL;
 
     if (virFileReadAllQuiet("/sys/devices/intel_cqm/type", 10, &buf) < 0)
-        goto error;
+        return -1;
 
     if ((tmp = strchr(buf, '\n')))
         *tmp = '\0';
@@ -152,62 +186,41 @@ virPerfRdtAttrInit(void)
     if (virStrToLong_ui(buf, NULL, 10, &attr_type) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to get rdt event type"));
-        goto error;
+        return -1;
     }
-    VIR_FREE(buf);
 
     attrs[VIR_PERF_EVENT_CMT].attrType = attr_type;
     attrs[VIR_PERF_EVENT_MBMT].attrType = attr_type;
     attrs[VIR_PERF_EVENT_MBML].attrType = attr_type;
 
     return 0;
-
- error:
-    VIR_FREE(buf);
-    return -1;
 }
 
-
-static virPerfEventPtr
-virPerfGetEvent(virPerfPtr perf,
-                virPerfEventType type)
-{
-    if (!perf)
-        return NULL;
-
-    if (type >= VIR_PERF_EVENT_LAST) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Event '%d' is not supported"),
-                       type);
-        return NULL;
-    }
-
-    return perf->events + type;
-}
 
 int
 virPerfEventEnable(virPerfPtr perf,
                    virPerfEventType type,
                    pid_t pid)
 {
-    char *buf = NULL;
     struct perf_event_attr attr;
-    virPerfEventPtr event = virPerfGetEvent(perf, type);
-    virPerfEventAttrPtr event_attr = virPerfGetEventAttr(type);
+    virPerfEventPtr event = &(perf->events[type]);
+    virPerfEventAttrPtr event_attr = &attrs[type];
 
-    if (!event || !event_attr)
-        return -1;
+    if (event->enabled)
+        return 0;
 
     if (event_attr->attrType == 0 && (type == VIR_PERF_EVENT_CMT ||
-                                       type == VIR_PERF_EVENT_MBMT ||
-                                       type == VIR_PERF_EVENT_MBML)) {
+                                      type == VIR_PERF_EVENT_MBMT ||
+                                      type == VIR_PERF_EVENT_MBML)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                        _("unable to enable host cpu perf event for %s"),
-                       virPerfEventTypeToString(event->type));
+                       virPerfEventTypeToString(type));
         return -1;
     }
 
     if (type == VIR_PERF_EVENT_CMT) {
+        VIR_AUTOFREE(char *) buf = NULL;
+
         if (virFileReadAll("/sys/devices/intel_cqm/events/llc_occupancy.scale",
                            10, &buf) < 0)
             goto error;
@@ -217,8 +230,6 @@ virPerfEventEnable(virPerfPtr perf,
                                  _("failed to get cmt scaling factor"));
             goto error;
         }
-
-        VIR_FREE(buf);
     }
 
     memset(&attr, 0, sizeof(attr));
@@ -233,14 +244,14 @@ virPerfEventEnable(virPerfPtr perf,
     if (event->fd < 0) {
         virReportSystemError(errno,
                              _("unable to open host cpu perf event for %s"),
-                             virPerfEventTypeToString(event->type));
+                             virPerfEventTypeToString(type));
         goto error;
     }
 
     if (ioctl(event->fd, PERF_EVENT_IOC_ENABLE) < 0) {
         virReportSystemError(errno,
                              _("unable to enable host cpu perf event for %s"),
-                             virPerfEventTypeToString(event->type));
+                             virPerfEventTypeToString(type));
         goto error;
     }
 
@@ -249,7 +260,6 @@ virPerfEventEnable(virPerfPtr perf,
 
  error:
     VIR_FORCE_CLOSE(event->fd);
-    VIR_FREE(buf);
     return -1;
 }
 
@@ -257,9 +267,7 @@ int
 virPerfEventDisable(virPerfPtr perf,
                     virPerfEventType type)
 {
-    virPerfEventPtr event = virPerfGetEvent(perf, type);
-    if (event == NULL)
-        return -1;
+    virPerfEventPtr event = &(perf->events[type]);
 
     if (!event->enabled)
         return 0;
@@ -267,7 +275,7 @@ virPerfEventDisable(virPerfPtr perf,
     if (ioctl(event->fd, PERF_EVENT_IOC_DISABLE) < 0) {
         virReportSystemError(errno,
                              _("unable to disable host cpu perf event for %s"),
-                             virPerfEventTypeToString(event->type));
+                             virPerfEventTypeToString(type));
         return -1;
     }
 
@@ -279,11 +287,7 @@ virPerfEventDisable(virPerfPtr perf,
 bool virPerfEventIsEnabled(virPerfPtr perf,
                            virPerfEventType type)
 {
-    virPerfEventPtr event = virPerfGetEvent(perf, type);
-    if (event == NULL)
-        return false;
-
-    return event->enabled;
+    return perf && perf->events[type].enabled;
 }
 
 int
@@ -291,8 +295,8 @@ virPerfReadEvent(virPerfPtr perf,
                  virPerfEventType type,
                  uint64_t *value)
 {
-    virPerfEventPtr event = virPerfGetEvent(perf, type);
-    if (event == NULL || !event->enabled)
+    virPerfEventPtr event = &perf->events[type];
+    if (!event->enabled)
         return -1;
 
     if (saferead(event->fd, value, sizeof(uint64_t)) < 0) {
@@ -363,7 +367,6 @@ virPerfNew(void)
         return NULL;
 
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
-        perf->events[i].type = i;
         perf->events[i].fd = -1;
         perf->events[i].enabled = false;
     }

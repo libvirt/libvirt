@@ -22,19 +22,16 @@
 #include <config.h>
 
 #include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <sys/utsname.h>
-#ifdef HAVE_MNTENT_H
-# include <mntent.h>
-#endif /* HAVE_MNTENT_H */
 #include <sys/stat.h>
 
 #include "viralloc.h"
+#include "vircgroup.h"
 #include "virfile.h"
 #include "virt-host-validate-common.h"
 #include "virstring.h"
+#include "virarch.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -289,152 +286,50 @@ int virHostValidateLinuxKernel(const char *hvname,
     }
 }
 
-
-static int virHostValidateCGroupSupport(const char *hvname,
-                                        const char *cg_name,
-                                        virHostValidateLevel level,
-                                        const char *config_name)
+#ifdef __linux__
+int virHostValidateCGroupControllers(const char *hvname,
+                                     int controllers,
+                                     virHostValidateLevel level)
 {
-    virHostMsgCheck(hvname, "for cgroup '%s' controller support", cg_name);
-    FILE *fp = fopen("/proc/self/cgroup", "r");
-    size_t len = 0;
-    char *line = NULL;
-    ssize_t ret;
-    bool matched = false;
+    virCgroupPtr group = NULL;
+    int ret = 0;
+    size_t i;
 
-    if (!fp)
-        goto error;
+    if (virCgroupNewSelf(&group) < 0)
+        return -1;
 
-    while ((ret = getline(&line, &len, fp)) >= 0 && !matched) {
-        char **cgroups;
-        char *start;
-        char *end;
-        size_t ncgroups;
-        size_t i;
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        int flag = 1 << i;
+        const char *cg_name = virCgroupControllerTypeToString(i);
 
-        /* Each line in this file looks like
-         *
-         *   4:cpu,cpuacct:/machine.slice/machine-qemu\x2dtest.scope/emulator
-         *
-         * Since multiple cgroups can be part of the same line and some cgroup
-         * names can appear as part of other cgroup names (eg. 'cpu' is a
-         * prefix for both 'cpuacct' and 'cpuset'), it's not enough to simply
-         * check whether the cgroup name is present somewhere inside the file.
-         *
-         * Moreover, there's nothing stopping the cgroup name from appearing
-         * in an unrelated mount point name as well */
-
-        /* Look for the first colon.
-         * The part we're interested in starts right after it */
-        if (!(start = strchr(line, ':')))
-            continue;
-        start++;
-
-        /* Look for the second colon.
-         * The part we're interested in ends exactly there */
-        if (!(end = strchr(start, ':')))
-            continue;
-        *end = '\0';
-
-        if (!(cgroups = virStringSplitCount(start, ",", 0, &ncgroups)))
+        if (!(controllers & flag))
             continue;
 
-        /* Look for the matching cgroup */
-        for (i = 0; i < ncgroups; i++) {
-            if (STREQ(cgroups[i], cg_name))
-                matched = true;
+        virHostMsgCheck(hvname, "for cgroup '%s' controller support", cg_name);
+
+        if (!virCgroupHasController(group, i)) {
+            ret = -1;
+            virHostMsgFail(level, "Enable '%s' in kernel Kconfig file or "
+                           "mount/enable cgroup controller in your system",
+                           cg_name);
+        } else {
+            virHostMsgPass();
         }
-
-        virStringListFreeCount(cgroups, ncgroups);
     }
 
-    VIR_FREE(line);
-    VIR_FORCE_FCLOSE(fp);
-    if (!matched)
-        goto error;
+    virCgroupFree(&group);
 
-    virHostMsgPass();
-    return 0;
-
- error:
-    VIR_FREE(line);
-    virHostMsgFail(level, "Enable CONFIG_%s in kernel Kconfig file", config_name);
-    return -1;
+    return ret;
 }
-
-#ifdef HAVE_MNTENT_H
-static int virHostValidateCGroupMount(const char *hvname,
-                                      const char *cg_name,
-                                      virHostValidateLevel level)
+#else /*  !__linux__ */
+int virHostValidateCGroupControllers(const char *hvname ATTRIBUTE_UNUSED,
+                                     int controllers ATTRIBUTE_UNUSED,
+                                     virHostValidateLevel level)
 {
-    virHostMsgCheck(hvname, "for cgroup '%s' controller mount-point", cg_name);
-    FILE *fp = setmntent("/proc/mounts", "r");
-    struct mntent ent;
-    char mntbuf[1024];
-    bool matched = false;
-
-    if (!fp)
-        goto error;
-
-    while (getmntent_r(fp, &ent, mntbuf, sizeof(mntbuf)) && !matched) {
-        char **opts;
-        size_t nopts;
-        size_t i;
-
-        /* Ignore non-cgroup mounts */
-        if (STRNEQ(ent.mnt_type, "cgroup"))
-            continue;
-
-        if (!(opts = virStringSplitCount(ent.mnt_opts, ",", 0, &nopts)))
-            continue;
-
-        /* Look for a mount option matching the cgroup name */
-        for (i = 0; i < nopts; i++) {
-            if (STREQ(opts[i], cg_name))
-                matched = true;
-        }
-
-        virStringListFreeCount(opts, nopts);
-    }
-    endmntent(fp);
-    if (!matched)
-        goto error;
-
-    virHostMsgPass();
-    return 0;
-
- error:
-    virHostMsgFail(level, "Mount '%s' cgroup controller (suggested at /sys/fs/cgroup/%s)",
-                   cg_name, cg_name);
-    return -1;
-}
-#else /* ! HAVE_MNTENT_H */
-static int virHostValidateCGroupMount(const char *hvname,
-                                      const char *cg_name,
-                                      virHostValidateLevel level)
-{
-    virHostMsgCheck(hvname, "for cgroup '%s' controller mount-point", cg_name);
     virHostMsgFail(level, "%s", "This platform does not support cgroups");
     return -1;
 }
-#endif /* ! HAVE_MNTENT_H */
-
-int virHostValidateCGroupController(const char *hvname,
-                                    const char *cg_name,
-                                    virHostValidateLevel level,
-                                    const char *config_name)
-{
-    if (virHostValidateCGroupSupport(hvname,
-                                     cg_name,
-                                     level,
-                                     config_name) < 0)
-        return -1;
-    if (virHostValidateCGroupMount(hvname,
-                                   cg_name,
-                                   level) < 0)
-        return -1;
-    return 0;
-}
+#endif /* !__linux__ */
 
 int virHostValidateIOMMU(const char *hvname,
                          virHostValidateLevel level)
@@ -443,6 +338,10 @@ int virHostValidateIOMMU(const char *hvname,
     struct stat sb;
     const char *bootarg = NULL;
     bool isAMD = false, isIntel = false;
+    virArch arch = virArchFromHost();
+    struct dirent *dent;
+    DIR *dir;
+    int rc;
 
     flags = virHostValidateGetCPUFlags();
 
@@ -453,9 +352,8 @@ int virHostValidateIOMMU(const char *hvname,
 
     virBitmapFree(flags);
 
-    virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
-
     if (isIntel) {
+        virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
         if (access("/sys/firmware/acpi/tables/DMAR", F_OK) == 0) {
             virHostMsgPass();
             bootarg = "intel_iommu=on";
@@ -467,6 +365,7 @@ int virHostValidateIOMMU(const char *hvname,
             return -1;
         }
     } else if (isAMD) {
+        virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
         if (access("/sys/firmware/acpi/tables/IVRS", F_OK) == 0) {
             virHostMsgPass();
             bootarg = "iommu=pt iommu=1";
@@ -477,6 +376,19 @@ int virHostValidateIOMMU(const char *hvname,
                            "hardware platform");
             return -1;
         }
+    } else if (ARCH_IS_PPC64(arch)) {
+        /* Empty Block */
+    } else if (ARCH_IS_S390(arch)) {
+        /* On s390x, we skip the IOMMU check if there are no PCI
+         * devices (which is quite usual on s390x). If there are
+         * no PCI devices the directory is still there but is
+         * empty. */
+        if (!virDirOpen(&dir, "/sys/bus/pci/devices"))
+            return 0;
+        rc = virDirRead(dir, &dent, NULL);
+        VIR_DIR_CLOSE(dir);
+        if (rc <= 0)
+            return 0;
     } else {
         virHostMsgFail(level,
                        "Unknown if this platform has IOMMU support");
@@ -493,9 +405,12 @@ int virHostValidateIOMMU(const char *hvname,
 
     virHostMsgCheck(hvname, "%s", _("if IOMMU is enabled by kernel"));
     if (sb.st_nlink <= 2) {
-        virHostMsgFail(level,
-                       "IOMMU appears to be disabled in kernel. "
-                       "Add %s to kernel cmdline arguments", bootarg);
+        if (bootarg)
+            virHostMsgFail(level,
+                           "IOMMU appears to be disabled in kernel. "
+                           "Add %s to kernel cmdline arguments", bootarg);
+        else
+            virHostMsgFail(level, "IOMMU capability not compiled into kernel.");
         return -1;
     }
     virHostMsgPass();

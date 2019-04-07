@@ -20,9 +20,9 @@
  *
  */
 
-#ifndef PARALLELS_DRIVER_H
-# define PARALLELS_DRIVER_H
+#ifndef LIBVIRT_VZ_DRIVER_H
+# define LIBVIRT_VZ_DRIVER_H
 
 int vzRegister(void);
 
-#endif
+#endif /* LIBVIRT_VZ_DRIVER_H */

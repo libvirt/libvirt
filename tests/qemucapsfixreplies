@@ -1,0 +1,26 @@
+#!/bin/sh
+
+if [ "$#" -ne 1 ] || [ "$1" = "--help" ] || [ ! -f "$1" ]; then
+    echo "This script fixes replies ids in QEMU replies files."
+    echo ""
+    echo "      Usage: $0 path/to/qemu.replies"
+    exit 0
+fi
+
+awk -i inplace \
+    'BEGIN {last=0; pattern="libvirt-[0-9]+"}
+    {
+        if (match($0, "libvirt-1[^0-9]")) {
+            count=1;
+        }
+        if (match($0, pattern)) {
+            str="libvirt-" count;
+            sub(pattern, str, $0);
+            if (last != count) {
+                last=count;
+            } else {
+                count++;
+            }
+        }
+        print
+    }' "$1"

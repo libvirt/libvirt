@@ -14,12 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Jan Tomko <jtomko@redhat.com>
  */
 
 #include <config.h>
-#include <stdlib.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -87,13 +84,26 @@ int open(const char *pathname, int flags, ...)
 {
     char *path;
     int ret;
+    va_list ap;
+    mode_t mode = 0;
 
     init_syms();
 
     path = get_fake_path(pathname);
     if (!path)
         return -1;
-    ret = realopen(path, flags);
+
+    /* The mode argument is mandatory when O_CREAT is set in flags,
+     * otherwise the argument is ignored.
+     */
+    if (flags & O_CREAT) {
+        va_start(ap, flags);
+        mode = (mode_t) va_arg(ap, int);
+        va_end(ap);
+    }
+
+    ret = realopen(path, flags, mode);
+
     VIR_FREE(path);
     return ret;
 }

@@ -1,8 +1,5 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "internal.h"
 #include "testutils.h"
@@ -23,6 +20,7 @@ static int testBufInfiniteLoop(const void *data)
     char *addstr = NULL, *bufret = NULL;
     int ret = -1;
     const struct testInfo *info = data;
+    int len;
 
     virBufferAddChar(buf, 'a');
 
@@ -32,7 +30,8 @@ static int testBufInfiniteLoop(const void *data)
      * which was the case after the above addchar at the time of the bug.
      * This test is a bit fragile, since it relies on virBuffer internals.
      */
-    if (virAsprintf(&addstr, "%*s", buf->a - buf->b - 1, "a") < 0)
+    len = buf->size - buf->use - 1;
+    if (virAsprintf(&addstr, "%*s", len, "a") < 0)
         goto out;
 
     if (info->doEscape)
@@ -202,18 +201,18 @@ static int testBufAddBuffer(const void *data ATTRIBUTE_UNUSED)
     char *result = NULL;
     const char *expected = \
 "  A long time ago, in a galaxy far,\n" \
-"  far away...\n"                       \
-"    It is a period of civil war.\n"    \
-"    Rebel spaceships, striking\n"      \
-"    from a hidden base, have won\n"    \
-"    their first victory against\n"     \
-"    the evil Galactic Empire.\n"       \
-"  During the battle, rebel\n"          \
-"  spies managed to steal secret\n"     \
-"  plans to the Empire's\n"             \
-"  ultimate weapon, the DEATH\n"        \
-"  STAR, an armored space\n"            \
-"  station with enough power to\n"      \
+"  far away...\n" \
+"    It is a period of civil war.\n" \
+"    Rebel spaceships, striking\n" \
+"    from a hidden base, have won\n" \
+"    their first victory against\n" \
+"    the evil Galactic Empire.\n" \
+"  During the battle, rebel\n" \
+"  spies managed to steal secret\n" \
+"  plans to the Empire's\n" \
+"  ultimate weapon, the DEATH\n" \
+"  STAR, an armored space\n" \
+"  station with enough power to\n" \
 "  destroy an entire planet.\n";
 
     if (virBufferUse(&buf1)) {
@@ -376,16 +375,84 @@ testBufEscapeStr(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
+testBufEscapeRegex(const void *opaque)
+{
+    const struct testBufAddStrData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *actual;
+    int ret = -1;
+
+    virBufferEscapeRegex(&buf, "%s", data->data);
+
+    if (!(actual = virBufferContentAndReset(&buf))) {
+        VIR_TEST_DEBUG("testBufEscapeRegex: buf is empty");
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(actual, data->expect)) {
+        VIR_TEST_DEBUG("testBufEscapeRegex: Strings don't match:\n");
+        virTestDifference(stderr, data->expect, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+    return ret;
+}
+
+
+static int
+testBufSetIndent(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *actual;
+    int ret = -1;
+
+    virBufferSetIndent(&buf, 11);
+    virBufferAddLit(&buf, "test\n");
+    virBufferSetIndent(&buf, 2);
+    virBufferAddLit(&buf, "test2\n");
+
+    if (!(actual = virBufferContentAndReset(&buf)))
+        goto cleanup;
+
+    if (STRNEQ(actual, "           test\n  test2\n")) {
+        VIR_TEST_DEBUG("testBufSetIndent: expected indent not set\n");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+    return ret;
+}
+
+
+/* Result of this shows up only in valgrind or similar */
+static int
+testBufferAutoclean(const void *opaque ATTRIBUTE_UNUSED)
+{
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "test test test\n");
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
 
 
-#define DO_TEST(msg, cb, data)                                         \
-    do {                                                               \
-        struct testInfo info = { data };                               \
-        if (virTestRun("Buf: " msg, cb, &info) < 0)                    \
-            ret = -1;                                                  \
+#define DO_TEST(msg, cb, data) \
+    do { \
+        struct testInfo info = { data }; \
+        if (virTestRun("Buf: " msg, cb, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("EscapeString infinite loop", testBufInfiniteLoop, 1);
@@ -393,12 +460,14 @@ mymain(void)
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
     DO_TEST("Trim", testBufTrim, 0);
     DO_TEST("AddBuffer", testBufAddBuffer, 0);
+    DO_TEST("set indent", testBufSetIndent, 0);
+    DO_TEST("autoclean", testBufferAutoclean, 0);
 
-#define DO_TEST_ADD_STR(DATA, EXPECT)                                  \
-    do {                                                               \
-        struct testBufAddStrData info = { DATA, EXPECT };              \
-        if (virTestRun("Buf: AddStr", testBufAddStr, &info) < 0)       \
-            ret = -1;                                                  \
+#define DO_TEST_ADD_STR(DATA, EXPECT) \
+    do { \
+        struct testBufAddStrData info = { DATA, EXPECT }; \
+        if (virTestRun("Buf: AddStr", testBufAddStr, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_ADD_STR("", "<c>\n</c>");
@@ -406,11 +475,11 @@ mymain(void)
     DO_TEST_ADD_STR("<a/>\n", "<c>\n  <a/>\n</c>");
     DO_TEST_ADD_STR("<b>\n  <a/>\n</b>\n", "<c>\n  <b>\n    <a/>\n  </b>\n</c>");
 
-#define DO_TEST_ESCAPE(data, expect)                                   \
-    do {                                                               \
-        struct testBufAddStrData info = { data, expect };              \
+#define DO_TEST_ESCAPE(data, expect) \
+    do { \
+        struct testBufAddStrData info = { data, expect }; \
         if (virTestRun("Buf: EscapeStr", testBufEscapeStr, &info) < 0) \
-            ret = -1;                                                  \
+            ret = -1; \
     } while (0)
 
     DO_TEST_ESCAPE("<td></td><td></td>",
@@ -422,7 +491,18 @@ mymain(void)
     DO_TEST_ESCAPE("\x01\x01\x02\x03\x05\x08",
                    "<c>\n  <el></el>\n</c>");
 
+#define DO_TEST_ESCAPE_REGEX(data, expect) \
+    do { \
+        struct testBufAddStrData info = { data, expect }; \
+        if (virTestRun("Buf: EscapeRegex", testBufEscapeRegex, &info) < 0) \
+            ret = -1; \
+    } while (0)
+
+    DO_TEST_ESCAPE_REGEX("noescape", "noescape");
+    DO_TEST_ESCAPE_REGEX("^$.|?*+()[]{}\\",
+                         "\\^\\$\\.\\|\\?\\*\\+\\(\\)\\[\\]\\{\\}\\\\");
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

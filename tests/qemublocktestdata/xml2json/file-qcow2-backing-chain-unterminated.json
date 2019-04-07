@@ -1,0 +1,27 @@
+{
+  "node-name": "#block126",
+  "read-only": false,
+  "driver": "qcow2",
+  "file": "#block004",
+  "backing": "#block313"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1507297895",
+  "node-name": "#block004",
+  "read-only": false,
+  "discard": "unmap"
+}
+{
+  "node-name": "#block313",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": "#block256"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/rhel7.3.1484071872",
+  "node-name": "#block256",
+  "read-only": true,
+  "discard": "unmap"
+}

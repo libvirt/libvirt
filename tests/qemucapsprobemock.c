@@ -14,12 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Jiri Denemark <jdenemar@redhat.com>
  */
 
 #include <config.h>
-#include <stdio.h>
 #include <dlfcn.h>
 
 #include "internal.h"
@@ -28,14 +25,30 @@
 #include "qemu/qemu_monitor.h"
 #include "qemu/qemu_monitor_json.h"
 
-#define REAL_SYM(realFunc)                                                  \
-    do {                                                                    \
-        if (!realFunc && !(realFunc = dlsym(RTLD_NEXT, __FUNCTION__))) {    \
-            fprintf(stderr, "Cannot find real '%s' symbol\n",               \
-                    __FUNCTION__);                                          \
-            abort();                                                        \
-        }                                                                   \
+#define REAL_SYM(realFunc) \
+    do { \
+        if (!realFunc && !(realFunc = dlsym(RTLD_NEXT, __FUNCTION__))) { \
+            fprintf(stderr, "Cannot find real '%s' symbol\n", \
+                    __FUNCTION__); \
+            abort(); \
+        } \
     } while (0)
+
+static bool first = true;
+
+static void
+printLineSkipEmpty(const char *line,
+                   FILE *fp)
+{
+    const char *p;
+
+    for (p = line; *p; p++) {
+        if (p[0] == '\n' && p[1] == '\n')
+            continue;
+
+        fputc(*p, fp);
+    }
+}
 
 
 static int (*realQemuMonitorSend)(qemuMonitorPtr mon,
@@ -45,9 +58,22 @@ int
 qemuMonitorSend(qemuMonitorPtr mon,
                 qemuMonitorMessagePtr msg)
 {
+    char *reformatted;
+
     REAL_SYM(realQemuMonitorSend);
 
-    fprintf(stderr, "%s", msg->txBuffer);
+    if (!(reformatted = virJSONStringReformat(msg->txBuffer, true))) {
+        fprintf(stderr, "Failed to reformat command string '%s'\n", msg->txBuffer);
+        abort();
+    }
+
+    if (first)
+        first = false;
+    else
+        printLineSkipEmpty("\n", stdout);
+
+    printLineSkipEmpty(reformatted, stdout);
+    VIR_FREE(reformatted);
 
     return realQemuMonitorSend(mon, msg);
 }
@@ -62,7 +88,6 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
                              const char *line,
                              qemuMonitorMessagePtr msg)
 {
-    static bool first = true;
     virJSONValuePtr value = NULL;
     char *json = NULL;
     int ret;
@@ -71,29 +96,23 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
 
     ret = realQemuMonitorJSONIOProcessLine(mon, line, msg);
 
-    if (ret == 0 &&
-        (value = virJSONValueFromString(line)) &&
-        (json = virJSONValueToString(value, 1))) {
-        char *p;
-        bool skip = false;
+    if (ret == 0) {
+        if (!(value = virJSONValueFromString(line)) ||
+            !(json = virJSONValueToString(value, true))) {
+            fprintf(stderr, "Failed to reformat reply string '%s'\n", line);
+            abort();
+        }
 
-        if (first) {
+        /* Ignore QMP greeting */
+        if (virJSONValueObjectHasKey(value, "QMP"))
+            goto cleanup;
+
+        if (first)
             first = false;
-        } else {
-            /* Ignore QMP greeting if it's not the first one */
-            if (virJSONValueObjectHasKey(value, "QMP"))
-                goto cleanup;
-            putchar('\n');
-        }
+        else
+            printLineSkipEmpty("\n", stdout);
 
-        for (p = json; *p; p++) {
-            if (skip && *p == '\n') {
-                continue;
-            } else {
-                skip = *p == '\n';
-                putchar(*p);
-            }
-        }
+        printLineSkipEmpty(json, stdout);
     }
 
  cleanup:

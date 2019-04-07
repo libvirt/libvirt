@@ -20,9 +20,8 @@
  *
  */
 
-
-#ifndef __VIR_MEMORY_H_
-# define __VIR_MEMORY_H_
+#ifndef LIBVIRT_VIRALLOC_H
+# define LIBVIRT_VIRALLOC_H
 
 # include "internal.h"
 
@@ -79,6 +78,8 @@ int virAllocVar(void *ptrptr, size_t struct_size, size_t element_size, size_t co
 void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
 
 void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countptr)
+    ATTRIBUTE_NONNULL(1);
+void virDisposeString(char **strptr)
     ATTRIBUTE_NONNULL(1);
 
 /**
@@ -358,7 +359,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  * Returns -1 on failure (with OOM error reported), 0 on success
  */
 # define VIR_INSERT_ELEMENT(ptr, at, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count),    \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 # define VIR_INSERT_ELEMENT_COPY(ptr, at, count, newelem) \
@@ -376,7 +377,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
 
 /* Quiet version of macros above */
 # define VIR_INSERT_ELEMENT_QUIET(ptr, at, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count),    \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        false, 0, NULL, NULL, 0)
 # define VIR_INSERT_ELEMENT_COPY_QUIET(ptr, at, count, newelem) \
@@ -428,33 +429,33 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  * Returns -1 on failure (with OOM error reported), 0 on success
  */
 # define VIR_APPEND_ELEMENT(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 # define VIR_APPEND_ELEMENT_COPY(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false, \
                        true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 # define VIR_APPEND_ELEMENT_INPLACE(ptr, count, newelem) \
-    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),   \
-                                    VIR_TYPEMATCH(ptr, &(newelem)),         \
-                                    &(newelem), true, true, false,          \
-                                    VIR_FROM_THIS, __FILE__,                \
+    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
+                                    VIR_TYPEMATCH(ptr, &(newelem)), \
+                                    &(newelem), true, true, false, \
+                                    VIR_FROM_THIS, __FILE__, \
                                     __FUNCTION__, __LINE__))
 # define VIR_APPEND_ELEMENT_COPY_INPLACE(ptr, count, newelem) \
-    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),   \
-                                    VIR_TYPEMATCH(ptr, &(newelem)),         \
-                                    &(newelem), false, true, false,         \
-                                    VIR_FROM_THIS, __FILE__,                \
+    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
+                                    VIR_TYPEMATCH(ptr, &(newelem)), \
+                                    &(newelem), false, true, false, \
+                                    VIR_FROM_THIS, __FILE__, \
                                     __FUNCTION__, __LINE__))
 
 /* Quiet version of macros above */
 # define VIR_APPEND_ELEMENT_QUIET(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        false, 0, NULL, NULL, 0)
 # define VIR_APPEND_ELEMENT_COPY_QUIET(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false, \
                        false, 0, NULL, NULL, 0)
 
@@ -559,7 +560,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  * @ptr: pointer holding address to be cleared and freed
  * @count: count of elements in @ptr
  *
- * Clear the memory of the array of elemets pointed to by 'ptr' of 'count'
+ * Clear the memory of the array of elements pointed to by 'ptr' of 'count'
  * elements and free it. Update the pointer/count to NULL/0.
  *
  * This macro is safe to use on arguments with side effects.
@@ -576,9 +577,17 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  *
  * This macro is not safe to be used on arguments with side effects.
  */
-# define VIR_DISPOSE_STRING(ptr) virDispose(1 ? (void *) &(ptr) : (ptr),      \
-                                            (ptr) ? strlen((ptr)) : 0, 1, NULL)
+# define VIR_DISPOSE_STRING(ptr) virDisposeString(&(ptr))
 
+/**
+ * VIR_AUTODISPOSE_STR:
+ *
+ * Macro to automatically free and clear the memory allocated to
+ * the string variable declared with it by calling virDisposeString
+ * when the variable goes out of scope.
+ */
+# define VIR_AUTODISPOSE_STR \
+    __attribute__((cleanup(virDisposeString))) char *
 
 /**
  * VIR_DISPOSE:
@@ -588,7 +597,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  *
  * This macro is safe to be used on arguments with side effects.
  */
-# define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1,          \
+# define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1, \
                                      sizeof(*(ptr)), NULL)
 
 
@@ -596,4 +605,81 @@ void virAllocTestInit(void);
 int virAllocTestCount(void);
 void virAllocTestOOM(int n, int m);
 void virAllocTestHook(void (*func)(int, void*), void *data);
-#endif /* __VIR_MEMORY_H_ */
+
+# define VIR_AUTOPTR_FUNC_NAME(type) type##AutoPtrFree
+
+/**
+ * VIR_DEFINE_AUTOPTR_FUNC:
+ * @type: type of the variable to be freed automatically
+ * @func: cleanup function to be automatically called
+ *
+ * This macro defines a function for automatic freeing of
+ * resources allocated to a variable of type @type. This newly
+ * defined function works as a necessary wrapper around @func.
+ */
+# define VIR_DEFINE_AUTOPTR_FUNC(type, func) \
+    static inline void VIR_AUTOPTR_FUNC_NAME(type)(type **_ptr) \
+    { \
+        if (*_ptr) \
+            (func)(*_ptr); \
+        *_ptr = NULL; \
+    }
+
+# define VIR_AUTOCLEAN_FUNC_NAME(type) type##AutoClean
+
+/**
+ * VIR_DEFINE_AUTOCLEAN_FUNC:
+ * @type: type of the variable to be cleared automatically
+ * @func: cleanup function to be automatically called
+ *
+ * This macro defines a function for automatic clearing of
+ * resources in a stack'd variable of type @type. Note that @func must
+ * take pointer to @type.
+ */
+# define VIR_DEFINE_AUTOCLEAN_FUNC(type, func) \
+    static inline void VIR_AUTOCLEAN_FUNC_NAME(type)(type *_ptr) \
+    { \
+        (func)(_ptr); \
+    }
+
+/**
+ * VIR_AUTOFREE:
+ * @type: type of the variable to be freed automatically
+ *
+ * Macro to automatically free the memory allocated to
+ * the variable declared with it by calling virFree
+ * when the variable goes out of scope.
+ */
+# define VIR_AUTOFREE(type) __attribute__((cleanup(virFree))) type
+
+/**
+ * VIR_AUTOPTR:
+ * @type: type of the variable to be freed automatically
+ *
+ * Macro to automatically free the memory allocated to
+ * the variable declared with it by calling the function
+ * defined by VIR_DEFINE_AUTOPTR_FUNC when the variable
+ * goes out of scope.
+ *
+ * Note that this macro must NOT be used with vectors! The freeing function
+ * will not free any elements beyond the first.
+ */
+# define VIR_AUTOPTR(type) \
+    __attribute__((cleanup(VIR_AUTOPTR_FUNC_NAME(type)))) type *
+
+/**
+ * VIR_AUTOCLEAN:
+ * @type: type of the variable to be cleared automatically
+ *
+ * Macro to automatically call clearing function registered for variable of @type
+ * when the variable goes out of scope.
+ * The cleanup function is registered by VIR_DEFINE_AUTOCLEAN_FUNC macro for
+ * the given type.
+ *
+ * Note that this macro must NOT be used with vectors! The cleaning function
+ * will not clean any elements beyond the first.
+ */
+# define VIR_AUTOCLEAN(type) \
+    __attribute__((cleanup(VIR_AUTOCLEAN_FUNC_NAME(type)))) type
+
+#endif /* LIBVIRT_VIRALLOC_H */

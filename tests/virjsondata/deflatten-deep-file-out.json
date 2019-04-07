@@ -1,0 +1,23 @@
+{
+  "file": {
+    "double": {
+      "nest1": "some",
+      "nest2": "more",
+      "nest3": {
+        "even": "objects"
+      }
+    },
+    "very": {
+      "deeply": {
+        "nested": {
+          "object": {
+            "chains": {
+              "nest1": "some",
+              "nest2": "stuff"
+            }
+          }
+        }
+      }
+    }
+  }
+}

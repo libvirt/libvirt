@@ -14,40 +14,37 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
-
+#define LIBVIRT_VIRDBUSPRIV_H_ALLOW
 #include "virdbuspriv.h"
 #include "virlog.h"
 #include "testutils.h"
 
 VIR_LOG_INIT("tests.dbustest");
 
-#define VERIFY(typname, valorig, valnew, fmt)                           \
-    do {                                                                \
-        VIR_DEBUG("Compare " typname " '" fmt "' to '"                  \
-                  fmt "'", valorig, valnew);                            \
-        if (valorig != valnew) {                                        \
-            fprintf(stderr, "Failed to round-trip " typname " '"        \
-                    fmt "' to '" fmt "'\n", valorig, valnew);           \
-            goto cleanup;                                               \
-        }                                                               \
+#define VERIFY(typname, valorig, valnew, fmt) \
+    do { \
+        VIR_DEBUG("Compare " typname " '" fmt "' to '" \
+                  fmt "'", valorig, valnew); \
+        if (valorig != valnew) { \
+            fprintf(stderr, "Failed to round-trip " typname " '" \
+                    fmt "' to '" fmt "'\n", valorig, valnew); \
+            goto cleanup; \
+        } \
     } while (0)
 
-#define VERIFY_STR(typname, valorig, valnew, fmt)                       \
-    do {                                                                \
-        VIR_DEBUG("Compare " typname " '" fmt "' to '"                  \
-                  fmt "'", valorig, valnew);                            \
-        if (STRNEQ(valorig, valnew)) {                                  \
-            fprintf(stderr, "Failed to round-trip " typname " '"        \
-                    fmt "' to '" fmt "'\n", valorig, valnew);           \
-            goto cleanup;                                               \
-        }                                                               \
+#define VERIFY_STR(typname, valorig, valnew, fmt) \
+    do { \
+        VIR_DEBUG("Compare " typname " '" fmt "' to '" \
+                  fmt "'", valorig, valnew); \
+        if (STRNEQ(valorig, valnew)) { \
+            fprintf(stderr, "Failed to round-trip " typname " '" \
+                    fmt "' to '" fmt "'\n", valorig, valnew); \
+            goto cleanup; \
+        } \
     } while (0)
 
 static int testMessageSimple(const void *args ATTRIBUTE_UNUSED)
@@ -323,6 +320,7 @@ static int testMessageSingleArrayRef(const void *args ATTRIBUTE_UNUSED)
  cleanup:
     if (out_strv1)
         VIR_FREE(out_strv1[0]);
+    VIR_FREE(out_strv1);
     virDBusMessageUnref(msg);
     return ret;
 }
@@ -727,4 +725,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

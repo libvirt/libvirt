@@ -1,6 +1,5 @@
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "internal.h"
 #include "testutils.h"
@@ -68,12 +67,12 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(name)                                           \
-    do {                                                        \
-        const struct testInfo info = {name, false};             \
-        if (virTestRun("Secret XML->XML " name,                 \
-                       testCompareXMLToXMLHelper, &info) < 0)   \
-            ret = -1;                                           \
+#define DO_TEST(name) \
+    do { \
+        const struct testInfo info = {name, false}; \
+        if (virTestRun("Secret XML->XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("ephemeral-usage-volume");
@@ -85,4 +84,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

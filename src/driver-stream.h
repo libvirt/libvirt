@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_DRIVER_STREAM_H__
-# define __VIR_DRIVER_STREAM_H__
+#ifndef LIBVIRT_DRIVER_STREAM_H
+# define LIBVIRT_DRIVER_STREAM_H
 
 # ifndef __VIR_DRIVER_H_INCLUDES___
 #  error "Don't include this file directly, only use driver.h"
@@ -34,6 +34,27 @@ typedef int
 (*virDrvStreamRecv)(virStreamPtr st,
                     char *data,
                     size_t nbytes);
+
+typedef int
+(*virDrvStreamRecvFlags)(virStreamPtr st,
+                         char *data,
+                         size_t nbytes,
+                         unsigned int flags);
+
+typedef int
+(*virDrvStreamSendHole)(virStreamPtr st,
+                        long long length,
+                        unsigned int flags);
+
+typedef int
+(*virDrvStreamRecvHole)(virStreamPtr st,
+                        long long *length,
+                        unsigned int flags);
+
+typedef int
+(*virDrvStreamInData)(virStreamPtr st,
+                      int *data,
+                      long long *length);
 
 typedef int
 (*virDrvStreamEventAddCallback)(virStreamPtr stream,
@@ -61,6 +82,10 @@ typedef virStreamDriver *virStreamDriverPtr;
 struct _virStreamDriver {
     virDrvStreamSend streamSend;
     virDrvStreamRecv streamRecv;
+    virDrvStreamRecvFlags streamRecvFlags;
+    virDrvStreamSendHole streamSendHole;
+    virDrvStreamRecvHole streamRecvHole;
+    virDrvStreamInData streamInData;
     virDrvStreamEventAddCallback streamEventAddCallback;
     virDrvStreamEventUpdateCallback streamEventUpdateCallback;
     virDrvStreamEventRemoveCallback streamEventRemoveCallback;
@@ -69,4 +94,4 @@ struct _virStreamDriver {
 };
 
 
-#endif /* __VIR_DRIVER_STREAM_H__ */
+#endif /* LIBVIRT_DRIVER_STREAM_H */

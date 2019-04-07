@@ -2,7 +2,6 @@
   <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
   <rule action='accept' direction='out'>
      <rarp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
-           protocolid='rarp'
            dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
            hwtype='12'
            protocoltype='34'

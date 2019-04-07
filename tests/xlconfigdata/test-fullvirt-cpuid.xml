@@ -1,0 +1,37 @@
+<domain type='xen'>
+  <name>XenGuest2</name>
+  <uuid>c7a5fdb2-cdaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>592896</memory>
+  <currentMemory unit='KiB'>403456</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='xenfv'>hvm</type>
+    <loader type='rom'>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='cdrom'/>
+  </os>
+  <features>
+    <pae/>
+  </features>
+  <cpu mode='host-passthrough'>
+    <feature policy='disable' name='tm'/>
+    <feature policy='force' name='pni'/>
+    <feature policy='optional' name='pdpe1gb'/>
+  </cpu>
+  <clock offset='variable' adjustment='0' basis='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
+    <controller type='xenbus' index='0'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
+    <video>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
+    </video>
+    <memballoon model='xen'/>
+  </devices>
+</domain>

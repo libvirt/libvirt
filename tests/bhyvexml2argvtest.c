@@ -7,6 +7,7 @@
 # include "datatypes.h"
 
 # include "bhyve/bhyve_capabilities.h"
+# include "bhyve/bhyve_domain.h"
 # include "bhyve/bhyve_utils.h"
 # include "bhyve/bhyve_command.h"
 
@@ -36,16 +37,26 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                         NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
-        if (flags & FLAG_EXPECT_PARSE_ERROR)
+        if (flags & FLAG_EXPECT_PARSE_ERROR) {
             ret = 0;
+        } else if (flags & FLAG_EXPECT_FAILURE) {
+            ret = 0;
+            VIR_TEST_DEBUG("Got expected error: %s\n",
+                    virGetLastErrorMessage());
+            virResetLastError();
+        }
+
         goto out;
     }
 
     conn->privateData = &driver;
 
     cmd = virBhyveProcessBuildBhyveCmd(conn, vmdef, false);
-    ldcmd = virBhyveProcessBuildLoadCmd(conn, vmdef, "<device.map>",
-                                        &actualdm);
+    if (vmdef->os.loader)
+        ldcmd = virCommandNew("dummy");
+    else
+        ldcmd = virBhyveProcessBuildLoadCmd(conn, vmdef, "<device.map>",
+                                            &actualdm);
 
     if ((cmd == NULL) || (ldcmd == NULL)) {
         if (flags & FLAG_EXPECT_FAILURE) {
@@ -57,13 +68,13 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
     }
 
-    if (!(actualargv = virCommandToString(cmd)))
+    if (!(actualargv = virCommandToString(cmd, false)))
         goto out;
 
     if (actualdm != NULL)
         virTrimSpaces(actualdm, NULL);
 
-    if (!(actualld = virCommandToString(ldcmd)))
+    if (!(actualld = virCommandToString(ldcmd, false)))
         goto out;
 
     if (virTestCompareToFile(actualargv, cmdline) < 0)
@@ -80,6 +91,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  out:
+    if (vmdef &&
+        vmdef->ngraphics == 1 &&
+        vmdef->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+        virPortAllocatorRelease(vmdef->graphics[0]->data.vnc.port);
+
     VIR_FREE(actualargv);
     VIR_FREE(actualld);
     VIR_FREE(actualdm);
@@ -131,32 +147,40 @@ mymain(void)
     if ((driver.caps = virBhyveCapsBuild()) == NULL)
         return EXIT_FAILURE;
 
-    if ((driver.xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)) == NULL)
+    if ((driver.xmlopt = virBhyveDriverCreateXMLConf(&driver)) == NULL)
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, flags)                             \
-    do {                                                       \
-        static struct testInfo info = {                        \
-            name, (flags)                                      \
-        };                                                     \
-        if (virTestRun("BHYVE XML-2-ARGV " name,               \
+    if (!(driver.remotePorts = virPortAllocatorRangeNew("display", 5900, 65535)))
+        return EXIT_FAILURE;
+
+
+# define DO_TEST_FULL(name, flags) \
+    do { \
+        static struct testInfo info = { \
+            name, (flags) \
+        }; \
+        if (virTestRun("BHYVE XML-2-ARGV " name, \
                        testCompareXMLToArgvHelper, &info) < 0) \
-            ret = -1;                                          \
+            ret = -1; \
     } while (0)
 
-# define DO_TEST(name)                                         \
+# define DO_TEST(name) \
     DO_TEST_FULL(name, 0)
 
-# define DO_TEST_FAILURE(name)                                 \
+# define DO_TEST_FAILURE(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_FAILURE)
 
-# define DO_TEST_PARSE_ERROR(name)                             \
+# define DO_TEST_PARSE_ERROR(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
-    driver.bhyvecaps = BHYVE_CAP_RTC_UTC;
+    driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT | \
+                       BHYVE_CAP_NET_E1000 | BHYVE_CAP_LPC_BOOTROM | \
+                       BHYVE_CAP_FBUF | BHYVE_CAP_XHCI | \
+                       BHYVE_CAP_CPUTOPOLOGY;
 
     DO_TEST("base");
+    DO_TEST("wired");
     DO_TEST("acpiapic");
     DO_TEST("disk-cdrom");
     DO_TEST("disk-virtio");
@@ -177,18 +201,64 @@ mymain(void)
     DO_TEST("disk-cdrom-grub");
     DO_TEST("serial-grub");
     DO_TEST("localtime");
+    DO_TEST("net-e1000");
+    DO_TEST("uefi");
+    DO_TEST("vnc");
+    DO_TEST("vnc-vgaconf-on");
+    DO_TEST("vnc-vgaconf-off");
+    DO_TEST("vnc-vgaconf-io");
+    DO_TEST("vnc-autoport");
+    DO_TEST("cputopology");
+    DO_TEST_FAILURE("cputopology-nvcpu-mismatch");
+    DO_TEST("commandline");
+    DO_TEST("msrs");
+
+    /* Address allocation tests */
+    DO_TEST("addr-single-sata-disk");
+    DO_TEST("addr-multiple-sata-disks");
+    DO_TEST("addr-more-than-32-sata-disks");
+    DO_TEST("addr-single-virtio-disk");
+    DO_TEST("addr-multiple-virtio-disks");
+
+    /* The same without 32 devs per controller support */
+    driver.bhyvecaps ^= BHYVE_CAP_AHCI32SLOT;
+    DO_TEST("addr-no32devs-single-sata-disk");
+    DO_TEST("addr-no32devs-multiple-sata-disks");
+    DO_TEST_FAILURE("addr-no32devs-more-than-32-sata-disks");
+
+    /* USB xhci tablet */
+    DO_TEST("input-xhci-tablet");
+    DO_TEST_FAILURE("xhci-multiple-controllers");
+    DO_TEST_FAILURE("xhci-no-devs");
+    DO_TEST_FAILURE("xhci-multiple-devs");
+    driver.bhyvecaps ^= BHYVE_CAP_XHCI;
+    DO_TEST_FAILURE("input-xhci-tablet");
 
     driver.grubcaps = 0;
 
     DO_TEST("serial-grub-nocons");
 
+    driver.bhyvecaps &= ~BHYVE_CAP_NET_E1000;
+
+    DO_TEST_FAILURE("net-e1000");
+
+    driver.bhyvecaps &= ~BHYVE_CAP_LPC_BOOTROM;
+    DO_TEST_FAILURE("uefi");
+
+    driver.bhyvecaps &= ~BHYVE_CAP_FBUF;
+    DO_TEST_FAILURE("vnc");
+
+    driver.bhyvecaps &= ~BHYVE_CAP_CPUTOPOLOGY;
+    DO_TEST_FAILURE("cputopology");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
+    virPortAllocatorRangeFree(driver.remotePorts);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/bhyvexml2argvmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/bhyvexml2argvmock.so")
 
 #else
 

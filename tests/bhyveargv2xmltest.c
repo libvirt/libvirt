@@ -74,7 +74,7 @@ testCompareXMLToArgvFiles(const char *xmlfile,
         }
     }
 
-    if (vmdef && !virDomainDefCheckABIStability(vmdef, vmdef)) {
+    if (vmdef && !virDomainDefCheckABIStability(vmdef, vmdef, driver.xmlopt)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xmlfile);
         goto fail;
     }
@@ -130,38 +130,40 @@ mymain(void)
     if ((driver.caps = virBhyveCapsBuild()) == NULL)
         return EXIT_FAILURE;
 
-    if ((driver.xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)) == NULL)
+    if ((driver.xmlopt = virDomainXMLOptionNew(NULL, NULL,
+                                               NULL, NULL, NULL)) == NULL)
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, flags)                            \
-    do {                                                       \
-        static struct testInfo info = {                        \
-            name, (flags)                                      \
-        };                                                     \
-        if (virTestRun("BHYVE ARGV-2-XML " name,              \
+# define DO_TEST_FULL(name, flags) \
+    do { \
+        static struct testInfo info = { \
+            name, (flags) \
+        }; \
+        if (virTestRun("BHYVE ARGV-2-XML " name, \
                        testCompareXMLToArgvHelper, &info) < 0) \
-            ret = -1;                                          \
+            ret = -1; \
     } while (0)
 
-# define DO_TEST(name)                                         \
+# define DO_TEST(name) \
     DO_TEST_FULL(name, 0)
 
-# define DO_TEST_FAIL(name)                                    \
+# define DO_TEST_FAIL(name) \
     DO_TEST_FULL(name, 5)
 
-# define DO_TEST_WARN(name)                                    \
+# define DO_TEST_WARN(name) \
     DO_TEST_FULL(name, 4)
 
-# define DO_TEST_FAIL_SILENT(name)                             \
+# define DO_TEST_FAIL_SILENT(name) \
     DO_TEST_FULL(name, 1)
 
-# define DO_TEST_PARSE_ERROR(name)                             \
+# define DO_TEST_PARSE_ERROR(name) \
     DO_TEST_FULL(name, 2)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
     driver.bhyvecaps = BHYVE_CAP_RTC_UTC;
 
     DO_TEST("base");
+    DO_TEST("wired");
     DO_TEST("oneline");
     DO_TEST("name");
     DO_TEST("console");
@@ -175,6 +177,7 @@ mymain(void)
     DO_TEST("ahci-hd");
     DO_TEST("virtio-blk");
     DO_TEST("virtio-net");
+    DO_TEST("e1000");
     DO_TEST_WARN("virtio-net2");
     DO_TEST_WARN("virtio-net3");
     DO_TEST_WARN("virtio-net4");
@@ -202,7 +205,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/bhyveargv2xmlmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/bhyveargv2xmlmock.so")
 
 #else
 

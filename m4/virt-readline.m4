@@ -38,6 +38,19 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
     LIBS="$lv_saved_libs $extra_LIBS"
   fi
 
+  AC_CHECK_DECLS([rl_completion_quote_character],
+                 [], [],
+                 [[#include <stdio.h>
+                  #include <readline/readline.h>]])
+
+  if test "$ac_cv_have_decl_rl_completion_quote_character" = "no" ; then
+    if test "$with_readline" = "yes" ; then
+      AC_MSG_ERROR([readline is missing rl_completion_quote_character])
+    else
+      with_readline=no;
+    fi
+  fi
+
   # The normal library check...
   LIBVIRT_CHECK_LIB([READLINE], [readline], [readline], [readline/readline.h])
 
@@ -45,7 +58,9 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
   # function, to ensure we aren't being confused by caching.
   LIBS=$lv_saved_libs
   AC_CHECK_LIB([readline], [rl_initialize],
-    [], [READLINE_LIBS="$READLINE_LIBS $extra_LIBS"])
+    [READLINE_CFLAGS="-D_FUNCTION_DEF $READLINE_CFLAGS"
+     AC_SUBST(READLINE_CFLAGS)],
+    [READLINE_LIBS="$READLINE_LIBS $extra_LIBS"])
   LIBS=$lv_saved_libs
 ])
 

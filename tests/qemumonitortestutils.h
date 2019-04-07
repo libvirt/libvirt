@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef __VIR_QEMU_MONITOR_TEST_UTILS_H__
-# define __VIR_QEMU_MONITOR_TEST_UTILS_H__
+#ifndef LIBVIRT_QEMUMONITORTESTUTILS_H
+# define LIBVIRT_QEMUMONITORTESTUTILS_H
 
 # include "domain_conf.h"
 # include "qemu/qemu_conf.h"
@@ -42,7 +42,9 @@ int qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
 int qemuMonitorTestAddResponse(qemuMonitorTestPtr test,
                                const char *response);
 
-int qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test);
+int qemuMonitorTestAddInvalidCommandResponse(qemuMonitorTestPtr test,
+                                             const char *expectedcommand,
+                                             const char *actualcommand);
 
 void *qemuMonitorTestItemGetPrivateData(qemuMonitorTestItemPtr item);
 
@@ -51,6 +53,11 @@ int qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...);
 int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                            const char *command_name,
                            const char *response);
+
+int qemuMonitorTestAddItemVerbatim(qemuMonitorTestPtr test,
+                                   const char *command,
+                                   const char *cmderr,
+                                   const char *response);
 
 int qemuMonitorTestAddAgentSyncResponse(qemuMonitorTestPtr test);
 
@@ -67,17 +74,23 @@ int qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
                                  const char *response);
 
 # define qemuMonitorTestNewSimple(json, xmlopt) \
-    qemuMonitorTestNew(json, xmlopt, NULL, NULL, NULL)
+    qemuMonitorTestNew(json, xmlopt, NULL, NULL, NULL, NULL)
+# define qemuMonitorTestNewSchema(xmlopt, schema) \
+    qemuMonitorTestNew(true, xmlopt, NULL, NULL, NULL, schema)
 
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
                                       virDomainXMLOptionPtr xmlopt,
                                       virDomainObjPtr vm,
                                       virQEMUDriverPtr driver,
-                                      const char *greeting);
+                                      const char *greeting,
+                                      virHashTablePtr schema);
 
 qemuMonitorTestPtr qemuMonitorTestNewFromFile(const char *fileName,
                                               virDomainXMLOptionPtr xmlopt,
                                               bool simple);
+qemuMonitorTestPtr qemuMonitorTestNewFromFileFull(const char *fileName,
+                                                  virQEMUDriverPtr driver,
+                                                  virDomainObjPtr vm);
 
 qemuMonitorTestPtr qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt);
 
@@ -86,5 +99,6 @@ void qemuMonitorTestFree(qemuMonitorTestPtr test);
 
 qemuMonitorPtr qemuMonitorTestGetMonitor(qemuMonitorTestPtr test);
 qemuAgentPtr qemuMonitorTestGetAgent(qemuMonitorTestPtr test);
+virDomainObjPtr qemuMonitorTestGetDomainObj(qemuMonitorTestPtr test);
 
-#endif /* __VIR_QEMU_MONITOR_TEST_UTILS_H__ */
+#endif /* LIBVIRT_QEMUMONITORTESTUTILS_H */

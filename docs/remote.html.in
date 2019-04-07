@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1 >Remote support</h1>
@@ -7,57 +7,11 @@
 Libvirt allows you to access hypervisors running on remote
 machines through authenticated and encrypted connections.
 </p>
-    <ul>
-      <li>
-        <a href="#Remote_basic_usage">Basic usage</a>
-      </li>
-      <li>
-        <a href="#Remote_transports">Transports</a>
-      </li>
-      <li>
-        <a href="#Remote_URI_reference">Remote URIs</a>
-        <ul>
-          <li>
-            <a href="#Remote_URI_parameters">Extra parameters</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="#Remote_certificates">Generating TLS certificates</a>
-        <ul>
-          <li>
-            <a href="#Remote_PKI">Public Key Infrastructure set up</a>
-          </li>
-          <li>
-            <a href="#Remote_TLS_background">Background to TLS certificates</a>
-          </li>
-          <li>
-            <a href="#Remote_TLS_CA">Setting up a Certificate Authority (CA)</a>
-          </li>
-          <li>
-            <a href="#Remote_TLS_server_certificates">Issuing server certificates</a>
-          </li>
-          <li>
-            <a href="#Remote_TLS_client_certificates">Issuing client certificates</a>
-          </li>
-          <li>
-            <a href="#Remote_TLS_troubleshooting">Troubleshooting TLS certificate problems</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="#Remote_libvirtd_configuration">libvirtd configuration file</a>
-      </li>
-      <li>
-        <a href="#Remote_IPv6">IPv6 support</a>
-      </li>
-      <li>
-        <a href="#Remote_limitations">Limitations</a>
-      </li>
-    </ul>
-    <h3>
-      <a name="Remote_basic_usage">Basic usage</a>
-    </h3>
+    <ul id="toc"></ul>
+
+    <h2>
+      <a id="Remote_basic_usage">Basic usage</a>
+    </h2>
     <p>
 On the remote machine, <code>libvirtd</code> should be running in general.
 See <a href="#Remote_libvirtd_configuration">the section
@@ -76,7 +30,8 @@ to <code>virConnectOpen</code> (or <code>virsh -c ...</code>).
 For example, if you normally use <code>qemu:///system</code>
 to access the system-wide QEMU daemon, then to access
 the system-wide QEMU daemon on a remote machine called
-<code>oirase</code> you would use <code>qemu://oirase/system</code>.
+<code>compute1.libvirt.org</code> you would use
+<code>qemu://compute1.libvirt.org/system</code>.
 </p>
     <p>
 The <a href="#Remote_URI_reference">section on remote URIs</a>
@@ -95,9 +50,9 @@ relating to failures in the remote transport itself. </li>
       <li> Remote calls are handled synchronously, so they will be
 much slower than, say, direct hypervisor calls. </li>
     </ul>
-    <h3>
-      <a name="Remote_transports">Transports</a>
-    </h3>
+    <h2>
+      <a id="Remote_transports">Transports</a>
+    </h2>
     <p>
 Remote libvirt supports a range of transports:
 </p>
@@ -156,9 +111,9 @@ netcat is required on the remote side.</dd>
     <p>
 The default transport, if no other is specified, is <code>tls</code>.
 </p>
-    <h3>
-      <a name="Remote_URI_reference">Remote URIs</a>
-    </h3>
+    <h2>
+      <a id="Remote_URI_reference">Remote URIs</a>
+    </h2>
     <p>
 See also: <a href="uri.html">documentation on ordinary ("local") URIs</a>.
 </p>
@@ -175,14 +130,14 @@ to distinguish this from a local URI.
 Some examples:
 </p>
     <ul>
-      <li><code>xen+ssh://rjones@towada/</code><br/> &#x2014; Connect to a
+      <li><code>xen+ssh://rjones@towada/system</code><br/> &#x2014; Connect to a
 remote Xen hypervisor on host <code>towada</code> using ssh transport and ssh
 username <code>rjones</code>.
 </li>
-      <li><code>xen://towada/</code><br/> &#x2014; Connect to a
+      <li><code>xen://towada/system</code><br/> &#x2014; Connect to a
 remote Xen hypervisor on host <code>towada</code> using TLS.
 </li>
-      <li><code>xen://towada/?no_verify=1</code><br/> &#x2014; Connect to a
+      <li><code>xen://towada/system?no_verify=1</code><br/> &#x2014; Connect to a
 remote Xen hypervisor on host <code>towada</code> using TLS.  Do not verify
 the server's certificate.
 </li>
@@ -203,9 +158,9 @@ and use a different known_hosts file.</li>
 Connect to a remote host using a ssh connection with the libssh driver
 and use a different known_hosts file.</li>
     </ul>
-    <h4>
-      <a name="Remote_URI_parameters">Extra parameters</a>
-    </h4>
+    <h3>
+      <a id="Remote_URI_parameters">Extra parameters</a>
+    </h3>
     <p>
 Extra parameters can be added to remote URIs as part
 of the query string (the part following <q><code>?</code></q>).
@@ -409,12 +364,12 @@ Note that parameter values must be
         <td> Example: <code>sshauth=privkey,agent</code> </td>
       </tr>
     </table>
+    <h2>
+      <a id="Remote_certificates">Generating TLS certificates</a>
+    </h2>
     <h3>
-      <a name="Remote_certificates">Generating TLS certificates</a>
+      <a id="Remote_PKI">Public Key Infrastructure set up</a>
     </h3>
-    <h4>
-      <a name="Remote_PKI">Public Key Infrastructure set up</a>
-    </h4>
     <p>
 If you are unsure how to create TLS certificates, skip to the
 next section.
@@ -458,7 +413,9 @@ next section.
         <td> Server's certificate signed by the CA.
  (<a href="#Remote_TLS_server_certificates">more info</a>) </td>
         <td> CommonName (CN) must be the hostname of the server as it
-  is seen by clients. </td>
+          is seen by clients. All hostname and IP address variants that might
+          be used to reach the server should be listed in Subject Alt Name
+          fields.</td>
       </tr>
       <tr>
         <td>
@@ -517,9 +474,9 @@ next section.
       </li>
       <li> For the root user, the global default locations will always be used.</li>
     </ul>
-    <h4>
-      <a name="Remote_TLS_background">Background to TLS certificates</a>
-    </h4>
+    <h3>
+      <a id="Remote_TLS_background">Background to TLS certificates</a>
+    </h3>
     <p>
 Libvirt supports TLS certificates for verifying the identity
 of the server and clients.  There are two distinct checks involved:
@@ -552,9 +509,9 @@ they have a valid certificate issued by the CA for their own IP
 address.  You may want to change this to make it less (or more)
 permissive, depending on your needs.
 </p>
-    <h4>
-      <a name="Remote_TLS_CA">Setting up a Certificate Authority (CA)</a>
-    </h4>
+    <h3>
+      <a id="Remote_TLS_CA">Setting up a Certificate Authority (CA)</a>
+    </h3>
     <p>
 You will need the <a href="http://www.gnu.org/software/gnutls/manual/html_node/Invoking-certtool.html">GnuTLS
 certtool program documented here</a>.  In Fedora, it is in the
@@ -610,8 +567,8 @@ X.509 certificate info:
 
 Version: 3
 Serial Number (hex): 00
-Subject: CN=Red Hat Emerging Technologies
-Issuer: CN=Red Hat Emerging Technologies
+Subject: CN=Libvirt Project
+Issuer: CN=Libvirt Project
 Signature Algorithm: RSA-SHA
 Validity:
         Not Before: Mon Jun 18 16:22:18 2007
@@ -623,19 +580,26 @@ This is all that is required to set up your CA.  Keep the CA's private
 key carefully as you will need it when you come to issue certificates
 for your clients and servers.
 </p>
-    <h4>
-      <a name="Remote_TLS_server_certificates">Issuing server certificates</a>
-    </h4>
+    <h3>
+      <a id="Remote_TLS_server_certificates">Issuing server certificates</a>
+    </h3>
     <p>
 For each server (libvirtd) you need to issue a certificate
-with the X.509 CommonName (CN) field set to the hostname
-of the server.  The CN must match the hostname which
-clients will be using to connect to the server.
+containing one or more hostnames and/or IP addresses.
+Historically the CommonName (CN) field would contain the
+hostname of the server and would match the hostname used
+in the URI that clients pass to libvirt. In most TLS implementations
+the CN field is considered legacy data. The preferential mechanism
+is to use Subject Alt Name (SAN) extension fields to validate
+against. In the future use of the CN field for validation may be
+discontinued entirely, so it is strongly recommended to
+include the SAN fields.
 </p>
     <p>
 In the example below, clients will be connecting to the
 server using a <a href="#Remote_URI_reference">URI</a> of
-<code>xen://oirase/</code>, so the CN must be "<code>oirase</code>".
+<code>qemu://compute1.libvirt.org/system</code>, so the CN
+must be "<code>compute1.libvirt.org</code>".
 </p>
     <p>
 Make a private key for the server:
@@ -645,19 +609,36 @@ certtool --generate-privkey &gt; serverkey.pem
 </pre>
     <p>
 and sign that key with the CA's private key by first
-creating a template file called <code>server.info</code>
-(only the CN field matters, which as explained above must
-be the server's hostname):
+creating a template file called <code>server.info</code>.
+The template file will contain a number of fields to define
+the server as follows:
 </p>
     <pre>
 organization = <i>Name of your organization</i>
-cn = oirase
+cn = compute1.libvirt.org
+dns_name = compute1
+dns_name = compute1.libvirt.org
+ip_address = 10.0.0.74
+ip_address = 192.168.1.24
+ip_address = 2001:cafe::74
+ip_address = fe20::24
 tls_www_server
 encryption_key
 signing_key
 </pre>
+<p>
+The 'cn' field should refer to the fully qualified public
+hostname of the server. For the SAN extension data, there
+must also be one or more 'dns_name' fields that contain all
+possible hostnames that can be reasonably used by clients
+to reach the server, both with and without domain name
+qualifiers. If clients are likely to connect to the server
+by IP address, then one or more 'ip_address' fields should
+also be added.
+</p>
     <p>
-and sign:
+Use the template file as input to a <code>certtool</code>
+command to sign the server certificate:
 </p>
     <pre>
 certtool --generate-certificate --load-privkey serverkey.pem \
@@ -681,16 +662,28 @@ X.509 certificate info:
 
 Version: 3
 Serial Number (hex): 00
-Subject: O=Red Hat Emerging Technologies,CN=oirase
-Issuer: CN=Red Hat Emerging Technologies
+Subject: O=Libvirt Project,CN=compute1.libvirt.org
+Issuer: CN=Libvirt Project
 Signature Algorithm: RSA-SHA
 Validity:
-        Not Before: Mon Jun 18 16:34:49 2007
-        Not After: Tue Jun 17 16:34:49 2008
+        Not Before: Wed Oct 04 09:09:44 UTC 2017
+        Not After: Thu Oct 04 09:09:44 UTC 2018
+Extensions:
+        Basic Constraints (critical):
+                Certificate Authority (CA): FALSE
+        Subject Alternative Name (not critical):
+                DNSname: compute1
+                DNSname: compute1.libvirt.org
+                IPAddress: 10.0.0.74
+                IPAddress: 192.168.1.24
+                IPAddress: 2001:cafe::74
+                IPAddress: fe20::24
 </pre>
     <p>
-Note the "Issuer" CN is "Red Hat Emerging Technologies" (the CA) and
-the "Subject" CN is "oirase" (the server).
+Note the "Issuer" CN is "Libvirt Project" (the CA) and
+the "Subject" CN is "compute1.libvirt.org" (the server).
+Notice that the hostname listed in the CN must also
+be duplicated as a DNSname entry
 </p>
     <p>
 Finally we have two files to install:
@@ -706,18 +699,18 @@ which can be installed on the server as
 <code>/etc/pki/libvirt/servercert.pem</code>.
 </li>
     </ul>
-    <h4>
-      <a name="Remote_TLS_client_certificates">Issuing client certificates</a>
-    </h4>
+    <h3>
+      <a id="Remote_TLS_client_certificates">Issuing client certificates</a>
+    </h3>
     <p>
 For each client (ie. any program linked with libvirt, such as
-<a href="http://virt-manager.et.redhat.com/">virt-manager</a>)
+<a href="http://virt-manager.org/">virt-manager</a>)
 you need to issue a certificate with the X.509 Distinguished Name (DN)
 set to a suitable name.  You can decide this on a company / organisation
-policy.  For example, I use:
+policy.  For example:
 </p>
     <pre>
-C=GB,ST=London,L=London,O=Red Hat,CN=<i>name_of_client</i>
+C=GB,ST=London,L=London,O=Libvirt Project,CN=<i>name_of_client</i>
 </pre>
     <p>
 The process is the same as for
@@ -738,7 +731,7 @@ Act as CA and sign the certificate.  Create client.info containing:
 country = GB
 state = London
 locality = London
-organization = Red Hat
+organization = Libvirt Project
 cn = client1
 tls_www_client
 encryption_key
@@ -759,9 +752,9 @@ cp clientcert.pem /etc/pki/libvirt/clientcert.pem
 </pre>
 </li>
     </ol>
-    <h4>
-      <a name="Remote_TLS_troubleshooting">Troubleshooting TLS certificate problems</a>
-    </h4>
+    <h3>
+      <a id="Remote_TLS_troubleshooting">Troubleshooting TLS certificate problems</a>
+    </h3>
     <dl>
       <dt> failed to verify client's certificate </dt>
       <dd>
@@ -777,9 +770,9 @@ tell you enough to diagnose the problem.
 to analyze the setup on the client or server machines, preferably as root.
 It will try to point out the possible problems and provide solutions to
 fix the set up up to a point where you have secure remote access.</p>
-    <h3>
-      <a name="Remote_libvirtd_configuration">libvirtd configuration file</a>
-    </h3>
+    <h2>
+      <a id="Remote_libvirtd_configuration">libvirtd configuration file</a>
+    </h2>
     <p>
 Libvirtd (the remote daemon) is configured from a file called
 <code>/etc/libvirt/libvirtd.conf</code>, or specified on
@@ -930,7 +923,7 @@ Blank lines and comments beginning with <code>#</code> are ignored.
   The default is that DNs are not checked.
   </p>
           <p>
-  This list may contain wildcards such as <code>"C=GB,ST=London,L=London,O=Red Hat,CN=*"</code>
+  This list may contain wildcards such as <code>"C=GB,ST=London,L=London,O=Libvirt Project,CN=*"</code>
   See the POSIX <code>fnmatch</code> function for the format
   of the wildcards.
   </p>
@@ -945,9 +938,9 @@ Blank lines and comments beginning with <code>#</code> are ignored.
         </td>
       </tr>
     </table>
-    <h3>
-      <a name="Remote_IPv6">IPv6 support</a>
-    </h3>
+    <h2>
+      <a id="Remote_IPv6">IPv6 support</a>
+    </h2>
     <p>
 The libvirtd service and libvirt remote client driver both use the
 <code>getaddrinfo()</code> functions for name resolution and are
@@ -958,9 +951,9 @@ address resolved for a service is reachable over IPv6, then an IPv6
 connection will be made, otherwise IPv4 will be used. In summary it
 should just 'do the right thing(tm)'.
 </p>
-    <h3>
-      <a name="Remote_limitations">Limitations</a>
-    </h3>
+    <h2>
+      <a id="Remote_limitations">Limitations</a>
+    </h2>
     <ul>
       <li> Fine-grained authentication: libvirt in general,
 but in particular the remote case should support more

@@ -17,22 +17,18 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Sebastian Wiedenroth <sebastian.wiedenroth@skylime.net>
  */
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <fcntl.h>
 
 #include "internal.h"
 #include "testutils.h"
-#include "storage/storage_backend_sheepdog.h"
+#define LIBVIRT_STORAGE_BACKEND_SHEEPDOG_PRIV_H_ALLOW
+#include "storage/storage_backend_sheepdog_priv.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -61,33 +57,27 @@ test_node_info_parser(const void *opaque)
 {
     const struct testNodeInfoParserData *data = opaque;
     collie_test test = data->data;
-    int ret = -1;
-    char *output = NULL;
-    virStoragePoolDefPtr pool = NULL;
+    VIR_AUTOFREE(char *) output = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) pool = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(output, test.output) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageBackendSheepdogParseNodeInfo(pool, output) !=
         test.expected_return)
-        goto cleanup;
+        return -1;
 
-    if (test.expected_return) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (test.expected_return)
+        return 0;
 
     if (pool->capacity == test.expected_capacity &&
         pool->allocation == test.expected_allocation)
-        ret = 0;
+        return 0;
 
- cleanup:
-    VIR_FREE(output);
-    virStoragePoolDefFree(pool);
-    return ret;
+    return -1;
 }
 
 static int
@@ -95,38 +85,31 @@ test_vdi_list_parser(const void *opaque)
 {
     const struct testVDIListParserData *data = opaque;
     collie_test test = data->data;
-    int ret = -1;
-    char *output = NULL;
-    virStoragePoolDefPtr pool = NULL;
-    virStorageVolDefPtr vol = NULL;
+    VIR_AUTOFREE(char *) output = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) pool = NULL;
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
-        goto cleanup;
+        return -1;
 
     if (!(vol = virStorageVolDefParseFile(pool, data->volxml, 0)))
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(output, test.output) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageBackendSheepdogParseVdiList(vol, output) !=
         test.expected_return)
-        goto cleanup;
+        return -1;
 
-    if (test.expected_return) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (test.expected_return)
+        return 0;
 
     if (vol->target.capacity == test.expected_capacity &&
         vol->target.allocation == test.expected_allocation)
-        ret = 0;
+        return 0;
 
- cleanup:
-    VIR_FREE(output);
-    virStoragePoolDefFree(pool);
-    virStorageVolDefFree(vol);
-    return ret;
+    return -1;
 }
 
 
@@ -134,8 +117,8 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *poolxml = NULL;
-    char *volxml = NULL;
+    VIR_AUTOFREE(char *) poolxml = NULL;
+    VIR_AUTOFREE(char *) volxml = NULL;
 
     collie_test node_info_tests[] = {
         {"", -1, 0, 0},
@@ -185,15 +168,15 @@ mymain(void)
                     abs_srcdir) < 0)
         goto cleanup;
 
-#define DO_TEST_NODE(collie)                                            \
-    do {                                                                \
-        struct testNodeInfoParserData data = {                          \
-            .data = collie,                                             \
-            .poolxml = poolxml,                                         \
-        };                                                              \
-        if (virTestRun("node_info_parser", test_node_info_parser,       \
-                       &data) < 0)                                      \
-            ret = -1;                                                   \
+#define DO_TEST_NODE(collie) \
+    do { \
+        struct testNodeInfoParserData data = { \
+            .data = collie, \
+            .poolxml = poolxml, \
+        }; \
+        if (virTestRun("node_info_parser", test_node_info_parser, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
 
     while (test->output != NULL) {
@@ -202,16 +185,16 @@ mymain(void)
     }
 
 
-#define DO_TEST_VDI(collie)                                             \
-    do {                                                                \
-        struct testVDIListParserData data = {                           \
-            .data = collie,                                             \
-            .poolxml = poolxml,                                         \
-            .volxml = volxml,                                           \
-        };                                                              \
-        if (virTestRun("vdi_list_parser", test_vdi_list_parser,         \
-                       &data) < 0)                                      \
-            ret = -1;                                                   \
+#define DO_TEST_VDI(collie) \
+    do { \
+        struct testVDIListParserData data = { \
+            .data = collie, \
+            .poolxml = poolxml, \
+            .volxml = volxml, \
+        }; \
+        if (virTestRun("vdi_list_parser", test_vdi_list_parser, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
 
     test = vdi_list_tests;
@@ -222,9 +205,7 @@ mymain(void)
     }
 
  cleanup:
-    VIR_FREE(poolxml);
-    VIR_FREE(volxml);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

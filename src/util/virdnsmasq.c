@@ -23,12 +23,7 @@
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <limits.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -605,8 +600,9 @@ dnsmasqReload(pid_t pid ATTRIBUTE_UNUSED)
 #ifndef WIN32
     if (kill(pid, SIGHUP) != 0) {
         virReportSystemError(errno,
-            _("Failed to make dnsmasq (PID: %d) reload config files."),
-            pid);
+                             _("Failed to make dnsmasq (PID: %d)"
+                               " reload config files."),
+                             pid);
         return -1;
     }
 #endif /* WIN32 */
@@ -620,7 +616,7 @@ dnsmasqReload(pid_t pid ATTRIBUTE_UNUSED)
  *
  */
 struct _dnsmasqCaps {
-    virObject object;
+    virObject parent;
     char *binaryPath;
     bool noRefresh;
     time_t mtime;
@@ -641,17 +637,13 @@ dnsmasqCapsDispose(void *obj)
 
 static int dnsmasqCapsOnceInit(void)
 {
-    if (!(dnsmasqCapsClass = virClassNew(virClassForObject(),
-                                         "dnsmasqCaps",
-                                         sizeof(dnsmasqCaps),
-                                         dnsmasqCapsDispose))) {
+    if (!VIR_CLASS_NEW(dnsmasqCaps, virClassForObject()))
         return -1;
-    }
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(dnsmasqCaps)
+VIR_ONCE_GLOBAL_INIT(dnsmasqCaps);
 
 static void
 dnsmasqCapsSet(dnsmasqCapsPtr caps,
@@ -889,6 +881,5 @@ dnsmasqCapsGetVersion(dnsmasqCapsPtr caps)
 bool
 dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag)
 {
-
     return caps && virBitmapIsBitSet(caps->flags, flag);
 }

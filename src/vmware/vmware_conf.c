@@ -21,24 +21,28 @@
 
 #include <config.h>
 
-#include <string.h>
 
 #include "vircommand.h"
 #include "cpu/cpu.h"
 #include "dirname.h"
 #include "viralloc.h"
-#include "nodeinfo.h"
 #include "virfile.h"
 #include "viruuid.h"
 #include "virerror.h"
 #include "vmx.h"
 #include "vmware_conf.h"
 #include "virstring.h"
+#include "virlog.h"
+
+#define VIR_FROM_THIS VIR_FROM_VMWARE
+
+VIR_LOG_INIT("vmware.vmware_conf");
 
 VIR_ENUM_IMPL(vmwareDriver, VMWARE_DRIVER_LAST,
               "player",
               "ws",
-              "fusion");
+              "fusion",
+);
 
 /* Free all memory associated with a vmware_driver structure */
 void
@@ -61,15 +65,16 @@ vmwareCapsInit(void)
 {
     virCapsPtr caps = NULL;
     virCapsGuestPtr guest = NULL;
-    virCPUDefPtr cpu = NULL;
-    virCPUDataPtr data = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
         goto error;
 
-    if (nodeCapsInitNUMA(caps) < 0)
+    if (virCapabilitiesInitNUMA(caps) < 0)
         goto error;
+
+    if (virCapabilitiesInitCaches(caps) < 0)
+        VIR_WARN("Failed to get host CPU cache info");
 
     /* i686 guests are always supported */
     if ((guest = virCapabilitiesAddGuest(caps,
@@ -82,17 +87,10 @@ vmwareCapsInit(void)
                                       VIR_DOMAIN_VIRT_VMWARE,
                                       NULL, NULL, 0, NULL) == NULL)
         goto error;
+    guest = NULL;
 
-    if (VIR_ALLOC(cpu) < 0)
+    if (!(caps->host.cpu = virCPUProbeHost(caps->host.arch)))
         goto error;
-
-    cpu->arch = caps->host.arch;
-    cpu->type = VIR_CPU_TYPE_HOST;
-
-    if (!(data = cpuNodeData(cpu->arch))
-        || cpuDecode(cpu, data, NULL, 0, NULL) < 0) {
-        goto error;
-    }
 
     /* x86_64 guests are supported if
      *  - Host arch is x86_64
@@ -100,9 +98,9 @@ vmwareCapsInit(void)
      *  - Host CPU is x86_64 with virtualization extensions
      */
     if (caps->host.arch == VIR_ARCH_X86_64 ||
-        (virCPUDataCheckFeature(data, "lm") &&
-         (virCPUDataCheckFeature(data, "vmx") ||
-          virCPUDataCheckFeature(data, "svm")))) {
+        (virCPUCheckFeature(caps->host.cpu->arch, caps->host.cpu, "lm") &&
+         (virCPUCheckFeature(caps->host.cpu->arch, caps->host.cpu, "vmx") ||
+          virCPUCheckFeature(caps->host.cpu->arch, caps->host.cpu, "svm")))) {
 
         if ((guest = virCapabilitiesAddGuest(caps,
                                              VIR_DOMAIN_OSTYPE_HVM,
@@ -114,17 +112,15 @@ vmwareCapsInit(void)
                                           VIR_DOMAIN_VIRT_VMWARE,
                                           NULL, NULL, 0, NULL) == NULL)
             goto error;
+        guest = NULL;
     }
-
- cleanup:
-    virCPUDefFree(cpu);
-    cpuDataFree(data);
 
     return caps;
 
  error:
+    virCapabilitiesFreeGuest(guest);
     virObjectUnref(caps);
-    goto cleanup;
+    return NULL;
 }
 
 int
@@ -190,10 +186,9 @@ vmwareLoadDomains(struct vmware_driver *driver)
                              VIR_DOMAIN_RUNNING_UNKNOWN);
         vm->persistent = 1;
 
-        virObjectUnlock(vm);
+        virDomainObjEndAPI(&vm);
 
         vmdef = NULL;
-        vm = NULL;
     }
 
     ret = 0;
@@ -439,7 +434,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
     if (vmwareParsePath(src, &directoryName, &fileName) < 0)
         goto cleanup;
 
-    if (!virFileHasSuffix(fileName, ".vmdk")) {
+    if (!virStringHasCaseSuffix(fileName, ".vmdk")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting source '%s' of first file-based harddisk "
                          "to be a VMDK image"), src);

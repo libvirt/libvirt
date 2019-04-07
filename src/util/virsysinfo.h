@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel Veillard <veillard@redhat.com>
  */
 
-#ifndef __VIR_SYSINFOS_H__
-# define __VIR_SYSINFOS_H__
+#ifndef LIBVIRT_VIRSYSINFO_H
+# define LIBVIRT_VIRSYSINFO_H
 
 # include "internal.h"
 # include "virutil.h"
@@ -98,6 +96,23 @@ struct _virSysinfoBaseBoardDef {
     /* XXX board type */
 };
 
+typedef struct _virSysinfoChassisDef virSysinfoChassisDef;
+typedef virSysinfoChassisDef *virSysinfoChassisDefPtr;
+struct _virSysinfoChassisDef {
+    char *manufacturer;
+    char *version;
+    char *serial;
+    char *asset;
+    char *sku;
+};
+
+typedef struct _virSysinfoOEMStringsDef virSysinfoOEMStringsDef;
+typedef virSysinfoOEMStringsDef *virSysinfoOEMStringsDefPtr;
+struct _virSysinfoOEMStringsDef {
+    size_t nvalues;
+    char **values;
+};
+
 typedef struct _virSysinfoDef virSysinfoDef;
 typedef virSysinfoDef *virSysinfoDefPtr;
 struct _virSysinfoDef {
@@ -109,11 +124,15 @@ struct _virSysinfoDef {
     size_t nbaseBoard;
     virSysinfoBaseBoardDefPtr baseBoard;
 
+    virSysinfoChassisDefPtr chassis;
+
     size_t nprocessor;
     virSysinfoProcessorDefPtr processor;
 
     size_t nmemory;
     virSysinfoMemoryDefPtr memory;
+
+    virSysinfoOEMStringsDefPtr oemStrings;
 };
 
 virSysinfoDefPtr virSysinfoRead(void);
@@ -121,6 +140,8 @@ virSysinfoDefPtr virSysinfoRead(void);
 void virSysinfoBIOSDefFree(virSysinfoBIOSDefPtr def);
 void virSysinfoSystemDefFree(virSysinfoSystemDefPtr def);
 void virSysinfoBaseBoardDefClear(virSysinfoBaseBoardDefPtr def);
+void virSysinfoChassisDefFree(virSysinfoChassisDefPtr def);
+void virSysinfoOEMStringsDefFree(virSysinfoOEMStringsDefPtr def);
 void virSysinfoDefFree(virSysinfoDefPtr def);
 
 int virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
@@ -129,6 +150,6 @@ int virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 bool virSysinfoIsEqual(virSysinfoDefPtr src,
                        virSysinfoDefPtr dst);
 
-VIR_ENUM_DECL(virSysinfo)
+VIR_ENUM_DECL(virSysinfo);
 
-#endif /* __VIR_SYSINFOS_H__ */
+#endif /* LIBVIRT_VIRSYSINFO_H */

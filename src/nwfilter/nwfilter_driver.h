@@ -20,19 +20,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
- *         Stefan Berger <stefanb@us.ibm.com>
  */
 
-#ifndef __VIR_NWFILTER_DRIVER_H__
-# define __VIR_NWFILTER_DRIVER_H__
+#ifndef LIBVIRT_NWFILTER_DRIVER_H
+# define LIBVIRT_NWFILTER_DRIVER_H
 
 # include "nwfilter_params.h"
 # include "nwfilter_conf.h"
 
 int nwfilterRegister(void);
 
-bool virNWFilterDriverIsWatchingFirewallD(void);
-
-#endif /* __VIR_NWFILTER_DRIVER_H__ */
+#endif /* LIBVIRT_NWFILTER_DRIVER_H */

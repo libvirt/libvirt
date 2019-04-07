@@ -1,0 +1,28 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-s390x \
+-name QEMUGuest1 \
+-S \
+-machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off \
+-m 256 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 9aa4b45c-b9dd-45ef-91fe-862b27b4231f \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0000 \
+-chardev pty,id=charconsole0 \
+-device virtconsole,chardev=charconsole0,id=console0 \
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.0002

@@ -16,13 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Mark McLoughlin <markmc@redhat.com>
  */
 
-#ifndef __VIR_UUID_H__
-# define __VIR_UUID_H__
+#ifndef LIBVIRT_VIRUUID_H
+# define LIBVIRT_VIRUUID_H
 
 # include "internal.h"
 
@@ -32,15 +29,15 @@
  * @conn: connection
  * @uuid: possibly null UUID array
  */
-# define VIR_UUID_DEBUG(conn, uuid)                             \
-    do {                                                        \
-        if (uuid) {                                             \
-            char _uuidstr[VIR_UUID_STRING_BUFLEN];              \
-            virUUIDFormat(uuid, _uuidstr);                      \
-            VIR_DEBUG("conn=%p, uuid=%s", conn, _uuidstr);      \
-        } else {                                                \
-            VIR_DEBUG("conn=%p, uuid=(null)", conn);            \
-        }                                                       \
+# define VIR_UUID_DEBUG(conn, uuid) \
+    do { \
+        if (uuid) { \
+            char _uuidstr[VIR_UUID_STRING_BUFLEN]; \
+            virUUIDFormat(uuid, _uuidstr); \
+            VIR_DEBUG("conn=%p, uuid=%s", conn, _uuidstr); \
+        } else { \
+            VIR_DEBUG("conn=%p, uuid=(null)", conn); \
+        } \
     } while (0)
 
 
@@ -49,7 +46,7 @@ int virGetHostUUID(unsigned char *host_uuid) ATTRIBUTE_NONNULL(1);
 
 int virUUIDIsValid(unsigned char *uuid);
 
-int virUUIDGenerate(unsigned char *uuid);
+int virUUIDGenerate(unsigned char *uuid) ATTRIBUTE_NOINLINE;
 
 int virUUIDParse(const char *uuidstr,
                  unsigned char *uuid)
@@ -58,4 +55,4 @@ int virUUIDParse(const char *uuidstr,
 const char *virUUIDFormat(const unsigned char *uuid,
                           char *uuidstr) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-#endif /* __VIR_UUID_H__ */
+#endif /* LIBVIRT_VIRUUID_H */

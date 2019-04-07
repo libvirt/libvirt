@@ -19,8 +19,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Fabian Freyer <fabian.freyer@physik.tu-berlin.de>
  */
 
 #include <config.h>
@@ -432,10 +430,8 @@ bhyveParsePCIDisk(virDomainDefPtr def,
     int idx = -1;
     virDomainDiskDefPtr disk = NULL;
 
-    if (VIR_ALLOC(disk) < 0)
+    if (!(disk = virDomainDiskDefNew(NULL)))
         goto cleanup;
-    if (VIR_ALLOC(disk->src) < 0)
-        goto error;
 
     disk->bus = bus;
     disk->device = device;
@@ -496,6 +492,7 @@ bhyveParsePCINet(virDomainDefPtr def,
                  unsigned pcislot,
                  unsigned pcibus,
                  unsigned function,
+                 const char *model,
                  const char *config)
 {
     /* -s slot,virtio-net,tapN[,mac=xx:xx:xx:xx:xx:xx] */
@@ -507,9 +504,15 @@ bhyveParsePCINet(virDomainDefPtr def,
     if (VIR_ALLOC(net) < 0)
         goto cleanup;
 
-    /* Let's just assume it is VIR_DOMAIN_NET_TYPE_ETHERNET, it could also be
-     * a bridge, but this is the most generic option. */
-    net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+    /* As we only support interface type='bridge' and cannot
+     * guess the actual bridge name from the command line,
+     * try to come up with some reasonable defaults */
+    net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+    if (VIR_STRDUP(net->data.bridge.brname, "virbr0") < 0)
+        goto error;
+
+    if (VIR_STRDUP(net->model, model) < 0)
+        goto error;
 
     net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     net->info.addr.pci.slot = pcislot;
@@ -617,7 +620,11 @@ bhyveParseBhyvePCIArg(virDomainDefPtr def,
                           nahcidisk,
                           conf);
     else if (STREQ(emulation, "virtio-net"))
-        bhyveParsePCINet(def, xmlopt, caps, pcislot, bus, function, conf);
+        bhyveParsePCINet(def, xmlopt, caps, pcislot, bus, function,
+                         "virtio", conf);
+    else if (STREQ(emulation, "e1000"))
+        bhyveParsePCINet(def, xmlopt, caps, pcislot, bus, function,
+                         "e1000", conf);
 
     VIR_FREE(emulation);
     VIR_FREE(slotdef);
@@ -709,6 +716,9 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
                                _("Cannot parse UUID '%s'"), parser->optarg);
                 goto error;
             }
+            break;
+        case 'S':
+            def->mem.locked = true;
             break;
         }
     }

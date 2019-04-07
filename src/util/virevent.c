@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -28,7 +26,6 @@
 #include "virlog.h"
 #include "virerror.h"
 
-#include <stdlib.h>
 
 VIR_LOG_INIT("util.event");
 
@@ -220,6 +217,13 @@ virEventRemoveTimeout(int timer)
  * existing event loop implementation, then the
  * virEventRegisterDefaultImpl() method can be used to setup
  * the generic libvirt implementation.
+ *
+ * Once registered, the event loop implementation cannot be
+ * changed, and must be run continuously. Note that callbacks
+ * may remain registered for a short time even after calling
+ * virConnectClose on all open connections, so it is not safe
+ * to stop running the event loop immediately after closing
+ * the connection.
  */
 void virEventRegisterImpl(virEventAddHandleFunc addHandle,
                           virEventUpdateHandleFunc updateHandle,
@@ -232,6 +236,12 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
               "addTimeout=%p updateTimeout=%p removeTimeout=%p",
               addHandle, updateHandle, removeHandle,
               addTimeout, updateTimeout, removeTimeout);
+
+    if (addHandleImpl || updateHandleImpl || removeHandleImpl ||
+        addTimeoutImpl || updateTimeoutImpl || removeTimeoutImpl) {
+        VIR_WARN("Ignoring attempt to replace registered event loop");
+        return;
+    }
 
     addHandleImpl = addHandle;
     updateHandleImpl = updateHandle;
@@ -273,14 +283,12 @@ int virEventRegisterDefaultImpl(void)
         return -1;
     }
 
-    virEventRegisterImpl(
-        virEventPollAddHandle,
-        virEventPollUpdateHandle,
-        virEventPollRemoveHandle,
-        virEventPollAddTimeout,
-        virEventPollUpdateTimeout,
-        virEventPollRemoveTimeout
-        );
+    virEventRegisterImpl(virEventPollAddHandle,
+                         virEventPollUpdateHandle,
+                         virEventPollRemoveHandle,
+                         virEventPollAddTimeout,
+                         virEventPollUpdateTimeout,
+                         virEventPollRemoveTimeout);
 
     return 0;
 }

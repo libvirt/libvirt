@@ -1,0 +1,12 @@
+<network ipv6='no'>
+  <name>private</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <bridge name='virbr2'/>
+  <mtu size='9000'/>
+  <mac address='52:54:00:17:3F:37'/>
+  <ip address="192.168.152.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.152.2" end="192.168.152.254"/>
+    </dhcp>
+  </ip>
+</network>

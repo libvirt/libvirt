@@ -749,6 +749,74 @@ LIBVIRT_2.2.0 {
 LIBVIRT_3.0.0 {
     global:
         virStorageVolGetInfoFlags;
+        virConnectSecretEventRegisterAny;
+        virConnectSecretEventDeregisterAny;
 } LIBVIRT_2.2.0;
+
+LIBVIRT_3.1.0 {
+    global:
+        virDomainSetBlockThreshold;
+        virDomainSetVcpu;
+} LIBVIRT_3.0.0;
+
+LIBVIRT_3.4.0 {
+    global:
+        virStreamRecvFlags;
+        virStreamRecvHole;
+        virStreamSendHole;
+        virStreamSparseRecvAll;
+        virStreamSparseSendAll;
+} LIBVIRT_3.1.0;
+
+LIBVIRT_3.7.0 {
+    global:
+        virDomainMigrateGetMaxDowntime;
+        virDomainManagedSaveGetXMLDesc;
+        virDomainManagedSaveDefineXML;
+} LIBVIRT_3.4.0;
+
+LIBVIRT_3.9.0 {
+    global:
+        virDomainSetLifecycleAction;
+} LIBVIRT_3.7.0;
+
+LIBVIRT_4.1.0 {
+    global:
+        virStoragePoolLookupByTargetPath;
+} LIBVIRT_3.9.0;
+
+LIBVIRT_4.4.0 {
+    global:
+        virDomainDetachDeviceAlias;
+        virConnectCompareHypervisorCPU;
+        virConnectBaselineHypervisorCPU;
+} LIBVIRT_4.1.0;
+
+LIBVIRT_4.5.0 {
+    global:
+        virGetLastErrorCode;
+        virGetLastErrorDomain;
+        virNodeGetSEVInfo;
+        virDomainGetLaunchSecurityInfo;
+        virNWFilterBindingLookupByPortDev;
+        virConnectListAllNWFilterBindings;
+        virNWFilterBindingCreateXML;
+        virNWFilterBindingGetXMLDesc;
+        virNWFilterBindingDelete;
+        virNWFilterBindingRef;
+        virNWFilterBindingFree;
+        virNWFilterBindingGetPortDev;
+        virNWFilterBindingGetFilterName;
+} LIBVIRT_4.4.0;
+
+LIBVIRT_4.10.0 {
+    global:
+        virDomainSetIOThreadParams;
+} LIBVIRT_4.5.0;
+
+LIBVIRT_5.2.0 {
+    global:
+        virConnectGetStoragePoolCapabilities;
+} LIBVIRT_4.10.0;
 
 # .... define new API here using predicted next version number ....

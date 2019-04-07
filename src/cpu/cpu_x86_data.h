@@ -16,15 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Jiri Denemark <jdenemar@redhat.com>
  */
 
-#ifndef __VIR_CPU_X86_DATA_H__
-# define __VIR_CPU_X86_DATA_H__
+#ifndef LIBVIRT_CPU_X86_DATA_H
+# define LIBVIRT_CPU_X86_DATA_H
 
-# include <stdint.h>
 
 typedef struct _virCPUx86CPUID virCPUx86CPUID;
 struct _virCPUx86CPUID {
@@ -49,14 +45,25 @@ struct _virCPUx86CPUID {
 # define VIR_CPU_x86_KVM_PV_EOI       "__kvm_pv_eoi"
 # define VIR_CPU_x86_KVM_PV_UNHALT    "__kvm_pv_unhalt"
 # define VIR_CPU_x86_KVM_CLOCKSOURCE_STABLE_BIT "__kvm_clocksource_stable"
+
+/*
+ * The following HyperV feature names suffixes must exactly match corresponding
+ * ones defined for virDomainHyperv in domain_conf.c.
+ * E.g "__kvm_runtime" -> "runtime", "__kvm_hv_spinlocks" -> "spinlocks" etc.
+*/
 # define VIR_CPU_x86_KVM_HV_RUNTIME   "__kvm_hv_runtime"
 # define VIR_CPU_x86_KVM_HV_SYNIC     "__kvm_hv_synic"
 # define VIR_CPU_x86_KVM_HV_STIMER    "__kvm_hv_stimer"
 # define VIR_CPU_x86_KVM_HV_RELAXED   "__kvm_hv_relaxed"
-# define VIR_CPU_x86_KVM_HV_SPINLOCK  "__kvm_hv_spinlock"
+# define VIR_CPU_x86_KVM_HV_SPINLOCKS  "__kvm_hv_spinlocks"
 # define VIR_CPU_x86_KVM_HV_VAPIC     "__kvm_hv_vapic"
 # define VIR_CPU_x86_KVM_HV_VPINDEX   "__kvm_hv_vpindex"
 # define VIR_CPU_x86_KVM_HV_RESET     "__kvm_hv_reset"
+# define VIR_CPU_x86_KVM_HV_FREQUENCIES "__kvm_hv_frequencies"
+# define VIR_CPU_x86_KVM_HV_REENLIGHTENMENT "__kvm_hv_reenlightenment"
+# define VIR_CPU_x86_KVM_HV_TLBFLUSH  "__kvm_hv_tlbflush"
+# define VIR_CPU_x86_KVM_HV_IPI       "__kvm_hv_ipi"
+# define VIR_CPU_x86_KVM_HV_EVMCS     "__kvm_hv_evmcs"
 
 
 # define VIR_CPU_X86_DATA_INIT { 0 }
@@ -67,4 +74,4 @@ struct _virCPUx86Data {
     virCPUx86CPUID *data;
 };
 
-#endif /* __VIR_CPU_X86_DATA_H__ */
+#endif /* LIBVIRT_CPU_X86_DATA_H */

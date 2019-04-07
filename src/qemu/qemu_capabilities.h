@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __QEMU_CAPABILITIES_H__
-# define __QEMU_CAPABILITIES_H__
+#ifndef LIBVIRT_QEMU_CAPABILITIES_H
+# define LIBVIRT_QEMU_CAPABILITIES_H
 
 # include "virobject.h"
 # include "capabilities.h"
@@ -30,6 +28,7 @@
 # include "qemu_monitor.h"
 # include "domain_capabilities.h"
 # include "virfirmware.h"
+# include "virfilecache.h"
 
 /*
  * Internal flags to keep track of qemu command line capabilities
@@ -45,13 +44,13 @@
  * longer be used in code. Periodically we can then purge all the
  * X_ flags and re-group what's left.
  */
-typedef enum {
+typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 0 */
     X_QEMU_CAPS_KQEMU, /* Whether KQEMU is compiled in */
     X_QEMU_CAPS_VNC_COLON, /* VNC takes or address + display */
     X_QEMU_CAPS_NO_REBOOT, /* Is the -no-reboot flag available */
     X_QEMU_CAPS_DRIVE, /* Is the new -drive arg available */
-    QEMU_CAPS_DRIVE_BOOT, /* Does -drive support boot=on */
+    X_QEMU_CAPS_DRIVE_BOOT, /* Does -drive support boot=on */
 
     /* 5 */
     X_QEMU_CAPS_NAME, /* Is the -name flag available */
@@ -64,81 +63,81 @@ typedef enum {
     X_QEMU_CAPS_MIGRATE_QEMU_TCP, /* have qemu tcp migration */
     X_QEMU_CAPS_MIGRATE_QEMU_EXEC, /* have qemu exec migration */
     X_QEMU_CAPS_DRIVE_CACHE_V2, /* cache= flag wanting new v2 values */
-    QEMU_CAPS_KVM, /* Whether KVM is enabled by default */
+    QEMU_CAPS_KVM, /* Whether KVM is usable / was used during probing */
     X_QEMU_CAPS_DRIVE_FORMAT, /* Is -drive format= avail */
 
     /* 15 */
     X_QEMU_CAPS_VGA, /* Is -vga avail */
     X_QEMU_CAPS_0_10, /* features added in qemu-0.10.0 or later */
     X_QEMU_CAPS_PCIDEVICE, /* PCI device assignment supported */
-    QEMU_CAPS_MEM_PATH, /* mmap'ped guest backing supported */
-    QEMU_CAPS_DRIVE_SERIAL, /* -driver serial=  available */
+    X_QEMU_CAPS_MEM_PATH, /* mmap'ped guest backing supported */
+    X_QEMU_CAPS_DRIVE_SERIAL, /* -driver serial=  available */
 
     /* 20 */
     X_QEMU_CAPS_XEN_DOMID, /* -xen-domid */
     X_QEMU_CAPS_MIGRATE_QEMU_UNIX, /* qemu migration via unix sockets */
-    QEMU_CAPS_CHARDEV, /* Is the new -chardev arg available */
-    QEMU_CAPS_ENABLE_KVM, /* -enable-kvm flag */
-    QEMU_CAPS_MONITOR_JSON, /* JSON mode for monitor */
+    X_QEMU_CAPS_CHARDEV, /* Is the new -chardev arg available */
+    X_QEMU_CAPS_ENABLE_KVM, /* -enable-kvm flag */
+    X_QEMU_CAPS_MONITOR_JSON, /* JSON mode for monitor */
 
     /* 25 */
     X_QEMU_CAPS_BALLOON, /* -balloon available */
     X_QEMU_CAPS_DEVICE, /* Is the -device arg available */
-    QEMU_CAPS_SDL, /* Is the new -sdl arg available */
+    X_QEMU_CAPS_SDL, /* Is the new -sdl arg available */
     X_QEMU_CAPS_SMP_TOPOLOGY, /* -smp has sockets/cores/threads */
-    QEMU_CAPS_NETDEV, /* -netdev flag & netdev_add/remove */
+    X_QEMU_CAPS_NETDEV, /* -netdev flag & netdev_add/remove */
 
     /* 30 */
-    QEMU_CAPS_RTC, /* The -rtc flag for clock options */
-    QEMU_CAPS_VHOST_NET, /* vhost-net support available */
-    QEMU_CAPS_RTC_TD_HACK, /* -rtc-td-hack available */
+    X_QEMU_CAPS_RTC, /* The -rtc flag for clock options */
+    X_QEMU_CAPS_VHOST_NET, /* vhost-net support available */
+    X_QEMU_CAPS_RTC_TD_HACK, /* -rtc-td-hack available */
     QEMU_CAPS_NO_HPET, /* -no-hpet flag is supported */
-    QEMU_CAPS_NO_KVM_PIT, /* -no-kvm-pit-reinjection supported */
+    X_QEMU_CAPS_NO_KVM_PIT, /* -no-kvm-pit-reinjection supported */
 
     /* 35 */
-    QEMU_CAPS_TDF, /* -tdf flag (user-mode pit catchup) */
-    QEMU_CAPS_PCI_CONFIGFD, /* pci-assign.configfd */
-    QEMU_CAPS_NODEFCONFIG, /* -nodefconfig */
-    QEMU_CAPS_BOOT_MENU, /* -boot menu=on support */
+    X_QEMU_CAPS_TDF, /* -tdf flag (user-mode pit catchup) */
+    X_QEMU_CAPS_PCI_CONFIGFD, /* pci-assign.configfd */
+    X_QEMU_CAPS_NODEFCONFIG, /* -nodefconfig */
+    X_QEMU_CAPS_BOOT_MENU, /* -boot menu=on support */
     X_QEMU_CAPS_ENABLE_KQEMU, /* -enable-kqemu flag */
 
     /* 40 */
-    QEMU_CAPS_FSDEV, /* -fstype filesystem passthrough */
-    QEMU_CAPS_NESTING, /* -enable-nesting (SVM/VMX) */
-    QEMU_CAPS_NAME_PROCESS, /* Is -name process= available */
+    X_QEMU_CAPS_FSDEV, /* -fstype filesystem passthrough */
+    X_QEMU_CAPS_NESTING, /* -enable-nesting (SVM/VMX) */
+    X_QEMU_CAPS_NAME_PROCESS, /* Is -name process= available */
     X_QEMU_CAPS_DRIVE_READONLY, /* -drive readonly=on|off */
-    QEMU_CAPS_SMBIOS_TYPE, /* Is -smbios type= available */
+    X_QEMU_CAPS_SMBIOS_TYPE, /* Is -smbios type= available */
 
     /* 45 */
     X_QEMU_CAPS_VGA_QXL, /* The 'qxl' arg for '-vga' */
     QEMU_CAPS_SPICE, /* Is -spice avail */
-    QEMU_CAPS_VGA_NONE, /* The 'none' arg for '-vga' */
+    X_QEMU_CAPS_VGA_NONE, /* The 'none' arg for '-vga' */
     X_QEMU_CAPS_MIGRATE_QEMU_FD, /* -incoming fd:n */
-    QEMU_CAPS_BOOTINDEX, /* -device bootindex property */
+    X_QEMU_CAPS_BOOTINDEX, /* -device bootindex property */
 
     /* 50 */
     QEMU_CAPS_HDA_DUPLEX, /* -device hda-duplex */
-    QEMU_CAPS_DRIVE_AIO, /* -drive aio= supported */
-    QEMU_CAPS_PCI_MULTIBUS, /* bus=pci.0 vs bus=pci */
-    QEMU_CAPS_PCI_BOOTINDEX, /* pci-assign.bootindex */
+    X_QEMU_CAPS_DRIVE_AIO, /* -drive aio= supported */
+    X_QEMU_CAPS_PCI_MULTIBUS, /* bus=pci.0 vs bus=pci */
+    X_QEMU_CAPS_PCI_BOOTINDEX, /* pci-assign.bootindex */
     QEMU_CAPS_CCID_EMULATED, /* -device ccid-card-emulated */
 
     /* 55 */
     QEMU_CAPS_CCID_PASSTHRU, /* -device ccid-card-passthru */
-    QEMU_CAPS_CHARDEV_SPICEVMC, /* newer -chardev spicevmc */
-    QEMU_CAPS_DEVICE_SPICEVMC, /* older -device spicevmc*/
+    X_QEMU_CAPS_CHARDEV_SPICEVMC, /* newer -chardev spicevmc */
+    X_QEMU_CAPS_DEVICE_SPICEVMC, /* older -device spicevmc*/
     QEMU_CAPS_VIRTIO_TX_ALG, /* -device virtio-net-pci,tx=string */
     X_QEMU_CAPS_DEVICE_QXL_VGA, /* primary qxl device named qxl-vga? */
 
     /* 60 */
-    QEMU_CAPS_PCI_MULTIFUNCTION, /* -device multifunction=on|off */
+    X_QEMU_CAPS_PCI_MULTIFUNCTION, /* -device multifunction=on|off */
     QEMU_CAPS_VIRTIO_IOEVENTFD, /* virtio-{net|blk}-pci.ioeventfd=on */
     QEMU_CAPS_SGA, /* Serial Graphics Adapter */
     QEMU_CAPS_VIRTIO_BLK_EVENT_IDX, /* virtio-blk-pci.event_idx */
     QEMU_CAPS_VIRTIO_NET_EVENT_IDX, /* virtio-net-pci.event_idx */
 
     /* 65 */
-    QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC, /* Is cache=directsync supported? */
+    X_QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC, /* Is cache=directsync supported? */
     QEMU_CAPS_PIIX3_USB_UHCI, /* -device piix3-usb-uhci */
     QEMU_CAPS_PIIX4_USB_UHCI, /* -device piix4-usb-uhci */
     QEMU_CAPS_USB_EHCI, /* -device usb-ehci */
@@ -149,45 +148,45 @@ typedef enum {
     QEMU_CAPS_PCI_OHCI, /* -device pci-ohci */
     QEMU_CAPS_USB_REDIR, /* -device usb-redir */
     QEMU_CAPS_USB_HUB, /* -device usb-hub */
-    QEMU_CAPS_NO_SHUTDOWN, /* usable -no-shutdown */
+    X_QEMU_CAPS_NO_SHUTDOWN, /* usable -no-shutdown */
 
     /* 75 */
-    QEMU_CAPS_DRIVE_CACHE_UNSAFE, /* Is cache=unsafe supported? */
+    X_QEMU_CAPS_DRIVE_CACHE_UNSAFE, /* Is cache=unsafe supported? */
     X_QEMU_CAPS_PCI_ROMBAR, /* -device rombar=0|1 */
     QEMU_CAPS_ICH9_AHCI, /* -device ich9-ahci */
     QEMU_CAPS_NO_ACPI, /* -no-acpi */
-    QEMU_CAPS_FSDEV_READONLY, /* -fsdev readonly supported */
+    X_QEMU_CAPS_FSDEV_READONLY, /* -fsdev readonly supported */
 
     /* 80 */
     QEMU_CAPS_VIRTIO_BLK_SCSI, /* virtio-blk-pci.scsi */
     X_QEMU_CAPS_VIRTIO_BLK_SG_IO, /* SG_IO commands */
-    QEMU_CAPS_DRIVE_COPY_ON_READ, /* -drive copy-on-read */
+    X_QEMU_CAPS_DRIVE_COPY_ON_READ, /* -drive copy-on-read */
     X_QEMU_CAPS_CPU_HOST, /* support for -cpu host */
-    QEMU_CAPS_FSDEV_WRITEOUT, /* -fsdev writeout supported */
+    X_QEMU_CAPS_FSDEV_WRITEOUT, /* -fsdev writeout supported */
 
     /* 85 */
-    QEMU_CAPS_DRIVE_IOTUNE, /* -drive bps= and friends */
-    QEMU_CAPS_WAKEUP, /* system_wakeup monitor command */
+    X_QEMU_CAPS_DRIVE_IOTUNE, /* -drive bps= and friends */
+    X_QEMU_CAPS_WAKEUP, /* system_wakeup monitor command */
     QEMU_CAPS_SCSI_DISK_CHANNEL, /* Is scsi-disk.channel available? */
     QEMU_CAPS_SCSI_BLOCK, /* -device scsi-block */
-    QEMU_CAPS_TRANSACTION, /* transaction monitor command */
+    X_QEMU_CAPS_TRANSACTION, /* transaction monitor command */
 
     /* 90 */
-    QEMU_CAPS_BLOCKJOB_SYNC, /* old block_job_cancel, block_stream */
-    QEMU_CAPS_BLOCKJOB_ASYNC, /* new block-job-cancel, block-stream */
-    QEMU_CAPS_SCSI_CD, /* -device scsi-cd */
-    QEMU_CAPS_IDE_CD, /* -device ide-cd */
-    QEMU_CAPS_NO_USER_CONFIG, /* -no-user-config */
+    X_QEMU_CAPS_BLOCKJOB_SYNC, /* old block_job_cancel, block_stream */
+    X_QEMU_CAPS_BLOCKJOB_ASYNC, /* new block-job-cancel, block-stream */
+    X_QEMU_CAPS_SCSI_CD, /* -device scsi-cd */
+    X_QEMU_CAPS_IDE_CD, /* -device ide-cd */
+    X_QEMU_CAPS_NO_USER_CONFIG, /* -no-user-config */
 
     /* 95 */
     QEMU_CAPS_HDA_MICRO, /* -device hda-micro */
     QEMU_CAPS_DUMP_GUEST_MEMORY, /* dump-guest-memory command */
     QEMU_CAPS_NEC_USB_XHCI, /* -device nec-usb-xhci */
     QEMU_CAPS_VIRTIO_S390, /* -device virtio-*-s390 */
-    QEMU_CAPS_BALLOON_EVENT, /* Async event for balloon changes */
+    X_QEMU_CAPS_BALLOON_EVENT, /* Async event for balloon changes */
 
     /* 100 */
-    QEMU_CAPS_NETDEV_BRIDGE, /* bridge helper support */
+    X_QEMU_CAPS_NETDEV_BRIDGE, /* bridge helper support */
     QEMU_CAPS_SCSI_LSI, /* -device lsi */
     QEMU_CAPS_VIRTIO_SCSI, /* -device virtio-scsi-* */
     QEMU_CAPS_BLOCKIO, /* -device ...logical_block_size & co */
@@ -202,16 +201,16 @@ typedef enum {
 
     /* 110 */
     QEMU_CAPS_REBOOT_TIMEOUT, /* -boot reboot-timeout */
-    QEMU_CAPS_DUMP_GUEST_CORE, /* dump-guest-core-parameter */
-    QEMU_CAPS_SEAMLESS_MIGRATION, /* seamless-migration for SPICE */
-    QEMU_CAPS_BLOCK_COMMIT, /* block-commit */
+    X_QEMU_CAPS_DUMP_GUEST_CORE, /* dump-guest-core-parameter */
+    X_QEMU_CAPS_SEAMLESS_MIGRATION, /* seamless-migration for SPICE */
+    X_QEMU_CAPS_BLOCK_COMMIT, /* block-commit */
     QEMU_CAPS_VNC, /* Is -vnc available? */
 
     /* 115 */
-    QEMU_CAPS_DRIVE_MIRROR, /* drive-mirror monitor command */
-    QEMU_CAPS_USB_REDIR_BOOTINDEX, /* usb-redir.bootindex */
-    QEMU_CAPS_USB_HOST_BOOTINDEX, /* usb-host.bootindex */
-    QEMU_CAPS_DISK_SNAPSHOT, /* blockdev-snapshot-sync command */
+    X_QEMU_CAPS_DRIVE_MIRROR, /* drive-mirror monitor command */
+    X_QEMU_CAPS_USB_REDIR_BOOTINDEX, /* usb-redir.bootindex */
+    X_QEMU_CAPS_USB_HOST_BOOTINDEX, /* usb-host.bootindex */
+    X_QEMU_CAPS_DISK_SNAPSHOT, /* blockdev-snapshot-sync command */
     QEMU_CAPS_DEVICE_QXL, /* -device qxl */
 
     /* 120 */
@@ -219,12 +218,12 @@ typedef enum {
     QEMU_CAPS_DEVICE_CIRRUS_VGA, /* -device cirrus-vga */
     QEMU_CAPS_DEVICE_VMWARE_SVGA, /* -device vmware-svga */
     QEMU_CAPS_DEVICE_VIDEO_PRIMARY, /* -device safe for primary video device */
-    QEMU_CAPS_SCLP_S390, /* -device sclp* */
+    QEMU_CAPS_DEVICE_SCLPCONSOLE, /* -device sclpconsole */
 
     /* 125 */
     QEMU_CAPS_DEVICE_USB_SERIAL, /* -device usb-serial */
-    QEMU_CAPS_DEVICE_USB_NET, /* -device usb-net */
-    QEMU_CAPS_ADD_FD, /* -add-fd */
+    X_QEMU_CAPS_DEVICE_USB_NET, /* -device usb-net */
+    X_QEMU_CAPS_ADD_FD, /* -add-fd */
     QEMU_CAPS_NBD_SERVER, /* nbd-server-start QMP command */
     QEMU_CAPS_DEVICE_VIRTIO_RNG, /* virtio-rng device */
 
@@ -232,13 +231,13 @@ typedef enum {
     QEMU_CAPS_OBJECT_RNG_RANDOM, /* the rng-random backend for virtio rng */
     QEMU_CAPS_OBJECT_RNG_EGD, /* EGD protocol daemon for rng */
     QEMU_CAPS_VIRTIO_CCW, /* -device virtio-*-ccw */
-    QEMU_CAPS_DTB, /* -dtb file */
+    X_QEMU_CAPS_DTB, /* -dtb file */
     QEMU_CAPS_SCSI_MEGASAS, /* -device megasas */
 
     /* 135 */
-    QEMU_CAPS_IPV6_MIGRATION, /* -incoming [::] */
-    QEMU_CAPS_MACHINE_OPT, /* -machine xxxx*/
-    QEMU_CAPS_MACHINE_USB_OPT, /* -machine xxx,usb=on/off */
+    X_QEMU_CAPS_IPV6_MIGRATION, /* -incoming [::] */
+    X_QEMU_CAPS_MACHINE_OPT, /* -machine xxxx*/
+    X_QEMU_CAPS_MACHINE_USB_OPT, /* -machine xxx,usb=on/off */
     QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, /* -tpmdev passthrough */
     QEMU_CAPS_DEVICE_TPM_TIS, /* -device tpm_tis */
 
@@ -246,19 +245,19 @@ typedef enum {
     QEMU_CAPS_DEVICE_NVRAM, /* -global spapr-nvram.reg=xxxx */
     QEMU_CAPS_DEVICE_PCI_BRIDGE, /* -device pci-bridge */
     QEMU_CAPS_DEVICE_VFIO_PCI, /* -device vfio-pci */
-    QEMU_CAPS_VFIO_PCI_BOOTINDEX, /* bootindex param for vfio-pci device */
-    QEMU_CAPS_DEVICE_SCSI_GENERIC, /* -device scsi-generic */
+    X_QEMU_CAPS_VFIO_PCI_BOOTINDEX, /* bootindex param for vfio-pci device */
+    X_QEMU_CAPS_DEVICE_SCSI_GENERIC, /* -device scsi-generic */
 
     /* 145 */
-    QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX, /* -device scsi-generic.bootindex */
+    X_QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX, /* -device scsi-generic.bootindex */
     QEMU_CAPS_MEM_MERGE, /* -machine mem-merge */
-    QEMU_CAPS_VNC_WEBSOCKET, /* -vnc x:y,websocket */
+    X_QEMU_CAPS_VNC_WEBSOCKET, /* -vnc x:y,websocket */
     QEMU_CAPS_DRIVE_DISCARD, /* -drive discard=off(ignore)|on(unmap) */
     QEMU_CAPS_REALTIME_MLOCK, /* -realtime mlock=on|off */
 
     /* 150 */
-    QEMU_CAPS_VNC_SHARE_POLICY, /* set display sharing policy */
-    QEMU_CAPS_DEVICE_DEL_EVENT, /* DEVICE_DELETED event */
+    X_QEMU_CAPS_VNC_SHARE_POLICY, /* set display sharing policy */
+    X_QEMU_CAPS_DEVICE_DEL_EVENT, /* DEVICE_DELETED event */
     QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, /* -device i82801b11-bridge */
     QEMU_CAPS_I440FX_PCI_HOLE64_SIZE, /* i440FX-pcihost.pci-hole64-size */
     QEMU_CAPS_Q35_PCI_HOLE64_SIZE, /* q35-pcihost.pci-hole64-size */
@@ -275,11 +274,11 @@ typedef enum {
     QEMU_CAPS_DEVICE_PANIC, /* -device pvpanic */
     QEMU_CAPS_ENABLE_FIPS, /* -enable-fips */
     QEMU_CAPS_SPICE_FILE_XFER_DISABLE, /* -spice disable-agent-file-xfer */
-    QEMU_CAPS_CHARDEV_SPICEPORT, /* -chardev spiceport */
+    X_QEMU_CAPS_CHARDEV_SPICEPORT, /* -chardev spiceport */
 
     /* 165 */
     QEMU_CAPS_DEVICE_USB_KBD, /* -device usb-kbd */
-    QEMU_CAPS_HOST_PCI_MULTIDOMAIN, /* support domain > 0 in host pci address */
+    X_QEMU_CAPS_HOST_PCI_MULTIDOMAIN, /* support domain > 0 in host pci address */
     QEMU_CAPS_MSG_TIMESTAMP, /* -msg timestamp */
     QEMU_CAPS_ACTIVE_COMMIT, /* block-commit works without 'top' */
     QEMU_CAPS_CHANGE_BACKING_FILE, /* change name of backing file in metadata */
@@ -357,7 +356,7 @@ typedef enum {
 
     /* 220 */
     QEMU_CAPS_DEVICE_PXB_PCIE, /* -device pxb-pcie */
-    QEMU_CAPS_DEVICE_TRAY_MOVED, /* DEVICE_TRAY_MOVED event */
+    X_QEMU_CAPS_DEVICE_TRAY_MOVED, /* DEVICE_TRAY_MOVED event */
     QEMU_CAPS_NEC_USB_XHCI_PORTS, /* -device nec-usb-xhci.p3 ports setting */
     QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, /* virtio-scsi-{pci,ccw}.iothread */
     QEMU_CAPS_NAME_GUEST, /* -name guest= */
@@ -370,7 +369,7 @@ typedef enum {
     QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */
 
     /* 230 */
-    QEMU_CAPS_DISPLAY, /* -display */
+    X_QEMU_CAPS_DISPLAY, /* -display */
     QEMU_CAPS_DEVICE_INTEL_IOMMU, /* -device intel-iommu */
     QEMU_CAPS_MACHINE_SMM_OPT, /* -machine xxx,smm=on/off/auto */
     QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, /* virtio-*pci.disable-legacy */
@@ -390,14 +389,129 @@ typedef enum {
     QEMU_CAPS_DEVICE_VHOST_SCSI, /* -device vhost-scsi-{ccw,pci} */
     QEMU_CAPS_DRIVE_IOTUNE_GROUP, /* -drive throttling.group=<name> */
 
+    /* 245 */
+    QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION, /* qmp query-cpu-model-expansion */
+    QEMU_CAPS_VIRTIO_NET_HOST_MTU, /* virtio-net-*.host_mtu */
+    QEMU_CAPS_SPICE_RENDERNODE, /* -spice rendernode */
+    QEMU_CAPS_DEVICE_NVDIMM, /* -device nvdimm */
+    QEMU_CAPS_DEVICE_PCIE_ROOT_PORT, /* -device pcie-root-port */
+
+    /* 250 */
+    QEMU_CAPS_QUERY_CPU_DEFINITIONS, /* qmp query-cpu-definitions */
+    QEMU_CAPS_BLOCK_WRITE_THRESHOLD, /* BLOCK_WRITE_THRESHOLD event */
+    QEMU_CAPS_QUERY_NAMED_BLOCK_NODES, /* qmp query-named-block-nodes */
+    QEMU_CAPS_CPU_CACHE, /* -cpu supports host-cache-info and l3-cache properties */
+    QEMU_CAPS_DEVICE_QEMU_XHCI, /* -device qemu-xhci */
+
+    /* 255 */
+    QEMU_CAPS_MACHINE_KERNEL_IRQCHIP, /* -machine kernel_irqchip */
+    QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT, /* -machine kernel_irqchip=split */
+    QEMU_CAPS_INTEL_IOMMU_INTREMAP, /* intel-iommu.intremap */
+    QEMU_CAPS_INTEL_IOMMU_CACHING_MODE, /* intel-iommu.caching-mode */
+    QEMU_CAPS_INTEL_IOMMU_EIM, /* intel-iommu.eim */
+
+    /* 260 */
+    QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB, /* intel-iommu.device-iotlb */
+    QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, /* virtio-*-pci.iommu_platform */
+    QEMU_CAPS_VIRTIO_PCI_ATS, /* virtio-*-pci.ats */
+    QEMU_CAPS_LOADPARM, /* -machine loadparm */
+    QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE, /* -device spapr-pci-host-bridge */
+
+    /* 265 */
+    QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE, /* spapr-pci-host-bridge.numa_node= */
+    QEMU_CAPS_VNC_MULTI_SERVERS, /* -vnc vnc=unix:/path */
+    QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, /* virtio-net-*.tx_queue_size */
+    QEMU_CAPS_CHARDEV_RECONNECT, /* -chardev reconnect */
+    QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS, /* -device virtio-(vga|gpu-*),max-outputs= */
+
+    /* 270 */
+    QEMU_CAPS_VXHS, /* -drive file.driver=vxhs via query-qmp-schema */
+    QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, /* virtio-blk-*.num-queues */
+    QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT, /* -machine pseries,resize-hpt */
+    QEMU_CAPS_DEVICE_VMCOREINFO, /* -device vmcoreinfo */
+    QEMU_CAPS_DEVICE_SPAPR_VTY, /* -device spapr-vty */
+
+    /* 275 */
+    QEMU_CAPS_DEVICE_SCLPLMCONSOLE, /* -device sclplmconsole */
+    QEMU_CAPS_NUMA_DIST, /* -numa dist */
+    QEMU_CAPS_DISK_SHARE_RW, /* share-rw=on for concurrent disk access */
+    QEMU_CAPS_ISCSI_PASSWORD_SECRET, /* -drive file.driver=iscsi,...,password-secret= */
+    QEMU_CAPS_DEVICE_ISA_SERIAL, /* -device isa-serial */
+
+    /* 280 */
+    QEMU_CAPS_DEVICE_PL011, /* -device pl011 (not user-instantiable) */
+    QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT, /* -machine pseries,max-cpu-compat= */
+    QEMU_CAPS_DUMP_COMPLETED, /* DUMP_COMPLETED event */
+    QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW, /* -device virtio-gpu-ccw */
+    QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW, /* -device virtio-keyboard-ccw */
+
+    /* 285 */
+    QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW, /* -device virtio-mouse-ccw */
+    QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW, /* -device virtio-tablet-ccw */
+    QEMU_CAPS_QCOW2_LUKS, /* qcow2 format support LUKS encryption */
+    QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE, /* -device pcie-pci-bridge */
+    QEMU_CAPS_SECCOMP_BLACKLIST, /* -sandbox.elevateprivileges */
+
+    /* 290 */
+    QEMU_CAPS_QUERY_CPUS_FAST, /* query-cpus-fast command */
+    QEMU_CAPS_DISK_WRITE_CACHE, /* qemu block frontends support write-cache param */
+    QEMU_CAPS_NBD_TLS, /* NBD server supports TLS transport */
+    QEMU_CAPS_DEVICE_TPM_CRB, /* -device tpm-crb */
+    QEMU_CAPS_PR_MANAGER_HELPER, /* -object pr-manager-helper */
+
+    /* 295 */
+    QEMU_CAPS_QOM_LIST_PROPERTIES, /* qom-list-properties monitor command */
+    QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD, /* -object memory-backend-file,discard-data */
+    QEMU_CAPS_CCW, /* -device virtual-css-bridge */
+    QEMU_CAPS_CCW_CSSID_UNRESTRICTED, /* virtual-css-bridge.cssid-unrestricted= */
+    QEMU_CAPS_DEVICE_VFIO_CCW, /* -device vfio-ccw */
+
+    /* 300 */
+    QEMU_CAPS_SDL_GL, /* -sdl gl */
+    QEMU_CAPS_SCREENDUMP_DEVICE, /* screendump command accepts device & head */
+    QEMU_CAPS_HDA_OUTPUT, /* -device hda-output */
+    QEMU_CAPS_BLOCKDEV_DEL, /* blockdev-del is supported */
+    QEMU_CAPS_DEVICE_VMGENID, /* -device vmgenid */
+
+    /* 305 */
+    QEMU_CAPS_DEVICE_VHOST_VSOCK, /* -device vhost-vsock-* */
+    QEMU_CAPS_CHARDEV_FD_PASS, /* Passing pre-opened FDs for chardevs */
+    QEMU_CAPS_DEVICE_TPM_EMULATOR, /* -tpmdev emulator */
+    QEMU_CAPS_DEVICE_MCH, /* Northbridge in q35 machine types */
+    QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES, /* -global mch.extended-tseg-mbytes */
+
+    /* 310 */
+    QEMU_CAPS_SEV_GUEST, /* -object sev-guest,... */
+    QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE, /* -machine pseries.cap-hpt-max-page-size */
+    QEMU_CAPS_MACHINE_PSERIES_CAP_HTM, /* -machine pseries.cap-htm */
+    QEMU_CAPS_USB_STORAGE_WERROR, /* -device usb-storage,werror=..,rerror=.. */
+    QEMU_CAPS_EGL_HEADLESS, /* -display egl-headless */
+
+    /* 315 */
+    QEMU_CAPS_VFIO_PCI_DISPLAY, /* -device vfio-pci.display */
+    QEMU_CAPS_BLOCKDEV, /* -blockdev and blockdev-add are supported */
+    QEMU_CAPS_DEVICE_VFIO_AP, /* -device vfio-ap */
+    QEMU_CAPS_DEVICE_ZPCI, /* -device zpci */
+    QEMU_CAPS_OBJECT_MEMORY_MEMFD, /* -object memory-backend-memfd */
+
+    /* 320 */
+    QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB, /* -object memory-backend-memfd.hugetlb */
+    QEMU_CAPS_IOTHREAD_POLLING, /* -object iothread.poll-max-ns */
+    QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV, /* -machine pseries.cap-nested-hv */
+    QEMU_CAPS_EGL_HEADLESS_RENDERNODE, /* -display egl-headless,rendernode= */
+    QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN, /* -object memory-backend-file,align= */
+
+    /* 325 */
+    QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM, /* -object memory-backend-file,pmem= */
+    QEMU_CAPS_DEVICE_NVDIMM_UNARMED, /* -device nvdimm,unarmed= */
+    QEMU_CAPS_SCSI_DISK_DEVICE_ID, /* 'device_id' property of scsi disk */
+    QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL, /* virtio *-pci-{non-}transitional devices */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
 typedef struct _virQEMUCaps virQEMUCaps;
 typedef virQEMUCaps *virQEMUCapsPtr;
-
-typedef struct _virQEMUCapsCache virQEMUCapsCache;
-typedef virQEMUCapsCache *virQEMUCapsCachePtr;
 
 virQEMUCapsPtr virQEMUCapsNew(void);
 
@@ -413,13 +527,10 @@ bool virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
                     virQEMUCapsFlags flag);
 
 bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
-                               virDomainDefPtr def);
+                               const virDomainDef *def);
 
 bool virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
                                const virDomainDef *def);
-
-bool virQEMUCapsSupportsSMM(virQEMUCapsPtr qemuCaps,
-                            const virDomainDef *def);
 
 char *virQEMUCapsFlagsString(virQEMUCapsPtr qemuCaps);
 
@@ -433,17 +544,36 @@ int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  const char **name,
                                  size_t count,
                                  virDomainCapsCPUUsable usable);
-int virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                                 virDomainVirtType type,
-                                 char ***names,
-                                 size_t *count);
-virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps);
+virDomainCapsCPUModelsPtr virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                                       virDomainVirtType type);
+virDomainCapsCPUModelsPtr virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon);
+
+typedef enum {
+    /* Host CPU definition reported in domain capabilities. */
+    VIR_QEMU_CAPS_HOST_CPU_REPORTED,
+    /* Migratable host CPU definition used for updating guest CPU. */
+    VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE,
+    /* CPU definition with features detected by libvirt using virCPUGetHost
+     * combined with features reported by QEMU. This is used for backward
+     * compatible comparison between a guest CPU and a host CPU. */
+    VIR_QEMU_CAPS_HOST_CPU_FULL,
+} virQEMUCapsHostCPUType;
+
+virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
+                                     virDomainVirtType type,
+                                     virQEMUCapsHostCPUType cpuType);
+int virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
+                              virDomainVirtType virtType,
+                              bool migratable,
+                              char ***features);
+
 bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                    virCapsPtr caps,
                                    virDomainVirtType type,
                                    virCPUMode mode);
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
                                            const char *name);
+const char *virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps);
 int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
                                  const char *name);
 bool virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,
@@ -452,57 +582,37 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
                                    size_t *nmachines,
                                    virCapsGuestMachinePtr **machines);
 
-bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
-                        time_t ctime,
-                        uid_t runUid,
-                        gid_t runGid);
-
 void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
                                     const char *machineType);
 
-/* Only for use by test suite */
-void virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
-                                   virGICCapability *capabilities,
-                                   size_t ncapabilities);
-
-virQEMUCapsCachePtr virQEMUCapsCacheNew(const char *libDir,
-                                        const char *cacheDir,
-                                        uid_t uid, gid_t gid);
-virQEMUCapsPtr virQEMUCapsCacheLookup(virCapsPtr caps,
-                                      virQEMUCapsCachePtr cache,
+virFileCachePtr virQEMUCapsCacheNew(const char *libDir,
+                                    const char *cacheDir,
+                                    uid_t uid,
+                                    gid_t gid,
+                                    unsigned int microcodeVersion);
+virQEMUCapsPtr virQEMUCapsCacheLookup(virFileCachePtr cache,
                                       const char *binary);
-virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virCapsPtr caps,
-                                          virQEMUCapsCachePtr cache,
+virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
                                           const char *binary,
                                           const char *machineType);
-virQEMUCapsPtr virQEMUCapsCacheLookupByArch(virCapsPtr caps,
-                                            virQEMUCapsCachePtr cache,
+virQEMUCapsPtr virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
                                             virArch arch);
-void virQEMUCapsCacheFree(virQEMUCapsCachePtr cache);
+virQEMUCapsPtr virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
+                                             const char *binary,
+                                             const char *archStr,
+                                             const char *virttypeStr,
+                                             const char *machine,
+                                             virArch *retArch,
+                                             virDomainVirtType *retVirttype,
+                                             const char **retMachine);
 
-virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache);
+virCapsPtr virQEMUCapsInit(virFileCachePtr cache);
 
 int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
-                                 virQEMUCapsCachePtr capsCache,
+                                 virFileCachePtr capsCache,
                                  unsigned int *version);
 
-/* Only for use by test suite */
-int virQEMUCapsParseHelpStr(const char *qemu,
-                            const char *str,
-                            virQEMUCapsPtr qemuCaps,
-                            unsigned int *version,
-                            bool *is_kvm,
-                            unsigned int *kvm_version,
-                            bool check_yajl,
-                            const char *qmperr);
-/* Only for use by test suite */
-int virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str);
-
 VIR_ENUM_DECL(virQEMUCaps);
-
-bool virQEMUCapsSupportsChardev(const virDomainDef *def,
-                                virQEMUCapsPtr qemuCaps,
-                                virDomainChrDefPtr chr);
 
 bool virQEMUCapsSupportsGICVersion(virQEMUCapsPtr qemuCaps,
                                    virDomainVirtType virtType,
@@ -511,13 +621,11 @@ bool virQEMUCapsSupportsGICVersion(virQEMUCapsPtr qemuCaps,
 bool virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
                                    const char *canonical_machine);
 
-const char *virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps);
+const char *virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps);
 
 int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    const char *binary,
-                                   virQEMUCapsPtr qemubinCaps,
-                                   const char *kvmbin,
-                                   virQEMUCapsPtr kvmbinCaps,
+                                   virQEMUCapsPtr qemuCaps,
                                    virArch guestarch);
 
 int virQEMUCapsFillDomainCaps(virCapsPtr caps,
@@ -526,4 +634,16 @@ int virQEMUCapsFillDomainCaps(virCapsPtr caps,
                               virFirmwarePtr *firmwares,
                               size_t nfirmwares);
 
-#endif /* __QEMU_CAPABILITIES_H__*/
+bool virQEMUCapsGuestIsNative(virArch host,
+                              virArch guest);
+
+bool virQEMUCapsCPUFilterFeatures(const char *name,
+                                  void *opaque);
+
+virSEVCapabilityPtr
+virQEMUCapsGetSEVCapabilities(virQEMUCapsPtr qemuCaps);
+
+virArch virQEMUCapsArchFromString(const char *arch);
+const char *virQEMUCapsArchToString(virArch arch);
+
+#endif /* LIBVIRT_QEMU_CAPABILITIES_H */

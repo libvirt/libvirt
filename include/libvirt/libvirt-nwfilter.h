@@ -2,7 +2,6 @@
  * libvirt-nwfilter.h
  * Summary: APIs for management of nwfilters
  * Description: Provides APIs for the management of nwfilters
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *
@@ -21,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_NWFILTER_H__
-# define __VIR_LIBVIRT_NWFILTER_H__
+#ifndef LIBVIRT_NWFILTER_H
+# define LIBVIRT_NWFILTER_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -42,6 +41,23 @@ typedef struct _virNWFilter virNWFilter;
  * this is the type used to reference a network filter in the API.
  */
 typedef virNWFilter *virNWFilterPtr;
+
+/**
+ * virNWFilterBinding:
+ *
+ * a virNWFilterBinding is a private structure representing a network
+ * filter binding to a port
+ */
+typedef struct _virNWFilterBinding virNWFilterBinding;
+
+/**
+ * virNWFilterBindingPtr:
+ *
+ * a virNWFilterBindingPtr is pointer to a virNWFilterBinding private
+ * structure, this is the type used to reference a network filter
+ * port binding in the API.
+ */
+typedef virNWFilterBinding *virNWFilterBindingPtr;
 
 
 /*
@@ -92,4 +108,26 @@ int                     virNWFilterGetUUIDString (virNWFilterPtr nwfilter,
 char *                  virNWFilterGetXMLDesc    (virNWFilterPtr nwfilter,
                                                   unsigned int flags);
 
-#endif /* __VIR_LIBVIRT_NWFILTER_H__ */
+
+virNWFilterBindingPtr   virNWFilterBindingLookupByPortDev(virConnectPtr conn,
+                                                          const char *portdev);
+
+const char *            virNWFilterBindingGetPortDev(virNWFilterBindingPtr binding);
+const char *            virNWFilterBindingGetFilterName(virNWFilterBindingPtr binding);
+
+int                     virConnectListAllNWFilterBindings(virConnectPtr conn,
+                                                          virNWFilterBindingPtr **bindings,
+                                                          unsigned int flags);
+
+virNWFilterBindingPtr   virNWFilterBindingCreateXML(virConnectPtr conn,
+                                                    const char *xml,
+                                                    unsigned int flags);
+
+char *                  virNWFilterBindingGetXMLDesc(virNWFilterBindingPtr binding,
+                                                     unsigned int flags);
+
+int                     virNWFilterBindingDelete(virNWFilterBindingPtr binding);
+int                     virNWFilterBindingRef(virNWFilterBindingPtr binding);
+int                     virNWFilterBindingFree(virNWFilterBindingPtr binding);
+
+#endif /* LIBVIRT_NWFILTER_H */

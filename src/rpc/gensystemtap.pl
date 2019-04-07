@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright (C) 2011-2012 Red Hat, Inc.
 #
@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library.  If not, see
 # <http://www.gnu.org/licenses/>.
-#
-# Author: Daniel P. Berrange <berrange@redhat.com>
 #
 # Generate a set of systemtap functions for translating various
 # RPC enum values into strings

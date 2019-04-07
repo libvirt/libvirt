@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VBOX_SNAPSHOT_CONF_H
-# define VBOX_SNAPSHOT_CONF_H
+#ifndef LIBVIRT_VBOX_SNAPSHOT_CONF_H
+# define LIBVIRT_VBOX_SNAPSHOT_CONF_H
 
 # include "internal.h"
 
@@ -138,4 +138,4 @@ virVBoxSnapshotConfSnapshotPtr
 virVBoxSnapshotConfSnapshotByName(virVBoxSnapshotConfSnapshotPtr snapshot,
                                   const char *snapshotName);
 
-#endif /*VBOX_SNAPSHOT_CONF_H*/
+#endif /* LIBVIRT_VBOX_SNAPSHOT_CONF_H */

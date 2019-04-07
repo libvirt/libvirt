@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Jiri Denemark <jdenemar@redhat.com>
  */
 
 #include <config.h>
@@ -58,16 +56,13 @@ static void virKeepAliveDispose(void *obj);
 
 static int virKeepAliveOnceInit(void)
 {
-    if (!(virKeepAliveClass = virClassNew(virClassForObjectLockable(),
-                                          "virKeepAlive",
-                                          sizeof(virKeepAlive),
-                                          virKeepAliveDispose)))
+    if (!VIR_CLASS_NEW(virKeepAlive, virClassForObjectLockable()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virKeepAlive)
+VIR_ONCE_GLOBAL_INIT(virKeepAlive);
 
 static virNetMessagePtr
 virKeepAliveMessage(virKeepAlivePtr ka, int proc)
@@ -160,16 +155,16 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     bool dead;
     void *client;
 
+    virObjectRef(ka);
     virObjectLock(ka);
 
     client = ka->client;
     dead = virKeepAliveTimerInternal(ka, &msg);
 
+    virObjectUnlock(ka);
+
     if (!dead && !msg)
         goto cleanup;
-
-    virObjectRef(ka);
-    virObjectUnlock(ka);
 
     if (dead) {
         ka->deadCB(client);
@@ -178,11 +173,8 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
         virNetMessageFree(msg);
     }
 
-    virObjectLock(ka);
-    virObjectUnref(ka);
-
  cleanup:
-    virObjectUnlock(ka);
+    virObjectUnref(ka);
 }
 
 

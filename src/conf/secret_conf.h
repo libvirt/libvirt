@@ -16,17 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Red Hat Author: Miloslav Trmač <mitr@redhat.com>
  */
 
-#ifndef __VIR_SECRET_CONF_H__
-# define __VIR_SECRET_CONF_H__
+#ifndef LIBVIRT_SECRET_CONF_H
+# define LIBVIRT_SECRET_CONF_H
 
 # include "internal.h"
 # include "virutil.h"
-
-VIR_ENUM_DECL(virSecretUsage)
 
 typedef struct _virSecretDef virSecretDef;
 typedef virSecretDef *virSecretDefPtr;
@@ -36,32 +32,24 @@ struct _virSecretDef {
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *description;          /* May be NULL */
     int usage_type;  /* virSecretUsageType */
-    union {
-        char *volume;               /* May be NULL */
-        char *ceph;
-        char *target;
-        char *name;
-    } usage;
+    char *usage_id; /* May be NULL */
 };
-
-const char *virSecretUsageIDForDef(virSecretDefPtr def);
 
 void virSecretDefFree(virSecretDefPtr def);
 virSecretDefPtr virSecretDefParseString(const char *xml);
 virSecretDefPtr virSecretDefParseFile(const char *filename);
 char *virSecretDefFormat(const virSecretDef *def);
 
-# define VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL       \
+# define VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL \
                 (VIR_CONNECT_LIST_SECRETS_EPHEMERAL     | \
                  VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL)
 
-# define VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE       \
+# define VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE \
                 (VIR_CONNECT_LIST_SECRETS_PRIVATE     | \
                  VIR_CONNECT_LIST_SECRETS_NO_PRIVATE)
 
-# define VIR_CONNECT_LIST_SECRETS_FILTERS_ALL                  \
+# define VIR_CONNECT_LIST_SECRETS_FILTERS_ALL \
                 (VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL  | \
                  VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE)
 
-
-#endif
+#endif /* LIBVIRT_SECRET_CONF_H */

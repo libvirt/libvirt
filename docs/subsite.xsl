@@ -10,15 +10,14 @@
   <xsl:output
     method="xml"
     encoding="UTF-8"
-    indent="yes"
-    doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-    doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+    indent="yes"/>
 
   <xsl:variable name="href_base" select="'../'"/>
 
   <xsl:template match="/">
     <xsl:apply-templates select="." mode="page">
       <xsl:with-param name="pagename" select="$pagename"/>
+      <xsl:with-param name="timestamp" select="$timestamp"/>
     </xsl:apply-templates>
   </xsl:template>
 

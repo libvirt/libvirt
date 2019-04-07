@@ -212,6 +212,7 @@ compare exp-err err || fail=1
 # Numeric value with invalid suffix
 cat <<\EOF > exp-err || framework_failure
 error: Scaled numeric value '42WB' for <size> option is malformed or out of range
+error: invalid argument: unknown suffix 'WB'
 EOF
 virsh -q -c $test_url setmaxmem test 42WB >out 2>err && fail=1
 test -s out && fail=1

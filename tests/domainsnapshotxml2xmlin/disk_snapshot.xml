@@ -24,7 +24,7 @@
       </source>
     </disk>
     <disk name='hdh' snapshot='external' type='network'>
-      <source protocol='rbd' name='name'>
+      <source protocol='rbd' name='vol/name'>
         <host name='host' port='1234'/>
         <host name='host2' port='1234' transport='rdma'/>
         <host name='host3' port='1234'/>

@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -24,9 +22,8 @@
 
 #ifdef __linux__
 
-# include <stdlib.h>
 
-# define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
+# define LIBVIRT_VIRCGROUPPRIV_H_ALLOW
 # include "vircgrouppriv.h"
 # include "virstring.h"
 # include "virerror.h"
@@ -44,7 +41,10 @@ static int validateCgroup(virCgroupPtr cgroup,
                           const char *expectPath,
                           const char **expectMountPoint,
                           const char **expectLinkPoint,
-                          const char **expectPlacement)
+                          const char **expectPlacement,
+                          const char *expectUnifiedMountPoint,
+                          const char *expectUnifiedPlacement,
+                          unsigned int expectUnifiedControllers)
 {
     size_t i;
 
@@ -56,29 +56,61 @@ static int validateCgroup(virCgroupPtr cgroup,
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (STRNEQ_NULLABLE(expectMountPoint[i],
-                            cgroup->controllers[i].mountPoint)) {
+                            cgroup->legacy[i].mountPoint)) {
             fprintf(stderr, "Wrong mount '%s', expected '%s' for '%s'\n",
-                    cgroup->controllers[i].mountPoint,
+                    cgroup->legacy[i].mountPoint,
                     expectMountPoint[i],
                     virCgroupControllerTypeToString(i));
             return -1;
         }
         if (STRNEQ_NULLABLE(expectLinkPoint[i],
-                            cgroup->controllers[i].linkPoint)) {
+                            cgroup->legacy[i].linkPoint)) {
             fprintf(stderr, "Wrong link '%s', expected '%s' for '%s'\n",
-                    cgroup->controllers[i].linkPoint,
+                    cgroup->legacy[i].linkPoint,
                     expectLinkPoint[i],
                     virCgroupControllerTypeToString(i));
             return -1;
         }
         if (STRNEQ_NULLABLE(expectPlacement[i],
-                            cgroup->controllers[i].placement)) {
+                            cgroup->legacy[i].placement)) {
             fprintf(stderr, "Wrong placement '%s', expected '%s' for '%s'\n",
-                    cgroup->controllers[i].placement,
+                    cgroup->legacy[i].placement,
                     expectPlacement[i],
                     virCgroupControllerTypeToString(i));
             return -1;
         }
+    }
+
+    if (STRNEQ_NULLABLE(expectUnifiedMountPoint,
+                        cgroup->unified.mountPoint)) {
+        fprintf(stderr, "Wrong mount '%s', expected '%s' for 'unified'\n",
+                cgroup->unified.mountPoint,
+                expectUnifiedMountPoint);
+        return -1;
+    }
+    if (STRNEQ_NULLABLE(expectUnifiedPlacement,
+                        cgroup->unified.placement)) {
+        fprintf(stderr, "Wrong placement '%s', expected '%s' for 'unified'\n",
+                cgroup->unified.placement,
+                expectUnifiedPlacement);
+        return -1;
+    }
+    if (expectUnifiedControllers != cgroup->unified.controllers) {
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+            int type = 1 << i;
+            if ((expectUnifiedControllers & type) != (cgroup->unified.controllers & type)) {
+                const char *typeStr = virCgroupControllerTypeToString(i);
+                if (expectUnifiedControllers & type) {
+                    fprintf(stderr, "expected controller '%s' for 'unified', "
+                            "but it's missing\n", typeStr);
+                } else {
+                    fprintf(stderr, "existing controller '%s' for 'unified', "
+                            "but it's not expected\n", typeStr);
+                }
+            }
+
+        }
+        return -1;
     }
 
     return 0;
@@ -114,16 +146,6 @@ const char *mountsAllInOne[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_BLKIO] = "/not/really/sys/fs/cgroup",
     [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
 };
-const char *mountsLogind[VIR_CGROUP_CONTROLLER_LAST] = {
-    [VIR_CGROUP_CONTROLLER_CPU] = NULL,
-    [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
-    [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
-    [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
-    [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-    [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
-    [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
-    [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/not/really/sys/fs/cgroup/systemd",
-};
 
 const char *links[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_CPU] = "/not/really/sys/fs/cgroup/cpu",
@@ -147,15 +169,10 @@ const char *linksAllInOne[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
 };
 
-const char *linksLogind[VIR_CGROUP_CONTROLLER_LAST] = {
-    [VIR_CGROUP_CONTROLLER_CPU] = NULL,
-    [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
-    [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
-    [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
-    [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-    [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
-    [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
-    [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
+
+struct _detectMountsData {
+    const char *file;
+    bool fail;
 };
 
 
@@ -163,29 +180,36 @@ static int
 testCgroupDetectMounts(const void *args)
 {
     int result = -1;
-    const char *file = args;
-    char *mounts = NULL;
+    const struct _detectMountsData *data = args;
     char *parsed = NULL;
     const char *actual;
     virCgroupPtr group = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    if (virAsprintf(&mounts, "%s/vircgroupdata/%s.mounts",
-                    abs_srcdir, file) < 0 ||
-        virAsprintf(&parsed, "%s/vircgroupdata/%s.parsed",
-                    abs_srcdir, file) < 0 ||
-        VIR_ALLOC(group) < 0)
-        goto cleanup;
+    setenv("VIR_CGROUP_MOCK_FILENAME", data->file, 1);
 
-    if (virCgroupDetectMountsFromFile(group, mounts, false) < 0)
+    if (virAsprintf(&parsed, "%s/vircgroupdata/%s.parsed",
+                    abs_srcdir, data->file) < 0) {
+        goto cleanup;
+    }
+
+    if (virCgroupNewSelf(&group) < 0) {
+        if (data->fail)
+            result = 0;
+        goto cleanup;
+    }
+
+    if (data->fail)
         goto cleanup;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         virBufferAsprintf(&buf, "%-12s %s\n",
                           virCgroupControllerTypeToString(i),
-                          NULLSTR(group->controllers[i].mountPoint));
+                          NULLSTR(group->legacy[i].mountPoint));
     }
+    virBufferAsprintf(&buf, "%-12s %s\n",
+                      "unified", NULLSTR(group->unified.mountPoint));
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
@@ -196,7 +220,7 @@ testCgroupDetectMounts(const void *args)
     result = 0;
 
  cleanup:
-    VIR_FREE(mounts);
+    unsetenv("VIR_CGROUP_MOCK_FILENAME");
     VIR_FREE(parsed);
     virCgroupFree(&group);
     virBufferFreeAndReset(&buf);
@@ -224,7 +248,7 @@ static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "", mountsFull, links, placement);
+    ret = validateCgroup(cgroup, "", mountsFull, links, placement, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -232,13 +256,13 @@ static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-# define ENSURE_ERRNO(en)                                           \
-    do {                                                            \
-    if (!virLastErrorIsSystemErrno(en)) {                           \
-        virErrorPtr err = virGetLastError();                        \
-        fprintf(stderr, "Did not get " #en " error code: %d:%d\n",  \
-                err ? err->code : 0, err ? err->int1 : 0);          \
-        goto cleanup;                                               \
+# define ENSURE_ERRNO(en) \
+    do { \
+    if (!virLastErrorIsSystemErrno(en)) { \
+        virErrorPtr err = virGetLastError(); \
+        fprintf(stderr, "Did not get " #en " error code: %d:%d\n", \
+                err ? err->code : 0, err ? err->int1 : 0); \
+        goto cleanup; \
     } } while (0)
 
     /* Asking for impossible combination since CPU is co-mounted */
@@ -303,14 +327,14 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsSmall, links, placementSmall);
+    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsSmall, links, placementSmall, NULL, NULL, 0);
     virCgroupFree(&cgroup);
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsFull, links, placementFull);
+    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsFull, links, placementFull, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -353,13 +377,14 @@ static int testCgroupNewForPartitionNested(const void *args ATTRIBUTE_UNUSED)
     }
 
     /* Should now work */
+    virCgroupFree(&cgroup);
     if ((rv = virCgroupNewPartition("/deployment/production", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Failed to create /deployment/production cgroup: %d\n", -rv);
         goto cleanup;
     }
 
     ret = validateCgroup(cgroup, "/deployment.partition/production.partition",
-                         mountsFull, links, placementFull);
+                         mountsFull, links, placementFull, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -401,19 +426,21 @@ static int testCgroupNewForPartitionNestedDeep(const void *args ATTRIBUTE_UNUSED
         goto cleanup;
     }
 
+    virCgroupFree(&cgroup);
     if ((rv = virCgroupNewPartition("/user/berrange.user", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Failed to create /user/berrange.user cgroup: %d\n", -rv);
         goto cleanup;
     }
 
     /* Should now work */
+    virCgroupFree(&cgroup);
     if ((rv = virCgroupNewPartition("/user/berrange.user/production", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Failed to create /user/berrange.user/production cgroup: %d\n", -rv);
         goto cleanup;
     }
 
     ret = validateCgroup(cgroup, "/user/berrange.user/production.partition",
-                         mountsFull, links, placementFull);
+                         mountsFull, links, placementFull, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -449,7 +476,7 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(domaincgroup, "/production.partition/foo.libvirt-lxc", mountsFull, links, placement);
+    ret = validateCgroup(domaincgroup, "/production.partition/foo.libvirt-lxc", mountsFull, links, placement, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&partitioncgroup);
@@ -500,7 +527,7 @@ static int testCgroupNewForPartitionDomainEscaped(const void *args ATTRIBUTE_UNU
      * since our fake /proc/cgroups pretends this controller
      * isn't compiled into the kernel
      */
-    ret = validateCgroup(domaincgroup, "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc", mountsFull, links, placement);
+    ret = validateCgroup(domaincgroup, "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc", mountsFull, links, placement, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&partitioncgroup3);
@@ -529,7 +556,7 @@ static int testCgroupNewForSelfAllInOne(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "", mountsAllInOne, linksAllInOne, placement);
+    ret = validateCgroup(cgroup, "", mountsAllInOne, linksAllInOne, placement, NULL, NULL, 0);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -540,24 +567,73 @@ static int testCgroupNewForSelfAllInOne(const void *args ATTRIBUTE_UNUSED)
 static int testCgroupNewForSelfLogind(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
+
+    if (virCgroupNewSelf(&cgroup) >= 0) {
+        fprintf(stderr, "Expected to fail, only systemd cgroup available.\n");
+        virCgroupFree(&cgroup);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int testCgroupNewForSelfUnified(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
     int ret = -1;
-    const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = NULL,
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
-        [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
-        [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
-        [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
-        [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
-        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/",
-    };
+    const char *empty[VIR_CGROUP_CONTROLLER_LAST] = { 0 };
+    unsigned int controllers =
+        (1 << VIR_CGROUP_CONTROLLER_CPU) |
+        (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+        (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
+        (1 << VIR_CGROUP_CONTROLLER_BLKIO);
 
     if (virCgroupNewSelf(&cgroup) < 0) {
         fprintf(stderr, "Cannot create cgroup for self\n");
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "", mountsLogind, linksLogind, placement);
+    ret = validateCgroup(cgroup, "", empty, empty, empty,
+                         "/not/really/sys/fs/cgroup", "/", controllers);
+ cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
+
+static int testCgroupNewForSelfHybrid(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+    const char *empty[VIR_CGROUP_CONTROLLER_LAST] = { 0 };
+    const char *mounts[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/not/really/sys/fs/cgroup/cpuset",
+        [VIR_CGROUP_CONTROLLER_DEVICES] = "/not/really/sys/fs/cgroup/devices",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/not/really/sys/fs/cgroup/freezer",
+        [VIR_CGROUP_CONTROLLER_NET_CLS] = "/not/really/sys/fs/cgroup/net_cls",
+        [VIR_CGROUP_CONTROLLER_PERF_EVENT] = "/not/really/sys/fs/cgroup/perf_event",
+    };
+    const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/",
+        [VIR_CGROUP_CONTROLLER_DEVICES] = "/",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/",
+        [VIR_CGROUP_CONTROLLER_NET_CLS] = "/",
+        [VIR_CGROUP_CONTROLLER_PERF_EVENT] = "/",
+    };
+    unsigned int controllers =
+        (1 << VIR_CGROUP_CONTROLLER_CPU) |
+        (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+        (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
+        (1 << VIR_CGROUP_CONTROLLER_BLKIO);
+
+    if (virCgroupNewSelf(&cgroup) < 0) {
+        fprintf(stderr, "Cannot create cgroup for self\n");
+        goto cleanup;
+    }
+
+    ret = validateCgroup(cgroup, "", mounts, empty, placement,
+                         "/not/really/sys/fs/cgroup/unified", "/", controllers);
 
  cleanup:
     virCgroupFree(&cgroup);
@@ -583,13 +659,13 @@ static int testCgroupControllerAvailable(const void *args ATTRIBUTE_UNUSED)
 {
     int ret = 0;
 
-# define CHECK_CONTROLLER(c, present)                                   \
-    if ((present && !virCgroupControllerAvailable(c)) ||                \
-        (!present && virCgroupControllerAvailable(c))) {                \
-        fprintf(stderr, present ?                                       \
-                "Expected controller %s not available\n" :              \
-                "Unexpected controller %s available\n", #c);            \
-        ret = -1;                                                       \
+# define CHECK_CONTROLLER(c, present) \
+    if ((present && !virCgroupControllerAvailable(c)) || \
+        (!present && virCgroupControllerAvailable(c))) { \
+        fprintf(stderr, present ? \
+                "Expected controller %s not available\n" : \
+                "Unexpected controller %s available\n", #c); \
+        ret = -1; \
     }
 
     CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_CPU, true)
@@ -678,7 +754,7 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
 
         if (params[i].value.ul != expected[i]) {
             fprintf(stderr,
-                    "Wrong value from virCgroupGetMemoryUsage at %zu (expected %llu)\n",
+                    "Wrong value from virCgroupGetPercpuStats at %zu (expected %llu)\n",
                     i, params[i].value.ul);
             goto cleanup;
         }
@@ -723,6 +799,67 @@ static int testCgroupGetMemoryUsage(const void *args ATTRIBUTE_UNUSED)
     virCgroupFree(&cgroup);
     return ret;
 }
+
+
+static int
+testCgroupGetMemoryStat(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    int rv;
+    int ret = -1;
+    size_t i;
+
+    const unsigned long long expected_values[] = {
+        1336619008ULL,
+        67100672ULL,
+        145887232ULL,
+        661872640ULL,
+        627400704UL,
+        3690496ULL
+    };
+    const char* names[] = {
+        "cache",
+        "active_anon",
+        "inactive_anon",
+        "active_file",
+        "inactive_file",
+        "unevictable"
+    };
+    unsigned long long values[ARRAY_CARDINALITY(expected_values)];
+
+    if ((rv = virCgroupNewPartition("/virtualmachines", true,
+                                    (1 << VIR_CGROUP_CONTROLLER_MEMORY),
+                                    &cgroup)) < 0) {
+        fprintf(stderr, "Could not create /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupGetMemoryStat(cgroup, &values[0],
+                                     &values[1], &values[2],
+                                     &values[3], &values[4],
+                                     &values[5])) < 0) {
+        fprintf(stderr, "Could not retrieve GetMemoryStat for /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(expected_values); i++) {
+        /* NB: virCgroupGetMemoryStat returns a KiB scaled value */
+        if ((expected_values[i] >> 10) != values[i]) {
+            fprintf(stderr,
+                    "Wrong value (%llu) for %s from virCgroupGetMemoryStat "
+                    "(expected %llu)\n",
+                    values[i], names[i], (expected_values[i] >> 10));
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
 
 static int testCgroupGetBlkioIoServiced(const void *args ATTRIBUTE_UNUSED)
 {
@@ -849,10 +986,10 @@ static int testCgroupGetBlkioIoDeviceServiced(const void *args ATTRIBUTE_UNUSED)
 
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
-static int
-mymain(void)
+static char *
+initFakeFS(const char *mode,
+           const char *filename)
 {
-    int ret = 0;
     char *fakerootdir;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
@@ -867,13 +1004,43 @@ mymain(void)
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
 
-# define DETECT_MOUNTS(file)                                            \
-    do {                                                                \
-        if (virTestRun("Detect cgroup mounts for " file,                \
-                       testCgroupDetectMounts,                          \
-                       file) < 0)                                       \
-            ret = -1;                                                   \
+    if (mode)
+        setenv("VIR_CGROUP_MOCK_MODE", mode, 1);
+
+    if (filename)
+        setenv("VIR_CGROUP_MOCK_FILENAME", filename, 1);
+
+    return fakerootdir;
+}
+
+static void
+cleanupFakeFS(char *fakerootdir)
+{
+    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
+        virFileDeleteTree(fakerootdir);
+
+    VIR_FREE(fakerootdir);
+    unsetenv("LIBVIRT_FAKE_ROOT_DIR");
+    unsetenv("VIR_CGROUP_MOCK_MODE");
+    unsetenv("VIR_CGROUP_MOCK_FILENAME");
+}
+
+static int
+mymain(void)
+{
+    int ret = 0;
+    char *fakerootdir;
+
+# define DETECT_MOUNTS_FULL(file, fail) \
+    do { \
+        struct _detectMountsData data = { file, fail }; \
+        if (virTestRun("Detect cgroup mounts for " file, \
+                       testCgroupDetectMounts, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
+# define DETECT_MOUNTS(file) DETECT_MOUNTS_FULL(file, false);
+# define DETECT_MOUNTS_FAIL(file) DETECT_MOUNTS_FULL(file, true);
 
     DETECT_MOUNTS("ovirt-node-6.6");
     DETECT_MOUNTS("ovirt-node-7.1");
@@ -884,8 +1051,16 @@ mymain(void)
     DETECT_MOUNTS("cgroups2");
     DETECT_MOUNTS("cgroups3");
     DETECT_MOUNTS("all-in-one");
-    DETECT_MOUNTS("no-cgroups");
+    DETECT_MOUNTS_FAIL("no-cgroups");
+    DETECT_MOUNTS("kubevirt");
+    fakerootdir = initFakeFS("unified", NULL);
+    DETECT_MOUNTS("unified");
+    cleanupFakeFS(fakerootdir);
+    fakerootdir = initFakeFS("hybrid", NULL);
+    DETECT_MOUNTS("hybrid");
+    cleanupFakeFS(fakerootdir);
 
+    fakerootdir = initFakeFS(NULL, "systemd");
     if (virTestRun("New cgroup for self", testCgroupNewForSelf, NULL) < 0)
         ret = -1;
 
@@ -919,32 +1094,49 @@ mymain(void)
     if (virTestRun("virCgroupGetMemoryUsage works", testCgroupGetMemoryUsage, NULL) < 0)
         ret = -1;
 
-    if (virTestRun("virCgroupGetPercpuStats works", testCgroupGetPercpuStats, NULL) < 0)
+    if (virTestRun("virCgroupGetMemoryStat works", testCgroupGetMemoryStat, NULL) < 0)
         ret = -1;
 
-    setenv("VIR_CGROUP_MOCK_MODE", "allinone", 1);
+    if (virTestRun("virCgroupGetPercpuStats works", testCgroupGetPercpuStats, NULL) < 0)
+        ret = -1;
+    cleanupFakeFS(fakerootdir);
+
+    fakerootdir = initFakeFS(NULL, "all-in-one");
     if (virTestRun("New cgroup for self (allinone)", testCgroupNewForSelfAllInOne, NULL) < 0)
         ret = -1;
     if (virTestRun("Cgroup available", testCgroupAvailable, (void*)0x1) < 0)
         ret = -1;
-    unsetenv("VIR_CGROUP_MOCK_MODE");
+    cleanupFakeFS(fakerootdir);
 
-    setenv("VIR_CGROUP_MOCK_MODE", "logind", 1);
+    fakerootdir = initFakeFS(NULL, "logind");
     if (virTestRun("New cgroup for self (logind)", testCgroupNewForSelfLogind, NULL) < 0)
         ret = -1;
     if (virTestRun("Cgroup available", testCgroupAvailable, (void*)0x0) < 0)
         ret = -1;
-    unsetenv("VIR_CGROUP_MOCK_MODE");
+    cleanupFakeFS(fakerootdir);
 
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakerootdir);
+    /* cgroup unified */
 
-    VIR_FREE(fakerootdir);
+    fakerootdir = initFakeFS("unified", "unified");
+    if (virTestRun("New cgroup for self (unified)", testCgroupNewForSelfUnified, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Cgroup available (unified)", testCgroupAvailable, (void*)0x1) < 0)
+        ret = -1;
+    cleanupFakeFS(fakerootdir);
+
+    /* cgroup hybrid */
+
+    fakerootdir = initFakeFS("hybrid", "hybrid");
+    if (virTestRun("New cgroup for self (hybrid)", testCgroupNewForSelfHybrid, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Cgroup available (hybrid)", testCgroupAvailable, (void*)0x1) < 0)
+        ret = -1;
+    cleanupFakeFS(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/vircgroupmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/vircgroupmock.so")
 
 #else
 int

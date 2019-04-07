@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library;  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -27,11 +25,11 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <getopt.h>
-#include <stdlib.h>
 
 
 #include "log_daemon.h"
 #include "log_daemon_config.h"
+#include "admin/admin_server_dispatch.h"
 #include "virutil.h"
 #include "virfile.h"
 #include "virpidfile.h"
@@ -59,7 +57,6 @@ VIR_LOG_INIT("logging.log_daemon");
 struct _virLogDaemon {
     virMutex lock;
     virNetDaemonPtr dmn;
-    virNetServerPtr srv;
     virLogHandlerPtr handler;
 };
 
@@ -82,7 +79,7 @@ enum {
     VIR_LOG_DAEMON_ERR_LAST
 };
 
-VIR_ENUM_DECL(virDaemonErr)
+VIR_ENUM_DECL(virDaemonErr);
 VIR_ENUM_IMPL(virDaemonErr, VIR_LOG_DAEMON_ERR_LAST,
               "Initialization successful",
               "Unable to obtain pidfile",
@@ -93,7 +90,8 @@ VIR_ENUM_IMPL(virDaemonErr, VIR_LOG_DAEMON_ERR_LAST,
               "Unable to initialize network sockets",
               "Unable to load configuration file",
               "Unable to look for hook scripts",
-              "Unable to re-execute daemon");
+              "Unable to re-execute daemon",
+);
 
 static void *
 virLogDaemonClientNew(virNetServerClientPtr client,
@@ -117,7 +115,6 @@ virLogDaemonFree(virLogDaemonPtr logd)
 
     virObjectUnref(logd->handler);
     virMutexDestroy(&logd->lock);
-    virObjectUnref(logd->srv);
     virObjectUnref(logd->dmn);
 
     VIR_FREE(logd);
@@ -129,6 +126,12 @@ virLogDaemonInhibitor(bool inhibit, void *opaque)
 {
     virLogDaemonPtr dmn = opaque;
 
+    /* virtlogd uses inhibition only to stop session daemon being killed after
+     * the specified timeout, for the system daemon this is taken care of by
+     * libvirtd and the dependencies between the services. */
+    if (virNetDaemonIsPrivileged(dmn->dmn))
+        return;
+
     if (inhibit)
         virNetDaemonAddShutdownInhibition(dmn->dmn);
     else
@@ -139,6 +142,7 @@ static virLogDaemonPtr
 virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
 {
     virLogDaemonPtr logd;
+    virNetServerPtr srv = NULL;
 
     if (VIR_ALLOC(logd) < 0)
         return NULL;
@@ -150,19 +154,38 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
         return NULL;
     }
 
-    if (!(logd->srv = virNetServerNew("virtlogd", 1,
-                                      1, 1, 0, config->max_clients,
-                                      config->max_clients, -1, 0,
-                                      NULL,
-                                      virLogDaemonClientNew,
-                                      virLogDaemonClientPreExecRestart,
-                                      virLogDaemonClientFree,
-                                      (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
+    if (!(logd->dmn = virNetDaemonNew()))
         goto error;
 
-    if (!(logd->dmn = virNetDaemonNew()) ||
-        virNetDaemonAddServer(logd->dmn, logd->srv) < 0)
+    if (!(srv = virNetServerNew("virtlogd", 1,
+                                0, 0, 0, config->max_clients,
+                                config->max_clients, -1, 0,
+                                NULL,
+                                virLogDaemonClientNew,
+                                virLogDaemonClientPreExecRestart,
+                                virLogDaemonClientFree,
+                                (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
+
+    if (virNetDaemonAddServer(logd->dmn, srv) < 0)
+        goto error;
+    virObjectUnref(srv);
+    srv = NULL;
+
+    if (!(srv = virNetServerNew("admin", 1,
+                                0, 0, 0, config->admin_max_clients,
+                                config->admin_max_clients, -1, 0,
+                                NULL,
+                                remoteAdmClientNew,
+                                remoteAdmClientPreExecRestart,
+                                remoteAdmClientFree,
+                                logd->dmn)))
+        goto error;
+
+    if (virNetDaemonAddServer(logd->dmn, srv) < 0)
+        goto error;
+    virObjectUnref(srv);
+    srv = NULL;
 
     if (!(logd->handler = virLogHandlerNew(privileged,
                                            config->max_size,
@@ -174,6 +197,7 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
     return logd;
 
  error:
+    virObjectUnref(srv);
     virLogDaemonFree(logd);
     return NULL;
 }
@@ -186,12 +210,44 @@ virLogDaemonGetHandler(virLogDaemonPtr dmn)
 }
 
 
+static virNetServerPtr
+virLogDaemonNewServerPostExecRestart(virNetDaemonPtr dmn,
+                                     const char *name,
+                                     virJSONValuePtr object,
+                                     void *opaque)
+{
+    if (STREQ(name, "virtlogd")) {
+        return virNetServerNewPostExecRestart(object,
+                                              name,
+                                              virLogDaemonClientNew,
+                                              virLogDaemonClientNewPostExecRestart,
+                                              virLogDaemonClientPreExecRestart,
+                                              virLogDaemonClientFree,
+                                              opaque);
+    } else if (STREQ(name, "admin")) {
+        return virNetServerNewPostExecRestart(object,
+                                              name,
+                                              remoteAdmClientNew,
+                                              remoteAdmClientNewPostExecRestart,
+                                              remoteAdmClientPreExecRestart,
+                                              remoteAdmClientFree,
+                                              dmn);
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected server name '%s' during restart"),
+                       name);
+        return NULL;
+    }
+}
+
+
 static virLogDaemonPtr
 virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
                                virLogDaemonConfigPtr config)
 {
     virLogDaemonPtr logd;
     virJSONValuePtr child;
+    const char *serverNames[] = { "virtlogd" };
 
     if (VIR_ALLOC(logd) < 0)
         return NULL;
@@ -209,16 +265,11 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
         goto error;
     }
 
-    if (!(logd->dmn = virNetDaemonNewPostExecRestart(child)))
-        goto error;
-
-    if (!(logd->srv = virNetDaemonAddServerPostExec(logd->dmn,
-                                                    "virtlogd",
-                                                    virLogDaemonClientNew,
-                                                    virLogDaemonClientNewPostExecRestart,
-                                                    virLogDaemonClientPreExecRestart,
-                                                    virLogDaemonClientFree,
-                                                    (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
+    if (!(logd->dmn = virNetDaemonNewPostExecRestart(child,
+                                                     ARRAY_CARDINALITY(serverNames),
+                                                     serverNames,
+                                                     virLogDaemonNewServerPostExecRestart,
+                                                     (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
 
     if (!(child = virJSONValueObjectGet(object, "handler"))) {
@@ -333,10 +384,12 @@ virLogDaemonForkIntoBackground(const char *argv0)
 
 static int
 virLogDaemonUnixSocketPaths(bool privileged,
-                            char **sockfile)
+                            char **sockfile,
+                            char **adminSockfile)
 {
     if (privileged) {
-        if (VIR_STRDUP(*sockfile, LOCALSTATEDIR "/run/libvirt/virtlogd-sock") < 0)
+        if (VIR_STRDUP(*sockfile, LOCALSTATEDIR "/run/libvirt/virtlogd-sock") < 0 ||
+            VIR_STRDUP(*adminSockfile, LOCALSTATEDIR "/run/libvirt/virtlogd-admin-sock") < 0)
             goto error;
     } else {
         char *rundir = NULL;
@@ -353,7 +406,8 @@ virLogDaemonUnixSocketPaths(bool privileged,
         }
         umask(old_umask);
 
-        if (virAsprintf(sockfile, "%s/virtlogd-sock", rundir) < 0) {
+        if (virAsprintf(sockfile, "%s/virtlogd-sock", rundir) < 0 ||
+            virAsprintf(adminSockfile, "%s/virtlogd-admin-sock", rundir) < 0) {
             VIR_FREE(rundir);
             goto error;
         }
@@ -388,19 +442,15 @@ virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
      * Libvirtd's order of precedence is:
      * cmdline > environment > config
      *
-     * The default output is applied only if there was no setting from either
-     * the config or the environment. Because we don't have a way to determine
-     * if the log level has been set, we must process variables in the opposite
+     * Given the precedence, we must process the variables in the opposite
      * order, each one overriding the previous.
      */
     if (config->log_level != 0)
         virLogSetDefaultPriority(config->log_level);
 
-    if (virLogSetDefaultOutput("virtlogd.log", godaemon, privileged) < 0)
-        return -1;
-
-    /* In case the config is empty, the filters become empty and outputs will
-     * be set to default
+    /* In case the config is empty, both filters and outputs will become empty,
+     * however we can't start with empty outputs, thus we'll need to define and
+     * setup a default one.
      */
     ignore_value(virLogSetFilters(config->log_filters));
     ignore_value(virLogSetOutputs(config->log_outputs));
@@ -413,6 +463,15 @@ virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
      */
     if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
         virLogSetDefaultPriority(VIR_LOG_INFO);
+
+    /* Define the default output. This is only applied if there was no setting
+     * from either the config or the environment.
+     */
+    if (virLogSetDefaultOutput("virtlogd.log", godaemon, privileged) < 0)
+        return -1;
+
+    if (virLogGetNbOutputs() == 0)
+        virLogSetOutputs(virLogGetDefaultOutput());
 
     return 0;
 }
@@ -459,29 +518,48 @@ virLogDaemonSetupSignals(virNetDaemonPtr dmn)
 
 
 static int
-virLogDaemonSetupNetworkingSystemD(virNetServerPtr srv)
+virLogDaemonSetupNetworkingSystemD(virNetServerPtr logSrv, virNetServerPtr adminSrv)
 {
-    virNetServerServicePtr svc;
     unsigned int nfds;
+    size_t i;
 
     if ((nfds = virGetListenFDs()) == 0)
         return 0;
-    if (nfds > 1)
+    if (nfds > 2)
         VIR_DEBUG("Too many (%d) file descriptors from systemd", nfds);
-    nfds = 1;
 
-    /* Systemd passes FDs, starting immediately after stderr,
-     * so the first FD we'll get is '3'. */
-    if (!(svc = virNetServerServiceNewFD(3, 0,
-#if WITH_GNUTLS
-                                         NULL,
-#endif
-                                         false, 0, 1)))
-        return -1;
+    for (i = 0; i < nfds && i < 2; i++) {
+        virNetServerServicePtr svc;
+        char *path = virGetUNIXSocketPath(3 + i);
+        virNetServerPtr srv;
 
-    if (virNetServerAddService(srv, svc, NULL) < 0) {
-        virObjectUnref(svc);
-        return -1;
+        if (!path)
+            return -1;
+
+        if (strstr(path, "virtlogd-admin-sock")) {
+            srv = adminSrv;
+        } else if (strstr(path, "virtlogd-sock")) {
+            srv = logSrv;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown UNIX socket %s passed in"),
+                           path);
+            VIR_FREE(path);
+            return -1;
+        }
+        VIR_FREE(path);
+
+        /* Systemd passes FDs, starting immediately after stderr,
+         * so the first FD we'll get is '3'. */
+        if (!(svc = virNetServerServiceNewFD(3 + i, 0,
+                                             NULL,
+                                             false, 0, 1)))
+            return -1;
+
+        if (virNetServerAddService(srv, svc, NULL) < 0) {
+            virObjectUnref(svc);
+            return -1;
+        }
     }
     return 1;
 }
@@ -495,9 +573,7 @@ virLogDaemonSetupNetworkingNative(virNetServerPtr srv, const char *sock_path)
     VIR_DEBUG("Setting up networking natively");
 
     if (!(svc = virNetServerServiceNewUNIX(sock_path, 0700, 0, 0,
-#if WITH_GNUTLS
                                            NULL,
-#endif
                                            false, 0, 1)))
         return -1;
 
@@ -571,6 +647,9 @@ virLogDaemonClientNew(virNetServerClientPtr client,
             goto error;
         }
     }
+
+    /* there's no closing handshake in the logging protocol */
+    virNetServerClientSetQuietEOF(client);
 
     return priv;
 
@@ -849,7 +928,10 @@ virLogDaemonUsage(const char *argv0, bool privileged)
 }
 
 int main(int argc, char **argv) {
+    virNetServerPtr logSrv = NULL;
+    virNetServerPtr adminSrv = NULL;
     virNetServerProgramPtr logProgram = NULL;
+    virNetServerProgramPtr adminProgram = NULL;
     char *remote_config_file = NULL;
     int statuswrite = -1;
     int ret = 1;
@@ -859,6 +941,7 @@ int main(int argc, char **argv) {
     char *pid_file = NULL;
     int pid_file_fd = -1;
     char *sock_file = NULL;
+    char *admin_sock_file = NULL;
     int timeout = -1;        /* -t: Shutdown timeout */
     char *state_file = NULL;
     bool implicit_conf = false;
@@ -986,12 +1069,13 @@ int main(int argc, char **argv) {
     VIR_DEBUG("Decided on pid file path '%s'", NULLSTR(pid_file));
 
     if (virLogDaemonUnixSocketPaths(privileged,
-                                    &sock_file) < 0) {
+                                    &sock_file,
+                                    &admin_sock_file) < 0) {
         VIR_ERROR(_("Can't determine socket paths"));
         exit(EXIT_FAILURE);
     }
-    VIR_DEBUG("Decided on socket paths '%s'",
-              sock_file);
+    VIR_DEBUG("Decided on socket paths '%s' and '%s'",
+              sock_file, admin_sock_file);
 
     if (virLogDaemonExecRestartStatePath(privileged,
                                          &state_file) < 0) {
@@ -1068,18 +1152,30 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
 
-        if ((rv = virLogDaemonSetupNetworkingSystemD(logDaemon->srv)) < 0) {
+        logSrv = virNetDaemonGetServer(logDaemon->dmn, "virtlogd");
+        adminSrv = virNetDaemonGetServer(logDaemon->dmn, "admin");
+        if ((rv = virLogDaemonSetupNetworkingSystemD(logSrv, adminSrv)) < 0) {
             ret = VIR_LOG_DAEMON_ERR_NETWORK;
             goto cleanup;
         }
 
         /* Only do this, if systemd did not pass a FD */
-        if (rv == 0 &&
-            virLogDaemonSetupNetworkingNative(logDaemon->srv, sock_file) < 0) {
-            ret = VIR_LOG_DAEMON_ERR_NETWORK;
-            goto cleanup;
+        if (rv == 0) {
+            if (virLogDaemonSetupNetworkingNative(logSrv, sock_file) < 0 ||
+                virLogDaemonSetupNetworkingNative(adminSrv, admin_sock_file) < 0) {
+                ret = VIR_LOG_DAEMON_ERR_NETWORK;
+                goto cleanup;
+            }
         }
+        virObjectUnref(logSrv);
+        virObjectUnref(adminSrv);
     }
+
+    logSrv = virNetDaemonGetServer(logDaemon->dmn, "virtlogd");
+    /* If exec-restarting from old virtlogd, we won't have an
+     * admin server present */
+    if (virNetDaemonHasServer(logDaemon->dmn, "admin"))
+        adminSrv = virNetDaemonGetServer(logDaemon->dmn, "admin");
 
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
@@ -1099,9 +1195,23 @@ int main(int argc, char **argv) {
         ret = VIR_LOG_DAEMON_ERR_INIT;
         goto cleanup;
     }
-    if (virNetServerAddProgram(logDaemon->srv, logProgram) < 0) {
+    if (virNetServerAddProgram(logSrv, logProgram) < 0) {
         ret = VIR_LOG_DAEMON_ERR_INIT;
         goto cleanup;
+    }
+
+    if (adminSrv != NULL) {
+        if (!(adminProgram = virNetServerProgramNew(ADMIN_PROGRAM,
+                                                    ADMIN_PROTOCOL_VERSION,
+                                                    adminProcs,
+                                                    adminNProcs))) {
+            ret = VIR_LOG_DAEMON_ERR_INIT;
+            goto cleanup;
+        }
+        if (virNetServerAddProgram(adminSrv, adminProgram) < 0) {
+            ret = VIR_LOG_DAEMON_ERR_INIT;
+            goto cleanup;
+        }
     }
 
     /* Disable error func, now logging is setup */
@@ -1121,7 +1231,7 @@ int main(int argc, char **argv) {
 
     /* Start accepting new clients from network */
 
-    virNetServerUpdateServices(logDaemon->srv, true);
+    virNetDaemonUpdateServices(logDaemon->dmn, true);
     virNetDaemonRun(logDaemon->dmn);
 
     if (execRestart &&
@@ -1134,6 +1244,9 @@ int main(int argc, char **argv) {
 
  cleanup:
     virObjectUnref(logProgram);
+    virObjectUnref(adminProgram);
+    virObjectUnref(logSrv);
+    virObjectUnref(adminSrv);
     virLogDaemonFree(logDaemon);
     if (statuswrite != -1) {
         if (ret != 0) {
@@ -1149,6 +1262,7 @@ int main(int argc, char **argv) {
         virPidFileReleasePath(pid_file, pid_file_fd);
     VIR_FREE(pid_file);
     VIR_FREE(sock_file);
+    VIR_FREE(admin_sock_file);
     VIR_FREE(state_file);
     VIR_FREE(run_dir);
     VIR_FREE(remote_config_file);

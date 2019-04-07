@@ -18,15 +18,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Ben Guthro
  */
 
-#include "internal.h"
+#ifndef LIBVIRT_DOMAIN_EVENT_H
+# define LIBVIRT_DOMAIN_EVENT_H
 
-#ifndef __DOMAIN_EVENT_H__
-# define __DOMAIN_EVENT_H__
-
+# include "internal.h"
 # include "object_event.h"
 # include "domain_conf.h"
 
@@ -234,6 +231,31 @@ virDomainEventJobCompletedNewFromDom(virDomainPtr dom,
                                      virTypedParameterPtr params,
                                      int nparams);
 
+virObjectEventPtr
+virDomainEventMetadataChangeNewFromObj(virDomainObjPtr obj,
+                                       int type,
+                                       const char *nsuri);
+
+virObjectEventPtr
+virDomainEventMetadataChangeNewFromDom(virDomainPtr dom,
+                                       int type,
+                                       const char *nsuri);
+
+
+virObjectEventPtr
+virDomainEventBlockThresholdNewFromObj(virDomainObjPtr obj,
+                                       const char *dev,
+                                       const char *path,
+                                       unsigned long long threshold,
+                                       unsigned long long excess);
+
+virObjectEventPtr
+virDomainEventBlockThresholdNewFromDom(virDomainPtr dom,
+                                       const char *dev,
+                                       const char *path,
+                                       unsigned long long threshold,
+                                       unsigned long long excess);
+
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virObjectEventStatePtr state,
@@ -302,4 +324,4 @@ virDomainQemuMonitorEventNew(int id,
                              const char *details)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
-#endif
+#endif /* LIBVIRT_DOMAIN_EVENT_H */

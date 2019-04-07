@@ -1,7 +1,7 @@
 /*
  * virerror.c: error handling and reporting code for libvirt
  *
- * Copyright (C) 2006, 2008-2016 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,24 +16,22 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel Veillard <veillard@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
 
 #include "virerror.h"
 #include "datatypes.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "virthread.h"
 #include "virutil.h"
 #include "virstring.h"
+
+#define LIBVIRT_VIRERRORPRIV_H_ALLOW
+#include "virerrorpriv.h"
+#undef LIBVIRT_VIRERRORPRIV_H_ALLOW
 
 VIR_LOG_INIT("util.error");
 
@@ -57,7 +55,7 @@ static virLogPriority virErrorLevelPriority(virErrorLevel level)
 }
 
 
-VIR_ENUM_DECL(virErrorDomain)
+VIR_ENUM_DECL(virErrorDomain);
 VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "", /* 0 */
               "Xen Driver",
@@ -139,7 +137,10 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
 
               "Perf", /* 65 */
               "Libssh transport layer",
-    )
+              "Resource control",
+              "FirewallD",
+              "Domain Checkpoint",
+);
 
 
 /*
@@ -271,6 +272,41 @@ virGetLastError(void)
 
 
 /**
+ * virGetLastErrorCode:
+ *
+ * Get the most recent error code (enum virErrorNumber).
+ *
+ * Returns the most recent error code, or VIR_ERR_OK if none is set.
+ */
+int
+virGetLastErrorCode(void)
+{
+    virErrorPtr err = virLastErrorObject();
+    if (!err)
+        return VIR_ERR_OK;
+    return err->code;
+}
+
+
+/**
+ * virGetLastErrorDomain:
+ *
+ * Get the most recent error domain (enum virErrorDomain).
+ *
+ * Returns a numerical value of the most recent error's origin, or VIR_FROM_NONE
+ * if none is set.
+ */
+int
+virGetLastErrorDomain(void)
+{
+    virErrorPtr err = virLastErrorObject();
+    if (!err)
+        return VIR_FROM_NONE;
+    return err->domain;
+}
+
+
+/**
  * virGetLastErrorMessage:
  *
  * Get the most recent error message
@@ -330,19 +366,26 @@ virSetError(virErrorPtr newerr)
  *
  * One will need to free the result with virResetError()
  *
- * Returns 0 if no error was found and the error code otherwise and -1 in case
- *         of parameter error.
+ * Returns error code or -1 in case of parameter error.
  */
 int
 virCopyLastError(virErrorPtr to)
 {
     virErrorPtr err = virLastErrorObject();
+
+    if (!to)
+        return -1;
+
     /* We can't guarantee caller has initialized it to zero */
     memset(to, 0, sizeof(*to));
-    if (err)
+    if (err) {
         virCopyError(err, to);
-    else
+    } else {
         virResetError(to);
+        to->code = VIR_ERR_NO_MEMORY;
+        to->domain = VIR_FROM_NONE;
+        to->level = VIR_ERR_ERROR;
+    }
     return to->code;
 }
 
@@ -369,6 +412,51 @@ virSaveLastError(void)
     errno = saved_errno;
     return to;
 }
+
+
+/**
+ * virErrorPreserveLast:
+ * @saveerr: pointer to virErrorPtr for storing last error object
+ *
+ * Preserves the currently set last error (for the thread) into @saveerr so that
+ * it can be restored via virErrorRestore(). @saveerr must be passed to
+ * virErrorRestore()
+ */
+void
+virErrorPreserveLast(virErrorPtr *saveerr)
+{
+    int saved_errno = errno;
+    virErrorPtr lasterr = virGetLastError();
+
+    *saveerr = NULL;
+
+    if (lasterr)
+        *saveerr = virErrorCopyNew(lasterr);
+
+    errno = saved_errno;
+}
+
+
+/**
+ * virErrorRestore:
+ * @savederr: error object holding saved error
+ *
+ * Restores the error passed via @savederr and clears associated memory.
+ */
+void
+virErrorRestore(virErrorPtr *savederr)
+{
+    int saved_errno = errno;
+
+    if (!*savederr)
+        return;
+
+    virSetError(*savederr);
+    virFreeError(*savederr);
+    *savederr = NULL;
+    errno = saved_errno;
+}
+
 
 /**
  * virResetError:
@@ -816,600 +904,353 @@ void virRaiseErrorObject(const char *filename,
 }
 
 
+typedef struct {
+    const char *msg;
+    const char *msginfo;
+} virErrorMsgTuple;
+
+
+const virErrorMsgTuple virErrorMsgStrings[VIR_ERR_NUMBER_LAST] = {
+    [VIR_ERR_OK] = { NULL, NULL },
+    [VIR_ERR_INTERNAL_ERROR] = {
+        N_("internal error"),
+        N_("internal error: %s") },
+    [VIR_ERR_NO_MEMORY] = {
+        N_("out of memory"),
+        N_("out of memory: %s") },
+    [VIR_ERR_NO_SUPPORT] = {
+        N_("this function is not supported by the connection driver"),
+        N_("this function is not supported by the connection driver: %s") },
+    [VIR_ERR_UNKNOWN_HOST] = {
+        N_("unknown host"),
+        N_("unknown host %s") },
+    [VIR_ERR_NO_CONNECT] = {
+        N_("no connection driver available"),
+        N_("no connection driver available for %s") },
+    [VIR_ERR_INVALID_CONN] = {
+        N_("invalid connection pointer in"),
+        N_("invalid connection pointer in %s") },
+    [VIR_ERR_INVALID_DOMAIN] = {
+        N_("invalid domain pointer in"),
+        N_("invalid domain pointer in %s") },
+    [VIR_ERR_INVALID_ARG] = {
+        N_("invalid argument"),
+        N_("invalid argument: %s") },
+    [VIR_ERR_OPERATION_FAILED] = {
+        N_("operation failed"),
+        N_("operation failed: %s") },
+    [VIR_ERR_GET_FAILED] = {
+        N_("GET operation failed"),
+        N_("GET operation failed: %s") },
+    [VIR_ERR_POST_FAILED] = {
+        N_("POST operation failed"),
+        N_("POST operation failed: %s") },
+    [VIR_ERR_HTTP_ERROR] = {
+        N_("got unknown HTTP error code"),
+        N_("got unknown HTTP error code %s") },
+    [VIR_ERR_SEXPR_SERIAL] = {
+        N_("failed to serialize S-Expr"),
+        N_("failed to serialize S-Expr: %s") },
+    [VIR_ERR_NO_XEN] = {
+        N_("could not use Xen hypervisor entry"),
+        N_("could not use Xen hypervisor entry %s") },
+    [VIR_ERR_XEN_CALL] = {
+        N_("failed Xen syscall"),
+        N_("failed Xen syscall %s") },
+    [VIR_ERR_OS_TYPE] = {
+        N_("unknown OS type"),
+        N_("unknown OS type %s") },
+    [VIR_ERR_NO_KERNEL] = {
+        N_("missing kernel information"),
+        N_("missing kernel information: %s") },
+    [VIR_ERR_NO_ROOT] = {
+        N_("missing root device information"),
+        N_("missing root device information in %s") },
+    [VIR_ERR_NO_SOURCE] = {
+        N_("missing source information for device"),
+        N_("missing source information for device %s") },
+    [VIR_ERR_NO_TARGET] = {
+        N_("missing target information for device"),
+        N_("missing target information for device %s") },
+    [VIR_ERR_NO_NAME] = {
+        N_("missing name information"),
+        N_("missing name information in %s") },
+    [VIR_ERR_NO_OS] = {
+        N_("missing operating system information"),
+        N_("missing operating system information for %s") },
+    [VIR_ERR_NO_DEVICE] = {
+        N_("missing devices information"),
+        N_("missing devices information for %s") },
+    [VIR_ERR_NO_XENSTORE] = {
+        N_("could not connect to Xen Store"),
+        N_("could not connect to Xen Store %s") },
+    [VIR_ERR_DRIVER_FULL] = {
+        N_("too many drivers registered"),
+        N_("too many drivers registered in %s") },
+    [VIR_ERR_CALL_FAILED] = {
+        N_("library call failed"),
+        N_("library call failed: %s") },
+    [VIR_ERR_XML_ERROR] = {
+        N_("XML description is invalid or not well formed"),
+        N_("XML error: %s") },
+    [VIR_ERR_DOM_EXIST] = {
+        N_("this domain exists already"),
+        N_("domain %s exists already") },
+    [VIR_ERR_OPERATION_DENIED] = {
+        N_("operation forbidden for read only access"),
+        N_("operation forbidden: %s") },
+    [VIR_ERR_OPEN_FAILED] = {
+        N_("failed to open configuration file"),
+        N_("failed to open configuration file %s") },
+    [VIR_ERR_READ_FAILED] = {
+        N_("failed to read configuration file"),
+        N_("failed to read configuration file %s") },
+    [VIR_ERR_PARSE_FAILED] = {
+        N_("failed to parse configuration file"),
+        N_("failed to parse configuration file %s") },
+    [VIR_ERR_CONF_SYNTAX] = {
+        N_("configuration file syntax error"),
+        N_("configuration file syntax error: %s") },
+    [VIR_ERR_WRITE_FAILED] = {
+        N_("failed to write configuration file"),
+        N_("failed to write configuration file: %s") },
+    [VIR_ERR_XML_DETAIL] = {
+        N_("parser error"),
+        "%s" },
+    [VIR_ERR_INVALID_NETWORK] = {
+        N_("invalid network pointer in"),
+        N_("invalid network pointer in %s") },
+    [VIR_ERR_NETWORK_EXIST] = {
+        N_("this network exists already"),
+        N_("network %s exists already") },
+    [VIR_ERR_SYSTEM_ERROR] = {
+        N_("system call error"),
+        "%s" },
+    [VIR_ERR_RPC] = {
+        N_("RPC error"),
+        "%s" },
+    [VIR_ERR_GNUTLS_ERROR] = {
+        N_("GNUTLS call error"),
+        "%s" },
+    [VIR_WAR_NO_NETWORK] = {
+        N_("Failed to find the network"),
+        N_("Failed to find the network: %s") },
+    [VIR_ERR_NO_DOMAIN] = {
+        N_("Domain not found"),
+        N_("Domain not found: %s") },
+    [VIR_ERR_NO_NETWORK] = {
+        N_("Network not found"),
+        N_("Network not found: %s") },
+    [VIR_ERR_INVALID_MAC] = {
+        N_("invalid MAC address"),
+        N_("invalid MAC address: %s") },
+    [VIR_ERR_AUTH_FAILED] = {
+        N_("authentication failed"),
+        N_("authentication failed: %s") },
+    [VIR_ERR_INVALID_STORAGE_POOL] = {
+        N_("invalid storage pool pointer in"),
+        N_("invalid storage pool pointer in %s") },
+    [VIR_ERR_INVALID_STORAGE_VOL] = {
+        N_("invalid storage volume pointer in"),
+        N_("invalid storage volume pointer in %s") },
+    [VIR_WAR_NO_STORAGE] = {
+        N_("Failed to find a storage driver"),
+        N_("Failed to find a storage driver: %s") },
+    [VIR_ERR_NO_STORAGE_POOL] = {
+        N_("Storage pool not found"),
+        N_("Storage pool not found: %s") },
+    [VIR_ERR_NO_STORAGE_VOL] = {
+        N_("Storage volume not found"),
+        N_("Storage volume not found: %s") },
+    [VIR_WAR_NO_NODE] = {
+        N_("Failed to find a node driver"),
+        N_("Failed to find a node driver: %s") },
+    [VIR_ERR_INVALID_NODE_DEVICE] = {
+        N_("invalid node device pointer"),
+        N_("invalid node device pointer in %s") },
+    [VIR_ERR_NO_NODE_DEVICE] = {
+        N_("Node device not found"),
+        N_("Node device not found: %s") },
+    [VIR_ERR_NO_SECURITY_MODEL] = {
+        N_("Security model not found"),
+        N_("Security model not found: %s") },
+    [VIR_ERR_OPERATION_INVALID] = {
+        N_("Requested operation is not valid"),
+        N_("Requested operation is not valid: %s") },
+    [VIR_WAR_NO_INTERFACE] = {
+        N_("Failed to find the interface"),
+        N_("Failed to find the interface: %s") },
+    [VIR_ERR_NO_INTERFACE] = {
+        N_("Interface not found"),
+        N_("Interface not found: %s") },
+    [VIR_ERR_INVALID_INTERFACE] = {
+        N_("invalid interface pointer in"),
+        N_("invalid interface pointer in %s") },
+    [VIR_ERR_MULTIPLE_INTERFACES] = {
+        N_("multiple matching interfaces found"),
+        N_("multiple matching interfaces found: %s") },
+    [VIR_WAR_NO_NWFILTER] = {
+        N_("Failed to start the nwfilter driver"),
+        N_("Failed to start the nwfilter driver: %s") },
+    [VIR_ERR_INVALID_NWFILTER] = {
+        N_("Invalid network filter"),
+        N_("Invalid network filter: %s") },
+    [VIR_ERR_NO_NWFILTER] = {
+        N_("Network filter not found"),
+        N_("Network filter not found: %s") },
+    [VIR_ERR_BUILD_FIREWALL] = {
+        N_("Error while building firewall"),
+        N_("Error while building firewall: %s") },
+    [VIR_WAR_NO_SECRET] = {
+        N_("Failed to find a secret storage driver"),
+        N_("Failed to find a secret storage driver: %s") },
+    [VIR_ERR_INVALID_SECRET] = {
+        N_("Invalid secret"),
+        N_("Invalid secret: %s") },
+    [VIR_ERR_NO_SECRET] = {
+        N_("Secret not found"),
+        N_("Secret not found: %s") },
+    [VIR_ERR_CONFIG_UNSUPPORTED] = {
+        N_("unsupported configuration"),
+        N_("unsupported configuration: %s") },
+    [VIR_ERR_OPERATION_TIMEOUT] = {
+        N_("Timed out during operation"),
+        N_("Timed out during operation: %s") },
+    [VIR_ERR_MIGRATE_PERSIST_FAILED] = {
+        N_("Failed to make domain persistent after migration"),
+        N_("Failed to make domain persistent after migration: %s") },
+    [VIR_ERR_HOOK_SCRIPT_FAILED] = {
+        N_("Hook script execution failed"),
+        N_("Hook script execution failed: %s") },
+    [VIR_ERR_INVALID_DOMAIN_SNAPSHOT] = {
+        N_("Invalid domain snapshot"),
+        N_("Invalid domain snapshot: %s") },
+    [VIR_ERR_NO_DOMAIN_SNAPSHOT] = {
+        N_("Domain snapshot not found"),
+        N_("Domain snapshot not found: %s") },
+    [VIR_ERR_INVALID_STREAM] = {
+        N_("invalid stream pointer"),
+        N_("invalid stream pointer in %s") },
+    [VIR_ERR_ARGUMENT_UNSUPPORTED] = {
+        N_("argument unsupported"),
+        N_("argument unsupported: %s") },
+    [VIR_ERR_STORAGE_PROBE_FAILED] = {
+        N_("Storage pool probe failed"),
+        N_("Storage pool probe failed: %s") },
+    [VIR_ERR_STORAGE_POOL_BUILT] = {
+        N_("Storage pool already built"),
+        N_("Storage pool already built: %s") },
+    [VIR_ERR_SNAPSHOT_REVERT_RISKY] = {
+        N_("revert requires force"),
+        N_("revert requires force: %s") },
+    [VIR_ERR_OPERATION_ABORTED] = {
+        N_("operation aborted"),
+        N_("operation aborted: %s") },
+    [VIR_ERR_AUTH_CANCELLED] = {
+        N_("authentication cancelled"),
+        N_("authentication cancelled: %s") },
+    [VIR_ERR_NO_DOMAIN_METADATA] = {
+        N_("metadata not found"),
+        N_("metadata not found: %s") },
+    [VIR_ERR_MIGRATE_UNSAFE] = {
+        N_("Unsafe migration"),
+        N_("Unsafe migration: %s") },
+    [VIR_ERR_OVERFLOW] = {
+        N_("numerical overflow"),
+        N_("numerical overflow: %s") },
+    [VIR_ERR_BLOCK_COPY_ACTIVE] = {
+        N_("block copy still active"),
+        N_("block copy still active: %s") },
+    [VIR_ERR_OPERATION_UNSUPPORTED] = {
+        N_("Operation not supported"),
+        N_("Operation not supported: %s") },
+    [VIR_ERR_SSH] = {
+        N_("SSH transport error"),
+        N_("SSH transport error: %s") },
+    [VIR_ERR_AGENT_UNRESPONSIVE] = {
+        N_("Guest agent is not responding"),
+        N_("Guest agent is not responding: %s") },
+    [VIR_ERR_RESOURCE_BUSY] = {
+        N_("resource busy"),
+        N_("resource busy: %s") },
+    [VIR_ERR_ACCESS_DENIED] = {
+        N_("access denied"),
+        N_("access denied: %s") },
+    [VIR_ERR_DBUS_SERVICE] = {
+        N_("error from service"),
+        N_("error from service: %s") },
+    [VIR_ERR_STORAGE_VOL_EXIST] = {
+        N_("this storage volume exists already"),
+        N_("storage volume %s exists already") },
+    [VIR_ERR_CPU_INCOMPATIBLE] = {
+        N_("the CPU is incompatible with host CPU"),
+        N_("the CPU is incompatible with host CPU: %s") },
+    [VIR_ERR_XML_INVALID_SCHEMA] = {
+        N_("XML document failed to validate against schema"),
+        N_("XML document failed to validate against schema: %s") },
+    [VIR_ERR_MIGRATE_FINISH_OK] = {
+        N_("migration successfully aborted"),
+        N_("migration successfully aborted: %s") },
+    [VIR_ERR_AUTH_UNAVAILABLE] = {
+        N_("authentication unavailable"),
+        N_("authentication unavailable: %s") },
+    [VIR_ERR_NO_SERVER] = {
+        N_("Server not found"),
+        N_("Server not found: %s") },
+    [VIR_ERR_NO_CLIENT] = {
+        N_("Client not found"),
+        N_("Client not found: %s") },
+    [VIR_ERR_AGENT_UNSYNCED] = {
+        N_("guest agent replied with wrong id to guest-sync command"),
+        N_("guest agent replied with wrong id to guest-sync command: %s") },
+    [VIR_ERR_LIBSSH] = {
+        N_("libssh transport error"),
+        N_("libssh transport error: %s") },
+    [VIR_ERR_DEVICE_MISSING] = {
+        N_("device not found"),
+        N_("device not found: %s") },
+    [VIR_ERR_INVALID_NWFILTER_BINDING] = {
+        N_("Invalid network filter binding"),
+        N_("Invalid network filter binding: %s") },
+    [VIR_ERR_NO_NWFILTER_BINDING] = {
+        N_("Network filter binding not found"),
+        N_("Network filter binding not found: %s") },
+    [VIR_ERR_INVALID_DOMAIN_CHECKPOINT] = {
+        N_("Invalid domain checkpoint"),
+        N_("Invalid domain checkpoint: %s") },
+    [VIR_ERR_NO_DOMAIN_CHECKPOINT] = {
+        N_("Domain checkpoint not found"),
+        N_("Domain checkpoint not found: %s") },
+    [VIR_ERR_NO_DOMAIN_BACKUP] = {
+        N_("Domain backup job id not found"),
+        N_("Domain backup job id not found: %s") },
+};
+
+
 /**
  * virErrorMsg:
  * @error: the virErrorNumber
- * @info: usually the first parameter string
+ * @info: additional info string
  *
- * Internal routine to get the message associated to an error raised
- * from the library
+ * Internal routine to get the message associated to @error raised
+ * from the library.
  *
- * Returns the constant string associated to @error
+ * Returns a *printf format string which describes @error. The returned string
+ * contains exactly one '%s' modifier if @info is non-NULL, or no modifiers at
+ * all if @info is NULL. If @error is invalid NULL is returned.
  */
-static const char *
+const char *
 virErrorMsg(virErrorNumber error, const char *info)
 {
-    const char *errmsg = NULL;
+    if (error >= VIR_ERR_NUMBER_LAST)
+        return NULL;
 
-    switch (error) {
-        case VIR_ERR_OK:
-            return NULL;
-        case VIR_ERR_INTERNAL_ERROR:
-            if (info != NULL)
-              errmsg = _("internal error: %s");
-            else
-              errmsg = _("internal error");
-            break;
-        case VIR_ERR_NO_MEMORY:
-            errmsg = _("out of memory");
-            break;
-        case VIR_ERR_NO_SUPPORT:
-            if (info == NULL)
-                errmsg = _("this function is not supported by the connection driver");
-            else
-                errmsg = _("this function is not supported by the connection driver: %s");
-            break;
-        case VIR_ERR_NO_CONNECT:
-            if (info == NULL)
-                errmsg = _("no connection driver available");
-            else
-                errmsg = _("no connection driver available for %s");
-            break;
-        case VIR_ERR_INVALID_CONN:
-            if (info == NULL)
-                errmsg = _("invalid connection pointer in");
-            else
-                errmsg = _("invalid connection pointer in %s");
-            break;
-        case VIR_ERR_INVALID_DOMAIN:
-            if (info == NULL)
-                errmsg = _("invalid domain pointer in");
-            else
-                errmsg = _("invalid domain pointer in %s");
-            break;
-        case VIR_ERR_INVALID_ARG:
-            if (info == NULL)
-                errmsg = _("invalid argument");
-            else
-                errmsg = _("invalid argument: %s");
-            break;
-        case VIR_ERR_OPERATION_FAILED:
-            if (info != NULL)
-                errmsg = _("operation failed: %s");
-            else
-                errmsg = _("operation failed");
-            break;
-        case VIR_ERR_GET_FAILED:
-            if (info != NULL)
-                errmsg = _("GET operation failed: %s");
-            else
-                errmsg = _("GET operation failed");
-            break;
-        case VIR_ERR_POST_FAILED:
-            if (info != NULL)
-                errmsg = _("POST operation failed: %s");
-            else
-                errmsg = _("POST operation failed");
-            break;
-        case VIR_ERR_HTTP_ERROR:
-            errmsg = _("got unknown HTTP error code %d");
-            break;
-        case VIR_ERR_UNKNOWN_HOST:
-            if (info != NULL)
-                errmsg = _("unknown host %s");
-            else
-                errmsg = _("unknown host");
-            break;
-        case VIR_ERR_SEXPR_SERIAL:
-            if (info != NULL)
-                errmsg = _("failed to serialize S-Expr: %s");
-            else
-                errmsg = _("failed to serialize S-Expr");
-            break;
-        case VIR_ERR_NO_XEN:
-            if (info == NULL)
-                errmsg = _("could not use Xen hypervisor entry");
-            else
-                errmsg = _("could not use Xen hypervisor entry %s");
-            break;
-        case VIR_ERR_NO_XENSTORE:
-            if (info == NULL)
-                errmsg = _("could not connect to Xen Store");
-            else
-                errmsg = _("could not connect to Xen Store %s");
-            break;
-        case VIR_ERR_XEN_CALL:
-            errmsg = _("failed Xen syscall %s");
-            break;
-        case VIR_ERR_OS_TYPE:
-            if (info == NULL)
-                errmsg = _("unknown OS type");
-            else
-                errmsg = _("unknown OS type %s");
-            break;
-        case VIR_ERR_NO_KERNEL:
-            errmsg = _("missing kernel information");
-            break;
-        case VIR_ERR_NO_ROOT:
-            if (info == NULL)
-                errmsg = _("missing root device information");
-            else
-                errmsg = _("missing root device information in %s");
-            break;
-        case VIR_ERR_NO_SOURCE:
-            if (info == NULL)
-                errmsg = _("missing source information for device");
-            else
-                errmsg = _("missing source information for device %s");
-            break;
-        case VIR_ERR_NO_TARGET:
-            if (info == NULL)
-                errmsg = _("missing target information for device");
-            else
-                errmsg = _("missing target information for device %s");
-            break;
-        case VIR_ERR_NO_NAME:
-            if (info == NULL)
-                errmsg = _("missing name information");
-            else
-                errmsg = _("missing name information in %s");
-            break;
-        case VIR_ERR_NO_OS:
-            if (info == NULL)
-                errmsg = _("missing operating system information");
-            else
-                errmsg = _("missing operating system information for %s");
-            break;
-        case VIR_ERR_NO_DEVICE:
-            if (info == NULL)
-                errmsg = _("missing devices information");
-            else
-                errmsg = _("missing devices information for %s");
-            break;
-        case VIR_ERR_DRIVER_FULL:
-            if (info == NULL)
-                errmsg = _("too many drivers registered");
-            else
-                errmsg = _("too many drivers registered in %s");
-            break;
-        case VIR_ERR_CALL_FAILED: /* DEPRECATED, use VIR_ERR_NO_SUPPORT */
-            if (info == NULL)
-                errmsg = _("library call failed, possibly not supported");
-            else
-                errmsg = _("library call %s failed, possibly not supported");
-            break;
-        case VIR_ERR_XML_ERROR:
-            if (info == NULL)
-                errmsg = _("XML description is invalid or not well formed");
-            else
-                errmsg = _("XML error: %s");
-            break;
-        case VIR_ERR_DOM_EXIST:
-            if (info == NULL)
-                errmsg = _("this domain exists already");
-            else
-                errmsg = _("domain %s exists already");
-            break;
-        case VIR_ERR_OPERATION_DENIED:
-            if (info == NULL)
-                errmsg = _("operation forbidden for read only access");
-            else
-                errmsg = _("operation forbidden: %s");
-            break;
-        case VIR_ERR_OPEN_FAILED:
-            if (info == NULL)
-                errmsg = _("failed to open configuration file for reading");
-            else
-                errmsg = _("failed to open %s for reading");
-            break;
-        case VIR_ERR_READ_FAILED:
-            if (info == NULL)
-                errmsg = _("failed to read configuration file");
-            else
-                errmsg = _("failed to read configuration file %s");
-            break;
-        case VIR_ERR_PARSE_FAILED:
-            if (info == NULL)
-                errmsg = _("failed to parse configuration file");
-            else
-                errmsg = _("failed to parse configuration file %s");
-            break;
-        case VIR_ERR_CONF_SYNTAX:
-            if (info == NULL)
-                errmsg = _("configuration file syntax error");
-            else
-                errmsg = _("configuration file syntax error: %s");
-            break;
-        case VIR_ERR_WRITE_FAILED:
-            if (info == NULL)
-                errmsg = _("failed to write configuration file");
-            else
-                errmsg = _("failed to write configuration file: %s");
-            break;
-        case VIR_ERR_XML_DETAIL:
-            if (info == NULL)
-                errmsg = _("parser error");
-            else
-                errmsg = "%s";
-            break;
-        case VIR_ERR_INVALID_NETWORK:
-            if (info == NULL)
-                errmsg = _("invalid network pointer in");
-            else
-                errmsg = _("invalid network pointer in %s");
-            break;
-        case VIR_ERR_NETWORK_EXIST:
-            if (info == NULL)
-                errmsg = _("this network exists already");
-            else
-                errmsg = _("network %s exists already");
-            break;
-        case VIR_ERR_SYSTEM_ERROR:
-            if (info == NULL)
-                errmsg = _("system call error");
-            else
-                errmsg = "%s";
-            break;
-        case VIR_ERR_RPC:
-            if (info == NULL)
-                errmsg = _("RPC error");
-            else
-                errmsg = "%s";
-            break;
-        case VIR_ERR_GNUTLS_ERROR:
-            if (info == NULL)
-                errmsg = _("GNUTLS call error");
-            else
-                errmsg = "%s";
-            break;
-        case VIR_WAR_NO_NETWORK:
-            if (info == NULL)
-                errmsg = _("Failed to find the network");
-            else
-                errmsg = _("Failed to find the network: %s");
-            break;
-        case VIR_ERR_NO_DOMAIN:
-            if (info == NULL)
-                errmsg = _("Domain not found");
-            else
-                errmsg = _("Domain not found: %s");
-            break;
-        case VIR_ERR_NO_NETWORK:
-            if (info == NULL)
-                errmsg = _("Network not found");
-            else
-                errmsg = _("Network not found: %s");
-            break;
-        case VIR_ERR_INVALID_MAC:
-            if (info == NULL)
-                errmsg = _("invalid MAC address");
-            else
-                errmsg = _("invalid MAC address: %s");
-            break;
-        case VIR_ERR_AUTH_FAILED:
-            if (info == NULL)
-                errmsg = _("authentication failed");
-            else
-                errmsg = _("authentication failed: %s");
-            break;
-        case VIR_ERR_AUTH_CANCELLED:
-            if (info == NULL)
-                errmsg = _("authentication cancelled");
-            else
-                errmsg = _("authentication cancelled: %s");
-            break;
-        case VIR_ERR_AUTH_UNAVAILABLE:
-            if (info == NULL)
-                errmsg = _("authentication unavailable");
-            else
-                errmsg = _("authentication unavailable: %s");
-            break;
-        case VIR_ERR_NO_STORAGE_POOL:
-            if (info == NULL)
-                errmsg = _("Storage pool not found");
-            else
-                errmsg = _("Storage pool not found: %s");
-            break;
-        case VIR_ERR_NO_STORAGE_VOL:
-            if (info == NULL)
-                errmsg = _("Storage volume not found");
-            else
-                errmsg = _("Storage volume not found: %s");
-            break;
-        case VIR_ERR_STORAGE_VOL_EXIST:
-            if (info == NULL)
-                errmsg = _("this storage volume exists already");
-            else
-                errmsg = _("storage volume %s exists already");
-            break;
-        case VIR_ERR_STORAGE_PROBE_FAILED:
-            if (info == NULL)
-                errmsg = _("Storage pool probe failed");
-            else
-                errmsg = _("Storage pool probe failed: %s");
-            break;
-        case VIR_ERR_STORAGE_POOL_BUILT:
-            if (info == NULL)
-                errmsg = _("Storage pool already built");
-            else
-                errmsg = _("Storage pool already built: %s");
-            break;
-        case VIR_ERR_INVALID_STORAGE_POOL:
-            if (info == NULL)
-                errmsg = _("invalid storage pool pointer in");
-            else
-                errmsg = _("invalid storage pool pointer in %s");
-            break;
-        case VIR_ERR_INVALID_STORAGE_VOL:
-            if (info == NULL)
-                errmsg = _("invalid storage volume pointer in");
-            else
-                errmsg = _("invalid storage volume pointer in %s");
-            break;
-        case VIR_WAR_NO_STORAGE:
-            if (info == NULL)
-                errmsg = _("Failed to find a storage driver");
-            else
-                errmsg = _("Failed to find a storage driver: %s");
-            break;
-        case VIR_WAR_NO_NODE:
-            if (info == NULL)
-                errmsg = _("Failed to find a node driver");
-            else
-                errmsg = _("Failed to find a node driver: %s");
-            break;
-        case VIR_ERR_INVALID_NODE_DEVICE:
-            if (info == NULL)
-                errmsg = _("invalid node device pointer");
-            else
-                errmsg = _("invalid node device pointer in %s");
-            break;
-        case VIR_ERR_NO_NODE_DEVICE:
-            if (info == NULL)
-                errmsg = _("Node device not found");
-            else
-                errmsg = _("Node device not found: %s");
-            break;
-        case VIR_ERR_NO_SECURITY_MODEL:
-            if (info == NULL)
-                errmsg = _("Security model not found");
-            else
-                errmsg = _("Security model not found: %s");
-            break;
-        case VIR_ERR_OPERATION_INVALID:
-            if (info == NULL)
-                errmsg = _("Requested operation is not valid");
-            else
-                errmsg = _("Requested operation is not valid: %s");
-            break;
-        case VIR_WAR_NO_INTERFACE:
-            if (info == NULL)
-                errmsg = _("Failed to find the interface");
-            else
-                errmsg = _("Failed to find the interface: %s");
-            break;
-        case VIR_ERR_NO_INTERFACE:
-            if (info == NULL)
-                errmsg = _("Interface not found");
-            else
-                errmsg = _("Interface not found: %s");
-            break;
-        case VIR_ERR_INVALID_INTERFACE:
-            if (info == NULL)
-                errmsg = _("invalid interface pointer in");
-            else
-                errmsg = _("invalid interface pointer in %s");
-            break;
-        case VIR_ERR_MULTIPLE_INTERFACES:
-            if (info == NULL)
-                errmsg = _("multiple matching interfaces found");
-            else
-                errmsg = _("multiple matching interfaces found: %s");
-            break;
-        case VIR_WAR_NO_SECRET:
-            if (info == NULL)
-                errmsg = _("Failed to find a secret storage driver");
-            else
-                errmsg = _("Failed to find a secret storage driver: %s");
-            break;
-        case VIR_ERR_INVALID_SECRET:
-            if (info == NULL)
-                errmsg = _("Invalid secret");
-            else
-                errmsg = _("Invalid secret: %s");
-            break;
-        case VIR_ERR_NO_SECRET:
-            if (info == NULL)
-                errmsg = _("Secret not found");
-            else
-                errmsg = _("Secret not found: %s");
-            break;
-        case VIR_WAR_NO_NWFILTER:
-            if (info == NULL)
-                errmsg = _("Failed to start the nwfilter driver");
-            else
-                errmsg = _("Failed to start the nwfilter driver: %s");
-            break;
-        case VIR_ERR_INVALID_NWFILTER:
-            if (info == NULL)
-                errmsg = _("Invalid network filter");
-            else
-                errmsg = _("Invalid network filter: %s");
-            break;
-        case VIR_ERR_NO_NWFILTER:
-            if (info == NULL)
-                errmsg = _("Network filter not found");
-            else
-                errmsg = _("Network filter not found: %s");
-            break;
-        case VIR_ERR_BUILD_FIREWALL:
-            if (info == NULL)
-                errmsg = _("Error while building firewall");
-            else
-                errmsg = _("Error while building firewall: %s");
-            break;
-        case VIR_ERR_CONFIG_UNSUPPORTED:
-            if (info == NULL)
-                errmsg = _("unsupported configuration");
-            else
-                errmsg = _("unsupported configuration: %s");
-            break;
-        case VIR_ERR_OPERATION_TIMEOUT:
-            if (info == NULL)
-                errmsg = _("Timed out during operation");
-            else
-                errmsg = _("Timed out during operation: %s");
-            break;
-        case VIR_ERR_MIGRATE_PERSIST_FAILED:
-            if (info == NULL)
-                errmsg = _("Failed to make domain persistent after migration");
-            else
-                errmsg = _("Failed to make domain persistent after migration: %s");
-            break;
-        case VIR_ERR_HOOK_SCRIPT_FAILED:
-            if (info == NULL)
-                errmsg = _("Hook script execution failed");
-            else
-                errmsg = _("Hook script execution failed: %s");
-            break;
-        case VIR_ERR_INVALID_DOMAIN_SNAPSHOT:
-            if (info == NULL)
-                errmsg = _("Invalid snapshot");
-            else
-                errmsg = _("Invalid snapshot: %s");
-            break;
-        case VIR_ERR_NO_DOMAIN_SNAPSHOT:
-            if (info == NULL)
-                errmsg = _("Domain snapshot not found");
-            else
-                errmsg = _("Domain snapshot not found: %s");
-            break;
-        case VIR_ERR_INVALID_STREAM:
-            if (info == NULL)
-                errmsg = _("invalid stream pointer");
-            else
-                errmsg = _("invalid stream pointer in %s");
-            break;
-        case VIR_ERR_ARGUMENT_UNSUPPORTED:
-            if (info == NULL)
-                errmsg = _("argument unsupported");
-            else
-                errmsg = _("argument unsupported: %s");
-            break;
-        case VIR_ERR_SNAPSHOT_REVERT_RISKY:
-            if (info == NULL)
-                errmsg = _("revert requires force");
-            else
-                errmsg = _("revert requires force: %s");
-            break;
-        case VIR_ERR_OPERATION_ABORTED:
-            if (info == NULL)
-                errmsg = _("operation aborted");
-            else
-                errmsg = _("operation aborted: %s");
-            break;
-        case VIR_ERR_NO_DOMAIN_METADATA:
-            if (info == NULL)
-                errmsg = _("metadata not found");
-            else
-                errmsg = _("metadata not found: %s");
-            break;
-        case VIR_ERR_MIGRATE_UNSAFE:
-            if (!info)
-                errmsg = _("Unsafe migration");
-            else
-                errmsg = _("Unsafe migration: %s");
-            break;
-        case VIR_ERR_OVERFLOW:
-            if (!info)
-                errmsg = _("numerical overflow");
-            else
-                errmsg = _("numerical overflow: %s");
-            break;
-        case VIR_ERR_BLOCK_COPY_ACTIVE:
-            if (!info)
-                errmsg = _("block copy still active");
-            else
-                errmsg = _("block copy still active: %s");
-            break;
-        case VIR_ERR_OPERATION_UNSUPPORTED:
-            if (!info)
-                errmsg = _("Operation not supported");
-            else
-                errmsg = _("Operation not supported: %s");
-            break;
-        case VIR_ERR_SSH:
-            if (info == NULL)
-                errmsg = _("SSH transport error");
-            else
-                errmsg = _("SSH transport error: %s");
-            break;
-        case VIR_ERR_AGENT_UNRESPONSIVE:
-            if (info == NULL)
-                errmsg = _("Guest agent is not responding");
-            else
-                errmsg = _("Guest agent is not responding: %s");
-            break;
-        case VIR_ERR_RESOURCE_BUSY:
-            if (info == NULL)
-                errmsg = _("resource busy");
-            else
-                errmsg = _("resource busy: %s");
-            break;
-        case VIR_ERR_ACCESS_DENIED:
-            if (info == NULL)
-                errmsg = _("access denied");
-            else
-                errmsg = _("access denied: %s");
-            break;
-        case VIR_ERR_DBUS_SERVICE:
-            if (info == NULL)
-                errmsg = _("error from service");
-            else
-                errmsg = _("error from service: %s");
-            break;
-        case VIR_ERR_CPU_INCOMPATIBLE:
-            if (info == NULL)
-                errmsg = _("the CPU is incompatible with host CPU");
-            else
-                errmsg = _("the CPU is incompatible with host CPU: %s");
-            break;
-        case VIR_ERR_XML_INVALID_SCHEMA:
-            if (info == NULL)
-                errmsg = _("XML document failed to validate against schema");
-            else
-                errmsg = _("XML document failed to validate against schema: %s");
-            break;
-        case VIR_ERR_MIGRATE_FINISH_OK:
-            errmsg = _("migration successfully aborted");
-            break;
-        case VIR_ERR_NO_SERVER:
-            if (info == NULL)
-                errmsg = _("Server not found");
-            else
-                errmsg = _("Server not found: %s");
-            break;
-        case VIR_ERR_NO_CLIENT:
-            if (info == NULL)
-                errmsg = _("Client not found");
-            else
-                errmsg = _("Client not found: %s");
-            break;
-        case VIR_ERR_AGENT_UNSYNCED:
-            if (info == NULL)
-                errmsg = _("guest agent replied with wrong id to guest-sync command");
-            else
-                errmsg = _("guest agent replied with wrong id to guest-sync command: %s");
-            break;
-        case VIR_ERR_LIBSSH:
-            if (info == NULL)
-                errmsg = _("libssh transport error");
-            else
-                errmsg = _("libssh transport error: %s");
-            break;
-    }
-    return errmsg;
+    if (info)
+        return _(virErrorMsgStrings[error].msginfo);
+    else
+        return _(virErrorMsgStrings[error].msg);
 }
+
 
 /**
  * virReportErrorHelper:
@@ -1434,7 +1275,7 @@ void virReportErrorHelper(int domcode,
 {
     int save_errno = errno;
     va_list args;
-    char errorMessage[1024];
+    char errorMessage[VIR_ERROR_MAX_LENGTH];
     const char *virerr;
 
     if (fmt) {
@@ -1495,8 +1336,8 @@ void virReportSystemErrorFull(int domcode,
                               const char *fmt, ...)
 {
     int save_errno = errno;
-    char strerror_buf[1024];
-    char msgDetailBuf[1024];
+    char strerror_buf[VIR_ERROR_MAX_LENGTH];
+    char msgDetailBuf[VIR_ERROR_MAX_LENGTH];
 
     const char *errnoDetail = virStrerror(theerrno, strerror_buf,
                                           sizeof(strerror_buf));

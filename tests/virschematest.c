@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Ján Tomko <jtomko@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "testutils.h"
 
@@ -35,6 +32,7 @@ VIR_LOG_INIT("tests.schematest");
 
 struct testSchemaData {
     virXMLValidatorPtr validator;
+    const char *schema;
     const char *xml_path;
 };
 
@@ -43,7 +41,7 @@ static int
 testSchemaFile(const void *args)
 {
     const struct testSchemaData *data = args;
-    bool shouldFail = virFileHasSuffix(data->xml_path, "-invalid.xml");
+    bool shouldFail = virStringHasSuffix(data->xml_path, "-invalid.xml");
     xmlDocPtr xml = NULL;
     int ret = -1;
 
@@ -84,7 +82,9 @@ testSchemaDir(const char *schema,
         return -1;
 
     while ((rc = virDirRead(dir, &ent, dir_path)) > 0) {
-        if (!virFileHasSuffix(ent->d_name, ".xml"))
+        if (!virStringHasSuffix(ent->d_name, ".xml"))
+            continue;
+        if (ent->d_name[0] == '.')
             continue;
 
         if (virAsprintf(&xml_path, "%s/%s", dir_path, ent->d_name) < 0)
@@ -140,20 +140,15 @@ testSchemaDirs(const char *schema, virXMLValidatorPtr validator, ...)
 }
 
 
-struct testSchemaFileData {
-    virXMLValidatorPtr validator;
-    const char *schema;
-};
-
 static int
 testSchemaGrammar(const void *opaque)
 {
-    struct testSchemaFileData *data = (struct testSchemaFileData *) opaque;
+    struct testSchemaData *data = (struct testSchemaData *) opaque;
     char *schema_path;
     int ret = -1;
 
     if (virAsprintf(&schema_path, "%s/docs/schemas/%s",
-                    abs_topsrcdir, data->schema) < 0)
+                    abs_top_srcdir, data->schema) < 0)
         return -1;
 
     if (!(data->validator = virXMLValidatorInit(schema_path)))
@@ -171,53 +166,80 @@ static int
 mymain(void)
 {
     int ret = 0;
-    struct testSchemaFileData data;
+    struct testSchemaData data;
 
     memset(&data, 0, sizeof(data));
 
-#define DO_TEST(sch, ...)                                                      \
-    do {                                                                       \
-        data.schema = sch;                                                     \
-        if (virTestRun("test schema grammar file: " sch,                       \
-                       testSchemaGrammar, &data) == 0) {                       \
-            /* initialize the validator even if the schema test                \
-             * was skipped because of VIR_TEST_RANGE */                        \
-            if (!data.validator && testSchemaGrammar(&data) < 0) {             \
-                ret = -1;                                                      \
-                break;                                                         \
-            }                                                                  \
-            if (testSchemaDirs(sch, data.validator, __VA_ARGS__, NULL) < 0)    \
-                ret = -1;                                                      \
-                                                                               \
-            virXMLValidatorFree(data.validator);                               \
-            data.validator = NULL;                                             \
-        } else {                                                               \
-            ret = -1;                                                          \
-        }                                                                      \
+#define DO_TEST_DIR(sch, ...) \
+    do { \
+        data.schema = sch; \
+        if (virTestRun("test schema grammar file: " sch, \
+                       testSchemaGrammar, &data) == 0) { \
+            /* initialize the validator even if the schema test \
+             * was skipped because of VIR_TEST_RANGE */ \
+            if (!data.validator && testSchemaGrammar(&data) < 0) { \
+                ret = -1; \
+                break; \
+            } \
+            if (testSchemaDirs(sch, data.validator, __VA_ARGS__, NULL) < 0) \
+                ret = -1; \
+ \
+            virXMLValidatorFree(data.validator); \
+            data.validator = NULL; \
+        } else { \
+            ret = -1; \
+        } \
     } while (0)
 
-    DO_TEST("capability.rng", "capabilityschemadata", "xencapsdata");
-    DO_TEST("domain.rng", "domainschemadata", "qemuargv2xmldata",
-            "qemuxml2argvdata", "sexpr2xmldata", "xmconfigdata",
-            "xml2sexprdata", "qemuxml2xmloutdata", "lxcxml2xmldata",
-            "lxcxml2xmloutdata", "bhyvexml2argvdata", "genericxml2xmlindata",
-            "genericxml2xmloutdata", "xlconfigdata",
-            "qemuhotplugtestdomains");
-    DO_TEST("domaincaps.rng", "domaincapsschemadata");
-    DO_TEST("domainsnapshot.rng", "domainsnapshotxml2xmlin",
-            "domainsnapshotxml2xmlout");
-    DO_TEST("interface.rng", "interfaceschemadata");
-    DO_TEST("network.rng", "../src/network", "networkxml2xmlin",
-            "networkxml2xmlout", "networkxml2confdata");
-    DO_TEST("nodedev.rng", "nodedevschemadata");
-    DO_TEST("nwfilter.rng", "nwfilterxml2xmlout");
-    DO_TEST("secret.rng", "secretxml2xmlin");
-    DO_TEST("storagepool.rng", "storagepoolxml2xmlin", "storagepoolxml2xmlout",
-            "storagepoolschemadata");
-    DO_TEST("storagevol.rng", "storagevolxml2xmlin", "storagevolxml2xmlout",
-            "storagevolschemadata");
+#define DO_TEST_FILE(sch, xmlfile) \
+    do { \
+        data.schema = sch; \
+        data.xml_path = abs_srcdir "/" xmlfile; \
+        if (virTestRun("test schema grammar file: " sch, \
+                       testSchemaGrammar, &data) == 0) { \
+            /* initialize the validator even if the schema test \
+             * was skipped because of VIR_TEST_RANGE */ \
+            if (!data.validator && testSchemaGrammar(&data) < 0) { \
+                ret = -1; \
+                break; \
+            } \
+            if (virTestRun("Checking " xmlfile " against " sch, \
+                           testSchemaFile, &data) < 0) \
+                ret = -1; \
+ \
+            virXMLValidatorFree(data.validator); \
+            data.validator = NULL; \
+        } else { \
+            ret = -1; \
+        } \
+    } while (0)
+
+    DO_TEST_DIR("capability.rng", "capabilityschemadata", "vircaps2xmldata");
+    DO_TEST_DIR("domain.rng", "domainschemadata", "qemuargv2xmldata",
+                "qemuxml2argvdata", "sexpr2xmldata", "xmconfigdata",
+                "xml2sexprdata", "qemuxml2xmloutdata", "lxcxml2xmldata",
+                "lxcxml2xmloutdata", "bhyvexml2argvdata", "genericxml2xmlindata",
+                "genericxml2xmloutdata", "xlconfigdata", "libxlxml2domconfigdata",
+                "qemuhotplugtestdomains");
+    DO_TEST_DIR("domaincaps.rng", "domaincapsschemadata");
+    DO_TEST_DIR("domainsnapshot.rng", "domainsnapshotxml2xmlin",
+                "domainsnapshotxml2xmlout");
+    DO_TEST_DIR("interface.rng", "interfaceschemadata");
+    DO_TEST_DIR("network.rng", "../src/network", "networkxml2xmlin",
+                "networkxml2xmlout", "networkxml2confdata");
+    DO_TEST_DIR("nodedev.rng", "nodedevschemadata");
+    DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout", "../examples/xml/nwfilter");
+    DO_TEST_DIR("nwfilterbinding.rng", "virnwfilterbindingxml2xmldata");
+    DO_TEST_DIR("secret.rng", "secretxml2xmlin");
+    DO_TEST_DIR("storagepoolcaps.rng", "storagepoolcapsschemadata");
+    DO_TEST_DIR("storagepool.rng", "storagepoolxml2xmlin", "storagepoolxml2xmlout",
+                "storagepoolschemadata");
+    DO_TEST_DIR("storagevol.rng", "storagevolxml2xmlin", "storagevolxml2xmlout",
+                "storagevolschemadata");
+
+    DO_TEST_FILE("../news.rng", "../docs/news.xml");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

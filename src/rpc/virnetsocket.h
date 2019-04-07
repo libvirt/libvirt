@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NET_SOCKET_H__
-# define __VIR_NET_SOCKET_H__
+#ifndef LIBVIRT_VIRNETSOCKET_H
+# define LIBVIRT_VIRNETSOCKET_H
 
 # include "virsocketaddr.h"
 # include "vircommand.h"
@@ -136,12 +134,16 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 uid_t *uid,
                                 gid_t *gid,
                                 pid_t *pid,
-                                unsigned long long *timestamp);
+                                unsigned long long *timestamp)
+    ATTRIBUTE_NOINLINE;
 int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
-                                  char **context);
+                                  char **context)
+    ATTRIBUTE_NOINLINE;
 
 int virNetSocketSetBlocking(virNetSocketPtr sock,
                             bool blocking);
+
+void virNetSocketSetQuietEOF(virNetSocketPtr sock);
 
 ssize_t virNetSocketRead(virNetSocketPtr sock, char *buf, size_t len);
 ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len);
@@ -183,4 +185,4 @@ void virNetSocketRemoveIOCallback(virNetSocketPtr sock);
 void virNetSocketClose(virNetSocketPtr sock);
 
 
-#endif /* __VIR_NET_SOCKET_H__ */
+#endif /* LIBVIRT_VIRNETSOCKET_H */

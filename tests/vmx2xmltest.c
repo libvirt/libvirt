@@ -4,8 +4,6 @@
 
 #ifdef WITH_VMX
 
-# include <stdio.h>
-# include <string.h>
 # include <unistd.h>
 
 # include "internal.h"
@@ -30,7 +28,7 @@ testCapsInit(void)
     if (caps == NULL)
         return;
 
-    virCapabilitiesAddHostMigrateTransport(caps, "esx");
+    virCapabilitiesAddHostMigrateTransport(caps, "vpxmigr");
 
     /* i686 guest */
     guest =
@@ -81,7 +79,7 @@ testCompareFiles(const char *vmx, const char *xml)
     if (!(def = virVMXParseConfig(&ctx, xmlopt, caps, vmxData)))
         goto cleanup;
 
-    if (!virDomainDefCheckABIStability(def, def)) {
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", vmx);
         goto cleanup;
     }
@@ -180,14 +178,14 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST(_in, _out)                                                   \
-        do {                                                                  \
-            struct testInfo info = { _in, _out };                             \
-            virResetLastError();                                              \
-            if (virTestRun("VMware VMX-2-XML "_in" -> "_out,                  \
-                           testCompareHelper, &info) < 0) {                   \
-                ret = -1;                                                     \
-            }                                                                 \
+# define DO_TEST(_in, _out) \
+        do { \
+            struct testInfo info = { _in, _out }; \
+            virResetLastError(); \
+            if (virTestRun("VMware VMX-2-XML "_in" -> "_out, \
+                           testCompareHelper, &info) < 0) { \
+                ret = -1; \
+            } \
         } while (0)
 
     testCapsInit();
@@ -268,6 +266,8 @@ mymain(void)
     DO_TEST("esx-in-the-wild-5", "esx-in-the-wild-5");
     DO_TEST("esx-in-the-wild-6", "esx-in-the-wild-6");
     DO_TEST("esx-in-the-wild-7", "esx-in-the-wild-7");
+    DO_TEST("esx-in-the-wild-8", "esx-in-the-wild-8");
+    DO_TEST("esx-in-the-wild-9", "esx-in-the-wild-9");
 
     DO_TEST("gsx-in-the-wild-1", "gsx-in-the-wild-1");
     DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2");
@@ -295,7 +295,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

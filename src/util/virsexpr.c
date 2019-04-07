@@ -22,11 +22,7 @@
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "c-ctype.h"
-#include <errno.h>
 
 #include "virerror.h"
 #include "virsexpr.h"

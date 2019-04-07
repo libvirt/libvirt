@@ -16,18 +16,21 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
-#ifndef VIRSH_SECRET_H
-# define VIRSH_SECRET_H
+#ifndef LIBVIRT_VIRSH_SECRET_H
+# define LIBVIRT_VIRSH_SECRET_H
 
 # include "virsh.h"
 
+struct virshSecretEventCallback {
+    const char *name;
+    virConnectSecretEventGenericCallback cb;
+};
+typedef struct virshSecretEventCallback virshSecretEventCallback;
+
+extern virshSecretEventCallback virshSecretEventCallbacks[];
+
 extern const vshCmdDef secretCmds[];
 
-#endif /* VIRSH_SECRET_H */
+#endif /* LIBVIRT_VIRSH_SECRET_H */

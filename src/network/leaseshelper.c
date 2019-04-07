@@ -18,15 +18,11 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Author: Nehal J Wani <nehaljw.kkd1@gmail.com>
- *
  * For IPv6 support, use dnsmasq >= 2.67
  */
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "virthread.h"
 #include "virfile.h"
@@ -77,7 +73,8 @@ enum virLeaseActionFlags {
 VIR_ENUM_DECL(virLeaseAction);
 
 VIR_ENUM_IMPL(virLeaseAction, VIR_LEASE_ACTION_LAST,
-              "add", "old", "del", "init");
+              "add", "old", "del", "init",
+);
 
 int
 main(int argc, char **argv)
@@ -195,7 +192,7 @@ main(int argc, char **argv)
         if (!lease_new)
             break;
 
-        /* fallthrough */
+        ATTRIBUTE_FALLTHROUGH;
     case VIR_LEASE_ACTION_DEL:
         /* Delete the corresponding lease, if it already exists */
         delete = true;
@@ -232,7 +229,7 @@ main(int argc, char **argv)
         }
         lease_new = NULL;
 
-        /* fallthrough */
+        ATTRIBUTE_FALLTHROUGH;
     case VIR_LEASE_ACTION_DEL:
         if (!(leases_str = virJSONValueToString(leases_array_new, true))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

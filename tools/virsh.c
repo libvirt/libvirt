@@ -16,26 +16,17 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Daniel Veillard <veillard@redhat.com>
- * Karel Zak <kzak@redhat.com>
- * Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 #include "virsh.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
 #include <unistd.h>
-#include <errno.h>
 #include <getopt.h>
 #include <sys/time.h>
 #include <fcntl.h>
 #include <time.h>
-#include <limits.h>
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <signal.h>
@@ -145,6 +136,7 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
     bool keepalive_forced = false;
     virPolkitAgentPtr pkagent = NULL;
     int authfail = 0;
+    bool agentCreated = false;
 
     if (ctl->keepalive_interval >= 0) {
         interval = ctl->keepalive_interval;
@@ -166,10 +158,12 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
             goto cleanup;
 
         err = virGetLastError();
-        if (err && err->domain == VIR_FROM_POLKIT &&
+        if (!agentCreated &&
+            err && err->domain == VIR_FROM_POLKIT &&
             err->code == VIR_ERR_AUTH_UNAVAILABLE) {
             if (!pkagent && !(pkagent = virPolkitAgentCreate()))
                 goto cleanup;
+            agentCreated = true;
         } else if (err && err->domain == VIR_FROM_POLKIT &&
                    err->code == VIR_ERR_AUTH_FAILED) {
             authfail++;
@@ -215,7 +209,13 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
 {
     bool connected = false;
     virshControlPtr priv = ctl->privData;
-    bool ro = name ? readonly : priv->readonly;
+
+    /* If the flag was not specified, then it depends on whether we are
+     * reconnecting to the current URI (in which case we want to keep the
+     * readonly flag as it was) or to a specified URI in which case it
+     * should stay false */
+    if (!readonly && !name)
+        readonly = priv->readonly;
 
     if (priv->conn) {
         int ret;
@@ -230,7 +230,7 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
                                   "disconnect from the hypervisor"));
     }
 
-    priv->conn = virshConnect(ctl, name ? name : ctl->connname, ro);
+    priv->conn = virshConnect(ctl, name ? name : ctl->connname, readonly);
 
     if (!priv->conn) {
         if (disconnected)
@@ -242,8 +242,10 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
         if (name) {
             VIR_FREE(ctl->connname);
             ctl->connname = vshStrdup(ctl, name);
-            priv->readonly = readonly;
         }
+
+        priv->readonly = readonly;
+
         if (virConnectRegisterCloseCallback(priv->conn, virshCatchDisconnect,
                                             ctl, NULL) < 0)
             vshError(ctl, "%s", _("Unable to register disconnect callback"));
@@ -255,14 +257,6 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
     priv->useSnapshotOld = false;
     priv->blockJobNoBytes = false;
     return 0;
-}
-
-int virshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
-                    const char *bytes, size_t nbytes, void *opaque)
-{
-    int *fd = opaque;
-
-    return safewrite(*fd, bytes, nbytes);
 }
 
 /* ---------------
@@ -324,7 +318,7 @@ virshConnectionUsability(vshControl *ctl, virConnectPtr conn)
     }
 
     /* The connection is considered dead only if
-     * virConnectIsAlive() successfuly says so.
+     * virConnectIsAlive() successfully says so.
      */
     vshResetLibvirtError();
 
@@ -347,39 +341,6 @@ virshConnectionHandler(vshControl *ctl)
 }
 
 
-/* ---------------
- * Misc utils
- * ---------------
- */
-int
-virshDomainState(vshControl *ctl, virDomainPtr dom, int *reason)
-{
-    virDomainInfo info;
-    virshControlPtr priv = ctl->privData;
-
-    if (reason)
-        *reason = -1;
-
-    if (!priv->useGetInfo) {
-        int state;
-        if (virDomainGetState(dom, &state, reason, 0) < 0) {
-            virErrorPtr err = virGetLastError();
-            if (err && err->code == VIR_ERR_NO_SUPPORT)
-                priv->useGetInfo = true;
-            else
-                return -1;
-        } else {
-            return state;
-        }
-    }
-
-    /* fall back to virDomainGetInfo if virDomainGetState is not supported */
-    if (virDomainGetInfo(dom, &info) < 0)
-        return -1;
-    else
-        return info.state;
-}
-
 /*
  * Initialize connection.
  */
@@ -399,16 +360,22 @@ virshInit(vshControl *ctl)
     /* set up the library error handler */
     virSetErrorFunc(NULL, vshErrorHandler);
 
-    if (virEventRegisterDefaultImpl() < 0)
+    if (virEventRegisterDefaultImpl() < 0) {
+        vshReportError(ctl);
         return false;
+    }
 
-    if (virThreadCreate(&ctl->eventLoop, true, vshEventLoop, ctl) < 0)
+    if (virThreadCreate(&ctl->eventLoop, true, vshEventLoop, ctl) < 0) {
+        vshReportError(ctl);
         return false;
+    }
     ctl->eventLoopStarted = true;
 
     if ((ctl->eventTimerId = virEventAddTimeout(-1, vshEventTimeout, ctl,
-                                                NULL)) < 0)
+                                                NULL)) < 0) {
+        vshReportError(ctl);
         return false;
+    }
 
     if (ctl->connname) {
         /* Connecting to a named connection must succeed, but we delay
@@ -537,7 +504,7 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 {
     /* FIXME - list a copyright blurb, as in GNU programs?  */
     vshPrint(ctl, _("Virsh command line tool of libvirt %s\n"), VERSION);
-    vshPrint(ctl, _("See web site at %s\n\n"), "http://libvirt.org/");
+    vshPrint(ctl, _("See web site at %s\n\n"), "https://libvirt.org/");
 
     vshPrint(ctl, "%s", _("Compiled with support for:\n"));
     vshPrint(ctl, "%s", _(" Hypervisors:"));
@@ -546,12 +513,6 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #endif
 #ifdef WITH_LXC
     vshPrint(ctl, " LXC");
-#endif
-#ifdef WITH_UML
-    vshPrint(ctl, " UML");
-#endif
-#ifdef WITH_XEN
-    vshPrint(ctl, " Xen");
 #endif
 #ifdef WITH_LIBXL
     vshPrint(ctl, " LibXL");
@@ -648,6 +609,9 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_STORAGE_ZFS
     vshPrint(ctl, " ZFS");
 #endif
+#ifdef WITH_STORAGE_VSTORAGE
+    vshPrint(ctl, "Virtuozzo Storage");
+#endif
     vshPrint(ctl, "\n");
 
     vshPrint(ctl, "%s", _(" Miscellaneous:"));
@@ -674,9 +638,6 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #endif
 #if WITH_READLINE
     vshPrint(ctl, " Readline");
-#endif
-#ifdef WITH_DRIVER_MODULES
-    vshPrint(ctl, " Modular");
 #endif
     vshPrint(ctl, "\n");
 }
@@ -806,7 +767,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
                 puts(VERSION);
                 exit(EXIT_SUCCESS);
             }
-            /* fall through */
+            ATTRIBUTE_FALLTHROUGH;
         case 'V':
             virshShowVersion(ctl);
             exit(EXIT_SUCCESS);
@@ -841,7 +802,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
         ctl->imode = false;
         if (argc - optind == 1) {
             vshDebug(ctl, VSH_ERR_INFO, "commands: \"%s\"\n", argv[optind]);
-            return vshCommandStringParse(ctl, argv[optind]);
+            return vshCommandStringParse(ctl, argv[optind], NULL);
         } else {
             return vshCommandArgvParse(ctl, argc - optind, argv + optind);
         }
@@ -857,6 +818,7 @@ static const vshCmdDef virshCmds[] = {
     VSH_CMD_PWD,
     VSH_CMD_QUIT,
     VSH_CMD_SELF_TEST,
+    VSH_CMD_COMPLETE,
     {.name = "connect",
      .handler = cmdConnect,
      .opts = opts_connect,
@@ -978,7 +940,7 @@ main(int argc, char **argv)
 #if WITH_READLINE
                 add_history(ctl->cmdstr);
 #endif
-                if (vshCommandStringParse(ctl, ctl->cmdstr))
+                if (vshCommandStringParse(ctl, ctl->cmdstr, NULL))
                     vshCommandRun(ctl, ctl->cmd);
             }
             VIR_FREE(ctl->cmdstr);

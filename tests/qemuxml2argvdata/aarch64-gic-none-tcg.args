@@ -1,0 +1,26 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-guest \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 \
+-name guest \
+-S \
+-machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2 \
+-cpu cortex-a57 \
+-m 1024 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi

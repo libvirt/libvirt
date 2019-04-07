@@ -4,8 +4,6 @@
 
 #ifdef WITH_VBOX
 
-# include <stdio.h>
-# include <stdlib.h>
 # include <regex.h>
 # include "vbox/vbox_snapshot_conf.h"
 
@@ -134,9 +132,9 @@ mymain(void)
         goto cleanup;
     }
 
-# define DO_TEST(name)                                       \
-    if (virTestRun("VBox Snapshot XML-2-XML " name,          \
-                   testCompareXMLToXMLHelper, (name)) < 0)   \
+# define DO_TEST(name) \
+    if (virTestRun("VBox Snapshot XML-2-XML " name, \
+                   testCompareXMLToXMLHelper, (name)) < 0) \
         ret = -1
 
     DO_TEST("2disks-nosnap");
@@ -152,7 +150,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

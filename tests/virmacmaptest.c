@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -157,47 +155,47 @@ mymain(void)
     int ret = 0;
     virMacMapPtr mgr = NULL;
 
-#define DO_TEST_BASIC(f, d, ...)                                    \
-    do {                                                            \
-        const char * const m[] = {__VA_ARGS__, NULL };              \
+#define DO_TEST_BASIC(f, d, ...) \
+    do { \
+        const char * const m[] = {__VA_ARGS__, NULL }; \
         struct testData data = {.file = f, .domain = d, .macs = m}; \
-        if (virTestRun("Lookup " #d " in " #f,                      \
-                       testMACLookup, &data) < 0)                   \
-            ret = -1;                                               \
-        if (virTestRun("Remove " #d " in " #f,                      \
-                       testMACRemove, &data) < 0)                   \
-            ret = -1;                                               \
+        if (virTestRun("Lookup " #d " in " #f, \
+                       testMACLookup, &data) < 0) \
+            ret = -1; \
+        if (virTestRun("Remove " #d " in " #f, \
+                       testMACRemove, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_FLUSH_PROLOGUE                                      \
-    do {                                                            \
-        if (!(mgr = virMacMapNew(NULL))) {                          \
-            ret = -1;                                               \
-            goto cleanup;                                           \
-        }                                                           \
+#define DO_TEST_FLUSH_PROLOGUE \
+    do { \
+        if (!(mgr = virMacMapNew(NULL))) { \
+            ret = -1; \
+            goto cleanup; \
+        } \
     } while (0)
 
-#define DO_TEST_FLUSH(d, ...)                                       \
-    do {                                                            \
-        const char * const m[] = {__VA_ARGS__, NULL };              \
-        size_t i;                                                   \
-        for (i = 0; m[i]; i++)  {                                   \
-            if (virMacMapAdd(mgr, d, m[i]) < 0) {                   \
-                virObjectUnref(mgr);                                \
-                mgr = NULL;                                         \
-                ret = -1;                                           \
-            }                                                       \
-        }                                                           \
+#define DO_TEST_FLUSH(d, ...) \
+    do { \
+        const char * const m[] = {__VA_ARGS__, NULL }; \
+        size_t i; \
+        for (i = 0; m[i]; i++)  { \
+            if (virMacMapAdd(mgr, d, m[i]) < 0) { \
+                virObjectUnref(mgr); \
+                mgr = NULL; \
+                ret = -1; \
+            } \
+        } \
     } while (0)
 
 
-#define DO_TEST_FLUSH_EPILOGUE(f)                                   \
-    do {                                                            \
-        struct testData data = {.file = f, .mgr = mgr};             \
-        if (virTestRun("Flush " #f, testMACFlush, &data) < 0)       \
-            ret = -1;                                               \
-        virObjectUnref(mgr);                                        \
-        mgr = NULL;                                                 \
+#define DO_TEST_FLUSH_EPILOGUE(f) \
+    do { \
+        struct testData data = {.file = f, .mgr = mgr}; \
+        if (virTestRun("Flush " #f, testMACFlush, &data) < 0) \
+            ret = -1; \
+        virObjectUnref(mgr); \
+        mgr = NULL; \
     } while (0)
 
     DO_TEST_BASIC("empty", "none", NULL);
@@ -234,4 +232,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virmacmapmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdeterministichashmock.so")

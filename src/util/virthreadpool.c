@@ -18,10 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Hu Tao <hutao@cn.fujitsu.com>
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -439,6 +435,14 @@ virThreadPoolSetParameters(virThreadPoolPtr pool,
     if (min > max) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("minWorkers cannot be larger than maxWorkers"));
+        goto error;
+    }
+
+    if ((maxWorkers == 0 && pool->maxWorkers > 0) ||
+        (maxWorkers > 0 && pool->maxWorkers == 0)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("maxWorkers must not be switched from zero to non-zero"
+                         " and vice versa"));
         goto error;
     }
 

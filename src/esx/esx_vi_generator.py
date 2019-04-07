@@ -22,6 +22,8 @@
 # <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
+
 import sys
 import os
 import os.path
@@ -47,10 +49,7 @@ separator = "/* " + ("* " * 37) + "*\n"
 
 
 def aligned(left, right, length=59):
-    while len(left) < length:
-        left += " "
-
-    return left + right
+    return left.ljust(length, ' ') + right
 
 
 
@@ -73,16 +72,17 @@ class Member:
 
 
     def get_occurrence_comment(self):
-        if self.occurrence == OCCURRENCE__REQUIRED_ITEM:
-            return "/* required */"
-        elif self.occurrence == OCCURRENCE__REQUIRED_LIST:
-            return "/* required, list */"
-        elif self.occurrence == OCCURRENCE__OPTIONAL_ITEM:
-            return "/* optional */"
-        elif self.occurrence == OCCURRENCE__OPTIONAL_LIST:
-            return "/* optional, list */"
+        occurrence_map = {
+            OCCURRENCE__REQUIRED_ITEM: "/* required */",
+            OCCURRENCE__REQUIRED_LIST: "/* required, list */",
+            OCCURRENCE__OPTIONAL_ITEM: "/* optional */",
+            OCCURRENCE__OPTIONAL_LIST: "/* optional, list */"
+        }
+        try:
+            return occurrence_map[self.occurrence]
+        except KeyError:
+            raise ValueError("unknown occurrence value '%s'" % self.occurrence)
 
-        raise ValueError("unknown occurrence value '%s'" % self.occurrence)
 
 
 
@@ -119,7 +119,7 @@ class Parameter(Member):
             return aligned(string, self.get_occurrence_comment() + "\n")
 
 
-    def generate_return(self, offset = 0, end_of_line = ";"):
+    def generate_return(self, offset=0, end_of_line=";"):
         if self.occurrence == OCCURRENCE__IGNORED:
             raise ValueError("invalid function parameter occurrence value '%s'"
                              % self.occurrence)
@@ -610,7 +610,7 @@ class Object(GenericObject):
         return source
 
 
-    def generate_deep_copy_code(self, add_banner = False):
+    def generate_deep_copy_code(self, add_banner=False):
         source = ""
 
         if self.extends is not None:
@@ -1019,20 +1019,16 @@ class ManagedObject(GenericObject):
 
 
     def generate_helper_header(self):
-        header = ""
-
         # functions
-        header += ("int esxVI_Lookup%s(esxVI_Context *ctx, "
-                                      "const char *name, "
-                                      "esxVI_ManagedObjectReference *root, "
-                                      "esxVI_String *selectedPropertyNameList, "
-                                      "esxVI_%s **item, "
-                                      "esxVI_Occurrence occurrence);\n") \
-                  % (self.name, self.name)
-
-        header += "\n"
-
-        return header
+        return (
+            "int esxVI_Lookup%(name)s(esxVI_Context *ctx,"
+                                     " const char *name,"
+                                     " esxVI_ManagedObjectReference *root,"
+                                     " esxVI_String *selectedPropertyNameList,"
+                                     " esxVI_%(name)s **item,"
+                                     " esxVI_Occurrence occurrence);\n\n"
+            % {"name": self.name}
+        )
 
 
     def generate_source(self):
@@ -1090,26 +1086,19 @@ class ManagedObject(GenericObject):
 
 
     def generate_helper_source(self):
-        source = ""
-
         # lookup
-        source += "/* esxVI_Lookup%s */\n" % self.name
-        source += "ESX_VI__TEMPLATE__LOOKUP(%s,\n" % self.name
-        source += "{\n"
-
-        source += self.generate_lookup_code1()
-
-        source += "},\n"
-        source += "{\n"
-
-        source += self.generate_lookup_code2()
-
-        source += "})\n\n"
-
-        source += "\n\n"
-
-        return source
-
+        return (
+            "/* esxVI_Lookup%(name)s */\n"
+            "ESX_VI__TEMPLATE__LOOKUP(%(name)s,\n"
+            "{\n"
+            "%(lookup_code1)s},\n"
+            "{\n"
+            "%(lookup_code2)s})"
+            "\n\n\n\n"
+            % {"name": self.name,
+               "lookup_code1": self.generate_lookup_code1(),
+               "lookup_code2": self.generate_lookup_code2()}
+        )
 
 
 class Enum(Type):
@@ -1196,7 +1185,7 @@ class Enum(Type):
 
 
 def report_error(message):
-    print "error: " + message
+    print("error: " + message)
     sys.exit(1)
 
 
@@ -1321,11 +1310,11 @@ def is_known_type(type):
 
 def open_and_print(filename):
     if filename.startswith("./"):
-        print "  GEN      " + filename[2:]
+        print("  GEN      " + filename[2:])
     else:
-        print "  GEN      " + filename
+        print("  GEN      " + filename)
 
-    return open(filename, "wb")
+    return open(filename, "wt")
 
 
 
@@ -1340,61 +1329,53 @@ predefined_objects = ["AnyType",
                       "MethodFault",
                       "ManagedObjectReference"]
 
-additional_enum_features = { "ManagedEntityStatus"      : Enum.FEATURE__ANY_TYPE,
-                             "TaskInfoState"            : Enum.FEATURE__ANY_TYPE,
-                             "VirtualMachinePowerState" : Enum.FEATURE__ANY_TYPE }
+additional_enum_features = {
+    "ManagedEntityStatus": Enum.FEATURE__ANY_TYPE,
+    "TaskInfoState": Enum.FEATURE__ANY_TYPE,
+    "VirtualMachinePowerState": Enum.FEATURE__ANY_TYPE
+}
 
-additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__ANY_TYPE,
-                               "AutoStartPowerInfo"         : Object.FEATURE__ANY_TYPE,
-                               "DatastoreHostMount"         : Object.FEATURE__DEEP_COPY |
-                                                              Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "DatastoreInfo"              : Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__DYNAMIC_CAST,
-                               "HostConfigManager"          : Object.FEATURE__ANY_TYPE,
-                               "HostCpuIdInfo"              : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostDatastoreBrowserSearchResults" : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostHostBusAdapter"         : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostInternetScsiHba"        : Object.FEATURE__DYNAMIC_CAST |
-                                                              Object.FEATURE__DEEP_COPY,
-                               "HostInternetScsiTargetTransport"  : Object.FEATURE__DYNAMIC_CAST,
-                               "HostScsiDisk"               : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__DYNAMIC_CAST,
-                               "HostScsiTopologyInterface"  : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostScsiTopologyLun"        : Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__LIST |
-                                                              Object.FEATURE__DEEP_COPY,
-                               "HostScsiTopologyTarget"     : Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__LIST,
-                               "HostPortGroup"              : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostVirtualSwitch"          : Object.FEATURE__DEEP_COPY |
-                                                              Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "ManagedObjectReference"     : Object.FEATURE__ANY_TYPE,
-                               "ObjectContent"              : Object.FEATURE__DEEP_COPY,
-                               "PhysicalNic"                : Object.FEATURE__DEEP_COPY |
-                                                              Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "ResourcePoolResourceUsage"  : Object.FEATURE__ANY_TYPE,
-                               "ScsiLun"                    : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__DEEP_COPY,
-                               "ScsiLunDurableName"         : Object.FEATURE__LIST,
-                               "ServiceContent"             : Object.FEATURE__DESERIALIZE,
-                               "SharesInfo"                 : Object.FEATURE__ANY_TYPE,
-                               "TaskInfo"                   : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "UserSession"                : Object.FEATURE__ANY_TYPE,
-                               "VirtualMachineQuestionInfo" : Object.FEATURE__ANY_TYPE,
-                               "VirtualMachineSnapshotTree" : Object.FEATURE__DEEP_COPY |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "VmEventArgument"            : Object.FEATURE__DESERIALIZE }
+additional_object_features = {
+    "AutoStartDefaults": Object.FEATURE__ANY_TYPE,
+    "AutoStartPowerInfo": Object.FEATURE__ANY_TYPE,
+    "DatastoreHostMount": (Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST |
+                           Object.FEATURE__ANY_TYPE),
+    "DatastoreInfo": Object.FEATURE__ANY_TYPE | Object.FEATURE__DYNAMIC_CAST,
+    "HostConfigManager": Object.FEATURE__ANY_TYPE,
+    "HostCpuIdInfo": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+    "HostDatastoreBrowserSearchResults": (Object.FEATURE__LIST |
+                                          Object.FEATURE__ANY_TYPE),
+    "HostHostBusAdapter": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+    "HostInternetScsiHba": (Object.FEATURE__DYNAMIC_CAST |
+                            Object.FEATURE__DEEP_COPY),
+    "HostInternetScsiTargetTransport": Object.FEATURE__DYNAMIC_CAST,
+    "HostScsiDisk": (Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE |
+                     Object.FEATURE__DYNAMIC_CAST),
+    "HostScsiTopologyInterface": (Object.FEATURE__LIST |
+                                  Object.FEATURE__ANY_TYPE),
+    "HostScsiTopologyLun": (Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST |
+                            Object.FEATURE__DEEP_COPY),
+    "HostScsiTopologyTarget": Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
+    "HostPortGroup": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+    "HostVirtualSwitch": (Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST |
+                          Object.FEATURE__ANY_TYPE),
+    "ManagedObjectReference": Object.FEATURE__ANY_TYPE,
+    "ObjectContent": Object.FEATURE__DEEP_COPY,
+    "PhysicalNic": (Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST |
+                    Object.FEATURE__ANY_TYPE),
+    "ResourcePoolResourceUsage": Object.FEATURE__ANY_TYPE,
+    "ScsiLun": (Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE |
+                Object.FEATURE__DEEP_COPY),
+    "ScsiLunDurableName": Object.FEATURE__LIST,
+    "ServiceContent": Object.FEATURE__DESERIALIZE,
+    "SharesInfo": Object.FEATURE__ANY_TYPE,
+    "TaskInfo": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+    "UserSession": Object.FEATURE__ANY_TYPE,
+    "VirtualMachineQuestionInfo": Object.FEATURE__ANY_TYPE,
+    "VirtualMachineSnapshotTree": (Object.FEATURE__DEEP_COPY |
+                                   Object.FEATURE__ANY_TYPE),
+    "VmEventArgument": Object.FEATURE__DESERIALIZE
+}
 
 removed_object_features = {}
 
@@ -1433,7 +1414,7 @@ block = None
 
 
 # parse input file
-for line in file(input_filename, "rb").readlines():
+for line in open(input_filename, "rt").readlines():
     number += 1
 
     if "#" in line:
@@ -1702,8 +1683,7 @@ types_typedef.write(separator +
                     " * VI Enums\n" +
                     " */\n\n")
 
-names = enums_by_name.keys()
-names.sort()
+names = sorted(enums_by_name.keys())
 
 for name in names:
     types_typedef.write(enums_by_name[name].generate_typedef())
@@ -1724,8 +1704,7 @@ types_typeenum.write("\n")
 types_typetostring.write("\n")
 types_typefromstring.write("\n")
 
-names = objects_by_name.keys()
-names.sort()
+names = sorted(objects_by_name.keys())
 
 for name in names:
     types_typedef.write(objects_by_name[name].generate_typedef())
@@ -1746,8 +1725,7 @@ types_typeenum.write("\n")
 types_typetostring.write("\n")
 types_typefromstring.write("\n")
 
-names = managed_objects_by_name.keys()
-names.sort()
+names = sorted(managed_objects_by_name.keys())
 
 for name in names:
     types_typedef.write(managed_objects_by_name[name].generate_typedef())
@@ -1760,8 +1738,7 @@ for name in names:
 
 
 # output methods
-names = methods_by_name.keys()
-names.sort()
+names = sorted(methods_by_name.keys())
 
 for name in names:
     methods_header.write(methods_by_name[name].generate_header())
@@ -1780,8 +1757,7 @@ for name in names:
 
 
 # output helpers
-names = managed_objects_by_name.keys()
-names.sort()
+names = sorted(managed_objects_by_name.keys())
 
 for name in names:
     helpers_header.write(managed_objects_by_name[name].generate_helper_header())

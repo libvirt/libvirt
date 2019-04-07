@@ -48,7 +48,7 @@
 
 VIR_LOG_INIT("vbox.vbox_driver");
 
-#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_DRIVER)
+#if defined(VBOX_DRIVER)
 static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                          virConfPtr conf ATTRIBUTE_UNUSED,
@@ -57,18 +57,6 @@ static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
     uid_t uid = geteuid();
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (conn->uri == NULL ||
-        conn->uri->scheme == NULL ||
-        STRNEQ(conn->uri->scheme, "vbox") ||
-        conn->uri->server != NULL)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("no VirtualBox driver path specified (try vbox:///session)"));
-        return VIR_DRV_OPEN_ERROR;
-    }
 
     if (uid != 0) {
         if (STRNEQ(conn->uri->path, "/session")) {
@@ -95,7 +83,11 @@ static virHypervisorDriver vboxDriverDummy = {
     .connectOpen = dummyConnectOpen, /* 0.6.3 */
 };
 
-static virConnectDriver vboxConnectDriver;
+static virConnectDriver vboxConnectDriver = {
+    .localOnly = true,
+    .uriSchemes = (const char *[]){ "vbox", NULL },
+    .hypervisorDriver = NULL,
+};
 
 int vboxRegister(void)
 {

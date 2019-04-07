@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Network XML format</h1>
@@ -8,12 +8,12 @@
     </ul>
 
     <p>
-      This page provides an introduction to the network XML format. For background
-      information on the concepts referred to here, consult the <a href="archnetwork.html">network driver architecture</a>
-      page.
+      This page provides an introduction to the network XML format. For
+      background information on the concepts referred to here, consult the
+      <a href="https://wiki.libvirt.org/page/Networking">relevant wiki page</a>.
     </p>
 
-    <h2><a name="elements">Element and attribute overview</a></h2>
+    <h2><a id="elements">Element and attribute overview</a></h2>
 
     <p>
       The root element required for all virtual networks is
@@ -27,7 +27,7 @@
       available <span class="since">since 0.3.0</span>
     </p>
 
-    <h3><a name="elementsMetadata">General metadata</a></h3>
+    <h3><a id="elementsMetadata">General metadata</a></h3>
 
     <p>
       The first elements provide basic metadata about the virtual
@@ -76,14 +76,14 @@
         be used to set that attribute of the same name for each domain
         interface connected to this network (<span class="since">since
         1.2.10</span>). See
-        the <a href="formatdomain.html#elementSNICS">Network
+        the <a href="formatdomain.html#elementsNICS">Network
         interfaces</a> section of the domain XML documentation for
         more details. Note that an explicit setting of this attribute
         in a portgroup or the individual domain interface will
         override the setting in the network.</dd>
     </dl>
 
-    <h3><a name="elementsConnect">Connectivity</a></h3>
+    <h3><a id="elementsConnect">Connectivity</a></h3>
 
     <p>
       The next set of elements control how a virtual network is
@@ -93,6 +93,7 @@
     <pre>
 ...
 &lt;bridge name="virbr0" stp="on" delay="5" macTableManager="libvirt"/&gt;
+&lt;mtu size="9000"/&gt;
 &lt;domain name="example.com" localOnly="no"/&gt;
 &lt;forward mode="nat" dev="eth0"/&gt;
 ...</pre>
@@ -106,13 +107,13 @@
         may also be connected to the LAN. When defining
         a new network with a <code>&lt;forward&gt;</code> mode of
 
-        "nat" or "route" (or an isolated network with
+        "nat", "route", or "open" (or an isolated network with
         no <code>&lt;forward&gt;</code> element), libvirt will
         automatically generate a unique name for the bridge device if
         none is given, and this name will be permanently stored in the
         network configuration so that that the same name will be used
         every time the network is started. For these types of networks
-        (nat, routed, and isolated), a bridge name beginning with the
+        (nat, route, open, and isolated), a bridge name beginning with the
         prefix "virbr" is recommended (and that is what is
         auto-generated), but not enforced.
         Attribute <code>stp</code> specifies if Spanning Tree Protocol
@@ -152,8 +153,41 @@
           newer</span>
         </p>
 
-
+        <p>
+          The optional <code>zone</code> attribute of
+          the <code>bridge</code> element is used to specify
+          the <a href="https://firewalld.org">firewalld</a>
+          zone for the bridge of a network with <code>forward</code>
+          mode of "nat", "route", "open", or one with
+          no <code>forward</code> specified. By default, the bridges
+          of all virtual networks with these forward modes are placed
+          in the firewalld zone named "libvirt", which permits
+          incoming DNS, DHCP, TFTP, and SSH to the host from guests on
+          the network. This behavior can be changed either by
+          modifying the libvirt zone (using firewalld management
+          tools), or by placing the network in a different zone (which
+          will also be managed using firewalld tools).
+          <span class="since">Since 5.1.0</span>
+        </p>
       </dd>
+
+      <dt><code>mtu</code></dt>
+      <dd>
+        The <code>size</code> attribute of the <code>mtu></code>
+        element specifies the Maximum Transmission Unit (MTU) for the
+        network. <span class="since">Since 3.1.0</span>. In the case
+        of a libvirt-managed network (one with forward mode
+        of <code>nat</code>, <code>route</code>, <code>open</code>, or
+        no <code>forward</code> element (i.e. an isolated network),
+        this will be the MTU assigned to the bridge device when
+        libvirt creates it, and thereafter also assigned to all tap
+        devices created to connect guest interfaces. Network types not
+        specifically mentioned here don't support having an MTU set in
+        the libvirt network config. If mtu size is unspecified, the
+        default setting for the type of device being used is assumed
+        (usually 1500).
+      </dd>
+
       <dt><code>domain</code></dt>
       <dd>
         The <code>name</code> attribute on the <code>domain</code>
@@ -497,7 +531,7 @@
 
       </dd>
     </dl>
-    <h5><a name="elementQoS">Quality of service</a></h5>
+    <h5><a id="elementQoS">Quality of service</a></h5>
 
 <pre>
 ...
@@ -617,7 +651,7 @@
         <span class="since">since 1.0.1</span>.
       </p>
 
-    <h5><a name="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
+    <h5><a id="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
 
 <pre>
 &lt;network&gt;
@@ -695,7 +729,7 @@
       or <code>&lt;interface&gt;</code>.
     </p>
 
-    <h5><a name="elementsPortgroup">Portgroups</a></h5>
+    <h5><a id="elementsPortgroup">Portgroups</a></h5>
 
 <pre>
 ...
@@ -765,7 +799,7 @@
       set that attribute of the same name for each domain interface
       using this portgroup (<span class="since">since
       1.2.10</span>). See
-      the <a href="formatdomain.html#elementSNICS">Network
+      the <a href="formatdomain.html#elementsNICS">Network
       interfaces</a> section of the domain XML documentation for more
       details. Note that an explicit setting of this attribute in the
       portgroup overrides the network-wide setting, and an explicit
@@ -773,7 +807,7 @@
       setting in the portgroup.
     </p>
 
-    <h5><a name="elementsStaticroute">Static Routes</a></h5>
+    <h5><a id="elementsStaticroute">Static Routes</a></h5>
     <p>
       Static route definitions are used to provide routing information
       to the virtualization host for networks which are not directly
@@ -828,7 +862,7 @@
 ...
     </pre>
 
-    <h3><a name="elementsAddress">Addressing</a></h3>
+    <h3><a id="elementsAddress">Addressing</a></h3>
 
     <p>
       The final set of elements define the addresses (IPv4 and/or
@@ -980,7 +1014,7 @@
         <code>prefix</code> attribute, which is an integer (for example,
         <code>netmask='255.255.255.0'</code> could also be given as
         <code>prefix='24'</code>). The <code>family</code> attribute is used
-        to specify the type of address &mdash; <code>ipv4</code> or
+        to specify the type of address - <code>ipv4</code> or
         <code>ipv6</code>; if no <code>family</code> is given,
         <code>ipv4</code> is assumed. More than one address of each family can
         be defined for a network. The optional <code>localPtr</code> attribute
@@ -1062,9 +1096,9 @@
       </dd>
     </dl>
 
-    <h2><a name="examples">Example configuration</a></h2>
+    <h2><a id="examples">Example configuration</a></h2>
 
-    <h3><a name="examplesNAT">NAT based network</a></h3>
+    <h3><a id="examplesNAT">NAT based network</a></h3>
 
     <p>
       This example is the so called "default" virtual network. It is
@@ -1112,7 +1146,7 @@
   &lt;/ip&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesRoute">Routed network config</a></h3>
+    <h3><a id="examplesRoute">Routed network config</a></h3>
 
     <p>
       This is a variant on the default network which routes traffic
@@ -1194,7 +1228,7 @@
   &lt;route family="ipv6" address="2001:db8:ca2:8::" prefix="64" gateway="2001:db8:ca2:7::4"/&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesPrivate">Isolated network config</a></h3>
+    <h3><a id="examplesPrivate">Isolated network config</a></h3>
 
     <p>
       This variant provides a completely isolated private network
@@ -1216,7 +1250,7 @@
   &lt;ip family="ipv6" address="2001:db8:ca2:3::1" prefix="64"/&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesPrivate6">Isolated IPv6 network config</a></h3>
+    <h3><a id="examplesPrivate6">Isolated IPv6 network config</a></h3>
 
     <p>
       This variation of an isolated network defines only IPv6.
@@ -1242,7 +1276,7 @@
   &lt;/ip&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesBridge">Using an existing host bridge</a></h3>
+    <h3><a id="examplesBridge">Using an existing host bridge</a></h3>
 
     <p>
       <span class="since">Since 0.9.4</span>
@@ -1260,7 +1294,7 @@
   &lt;bridge name="br0"/&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesDirect">Using a macvtap "direct" connection</a></h3>
+    <h3><a id="examplesDirect">Using a macvtap "direct" connection</a></h3>
 
     <p>
       <span class="since">Since 0.9.4, QEMU and KVM only, requires
@@ -1295,7 +1329,7 @@
   &lt;/forward&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesNoGateway">Network config with no gateway addresses</a></h3>
+    <h3><a id="examplesNoGateway">Network config with no gateway addresses</a></h3>
 
     <p>
     A valid network definition can contain no IPv4 or IPv6 addresses.  Such a definition

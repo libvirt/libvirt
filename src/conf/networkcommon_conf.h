@@ -18,12 +18,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __NETWORKCOMMON_CONF_H__
-# define __NETWORKCOMMON_CONF_H__
+#ifndef LIBVIRT_NETWORKCOMMON_CONF_H
+# define LIBVIRT_NETWORKCOMMON_CONF_H
 
 # include <libxml/tree.h>
 # include <libxml/xpath.h>
@@ -52,4 +50,4 @@ int
 virNetDevIPRouteFormat(virBufferPtr buf,
                        const virNetDevIPRoute *def);
 
-#endif /* __NETWORKCOMMON_CONF_H__ */
+#endif /* LIBVIRT_NETWORKCOMMON_CONF_H */

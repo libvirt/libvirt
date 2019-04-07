@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author:
- *   Jamie Strandboge <jamie@canonical.com>
- *
  */
-#ifndef __VIR_SECURITY_APPARMOR_H__
-# define __VIR_SECURITY_APPARMOR_H__
+
+#ifndef LIBVIRT_SECURITY_APPARMOR_H
+# define LIBVIRT_SECURITY_APPARMOR_H
 
 # include "security_driver.h"
 
@@ -30,4 +27,4 @@ extern virSecurityDriver virAppArmorSecurityDriver;
 # define PROFILE_NAME_SIZE  8 + VIR_UUID_STRING_BUFLEN /* AA_PREFIX + uuid */
 # define MAX_FILE_LEN       (1024*1024*10)  /* 10MB limit for sanity check */
 
-#endif /* __VIR_SECURITY_APPARMOR_H__ */
+#endif /* LIBVIRT_SECURITY_APPARMOR_H */

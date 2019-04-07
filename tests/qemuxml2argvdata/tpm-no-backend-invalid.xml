@@ -1,0 +1,27 @@
+<domain type='qemu'>
+  <name>TPM-VM</name>
+  <uuid>11d7cd22-da89-3094-6212-079a48a309a1</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>512288</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-0.12'>hvm</type>
+    <boot dev='hd'/>
+    <bootmenu enable='yes'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <tpm model='tpm-tis'>
+    </tpm>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

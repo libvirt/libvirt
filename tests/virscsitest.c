@@ -15,13 +15,10 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Author: Osier Yang <jyang@redhat.com>
- *
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "virscsi.h"
 #include "testutils.h"
@@ -33,7 +30,6 @@
 
 VIR_LOG_INIT("tests.scsitest");
 
-static const char *abs_top_srcdir;
 static char *virscsi_prefix;
 
 static int
@@ -198,10 +194,6 @@ mymain(void)
     char *tmpdir = NULL;
     char template[] = "/tmp/libvirt_XXXXXX";
 
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-        abs_top_srcdir = abs_srcdir "/..";
-
     if (virAsprintf(&virscsi_prefix, "%s" VIR_SCSI_DATA, abs_srcdir) < 0) {
         ret = -1;
         goto cleanup;
@@ -215,12 +207,12 @@ mymain(void)
         goto cleanup;
     }
 
-#define CREATE_SYMLINK(src_name, dst_name)                    \
-    do {                                                      \
+#define CREATE_SYMLINK(src_name, dst_name) \
+    do { \
         if (create_symlink(tmpdir, src_name, dst_name) < 0) { \
-            ret = -1;                                         \
-            goto cleanup;                                     \
-        }                                                     \
+            ret = -1; \
+            goto cleanup; \
+        } \
     } while (0)
 
     CREATE_SYMLINK("0-0-0-0", "0:0:0:0");
@@ -247,4 +239,4 @@ mymain(void)
     return ret;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

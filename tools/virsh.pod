@@ -35,15 +35,18 @@ will be clear for each of those commands.  Note: it is permissible to
 give numeric names to domains, however, doing so will result in a
 domain that can only be identified by domain id. In other words, if a
 numeric value is supplied it will be interpreted as a domain id, not
-as a name.
+as a name. Any I<command> starting with B<#> is treated as a comment
+and silently ignored, all other unrecognized I<command>s are diagnosed.
 
 The B<virsh> program can be used either to run one I<COMMAND> by giving the
 command and its arguments on the shell command line, or a I<COMMAND_STRING>
 which is a single shell argument consisting of multiple I<COMMAND> actions
-and their arguments joined with whitespace, and separated by semicolons
-between commands.  Within I<COMMAND_STRING>, virsh understands the
+and their arguments joined with whitespace and separated by semicolons or
+newlines between commands, where unquoted backslash-newline pairs are
+elided.  Within I<COMMAND_STRING>, virsh understands the
 same single, double, and backslash escapes as the shell, although you must
-add another layer of shell escaping in creating the single shell argument.
+add another layer of shell escaping in creating the single shell argument,
+and any word starting with unquoted I<#> begins a comment that ends at newline.
 If no command is given in the command line, B<virsh> will then start a minimal
 interpreter waiting for your commands, and the B<quit> command will then exit
 the program.
@@ -249,12 +252,12 @@ Will print the current directory.
 is automatically run with the I<URI> parameter requested by the C<-c>
 option on the command line. The I<URI> parameter specifies how to
 connect to the hypervisor. The documentation page at
-L<http://libvirt.org/uri.html> list the values supported, but the most
+L<https://libvirt.org/uri.html> list the values supported, but the most
 common are:
 
 =over 4
 
-=item xen:///
+=item xen:///system
 
 this is used to connect to the local Xen hypervisor
 
@@ -266,7 +269,7 @@ connect locally as root to the daemon supervising QEMU and KVM domains
 
 connect locally as a normal user to his own set of QEMU and KVM domains
 
-=item lxc:///
+=item lxc:///system
 
 connect to a local linux container
 
@@ -275,7 +278,7 @@ connect to a local linux container
 To find the currently used URI, check the I<uri> command documented below.
 
 For remote access see the documentation page at
-L<http://libvirt.org/uri.html> on how to make URIs.
+L<https://libvirt.org/uri.html> on how to make URIs.
 The I<--readonly> option allows for read-only connection
 
 =item B<uri>
@@ -308,14 +311,14 @@ With I<--pretty> the online CPUs are printed as a range instead of a list.
 =item B<nodecpustats> [I<cpu>] [I<--percent>]
 
 Returns cpu stats of the node.
-If I<cpu> is specified, this will prints specified cpu statistics only.
-If I<--percent> is specified, this will prints percentage of each kind of cpu
-statistics during 1 second.
+If I<cpu> is specified, this will print the specified cpu statistics only.
+If I<--percent> is specified, this will print the percentage of each kind
+of cpu statistics during 1 second.
 
 =item B<nodememstats> [I<cell>]
 
 Returns memory stats of the node.
-If I<cell> is specified, this will prints specified cell statistics only.
+If I<cell> is specified, this will print the specified cell statistics only.
 
 =item B<nodesuspend> [I<target>] [I<duration>]
 
@@ -350,7 +353,7 @@ we are currently connected to. This includes a section on the host
 capabilities in terms of CPU and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
 description see:
-  L<http://libvirt.org/formatcaps.html>
+  L<https://libvirt.org/formatcaps.html>
 The XML also show the NUMA topology information if available.
 
 =item B<domcapabilities> [I<virttype>] [I<emulatorbin>]
@@ -388,6 +391,13 @@ supplied along with either the I<emulatorbin> or I<arch> in order to
 generate output for the default I<machine>.  Supplying a I<machine>
 value will generate output for the specific machine.
 
+=item B<pool-capabilities>
+Print an XML document describing the storage pool capabilities for the
+connected storage driver. This may be useful if you intend to create a
+new storage pool and need to know the available pool types and supported
+storage pool source and target volume formats as well as the required
+source elements to create the pool.
+
 =item B<inject-nmi> I<domain>
 
 Inject NMI to the guest.
@@ -418,8 +428,9 @@ State is the run state (see below).
 
 B<STATES>
 
-The State field lists 8 states for a domain, and which ones the
-current domain is in.
+The State field lists what state each domain is currently in. A domain
+can be in one of the following possible states:
+
 
 =over 4
 
@@ -440,7 +451,7 @@ running B<virsh suspend>.  When in a paused state the domain will still
 consume allocated resources like memory, but will not be eligible for
 scheduling by the hypervisor.
 
-=item B<shutdown>
+=item B<in shutdown>
 
 The domain is in the process of shutting down, i.e. the guest operating system
 has been notified and should be in the process of stopping its operations
@@ -456,11 +467,6 @@ shut down completely, or has not been started.
 The domain has crashed, which is always a violent ending.  Usually
 this state can only occur if the domain has been configured not to
 restart on crash.
-
-=item B<dying>
-
-The domain is in process of dying, but hasn't completely shutdown or
-crashed.
 
 =item B<pmsuspended>
 
@@ -529,9 +535,8 @@ output should be used. This is the default.
 If both I<--name> and I<--uuid> are specified, domain UUID's and names
 are printed side by side without any header. Flag I<--table> specifies
 that the legacy table-formatted output should be used. This is the
-default if neither I<--name> nor I<--uuid> are specified. Options
-I<--uuid> and I<--name> are mutually exclusive if option I<--table> is
-specified.
+default if neither I<--name> nor I<--uuid> are specified. Option
+I<--table> is mutually exclusive with options I<--uuid> and I<--name>.
 
 If I<--title> is specified, then the short domain description (title) is
 printed in an extra column. This flag is usable only with the default
@@ -579,37 +584,112 @@ I<--all> which executes the modification on all NUMA cells.
 =item B<cpu-baseline> I<FILE> [I<--features>] [I<--migratable>]
 
 Compute baseline CPU which will be supported by all host CPUs given in <file>.
-The list of host CPUs is built by extracting all <cpu> elements from the
-<file>. Thus, the <file> can contain either a set of <cpu> elements separated
-by new lines or even a set of complete <capabilities> elements printed by
-B<capabilities> command.  If I<--features> is specified then the
-resulting XML description will explicitly include all features that make
-up the CPU, without this option features that are part of the CPU model
+(See B<hypervisor-cpu-baseline> command to get a CPU which can be provided by a
+specific hypervisor.) The list of host CPUs is built by extracting all <cpu>
+elements from the <file>. Thus, the <file> can contain either a set of <cpu>
+elements separated by new lines or even a set of complete <capabilities>
+elements printed by B<capabilities> command.  If I<--features> is specified,
+then the resulting XML description will explicitly include all features that
+make up the CPU, without this option features that are part of the CPU model
 will not be listed in the XML description.   If I<--migratable> is specified,
 features that block migration will not be included in the resulting CPU.
 
 =item B<cpu-compare> I<FILE> [I<--error>]
 
-Compare CPU definition from XML <file> with host CPU. The XML <file> may
+Compare CPU definition from XML <file> with host CPU. (See
+B<hypervisor-cpu-compare> command for comparing the CPU definition with the CPU
+which a specific hypervisor is able to provide on the host.) The XML <file> may
 contain either host or guest CPU definition. The host CPU definition is the
 <cpu> element and its contents as printed by B<capabilities> command. The
 guest CPU definition is the <cpu> element and its contents from domain XML
-definition. For more information on guest CPU definition see:
-L<http://libvirt.org/formatdomain.html#elementsCPU>. If I<--error> is
+definition or the CPU definition created from the host CPU model found in
+domain capabilities XML (printed by B<domcapabilities> command). In
+addition to the <cpu> element itself, this command accepts
+full domain XML, capabilities XML, or domain capabilities XML containing
+the CPU definition. For more information on guest CPU definition see:
+L<https://libvirt.org/formatdomain.html#elementsCPU>. If I<--error> is
 specified, the command will return an error when the given CPU is
 incompatible with host CPU and a message providing more details about the
 incompatibility will be printed out.
 
 =item B<cpu-models> I<arch>
 
-Print the list of CPU models known for the specified architecture.
+Print the list of CPU models known by libvirt for the specified architecture.
+Whether a specific hypervisor is able to create a domain which uses any of
+the printed CPU models is a separate question which can be answered by
+looking at the domain capabilities XML returned by B<domcapabilities> command.
+Moreover, for some architectures libvirt does not know any CPU models and
+the usable CPU models are only limited by the hypervisor. This command will
+print that all CPU models are accepted for these architectures and the actual
+list of supported CPU models can be checked in the domain capabilities XML.
 
-=item B<echo> [I<--shell>] [I<--xml>] [I<arg>...]
+=item B<echo> [I<--shell>] [I<--xml>] [I<err>...] [I<arg>...]
 
 Echo back each I<arg>, separated by space.  If I<--shell> is
 specified, then the output will be single-quoted where needed, so that
 it is suitable for reuse in a shell context.  If I<--xml> is
 specified, then the output will be escaped for use in XML.
+If I<--err> is specified, prefix B<"error: "> and output to stderr
+instead of stdout.
+
+=item B<hypervisor-cpu-compare> I<FILE> [I<virttype>] [I<emulator>] [I<arch>]
+[I<machine>] [I<--error>]
+
+Compare CPU definition from XML <file> with the CPU the hypervisor is able to
+provide on the host. (This is different from B<cpu-compare> which compares the
+CPU definition with the host CPU without considering any specific hypervisor
+and its abilities.)
+
+The XML I<FILE> may contain either a host or guest CPU definition. The host CPU
+definition is the <cpu> element and its contents as printed by the
+B<capabilities> command. The guest CPU definition is the <cpu> element and its
+contents from the domain XML definition or the CPU definition created from the
+host CPU model found in the domain capabilities XML (printed by the
+B<domcapabilities> command). In addition to the <cpu> element itself, this
+command accepts full domain XML, capabilities XML, or domain capabilities XML
+containing the CPU definition. For more information on guest CPU definition
+see: L<https://libvirt.org/formatdomain.html#elementsCPU>.
+
+The I<virttype> option specifies the virtualization type (usable in the 'type'
+attribute of the <domain> top level element from the domain XML). I<emulator>
+specifies the path to the emulator, I<arch> specifies the CPU architecture, and
+I<machine> specifies the machine type. If I<--error> is specified, the command
+will return an error when the given CPU is incompatible with the host CPU and a
+message providing more details about the incompatibility will be printed out.
+
+=item B<hypervisor-cpu-baseline> I<FILE> [I<virttype>] [I<emulator>] [I<arch>]
+[I<machine>] [I<--features>] [I<--migratable>]
+
+Compute a baseline CPU which will be compatible with all CPUs defined in an XML
+I<file> and with the CPU the hypervisor is able to provide on the host. (This
+is different from B<cpu-baseline> which does not consider any hypervisor
+abilities when computing the baseline CPU.)
+
+The XML I<FILE> may contain either host or guest CPU definitions describing the
+host CPU model. The host CPU definition is the <cpu> element and its contents
+as printed by B<capabilities> command. The guest CPU definition may be created
+from the host CPU model found in domain capabilities XML (printed by
+B<domcapabilities> command). In addition to the <cpu> elements, this command
+accepts full capabilities XMLs, or domain capabilities XMLs containing the CPU
+definitions. For best results, use only the CPU definitions from domain
+capabilities.
+
+When I<FILE> contains only a single CPU definition, the command will print the
+same CPU with restrictions imposed by the capabilities of the hypervisor.
+Specifically, running th B<virsh hypervisor-cpu-baseline> command with no
+additional options on the result of B<virsh domcapabilities> will transform the
+host CPU model from domain capabilities XML to a form directly usable in domain
+XML.
+
+The I<virttype> option specifies the virtualization type (usable in the 'type'
+attribute of the <domain> top level element from the domain XML). I<emulator>
+specifies the path to the emulator, I<arch> specifies the CPU architecture, and
+I<machine> specifies the machine type. If I<--features> is specified, then the
+resulting XML description will explicitly include all features that make up the
+CPU, without this option features that are part of the CPU model will not be
+listed in the XML description. If I<--migratable> is specified, features that
+block migration will not be included in the resulting CPU.
+
 
 =back
 
@@ -641,13 +721,20 @@ the I<--force> flag may be specified, requesting to disconnect any existing
 sessions, such as in a case of a broken connection.
 
 =item B<create> I<FILE> [I<--console>] [I<--paused>] [I<--autodestroy>]
-[I<--pass-fds N,M,...>]
+[I<--pass-fds N,M,...>] [I<--validate>]
 
-Create a domain from an XML <file>. An easy way to create the XML
-<file> is to use the B<dumpxml> command to obtain the definition of a
-pre-existing guest.  The domain will be paused if the I<--paused> option
-is used and supported by the driver; otherwise it will be running.
-If I<--console> is requested, attach to the console after creation.
+Create a domain from an XML <file>. Optionally, I<--validate> option can be
+passed to validate the format of the input XML file against an internal RNG
+schema (identical to using L<virt-xml-validate(1)> tool). Domains created using
+this command are going to be either transient (temporary ones that will vanish
+once destroyed) or existing persistent domains that will run with one-time use
+configuration, leaving the persistent XML untouched (this can come handy during
+an automated testing of various configurations all based on the original XML).
+See the B<Example> section for usage demonstration.
+
+The domain will be paused if the I<--paused> option is used
+and supported by the driver; otherwise it will be running. If I<--console> is
+requested, attach to the console after creation.
 If I<--autodestroy> is requested, then the guest will be automatically
 destroyed when virsh closes its connection to libvirt, or otherwise
 exits.
@@ -659,14 +746,31 @@ is only supported with container based virtualization.
 
 B<Example>
 
- virsh dumpxml <domain> > domain.xml
- vi domain.xml (or make changes with your other text editor)
- virsh create domain.xml
+ 1) prepare a template from an existing domain (skip directly to 3a if writing
+    one from scratch)
 
-=item B<define> I<FILE>
+ # virsh dumpxml <domain> > domain.xml
 
-Define a domain from an XML <file>. The domain definition is registered
-but not started.  If domain is already running, the changes will take
+ 2) edit the template using an editor of your choice and:
+    a) DO CHANGE! <name> and <uuid> (<uuid> can also be removed), or
+    b) DON'T CHANGE! either <name> or <uuid>
+
+ # $EDITOR domain.xml
+
+ 3) create a domain from domain.xml, depending on whether following 2a or 2b
+    respectively:
+    a) the domain is going to be transient
+    b) an existing persistent domain will run with a modified one-time
+       configuration
+
+ # virsh create domain.xml
+
+=item B<define> I<FILE> [I<--validate>]
+
+Define a domain from an XML <file>. Optionally, the format of the input XML
+file can be validated against an internal RNG schema with I<--validate>
+(identical to using L<virt-xml-validate(1)> tool). The domain definition is
+registered but not started.  If domain is already running, the changes will take
 effect on the next boot.
 
 =item B<desc> I<domain> [[I<--live>] [I<--config>] |
@@ -740,23 +844,33 @@ B<Explanation of fields> (fields appear in the following order):
 
 
 =item B<domifaddr> I<domain> [I<interface>] [I<--full>]
-              [I<--source lease|agent>]
+              [I<--source lease|agent|arp>]
 
 Get a list of interfaces of a running domain along with their IP and MAC
 addresses, or limited output just for one interface if I<interface> is
 specified. Note that I<interface> can be driver dependent, it can be the name
 within guest OS or the name you would see in domain XML. Moreover, the whole
 command may require a guest agent to be configured for the queried domain under
-some drivers, notably qemu. If I<--full> is specified, the interface name is
-always displayed when the interface has multiple addresses or alias, otherwise
-it only displays the interface name for the first address, and "-" for the
-others. The I<--source> argument specifies what data source to use for the
-addresses, currently one of 'lease' to read DHCP leases, or 'agent' to query
-the guest OS via an agent. If unspecified, 'lease' is the default.
+some hypervisors, notably QEMU.
+
+If I<--full> is specified, the interface name and MAC address is always
+displayed when the interface has multiple IP addresses or aliases; otherwise,
+only the interface name and MAC address is displayed for the first name and
+MAC address with "-" for the others using the same name and MAC address.
+
+The I<--source> argument specifies what data source to use for the
+addresses, currently 'lease' to read DHCP leases, 'agent' to query
+the guest OS via an agent, or 'arp' to get IP from host's arp tables.
+If unspecified, 'lease' is the default.
 
 =item B<domifstat> I<domain> I<interface-device>
 
-Get network interface stats for a running domain.
+Get network interface stats for a running domain. The network
+interface stats are only available for interfaces that have a
+physical source interface. This does not include, for example, a
+'user' interface type since it is a virtual LAN with NAT to the
+outside world. I<interface-device> can be the interface target by
+name or MAC address.
 
 =item B<domif-setlink> I<domain> I<interface-device> I<state> [I<--config>]
 
@@ -789,7 +903,7 @@ inbound or outbound bandwidth. I<average,peak,burst,floor> is the same as
 in command I<attach-interface>.  Values for I<average>, I<peak> and I<floor>
 are expressed in kilobytes per second, while I<burst> is expressed in kilobytes
 in a single burst at I<peak> speed as described in the Network XML
-documentation at L<http://libvirt.org/formatnetwork.html#elementQoS>.
+documentation at L<https://libvirt.org/formatnetwork.html#elementQoS>.
 
 To clear inbound or outbound settings, use I<--inbound> or I<--outbound>
 respectfully with average value of zero.
@@ -811,17 +925,19 @@ missing from the output. Other fields may appear if communicating with a newer
 version of libvirtd.
 
 B<Explanation of fields>:
-  swap_in           - The amount of data read from swap space (in kB)
-  swap_out          - The amount of memory written out to swap space (in kB)
+  swap_in           - The amount of data read from swap space (in KiB)
+  swap_out          - The amount of memory written out to swap space (in KiB)
   major_fault       - The number of page faults where disk IO was required
   minor_fault       - The number of other page faults
-  unused            - The amount of memory left unused by the system (in kB)
-  available         - The amount of usable memory as seen by the domain (in kB)
-  actual            - Current balloon value (in KB)
-  rss               - Resident Set Size of the running domain's process (in kB)
+  unused            - The amount of memory left unused by the system (in KiB)
+  available         - The amount of usable memory as seen by the domain (in KiB)
+  actual            - Current balloon value (in KiB)
+  rss               - Resident Set Size of the running domain's process (in KiB)
   usable            - The amount of memory which can be reclaimed by balloon
-without causing host swapping (in KB)
+without causing host swapping (in KiB)
   last-update       - Timestamp of the last update of statistics (in seconds)
+  disk_caches       - The amount of memory that can be reclaimed without
+additional I/O, typically disk caches (in KiB)
 
 For QEMU/KVM with a memory balloon, setting the optional I<--period> to a
 value larger than 0 in seconds will allow the balloon driver to return
@@ -847,12 +963,16 @@ B<domstate> command says that a domain was paused due to I/O error.
 The B<domblkerror> command lists all block devices in error state and
 the error seen on each of them.
 
-=item B<domblkinfo> I<domain> I<block-device>
+=item B<domblkinfo> I<domain> [I<block-device> I<--all>] [I<--human>]
 
 Get block device size info for a domain.  A I<block-device> corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to I<domain> (see
-also B<domblklist> for listing these names).
+also B<domblklist> for listing these names). If I<--human> is set, the
+output will have a human readable output.
+If I<--all> is set, the output will be a table showing all block devices
+size info associated with I<domain>.
+The I<--all> option takes precedence of the others.
 
 =item B<domblklist> I<domain> [I<--inactive>] [I<--details>]
 
@@ -865,11 +985,12 @@ that require a block device name (such as I<domblkinfo> or
 I<snapshot-create> for disk snapshots) will accept either target
 or unique source names printed by this command.
 
-=item B<domstats> [I<--raw>] [I<--enforce>] [I<--backing>] [I<--state>]
-[I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>] [I<--block>]
-[I<--perf>] [[I<--list-active>] [I<--list-inactive>] [I<--list-persistent>]
-[I<--list-transient>] [I<--list-running>] [I<--list-paused>]
-[I<--list-shutoff>] [I<--list-other>]] | [I<domain> ...]
+=item B<domstats> [I<--raw>] [I<--enforce>] [I<--backing>] [I<--nowait>]
+[I<--state>] [I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>]
+[I<--block>] [I<--perf>] [I<--iothread>]
+[[I<--list-active>] [I<--list-inactive>]
+[I<--list-persistent>] [I<--list-transient>] [I<--list-running>]
+[I<--list-paused>] [I<--list-shutoff>] [I<--list-other>]] | [I<domain> ...]
 
 Get statistics for multiple or all domains. Without any argument this
 command prints all available statistics for all domains.
@@ -885,73 +1006,117 @@ behavior use the I<--raw> flag.
 The individual statistics groups are selectable via specific flags. By
 default all supported statistics groups are returned. Supported
 statistics groups flags are: I<--state>, I<--cpu-total>, I<--balloon>,
-I<--vcpu>, I<--interface>, I<--block>, I<--perf>.
+I<--vcpu>, I<--interface>, I<--block>, I<--perf>, I<--iothread>.
 
 Note that - depending on the hypervisor type and version or the domain state
 - not all of the following statistics may be returned.
 
 When selecting the I<--state> group the following fields are returned:
-"state.state" - state of the VM, returned as number from virDomainState enum,
-"state.reason" - reason for entering given state, returned as int from
-virDomain*Reason enum corresponding to given state.
+
+ "state.state" - state of the VM, returned as number from
+                 virDomainState enum
+ "state.reason" - reason for entering given state, returned
+                  as int from virDomain*Reason enum corresponding
+                  to given state
 
 I<--cpu-total> returns:
-"cpu.time" - total cpu time spent for this domain in nanoseconds,
-"cpu.user" - user cpu time spent in nanoseconds,
-"cpu.system" - system cpu time spent in nanoseconds
+
+ "cpu.time" - total cpu time spent for this domain in nanoseconds
+ "cpu.user" - user cpu time spent in nanoseconds
+ "cpu.system" - system cpu time spent in nanoseconds
+ "cpu.cache.monitor.count" - the number of cache monitors for this
+                             domain
+ "cpu.cache.monitor.<num>.name" - the name of cache monitor <num>
+ "cpu.cache.monitor.<num>.vcpus" - vcpu list of cache monitor <num>
+ "cpu.cache.monitor.<num>.bank.count" - the number of cache banks
+                                        in cache monitor <num>
+ "cpu.cache.monitor.<num>.bank.<index>.id" - host allocated cache id
+                                             for bank <index> in
+                                             cache monitor <num>
+ "cpu.cache.monitor.<num>.bank.<index>.bytes" - the number of bytes
+                                                of last level cache
+                                                that the domain is
+                                                using on cache bank
+                                                <index>
 
 I<--balloon> returns:
-"balloon.current" - the memory in kiB currently used,
-"balloon.maximum" - the maximum memory in kiB allowed,
-"balloon.swap_in" - the amount of data read from swap space (in kB),
-"balloon.swap_out" - the amount of memory written out to swap space (in kB),
-"balloon.major_fault" - the number of page faults then disk IO was required,
-"balloon.minor_fault" - the number of other page faults,
-"balloon.unused" - the amount of memory left unused by the system (in kB),
-"balloon.available" - the amount of usable memory as seen by the domain (in kB),
-"balloon.rss" - Resident Set Size of running domain's process (in kB),
-"balloon.usable" - the amount of memory which can be reclaimed by balloon
-without causing host swapping (in KB),
-"balloon.last-update" - timestamp of the last update of statistics (in seconds)
+
+ "balloon.current" - the memory in KiB currently used
+ "balloon.maximum" - the maximum memory in KiB allowed
+ "balloon.swap_in" - the amount of data read from swap space (in KiB)
+ "balloon.swap_out" - the amount of memory written out to swap
+                      space (in KiB)
+ "balloon.major_fault" - the number of page faults then disk IO
+                         was required
+ "balloon.minor_fault" - the number of other page faults
+ "balloon.unused" - the amount of memory left unused by the
+                    system (in KiB)
+ "balloon.available" - the amount of usable memory as seen by
+                       the domain (in KiB)
+ "balloon.rss" - Resident Set Size of running domain's process
+                 (in KiB)
+ "balloon.usable" - the amount of memory which can be reclaimed by
+                    balloon without causing host swapping (in KiB)
+ "balloon.last-update" - timestamp of the last update of statistics
+                         (in seconds)
+ "balloon.disk_caches " - the amount of memory that can be reclaimed
+                          without additional I/O, typically disk
+                          caches (in KiB)
 
 I<--vcpu> returns:
-"vcpu.current" - current number of online virtual CPUs,
-"vcpu.maximum" - maximum number of online virtual CPUs,
-"vcpu.<num>.state" - state of the virtual CPU <num>, as number
-from virVcpuState enum,
-"vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
- (in microseconds),
-"vcpu.<num>.wait" - virtual cpu time spent by virtual CPU <num>
-waiting on I/O (in microseconds),
-"vcpu.<num>.halted" - virtual CPU <num> is halted: yes or no (may indicate
-the processor is idle or even disabled, depending on the architecture)
+
+ "vcpu.current" - current number of online virtual CPUs
+ "vcpu.maximum" - maximum number of online virtual CPUs
+ "vcpu.<num>.state" - state of the virtual CPU <num>, as
+                      number from virVcpuState enum
+ "vcpu.<num>.time" - virtual cpu time spent by virtual
+                     CPU <num> (in microseconds)
+ "vcpu.<num>.wait" - virtual cpu time spent by virtual
+                     CPU <num> waiting on I/O (in microseconds)
+ "vcpu.<num>.halted" - virtual CPU <num> is halted: yes or
+                       no (may indicate the processor is idle
+                       or even disabled, depending on the
+                       architecture)
 
 I<--interface> returns:
-"net.count" - number of network interfaces on this domain,
-"net.<num>.name" - name of the interface <num>,
-"net.<num>.rx.bytes" - number of bytes received,
-"net.<num>.rx.pkts" - number of packets received,
-"net.<num>.rx.errs" - number of receive errors,
-"net.<num>.rx.drop" - number of receive packets dropped,
-"net.<num>.tx.bytes" - number of bytes transmitted,
-"net.<num>.tx.pkts" - number of packets transmitted,
-"net.<num>.tx.errs" - number of transmission errors,
-"net.<num>.tx.drop" - number of transmit packets dropped
+
+ "net.count" - number of network interfaces on this domain
+ "net.<num>.name" - name of the interface <num>
+ "net.<num>.rx.bytes" - number of bytes received
+ "net.<num>.rx.pkts" - number of packets received
+ "net.<num>.rx.errs" - number of receive errors
+ "net.<num>.rx.drop" - number of receive packets dropped
+ "net.<num>.tx.bytes" - number of bytes transmitted
+ "net.<num>.tx.pkts" - number of packets transmitted
+ "net.<num>.tx.errs" - number of transmission errors
+ "net.<num>.tx.drop" - number of transmit packets dropped
 
 I<--perf> returns the statistics of all enabled perf events:
-"perf.cmt" - the cache usage in Byte currently used,
-"perf.mbmt" - total system bandwidth from one level of cache,
-"perf.mbml" - bandwidth of memory traffic for a memory controller,
-"perf.cpu_cycles" - the count of cpu cycles (total/elapsed),
-"perf.instructions" - the count of instructions,
-"perf.cache_references" - the count of cache hits,
-"perf.cache_misses" - the count of caches misses,
-"perf.branch_instructions" - the count of branch instructions,
-"perf.branch_misses" - the count of branch misses,
-"perf.bus_cycles" - the count of bus cycles,
-"perf.stalled_cycles_frontend" - the count of stalled frontend cpu cycles,
-"perf.stalled_cycles_backend" - the count of stalled backend cpu cycles,
-"perf.ref_cpu_cycles" - the count of ref cpu cycles
+
+ "perf.cmt" - the cache usage in Byte currently used
+ "perf.mbmt" - total system bandwidth from one level of cache
+ "perf.mbml" - bandwidth of memory traffic for a memory controller
+ "perf.cpu_cycles" - the count of cpu cycles (total/elapsed)
+ "perf.instructions" - the count of instructions
+ "perf.cache_references" - the count of cache hits
+ "perf.cache_misses" - the count of caches misses
+ "perf.branch_instructions" - the count of branch instructions
+ "perf.branch_misses" - the count of branch misses
+ "perf.bus_cycles" - the count of bus cycles
+ "perf.stalled_cycles_frontend" - the count of stalled frontend
+                                  cpu cycles
+ "perf.stalled_cycles_backend" - the count of stalled backend
+                                 cpu cycles
+ "perf.ref_cpu_cycles" - the count of ref cpu cycles
+ "perf.cpu_clock" - the count of cpu clock time
+ "perf.task_clock" - the count of task clock time
+ "perf.page_faults" - the count of page faults
+ "perf.context_switches" - the count of context switches
+ "perf.cpu_migrations" - the count of cpu migrations
+ "perf.page_faults_min" - the count of minor page faults
+ "perf.page_faults_maj" - the count of major page faults
+ "perf.alignment_faults" - the count of alignment faults
+ "perf.emulation_faults" - the count of emulation faults
 
 See the B<perf> command for more details about each event.
 
@@ -960,30 +1125,65 @@ domain.  Using the I<--backing> flag extends this information to
 cover all resources in the backing chain, rather than the default
 of limiting information to the active layer for each guest disk.
 Information listed includes:
-"block.count" - number of block devices being listed,
-"block.<num>.name" - name of the target of the block device <num> (the
-same name for multiple entries if I<--backing> is present),
-"block.<num>.backingIndex" - when I<--backing> is present, matches up
-with the <backingStore> index listed in domain XML for backing files,
-"block.<num>.path" - file source of block device <num>, if it is a
-local file or block device,
-"block.<num>.rd.reqs" - number of read requests,
-"block.<num>.rd.bytes" - number of read bytes,
-"block.<num>.rd.times" - total time (ns) spent on reads,
-"block.<num>.wr.reqs" - number of write requests,
-"block.<num>.wr.bytes" - number of written bytes,
-"block.<num>.wr.times" - total time (ns) spent on writes,
-"block.<num>.fl.reqs" - total flush requests,
-"block.<num>.fl.times" - total time (ns) spent on cache flushing,
-"block.<num>.errors" - Xen only: the 'oo_req' value,
-"block.<num>.allocation" - offset of highest written sector in bytes,
-"block.<num>.capacity" - logical size of source file in bytes,
-"block.<num>.physical" - physical size of source file in bytes
+
+ "block.count" - number of block devices being listed
+ "block.<num>.name" - name of the target of the block
+                      device <num> (the same name for
+                      multiple entries if I<--backing>
+                      is present)
+ "block.<num>.backingIndex" - when I<--backing> is present,
+                              matches up with the <backingStore>
+                              index listed in domain XML for
+                              backing files
+ "block.<num>.path" - file source of block device <num>, if
+                      it is a local file or block device
+ "block.<num>.rd.reqs" - number of read requests
+ "block.<num>.rd.bytes" - number of read bytes
+ "block.<num>.rd.times" - total time (ns) spent on reads
+ "block.<num>.wr.reqs" - number of write requests
+ "block.<num>.wr.bytes" - number of written bytes
+ "block.<num>.wr.times" - total time (ns) spent on writes
+ "block.<num>.fl.reqs" - total flush requests
+ "block.<num>.fl.times" - total time (ns) spent on cache flushing
+ "block.<num>.errors" - Xen only: the 'oo_req' value
+ "block.<num>.allocation" - offset of highest written sector in bytes
+ "block.<num>.capacity" - logical size of source file in bytes
+ "block.<num>.physical" - physical size of source file in bytes
+ "block.<num>.threshold" - threshold (in bytes) for delivering the
+                           VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD event
+                           See domblkthreshold.
+
+I<--iothread> returns information about IOThreads on the running guest
+if supported by the hypervisor.
+
+The "poll-max-ns" for each thread is the maximum nanoseconds to allow
+each polling interval to occur. A polling interval is a period of time
+allowed for a thread to process data before being the guest gives up
+its CPU quantum back to the host. A value set too small will not allow
+the IOThread to run long enough on a CPU to process data. A value set
+too high will consume too much CPU time per IOThread failing to allow
+other threads running on the CPU to get time. The polling interval is
+not available for statistical purposes.
+
+ "iothread.<id>.poll-max-ns" - maximum polling time in nanoseconds used
+                               by the <id> IOThread. A value of 0 (zero)
+                               indicates polling is disabled.
+ "iothread.<id>.poll-grow" - polling time grow value. A value of 0 (zero)
+                             indicates growth is managed by the hypervisor.
+ "iothread.<id>.poll-shrink" - polling time shrink value. A value of
+                               0 (zero) indicates shrink is managed by
+                               the hypervisor.
 
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag I<--enforce>
 forces the command to fail if the daemon doesn't support the
 selected group.
+
+When collecting stats libvirtd may wait for some time if there's
+already another job running on given domain for it to finish.
+This may cause unnecessary delay in delivering stats. Using
+I<--nowait> suppresses this behaviour. On the other hand
+some statistics might be missing for such domain.
 
 =item B<domiflist> I<domain> [I<--inactive>]
 
@@ -1048,6 +1248,7 @@ command.
 | I<--xml> B<file> } [I<--shallow>] [I<--reuse-external>] [I<bandwidth>]
 [I<--wait> [I<--async>] [I<--verbose>]] [{I<--pivot> | I<--finish>}]
 [I<--timeout> B<seconds>] [I<granularity>] [I<buf-size>] [I<--bytes>]
+[I<--transient-job>]
 
 Copy a disk backing image chain to a destination.  Either I<dest> as
 the destination file name, or I<--xml> with the name of an XML file containing
@@ -1102,6 +1303,11 @@ within a certain range. Specifying I<buf-size> will control how much data can
 be simultaneously in-flight during the copy; larger values use more memory but
 may allow faster completion (the default value is usually correct).
 
+I<--transient-job> allows to specify that the user does not require the job to
+be recovered if the VM crashes or is turned off before the job completes. This
+flag removes the restriction of copy jobs to transient domains if that
+restriction is applied by the hypervisor.
+
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<--bytes>] [I<base>]
 [I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
 [I<--keep-relative>]
@@ -1145,7 +1351,7 @@ command.
 [I<read-bytes-sec-max-length>] [I<write-bytes-sec-max-length>]]
 [[I<total-iops-sec-max-length>] |
 [I<read-iops-sec-max-length>] [I<write-iops-sec-max-length>]]
-[I<size-iops-sec>] [I<group_name>]
+[I<size-iops-sec>] [I<group-name>]
 
 Set or query the block disk io parameters for a block device of I<domain>.
 I<device> specifies a unique target name (<target dev='name'/>) or source
@@ -1185,7 +1391,7 @@ read I/O operations limit.
 I<--write-iops-sec-max-length> specifies duration in seconds to allow maximum
 write I/O operations limit.
 I<--size-iops-sec> specifies size I/O operations limit per second.
-I<--group_name> specifies group name to share I/O quota between multiple drives.
+I<--group-name> specifies group name to share I/O quota between multiple drives.
 For a qemu domain, if no name is provided, then the default is to have a single
 group for each I<device>.
 
@@ -1247,6 +1453,14 @@ scaled positive number may be used as bandwidth (see B<NOTES> above). Using
 I<--bytes> with a scaled value allows to use finer granularity. A scaled value
 used without I<--bytes> will be rounded down to MiB/s. Note that the
 I<--bytes> may be unsupported by the hypervisor.
+
+
+=item B<domblkthreshold> I<domain> I<dev> I<threshold>
+
+Set the threshold value for delivering the block-threshold event. I<dev>
+specifies the disk device target or backing chain element of given device using
+the 'target[1]' syntax. I<threshold> is a scaled value of the offset. If the
+block device should write beyond that offset the event will be delivered.
 
 =item B<blockresize> I<domain> I<path> I<size>
 
@@ -1393,15 +1607,17 @@ Convert the file I<config> in the native guest configuration format
 named by I<format> to a domain XML format. For QEMU/KVM hypervisor,
 the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
 I<format> argument may be B<xen-xm>, B<xen-xl>, or B<xen-sxpr>. For
-LXC hypervisor, the I<format> argument must be B<lxc-tools>.
+LXC hypervisor, the I<format> argument must be B<lxc-tools>. For
+VMware/ESX hypervisor, the I<format> argument must be B<vmware-vmx>.
+For the Bhyve hypervisor, the I<format> argument must be B<bhyve-argv>.
 
-=item B<domxml-to-native> I<format> I<xml>
+=item B<domxml-to-native> I<format>
+{ [I<--xml>] I<xml> | I<--domain> I<domain-name-or-id-or-uuid> }
 
-Convert the file I<xml> in domain XML format to the native guest
-configuration format named by I<format>. For QEMU/KVM hypervisor,
-the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
-I<format> argument may be B<xen-xm>, B<xen-xl>, or B<xen-sxpr>. For
-LXC hypervisor, the I<format> argument must be B<lxc-tools>.
+Convert the file I<xml> into domain XML format or convert an existing
+I<--domain> to the native guest configuration format named by I<format>.
+The I<xml> and I<--domain> arguments are mutually exclusive. For the types
+of I<format> argument, refer to B<domxml-from-native>.
 
 =item B<dump> I<domain> I<corefilepath> [I<--bypass-cache>]
 { [I<--live>] | [I<--crash>] | [I<--reset>] } [I<--verbose>] [I<--memory-only>]
@@ -1538,6 +1754,30 @@ If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified or I<--live> and I<--config> are not specified,
 affect the current guest state.
 
+=item B<iothreadset> I<domain> I<iothread_id>
+[[I<--poll-max-ns> B<ns>] [I<--poll-grow> B<factor>]
+[I<--poll-shrink> B<divisor>]]
+[[I<--config>] [I<--live>] | [I<--current>]]
+
+Modifies an existing iothread of the domain using the specified
+I<iothread_id>. The I<--poll-max-ns> provides the maximum polling
+interval to be allowed for an IOThread in ns. If a 0 (zero) is provided,
+then polling for the IOThread is disabled.  The I<--poll-grow> is the
+factor by which the current polling time will be adjusted in order to
+reach the maximum polling time. If a 0 (zero) is provided, then the
+default factor will be used. The I<--poll-shrink> is the quotient
+by which the current polling time will be reduced in order to get
+below the maximum polling interval. If a 0 (zero) is provided, then
+the default quotient will be used. The polling values are purely dynamic
+for a running guest. Saving, destroying, stopping, etc. the guest will
+result in the polling values returning to hypervisor defaults at the
+next start, restore, etc.
+
+If I<--live> is specified, affect a running guest. If the guest is not
+running an error is returned.
+If I<--current> is specified or I<--live> is not specified, then handle
+as if I<--live> was specified.
+
 =item B<iothreaddel> I<domain> I<iothread_id>
 [[I<--config>] [I<--live>] | [I<--current>]]
 
@@ -1578,6 +1818,45 @@ has any managed save image.
 
 Remove the B<managedsave> state file for a domain, if it exists.  This
 ensures the domain will do a full boot the next time it is started.
+
+=item B<managedsave-define> I<domain> I<xml> [{I<--running> | I<--paused>}]
+
+Update the domain XML that will be used when I<domain> is later
+started. The I<xml> argument must be a file name containing
+the alternative XML, with changes only in the host-specific portions of
+the domain XML. For example, it can be used to change disk file paths.
+
+The managed save image records whether the domain should be started to a
+running or paused state.  Normally, this command does not alter the
+recorded state; passing either the I<--running> or I<--paused> flag
+will allow overriding which state the B<start> should use.
+
+=item B<managedsave-dumpxml> I<domain> [I<--security-info>]
+
+Extract the domain XML that was in effect at the time the saved state
+file I<file> was created with the B<managedsave> command.  Using
+I<--security-info> will also include security sensitive information.
+
+=item B<managedsave-edit> I<domain> [{I<--running> | I<--paused>}]
+
+Edit the XML configuration associated with a saved state file of a
+I<domain> was created by the B<managedsave> command.
+
+The managed save image records whether the domain should be started to a
+running or paused state.  Normally, this command does not alter the
+recorded state; passing either the I<--running> or I<--paused> flag
+will allow overriding which state the B<restore> should use.
+
+This is equivalent to:
+
+ virsh managedsave-dumpxml domain-name > state-file.xml
+ vi state-file.xml (or make changes with your other text editor)
+ virsh managedsave-define domain-name state-file-xml
+
+except that it does some error checking.
+
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
 
 =item B<maxvcpus> [I<type>]
 
@@ -1634,7 +1913,9 @@ I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>] [I<dna
 [I<--compressed>] [I<--comp-methods> B<method-list>]
 [I<--comp-mt-level>] [I<--comp-mt-threads>] [I<--comp-mt-dthreads>]
 [I<--comp-xbzrle-cache>] [I<--auto-converge>] [I<auto-converge-initial>]
-[I<auto-converge-increment>] [I<--persistent-xml> B<file>]
+[I<auto-converge-increment>] [I<--persistent-xml> B<file>] [I<--tls>]
+[I<--postcopy-bandwidth> B<bandwidth>]
+[I<--parallel> [I<--parallel-connections> B<connections>]]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -1665,6 +1946,8 @@ Once migration is running, the user may switch to post-copy using the
 B<migrate-postcopy> command sent from another virsh instance or use
 I<--postcopy-after-precopy> along with I<--postcopy> to let libvirt
 automatically switch to post-copy after the first pass of pre-copy is finished.
+The maximum bandwidth consumed during the post-copy phase may be limited using
+I<--postcopy-bandwidth>.
 
 I<--auto-converge> forces convergence during live migration. The initial
 guest CPU throttling rate can be set with I<auto-converge-initial>. If the
@@ -1673,7 +1956,13 @@ periodically increased by I<auto-converge-increment>.
 
 I<--rdma-pin-all> can be used with RDMA migration (i.e., when I<migrateuri>
 starts with rdma://) to tell the hypervisor to pin all domain's memory at once
-before migration starts rather then letting it pin memory pages as needed.
+before migration starts rather than letting it pin memory pages as needed. For
+QEMU/KVM this requires hard_limit memory tuning element (in the domain XML) to
+be used and set to the maximum memory configured for the domain plus any memory
+consumed by the QEMU process itself. Beware of setting the memory limit too
+high (and thus allowing the domain to lock most of the host's memory). Doing so
+may be dangerous to both the domain and the host itself since the host's kernel
+may run out of memory.
 
 B<Note>: Individual hypervisors usually do not support all possible types of
 migration. For example, QEMU does not support direct migration.
@@ -1714,6 +2003,17 @@ Values are in range from 0 to 9, where 1 is maximum speed and 9 is maximum
 compression. I<--comp-mt-threads> and I<--comp-mt-dthreads> set the number
 of compress threads on source and the number of decompress threads on target
 respectively. I<--comp-xbzrle-cache> sets size of page cache in bytes.
+
+Providing I<--tls> causes the migration to use the host configured TLS setup
+(see migrate_tls_x509_cert_dir in /etc/libvirt/qemu.conf) in order to perform
+the migration of the domain. Usage requires proper TLS setup for both source
+and target.
+
+I<--parallel> option will cause migration data to be sent over multiple
+parallel connections. The number of such connections can be set using
+I<--parallel-connections>. Parallel connections may help with saturating the
+network link between the source and the target and thus speeding up the
+migration.
 
 Running migration can be canceled by interrupting virsh (usually using
 C<Ctrl-C>) or by B<domjobabort> command sent from another virsh instance.
@@ -1767,7 +2067,7 @@ order to comply with local firewall policies.
 
 =back
 
-See L<http://libvirt.org/migration.html#uris> for more details on
+See L<https://libvirt.org/migration.html#uris> for more details on
 migration URIs.
 
 Optional I<graphicsuri> overrides connection parameters used for automatically
@@ -1801,6 +2101,12 @@ Set maximum tolerable downtime for a domain which is being live-migrated to
 another host.  The I<downtime> is a number of milliseconds the guest is allowed
 to be down at the end of live migration.
 
+=item B<migrate-getmaxdowntime> I<domain>
+
+Get the maximum tolerable downtime for a domain which is being live-migrated to
+another host.  This is the number of milliseconds the guest is allowed
+to be down at the end of live migration.
+
 =item B<migrate-compcache> I<domain> [I<--size> B<bytes>]
 
 Sets and/or gets size of the cache (in bytes) used for compressing repeatedly
@@ -1813,17 +2119,21 @@ is supposed to be used while the domain is being live-migrated as a reaction
 to migration progress and increasing number of compression cache misses
 obtained from domjobinfo.
 
-=item B<migrate-setspeed> I<domain> I<bandwidth>
+=item B<migrate-setspeed> I<domain> I<bandwidth> [I<--postcopy>]
 
 Set the maximum migration bandwidth (in MiB/s) for a domain which is being
 migrated to another host. I<bandwidth> is interpreted as an unsigned long
 long value. Specifying a negative value results in an essentially unlimited
 value being provided to the hypervisor. The hypervisor can choose whether to
-reject the value or convert it to the maximum value allowed.
+reject the value or convert it to the maximum value allowed. If the
+I<--postcopy> option is specified, the command will set the maximum bandwidth
+allowed during a post-copy migration phase.
 
-=item B<migrate-getspeed> I<domain>
+=item B<migrate-getspeed> I<domain> [I<--postcopy>]
 
-Get the maximum migration bandwidth (in MiB/s) for a domain.
+Get the maximum migration bandwidth (in MiB/s) for a domain. If the
+I<--postcopy> option is specified, the command will get the maximum bandwidth
+allowed during a post-copy migration phase.
 
 =item B<migrate-postcopy> I<domain>
 
@@ -2045,10 +2355,14 @@ The numeric values are those defined by the Linux generic input
 event subsystem. The symbolic names match the corresponding
 Linux key constant macro names.
 
+See L<virkeycode-linux(7)> and L<virkeyname-linux(7)>
+
 =item B<xt>
 
 The numeric values are those defined by the original XT keyboard
 controller. No symbolic names are provided
+
+See L<virkeycode-xt(7)>
 
 =item B<atset1>
 
@@ -2057,21 +2371,29 @@ set 1 (aka XT compatible set). Extended keycoes from B<atset1>
 may differ from extended keycodes in the B<xt> codeset. No symbolic
 names are provided
 
+See L<virkeycode-atset1(7)>
+
 =item B<atset2>
 
 The numeric values are those defined by the AT keyboard controller,
 set 2. No symbolic names are provided
+
+See L<virkeycode-atset2(7)>
 
 =item B<atset3>
 
 The numeric values are those defined by the AT keyboard controller,
 set 3 (aka PS/2 compatible set). No symbolic names are provided
 
+See L<virkeycode-atset3(7)>
+
 =item B<os_x>
 
 The numeric values are those defined by the OS-X keyboard input
 subsystem. The symbolic names match the corresponding OS-X key
 constant macro names
+
+See L<virkeycode-osx(7)> and L<virkeyname-osx(7)>
 
 =item B<xt_kbd>
 
@@ -2080,23 +2402,31 @@ These are a variant on the original XT codeset, but often with
 different encoding for extended keycodes. No symbolic names are
 provided.
 
+See L<virkeycode-xtkbd(7)>
+
 =item B<win32>
 
 The numeric values are those defined by the Win32 keyboard input
 subsystem. The symbolic names match the corresponding Win32 key
 constant macro names
 
+See L<virkeycode-win32(7)> and L<virkeyname-win32(7)>
+
 =item B<usb>
 
 The numeric values are those defined by the USB HID specification
 for keyboard input. No symbolic names are provided
 
-=item B<rfb>
+See L<virkeycode-usb(7)>
 
-The numeric values are those defined by the RFB extension for sending
+=item B<qnum>
+
+The numeric values are those defined by the QNUM extension for sending
 raw keycodes. These are a variant on the XT codeset, but extended
 keycodes have the low bit of the second byte set, instead of the high
 bit of the first byte. No symbolic names are provided.
+
+See L<virkeycode-qnum(7)>
 
 =back
 
@@ -2170,6 +2500,15 @@ inside the container, this is the /proc/meminfo "MemTotal" value. When viewing
 the value from the host, use the B<virsh memtune> command. In order to view
 the current memory in use and the maximum value allowed to set memory, use
 the B<virsh dominfo> command.
+
+=item B<set-lifecycle-action> I<domain> I<type> I<action>
+[[I<--config>] [I<--live>] | [I<--current>]]
+
+Set the lifecycle I<action> for specified lifecycle I<type>.
+The valid types are "poweroff", "reboot" and "crash", and for each of
+them valid I<action> is one of "destroy", "restart", "rename-restart",
+"preserve".  For I<type> "crash", additional actions "coredump-destroy"
+and "coredump-restart" are supported.
 
 =item B<set-user-password> I<domain> I<user> I<password> [I<--encrypted>]
 
@@ -2274,7 +2613,7 @@ including context-switches, minor-faults, etc.. Now dozens of events
 from different sources can be supported by perf.
 
 Currently only QEMU/KVM supports this command. The I<--enable> and I<--disable>
-option combined with B<eventSpec> can be used to enabled or disable specific
+option combined with B<eventSpec> can be used to enable or disable specific
 performance event. B<eventSpec> is a string list of one or more events
 separated by commas. Valid event names are as follows:
 
@@ -2316,6 +2655,24 @@ B<Valid perf event names>
   ref_cpu_cycles   -  Provides the count of total cpu cycles
                       not affected by CPU frequency scaling by
                       applications running on the platform.
+  cpu_clock - Provides the cpu clock time consumed by
+              applications running on the platform.
+  task_clock - Provides the task clock time consumed by
+               applications running on the platform.
+  page_faults - Provides the count of page faults by
+                applications running on the platform.
+  context_switches - Provides the count of context switches
+                     by applications running on the platform.
+  cpu_migrations - Provides the count cpu migrations by
+                   applications running on the platform.
+  page_faults_min - Provides the count minor page faults
+                    by applications running on the platform.
+  page_faults_maj - Provides the count major page faults
+                    by applications running on the platform.
+  alignment_faults - Provides the count alignment faults
+                     by applications running on the platform.
+  emulation_faults - Provides the count emulation faults
+                     by applications running on the platform.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.
@@ -2422,7 +2779,27 @@ marked as hotpluggable.
 The I<--maximum> flag controls the maximum number of virtual cpus that can
 be hot-plugged the next time the domain is booted.  As such, it must only be
 used with the I<--config> flag, and not with the I<--live> or the I<--current>
-flag.
+flag. Note that it may not be possible to change the maximum vcpu count if
+the processor topology is specified for the guest.
+
+=item B<setvcpu> I<domain> I<vcpulist> [I<--enable>] | [I<--disable>]
+[[I<--live>] [I<--config>] | [I<--current>]]
+
+Change state of individual vCPUs using hot(un)plug mechanism.
+
+See B<vcpupin> for information on format of I<vcpulist>. Hypervisor drivers may
+require that I<vcpulist> contains exactly vCPUs belonging to one hotpluggable
+entity. This is usually just a single vCPU but certain architectures such as
+ppc64 require a full core to be specified at once.
+
+Note that hypervisors may refuse to disable certain vcpus such as vcpu 0 or
+others.
+
+If I<--live> is specified, affect a running domain.
+If I<--config> is specified, affect the next startup of a persistent domain.
+If I<--current> is specified, affect the current domain state. This is the
+default. Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive.
 
 =item B<shutdown> I<domain> [I<--mode MODE-LIST>]
 
@@ -2700,7 +3077,7 @@ is not available the processes will provide an exit code of 1.
 The following commands manipulate devices associated to domains.
 The I<domain> can be specified as a short integer, a name or a full UUID.
 To better understand the values allowed as options for the command
-reading the documentation at L<http://libvirt.org/formatdomain.html> on the
+reading the documentation at L<https://libvirt.org/formatdomain.html> on the
 format of the device sections to get the most accurate set of accepted values.
 
 =over 4
@@ -2711,7 +3088,7 @@ format of the device sections to get the most accurate set of accepted values.
 Attach a device to the domain, using a device definition in an XML
 file using a device definition element such as <disk> or <interface>
 as the top-level element.  See the documentation at
-L<http://libvirt.org/formatdomain.html#elementsDevices> to learn about
+L<https://libvirt.org/formatdomain.html#elementsDevices> to learn about
 libvirt XML format for a device.  If I<--config> is specified the
 command alters the persistent domain configuration with the device
 attach taking effect the next time libvirt starts the domain.
@@ -2737,7 +3114,7 @@ expected.
 =item B<attach-disk> I<domain> I<source> I<target> [[[I<--live>] [I<--config>]
 | [I<--current>]] | [I<--persistent>]] [I<--targetbus bus>] [I<--driver
 driver>] [I<--subdriver subdriver>] [I<--iothread iothread>]
-[I<--cache cache>] [I<--type type>]
+[I<--cache cache>] [I<--io io>] [I<--type type>] [I<--alias alias>]
 [I<--mode mode>] [I<--sourcetype sourcetype>] [I<--serial serial>] [I<--wwn
 wwn>] [I<--rawio>] [I<--address address>] [I<--multifunction>] [I<--print-xml>]
 
@@ -2760,17 +3137,20 @@ disk formats.  I<type> can indicate I<lun>, I<cdrom> or I<floppy> as
 alternative to the disk default, although this use only replaces the media
 within the existing virtual cdrom or floppy device; consider using
 B<update-device> for this usage instead.
+I<alias> can set user supplied alias.
 I<mode> can specify the two specific mode I<readonly> or I<shareable>.
 I<sourcetype> can indicate the type of source (block|file)
 I<cache> can be one of "default", "none", "writethrough", "writeback",
 "directsync" or "unsafe".
+I<io> controls specific policies on I/O; QEMU guests support "threads" and "native".
 I<iothread> is the number within the range of domain IOThreads to which
 this disk may be attached (QEMU only).
 I<serial> is the serial of disk device. I<wwn> is the wwn of disk device.
 I<rawio> indicates the disk needs rawio capability.
-I<address> is the address of disk device in the form of pci:domain.bus.slot.function,
-scsi:controller.bus.unit, ide:controller.bus.unit or ccw:cssid.ssid.devno.
-Virtio-ccw devices must have their cssid set to 0xfe.
+I<address> is the address of disk device in the form of
+pci:domain.bus.slot.function, scsi:controller.bus.unit,
+ide:controller.bus.unit, usb:bus.port, sata:controller.bus.unit or
+ccw:cssid.ssid.devno. Virtio-ccw devices must have their cssid set to 0xfe.
 I<multifunction> indicates specified pci address is a multifunction pci device
 address.
 
@@ -2792,7 +3172,7 @@ Likewise, I<--shareable> is an alias for I<--mode shareable>.
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
 [I<--inbound average,peak,burst,floor>] [I<--outbound average,peak,burst>]
-[I<--managed>] [I<--print-xml>]
+[I<--alias alias>] [I<--managed>] [I<--print-xml>]
 
 Attach a new network interface to the domain.
 
@@ -2846,6 +3226,8 @@ I<bridge> type and only for Xen domains.
 B<--model> specifies the network device model to be presented to the
 domain.
 
+B<alias> can set user supplied alias.
+
 B<--inbound> and B<--outbound> control the bandwidth of the
 interface.  At least one from the I<average>, I<floor> pair must be
 specified.  The other two I<peak> and I<burst> are optional, so
@@ -2854,7 +3236,7 @@ specified.  The other two I<peak> and I<burst> are optional, so
 are expressed in kilobytes per second, while I<burst> is expressed in
 kilobytes in a single burst at I<peak> speed as described in the
 Network XML documentation at
-L<http://libvirt.org/formatnetwork.html#elementQoS>.
+L<https://libvirt.org/formatnetwork.html#elementQoS>.
 
 B<--managed> is usable only for I<hostdev> type and tells libvirt
 that the interface should be managed, which means detached and reattached
@@ -2892,6 +3274,16 @@ or attempting to detach a device that is not present in the domain XML,
 but shares some specific attributes with one that is present,
 may lead to unexpected results.
 
+B<Quirk>: Device unplug is asynchronous in most cases and requires guest
+cooperation. This means that it's up to the discretion of the guest to disallow
+or delay the unplug arbitrarily. As the libvirt API used in this command was
+designed as synchronous it returns success after some timeout even if the device
+was not unplugged yet to allow further interactions with the domain e.g. if the
+guest is unresponsive. Callers which need to make sure that the
+device was unplugged can use libvirt events (see virsh event) to be notified
+when the device is removed. Note that the event may arrive before the command
+returns.
+
 If I<--live> is specified, affect a running domain.
 If I<--config> is specified, affect the next startup of a persistent domain.
 If I<--current> is specified, affect the current domain state.
@@ -2905,8 +3297,23 @@ an offline domain, and like I<--live> I<--config> for a running domain.
 Note that older versions of virsh used I<--config> as an alias for
 I<--persistent>.
 
+=item B<detach-device-alias> I<domain> I<alias>
+[[[I<--live>] [I<--config>] | [I<--current>]]]]
+
+Detach a device with given I<alias> from the I<domain>. This command returns
+successfully after the unplug request was sent to the hypervisor. The actual
+removal of the device is notified asynchronously via libvirt events
+(see virsh event).
+
+If I<--live> is specified, affect a running domain.
+If I<--config> is specified, affect the next startup of a persistent domain.
+If I<--current> is specified, affect the current domain state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive.
+
 =item B<detach-disk> I<domain> I<target>
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
+[I<--print-xml>]
 
 Detach a disk device from a domain. The I<target> is the device as seen
 from the domain.
@@ -2923,6 +3330,11 @@ an offline domain, and like I<--live> I<--config> for a running domain.
 
 Note that older versions of virsh used I<--config> as an alias for
 I<--persistent>.
+
+If B<--print-xml> is specified, then the XML which would be used to detach the
+disk is printed instead.
+
+Please see documentation for B<detach-device> for known quirks.
 
 =item B<detach-interface> I<domain> I<type> [I<--mac mac>]
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
@@ -2946,6 +3358,8 @@ an offline domain, and like I<--live> I<--config> for a running domain.
 Note that older versions of virsh used I<--config> as an alias for
 I<--persistent>.
 
+Please see documentation for B<detach-device> for known quirks.
+
 =item B<update-device> I<domain> I<file> [I<--force>]
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 
@@ -2953,7 +3367,7 @@ Update the characteristics of a device associated with I<domain>,
 based on the device definition in an XML I<file>.  The I<--force> option
 can be used to force device update, e.g., to eject a CD-ROM even if it is
 locked/mounted in the domain. See the documentation at
-L<http://libvirt.org/formatdomain.html#elementsDevices> to learn about
+L<https://libvirt.org/formatdomain.html#elementsDevices> to learn about
 libvirt XML format for a device.
 
 If I<--live> is specified, affect a running domain.
@@ -3019,7 +3433,7 @@ the host's hard disk controller where the guest's disk images live could
 cause the host system to lock up or reboot).
 
 For more information on node device definition see:
-L<http://libvirt.org/formatnode.html>.
+L<https://libvirt.org/formatnode.html>.
 
 Passthrough devices cannot be simultaneously used by the host and its
 guest domains, nor by multiple active guests at once.  If the
@@ -3076,11 +3490,12 @@ for HBA).
 
 List all of the devices available on the node that are known by libvirt.
 I<cap> is used to filter the list by capability types, the types must be
-separated by comma, e.g. --cap pci,scsi, valid capability types include
+separated by comma, e.g. --cap pci,scsi. Valid capability types include
 'system', 'pci', 'usb_device', 'usb', 'net', 'scsi_host', 'scsi_target',
-'scsi', 'storage', 'fc_host', 'vports', 'scsi_generic'. If I<--tree> is
-used, the output is formatted in a tree representing parents of each node.
-I<cap> and I<--tree> are mutually exclusive.
+'scsi', 'storage', 'fc_host', 'vports', 'scsi_generic', 'drm', 'mdev',
+'mdev_types', 'ccw'.
+If I<--tree> is used, the output is formatted in a tree representing parents of each
+node.  I<cap> and I<--tree> are mutually exclusive.
 
 =item B<nodedev-reattach> I<nodedev>
 
@@ -3121,7 +3536,7 @@ before the event.
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
 actual network devices. For more detailed information about this feature
-see the documentation at L<http://libvirt.org/formatnetwork.html> . Many
+see the documentation at L<https://libvirt.org/formatnetwork.html> . Many
 of the commands for virtual networks are similar to the ones used for domains,
 but the way to name a virtual network is either by its name or UUID.
 
@@ -3136,7 +3551,7 @@ The I<--disable> option disable autostarting.
 
 Create a transient (temporary) virtual network from an
 XML I<file> and instantiate (start) the network.
-See the documentation at L<http://libvirt.org/formatnetwork.html>
+See the documentation at L<https://libvirt.org/formatnetwork.html>
 to get a description of the XML network format used by libvirt.
 
 =item B<net-define> I<file>
@@ -3409,7 +3824,7 @@ capability to manage various storage solutions, including files, raw
 partitions, and domain-specific formats, used to provide the storage
 volumes visible as devices within virtual machines. For more detailed
 information about this feature, see the documentation at
-L<http://libvirt.org/formatstorage.html> . Many of the commands for
+L<https://libvirt.org/formatstorage.html> . Many of the commands for
 pools are similar to the ones used for domains.
 
 =over 4
@@ -3469,20 +3884,34 @@ Configure whether I<pool> should automatically start at boot.
 Build a given pool.
 
 Options I<--overwrite> and I<--no-overwrite> can only be used for
-B<pool-build> a filesystem or disk pool. For a file system pool if
-neither of them is specified, B<pool-build> makes the directory. If
-I<--no-overwrite> is specified, it probes to determine if a
-filesystem already exists on the target device, returning an error
-if exists, or using mkfs to format the target device if not. If
-I<--overwrite> is specified, mkfs is always executed and any existing
-data on the target device is overwritten unconditionally. For a disk
-pool, if neither of them is specified or I<--no-overwrite> is specified,
-B<pool-build> will use 'parted --print' in order to determine if the
-disk already has a label before attempting to create one. Only if a disk
-does not already have one will a label be created. If I<--overwrite> is
-specified or it's been determined that the disk doesn't already have one,
-'parted mklabel' will be used to create a label of the format specified
-by the pool source format type or "dos" if not specified for the pool.
+B<pool-build> a filesystem, disk, or logical pool.
+
+For a file system pool if neither flag is specified, then B<pool-build>
+just makes the target path directory and no attempt to run mkfs on the
+target volume device. If I<--no-overwrite> is specified, it probes to
+determine if a filesystem already exists on the target device, returning
+an error if one exists or using mkfs to format the target device if not.
+If I<--overwrite> is specified, mkfs is always executed and any existing
+data on the target device is overwritten unconditionally.
+
+For a disk pool, if neither of them is specified or I<--no-overwrite>
+is specified, B<pool-build> will check the target volume device for
+existing filesystems or partitions before attempting to write a new
+label on the target volume device. If the target volume device already
+has a label, the command will fail. If I<--overwrite> is specified,
+then no check will be made on the target volume device prior to writing
+a new label. Writing of the label uses the pool source format type
+or "dos" if not specified.
+
+For a logical pool, if neither of them is specified or I<--no-overwrite>
+is specified, B<pool-build> will check the target volume devices for
+existing filesystems or partitions before attempting to initialize
+and format each device for usage by the logical pool. If any target
+volume device already has a label, the command will fail. If
+I<--overwrite> is specified, then no check will be made on the target
+volume devices prior to initializing and formatting each device. Once
+all the target volume devices are properly formatted via pvcreate,
+the volume group will be created using all the devices.
 
 =item B<pool-create> I<file>
 [I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]
@@ -3495,13 +3924,17 @@ follow-up command to build the pool. The I<--overwrite> and
 I<--no-overwrite> flags follow the same rules as B<pool-build>. If
 just I<--build> is provided, then B<pool-build> is called with no flags.
 
-=item B<pool-create-as> I<name> I<type> [I<--print-xml>]
+=item B<pool-create-as> I<name> I<type>
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
 [I<--source-name name>] [I<--target path>] [I<--source-format format>]
-[I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
-[[I<--adapter-name name>] | [I<--adapter-wwnn> I<--adapter-wwpn>]
-[I<--adapter-parent parent>]]
-[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]
+[I<--auth-type authtype> I<--auth-username username>
+[I<--secret-usage usage> | I<--secret-uuid uuid>]]
+[I<--source-protocol-ver ver>]
+[[I<--adapter-name name>] | [I<--adapter-wwnn> wwnn I<--adapter-wwpn> wwpn]
+[I<--adapter-parent parent> |
+ I<--adapter-parent-wwnn parent_wwnn> I<adapter-parent-wwpn parent_wwpn> |
+ I<--adapter-parent-fabric-wwn parent_fabric_wwn>]]
+[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]] [I<--print-xml>]
 
 
 Create and start a pool object I<name> from the raw parameters.  If
@@ -3532,18 +3965,31 @@ the host file system.
 [I<--source-format format>] provides information about the format of the
 pool (pool types fs, netfs, disk, logical).
 
-[I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
+[I<--auth-type authtype> I<--auth-username username>
+[I<--secret-usage usage> | I<--secret-uuid uuid>]]
 provides the elements required to generate authentication credentials for
 the storage pool. The I<authtype> is either chap for iscsi I<type> pools or
-ceph for rbd I<type> pools.
+ceph for rbd I<type> pools. Either the secret I<usage> or I<uuid> value may
+be provided, but not both.
+
+[I<--source-protocol-ver ver>] provides the NFS protocol version number used
+to contact the server's NFS service via nfs mount option 'nfsvers=n'. It is
+expect the I<ver> value is an unsigned integer.
 
 [I<--adapter-name name>] defines the scsi_hostN adapter name to be used for
 the scsi_host adapter type pool.
 
-[I<--adapter-wwnn> I<--adapter-wwpn> [I<--adapter-parent parent>]] defines
-the wwnn and wwpn to be used for the fc_host adapter type pool. The parent
-optionally provides the name of the scsi_hostN node device to be used for
-the vHBA.
+[I<--adapter-wwnn wwnn> I<--adapter-wwpn wwpn> [I<--adapter-parent parent> |
+I<--adapter-parent-wwnn parent_wwnn> I<adapter-parent-wwpn parent_wwpn> |
+I<--adapter-parent-fabric-wwn parent_fabric_wwn>]]
+defines the wwnn and wwpn to be used for the fc_host adapter type pool.
+Optionally provide the parent scsi_hostN node device to be used for the
+vHBA either by parent name, parent_wwnn and parent_wwpn, or parent_fabric_wwn.
+The parent name could change between reboots if the hardware environment
+changes, so providing the parent_wwnn and parent_wwpn ensure usage of the
+same physical HBA even if the scsi_hostN node device changes. Usage of the
+parent_fabric_wwn allows a bit more flexibility to choose an HBA on the
+same storage fabric in order to define the pool.
 
 [I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]] perform a
 B<pool-build> after creation in order to remove the need for a
@@ -3551,17 +3997,24 @@ follow-up command to build the pool. The I<--overwrite> and
 I<--no-overwrite> flags follow the same rules as B<pool-build>. If
 just I<--build> is provided, then B<pool-build> is called with no flags.
 
+For a "logical" pool only [I<--name>] needs to be provided. The
+[I<--source-name>] if provided must match the Volume Group name.
+If not provided, one will be generated using the [I<--name>]. If
+provided the [I<--target>] is ignored and a target source is generated
+using the [I<--source-name>] (or as generated from the [I<--name>]).
+
 =item B<pool-define> I<file>
 
 Define an inactive persistent storage pool or modify an existing persistent one
 from the XML I<file>.
 
-=item B<pool-define-as> I<name> I<type> [I<--print-xml>]
+=item B<pool-define-as> I<name> I<type>
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
 [I<--source-name name>] [I<--target path>] [I<--source-format format>]
-[I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
+[I<--auth-type authtype> I<--auth-username username>
+[I<--secret-usage usage> | I<--secret-uuid uuid>]]
 [[I<--adapter-name name>] | [I<--adapter-wwnn> I<--adapter-wwpn>]
-[I<--adapter-parent parent>]]
+[I<--adapter-parent parent>]] [I<--print-xml>]
 
 Create, but do not start, a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
@@ -3605,14 +4058,16 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
-=item B<pool-info> I<pool-or-uuid>
+=item B<pool-info> [I<--bytes>] I<pool-or-uuid>
 
-Returns basic information about the I<pool> object.
+Returns basic information about the I<pool> object. If I<--bytes> is specified the sizes
+of basic info are not converted to human friendly units.
 
 =item B<pool-list> [I<--inactive>] [I<--all>]
                    [I<--persistent>] [I<--transient>]
                    [I<--autostart>] [I<--no-autostart>]
-                   [[I<--details>] [<type>]
+                   [[I<--details>] [I<--uuid>]
+                   [I<--name>] [<type>]
 
 List pool objects known to libvirt.  By default, only active pools
 are listed; I<--inactive> lists just the inactive pools, and I<--all>
@@ -3621,7 +4076,11 @@ lists all pools.
 In addition, there are several sets of filtering flags. I<--persistent> is to
 list the persistent pools, I<--transient> is to list the transient pools.
 I<--autostart> lists the autostarting pools, I<--no-autostart> lists the pools
-with autostarting disabled.
+with autostarting disabled. If I<--uuid> is specified only pool's UUIDs are printed.
+If I<--name> is specified only pool's names are printed. If both I<--name>
+and I<--uuid> are specified, pool's UUID and names are printed side by side
+without any header. Option I<--details> is mutually exclusive with options
+I<--uuid> and I<--name>.
 
 You may also want to list pools with specified types using I<type>, the
 pool types must be separated by comma, e.g. --type dir,disk. The valid pool
@@ -3700,10 +4159,13 @@ before the event.
 =item B<vol-create> I<pool-or-uuid> I<FILE> [I<--prealloc-metadata>]
 
 Create a volume from an XML <file>.
+
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume in.
+
 I<FILE> is the XML <file> with the volume definition. An easy way to create the
 XML <file> is to use the B<vol-dumpxml> command to obtain the definition of a
 pre-existing volume.
+
 [I<--prealloc-metadata>] preallocate metadata (for qcow2 images which don't
 support full allocation). This option creates a sparse image file with metadata,
 resulting in higher performance compared to images with no preallocation and
@@ -3715,127 +4177,183 @@ B<Example>
  vi newvolume.xml (or make changes with your other text editor)
  virsh vol-create differentstoragepool newvolume.xml
 
-=item B<vol-create-from> I<pool-or-uuid> I<FILE> [I<--inputpool>
-I<pool-or-uuid>] I<vol-name-or-key-or-path> [I<--prealloc-metadata>]
-[I<--reflink>]
+=item B<vol-create-from> I<pool-or-uuid> I<FILE> I<vol-name-or-key-or-path>
+[I<--inputpool> I<pool-or-uuid>]  [I<--prealloc-metadata>] [I<--reflink>]
 
 Create a volume, using another volume as input.
+
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume in.
+
 I<FILE> is the XML <file> with the volume definition.
+
+I<vol-name-or-key-or-path> is the name or key or path of the source volume.
+
 I<--inputpool> I<pool-or-uuid> is the name or uuid of the storage pool the
 source volume is in.
-I<vol-name-or-key-or-path> is the name or key or path of the source volume.
+
 [I<--prealloc-metadata>] preallocate metadata (for qcow2 images which don't
 support full allocation). This option creates a sparse image file with metadata,
 resulting in higher performance compared to images with no preallocation and
 only slightly higher initial disk space usage.
+
 When I<--reflink> is specified, perform a COW lightweight copy,
 where the data blocks are copied only when modified.
 If this is not possible, the copy fails.
 
 =item B<vol-create-as> I<pool-or-uuid> I<name> I<capacity>
-[I<--allocation> I<size>] [I<--format> I<string>] [I<--backing-vol>
-I<vol-name-or-key-or-path>] [I<--backing-vol-format> I<string>]
-[I<--prealloc-metadata>] [I<--print-xml>]
+[I<--allocation> I<size>] [I<--format> I<string>]
+[I<--backing-vol> I<vol-name-or-key-or-path>]
+[I<--backing-vol-format> I<string>] [I<--prealloc-metadata>] [I<--print-xml>]
 
 Create a volume from a set of arguments unless I<--print-xml> is specified, in
 which case just the XML of the volume object is printed out without any actual
 object creation.
+
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume
 in.
+
 I<name> is the name of the new volume. For a disk pool, this must match the
 partition name as determined from the pool's source device path and the next
 available partition. For example, a source device path of /dev/sdb and there
 are no partitions on the disk, then the name must be sdb1 with the next
 name being sdb2 and so on.
+
 I<capacity> is the size of the volume to be created, as a scaled integer
 (see B<NOTES> above), defaulting to bytes if there is no suffix.
+
 I<--allocation> I<size> is the initial size to be allocated in the volume,
 also as a scaled integer defaulting to bytes.
+
 I<--format> I<string> is used in file based storage pools to specify the volume
 file format to use; raw, bochs, qcow, qcow2, vmdk, qed. Use extended for disk
 storage pools in order to create an extended partition (other values are
 validity checked but not preserved when libvirtd is restarted or the pool
 is refreshed).
+
 I<--backing-vol> I<vol-name-or-key-or-path> is the source backing
 volume to be used if taking a snapshot of an existing volume.
+
 I<--backing-vol-format> I<string> is the format of the snapshot backing volume;
 raw, bochs, qcow, qcow2, qed, vmdk, host_device. These are, however, meant for
 file based storage pools.
+
 [I<--prealloc-metadata>] preallocate metadata (for qcow2 images which don't
 support full allocation). This option creates a sparse image file with metadata,
 resulting in higher performance compared to images with no preallocation and
 only slightly higher initial disk space usage.
 
-=item B<vol-clone> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
-I<name> [I<--prealloc-metadata>] [I<--reflink>]
+=item B<vol-clone> I<vol-name-or-key-or-path> I<name>
+[I<--pool> I<pool-or-uuid>] [I<--prealloc-metadata>] [I<--reflink>]
 
 Clone an existing volume within the parent pool.  Less powerful,
 but easier to type, version of B<vol-create-from>.
-I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool
-that contains the source volume, and will contain the new volume.
+
 I<vol-name-or-key-or-path> is the name or key or path of the source volume.
+
 I<name> is the name of the new volume.
+
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool
+that contains the source volume and will contain the new volume.
+If the source volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be cloned; otherwise,
+the first volume found by the key or path will be used.
+
 [I<--prealloc-metadata>] preallocate metadata (for qcow2 images which don't
 support full allocation). This option creates a sparse image file with metadata,
 resulting in higher performance compared to images with no preallocation and
 only slightly higher initial disk space usage.
+
 When I<--reflink> is specified, perform a COW lightweight copy,
 where the data blocks are copied only when modified.
 If this is not possible, the copy fails.
 
-=item B<vol-delete> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+=item B<vol-delete> I<vol-name-or-key-or-path> [I<--pool> I<pool-or-uuid>]
 [I<--delete-snapshots>]
 
 Delete a given volume.
-I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in.
-I<vol-name-or-key-or-path> is the name or key or path of the volume to delete.
+
+I<vol-name-or-key-or-path> is the volume name or key or path of the volume
+to delete.
+
+[I<--pool> I<pool-or-uuid>] is the name or UUID of the storage pool the volume
+is in. If the volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be deleted; otherwise,
+the first volume found by the key or path will be used.
 
 The I<--delete-snapshots> flag specifies that any snapshots associated with
 the storage volume should be deleted as well. Not all storage drivers
 support this option, presently only rbd.
 
-=item B<vol-upload> [I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
-[I<--length> I<bytes>] I<vol-name-or-key-or-path> I<local-file>
+=item B<vol-upload> I<vol-name-or-key-or-path> I<local-file>
+[I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
+[I<--length> I<bytes>] [I<--sparse>]
 
 Upload the contents of I<local-file> to a storage volume.
-I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in.
+
 I<vol-name-or-key-or-path> is the name or key or path of the volume where the
-file will be uploaded.
+I<local-file> will be uploaded.
+
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
+is in. If the volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be uploaded into;
+otherwise, the first volume found by the key or path will be used.
+
 I<--offset> is the position in the storage volume at which to start writing
-the data. The value must be 0 or larger. I<--length> is an upper bound
-of the amount of data to be uploaded. A negative value is interpreted
-as an unsigned long long value to essentially include everything from
-the offset to the end of the volume.
-An error will occur if the I<local-file> is greater than the specified length.
+the data. The value must be 0 or larger.
+
+I<--length> is an upper bound of the amount of data to be uploaded.
+A negative value is interpreted as an unsigned long long value to
+essentially include everything from the offset to the end of the volume.
+
+If I<--sparse> is specified, this command will preserve volume sparseness.
+
+An error will occur if the I<local-file> is greater than the specified
+I<length>.
+
 See the description for the libvirt virStorageVolUpload API for details
 regarding possible target volume and pool changes as a result of the
 pool refresh when the upload is attempted.
 
-=item B<vol-download> [I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
-[I<--length> I<bytes>] I<vol-name-or-key-or-path> I<local-file>
+=item B<vol-download> I<vol-name-or-key-or-path> I<local-file>
+[I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>] [I<--length> I<bytes>]
+[I<--sparse>]
 
 Download the contents of a storage volume to I<local-file>.
-I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in.
-I<vol-name-or-key-or-path> is the name or key or path of the volume to download.
-I<--offset> is the position in the storage volume at which to start reading
-the data. The value must be 0 or larger. I<--length> is an upper bound of
-the amount of data to be downloaded. A negative value is interpreted as
-an unsigned long long value to essentially include everything from the
-offset to the end of the volume.
 
-=item B<vol-wipe> [I<--pool> I<pool-or-uuid>] [I<--algorithm> I<algorithm>]
-I<vol-name-or-key-or-path>
+I<vol-name-or-key-or-path> is the name or key or path of the volume to
+download into I<local-file>.
+
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
+is in. If the volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be uploaded into;
+otherwise, the first volume found by the key or path will be used.
+
+I<--offset> is the position in the storage volume at which to start reading
+the data. The value must be 0 or larger.
+
+I<--length> is an upper bound of the amount of data to be downloaded.
+A negative value is interpreted as an unsigned long long value to
+essentially include everything from the offset to the end of the volume.
+
+If I<--sparse> is specified, this command will preserve volume sparseness.
+
+=item B<vol-wipe> I<vol-name-or-key-or-path> [I<--pool> I<pool-or-uuid>]
+[I<--algorithm> I<algorithm>]
 
 Wipe a volume, ensure data previously on the volume is not accessible to
-future reads. I<--pool> I<pool-or-uuid> is the name or UUID of the storage
-pool the volume is in.
+future reads.
+
 I<vol-name-or-key-or-path> is the name or key or path of the volume to wipe.
 It is possible to choose different wiping algorithms instead of re-writing
-volume with zeroes. This can be done via I<--algorithm> switch.
+volume with zeroes.
+
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the
+volume is in. If the volume name is provided instead of the key or path,
+then providing the pool is necessary to find the volume to be wiped;
+otherwise, the first volume found by the key or path will be used.
+
+Use the I<--algorithm> switch choosing from the list of the following
+algorithms in order to define which algorithm to use for the wipe.
 
 B<Supported algorithms>
   zero       - 1-pass all zeroes
@@ -3871,74 +4389,115 @@ it expects the storage driver to be able to discard all bytes in a
 volume. It is up to the storage driver to handle how the discarding
 occurs. Not all storage drivers or volume types can support 'trim'.
 
-=item B<vol-dumpxml> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+=item B<vol-dumpxml> I<vol-name-or-key-or-path> [I<--pool> I<pool-or-uuid>]
 
 Output the volume information as an XML dump to stdout.
-I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in. I<vol-name-or-key-or-path> is the name or key or path of the volume
-to output the XML of.
 
-=item B<vol-info> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+I<vol-name-or-key-or-path> is the name or key or path of the volume
+to output the XML.
+
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
+is in. If the volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be uploaded into;
+otherwise, the first volume found by the key or path will be used.
+
+=item B<vol-info> I<vol-name-or-key-or-path> [I<--pool> I<pool-or-uuid>]
 [I<--bytes>] [I<--physical>]
 
 Returns basic information about the given storage volume.
+
+I<vol-name-or-key-or-path> is the name or key or path of the volume
+to return information for.
+
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in. I<vol-name-or-key-or-path> is the name or key or path of the volume
-to return information for. If I<--bytes> is specified the sizes are not
-converted to human friendly units. If I<--physical> is specified, then the host
-physical size is returned and displayed instead of the allocation value. The
-physical value for some file types, such as qcow2 may have a different (larger)
-physical value than is shown for allocation. Additionally sparse files will
+is in. If the volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be uploaded into;
+otherwise, the first volume found by the key or path will be used.
+
+If I<--bytes> is specified the sizes are not converted to human friendly
+units.
+
+If I<--physical> is specified, then the host physical size is returned
+and displayed instead of the allocation value. The physical value for
+some file types, such as qcow2 may have a different (larger) physical
+value than is shown for allocation. Additionally sparse files will
 have different physical and allocation values.
 
 =item B<vol-list> [I<--pool> I<pool-or-uuid>] [I<--details>]
 
 Return the list of volumes in the given storage pool.
+
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool.
+
 The I<--details> option instructs virsh to additionally display volume
 type and capacity related information where available.
 
-=item B<vol-pool> [I<--uuid>] I<vol-key-or-path>
+=item B<vol-pool> I<vol-key-or-path> [I<--uuid>]
 
 Return the pool name or UUID for a given volume. By default, the pool name is
-returned. If the I<--uuid> option is given, the pool UUID is returned instead.
-I<vol-key-or-path> is the key or path of the volume to return the pool
-information for.
+returned.
 
-=item B<vol-path> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key>
+I<vol-key-or-path> is the key or path of the volume to return the pool
+information.
+
+If the I<--uuid> option is given, the pool UUID is returned instead.
+
+=item B<vol-path> I<vol-name-or-key> [I<--pool> I<pool-or-uuid>]
 
 Return the path for a given volume.
+
+I<vol-name-or-key> is the name or key of the volume to return the path.
+
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in.
-I<vol-name-or-key> is the name or key of the volume to return the path for.
+is in. If the volume name is provided instead of the key, then providing
+the pool is necessary to find the volume to be uploaded into; otherwise,
+the first volume found by the key will be used.
 
 =item B<vol-name> I<vol-key-or-path>
 
 Return the name for a given volume.
-I<vol-key-or-path> is the key or path of the volume to return the name for.
 
-=item B<vol-key> [I<--pool> I<pool-or-uuid>] I<vol-name-or-path>
+I<vol-key-or-path> is the key or path of the volume to return the name.
+
+=item B<vol-key> I<vol-name-or-path> [I<--pool> I<pool-or-uuid>]
 
 Return the volume key for a given volume.
-I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in. I<vol-name-or-path> is the name or path of the volume to return the
-volume key for.
 
-=item B<vol-resize> [I<--pool> I<pool-or-uuid>] I<vol-name-or-path>
-I<pool-or-uuid> I<capacity> [I<--allocate>] [I<--delta>] [I<--shrink>]
+I<vol-name-or-path> is the name or path of the volume to return the
+volume key.
+
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
+is in. If the volume name is provided instead of the path, then providing
+the pool is necessary to find the volume to be uploaded into; otherwise,
+the first volume found by the path will be used.
+
+=item B<vol-resize> I<vol-name-or-path> I<capacity> [I<--pool> I<pool-or-uuid>]
+[I<--allocate>] [I<--delta>] [I<--shrink>]
 
 Resize the capacity of the given volume, in bytes.
+
+I<vol-name-or-key-or-path> is the name or key or path of the volume
+to resize.
+
+I<capacity> is a scaled integer (see B<NOTES> above) for the volume,
+which defaults to bytes if there is no suffix.
+
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in. I<vol-name-or-key-or-path> is the name or key or path of the volume
-to resize.  The new capacity might be sparse unless I<--allocate> is
-specified.  Normally, I<capacity> is the new size, but if I<--delta>
-is present, then it is added to the existing size.  Attempts to shrink
-the volume will fail unless I<--shrink> is present; I<capacity> cannot
-be negative unless I<--shrink> is provided, but a negative sign is not
-necessary. I<capacity> is a scaled integer (see B<NOTES> above), which
-defaults to bytes if there is no suffix.  This command is only safe
-for storage volumes not in use by an active guest; see also
-B<blockresize> for live resizing.
+is in. If the volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be uploaded into;
+otherwise, the first volume found by the key or path will be used.
+
+The new I<capacity> might be sparse unless I<--allocate> is specified.
+
+Normally, I<capacity> is the new size, but if I<--delta>
+is present, then it is added to the existing size.
+
+Attempts to shrink the volume will fail unless I<--shrink> is present.
+The I<capacity> cannot be negative unless I<--shrink> is provided, but
+a negative sign is not necessary.
+
+This command is only safe for storage volumes not in use by an active
+guest; see also B<blockresize> for live resizing.
 
 =back
 
@@ -3948,7 +4507,7 @@ The following commands manipulate "secrets" (e.g. passwords, passphrases and
 encryption keys).  Libvirt can store secrets independently from their use, and
 other objects (e.g. volumes or domains) can refer to the secrets for encryption
 or possibly other uses.  Secrets are identified using a UUID.  See
-L<http://libvirt.org/formatsecret.html> for documentation of the XML format
+L<https://libvirt.org/formatsecret.html> for documentation of the XML format
 used to represent properties of secrets.
 
 =over 4
@@ -3963,6 +4522,24 @@ properties defined in I<file>, without affecting the secret value.
 =item B<secret-dumpxml> I<secret>
 
 Output properties of I<secret> (specified by its UUID) as an XML dump to stdout.
+
+=item B<secret-event> {[I<secret>] I<event> [I<--loop>] [I<--timeout>
+I<seconds>] [I<--timestamp>] | I<--list>}
+
+Wait for a class of secret events to occur, and print appropriate details
+of events as they happen.  The events can optionally be filtered by
+I<secret>.  Using I<--list> as the only argument will provide a list
+of possible I<event> values known by this client, although the connection
+might not allow registering for all these events.
+
+By default, this command is one-shot, and returns success once an event
+occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
+If I<--timeout> is specified, the command gives up waiting for events
+after I<seconds> have elapsed.   With I<--loop>, the command prints all
+events until a timeout or interrupt key.
+
+When I<--timestamp> is used, a human-readable timestamp will be printed
+before the event.
 
 =item B<secret-set-value> I<secret> I<base64>
 
@@ -3996,7 +4573,7 @@ disk, memory, and device state of a domain at a point-of-time, and save it
 for future use.  They have many uses, from saving a "clean" copy of an OS
 image to saving a domain's state before a potentially destructive operation.
 Snapshots are identified with a unique name.  See
-L<http://libvirt.org/formatsnapshot.html> for documentation of the XML format
+L<https://libvirt.org/formatsnapshot.html> for documentation of the XML format
 used to represent properties of snapshots.
 
 =over 4
@@ -4017,8 +4594,8 @@ If I<--halt> is specified, the domain will be left in an inactive state
 after the snapshot is created.
 
 If I<--disk-only> is specified, the snapshot will only include disk
-state rather than the usual system checkpoint with vm state.  Disk
-snapshots are faster than full system checkpoints, but reverting to a
+content rather than the usual full system snapshot with vm state.  Disk
+snapshots are captured faster than full system snapshots, but reverting to a
 disk snapshot may require fsck or journal replays, since it is like
 the disk state at the point when the power cord is abruptly pulled;
 and mixing I<--halt> and I<--disk-only> loses any data that was not
@@ -4057,10 +4634,10 @@ this.  If this flag is not specified, then some hypervisors may fail
 after partially performing the action, and B<dumpxml> must be used to
 see whether any partial changes occurred.
 
-If I<--live> is specified, libvirt takes the snapshot (checkpoint) while
+If I<--live> is specified, libvirt takes the snapshot while
 the guest is running. Both disk snapshot and domain memory snapshot are
 taken. This increases the size of the memory image of the external
-checkpoint. This is currently supported only for external checkpoints.
+snapshot. This is currently supported only for full system external snapshots.
 
 Existence of snapshot metadata will prevent attempts to B<undefine>
 a persistent domain.  However, for transient domains, snapshot
@@ -4080,7 +4657,7 @@ Otherwise, if I<--halt> is specified, the domain will be left in an
 inactive state after the snapshot is created, and if I<--disk-only>
 is specified, the snapshot will not include vm state.
 
-The I<--memspec> option can be used to control whether a checkpoint
+The I<--memspec> option can be used to control whether a full system snapshot
 is internal or external.  The I<--memspec> flag is mandatory, followed
 by a B<memspec> of the form B<[file=]name[,snapshot=type]>, where
 type can be B<no>, B<internal>, or B<external>.  To include a literal
@@ -4088,7 +4665,7 @@ comma in B<file=name>, escape it with a second comma. I<--memspec> cannot
 be used together with I<--disk-only>.
 
 The I<--diskspec> option can be used to control how I<--disk-only> and
-external checkpoints create external files.  This option can occur
+external full system snapshots create external files.  This option can occur
 multiple times, according to the number of <disk> elements in the domain
 xml.  Each <diskspec> is in the
 form B<disk[,snapshot=type][,driver=type][,file=name]>.  A I<diskspec>
@@ -4128,7 +4705,7 @@ see whether any partial changes occurred.
 
 If I<--live> is specified, libvirt takes the snapshot while the guest is
 running. This increases the size of the memory image of the external
-checkpoint. This is currently supported only for external checkpoints.
+snapshot. This is currently supported only for external full system snapshots.
 
 =item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info>]
 | [I<snapshotname>]}
@@ -4176,13 +4753,18 @@ Output basic information about a named <snapshot>, or the current snapshot
 with I<--current>.
 
 =item B<snapshot-list> I<domain> [I<--metadata>] [I<--no-metadata>]
-[{I<--parent> | I<--roots> | [{I<--tree> | I<--name>}]}]
+[{I<--parent> | I<--roots> | [{I<--tree> | I<--name>}]}] [I<--topological>]
 [{[I<--from>] B<snapshot> | I<--current>} [I<--descendants>]]
 [I<--leaves>] [I<--no-leaves>] [I<--inactive>] [I<--active>]
 [I<--disk-only>] [I<--internal>] [I<--external>]
 
 List all of the available snapshots for the given domain, defaulting
 to show columns for the snapshot name, creation time, and domain state.
+
+Normally, table form output is sorted by snapshot name; using
+I<--topological> instead sorts so that no child is listed before its
+ancestors (although there may be more than one possible ordering with
+this property).
 
 If I<--parent> is specified, add a column to the output table giving
 the name of the parent of each snapshot.  If I<--roots> is specified,
@@ -4344,6 +4926,51 @@ mentioned in I<nwfilter-define>.
 
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
+
+=back
+
+=head1 NWFILTER BINDING COMMANDS
+
+The following commands manipulate network filter bindings. Network filter
+bindings track the association between a network port and a network
+filter. Generally the bindings are managed automatically by the hypervisor
+drivers when adding/removing NICs on a guest.
+
+If an admin is creating/deleting TAP devices for non-guest usage,
+however, the network filter binding commands provide a way to make use
+of the network filters directly.
+
+=over 4
+
+=item B<nwfilter-binding-create> I<xmlfile>
+
+Associate a network port with a network filter. The network filter backend
+will immediately attempt to instantiate the filter rules on the port. This
+command may be used to associate a filter with a currently running guest
+that does not have a filter defined for a specific network port. Since the
+bindings are generally automatically managed by the hypervisor, using this
+command to define a filter for a network port and then starting the guest
+afterwards may prevent the guest from starting if it attempts to use the
+network port and finds a filter already defined.
+
+=item B<nwfilter-binding-delete> I<port-name>
+
+Disassociate a network port from a network filter. The network filter
+backend will immediately tear down the filter rules that exist on the
+port. This command may be used to remove the network port binding for
+a filter currently in use for the guest while the guest is running
+without needing to restart the guest. Restoring the network port binding
+filter for the running guest would be accomplished by using
+I<nwfilter-binding-create>.
+
+=item B<nwfilter-binding-list>
+
+List all of the network ports which have filters associated with them.
+
+=item B<nwfilter-binding-dumpxml> I<port-name>
+
+Output the network filter binding XML for the network device called
+C<port-name>.
 
 =back
 
@@ -4532,20 +5159,20 @@ Messages at level WARNING or above
 
 =item * LIBVIRT_DEBUG=4
 
-Messages at level ERROR or above
+Messages at level ERROR
 
 =back
 
 For further information about debugging options consult
-L<http://libvirt.org/logging.html>
+L<https://libvirt.org/logging.html>
 
 =back
 
 =head1 BUGS
 
 Report any bugs discovered to the libvirt community via the mailing
-list L<http://libvirt.org/contact.html> or bug tracker
-L<http://libvirt.org/bugs.html>.
+list L<https://libvirt.org/contact.html> or bug tracker
+L<https://libvirt.org/bugs.html>.
 Alternatively report bugs to your software distributor / vendor.
 
 =head1 AUTHORS
@@ -4571,6 +5198,6 @@ PURPOSE
 =head1 SEE ALSO
 
 L<virt-install(1)>, L<virt-xml-validate(1)>, L<virt-top(1)>, L<virt-df(1)>,
-L<http://www.libvirt.org/>
+L<https://libvirt.org/>
 
 =cut

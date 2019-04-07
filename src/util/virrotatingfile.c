@@ -103,7 +103,7 @@ virRotatingFileWriterEntryNew(const char *path,
     virRotatingFileWriterEntryPtr entry;
     struct stat sb;
 
-    VIR_DEBUG("Opening %s mode=%02o", path, mode);
+    VIR_DEBUG("Opening %s mode=0%02o", path, mode);
 
     if (VIR_ALLOC(entry) < 0)
         return NULL;
@@ -406,8 +406,7 @@ virRotatingFileWriterRollover(virRotatingFileWriterPtr file)
             }
 
             VIR_FREE(nextpath);
-            nextpath = thispath;
-            thispath = NULL;
+            VIR_STEAL_PTR(nextpath, thispath);
         }
     }
 
@@ -483,18 +482,19 @@ virRotatingFileWriterAppend(virRotatingFileWriterPtr file,
 
         if ((file->entry->pos == file->maxlen && len) ||
             forceRollover) {
-            virRotatingFileWriterEntryPtr tmp = file->entry;
-            VIR_DEBUG("Hit max size %zu on %s (force=%d)\n",
+            virRotatingFileWriterEntryPtr tmp;
+            VIR_DEBUG("Hit max size %zu on %s (force=%d)",
                       file->maxlen, file->basepath, forceRollover);
 
             if (virRotatingFileWriterRollover(file) < 0)
                 return -1;
 
-            if (!(file->entry = virRotatingFileWriterEntryNew(file->basepath,
-                                                              file->mode)))
+            if (!(tmp = virRotatingFileWriterEntryNew(file->basepath,
+                                                      file->mode)))
                 return -1;
 
-            virRotatingFileWriterEntryFree(tmp);
+            virRotatingFileWriterEntryFree(file->entry);
+            file->entry = tmp;
         }
     }
 
@@ -570,7 +570,7 @@ virRotatingFileReaderConsume(virRotatingFileReaderPtr file,
 {
     ssize_t ret = 0;
 
-    VIR_DEBUG("Consume %p %zu\n", buf, len);
+    VIR_DEBUG("Consume %p %zu", buf, len);
     while (len) {
         virRotatingFileReaderEntryPtr entry;
         ssize_t got;

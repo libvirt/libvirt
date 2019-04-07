@@ -1,0 +1,29 @@
+<domain type='qemu'>
+  <name>QEMUGuest</name>
+  <uuid>9f4b6512-e73a-4a25-93e8-5307802821ce</uuid>
+  <memory unit='KiB'>65536</memory>
+  <currentMemory unit='KiB'>65536</currentMemory>
+  <vcpu placement='auto'>1</vcpu>
+  <numatune>
+    <memory mode='preferred'/>
+  </numatune>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu>
+    <numa>
+      <cell id='0' cpus='0' memory='65536' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

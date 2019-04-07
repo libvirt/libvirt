@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Daniel Veillard <veillard@redhat.com>
  */
 
-#ifndef __VIR_CONF_H__
-# define __VIR_CONF_H__
+#ifndef LIBVIRT_VIRCONF_H
+# define LIBVIRT_VIRCONF_H
 
 # include "virutil.h"
 
@@ -40,7 +38,7 @@ typedef enum {
     VIR_CONF_LAST,          /* sentinel */
 } virConfType;
 
-VIR_ENUM_DECL(virConf)
+VIR_ENUM_DECL(virConf);
 
 typedef enum {
     VIR_CONF_FLAG_VMX_FORMAT = 1,  /* allow ':', '.' and '-' in names for compatibility
@@ -59,11 +57,11 @@ typedef struct _virConfValue virConfValue;
 typedef virConfValue *virConfValuePtr;
 
 struct _virConfValue {
-    virConfType type;		/* the virConfType */
-    virConfValuePtr next;	/* next element if in a list */
-    long long  l;		/* very long integer */
-    char *str;			/* pointer to 0 terminated string */
-    virConfValuePtr list;	/* list of a list */
+    virConfType type;           /* the virConfType */
+    virConfValuePtr next;       /* next element if in a list */
+    long long  l;               /* very long integer */
+    char *str;                  /* pointer to 0 terminated string */
+    virConfValuePtr list;       /* list of a list */
 };
 
 /**
@@ -79,8 +77,8 @@ typedef int (*virConfWalkCallback)(const char* name,
 
 virConfPtr virConfNew(void);
 virConfPtr virConfReadFile(const char *filename, unsigned int flags);
-virConfPtr virConfReadMem(const char *memory,
-                          int len, unsigned int flags);
+virConfPtr virConfReadString(const char *memory,
+                             unsigned int flags);
 int virConfFree(virConfPtr conf);
 void virConfFreeValue(virConfValuePtr val);
 virConfValuePtr virConfGetValue(virConfPtr conf,
@@ -130,4 +128,4 @@ int virConfWriteMem(char *memory,
                     virConfPtr conf);
 int virConfLoadConfig(virConfPtr *conf, const char *name);
 
-#endif /* __VIR_CONF_H__ */
+#endif /* LIBVIRT_VIRCONF_H */

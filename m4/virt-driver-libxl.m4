@@ -26,40 +26,34 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
   LIBXL_CFLAGS=""
   LIBXL_FIRMWARE_DIR=""
   LIBXL_EXECBIN_DIR=""
-  LIBXL_API_VERSION="-DLIBXL_API_VERSION=0x040400"
+  LIBXL_API_VERSION="-DLIBXL_API_VERSION=0x040500"
 
   dnl search for libxl, aka libxenlight
-  dnl Xen > 4.5 introduced a pkgconfig file, check for it first
   old_with_libxl="$with_libxl"
-  LIBVIRT_CHECK_PKG([LIBXL], [xenlight], [4.4.0], [true])
+  LIBVIRT_CHECK_PKG([LIBXL], [xenlight], [4.6.0], [true])
   if test "x$with_libxl" = "xyes" ; then
     LIBXL_FIRMWARE_DIR=$($PKG_CONFIG --variable xenfirmwaredir xenlight)
     LIBXL_EXECBIN_DIR=$($PKG_CONFIG --variable libexec_bin xenlight)
   fi
 
-  dnl pkgconfig file not found, fallback to lib probe
+  dnl In Fedora <= 28, the xenlight pkgconfig file is in the -runtime package
+  dnl https://bugzilla.redhat.com/show_bug.cgi?id=1629643
+  dnl Until Fedora 28 reaches EOL, fallback to lib probe if xenlight.pc is
+  dnl not found
   if test "x$with_libxl" = "xno" ; then
     with_libxl="$old_with_libxl"
 
-    dnl LIBXL_API_VERSION 4.4.0 introduced a new parameter to
-    dnl libxl_domain_create_restore for specifying restore parameters.
-    dnl The libxl driver will make use of this new parameter for specifying
-    dnl the Xen migration stream version. Specify LIBXL_API_VERSION to trigger
-    dnl an error if there is too old xenlight
-    old_CFLAGS="$CFLAGS"
+    save_CFLAGS="$CFLAGS"
     CFLAGS="$CFLAGS $LIBXL_API_VERSION"
-    LIBVIRT_CHECK_LIB([LIBXL], [xenlight], [libxl_ctx_alloc], [libxl.h], [fail="1"])
-    CFLAGS="$old_CFLAGS"
+    LIBVIRT_CHECK_LIB([LIBXL], [xenlight], [libxl_cpupool_cpuadd_cpumap], [libxl.h], [fail="1"])
+    CFLAGS="$save_CFLAGS"
 
     if test $fail = 1; then
-      AC_MSG_ERROR([You must install the libxl Library from Xen >= 4.4 to compile libxenlight driver with -lxl])
+      AC_MSG_ERROR([You must install the libxl Library from Xen >= 4.6 to compile libxenlight driver with -lxl])
     fi
   fi
 
   if test "$with_libxl" = "yes"; then
-    old_LIBS="$LIBS"
-    old_CFLAGS="$CFLAGS"
-
     LIBXL_CFLAGS="$LIBXL_CFLAGS $LIBXL_API_VERSION"
 
     dnl If building with libxl, use the libxl utility header and lib too
@@ -75,14 +69,14 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
     dnl (since Xen 4.7) if not then assume it is in libxenctrl
     dnl (as it was for 4.6 and earler)
     AC_CHECK_LIB([xentoollog], [xtl_createlogger_stdiostream], [
-      LIBXL_LIBS="$LIBXL_LIBS -lxentoollog"
+      LIBXL_LIBS="$LIBXL_LIBS -lxenstore -lxentoollog"
     ],[
-      LIBXL_LIBS="$LIBXL_LIBS -lxenctrl"
+      LIBXL_LIBS="$LIBXL_LIBS -lxenstore -lxenctrl"
     ])
-
-    CFLAGS="$old_CFLAGS"
-    LIBS="$old_LIBS"
   fi
+
+  dnl Check if Xen has support for PVH
+  AC_CHECK_DECL(LIBXL_DOMAIN_TYPE_PVH, [AC_DEFINE([HAVE_XEN_PVH], [1], [Define to 1 if Xen has PVH support.])], [], [#include <libxl.h>])
 
   AC_SUBST([LIBXL_CFLAGS])
   AC_SUBST([LIBXL_LIBS])

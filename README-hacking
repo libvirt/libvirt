@@ -2,7 +2,8 @@
 
 These notes intend to help people working on the checked-out sources.
 These requirements do not apply when building from a distribution tarball.
-See also HACKING for more detailed libvirt contribution guidelines.
+See also docs/hacking.html (after building libvirt using the information
+included in this file) for more detailed contribution guidelines.
 
 * Requirements
 
@@ -24,7 +25,7 @@ few prerequisites, later, a plain `git pull && make' should be sufficient.
 
 You can get a copy of the source repository like this:
 
-        $ git clone git://libvirt.org/libvirt
+        $ git clone https://libvirt.org/git/libvirt.git
         $ cd libvirt
 
 As an optional step, if you already have a copy of the gnulib git

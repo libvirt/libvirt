@@ -1,0 +1,727 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Adnan Hodzic <AbsintheSyringe@gmail.com>, 2007.
+# Daniel  <veillard@redhat.com>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-26 07:12+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
+"bs/)\n"
+"Language: bs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  OPIS\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  OPCIJE\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Vrijeme: %.3f ms)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  NAZIV\n"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: nije uspjelo dodijeliti %d bajtova"
+
+msgid "(re)connect to hypervisor"
+msgstr "(ponovo) uspostavi vezu s hypervisorom"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <broj>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <niz>"
+
+msgid "CPU Affinity:"
+msgstr "CPU sklonost:"
+
+msgid "CPU frequency:"
+msgstr "CPU frekvencija:"
+
+msgid "CPU model:"
+msgstr "CPU model:"
+
+msgid "CPU socket(s):"
+msgstr "CPU priključci:"
+
+msgid "CPU time:"
+msgstr "CPU vrijeme:"
+
+msgid "CPU(s):"
+msgstr "CPU:"
+
+msgid "CPU:"
+msgstr "CPU:"
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Nije moguće izvući hypervisor verziju pokrenutog %s\n"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Promjena trenutno dodijeljene veličine memorije u gostujućoj domeni."
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr ""
+"Promjena ograničenje najveće veličine dodijeljene memorije u gostujućoj "
+"domeni."
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Uspostavljanje veze s lokalnim hypervisor. Ovo je ugrađena naredba nakon "
+"pokretanja ljuske."
+
+msgid "Core dump a domain."
+msgstr "Izbacivanje jezgre domene."
+
+msgid "Core(s) per socket:"
+msgstr "Jezgri po priključku:"
+
+msgid "Create a domain."
+msgstr "Izrada domene."
+
+msgid "Define a domain."
+msgstr "Definiranje domene."
+
+msgid "Display the system version information."
+msgstr "Prikazivanje sistemskih podataka o verziji."
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "Domena %s izrađena je iz %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Domena %s definirana je iz %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "Domena %s je uništena\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "Definicija domene %s je uklonjena\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "Domena %s se ponovno pokreće\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "Domena %s je pogašena\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "Domena %s je nastavila s radom\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "Domena %s je pokrenuta\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "Domena %s je obustavljena\n"
+
+msgid "Domain is already active"
+msgstr "Domena je aktivna"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "Domena je obnovljena iz %s\n"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Izbacivanje jezgre domene %s u %s nije uspjelo."
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Izrada domene iz %s nije uspjela"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Definiranje domene iz %s nije uspjelo"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "Uništavanje domene %s nije uspjelo"
+
+msgid "Failed to list active domains"
+msgstr "Ispisivanje aktivnih domena nije uspjelo"
+
+msgid "Failed to list inactive domains"
+msgstr "Ispisivanje neaktivnih domena nije uspjelo"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Ponovno pokretanje domena %s nije uspjelo"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Obnavljanje domene iz %s nije uspjelo"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "Nastavljanje domene %s nije uspjelo"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Spremanje domene %s na lokaciju %s nije uspjelo"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Gašenje domene %s nije uspjelo"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Pokretanje domene %s nije uspjelo"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "Obustavljanje domene %s nije uspjelo"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Uklanjanje definicije domene %s nije uspjelo"
+
+msgid "GET operation failed"
+msgstr "operacija GET nije uspjela"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "operacija GET nije uspjela: %s"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+msgid "Max memory:"
+msgstr "Najv. memorije:"
+
+msgid "Memory size:"
+msgstr "Veličina memorije:"
+
+msgid "NUMA cell(s):"
+msgstr "NUMA ćelija:"
+
+msgid "Name"
+msgstr "Naziv"
+
+msgid "Name:"
+msgstr "naziv:"
+
+msgid "No error message provided"
+msgstr "Nije pružena poruka o pogrešci"
+
+msgid "OS Type:"
+msgstr "OS vrsta:"
+
+msgid "POST operation failed"
+msgstr "operacija POST nije uspjela"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "operacija POST nije uspjela: %s"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "VCPU-i najviše domene za udomljivanje fizičkih CPU-a."
+
+msgid "Restore a domain."
+msgstr "Obnavljanje domene."
+
+msgid "Resume a previously suspended domain."
+msgstr "Nastavljanje rada prethodno obustavljene domene"
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Ispis osnovnih podataka o virtualnim CPU-ima domene."
+
+msgid "Returns basic information about the domain."
+msgstr "Ispis osnovnih podataka o domeni"
+
+msgid "Returns basic information about the node."
+msgstr "Ispis osnovnih podataka o čvoru."
+
+msgid "Returns list of domains."
+msgstr "Ispisivanje popisa domena."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Pokretanje naredbe za ponovno pokretanje unutar ciljane domene"
+
+msgid "Run shutdown in the target domain."
+msgstr "Pokretanje postupka gašenja u ciljanoj domeni."
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Pokrenuti hypervisor: %s %d.%d.%d\n"
+
+msgid "State"
+msgstr "Stanje"
+
+msgid "State:"
+msgstr "Stanje:"
+
+msgid "Suspend a running domain."
+msgstr "Obustavljanje izvršavanja domene."
+
+msgid "Thread(s) per core:"
+msgstr "Grana po jezgri:"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Unesite: 'help' za pomoć o naredbama\n"
+"         'quit' za izlazak\n"
+"\n"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Used memory:"
+msgstr "Upotrijebljeno memorije:"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Upotreba API-a: %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "VCPU:"
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Dobrodošli u %s, virtualizacijski interaktivni terminal.\n"
+"\n"
+
+msgid "cannot parse vbd filename, missing driver name"
+msgstr ""
+"raščlanjivanje naziva datoteke vbd nije moguće, nedostaje naziv upravljačkog "
+"programa"
+
+msgid "cannot parse vbd filename, missing driver type"
+msgstr ""
+"raščlanjivanje naziva datoteke vbd nije moguće, nedostaje vrsta upravljačkog "
+"programa"
+
+msgid "change maximum memory limit"
+msgstr "promijeni najviše ograničenje memorije"
+
+msgid "change memory allocation"
+msgstr "promijeni dodjeljivanje memorije"
+
+msgid "change number of virtual CPUs"
+msgstr "promijeni broj virtualnih CPU-a"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "naredba '%s' ne podržava opciju --%s"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "naredba '%s' zahtijeva opciju --%s"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "naredba '%s' zahtijeva opciju <%s>"
+
+msgid "configuration file syntax error"
+msgstr "pogreška u sintaksi konfiguracijske datoteke"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "pogreška u sintaksi konfiguracijske datoteke: %s"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "ID domene ili UUID pretvori u naziv domene"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "naziv domene ili UUID pretvori u ID domene"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "naziv domene ili ID pretvori u UUID domene"
+
+msgid "could not connect to Xen Store"
+msgstr "nije moguće uspostaviti vezu s Xen Store"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "nije moguće uspostaviti vezu s Xen Store %s"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "nije moguće upotrijebiti Xen hypervisor unos"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "nije moguće upotrijebiti Xen hypervisor unos %s"
+
+msgid "crashed"
+msgstr "srušeno"
+
+msgid "create a domain from an XML file"
+msgstr "izradi domenu iz XML datoteke"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "definiraj (bez pokretanja) domenu iz XML datoteke"
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "domena %s već postoji"
+
+msgid "domain id or name"
+msgstr "ID domene ili naziv"
+
+msgid "domain id or uuid"
+msgstr "ID domene ili UUID"
+
+msgid "domain information"
+msgstr "podaci domene"
+
+msgid "domain information in XML"
+msgstr "podaci domene u XML-u"
+
+msgid "domain information incomplete, missing name"
+msgstr "podaci domene nisu potpuni, nedostaje name"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "podaci domene nisu potpuni, vbd nema dev"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "podaci domene nisu potpuni, vbd nema src"
+
+msgid "domain name or uuid"
+msgstr "naziv domene ili uuid"
+
+msgid "domain state"
+msgstr "stanje domene"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "izbacivanje jezgre domene u datoteku, radi analize"
+
+msgid "error"
+msgstr "pogreška"
+
+msgid "error: "
+msgstr "pogreška: "
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "očekivana sintaksa: --%s <%s>"
+
+msgid "expecting a name"
+msgstr "očekuje se naziv"
+
+msgid "expecting a separator"
+msgstr "očekuje se razdjelnik"
+
+msgid "expecting a separator in list"
+msgstr "očekuje se razdjelnik u popisu"
+
+msgid "expecting a value"
+msgstr "očekuje se vrijednost"
+
+msgid "expecting an assignment"
+msgstr "očekuje se dodjeljivanje"
+
+msgid "failed to connect to the hypervisor"
+msgstr "uspostavljanje veze s hypervisorom nije uspjelo"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "dohvaćanje domene '%s' nije uspjelo"
+
+msgid "failed to get domain UUID"
+msgstr "dohvaćanje UUID-a domene nije uspjelo"
+
+msgid "failed to get hypervisor type"
+msgstr "dohvaćanje vrste hypervisora nije uspjelo"
+
+msgid "failed to get node information"
+msgstr "Dohvaćanje podataka o čvoru nije uspjelo"
+
+msgid "failed to get the hypervisor version"
+msgstr "dohvaćanje hypervisor verzije nije uspjelo"
+
+msgid "failed to get the library version"
+msgstr "dohvaćanje verzije biblioteke nije uspjelo"
+
+msgid "failed to open file"
+msgstr "otvaranje datoteke nije uspjelo"
+
+msgid "failed to parse configuration file"
+msgstr "raščlanjivanje konfiguracijske datoteke nije uspjelo"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "raščlanjivanje konfiguracijske datoteke %s nije uspjelo"
+
+msgid "failed to read configuration file"
+msgstr "čitanje konfiguracijske datoteke nije uspjelo"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "čitanje konfiguracijske datoteke %s nije uspjelo"
+
+msgid "failed to save content"
+msgstr "spremanje sadržaja nije uspjelo"
+
+msgid "failed to serialize S-Expr"
+msgstr "serijalizacija S-Expr nije uspjela"
+
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "serijalizacija S-Expr nije uspjela: %s"
+
+msgid "failed to write configuration file"
+msgstr "zapisivanje konfiguracijske datoteke nije uspjelo"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "zapisivanje konfiguracijske datoteke %s nije uspjelo"
+
+msgid "getting time of day"
+msgstr "dohvaćanje vremena dana"
+
+msgid "gracefully shutdown a domain"
+msgstr "dostojanstveno ugasi domenu"
+
+msgid "hypervisor connection URI"
+msgstr "URI povezivanja hypervisora"
+
+msgid "in shutdown"
+msgstr "u gašenju"
+
+msgid "internal error"
+msgstr "interna pogreška"
+
+msgid "invalid connection pointer in"
+msgstr "neispravan pokazivač veze pri"
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "neispravan pokazivač veze pri %s"
+
+msgid "invalid domain pointer in"
+msgstr "neispravan pokazivač domene pri"
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "neispravan pokazivač domene pri %s"
+
+msgid "list domains"
+msgstr "ispiši domene"
+
+msgid "list inactive & active domains"
+msgstr "ispiši neaktivne i aktivne domene"
+
+msgid "list inactive domains"
+msgstr "ispiši neaktivne domene"
+
+msgid "missing \""
+msgstr "nedostaje \""
+
+msgid "missing devices information"
+msgstr "nedostaju podaci o uređaju"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "nedostaju podaci o uređaju za %s"
+
+msgid "missing kernel information"
+msgstr "nedostaju podaci o kernelu"
+
+msgid "missing operating system information"
+msgstr "nedostaju podaci o operacijskom sustavu"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "nedostaju podaci o operacijskom sustavu za %s"
+
+msgid "missing root device information"
+msgstr "nedostaje podaci o korijenskom uređaju"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "nedostaju podaci o korijenskom uređaju pri %s"
+
+msgid "missing source information for device"
+msgstr "nedostaju podaci izvora za uređaj"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "nedostaju podaci izvora za uređaj %s"
+
+msgid "missing target information for device"
+msgstr "nedostaju podaci cilja za uređaj"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "nedostaju podaci cilja za uređaj %s"
+
+msgid "name of the inactive domain"
+msgstr "naziv neaktivne domene"
+
+msgid "no state"
+msgstr "bez stanja"
+
+msgid "no valid connection"
+msgstr "nije valjana veza"
+
+msgid "node information"
+msgstr "podaci čvora"
+
+msgid "number"
+msgstr "broj"
+
+msgid "number of virtual CPUs"
+msgstr "broj virtualnih CPU-a"
+
+msgid "offline"
+msgstr "izvan mreže"
+
+msgid "operation failed"
+msgstr "operacija nije uspjela"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "operacija nije uspjela: %s"
+
+msgid "operation forbidden for read only access"
+msgstr "operacija zabranjena za pristup samo za čitanje"
+
+msgid "out of memory"
+msgstr "nedovoljno memorije"
+
+msgid "paused"
+msgstr "pauzirano"
+
+msgid "print help"
+msgstr "ispiši pomoć"
+
+msgid "quit this interactive terminal"
+msgstr "napusti ovaj interaktivni terminal"
+
+msgid "read-only connection"
+msgstr "povezivanje samo za čitanje"
+
+msgid "reboot a domain"
+msgstr "ponovno pokreni domenu"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "obnovi domenu iz stanje spremljenog u datoteci"
+
+msgid "resume a domain"
+msgstr "nastavi domenu"
+
+msgid "running"
+msgstr "izvršavanje"
+
+msgid "save a domain state to a file"
+msgstr "spremi stanje domene u datoteku"
+
+msgid "show version"
+msgstr "prikaži verziju"
+
+msgid "shut off"
+msgstr "isključeno"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "pokreni (prethodno definiranu) neaktivnu domenu"
+
+msgid "string"
+msgstr "niz"
+
+msgid "suspend a domain"
+msgstr "obustavi domenu"
+
+msgid "the state to restore"
+msgstr "stanje za obnavljanje"
+
+msgid "this domain exists already"
+msgstr "ova domena već postoji"
+
+msgid "too many drivers registered"
+msgstr "registrirano je previše upravljačkih programa"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "registrirano je previše upravljačkih programa pri %s"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "neočekivan podatak '%s'"
+
+msgid "unknown OS type"
+msgstr "nepoznata vrsta OS"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "nepoznata vrsta OS %s"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "nepoznata naredba: '%s'"
+
+msgid "unknown host"
+msgstr "nepoznato računalo"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "nepoznato računalo %s"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "nepodržana opcija '-%c'. Pogledajte --help."
+
+msgid "unterminated number"
+msgstr "neodređeni broj"
+
+msgid "unterminated string"
+msgstr "neodređeni niz"
+
+msgid "vcpu number"
+msgstr "broj vcpu-a"
+
+msgid "warning"
+msgstr "upozorenje"
+
+msgid "where to dump the core"
+msgstr "lokacija izbacivanja jezgre"
+
+msgid "where to save the data"
+msgstr "lokacija spremanja podataka"

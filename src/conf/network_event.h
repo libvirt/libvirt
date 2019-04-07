@@ -17,16 +17,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Cedric Bosdonnat
  */
 
-#include "internal.h"
-#include "object_event.h"
-#include "object_event_private.h"
+#ifndef LIBVIRT_NETWORK_EVENT_H
+# define LIBVIRT_NETWORK_EVENT_H
 
-#ifndef __NETWORK_EVENT_H__
-# define __NETWORK_EVENT_H__
+# include "internal.h"
+# include "object_event.h"
+# include "object_event_private.h"
 
 int
 virNetworkEventStateRegisterID(virConnectPtr conn,
@@ -58,4 +56,4 @@ virNetworkEventLifecycleNew(const char *name,
                             int type,
                             int detail);
 
-#endif
+#endif /* LIBVIRT_NETWORK_EVENT_H */

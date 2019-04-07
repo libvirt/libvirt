@@ -16,13 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_INITCTL_H__
-# define __VIR_INITCTL_H__
+#ifndef LIBVIRT_VIRINITCTL_H
+# define LIBVIRT_VIRINITCTL_H
 
 typedef enum {
     VIR_INITCTL_RUNLEVEL_POWEROFF = 0,
@@ -36,6 +33,10 @@ typedef enum {
     VIR_INITCTL_RUNLEVEL_LAST
 } virInitctlRunLevel;
 
-int virInitctlSetRunLevel(virInitctlRunLevel level);
 
-#endif
+extern const char *virInitctlFifos[];
+
+int virInitctlSetRunLevel(const char *fifo,
+                          virInitctlRunLevel level);
+
+#endif /* LIBVIRT_VIRINITCTL_H */

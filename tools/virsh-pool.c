@@ -16,11 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
 #include <config.h>
@@ -33,98 +28,119 @@
 #include "conf/storage_conf.h"
 #include "virstring.h"
 #include "virtime.h"
+#include "vsh-table.h"
 
-#define VIRSH_COMMON_OPT_POOL_FULL                            \
-    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))            \
+#define VIRSH_COMMON_OPT_POOL_FULL(cflags) \
+    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"), cflags)
 
-#define VIRSH_COMMON_OPT_POOL_BUILD                           \
-    {.name = "build",                                         \
-     .type = VSH_OT_BOOL,                                     \
-     .flags = 0,                                              \
-     .help = N_("build the pool as normal")                   \
-    }                                                         \
+#define VIRSH_COMMON_OPT_POOL_BUILD \
+    {.name = "build", \
+     .type = VSH_OT_BOOL, \
+     .flags = 0, \
+     .help = N_("build the pool as normal") \
+    }
 
-#define VIRSH_COMMON_OPT_POOL_NO_OVERWRITE                        \
-    {.name = "no-overwrite",                                      \
-     .type = VSH_OT_BOOL,                                         \
-     .flags = 0,                                                  \
-     .help = N_("do not overwrite an existing pool of this type") \
-    }                                                             \
+#define VIRSH_COMMON_OPT_POOL_NO_OVERWRITE \
+    {.name = "no-overwrite", \
+     .type = VSH_OT_BOOL, \
+     .flags = 0, \
+     .help = N_("do not overwrite any existing data") \
+    }
 
-#define VIRSH_COMMON_OPT_POOL_OVERWRITE                           \
-    {.name = "overwrite",                                         \
-     .type = VSH_OT_BOOL,                                         \
-     .flags = 0,                                                  \
-     .help = N_("overwrite any existing data")                    \
-    }                                                             \
+#define VIRSH_COMMON_OPT_POOL_OVERWRITE \
+    {.name = "overwrite", \
+     .type = VSH_OT_BOOL, \
+     .flags = 0, \
+     .help = N_("overwrite any existing data") \
+    }
 
-#define VIRSH_COMMON_OPT_POOL_X_AS                                     \
-    {.name = "name",                                                   \
-     .type = VSH_OT_DATA,                                              \
-     .flags = VSH_OFLAG_REQ,                                           \
-     .help = N_("name of the pool")                                    \
-    },                                                                 \
-    {.name = "type",                                                   \
-     .type = VSH_OT_DATA,                                              \
-     .flags = VSH_OFLAG_REQ,                                           \
-     .help = N_("type of the pool")                                    \
-    },                                                                 \
-    {.name = "print-xml",                                              \
-     .type = VSH_OT_BOOL,                                              \
-     .help = N_("print XML document, but don't define/create")         \
-    },                                                                 \
-    {.name = "source-host",                                            \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("source-host for underlying storage")                  \
-    },                                                                 \
-    {.name = "source-path",                                            \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("source path for underlying storage")                  \
-    },                                                                 \
-    {.name = "source-dev",                                             \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("source device for underlying storage")                \
-    },                                                                 \
-    {.name = "source-name",                                            \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("source name for underlying storage")                  \
-    },                                                                 \
-    {.name = "target",                                                 \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("target for underlying storage")                       \
-    },                                                                 \
-    {.name = "source-format",                                          \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("format for underlying storage")                       \
-    },                                                                 \
-    {.name = "auth-type",                                              \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("auth type to be used for underlying storage")         \
-    },                                                                 \
-    {.name = "auth-username",                                          \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("auth username to be used for underlying storage")     \
-    },                                                                 \
-    {.name = "secret-usage",                                           \
-     .type = VSH_OT_STRING,                                            \
+#define VIRSH_COMMON_OPT_POOL_X_AS \
+    {.name = "name", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("name of the pool") \
+    }, \
+    {.name = "type", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("type of the pool") \
+    }, \
+    {.name = "print-xml", \
+     .type = VSH_OT_BOOL, \
+     .help = N_("print XML document, but don't define/create") \
+    }, \
+    {.name = "source-host", \
+     .type = VSH_OT_STRING, \
+     .help = N_("source-host for underlying storage") \
+    }, \
+    {.name = "source-path", \
+     .type = VSH_OT_STRING, \
+     .help = N_("source path for underlying storage") \
+    }, \
+    {.name = "source-dev", \
+     .type = VSH_OT_STRING, \
+     .help = N_("source device for underlying storage") \
+    }, \
+    {.name = "source-name", \
+     .type = VSH_OT_STRING, \
+     .help = N_("source name for underlying storage") \
+    }, \
+    {.name = "target", \
+     .type = VSH_OT_STRING, \
+     .help = N_("target for underlying storage") \
+    }, \
+    {.name = "source-format", \
+     .type = VSH_OT_STRING, \
+     .help = N_("format for underlying storage") \
+    }, \
+    {.name = "auth-type", \
+     .type = VSH_OT_STRING, \
+     .help = N_("auth type to be used for underlying storage") \
+    }, \
+    {.name = "auth-username", \
+     .type = VSH_OT_STRING, \
+     .help = N_("auth username to be used for underlying storage") \
+    }, \
+    {.name = "secret-usage", \
+     .type = VSH_OT_STRING, \
      .help = N_("auth secret usage to be used for underlying storage") \
-    },                                                                 \
-    {.name = "adapter-name",                                           \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("adapter name to be used for underlying storage")      \
-    },                                                                 \
-    {.name = "adapter-wwnn",                                           \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("adapter wwnn to be used for underlying storage")      \
-    },                                                                 \
-    {.name = "adapter-wwpn",                                           \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("adapter wwpn to be used for underlying storage")      \
-    },                                                                 \
-    {.name = "adapter-parent",                                         \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("adapter parent to be used for underlying storage")    \
-    }                                                                  \
+    }, \
+    {.name = "secret-uuid", \
+     .type = VSH_OT_STRING, \
+     .help = N_("auth secret UUID to be used for underlying storage") \
+    }, \
+    {.name = "adapter-name", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter name to be used for underlying storage") \
+    }, \
+    {.name = "adapter-wwnn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter wwnn to be used for underlying storage") \
+    }, \
+    {.name = "adapter-wwpn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter wwpn to be used for underlying storage") \
+    }, \
+    {.name = "adapter-parent", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter parent scsi_hostN to be used for underlying vHBA storage") \
+    }, \
+    {.name = "adapter-parent-wwnn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter parent scsi_hostN wwnn to be used for underlying vHBA storage") \
+    }, \
+    {.name = "adapter-parent-wwpn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter parent scsi_hostN wwpn to be used for underlying vHBA storage") \
+    }, \
+    {.name = "adapter-parent-fabric-wwn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter parent scsi_hostN fabric_wwn to be used for underlying vHBA storage") \
+    }, \
+    {.name = "source-protocol-ver", \
+     .type = VSH_OT_STRING, \
+     .help = N_("nfsvers value for NFS pool mount option") \
+    }
 
 virStoragePoolPtr
 virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
@@ -137,6 +153,9 @@ virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     virCheckFlags(VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+        return NULL;
+
+    if (cmd->skipChecks && !n)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
@@ -178,7 +197,7 @@ static const vshCmdInfo info_pool_autostart[] = {
 };
 
 static const vshCmdOptDef opts_pool_autostart[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT),
 
     {.name = "disable",
      .type = VSH_OT_BOOL,
@@ -302,8 +321,12 @@ virshBuildPoolXML(vshControl *ctl,
                *srcDev = NULL, *srcName = NULL, *srcFormat = NULL,
                *target = NULL, *authType = NULL, *authUsername = NULL,
                *secretUsage = NULL, *adapterName = NULL, *adapterParent = NULL,
-               *adapterWwnn = NULL, *adapterWwpn = NULL;
+               *adapterWwnn = NULL, *adapterWwpn = NULL, *secretUUID = NULL,
+               *adapterParentWwnn = NULL, *adapterParentWwpn = NULL,
+               *adapterParentFabricWwn = NULL, *protoVer = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    VSH_EXCLUSIVE_OPTIONS("secret-usage", "secret-uuid");
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         goto cleanup;
@@ -319,10 +342,15 @@ virshBuildPoolXML(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "auth-type", &authType) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "auth-username", &authUsername) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "secret-usage", &secretUsage) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "secret-uuid", &secretUUID) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-name", &adapterName) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-wwnn", &adapterWwnn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-wwpn", &adapterWwpn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-parent", &adapterParent) < 0)
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent", &adapterParent) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwnn", &adapterParentWwnn) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwpn", &adapterParentWwpn) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent-fabric-wwn", &adapterParentFabricWwn) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "source-protocol-ver", &protoVer) < 0)
         goto cleanup;
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
@@ -343,17 +371,26 @@ virshBuildPoolXML(vshControl *ctl,
             virBufferAddLit(&buf, "<adapter type='fc_host'");
             if (adapterParent)
                 virBufferAsprintf(&buf, " parent='%s'", adapterParent);
+            else if (adapterParentWwnn && adapterParentWwpn)
+                virBufferAsprintf(&buf, " parent_wwnn='%s' parent_wwpn='%s'",
+                                  adapterParentWwnn, adapterParentWwpn);
+            else if (adapterParentFabricWwn)
+                virBufferAsprintf(&buf, " parent_fabric_wwn='%s'",
+                                  adapterParentFabricWwn);
             virBufferAsprintf(&buf, " wwnn='%s' wwpn='%s'/>\n",
                               adapterWwnn, adapterWwpn);
         } else if (adapterName) {
             virBufferAsprintf(&buf, "<adapter type='scsi_host' name='%s'/>\n",
                               adapterName);
         }
-        if (authType && authUsername && secretUsage) {
+        if (authType && authUsername && (secretUsage || secretUUID)) {
             virBufferAsprintf(&buf, "<auth type='%s' username='%s'>\n",
                               authType, authUsername);
             virBufferAdjustIndent(&buf, 2);
-            virBufferAsprintf(&buf, "<secret usage='%s'/>\n", secretUsage);
+            if (secretUsage)
+                virBufferAsprintf(&buf, "<secret usage='%s'/>\n", secretUsage);
+            else
+                virBufferAsprintf(&buf, "<secret uuid='%s'/>\n", secretUUID);
             virBufferAdjustIndent(&buf, -2);
             virBufferAddLit(&buf, "</auth>\n");
         }
@@ -361,6 +398,9 @@ virshBuildPoolXML(vshControl *ctl,
             virBufferAsprintf(&buf, "<format type='%s'/>\n", srcFormat);
         if (srcName)
             virBufferAsprintf(&buf, "<name>%s</name>\n", srcName);
+
+        if (protoVer)
+            virBufferAsprintf(&buf, "<protocol ver='%s'/>\n", protoVer);
 
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</source>\n");
@@ -565,7 +605,7 @@ static const vshCmdInfo info_pool_build[] = {
 };
 
 static const vshCmdOptDef opts_pool_build[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(0),
     VIRSH_COMMON_OPT_POOL_NO_OVERWRITE,
     VIRSH_COMMON_OPT_POOL_OVERWRITE,
 
@@ -615,7 +655,7 @@ static const vshCmdInfo info_pool_destroy[] = {
 };
 
 static const vshCmdOptDef opts_pool_destroy[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE),
 
     {.name = NULL}
 };
@@ -655,7 +695,7 @@ static const vshCmdInfo info_pool_delete[] = {
 };
 
 static const vshCmdOptDef opts_pool_delete[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE),
 
     {.name = NULL}
 };
@@ -695,7 +735,7 @@ static const vshCmdInfo info_pool_refresh[] = {
 };
 
 static const vshCmdOptDef opts_pool_refresh[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE),
 
     {.name = NULL}
 };
@@ -735,7 +775,7 @@ static const vshCmdInfo info_pool_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_pool_dumpxml[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(0),
 
     {.name = "inactive",
      .type = VSH_OT_BOOL,
@@ -997,14 +1037,14 @@ virshStoragePoolListCollect(vshControl *ctl,
 }
 
 
-VIR_ENUM_DECL(virshStoragePoolState)
+VIR_ENUM_DECL(virshStoragePoolState);
 VIR_ENUM_IMPL(virshStoragePoolState,
               VIR_STORAGE_POOL_STATE_LAST,
               N_("inactive"),
               N_("building"),
               N_("running"),
               N_("degraded"),
-              N_("inaccessible"))
+              N_("inaccessible"));
 
 static const char *
 virshStoragePoolStateToString(int state)
@@ -1060,6 +1100,14 @@ static const vshCmdOptDef opts_pool_list[] = {
      .type = VSH_OT_BOOL,
      .help = N_("display extended details for pools")
     },
+    {.name = "uuid",
+     .type = VSH_OT_BOOL,
+     .help = N_("list UUID of active pools only")
+    },
+    {.name = "name",
+     .type = VSH_OT_BOOL,
+     .help = N_("list name of active pools only")
+    },
     {.name = NULL}
 };
 
@@ -1069,10 +1117,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     virStoragePoolInfo info;
     size_t i;
     bool ret = false;
-    size_t stringLength = 0, nameStrLength = 0;
-    size_t autostartStrLength = 0, persistStrLength = 0;
-    size_t stateStrLength = 0, capStrLength = 0;
-    size_t allocStrLength = 0, availStrLength = 0;
     struct poolInfoText {
         char *state;
         char *autostart;
@@ -1087,7 +1131,9 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     const char *type = NULL;
     bool details = vshCommandOptBool(cmd, "details");
     bool inactive, all;
-    char *outputStr = NULL;
+    bool uuid = false;
+    bool name = false;
+    vshTablePtr table = NULL;
 
     inactive = vshCommandOptBool(cmd, "inactive");
     all = vshCommandOptBool(cmd, "all");
@@ -1111,8 +1157,17 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (vshCommandOptBool(cmd, "transient"))
         flags |= VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT;
 
+    if (vshCommandOptBool(cmd, "uuid"))
+        uuid = true;
+
+    if (vshCommandOptBool(cmd, "name"))
+        name = true;
+
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         return false;
+
+    VSH_EXCLUSIVE_OPTIONS("details", "uuid");
+    VSH_EXCLUSIVE_OPTIONS("details", "name");
 
     if (type) {
         int poolType = -1;
@@ -1148,6 +1203,9 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             case VIR_STORAGE_POOL_ISCSI:
                 flags |= VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI;
                 break;
+            case VIR_STORAGE_POOL_ISCSI_DIRECT:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI;
+                break;
             case VIR_STORAGE_POOL_SCSI:
                 flags |= VIR_CONNECT_LIST_STORAGE_POOLS_SCSI;
                 break;
@@ -1165,6 +1223,9 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 break;
             case VIR_STORAGE_POOL_ZFS:
                 flags |= VIR_CONNECT_LIST_STORAGE_POOLS_ZFS;
+                break;
+            case VIR_STORAGE_POOL_VSTORAGE:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_VSTORAGE;
                 break;
             case VIR_STORAGE_POOL_LAST:
                 break;
@@ -1199,11 +1260,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             else
                 poolInfoTexts[i].persistent = vshStrdup(ctl, persistent ?
                                                          _("yes") : _("no"));
-
-            /* Keep the length of persistent string if longest so far */
-            stringLength = strlen(poolInfoTexts[i].persistent);
-            if (stringLength > persistStrLength)
-                persistStrLength = stringLength;
         }
 
         /* Collect further extended information about the pool */
@@ -1249,21 +1305,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     poolInfoTexts[i].allocation = vshStrdup(ctl, _("-"));
                     poolInfoTexts[i].available = vshStrdup(ctl, _("-"));
                 }
-
-                /* Keep the length of capacity string if longest so far */
-                stringLength = strlen(poolInfoTexts[i].capacity);
-                if (stringLength > capStrLength)
-                    capStrLength = stringLength;
-
-                /* Keep the length of allocation string if longest so far */
-                stringLength = strlen(poolInfoTexts[i].allocation);
-                if (stringLength > allocStrLength)
-                    allocStrLength = stringLength;
-
-                /* Keep the length of available string if longest so far */
-                stringLength = strlen(poolInfoTexts[i].available);
-                if (stringLength > availStrLength)
-                    availStrLength = stringLength;
             } else {
                 /* --details option was not specified, only active/inactive
                  * state strings are used */
@@ -1273,21 +1314,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     poolInfoTexts[i].state = vshStrdup(ctl, _("inactive"));
            }
         }
-
-        /* Keep the length of name string if longest so far */
-        stringLength = strlen(virStoragePoolGetName(list->pools[i]));
-        if (stringLength > nameStrLength)
-            nameStrLength = stringLength;
-
-        /* Keep the length of state string if longest so far */
-        stringLength = strlen(poolInfoTexts[i].state);
-        if (stringLength > stateStrLength)
-            stateStrLength = stringLength;
-
-        /* Keep the length of autostart string if longest so far */
-        stringLength = strlen(poolInfoTexts[i].autostart);
-        if (stringLength > autostartStrLength)
-            autostartStrLength = stringLength;
     }
 
     /* If the --details option wasn't selected, we output the pool
@@ -1297,19 +1323,40 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     /* Output basic info then return if --details option not selected */
     if (!details) {
+        if (uuid || name) {
+            for (i = 0; i < list->npools; i++) {
+                if (uuid) {
+                    char uuid_str[VIR_UUID_STRING_BUFLEN];
+                    virStoragePoolGetUUIDString(list->pools[i], uuid_str);
+                    vshPrint(ctl, "%-36s%c", uuid_str, name ? ' ': '\n');
+                }
+                if (name) {
+                    const char *name_str =
+                        virStoragePoolGetName(list->pools[i]);
+                    vshPrint(ctl, "%-20s\n", name_str);
+                }
+            }
+            ret = true;
+            goto cleanup;
+        }
+
         /* Output old style header */
-        vshPrintExtra(ctl, " %-20s %-10s %-10s\n", _("Name"), _("State"),
-                      _("Autostart"));
-        vshPrintExtra(ctl, "-------------------------------------------\n");
+        table = vshTableNew(_("Name"), _("State"), _("Autostart"), NULL);
+        if (!table)
+            goto cleanup;
 
         /* Output old style pool info */
         for (i = 0; i < list->npools; i++) {
-            const char *name = virStoragePoolGetName(list->pools[i]);
-            vshPrint(ctl, " %-20s %-10s %-10s\n",
-                 name,
-                 poolInfoTexts[i].state,
-                 poolInfoTexts[i].autostart);
+            const char *name_str = virStoragePoolGetName(list->pools[i]);
+            if (vshTableRowAppend(table,
+                                  name_str,
+                                  poolInfoTexts[i].state,
+                                  poolInfoTexts[i].autostart,
+                                  NULL) < 0)
+                goto cleanup;
         }
+
+        vshTablePrintToStdout(table, ctl);
 
         /* Cleanup and return */
         ret = true;
@@ -1318,99 +1365,33 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     /* We only get here if the --details option was selected. */
 
-    /* Use the length of name header string if it's longest */
-    stringLength = strlen(_("Name"));
-    if (stringLength > nameStrLength)
-        nameStrLength = stringLength;
-
-    /* Use the length of state header string if it's longest */
-    stringLength = strlen(_("State"));
-    if (stringLength > stateStrLength)
-        stateStrLength = stringLength;
-
-    /* Use the length of autostart header string if it's longest */
-    stringLength = strlen(_("Autostart"));
-    if (stringLength > autostartStrLength)
-        autostartStrLength = stringLength;
-
-    /* Use the length of persistent header string if it's longest */
-    stringLength = strlen(_("Persistent"));
-    if (stringLength > persistStrLength)
-        persistStrLength = stringLength;
-
-    /* Use the length of capacity header string if it's longest */
-    stringLength = strlen(_("Capacity"));
-    if (stringLength > capStrLength)
-        capStrLength = stringLength;
-
-    /* Use the length of allocation header string if it's longest */
-    stringLength = strlen(_("Allocation"));
-    if (stringLength > allocStrLength)
-        allocStrLength = stringLength;
-
-    /* Use the length of available header string if it's longest */
-    stringLength = strlen(_("Available"));
-    if (stringLength > availStrLength)
-        availStrLength = stringLength;
-
-    /* Display the string lengths for debugging. */
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest name string = %lu chars\n",
-             (unsigned long) nameStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest state string = %lu chars\n",
-             (unsigned long) stateStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest autostart string = %lu chars\n",
-             (unsigned long) autostartStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest persistent string = %lu chars\n",
-             (unsigned long) persistStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest capacity string = %lu chars\n",
-             (unsigned long) capStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest allocation string = %lu chars\n",
-             (unsigned long) allocStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Longest available string = %lu chars\n",
-             (unsigned long) availStrLength);
-
-    /* Create the output template.  Each column is sized according to
-     * the longest string.
-     */
-    if (virAsprintf(&outputStr,
-                    " %%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
-                    (unsigned long) nameStrLength,
-                    (unsigned long) stateStrLength,
-                    (unsigned long) autostartStrLength,
-                    (unsigned long) persistStrLength,
-                    (unsigned long) capStrLength,
-                    (unsigned long) allocStrLength,
-                    (unsigned long) availStrLength) < 0)
+    /* Insert the header into table */
+    table = vshTableNew(_("Name"), _("State"), _("Autostart"), _("Persistent"),
+                        _("Capacity"), _("Allocation"), _("Available"), NULL);
+    if (!table)
         goto cleanup;
 
-    /* Display the header */
-    vshPrintExtra(ctl, outputStr, _("Name"), _("State"), _("Autostart"),
-                  _("Persistent"), _("Capacity"), _("Allocation"),
-                  _("Available"));
-    for (i = nameStrLength + stateStrLength + autostartStrLength
-                           + persistStrLength + capStrLength
-                           + allocStrLength + availStrLength
-                           + 14; i > 0; i--)
-        vshPrintExtra(ctl, "-");
-    vshPrintExtra(ctl, "\n");
-
-    /* Display the pool info rows */
+    /* Insert the pool info rows into table*/
     for (i = 0; i < list->npools; i++) {
-        vshPrint(ctl, outputStr,
-                 virStoragePoolGetName(list->pools[i]),
-                 poolInfoTexts[i].state,
-                 poolInfoTexts[i].autostart,
-                 poolInfoTexts[i].persistent,
-                 poolInfoTexts[i].capacity,
-                 poolInfoTexts[i].allocation,
-                 poolInfoTexts[i].available);
+        if (vshTableRowAppend(table,
+                              virStoragePoolGetName(list->pools[i]),
+                              poolInfoTexts[i].state,
+                              poolInfoTexts[i].autostart,
+                              poolInfoTexts[i].persistent,
+                              poolInfoTexts[i].capacity,
+                              poolInfoTexts[i].allocation,
+                              poolInfoTexts[i].available,
+                              NULL) < 0)
+            goto cleanup;
     }
+
+    vshTablePrintToStdout(table, ctl);
 
     /* Cleanup and return */
     ret = true;
 
  cleanup:
-    VIR_FREE(outputStr);
+    vshTableFree(table);
     if (list && list->npools) {
         for (i = 0; i < list->npools; i++) {
             VIR_FREE(poolInfoTexts[i].state);
@@ -1587,8 +1568,12 @@ static const vshCmdInfo info_pool_info[] = {
 };
 
 static const vshCmdOptDef opts_pool_info[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(0),
 
+    {.name = "bytes",
+     .type = VSH_OT_BOOL,
+     .help = N_("Reture pool info in bytes"),
+    },
     {.name = NULL}
 };
 
@@ -1600,10 +1585,13 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
     int autostart = 0;
     int persistent = 0;
     bool ret = true;
+    bool bytes = false;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
+
+    bytes = vshCommandOptBool(cmd, "bytes");
 
     vshPrint(ctl, "%-15s %s\n", _("Name:"), virStoragePoolGetName(pool));
 
@@ -1633,14 +1621,20 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 
         if (info.state == VIR_STORAGE_POOL_RUNNING ||
             info.state == VIR_STORAGE_POOL_DEGRADED) {
-            val = vshPrettyCapacity(info.capacity, &unit);
-            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
+            if (bytes) {
+                vshPrint(ctl, "%-15s %llu\n", _("Capacity:"), info.capacity);
+                vshPrint(ctl, "%-15s %llu\n", _("Allocation:"), info.allocation);
+                vshPrint(ctl, "%-15s %llu\n", _("Available:"), info.available);
+            } else {
+                val = vshPrettyCapacity(info.capacity, &unit);
+                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
 
-            val = vshPrettyCapacity(info.allocation, &unit);
-            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
+                val = vshPrettyCapacity(info.allocation, &unit);
+                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
 
-            val = vshPrettyCapacity(info.available, &unit);
-            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Available:"), val, unit);
+                val = vshPrettyCapacity(info.available, &unit);
+                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Available:"), val, unit);
+            }
         }
     } else {
         ret = false;
@@ -1664,7 +1658,7 @@ static const vshCmdInfo info_pool_name[] = {
 };
 
 static const vshCmdOptDef opts_pool_name[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(0),
 
     {.name = NULL}
 };
@@ -1696,7 +1690,7 @@ static const vshCmdInfo info_pool_start[] = {
 };
 
 static const vshCmdOptDef opts_pool_start[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE),
     VIRSH_COMMON_OPT_POOL_BUILD,
     VIRSH_COMMON_OPT_POOL_NO_OVERWRITE,
     VIRSH_COMMON_OPT_POOL_OVERWRITE,
@@ -1757,7 +1751,7 @@ static const vshCmdInfo info_pool_undefine[] = {
 };
 
 static const vshCmdOptDef opts_pool_undefine[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT),
 
     {.name = NULL}
 };
@@ -1797,7 +1791,7 @@ static const vshCmdInfo info_pool_uuid[] = {
 };
 
 static const vshCmdOptDef opts_pool_uuid[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(0),
 
     {.name = NULL}
 };
@@ -1834,7 +1828,7 @@ static const vshCmdInfo info_pool_edit[] = {
 };
 
 static const vshCmdOptDef opts_pool_edit[] = {
-    VIRSH_COMMON_OPT_POOL_FULL,
+    VIRSH_COMMON_OPT_POOL_FULL(0),
 
     {.name = NULL}
 };
@@ -1866,12 +1860,12 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     }
 
 #define EDIT_GET_XML virStoragePoolGetXMLDesc(pool, flags)
-#define EDIT_NOT_CHANGED                                                     \
-    do {                                                                     \
-        vshPrintExtra(ctl, _("Pool %s XML configuration not changed.\n"),    \
-                 virStoragePoolGetName(pool));                               \
-        ret = true;                                                          \
-        goto edit_cleanup;                                                   \
+#define EDIT_NOT_CHANGED \
+    do { \
+        vshPrintExtra(ctl, _("Pool %s XML configuration not changed.\n"), \
+                 virStoragePoolGetName(pool)); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (pool_edited = virStoragePoolDefineXML(priv->conn, doc_edited, 0))
@@ -1894,13 +1888,15 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
 /*
  * "pool-event" command
  */
-VIR_ENUM_DECL(virshPoolEvent)
+VIR_ENUM_DECL(virshPoolEvent);
 VIR_ENUM_IMPL(virshPoolEvent,
               VIR_STORAGE_POOL_EVENT_LAST,
               N_("Defined"),
               N_("Undefined"),
               N_("Started"),
-              N_("Stopped"))
+              N_("Stopped"),
+              N_("Created"),
+              N_("Deleted"));
 
 static const char *
 virshPoolEventToString(int event)
@@ -1909,18 +1905,12 @@ virshPoolEventToString(int event)
     return str ? _(str) : _("unknown");
 }
 
-struct vshEventCallback {
-    const char *name;
-    virConnectStoragePoolEventGenericCallback cb;
-};
-typedef struct vshEventCallback vshEventCallback;
-
 struct virshPoolEventData {
     vshControl *ctl;
     bool loop;
     bool timestamp;
     int count;
-    vshEventCallback *cb;
+    virshPoolEventCallback *cb;
 };
 typedef struct virshPoolEventData virshPoolEventData;
 
@@ -1989,12 +1979,12 @@ vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         vshEventDone(data->ctl);
 }
 
-static vshEventCallback vshEventCallbacks[] = {
+virshPoolEventCallback virshPoolEventCallbacks[] = {
     { "lifecycle",
       VIR_STORAGE_POOL_EVENT_CALLBACK(vshEventLifecyclePrint), },
     { "refresh", vshEventGenericPrint, }
 };
-verify(VIR_STORAGE_POOL_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
+verify(VIR_STORAGE_POOL_EVENT_ID_LAST == ARRAY_CARDINALITY(virshPoolEventCallbacks));
 
 
 static const vshCmdInfo info_pool_event[] = {
@@ -2014,6 +2004,7 @@ static const vshCmdOptDef opts_pool_event[] = {
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .completer = virshPoolEventNameCompleter,
      .help = N_("which event type to wait for")
     },
     {.name = "loop",
@@ -2051,7 +2042,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
         size_t i;
 
         for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++)
-            vshPrint(ctl, "%s\n", vshEventCallbacks[i].name);
+            vshPrint(ctl, "%s\n", virshPoolEventCallbacks[i].name);
         return true;
     }
 
@@ -2063,7 +2054,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (event = 0; event < VIR_STORAGE_POOL_EVENT_ID_LAST; event++)
-        if (STREQ(eventName, vshEventCallbacks[event].name))
+        if (STREQ(eventName, virshPoolEventCallbacks[event].name))
             break;
     if (event == VIR_STORAGE_POOL_EVENT_ID_LAST) {
         vshError(ctl, _("unknown event type %s"), eventName);
@@ -2074,7 +2065,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
     data.loop = vshCommandOptBool(cmd, "loop");
     data.timestamp = vshCommandOptBool(cmd, "timestamp");
     data.count = 0;
-    data.cb = &vshEventCallbacks[event];
+    data.cb = &virshPoolEventCallbacks[event];
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
 
@@ -2111,6 +2102,42 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
     if (pool)
         virStoragePoolFree(pool);
     return ret;
+}
+
+
+/*
+ * "pool-capabilities" command
+ */
+static const vshCmdInfo info_pool_capabilities[] = {
+    {.name = "help",
+     .data = N_("storage pool capabilities")
+    },
+    {.name = "desc",
+     .data = N_("Returns capabilities of storage pool support.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_pool_capabilities[] = {
+    {.name = NULL}
+};
+
+static bool
+cmdPoolCapabilities(vshControl *ctl,
+                    const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    const unsigned int flags = 0; /* No flags so far */
+    virshControlPtr priv = ctl->privData;
+    VIR_AUTOFREE(char *) caps = NULL;
+
+    caps = virConnectGetStoragePoolCapabilities(priv->conn, flags);
+    if (!caps) {
+        vshError(ctl, "%s", _("failed to get storage pool capabilities"));
+        return false;
+    }
+
+    vshPrint(ctl, "%s\n", caps);
+    return true;
 }
 
 
@@ -2233,6 +2260,12 @@ const vshCmdDef storagePoolCmds[] = {
      .handler = cmdPoolEvent,
      .opts = opts_pool_event,
      .info = info_pool_event,
+     .flags = 0
+    },
+    {.name = "pool-capabilities",
+     .handler = cmdPoolCapabilities,
+     .opts = opts_pool_capabilities,
+     .info = info_pool_capabilities,
      .flags = 0
     },
     {.name = NULL}

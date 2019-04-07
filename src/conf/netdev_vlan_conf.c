@@ -14,10 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Laine Stump <laine@redhat.com>
- *     James Robson <jrobson@websense.com>
  */
 
 #include <config.h>
@@ -29,7 +25,8 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_ENUM_IMPL(virNativeVlanMode, VIR_NATIVE_VLAN_MODE_LAST,
-              "default", "tagged", "untagged")
+              "default", "tagged", "untagged",
+);
 
 int
 virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr def)

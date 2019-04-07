@@ -1,11 +1,10 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-#include "config.h"
-#include<unistd.h>
-#include<libvirt/libvirt-admin.h>
-#include<libvirt/virterror.h>
+#include <unistd.h>
+#include <libvirt/libvirt-admin.h>
+#include <libvirt/virterror.h>
 
 static void printHelp(const char *argv0)
 {

@@ -19,14 +19,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Stefan Berger <stefanb@us.ibm.com>
  */
 
-#ifndef __NWFILTER_TECH_DRIVER_H__
-# define __NWFILTER_TECH_DRIVER_H__
+#ifndef LIBVIRT_NWFILTER_TECH_DRIVER_H
+# define LIBVIRT_NWFILTER_TECH_DRIVER_H
 
-# include "nwfilter_conf.h"
+# include "virnwfilterobj.h"
 
 typedef struct _virNWFilterTechDriver virNWFilterTechDriver;
 typedef virNWFilterTechDriver *virNWFilterTechDriverPtr;
@@ -39,7 +37,7 @@ struct _virNWFilterRuleInst {
     virNWFilterChainPriority chainPriority;
     virNWFilterRuleDefPtr def;
     virNWFilterRulePriority priority;
-    virNWFilterHashTablePtr vars;
+    virHashTablePtr vars;
 };
 
 
@@ -93,4 +91,4 @@ struct _virNWFilterTechDriver {
     virNWFilterRemoveBasicRules removeBasicRules;
 };
 
-#endif /* __NWFILTER_TECH_DRIVER_H__ */
+#endif /* LIBVIRT_NWFILTER_TECH_DRIVER_H */

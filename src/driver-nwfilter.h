@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_DRIVER_NWFILTER_H__
-# define __VIR_DRIVER_NWFILTER_H__
+#ifndef LIBVIRT_DRIVER_NWFILTER_H
+# define LIBVIRT_DRIVER_NWFILTER_H
 
 # ifndef __VIR_DRIVER_H_INCLUDES___
 #  error "Don't include this file directly, only use driver.h"
@@ -57,6 +57,31 @@ typedef char *
 (*virDrvNWFilterGetXMLDesc)(virNWFilterPtr nwfilter,
                             unsigned int flags);
 
+typedef virNWFilterBindingPtr
+(*virDrvNWFilterBindingLookupByPortDev)(virConnectPtr conn,
+                                        const char *portdev);
+
+typedef int
+(*virDrvConnectListAllNWFilterBindings)(virConnectPtr conn,
+                                        virNWFilterBindingPtr **bindings,
+                                        unsigned int flags);
+
+typedef virNWFilterBindingPtr
+(*virDrvNWFilterBindingCreateXML)(virConnectPtr conn,
+                                  const char *xml,
+                                  unsigned int flags);
+
+typedef char *
+(*virDrvNWFilterBindingGetXMLDesc)(virNWFilterBindingPtr binding,
+                                   unsigned int flags);
+
+typedef int
+(*virDrvNWFilterBindingDelete)(virNWFilterBindingPtr binding);
+typedef int
+(*virDrvNWFilterBindingRef)(virNWFilterBindingPtr binding);
+typedef int
+(*virDrvNWFilterBindingFree)(virNWFilterBindingPtr binding);
+
 
 typedef struct _virNWFilterDriver virNWFilterDriver;
 typedef virNWFilterDriver *virNWFilterDriverPtr;
@@ -77,7 +102,12 @@ struct _virNWFilterDriver {
     virDrvNWFilterDefineXML nwfilterDefineXML;
     virDrvNWFilterUndefine nwfilterUndefine;
     virDrvNWFilterGetXMLDesc nwfilterGetXMLDesc;
+    virDrvConnectListAllNWFilterBindings connectListAllNWFilterBindings;
+    virDrvNWFilterBindingLookupByPortDev nwfilterBindingLookupByPortDev;
+    virDrvNWFilterBindingCreateXML nwfilterBindingCreateXML;
+    virDrvNWFilterBindingDelete nwfilterBindingDelete;
+    virDrvNWFilterBindingGetXMLDesc nwfilterBindingGetXMLDesc;
 };
 
 
-#endif /* __VIR_DRIVER_NWFILTER_H__ */
+#endif /* LIBVIRT_DRIVER_NWFILTER_H */

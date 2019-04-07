@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __QEMU_HOSTDEV_H__
-# define __QEMU_HOSTDEV_H__
+#ifndef LIBVIRT_QEMU_HOSTDEV_H
+# define LIBVIRT_QEMU_HOSTDEV_H
 
 # include "qemu_conf.h"
 # include "domain_conf.h"
@@ -30,6 +28,8 @@
 bool qemuHostdevHostSupportsPassthroughLegacy(void);
 bool qemuHostdevHostSupportsPassthroughVFIO(void);
 
+int qemuHostdevUpdateActiveMediatedDevices(virQEMUDriverPtr driver,
+                                           virDomainDefPtr def);
 int qemuHostdevUpdateActivePCIDevices(virQEMUDriverPtr driver,
                                       virDomainDefPtr def);
 int qemuHostdevUpdateActiveUSBDevices(virQEMUDriverPtr driver,
@@ -59,6 +59,10 @@ int qemuHostdevPrepareSCSIVHostDevices(virQEMUDriverPtr driver,
                                        const char *name,
                                        virDomainHostdevDefPtr *hostdevs,
                                        int nhostdevs);
+int qemuHostdevPrepareMediatedDevices(virQEMUDriverPtr driver,
+                                      const char *name,
+                                      virDomainHostdevDefPtr *hostdevs,
+                                      int nhostdevs);
 int qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
                                     virDomainDefPtr def,
                                     virQEMUCapsPtr qemuCaps,
@@ -80,7 +84,11 @@ void qemuHostdevReAttachSCSIVHostDevices(virQEMUDriverPtr driver,
                                          const char *name,
                                          virDomainHostdevDefPtr *hostdevs,
                                          int nhostdevs);
+void qemuHostdevReAttachMediatedDevices(virQEMUDriverPtr driver,
+                                        const char *name,
+                                        virDomainHostdevDefPtr *hostdevs,
+                                        int nhostdevs);
 void qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
                                       virDomainDefPtr def);
 
-#endif /* __QEMU_HOSTDEV_H__ */
+#endif /* LIBVIRT_QEMU_HOSTDEV_H */

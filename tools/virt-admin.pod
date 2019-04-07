@@ -18,15 +18,19 @@ The basic structure of most virt-admin usage is:
 
   virt-admin [OPTION]... <command> [ARG]...
 
-Where I<command> is one of the commands listed below.
+Where I<command> is one of the commands listed below. Any I<command>
+starting with B<#> is treated as a comment and silently ignored, all
+other unrecognized I<command>s are diagnosed.
 
 The B<virt-admin> program can be used either to run one I<COMMAND> by giving the
 command and its arguments on the shell command line, or a I<COMMAND_STRING>
 which is a single shell argument consisting of multiple I<COMMAND> actions
-and their arguments joined with whitespace, and separated by semicolons
-between commands.  Within I<COMMAND_STRING>, virt-admin understands the
+and their arguments joined with whitespace and separated by semicolons or
+newlines between commands, where unquoted backslash-newline pairs are
+elided.  Within I<COMMAND_STRING>, virt-admin understands the
 same single, double, and backslash escapes as the shell, although you must
-add another layer of shell escaping in creating the single shell argument.
+add another layer of shell escaping in creating the single shell argument,
+and any word starting with unquoted I<#> begins a comment that ends at newline.
 If no command is given in the command line, B<virt-admin> will then start a minimal
 interpreter waiting for your commands, and the B<quit> command will then exit
 the program.
@@ -456,15 +460,15 @@ Messages at level ERROR or above
 =back
 
 For further information about debugging options consult
-L<http://libvirt.org/logging.html>
+L<https://libvirt.org/logging.html>
 
 =back
 
 =head1 BUGS
 
 Report any bugs discovered to the libvirt community via the mailing
-list L<http://libvirt.org/contact.html> or bug tracker
-L<http://libvirt.org/bugs.html>.
+list L<https://libvirt.org/contact.html> or bug tracker
+L<https://libvirt.org/bugs.html>.
 Alternatively report bugs to your software distributor / vendor.
 
 =head1 AUTHORS
@@ -488,6 +492,6 @@ PURPOSE
 =head1 SEE ALSO
 
 L<virsh(1)>, L<virt-xml-validate(1)>, L<virt-host-validate(1)>,
-L<http://www.libvirt.org/>
+L<https://libvirt.org/>
 
 =cut

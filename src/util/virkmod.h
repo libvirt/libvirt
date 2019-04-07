@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_KMOD_H__
-# define __VIR_KMOD_H__
+#ifndef LIBVIRT_VIRKMOD_H
+# define LIBVIRT_VIRKMOD_H
 
 # include "internal.h"
 
@@ -31,4 +31,4 @@ char *virKModUnload(const char *)
     ATTRIBUTE_NONNULL(1);
 bool virKModIsBlacklisted(const char *)
     ATTRIBUTE_NONNULL(1);
-#endif /* __VIR_KMOD_H__ */
+#endif /* LIBVIRT_VIRKMOD_H */

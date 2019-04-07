@@ -17,13 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-
-#ifndef __QEMU_AGENT_H__
-# define __QEMU_AGENT_H__
+#ifndef LIBVIRT_QEMU_AGENT_H
+# define LIBVIRT_QEMU_AGENT_H
 
 # include "internal.h"
 # include "domain_conf.h"
@@ -105,6 +102,10 @@ int qemuAgentUpdateCPUInfo(unsigned int nvcpus,
                            qemuAgentCPUInfoPtr cpuinfo,
                            int ncpuinfo);
 
+int
+qemuAgentGetHostname(qemuAgentPtr mon,
+                     char **hostname);
+
 int qemuAgentGetTime(qemuAgentPtr mon,
                      long long *seconds,
                      unsigned int *nseconds);
@@ -120,4 +121,4 @@ int qemuAgentSetUserPassword(qemuAgentPtr mon,
                              const char *user,
                              const char *password,
                              bool crypted);
-#endif /* __QEMU_AGENT_H__ */
+#endif /* LIBVIRT_QEMU_AGENT_H */

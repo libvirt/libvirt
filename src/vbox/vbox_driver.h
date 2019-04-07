@@ -1,7 +1,3 @@
-/** @file vbox_driver.h
- * Core driver methods for managing VirtualBox VM's
- */
-
 /*
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
@@ -26,21 +22,21 @@
  * additional information or have any questions.
  */
 
-#ifndef VBOX_DRIVER_H
-# define VBOX_DRIVER_H
+#ifndef LIBVIRT_VBOX_DRIVER_H
+# define LIBVIRT_VBOX_DRIVER_H
 
 # include "internal.h"
 
-# if !defined(WITH_DRIVER_MODULES) || defined(VBOX_NETWORK_DRIVER)
+# if defined(VBOX_NETWORK_DRIVER)
 int vboxNetworkRegister(void);
 # endif
 
-# if !defined(WITH_DRIVER_MODULES) || defined(VBOX_STORAGE_DRIVER)
+# if defined(VBOX_STORAGE_DRIVER)
 int vboxStorageRegister(void);
 # endif
 
-# if !defined(WITH_DRIVER_MODULES) || defined(VBOX_DRIVER)
+# if defined(VBOX_DRIVER)
 int vboxRegister(void);
 # endif
 
-#endif
+#endif /* LIBVIRT_VBOX_DRIVER_H */

@@ -1,18 +1,15 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <string.h>
 #include <unistd.h>
 
 #include "internal.h"
 #include "virxml.h"
 #include "datatypes.h"
-#include "xen/xen_driver.h"
-#include "xen/xend_internal.h"
 #include "xenconfig/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "virstring.h"
+#include "libxl/libxl_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -22,61 +19,37 @@ static virDomainXMLOptionPtr xmlopt;
 static int
 testCompareFiles(const char *xml, const char *sexpr)
 {
-  char *sexprData = NULL;
-  char *gotxml = NULL;
-  int id;
-  char * tty;
-  int vncport;
-  int ret = -1;
-  virDomainDefPtr def = NULL;
-  virConnectPtr conn;
-  struct _xenUnifiedPrivate priv;
+    char *sexprData = NULL;
+    char *gotxml = NULL;
+    int ret = -1;
+    virDomainDefPtr def = NULL;
 
+    if (virTestLoadFile(sexpr, &sexprData) < 0)
+        goto fail;
 
-  conn = virGetConnect();
-  if (!conn) goto fail;
+    if (!(def = xenParseSxprString(sexprData,
+                                   NULL, -1, caps, xmlopt)))
+        goto fail;
 
-  if (virTestLoadFile(sexpr, &sexprData) < 0)
-      goto fail;
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
+        fprintf(stderr, "ABI stability check failed on %s", xml);
+        goto fail;
+    }
 
-  memset(&priv, 0, sizeof(priv));
-  /* Many puppies died to bring you this code. */
-  priv.caps = caps;
-  conn->privateData = &priv;
-  if (virMutexInit(&priv.lock) < 0)
-      goto fail;
+    if (!(gotxml = virDomainDefFormat(def, caps, 0)))
+        goto fail;
 
-  if (xenGetDomIdFromSxprString(sexprData, &id) < 0)
-      goto fail;
-  xenUnifiedLock(&priv);
-  tty = xenStoreDomainGetConsolePath(conn, id);
-  vncport = xenStoreDomainGetVNCPort(conn, id);
-  xenUnifiedUnlock(&priv);
+    if (virTestCompareToFile(gotxml, xml) < 0)
+        goto fail;
 
-  if (!(def = xenParseSxprString(sexprData,
-                                 tty, vncport, caps, xmlopt)))
-      goto fail;
-
-  if (!virDomainDefCheckABIStability(def, def)) {
-      fprintf(stderr, "ABI stability check failed on %s", xml);
-      goto fail;
-  }
-
-  if (!(gotxml = virDomainDefFormat(def, caps, 0)))
-      goto fail;
-
-  if (virTestCompareToFile(gotxml, xml) < 0)
-      goto fail;
-
-  ret = 0;
+    ret = 0;
 
  fail:
-  VIR_FREE(sexprData);
-  VIR_FREE(gotxml);
-  virDomainDefFree(def);
-  virObjectUnref(conn);
+    VIR_FREE(sexprData);
+    VIR_FREE(gotxml);
+    virDomainDefFree(def);
 
-  return ret;
+    return ret;
 }
 
 struct testInfo {
@@ -113,21 +86,19 @@ mymain(void)
 {
     int ret = 0;
 
-    if (!(caps = testXenCapsInit()))
+    if (!(caps = testXLInitCaps()))
         return EXIT_FAILURE;
 
-    if (!(xmlopt = xenDomainXMLConfInit())) {
-        virObjectUnref(caps);
+    if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
-    }
 
-#define DO_TEST(in, out)                                               \
-    do {                                                               \
-        struct testInfo info = { in, out };                            \
-        virResetLastError();                                           \
-        if (virTestRun("Xen SEXPR-2-XML " in " -> " out,               \
-                       testCompareHelper, &info) < 0)                  \
-            ret = -1;                                                  \
+#define DO_TEST(in, out) \
+    do { \
+        struct testInfo info = { in, out }; \
+        virResetLastError(); \
+        if (virTestRun("Xen SEXPR-2-XML " in " -> " out, \
+                       testCompareHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("pv", "pv");
@@ -196,4 +167,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

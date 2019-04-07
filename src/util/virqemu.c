@@ -56,7 +56,7 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
 {
     ssize_t pos = -1;
     ssize_t end;
-    virBitmapPtr bitmap = NULL;
+    VIR_AUTOPTR(virBitmap) bitmap = NULL;
 
     if (virJSONValueGetArrayAsBitmap(array, &bitmap) < 0)
         return -1;
@@ -73,8 +73,6 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
         }
     }
 
-    virBitmapFree(bitmap);
-
     return 0;
 }
 
@@ -85,29 +83,22 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
                                          virBufferPtr buf)
 {
     virJSONValuePtr member;
-    char *prefix = NULL;
     size_t i;
-    int ret = 0;
 
     for (i = 0; i < virJSONValueArraySize(array); i++) {
         member = virJSONValueArrayGet((virJSONValuePtr) array, i);
+        VIR_AUTOFREE(char *) prefix = NULL;
 
         if (virAsprintf(&prefix, "%s.%zu", key, i) < 0)
-            goto cleanup;
+            return 0;
 
         if (virQEMUBuildCommandLineJSONRecurse(prefix, member, buf,
                                                virQEMUBuildCommandLineJSONArrayNumbered,
                                                true) < 0)
-            goto cleanup;
-
-        VIR_FREE(prefix);
+            return 0;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(prefix);
-    return ret;
+    return 0;
 }
 
 
@@ -118,23 +109,19 @@ virQEMUBuildCommandLineJSONIterate(const char *key,
                                    void *opaque)
 {
     struct virQEMUCommandLineJSONIteratorData *data = opaque;
-    char *tmpkey = NULL;
-    int ret = -1;
 
     if (data->prefix) {
+        VIR_AUTOFREE(char *) tmpkey = NULL;
+
         if (virAsprintf(&tmpkey, "%s.%s", data->prefix, key) < 0)
             return -1;
 
-        ret = virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf,
-                                                 data->arrayFunc, false);
-
-        VIR_FREE(tmpkey);
+        return virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf,
+                                                  data->arrayFunc, false);
     } else {
-        ret = virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
-                                                 data->arrayFunc, false);
+        return virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
+                                                  data->arrayFunc, false);
     }
-
-    return ret;
 }
 
 
@@ -146,28 +133,31 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
                                    bool nested)
 {
     struct virQEMUCommandLineJSONIteratorData data = { key, buf, arrayFunc };
+    virJSONType type = virJSONValueGetType(value);
     virJSONValuePtr elem;
+    bool tmp;
     size_t i;
 
-    if (!key && value->type != VIR_JSON_TYPE_OBJECT) {
+    if (!key && type != VIR_JSON_TYPE_OBJECT) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only JSON objects can be top level"));
         return -1;
     }
 
-    switch ((virJSONType) value->type) {
+    switch (type) {
     case VIR_JSON_TYPE_STRING:
         virBufferAsprintf(buf, "%s=", key);
-        virQEMUBuildBufferEscapeComma(buf, value->data.string);
+        virQEMUBuildBufferEscapeComma(buf, virJSONValueGetString(value));
         virBufferAddLit(buf, ",");
         break;
 
     case VIR_JSON_TYPE_NUMBER:
-        virBufferAsprintf(buf, "%s=%s,", key, value->data.number);
+        virBufferAsprintf(buf, "%s=%s,", key, virJSONValueGetNumberString(value));
         break;
 
     case VIR_JSON_TYPE_BOOLEAN:
-        if (value->data.boolean)
+        virJSONValueGetBoolean(value, &tmp);
+        if (tmp)
             virBufferAsprintf(buf, "%s=yes,", key);
         else
             virBufferAsprintf(buf, "%s=no,", key);
@@ -238,28 +228,39 @@ virQEMUBuildCommandLineJSON(virJSONValuePtr value,
 }
 
 
-char *
-virQEMUBuildObjectCommandlineFromJSON(const char *type,
-                                      const char *alias,
-                                      virJSONValuePtr props)
+static int
+virQEMUBuildObjectCommandlineFromJSONInternal(virBufferPtr buf,
+                                              const char *type,
+                                              const char *alias,
+                                              virJSONValuePtr props)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *ret = NULL;
+    if (!type || !alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing 'type'(%s) or 'alias'(%s) field of QOM 'object'"),
+                       NULLSTR(type), NULLSTR(alias));
+        return -1;
+    }
 
-    virBufferAsprintf(&buf, "%s,id=%s,", type, alias);
+    virBufferAsprintf(buf, "%s,id=%s,", type, alias);
 
-    if (virQEMUBuildCommandLineJSON(props, &buf,
+    if (props &&
+        virQEMUBuildCommandLineJSON(props, buf,
                                     virQEMUBuildCommandLineJSONArrayBitmap) < 0)
-        goto cleanup;
+        return -1;
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
+    return 0;
+}
 
-    ret = virBufferContentAndReset(&buf);
 
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return ret;
+int
+virQEMUBuildObjectCommandlineFromJSON(virBufferPtr buf,
+                                      virJSONValuePtr objprops)
+{
+    const char *type = virJSONValueObjectGetString(objprops, "qom-type");
+    const char *alias = virJSONValueObjectGetString(objprops, "id");
+    virJSONValuePtr props = virJSONValueObjectGetObject(objprops, "props");
+
+    return virQEMUBuildObjectCommandlineFromJSONInternal(buf, type, alias, props);
 }
 
 
@@ -300,9 +301,9 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
 
 
 /**
- * virQEMUBuildLuksOpts:
+ * virQEMUBuildQemuImgKeySecretOpts:
  * @buf: buffer to build the string into
- * @enc: pointer to encryption info
+ * @encinfo: pointer to encryption info
  * @alias: alias to use
  *
  * Generate the string for id=$alias and any encryption options for
@@ -320,38 +321,38 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
  *
  */
 void
-virQEMUBuildLuksOpts(virBufferPtr buf,
-                     virStorageEncryptionInfoDefPtr enc,
-                     const char *alias)
+virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
+                                 virStorageEncryptionInfoDefPtr encinfo,
+                                 const char *alias)
 {
     virBufferAsprintf(buf, "key-secret=%s,", alias);
 
-    if (!enc->cipher_name)
+    if (!encinfo->cipher_name)
         return;
 
     virBufferAddLit(buf, "cipher-alg=");
-    virQEMUBuildBufferEscapeComma(buf, enc->cipher_name);
-    virBufferAsprintf(buf, "-%u,", enc->cipher_size);
-    if (enc->cipher_mode) {
+    virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_name);
+    virBufferAsprintf(buf, "-%u,", encinfo->cipher_size);
+    if (encinfo->cipher_mode) {
         virBufferAddLit(buf, "cipher-mode=");
-        virQEMUBuildBufferEscapeComma(buf, enc->cipher_mode);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_mode);
         virBufferAddLit(buf, ",");
     }
-    if (enc->cipher_hash) {
+    if (encinfo->cipher_hash) {
         virBufferAddLit(buf, "hash-alg=");
-        virQEMUBuildBufferEscapeComma(buf, enc->cipher_hash);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_hash);
         virBufferAddLit(buf, ",");
     }
-    if (!enc->ivgen_name)
+    if (!encinfo->ivgen_name)
         return;
 
     virBufferAddLit(buf, "ivgen-alg=");
-    virQEMUBuildBufferEscapeComma(buf, enc->ivgen_name);
+    virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_name);
     virBufferAddLit(buf, ",");
 
-    if (enc->ivgen_hash) {
+    if (encinfo->ivgen_hash) {
         virBufferAddLit(buf, "ivgen-hash-alg=");
-        virQEMUBuildBufferEscapeComma(buf, enc->ivgen_hash);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_hash);
         virBufferAddLit(buf, ",");
     }
 }

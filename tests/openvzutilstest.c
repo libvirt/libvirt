@@ -4,8 +4,6 @@
 
 #ifdef WITH_OPENVZ
 
-# include <stdio.h>
-# include <string.h>
 # include <unistd.h>
 
 # include "internal.h"
@@ -141,12 +139,12 @@ mymain(void)
 
     openvzLocateConfFile = testLocateConfFile;
 
-# define DO_TEST(_name)                                                       \
-        do {                                                                  \
-            if (virTestRun("OpenVZ "#_name, test##_name,                      \
-                            NULL) < 0) {                                      \
-                result = -1;                                                  \
-            }                                                                 \
+# define DO_TEST(_name) \
+        do { \
+            if (virTestRun("OpenVZ "#_name, test##_name, \
+                            NULL) < 0) { \
+                result = -1; \
+            } \
         } while (0)
 
     DO_TEST(ReadConfigParam);
@@ -155,7 +153,7 @@ mymain(void)
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

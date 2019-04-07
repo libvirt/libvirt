@@ -15,13 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Stefan Berger <stefanb@us.ibm.com>
  */
 
-#ifndef __UTIL_MACVTAP_H__
-# define __UTIL_MACVTAP_H__
+#ifndef LIBVIRT_VIRNETDEVMACVLAN_H
+# define LIBVIRT_VIRNETDEVMACVLAN_H
 
 # include "internal.h"
 # include "virmacaddr.h"
@@ -39,7 +36,7 @@ typedef enum {
 
     VIR_NETDEV_MACVLAN_MODE_LAST,
 } virNetDevMacVLanMode;
-VIR_ENUM_DECL(virNetDevMacVLanMode)
+VIR_ENUM_DECL(virNetDevMacVLanMode);
 
 typedef enum {
    VIR_NETDEV_MACVLAN_CREATE_NONE     = 0,
@@ -50,6 +47,12 @@ typedef enum {
    /* Enable VNET_HDR */
    VIR_NETDEV_MACVLAN_VNET_HDR          = 1 << 2,
 } virNetDevMacVLanCreateFlags;
+
+/* libvirt will start macvtap/macvlan interface names with one of
+ * these prefixes when it auto-generates the name
+ */
+# define VIR_NET_GENERATED_MACVTAP_PREFIX "macvtap"
+# define VIR_NET_GENERATED_MACVLAN_PREFIX "macvlan"
 
 int virNetDevMacVLanReserveName(const char *name, bool quietfail);
 int virNetDevMacVLanReleaseName(const char *name);
@@ -88,24 +91,24 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            int mode,
                                            virNetDevVPortProfilePtr virtPortProfile,
                                            char *stateDir)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(6) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
-                                           const virMacAddr *macaddress,
-                                           const char *linkdev,
-                                           const unsigned char *vmuuid,
-                                           virNetDevVPortProfilePtr virtPortProfile,
-                                           virNetDevVPortProfileOp vmOp)
+                                            const virMacAddr *macaddress,
+                                            const char *linkdev,
+                                            const unsigned char *vmuuid,
+                                            virNetDevVPortProfilePtr virtPortProfile,
+                                            virNetDevVPortProfileOp vmOp)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
-                                             const virMacAddr *macaddress,
-                                             const char *linkdev,
-                                             const unsigned char *vmuuid,
-                                             virNetDevVPortProfilePtr virtPortProfile,
-                                             virNetDevVPortProfileOp vmOp)
+                                                 const virMacAddr *macaddress,
+                                                 const char *linkdev,
+                                                 const unsigned char *vmuuid,
+                                                 virNetDevVPortProfilePtr virtPortProfile,
+                                                 virNetDevVPortProfileOp vmOp)
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
-#endif /* __UTIL_MACVTAP_H__ */
+#endif /* LIBVIRT_VIRNETDEVMACVLAN_H */

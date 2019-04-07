@@ -1,0 +1,2492 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel <veillard@redhat.com>, 2011
+# denka <dennis@dennis.se>, 2014
+# Göran Uddeborg <goeran@uddeborg.se, 2011
+# Magnus Larsson <fedoratrans@gmail.com>, 2006, 2007, 2008
+# Göran Uddeborg <goeran@uddeborg.se>, 2015. #zanata
+# Göran Uddeborg <goeran@uddeborg.se>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2017-02-26 05:02+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
+"Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
+"sv/)\n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  (specify help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (ange --help <kommando> för detaljer om kommandot)\n"
+"\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  BESKRIVNING\n"
+
+msgid ""
+"\n"
+"  Default paths:\n"
+"\n"
+"    Configuration file (unless overridden by -f):\n"
+"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
+"\n"
+"    Sockets:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
+"\n"
+"    TLS:\n"
+"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
+"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
+"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
+"\n"
+"    PID file:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
+"\n"
+msgstr ""
+"\n"
+"  Standardsökvägar:\n"
+"\n"
+"    Konfigurationsfil (om inte åsidosatt med -f):\n"
+"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
+"\n"
+"    Uttag:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
+"\n"
+"    TLS:\n"
+"      CA-certifikat:           $HOME/.pki/libvirt/cacert.pem\n"
+"      Servercertifikat:        $HOME/.pki/libvirt/servercert.pem\n"
+"      Serverns privata nyckel: $HOME/.pki/libvirt/serverkey.pem\n"
+"\n"
+"    PID-fil:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
+"\n"
+
+#, c-format
+msgid ""
+"\n"
+"  Default paths:\n"
+"\n"
+"    Configuration file (unless overridden by -f):\n"
+"      %s\n"
+"\n"
+"    Sockets:\n"
+"      %s\n"
+"      %s\n"
+"\n"
+"    TLS:\n"
+"      CA certificate:     %s\n"
+"      Server certificate: %s\n"
+"      Server private key: %s\n"
+"\n"
+"    PID file (unless overridden by -p):\n"
+"      %s/run/libvirtd.pid\n"
+"\n"
+msgstr ""
+"\n"
+"  Standardsökvägar:\n"
+"\n"
+"    Konfigurationsfil (om inte åsidosatt med -f):\n"
+"      %s\n"
+"\n"
+"    Uttag:\n"
+"      %s\n"
+"      %s\n"
+"\n"
+"    TLS:\n"
+"      CA certifikat:           %s\n"
+"      Servercertifikat:        %s\n"
+"      Serverns privata nyckel: %s\n"
+"\n"
+"    PID-fil (om inte åsidosatt med -p):\n"
+"      %s/run/libvirtd.pid\n"
+"\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  FLAGGOR\n"
+
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  SYNOPSIS\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Tid: %.3f ms)\n"
+"\n"
+
+#, c-format
+msgid ""
+"\n"
+"Usage:\n"
+"  %s [options]\n"
+"\n"
+"Options:\n"
+"  -h | --help            Display program help:\n"
+"  -v | --verbose         Verbose messages.\n"
+"  -d | --daemon          Run as a daemon & write PID file.\n"
+"  -l | --listen          Listen for TCP/IP connections.\n"
+"  -t | --timeout <secs>  Exit after timeout period.\n"
+"  -f | --config <file>   Configuration file.\n"
+"  -V | --version         Display version information.\n"
+"  -p | --pid-file <file> Change name of PID file.\n"
+"\n"
+"libvirt management daemon:\n"
+msgstr ""
+"\n"
+"Användning:\n"
+"  %s [flaggor]\n"
+"\n"
+"Flaggor:\n"
+"  -h | --help            Visa programhjälpen:\n"
+"  -v | --verbose         Utförliga meddelanden.\n"
+"  -d | --daemon          Kör som en demon och skriv PID till en fil.\n"
+"  -l | --listen          Lyssna efter TCP/IP-förbindelser. \n"
+"  -t | --timeout <sek>   Avsluta efter en begränsad tid.\n"
+"  -f | --config <fil>    Konfigurationsfil.\n"
+"  -V | --version         Visa versionsinformation.\n"
+"  -p | --pid-file <fil>  Ändra namnet på PID-filen.\n"
+"\n"
+"libvirt-hanteringsdemon:\n"
+
+msgid "  NAME\n"
+msgstr "  NAMN\n"
+
+#, c-format
+msgid "%s harddisk '%s' has unsupported cache mode '%s'"
+msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
+
+#, c-format
+msgid "%s object has invalid dynamic type"
+msgstr "%s-objekt har ogiltig dynamisk typ"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: misslyckades att allokera %d bytes"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s: %d: misslyckades att allokera %lu bytes"
+
+#, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#, c-format
+msgid "%s: %s: unsupported auth %s"
+msgstr "%s: %s: ej stödd autenticering %s"
+
+#, c-format
+msgid ""
+"%s: error: %s. Check /var/log/messages or run without --daemon for more "
+"info.\n"
+msgstr ""
+"%s: fel: %s.  Undersök /var/log/messages eller kör utan --daemon för mer "
+"information.\n"
+
+#, c-format
+msgid "%s: error: unable to determine if daemon is running: %s\n"
+msgstr "%s: fel: kan inte avgöra om demonen kör: %s\n"
+
+#, c-format
+msgid "%s: failed to write log file: %s"
+msgstr "%s: misslyckades att skriva loggfilen: %s"
+
+#, c-format
+msgid "%s: initialization failed\n"
+msgstr "%s: initiering misslyckades\n"
+
+msgid "(re)connect to hypervisor"
+msgstr "(åter)anslut till hypervisor"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <nummer>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <sträng>"
+
+msgid "--format only works with --memory-only"
+msgstr "--format fungerar endast med --memory-only"
+
+msgid "Address family for hostname not supported"
+msgstr "Adressfamiljen för värdnamnet stödjs inte"
+
+msgid "All requests done"
+msgstr "Alla begäran klara"
+
+msgid "Argument buffer too small"
+msgstr "Argumentbufferten är för liten"
+
+msgid "Attach device from an XML <file>."
+msgstr "Anslut enhet från en XML <fil>."
+
+msgid "Attach new disk device."
+msgstr "Anslut ny diskenhet."
+
+msgid "Attach new network interface."
+msgstr "Anslut nytt nätverksgränssnitt."
+
+msgid "Authentication failed"
+msgstr "Autentisering misslyckades"
+
+msgid "Autostart"
+msgstr "Autostart"
+
+msgid "Bad value for ai_flags"
+msgstr "Felaktigt värde för ai_flags"
+
+msgid "CPU Affinity:"
+msgstr "CPU-släktskap:"
+
+msgid "CPU frequency:"
+msgstr "CPU-frekvens:"
+
+msgid "CPU model:"
+msgstr "CPU-modell:"
+
+msgid "CPU socket(s):"
+msgstr "CPU-uttag:"
+
+msgid "CPU time:"
+msgstr "CPU-tid:"
+
+msgid "CPU vendor specified without CPU model"
+msgstr "CPU-leverantören anges utan CPU-modell"
+
+msgid "CPU(s):"
+msgstr "CPU(er):"
+
+msgid "CPU:"
+msgstr "CPU:"
+
+#, c-format
+msgid "Call to %s for unexpected type '%s'"
+msgstr "Anrop av %s för oväntad typ ”%s”"
+
+#, c-format
+msgid "Can't read %s"
+msgstr "Kan inte läsa %s"
+
+#, c-format
+msgid "Cannot directly attach floppy %s"
+msgstr "Kan inte direktansluta diskett %s"
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Kan inte hämta ut version från körande %s hypervisor\n"
+
+msgid "Cannot parse <address> 'bus' attribute"
+msgstr "Kan inte tolka <address> ”bus”-attributet"
+
+msgid "Cannot parse <address> 'controller' attribute"
+msgstr "Kan inte tolka <address> ”controller”-attribut"
+
+msgid "Cannot parse <address> 'domain' attribute"
+msgstr "Kan inte tolka <address> ”domain”-attributet"
+
+msgid "Cannot parse <address> 'function' attribute"
+msgstr "Kan inte tolka <address> ”function”-attributet"
+
+msgid "Cannot parse <address> 'port' attribute"
+msgstr "Kan inte tolka <address> ”port”-attribut"
+
+msgid "Cannot parse <address> 'slot' attribute"
+msgstr "Kan inte tolka <address> ”slot”-attributet"
+
+msgid "Cannot parse <address> 'unit' attribute"
+msgstr "Kan inte tolka <address> ”unit”-attribut"
+
+msgid "Cannot parse <source> 'port' attribute with socket interface"
+msgstr "Kan inte tolka <source> ”port”-attribut med uttagsgränssnitt"
+
+#, c-format
+msgid "Cannot parse controller index %s"
+msgstr "Kan inte tolka styrenhetsindex %s"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Ändra nuvarande minnesallokering i gästdomänen."
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "Ändra gräns för maximal minnesallokering för gästdomänen."
+
+msgid "Configure a domain to be automatically started at boot."
+msgstr "Konfigurera en domän till att automatiskt starta vid uppstart."
+
+msgid "Configure a network to be automatically started at boot."
+msgstr "Konfigurera ett nätverk att starta automatiskt vid uppstart."
+
+msgid "Connect the virtual serial console for the guest"
+msgstr "Anslut den virtuella seriekonsolen för gästen"
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Anslut till lokal hypervisor. Detta är inbyggt kommando efter skalet startat "
+"upp."
+
+msgid "Core dump a domain."
+msgstr "Spara kärnan för en domän."
+
+msgid "Core(s) per socket:"
+msgstr "Kärnor per uttag:"
+
+#, c-format
+msgid "Could not find %s with name '%s'"
+msgstr "Kunde inte hitta %s med namnet ”%s”"
+
+msgid "Could not find <name>"
+msgstr "Kunde inte hitta <namn>"
+
+msgid "Could not find <uuid>"
+msgstr "Kunde inte hitta <uuid>"
+
+#, c-format
+msgid "Could not set max-memory to %lu kilobytes: %s"
+msgstr "Kunde inte ställa in max minne till %lu kilobyte: %s"
+
+#, c-format
+msgid "Could not set memory to %lu kilobytes: %s"
+msgstr "Kunde inte ställa in minne  till %lu kilobyte: %s"
+
+#, c-format
+msgid "Could not set number of virtual CPUs to %d: %s"
+msgstr "Kunde inte ställa in antalet virtuella processorer till %d: %s"
+
+#, c-format
+msgid "Could not start domain: %s"
+msgstr "Kunde inte starta domänen: %s"
+
+msgid "Create a domain."
+msgstr "Skapa en domän."
+
+msgid "Create a network."
+msgstr "Skapa ett nätverk."
+
+msgid "Create a restore point for interfaces settings"
+msgstr "Skapa en återställningspunkt för gränssnittsinställningar"
+
+msgid "Define a domain."
+msgstr "Definiera en domän."
+
+msgid "Detach device from an XML <file>"
+msgstr "Avmontera enhet från en XML-fil"
+
+msgid "Detach disk device."
+msgstr "Avmontera diskenhet."
+
+msgid "Detach network interface."
+msgstr "Avmontera nätverksgränssnitt."
+
+msgid "Display the system version information."
+msgstr "Visa informationen om systemversion"
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "Domän %s skapad från %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Domän %s definierad från %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "Domän %s förstörd\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "Domän %s har avdefinierats\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "Domän %s håller på att starts om\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "Domän %s håller på att stängas ned\n"
+
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "Domän %s markerad som autostartad\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "Domän %s fortsatt\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "Domän %s startade\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "Domän %s suspenderad\n"
+
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "Domän %s avmarkerad som autostartad\n"
+
+msgid "Domain is already active"
+msgstr "Domänen är redan aktiv"
+
+msgid "Domain is already running"
+msgstr "Domänen kör redan"
+
+msgid "Domain is not powered off"
+msgstr "Domänen är inte avstängd"
+
+msgid "Domain not found"
+msgstr "Domän hittades inte"
+
+#, c-format
+msgid "Domain not found: %s"
+msgstr "Domän hittades inte: %s"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "Domän återställd från %s\n"
+
+msgid "Driver state initialization failed"
+msgstr "Initiering av drivrutinstillstånd misslyckades"
+
+msgid "Error parsing 'path'. Invalid characters."
+msgstr "Fel vid tolkning av ”path”.  Ogiltiga tecken."
+
+msgid "Error while opening SSH session."
+msgstr "Fel när SSH-session öppnades."
+
+msgid "Error while reading the domain name"
+msgstr "Fel när domännamnet lästes"
+
+msgid "Failed to allocate memory"
+msgstr "Misslyckades att allokera minne"
+
+#, c-format
+msgid "Failed to apply capabilities: %d"
+msgstr "Det gick inte att sätta förmågor: %d"
+
+#, c-format
+msgid "Failed to attach device from %s"
+msgstr "Misslyckades att ansluta enhet från %s"
+
+#, c-format
+msgid "Failed to bind socket to '%s'"
+msgstr "Misslyckades att binda uttag till ”%s”"
+
+#, c-format
+msgid "Failed to connect socket to '%s'"
+msgstr "Misslyckades att ansluta uttaget till ”%s”"
+
+#, c-format
+msgid "Failed to convert '%s' to unsigned int"
+msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Misslyckades att spara domän %s till %s"
+
+msgid "Failed to create XML"
+msgstr "Misslyckades att skapa XML"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Misslyckades att skapa domän från %s"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "Misslyckades att skapa nätverk från %s"
+
+msgid "Failed to create socket"
+msgstr "Misslyckades att skapa uttag"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Misslyckades att definiera domän från %s"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "Misslyckades att definiera nätverk från %s"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "Misslyckades att förstöra domän %s"
+
+#, c-format
+msgid "Failed to destroy interface %s"
+msgstr "Misslyckades med att förstöra gränssnittet %s"
+
+#, c-format
+msgid "Failed to destroy network %s"
+msgstr "Misslyckades att förstöra nätverk %s"
+
+#, c-format
+msgid "Failed to detach device from %s"
+msgstr "Misslyckades att avmontera enheten från %s"
+
+#, c-format
+msgid "Failed to find path for %s binary"
+msgstr "Kunde inte hitta sökvägen till binären %s"
+
+msgid "Failed to find the network"
+msgstr "Misslyckades att hitta nätverk"
+
+#, c-format
+msgid "Failed to find the network: %s"
+msgstr "Misslyckades att hitta nätverket: %s"
+
+#, c-format
+msgid "Failed to fork as daemon: %s"
+msgstr "Det gick inte grena av som demon: %s"
+
+#, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "Misslyckades att hämta block statistik %sl %s"
+
+msgid "Failed to get disk information"
+msgstr "Misslyckades att få diskinformation"
+
+msgid "Failed to get interface information"
+msgstr "misslyckades att få gränssnittsinformation"
+
+#, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+
+#, c-format
+msgid "Failed to initialize libvirt error handling"
+msgstr "Misslyckades att initiera felhantering för libvirt"
+
+msgid "Failed to list active domains"
+msgstr "Misslyckades att lista aktiva domäner"
+
+msgid "Failed to list active networks"
+msgstr "Misslyckades att lista aktiva nätverk"
+
+msgid "Failed to list inactive domains"
+msgstr "Misslyckades att lista inaktiva domäner"
+
+msgid "Failed to list inactive networks"
+msgstr "Misslyckades att lista inaktiva nätverk"
+
+#, c-format
+msgid "Failed to mark domain %s as autostarted"
+msgstr "Misslyckades att markera domän %s som autostartad"
+
+#, c-format
+msgid "Failed to open file '%s'"
+msgstr "Misslyckades att öppna filen ”%s”"
+
+#, c-format
+msgid "Failed to parse mode '%s'"
+msgstr "Misslyckades med att tolka läget ”%s”"
+
+msgid "Failed to read /proc/mounts"
+msgstr "Det gick inte att läsa /proc/mounts"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Misslyckades att starta om domän %s"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Misslyckades att återställa domän från %s"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "Misslyckades att fortsätta domän %s"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Misslyckades att spara domän %s till %s"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Misslyckades att stänga ned domän %s"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Misslyckades att starta domän %s"
+
+#, c-format
+msgid "Failed to start interface %s"
+msgstr "Misslyckades med att starta gränssnittet %s"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Misslyckades att starta nätverk %s"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "Misslyckades att suspendera domän %s"
+
+#, c-format
+msgid "Failed to take snapshot: %s"
+msgstr "Misslyckades att ta ögonblicksbild: %s"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Misslyckades att avdefiniera domän %s"
+
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "Misslyckades att avdefiniera nätverk %s"
+
+#, c-format
+msgid "Failed to unmark domain %s as autostarted"
+msgstr "Misslyckades att avmarkera domän %s som autostartad"
+
+msgid "GET operation failed"
+msgstr "GET-operation misslyckades"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "GET-operation misslyckades: %s"
+
+msgid "GNUTLS call error"
+msgstr "GNUTLS-anropsfel"
+
+msgid "Get network interface stats for a running domain."
+msgstr "Hämta statistik för nätverksgränssnitt för en köranade domän."
+
+msgid "Host sysinfo extraction not supported on this platform"
+msgstr "Extrahering av värdend stödjs inte på denna plattform"
+
+#, c-format
+msgid "HostCpuIdInfo register '%s' has an unexpected format"
+msgstr "HostCpuIdInfo-register ”%s” har ett oväntat format"
+
+#, c-format
+msgid "HostCpuIdInfo register '%s' has an unexpected length"
+msgstr "HostCpuIdInfo-register ”%s” har en oväntad längd"
+
+msgid "IPv4"
+msgstr "IPv4"
+
+msgid "IPv6"
+msgstr "IPv6"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+#, c-format
+msgid "Interface %s destroyed\n"
+msgstr "Gränssnittet %s förstört\n"
+
+#, c-format
+msgid "Interface %s started\n"
+msgstr "Gränssnitt %s startat\n"
+
+msgid "Interrupted by a signal"
+msgstr "Avbröts av en signal"
+
+msgid "Invalid CPU feature name"
+msgstr "Ogiltigt CPU-funktionsnamn"
+
+msgid "Invalid CPU feature policy"
+msgstr "Ogiltig CPU-funktionspolicy"
+
+msgid "Invalid CPU topology"
+msgstr "Ogiltig CPU-topologi"
+
+#, c-format
+msgid "Invalid bus type '%s' for disk"
+msgstr "Ogiltig busstyp ”%s” för hårddisk"
+
+#, c-format
+msgid "Invalid bus type '%s' for floppy disk"
+msgstr "Ogiltig busstyp ”%s” för diskett"
+
+msgid "Invalid context"
+msgstr "Ogiltig kontext"
+
+msgid "Invalid file descriptor while waiting for monitor"
+msgstr "Ogiltig filidentifierare i väntan på övervakaren"
+
+#, c-format
+msgid "Invalid floppy device name: %s"
+msgstr "Ogiltigt diskettenhetsnamn: %s"
+
+#, c-format
+msgid "Invalid harddisk device name: %s"
+msgstr "Ogiltigt hårddiskenhetsnamn: %s"
+
+msgid "Invalid match attribute for CPU specification"
+msgstr "Ogiltigt match-attribut för CPU-specifikationen"
+
+#, c-format
+msgid "Invalid port number: %s"
+msgstr "Ogiltigt portnummer: %s"
+
+#, c-format
+msgid "Invalid ports: %s"
+msgstr "Ogiltiga portar: %s"
+
+msgid "Invalid value for timeout"
+msgstr "Felaktigt värde för tidsgräns"
+
+#, c-format
+msgid "Invalid vectors: %s"
+msgstr "Ogiltiga vektorer: %s"
+
+#, c-format
+msgid "Lease %s in lockspace %s already exists"
+msgstr "Hyra %s i låsrymden %s finns redan"
+
+#, c-format
+msgid "Lease %s in lockspace %s does not exist"
+msgstr "Hyra %s i låsrymden %s finns inte"
+
+#, c-format
+msgid "Malformed lease target offset %s"
+msgstr "Felaktig målförskjutning för hyra %s"
+
+msgid "Max memory:"
+msgstr "Max minne:"
+
+msgid "Memory allocation failure"
+msgstr "Minnesallokeringsfel"
+
+msgid "Memory size:"
+msgstr "Minnesstorlek:"
+
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr "Migrera domän till en anna värd.  Lägg till --live för live-migrering."
+
+msgid "Missing 'cores' attribute in CPU topology"
+msgstr "Saknat ”cores”-attribut i CPU-topologi"
+
+msgid "Missing 'key' element for lease"
+msgstr "Saknat ”key”-element för hyra"
+
+#, c-format
+msgid "Missing 'name' property in %s lookup"
+msgstr "Saknad ”name”-egenskap i %s-uppslagning"
+
+msgid "Missing 'sockets' attribute in CPU topology"
+msgstr "Saknat ”sockets”-attribut i CPU-topologi"
+
+msgid "Missing 'target' element for lease"
+msgstr "Saknat ”target”-element för hyra"
+
+msgid "Missing 'threads' attribute in CPU topology"
+msgstr "Saknat ”threads”-attribut i CPU-topologi"
+
+msgid "Missing CPU architecture"
+msgstr "Saknad CPU-arkitektur"
+
+msgid "Missing CPU feature name"
+msgstr "Saknat CPU-funktionsnamn"
+
+msgid "Missing CPU model name"
+msgstr "Saknat CPU-modellnamn"
+
+msgid "Missing source host attribute for char device"
+msgstr "Källvärdsattribut saknas för teckenenhet"
+
+msgid "Missing source path attribute for char device"
+msgstr "Källsökvägsattribut saknas för teckenenhet"
+
+msgid "Missing source service attribute for char device"
+msgstr "Källtjänstattribut saknas för teckenenhet"
+
+msgid "Model name contains invalid characters"
+msgstr "Modellnamnet innehåller ogiltiga tecken"
+
+msgid "Monitor does not support sending of file descriptors"
+msgstr "Övervakningen stödjer inte att skicka filidentifierare"
+
+msgid "NUMA cell number"
+msgstr "NUMA-cellnummer:"
+
+msgid "NUMA cell(s):"
+msgstr "NUMA-cell(er):"
+
+msgid "NUMA free memory"
+msgstr "NUMA oanvänt minne"
+
+msgid "Name"
+msgstr "Namn"
+
+msgid "Name or service not known"
+msgstr "Namnet eller tjänsten inte känd"
+
+msgid "Name:"
+msgstr "Namn:"
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "Nätverk %s skapat från %s\n"
+
+#, c-format
+msgid "Network %s defined from %s\n"
+msgstr "Nätverk %s definierad från %s\n"
+
+#, c-format
+msgid "Network %s destroyed\n"
+msgstr "Nätverk %s förstört\n"
+
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "Nätverk %s har avdefinierats\n"
+
+#, c-format
+msgid "Network %s marked as autostarted\n"
+msgstr "Nätverk %s markerat som autostartat\n"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "Nätverk %s startat\n"
+
+#, c-format
+msgid "Network %s unmarked as autostarted\n"
+msgstr "Nätverk %s avmarkerat som autostartat\n"
+
+msgid "Network not found"
+msgstr "Nätverk hittades inte"
+
+#, c-format
+msgid "Network not found: %s"
+msgstr "Nätverk hittades inte: %s"
+
+msgid "No <source> 'address' attribute specified with socket interface"
+msgstr "Inget <source> ”adress”-attribut angivet uttagsgränssnitt"
+
+msgid ""
+"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+msgstr ""
+"Inget <source> ”bridge”-attribut angivet med <interface type='bridge'/>"
+
+msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
+msgstr "Inga <source> ”dev”-attribut angivet med <interface type='direct'/>"
+
+msgid ""
+"No <source> 'name' attribute specified with <interface type='internal'/>"
+msgstr ""
+"Inget <source> ”name”-attribut angivet med <interface type='internal'/>"
+
+msgid ""
+"No <source> 'network' attribute specified with <interface type='network'/>"
+msgstr ""
+"Inget <source> ”network”-attribut angivet med <interface type='network'/>"
+
+msgid "No <source> 'port' attribute specified with socket interface"
+msgstr "Inget <source> ”port”-attribut angivet med uttagsgränssnitt"
+
+msgid "No address associated with hostname"
+msgstr "Ingen adress associerad med värdnamnet"
+
+msgid "No error message provided"
+msgstr "Inget felmeddelande gavs"
+
+msgid "No support for multiple video devices"
+msgstr "Inget stöd för flera videoenheter"
+
+msgid "No type specified for device address"
+msgstr "Ingen typ angiven för enhetsadress"
+
+msgid "Non-cancelable task is blocked by an unanswered question"
+msgstr "Icke annullerbar uppgift blockeras av en obesvarad fråga"
+
+msgid "Non-empty feature list specified without CPU model"
+msgstr "Icke-tom lista över funktioner angiven utan CPU-modell"
+
+msgid "Non-recoverable failure in name resolution"
+msgstr "Irreparabelt misslyckande i namnuppslagning"
+
+#, c-format
+msgid "Number of client info parameters %d exceeds max allowed limit: %d"
+msgstr ""
+"Antalet parametrar för klientinformation %d överskrider maximalt tillåtna "
+"gränsen: %d"
+
+#, c-format
+msgid "Number of client processing parameters %d exceeds max allowed limit: %d"
+msgstr ""
+"Antal parametrar för klientbearbetning %d överskrider maximalt tillåtna "
+"gränsen: %d"
+
+#, c-format
+msgid "Number of threadpool parameters %d exceeds max allowed limit: %d"
+msgstr ""
+"Antalet parametrar för trådpoolen %d överskrider maximalt tillåtna gränsen: "
+"%d"
+
+msgid "OS Type:"
+msgstr "OS-typ:"
+
+msgid "Only x509 certificates are supported"
+msgstr "Endast x509-certifikat stöds"
+
+msgid "Output the IP address and port number for the VNC display."
+msgstr "Skriv ut IP-adress och portnummer för VNC-skärmen."
+
+msgid "Output the device for the TTY console."
+msgstr "Skriv ut enheten för TTY-konsolen."
+
+msgid "Output the domain information as an XML dump to stdout."
+msgstr "Skriv ut domäninformationen som en XML-dump till stdout."
+
+msgid "Output the network information as an XML dump to stdout."
+msgstr "Skriv ut nätverksinformationen som en XML-dump till stdout."
+
+msgid "PCI host devices must use 'pci' address type"
+msgstr "PCI-värdenheter måste använda adresstypen ”pci”"
+
+msgid "POST operation failed"
+msgstr "POST-operation misslyckades"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "POST-operation misslyckades: %s"
+
+msgid "Parameter string not correctly encoded"
+msgstr "Parametersträngen är inte korrekt kodad"
+
+#, c-format
+msgid "Path %s too long for unix socket"
+msgstr "Sökvägen %s är för lång för unix-uttag"
+
+#, c-format
+msgid ""
+"Pending question blocks virtual machine execution, question is '%s', "
+"possible answers are %s"
+msgstr ""
+"Väntande frågor förhindrar att den virtuella maskinen körs, frågan är ”%s”, "
+"möjligt svar är %s"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Sätt fast domän VCPU:er till värdens fysiska CPU:er."
+
+#, c-format
+msgid "Pool %s has been undefined\n"
+msgstr "Pool %s har blivit odefinierad\n"
+
+msgid ""
+"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
+"support to enable this feature."
+msgstr ""
+"Kanske har du inte IBM Tools installerat på din LPAR.  Kontakta din support "
+"för att aktivera denna funktion."
+
+#, c-format
+msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
+msgstr "Process %d %p %p [[[[%s]]][[[%s]]]"
+
+msgid "Processing request in progress"
+msgstr "Behandling av begäran pågår"
+
+#, c-format
+msgid "QueryPerf returned object with unexpected type '%s'"
+msgstr "QueryPerf returnerade objektet med oväntade typ ”%s”"
+
+msgid "RPC error"
+msgstr "RPC-fel"
+
+msgid "Request canceled"
+msgstr "Begäran avbröts"
+
+msgid "Request not canceled"
+msgstr "Begäran avbröts inte"
+
+#, c-format
+msgid ""
+"Requested number of virtual CPUs is greater than max allowable number of "
+"virtual CPUs for the domain: %d > %d"
+msgstr ""
+"Det begärda antalet virtuella processorer är större än maximalt tillåtet "
+"antal virtuella processorer för domänen: %d > %d"
+
+msgid "Requested number of virtual CPUs must at least be 1"
+msgstr "Det begärda antalet virtuella processorer måste vara minst 1"
+
+msgid "Restore a domain."
+msgstr "Återställ en domän."
+
+msgid "Resume a previously suspended domain."
+msgstr "Fortsätt en tidigare suspenderad domän."
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Returnerar grundinformation om domänens virtuella CPU:er."
+
+msgid "Returns basic information about the domain."
+msgstr "Returnerar grundinformation om domänen."
+
+msgid "Returns basic information about the node."
+msgstr "Returnerar grundinformation om noden."
+
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Returnera kapabiliteter för hypervisor/drivrutin."
+
+msgid "Returns list of domains."
+msgstr "Returnera lista på domäner"
+
+msgid "Returns list of networks."
+msgstr "Returnera lista på nätverk."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Kör ett omstartskommando i måldomänen."
+
+msgid "Run shutdown in the target domain."
+msgstr "Kör nedstängning i måldomänen."
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Kör hypervisor: %s %d.%d.%d\n"
+
+msgid "Scheduler"
+msgstr "Schemaläggare"
+
+msgid "Servname not supported for ai_socktype"
+msgstr "Servernamnet stödjs inte för ai_socktype"
+
+msgid "Show maximum number of virtual CPUs for guests on this connection."
+msgstr ""
+"Visa maximala antalet virtuella processorer för gästerna på denna anslutning."
+
+msgid "Show/Set scheduler parameters."
+msgstr "Visa/sätt parametrar för schemaläggare."
+
+msgid "Start a network."
+msgstr "Starta ett nätverk."
+
+msgid "State"
+msgstr "Tillstånd"
+
+msgid "State:"
+msgstr "Tillstånd:"
+
+msgid "Suspend a running domain."
+msgstr "Suspendera en körande domän."
+
+msgid "System error"
+msgstr "Systemfel"
+
+#, c-format
+msgid "Target CPU arch %s does not match source %s"
+msgstr "Mål-CPU-arkitekturen %s stämmer inte med källan %s"
+
+#, c-format
+msgid "Target CPU cores %d does not match source %d"
+msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+
+msgid "Target CPU does not match source"
+msgstr "Mål-CPU stämmer inte med källan"
+
+#, c-format
+msgid "Target CPU feature %s does not match source %s"
+msgstr "Mål-CPU-funktionen %s stämmer inte med källan %s"
+
+#, c-format
+msgid "Target CPU feature count %zu does not match source %zu"
+msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
+
+#, c-format
+msgid "Target CPU feature policy %s does not match source %s"
+msgstr "Mål-CPU-funktionspolicyn %s stämmer inte med källan %s"
+
+#, c-format
+msgid "Target CPU model %s does not match source %s"
+msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+
+#, c-format
+msgid "Target CPU sockets %d does not match source %d"
+msgstr "Mål-CPU-sockeln %d stämmer inte med källan %d"
+
+#, c-format
+msgid "Target CPU threads %d does not match source %d"
+msgstr "Mål-CPU-trådar %d stämmer inte med källan %d"
+
+#, c-format
+msgid "Target CPU type %s does not match source %s"
+msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+
+#, c-format
+msgid "Target CPU vendor %s does not match source %s"
+msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+
+#, c-format
+msgid "Target sysinfo %s %s does not match source %s"
+msgstr "Mål-sysinfo %s %s matchar inte källan %s"
+
+#, c-format
+msgid "Target sysinfo %s does not match source %s"
+msgstr "Mål-sysinfo %s matchar inte källan %s"
+
+msgid "Target sysinfo does not match source"
+msgstr "Mål-sysinfo matchar inte källan"
+
+msgid "Temporary failure in name resolution"
+msgstr "Tillfälliga fel i namnuppslagning"
+
+msgid "This type of disk cannot be hot unplugged"
+msgstr "Denna typ av disk kan inte tas bort under drift"
+
+msgid "Thread(s) per core:"
+msgstr "Trådar per kärna:"
+
+#, c-format
+msgid "Too many (%u) FDs passed from caller"
+msgstr "För många (%u) FB:are skickade från anroparen"
+
+#, c-format
+msgid "Too many clients '%d' for limit '%d'"
+msgstr "För många klienter ”%d” för gränsen ”%d”"
+
+#, c-format
+msgid "Too many servers '%d' for limit '%d'"
+msgstr "För många servrar ”%d” för gränsen ”%d”"
+
+msgid "Total"
+msgstr "Totalt"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Skriv: 'help' för hjälp med kommandon\n"
+"       'quit' för att avsluta\n"
+"\n"
+
+msgid "UNIX sockets are not supported on this platform"
+msgstr "UNIX-uttag stödjs inte på denna plattform"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Unable to change MaxMemorySize"
+msgstr "Kan inte ändra MaxMemorySize"
+
+#, c-format
+msgid "Unable to create Volume: %s"
+msgstr "Kan inte skapa volym: %s"
+
+msgid "Unable to create new virtual adapter"
+msgstr "Kan inte skapa en nya virtuell adapter"
+
+msgid "Unable to get VIOS name"
+msgstr "Kan inte få tag i VIOS-namn"
+
+msgid "Unable to get VIOS profile name."
+msgstr "Kan inte få tag i VIOS-profilnamn."
+
+msgid "Unable to get free slot number"
+msgstr "Kan inte få fram antal fria platser"
+
+msgid "Unable to get local socket name"
+msgstr "Kan inte få lokalt uttagsnamn"
+
+msgid "Unable to get remote socket name"
+msgstr "Kan inte få fjärruttagets namn"
+
+msgid "Unable to initialize certificate"
+msgstr "Kan inte initiera certifikat"
+
+msgid "Unable to load certificate"
+msgstr "Kan inte ladda certfikat"
+
+#, c-format
+msgid "Unable to migrate %s to %s"
+msgstr "Kan inte migrera %s till %s"
+
+#, c-format
+msgid "Unable to open monitor path %s"
+msgstr "Ken inte öppna övervakningssökvägen %s"
+
+#, c-format
+msgid "Unable to parse devaddr parameter '%s'"
+msgstr "Det går inte att tolka devaddr-parametern ”%s”"
+
+msgid "Unable to query kqueue"
+msgstr "Kan inte fråga kqueue"
+
+msgid "Unable to read from monitor"
+msgstr "Kan inte läsa från övervakaren"
+
+msgid "Unable to retrieve threadpool parameters"
+msgstr "Kan inte hämta parametrar för trådpoolen"
+
+msgid "Unable to wait on parent process"
+msgstr "Kan inte vänta på föräldraprocessen"
+
+msgid "Unable to write to monitor"
+msgstr "Kan inte skriva till övervakaren"
+
+#, c-format
+msgid "Unexpected CPU feature policy %d"
+msgstr "Oväntad CPU-funktionspolicy %d"
+
+#, c-format
+msgid "Unexpected CPU match policy %d"
+msgstr "Oväntad CPU-matchningspolicy %d"
+
+#, c-format
+msgid "Unhandled event %d for monitor fd %d"
+msgstr "Ohanterat händelse %d för att övervaknings-fb %d"
+
+msgid "Unknown"
+msgstr "Okänd"
+
+#, c-format
+msgid "Unknown controller type '%s'"
+msgstr "Okänd styrenhetstyp ”%s”"
+
+msgid "Unknown error"
+msgstr "Okänt fel"
+
+#, c-format
+msgid "Unknown interface <driver name='%s'> has been specified"
+msgstr "Okänt gränssnitt <driver name='%s'> har specificerats"
+
+#, c-format
+msgid "Unknown interface <driver txmode='%s'> has been specified"
+msgstr "Okänt gränssnitt <driver txmode='%s'> har specificerats"
+
+#, c-format
+msgid "Unknown model type '%s'"
+msgstr "Okänd modelltyp ”%s”"
+
+msgid "Unknown poll response."
+msgstr "Okänt pollsvar."
+
+#, c-format
+msgid "Unknown protocol '%s'"
+msgstr "Okänt protokoll ”%s”"
+
+#, c-format
+msgid "Unknown source mode '%s'"
+msgstr "Okänd källäge ”%s”"
+
+#, c-format
+msgid "Unsupported config format '%s'"
+msgstr "Konfigurationsformatet stödjs inte ”%s”"
+
+#, c-format
+msgid "Unsupported config type %s"
+msgstr "Konfigurationstypen stödjs inte %s"
+
+#, c-format
+msgid "Unsupported disk device type '%s'"
+msgstr "Diskenhettypen ”%s” stödjs inte"
+
+msgid "Used memory:"
+msgstr "Använt minne:"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Använder API: %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "VCPU:"
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Välkommen till %s, den interaktiva terminalen för virtualisering.\n"
+"\n"
+
+msgid "XML does not contain expected 'cpu' element"
+msgstr "XML innehåller inte ett förväntat ”cpu”-element"
+
+msgid "XML file"
+msgstr "XML-fil"
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "ai_family not supported"
+msgstr "ai_family stödjs inte"
+
+msgid "ai_socktype not supported"
+msgstr "ai_socktype stödjs inte"
+
+msgid "attach device from an XML file"
+msgstr "anslut enhet från en XML-fil"
+
+msgid "attach disk device"
+msgstr "anslut diskenhet"
+
+msgid "attach network interface"
+msgstr "anslut nätverksgränssnitt"
+
+msgid "authentication failed"
+msgstr "autentisering misslyckades"
+
+#, c-format
+msgid "authentication failed: %s"
+msgstr "autentisering misslyckades: %s"
+
+msgid "authentication required"
+msgstr "autentisering krävs"
+
+msgid "autostart a domain"
+msgstr "autostarta en domän"
+
+msgid "autostart a network"
+msgstr "starta ett nätverk automatiskt"
+
+msgid "bad pathname"
+msgstr "felaktig sökväg"
+
+msgid "block device"
+msgstr "blockenhet"
+
+msgid "canceled"
+msgstr "avbruten"
+
+#, c-format
+msgid "cannot change to root directory: %s"
+msgstr "kan inte byta till rotkatalogen: %s"
+
+#, c-format
+msgid "cannot create config directory %s"
+msgstr "kan inte skapa konfigurationskatalogen %s"
+
+#, c-format
+msgid "cannot create config directory '%s'"
+msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+
+msgid "cannot generate a random uuid for instanceid"
+msgstr "kan inte generera ett slumpmässigt uuid som instanceid"
+
+msgid "cannot initialize mutex"
+msgstr "kan inte initiera mutex"
+
+msgid "cannot mix string I/O with asynchronous command"
+msgstr "kan inte blanda sträng-I/O med asynkront kommando"
+
+msgid "cannot parse instanceid parameter as a uuid"
+msgstr "kan inte tolka parametern instanceid som ett uuid"
+
+msgid "cannot parse value of managerid parameter"
+msgstr "kan inte tolka värdet av parametern managerid"
+
+msgid "cannot parse value of typeid parameter"
+msgstr "kan inte tolka värdet på parametern typeid"
+
+msgid "cannot parse value of typeidversion parameter"
+msgstr "kan inte tolka värdet av parametern typeidversion"
+
+msgid "cannot parse vbd filename, missing driver name"
+msgstr "kan inte analysera vbd-filnamn, saknar drivrutinsnamn"
+
+msgid "cannot parse vbd filename, missing driver type"
+msgstr "kan inte analysera vbd-filnamn, saknar drivrutinstyp"
+
+#, c-format
+msgid "cannot remove config %s"
+msgstr "kan inte ta bort konfigurationen %s"
+
+#, c-format
+msgid "cannot write config file '%s'"
+msgstr "kan inte skriva konfigurationsfilen ”%s”"
+
+msgid "cap for XEN_CREDIT"
+msgstr "gräns för XEN_CREDIT"
+
+msgid "capabilities"
+msgstr "kapabiliteter"
+
+msgid "cgroup CPU controller is not mounted"
+msgstr "cgroup-CPU-regulatorn är inte monterad"
+
+msgid "change maximum memory limit"
+msgstr "ändra gräns för maximalt minne"
+
+msgid "change memory allocation"
+msgstr "ändra minnesallokering"
+
+msgid "change number of virtual CPUs"
+msgstr "ändra antal virtuella CPU:er"
+
+msgid "changed"
+msgstr "ändrad"
+
+msgid "client tried invalid PolicyKit init request"
+msgstr "klienten försökte med en ogiltig PolicyKit-initieringsbegäran"
+
+msgid "client tried invalid SASL init request"
+msgstr "klienten försökte med en ogiltig SASL-initieringsbegäran"
+
+msgid "client tried invalid SASL start request"
+msgstr "klienten försökte med en ogiltig SASL-startbegäran"
+
+msgid "closed"
+msgstr "stängd"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "kommandot '%s' stöder inte flaggan --%s"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "kommando '%s' kräver flaggan --%s"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "kommando '%s' kräver flaggan <%s>"
+
+msgid "completed"
+msgstr "färdig"
+
+msgid "configuration file syntax error"
+msgstr "syntaxfel i konfigurationsfilen"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "syntaxfel i konfigurationsfilen: %s"
+
+msgid "connect"
+msgstr "anslut"
+
+msgid "connect to the guest console"
+msgstr "anslut till gästkonsolen"
+
+msgid "connection already open"
+msgstr "anslutningen redan öppen"
+
+msgid "connection not open"
+msgstr "anslutningen är inte öppen"
+
+msgid "connection vcpu maximum"
+msgstr "anslutning vcpu maximal"
+
+#, c-format
+msgid "conversion from hyper to %s overflowed"
+msgstr "konvertering från hyper till %s svämmade över"
+
+msgid "conversion from string failed"
+msgstr "konvertering från sträng misslyckades"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "konvertera ett domän-id eller UUID till domännamn"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "konvertera ett domännamn eller UUID till ett domän-id"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "konvertera ett domännamn eller id till domän-UUID"
+
+msgid "convert a network UUID to network name"
+msgstr "konvertera ett nätverks-UUID till nätverksnamn"
+
+msgid "convert a network name to network UUID"
+msgstr "konvertera ett nätverksnamn till nätverks-UUID"
+
+msgid "could not allocate memory"
+msgstr "kunde inte allokera minne"
+
+msgid "could not allocate memory for profile files"
+msgstr "kunde inte allokera minne för profilfiler"
+
+msgid "could not allocate memory for profile name"
+msgstr "kunde inte allokera minne för profilnamn"
+
+msgid "could not connect to Xen Store"
+msgstr "kunde inte ansluta till Xen Store"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "kunde inte ansluta till Xen Store %s"
+
+msgid "could not get information about NUMA topology"
+msgstr "kunde inte få information om NUMA-topologi"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "kunde inte använda akten för Xens hypervisor"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "kunde inte använda akten för Xens hypervisor %s<"
+
+msgid "crashed"
+msgstr "kraschad"
+
+msgid "create a domain from an XML file"
+msgstr "skapa en domän från en XML-fil"
+
+msgid "create a network from an XML file"
+msgstr "skapa ett nätverk från en XML-fil"
+
+msgid "creation of pid file requires daemonized command"
+msgstr "att skapa en pid-fil kräver daemonkommando"
+
+#, c-format
+msgid "daemonized command cannot set working directory %s"
+msgstr "daemonkommando kan inte ange arbetskatalog %s"
+
+msgid "daemonized command cannot use virCommandRunAsync"
+msgstr "demonkommando kan inte använda virCommandRunAsync"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "definiera (men start inte) en domän från en XML-fil"
+
+#, c-format
+msgid "deleting %s drive failed: %s"
+msgstr "att ta bort %s-enheten misslyckades: %s"
+
+msgid ""
+"deleting drive is not supported.  This may leak data if disk is reassigned"
+msgstr ""
+"att ta bort enheten stödjs inte.  Detta kan läcka data om disken är "
+"omplacerad"
+
+msgid "destroy a physical host interface (disable it / \"if-down\")"
+msgstr "förstör ett fysiskt värdgränssnitt (avaktivera det / ”if-down”)"
+
+msgid "detach device from an XML file"
+msgstr "avmontera enhet från en XML-fil"
+
+msgid "detach disk device"
+msgstr "avmontera diskenhet"
+
+msgid "detach network interface"
+msgstr "anslut nätverksgränssnitt"
+
+msgid "disable autostarting"
+msgstr "inaktivera autostartning"
+
+msgid "disconnect"
+msgstr "koppla från"
+
+msgid "disk ioeventfd mode supported only for virtio bus"
+msgstr "disk-ioeventfd-läge stödjs endast för virtio-bussen"
+
+msgid "display available free memory for the NUMA cell."
+msgstr "visa oanvänt minne för NUMA-cellen."
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "domän %s finns redan"
+
+#, c-format
+msgid "domain '%s' is already defined with uuid %s"
+msgstr "domänen ”%s” är redan definierat med UUID %s"
+
+#, c-format
+msgid "domain event %d not registered"
+msgstr "domänhändelse %d är inte registrerad"
+
+msgid "domain id or name"
+msgstr "domännamn eller uuid"
+
+msgid "domain id or uuid"
+msgstr "domännamn eller uuid"
+
+msgid "domain information"
+msgstr "domäninformation"
+
+msgid "domain information in XML"
+msgstr "domäninformation i XML"
+
+msgid "domain information incomplete, missing kernel & bootloader"
+msgstr "domäninformation ej komplett, saknar kärna & startprogram"
+
+msgid "domain information incomplete, missing name"
+msgstr "domäninformation inkomplett, saknar namn"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "domäninformation inkomplett, vbd har ingen dev"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "domäninformation inkomplett, vbd har ingen src"
+
+msgid "domain name or uuid"
+msgstr "domännamn eller uuid"
+
+msgid "domain state"
+msgstr "domäntillstånd"
+
+msgid "domain type"
+msgstr "domäntyp"
+
+msgid "driver of disk device"
+msgstr "drivrutin för diskenhet"
+
+msgid "dropped"
+msgstr "kastad"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "dumpa kärnan för en domän till en fil för analys"
+
+msgid "error"
+msgstr "fel"
+
+msgid "error: "
+msgstr "fel: "
+
+#, c-format
+msgid "event from unexpected fd %d!=%d / watch %d!=%d"
+msgstr "händelse från oväntat fb %d≠%d / ser %d≠%d"
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "förväntad syntax: --%s <%s>"
+
+msgid "expecting a name"
+msgstr "förväntar mig ett namn"
+
+msgid "expecting a separator"
+msgstr "förväntar mig en separator"
+
+msgid "expecting a separator in list"
+msgstr "förväntar sig en separator i listan"
+
+msgid "expecting a value"
+msgstr "förväntar sig ett värde"
+
+#, c-format
+msgid "expecting absolute path: %s"
+msgstr "absolut sökväg förväntas: %s"
+
+msgid "expecting an assignment"
+msgstr "förväntar mig en tilldelning"
+
+msgid "failed to connect to the hypervisor"
+msgstr "misslyckades att ansluta till hypervisor"
+
+#, c-format
+msgid "failed to create logfile %s"
+msgstr "det gick inte att skapa loggfilen %s"
+
+msgid "failed to create profile"
+msgstr "misslyckats med att skapa profil"
+
+msgid "failed to generate XML"
+msgstr "misslyckades med att generera XML"
+
+msgid "failed to get URI"
+msgstr "misslyckades att hämta URI"
+
+msgid "failed to get capabilities"
+msgstr "misslyckades att hämta kapabiliteter"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "misslyckades att hämta domän '%s'"
+
+msgid "failed to get domain UUID"
+msgstr "misslyckades att hämta domän-UUID"
+
+#, c-format
+msgid "failed to get free memory for NUMA node number: %lu"
+msgstr "misslyckades med att få ledigt minne för NUMA-nod nummer: %lu"
+
+msgid "failed to get hostname"
+msgstr "misslyckades att få värdnamn"
+
+msgid "failed to get hypervisor type"
+msgstr "misslyckades att hämta typ av hypervisor"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "misslyckades att hämta nätverk '%s'"
+
+msgid "failed to get network UUID"
+msgstr "misslyckades att hämta nätverks-UUID"
+
+msgid "failed to get node information"
+msgstr "misslyckades att få nodinformation"
+
+msgid "failed to get the hypervisor version"
+msgstr "misslyckades att hämta version av hypervisor"
+
+msgid "failed to get the library version"
+msgstr "misslyckades att hämta biblioteksversion"
+
+#, c-format
+msgid "failed to mark network %s as autostarted"
+msgstr "Misslyckades att markera nätverk %s som autostartat"
+
+msgid "failed to open file"
+msgstr "misslyckades att öppna fil"
+
+msgid "failed to open the log file. check the log file path"
+msgstr "misslyckades att öppna loggfil. kontrollera sökvägen till loggfilen"
+
+msgid "failed to parse configuration file"
+msgstr "kunde inte analysera konfigurationsfilen"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "kunde inte analysera konfigurationsfilen %s"
+
+msgid "failed to read configuration file"
+msgstr "kunde inte läsa konfigurationsfilen"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "kunde inte läsa konfigurationsfilen %s"
+
+msgid "failed to save content"
+msgstr "misslyckades att spara innehåll"
+
+msgid "failed to serialize S-Expr"
+msgstr "misslyckades att serialisera S-Expr"
+
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "misslyckades att serialisera S-Expr: %s"
+
+#, c-format
+msgid "failed to unmark network %s as autostarted"
+msgstr "Misslyckades att avmarkera nätverk %s som autostartat"
+
+msgid "failed to write configuration file"
+msgstr "misslyckades att skriva konfigurationsfilen"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "misslyckades att skriva konfigurationsfilen: %s"
+
+msgid "failed to write the log file"
+msgstr "misslyckades att skriva loggfilen"
+
+msgid "file containing an XML domain description"
+msgstr "fil som innehåller XML-domänbeskrivningen"
+
+msgid "file containing an XML network description"
+msgstr "fil som innehåller XML-nätverksbeskrivningen"
+
+#, c-format
+msgid "filter with same UUID but different name ('%s') already exists"
+msgstr "filter med samma UUID men annat namn (”%s”) finns redan"
+
+msgid "filter would introduce a loop"
+msgstr "filtret skulle införa en slinga"
+
+msgid "get device block stats for a domain"
+msgstr "hämta enhetsblocks-statistik för en domän"
+
+msgid "get network interface stats for a domain"
+msgstr "hämta nätverksgränssnitt-statistik för en domän"
+
+msgid "getting time of day"
+msgstr "hämtar tid på dygnet"
+
+msgid "gracefully shutdown a domain"
+msgstr "stäng snällt ned en domän"
+
+msgid "guestfwd channel does not define a target address"
+msgstr "guestfwd-kanalen definierar inte en mål adress"
+
+msgid "guestfwd channel does not define a target port"
+msgstr "guestfwd-kanalen definierar inte en målport"
+
+msgid "guestfwd channel only supports IPv4 addresses"
+msgstr "guestfwd-kanalen stödjer endast IPv4-adresser"
+
+msgid "host-certificates mode needs exactly three certificates"
+msgstr "läget host-certificates behöver exakt tre certifikat"
+
+msgid "hypervisor connection URI"
+msgstr "anslutnings-URI för hypervisor"
+
+msgid "in shutdown"
+msgstr "stänger ner"
+
+msgid "inactive"
+msgstr "inaktiv"
+
+#, c-format
+msgid "incorrect boot order '%s', expecting positive integer"
+msgstr "felaktig startordning ”%s”, ett positivt heltal förväntas"
+
+msgid "initialize"
+msgstr "initiera"
+
+msgid "internal error"
+msgstr "internt fel"
+
+#, c-format
+msgid "invalid UUID source: %s"
+msgstr "felaktig UUID-källa: %s"
+
+msgid "invalid connection pointer in"
+msgstr "ogiltig anslutningspekare i"
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "ogiltig anslutningspekare i %s"
+
+msgid "invalid domain pointer in"
+msgstr "ogiltig domänpekare i"
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "ogiltig domänpekare i %s"
+
+#, c-format
+msgid "invalid host UUID: %s"
+msgstr "ogiltiga värd-UUID: %s"
+
+msgid "invalid network pointer in"
+msgstr "ogiltig nätverkspekare i"
+
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "ogiltig nätverkspekare i %s"
+
+msgid "invalid watchdog action"
+msgstr "ogiltig vakthundsåtgärd"
+
+msgid "libhal_get_all_devices failed"
+msgstr "libhal_get_all_devices misslyckades"
+
+msgid "libvirtd quit during handshake"
+msgstr "libvirtd avslutade under handskakningen"
+
+#, c-format
+msgid "libxenlight failed to restore domain '%s'"
+msgstr "libxenlight misslyckades att återställa domänen ”%s”"
+
+msgid "libxenlight failed to store userdata"
+msgstr "libxenlight misslyckades med att lagra användardata"
+
+msgid "list domains"
+msgstr "lista domäner"
+
+msgid "list inactive & active domains"
+msgstr "lista inaktiva & aktiva domäner<"
+
+msgid "list inactive & active networks"
+msgstr "lista inaktiva & aktiva nätverk"
+
+msgid "list inactive domains"
+msgstr "lista inaktiva domäner"
+
+msgid "list inactive networks"
+msgstr "lista inaktiva nätverk"
+
+msgid "list networks"
+msgstr "lista nätverk"
+
+msgid "live migration"
+msgstr "live-migrering"
+
+msgid "machine is not in poweroff|saved|aborted state, so couldn't start it"
+msgstr ""
+"maskinen inte är i avstängt|sparat|avbrutet läge, så det gick inte att "
+"starta den"
+
+msgid "managed PCI devices not supported with XenD"
+msgstr "hanterade PCI-enheter stödjs inte med XenD"
+
+msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
+msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
+
+msgid "maxcells > REMOTE_NODE_MAX_CELLS"
+msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
+
+msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+msgstr "maxinfo · maplen > REMOTE_CPUMAPS_MAX"
+
+msgid "maxinfo > REMOTE_VCPUINFO_MAX"
+msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
+
+msgid "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+
+msgid "migrate domain to another host"
+msgstr "migrera domän till en annan värd"
+
+msgid "migration URI, usually can be omitted"
+msgstr "migrerings-URI, kan oftas uteslutas"
+
+msgid "missing \""
+msgstr "saknar \""
+
+msgid "missing boot order attribute"
+msgstr "startordningsattribut saknas"
+
+msgid "missing devices information"
+msgstr "saknar enhetsinformation"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "saknar enhetsinformation för %s"
+
+msgid "missing kernel information"
+msgstr "saknar kärninformation"
+
+msgid "missing name for disk source"
+msgstr "saknat namn för källskiva"
+
+msgid "missing name for host"
+msgstr "namn för värd saknas"
+
+msgid "missing operating system information"
+msgstr "saknar operativsysteminformation"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "saknar operativsysteminformation för %s"
+
+msgid "missing root device information"
+msgstr "saknar rot-enhetsinformation"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "saknar rotenhetsinformation i %s"
+
+msgid "missing smartcard device mode"
+msgstr "smartkortenhets läge saknas"
+
+msgid "missing source information for device"
+msgstr "saknar källinformation för enhet"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "saknar källinformation för enhet %s"
+
+msgid "missing target information for device"
+msgstr "saknar målinformation för enhet"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "saknar målinformation för enhet %s"
+
+msgid "mode of device reading and writing"
+msgstr "läge för enhetsläsning och skrivning"
+
+msgid "name of the inactive domain"
+msgstr "namn för den inaktiva domänen"
+
+msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
+msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+#, c-format
+msgid "negotiated SSF %d was not strong enough"
+msgstr "förhandlad SSF %d var inte stark nog"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "nätverk %s finns redan"
+
+#, c-format
+msgid "network %s is not active"
+msgstr "nätverket %s är inte aktivt"
+
+#, c-format
+msgid "network filter config filename '%s' does not match name '%s'"
+msgstr "nätverkfiltrets konfigurationsfilnamn ”%s” matchar inte namnet ”%s”"
+
+msgid "network information in XML"
+msgstr "nätverksinformation i XML"
+
+msgid "network interface type"
+msgstr "nätverksgränssnittstyp"
+
+msgid "network name"
+msgstr "nätverksnamn"
+
+msgid "network name or uuid"
+msgstr "nätverksnamn eller uuid"
+
+msgid "network uuid"
+msgstr "nätverks-uuid"
+
+msgid "no autostart"
+msgstr "ingen autostart"
+
+#, c-format
+msgid "no client with matching id '%llu' found"
+msgstr "det finns ingen klient som matchar id ”%llu”"
+
+#, c-format
+msgid "no config file for %s"
+msgstr "ingen konfigurationsfil för %s"
+
+msgid "no limit"
+msgstr "ingen gräns"
+
+#, c-format
+msgid "no server with matching name '%s' found"
+msgstr "det finns ingen server med namn som matchar ”%s”"
+
+msgid "no state"
+msgstr "inget tillstånd"
+
+#, c-format
+msgid "no storage pool with matching name '%s'"
+msgstr "ingen lagringspool med matchande namn ”%s”"
+
+#, c-format
+msgid "no storage vol with matching name '%s'"
+msgstr "ingen lagringsvolym med matchande namn ”%s”"
+
+msgid "no valid connection"
+msgstr "ingen giltig anslutning"
+
+msgid "node information"
+msgstr "nodinformation"
+
+msgid "nparams too large"
+msgstr "nparams är för stor"
+
+msgid "number"
+msgstr "nummer"
+
+msgid "number of virtual CPUs"
+msgstr "antal virtuella CPU:er"
+
+msgid "offline"
+msgstr "oansluten"
+
+msgid "open disk image file failed"
+msgstr "att öppna skivavbildsfilen misslyckades"
+
+msgid "opened"
+msgstr "öppnad"
+
+msgid "operation failed"
+msgstr "operation misslyckades"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "operation misslyckades: %s"
+
+msgid "operation forbidden for read only access"
+msgstr "operation ej tillåten vid skrivskyddad åtkomst"
+
+msgid "out of memory"
+msgstr "slut på minne"
+
+msgid "parser error"
+msgstr "avläsningsfel"
+
+msgid "passthrough mode requires a character device type attribute"
+msgstr "läget passthrough kräver ett attribut av teckenenhetstyp"
+
+msgid "path does not exist, skipping file type checks"
+msgstr "sökvägen finns inte, hoppar över kontroller av filtyp"
+
+msgid "pause"
+msgstr "paus"
+
+msgid "paused"
+msgstr "stannad"
+
+msgid "poll error"
+msgstr "pollfel"
+
+msgid "pool has no config file"
+msgstr "poolen har ingen konfigurationsfil"
+
+msgid "print help"
+msgstr "skriv ut hjälp"
+
+msgid "print the hypervisor canonical URI"
+msgstr "skriv ut de canonical-URI för hypervisor"
+
+msgid "print the hypervisor hostname"
+msgstr "skriv ut värdnamnet för hypervisor"
+
+msgid "profileid parameter too long"
+msgstr "parametern profileid är för lång"
+
+msgid "quit this interactive terminal"
+msgstr "avsluta denna interaktiva terminal"
+
+msgid "read-only connection"
+msgstr "anslutning skrivskyddad"
+
+msgid "ready"
+msgstr "klar"
+
+msgid "reboot a domain"
+msgstr "starta om en domän"
+
+msgid "report"
+msgstr "rapportera"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "återställ en domän från ett sparat tillstånd i en fil"
+
+msgid "resume a domain"
+msgstr "fortsätt en domän"
+
+msgid "running"
+msgstr "kör"
+
+#, c-format
+msgid "sasl start reply data too long %d"
+msgstr "sasl-startsvarsdata är för långt %d"
+
+#, c-format
+msgid "sasl step reply data too long %d"
+msgstr "sasl-stegsvarsdata är för långt %d"
+
+msgid "save a domain state to a file"
+msgstr "spara ett domäntillstånd till en fil"
+
+msgid "script used to bridge network interface"
+msgstr "skript som används för brygga nätverksgränssnitt"
+
+msgid "security imagelabel is missing"
+msgstr "säkerhetsavbildsetikett saknas"
+
+msgid "security label is missing"
+msgstr "säkerhetsetikett saknas"
+
+msgid "setting up HAL callbacks failed"
+msgstr "att sätta upp HAL-återanrop misslyckades"
+
+msgid "show domain title"
+msgstr "visa domäntitel"
+
+msgid "show free memory for all NUMA cells"
+msgstr "visa ledigt minne för alla NUMA-celler"
+
+msgid "show version"
+msgstr "visa version"
+
+msgid "show/set scheduler parameters"
+msgstr "visa/sätt parametrar för schemaläggare"
+
+msgid "shut off"
+msgstr "avstängd"
+
+msgid "size > maximum buffer size"
+msgstr "size > maximal buffertstorlek"
+
+msgid "sndbuf must be a positive integer"
+msgstr "sndbuf måste vara ett positivt heltal"
+
+msgid "source of disk device"
+msgstr "källa för skivenhet"
+
+msgid "source of network interface"
+msgstr "källa för nätverksgränssnitt"
+
+msgid "spicevmc device type only supports virtio"
+msgstr "spicevmc-enhetstyp stödjer bara virtio"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "starta en (tidigare definierad) inaktiv domän"
+
+msgid "start a (previously defined) inactive network"
+msgstr "starta ett (tidigare definierat) inaktivt nätverk"
+
+msgid "start a physical host interface (enable it / \"if-up\")"
+msgstr "starta ett fysiskt värdgränssnitt (aktivera det / ”if-up”)"
+
+msgid "start a physical host interface."
+msgstr "starta ett fysiskt värdgränssnitt."
+
+msgid "storage pool does not support volume creation"
+msgstr "lagringspool stödjer inte skapande av volymer"
+
+msgid "storage pool does not support volume creation from an existing volume"
+msgstr "lagringspoolen stödjer inte att skapa volymer från en befintlig volym"
+
+msgid "storage vol already exists"
+msgstr "lagringsvolymen finns redan"
+
+#, c-format
+msgid "storage volume name '%s' already in use."
+msgstr "lagringsvolymnamnet ”%s” används redan."
+
+#, c-format
+msgid "stream aborted with unexpected status %d"
+msgstr "strömmen avbröts med oväntad status %d"
+
+msgid "stream had I/O failure"
+msgstr "strömmen hade I/O-fel"
+
+msgid "stream had unexpected termination"
+msgstr "strömmen avslutades oväntat"
+
+msgid "string"
+msgstr "sträng"
+
+msgid "subdriver of disk device"
+msgstr "underdrivrutin till diskenhet"
+
+msgid "suspend a domain"
+msgstr "suspendera en domän"
+
+msgid "system call error"
+msgstr "systemanropsfel"
+
+msgid "target device type"
+msgstr "målenhetstyp"
+
+msgid "target network name"
+msgstr "målets nätverksnamn"
+
+msgid "target of disk device"
+msgstr "mål för diskenhet"
+
+#, c-format
+msgid "target type must be specified for %s device"
+msgstr "måltypen måste anges för %s-enhet"
+
+msgid "testOpen: supply a path or use test:///default"
+msgstr "testOpen: ange en sökväg eller använd test:///default"
+
+msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
+msgstr "resultatet får inte plats i REMOTE_NODE_MAX_CELLS"
+
+msgid "the state to restore"
+msgstr "tillståndet som ska återställas"
+
+msgid "this domain does not have a device to take snapshots"
+msgstr "den här domänen har inte en enhet för att ta ögonblicksbilder"
+
+msgid "this domain exists already"
+msgstr "denna domän finns redan"
+
+msgid "this network exists already"
+msgstr "detta nätverk finns redan"
+
+msgid "too many drivers registered"
+msgstr "för många drivrutiner registrerade"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "för många drivrutiner registrerade i %s"
+
+msgid "tty console"
+msgstr "tty-konsol"
+
+#, c-format
+msgid "unable to connect to server at '%s:%s'"
+msgstr "kan inte ansluta till servern på ”%s:%s”"
+
+#, c-format
+msgid "unable to create rundir %s: %s"
+msgstr "kan inte skapa körkatalogen %s: %s"
+
+msgid "unable to create socket pair"
+msgstr "kan inte skapa uttagspar"
+
+msgid "unable to get node capabilities"
+msgstr "kan inte ta fram nodegenskaper"
+
+msgid "unable to init mutex"
+msgstr "kan inte initiera mutex"
+
+#, c-format
+msgid "unable to parse mac address '%s'"
+msgstr "kan inte tolka mac-adressen ”%s”"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "oväntad data '%s'"
+
+#, c-format
+msgid "unexpected disk type %s"
+msgstr "oväntad disktyp %s"
+
+#, c-format
+msgid "unexpected domain %s already exists"
+msgstr "oväntad domän %s finns redan"
+
+#, c-format
+msgid "unexpected graphics type %d"
+msgstr "oväntad grafiktyp %d"
+
+#, c-format
+msgid "unexpected lifecycle value %d"
+msgstr "oväntat livscykelvärde %d"
+
+#, c-format
+msgid "unexpected sysinfo type model %d"
+msgstr "oväntade sysinfo typmodell %d"
+
+msgid "unix"
+msgstr "unix"
+
+msgid "unknown OS type"
+msgstr "okänd OS-typ"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "okänd OS-typ %s"
+
+#, c-format
+msgid "unknown accessmode '%s'"
+msgstr "okända åtkomstläge ”%s”"
+
+#, c-format
+msgid "unknown address type '%s'"
+msgstr "okänd adresstyp ”%s”"
+
+#, c-format
+msgid "unknown character device type: %s"
+msgstr "okänd teckenenhetstyp: %s"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "okänt kommando: '%s'"
+
+#, c-format
+msgid "unknown disk bus type '%s'"
+msgstr "okänd diskbusstyp ”%s”"
+
+#, c-format
+msgid "unknown disk cache mode '%s'"
+msgstr "okänt disk-cachenings-läge ”%s”"
+
+#, c-format
+msgid "unknown disk device '%s'"
+msgstr "okänd diskenhet ”%s”"
+
+#, c-format
+msgid "unknown disk error policy '%s'"
+msgstr "okänd diskfelspolicy ”%s”"
+
+#, c-format
+msgid "unknown disk io mode '%s'"
+msgstr "okänt disk-IO-läge ”%s”"
+
+#, c-format
+msgid "unknown disk ioeventfd mode '%s'"
+msgstr "okänt disk-ioeventfd-läge ”%s”"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "okänd disktyp ”%s”"
+
+#, c-format
+msgid "unknown filesystem type '%s'"
+msgstr "okänd filsystemstyp ”%s”"
+
+msgid "unknown host"
+msgstr "okänd värd"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "okänd värd %s"
+
+#, c-format
+msgid "unknown interface ioeventfd mode '%s'"
+msgstr "okänt gränssnitt ioeventfd läge ”%s”"
+
+#, c-format
+msgid "unknown interface type '%s'"
+msgstr "okän gränssnittstyp ”%s”"
+
+#, c-format
+msgid "unknown lifecycle type %s"
+msgstr "okänd livscykeltyp %s"
+
+#, c-format
+msgid "unknown parameter type: %d"
+msgstr "okänd parametertyp: %d"
+
+#, c-format
+msgid "unknown procedure: %d"
+msgstr "okänt förfarande: %d"
+
+#, c-format
+msgid "unknown protocol type '%s'"
+msgstr "okänd protokolltyp ”%s”"
+
+msgid "unknown root element for nw filter"
+msgstr "okänt rotelement för nw-filter"
+
+#, c-format
+msgid "unknown smartcard device mode: %s"
+msgstr "okänt läge för smartkortenhet: %s"
+
+msgid "unknown smartcard mode"
+msgstr "okänt smartkortsläge"
+
+#, c-format
+msgid "unknown type presented to host for character device: %s"
+msgstr "okänd typ presenterad för värd för teckenenhet: %s"
+
+#, c-format
+msgid "unsupported disk type %s"
+msgstr "disktypen stödjs inte %s"
+
+#, c-format
+msgid "unsupported event ID %d"
+msgstr "ej stödd händelse-ID %d"
+
+#, c-format
+msgid "unsupported flags: (0x%x)"
+msgstr "flaggor som inte stödjs: (0x%x)"
+
+#, c-format
+msgid "unsupported network type %d"
+msgstr "nätverkstypen stödjs inte %d"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "flaggan '-%c' stöds ej. Se --help."
+
+msgid "unterminated number"
+msgstr "oterminerade nummer"
+
+msgid "unterminated string"
+msgstr "oterminerad sträng"
+
+msgid "value for typeid out of range"
+msgstr "värde på typeid är utanför intervallet"
+
+msgid "value of managerid out of range"
+msgstr "värdet på managerid är utanför intervallet"
+
+msgid "value of typeidversion out of range"
+msgstr "värdet på typeidversion är utanför intervallet"
+
+msgid "vcpu number"
+msgstr "vcpu-nummer"
+
+#, c-format
+msgid "version mismatch (actual %x, expected %x)"
+msgstr "versioner matchar inte (aktuell %x, förväntad %x)"
+
+msgid "vnc display"
+msgstr "vnc-skärm"
+
+#, c-format
+msgid "volume '%s' is still being allocated."
+msgstr "volymen ”%s” allokeras fortfarande."
+
+msgid "warning"
+msgstr "varning"
+
+msgid "weight for XEN_CREDIT"
+msgstr "vikt för XEN_CREDIT"
+
+msgid "where to dump the core"
+msgstr "var kärnan ska sparas"
+
+msgid "where to save the data"
+msgstr "var data ska sparas"

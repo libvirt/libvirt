@@ -28,6 +28,9 @@ int virNetDevTapCreateInBridgePort(const char *brname ATTRIBUTE_UNUSED,
                                    size_t tapfdSize ATTRIBUTE_UNUSED,
                                    virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
                                    virNetDevVlanPtr virtVlan ATTRIBUTE_UNUSED,
+                                   virNetDevCoalescePtr coalesce ATTRIBUTE_UNUSED,
+                                   unsigned int mtu ATTRIBUTE_UNUSED,
+                                   unsigned int *actualMTU ATTRIBUTE_UNUSED,
                                    unsigned int fakeflags ATTRIBUTE_UNUSED)
 {
     VIR_FREE(*ifname);
@@ -47,6 +50,13 @@ char *virNetDevTapGetRealDeviceName(char *name ATTRIBUTE_UNUSED)
 
 int virNetDevSetOnline(const char *ifname ATTRIBUTE_UNUSED,
                        bool online ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+int bind(int sockfd ATTRIBUTE_UNUSED,
+         const struct sockaddr *addr ATTRIBUTE_UNUSED,
+         socklen_t addrlen ATTRIBUTE_UNUSED)
 {
     return 0;
 }

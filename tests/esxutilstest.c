@@ -4,8 +4,6 @@
 
 #ifdef WITH_ESX
 
-# include <stdio.h>
-# include <string.h>
 # include <unistd.h>
 
 # include "internal.h"
@@ -247,12 +245,12 @@ mymain(void)
 
     virTestQuiesceLibvirtErrors(true);
 
-# define DO_TEST(_name)                                                       \
-        do {                                                                  \
-            if (virTestRun("VMware "#_name, test##_name,                      \
-                           NULL) < 0) {                                       \
-                result = -1;                                                  \
-            }                                                                 \
+# define DO_TEST(_name) \
+        do { \
+            if (virTestRun("VMware "#_name, test##_name, \
+                           NULL) < 0) { \
+                result = -1; \
+            } \
         } while (0)
 
     DO_TEST(ParseDatastorePath);
@@ -263,7 +261,7 @@ mymain(void)
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

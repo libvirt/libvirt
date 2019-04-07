@@ -1,0 +1,28 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-foo \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-foo/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-foo/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-foo/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name foo \
+-S \
+-machine pc-1.2,accel=tcg,usb=off,dump-guest-core=off \
+-m 2048 \
+-smp 2,sockets=2,cores=1,threads=1 \
+-uuid 3c7c30b5-7866-4b05-8a29-efebccba52a0 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-foo/monitor.sock,server,\
+nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-global i440FX-pcihost.pci-hole64-size=1048576K \
+-usb \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_AUTHCONFIG_H__
-# define __VIR_AUTHCONFIG_H__
+#ifndef LIBVIRT_VIRAUTHCONFIG_H
+# define LIBVIRT_VIRAUTHCONFIG_H
 
 # include "internal.h"
+# include "viralloc.h"
 
 typedef struct _virAuthConfig virAuthConfig;
 typedef virAuthConfig *virAuthConfigPtr;
@@ -42,4 +41,6 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
                         const char *credname,
                         const char **value);
 
-#endif /* __VIR_AUTHCONFIG_H__ */
+VIR_DEFINE_AUTOPTR_FUNC(virAuthConfig, virAuthConfigFree);
+
+#endif /* LIBVIRT_VIRAUTHCONFIG_H */

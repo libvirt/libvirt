@@ -1,9 +1,6 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -86,15 +83,15 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(NAME, EXPECT_WARN)                                \
-    do {                                                          \
-        test_parms tp = {                                         \
-            .name = NAME,                                         \
-            .expect_warning = EXPECT_WARN,                        \
-        };                                                        \
-        if (virTestRun("NWFilter XML-2-XML " NAME,                \
-                       testCompareXMLToXMLHelper, (&tp)) < 0)     \
-            ret = -1;                                             \
+#define DO_TEST(NAME, EXPECT_WARN) \
+    do { \
+        test_parms tp = { \
+            .name = NAME, \
+            .expect_warning = EXPECT_WARN, \
+        }; \
+        if (virTestRun("NWFilter XML-2-XML " NAME, \
+                       testCompareXMLToXMLHelper, (&tp)) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("mac-test", true);
@@ -152,4 +149,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

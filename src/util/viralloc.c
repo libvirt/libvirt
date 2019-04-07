@@ -21,7 +21,6 @@
  */
 
 #include <config.h>
-#include <stdlib.h>
 
 #include "viralloc.h"
 #include "virlog.h"
@@ -243,7 +242,7 @@ int virReallocN(void *ptrptr,
         return -1;
     }
     tmp = realloc(*(void**)ptrptr, size * count);
-    if (!tmp && (size * count)) {
+    if (!tmp && ((size * count) != 0)) {
         if (report)
             virReportOOMErrorFull(domcode, filename, funcname, linenr);
         return -1;
@@ -589,7 +588,7 @@ void virFree(void *ptrptr)
  * virDispose:
  * @ptrptr: pointer to pointer for address of memory to be sanitized and freed
  * @count: count of elements in the array to dispose
- * @elemet_size: size of one element
+ * @element_size: size of one element
  * @countptr: pointer to the count variable to clear (may be NULL)
  *
  * Clear and release the chunk of memory in the pointer pointed to by 'prtptr'.
@@ -618,4 +617,20 @@ void virDispose(void *ptrptr,
     if (countptr)
         *countptr = 0;
     errno = save_errno;
+}
+
+
+/**
+ * virDisposeString:
+ * @ptrptr: pointer to pointer for a string which should be sanitized and cleared
+ *
+ * See virDispose.
+ */
+void
+virDisposeString(char **strptr)
+{
+    if (!*strptr)
+        return;
+
+    virDispose(strptr, strlen(*strptr), sizeof(char), NULL);
 }

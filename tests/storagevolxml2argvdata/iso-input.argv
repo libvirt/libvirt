@@ -1,0 +1,2 @@
+qemu-img convert -f raw -O raw /var/lib/libvirt/images/test.iso \
+/var/lib/libvirt/images/sparse.img

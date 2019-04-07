@@ -1,0 +1,27 @@
+VMWARE_DRIVER_SOURCES = \
+	vmware/vmware_driver.c \
+	vmware/vmware_driver.h \
+	vmware/vmware_conf.c \
+	vmware/vmware_conf.h \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(VMWARE_DRIVER_SOURCES)
+
+EXTRA_DIST += $(VMWARE_DRIVER_SOURCES)
+
+if WITH_VMWARE
+noinst_LTLIBRARIES += libvirt_driver_vmware.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_vmware.la
+libvirt_driver_vmware_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/vmx \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_vmware_la_SOURCES = $(VMWARE_DRIVER_SOURCES)
+endif WITH_VMWARE
+
+if WITH_VMWARE
+USED_SYM_FILES += $(srcdir)/libvirt_vmware.syms
+else ! WITH_VMWARE
+SYM_FILES += $(srcdir)/libvirt_vmware.syms
+endif ! WITH_VMWARE

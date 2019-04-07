@@ -26,6 +26,9 @@
 # include <sys/un.h>
 #endif
 
+#define LIBVIRT_VIRSYSTEMDPRIV_H_ALLOW
+#include "virsystemdpriv.h"
+
 #include "virsystemd.h"
 #include "viratomic.h"
 #include "virbuffer.h"
@@ -50,18 +53,18 @@ static void virSystemdEscapeName(virBufferPtr buf,
 {
     static const char hextable[16] = "0123456789abcdef";
 
-#define ESCAPE(c)                                                       \
-    do {                                                                \
-        virBufferAddChar(buf, '\\');                                    \
-        virBufferAddChar(buf, 'x');                                     \
-        virBufferAddChar(buf, hextable[(c >> 4) & 15]);                 \
-        virBufferAddChar(buf, hextable[c & 15]);                        \
+#define ESCAPE(c) \
+    do { \
+        virBufferAddChar(buf, '\\'); \
+        virBufferAddChar(buf, 'x'); \
+        virBufferAddChar(buf, hextable[(c >> 4) & 15]); \
+        virBufferAddChar(buf, hextable[c & 15]); \
     } while (0)
 
-#define VALID_CHARS                             \
-        "0123456789"                            \
-        "abcdefghijklmnopqrstuvwxyz"            \
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"            \
+#define VALID_CHARS \
+        "0123456789" \
+        "abcdefghijklmnopqrstuvwxyz" \
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
         ":-_.\\"
 
     if (*name == '.') {
@@ -122,64 +125,39 @@ char *virSystemdMakeSliceName(const char *partition)
     return virBufferContentAndReset(&buf);
 }
 
-#define HOSTNAME_CHARS                                                  \
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
+static int virSystemdHasMachinedCachedValue = -1;
 
-static void
-virSystemdAppendValidMachineName(virBufferPtr buf,
-                                 const char *name)
+/* Reset the cache from tests for testing the underlying dbus calls
+ * as well */
+void virSystemdHasMachinedResetCachedValue(void)
 {
-    bool skip_dot = false;
-
-    for (; *name; name++) {
-        if (strlen(virBufferCurrentContent(buf)) >= 64)
-            break;
-
-        if (*name == '.') {
-            if (!skip_dot)
-                virBufferAddChar(buf, *name);
-            skip_dot = true;
-            continue;
-        }
-
-        skip_dot = false;
-
-        if (!strchr(HOSTNAME_CHARS, *name))
-            continue;
-
-        virBufferAddChar(buf, *name);
-    }
+    virSystemdHasMachinedCachedValue = -1;
 }
 
-#undef HOSTNAME_CHARS
-
-char *
-virSystemdMakeMachineName(const char *drivername,
-                          int id,
-                          const char *name,
-                          bool privileged)
+/* -2 = machine1 is not supported on this machine
+ * -1 = error
+ *  0 = machine1 is available
+ */
+static int
+virSystemdHasMachined(void)
 {
-    char *machinename = NULL;
-    char *username = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int ret;
+    int val;
 
-    if (privileged) {
-        virBufferAsprintf(&buf, "%s-", drivername);
-    } else {
-        if (!(username = virGetUserName(geteuid())))
-            goto cleanup;
+    val = virAtomicIntGet(&virSystemdHasMachinedCachedValue);
+    if (val != -1)
+        return val;
 
-        virBufferAsprintf(&buf, "%s-%s-", username, drivername);
+    if ((ret = virDBusIsServiceEnabled("org.freedesktop.machine1")) < 0) {
+        if (ret == -2)
+            virAtomicIntSet(&virSystemdHasMachinedCachedValue, -2);
+        return ret;
     }
 
-    virBufferAsprintf(&buf, "%d-", id);
-    virSystemdAppendValidMachineName(&buf, name);
-
-    machinename = virBufferContentAndReset(&buf);
- cleanup:
-    VIR_FREE(username);
-
-    return machinename;
+    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) == -1)
+        return ret;
+    virAtomicIntSet(&virSystemdHasMachinedCachedValue, ret);
+    return ret;
 }
 
 
@@ -190,10 +168,7 @@ virSystemdGetMachineNameByPID(pid_t pid)
     DBusMessage *reply = NULL;
     char *name = NULL, *object = NULL;
 
-    if (virDBusIsServiceEnabled("org.freedesktop.machine1") < 0)
-        goto cleanup;
-
-    if (virDBusIsServiceRegistered("org.freedesktop.systemd1") < 0)
+    if (virSystemdHasMachined() < 0)
         goto cleanup;
 
     if (!(conn = virDBusGetSystemBus()))
@@ -209,6 +184,9 @@ virSystemdGetMachineNameByPID(pid_t pid)
 
     if (virDBusMessageRead(reply, "o", &object) < 0)
         goto cleanup;
+
+    virDBusMessageUnref(reply);
+    reply = NULL;
 
     VIR_DEBUG("Domain with pid %lld has object path '%s'",
               (long long) pid, object);
@@ -268,11 +246,7 @@ int virSystemdCreateMachine(const char *name,
     char *slicename = NULL;
     static int hasCreateWithNetwork = 1;
 
-    ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
-    if (ret < 0)
-        return ret;
-
-    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) < 0)
+    if ((ret = virSystemdHasMachined()) < 0)
         return ret;
 
     if (!(conn = virDBusGetSystemBus()))
@@ -365,7 +339,7 @@ int virSystemdCreateMachine(const char *name,
                               creatorname,
                               iscontainer ? "container" : "vm",
                               (unsigned int)pidleader,
-                              rootdir ? rootdir : "",
+                              NULLSTR_EMPTY(rootdir),
                               nnicindexes, nicindexes,
                               3,
                               "Slice", "s", slicename,
@@ -407,7 +381,7 @@ int virSystemdCreateMachine(const char *name,
                               creatorname,
                               iscontainer ? "container" : "vm",
                               (unsigned int)pidleader,
-                              rootdir ? rootdir : "",
+                              NULLSTR_EMPTY(rootdir),
                               3,
                               "Slice", "s", slicename,
                               "After", "as", 1, "libvirtd.service",
@@ -434,11 +408,7 @@ int virSystemdTerminateMachine(const char *name)
 
     memset(&error, 0, sizeof(error));
 
-    ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
-    if (ret < 0)
-        goto cleanup;
-
-    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) < 0)
+    if ((ret = virSystemdHasMachined()) < 0)
         goto cleanup;
 
     ret = -1;

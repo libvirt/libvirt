@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_XDRDEFS_H__
-# define __VIR_XDRDEFS_H__
+#ifndef LIBVIRT_VIRXDRDEFS_H
+# define LIBVIRT_VIRXDRDEFS_H
 
 /* cygwin's xdr implementation defines xdr_u_int64_t instead of xdr_uint64_t
  * and lacks IXDR_PUT_INT32 and IXDR_GET_INT32
@@ -40,4 +40,4 @@
 #  define IXDR_GET_U_INT32 IXDR_GET_U_LONG
 # endif
 
-#endif /* __VIR_XDRDEFS_H__ */
+#endif /* LIBVIRT_VIRXDRDEFS_H */

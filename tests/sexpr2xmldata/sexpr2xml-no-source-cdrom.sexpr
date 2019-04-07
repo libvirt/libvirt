@@ -25,7 +25,7 @@
             (kernel /usr/lib/xen/boot/hvmloader)
             (vnc 1)
             (vncunused 1)
-            (device_model /usr/lib/xen/bin/qemu-dm)
+            (device_model /usr/lib/xen/bin/qemu-system-i386)
             (pae 1)
             (apic 1)
             (acpi 1)

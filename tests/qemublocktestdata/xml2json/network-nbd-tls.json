@@ -1,0 +1,19 @@
+{
+  "node-name": "node-b-f",
+  "read-only": false,
+  "driver": "qcow2",
+  "file": "node-a-s",
+  "backing": null
+}
+{
+  "driver": "nbd",
+  "server": {
+    "type": "inet",
+    "host": "host1.example.com",
+    "port": "10809"
+  },
+  "tls-creds": "node-a-s-tls0",
+  "node-name": "node-a-s",
+  "read-only": false,
+  "discard": "unmap"
+}

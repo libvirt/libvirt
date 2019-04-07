@@ -20,9 +20,6 @@
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #include <selinux/selinux.h>
@@ -68,33 +65,37 @@ testBuildDomainDef(bool dynamic,
                    const char *baselabel)
 {
     virDomainDefPtr def;
-    virSecurityLabelDefPtr secdef;
+    virSecurityLabelDefPtr secdef = NULL;
 
     if (!(def = virDomainDefNew()))
         goto error;
 
+    def->virtType = VIR_DOMAIN_VIRT_KVM;
     if (VIR_ALLOC_N(def->seclabels, 1) < 0)
         goto error;
 
     if (VIR_ALLOC(secdef) < 0)
         goto error;
 
-    def->virtType = VIR_DOMAIN_VIRT_KVM;
-    def->seclabels[0] = secdef;
-    def->seclabels[0]->type = dynamic ? VIR_DOMAIN_SECLABEL_DYNAMIC : VIR_DOMAIN_SECLABEL_STATIC;
+    if (VIR_STRDUP(secdef->model, "selinux") < 0)
+        goto error;
 
+    secdef->type = dynamic ? VIR_DOMAIN_SECLABEL_DYNAMIC : VIR_DOMAIN_SECLABEL_STATIC;
     if (label &&
-        VIR_STRDUP(def->seclabels[0]->label, label) < 0)
+        VIR_STRDUP(secdef->label, label) < 0)
         goto error;
 
     if (baselabel &&
-        VIR_STRDUP(def->seclabels[0]->baselabel, baselabel) < 0)
+        VIR_STRDUP(secdef->baselabel, baselabel) < 0)
         goto error;
 
+    def->seclabels[0] = secdef;
+    def->nseclabels++;
     return def;
 
  error:
     virDomainDefFree(def);
+    virSecurityLabelDefFree(secdef);
     return NULL;
 }
 
@@ -279,19 +280,19 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-#define DO_TEST_GEN_LABEL(desc, pidcon,                                     \
-                          dynamic, label, baselabel,                        \
-                          user, role, imageRole,                            \
-                          type, imageType,                                  \
-                          sensMin, sensMax, catMin, catMax)                 \
-    do {                                                                    \
-        struct testSELinuxGenLabelData data = {                             \
-            mgr, pidcon, dynamic, label, baselabel,                         \
-            user, role, imageRole, type, imageType,                         \
-            sensMin, sensMax, catMin, catMax                                \
-        };                                                                  \
+#define DO_TEST_GEN_LABEL(desc, pidcon, \
+                          dynamic, label, baselabel, \
+                          user, role, imageRole, \
+                          type, imageType, \
+                          sensMin, sensMax, catMin, catMax) \
+    do { \
+        struct testSELinuxGenLabelData data = { \
+            mgr, pidcon, dynamic, label, baselabel, \
+            user, role, imageRole, type, imageType, \
+            sensMin, sensMax, catMin, catMax \
+        }; \
         if (virTestRun("GenLabel " # desc, testSELinuxGenLabel, &data) < 0) \
-            ret = -1;                                                       \
+            ret = -1; \
     } while (0)
 
     DO_TEST_GEN_LABEL("dynamic unconfined, s0, c0.c1023",
@@ -337,7 +338,8 @@ mymain(void)
                       "svirt_t", "svirt_image_t",
                       0, 0, 0, 1023);
 
+    virObjectUnref(mgr);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libsecurityselinuxhelper.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libsecurityselinuxhelper.so")

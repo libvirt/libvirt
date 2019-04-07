@@ -27,8 +27,8 @@ module Virtlockd =
    let logging_entry = int_entry "log_level"
                      | str_entry "log_filters"
                      | str_entry "log_outputs"
-                     | int_entry "log_buffer_size"
                      | int_entry "max_clients"
+                     | int_entry "admin_max_clients"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = logging_entry

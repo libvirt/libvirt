@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Virtual machine lock manager, virtlockd plugin</h1>
@@ -12,7 +12,7 @@
       plugin for virtual machine disk mutual exclusion.
     </p>
 
-    <h2><a name="background">virtlockd background</a></h2>
+    <h2><a id="background">virtlockd background</a></h2>
 
     <p>
       The virtlockd daemon is a single purpose binary which
@@ -26,7 +26,7 @@
       commonly used filesystems.
     </p>
 
-    <h2><a name="sanlock">virtlockd daemon setup</a></h2>
+    <h2><a id="sanlock">virtlockd daemon setup</a></h2>
 
     <p>
       In most OS, the virtlockd daemon itself will not require
@@ -53,7 +53,7 @@
       setup at all.
     </p>
 
-    <h2><a name="lockdplugin">libvirt lockd plugin configuration</a></h2>
+    <h2><a id="lockdplugin">libvirt lockd plugin configuration</a></h2>
 
     <p>
       Once the virtlockd daemon is running, or setup to autostart,
@@ -127,7 +127,7 @@ $ su - root
       the same locking mechanism
     </p>
 
-    <h2><a name="qemuconfig">QEMU/KVM driver configuration</a></h2>
+    <h2><a id="qemuconfig">QEMU/KVM driver configuration</a></h2>
 
     <p>
       The QEMU driver is capable of using the virtlockd plugin

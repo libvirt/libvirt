@@ -35,19 +35,24 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+#define VIR_PORT_ALLOCATOR_NUM_PORTS 65536
+
+typedef struct _virPortAllocator virPortAllocator;
+typedef virPortAllocator *virPortAllocatorPtr;
 struct _virPortAllocator {
     virObjectLockable parent;
     virBitmapPtr bitmap;
+};
 
+struct _virPortAllocatorRange {
     char *name;
 
     unsigned short start;
     unsigned short end;
-
-    unsigned int flags;
 };
 
 static virClassPtr virPortAllocatorClass;
+static virPortAllocatorPtr virPortAllocatorInstance;
 
 static void
 virPortAllocatorDispose(void *obj)
@@ -55,28 +60,45 @@ virPortAllocatorDispose(void *obj)
     virPortAllocatorPtr pa = obj;
 
     virBitmapFree(pa->bitmap);
-    VIR_FREE(pa->name);
 }
 
-static int virPortAllocatorOnceInit(void)
+static virPortAllocatorPtr
+virPortAllocatorNew(void)
 {
-    if (!(virPortAllocatorClass = virClassNew(virClassForObjectLockable(),
-                                              "virPortAllocator",
-                                              sizeof(virPortAllocator),
-                                              virPortAllocatorDispose)))
+    virPortAllocatorPtr pa;
+
+    if (!(pa = virObjectLockableNew(virPortAllocatorClass)))
+        return NULL;
+
+    if (!(pa->bitmap = virBitmapNew(VIR_PORT_ALLOCATOR_NUM_PORTS)))
+        goto error;
+
+    return pa;
+ error:
+    virObjectUnref(pa);
+    return NULL;
+}
+
+static int
+virPortAllocatorOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(virPortAllocator, virClassForObjectLockable()))
+        return -1;
+
+    if (!(virPortAllocatorInstance = virPortAllocatorNew()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virPortAllocator)
+VIR_ONCE_GLOBAL_INIT(virPortAllocator);
 
-virPortAllocatorPtr virPortAllocatorNew(const char *name,
-                                        unsigned short start,
-                                        unsigned short end,
-                                        unsigned int flags)
+virPortAllocatorRangePtr
+virPortAllocatorRangeNew(const char *name,
+                         unsigned short start,
+                         unsigned short end)
 {
-    virPortAllocatorPtr pa;
+    virPortAllocatorRangePtr range;
 
     if (start >= end) {
         virReportInvalidArg(start, "start port %d must be less than end port %d",
@@ -84,28 +106,36 @@ virPortAllocatorPtr virPortAllocatorNew(const char *name,
         return NULL;
     }
 
-    if (virPortAllocatorInitialize() < 0)
+    if (VIR_ALLOC(range) < 0)
         return NULL;
 
-    if (!(pa = virObjectLockableNew(virPortAllocatorClass)))
-        return NULL;
+    range->start = start;
+    range->end = end;
 
-    pa->flags = flags;
-    pa->start = start;
-    pa->end = end;
+    if (VIR_STRDUP(range->name, name) < 0)
+        goto error;
 
-    if (!(pa->bitmap = virBitmapNew((end-start)+1)) ||
-        VIR_STRDUP(pa->name, name) < 0) {
-        virObjectUnref(pa);
-        return NULL;
-    }
+    return range;
 
-    return pa;
+ error:
+    virPortAllocatorRangeFree(range);
+    return NULL;
 }
 
-static int virPortAllocatorBindToPort(bool *used,
-                                      unsigned short port,
-                                      int family)
+void
+virPortAllocatorRangeFree(virPortAllocatorRangePtr range)
+{
+    if (!range)
+        return;
+
+    VIR_FREE(range->name);
+    VIR_FREE(range);
+}
+
+static int
+virPortAllocatorBindToPort(bool *used,
+                           unsigned short port,
+                           int family)
 {
     struct sockaddr_in6 addr6 = {
         .sin6_family = AF_INET6,
@@ -172,31 +202,43 @@ static int virPortAllocatorBindToPort(bool *used,
     return ret;
 }
 
-int virPortAllocatorAcquire(virPortAllocatorPtr pa,
-                            unsigned short *port)
+static virPortAllocatorPtr
+virPortAllocatorGet(void)
+{
+    if (virPortAllocatorInitialize() < 0)
+        return NULL;
+
+    return virPortAllocatorInstance;
+}
+
+int
+virPortAllocatorAcquire(const virPortAllocatorRange *range,
+                        unsigned short *port)
 {
     int ret = -1;
     size_t i;
+    virPortAllocatorPtr pa = virPortAllocatorGet();
 
     *port = 0;
+
+    if (!pa)
+        return -1;
+
     virObjectLock(pa);
 
-    for (i = pa->start; i <= pa->end && !*port; i++) {
+    for (i = range->start; i <= range->end && !*port; i++) {
         bool used = false, v6used = false;
 
-        if (virBitmapIsBitSet(pa->bitmap, i - pa->start))
+        if (virBitmapIsBitSet(pa->bitmap, i))
             continue;
 
-        if (!(pa->flags & VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK)) {
-            if (virPortAllocatorBindToPort(&v6used, i, AF_INET6) < 0 ||
-                virPortAllocatorBindToPort(&used, i, AF_INET) < 0)
-                goto cleanup;
-        }
+        if (virPortAllocatorBindToPort(&v6used, i, AF_INET6) < 0 ||
+            virPortAllocatorBindToPort(&used, i, AF_INET) < 0)
+            goto cleanup;
 
         if (!used && !v6used) {
             /* Add port to bitmap of reserved ports */
-            if (virBitmapSetBit(pa->bitmap,
-                                i - pa->start) < 0) {
+            if (virBitmapSetBit(pa->bitmap, i) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to reserve port %zu"), i);
                 goto cleanup;
@@ -209,32 +251,28 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
     if (*port == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to find an unused port in range '%s' (%d-%d)"),
-                       pa->name, pa->start, pa->end);
+                       range->name, range->start, range->end);
     }
  cleanup:
     virObjectUnlock(pa);
     return ret;
 }
 
-int virPortAllocatorRelease(virPortAllocatorPtr pa,
-                            unsigned short port)
+int
+virPortAllocatorRelease(unsigned short port)
 {
     int ret = -1;
+    virPortAllocatorPtr pa = virPortAllocatorGet();
+
+    if (!pa)
+        return -1;
 
     if (!port)
         return 0;
 
     virObjectLock(pa);
 
-    if (port < pa->start ||
-        port > pa->end) {
-        virReportInvalidArg(port, "port %d must be in range (%d, %d)",
-                            port, pa->start, pa->end);
-        goto cleanup;
-    }
-
-    if (virBitmapClearBit(pa->bitmap,
-                          port - pa->start) < 0) {
+    if (virBitmapClearBit(pa->bitmap, port) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to release port %d"),
                        port);
@@ -247,35 +285,25 @@ int virPortAllocatorRelease(virPortAllocatorPtr pa,
     return ret;
 }
 
-int virPortAllocatorSetUsed(virPortAllocatorPtr pa,
-                            unsigned short port,
-                            bool value)
+int
+virPortAllocatorSetUsed(unsigned short port)
 {
     int ret = -1;
+    virPortAllocatorPtr pa = virPortAllocatorGet();
+
+    if (!pa)
+        return -1;
+
+    if (!port)
+        return 0;
 
     virObjectLock(pa);
 
-    if (port < pa->start ||
-        port > pa->end) {
-        ret = 0;
+    if (virBitmapIsBitSet(pa->bitmap, port) ||
+        virBitmapSetBit(pa->bitmap, port) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to reserve port %d"), port);
         goto cleanup;
-    }
-
-    if (value) {
-        if (virBitmapIsBitSet(pa->bitmap, port - pa->start) ||
-            virBitmapSetBit(pa->bitmap, port - pa->start) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to reserve port %d"), port);
-            goto cleanup;
-        }
-    } else {
-        if (virBitmapClearBit(pa->bitmap,
-                              port - pa->start) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to release port %d"),
-                           port);
-            goto cleanup;
-        }
     }
 
     ret = 0;

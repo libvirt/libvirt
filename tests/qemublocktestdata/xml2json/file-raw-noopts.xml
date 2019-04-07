@@ -1,0 +1,12 @@
+<disk device='disk'>
+  <driver name='qemu' type='raw'/>
+  <source file='/var/lib/libvirt/images/i.img'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='0123456789ABCDEF0123456789ABCDE'/>
+        <nodename type='format' name='0123456789ABCDEF0123456789ABCDE'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <target dev='vda'/>
+</disk>

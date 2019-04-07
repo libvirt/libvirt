@@ -11,12 +11,11 @@
 # Document usage with uninstalled daemon and libs. Assuming CWD is toplevel
 # source git directory, it should be only slight modification to the following:
 #
-#     ./run stap --ldd -c daemon/libvirtd -d daemon/libvirtd
+#     ./run stap --ldd -c src/libvirtd -d src/libvirtd
 #       examples/systemtap/lock-debug.stp src/.libs/libvirt.so
 #
 # Debug RWLock mechanisms as well.
 #
-# Author: Martin Kletzander <mkletzan@redhat.com>
 
 
 global mx_tolock

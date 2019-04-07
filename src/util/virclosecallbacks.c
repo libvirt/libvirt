@@ -16,10 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Daniel P. Berrange <berrange@redhat.com>
- *      Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -53,18 +49,13 @@ static void virCloseCallbacksDispose(void *obj);
 
 static int virCloseCallbacksOnceInit(void)
 {
-    virCloseCallbacksClass = virClassNew(virClassForObjectLockable(),
-                                         "virCloseCallbacks",
-                                         sizeof(virCloseCallbacks),
-                                         virCloseCallbacksDispose);
-
-    if (!virCloseCallbacksClass)
+    if (!VIR_CLASS_NEW(virCloseCallbacks, virClassForObjectLockable()))
         return -1;
-    else
-        return 0;
+
+    return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virCloseCallbacks)
+VIR_ONCE_GLOBAL_INIT(virCloseCallbacks);
 
 
 virCloseCallbacksPtr
@@ -331,8 +322,10 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
 
     virObjectLock(closeCallbacks);
     list = virCloseCallbacksGetForConn(closeCallbacks, conn);
-    if (!list)
+    if (!list) {
+        virObjectUnlock(closeCallbacks);
         return;
+    }
 
     for (i = 0; i < list->nentries; i++) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -344,6 +337,7 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
     for (i = 0; i < list->nentries; i++) {
         virDomainObjPtr vm;
 
+        /* Grab a ref and lock to the vm */
         if (!(vm = virDomainObjListFindByUUID(domains,
                                               list->entries[i].uuid))) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -352,9 +346,14 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
             continue;
         }
 
-        vm = list->entries[i].callback(vm, conn, opaque);
-        if (vm)
-            virObjectUnlock(vm);
+        /* Remove the ref taken out during virCloseCallbacksSet since
+         * we're about to call the callback function and we have another
+         * ref anyway (so it cannot be deleted).
+         *
+         * Call the callback function and end the API usage. */
+        virObjectUnref(vm);
+        list->entries[i].callback(vm, conn, opaque);
+        virDomainObjEndAPI(&vm);
     }
     VIR_FREE(list->entries);
     VIR_FREE(list);

@@ -52,27 +52,30 @@ struct _virNetSASLSession {
 
 static virClassPtr virNetSASLContextClass;
 static virClassPtr virNetSASLSessionClass;
+static void virNetSASLContextDispose(void *obj);
 static void virNetSASLSessionDispose(void *obj);
 
 static int virNetSASLContextOnceInit(void)
 {
-    if (!(virNetSASLContextClass = virClassNew(virClassForObjectLockable(),
-                                               "virNetSASLContext",
-                                               sizeof(virNetSASLContext),
-                                               NULL)))
+    if (!VIR_CLASS_NEW(virNetSASLContext, virClassForObjectLockable()))
         return -1;
 
-    if (!(virNetSASLSessionClass = virClassNew(virClassForObjectLockable(),
-                                               "virNetSASLSession",
-                                               sizeof(virNetSASLSession),
-                                               virNetSASLSessionDispose)))
+    if (!VIR_CLASS_NEW(virNetSASLSession, virClassForObjectLockable()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetSASLContext)
+VIR_ONCE_GLOBAL_INIT(virNetSASLContext);
 
+/* Apple have annotated all SASL functions as deprecated for
+ * unknown reasons. Since they still work, lets just ignore
+ * the warnings. If Apple finally delete the SASL functions
+ * our configure check should already catch that
+ */
+#ifdef __APPLE__
+VIR_WARNINGS_NO_DEPRECATED
+#endif
 
 virNetSASLContextPtr virNetSASLContextNewClient(void)
 {
@@ -390,6 +393,12 @@ char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
                        err, sasl_errdetail(sasl->conn));
         goto cleanup;
     }
+    VIR_DEBUG("SASL mechanism list is '%s'", mechlist);
+    if (STREQ(mechlist, "")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no SASL mechanisms are available"));
+        goto cleanup;
+    }
     ignore_value(VIR_STRDUP(ret, mechlist));
 
  cleanup:
@@ -672,6 +681,11 @@ ssize_t virNetSASLSessionDecode(virNetSASLSessionPtr sasl,
     return ret;
 }
 
+void virNetSASLContextDispose(void *obj ATTRIBUTE_UNUSED)
+{
+    return;
+}
+
 void virNetSASLSessionDispose(void *obj)
 {
     virNetSASLSessionPtr sasl = obj;
@@ -680,3 +694,7 @@ void virNetSASLSessionDispose(void *obj)
         sasl_dispose(&sasl->conn);
     VIR_FREE(sasl->callbacks);
 }
+
+#ifdef __APPLE__
+VIR_WARNINGS_RESET
+#endif

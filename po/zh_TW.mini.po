@@ -1,0 +1,1016 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Cheng-Chia Tseng <pswo10680@gmail.com>, 2012.
+# Chester Cheng <ccheng@redhat.com>, 2006, 2007.
+# Daniel  <veillard@redhat.com>, 2011.
+# Cheng-Chia Tseng <pswo10680@gmail.com>, 2018. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2018-09-10 04:24+0000\n"
+"Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/libvirt/"
+"language/zh_TW/)\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  描述\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  選項\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"（時間：%.3f 毫秒)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  名稱\n"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s：%d：無法分配 %d 位元組"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s：%d：無法分配 %lu 位元組"
+
+msgid "(re)connect to hypervisor"
+msgstr "（重新）連至 hypervisor"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <number>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <string>"
+
+msgid "Autostart"
+msgstr "自動啟動"
+
+msgid "CPU Affinity:"
+msgstr "處理器的同屬："
+
+msgid "CPU frequency:"
+msgstr "處理器的頻率："
+
+msgid "CPU model:"
+msgstr "處理器類型："
+
+msgid "CPU socket(s):"
+msgstr "處理器的插槽："
+
+msgid "CPU time:"
+msgstr "處理器時間："
+
+msgid "CPU(s):"
+msgstr "處理器數目："
+
+msgid "CPU:"
+msgstr "處理器："
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "無法解開執行中 %s hypervisor 的版本\n"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "改變客端區域中，目前的記憶體分配。"
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "改變客端區域的最大記憶體分配限制。"
+
+msgid "Configure a domain to be automatically started at boot."
+msgstr "將區域設定為開機時自動啟動。"
+
+msgid "Configure a network to be automatically started at boot."
+msgstr "將網路設定為開機時自動啟動。"
+
+msgid "Connect the virtual serial console for the guest"
+msgstr "透過虛擬序列埠主控台，連接用戶端"
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr "連上本機的 hypervisor。這是 shell 啟動後的內建指令。"
+
+msgid "Core dump a domain."
+msgstr "傾印一個區域的核心。"
+
+msgid "Core(s) per socket:"
+msgstr "每個插槽的核心："
+
+#, c-format
+msgid "Could not destroy domain: %s"
+msgstr "無法消止區域：%s"
+
+msgid "Create a domain."
+msgstr "建立區域。"
+
+msgid "Create a network."
+msgstr "建立網路。"
+
+msgid "Define a domain."
+msgstr "定義區域。"
+
+msgid ""
+"Destroy a device on the node.  Note that this command destroys devices on "
+"the physical host"
+msgstr "消止節點上的裝置。請注意到這個指令會消止實體主機上的裝置"
+
+msgid "Destroyed"
+msgstr "已強制關閉"
+
+#, c-format
+msgid "Destroyed node device '%s'\n"
+msgstr "已消止「%s」節點裝置\n"
+
+msgid "Display the system version information."
+msgstr "顯示系統版本的資訊。"
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "區域 %s 建立自 %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "區域 %s 定義自 %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr " %s 區域已強制關閉\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "區域 %s 已經取消定義\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "區域 %s 正在重新開機中\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "區域 %s 正在執行關機\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "區域 %s 已經繼續執行\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "區域 %s 已開啟\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "區域 %s 已經暫停\n"
+
+msgid "Domain autodestroy requires a connection handle"
+msgstr "區域自動消止需要連線處理"
+
+msgid "Domain is already active"
+msgstr "區域已經啟動"
+
+msgid "Domain is already running"
+msgstr "區域已經啟動"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "從 %s 回復區域\n"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "無法將區域 %s 的核心傾印至 %s"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "無法從 %s 建立區域"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "無法從 %s 建立網路"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "無法從 %s 定義區域"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "無法從 %s 定義網路"
+
+#, c-format
+msgid "Failed to destroy bridge interface %s"
+msgstr "無法消止 %s 橋接介面"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "無法讓 %s 區域強制關閉"
+
+#, c-format
+msgid "Failed to destroy domain '%d'"
+msgstr "無法消止區域「%d」"
+
+#, c-format
+msgid "Failed to destroy interface %s"
+msgstr "無法消止 %s 介面"
+
+#, c-format
+msgid "Failed to destroy network %s"
+msgstr "無法消止 %s 網路"
+
+#, c-format
+msgid "Failed to destroy node device '%s'"
+msgstr "無法消止「%s」節點裝置"
+
+#, c-format
+msgid "Failed to destroy pool %s"
+msgstr "無法消止 %s 集池"
+
+msgid "Failed to list active domains"
+msgstr "無法列出運作中的區域"
+
+msgid "Failed to list active networks"
+msgstr "無法列出運作中的網路"
+
+msgid "Failed to list inactive domains"
+msgstr "無法列出非作用中的區域"
+
+msgid "Failed to list inactive networks"
+msgstr "無法列出非作用中的網路"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "無法重新啟動區域 %s"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "無法從 %s 回復區域"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "無法繼續區域 %s"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "無法將區域 %s 存至 %s"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "無法關上區域 %s"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "無法開啟區域 %s"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "無法開啟網路 %s"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "無法暫停區域 %s"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "無法為區域 %s 取消定義"
+
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "無法為網路 %s 取消定義"
+
+msgid "GET operation failed"
+msgstr "GET 操作失敗"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "GET 操作失敗：%s"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+#, c-format
+msgid "Interface %s destroyed\n"
+msgstr "已消止 %s 介面\n"
+
+msgid "Max memory:"
+msgstr "最大記憶體："
+
+msgid "Memory size:"
+msgstr "記憶體大小："
+
+msgid "NUMA cell(s):"
+msgstr "NUMA cell："
+
+msgid "Name"
+msgstr "名稱"
+
+msgid "Name:"
+msgstr "名稱："
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "網路 %s 建立自 %s\n"
+
+#, c-format
+msgid "Network %s defined from %s\n"
+msgstr "網路 %s 定義自 %s\n"
+
+#, c-format
+msgid "Network %s destroyed\n"
+msgstr "已經消止 %s 網路\n"
+
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "網路 %s 已經取消定義\n"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "網路 %s 已開啟\n"
+
+msgid "No error message provided"
+msgstr "無法提供錯誤訊息"
+
+msgid "OS Type:"
+msgstr "作業系統類型："
+
+msgid "Only x509 certificates are supported"
+msgstr "僅支援 x509 憑證"
+
+msgid "POST operation failed"
+msgstr "POST 操作失敗"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "POST 操作失敗：%s"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "讓區域 VCPU 符合主機的實際處理器。"
+
+#, c-format
+msgid "Pool %s destroyed\n"
+msgstr "%s 集池已消止\n"
+
+msgid "Restore a domain."
+msgstr "回復區域。"
+
+msgid "Resume a previously suspended domain."
+msgstr "繼續一項先前暫停的區域。"
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "傳回區域的虛擬處理器之基本資訊。"
+
+msgid "Returns basic information about the domain."
+msgstr "傳回區域的相關資訊。"
+
+msgid "Returns basic information about the node."
+msgstr "傳回節點的基本資訊。"
+
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "傳回 hypervisor 或驅動程式的能力。"
+
+msgid "Returns list of domains."
+msgstr "傳回區域清單。"
+
+msgid "Returns list of networks."
+msgstr "傳回網路清單。"
+
+msgid "Run a reboot command in the target domain."
+msgstr "在目標區域中執行重新開機指令。"
+
+msgid "Run shutdown in the target domain."
+msgstr "在目標區域執行關機。"
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "執行 hypervisor：%s %d.%d.%d\n"
+
+msgid ""
+"Save and destroy a running domain, so it can be restarted from\n"
+"    the same state at a later time.  When the virsh 'start'\n"
+"    command is next run for the domain, it will automatically\n"
+"    be started from this saved state."
+msgstr ""
+"儲存並消止區域，讓它可以在之後以\n"
+"    相同狀態重新啟動。當該區域下次\n"
+"    執行 virsh 'start' 指令時，它會自動\n"
+"    以這個儲存的狀態啟動。"
+
+msgid "Start a network."
+msgstr "啟動一個網路。"
+
+msgid "State"
+msgstr "狀態"
+
+msgid "State:"
+msgstr "狀態："
+
+msgid "Suspend a running domain."
+msgstr "暫停執行中的區域。"
+
+msgid "Thread(s) per core:"
+msgstr "每個核心的執行續："
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"類型：  「help」以取得指令的求助畫面\n"
+"        「quit」離開\n"
+"\n"
+
+msgid "UUID:"
+msgstr "UUID："
+
+#, c-format
+msgid "Unable to destroy Storage Pool: %s"
+msgstr "無法消止儲藏集池：%s"
+
+msgid "Unable to initialize certificate"
+msgstr "無法初始化憑證"
+
+msgid "Unable to load certificate"
+msgstr "無法載入憑證"
+
+msgid "Used memory:"
+msgstr "已使用的記憶體："
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "使用 API：%s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "VCPU："
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"歡迎使用 %s - 虛擬化的互動模式終端機。\n"
+"\n"
+
+msgid "active"
+msgstr "啟用"
+
+msgid "authentication required"
+msgstr "需要通過認證"
+
+msgid "automatically destroy the guest when virsh disconnects"
+msgstr "virsh 中斷連線時自動消止客端"
+
+msgid "autostart a domain"
+msgstr "自動啟動一個區域"
+
+msgid "autostart a network"
+msgstr "自動啟動網路"
+
+msgid "cannot abort incoming migration; use virDomainDestroy instead"
+msgstr "無法中止移入的遷移；請改用 virDomainDestroy"
+
+msgid "cannot initialize condition variable"
+msgstr "無法初始化條件變數"
+
+msgid "cannot initialize mutex"
+msgstr "無法初始化 mutex"
+
+msgid "cannot parse vbd filename, missing driver name"
+msgstr "無法解析 vbd 檔名，找不到驅動程式名稱"
+
+msgid "cannot parse vbd filename, missing driver type"
+msgstr "無法解析 vbd 檔名，找不到驅動程式類型"
+
+msgid "capabilities"
+msgstr "能力"
+
+msgid "change maximum memory limit"
+msgstr "改變最大記憶體的限制"
+
+msgid "change memory allocation"
+msgstr "改變記憶體分配"
+
+msgid "change number of virtual CPUs"
+msgstr "改變虛擬處理器的數量"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "「%s」指令並不支援 --%s 選項"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "「%s」指令需要 --%s 選項"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "「%s」指令需要 <%s> 選項"
+
+msgid "configuration file syntax error"
+msgstr "設定檔語法錯誤"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "設定檔語法錯誤：%s"
+
+msgid "connect to the guest console"
+msgstr "連接客端主控台"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "將區域 id 或 UUID 轉為區域名稱"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "將區域名稱或 UUID 轉為區域 ID"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "將區域名稱或 ID 轉為 UUID"
+
+msgid "convert a network UUID to network name"
+msgstr "將網路 id 或 UUID 轉為網路名稱"
+
+msgid "convert a network name to network UUID"
+msgstr "將網路名稱轉為網路 UUID"
+
+msgid "could not connect to Xen Store"
+msgstr "無法連上 Xen Store"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "無法連上 Xen Store %s"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "無法使用 Xen hypervisor 項目"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "無法使用 Xen hypervisor 項目 %s"
+
+msgid "crashed"
+msgstr "當機"
+
+msgid "create a domain from an XML file"
+msgstr "從 XML 檔案建立區域"
+
+msgid "create a network from an XML file"
+msgstr "從 XML 檔案建立網路"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "從 XML 檔案定義（但不啟動）區域"
+
+msgid "destroy (stop) a device on the node"
+msgstr "消止（停止）節點上的裝置"
+
+msgid "destroy (stop) a domain"
+msgstr "消止（停止）區域"
+
+msgid "destroy (stop) a network"
+msgstr "消止（停止）網路"
+
+msgid "destroy (stop) a pool"
+msgstr "消止（停止）集池"
+
+msgid "destroy a physical host interface (disable it / \"if-down\")"
+msgstr "消止實體主機介面（停用 / \"if-down\"）"
+
+msgid "destroyed"
+msgstr "已強制關閉"
+
+msgid "disable autostarting"
+msgstr "停用自動啟動"
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "區域 %s 已經存在"
+
+msgid "domain id or name"
+msgstr "區域 ID 或名稱"
+
+msgid "domain id or uuid"
+msgstr "區域 id 或 uuid"
+
+msgid "domain information"
+msgstr "區域資訊"
+
+msgid "domain information in XML"
+msgstr "XML 格式的區域資訊"
+
+msgid "domain information incomplete, missing name"
+msgstr "區域的資訊不全，沒有名稱"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "區域的資訊不全，vbd 沒有 dev"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "區域的資訊不全，vbd 沒有 src"
+
+msgid "domain is marked for auto destroy"
+msgstr "區域已標記要自動消止"
+
+msgid "domain name or uuid"
+msgstr "區域名稱或 uuid"
+
+msgid "domain state"
+msgstr "區域狀態"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "將一個區域的核心傾印到檔案中，以供分析用"
+
+msgid "error"
+msgstr "錯誤"
+
+#, c-format
+msgid "error destroying network device %s"
+msgstr "消止網路裝置 %s 時發生錯誤"
+
+msgid "error: "
+msgstr "錯誤："
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "語法：--%s <%s>"
+
+msgid "expecting a name"
+msgstr "預期的是名稱"
+
+msgid "expecting a separator"
+msgstr "預期的是分隔子"
+
+msgid "expecting a separator in list"
+msgstr "預期的是清單式的分隔子"
+
+msgid "expecting a value"
+msgstr "預期的是數值"
+
+msgid "expecting an assignment"
+msgstr "預期的是指定子"
+
+msgid "failed to connect to the hypervisor"
+msgstr "無法連上 hypervisor"
+
+#, c-format
+msgid "failed to destroy (stop) interface %s: %s%s%s"
+msgstr "無法消止（停止）%s 介面：%s%s%s"
+
+msgid "failed to get capabilities"
+msgstr "無法取得能力方面的資訊"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "無法取得區域「%s」"
+
+msgid "failed to get domain UUID"
+msgstr "無法取得區域 UUID"
+
+msgid "failed to get hypervisor type"
+msgstr "無法取得 hypervisor 類型"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "無法取得網路「%s」"
+
+msgid "failed to get network UUID"
+msgstr "無法取得網路 UUID"
+
+msgid "failed to get node information"
+msgstr "無法取得節點資訊"
+
+msgid "failed to get the hypervisor version"
+msgstr "無法取得 hypervisor 的版本"
+
+msgid "failed to get the library version"
+msgstr "無法取得函式庫的版本"
+
+msgid "failed to open file"
+msgstr "無法開啟檔案"
+
+msgid "failed to parse configuration file"
+msgstr "無法解析設定檔"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "無法解析設定檔 %s"
+
+msgid "failed to read configuration file"
+msgstr "無法讀取設定檔"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "無法讀取設定檔 %s"
+
+msgid "failed to save content"
+msgstr "無法存入內容"
+
+msgid "failed to serialize S-Expr"
+msgstr "無法為 S-Expr 製作序列號"
+
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "無法為 S-Expr 製作序列號：%s"
+
+msgid "failed to write configuration file"
+msgstr "無法寫入設定檔"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "無法寫入設定檔：%s"
+
+msgid "file containing an XML network description"
+msgstr "包含 XML 網路描述的檔案"
+
+msgid "getting time of day"
+msgstr "讀取當天的時間"
+
+msgid "gracefully shutdown a domain"
+msgstr "以正確方法讓區域停機"
+
+msgid "hypervisor connection URI"
+msgstr "hypervisor 連線的 URI"
+
+msgid "in shutdown"
+msgstr "關機中"
+
+msgid "inactive"
+msgstr "非啟用中"
+
+msgid "internal error"
+msgstr "內部錯誤"
+
+msgid "invalid connection pointer in"
+msgstr "無效的連線指標，於 "
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "無效的連線指標，於 %s"
+
+msgid "invalid domain pointer in"
+msgstr "無效的區域指標，於 "
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "無效的區域指標，於 %s"
+
+msgid "invalid network pointer in"
+msgstr "無效的網路指標，於 "
+
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "無效的網路指標，於 %s"
+
+msgid "list domains"
+msgstr "列出區域"
+
+msgid "list inactive & active domains"
+msgstr "列出作用中與非作用中的區域"
+
+msgid "list inactive & active networks"
+msgstr "列出作用中與非作用中的網路"
+
+msgid "list inactive domains"
+msgstr "列出非作用中的區域"
+
+msgid "list inactive networks"
+msgstr "列出非作用中的網路"
+
+msgid "list networks"
+msgstr "列出網路"
+
+msgid "missing \""
+msgstr "找不到 \""
+
+msgid "missing devices information"
+msgstr "找不到裝置的資訊"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "找不到 %s 的裝置資訊"
+
+msgid "missing kernel information"
+msgstr "找不到核心資訊"
+
+msgid "missing operating system information"
+msgstr "找不到作業系統資訊"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "找不到 %s 的作業系統資訊"
+
+msgid "missing root device information"
+msgstr "找不到 root 裝置的資訊"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "找不到 root 裝置的資訊，於 %s"
+
+msgid "missing source information for device"
+msgstr "找不到裝置的來源資訊"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "找不到裝置 %s 的來源資訊"
+
+msgid "missing target information for device"
+msgstr "找不到裝置的目標資訊"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "找不到 %s 裝置的目標資訊"
+
+msgid "name of the inactive domain"
+msgstr "非作用中區域的名稱"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "網路 %s 已經存在"
+
+msgid "network information in XML"
+msgstr "XML 格式的網路資訊"
+
+msgid "network name"
+msgstr "網路名稱"
+
+msgid "network name or uuid"
+msgstr "網路名稱或 uuid"
+
+msgid "network uuid"
+msgstr "網路 uuid"
+
+msgid "no autostart"
+msgstr "不自動啟動"
+
+msgid "no limit"
+msgstr "沒有限制"
+
+msgid "no state"
+msgstr "無狀態"
+
+msgid "no valid connection"
+msgstr "沒有有效的連線"
+
+msgid "node information"
+msgstr "節點資訊"
+
+msgid "number"
+msgstr "數量"
+
+msgid "number of virtual CPUs"
+msgstr "虛擬處理器的數量"
+
+msgid "offline"
+msgstr "離線"
+
+msgid "operation failed"
+msgstr "操作失敗"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "操作失敗：%s"
+
+msgid "operation forbidden for read only access"
+msgstr "唯讀時，禁止這操作"
+
+msgid "out of memory"
+msgstr "記憶體不足"
+
+msgid "parser error"
+msgstr "解析程式錯誤"
+
+msgid "paused"
+msgstr "已暫停"
+
+msgid "print help"
+msgstr "列印求助訊息"
+
+msgid "quit this interactive terminal"
+msgstr "離開這互動式的終端機"
+
+msgid "read-only connection"
+msgstr "唯讀的連線"
+
+msgid "reboot a domain"
+msgstr "重新啟動區域"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "從檔案中的儲存狀態回復區域"
+
+msgid "resume a domain"
+msgstr "繼續執行區域"
+
+msgid "running"
+msgstr "執行中"
+
+msgid "save a domain state to a file"
+msgstr "將區域狀態存至檔案"
+
+msgid "show version"
+msgstr "顯示版本"
+
+msgid "shut off"
+msgstr "關機"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "開啟（先前定義的）非作用中區域"
+
+msgid "start a (previously defined) inactive network"
+msgstr "開啟（先前定義的）非作用中網路"
+
+msgid "string"
+msgstr "字串"
+
+msgid "suspend a domain"
+msgstr "暫停區域"
+
+msgid "system call error"
+msgstr "系統呼叫錯誤"
+
+msgid "the state to restore"
+msgstr "要回復的狀態"
+
+msgid "this domain exists already"
+msgstr "這個區域已經存在"
+
+msgid "this network exists already"
+msgstr "這個網路已經存在"
+
+msgid "too many drivers registered"
+msgstr "註冊太多驅動程式"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "在 %s 中註冊太多驅動程式"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "無預期的資料「%s」"
+
+msgid "unknown OS type"
+msgstr "未知的作業系統類型"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "未知的作業系統類型 %s"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "未知的指令：「%s」"
+
+msgid "unknown host"
+msgstr "未知的主機"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "未知的主機 %s"
+
+#, c-format
+msgid "unknown procedure: %d"
+msgstr "未知處理程序：%d"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "不支援的選項「-%c」。請參閱 --help。"
+
+msgid "unterminated number"
+msgstr "未中止的數量"
+
+msgid "unterminated string"
+msgstr "未中止的字串"
+
+msgid "vcpu number"
+msgstr "vcpu 數量"
+
+#, c-format
+msgid "version mismatch (actual %x, expected %x)"
+msgstr "版本不符 (實際 %x，預期 %x)"
+
+msgid "vnc display"
+msgstr "vnc 顯示"
+
+msgid "warning"
+msgstr "警告"
+
+msgid "where to dump the core"
+msgstr "將核心傾印至何處"
+
+msgid "where to save the data"
+msgstr "將資料存至何處"

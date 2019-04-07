@@ -16,10 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 #include <config.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "security_driver.h"
 #include "security_stack.h"
@@ -28,6 +30,7 @@
 #include "viralloc.h"
 #include "virobject.h"
 #include "virlog.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -59,10 +62,7 @@ void virSecurityManagerDispose(void *obj)
 static int
 virSecurityManagerOnceInit(void)
 {
-    if (!(virSecurityManagerClass = virClassNew(virClassForObjectLockable(),
-                                                "virSecurityManagerClass",
-                                                sizeof(virSecurityManager),
-                                                virSecurityManagerDispose)))
+    if (!VIR_CLASS_NEW(virSecurityManager, virClassForObjectLockable()))
         return -1;
 
     return 0;
@@ -76,13 +76,13 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
                             const char *virtDriver,
                             unsigned int flags)
 {
-    virSecurityManagerPtr mgr;
-    char *privateData;
+    virSecurityManagerPtr mgr = NULL;
+    char *privateData = NULL;
 
     if (virSecurityManagerInitialize() < 0)
         return NULL;
 
-    VIR_DEBUG("drv=%p (%s) virtDriver=%s flags=%x",
+    VIR_DEBUG("drv=%p (%s) virtDriver=%s flags=0x%x",
               drv, drv->name, virtDriver, flags);
 
     virCheckFlags(VIR_SECURITY_MANAGER_NEW_MASK, NULL);
@@ -90,22 +90,22 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
     if (VIR_ALLOC_N(privateData, drv->privateDataLen) < 0)
         return NULL;
 
-    if (!(mgr = virObjectLockableNew(virSecurityManagerClass))) {
-        VIR_FREE(privateData);
-        return NULL;
-    }
+    if (!(mgr = virObjectLockableNew(virSecurityManagerClass)))
+        goto error;
 
     mgr->drv = drv;
     mgr->flags = flags;
     mgr->virtDriver = virtDriver;
-    mgr->privateData = privateData;
+    VIR_STEAL_PTR(mgr->privateData, privateData);
 
-    if (drv->open(mgr) < 0) {
-        virObjectUnref(mgr);
-        return NULL;
-    }
+    if (drv->open(mgr) < 0)
+        goto error;
 
     return mgr;
+ error:
+    VIR_FREE(privateData);
+    virObjectUnref(mgr);
+    return NULL;
 }
 
 
@@ -120,9 +120,13 @@ virSecurityManagerNewStack(virSecurityManagerPtr primary)
     if (!mgr)
         return NULL;
 
-    virSecurityStackAddNested(mgr, primary);
+    if (virSecurityStackAddNested(mgr, primary) < 0)
+        goto error;
 
     return mgr;
+ error:
+    virObjectUnref(mgr);
+    return NULL;
 }
 
 
@@ -146,7 +150,8 @@ virSecurityManagerNewDAC(const char *virtDriver,
     virSecurityManagerPtr mgr;
 
     virCheckFlags(VIR_SECURITY_MANAGER_NEW_MASK |
-                  VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP, NULL);
+                  VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP |
+                  VIR_SECURITY_MANAGER_MOUNT_NAMESPACE, NULL);
 
     mgr = virSecurityManagerNewDriver(&virSecurityDriverDAC,
                                       virtDriver,
@@ -161,6 +166,7 @@ virSecurityManagerNewDAC(const char *virtDriver,
     }
 
     virSecurityDACSetDynamicOwnership(mgr, flags & VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP);
+    virSecurityDACSetMountNamespace(mgr, flags & VIR_SECURITY_MANAGER_MOUNT_NAMESPACE);
     virSecurityDACSetChownCallback(mgr, chownCallback);
 
     return mgr;
@@ -235,6 +241,83 @@ virSecurityManagerPostFork(virSecurityManagerPtr mgr)
     virObjectUnlock(mgr);
 }
 
+
+/**
+ * virSecurityManagerTransactionStart:
+ * @mgr: security manager
+ *
+ * Starts a new transaction. In transaction nothing is changed security
+ * label until virSecurityManagerTransactionCommit() is called.
+ *
+ * Returns 0 on success,
+ *        -1 otherwise.
+ */
+int
+virSecurityManagerTransactionStart(virSecurityManagerPtr mgr)
+{
+    int ret = 0;
+
+    virObjectLock(mgr);
+    if (mgr->drv->transactionStart)
+        ret = mgr->drv->transactionStart(mgr);
+    virObjectUnlock(mgr);
+    return ret;
+}
+
+
+/**
+ * virSecurityManagerTransactionCommit:
+ * @mgr: security manager
+ * @pid: domain's PID
+ * @lock: lock and unlock paths that are relabeled
+ *
+ * If @pid is not -1 then enter the @pid namespace (usually @pid refers
+ * to a domain) and perform all the operations on the transaction list.
+ * If @pid is -1 then the transaction is performed in the namespace of
+ * the caller.
+ *
+ * If @lock is true then all the paths that transaction would
+ * touch are locked before and unlocked after it is done so.
+ *
+ * Note that the transaction is also freed, therefore new one has to be
+ * started after successful return from this function. Also it is
+ * considered as error if there's no transaction set and this function
+ * is called.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+int
+virSecurityManagerTransactionCommit(virSecurityManagerPtr mgr,
+                                    pid_t pid,
+                                    bool lock)
+{
+    int ret = 0;
+
+    virObjectLock(mgr);
+    if (mgr->drv->transactionCommit)
+        ret = mgr->drv->transactionCommit(mgr, pid, lock);
+    virObjectUnlock(mgr);
+    return ret;
+}
+
+
+/**
+ * virSecurityManagerTransactionAbort:
+ * @mgr: security manager
+ *
+ * Cancels and frees any out standing transaction.
+ */
+void
+virSecurityManagerTransactionAbort(virSecurityManagerPtr mgr)
+{
+    virObjectLock(mgr);
+    if (mgr->drv->transactionAbort)
+        mgr->drv->transactionAbort(mgr);
+    virObjectUnlock(mgr);
+}
+
+
 void *
 virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
 {
@@ -299,13 +382,6 @@ virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr,
 
 
 bool
-virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr)
-{
-    return mgr->flags & VIR_SECURITY_MANAGER_ALLOW_DISK_PROBE;
-}
-
-
-bool
 virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr)
 {
     return mgr->flags & VIR_SECURITY_MANAGER_DEFAULT_CONFINED;
@@ -327,53 +403,26 @@ virSecurityManagerGetPrivileged(virSecurityManagerPtr mgr)
 
 
 /**
- * virSecurityManagerRestoreDiskLabel:
- * @mgr: security manager object
- * @vm: domain definition object
- * @disk: disk definition to operate on
- *
- * Removes security label from the source image of the disk. Note that this
- * function doesn't restore labels on backing chain elements of @disk.
- *
- * Returns: 0 on success, -1 on error.
- */
-int
-virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr vm,
-                                   virDomainDiskDefPtr disk)
-{
-    if (mgr->drv->domainRestoreSecurityDiskLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityDiskLabel(mgr, vm, disk);
-        virObjectUnlock(mgr);
-        return ret;
-    }
-
-    virReportUnsupportedError();
-    return -1;
-}
-
-
-/**
  * virSecurityManagerRestoreImageLabel:
  * @mgr: security manager object
  * @vm: domain definition object
  * @src: disk source definition to operate on
+ * @flags: bitwise or of 'virSecurityDomainImageLabelFlags'
  *
- * Removes security label from a single storage image.
+ * Removes security label from @src according to @flags.
  *
  * Returns: 0 on success, -1 on error.
  */
 int
 virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
                                    virDomainDefPtr vm,
-                                   virStorageSourcePtr src)
+                                   virStorageSourcePtr src,
+                                   virSecurityDomainImageLabelFlags flags)
 {
     if (mgr->drv->domainRestoreSecurityImageLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityImageLabel(mgr, vm, src);
+        ret = mgr->drv->domainRestoreSecurityImageLabel(mgr, vm, src, flags);
         virObjectUnlock(mgr);
         return ret;
     }
@@ -435,53 +484,26 @@ virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
 
 
 /**
- * virSecurityManagerSetDiskLabel:
- * @mgr: security manager object
- * @vm: domain definition object
- * @disk: disk definition to operate on
- *
- * Labels the disk image and all images in the backing chain with the configured
- * security label.
- *
- * Returns: 0 on success, -1 on error.
- */
-int
-virSecurityManagerSetDiskLabel(virSecurityManagerPtr mgr,
-                               virDomainDefPtr vm,
-                               virDomainDiskDefPtr disk)
-{
-    if (mgr->drv->domainSetSecurityDiskLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityDiskLabel(mgr, vm, disk);
-        virObjectUnlock(mgr);
-        return ret;
-    }
-
-    virReportUnsupportedError();
-    return -1;
-}
-
-
-/**
  * virSecurityManagerSetImageLabel:
  * @mgr: security manager object
  * @vm: domain definition object
  * @src: disk source definition to operate on
+ * @flags: bitwise or of 'virSecurityDomainImageLabelFlags'
  *
- * Labels a single storage image with the configured security label.
+ * Labels a storage image with the configured security label according to @flags.
  *
  * Returns: 0 on success, -1 on error.
  */
 int
 virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr vm,
-                                virStorageSourcePtr src)
+                                virStorageSourcePtr src,
+                                virSecurityDomainImageLabelFlags flags)
 {
     if (mgr->drv->domainSetSecurityImageLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityImageLabel(mgr, vm, src);
+        ret = mgr->drv->domainSetSecurityImageLabel(mgr, vm, src, flags);
         virObjectUnlock(mgr);
         return ret;
     }
@@ -582,31 +604,33 @@ virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
     for (i = 0; sec_managers[i]; i++) {
         generated = false;
         seclabel = virDomainDefGetSecurityLabelDef(vm, sec_managers[i]->drv->name);
-        if (!seclabel) {
-            if (!(seclabel = virSecurityLabelDefNew(sec_managers[i]->drv->name)))
-                goto cleanup;
-            generated = seclabel->implicit = true;
-        }
-
-        if (seclabel->type == VIR_DOMAIN_SECLABEL_DEFAULT) {
-            if (virSecurityManagerGetDefaultConfined(sec_managers[i])) {
-                seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
-            } else {
-                seclabel->type = VIR_DOMAIN_SECLABEL_NONE;
-                seclabel->relabel = false;
-            }
-        }
-
-        if (seclabel->type == VIR_DOMAIN_SECLABEL_NONE) {
-            if (virSecurityManagerGetRequireConfined(sec_managers[i])) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Unconfined guests are not allowed on this host"));
-                goto cleanup;
-            } else if (vm->nseclabels && generated) {
-                VIR_DEBUG("Skipping auto generated seclabel of type none");
-                virSecurityLabelDefFree(seclabel);
-                seclabel = NULL;
+        if (seclabel == NULL) {
+            /* Only generate seclabel if confinement is enabled */
+            if (!virSecurityManagerGetDefaultConfined(sec_managers[i])) {
+                VIR_DEBUG("Skipping auto generated seclabel");
                 continue;
+            } else {
+                if (!(seclabel = virSecurityLabelDefNew(sec_managers[i]->drv->name)))
+                    goto cleanup;
+                generated = seclabel->implicit = true;
+                seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+            }
+        } else {
+            if (seclabel->type == VIR_DOMAIN_SECLABEL_DEFAULT) {
+                if (virSecurityManagerGetDefaultConfined(sec_managers[i])) {
+                    seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+                } else {
+                    seclabel->type = VIR_DOMAIN_SECLABEL_NONE;
+                    seclabel->relabel = false;
+                }
+            }
+
+            if (seclabel->type == VIR_DOMAIN_SECLABEL_NONE) {
+                if (virSecurityManagerGetRequireConfined(sec_managers[i])) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Unconfined guests are not allowed on this host"));
+                    goto cleanup;
+                }
             }
         }
 
@@ -743,8 +767,8 @@ virSecurityManagerCheckChardevLabel(virSecurityManagerPtr mgr,
 {
     size_t i;
 
-    for (i = 0; i < dev->nseclabels; i++) {
-        if (virSecurityManagerCheckModel(mgr, dev->seclabels[i]->model) < 0)
+    for (i = 0; i < dev->source->nseclabels; i++) {
+        if (virSecurityManagerCheckModel(mgr, dev->source->seclabels[i]->model) < 0)
             return -1;
     }
 
@@ -788,12 +812,14 @@ int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
 int
 virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr vm,
-                              const char *stdin_path)
+                              const char *stdin_path,
+                              bool chardevStdioLogd)
 {
     if (mgr->drv->domainSetSecurityAllLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityAllLabel(mgr, vm, stdin_path);
+        ret = mgr->drv->domainSetSecurityAllLabel(mgr, vm, stdin_path,
+                                                  chardevStdioLogd);
         virObjectUnlock(mgr);
         return ret;
     }
@@ -806,12 +832,14 @@ virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
 int
 virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr vm,
-                                  bool migrated)
+                                  bool migrated,
+                                  bool chardevStdioLogd)
 {
     if (mgr->drv->domainRestoreSecurityAllLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityAllLabel(mgr, vm, migrated);
+        ret = mgr->drv->domainRestoreSecurityAllLabel(mgr, vm, migrated,
+                                                      chardevStdioLogd);
         virObjectUnlock(mgr);
         return ret;
     }
@@ -969,18 +997,353 @@ virSecurityManagerGetNested(virSecurityManagerPtr mgr)
 }
 
 
+/**
+ * virSecurityManagerDomainSetPathLabel:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @path: path to label
+ * @allowSubtree: whether to allow just @path or its subtree too
+ *
+ * This function relabels given @path so that @vm can access it.
+ * If @allowSubtree is set to true the manager will grant access
+ * to @path and its subdirectories at any level (currently
+ * implemented only by AppArmor).
+ *
+ * Returns: 0 on success, -1 on error.
+ */
 int
 virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr vm,
-                                     const char *path)
+                                     const char *path,
+                                     bool allowSubtree)
 {
     if (mgr->drv->domainSetPathLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainSetPathLabel(mgr, vm, path);
+        ret = mgr->drv->domainSetPathLabel(mgr, vm, path, allowSubtree);
         virObjectUnlock(mgr);
         return ret;
     }
 
     return 0;
+}
+
+
+/**
+ * virSecurityManagerSetMemoryLabel:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @mem: memory module to operate on
+ *
+ * Labels the host part of a memory module.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+virSecurityManagerSetMemoryLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr vm,
+                                     virDomainMemoryDefPtr mem)
+{
+    if (mgr->drv->domainSetSecurityMemoryLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSecurityMemoryLabel(mgr, vm, mem);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+/**
+ * virSecurityManagerRestoreMemoryLabel:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @mem: memory module to operate on
+ *
+ * Removes security label from the host part of a memory module.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+virSecurityManagerRestoreMemoryLabel(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr vm,
+                                        virDomainMemoryDefPtr mem)
+{
+    if (mgr->drv->domainRestoreSecurityMemoryLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSecurityMemoryLabel(mgr, vm, mem);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+int
+virSecurityManagerSetInputLabel(virSecurityManagerPtr mgr,
+                                virDomainDefPtr vm,
+                                virDomainInputDefPtr input)
+{
+    if (mgr->drv->domainSetSecurityInputLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSecurityInputLabel(mgr, vm, input);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+int
+virSecurityManagerRestoreInputLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm,
+                                    virDomainInputDefPtr input)
+{
+    if (mgr->drv->domainRestoreSecurityInputLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSecurityInputLabel(mgr, vm, input);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+int
+virSecurityManagerSetChardevLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr def,
+                                  virDomainChrSourceDefPtr dev_source,
+                                  bool chardevStdioLogd)
+{
+    if (mgr->drv->domainSetSecurityChardevLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSecurityChardevLabel(mgr, def, dev_source,
+                                                      chardevStdioLogd);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+int
+virSecurityManagerRestoreChardevLabel(virSecurityManagerPtr mgr,
+                                      virDomainDefPtr def,
+                                      virDomainChrSourceDefPtr dev_source,
+                                      bool chardevStdioLogd)
+{
+    if (mgr->drv->domainRestoreSecurityChardevLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSecurityChardevLabel(mgr, def, dev_source,
+                                                          chardevStdioLogd);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+int
+virSecurityManagerSetTPMLabels(virSecurityManagerPtr mgr,
+                               virDomainDefPtr vm)
+{
+    int ret;
+
+    if (mgr->drv->domainSetSecurityTPMLabels) {
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSecurityTPMLabels(mgr, vm);
+        virObjectUnlock(mgr);
+
+        return ret;
+    }
+
+    return 0;
+}
+
+
+int
+virSecurityManagerRestoreTPMLabels(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr vm)
+{
+    int ret;
+
+    if (mgr->drv->domainRestoreSecurityTPMLabels) {
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSecurityTPMLabels(mgr, vm);
+        virObjectUnlock(mgr);
+
+        return ret;
+    }
+
+    return 0;
+}
+
+
+struct _virSecurityManagerMetadataLockState {
+    size_t nfds;
+    int *fds;
+};
+
+
+static int
+cmpstringp(const void *p1, const void *p2)
+{
+    const char *s1 = *(char * const *) p1;
+    const char *s2 = *(char * const *) p2;
+
+    if (!s1 && !s2)
+        return 0;
+
+    if (!s1 || !s2)
+        return s2 ? -1 : 1;
+
+    /* from man 3 qsort */
+    return strcmp(s1, s2);
+}
+
+#define METADATA_OFFSET 1
+#define METADATA_LEN 1
+
+/**
+ * virSecurityManagerMetadataLock:
+ * @mgr: security manager object
+ * @paths: paths to lock
+ * @npaths: number of items in @paths array
+ *
+ * Lock passed @paths for metadata change. The returned state
+ * should be passed to virSecurityManagerMetadataUnlock.
+ *
+ * NOTE: this function is not thread safe (because of usage of
+ * POSIX locks).
+ *
+ * Returns: state on success,
+ *          NULL on failure.
+ */
+virSecurityManagerMetadataLockStatePtr
+virSecurityManagerMetadataLock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                               const char **paths,
+                               size_t npaths)
+{
+    size_t i = 0;
+    size_t nfds = 0;
+    int *fds = NULL;
+    virSecurityManagerMetadataLockStatePtr ret = NULL;
+
+    if (VIR_ALLOC_N(fds, npaths) < 0)
+        return NULL;
+
+    /* Sort paths to lock in order to avoid deadlocks. */
+    qsort(paths, npaths, sizeof(*paths), cmpstringp);
+
+    for (i = 0; i < npaths; i++) {
+        const char *p = paths[i];
+        struct stat sb;
+        int retries = 10 * 1000;
+        int fd;
+
+        if (!p || stat(p, &sb) < 0)
+            continue;
+
+        if (S_ISDIR(sb.st_mode)) {
+            /* Directories can't be locked */
+            continue;
+        }
+
+        if ((fd = open(p, O_RDWR)) < 0) {
+            if (S_ISSOCK(sb.st_mode)) {
+                /* Sockets can be opened only if there exists the
+                 * other side that listens. */
+                continue;
+            }
+
+            virReportSystemError(errno,
+                                 _("unable to open %s"),
+                                 p);
+            goto cleanup;
+        }
+
+        do {
+            if (virFileLock(fd, false,
+                            METADATA_OFFSET, METADATA_LEN, false) < 0) {
+                if (retries && (errno == EACCES || errno == EAGAIN)) {
+                    /* File is locked. Try again. */
+                    retries--;
+                    usleep(1000);
+                    continue;
+                } else {
+                    virReportSystemError(errno,
+                                         _("unable to lock %s for metadata change"),
+                                         p);
+                    VIR_FORCE_CLOSE(fd);
+                    goto cleanup;
+                }
+            }
+
+            break;
+        } while (1);
+
+        VIR_APPEND_ELEMENT_COPY_INPLACE(fds, nfds, fd);
+    }
+
+    if (VIR_ALLOC(ret) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret->fds, fds);
+    ret->nfds = nfds;
+    nfds = 0;
+
+ cleanup:
+    for (i = nfds; i > 0; i--)
+        VIR_FORCE_CLOSE(fds[i - 1]);
+    VIR_FREE(fds);
+    return ret;
+}
+
+
+void
+virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                 virSecurityManagerMetadataLockStatePtr *state)
+{
+    size_t i;
+
+    if (!state)
+        return;
+
+    for (i = 0; i < (*state)->nfds; i++) {
+        char ebuf[1024];
+        int fd = (*state)->fds[i];
+
+        /* Technically, unlock is not needed because it will
+         * happen on VIR_CLOSE() anyway. But let's play it nice. */
+        if (virFileUnlock(fd, METADATA_OFFSET, METADATA_LEN) < 0) {
+            VIR_WARN("Unable to unlock fd %d: %s",
+                     fd, virStrerror(errno, ebuf, sizeof(ebuf)));
+        }
+
+        if (VIR_CLOSE(fd) < 0) {
+            VIR_WARN("Unable to close fd %d: %s",
+                     fd, virStrerror(errno, ebuf, sizeof(ebuf)));
+        }
+    }
+
+    VIR_FREE((*state)->fds);
+    VIR_FREE(*state);
 }

@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -69,12 +67,12 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST_LINK(ifname, state, speed)                                 \
-    do {                                                                    \
-        struct testVirNetDevGetLinkInfoData data = {ifname, state, speed};  \
-        if (virTestRun("Link info: " # ifname,                              \
-                       testVirNetDevGetLinkInfo, &data) < 0)                \
-            ret = -1;                                                       \
+# define DO_TEST_LINK(ifname, state, speed) \
+    do { \
+        struct testVirNetDevGetLinkInfoData data = {ifname, state, speed}; \
+        if (virTestRun("Link info: " # ifname, \
+                       testVirNetDevGetLinkInfo, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_LINK("eth0", VIR_NETDEV_IF_STATE_UP, 1000);
@@ -84,7 +82,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetdevmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetdevmock.so")
 #else
 int
 main(void)

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _LIBVIR_SEXPR_H_
-# define _LIBVIR_SEXPR_H_
+#ifndef LIBVIRT_VIRSEXPR_H
+# define LIBVIRT_VIRSEXPR_H
 
 # include "internal.h"
 # include "virbuffer.h"
@@ -66,4 +66,4 @@ int sexpr_int(const struct sexpr *sexpr, const char *name);
 double sexpr_float(const struct sexpr *sexpr, const char *name);
 uint64_t sexpr_u64(const struct sexpr *sexpr, const char *name);
 
-#endif
+#endif /* LIBVIRT_VIRSEXPR_H */

@@ -18,10 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Anthony Liguori <aliguori@us.ibm.com>
- * Author: Daniel Veillard <veillard@redhat.com>
- * Author: Markus Groß <gross@univention.de>
  */
 
 #include <config.h>
@@ -70,11 +66,6 @@ int xenGetDomIdFromSxpr(const struct sexpr *root, int *id)
     return 0;
 }
 
-/*****************************************************************
- ******
- ****** Parsing of S-Expression into virDomainDef objects
- ******
- *****************************************************************/
 
 /**
  * xenParseSxprOS:
@@ -745,7 +736,7 @@ xenParseSxprSound(virDomainDefPtr def,
                 len = (offset2 - offset);
             else
                 len = strlen(offset);
-            if (virStrncpy(model, offset, len, sizeof(model)) == NULL) {
+            if (virStrncpy(model, offset, len, sizeof(model)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Sound model %s too big for destination"),
                                offset);
@@ -1110,7 +1101,7 @@ xenParseSxprPCI(virDomainDefPtr def,
             goto error;
         }
 
-        if (!(dev = virDomainHostdevDefAlloc(NULL)))
+        if (!(dev = virDomainHostdevDefNew()))
            goto error;
 
         dev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
@@ -1245,35 +1236,35 @@ xenParseSxpr(const struct sexpr *root,
 
     tmp = sexpr_node(root, "domain/on_poweroff");
     if (tmp != NULL) {
-        if ((def->onPoweroff = virDomainLifecycleTypeFromString(tmp)) < 0) {
+        if ((def->onPoweroff = virDomainLifecycleActionTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown lifecycle type %s"), tmp);
             goto error;
         }
     } else {
-        def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+        def->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     }
 
     tmp = sexpr_node(root, "domain/on_reboot");
     if (tmp != NULL) {
-        if ((def->onReboot = virDomainLifecycleTypeFromString(tmp)) < 0) {
+        if ((def->onReboot = virDomainLifecycleActionTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown lifecycle type %s"), tmp);
             goto error;
         }
     } else {
-        def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
+        def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     }
 
     tmp = sexpr_node(root, "domain/on_crash");
     if (tmp != NULL) {
-        if ((def->onCrash = virDomainLifecycleCrashTypeFromString(tmp)) < 0) {
+        if ((def->onCrash = virDomainLifecycleActionTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown lifecycle type %s"), tmp);
             goto error;
         }
     } else {
-        def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
+        def->onCrash = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     }
 
     if (hvm) {
@@ -1661,24 +1652,18 @@ xenFormatSxprChr(virDomainChrDefPtr def,
                           (def->source->data.tcp.protocol
                            == VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW ?
                            "tcp" : "telnet"),
-                          (def->source->data.tcp.host ?
-                           def->source->data.tcp.host : ""),
-                          (def->source->data.tcp.service ?
-                           def->source->data.tcp.service : ""),
+                          NULLSTR_EMPTY(def->source->data.tcp.host),
+                          NULLSTR_EMPTY(def->source->data.tcp.service),
                           (def->source->data.tcp.listen ?
                            ",server,nowait" : ""));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
         virBufferAsprintf(buf, "%s:%s:%s@%s:%s", type,
-                          (def->source->data.udp.connectHost ?
-                           def->source->data.udp.connectHost : ""),
-                          (def->source->data.udp.connectService ?
-                           def->source->data.udp.connectService : ""),
-                          (def->source->data.udp.bindHost ?
-                           def->source->data.udp.bindHost : ""),
-                          (def->source->data.udp.bindService ?
-                           def->source->data.udp.bindService : ""));
+                          NULLSTR_EMPTY(def->source->data.udp.connectHost),
+                          NULLSTR_EMPTY(def->source->data.udp.connectService),
+                          NULLSTR_EMPTY(def->source->data.udp.bindHost),
+                          NULLSTR_EMPTY(def->source->data.udp.bindService));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -1708,7 +1693,7 @@ xenFormatSxprChr(virDomainChrDefPtr def,
  * @hvm: true or 1 if domain is HVM
  * @isAttach: create expression for device attach (1).
  *
- * Convert the disk device part of the domain config into a S-expresssion in buf.
+ * Convert the disk device part of the domain config into a S-expression in buf.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -1970,7 +1955,7 @@ xenFormatSxprNet(virConnectPtr conn,
  * @def: the device config
  * @buf: a buffer for the result S-expression
  *
- * Convert a single PCI device part of the domain config into a S-expresssion in buf.
+ * Convert a single PCI device part of the domain config into a S-expression in buf.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -1992,7 +1977,7 @@ xenFormatSxprPCI(virDomainHostdevDefPtr def,
  * @buf: a buffer for the result S-expression
  * @detach: create expression for device detach (1).
  *
- * Convert a single PCI device part of the domain config into a S-expresssion in buf.
+ * Convert a single PCI device part of the domain config into a S-expression in buf.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -2024,7 +2009,7 @@ xenFormatSxprOnePCI(virDomainHostdevDefPtr def,
  * @def: the domain config
  * @buf: a buffer for the result S-expression
  *
- * Convert all PCI device parts of the domain config into a S-expresssion in buf.
+ * Convert all PCI device parts of the domain config into a S-expression in buf.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -2214,21 +2199,21 @@ xenFormatSxpr(virConnectPtr conn, virDomainDefPtr def)
             virBufferEscapeSexpr(&buf, "(bootloader_args '%s')", def->os.bootloaderArgs);
     }
 
-    if (!(tmp = virDomainLifecycleTypeToString(def->onPoweroff))) {
+    if (!(tmp = virDomainLifecycleActionTypeToString(def->onPoweroff))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected lifecycle value %d"), def->onPoweroff);
         goto error;
     }
     virBufferAsprintf(&buf, "(on_poweroff '%s')", tmp);
 
-    if (!(tmp = virDomainLifecycleTypeToString(def->onReboot))) {
+    if (!(tmp = virDomainLifecycleActionTypeToString(def->onReboot))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected lifecycle value %d"), def->onReboot);
         goto error;
     }
     virBufferAsprintf(&buf, "(on_reboot '%s')", tmp);
 
-    if (!(tmp = virDomainLifecycleCrashTypeToString(def->onCrash))) {
+    if (!(tmp = virDomainLifecycleActionTypeToString(def->onCrash))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected lifecycle value %d"), def->onCrash);
         goto error;

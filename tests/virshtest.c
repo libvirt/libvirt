@@ -1,7 +1,5 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <string.h>
 #include <unistd.h>
 
 #include "internal.h"
@@ -44,18 +42,18 @@ static const char *domstate_fc4 = "running\n\n";
 static int testFilterLine(char *buffer,
                           const char *toRemove)
 {
-  char *start;
-  char *end;
+    char *start;
+    char *end;
 
-  if (!(start = strstr(buffer, toRemove)))
-    return -1;
+    if (!(start = strstr(buffer, toRemove)))
+      return -1;
 
-  if (!(end = strstr(start+1, "\n"))) {
-    *start = '\0';
-  } else {
-    memmove(start, end, strlen(end)+1);
-  }
-  return 0;
+    if (!(end = strstr(start+1, "\n"))) {
+      *start = '\0';
+    } else {
+      memmove(start, end, strlen(end)+1);
+    }
+    return 0;
 }
 
 static int
@@ -84,43 +82,43 @@ testCompareOutputLit(const char *expectData,
     return result;
 }
 
-# define VIRSH_DEFAULT     "../tools/virsh", \
+# define VIRSH_DEFAULT abs_top_builddir "/tools/virsh", \
     "--connect", \
     "test:///default"
 
 static char *custom_uri;
 
-# define VIRSH_CUSTOM     "../tools/virsh", \
+# define VIRSH_CUSTOM  abs_top_builddir "/tools/virsh", \
     "--connect", \
     custom_uri
 
 static int testCompareListDefault(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_DEFAULT, "list", NULL };
-  const char *exp = "\
- Id    Name                           State\n\
-----------------------------------------------------\n\
- 1     test                           running\n\
+    const char *const argv[] = { VIRSH_DEFAULT, "list", NULL };
+    const char *exp = "\
+ Id   Name   State\n\
+----------------------\n\
+ 1    test   running\n\
 \n";
-  return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareListCustom(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "list", NULL };
-  const char *exp = "\
- Id    Name                           State\n\
-----------------------------------------------------\n\
- 1     fv0                            running\n\
- 2     fc4                            running\n\
+    const char *const argv[] = { VIRSH_CUSTOM, "list", NULL };
+    const char *exp = "\
+ Id   Name   State\n\
+----------------------\n\
+ 1    fv0    running\n\
+ 2    fc4    running\n\
 \n";
-  return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareNodeinfoDefault(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_DEFAULT, "nodeinfo", NULL };
-  const char *exp = "\
+    const char *const argv[] = { VIRSH_DEFAULT, "nodeinfo", NULL };
+    const char *exp = "\
 CPU model:           i686\n\
 CPU(s):              16\n\
 CPU frequency:       1400 MHz\n\
@@ -130,17 +128,17 @@ Thread(s) per core:  2\n\
 NUMA cell(s):        2\n\
 Memory size:         3145728 KiB\n\
 \n";
-  return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareNodeinfoCustom(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = {
-    VIRSH_CUSTOM,
-    "nodeinfo",
-    NULL
-  };
-  const char *exp = "\
+    const char *const argv[] = {
+        VIRSH_CUSTOM,
+        "nodeinfo",
+        NULL
+    };
+    const char *exp = "\
 CPU model:           i986\n\
 CPU(s):              50\n\
 CPU frequency:       6000 MHz\n\
@@ -150,91 +148,91 @@ Thread(s) per core:  2\n\
 NUMA cell(s):        4\n\
 Memory size:         8192000 KiB\n\
 \n";
-  return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDominfoByID(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "2", NULL };
-  const char *exp = dominfo_fc4;
-  return testCompareOutputLit(exp, "\nCPU time:", argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "2", NULL };
+    const char *exp = dominfo_fc4;
+    return testCompareOutputLit(exp, "\nCPU time:", argv);
 }
 
 static int testCompareDominfoByUUID(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "dominfo", DOM_UUID, NULL };
-  const char *exp = dominfo_fc4;
-  return testCompareOutputLit(exp, "\nCPU time:", argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", DOM_UUID, NULL };
+    const char *exp = dominfo_fc4;
+    return testCompareOutputLit(exp, "\nCPU time:", argv);
 }
 
 static int testCompareDominfoByName(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc4", NULL };
-  const char *exp = dominfo_fc4;
-  return testCompareOutputLit(exp, "\nCPU time:", argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc4", NULL };
+    const char *exp = dominfo_fc4;
+    return testCompareOutputLit(exp, "\nCPU time:", argv);
 }
 
 static int testCompareDomuuidByID(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "2", NULL };
-  const char *exp = domuuid_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "2", NULL };
+    const char *exp = domuuid_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDomuuidByName(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "fc4", NULL };
-  const char *exp = domuuid_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "fc4", NULL };
+    const char *exp = domuuid_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDomidByName(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domid", "fc4", NULL };
-  const char *exp = domid_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domid", "fc4", NULL };
+    const char *exp = domid_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDomidByUUID(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domid", DOM_UUID, NULL };
-  const char *exp = domid_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domid", DOM_UUID, NULL };
+    const char *exp = domid_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDomnameByID(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domname", "2", NULL };
-  const char *exp = domname_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domname", "2", NULL };
+    const char *exp = domname_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDomnameByUUID(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domname", DOM_UUID, NULL };
-  const char *exp = domname_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domname", DOM_UUID, NULL };
+    const char *exp = domname_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDomstateByID(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domstate", "2", NULL };
-  const char *exp = domstate_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domstate", "2", NULL };
+    const char *exp = domstate_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDomstateByUUID(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domstate", DOM_UUID, NULL };
-  const char *exp = domstate_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domstate", DOM_UUID, NULL };
+    const char *exp = domstate_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED)
 {
-  const char *const argv[] = { VIRSH_CUSTOM, "domstate", "fc4", NULL };
-  const char *exp = domstate_fc4;
-  return testCompareOutputLit(exp, NULL, argv);
+    const char *const argv[] = { VIRSH_CUSTOM, "domstate", "fc4", NULL };
+    const char *exp = domstate_fc4;
+    return testCompareOutputLit(exp, NULL, argv);
 }
 
 struct testInfo {
@@ -324,13 +322,13 @@ mymain(void)
 
     /* It's a bit awkward listing result before argument, but that's a
      * limitation of C99 vararg macros.  */
-# define DO_TEST(i, result, ...)                                        \
-    do {                                                                \
-        const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL };    \
-        const struct testInfo info = { myargv, result };                \
-        if (virTestRun("virsh echo " #i,                                \
-                       testCompareEcho, &info) < 0)                     \
-            ret = -1;                                                   \
+# define DO_TEST(i, result, ...) \
+    do { \
+        const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL }; \
+        const struct testInfo info = { myargv, result }; \
+        if (virTestRun("virsh echo " #i, \
+                       testCompareEcho, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     /* Arg parsing quote removal tests.  */
@@ -413,12 +411,26 @@ mymain(void)
     DO_TEST(34, "hello\n", "echo --str hello");
     DO_TEST(35, "hello\n", "echo --hi");
 
+    /* Tests of multiple commands.  */
+    DO_TEST(36, "a\nb\n", " echo a; echo b;");
+    DO_TEST(37, "a\nb\n", "\necho a\n echo b\n");
+    DO_TEST(38, "a\nb\n", "ec\\\nho a\n echo \\\n b;");
+    DO_TEST(39, "a\n b\n", "\"ec\\\nho\" a\n echo \"\\\n b\";");
+    DO_TEST(40, "a\n\\\n b\n", "ec\\\nho a\n echo '\\\n b';");
+    DO_TEST(41, "a\n", "echo a # b");
+    DO_TEST(42, "a\nc\n", "echo a #b\necho c");
+    DO_TEST(43, "a\nc\n", "echo a # b\\\necho c");
+    DO_TEST(44, "a # b\n", "echo a '#' b");
+    DO_TEST(45, "a # b\n", "echo a \\# b");
+    DO_TEST(46, "a\n", "#unbalanced; 'quotes\"\necho a # b");
+    DO_TEST(47, "a\n", "\\# ignored;echo a\n'#also' ignored");
+
 # undef DO_TEST
 
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #endif /* WIN32 */

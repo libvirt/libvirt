@@ -16,11 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
-
-#include <config.h>
 
 #include <errno.h>
 #include <getopt.h>
@@ -33,6 +29,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <inttypes.h>
 
 static bool debug;
 static bool run_top;
@@ -42,7 +39,7 @@ static bool run_top;
  *
  *  CC       domtop.o
  *domtop.c:40:0: warning: "ERROR" redefined [enabled by default]
- * #define ERROR(...)                                              \
+ * #define ERROR(...) \
  * ^
  *In file included from /usr/i686-w64-mingw32/sys-root/mingw/include/windows.h:71:0,
  *                 from /usr/i686-w64-mingw32/sys-root/mingw/include/winsock2.h:23,
@@ -52,20 +49,20 @@ static bool run_top;
  * #define ERROR 0
  */
 #undef ERROR
-#define ERROR(...)                                              \
-do {                                                            \
-    fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__);  \
-    fprintf(stderr, __VA_ARGS__);                               \
-    fprintf(stderr, "\n");                                      \
+#define ERROR(...) \
+do { \
+    fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
 } while (0)
 
-#define DEBUG(...)                                              \
-do {                                                            \
-    if (!debug)                                                 \
-        break;                                                  \
-    fprintf(stderr, "DEBUG %s:%d : ", __FUNCTION__, __LINE__);  \
-    fprintf(stderr, __VA_ARGS__);                               \
-    fprintf(stderr, "\n");                                      \
+#define DEBUG(...) \
+do { \
+    if (!debug) \
+        break; \
+    fprintf(stderr, "DEBUG %s:%d : ", __FUNCTION__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
 } while (0)
 
 #define STREQ(a, b) (strcmp(a, b) == 0)
@@ -189,8 +186,7 @@ fetch_domains(virConnectPtr conn)
 }
 
 static void
-print_cpu_usage(const char *dom_name,
-                size_t cpu,
+print_cpu_usage(size_t cpu,
                 size_t ncpus,
                 unsigned long long then,
                 virTypedParameterPtr then_params,
@@ -230,8 +226,11 @@ print_cpu_usage(const char *dom_name,
             return;
         }
 
-        DEBUG("now_params=%llu then_params=%llu now=%llu then=%llu",
-              now_params[pos].value.ul, then_params[pos].value.ul, now, then);
+        DEBUG("now_params=%" PRIu64 " then_params=%" PRIu64
+              " now=%" PRIu64 " then=%" PRIu64,
+              (uint64_t)now_params[pos].value.ul,
+              (uint64_t)then_params[pos].value.ul,
+              (uint64_t)now, (uint64_t)then);
 
         /* @now_params and @then_params are in nanoseconds, @now and @then are
          * in microseconds. In ideal world, we would translate them both into
@@ -245,7 +244,8 @@ print_cpu_usage(const char *dom_name,
 
         if (delim)
             printf("\t");
-        printf("CPU%zu: %.2lf", cpu + i, usage);
+        /* mingw lacks %zu */
+        printf("CPU%u: %.2lf", (unsigned)(cpu + i), usage);
         delim = true;
     }
 
@@ -269,10 +269,6 @@ do_top(virConnectPtr conn,
     int max_id = 0;
     int nparams = 0, then_nparams = 0, now_nparams = 0;
     virTypedParameterPtr then_params = NULL, now_params = NULL;
-    struct sigaction action_stop;
-
-    memset(&action_stop, 0, sizeof(action_stop));
-    action_stop.sa_handler = stop;
 
     /* Lookup the domain */
     if (!(dom = virDomainLookupByName(conn, dom_name))) {
@@ -298,8 +294,10 @@ do_top(virConnectPtr conn,
         goto cleanup;
     }
 
-    sigaction(SIGTERM, &action_stop, NULL);
-    sigaction(SIGINT, &action_stop, NULL);
+    /* The ideal program would use sigaction to set this handler, but
+     * this way is portable to mingw. */
+    signal(SIGTERM, stop);
+    signal(SIGINT, stop);
 
     run_top = true;
     while (run_top) {
@@ -334,7 +332,7 @@ do_top(virConnectPtr conn,
             goto cleanup;
         }
 
-        print_cpu_usage(dom_name, 0, max_id,
+        print_cpu_usage(0, max_id,
                         then.tv_sec * 1000000 + then.tv_usec,
                         then_params, then_nparams,
                         now.tv_sec * 1000000 + now.tv_usec,

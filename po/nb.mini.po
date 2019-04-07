@@ -1,0 +1,470 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel  <veillard@redhat.com>, 2011.
+# Espen Stefansen <espenas@gmail.com>, 2007.
+# Kjartan Maraas <kmaraas@gnome.org>, 2007.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-24 05:43+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Norwegian Bokmål (http://www.transifex.com/projects/p/fedora/"
+"language/nb/)\n"
+"Language: nb\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  BESKRIVELSE\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  VALG\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Tid: %.3f ms)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  NAVN\n"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "  %s <nummer>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <streng>"
+
+msgid "CPU frequency:"
+msgstr "CPU-frekvens:"
+
+msgid "CPU model:"
+msgstr "CPU-modell:"
+
+msgid "CPU time:"
+msgstr "CPU-tid:"
+
+msgid "CPU(s):"
+msgstr "CPU(er):"
+
+msgid "CPU:"
+msgstr "CPU:"
+
+msgid "Create a domain."
+msgstr "Opprett et domene."
+
+msgid "Create a network."
+msgstr "Opprett et nettverk."
+
+msgid "Define a domain."
+msgstr "Definer et domene."
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "Domene %s opprettet fra %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Domenet %s definert fra %s\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "Domenet %s er startet\n"
+
+msgid "Domain is already active"
+msgstr "Domenet er allerede aktivt"
+
+msgid "Domain is already running"
+msgstr "Domenet kjører allerede"
+
+msgid "Domain not found"
+msgstr "Domene ikke funnet"
+
+#, c-format
+msgid "Domain not found: %s"
+msgstr "Domene ikke funnet: %s"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Kunne ikke opprette domenet fra %s"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Kunne ikke definere domenet fra %s"
+
+msgid "Failed to list active domains"
+msgstr "Kunne ikke vise aktive domener"
+
+msgid "Failed to list active networks"
+msgstr "Kunne ikke vise aktive nettverk"
+
+msgid "Failed to list inactive domains"
+msgstr "Kunne ikke vise inaktive domener"
+
+msgid "Failed to list inactive networks"
+msgstr "Kunne ikke vise inaktive nettverk"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Kunne ikke lagre domenet %s til %s"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Kunne ikke starte domenet %s"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Kunne ikke starte nettverket %s"
+
+msgid "GET operation failed"
+msgstr "GET-operasjon feilet"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "GET-operasjon feilet: %s"
+
+msgid "GNUTLS call error"
+msgstr "feil i GNUTLS-kall"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+msgid "Max memory:"
+msgstr "Maksimum minne:"
+
+msgid "Name"
+msgstr "Navn"
+
+msgid "Name:"
+msgstr "Navn:"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "Nettverket %s er startet\n"
+
+msgid "Network not found"
+msgstr "Nettverk ikke funnet"
+
+#, c-format
+msgid "Network not found: %s"
+msgstr "Nettverk ikke funnet: %s"
+
+msgid "No error message provided"
+msgstr "Ingen feilmelding gitt"
+
+msgid "OS Type:"
+msgstr "OS-type:"
+
+msgid "POST operation failed"
+msgstr "POST-operasjon feilet"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "POST-operasjon feilet: %s"
+
+msgid "RPC error"
+msgstr "RPC-feil"
+
+msgid "Returns list of domains."
+msgstr "Returner liste av domener."
+
+msgid "Returns list of networks."
+msgstr "Returner liste av nettverk."
+
+msgid "Start a network."
+msgstr "Start et nettverk."
+
+msgid "State"
+msgstr "Tilstand"
+
+msgid "State:"
+msgstr "Tilstand:"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Skriv: 'help' for hjelp med kommandoer\n"
+"       'quit' for å avslutte\n"
+"\n"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Used memory:"
+msgstr "Brukt minne:"
+
+msgid "VCPU:"
+msgstr "VCPU:"
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "change number of virtual CPUs"
+msgstr "endre antall virtuelle CPUer"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "kommando '%s' støtter ikke opsjonen --%s"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "kommando '%s' krever <%s>-opsjonen"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "konverter et domene-id eller -uuid til domenenavn"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "konverter et domenenavn eller -UUID til domene-id"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "konverter et domenenavn eller -id til domene-UUID"
+
+msgid "convert a network UUID to network name"
+msgstr "konverter et nettverks-UUID til nettverksnavn"
+
+msgid "convert a network name to network UUID"
+msgstr "konverter et nettverksnavn til nettverks-UUID"
+
+msgid "create a domain from an XML file"
+msgstr "opprett et domene fra en XML-fil"
+
+msgid "create a network from an XML file"
+msgstr "opprett et nettverk fra en XML-fil"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "definer (men ikke start) et domene fra en XML-fil"
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "domenet %s eksisterer allerede"
+
+msgid "domain id or name"
+msgstr "domene-id eller -navn"
+
+msgid "domain id or uuid"
+msgstr "domene-id eller -uuid"
+
+msgid "domain information"
+msgstr "domeneinformasjon"
+
+msgid "domain information in XML"
+msgstr "domeneinformasjon i XML"
+
+msgid "domain name or uuid"
+msgstr "domenenavn eller uuid"
+
+msgid "domain state"
+msgstr "domenetilstand"
+
+msgid "error"
+msgstr "feil"
+
+msgid "error: "
+msgstr "feil: "
+
+msgid "expecting a name"
+msgstr "forventer et navn"
+
+msgid "expecting a value"
+msgstr "forventer en verdi"
+
+msgid "failed to open file"
+msgstr "kunne ikke åpne fil"
+
+msgid "failed to read configuration file"
+msgstr "feil ved lesing av konfigurasjonsfil"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "feil ved lesing av konfigurasjonsfil %s"
+
+msgid "failed to save content"
+msgstr "kunne ikke lagre innhold"
+
+msgid "failed to write configuration file"
+msgstr "kunne ikke skrive til konfigurasjonsfil"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "kunne ikke skrive til konfigurasjonsfilen: %s"
+
+msgid "getting time of day"
+msgstr "henter tid på døgnet"
+
+msgid "internal error"
+msgstr "intern feil"
+
+msgid "list domains"
+msgstr "vis domener"
+
+msgid "list inactive & active domains"
+msgstr "vis aktive og inaktive domener"
+
+msgid "list inactive & active networks"
+msgstr "vis aktive og inaktive nettverk"
+
+msgid "list inactive domains"
+msgstr "vis inaktive domener"
+
+msgid "list inactive networks"
+msgstr "vis inaktive nettverk"
+
+msgid "list networks"
+msgstr "vis nettverk"
+
+msgid "missing \""
+msgstr "mangler \""
+
+msgid "missing devices information"
+msgstr "mangler informasjon om enheter"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "mangler informasjon om enheter for %s"
+
+msgid "missing kernel information"
+msgstr "mangler kjerneinformasjon"
+
+msgid "missing operating system information"
+msgstr "mangler informasjon om operativsystem"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "mangler informasjon om operativsystem for %s"
+
+msgid "missing source information for device"
+msgstr "mangler kildeinformasjon for enhet"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "mangler kildeinformasjon for enhet %s"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "nettverk %s eksisterer allerede"
+
+msgid "network name"
+msgstr "nettverksnavn"
+
+msgid "network name or uuid"
+msgstr "nettverksnavn eller uuid"
+
+msgid "network uuid"
+msgstr "nettverks-uuid"
+
+msgid "no state"
+msgstr "ingen tilstand"
+
+msgid "number"
+msgstr "nummer"
+
+msgid "number of virtual CPUs"
+msgstr "antall virtuelle CPUer"
+
+msgid "operation failed"
+msgstr "operasjon feilet"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "operasjon feilet: %s"
+
+msgid "out of memory"
+msgstr "slutt på minne"
+
+msgid "paused"
+msgstr "pauset"
+
+msgid "reboot a domain"
+msgstr "start et domene på nytt"
+
+msgid "resume a domain"
+msgstr "fortsett et domene"
+
+msgid "running"
+msgstr "kjører"
+
+msgid "save a domain state to a file"
+msgstr "lagre domenetilstanden til en fil"
+
+msgid "show version"
+msgstr "vis versjon"
+
+msgid "shut off"
+msgstr "slå av"
+
+msgid "string"
+msgstr "streng"
+
+msgid "system call error"
+msgstr "feil i systemkall"
+
+msgid "this domain exists already"
+msgstr "dette domenet eksisterer allerede"
+
+msgid "this network exists already"
+msgstr "dette nettverket eksisterer allerede"
+
+msgid "too many drivers registered"
+msgstr "for manger drivere er registrert"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "for mange drivere er registrert i %s"
+
+msgid "unknown OS type"
+msgstr "ukjent OS-type"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "ukjent OS-type %s"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "ukjent kommando: '%s'"
+
+msgid "unknown host"
+msgstr "ukjent vert"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "ukjent vert %s"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "usupportert opsjon '%c'. Se --help."
+
+msgid "vcpu number"
+msgstr "vcpu-nummer:"
+
+msgid "warning"
+msgstr "advarsel"
+
+msgid "where to save the data"
+msgstr "hvor data skal lagres"

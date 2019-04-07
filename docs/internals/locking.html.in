@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Resource Lock Manager</h1>
@@ -12,7 +12,7 @@
       access to content.
     </p>
 
-    <h2><a name="goals">Goals</a></h2>
+    <h2><a id="goals">Goals</a></h2>
 
     <p>
       The high level goal is to prevent the same disk image being
@@ -36,7 +36,7 @@
       </li>
     </ol>
 
-    <h2><a name="requirement">Requirements</a></h2>
+    <h2><a id="requirement">Requirements</a></h2>
 
     <p>
       The high level goal leads to a set of requirements
@@ -67,7 +67,7 @@
       </li>
     </ol>
 
-    <h2><a name="design">Design</a></h2>
+    <h2><a id="design">Design</a></h2>
 
     <p>
       Within a lock manager the following series of operations
@@ -102,7 +102,7 @@
       </li>
     </ul>
 
-    <h2><a name="impl">Plugin Implementations</a></h2>
+    <h2><a id="impl">Plugin Implementations</a></h2>
 
     <p>
       Lock manager implementations are provided as LGPLv2+
@@ -132,7 +132,7 @@
       in the previously mentioned header file
     </p>
 
-    <h2><a name="qemuIntegrate">QEMU Driver integration</a></h2>
+    <h2><a id="qemuIntegrate">QEMU Driver integration</a></h2>
 
     <p>
       With the QEMU driver, the lock plugin will be set
@@ -149,7 +149,7 @@ lockManager="sanlock"
       for backwards compatibility
     </p>
 
-    <h2><a name="usagePatterns">Lock usage patterns</a></h2>
+    <h2><a id="usagePatterns">Lock usage patterns</a></h2>
 
     <p>
       The following pseudo code illustrates the common
@@ -157,7 +157,7 @@ lockManager="sanlock"
       manager plugin callbacks.
     </p>
 
-    <h3><a name="usageLockAcquire">Lock acquisition</a></h3>
+    <h3><a id="usageLockAcquire">Lock acquisition</a></h3>
 
     <p>
       Initial lock acquisition will be performed from the
@@ -205,7 +205,7 @@ if (virLockManagerAcquire(lock, NULL, 0) &lt; 0);
   ...abort...
     </pre>
 
-    <h3><a name="usageLockAttach">Lock release</a></h3>
+    <h3><a id="usageLockAttach">Lock release</a></h3>
 
     <p>
       The locks are all implicitly released when the process

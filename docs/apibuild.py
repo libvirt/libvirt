@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/env python
 #
 # This is the API builder, it parses the C sources and build the
 # API formal description in XML.
@@ -7,15 +7,18 @@
 #
 # daniel@veillard.com
 #
-import os, sys
-import string
+
+from __future__ import print_function
+
+import os
+import sys
 import glob
 import re
 
-quiet=True
-warnings=0
-debug=False
-debugsym=None
+quiet = True
+warnings = 0
+debug = False
+debugsym = None
 
 #
 # C parser analysis code
@@ -119,24 +122,19 @@ hidden_macros = {
 }
 
 def escape(raw):
-    raw = string.replace(raw, '&', '&amp;')
-    raw = string.replace(raw, '<', '&lt;')
-    raw = string.replace(raw, '>', '&gt;')
-    raw = string.replace(raw, "'", '&apos;')
-    raw = string.replace(raw, '"', '&quot;')
+    raw = raw.replace('&', '&amp;')
+    raw = raw.replace('<', '&lt;')
+    raw = raw.replace('>', '&gt;')
+    raw = raw.replace("'", '&apos;')
+    raw = raw.replace('"', '&quot;')
     return raw
 
 def uniq(items):
-    d = {}
-    for item in items:
-        d[item]=1
-    k = d.keys()
-    k.sort()
-    return k
+    return sorted(set(items))
 
 class identifier:
-    def __init__(self, name, header=None, module=None, type=None, lineno = 0,
-                 info=None, extra=None, conditionals = None):
+    def __init__(self, name, header=None, module=None, type=None, lineno=0,
+                 info=None, extra=None, conditionals=None):
         self.name = name
         self.header = header
         self.module = module
@@ -150,21 +148,21 @@ class identifier:
         else:
             self.conditionals = conditionals[:]
         if self.name == debugsym and not quiet:
-            print "=> define %s : %s" % (debugsym, (module, type, info,
-                                         extra, conditionals))
+            print("=> define %s : %s" % (debugsym, (module, type, info,
+                                         extra, conditionals)))
 
     def __repr__(self):
         r = "%s %s:" % (self.type, self.name)
         if self.static:
             r = r + " static"
         if self.module is not None:
-            r = r + " from %s" % (self.module)
+            r = r + " from %s" % self.module
         if self.info is not None:
-            r = r + " " +  `self.info`
+            r = r + " " + repr(self.info)
         if self.extra is not None:
-            r = r + " " + `self.extra`
+            r = r + " " + repr(self.extra)
         if self.conditionals is not None:
-            r = r + " " + `self.conditionals`
+            r = r + " " + repr(self.conditionals)
         return r
 
 
@@ -207,11 +205,11 @@ class identifier:
     def get_conditionals(self):
         return self.conditionals
 
-    def update(self, header, module, type = None, info = None, extra=None,
+    def update(self, header, module, type=None, info=None, extra=None,
                conditionals=None):
         if self.name == debugsym and not quiet:
-            print "=> update %s : %s" % (debugsym, (module, type, info,
-                                         extra, conditionals))
+            print("=> update %s : %s" % (debugsym, (module, type, info,
+                                         extra, conditionals)))
         if header is not None and self.header is None:
             self.set_header(module)
         if module is not None and (self.module is None or self.header == self.module):
@@ -226,7 +224,7 @@ class identifier:
             self.set_conditionals(conditionals)
 
 class index:
-    def __init__(self, name = "noname"):
+    def __init__(self, name="noname"):
         self.name = name
         self.identifiers = {}
         self.functions = {}
@@ -243,18 +241,19 @@ class index:
     def warning(self, msg):
         global warnings
         warnings = warnings + 1
-        print msg
+        print(msg)
 
-    def add_ref(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals = None):
+    def add_ref(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals=None):
         if name[0:2] == '__':
             return None
         d = None
         try:
-           d = self.identifiers[name]
-           d.update(header, module, type, lineno, info, extra, conditionals)
+            d = self.identifiers[name]
+            d.update(header, module, type, lineno, info, extra, conditionals)
         except:
-           d = identifier(name, header, module, type, lineno, info, extra, conditionals)
-           self.identifiers[name] = d
+            d = identifier(name, header, module, type, lineno, info, extra,
+                           conditionals)
+            self.identifiers[name] = d
 
         if d is not None and static == 1:
             d.set_static(1)
@@ -263,140 +262,137 @@ class index:
             self.references[name] = d
 
         if name == debugsym and not quiet:
-            print "New ref: %s" % (d)
+            print("New ref: %s" % (d))
 
         return d
 
-    def add(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals = None):
+    def add(self, name, header, module, static, type, lineno, info=None,
+            extra=None, conditionals=None):
         if name[0:2] == '__':
             return None
         d = None
         try:
-           d = self.identifiers[name]
-           d.update(header, module, type, lineno, info, extra, conditionals)
+            d = self.identifiers[name]
+            d.update(header, module, type, lineno, info, extra, conditionals)
         except:
-           d = identifier(name, header, module, type, lineno, info, extra, conditionals)
-           self.identifiers[name] = d
+            d = identifier(name, header, module, type, lineno, info, extra,
+                           conditionals)
+            self.identifiers[name] = d
 
         if d is not None and static == 1:
             d.set_static(1)
 
         if d is not None and name is not None and type is not None:
-            if type == "function":
-                self.functions[name] = d
-            elif type == "functype":
-                self.functions[name] = d
-            elif type == "variable":
-                self.variables[name] = d
-            elif type == "include":
-                self.includes[name] = d
-            elif type == "struct":
-                self.structs[name] = d
-            elif type == "union":
-                self.unions[name] = d
-            elif type == "enum":
-                self.enums[name] = d
-            elif type == "typedef":
-                self.typedefs[name] = d
-            elif type == "macro":
-                self.macros[name] = d
+            type_map = {
+                "function": self.functions,
+                "functype": self.functions,
+                "variable": self.variables,
+                "include": self.includes,
+                "struct": self.structs,
+                "union": self.unions,
+                "enum": self.enums,
+                "typedef": self.typedefs,
+                "macro": self.macros
+            }
+            if type in type_map:
+                type_map[type][name] = d
             else:
                 self.warning("Unable to register type ", type)
 
         if name == debugsym and not quiet:
-            print "New symbol: %s" % (d)
+            print("New symbol: %s" % (d))
 
         return d
 
     def merge(self, idx):
         for id in idx.functions.keys():
-              #
-              # macro might be used to override functions or variables
-              # definitions
-              #
-             if self.macros.has_key(id):
-                 del self.macros[id]
-             if self.functions.has_key(id):
-                 self.warning("function %s from %s redeclared in %s" % (
+            #
+            # macro might be used to override functions or variables
+            # definitions
+            #
+            if id in self.macros:
+                del self.macros[id]
+            if id in self.functions:
+                self.warning("function %s from %s redeclared in %s" % (
                     id, self.functions[id].header, idx.functions[id].header))
-             else:
-                 self.functions[id] = idx.functions[id]
-                 self.identifiers[id] = idx.functions[id]
+            else:
+                self.functions[id] = idx.functions[id]
+                self.identifiers[id] = idx.functions[id]
         for id in idx.variables.keys():
-              #
-              # macro might be used to override functions or variables
-              # definitions
-              #
-             if self.macros.has_key(id):
-                 del self.macros[id]
-             if self.variables.has_key(id):
-                 self.warning("variable %s from %s redeclared in %s" % (
+            #
+            # macro might be used to override functions or variables
+            # definitions
+            #
+            if id in self.macros:
+                del self.macros[id]
+            if id in self.variables:
+                self.warning("variable %s from %s redeclared in %s" % (
                     id, self.variables[id].header, idx.variables[id].header))
-             else:
-                 self.variables[id] = idx.variables[id]
-                 self.identifiers[id] = idx.variables[id]
+            else:
+                self.variables[id] = idx.variables[id]
+                self.identifiers[id] = idx.variables[id]
         for id in idx.structs.keys():
-             if self.structs.has_key(id):
-                 self.warning("struct %s from %s redeclared in %s" % (
+            if id in self.structs:
+                self.warning("struct %s from %s redeclared in %s" % (
                     id, self.structs[id].header, idx.structs[id].header))
-             else:
-                 self.structs[id] = idx.structs[id]
-                 self.identifiers[id] = idx.structs[id]
+            else:
+                self.structs[id] = idx.structs[id]
+                self.identifiers[id] = idx.structs[id]
         for id in idx.unions.keys():
-             if self.unions.has_key(id):
-                 print "union %s from %s redeclared in %s" % (
-                    id, self.unions[id].header, idx.unions[id].header)
-             else:
-                 self.unions[id] = idx.unions[id]
-                 self.identifiers[id] = idx.unions[id]
+            if id in self.unions:
+                print("union %s from %s redeclared in %s" % (
+                    id, self.unions[id].header, idx.unions[id].header))
+            else:
+                self.unions[id] = idx.unions[id]
+                self.identifiers[id] = idx.unions[id]
         for id in idx.typedefs.keys():
-             if self.typedefs.has_key(id):
-                 self.warning("typedef %s from %s redeclared in %s" % (
+            if id in self.typedefs:
+                self.warning("typedef %s from %s redeclared in %s" % (
                     id, self.typedefs[id].header, idx.typedefs[id].header))
-             else:
-                 self.typedefs[id] = idx.typedefs[id]
-                 self.identifiers[id] = idx.typedefs[id]
+            else:
+                self.typedefs[id] = idx.typedefs[id]
+                self.identifiers[id] = idx.typedefs[id]
         for id in idx.macros.keys():
-              #
-              # macro might be used to override functions or variables
-              # definitions
-              #
-             if self.variables.has_key(id):
-                 continue
-             if self.functions.has_key(id):
-                 continue
-             if self.enums.has_key(id):
-                 continue
-             if self.macros.has_key(id):
-                 self.warning("macro %s from %s redeclared in %s" % (
+            #
+            # macro might be used to override functions or variables
+            # definitions
+            #
+            if id in self.variables:
+                continue
+            if id in self.functions:
+                continue
+            if id in self.enums:
+                continue
+            if id in self.macros:
+                self.warning("macro %s from %s redeclared in %s" % (
                     id, self.macros[id].header, idx.macros[id].header))
-             else:
-                 self.macros[id] = idx.macros[id]
-                 self.identifiers[id] = idx.macros[id]
+            else:
+                self.macros[id] = idx.macros[id]
+                self.identifiers[id] = idx.macros[id]
         for id in idx.enums.keys():
-             if self.enums.has_key(id):
-                 self.warning("enum %s from %s redeclared in %s" % (
+            if id in self.enums:
+                self.warning("enum %s from %s redeclared in %s" % (
                     id, self.enums[id].header, idx.enums[id].header))
-             else:
-                 self.enums[id] = idx.enums[id]
-                 self.identifiers[id] = idx.enums[id]
+            else:
+                self.enums[id] = idx.enums[id]
+                self.identifiers[id] = idx.enums[id]
 
     def merge_public(self, idx):
         for id in idx.functions.keys():
-             if self.functions.has_key(id):
-                 # check that function condition agrees with header
-                 if idx.functions[id].conditionals != \
-                    self.functions[id].conditionals:
-                     self.warning("Header condition differs from Function for %s:" \
-                                      % id)
-                     self.warning("  H: %s" % self.functions[id].conditionals)
-                     self.warning("  C: %s" % idx.functions[id].conditionals)
-                 up = idx.functions[id]
-                 self.functions[id].update(None, up.module, up.type, up.info, up.extra)
-         #     else:
-         #         print "Function %s from %s is not declared in headers" % (
-         #              id, idx.functions[id].module)
-         # TODO: do the same for variables.
+            if id in self.functions:
+                up = idx.functions[id]
+                # check that function condition agrees with header
+                if up.conditionals != self.functions[id].conditionals:
+                    self.warning("Header condition differs from Function"
+                                 " for %s:" % id)
+                    self.warning("  H: %s" % self.functions[id].conditionals)
+                    self.warning("  C: %s" % up.conditionals)
+                self.functions[id].update(None, up.module, up.type, up.info,
+                                          up.extra)
+        #     else:
+        #         print("Function %s from %s is not declared in headers" % (
+        #               id, idx.functions[id].module))
+        # TODO: do the same for variables.
 
     def analyze_dict(self, type, dict):
         count = 0
@@ -407,9 +403,9 @@ class index:
             if id.static == 0:
                 public = public + 1
         if count != public:
-            print "  %d %s , %d public" % (count, type, public)
+            print("  %d %s , %d public" % (count, type, public))
         elif count != 0:
-            print "  %d public %s" % (count, type)
+            print("  %d public %s" % (count, type))
 
 
     def analyze(self):
@@ -436,21 +432,17 @@ class CLexer:
             line = self.input.readline()
             if not line:
                 return None
-            self.lineno = self.lineno + 1
-            line = string.lstrip(line)
-            line = string.rstrip(line)
+            self.lineno += 1
+            line = line.strip()
             if line == '':
                 continue
             while line[-1] == '\\':
                 line = line[:-1]
-                n = self.input.readline()
-                self.lineno = self.lineno + 1
-                n = string.lstrip(n)
-                n = string.rstrip(n)
+                n = self.input.readline().strip()
+                self.lineno += 1
                 if not n:
                     break
-                else:
-                    line = line + n
+                line += n
         return line
 
     def getlineno(self):
@@ -460,9 +452,9 @@ class CLexer:
         self.tokens.insert(0, token)
 
     def debug(self):
-        print "Last token: ", self.last
-        print "Token queue: ", self.tokens
-        print "Line %d end: " % (self.lineno), self.line
+        print("Last token: ", self.last)
+        print("Token queue: ", self.tokens)
+        print("Line %d end: " % self.lineno, self.line)
 
     def token(self):
         while self.tokens == []:
@@ -475,45 +467,32 @@ class CLexer:
                 return None
 
             if line[0] == '#':
-                self.tokens = map((lambda x: ('preproc', x)),
-                                  string.split(line))
+                self.tokens = [('preproc', word) for word in line.split()]
 
                 # We might have whitespace between the '#' and preproc
                 # macro name, so instead of having a single token element
                 # of '#define' we might end up with '#' and 'define'. This
                 # merges them back together
                 if self.tokens[0][1] == "#":
-                    self.tokens[0] = ('preproc', self.tokens[0][1] + self.tokens[1][1])
-                    self.tokens = self.tokens[:1] + self.tokens[2:]
+                    self.tokens[0] = ('preproc', "#" + self.tokens[1][1])
+                    del self.tokens[1]
                 break
             l = len(line)
             if line[0] == '"' or line[0] == "'":
-                end = line[0]
-                line = line[1:]
-                found = 0
-                tok = ""
-                while found == 0:
-                    i = 0
-                    l = len(line)
-                    while i < l:
-                        if line[i] == end:
-                            self.line = line[i+1:]
-                            line = line[:i]
-                            l = i
-                            found = 1
-                            break
-                        if line[i] == '\\':
-                            i = i + 1
-                        i = i + 1
-                    tok = tok + line
-                    if found == 0:
-                        line = self.getline()
-                        if line is None:
-                            return None
+                quote = line[0]
+                i = 1
+                while quote not in line[i:]:
+                    i = len(line)
+                    nextline = self.getline()
+                    if nextline is None:
+                        return None
+                    line += nextline
+
+                tok, self.line = line[1:].split(quote, 1)
                 self.last = ('string', tok)
                 return self.last
 
-            if l >= 2 and line[0] == '/' and line[1] == '*':
+            if line.startswith("/*"):
                 line = line[2:]
                 found = 0
                 tok = ""
@@ -537,7 +516,7 @@ class CLexer:
                             return None
                 self.last = ('comment', tok)
                 return self.last
-            if l >= 2 and line[0] == '/' and line[1] == '/':
+            if line.startswith("//"):
                 line = line[2:]
                 self.last = ('comment', line)
                 return self.last
@@ -562,41 +541,35 @@ class CLexer:
                 if line[i] == ' ' or line[i] == '\t':
                     i = i + 1
                     continue
-                o = ord(line[i])
-                if (o >= 97 and o <= 122) or (o >= 65 and o <= 90) or \
-                   (o >= 48 and o <= 57):
+                if line[i].isalnum():
                     s = i
                     while i < l:
-                        o = ord(line[i])
-                        if (o >= 97 and o <= 122) or (o >= 65 and o <= 90) or \
-                           (o >= 48 and o <= 57) or string.find(
-                               " \t(){}:;,+-*/%&!|[]=><", line[i]) == -1:
+                        if line[i] not in " \t(){}:;,+-*/%&!|[]=><":
                             i = i + 1
                         else:
                             break
                     self.tokens.append(('name', line[s:i]))
                     continue
-                if string.find("(){}:;,[]", line[i]) != -1:
+                if line[i] in "(){}:;,[]":
 #                 if line[i] == '(' or line[i] == ')' or line[i] == '{' or \
 #                   line[i] == '}' or line[i] == ':' or line[i] == ';' or \
 #                   line[i] == ',' or line[i] == '[' or line[i] == ']':
                     self.tokens.append(('sep', line[i]))
                     i = i + 1
                     continue
-                if string.find("+-*><=/%&!|.", line[i]) != -1:
+                if line[i] in "+-*><=/%&!|.":
 #                 if line[i] == '+' or line[i] == '-' or line[i] == '*' or \
 #                   line[i] == '>' or line[i] == '<' or line[i] == '=' or \
 #                   line[i] == '/' or line[i] == '%' or line[i] == '&' or \
 #                   line[i] == '!' or line[i] == '|' or line[i] == '.':
-                    if line[i] == '.' and  i + 2 < l and \
+                    if line[i] == '.' and i + 2 < l and \
                        line[i+1] == '.' and line[i+2] == '.':
                         self.tokens.append(('name', '...'))
                         i = i + 3
                         continue
 
                     j = i + 1
-                    if j < l and (
-                       string.find("+-*><=/%&!|", line[j]) != -1):
+                    if j < l and line[j] in "+-*><=/%&!|":
 #                       line[j] == '+' or line[j] == '-' or line[j] == '*' or \
 #                       line[j] == '>' or line[j] == '<' or line[j] == '=' or \
 #                       line[j] == '/' or line[j] == '%' or line[j] == '&' or \
@@ -609,10 +582,7 @@ class CLexer:
                     continue
                 s = i
                 while i < l:
-                    o = ord(line[i])
-                    if (o >= 97 and o <= 122) or (o >= 65 and o <= 90) or \
-                       (o >= 48 and o <= 57) or (
-                        string.find(" \t(){}:;,+-*/%&!|[]=><", line[i]) == -1):
+                    if line[i] not in " \t(){}:;,+-*/%&!|[]=><":
 #                        line[i] != ' ' and line[i] != '\t' and
 #                        line[i] != '(' and line[i] != ')' and
 #                        line[i] != '{'  and line[i] != '}' and
@@ -637,7 +607,7 @@ class CLexer:
 
 class CParser:
     """The C module parser"""
-    def __init__(self, filename, idx = None):
+    def __init__(self, filename, idx=None):
         self.filename = filename
         if len(filename) > 2 and filename[-2:] == '.h':
             self.is_header = 1
@@ -669,7 +639,7 @@ class CParser:
     def lineno(self):
         return self.lexer.getlineno()
 
-    def index_add(self, name, module, static, type, info=None, extra = None):
+    def index_add(self, name, module, static, type, info=None, extra=None):
         if self.is_header == 1:
             self.index.add(name, module, module, static, type, self.lineno(),
                            info, extra, self.conditionals)
@@ -678,7 +648,7 @@ class CParser:
                            info, extra, self.conditionals)
 
     def index_add_ref(self, name, module, static, type, info=None,
-                      extra = None):
+                      extra=None):
         if self.is_header == 1:
             self.index.add_ref(name, module, module, static, type,
                                self.lineno(), info, extra, self.conditionals)
@@ -691,27 +661,27 @@ class CParser:
         warnings = warnings + 1
         if self.no_error:
             return
-        print msg
+        print(msg)
 
     def error(self, msg, token=-1):
         if self.no_error:
             return
 
-        print "Parse Error: " + msg
+        print("Parse Error: " + msg)
         if token != -1:
-            print "Got token ", token
+            print("Got token ", token)
         self.lexer.debug()
         sys.exit(1)
 
     def debug(self, msg, token=-1):
-        print "Debug: " + msg
+        print("Debug: " + msg)
         if token != -1:
-            print "Got token ", token
+            print("Got token ", token)
         self.lexer.debug()
 
     def parseTopComment(self, comment):
         res = {}
-        lines = string.split(comment, "\n")
+        lines = comment.split("\n")
         item = None
         for line in lines:
             line = line.lstrip().lstrip('*').lstrip()
@@ -722,26 +692,19 @@ class CParser:
                 line = m.group(2).lstrip()
 
             if item:
-                if res.has_key(item):
+                if item in res:
                     res[item] = res[item] + " " + line
                 else:
                     res[item] = line
         self.index.info = res
 
     def strip_lead_star(self, line):
-        l = len(line)
-        i = 0
-        while i < l:
-            if line[i] == ' ' or line[i] == '\t':
-                i += 1
-            elif line[i] == '*':
-                return line[:i] + line[i + 1:]
-            else:
-                 return line
+        if line.lstrip().startswith('*'):
+            line = line.replace('*', '', 1)
         return line
 
     def cleanupComment(self):
-        if type(self.comment) != type(""):
+        if not isinstance(self.comment, str):
             return
         # remove the leading * on multi-line comments
         lines = self.comment.splitlines(True)
@@ -760,10 +723,10 @@ class CParser:
             self.comment = self.comment + com
         token = self.lexer.token()
 
-        if string.find(self.comment, "DOC_DISABLE") != -1:
+        if self.comment.find("DOC_DISABLE") != -1:
             self.stop_error()
 
-        if string.find(self.comment, "DOC_ENABLE") != -1:
+        if self.comment.find("DOC_ENABLE") != -1:
             self.start_error()
 
         return token
@@ -771,57 +734,47 @@ class CParser:
     #
     # Parse a comment block associate to a typedef
     #
-    def parseTypeComment(self, name, quiet = 0):
+    def parseTypeComment(self, name, quiet=False):
         if name[0:2] == '__':
-            quiet = 1
-
-        args = []
-        desc = ""
+            quiet = True
 
         if self.comment is None:
             if not quiet:
-                self.warning("Missing comment for type %s" % (name))
-            return((args, desc))
-        if self.comment[0] != '*':
+                self.warning("Missing comment for type %s" % name)
+            return None
+        if not self.comment.startswith('*'):
             if not quiet:
-                self.warning("Missing * in type comment for %s" % (name))
-            return((args, desc))
-        lines = string.split(self.comment, '\n')
-        if lines[0] == '*':
-            del lines[0]
-        if lines[0] != "* %s:" % (name):
+                self.warning("Missing * in type comment for %s" % name)
+            return None
+
+        lines = self.comment.split('\n')
+        # Remove lines that contain only single asterisk
+        lines[:] = [line for line in lines if line.strip() != '*']
+
+        if lines[0] != "* %s:" % name:
             if not quiet:
-                self.warning("Misformatted type comment for %s" % (name))
+                self.warning("Misformatted type comment for %s" % name)
                 self.warning("  Expecting '* %s:' got '%s'" % (name, lines[0]))
-            return((args, desc))
+            return None
         del lines[0]
-        while len(lines) > 0 and lines[0] == '*':
-            del lines[0]
-        desc = ""
-        while len(lines) > 0:
-            l = lines[0]
-            while len(l) > 0 and l[0] == '*':
-                l = l[1:]
-            l = string.strip(l)
-            desc = desc + " " + l
-            del lines[0]
 
-        desc = string.strip(desc)
+        # Concatenate all remaining lines by striping leading asterisks
+        desc = " ".join([line.lstrip("*").strip() for line in lines]).strip()
 
-        if quiet == 0:
-            if desc == "":
-                self.warning("Type comment for %s lack description of the macro" % (name))
+        if not (quiet or desc):
+            self.warning("Type comment for %s lack description of the macro"
+                         % name)
 
-        return(desc)
+        return desc
     #
     # Parse a comment block associate to a macro
     #
-    def parseMacroComment(self, name, quiet = 0):
+    def parseMacroComment(self, name, quiet=0):
         global ignored_macros
 
         if name[0:2] == '__':
             quiet = 1
-        if ignored_macros.has_key(name):
+        if name in ignored_macros:
             quiet = 1
 
         args = []
@@ -829,41 +782,41 @@ class CParser:
 
         if self.comment is None:
             if not quiet:
-                self.warning("Missing comment for macro %s" % (name))
-            return((args, desc))
+                self.warning("Missing comment for macro %s" % name)
+            return args, desc
         if self.comment[0] != '*':
             if not quiet:
-                self.warning("Missing * in macro comment for %s" % (name))
-            return((args, desc))
-        lines = string.split(self.comment, '\n')
+                self.warning("Missing * in macro comment for %s" % name)
+            return args, desc
+        lines = self.comment.split('\n')
         if lines[0] == '*':
             del lines[0]
-        if lines[0] != "* %s:" % (name):
+        if lines[0] != "* %s:" % name:
             if not quiet:
-                self.warning("Misformatted macro comment for %s" % (name))
+                self.warning("Misformatted macro comment for %s" % name)
                 self.warning("  Expecting '* %s:' got '%s'" % (name, lines[0]))
-            return((args, desc))
+            return args, desc
         del lines[0]
         while lines[0] == '*':
             del lines[0]
         while len(lines) > 0 and lines[0][0:3] == '* @':
             l = lines[0][3:]
             try:
-                (arg, desc) = string.split(l, ':', 1)
-                desc=string.strip(desc)
-                arg=string.strip(arg)
+                arg, desc = l.split(':', 1)
+                desc = desc.strip()
+                arg = arg.strip()
             except:
                 if not quiet:
-                    self.warning("Misformatted macro comment for %s" % (name))
-                    self.warning("  problem with '%s'" % (lines[0]))
+                    self.warning("Misformatted macro comment for %s" % name)
+                    self.warning("  problem with '%s'" % lines[0])
                 del lines[0]
                 continue
             del lines[0]
-            l = string.strip(lines[0])
+            l = lines[0].strip()
             while len(l) > 2 and l[0:3] != '* @':
                 while l[0] == '*':
                     l = l[1:]
-                desc = desc + ' ' + string.strip(l)
+                desc = desc + ' ' + l.strip()
                 del lines[0]
                 if len(lines) == 0:
                     break
@@ -876,53 +829,53 @@ class CParser:
             l = lines[0]
             while len(l) > 0 and l[0] == '*':
                 l = l[1:]
-            l = string.strip(l)
+            l = l.strip()
             desc = desc + " " + l
             del lines[0]
 
-        desc = string.strip(desc)
+        desc = desc.strip()
 
         if quiet == 0:
             if desc == "":
-                self.warning("Macro comment for %s lack description of the macro" % (name))
+                self.warning("Macro comment for %s lack description of the macro" % name)
 
-        return((args, desc))
+        return args, desc
 
-     #
-     # Parse a comment block and merge the information found in the
-     # parameters descriptions, finally returns a block as complete
-     # as possible
-     #
-    def mergeFunctionComment(self, name, description, quiet = 0):
+    #
+    # Parse a comment block and merge the information found in the
+    # parameters descriptions, finally returns a block as complete
+    # as possible
+    #
+    def mergeFunctionComment(self, name, description, quiet=0):
         global ignored_functions
 
         if name == 'main':
             quiet = 1
         if name[0:2] == '__':
             quiet = 1
-        if ignored_functions.has_key(name):
+        if name in ignored_functions:
             quiet = 1
 
-        (ret, args) = description
+        ret, args = description
         desc = ""
         retdesc = ""
 
         if self.comment is None:
             if not quiet:
-                self.warning("Missing comment for function %s" % (name))
-            return(((ret[0], retdesc), args, desc))
+                self.warning("Missing comment for function %s" % name)
+            return (ret[0], retdesc), args, desc
         if self.comment[0] != '*':
             if not quiet:
-                self.warning("Missing * in function comment for %s" % (name))
-            return(((ret[0], retdesc), args, desc))
-        lines = string.split(self.comment, '\n')
+                self.warning("Missing * in function comment for %s" % name)
+            return (ret[0], retdesc), args, desc
+        lines = self.comment.split('\n')
         if lines[0] == '*':
             del lines[0]
-        if lines[0] != "* %s:" % (name):
+        if lines[0] != "* %s:" % name:
             if not quiet:
-                self.warning("Misformatted function comment for %s" % (name))
+                self.warning("Misformatted function comment for %s" % name)
                 self.warning("  Expecting '* %s:' got '%s'" % (name, lines[0]))
-            return(((ret[0], retdesc), args, desc))
+            return (ret[0], retdesc), args, desc
         del lines[0]
         while lines[0] == '*':
             del lines[0]
@@ -930,21 +883,21 @@ class CParser:
         while len(lines) > 0 and lines[0][0:3] == '* @':
             l = lines[0][3:]
             try:
-                (arg, desc) = string.split(l, ':', 1)
-                desc=string.strip(desc)
-                arg=string.strip(arg)
+                arg, desc = l.split(':', 1)
+                desc = desc.strip()
+                arg = arg.strip()
             except:
                 if not quiet:
-                    self.warning("Misformatted function comment for %s" % (name))
-                    self.warning("  problem with '%s'" % (lines[0]))
+                    self.warning("Misformatted function comment for %s" % name)
+                    self.warning("  problem with '%s'" % lines[0])
                 del lines[0]
                 continue
             del lines[0]
-            l = string.strip(lines[0])
+            l = lines[0].strip()
             while len(l) > 2 and l[0:3] != '* @':
                 while l[0] == '*':
                     l = l[1:]
-                desc = desc + ' ' + string.strip(l)
+                desc = desc + ' ' + l.strip()
                 del lines[0]
                 if len(lines) == 0:
                     break
@@ -975,16 +928,16 @@ class CParser:
                 l = l[i:]
             if len(l) >= 6 and l[0:7] == "Returns":
                 try:
-                    l = string.split(l, ' ', 1)[1]
+                    l = l.split(' ', 1)[1]
                 except:
                     l = ""
-                retdesc = string.strip(l)
+                retdesc = l.strip()
                 del lines[0]
                 while len(lines) > 0:
                     l = lines[0]
                     while len(l) > 0 and l[0] == '*':
                         l = l[1:]
-                    l = string.strip(l)
+                    l = l.strip()
                     retdesc = retdesc + " " + l
                     del lines[0]
             else:
@@ -996,29 +949,29 @@ class CParser:
 
         if desc is None:
             desc = ""
-        retdesc = string.strip(retdesc)
-        desc = string.strip(desc)
+        retdesc = retdesc.strip()
+        desc = desc.strip()
 
         if quiet == 0:
-             #
-             # report missing comments
-             #
+            #
+            # report missing comments
+            #
             i = 0
             while i < nbargs:
                 if args[i][2] is None and args[i][0] != "void" and args[i][1] is not None:
                     self.warning("Function comment for %s lacks description of arg %s" % (name, args[i][1]))
                 i = i + 1
             if retdesc == "" and ret[0] != "void":
-                self.warning("Function comment for %s lacks description of return value" % (name))
+                self.warning("Function comment for %s lacks description of return value" % name)
             if desc == "":
-                self.warning("Function comment for %s lacks description of the function" % (name))
+                self.warning("Function comment for %s lacks description of the function" % name)
 
 
-        return(((ret[0], retdesc), args, desc))
+        return (ret[0], retdesc), args, desc
 
     def parsePreproc(self, token):
         if debug:
-            print "=> preproc ", token, self.lexer.tokens
+            print("=> preproc ", token, self.lexer.tokens)
         name = token[1]
         if name == "#include":
             token = self.lexer.token()
@@ -1034,7 +987,7 @@ class CParser:
             if token is None:
                 return None
             if token[0] == 'preproc':
-                 # TODO macros with arguments
+                # TODO macros with arguments
                 name = token[1]
                 lst = []
                 token = self.lexer.token()
@@ -1043,12 +996,14 @@ class CParser:
                     lst.append(token[1])
                     token = self.lexer.token()
                 try:
-                    name = string.split(name, '(') [0]
+                    name = name.split('(') [0]
                 except:
                     pass
 
                 # skip hidden macros
                 if name in hidden_macros:
+                    return token
+                if name[-2:] == "_H" or name[-8:] == "_H_ALLOW":
                     return token
 
                 strValue = None
@@ -1080,7 +1035,7 @@ class CParser:
             apstr = self.lexer.tokens[0][1]
             try:
                 self.defines.append(apstr)
-                if string.find(apstr, 'ENABLED') != -1:
+                if apstr.find('ENABLED') != -1:
                     self.conditionals.append("defined(%s)" % apstr)
             except:
                 pass
@@ -1088,7 +1043,7 @@ class CParser:
             apstr = self.lexer.tokens[0][1]
             try:
                 self.defines.append(apstr)
-                if string.find(apstr, 'ENABLED') != -1:
+                if apstr.find('ENABLED') != -1:
                     self.conditionals.append("!defined(%s)" % apstr)
             except:
                 pass
@@ -1100,17 +1055,17 @@ class CParser:
                 apstr = apstr + tok[1]
             try:
                 self.defines.append(apstr)
-                if string.find(apstr, 'ENABLED') != -1:
+                if apstr.find('ENABLED') != -1:
                     self.conditionals.append(apstr)
             except:
                 pass
         elif name == "#else":
             if self.conditionals != [] and \
-               string.find(self.defines[-1], 'ENABLED') != -1:
+               self.defines[-1].find('ENABLED') != -1:
                 self.conditionals[-1] = "!(%s)" % self.conditionals[-1]
         elif name == "#endif":
             if self.conditionals != [] and \
-               string.find(self.defines[-1], 'ENABLED') != -1:
+               self.defines[-1].find('ENABLED') != -1:
                 self.conditionals = self.conditionals[:-1]
             self.defines = self.defines[:-1]
         token = self.lexer.token()
@@ -1119,11 +1074,11 @@ class CParser:
             token = self.lexer.token()
         return token
 
-     #
-     # token acquisition on top of the lexer, it handle internally
-     # preprocessor and comments since they are logically not part of
-     # the program structure.
-     #
+    #
+    # token acquisition on top of the lexer, it handle internally
+    # preprocessor and comments since they are logically not part of
+    # the program structure.
+    #
     def push(self, tok):
         self.lexer.push(tok)
 
@@ -1146,7 +1101,7 @@ class CParser:
                 while token is not None and token[1] != ";":
                     token = self.lexer.token()
                 return token
-            elif token[0] == "name" and ignored_words.has_key(token[1]):
+            elif token[0] == "name" and token[1] in ignored_words:
                 (n, info) = ignored_words[token[1]]
                 i = 0
                 while i < n:
@@ -1156,13 +1111,13 @@ class CParser:
                 continue
             else:
                 if debug:
-                    print "=> ", token
+                    print("=> ", token)
                 return token
         return None
 
-     #
-     # Parse a typedef, it records the type and its name.
-     #
+    #
+    # Parse a typedef, it records the type and its name.
+    #
     def parseTypedef(self, token):
         if token is None:
             return None
@@ -1172,13 +1127,13 @@ class CParser:
             return None
         base_type = self.type
         type = base_type
-         #self.debug("end typedef type", token)
+        # self.debug("end typedef type", token)
         while token is not None:
             if token[0] == "name":
                 name = token[1]
                 signature = self.signature
                 if signature is not None:
-                    type = string.split(type, '(')[0]
+                    type = type.split('(')[0]
                     d = self.mergeFunctionComment(name,
                             ((type, None), signature), 1)
                     self.index_add(name, self.filename, not self.is_header,
@@ -1197,7 +1152,7 @@ class CParser:
             else:
                 self.error("parsing typedef: expecting a name")
                 return token
-             #self.debug("end typedef", token)
+            # self.debug("end typedef", token)
             if token is not None and token[0] == 'sep' and token[1] == ',':
                 type = base_type
                 token = self.token()
@@ -1215,10 +1170,10 @@ class CParser:
         token = self.token()
         return token
 
-     #
-     # Parse a C code block, used for functions it parse till
-     # the balancing } included
-     #
+    #
+    # Parse a C code block, used for functions it parse till
+    # the balancing } included
+    #
     def parseBlock(self, token):
         while token is not None:
             if token[0] == "sep" and token[1] == "{":
@@ -1254,27 +1209,27 @@ class CParser:
                     token = self.token()
         return token
 
-     #
-     # Parse a C struct definition till the balancing }
-     #
+    #
+    # Parse a C struct definition till the balancing }
+    #
     def parseStruct(self, token):
         fields = []
-         #self.debug("start parseStruct", token)
+        # self.debug("start parseStruct", token)
         while token is not None:
             if token[0] == "sep" and token[1] == "{":
                 token = self.token()
                 token = self.parseTypeBlock(token)
             elif token[0] == "sep" and token[1] == "}":
                 self.struct_fields = fields
-                 #self.debug("end parseStruct", token)
-                 #print fields
+                # self.debug("end parseStruct", token)
+                # print(fields)
                 token = self.token()
                 return token
             else:
                 base_type = self.type
-                 #self.debug("before parseType", token)
+                # self.debug("before parseType", token)
                 token = self.parseType(token)
-                 #self.debug("after parseType", token)
+                # self.debug("after parseType", token)
                 if token is not None and token[0] == "name":
                     fname = token[1]
                     token = self.token()
@@ -1305,13 +1260,13 @@ class CParser:
                     token = self.token()
                 self.type = base_type
         self.struct_fields = fields
-         #self.debug("end parseStruct", token)
-         #print fields
+        # self.debug("end parseStruct", token)
+        # print(fields)
         return token
 
-     #
-     # Parse a C union definition till the balancing }
-     #
+    #
+    # Parse a C union definition till the balancing }
+    #
     def parseUnion(self, token):
         fields = []
         # self.debug("start parseUnion", token)
@@ -1322,7 +1277,7 @@ class CParser:
             elif token[0] == "sep" and token[1] == "}":
                 self.union_fields = fields
                 # self.debug("end parseUnion", token)
-                # print fields
+                # print(fields)
                 token = self.token()
                 return token
             else:
@@ -1356,18 +1311,18 @@ class CParser:
                 self.type = base_type
         self.union_fields = fields
         # self.debug("end parseUnion", token)
-        # print fields
+        # print(fields)
         return token
 
-     #
-     # Parse a C enum block, parse till the balancing }
-     #
+    #
+    # Parse a C enum block, parse till the balancing }
+    #
     def parseEnumBlock(self, token):
         self.enums = []
         name = None
-        self.comment = None
         comment = ""
         value = "-1"
+        commentsBeforeVal = self.comment is not None
         while token is not None:
             if token[0] == "sep" and token[1] == "{":
                 token = self.token()
@@ -1385,7 +1340,7 @@ class CParser:
                 self.cleanupComment()
                 if name is not None:
                     if self.comment is not None:
-                        comment = string.strip(self.comment)
+                        comment = self.comment.strip()
                         self.comment = None
                     self.enums.append((name, value, comment))
                 name = token[1]
@@ -1399,15 +1354,19 @@ class CParser:
                     while token[0] != "sep" or (token[1] != ',' and
                           token[1] != '}'):
                         # We might be dealing with '1U << 12' here
-                        value = value + re.sub("^(\d+)U$","\\1", token[1])
+                        value = value + re.sub("^(\d+)U$", "\\1", token[1])
                         token = self.token()
                 else:
                     try:
                         value = "%d" % (int(value) + 1)
                     except:
-                        self.warning("Failed to compute value of enum %s" % (name))
-                        value=""
+                        self.warning("Failed to compute value of enum %s" % name)
+                        value = ""
                 if token[0] == "sep" and token[1] == ",":
+                    if commentsBeforeVal:
+                        self.cleanupComment()
+                        self.enums.append((name, value, self.comment))
+                        name = comment = self.comment = None
                     token = self.token()
             else:
                 token = self.token()
@@ -1520,10 +1479,10 @@ class CParser:
 
         return token
 
-     #
-     # Parse a C definition block, used for structs or unions it parse till
-     # the balancing }
-     #
+    #
+    # Parse a C definition block, used for structs or unions it parse till
+    # the balancing }
+    #
     def parseTypeBlock(self, token):
         while token is not None:
             if token[0] == "sep" and token[1] == "{":
@@ -1536,11 +1495,11 @@ class CParser:
                 token = self.token()
         return token
 
-     #
-     # Parse a type: the fact that the type name can either occur after
-     #    the definition or within the definition makes it a little harder
-     #    if inside, the name token is pushed back before returning
-     #
+    #
+    # Parse a type: the fact that the type name can either occur after
+    #    the definition or within the definition makes it a little harder
+    #    if inside, the name token is pushed back before returning
+    #
     def parseType(self, token):
         self.type = ""
         self.struct_fields = []
@@ -1549,10 +1508,8 @@ class CParser:
         if token is None:
             return token
 
-        while token[0] == "name" and (
-              token[1] == "const" or \
-              token[1] == "unsigned" or \
-              token[1] == "signed"):
+        while (token[0] == "name" and
+               token[1] in ["const", "unsigned", "signed"]):
             if self.type == "":
                 self.type = token[1]
             else:
@@ -1652,6 +1609,8 @@ class CParser:
             self.enums = []
             token = self.token()
             if token is not None and token[0] == "sep" and token[1] == "{":
+                # drop comments before the enum block
+                self.comment = None
                 token = self.token()
                 token = self.parseEnumBlock(token)
             else:
@@ -1718,16 +1677,16 @@ class CParser:
             self.type = self.type + " " + token[1]
             token = self.token()
 
-         #
-         # if there is a parenthesis here, this means a function type
-         #
+        #
+        # if there is a parenthesis here, this means a function type
+        #
         if token is not None and token[0] == "sep" and token[1] == '(':
             self.type = self.type + token[1]
             token = self.token()
             while token is not None and token[0] == "op" and token[1] == '*':
                 self.type = self.type + token[1]
                 token = self.token()
-            if token is None or token[0] != "name" :
+            if token is None or token[0] != "name":
                 self.error("parsing function type, name expected", token)
                 return token
             self.type = self.type + token[1]
@@ -1751,9 +1710,9 @@ class CParser:
             token = nametok
             return token
 
-         #
-         # do some lookahead for arrays
-         #
+        #
+        # do some lookahead for arrays
+        #
         if token is not None and token[0] == "name":
             nametok = token
             token = self.token()
@@ -1773,7 +1732,7 @@ class CParser:
                     self.error("parsing array type, ']' expected", token)
                     return token
             elif token is not None and token[0] == "sep" and token[1] == ':':
-                 # remove :12 in case it's a limited int size
+                # remove :12 in case it's a limited int size
                 token = self.token()
                 token = self.token()
             self.lexer.push(token)
@@ -1781,9 +1740,9 @@ class CParser:
 
         return token
 
-     #
-     # Parse a signature: '(' has been parsed and we scan the type definition
-     #    up to the ')' included
+    #
+    # Parse a signature: '(' has been parsed and we scan the type definition
+    #    up to the ')' included
     def parseSignature(self, token):
         signature = []
         if token is not None and token[0] == "sep" and token[1] == ')':
@@ -1799,7 +1758,7 @@ class CParser:
                 token = self.token()
                 continue
             elif token is not None and token[0] == "sep" and token[1] == ')':
-                 # only the type was provided
+                # only the type was provided
                 if self.type == "...":
                     signature.append((self.type, "...", None))
                 else:
@@ -1817,41 +1776,42 @@ class CParser:
     # this dict contains the functions that are allowed to use [unsigned]
     # long for legacy reasons in their signature and return type. this list is
     # fixed. new procedures and public APIs have to use [unsigned] long long
-    long_legacy_functions = \
-      { "virGetVersion"                  : (False, ("libVer", "typeVer")),
-        "virConnectGetLibVersion"        : (False, ("libVer")),
-        "virConnectGetVersion"           : (False, ("hvVer")),
-        "virDomainGetMaxMemory"          : (True,  ()),
-        "virDomainMigrate"               : (False, ("flags", "bandwidth")),
-        "virDomainMigrate2"              : (False, ("flags", "bandwidth")),
-        "virDomainMigrateBegin3"         : (False, ("flags", "bandwidth")),
-        "virDomainMigrateConfirm3"       : (False, ("flags", "bandwidth")),
-        "virDomainMigrateDirect"         : (False, ("flags", "bandwidth")),
-        "virDomainMigrateFinish"         : (False, ("flags")),
-        "virDomainMigrateFinish2"        : (False, ("flags")),
-        "virDomainMigrateFinish3"        : (False, ("flags")),
-        "virDomainMigratePeer2Peer"      : (False, ("flags", "bandwidth")),
-        "virDomainMigratePerform"        : (False, ("flags", "bandwidth")),
-        "virDomainMigratePerform3"       : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepare"        : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepare2"       : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepare3"       : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepareTunnel"  : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepareTunnel3" : (False, ("flags", "bandwidth")),
-        "virDomainMigrateToURI"          : (False, ("flags", "bandwidth")),
-        "virDomainMigrateToURI2"         : (False, ("flags", "bandwidth")),
-        "virDomainMigrateVersion1"       : (False, ("flags", "bandwidth")),
-        "virDomainMigrateVersion2"       : (False, ("flags", "bandwidth")),
-        "virDomainMigrateVersion3"       : (False, ("flags", "bandwidth")),
-        "virDomainMigrateSetMaxSpeed"    : (False, ("bandwidth")),
-        "virDomainSetMaxMemory"          : (False, ("memory")),
-        "virDomainSetMemory"             : (False, ("memory")),
-        "virDomainSetMemoryFlags"        : (False, ("memory")),
-        "virDomainBlockCommit"           : (False, ("bandwidth")),
-        "virDomainBlockJobSetSpeed"      : (False, ("bandwidth")),
-        "virDomainBlockPull"             : (False, ("bandwidth")),
-        "virDomainBlockRebase"           : (False, ("bandwidth")),
-        "virDomainMigrateGetMaxSpeed"    : (False, ("bandwidth")) }
+    long_legacy_functions = {
+        "virGetVersion": (False, ("libVer", "typeVer")),
+        "virConnectGetLibVersion": (False, ("libVer")),
+        "virConnectGetVersion": (False, ("hvVer")),
+        "virDomainGetMaxMemory": (True, ()),
+        "virDomainMigrate": (False, ("flags", "bandwidth")),
+        "virDomainMigrate2": (False, ("flags", "bandwidth")),
+        "virDomainMigrateBegin3": (False, ("flags", "bandwidth")),
+        "virDomainMigrateConfirm3": (False, ("flags", "bandwidth")),
+        "virDomainMigrateDirect": (False, ("flags", "bandwidth")),
+        "virDomainMigrateFinish": (False, ("flags")),
+        "virDomainMigrateFinish2": (False, ("flags")),
+        "virDomainMigrateFinish3": (False, ("flags")),
+        "virDomainMigratePeer2Peer": (False, ("flags", "bandwidth")),
+        "virDomainMigratePerform": (False, ("flags", "bandwidth")),
+        "virDomainMigratePerform3": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare2": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare3": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepareTunnel": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepareTunnel3": (False, ("flags", "bandwidth")),
+        "virDomainMigrateToURI": (False, ("flags", "bandwidth")),
+        "virDomainMigrateToURI2": (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion1": (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion2": (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion3": (False, ("flags", "bandwidth")),
+        "virDomainMigrateSetMaxSpeed": (False, ("bandwidth")),
+        "virDomainSetMaxMemory": (False, ("memory")),
+        "virDomainSetMemory": (False, ("memory")),
+        "virDomainSetMemoryFlags": (False, ("memory")),
+        "virDomainBlockCommit": (False, ("bandwidth")),
+        "virDomainBlockJobSetSpeed": (False, ("bandwidth")),
+        "virDomainBlockPull": (False, ("bandwidth")),
+        "virDomainBlockRebase": (False, ("bandwidth")),
+        "virDomainMigrateGetMaxSpeed": (False, ("bandwidth"))
+    }
 
     def checkLongLegacyFunction(self, name, return_type, signature):
         if "long" in return_type and "long long" not in return_type:
@@ -1860,7 +1820,7 @@ class CParser:
                     raise Exception()
             except:
                 self.error(("function '%s' is not allowed to return long, "
-                            "use long long instead") % (name))
+                            "use long long instead") % name)
 
         for param in signature:
             if "long" in param[0] and "long long" not in param[0]:
@@ -1875,10 +1835,11 @@ class CParser:
     # this dict contains the structs that are allowed to use [unsigned]
     # long for legacy reasons. this list is fixed. new structs have to use
     # [unsigned] long long
-    long_legacy_struct_fields = \
-      { "_virDomainInfo"                 : ("maxMem", "memory"),
-        "_virNodeInfo"                   : ("memory"),
-        "_virDomainBlockJobInfo"         : ("bandwidth") }
+    long_legacy_struct_fields = {
+        "_virDomainInfo": ("maxMem", "memory"),
+        "_virNodeInfo": ("memory"),
+        "_virDomainBlockJobInfo": ("bandwidth")
+    }
 
     def checkLongLegacyStruct(self, name, fields):
         for field in fields:
@@ -1888,13 +1849,13 @@ class CParser:
                         raise Exception()
                 except:
                     self.error(("struct '%s' is not allowed to contain long "
-                                "field '%s', use long long instead") \
+                                "field '%s', use long long instead")
                                % (name, field[1]))
 
-     #
-     # Parse a global definition, be it a type, variable or function
-     # the extern "C" blocks are a bit nasty and require it to recurse.
-     #
+    #
+    # Parse a global definition, be it a type, variable or function
+    # the extern "C" blocks are a bit nasty and require it to recurse.
+    #
     def parseGlobal(self, token):
         static = 0
         if token[1] == 'extern':
@@ -1908,7 +1869,7 @@ class CParser:
                         return token
                     if token[0] == 'sep' and token[1] == "{":
                         token = self.token()
-#                        print 'Entering extern "C line ', self.lineno()
+#                        print('Entering extern "C line ', self.lineno())
                         while token is not None and (token[0] != 'sep' or
                               token[1] != "}"):
                             if token[0] == 'name':
@@ -1918,7 +1879,7 @@ class CParser:
                                  "token %s %s unexpected at the top level" % (
                                         token[0], token[1]))
                                 token = self.parseGlobal(token)
-#                        print 'Exiting extern "C" line', self.lineno()
+#                        print('Exiting extern "C" line', self.lineno())
                         token = self.token()
                         return token
                 else:
@@ -1926,7 +1887,7 @@ class CParser:
         elif token[1] == 'static':
             static = 1
             token = self.token()
-            if token is None or  token[0] != 'name':
+            if token is None or token[0] != 'name':
                 return token
 
         if token[1] == 'typedef':
@@ -1945,24 +1906,24 @@ class CParser:
                 if token[1] == "[":
                     type = type + token[1]
                     token = self.token()
-                    while token is not None and (token[0] != "sep" or \
-                          token[1] != ";"):
+                    while token is not None and (token[0] != "sep" or
+                                                 token[1] != ";"):
                         type = type + token[1]
                         token = self.token()
 
             if token is not None and token[0] == "op" and token[1] == "=":
-                 #
-                 # Skip the initialization of the variable
-                 #
+                #
+                # Skip the initialization of the variable
+                #
                 token = self.token()
                 if token[0] == 'sep' and token[1] == '{':
                     token = self.token()
                     token = self.parseBlock(token)
                 else:
                     self.comment = None
-                    while token is not None and (token[0] != "sep" or \
-                          (token[1] != ';' and token[1] != ',')):
-                            token = self.token()
+                    while token is not None and (token[0] != "sep" or
+                                                 token[1] not in ',;'):
+                        token = self.token()
                 self.comment = None
                 if token is None or token[0] != "sep" or (token[1] != ';' and
                    token[1] != ','):
@@ -2019,7 +1980,7 @@ class CParser:
 
     def parse(self):
         if not quiet:
-            print "Parsing %s" % (self.filename)
+            print("Parsing %s" % (self.filename))
         token = self.token()
         while token is not None:
             if token[0] == 'name':
@@ -2040,13 +2001,13 @@ class docBuilder:
         self.path = path
         self.directories = directories
         if name == "libvirt":
-            self.includes = includes + included_files.keys()
+            self.includes = includes + list(included_files.keys())
         elif name == "libvirt-qemu":
-            self.includes = includes + qemu_included_files.keys()
+            self.includes = includes + list(qemu_included_files.keys())
         elif name == "libvirt-lxc":
-            self.includes = includes + lxc_included_files.keys()
+            self.includes = includes + list(lxc_included_files.keys())
         elif name == "libvirt-admin":
-            self.includes = includes + admin_included_files.keys()
+            self.includes = includes + list(admin_included_files.keys())
         self.modules = {}
         self.headers = {}
         self.idx = index()
@@ -2058,53 +2019,50 @@ class docBuilder:
     def warning(self, msg):
         global warnings
         warnings = warnings + 1
-        print msg
+        print(msg)
 
     def error(self, msg):
         self.errors += 1
-        print >>sys.stderr, "Error:", msg
+        print("Error:", msg, file=sys.stderr)
 
     def indexString(self, id, str):
         if str is None:
             return
-        str = string.replace(str, "'", ' ')
-        str = string.replace(str, '"', ' ')
-        str = string.replace(str, "/", ' ')
-        str = string.replace(str, '*', ' ')
-        str = string.replace(str, "[", ' ')
-        str = string.replace(str, "]", ' ')
-        str = string.replace(str, "(", ' ')
-        str = string.replace(str, ")", ' ')
-        str = string.replace(str, "<", ' ')
-        str = string.replace(str, '>', ' ')
-        str = string.replace(str, "&", ' ')
-        str = string.replace(str, '#', ' ')
-        str = string.replace(str, ",", ' ')
-        str = string.replace(str, '.', ' ')
-        str = string.replace(str, ';', ' ')
-        tokens = string.split(str)
+        str = str.replace("'", ' ')
+        str = str.replace('"', ' ')
+        str = str.replace("/", ' ')
+        str = str.replace('*', ' ')
+        str = str.replace("[", ' ')
+        str = str.replace("]", ' ')
+        str = str.replace("(", ' ')
+        str = str.replace(")", ' ')
+        str = str.replace("<", ' ')
+        str = str.replace('>', ' ')
+        str = str.replace("&", ' ')
+        str = str.replace('#', ' ')
+        str = str.replace(",", ' ')
+        str = str.replace('.', ' ')
+        str = str.replace(';', ' ')
+        tokens = str.split()
         for token in tokens:
-            try:
-                c = token[0]
-                if string.find(string.letters, c) < 0:
-                    pass
-                elif len(token) < 3:
-                    pass
-                else:
-                    lower = string.lower(token)
-                    # TODO: generalize this a bit
-                    if lower == 'and' or lower == 'the':
-                        pass
-                    elif self.xref.has_key(token):
-                        self.xref[token].append(id)
-                    else:
-                        self.xref[token] = [id]
-            except:
+            c = token[0]
+            if not re.match(r"[a-zA-Z]", c):
                 pass
+            elif len(token) < 3:
+                pass
+            else:
+                lower = token.lower()
+                # TODO: generalize this a bit
+                if lower == 'and' or lower == 'the':
+                    pass
+                elif token in self.xref:
+                    self.xref[token].append(id)
+                else:
+                    self.xref[token] = [id]
 
     def analyze(self):
         if not quiet:
-            print "Project %s : %d headers, %d modules" % (self.name, len(self.headers.keys()), len(self.modules.keys()))
+            print("Project %s : %d headers, %d modules" % (self.name, len(self.headers.keys()), len(self.modules.keys())))
         self.idx.analyze()
 
     def scanHeaders(self):
@@ -2128,7 +2086,7 @@ class docBuilder:
             for file in files:
                 skip = 1
                 for incl in self.includes:
-                    if string.find(file, incl) != -1:
+                    if file.find(incl) != -1:
                         skip = 0
                         break
                 if skip == 0:
@@ -2137,7 +2095,7 @@ class docBuilder:
             for file in files:
                 skip = 1
                 for incl in self.includes:
-                    if string.find(file, incl) != -1:
+                    if file.find(incl) != -1:
                         skip = 0
                         break
                 if skip == 0:
@@ -2159,12 +2117,22 @@ class docBuilder:
                      self.modulename_file(id.header)))
         if id.info is not None:
             info = id.info
+            valhex = ""
             if info[0] is not None and info[0] != '':
                 try:
                     val = eval(info[0])
+                    valhex = hex(val)
                 except:
                     val = info[0]
                 output.write(" value='%s'" % (val))
+
+                if valhex != "":
+                    output.write(" value_hex='%s'" % (valhex))
+
+                m = re.match("\(?1<<(\d+)\)?", info[0])
+                if m:
+                    output.write(" value_bitshift='%s'" % (m.group(1)))
+
             if info[2] is not None and info[2] != '':
                 output.write(" type='%s'" % info[2])
             if info[1] is not None and info[1] != '':
@@ -2196,11 +2164,11 @@ class docBuilder:
                              name, escape(desc)))
                 self.indexString(name, desc)
             else:
-                output.write("      <arg name='%s'/>\n" % (name))
+                output.write("      <arg name='%s'/>\n" % name)
         output.write("    </macro>\n")
 
     def serialize_union(self, output, field, desc):
-        output.write("      <field name='%s' type='union' info='%s'>\n" % (field[1] , desc))
+        output.write("      <field name='%s' type='union' info='%s'>\n" % (field[1], desc))
         output.write("        <union>\n")
         for f in field[3]:
             desc = f[2]
@@ -2208,7 +2176,7 @@ class docBuilder:
                 desc = ''
             else:
                 desc = escape(desc)
-            output.write("          <field name='%s' type='%s' info='%s'/>\n" % (f[1] , f[0], desc))
+            output.write("          <field name='%s' type='%s' info='%s'/>\n" % (f[1], f[0], desc))
 
         output.write("        </union>\n")
         output.write("      </field>\n")
@@ -2219,9 +2187,8 @@ class docBuilder:
             output.write("    <struct name='%s' file='%s' type='%s'" % (
                      name, self.modulename_file(id.header), id.info))
             name = id.info[7:]
-            if self.idx.structs.has_key(name) and ( \
-               type(self.idx.structs[name].info) == type(()) or
-                type(self.idx.structs[name].info) == type([])):
+            if (name in self.idx.structs and
+                    isinstance(self.idx.structs[name].info, (list, tuple))):
                 output.write(">\n")
                 try:
                     for field in self.idx.structs[name].info:
@@ -2234,13 +2201,13 @@ class docBuilder:
                         if field[0] == "union":
                             self.serialize_union(output, field, desc)
                         else:
-                            output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1] , field[0], desc))
+                            output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1], field[0], desc))
                 except:
-                    self.warning("Failed to serialize struct %s" % (name))
+                    self.warning("Failed to serialize struct %s" % name)
                 output.write("    </struct>\n")
             else:
                 output.write("/>\n")
-        else :
+        else:
             output.write("    <typedef name='%s' file='%s' type='%s'" % (
                          name, self.modulename_file(id.header), id.info))
             try:
@@ -2265,7 +2232,7 @@ class docBuilder:
     def serialize_function(self, output, name):
         id = self.idx.functions[name]
         if name == debugsym and not quiet:
-            print "=>", id
+            print("=>", id)
 
         # NB: this is consumed by a regex in 'getAPIFilenames' in hvsupport.pl
         output.write("    <%s name='%s' file='%s' module='%s'>\n" % (id.type,
@@ -2280,7 +2247,7 @@ class docBuilder:
                 if apstr != "":
                     apstr = apstr + " &amp;&amp; "
                 apstr = apstr + cond
-            output.write("      <cond>%s</cond>\n"% (apstr))
+            output.write("      <cond>%s</cond>\n" % (apstr))
         try:
             (ret, params, desc) = id.info
             output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
@@ -2288,7 +2255,7 @@ class docBuilder:
             if ret[0] is not None:
                 if ret[0] == "void":
                     output.write("      <return type='void'/>\n")
-                elif (ret[1] is None or ret[1] == '') and not ignored_functions.has_key(name):
+                elif (ret[1] is None or ret[1] == '') and name not in ignored_functions:
                     self.error("Missing documentation for return of function `%s'" % name)
                 else:
                     output.write("      <return type='%s' info='%s'/>\n" % (
@@ -2298,7 +2265,7 @@ class docBuilder:
                 if param[0] == 'void':
                     continue
                 if (param[2] is None or param[2] == ''):
-                    if ignored_functions.has_key(name):
+                    if name in ignored_functions:
                         output.write("      <arg name='%s' type='%s' info=''/>\n" % (param[1], param[0]))
                     else:
                         self.error("Missing documentation for arg `%s' of function `%s'" % (param[1], name))
@@ -2306,8 +2273,8 @@ class docBuilder:
                     output.write("      <arg name='%s' type='%s' info='%s'/>\n" % (param[1], param[0], escape(param[2])))
                     self.indexString(name, param[2])
         except:
-            print >>sys.stderr, "Exception:", sys.exc_info()[1]
-            self.warning("Failed to save function %s info: %s" % (name, `id.info`))
+            print("Exception:", sys.exc_info()[1], file=sys.stderr)
+            self.warning("Failed to save function %s info: %s" % (name, repr(id.info)))
         output.write("    </%s>\n" % (id.type))
 
     def serialize_exports(self, output, file):
@@ -2315,69 +2282,58 @@ class docBuilder:
         output.write("    <file name='%s'>\n" % (module))
         dict = self.headers[file]
         if dict.info is not None:
-            for data in ('Summary', 'Description', 'Author'):
+            for data in ('Summary', 'Description'):
                 try:
                     output.write("     <%s>%s</%s>\n" % (
-                                 string.lower(data),
+                                 data.lower(),
                                  escape(dict.info[data]),
-                                 string.lower(data)))
-                except:
+                                 data.lower()))
+                except KeyError:
                     self.warning("Header %s lacks a %s description" % (module, data))
-            if dict.info.has_key('Description'):
+            if 'Description' in dict.info:
                 desc = dict.info['Description']
-                if string.find(desc, "DEPRECATED") != -1:
+                if desc.find("DEPRECATED") != -1:
                     output.write("     <deprecated/>\n")
 
-        ids = dict.macros.keys()
-        ids.sort()
-        for id in uniq(ids):
+        for id in uniq(dict.macros.keys()):
             # Macros are sometime used to masquerade other types.
-            if dict.functions.has_key(id):
+            if id in dict.functions:
                 continue
-            if dict.variables.has_key(id):
+            if id in dict.variables:
                 continue
-            if dict.typedefs.has_key(id):
+            if id in dict.typedefs:
                 continue
-            if dict.structs.has_key(id):
+            if id in dict.structs:
                 continue
-            if dict.unions.has_key(id):
+            if id in dict.unions:
                 continue
-            if dict.enums.has_key(id):
+            if id in dict.enums:
                 continue
             output.write("     <exports symbol='%s' type='macro'/>\n" % (id))
-        ids = dict.enums.keys()
-        ids.sort()
-        for id in uniq(ids):
+        for id in uniq(dict.enums.keys()):
             output.write("     <exports symbol='%s' type='enum'/>\n" % (id))
-        ids = dict.typedefs.keys()
-        ids.sort()
-        for id in uniq(ids):
+        for id in uniq(dict.typedefs.keys()):
             output.write("     <exports symbol='%s' type='typedef'/>\n" % (id))
-        ids = dict.structs.keys()
-        ids.sort()
-        for id in uniq(ids):
+        for id in uniq(dict.structs.keys()):
             output.write("     <exports symbol='%s' type='struct'/>\n" % (id))
-        ids = dict.variables.keys()
-        ids.sort()
-        for id in uniq(ids):
+        for id in uniq(dict.variables.keys()):
             output.write("     <exports symbol='%s' type='variable'/>\n" % (id))
-        ids = dict.functions.keys()
-        ids.sort()
-        for id in uniq(ids):
+        for id in uniq(dict.functions.keys()):
             output.write("     <exports symbol='%s' type='function'/>\n" % (id))
         output.write("    </file>\n")
 
     def serialize_xrefs_files(self, output):
-        headers = self.headers.keys()
-        headers.sort()
+        headers = sorted(self.headers.keys())
         for file in headers:
             module = self.modulename_file(file)
             output.write("    <file name='%s'>\n" % (module))
             dict = self.headers[file]
-            ids = uniq(dict.functions.keys() + dict.variables.keys() + \
-                  dict.macros.keys() + dict.typedefs.keys() + \
-                  dict.structs.keys() + dict.enums.keys())
-            ids.sort()
+            ids = uniq(list(dict.functions.keys()) +
+                       list(dict.variables.keys()) +
+                       list(dict.macros.keys()) +
+                       list(dict.typedefs.keys()) +
+                       list(dict.structs.keys()) +
+                       list(dict.enums.keys()))
             for id in ids:
                 output.write("      <ref name='%s'/>\n" % (id))
             output.write("    </file>\n")
@@ -2392,17 +2348,15 @@ class docBuilder:
                 for param in params:
                     if param[0] == 'void':
                         continue
-                    if funcs.has_key(param[0]):
+                    if param[0] in funcs:
                         funcs[param[0]].append(name)
                     else:
                         funcs[param[0]] = [name]
             except:
                 pass
-        typ = funcs.keys()
-        typ.sort()
+        typ = sorted(funcs.keys())
         for type in typ:
-            if type == '' or type == 'void' or type == "int" or \
-               type == "char *" or type == "const char *" :
+            if type in ['', "void", "int", "char *", "const char *"]:
                 continue
             output.write("    <type name='%s'>\n" % (type))
             ids = funcs[type]
@@ -2422,29 +2376,25 @@ class docBuilder:
                 (ret, params, desc) = id.info
                 if ret[0] == "void":
                     continue
-                if funcs.has_key(ret[0]):
+                if ret[0] in funcs:
                     funcs[ret[0]].append(name)
                 else:
                     funcs[ret[0]] = [name]
             except:
                 pass
-        typ = funcs.keys()
-        typ.sort()
+        typ = sorted(funcs.keys())
         for type in typ:
-            if type == '' or type == 'void' or type == "int" or \
-               type == "char *" or type == "const char *" :
+            if type in ['', "void", "int", "char *", "const char *"]:
                 continue
             output.write("    <type name='%s'>\n" % (type))
-            ids = funcs[type]
-            ids.sort()
+            ids = sorted(funcs[type])
             for id in ids:
                 output.write("      <ref name='%s'/>\n" % (id))
             output.write("    </type>\n")
 
     def serialize_xrefs_alpha(self, output):
         letter = None
-        ids = self.idx.identifiers.keys()
-        ids.sort()
+        ids = sorted(self.idx.identifiers.keys())
         for id in ids:
             if id[0] != letter:
                 if letter is not None:
@@ -2456,8 +2406,7 @@ class docBuilder:
             output.write("    </letter>\n")
 
     def serialize_xrefs_references(self, output):
-        typ = self.idx.identifiers.keys()
-        typ.sort()
+        typ = sorted(self.idx.identifiers.keys())
         for id in typ:
             idf = self.idx.identifiers[id]
             module = idf.header
@@ -2468,8 +2417,7 @@ class docBuilder:
 
     def serialize_xrefs_index(self, output):
         index = self.xref
-        typ = index.keys()
-        typ.sort()
+        typ = sorted(index.keys())
         letter = None
         count = 0
         chunk = 0
@@ -2483,7 +2431,7 @@ class docBuilder:
                         output.write("      </letter>\n")
                         output.write("    </chunk>\n")
                         count = 0
-                        chunks.append(["chunk%s" % (chunk -1), first_letter, letter])
+                        chunks.append(["chunk%s" % (chunk - 1), first_letter, letter])
                     output.write("    <chunk name='chunk%s'>\n" % (chunk))
                     first_letter = id[0]
                     chunk = chunk + 1
@@ -2506,7 +2454,7 @@ class docBuilder:
             output.write("      </letter>\n")
             output.write("    </chunk>\n")
             if count != 0:
-                chunks.append(["chunk%s" % (chunk -1), first_letter, letter])
+                chunks.append(["chunk%s" % (chunk - 1), first_letter, letter])
             output.write("    <chunks>\n")
             for ch in chunks:
                 output.write("      <chunk name='%s' start='%s' end='%s'/>\n" % (
@@ -2536,35 +2484,29 @@ class docBuilder:
     def serialize(self):
         filename = "%s/%s-api.xml" % (self.path, self.name)
         if not quiet:
-            print "Saving XML description %s" % (filename)
+            print("Saving XML description %s" % (filename))
         output = open(filename, "w")
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
         output.write("<api name='%s'>\n" % self.name)
         output.write("  <files>\n")
-        headers = self.headers.keys()
-        headers.sort()
+        headers = sorted(self.headers.keys())
         for file in headers:
             self.serialize_exports(output, file)
         output.write("  </files>\n")
         output.write("  <symbols>\n")
-        macros = self.idx.macros.keys()
-        macros.sort()
+        macros = sorted(self.idx.macros.keys())
         for macro in macros:
             self.serialize_macro(output, macro)
-        enums = self.idx.enums.keys()
-        enums.sort()
+        enums = sorted(self.idx.enums.keys())
         for enum in enums:
             self.serialize_enum(output, enum)
-        typedefs = self.idx.typedefs.keys()
-        typedefs.sort()
+        typedefs = sorted(self.idx.typedefs.keys())
         for typedef in typedefs:
             self.serialize_typedef(output, typedef)
-        variables = self.idx.variables.keys()
-        variables.sort()
+        variables = sorted(self.idx.variables.keys())
         for variable in variables:
             self.serialize_variable(output, variable)
-        functions = self.idx.functions.keys()
-        functions.sort()
+        functions = sorted(self.idx.functions.keys())
         for function in functions:
             self.serialize_function(output, function)
         output.write("  </symbols>\n")
@@ -2572,12 +2514,12 @@ class docBuilder:
         output.close()
 
         if self.errors > 0:
-            print >>sys.stderr, "apibuild.py: %d error(s) encountered during generation" % self.errors
+            print("apibuild.py: %d error(s) encountered during generation" % self.errors, file=sys.stderr)
             sys.exit(3)
 
         filename = "%s/%s-refs.xml" % (self.path, self.name)
         if not quiet:
-            print "Saving XML Cross References %s" % (filename)
+            print("Saving XML Cross References %s" % (filename))
         output = open(filename, "w")
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
         output.write("<apirefs name='%s'>\n" % self.name)
@@ -2590,7 +2532,7 @@ class app:
     def warning(self, msg):
         global warnings
         warnings = warnings + 1
-        print msg
+        print(msg)
 
     def rebuild(self, name):
         if name not in ["libvirt", "libvirt-qemu", "libvirt-lxc", "libvirt-admin"]:
@@ -2601,9 +2543,9 @@ class app:
         builddir = os.path.abspath((os.environ["builddir"]))
         if srcdir == builddir:
             builddir = None
-        if glob.glob(srcdir + "/../src/libvirt.c") != [] :
+        if glob.glob(srcdir + "/../src/libvirt.c") != []:
             if not quiet:
-                print "Rebuilding API description for %s" % name
+                print("Rebuilding API description for %s" % name)
             dirs = [srcdir + "/../src",
                     srcdir + "/../src/util",
                     srcdir + "/../include/libvirt"]
@@ -2611,9 +2553,9 @@ class app:
                 not os.path.exists(srcdir + "/../include/libvirt/libvirt-common.h")):
                 dirs.append(builddir + "/../include/libvirt")
             builder = docBuilder(name, srcdir, dirs, [])
-        elif glob.glob("src/libvirt.c") != [] :
+        elif glob.glob("src/libvirt.c") != []:
             if not quiet:
-                print "Rebuilding API description for %s" % name
+                print("Rebuilding API description for %s" % name)
             builder = docBuilder(name, srcdir,
                                  ["src", "src/util", "include/libvirt"],
                                  [])

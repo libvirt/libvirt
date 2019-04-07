@@ -47,8 +47,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wlong-long"
     # We allow manual list of all enum cases without default:
     dontwarn="$dontwarn -Wswitch-default"
-    # We allow optional default: instead of listing all enum values
-    dontwarn="$dontwarn -Wswitch-enum"
     # Not a problem since we don't use -fstrict-overflow
     dontwarn="$dontwarn -Wstrict-overflow"
     # Not a problem since we don't use -funsafe-loop-optimizations
@@ -61,6 +59,14 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wenum-compare"
     # gcc 5.1 -Wformat-signedness mishandles enums, not ready for prime time
     dontwarn="$dontwarn -Wformat-signedness"
+    # Several conditionals expand the same on both branches
+    # depending on the particular platform/architecture
+    dontwarn="$dontwarn -Wduplicated-branches"
+    # > This warning does not generally indicate that there is anything wrong
+    # > with your code; it merely indicates that GCC's optimizers are unable
+    # > to handle the code effectively.
+    # Source: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
+    dontwarn="$dontwarn -Wdisabled-optimization"
 
     # gcc 4.2 treats attribute(format) as an implicit attribute(nonnull),
     # which triggers spurious warnings for our usage
@@ -131,6 +137,24 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         [lv_cv_gcc_wlogical_op_equal_expr_broken=yes])
         CFLAGS="$save_CFLAGS"])
 
+    AC_CACHE_CHECK([whether clang gives bogus warnings for -Wdouble-promotion],
+      [lv_cv_clang_double_promotion_broken], [
+        save_CFLAGS="$CFLAGS"
+        CFLAGS="-O2 -Wdouble-promotion -Werror"
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+          #include <math.h>
+        ]], [[
+          float f = 0.0;
+	  return isnan(f);]])],
+        [lv_cv_clang_double_promotion_broken=no],
+        [lv_cv_clang_double_promotion_broken=yes])
+        CFLAGS="$save_CFLAGS"])
+
+    if test "$lv_cv_clang_double_promotion_broken" = "yes";
+    then
+      dontwarn="$dontwarn -Wdouble-promotion"
+    fi
+
     # We might fundamentally need some of these disabled forever, but
     # ideally we'd turn many of them on
     dontwarn="$dontwarn -Wfloat-equal"
@@ -151,10 +175,17 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # with gl_MANYWARN_COMPLEMENT
     # So we have -W enabled, and then have to explicitly turn off...
     wantwarn="$wantwarn -Wno-sign-compare"
+    # We do "bad" function casts all the time for event callbacks
+    wantwarn="$wantwarn -Wno-cast-function-type"
 
     # GNULIB expects this to be part of -Wc++-compat, but we turn
     # that one off, so we need to manually enable this again
     wantwarn="$wantwarn -Wjump-misses-init"
+
+    # GNULIB explicitly filters it out, preferring -Wswitch
+    # but that doesn't report missing enums if a default:
+    # is present.
+    wantwarn="$wantwarn -Wswitch-enum"
 
     # GNULIB turns on -Wformat=2 which implies -Wformat-nonliteral,
     # so we need to manually re-exclude it.  Also, older gcc 4.2
@@ -166,11 +197,15 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
       wantwarn="$wantwarn -Wno-format"
     fi
 
+    # -Wformat enables this by default, and we should keep it,
+    # but need to rewrite various areas of code first
+    wantwarn="$wantwarn -Wno-format-truncation"
+
     # This should be < 256 really. Currently we're down to 4096,
     # but using 1024 bytes sized buffers (mostly for virStrerror)
     # stops us from going down further
-    wantwarn="$wantwarn -Wframe-larger-than=4096"
-    dnl wantwarn="$wantwarn -Wframe-larger-than=256"
+    gl_WARN_ADD([-Wframe-larger-than=4096], [STRICT_FRAME_LIMIT_CFLAGS])
+    gl_WARN_ADD([-Wframe-larger-than=32768], [RELAXED_FRAME_LIMIT_CFLAGS])
 
     # Extra special flags
     dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
@@ -225,7 +260,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         *-fstack-protector-strong*)
         ;;
         *)
-            gl_WARN_ADD(["-fstack-protector-all"])
+            gl_WARN_ADD([-fstack-protector-all])
         ;;
         esac
         ;;

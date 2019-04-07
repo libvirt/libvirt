@@ -1,0 +1,19 @@
+[vcpu libvirt-id='0']
+    online=yes
+    hotpluggable=no
+    thread-id='89504'
+    enable-id='1'
+    query-cpus-id='0'
+    type='host-s390x-cpu'
+    qom_path='/machine/unattached/device[0]'
+    topology: core='0' vcpus='1'
+[vcpu libvirt-id='1']
+    online=yes
+    hotpluggable=no
+    thread-id='89505'
+    enable-id='2'
+    query-cpus-id='1'
+    type='host-s390x-cpu'
+    qom_path='/machine/unattached/device[1]'
+    topology: core='1' vcpus='1'
+    halted

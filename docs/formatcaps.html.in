@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Driver capabilities XML format</h1>
 
     <ul id="toc"></ul>
 
-    <h2><a name="elements">Element and attribute overview</a></h2>
+    <h2><a id="elements">Element and attribute overview</a></h2>
 
     <p>As new virtualization engine support gets added to libvirt, and to
     handle cases like QEMU supporting a variety of emulations, a query
@@ -21,14 +21,14 @@
     command line tool command '<code>capabilities</code>', it dumps the XML
     associated to the current connection. </p>
 
-    <p>As can be seen seen in the <a href="#elementExamples">example</a>, the
+    <p>As can be seen in the <a href="#elementExamples">example</a>, the
     capabilities XML consists of the <code>capabilities</code> element which
     have exactly one <code>host</code> child element to report information on
     host capabilities, and zero or more <code>guest</code> element to express
     the set of architectures the host can run at the moment.</p>
 
 
-    <h3><a name="elementHost">Host capabilities</a></h3>
+    <h3><a id="elementHost">Host capabilities</a></h3>
 
     <p>The <code>&lt;host/&gt;</code> element consists of the following child
     elements:</p>
@@ -61,7 +61,7 @@
     </dl>
 
 
-    <h3><a name="elementGuest">Guest capabilities</a></h3>
+    <h3><a id="elementGuest">Guest capabilities</a></h3>
 
     <p>While the <a href="#elementHost">previous section</a> aims at host
     capabilities, this one focuses on capabilities available to a guest
@@ -74,24 +74,44 @@
         is able to run. Possible values are:
         <dl>
           <dt><code>xen</code></dt>
-          <dd>for XEN</dd>
+          <dd>for XEN PV</dd>
 
           <dt><code>linux</code></dt>
           <dd>legacy alias for <code>xen</code></dd>
+
+          <dt><code>xenpvh</code></dt>
+          <dd>for XEN PVH</dd>
 
           <dt><code>hvm</code></dt>
           <dd>Unmodified operating system</dd>
 
           <dt><code>exe</code></dt>
           <dd>Container based virtualization</dd>
-
-          <dt><code>uml</code></dt>
-          <dd>User Mode Linux</dd>
         </dl>
         </dd>
 
         <dt><code>arch</code></dt>
-        <dd>This element brings some information on supported guest architecture.</dd>
+        <dd>This element brings some information on supported guest
+          architecture. Possible subelements are:
+          <dl>
+            <dt><code>wordsize</code></dt><dd>Size of CPU word in bits, for example 64.</dd>
+            <dt><code>emulator</code></dt><dd>Emulator (device model) path, for
+              use in <a href="formatdomain.html#elementEmulator">emulator</a>
+              element of domain XML.</dd>
+            <dt><code>loader</code></dt><dd>Loader path, for use in
+              <a href="formatdomain.html#elementLoader">loader</a> element of domain
+              XML.</dd>
+            <dt><code>machine</code></dt><dd>Machine type, for use in
+              <a href="formatdomain.html#attributeOSTypeMachine">machine</a>
+              attribute of os/type element in domain XML. For example Xen
+              supports <code>xenfv</code> for HVM, <code>xenpv</code> for
+              PV, or <code>xenpvh</code> for PVH.</dd>
+            <dt><code>domain</code></dt><dd>The <code>type</code> attribute of
+              this element specifies the type of hypervisor required to run the
+              domain. Use in <a href="formatdomain.html#attributeDomainType">type</a>
+              attribute of the domain root element.</dd>
+          </dl>
+        </dd>
 
         <dt><code>features</code></dt>
         <dd>This optional element encases possible features that can be used
@@ -138,7 +158,7 @@
         </dd>
     </dl>
 
-    <h3><a name="elementExamples">Examples</a></h3>
+    <h3><a id="elementExamples">Examples</a></h3>
 
     <p>For example, in the case of a 64-bit machine with hardware
     virtualization capabilities enabled in the chip and

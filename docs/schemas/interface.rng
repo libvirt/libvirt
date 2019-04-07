@@ -130,7 +130,8 @@
               <ref name="virOnOff"/>
             </attribute>
           </optional>
-          <!-- Bridge forward delay (see 'brctl setfd') -->
+          <!-- Bridge forward delay
+               (see 'ip link set <dev> type bridge forward_delay') -->
           <optional v:since="2">
             <attribute name="delay"><ref name="timeval"/></attribute>
           </optional>
@@ -279,17 +280,19 @@
   </define>
 
   <define name="startmode">
-    <element name="start">
-      <attribute name="mode">
-        <choice>
-          <value>onboot</value>
-          <value>none</value>
-          <value>hotplug</value>
-          <!-- Jim Fehlig lists the following that SuSe supports:
-               manual, ifplug, nfsroot -->
-        </choice>
-      </attribute>
-    </element>
+    <optional>
+      <element name="start">
+        <attribute name="mode">
+          <choice>
+            <value>onboot</value>
+            <value>none</value>
+            <value>hotplug</value>
+            <!-- Jim Fehlig lists the following that SuSe supports:
+                 manual, ifplug, nfsroot -->
+          </choice>
+        </attribute>
+      </element>
+    </optional>
   </define>
 
   <!--

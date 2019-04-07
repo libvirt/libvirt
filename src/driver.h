@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_DRIVER_H__
-# define __VIR_DRIVER_H__
+#ifndef LIBVIRT_DRIVER_H
+# define LIBVIRT_DRIVER_H
 
 # include <unistd.h>
 
@@ -56,8 +56,8 @@ typedef enum {
  *   != 0  Feature is supported.
  *   0     Feature is not supported.
  */
-# define VIR_DRV_SUPPORTS_FEATURE(drv, conn, feature)                   \
-    ((drv)->connectSupportsFeature ?                                    \
+# define VIR_DRV_SUPPORTS_FEATURE(drv, conn, feature) \
+    ((drv)->connectSupportsFeature ? \
         (drv)->connectSupportsFeature((conn), (feature)) > 0 : 0)
 
 
@@ -79,6 +79,16 @@ typedef struct _virConnectDriver virConnectDriver;
 typedef virConnectDriver *virConnectDriverPtr;
 
 struct _virConnectDriver {
+    /* Wether driver permits a server in the URI */
+    bool localOnly;
+    /* Wether driver needs a server in the URI */
+    bool remoteOnly;
+    /*
+     * NULL terminated list of supported URI schemes.
+     *  - Single element { NULL } list indicates no supported schemes
+     *  - NULL list indicates wildcard supporting all schemes
+     */
+    const char **uriSchemes;
     virHypervisorDriverPtr hypervisorDriver;
     virInterfaceDriverPtr interfaceDriver;
     virNetworkDriverPtr networkDriver;
@@ -99,6 +109,22 @@ int virSetSharedNWFilterDriver(virNWFilterDriverPtr driver) ATTRIBUTE_RETURN_CHE
 int virSetSharedSecretDriver(virSecretDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
 int virSetSharedStorageDriver(virStorageDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
 
-void *virDriverLoadModule(const char *name);
+int virDriverLoadModule(const char *name,
+                        const char *regfunc,
+                        bool required);
 
-#endif /* __VIR_DRIVER_H__ */
+virConnectPtr virGetConnectInterface(void);
+virConnectPtr virGetConnectNetwork(void);
+virConnectPtr virGetConnectNWFilter(void);
+virConnectPtr virGetConnectNodeDev(void);
+virConnectPtr virGetConnectSecret(void);
+virConnectPtr virGetConnectStorage(void);
+
+int virSetConnectInterface(virConnectPtr conn);
+int virSetConnectNetwork(virConnectPtr conn);
+int virSetConnectNWFilter(virConnectPtr conn);
+int virSetConnectNodeDev(virConnectPtr conn);
+int virSetConnectSecret(virConnectPtr conn);
+int virSetConnectStorage(virConnectPtr conn);
+
+#endif /* LIBVIRT_DRIVER_H */

@@ -10,6 +10,7 @@
     <kernel>/var/lib/xen/vmlinuz.2Dn2YT</kernel>
     <initrd>/var/lib/xen/initrd.img.0u-Vhq</initrd>
     <cmdline> method=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/test/5.91/x86_64/os  </cmdline>
+    <boot dev='hd'/>
   </os>
   <clock offset='variable' adjustment='0' basis='utc'/>
   <on_poweroff>destroy</on_poweroff>
@@ -17,11 +18,11 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <driver name='file'/>
+      <driver name='file' type='raw'/>
       <source file='/root/some.img'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <serial type='pty'>
       <target port='0'/>
     </serial>

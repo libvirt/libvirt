@@ -17,15 +17,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Anton Blanchard <anton@au.ibm.com>
- *      Prerna Saxena <prerna@linux.vnet.ibm.com>
- *      Li Zhang <zhlcindy@linux.vnet.ibm.com>
  */
 
 #include <config.h>
-#include <stdint.h>
 
 #include "virlog.h"
 #include "viralloc.h"
@@ -92,22 +86,22 @@ ppc64CheckCompatibilityMode(const char *host_model,
     if (!compat_mode)
         return VIR_CPU_COMPARE_IDENTICAL;
 
-    /* Valid host CPUs: POWER6, POWER7, POWER8 */
+    /* Valid host CPUs: POWER6, POWER7, POWER8, POWER9 */
     if (!STRPREFIX(host_model, "POWER") ||
         !(tmp = (char *) host_model + strlen("POWER")) ||
         virStrToLong_i(tmp, NULL, 10, &host) < 0 ||
-        host < 6 || host > 8) {
+        host < 6 || host > 9) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s",
                        _("Host CPU does not support compatibility modes"));
         goto out;
     }
 
-    /* Valid compatibility modes: power6, power7, power8 */
+    /* Valid compatibility modes: power6, power7, power8, power9 */
     if (!STRPREFIX(compat_mode, "power") ||
         !(tmp = (char *) compat_mode + strlen("power")) ||
         virStrToLong_i(tmp, NULL, 10, &compat) < 0 ||
-        compat < 6 || compat > 8) {
+        compat < 6 || compat > 9) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown compatibility mode %s"),
                        compat_mode);
@@ -247,6 +241,12 @@ ppc64ModelFromCPU(const virCPUDef *cpu,
 {
     struct ppc64_model *model;
 
+    if (!cpu->model) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no CPU model specified"));
+        return NULL;
+    }
+
     if (!(model = ppc64ModelFind(map, cpu->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown CPU model %s"), cpu->model);
@@ -275,84 +275,62 @@ ppc64MapFree(struct ppc64_map *map)
     VIR_FREE(map);
 }
 
-static struct ppc64_vendor *
-ppc64VendorParse(xmlXPathContextPtr ctxt,
-                 struct ppc64_map *map)
+static int
+ppc64VendorParse(xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                 const char *name,
+                 void *data)
 {
+    struct ppc64_map *map = data;
     struct ppc64_vendor *vendor;
+    int ret = -1;
 
     if (VIR_ALLOC(vendor) < 0)
-        return NULL;
+        return -1;
 
-    vendor->name = virXPathString("string(@name)", ctxt);
-    if (!vendor->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU vendor name"));
-        goto error;
-    }
+    if (VIR_STRDUP(vendor->name, name) < 0)
+        goto cleanup;
 
     if (ppc64VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
-        goto error;
+        goto cleanup;
     }
 
-    return vendor;
+    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
+        goto cleanup;
 
- error:
+    ret = 0;
+
+ cleanup:
     ppc64VendorFree(vendor);
-    return NULL;
+    return ret;
 }
 
 
 static int
-ppc64VendorsLoad(struct ppc64_map *map,
-                 xmlXPathContextPtr ctxt,
-                 xmlNodePtr *nodes,
-                 int n)
-{
-    struct ppc64_vendor *vendor;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->vendors, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(vendor = ppc64VendorParse(ctxt, map)))
-            return -1;
-        map->vendors[map->nvendors++] = vendor;
-    }
-
-    return 0;
-}
-
-
-static struct ppc64_model *
 ppc64ModelParse(xmlXPathContextPtr ctxt,
-                struct ppc64_map *map)
+                const char *name,
+                void *data)
 {
+    struct ppc64_map *map = data;
     struct ppc64_model *model;
     xmlNodePtr *nodes = NULL;
     char *vendor = NULL;
     unsigned long pvr;
     size_t i;
     int n;
+    int ret = -1;
 
     if (VIR_ALLOC(model) < 0)
-        goto error;
+        goto cleanup;
 
-    model->name = virXPathString("string(@name)", ctxt);
-    if (!model->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU model name"));
-        goto error;
-    }
+    if (VIR_STRDUP(model->name, name) < 0)
+        goto cleanup;
 
     if (ppc64ModelFind(map, model->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU model %s already defined"), model->name);
-        goto error;
+        goto cleanup;
     }
 
     if (virXPathBoolean("boolean(./vendor)", ctxt)) {
@@ -361,14 +339,14 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid vendor element in CPU model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
 
         if (!(model->vendor = ppc64VendorFind(map, vendor))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown vendor %s referenced by CPU model %s"),
                            vendor, model->name);
-            goto error;
+            goto cleanup;
         }
     }
 
@@ -376,11 +354,11 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing PVR information for CPU model %s"),
                        model->name);
-        goto error;
+        goto cleanup;
     }
 
     if (VIR_ALLOC_N(model->data.pvr, n) < 0)
-        goto error;
+        goto cleanup;
 
     model->data.len = n;
 
@@ -391,7 +369,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing or invalid PVR value in CPU model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
         model->data.pvr[i].value = pvr;
 
@@ -399,67 +377,23 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing or invalid PVR mask in CPU model %s"),
                            model->name);
-            goto error;
+            goto cleanup;
         }
         model->data.pvr[i].mask = pvr;
     }
 
+    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
+        goto cleanup;
+
+    ret = 0;
+
  cleanup:
+    ppc64ModelFree(model);
     VIR_FREE(vendor);
     VIR_FREE(nodes);
-    return model;
-
- error:
-    ppc64ModelFree(model);
-    model = NULL;
-    goto cleanup;
+    return ret;
 }
 
-
-static int
-ppc64ModelsLoad(struct ppc64_map *map,
-                xmlXPathContextPtr ctxt,
-                xmlNodePtr *nodes,
-                int n)
-{
-    struct ppc64_model *model;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->models, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(model = ppc64ModelParse(ctxt, map)))
-            return -1;
-        map->models[map->nmodels++] = model;
-    }
-
-    return 0;
-}
-
-
-static int
-ppc64MapLoadCallback(cpuMapElement element,
-                     xmlXPathContextPtr ctxt,
-                     xmlNodePtr *nodes,
-                     int n,
-                     void *data)
-{
-    struct ppc64_map *map = data;
-
-    switch (element) {
-    case CPU_MAP_ELEMENT_VENDOR:
-        return ppc64VendorsLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_MODEL:
-        return ppc64ModelsLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_FEATURE:
-    case CPU_MAP_ELEMENT_LAST:
-        break;
-    }
-
-    return 0;
-}
 
 static struct ppc64_map *
 ppc64LoadMap(void)
@@ -469,7 +403,7 @@ ppc64LoadMap(void)
     if (VIR_ALLOC(map) < 0)
         goto error;
 
-    if (cpuMapLoad("ppc64", ppc64MapLoadCallback, map) < 0)
+    if (cpuMapLoad("ppc64", ppc64VendorParse, NULL, ppc64ModelParse, map) < 0)
         goto error;
 
     return map;
@@ -576,7 +510,7 @@ ppc64Compute(virCPUDefPtr host,
                 ret = tmp;
                 goto cleanup;
             }
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
 
         case VIR_CPU_MODE_HOST_PASSTHROUGH:
             /* host-model and host-passthrough:
@@ -663,16 +597,11 @@ virCPUppc64Compare(virCPUDefPtr host,
 static int
 ppc64DriverDecode(virCPUDefPtr cpu,
                   const virCPUData *data,
-                  const char **models,
-                  unsigned int nmodels,
-                  const char *preferred ATTRIBUTE_UNUSED,
-                  unsigned int flags)
+                  virDomainCapsCPUModelsPtr models)
 {
     int ret = -1;
     struct ppc64_map *map;
     const struct ppc64_model *model;
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
 
     if (!data || !(map = ppc64LoadMap()))
         return -1;
@@ -684,7 +613,7 @@ ppc64DriverDecode(virCPUDefPtr cpu,
         goto cleanup;
     }
 
-    if (!virCPUModelIsAllowed(model->name, models, nmodels)) {
+    if (!virCPUModelIsAllowed(model->name, models)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("CPU model %s is not supported by hypervisor"),
                        model->name);
@@ -705,7 +634,7 @@ ppc64DriverDecode(virCPUDefPtr cpu,
 }
 
 static void
-ppc64DriverFree(virCPUDataPtr data)
+virCPUppc64DataFree(virCPUDataPtr data)
 {
     if (!data)
         return;
@@ -714,19 +643,22 @@ ppc64DriverFree(virCPUDataPtr data)
     VIR_FREE(data);
 }
 
-static virCPUDataPtr
-ppc64DriverNodeData(virArch arch)
+
+static int
+virCPUppc64GetHost(virCPUDefPtr cpu,
+                   virDomainCapsCPUModelsPtr models)
 {
-    virCPUDataPtr nodeData;
+    virCPUDataPtr cpuData = NULL;
     virCPUppc64Data *data;
+    int ret = -1;
 
-    if (VIR_ALLOC(nodeData) < 0)
-        goto error;
+    if (!(cpuData = virCPUDataNew(archs[0])))
+        goto cleanup;
 
-    data = &nodeData->data.ppc64;
+    data = &cpuData->data.ppc64;
 
     if (VIR_ALLOC_N(data->pvr, 1) < 0)
-        goto error;
+        goto cleanup;
 
     data->len = 1;
 
@@ -736,13 +668,11 @@ ppc64DriverNodeData(virArch arch)
 #endif
     data->pvr[0].mask = 0xfffffffful;
 
-    nodeData->arch = arch;
+    ret = ppc64DriverDecode(cpu, cpuData, models);
 
-    return nodeData;
-
- error:
-    ppc64DriverFree(nodeData);
-    return NULL;
+ cleanup:
+    virCPUppc64DataFree(cpuData);
+    return ret;
 }
 
 
@@ -765,20 +695,17 @@ virCPUppc64Update(virCPUDefPtr guest,
 }
 
 static virCPUDefPtr
-ppc64DriverBaseline(virCPUDefPtr *cpus,
+virCPUppc64Baseline(virCPUDefPtr *cpus,
                     unsigned int ncpus,
-                    const char **models ATTRIBUTE_UNUSED,
-                    unsigned int nmodels ATTRIBUTE_UNUSED,
-                    unsigned int flags)
+                    virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
+                    const char **features ATTRIBUTE_UNUSED,
+                    bool migratable ATTRIBUTE_UNUSED)
 {
     struct ppc64_map *map;
     const struct ppc64_model *model;
     const struct ppc64_vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
     size_t i;
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
     if (!(map = ppc64LoadMap()))
         goto error;
@@ -901,9 +828,9 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .compare    = virCPUppc64Compare,
     .decode     = ppc64DriverDecode,
     .encode     = NULL,
-    .free       = ppc64DriverFree,
-    .nodeData   = ppc64DriverNodeData,
-    .baseline   = ppc64DriverBaseline,
+    .dataFree   = virCPUppc64DataFree,
+    .getHost    = virCPUppc64GetHost,
+    .baseline   = virCPUppc64Baseline,
     .update     = virCPUppc64Update,
     .getModels  = virCPUppc64DriverGetModels,
     .convertLegacy = virCPUppc64ConvertLegacy,

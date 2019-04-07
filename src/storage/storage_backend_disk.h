@@ -17,15 +17,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_STORAGE_BACKEND_DISK_H__
-# define __VIR_STORAGE_BACKEND_DISK_H__
+#ifndef LIBVIRT_STORAGE_BACKEND_DISK_H
+# define LIBVIRT_STORAGE_BACKEND_DISK_H
 
-# include "storage_backend.h"
+int virStorageBackendDiskRegister(void);
 
-extern virStorageBackend virStorageBackendDisk;
-
-#endif /* __VIR_STORAGE_BACKEND_DISK_H__ */
+#endif /* LIBVIRT_STORAGE_BACKEND_DISK_H */

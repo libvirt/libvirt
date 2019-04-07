@@ -19,7 +19,7 @@ dnl
 
 AC_DEFUN([LIBVIRT_ARG_DRIVER_MODULES], [
   LIBVIRT_ARG_WITH([DRIVER_MODULES], [build drivers as loadable modules],
-                   [check])
+                   [yes])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_DRIVER_MODULES], [
@@ -27,28 +27,26 @@ AC_DEFUN([LIBVIRT_CHECK_DRIVER_MODULES], [
 
   if test "$with_libvirtd" = "no" ; then
     with_driver_modules=no
-  fi
+  else
+    if test "$with_driver_modules" = "no"; then
+      AC_MSG_ERROR([Building without driver modules is not supported anymore])
+    fi
 
-  DRIVER_MODULES_CFLAGS=
-  DRIVER_MODULES_LIBS=
-  if test "$with_driver_modules" = "yes" || test "$with_driver_modules" = "check"; then
-    if test "$with_dlfcn" != "yes" || test "$with_dlopen" != "yes"; then
-      if test "$with_driver_modules" = "yes" ; then
-        AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
-      else
-        with_driver_modules=no
-      fi
-    else
+    if test "$with_driver_modules" = "check"; then
       with_driver_modules=yes
     fi
   fi
 
-  if test "$with_driver_modules" = "yes" ; then
+  DRIVER_MODULES_CFLAGS=
+  DRIVER_MODULES_LIBS=
+  if test "$with_driver_modules" = "yes"; then
+    if test "$with_dlfcn" != "yes" || test "$with_dlopen" != "yes"; then
+      AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
+    fi
+
     DRIVER_MODULES_LDFLAGS="-export-dynamic"
     DRIVER_MODULES_LIBS="$DLOPEN_LIBS"
-    AC_DEFINE_UNQUOTED([WITH_DRIVER_MODULES], 1, [whether to build drivers as modules])
   fi
-  AM_CONDITIONAL([WITH_DRIVER_MODULES], [test "$with_driver_modules" != "no"])
   AC_SUBST([DRIVER_MODULES_LDFLAGS])
   AC_SUBST([DRIVER_MODULES_LIBS])
 ])

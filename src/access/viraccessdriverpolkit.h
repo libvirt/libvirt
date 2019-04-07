@@ -18,11 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_ACCESS_DRIVER_POLKIT_H__
-# define __VIR_ACCESS_DRIVER_POLKIT_H__
+#ifndef LIBVIRT_VIRACCESSDRIVERPOLKIT_H
+# define LIBVIRT_VIRACCESSDRIVERPOLKIT_H
 
 # include "viraccessdriver.h"
 
 extern virAccessDriver accessDriverPolkit;
 
-#endif /* __VIR_ACCESS_DRIVER_POLKIT_H__ */
+#endif /* LIBVIRT_VIRACCESSDRIVERPOLKIT_H */

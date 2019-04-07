@@ -718,7 +718,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     machineDescription->mediaRegistry = virVBoxSnapshotConfRetrieveMediaRegistry(cur, xPathContext, machineLocation);
     if (machineDescription->mediaRegistry == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       ("Unable to create media registry"));
+                       _("Unable to create media registry"));
         goto cleanup;
     }
 
@@ -958,7 +958,7 @@ virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegis
         goto cleanup;
     }
     if (hardDisk->parent == NULL) {
-        //it means that the hard disk is in 'root'
+        /* it means that the hard disk is in 'root' */
         for (i = 0; i < mediaRegistry->ndisks; i++) {
             if (hardDisk == mediaRegistry->disks[i])
                 break;

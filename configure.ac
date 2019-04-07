@@ -16,15 +16,21 @@ dnl You should have received a copy of the GNU Lesser General Public
 dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
-AC_INIT([libvirt], [3.0.0], [libvir-list@redhat.com], [], [http://libvirt.org])
+AC_INIT([libvirt], [5.3.0], [libvir-list@redhat.com], [], [https://libvirt.org])
 AC_CONFIG_SRCDIR([src/libvirt.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AH_BOTTOM([#include <config-post.h>])
 AC_CONFIG_MACRO_DIR([m4])
-dnl Make automake keep quiet about wildcards & other GNUmake-isms; also keep
-dnl quiet about the fact that we intentionally cater to automake 1.9
-AM_INIT_AUTOMAKE([-Wno-portability -Wno-obsolete tar-pax no-dist-gzip dist-xz subdir-objects])
+dnl Make automake keep quiet about wildcards & other GNUmake-isms
+AM_INIT_AUTOMAKE([
+    foreign
+    -Wno-portability
+    tar-pax
+    no-dist-gzip
+    dist-xz
+    subdir-objects
+    ])
 dnl older automake's default of ARFLAGS=cru is noisy on newer binutils;
 dnl we don't really need the 'u' even in older toolchains.  Then there is
 dnl older libtool, which spelled it AR_FLAGS
@@ -192,6 +198,7 @@ if test $with_linux = no; then
         with_lxc=no
     fi
     with_dtrace=no
+    with_storage_scsi=no
 fi
 
 if test $with_freebsd = yes; then
@@ -215,7 +222,6 @@ fi
 # RPC, we don't need several libraries.
 if test "$with_remote" = "no" ; then
   with_libvirtd=no
-  with_gnutls=no
   with_ssh2=no
   with_sasl=no
   with_libssh=no
@@ -223,10 +229,8 @@ fi
 # Stateful drivers are useful only when building the daemon.
 if test "$with_libvirtd" = "no" ; then
   with_qemu=no
-  with_xen=no
   with_lxc=no
   with_libxl=no
-  with_uml=no
   with_vbox=no
 fi
 
@@ -236,25 +240,29 @@ LIBVIRT_COMPILE_WARNINGS
 LIBVIRT_COMPILE_PIE
 LIBVIRT_LINKER_RELRO
 LIBVIRT_LINKER_NO_INDIRECT
+LIBVIRT_LINKER_NO_UNDEFINED
 
 LIBVIRT_ARG_APPARMOR
 LIBVIRT_ARG_ATTR
 LIBVIRT_ARG_AUDIT
 LIBVIRT_ARG_AVAHI
+LIBVIRT_ARG_BASH_COMPLETION
 LIBVIRT_ARG_BLKID
 LIBVIRT_ARG_CAPNG
 LIBVIRT_ARG_CURL
 LIBVIRT_ARG_DBUS
 LIBVIRT_ARG_FIREWALLD
+LIBVIRT_ARG_FIREWALLD_ZONE
 LIBVIRT_ARG_FUSE
 LIBVIRT_ARG_GLUSTER
-LIBVIRT_ARG_GNUTLS
 LIBVIRT_ARG_HAL
+LIBVIRT_ARG_LIBISCSI
 LIBVIRT_ARG_LIBPCAP
 LIBVIRT_ARG_LIBSSH
 LIBVIRT_ARG_LIBXML
 LIBVIRT_ARG_MACVTAP
 LIBVIRT_ARG_NETCF
+LIBVIRT_ARG_NLS
 LIBVIRT_ARG_NSS
 LIBVIRT_ARG_NUMACTL
 LIBVIRT_ARG_OPENWSMAN
@@ -271,11 +279,13 @@ LIBVIRT_ARG_VIRTUALPORT
 LIBVIRT_ARG_WIRESHARK
 LIBVIRT_ARG_YAJL
 
+LIBVIRT_CHECK_ACL
 LIBVIRT_CHECK_APPARMOR
 LIBVIRT_CHECK_ATOMIC
 LIBVIRT_CHECK_ATTR
 LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_AVAHI
+LIBVIRT_CHECK_BASH_COMPLETION
 LIBVIRT_CHECK_BLKID
 LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_CURL
@@ -283,10 +293,12 @@ LIBVIRT_CHECK_DBUS
 LIBVIRT_CHECK_DEVMAPPER
 LIBVIRT_CHECK_DLOPEN
 LIBVIRT_CHECK_FIREWALLD
+LIBVIRT_CHECK_FIREWALLD_ZONE
 LIBVIRT_CHECK_FUSE
 LIBVIRT_CHECK_GLUSTER
 LIBVIRT_CHECK_GNUTLS
 LIBVIRT_CHECK_HAL
+LIBVIRT_CHECK_LIBISCSI
 LIBVIRT_CHECK_LIBNL
 LIBVIRT_CHECK_LIBPARTED
 LIBVIRT_CHECK_LIBPCAP
@@ -294,7 +306,7 @@ LIBVIRT_CHECK_LIBSSH
 LIBVIRT_CHECK_LIBXML
 LIBVIRT_CHECK_MACVTAP
 LIBVIRT_CHECK_NETCF
-LIBVIRT_CHECK_NSS
+LIBVIRT_CHECK_NLS
 LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_NWFILTER
 LIBVIRT_CHECK_OPENWSMAN
@@ -317,27 +329,52 @@ AC_CHECK_SIZEOF([long])
 
 dnl Availability of various common functions (non-fatal if missing),
 dnl and various less common threadsafe functions
-AC_CHECK_FUNCS_ONCE([cfmakeraw fallocate geteuid getgid getgrnam_r \
-  getmntent_r getpwuid_r getrlimit getuid kill mmap newlocale posix_fallocate \
-  posix_memalign prlimit regexec sched_getaffinity setgroups setns \
-  setrlimit symlink sysctlbyname getifaddrs sched_setscheduler unshare])
+AC_CHECK_FUNCS_ONCE([\
+  cfmakeraw \
+  fallocate \
+  geteuid \
+  getgid \
+  getifaddrs \
+  getmntent_r \
+  getpwuid_r \
+  getrlimit \
+  getuid \
+  if_indextoname \
+  mmap \
+  newlocale \
+  posix_fallocate \
+  posix_memalign \
+  prlimit \
+  sched_getaffinity \
+  sched_setscheduler \
+  setgroups \
+  setns \
+  setrlimit \
+  symlink \
+  sysctlbyname \
+  unshare \
+  ])
 
 dnl Availability of various common headers (non-fatal if missing).
-AC_CHECK_HEADERS([pwd.h regex.h sys/un.h \
-  sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
-  sys/un.h sys/syscall.h sys/sysctl.h netinet/tcp.h ifaddrs.h \
-  libtasn1.h sys/ucred.h sys/mount.h sys/acl.h])
+AC_CHECK_HEADERS([\
+  ifaddrs.h \
+  libtasn1.h \
+  linux/magic.h \
+  mntent.h \
+  net/ethernet.h \
+  netinet/tcp.h \
+  pwd.h \
+  stdarg.h \
+  syslog.h \
+  sys/mount.h \
+  sys/syscall.h \
+  sys/sysctl.h \
+  sys/ucred.h \
+  sys/un.h \
+  ])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
 AC_CHECK_FUNCS([stat stat64 __xstat __xstat64 lstat lstat64 __lxstat __lxstat64])
-
-ACL_CFLAGS=""
-ACL_LIBS=""
-if test "x$ac_cv_header_sys_acl_h:x$with_linux" = "xyes:xyes" ; then
-    ACL_LIBS="-lacl"
-fi
-AC_SUBST([ACL_CFLAGS])
-AC_SUBST([ACL_LIBS])
 
 AC_CHECK_TYPE([struct ifreq],
   [AC_DEFINE([HAVE_STRUCT_IFREQ],[1],
@@ -353,9 +390,15 @@ AC_CHECK_TYPE([struct sockpeercred],
   ]])
 
 AC_CHECK_DECLS([ETH_FLAG_TXVLAN, ETH_FLAG_NTUPLE, ETH_FLAG_RXHASH, ETH_FLAG_LRO,
-                ETHTOOL_GGSO, ETHTOOL_GGRO, ETHTOOL_GFLAGS, ETHTOOL_GFEATURES],
+                ETHTOOL_GGSO, ETHTOOL_GGRO, ETHTOOL_GFLAGS, ETHTOOL_GFEATURES,
+                ETHTOOL_SCOALESCE, ETHTOOL_GCOALESCE],
   [], [], [[#include <linux/ethtool.h>
   ]])
+
+AC_CHECK_DECLS([SEEK_HOLE], [], [],
+               [#include <sys/types.h>
+                #include <unistd.h>])
+
 
 dnl Our only use of libtasn1.h is in the testsuite, and can be skipped
 dnl if the header is not present.  Assume -ltasn1 is present if the
@@ -399,7 +442,6 @@ dnl
 dnl Virtualization drivers check
 dnl
 
-LIBVIRT_DRIVER_ARG_XEN
 LIBVIRT_DRIVER_ARG_QEMU
 LIBVIRT_DRIVER_ARG_OPENVZ
 LIBVIRT_DRIVER_ARG_VMWARE
@@ -410,7 +452,6 @@ LIBVIRT_DRIVER_ARG_VBOX
 LIBVIRT_DRIVER_ARG_LXC
 LIBVIRT_DRIVER_ARG_VZ
 LIBVIRT_DRIVER_ARG_BHYVE
-LIBVIRT_DRIVER_ARG_UML
 LIBVIRT_DRIVER_ARG_ESX
 LIBVIRT_DRIVER_ARG_HYPERV
 LIBVIRT_DRIVER_ARG_TEST
@@ -419,7 +460,6 @@ LIBVIRT_DRIVER_ARG_LIBVIRTD
 LIBVIRT_DRIVER_ARG_NETWORK
 LIBVIRT_DRIVER_ARG_INTERFACE
 
-LIBVIRT_DRIVER_CHECK_XEN
 LIBVIRT_DRIVER_CHECK_QEMU
 LIBVIRT_DRIVER_CHECK_OPENVZ
 LIBVIRT_DRIVER_CHECK_VMWARE
@@ -430,7 +470,6 @@ LIBVIRT_DRIVER_CHECK_VBOX
 LIBVIRT_DRIVER_CHECK_LXC
 LIBVIRT_DRIVER_CHECK_VZ
 LIBVIRT_DRIVER_CHECK_BHYVE
-LIBVIRT_DRIVER_CHECK_UML
 LIBVIRT_DRIVER_CHECK_ESX
 LIBVIRT_DRIVER_CHECK_HYPERV
 LIBVIRT_DRIVER_CHECK_TEST
@@ -439,7 +478,7 @@ LIBVIRT_DRIVER_CHECK_LIBVIRTD
 LIBVIRT_DRIVER_CHECK_NETWORK
 LIBVIRT_DRIVER_CHECK_INTERFACE
 
-AM_CONDITIONAL([WITH_XENCONFIG], [test "$with_libxl" = "yes" || test "$with_xen" = "yes"])
+AM_CONDITIONAL([WITH_XENCONFIG], [test "$with_libxl" = "yes"])
 
 
 dnl
@@ -456,7 +495,6 @@ dnl
 LIBVIRT_ARG_DEBUG
 LIBVIRT_ARG_DTRACE
 LIBVIRT_ARG_NUMAD
-LIBVIRT_ARG_XML_CATALOG
 LIBVIRT_ARG_INIT_SCRIPT
 LIBVIRT_ARG_CHRDEV_LOCK_FILES
 LIBVIRT_ARG_DEFAULT_EDITOR
@@ -470,7 +508,6 @@ LIBVIRT_ARG_SYSCTL_CONFIG
 LIBVIRT_CHECK_DEBUG
 LIBVIRT_CHECK_DTRACE
 LIBVIRT_CHECK_NUMAD
-LIBVIRT_CHECK_XML_CATALOG
 LIBVIRT_CHECK_INIT_SCRIPT
 LIBVIRT_CHECK_CHRDEV_LOCK_FILES
 LIBVIRT_CHECK_DEFAULT_EDITOR
@@ -479,6 +516,7 @@ LIBVIRT_CHECK_LOGIN_SHELL
 LIBVIRT_CHECK_HOST_VALIDATE
 LIBVIRT_CHECK_TLS_PRIORITY
 LIBVIRT_CHECK_SYSCTL_CONFIG
+LIBVIRT_CHECK_NSS
 
 
 
@@ -563,6 +601,7 @@ LIBVIRT_STORAGE_ARG_DIR
 LIBVIRT_STORAGE_ARG_FS
 LIBVIRT_STORAGE_ARG_LVM
 LIBVIRT_STORAGE_ARG_ISCSI
+LIBVIRT_STORAGE_ARG_ISCSI_DIRECT
 LIBVIRT_STORAGE_ARG_SCSI
 LIBVIRT_STORAGE_ARG_MPATH
 LIBVIRT_STORAGE_ARG_DISK
@@ -570,12 +609,14 @@ LIBVIRT_STORAGE_ARG_RBD
 LIBVIRT_STORAGE_ARG_SHEEPDOG
 LIBVIRT_STORAGE_ARG_GLUSTER
 LIBVIRT_STORAGE_ARG_ZFS
+LIBVIRT_STORAGE_ARG_VSTORAGE
 
 if test "$with_libvirtd" = "no"; then
   with_storage_dir=no
   with_storage_fs=no
   with_storage_lvm=no
   with_storage_iscsi=no
+  with_storage_iscsi_direct=no
   with_storage_scsi=no
   with_storage_mpath=no
   with_storage_disk=no
@@ -583,6 +624,7 @@ if test "$with_libvirtd" = "no"; then
   with_storage_sheepdog=no
   with_storage_gluster=no
   with_storage_zfs=no
+  with_storage_vstorage=no
 fi
 
 dnl storage-fs does not work on MacOS X
@@ -595,6 +637,7 @@ LIBVIRT_STORAGE_CHECK_DIR
 LIBVIRT_STORAGE_CHECK_FS
 LIBVIRT_STORAGE_CHECK_LVM
 LIBVIRT_STORAGE_CHECK_ISCSI
+LIBVIRT_STORAGE_CHECK_ISCSI_DIRECT
 LIBVIRT_STORAGE_CHECK_SCSI
 LIBVIRT_STORAGE_CHECK_MPATH
 LIBVIRT_STORAGE_CHECK_DISK
@@ -602,18 +645,10 @@ LIBVIRT_STORAGE_CHECK_RBD
 LIBVIRT_STORAGE_CHECK_SHEEPDOG
 LIBVIRT_STORAGE_CHECK_GLUSTER
 LIBVIRT_STORAGE_CHECK_ZFS
-
-if test "$with_storage_fs" = "yes" ||
-   test "$with_storage_gluster" = "yes"; then
-  AC_PATH_PROG([GLUSTER_CLI], [gluster], [], [$LIBVIRT_SBIN_PATH])
-  if test "x$GLUSTER_CLI" != "x"; then
-      AC_DEFINE_UNQUOTED([GLUSTER_CLI], ["$GLUSTER_CLI"],
-        [Location or name of the gluster command line tool])
-  fi
-fi
+LIBVIRT_STORAGE_CHECK_VSTORAGE
 
 with_storage=no
-for backend in dir fs lvm iscsi scsi mpath rbd disk; do
+for backend in dir fs lvm iscsi iscsi_direct scsi mpath rbd disk; do
     if eval test \$with_storage_$backend = yes; then
         with_storage=yes
         break
@@ -632,11 +667,43 @@ if test "$with_linux" = "yes"; then
     AC_CHECK_HEADERS([linux/btrfs.h])
 fi
 
+dnl
+dnl check for xfs dev headers required by xfs ioctl
+dnl
+if test "$with_linux" = "yes"; then
+    AC_CHECK_HEADERS([xfs/xfs.h])
+fi
+
+dnl
+dnl check for DEVLINK_CMD_ESWITCH_GET
+dnl
+dnl Assume DEVLINK_ESWITCH_MODE_SWITCHDEV is also
+dnl available, as it was introudced in kernel 4.8
+dnl along with the original spelling of this constant
+dnl (DEVLINK_CMD_ESWITCH_MODE_GET, not supported by libvirt)
+dnl
+if test "$with_linux" = "yes"; then
+    AC_CHECK_HEADERS([linux/devlink.h])
+    AC_CHECK_DECLS([DEVLINK_CMD_ESWITCH_GET], [], [],
+                   [[#include <linux/devlink.h>]])
+fi
+
+dnl
+dnl check for VHOST_VSOCK_SET_GUEST_CID
+dnl
+if test "$with_linux" = "yes"; then
+    AC_CHECK_DECLS([VHOST_VSOCK_SET_GUEST_CID], [], [],
+                   [[#include <linux/vhost.h>]])
+fi
+
 dnl Allow perl/python overrides
-AC_PATH_PROGS([PYTHON], [python2 python])
+AC_PATH_PROGS([PYTHON], [python3 python2 python])
+if test -z "$PYTHON"; then
+    AC_MSG_ERROR(['python3', 'python2' or 'python' binary is required to build libvirt])
+fi
 AC_PATH_PROG([PERL], [perl])
 if test -z "$PERL"; then
-         AC_MSG_ERROR([Failed to find perl.])
+         AC_MSG_ERROR(['perl' binary is required to build libvirt])
 fi
 
 LIBVIRT_ARG_WITH([TEST_SUITE], [build test suite by default], [check])
@@ -677,23 +744,6 @@ fi
 AC_SUBST([VIR_TEST_EXPENSIVE_DEFAULT])
 AM_CONDITIONAL([WITH_EXPENSIVE_TESTS], [test $VIR_TEST_EXPENSIVE_DEFAULT = 1])
 
-LIBVIRT_ARG_ENABLE([TEST_COVERAGE], [turn on code coverage instrumentation], [no])
-case "$enable_test_coverage" in
-  yes|no) ;;
-  *) AC_MSG_ERROR([bad value ${enable_test_coverga} for test-coverage option]) ;;
-esac
-
-if test "$enable_test_coverage" = yes; then
-  save_WARN_CFLAGS=$WARN_CFLAGS
-  WARN_CFLAGS=
-  gl_WARN_ADD([-fprofile-arcs])
-  gl_WARN_ADD([-ftest-coverage])
-  COVERAGE_FLAGS=$WARN_CFLAGS
-  AC_SUBST([COVERAGE_CFLAGS], [$COVERAGE_FLAGS])
-  AC_SUBST([COVERAGE_LDFLAGS], [$COVERAGE_FLAGS])
-  WARN_CFLAGS=$save_WARN_CFLAGS
-fi
-
 LIBVIRT_ARG_ENABLE([TEST_OOM], [memory allocation failure checking], [no])
 case "$enable_test_oom" in
   yes|no) ;;
@@ -721,34 +771,6 @@ if test "$enable_test_locking" = "yes"; then
   AC_SUBST([LOCK_CHECKING_CFLAGS])
 fi
 AM_CONDITIONAL([WITH_CIL],[test "$enable_test_locking" = "yes"])
-
-dnl Check for gettext - don't go any newer than what RHEL 5 supports
-dnl
-dnl save and restore CPPFLAGS around gettext check as the internal iconv
-dnl check might leave -I/usr/local/include in CPPFLAGS on FreeBSD resulting
-dnl in the build picking up previously installed libvirt/libvirt.h instead
-dnl of the correct one from the source tree.
-dnl compute the difference between save_CPPFLAGS and CPPFLAGS and append it
-dnl to INCLUDES in order to preserve changes made by gettext but in a place
-dnl that does not break the build
-save_CPPFLAGS="$CPPFLAGS"
-AM_GNU_GETTEXT_VERSION([0.17])
-AM_GNU_GETTEXT([external])
-GETTEXT_CPPFLAGS=
-if test "x$save_CPPFLAGS" != "x$CPPFLAGS"; then
- set dummy $CPPFLAGS; shift
- for var
- do
-   case " $var " in
-     " $save_CPPFLAGS ") ;;
-     *) GETTEXT_CPPFLAGS="$GETTEXT_CPPFLAGS $var" ;;
-   esac
- done
-fi
-CPPFLAGS="$save_CPPFLAGS"
-AC_SUBST([GETTEXT_CPPFLAGS])
-
-ALL_LINGUAS=`cd "$srcdir/po" > /dev/null && ls *.po | sed 's+\.po$++'`
 
 dnl Cygwin, MinGW and MSVC checks
 LIBVIRT_WIN_CHECK_COMMON
@@ -889,6 +911,8 @@ AC_CONFIG_FILES([\
         Makefile src/Makefile include/libvirt/Makefile docs/Makefile \
         gnulib/lib/Makefile \
         gnulib/tests/Makefile \
+        .color_coded \
+        .ycm_extra_conf.py \
         libvirt.pc \
         libvirt-qemu.pc \
         libvirt-lxc.pc \
@@ -897,9 +921,8 @@ AC_CONFIG_FILES([\
         src/libvirt-qemu.pc \
         src/libvirt-lxc.pc \
         libvirt.spec mingw-libvirt.spec \
-        po/Makefile.in \
+        po/Makefile \
         include/libvirt/libvirt-common.h \
-        daemon/Makefile \
         examples/Makefile \
         tests/Makefile \
         tools/Makefile])
@@ -911,9 +934,7 @@ AC_MSG_NOTICE([=====================])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Drivers])
 AC_MSG_NOTICE([])
-LIBVIRT_DRIVER_RESULT_XEN
 LIBVIRT_DRIVER_RESULT_QEMU
-LIBVIRT_DRIVER_RESULT_UML
 LIBVIRT_DRIVER_RESULT_OPENVZ
 LIBVIRT_DRIVER_RESULT_VMWARE
 LIBVIRT_DRIVER_RESULT_VBOX
@@ -937,6 +958,7 @@ LIBVIRT_STORAGE_RESULT_DIR
 LIBVIRT_STORAGE_RESULT_FS
 LIBVIRT_STORAGE_RESULT_LVM
 LIBVIRT_STORAGE_RESULT_ISCSI
+LIBVIRT_STORAGE_RESULT_ISCSI_DIRECT
 LIBVIRT_STORAGE_RESULT_SCSI
 LIBVIRT_STORAGE_RESULT_MPATH
 LIBVIRT_STORAGE_RESULT_DISK
@@ -944,6 +966,7 @@ LIBVIRT_STORAGE_RESULT_RBD
 LIBVIRT_STORAGE_RESULT_SHEEPDOG
 LIBVIRT_STORAGE_RESULT_GLUSTER
 LIBVIRT_STORAGE_RESULT_ZFS
+LIBVIRT_STORAGE_RESULT_VSTORAGE
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
@@ -956,20 +979,24 @@ LIBVIRT_RESULT_DRIVER_MODULES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
+LIBVIRT_RESULT_ACL
 LIBVIRT_RESULT_APPARMOR
 LIBVIRT_RESULT_ATTR
 LIBVIRT_RESULT_AUDIT
 LIBVIRT_RESULT_AVAHI
+LIBVIRT_RESULT_BASH_COMPLETION
 LIBVIRT_RESULT_BLKID
 LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_CURL
 LIBVIRT_RESULT_DBUS
 LIBVIRT_RESULT_DLOPEN
 LIBVIRT_RESULT_FIREWALLD
+LIBVIRT_RESULT_FIREWALLD_ZONE
 LIBVIRT_RESULT_FUSE
 LIBVIRT_RESULT_GLUSTER
 LIBVIRT_RESULT_GNUTLS
 LIBVIRT_RESULT_HAL
+LIBVIRT_RESULT_LIBISCSI
 LIBVIRT_RESULT_LIBNL
 LIBVIRT_RESULT_LIBPCAP
 LIBVIRT_RESULT_LIBSSH
@@ -977,6 +1004,7 @@ LIBVIRT_RESULT_LIBXL
 LIBVIRT_RESULT_LIBXML
 LIBVIRT_RESULT_MACVTAP
 LIBVIRT_RESULT_NETCF
+LIBVIRT_RESULT_NLS
 LIBVIRT_RESULT_NSS
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_OPENWSMAN
@@ -992,7 +1020,6 @@ LIBVIRT_RESULT_SSH2
 LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_VIRTUALPORT
 LIBVIRT_RESULT_XDR
-LIBVIRT_RESULT_XEN
 LIBVIRT_RESULT_XENAPI
 LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([])
@@ -1003,8 +1030,7 @@ LIBVIRT_WIN_RESULT_WINDRES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([         Coverage: $enable_coverage])
-AC_MSG_NOTICE([        Alloc OOM: $enable_oom])
+AC_MSG_NOTICE([        Alloc OOM: $enable_test_oom])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
@@ -1013,7 +1039,6 @@ AC_MSG_NOTICE([       Use -Werror: $enable_werror])
 AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
 LIBVIRT_RESULT_DTRACE
 LIBVIRT_RESULT_NUMAD
-LIBVIRT_RESULT_XML_CATALOG
 LIBVIRT_RESULT_INIT_SCRIPT
 LIBVIRT_RESULT_CHRDEV_LOCK_FILES
 LIBVIRT_RESULT_DEFAULT_EDITOR

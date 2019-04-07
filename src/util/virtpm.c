@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Stefan Berger <stefanb@linux.vnet.ibm.com>
  */
 
 #include <config.h>
@@ -61,9 +59,7 @@ virTPMCreateCancelPath(const char *devpath)
                 VIR_FREE(path);
             }
             if (!path)
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("No usable sysfs TPM cancel file could be "
-                                 "found"));
+                ignore_value(VIR_STRDUP(path, "/dev/null"));
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("TPM device path %s is invalid"), devpath);

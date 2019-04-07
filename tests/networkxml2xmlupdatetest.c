@@ -1,9 +1,6 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -112,29 +109,29 @@ mymain(void)
     int ret = 0;
     unsigned int section;
 
-#define DO_TEST_FULL(name, updatexml, netxml, outxml, command, section,     \
-                     parentIndex, flags, expectFailure)                     \
-    do {                                                                    \
-        const struct testInfo info = {name, updatexml, netxml, outxml,      \
-                                      command, section, flags,              \
-                                      parentIndex, expectFailure};          \
-        if (virTestRun("Network XML-2-XML " name,                           \
-                       testCompareXMLToXMLHelper, &info) < 0)               \
-            ret = -1;                                                       \
+#define DO_TEST_FULL(name, updatexml, netxml, outxml, command, section, \
+                     parentIndex, flags, expectFailure) \
+    do { \
+        const struct testInfo info = {name, updatexml, netxml, outxml, \
+                                      command, section, flags, \
+                                      parentIndex, expectFailure}; \
+        if (virTestRun("Network XML-2-XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST(name, updatexml, netxml, outxml, command)                   \
+#define DO_TEST(name, updatexml, netxml, outxml, command) \
     DO_TEST_FULL(name, updatexml, netxml, outxml, command, section, -12435, \
                  0, false)
-#define DO_TEST_FAIL(name, updatexml, netxml, command)                      \
-    DO_TEST_FULL(name, updatexml, netxml, "n/a", command, section, -12345,  \
+#define DO_TEST_FAIL(name, updatexml, netxml, command) \
+    DO_TEST_FULL(name, updatexml, netxml, "n/a", command, section, -12345, \
                  0, true)
 
-#define DO_TEST_INDEX(name, updatexml, netxml, outxml, command, index)      \
-    DO_TEST_FULL(name, updatexml, netxml, outxml, command, section, index,  \
+#define DO_TEST_INDEX(name, updatexml, netxml, outxml, command, index) \
+    DO_TEST_FULL(name, updatexml, netxml, outxml, command, section, index, \
                  0, false)
-#define DO_TEST_INDEX_FAIL(name, updatexml, netxml, command, index)         \
-    DO_TEST_FULL(name, updatexml, netxml, "n/a", command, section, index,   \
+#define DO_TEST_INDEX_FAIL(name, updatexml, netxml, command, index) \
+    DO_TEST_FULL(name, updatexml, netxml, "n/a", command, section, index, \
                  0, true)
 
 
@@ -363,4 +360,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

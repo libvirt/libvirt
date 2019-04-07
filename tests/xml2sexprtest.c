@@ -1,19 +1,15 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
 
 #include "internal.h"
-#include "xen/xend_internal.h"
-#include "xen/xen_driver.h"
 #include "xenconfig/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "virstring.h"
+#include "libxl/libxl_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -23,32 +19,32 @@ static virDomainXMLOptionPtr xmlopt;
 static int
 testCompareFiles(const char *xml, const char *sexpr)
 {
-  char *gotsexpr = NULL;
-  int ret = -1;
-  virDomainDefPtr def = NULL;
+    char *gotsexpr = NULL;
+    int ret = -1;
+    virDomainDefPtr def = NULL;
 
-  if (!(def = virDomainDefParseFile(xml, caps, xmlopt, NULL,
-                                    VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-      goto fail;
+    if (!(def = virDomainDefParseFile(xml, caps, xmlopt, NULL,
+                                      VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+        goto fail;
 
-  if (!virDomainDefCheckABIStability(def, def)) {
-      fprintf(stderr, "ABI stability check failed on %s", xml);
-      goto fail;
-  }
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
+        fprintf(stderr, "ABI stability check failed on %s", xml);
+        goto fail;
+    }
 
-  if (!(gotsexpr = xenFormatSxpr(NULL, def)))
-      goto fail;
+    if (!(gotsexpr = xenFormatSxpr(NULL, def)))
+        goto fail;
 
-  if (virTestCompareToFile(gotsexpr, sexpr) < 0)
-      goto fail;
+    if (virTestCompareToFile(gotsexpr, sexpr) < 0)
+        goto fail;
 
-  ret = 0;
+    ret = 0;
 
  fail:
-  VIR_FREE(gotsexpr);
-  virDomainDefFree(def);
+    VIR_FREE(gotsexpr);
+    virDomainDefFree(def);
 
-  return ret;
+    return ret;
 }
 
 struct testInfo {
@@ -86,19 +82,19 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(in, out, name)                                         \
-    do {                                                               \
-        struct testInfo info = { in, out, name };                      \
-        virResetLastError();                                           \
-        if (virTestRun("Xen XML-2-SEXPR " in " -> " out,               \
-                       testCompareHelper, &info) < 0)                  \
-            ret = -1;                                                  \
+#define DO_TEST(in, out, name) \
+    do { \
+        struct testInfo info = { in, out, name }; \
+        virResetLastError(); \
+        if (virTestRun("Xen XML-2-SEXPR " in " -> " out, \
+                       testCompareHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
-    if (!(caps = testXenCapsInit()))
+    if (!(caps = testXLInitCaps()))
         return EXIT_FAILURE;
 
-    if (!(xmlopt = xenDomainXMLConfInit()))
+    if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
 
     DO_TEST("pv", "pv", "pvtest");
@@ -167,4 +163,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

@@ -19,15 +19,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
 #include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #if WITH_AVAHI
 # include <avahi-client/client.h>
@@ -128,7 +124,7 @@ static void virNetServerMDNSGroupCallback(AvahiEntryGroup *g ATTRIBUTE_UNUSED,
                   avahi_strerror(avahi_client_errno(group->mdns->client)));
 
         /* Some kind of failure happened while we were registering our services */
-        //avahi_simple_poll_quit(simple_poll);
+        /* avahi_simple_poll_quit(simple_poll); */
         break;
 
     case AVAHI_ENTRY_GROUP_UNCOMMITED:
@@ -231,7 +227,7 @@ static void virNetServerMDNSClientCallback(AvahiClient *c,
              * in AVAHI_SERVER_RUNNING state we will register them
              * again with the new host name. */
 
-            /* Fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
 
         case AVAHI_CLIENT_S_REGISTERING:
             /* The server records are now being established. This

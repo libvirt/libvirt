@@ -1,0 +1,18 @@
+<pool type='logical'>
+  <uuid>1c13165a-d0f4-3aee-b447-30fb38789091</uuid>
+  <capacity>99891544064</capacity>
+  <allocation>99220455424</allocation>
+  <available>671088640</available>
+  <source>
+    <name>zily</name>
+    <format type='lvm2'/>
+  </source>
+  <target>
+    <path>/dev/zily</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</pool>

@@ -77,27 +77,27 @@ mymain(void)
     testQemuCommandBuildObjectFromJSONData data1;
 
 #if !WITH_YAJL
-    fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
+    fputs("libvirt not compiled with JSON support, skipping this test\n", stderr);
     return EXIT_AM_SKIP;
 #endif
 
     virTestCounterReset("testQemuCommandBuildFromJSON");
 
-#define DO_TEST_COMMAND_FROM_JSON(PROPS, ARRAYFUNC, EXPECT)         \
-    do {                                                            \
-        data1.props = PROPS;                                        \
-        data1.expectprops = EXPECT;                                 \
-        data1.arrayfunc = ARRAYFUNC;                                \
-        if (virTestRun(virTestCounterNext(),                        \
-                       testQemuCommandBuildFromJSON,                \
-                       &data1) < 0)                                 \
-            ret = -1;                                               \
+#define DO_TEST_COMMAND_FROM_JSON(PROPS, ARRAYFUNC, EXPECT) \
+    do { \
+        data1.props = PROPS; \
+        data1.expectprops = EXPECT; \
+        data1.arrayfunc = ARRAYFUNC; \
+        if (virTestRun(virTestCounterNext(), \
+                       testQemuCommandBuildFromJSON, \
+                       &data1) < 0) \
+            ret = -1; \
      } while (0)
 
-#define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT)             \
+#define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT) \
     DO_TEST_COMMAND_FROM_JSON(PROPS, virQEMUBuildCommandLineJSONArrayBitmap, EXPECT)
 
-#define DO_TEST_COMMAND_DRIVE_FROM_JSON(PROPS, EXPECT)              \
+#define DO_TEST_COMMAND_DRIVE_FROM_JSON(PROPS, EXPECT) \
     DO_TEST_COMMAND_FROM_JSON(PROPS, virQEMUBuildCommandLineJSONArrayNumbered, EXPECT)
 
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{}", NULL);
@@ -155,4 +155,4 @@ mymain(void)
 
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

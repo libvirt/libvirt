@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Storage pool and volume XML format</h1>
 
     <ul id="toc"></ul>
 
-    <h2><a name="StoragePool">Storage pool XML</a></h2>
+    <h2><a id="StoragePool">Storage pool XML</a></h2>
 
     <p>
       Although all storage pool backends share the same public APIs and
@@ -19,16 +19,18 @@
       a single attribute <code>type</code>, which is one of <code>dir</code>,
       <code>fs</code>, <code>netfs</code>, <code>disk</code>,
       <code>iscsi</code>, <code>logical</code>, <code>scsi</code>
-      (all <span class="since">since 0.4.1</span>), <code>mpath</code>
-      (<span class="since">since 0.7.1</span>), <code>rbd</code>
-      (<span class="since">since 0.9.13</span>), <code>sheepdog</code>
-      (<span class="since">since 0.10.0</span>),
-      <code>gluster</code> (<span class="since">since
-      1.2.0</span>) or <code>zfs</code> (<span class="since">since
-      1.2.8</span>). This corresponds to the
+      (all <span class="since">since 0.4.1</span>),
+      <code>mpath</code> (<span class="since">since 0.7.1</span>),
+      <code>rbd</code> (<span class="since">since 0.9.13</span>),
+      <code>sheepdog</code> (<span class="since">since 0.10.0</span>),
+      <code>gluster</code> (<span class="since">since 1.2.0</span>),
+      <code>zfs</code> (<span class="since">since 1.2.8</span>),
+      <code>vstorage</code> (<span class="since">since 3.1.0</span>),
+      or <code>iscsi-direct</code> (<span class="since">since 4.7.0</span>).
+      This corresponds to the
       storage backend drivers listed further along in this document.
     </p>
-    <h3><a name="StoragePoolFirst">General metadata</a></h3>
+    <h3><a id="StoragePoolFirst">General metadata</a></h3>
 
     <pre>
 &lt;pool type="iscsi"&gt;
@@ -65,7 +67,7 @@
         pool. <span class="since">Since 0.4.1</span></dd>
     </dl>
 
-    <h3><a name="StoragePoolSource">Source elements</a></h3>
+    <h3><a id="StoragePoolSource">Source elements</a></h3>
 
     <p>
       A single <code>source</code> element is contained within the top level
@@ -120,15 +122,26 @@
 &lt;/source&gt;
 ...</pre>
 
+    <pre>
+...
+  &lt;source&gt;
+    &lt;host name='localhost'/&gt;
+    &lt;dir path='/var/lib/libvirt/images'/&gt;
+    &lt;format type='nfs'/&gt;
+    &lt;protocol ver='3'/&gt;
+  &lt;/source&gt;
+...</pre>
+
     <dl>
       <dt><code>device</code></dt>
       <dd>Provides the source for pools backed by physical devices
         (pool types <code>fs</code>, <code>logical</code>, <code>disk</code>,
-        <code>iscsi</code>, <code>zfs</code>).
+        <code>iscsi</code>, <code>iscsi-direct</code>, <code>zfs</code>,
+        <code>vstorage</code>).
         May be repeated multiple times depending on backend driver. Contains
         a required attribute <code>path</code> which is either the fully
         qualified path to the block device node or for <code>iscsi</code>
-        the iSCSI Qualified Name (IQN).
+        or <code>iscsi-direct</code> the iSCSI Qualified Name (IQN).
         <span class="since">Since 0.4.1</span>
         <p>An optional attribute <code>part_separator</code> for each
         <code>path</code> may be supplied. Valid values for the attribute
@@ -138,7 +151,10 @@
         causes libvirt to attempt to generate and find target volume path's
         using a "p" separator. The default algorithm used by device mapper
         is to add the "p" separator only when the source device path ends
-        with a number.
+        with a number; however, it's possible to configure the devmapper
+        device to not use 'user_friendly_names' thus creating partitions
+        with the "p" separator even when the device source path does not
+        end with a number.
         <span class="since">Since 1.3.1</span></p></dd>
       <dt><code>dir</code></dt>
       <dd>Provides the source for pools backed by directories (pool
@@ -203,18 +219,21 @@
         </dl>
         <dl>
           <dt><code>wwnn</code> and <code>wwpn</code></dt>
-          <dd>The "World Wide Node Name" (<code>wwnn</code>) and "World Wide
-            Port Name" (<code>wwpn</code>) are used by the "fc_host" adapter
-            to uniquely identify the device in the Fibre Channel storage fabric
-            (the device can be either a HBA or vHBA). Both wwnn and wwpn should
-            be specified. Use the command 'virsh nodedev-dumpxml' to determine
-            how to set the values for the wwnn/wwpn of a (v)HBA. The wwnn and
-            wwpn have very specific numerical format requirements based on the
-            hypervisor being used, thus care should be taken if you decide to
-            generate your own to follow the standards; otherwise, the pool
-            will fail to start with an opaque error message indicating failure
-            to write to the vport_create file during vport create/delete due
-            to "No such file or directory".
+          <dd>The required "World Wide Node Name" (<code>wwnn</code>) and
+            "World Wide Port Name" (<code>wwpn</code>) are used by the
+            "fc_host" adapter to uniquely identify the vHBA device in the
+            Fibre Channel storage fabric. If the vHBA device already exists
+            as a Node Device, then libvirt will use it; otherwise, the vHBA
+            will be created using the provided values. It is considered a
+            configuration error use the values from the HBA as those would
+            be for a "scsi_host" <code>type</code> pool instead. The
+            <code>wwnn</code> and <code>wwpn</code> have very specific
+            format requirements based on the hypervisor being used, thus
+            care should be taken if you decide to generate your own to
+            follow the standards; otherwise, the pool will fail to start
+            with an opaque error message indicating failure to write to
+            the vport_create file during vport create/delete due to
+            "No such file or directory".
             <span class="since">Since 1.0.4</span>
           </dd>
         </dl>
@@ -236,6 +255,23 @@
             used in order to ensure a new definition doesn't duplicate using
             the scsi_hostN of some existing storage pool.
             <span class="since">Since 1.0.4</span>
+          </dd>
+          <dt><code>parent_wwnn</code> and <code>parent_wwpn</code></dt>
+          <dd>Instead of the <code>parent</code> to specify which scsi_host
+            to use by name, it's possible to provide the wwnn and wwpn of
+            the parent to be used for the vHBA in order to ensure that
+            between reboots or after a hardware configuration change that
+            the scsi_host parent name doesn't change. Both the parent_wwnn
+            and parent_wwpn must be provided.
+            <span class="since">Since 3.0.0</span>
+          </dd>
+          <dt><code>parent_fabric_wwn</code></dt>
+          <dd>Instead of the <code>parent</code> to specify which scsi_host
+            to use by name, it's possible to provide the fabric_wwn on which
+            the scsi_host exists. This provides flexibility for choosing
+            a scsi_host that may be available on the fabric rather than
+            requiring a specific parent by wwnn or wwpn to be available.
+            <span class="since">Since 3.0.0</span>
           </dd>
           <dt><code>managed</code></dt>
           <dd>An optional attribute to instruct the SCSI storage backend to
@@ -310,6 +346,7 @@
       <dt><code>host</code></dt>
       <dd>Provides the source for pools backed by storage from a
         remote server (pool types <code>netfs</code>, <code>iscsi</code>,
+        <code>iscsi-direct</code>,
         <code>rbd</code>, <code>sheepdog</code>, <code>gluster</code>). Will be
         used in combination with a <code>directory</code>
         or <code>device</code> element. Contains an attribute <code>name</code>
@@ -324,11 +361,19 @@
         server. See the <a href="storage.html">storage driver page</a> for
         any restrictions for specific storage backends.
         <span class="since">Since 0.4.1</span></dd>
+      <dt><code>initiator</code></dt>
+      <dd>Required by the <code>iscsi-direct</code> pool in order to provide
+        the iSCSI Qualified Name (IQN) to communicate with the pool's
+        <code>device</code> target IQN. There is one sub-element
+        <code>iqn</code> with the <code>name</code> attribute to describe
+        the IQN for the initiator.
+        <span class="since">Since 4.7.0</span></dd>
       <dt><code>auth</code></dt>
       <dd>If present, the <code>auth</code> element provides the
         authentication credentials needed to access the source by the
         setting of the <code>type</code> attribute (pool
-        types <code>iscsi</code>, <code>rbd</code>). The <code>type</code>
+        types <code>iscsi</code>, <code>iscsi-direct</code>, <code>rbd</code>).
+        The <code>type</code>
         must be either "chap" or "ceph". Use "ceph" for
         Ceph RBD (Rados Block Device) network sources and use "iscsi" for CHAP
         (Challenge-Handshake Authentication Protocol) iSCSI
@@ -362,6 +407,12 @@
         LVM metadata type. All drivers are required to have a default
         value for this, so it is optional. <span class="since">Since 0.4.1</span></dd>
 
+      <dt><code>protocol</code></dt>
+      <dd>For a <code>netfs</code> Storage Pool provide a mechanism to
+        define which NFS protocol version number will be used to contact
+        the server's NFS service. The attribute <code>ver</code> accepts
+        an unsigned integer as the version number to use.
+        <span class="since">Since 5.1.0</span></dd>
       <dt><code>vendor</code></dt>
       <dd>Provides optional information about the vendor of the
         storage device. This contains a single
@@ -373,7 +424,7 @@
         is backend specific.  <span class="since">Since 0.8.4</span></dd>
     </dl>
 
-    <h3><a name="StoragePoolTarget">Target elements</a></h3>
+    <h3><a id="StoragePoolTarget">Target elements</a></h3>
 
     <p>
       A single <code>target</code> element is contained within the top level
@@ -423,39 +474,21 @@
         namespace. It provides information about the permissions to use for the
         final directory when the pool is built. There are 4 child elements.
         The <code>mode</code> element contains the octal permission set.
-        The <code>mode</code> defaults to 0755 when not provided.
+        The <code>mode</code> defaults to 0711 when not provided.
         The <code>owner</code> element contains the numeric user ID.
         The <code>group</code> element contains the numeric group ID.
         If <code>owner</code> or <code>group</code> aren't specified when
-        creating a directory, the values are inherited from the parent
-        directory. The <code>label</code> element contains the MAC (eg SELinux)
+        creating a directory, the UID and GID of the libvirtd process are used.
+        The <code>label</code> element contains the MAC (eg SELinux)
         label string.
         <span class="since">Since 0.4.1</span>
         For running directory or filesystem based pools, these fields
         will be filled with the values used by the existing directory.
         <span class="since">Since 1.2.16</span>
       </dd>
-      <dt><code>timestamps</code></dt>
-      <dd>Provides timing information about the volume. Up to four
-        sub-elements are present,
-        where <code>atime</code>, <code>btime</code>, <code>ctime</code>
-        and <code>mtime</code> hold the access, birth, change and
-        modification time of the volume, where known. The used time
-        format is &lt;seconds&gt;.&lt;nanoseconds&gt; since the
-        beginning of the epoch (1 Jan 1970). If nanosecond resolution
-        is 0 or otherwise unsupported by the host OS or filesystem,
-        then the nanoseconds part is omitted.  This is a readonly
-        attribute and is ignored when creating a volume.
-        <span class="since">Since 0.10.0</span>
-      </dd>
-      <dt><code>encryption</code></dt>
-      <dd>If present, specifies how the volume is encrypted.  See
-        the <a href="formatstorageencryption.html">Storage Encryption</a> page
-        for more information.
-      </dd>
     </dl>
 
-    <h3><a name="StoragePoolExtents">Device extents</a></h3>
+    <h3><a id="StoragePoolExtents">Device extents</a></h3>
 
     <p>
       If a storage pool exposes information about its underlying
@@ -475,7 +508,146 @@
       device, measured in bytes.  <span class="since">Since 0.4.1</span>
     </p>
 
-    <h2><a name="StorageVol">Storage volume XML</a></h2>
+    <h3><a id="StoragePoolRefresh">Refresh overrides</a></h3>
+
+    <p>
+      The optional <code>refresh</code> element can control how the pool and
+      associated volumes are refreshed (pool type <code>rbd</code>). The
+      <code>allocation</code> attribute of the <code>volume</code> child element
+      controls the method used for computing the allocation of a volume. The
+      valid attribute values are <code>default</code> to compute the actual
+      usage or <code>capacity</code> to use the logical capacity for cases where
+      computing the allocation is too expensive. The following XML snippet
+      shows the syntax:
+      <pre>
+&lt;pool type="rbd"&gt;
+  &lt;name&gt;myrbdpool&lt;/name&gt;
+...
+  &lt;source/&gt;
+...
+  &lt;refresh&gt;
+    &lt;volume allocation='capacity'/&gt;
+  &lt;/refresh&gt;
+...
+&lt;/pool&gt;
+</pre>
+      <span class="since">Since 5.2.0</span>
+    </p>
+
+    <h3><a id="StoragePoolNamespaces">Storage Pool Namespaces</a></h3>
+
+    <p>
+      Usage of Storage Pool Namespaces provides a mechanism to provide
+      pool type specific data in a free form or arbitrary manner via
+      XML syntax targeted solely for the needs of the specific pool type
+      which is not otherwise supported in standard XML. For the "fs" and
+      "netfs" pool types this provides a mechanism to provide additional
+      mount options on the command line. For the "rbd" pool this provides
+      a mechanism to override default settings for RBD configuration options.
+    </p>
+    <p>
+      Usage of namespaces comes with no support guarantees. It is intended
+      for developers testing out a concept prior to requesting an explicitly
+      supported XML option in libvirt, and thus should never be used in
+      production.
+    </p>
+    <dl>
+      <dt><code>fs:mount_opts</code></dt>
+      <dd>Provides an XML namespace mechanism to optionally utilize
+        specifically named options for the mount command via the "-o"
+        option for the <code>fs</code> or <code>netfs</code> type storage
+        pools. In order to designate that the Storage Pool will be using
+        the mechanism, the <code>pool</code> element must be modified to
+        provide the XML namespace attribute syntax as follows:
+
+        <p>
+        xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'
+        </p>
+
+        <p>
+        The <code>fs:mount_opts</code> defines the mount options by
+        specifying multiple <code>fs:option</code> subelements with
+        the attribute <code>name</code> specifying the mount option to
+        be added. The value of the named option is not checked since
+        it's possible options don't exist on all distributions. It is
+        expected that proper and valid options will be supplied for the
+        target host.
+        </p>
+
+        The following XML snippet shows the syntax required in order to
+        utilize for a netfs pool:
+      <pre>
+&lt;pool type="netfs" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'&gt;
+  &lt;name&gt;nfsimages&lt;/name&gt;
+...
+  &lt;source&gt;
+...
+  &lt;/source&gt;
+...
+  &lt;target&gt;
+...
+  &lt;/target&gt;
+  &lt;fs:mount_opts&gt;
+    &lt;fs:option name='sync'/&gt;
+    &lt;fs:option name='lazytime'/&gt;
+  &lt;/fs:mount_opts&gt;
+&lt;/pool&gt;
+...</pre>
+
+      <span class="since">Since 5.1.0.</span></dd>
+
+      <dt><code>rbd:config_opts</code></dt>
+      <dd>Provides an XML namespace mechanism to optionally utilize
+        specifically named options for the RBD configuration options
+        via the rados_conf_set API for the <code>rbd</code> type
+        storage pools. In order to designate that the Storage Pool
+        will be using the mechanism, the <code>pool</code> element
+        must be modified to provide the XML namespace attribute
+        syntax as follows:
+
+        <p>
+        xmlns:rbd='http://libvirt.org/schemas/storagepool/rbd/1.0'
+        </p>
+
+        <p>
+        The <code>rbd:config_opts</code> defines the configuration options
+        by specifying multiple <code>rbd:option</code> subelements with
+        the attribute <code>name</code> specifying the configuration option
+        to be added and <code>value</code> specifying the configuration
+        option value. The name and value for each option is only checked
+        to be not empty. The name and value provided are not checked since
+        it's possible options don't exist on all distributions. It is
+        expected that proper and valid options will be supplied for the
+        target host.
+        </p>
+
+        The following XML snippet shows the syntax required in order to
+        utilize
+      <pre>
+&lt;pool type="rbd" xmlns:rbd='http://libvirt.org/schemas/storagepool/rbd/1.0'&gt;
+  &lt;name&gt;myrbdpool&lt;/name&gt;
+...
+  &lt;source&gt;
+...
+  &lt;/source&gt;
+...
+  &lt;target&gt;
+...
+  &lt;/target&gt;
+...
+  &lt;rbd:config_opts&gt;
+    &lt;rbd:option name='client_mount_timeout' value='45'/&gt;
+    &lt;rbd:option name='rados_mon_op_timeout' value='20'/&gt;
+    &lt;rbd:option name='rados_osd_op_timeout' value='10'/&gt;
+  &lt;/rbd:config_opts&gt;
+&lt;/pool&gt;
+</pre>
+
+      <span class="since">Since 5.1.0.</span></dd>
+
+    </dl>
+
+    <h2><a id="StorageVol">Storage volume XML</a></h2>
     <p>
       A storage volume will generally be either a file or a device
       node; <span class="since">since 1.2.0</span>, an optional
@@ -485,7 +657,7 @@
       XML format is available <span class="since">since 0.4.1</span>
     </p>
 
-    <h3><a name="StorageVolFirst">General metadata</a></h3>
+    <h3><a id="StorageVolFirst">General metadata</a></h3>
 
     <pre>
 &lt;volume type='file'&gt;
@@ -564,7 +736,7 @@
         on the local host. <span class="since">Since 0.4.1</span></dd>
     </dl>
 
-    <h3><a name="StorageVolTarget">Target elements</a></h3>
+    <h3><a id="StorageVolTarget">Target elements</a></h3>
 
     <p>
       A single <code>target</code> element is contained within the top level
@@ -630,12 +802,30 @@
         The <code>owner</code> element contains the numeric user ID.
         The <code>group</code> element contains the numeric group ID.
         If <code>owner</code> or <code>group</code> aren't specified when
-        creating a supported volume, the values are inherited from the parent
-        directory. The <code>label</code> element contains the MAC (eg SELinux)
+        creating a supported volume, the UID and GID of the libvirtd process
+        are used. The <code>label</code> element contains the MAC (eg SELinux)
         label string.
         For existing directory or filesystem based volumes, these fields
         will be filled with the values used by the existing file.
         <span class="since">Since 0.4.1</span>
+      </dd>
+      <dt><code>timestamps</code></dt>
+      <dd>Provides timing information about the volume. Up to four
+        sub-elements are present,
+        where <code>atime</code>, <code>btime</code>, <code>ctime</code>
+        and <code>mtime</code> hold the access, birth, change and
+        modification time of the volume, where known. The used time
+        format is &lt;seconds&gt;.&lt;nanoseconds&gt; since the
+        beginning of the epoch (1 Jan 1970). If nanosecond resolution
+        is 0 or otherwise unsupported by the host OS or filesystem,
+        then the nanoseconds part is omitted.  This is a readonly
+        attribute and is ignored when creating a volume.
+        <span class="since">Since 0.10.0</span>
+      </dd>
+      <dt><code>encryption</code></dt>
+      <dd>If present, specifies how the volume is encrypted.  See
+        the <a href="formatstorageencryption.html">Storage Encryption</a> page
+        for more information.
       </dd>
       <dt><code>compat</code></dt>
       <dd>Specify compatibility level. So far, this is only used for
@@ -662,7 +852,7 @@
       </dd>
     </dl>
 
-    <h3><a name="StorageVolBacking">Backing store elements</a></h3>
+    <h3><a id="StorageVolBacking">Backing store elements</a></h3>
 
     <p>
       A single <code>backingStore</code> element is contained within the top level
@@ -708,14 +898,14 @@
       </dd>
     </dl>
 
-    <h2><a name="examples">Example configuration</a></h2>
+    <h2><a id="examples">Example configuration</a></h2>
 
     <p>
       Here are a couple of examples, for a more complete set demonstrating
       every type of storage pool, consult the <a href="storage.html">storage driver page</a>
     </p>
 
-    <h3><a name="exampleFile">File based storage pool</a></h3>
+    <h3><a id="exampleFile">File based storage pool</a></h3>
 
     <pre>
 &lt;pool type="dir"&gt;
@@ -725,7 +915,7 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3><a name="exampleISCSI">iSCSI based storage pool</a></h3>
+    <h3><a id="exampleISCSI">iSCSI based storage pool</a></h3>
 
     <pre>
 &lt;pool type="iscsi"&gt;
@@ -742,7 +932,7 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3><a name="exampleVol">Storage volume</a></h3>
+    <h3><a id="exampleVol">Storage volume</a></h3>
 
     <pre>
 &lt;volume&gt;
@@ -760,7 +950,7 @@
   &lt;/target&gt;
 &lt;/volume&gt;</pre>
 
-    <h3><a name="exampleLuks">Storage volume using LUKS</a></h3>
+    <h3><a id="exampleLuks">Storage volume using LUKS</a></h3>
 
     <pre>
 &lt;volume&gt;

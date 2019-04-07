@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
         <h1>VMware Workstation / Player / Fusion hypervisors driver</h1>
@@ -15,7 +15,7 @@
     from <a href="http://www.vmware.com/support/developer/vix-api/">here</a>.
     </p>
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
@@ -51,7 +51,7 @@ vmwarews+tcp://user@example.com/session  (remote access to VMware Workstation, S
 vmwarews+ssh://user@example.com/session  (remote access to VMware Workstation, SSH tunnelled)
 </pre>
 
-    <h2><a name="xmlconfig">Example domain XML config</a></h2>
+    <h2><a id="xmlconfig">Example domain XML config</a></h2>
 
 <pre>
 &lt;domain type='vmware'&gt;

@@ -1,0 +1,11 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>EPYC</model>
+  <vendor>AMD</vendor>
+  <feature policy='require' name='x2apic'/>
+  <feature policy='require' name='tsc-deadline'/>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='cmp_legacy'/>
+  <feature policy='disable' name='monitor'/>
+  <feature policy='disable' name='sha-ni'/>
+</cpu>

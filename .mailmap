@@ -20,7 +20,6 @@
 <jfehlig@suse.com> <jfehlig@novell.com>
 <jfehlig@suse.com> <jfehlig@linux-ypgk.site>
 <jclift@redhat.com> <justin@salasaga.org>
-<berrange@redhat.com> <dan@berrange.com>
 <soren@linux2go.dk> <soren@canonical.com>
 <cfergeau@redhat.com> <teuf@gnome.org>
 <wency@cn.fujitsu.com> <wency cn fujitsu com>
@@ -39,6 +38,11 @@
 <zhlcindy@linux.vnet.ibm.com> <zhlcindy@gmail.com>
 <serge.hallyn@canonical.com> <serue@us.ibm.com>
 <pritesh.kothari@sun.com> <Pritesh.Kothari@Sun.COM>
+<cbosdonnat@suse.com> <cedric.bosdonnat@free.fr>
+<mnestratov@virtuozzo.com> <mnestratov@parallels.com>
+<nshirokovskiy@virtuozzo.com> <nshirokovskiy@parallels.com>
+<jyang@redhat.com> <osier@yunify.com>
+<kkoukiou@redhat.com> <k.koukiou@googlemail.com>
 
 # Name consolidation:
 # Preferred author spelling <preferred email>
@@ -56,8 +60,16 @@ Aurelien Rougemont <beorn@binaries.fr>
 Serge E. Hallyn <serge.hallyn@canonical.com>
 Henrik Persson E <henrik.e.persson@ericsson.com>
 Philipp Hahn <hahn@univention.de>
-Marco Bozzolan <bozzolan@gmail.com>
-Marco Bozzolan <redshift@gmx.com>
 Pritesh Kothari <pritesh.kothari@sun.com>
 Wang Yufei (James) <james.wangyufei@huawei.com>
 Deepak C Shetty <dpkshetty@gmail.com>
+Dave Allan <dallan@redhat.com>
+Richard W.M. Jones <rjones@redhat.com>
+
+# Non-trivial consolidation:
+# see git documentation for information about the format
+Daniel P. Berrangé <berrange@redhat.com>
+Daniel P. Berrangé <berrange@redhat.com> <dan@berrange.com>
+Michal Prívozník <mprivozn@redhat.com>
+Michal Prívozník <mprivozn@redhat.com> <miso.privoznik@gmail.com>
+Marco Bozzolan <bozzolan@gmail.com> <redshift@gmx.com>

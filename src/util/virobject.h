@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_OBJECT_H__
-# define __VIR_OBJECT_H__
+#ifndef LIBVIRT_VIROBJECT_H
+# define LIBVIRT_VIROBJECT_H
 
 # include "internal.h"
 # include "virthread.h"
@@ -33,6 +33,9 @@ typedef virObject *virObjectPtr;
 
 typedef struct _virObjectLockable virObjectLockable;
 typedef virObjectLockable *virObjectLockablePtr;
+
+typedef struct _virObjectRWLockable virObjectRWLockable;
+typedef virObjectRWLockable *virObjectRWLockablePtr;
 
 typedef void (*virObjectDisposeCallback)(void *obj);
 
@@ -59,47 +62,115 @@ struct _virObjectLockable {
     virMutex lock;
 };
 
+struct _virObjectRWLockable {
+    virObject parent;
+    virRWLock lock;
+};
 
 virClassPtr virClassForObject(void);
 virClassPtr virClassForObjectLockable(void);
+virClassPtr virClassForObjectRWLockable(void);
 
 # ifndef VIR_PARENT_REQUIRED
 #  define VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(1)
 # endif
-virClassPtr virClassNew(virClassPtr parent,
-                        const char *name,
-                        size_t objectSize,
-                        virObjectDisposeCallback dispose)
+
+/* Assign the class description nameClass to represent struct @name
+ * (which must have an object-based 'parent' member at offset 0), and
+ * with parent class @prnt. nameDispose must exist as either a
+ * function or as a macro defined to NULL.
+ */
+# define VIR_CLASS_NEW(name, prnt) \
+    verify_expr(offsetof(name, parent) == 0, \
+      (name##Class = virClassNew(prnt, #name, sizeof(name), \
+                                 sizeof(((name *)NULL)->parent), \
+                                 name##Dispose)))
+
+virClassPtr
+virClassNew(virClassPtr parent,
+            const char *name,
+            size_t objectSize,
+            size_t parentSize,
+            virObjectDisposeCallback dispose)
     VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(2);
 
-const char *virClassName(virClassPtr klass)
+const char *
+virClassName(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
 
-bool virClassIsDerivedFrom(virClassPtr klass,
-                           virClassPtr parent)
+bool
+virClassIsDerivedFrom(virClassPtr klass,
+                      virClassPtr parent)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void *virObjectNew(virClassPtr klass)
+void *
+virObjectNew(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
-bool virObjectUnref(void *obj);
-void *virObjectRef(void *obj);
 
-bool virObjectIsClass(void *obj,
-                      virClassPtr klass)
+bool
+virObjectUnref(void *obj);
+
+void
+virObjectAutoUnref(void *objptr);
+
+/**
+ * VIR_AUTOUNREF:
+ * @type: type of an virObject subclass to be unref'd automatically
+ *
+ * Declares a variable of @type which will be automatically unref'd when
+ * control goes out of the scope.
+ */
+# define VIR_AUTOUNREF(type) \
+    __attribute__((cleanup(virObjectAutoUnref))) type
+
+void *
+virObjectRef(void *obj);
+
+bool
+virObjectIsClass(void *obj,
+                 virClassPtr klass)
     ATTRIBUTE_NONNULL(2);
 
-void virObjectFreeCallback(void *opaque);
-void virObjectFreeHashData(void *opaque, const void *name);
+void
+virObjectFreeCallback(void *opaque);
 
-void *virObjectLockableNew(virClassPtr klass)
+void
+virObjectFreeHashData(void *opaque,
+                      const void *name);
+
+void *
+virObjectLockableNew(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
 
-void virObjectLock(void *lockableobj)
-    ATTRIBUTE_NONNULL(1);
-void virObjectUnlock(void *lockableobj)
+void *
+virObjectRWLockableNew(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
 
-void virObjectListFree(void *list);
-void virObjectListFreeCount(void *list, size_t count);
+void
+virObjectLock(void *lockableobj)
+    ATTRIBUTE_NONNULL(1);
 
-#endif /* __VIR_OBJECT_H */
+void
+virObjectRWLockRead(void *lockableobj)
+    ATTRIBUTE_NONNULL(1);
+
+void
+virObjectRWLockWrite(void *lockableobj)
+    ATTRIBUTE_NONNULL(1);
+
+void
+virObjectUnlock(void *lockableobj)
+    ATTRIBUTE_NONNULL(1);
+
+void
+virObjectRWUnlock(void *lockableobj)
+    ATTRIBUTE_NONNULL(1);
+
+void
+virObjectListFree(void *list);
+
+void
+virObjectListFreeCount(void *list,
+                       size_t count);
+
+#endif /* LIBVIRT_VIROBJECT_H */

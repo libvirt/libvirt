@@ -1,0 +1,329 @@
+[
+    {
+      "device": "drive-ide0-0-0",
+      "parent": {
+        "stats": {
+          "flush_total_time_ns": 0,
+          "wr_highest_offset": 0,
+          "wr_total_time_ns": 0,
+          "failed_wr_operations": 0,
+          "failed_rd_operations": 0,
+          "wr_merged": 0,
+          "wr_bytes": 0,
+          "timed_stats": [
+
+          ],
+          "failed_flush_operations": 0,
+          "account_invalid": false,
+          "rd_total_time_ns": 0,
+          "flush_operations": 0,
+          "wr_operations": 0,
+          "rd_merged": 0,
+          "rd_bytes": 0,
+          "invalid_flush_operations": 0,
+          "account_failed": false,
+          "rd_operations": 0,
+          "invalid_wr_operations": 0,
+          "invalid_rd_operations": 0
+        },
+        "node-name": "#block092"
+      },
+      "stats": {
+        "flush_total_time_ns": 0,
+        "wr_highest_offset": 0,
+        "wr_total_time_ns": 0,
+        "failed_wr_operations": 0,
+        "failed_rd_operations": 0,
+        "wr_merged": 0,
+        "wr_bytes": 0,
+        "timed_stats": [
+
+        ],
+        "failed_flush_operations": 0,
+        "account_invalid": true,
+        "rd_total_time_ns": 61904,
+        "flush_operations": 0,
+        "wr_operations": 0,
+        "rd_merged": 0,
+        "rd_bytes": 512,
+        "invalid_flush_operations": 0,
+        "account_failed": true,
+        "idle_time_ns": 309814663943,
+        "rd_operations": 1,
+        "invalid_wr_operations": 0,
+        "invalid_rd_operations": 0
+      },
+      "backing": {
+        "parent": {
+          "stats": {
+            "flush_total_time_ns": 0,
+            "wr_highest_offset": 0,
+            "wr_total_time_ns": 0,
+            "failed_wr_operations": 0,
+            "failed_rd_operations": 0,
+            "wr_merged": 0,
+            "wr_bytes": 0,
+            "timed_stats": [
+
+            ],
+            "failed_flush_operations": 0,
+            "account_invalid": false,
+            "rd_total_time_ns": 0,
+            "flush_operations": 0,
+            "wr_operations": 0,
+            "rd_merged": 0,
+            "rd_bytes": 0,
+            "invalid_flush_operations": 0,
+            "account_failed": false,
+            "rd_operations": 0,
+            "invalid_wr_operations": 0,
+            "invalid_rd_operations": 0
+          },
+          "node-name": "#block232"
+        },
+        "stats": {
+          "flush_total_time_ns": 0,
+          "wr_highest_offset": 0,
+          "wr_total_time_ns": 0,
+          "failed_wr_operations": 0,
+          "failed_rd_operations": 0,
+          "wr_merged": 0,
+          "wr_bytes": 0,
+          "timed_stats": [
+
+          ],
+          "failed_flush_operations": 0,
+          "account_invalid": false,
+          "rd_total_time_ns": 0,
+          "flush_operations": 0,
+          "wr_operations": 0,
+          "rd_merged": 0,
+          "rd_bytes": 0,
+          "invalid_flush_operations": 0,
+          "account_failed": false,
+          "rd_operations": 0,
+          "invalid_wr_operations": 0,
+          "invalid_rd_operations": 0
+        },
+        "backing": {
+          "parent": {
+            "stats": {
+              "flush_total_time_ns": 0,
+              "wr_highest_offset": 0,
+              "wr_total_time_ns": 0,
+              "failed_wr_operations": 0,
+              "failed_rd_operations": 0,
+              "wr_merged": 0,
+              "wr_bytes": 0,
+              "timed_stats": [
+
+              ],
+              "failed_flush_operations": 0,
+              "account_invalid": false,
+              "rd_total_time_ns": 0,
+              "flush_operations": 0,
+              "wr_operations": 0,
+              "rd_merged": 0,
+              "rd_bytes": 0,
+              "invalid_flush_operations": 0,
+              "account_failed": false,
+              "rd_operations": 0,
+              "invalid_wr_operations": 0,
+              "invalid_rd_operations": 0
+            },
+            "node-name": "#block442"
+          },
+          "stats": {
+            "flush_total_time_ns": 0,
+            "wr_highest_offset": 0,
+            "wr_total_time_ns": 0,
+            "failed_wr_operations": 0,
+            "failed_rd_operations": 0,
+            "wr_merged": 0,
+            "wr_bytes": 0,
+            "timed_stats": [
+
+            ],
+            "failed_flush_operations": 0,
+            "account_invalid": false,
+            "rd_total_time_ns": 0,
+            "flush_operations": 0,
+            "wr_operations": 0,
+            "rd_merged": 0,
+            "rd_bytes": 0,
+            "invalid_flush_operations": 0,
+            "account_failed": false,
+            "rd_operations": 0,
+            "invalid_wr_operations": 0,
+            "invalid_rd_operations": 0
+          },
+          "backing": {
+            "parent": {
+              "stats": {
+                "flush_total_time_ns": 0,
+                "wr_highest_offset": 0,
+                "wr_total_time_ns": 0,
+                "failed_wr_operations": 0,
+                "failed_rd_operations": 0,
+                "wr_merged": 0,
+                "wr_bytes": 0,
+                "timed_stats": [
+
+                ],
+                "failed_flush_operations": 0,
+                "account_invalid": false,
+                "rd_total_time_ns": 0,
+                "flush_operations": 0,
+                "wr_operations": 0,
+                "rd_merged": 0,
+                "rd_bytes": 0,
+                "invalid_flush_operations": 0,
+                "account_failed": false,
+                "rd_operations": 0,
+                "invalid_wr_operations": 0,
+                "invalid_rd_operations": 0
+              },
+              "node-name": "#block614"
+            },
+            "stats": {
+              "flush_total_time_ns": 0,
+              "wr_highest_offset": 0,
+              "wr_total_time_ns": 0,
+              "failed_wr_operations": 0,
+              "failed_rd_operations": 0,
+              "wr_merged": 0,
+              "wr_bytes": 0,
+              "timed_stats": [
+
+              ],
+              "failed_flush_operations": 0,
+              "account_invalid": false,
+              "rd_total_time_ns": 0,
+              "flush_operations": 0,
+              "wr_operations": 0,
+              "rd_merged": 0,
+              "rd_bytes": 0,
+              "invalid_flush_operations": 0,
+              "account_failed": false,
+              "rd_operations": 0,
+              "invalid_wr_operations": 0,
+              "invalid_rd_operations": 0
+            },
+            "node-name": "#block797"
+          },
+          "node-name": "#block548"
+        },
+        "node-name": "#block346"
+      },
+      "node-name": "#block118"
+    },
+    {
+      "device": "drive-ide0-0-1",
+      "parent": {
+        "stats": {
+          "flush_total_time_ns": 0,
+          "wr_highest_offset": 0,
+          "wr_total_time_ns": 0,
+          "failed_wr_operations": 0,
+          "failed_rd_operations": 0,
+          "wr_merged": 0,
+          "wr_bytes": 0,
+          "timed_stats": [
+
+          ],
+          "failed_flush_operations": 0,
+          "account_invalid": false,
+          "rd_total_time_ns": 0,
+          "flush_operations": 0,
+          "wr_operations": 0,
+          "rd_merged": 0,
+          "rd_bytes": 0,
+          "invalid_flush_operations": 0,
+          "account_failed": false,
+          "rd_operations": 0,
+          "invalid_wr_operations": 0,
+          "invalid_rd_operations": 0
+        },
+        "node-name": "#block1107"
+      },
+      "stats": {
+        "flush_total_time_ns": 0,
+        "wr_highest_offset": 0,
+        "wr_total_time_ns": 0,
+        "failed_wr_operations": 0,
+        "failed_rd_operations": 0,
+        "wr_merged": 0,
+        "wr_bytes": 0,
+        "timed_stats": [
+
+        ],
+        "failed_flush_operations": 0,
+        "account_invalid": true,
+        "rd_total_time_ns": 0,
+        "flush_operations": 0,
+        "wr_operations": 0,
+        "rd_merged": 0,
+        "rd_bytes": 0,
+        "invalid_flush_operations": 0,
+        "account_failed": true,
+        "rd_operations": 0,
+        "invalid_wr_operations": 0,
+        "invalid_rd_operations": 0
+      },
+      "backing": {
+        "parent": {
+          "stats": {
+            "flush_total_time_ns": 0,
+            "wr_highest_offset": 0,
+            "wr_total_time_ns": 0,
+            "failed_wr_operations": 0,
+            "failed_rd_operations": 0,
+            "wr_merged": 0,
+            "wr_bytes": 0,
+            "timed_stats": [
+
+            ],
+            "failed_flush_operations": 0,
+            "account_invalid": false,
+            "rd_total_time_ns": 0,
+            "flush_operations": 0,
+            "wr_operations": 0,
+            "rd_merged": 0,
+            "rd_bytes": 0,
+            "invalid_flush_operations": 0,
+            "account_failed": false,
+            "rd_operations": 0,
+            "invalid_wr_operations": 0,
+            "invalid_rd_operations": 0
+          },
+          "node-name": "#block800"
+        },
+        "stats": {
+          "flush_total_time_ns": 0,
+          "wr_highest_offset": 0,
+          "wr_total_time_ns": 0,
+          "failed_wr_operations": 0,
+          "failed_rd_operations": 0,
+          "wr_merged": 0,
+          "wr_bytes": 0,
+          "timed_stats": [
+
+          ],
+          "failed_flush_operations": 0,
+          "account_invalid": false,
+          "rd_total_time_ns": 0,
+          "flush_operations": 0,
+          "wr_operations": 0,
+          "rd_merged": 0,
+          "rd_bytes": 0,
+          "invalid_flush_operations": 0,
+          "account_failed": false,
+          "rd_operations": 0,
+          "invalid_wr_operations": 0,
+          "invalid_rd_operations": 0
+        },
+        "node-name": "#block927"
+      },
+      "node-name": "#block1290"
+    }
+]

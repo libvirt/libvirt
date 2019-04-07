@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_EVENT_POLL_H__
-# define __VIR_EVENT_POLL_H__
+#ifndef LIBVIRT_VIREVENTPOLL_H
+# define LIBVIRT_VIREVENTPOLL_H
 
 # include "internal.h"
 
@@ -124,9 +122,9 @@ int virEventPollToNativeEvents(int events);
 /**
  * virEventPollInterrupt: wakeup any thread waiting in poll()
  *
- * return -1 if wakup failed
+ * return -1 if wakeup failed
  */
 int virEventPollInterrupt(void);
 
 
-#endif /* __VIRTD_EVENT_H__ */
+#endif /* LIBVIRT_VIREVENTPOLL_H */

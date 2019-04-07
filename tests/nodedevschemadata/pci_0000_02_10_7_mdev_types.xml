@@ -1,0 +1,33 @@
+<device>
+  <name>pci_0000_02_10_7</name>
+  <parent>pci_0000_00_04_0</parent>
+  <capability type='pci'>
+    <class>0xffffff</class>
+    <domain>0</domain>
+    <bus>2</bus>
+    <slot>16</slot>
+    <function>7</function>
+    <product id='0x10ca'>82576 Virtual Function</product>
+    <vendor id='0x8086'>Intel Corporation</vendor>
+    <capability type='mdev_types'>
+      <type id='foo1'>
+        <name>bar1</name>
+        <deviceAPI>vfio-pci</deviceAPI>
+        <availableInstances>1</availableInstances>
+      </type>
+      <type id='foo2'>
+        <name>bar2</name>
+        <deviceAPI>vfio-pci</deviceAPI>
+        <availableInstances>2</availableInstances>
+      </type>
+    </capability>
+    <iommuGroup number='31'>
+      <address domain='0x0000' bus='0x02' slot='0x10' function='0x7'/>
+    </iommuGroup>
+    <numa node='0'/>
+    <pci-express>
+      <link validity='cap' port='0' speed='2.5' width='4'/>
+      <link validity='sta' width='0'/>
+    </pci-express>
+  </capability>
+</device>

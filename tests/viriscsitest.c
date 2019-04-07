@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Jan Tomko <jtomko@redhat.com>
  */
 
 #include <config.h>
@@ -29,8 +27,7 @@ main(void)
     return EXIT_AM_SKIP;
 }
 #else
-# define __VIR_COMMAND_PRIV_H_ALLOW__
-
+# define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
 # include "viriscsi.h"
 
@@ -60,10 +57,19 @@ const char *iscsiadmSendtargetsOutput =
     "10.20.30.40:3260,1 iqn.2008-04.example:example1:iscsi.bar\n"
     "10.20.30.40:3260,1 iqn.2009-04.example:example1:iscsi.seven\n";
 
-struct testSessionInfo {
-    const char *device_path;
-    int output_version;
-    const char *expected_session;
+const char *iscsiadmIfaceDefaultOutput =
+    "default tcp,<empty>,<empty>,<empty>,<empty>\n"
+    "iser iser,<empty>,<empty>,<empty>,<empty>\n";
+
+const char *iscsiadmIfaceIfaceOutput =
+    "default tcp,<empty>,<empty>,<empty>,<empty>\n"
+    "iser iser,<empty>,<empty>,<empty>,<empty>\n"
+    "libvirt-iface-03020100 tcp,<empty>,<empty>,<empty>,iqn.2004-06.example:example1:initiator\n";
+
+
+struct testIscsiadmCbData {
+    bool output_version;
+    bool iface_created;
 };
 
 static void testIscsiadmCb(const char *const*args,
@@ -74,12 +80,13 @@ static void testIscsiadmCb(const char *const*args,
                            int *status,
                            void *opaque)
 {
-    int *output_version = opaque;
+    struct testIscsiadmCbData *data = opaque;
+
     if (args[0] && STREQ(args[0], ISCSIADM) &&
         args[1] && STREQ(args[1], "--mode") &&
         args[2] && STREQ(args[2], "session") &&
         args[3] == NULL) {
-        if (*output_version == 1)
+        if (data->output_version)
             ignore_value(VIR_STRDUP(*output, iscsiadmSessionOutputNonFlash));
         else
             ignore_value(VIR_STRDUP(*output, iscsiadmSessionOutput));
@@ -94,20 +101,121 @@ static void testIscsiadmCb(const char *const*args,
                args[8] && STREQ(args[8], "nonpersistent") &&
                args[9] == NULL) {
         ignore_value(VIR_STRDUP(*output, iscsiadmSendtargetsOutput));
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "node") &&
+               args[3] && STREQ(args[3], "--portal") &&
+               args[4] && STREQ(args[4], "10.20.30.40:3260,1") &&
+               args[5] && STREQ(args[5], "--targetname") &&
+               args[6] && STREQ(args[6], "iqn.2004-06.example:example1:iscsi.test") &&
+               args[7] && STREQ(args[7], "--login") &&
+               args[8] == NULL) {
+        /* Mocking real environment output is not needed for now.
+         * Example output from real environment:
+         *
+         * Logging in to [iface: default, \
+         *                target: iqn.2004-06.example:example1:iscsi.test, \
+         *                portal: 10.20.30.40:3260,1] (multiple)
+         * Login to [iface: default, \
+         *           target: iqn.2004-06.example:example1:iscsi.test, \
+         *           portal: 10.20.30.40:3260,1] successful.
+         */
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "iface") &&
+               args[3] == NULL) {
+        if (data->iface_created)
+            ignore_value(VIR_STRDUP(*output, iscsiadmIfaceIfaceOutput));
+        else
+            ignore_value(VIR_STRDUP(*output, iscsiadmIfaceDefaultOutput));
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "iface") &&
+               args[3] && STREQ(args[3], "--interface") &&
+               args[4] && STREQ(args[4], "libvirt-iface-03020100") &&
+               args[5] && STREQ(args[5], "--op") &&
+               args[6] && STREQ(args[6], "new") &&
+               args[7] == NULL) {
+        /* Mocking real environment output is not needed for now.
+         * Example output from real environment:
+         *
+         * New interface libvirt-iface-03020100 added
+         */
+        data->iface_created = true;
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "iface") &&
+               args[3] && STREQ(args[3], "--interface") &&
+               args[4] && STREQ(args[4], "libvirt-iface-03020100") &&
+               args[5] && STREQ(args[5], "--op") &&
+               args[6] && STREQ(args[6], "update") &&
+               args[7] && STREQ(args[7], "--name") &&
+               args[8] && STREQ(args[8], "iface.initiatorname") &&
+               args[9] && STREQ(args[9], "--value") &&
+               args[10] && STREQ(args[10], "iqn.2004-06.example:example1:initiator") &&
+               args[11] == NULL &&
+               data->iface_created) {
+        /* Mocking real environment output is not needed for now.
+         * Example output from real environment:
+         *
+         * libvirt-iface-03020100 updated.
+         */
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "discovery") &&
+               args[3] && STREQ(args[3], "--type") &&
+               args[4] && STREQ(args[4], "sendtargets") &&
+               args[5] && STREQ(args[5], "--portal") &&
+               args[6] && STREQ(args[6], "10.20.30.40:3260,1") &&
+               args[7] && STREQ(args[7], "--interface") &&
+               args[8] && STREQ(args[8], "libvirt-iface-03020100") &&
+               args[9] == NULL &&
+               data->iface_created) {
+        ignore_value(VIR_STRDUP(*output, iscsiadmSendtargetsOutput));
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "node") &&
+               args[3] && STREQ(args[3], "--portal") &&
+               args[4] && STREQ(args[4], "10.20.30.40:3260,1") &&
+               args[5] && STREQ(args[5], "--targetname") &&
+               args[6] && STREQ(args[6], "iqn.2004-06.example:example1:iscsi.test") &&
+               args[7] && STREQ(args[7], "--login") &&
+               args[8] && STREQ(args[8], "--interface") &&
+               args[9] && STREQ(args[9], "libvirt-iface-03020100") &&
+               args[10] == NULL &&
+               data->iface_created) {
+        /* Mocking real environment output is not needed for now.
+         * Example output from real environment:
+         *
+         * Logging in to [iface: libvirt-iface-03020100, \
+         *                target: iqn.2004-06.example:example1:iscsi.test, \
+         *                portal: 10.20.30.40:3260,1] (multiple)
+         * Login to [iface: libvirt-iface-03020100, \
+         *           target: iqn.2004-06.example:example1:iscsi.test, \
+         *           portal: 10.20.30.40:3260,1] successful.
+         */
     } else {
         *status = -1;
     }
 }
 
+struct testSessionInfo {
+    const char *device_path;
+    bool output_version;
+    const char *expected_session;
+};
+
 static int
 testISCSIGetSession(const void *data)
 {
     const struct testSessionInfo *info = data;
-    int ver = info->output_version;
+    struct testIscsiadmCbData cbData = { 0 };
     char *actual_session = NULL;
     int ret = -1;
 
-    virCommandSetDryRun(NULL, testIscsiadmCb, &ver);
+    cbData.output_version = info->output_version;
+
+    virCommandSetDryRun(NULL, testIscsiadmCb, &cbData);
 
     actual_session = virISCSIGetSession(info->device_path, true);
 
@@ -145,7 +253,8 @@ testISCSIScanTargets(const void *data)
 
     virCommandSetDryRun(NULL, testIscsiadmCb, NULL);
 
-    if (virISCSIScanTargets(info->portal, &ntargets, &targets) < 0)
+    if (virISCSIScanTargets(info->portal, NULL,
+                            false, &ntargets, &targets) < 0)
         goto cleanup;
 
     if (info->nexpected != ntargets) {
@@ -174,21 +283,48 @@ testISCSIScanTargets(const void *data)
     return ret;
 }
 
+
+struct testConnectionInfoLogin {
+    const char *portal;
+    const char *initiatoriqn;
+    const char *target;
+};
+
+
+static int
+testISCSIConnectionLogin(const void *data)
+{
+    const struct testConnectionInfoLogin *info = data;
+    struct testIscsiadmCbData cbData = { 0 };
+    int ret = -1;
+
+    virCommandSetDryRun(NULL, testIscsiadmCb, &cbData);
+
+    if (virISCSIConnectionLogin(info->portal, info->initiatoriqn, info->target) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virCommandSetDryRun(NULL, NULL, NULL);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
     int rv = 0;
 
-# define DO_SESSION_TEST(name, session)                                     \
-    do {                                                                    \
-        struct testSessionInfo info = {name, 0, session};                   \
-        if (virTestRun("ISCSI get session test" name,                       \
-                       testISCSIGetSession, &info) < 0)                     \
-            rv = -1;                                                        \
-        info.output_version = 1;                                            \
-        if (virTestRun("ISCSI get (non-flash) session test" name,           \
-                       testISCSIGetSession, &info) < 0)                     \
-            rv = -1;                                                        \
+# define DO_SESSION_TEST(name, session) \
+    do { \
+        struct testSessionInfo info = {name, false, session}; \
+        if (virTestRun("ISCSI get session test" name, \
+                       testISCSIGetSession, &info) < 0) \
+            rv = -1; \
+        info.output_version = true; \
+        if (virTestRun("ISCSI get (non-flash) session test" name, \
+                       testISCSIGetSession, &info) < 0) \
+            rv = -1; \
     } while (0)
 
     DO_SESSION_TEST("iqn.2004-06.example:example1:iscsi.test", "1");
@@ -212,10 +348,23 @@ mymain(void)
     if (virTestRun("ISCSI scan targets", testISCSIScanTargets, &infoTargets) < 0)
         rv = -1;
 
+# define DO_LOGIN_TEST(portal, iqn, target) \
+    do { \
+        struct testConnectionInfoLogin info = {portal, iqn, target }; \
+        if (virTestRun("ISCSI login " portal, \
+                       testISCSIConnectionLogin, &info) < 0) \
+        rv = -1; \
+    } while (0)
+
+    DO_LOGIN_TEST("10.20.30.40:3260,1", NULL, "iqn.2004-06.example:example1:iscsi.test");
+    DO_LOGIN_TEST("10.20.30.40:3260,1", "iqn.2004-06.example:example1:initiator",
+                  "iqn.2004-06.example:example1:iscsi.test");
+
     if (rv < 0)
         return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain,
+                      abs_builddir "/.libs/virrandommock.so")
 #endif /* WIN32 */

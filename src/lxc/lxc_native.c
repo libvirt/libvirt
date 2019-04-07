@@ -17,12 +17,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Cedric Bosdonnat <cbosdonnat@suse.com>
  */
 
 #include <config.h>
-#include <stdio.h>
 
 #include "internal.h"
 #include "lxc_container.h"
@@ -37,6 +34,20 @@
 #define VIR_FROM_THIS VIR_FROM_LXC
 
 VIR_LOG_INIT("lxc.lxc_native");
+
+VIR_ENUM_IMPL(virLXCNetworkConfigEntry, VIR_LXC_NETWORK_CONFIG_LAST,
+              "name",
+              "type",
+              "link",
+              "hwaddr",
+              "flags",
+              "macvlan.mode",
+              "vlan.id",
+              "ipv4",
+              "ipv4.gateway",
+              "ipv6",
+              "ipv6.gateway"
+);
 
 static virDomainFSDefPtr
 lxcCreateFSDef(int type,
@@ -199,19 +210,20 @@ lxcSetRootfs(virDomainDefPtr def,
              virConfPtr properties)
 {
     int type = VIR_DOMAIN_FS_TYPE_MOUNT;
-    virConfValuePtr value;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if (!(value = virConfGetValue(properties, "lxc.rootfs")) ||
-        !value->str) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Missing lxc.rootfs configuration"));
-        return -1;
+    if (virConfGetValueString(properties, "lxc.rootfs.path", &value) <= 0) {
+        virResetLastError();
+
+        /* Check for pre LXC 3.0 legacy key */
+        if (virConfGetValueString(properties, "lxc.rootfs", &value) <= 0)
+            return -1;
     }
 
-    if (STRPREFIX(value->str, "/dev/"))
+    if (STRPREFIX(value, "/dev/"))
         type = VIR_DOMAIN_FS_TYPE_BLOCK;
 
-    if (lxcAddFSDef(def, type, value->str, "/", false, 0) < 0)
+    if (lxcAddFSDef(def, type, value, "/", false, 0) < 0)
         return -1;
 
     return 0;
@@ -299,7 +311,7 @@ lxcAddFstabLine(virDomainDefPtr def, lxcFstabPtr fstab)
         type = VIR_DOMAIN_FS_TYPE_BLOCK;
 
     /* Do we have ro in options? */
-    readonly = virStringListHasString((const char **) options, "ro");
+    readonly = virStringListHasString((const char **)options, "ro");
 
     if (lxcAddFSDef(def, type, src, dst, readonly, usage) < 0)
         goto cleanup;
@@ -394,7 +406,7 @@ lxcCreateNetDef(const char *type,
 static virDomainHostdevDefPtr
 lxcCreateHostdevDef(int mode, int type, const char *data)
 {
-    virDomainHostdevDefPtr hostdev = virDomainHostdevDefAlloc(NULL);
+    virDomainHostdevDefPtr hostdev = virDomainHostdevDefNew();
 
     if (!hostdev)
         return NULL;
@@ -554,90 +566,149 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
     return -1;
 }
 
+
+static int
+lxcNetworkParseDataType(virConfValuePtr value,
+                        lxcNetworkParseData *parseData)
+{
+    virDomainDefPtr def = parseData->def;
+    size_t networks = parseData->networks;
+    bool privnet = parseData->privnet;
+    int status;
+
+    /* Store the previous NIC */
+    status = lxcAddNetworkDefinition(parseData);
+
+    if (status < 0)
+        return -1;
+    else if (status > 0)
+        networks++;
+    else if (parseData->type != NULL && STREQ(parseData->type, "none"))
+        privnet = false;
+
+    /* clean NIC to store a new one */
+    memset(parseData, 0, sizeof(*parseData));
+
+    parseData->def = def;
+    parseData->networks = networks;
+    parseData->privnet = privnet;
+
+    /* Keep the new value */
+    parseData->type = value->str;
+
+    return 0;
+}
+
+
+static int
+lxcNetworkParseDataIPs(const char *name,
+                       virConfValuePtr value,
+                       lxcNetworkParseData *parseData)
+{
+    int family = AF_INET;
+    char **ipparts = NULL;
+    virNetDevIPAddrPtr ip = NULL;
+
+    if (VIR_ALLOC(ip) < 0)
+        return -1;
+
+    if (STREQ(name, "ipv6"))
+        family = AF_INET6;
+
+    ipparts = virStringSplit(value->str, "/", 2);
+    if (virStringListLength((const char * const *)ipparts) != 2 ||
+        virSocketAddrParse(&ip->address, ipparts[0], family) < 0 ||
+        virStrToLong_ui(ipparts[1], NULL, 10, &ip->prefix) < 0) {
+
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid CIDR address: '%s'"), value->str);
+
+        virStringListFree(ipparts);
+        VIR_FREE(ip);
+        return -1;
+    }
+
+    virStringListFree(ipparts);
+
+    if (VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip) < 0) {
+        VIR_FREE(ip);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+lxcNetworkParseDataSuffix(const char *entry,
+                          virConfValuePtr value,
+                          lxcNetworkParseData *parseData)
+{
+    int elem = virLXCNetworkConfigEntryTypeFromString(entry);
+
+    switch (elem) {
+    case VIR_LXC_NETWORK_CONFIG_TYPE:
+        if (lxcNetworkParseDataType(value, parseData) < 0)
+            return -1;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_LINK:
+        parseData->link = value->str;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_HWADDR:
+        parseData->mac = value->str;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_FLAGS:
+        parseData->flag = value->str;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_MACVLAN_MODE:
+        parseData->macvlanmode = value->str;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_VLAN_ID:
+        parseData->vlanid = value->str;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_NAME:
+        parseData->name = value->str;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_IPV4:
+    case VIR_LXC_NETWORK_CONFIG_IPV6:
+        if (lxcNetworkParseDataIPs(entry, value, parseData) < 0)
+            return -1;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_IPV4_GATEWAY:
+        parseData->gateway_ipv4 = value->str;
+        break;
+    case VIR_LXC_NETWORK_CONFIG_IPV6_GATEWAY:
+        parseData->gateway_ipv6 = value->str;
+        break;
+    default:
+        VIR_WARN("Unhandled network property: %s = %s",
+                 entry,
+                 value->str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+lxcNetworkParseDataEntry(const char *name,
+                         virConfValuePtr value,
+                         lxcNetworkParseData *parseData)
+{
+    const char *suffix = STRSKIP(name, "lxc.network.");
+
+    return lxcNetworkParseDataSuffix(suffix, value, parseData);
+}
+
+
 static int
 lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
 {
     lxcNetworkParseData *parseData = data;
-    int status;
 
-    if (STREQ(name, "lxc.network.type")) {
-        /* Store the previous NIC */
-        status = lxcAddNetworkDefinition(parseData);
-
-        if (status < 0)
-            return -1;
-        else if (status > 0)
-            parseData->networks++;
-        else if (parseData->type != NULL && STREQ(parseData->type, "none"))
-            parseData->privnet = false;
-
-        /* Start a new network interface config */
-        parseData->type = NULL;
-        parseData->link = NULL;
-        parseData->mac = NULL;
-        parseData->flag = NULL;
-        parseData->macvlanmode = NULL;
-        parseData->vlanid = NULL;
-        parseData->name = NULL;
-
-        parseData->ips = NULL;
-        parseData->nips = 0;
-
-        /* Keep the new value */
-        parseData->type = value->str;
-    }
-    else if (STREQ(name, "lxc.network.link"))
-        parseData->link = value->str;
-    else if (STREQ(name, "lxc.network.hwaddr"))
-        parseData->mac = value->str;
-    else if (STREQ(name, "lxc.network.flags"))
-        parseData->flag = value->str;
-    else if (STREQ(name, "lxc.network.macvlan.mode"))
-        parseData->macvlanmode = value->str;
-    else if (STREQ(name, "lxc.network.vlan.id"))
-        parseData->vlanid = value->str;
-    else if (STREQ(name, "lxc.network.name"))
-        parseData->name = value->str;
-    else if (STREQ(name, "lxc.network.ipv4") ||
-             STREQ(name, "lxc.network.ipv6")) {
-        int family = AF_INET;
-        char **ipparts = NULL;
-        virNetDevIPAddrPtr ip = NULL;
-
-        if (VIR_ALLOC(ip) < 0)
-            return -1;
-
-        if (STREQ(name, "lxc.network.ipv6"))
-            family = AF_INET6;
-
-        ipparts = virStringSplit(value->str, "/", 2);
-        if (virStringListLength((const char * const *)ipparts) != 2 ||
-            virSocketAddrParse(&ip->address, ipparts[0], family) < 0 ||
-            virStrToLong_ui(ipparts[1], NULL, 10, &ip->prefix) < 0) {
-
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid CIDR address: '%s'"), value->str);
-
-            virStringListFree(ipparts);
-            VIR_FREE(ip);
-            return -1;
-        }
-
-        virStringListFree(ipparts);
-
-        if (VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip) < 0) {
-            VIR_FREE(ip);
-            return -1;
-        }
-    } else if (STREQ(name, "lxc.network.ipv4.gateway")) {
-        parseData->gateway_ipv4 = value->str;
-    } else if (STREQ(name, "lxc.network.ipv6.gateway")) {
-        parseData->gateway_ipv6 = value->str;
-    } else if (STRPREFIX(name, "lxc.network")) {
-        VIR_WARN("Unhandled network property: %s = %s",
-                 name,
-                 value->str);
-    }
+    if (STRPREFIX(name, "lxc.network."))
+        return lxcNetworkParseDataEntry(name, value, parseData);
 
     return 0;
 }
@@ -684,17 +755,22 @@ lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
 static int
 lxcCreateConsoles(virDomainDefPtr def, virConfPtr properties)
 {
-    virConfValuePtr value;
+    VIR_AUTOFREE(char *) value = NULL;
     int nbttys = 0;
     virDomainChrDefPtr console;
     size_t i;
 
-    if (!(value = virConfGetValue(properties, "lxc.tty")) || !value->str)
-        return 0;
+    if (virConfGetValueString(properties, "lxc.tty.max", &value) <= 0) {
+        virResetLastError();
 
-    if (virStrToLong_i(value->str, NULL, 10, &nbttys) < 0) {
+        /* Check for pre LXC 3.0 legacy key */
+        if (virConfGetValueString(properties, "lxc.tty", &value) <= 0)
+            return 0;
+    }
+
+    if (virStrToLong_i(value, NULL, 10, &nbttys) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("failed to parse int: '%s'"),
-                       value->str);
+                       value);
         return -1;
     }
 
@@ -729,13 +805,16 @@ lxcIdmapWalkCallback(const char *name, virConfValuePtr value, void *data)
     char type;
     unsigned long start, target, count;
 
-    if (STRNEQ(name, "lxc.id_map") || !value->str)
-        return 0;
+    /* LXC 3.0 uses "lxc.idmap", while legacy used "lxc.id_map" */
+    if (STRNEQ(name, "lxc.idmap") || !value->str) {
+        if (!value->str || STRNEQ(name, "lxc.id_map"))
+            return 0;
+    }
 
     if (sscanf(value->str, "%c %lu %lu %lu", &type,
                &target, &start, &count) != 4) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid lxc.id_map: '%s'"),
-                       value->str);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid %s: '%s'"),
+                       name, value->str);
         return -1;
     }
 
@@ -761,34 +840,34 @@ lxcIdmapWalkCallback(const char *name, virConfValuePtr value, void *data)
 static int
 lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
 {
-    virConfValuePtr value;
+    VIR_AUTOFREE(char *) value = NULL;
     unsigned long long size = 0;
 
-    if ((value = virConfGetValue(properties,
-                "lxc.cgroup.memory.limit_in_bytes")) &&
-            value->str && STRNEQ(value->str, "-1")) {
-        if (lxcConvertSize(value->str, &size) < 0)
+    if (virConfGetValueString(properties,
+                              "lxc.cgroup.memory.limit_in_bytes",
+                              &value) > 0) {
+        if (lxcConvertSize(value, &size) < 0)
             return -1;
         size = size / 1024;
         virDomainDefSetMemoryTotal(def, size);
         def->mem.hard_limit = virMemoryLimitTruncate(size);
+        VIR_FREE(value);
     }
 
-    if ((value = virConfGetValue(properties,
-                "lxc.cgroup.memory.soft_limit_in_bytes")) &&
-            value->str && STRNEQ(value->str, "-1")) {
-        if (lxcConvertSize(value->str, &size) < 0)
+    if (virConfGetValueString(properties,
+                              "lxc.cgroup.memory.soft_limit_in_bytes",
+                              &value) > 0) {
+        if (lxcConvertSize(value, &size) < 0)
             return -1;
-
         def->mem.soft_limit = virMemoryLimitTruncate(size / 1024);
+        VIR_FREE(value);
     }
 
-    if ((value = virConfGetValue(properties,
-                "lxc.cgroup.memory.memsw.limit_in_bytes")) &&
-            value->str && STRNEQ(value->str, "-1")) {
-        if (lxcConvertSize(value->str, &size) < 0)
+    if (virConfGetValueString(properties,
+                              "lxc.cgroup.memory.memsw.limit_in_bytes",
+                              &value) > 0) {
+        if (lxcConvertSize(value, &size) < 0)
             return -1;
-
         def->mem.swap_hard_limit = virMemoryLimitTruncate(size / 1024);
     }
     return 0;
@@ -797,53 +876,54 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
 static int
 lxcSetCpuTune(virDomainDefPtr def, virConfPtr properties)
 {
-    virConfValuePtr value;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if ((value = virConfGetValue(properties, "lxc.cgroup.cpu.shares")) &&
-            value->str) {
-        if (virStrToLong_ull(value->str, NULL, 10, &def->cputune.shares) < 0)
+    if (virConfGetValueString(properties, "lxc.cgroup.cpu.shares",
+                              &value) > 0) {
+        if (virStrToLong_ull(value, NULL, 10, &def->cputune.shares) < 0)
             goto error;
         def->cputune.sharesSpecified = true;
+        VIR_FREE(value);
     }
 
-    if ((value = virConfGetValue(properties,
-                                 "lxc.cgroup.cpu.cfs_quota_us")) &&
-            value->str && virStrToLong_ll(value->str, NULL, 10,
-                                          &def->cputune.quota) < 0)
-        goto error;
+    if (virConfGetValueString(properties, "lxc.cgroup.cpu.cfs_quota_us",
+                              &value) > 0) {
+        if (virStrToLong_ll(value, NULL, 10, &def->cputune.quota) < 0)
+            goto error;
+        VIR_FREE(value);
+    }
 
-    if ((value = virConfGetValue(properties,
-                                 "lxc.cgroup.cpu.cfs_period_us")) &&
-            value->str && virStrToLong_ull(value->str, NULL, 10,
-                                           &def->cputune.period) < 0)
-        goto error;
+    if (virConfGetValueString(properties, "lxc.cgroup.cpu.cfs_period_us",
+                              &value) > 0) {
+        if (virStrToLong_ull(value, NULL, 10, &def->cputune.period) < 0)
+            goto error;
+    }
 
     return 0;
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("failed to parse integer: '%s'"), value->str);
+                   _("failed to parse integer: '%s'"), value);
     return -1;
 }
 
 static int
 lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
 {
-    virConfValuePtr value;
+    VIR_AUTOFREE(char *) value = NULL;
     virBitmapPtr nodeset = NULL;
 
-    if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.cpus")) &&
-            value->str) {
-        if (virBitmapParse(value->str, &def->cpumask,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if (virConfGetValueString(properties, "lxc.cgroup.cpuset.cpus",
+                              &value) > 0) {
+        if (virBitmapParse(value, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
-
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+        VIR_FREE(value);
     }
 
-    if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.mems")) &&
-        value->str) {
-        if (virBitmapParse(value->str, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if (virConfGetValueString(properties, "lxc.cgroup.cpuset.mems",
+                              &value) > 0) {
+        if (virBitmapParse(value, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
         if (virDomainNumatuneSet(def->numa,
                                  def->placement_mode ==
@@ -952,14 +1032,15 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
 static int
 lxcSetBlkioTune(virDomainDefPtr def, virConfPtr properties)
 {
-    virConfValuePtr value;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if ((value = virConfGetValue(properties, "lxc.cgroup.blkio.weight")) &&
-            value->str && virStrToLong_ui(value->str, NULL, 10,
-                                          &def->blkio.weight) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to parse integer: '%s'"), value->str);
-        return -1;
+    if (virConfGetValueString(properties, "lxc.cgroup.blkio.weight",
+                              &value) > 0) {
+        if (virStrToLong_ui(value, NULL, 10, &def->blkio.weight) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse integer: '%s'"), value);
+            return -1;
+        }
     }
 
     if (virConfWalk(properties, lxcBlkioDeviceWalkCallback, def) < 0)
@@ -971,18 +1052,18 @@ lxcSetBlkioTune(virDomainDefPtr def, virConfPtr properties)
 static void
 lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
 {
-    virConfValuePtr value;
+    VIR_AUTOFREE(char *) value = NULL;
     char **toDrop = NULL;
     const char *capString;
     size_t i;
 
-    if ((value = virConfGetValue(properties, "lxc.cap.drop")) && value->str)
-        toDrop = virStringSplit(value->str, " ", 0);
+    if (virConfGetValueString(properties, "lxc.cap.drop", &value) > 0)
+        toDrop = virStringSplit(value, " ", 0);
 
     for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
         capString = virDomainCapsFeatureTypeToString(i);
         if (toDrop != NULL &&
-            virStringListHasString((const char **) toDrop, capString))
+            virStringListHasString((const char **)toDrop, capString))
             def->caps_features[i] = VIR_TRISTATE_SWITCH_OFF;
     }
 
@@ -998,9 +1079,9 @@ lxcParseConfigString(const char *config,
 {
     virDomainDefPtr vmdef = NULL;
     virConfPtr properties = NULL;
-    virConfValuePtr value;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if (!(properties = virConfReadMem(config, 0, VIR_CONF_FLAG_LXC_FORMAT)))
+    if (!(properties = virConfReadString(config, VIR_CONF_FLAG_LXC_FORMAT)))
         return NULL;
 
     if (!(vmdef = virDomainDefNew()))
@@ -1015,9 +1096,9 @@ lxcParseConfigString(const char *config,
     vmdef->id = -1;
     virDomainDefSetMemoryTotal(vmdef, 64 * 1024);
 
-    vmdef->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
-    vmdef->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
-    vmdef->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+    vmdef->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
+    vmdef->onCrash = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
+    vmdef->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     vmdef->virtType = VIR_DOMAIN_VIRT_LXC;
 
     /* Value not handled by the LXC driver, setting to
@@ -1031,31 +1112,43 @@ lxcParseConfigString(const char *config,
     vmdef->nfss = 0;
     vmdef->os.type = VIR_DOMAIN_OSTYPE_EXE;
 
-    if ((value = virConfGetValue(properties, "lxc.arch")) && value->str) {
-        virArch arch = virArchFromString(value->str);
-        if (arch == VIR_ARCH_NONE && STREQ(value->str, "x86"))
+    if (virConfGetValueString(properties, "lxc.arch", &value) > 0) {
+        virArch arch = virArchFromString(value);
+        if (arch == VIR_ARCH_NONE && STREQ(value, "x86"))
             arch = VIR_ARCH_I686;
-        else if (arch == VIR_ARCH_NONE && STREQ(value->str, "amd64"))
+        else if (arch == VIR_ARCH_NONE && STREQ(value, "amd64"))
             arch = VIR_ARCH_X86_64;
         vmdef->os.arch = arch;
+        VIR_FREE(value);
     }
 
     if (VIR_STRDUP(vmdef->os.init, "/sbin/init") < 0)
         goto error;
 
-    if (!(value = virConfGetValue(properties, "lxc.utsname")) ||
-            !value->str || (VIR_STRDUP(vmdef->name, value->str) < 0))
+    if (virConfGetValueString(properties, "lxc.uts.name", &value) <= 0) {
+        virResetLastError();
+
+        /* Check for pre LXC 3.0 legacy key */
+        if (virConfGetValueString(properties, "lxc.utsname", &value) <= 0)
+            goto error;
+    }
+
+    if (VIR_STRDUP(vmdef->name, value) < 0)
         goto error;
+
     if (!vmdef->name && (VIR_STRDUP(vmdef->name, "unnamed") < 0))
         goto error;
 
     if (lxcSetRootfs(vmdef, properties) < 0)
         goto error;
 
-    /* Look for fstab: we shouldn't have it */
-    if (virConfGetValue(properties, "lxc.mount")) {
+    /* LXC 3.0 uses "lxc.mount.fstab", while legacy used just "lxc.mount".
+     * In either case, generate the error to use "lxc.mount.entry" instead */
+    if (virConfGetValue(properties, "lxc.mount.fstab") ||
+        virConfGetValue(properties, "lxc.mount")) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("lxc.mount found, use lxc.mount.entry lines instead"));
+                       _("lxc.mount.fstab or lxc.mount found, use "
+                         "lxc.mount.entry lines instead"));
         goto error;
     }
 
@@ -1071,7 +1164,7 @@ lxcParseConfigString(const char *config,
     if (lxcCreateConsoles(vmdef, properties) < 0)
         goto error;
 
-    /* lxc.id_map */
+    /* lxc.idmap or legacy lxc.id_map */
     if (virConfWalk(properties, lxcIdmapWalkCallback, vmdef) < 0)
         goto error;
 

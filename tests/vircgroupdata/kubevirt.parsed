@@ -1,0 +1,11 @@
+cpu          /sys/fs/cgroup/cpu
+cpuacct      /sys/fs/cgroup/cpuacct
+cpuset       /sys/fs/cgroup/cpuset
+memory       /sys/fs/cgroup/memory
+devices      /sys/fs/cgroup/devices
+freezer      /some/random/location/freezer
+blkio        /sys/fs/cgroup/blkio
+net_cls      <null>
+perf_event   /sys/fs/cgroup/perf_event
+name=systemd <null>
+unified      <null>

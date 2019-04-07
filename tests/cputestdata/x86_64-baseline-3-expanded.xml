@@ -1,0 +1,35 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>Westmere</model>
+  <feature policy='require' name='aes'/>
+  <feature policy='require' name='apic'/>
+  <feature policy='require' name='clflush'/>
+  <feature policy='require' name='cmov'/>
+  <feature policy='require' name='cx16'/>
+  <feature policy='require' name='cx8'/>
+  <feature policy='require' name='de'/>
+  <feature policy='require' name='fpu'/>
+  <feature policy='require' name='fxsr'/>
+  <feature policy='require' name='lahf_lm'/>
+  <feature policy='require' name='lm'/>
+  <feature policy='require' name='mca'/>
+  <feature policy='require' name='mce'/>
+  <feature policy='require' name='mmx'/>
+  <feature policy='require' name='msr'/>
+  <feature policy='require' name='mtrr'/>
+  <feature policy='require' name='nx'/>
+  <feature policy='require' name='pae'/>
+  <feature policy='require' name='pat'/>
+  <feature policy='require' name='pge'/>
+  <feature policy='require' name='pni'/>
+  <feature policy='require' name='popcnt'/>
+  <feature policy='require' name='pse'/>
+  <feature policy='require' name='pse36'/>
+  <feature policy='require' name='sep'/>
+  <feature policy='require' name='sse'/>
+  <feature policy='require' name='sse2'/>
+  <feature policy='require' name='sse4.1'/>
+  <feature policy='require' name='sse4.2'/>
+  <feature policy='require' name='ssse3'/>
+  <feature policy='require' name='syscall'/>
+  <feature policy='require' name='tsc'/>
+</cpu>

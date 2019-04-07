@@ -1,0 +1,320 @@
+REMOTE_DRIVER_GENERATED = \
+	remote/remote_protocol.c \
+	remote/remote_protocol.h \
+	remote/remote_client_bodies.h \
+	remote/lxc_protocol.c \
+	remote/lxc_protocol.h \
+	remote/lxc_client_bodies.h \
+	remote/qemu_protocol.c \
+	remote/qemu_protocol.h \
+	remote/qemu_client_bodies.h \
+	$(NULL)
+
+REMOTE_DRIVER_SOURCES = \
+	remote/remote_driver.c \
+	remote/remote_driver.h \
+	$(REMOTE_DRIVER_GENERATED) \
+	$(NULL)
+
+LIBVIRTD_GENERATED = \
+	remote/remote_daemon_dispatch_stubs.h \
+	remote/remote_daemon_dispatch_lxc_stubs.h \
+	remote/remote_daemon_dispatch_qemu_stubs.h \
+	$(NULL)
+
+LIBVIRTD_SOURCES = \
+	remote/remote_daemon.c \
+	remote/remote_daemon.h \
+	remote/remote_daemon_config.c \
+	remote/remote_daemon_config.h \
+	remote/remote_daemon_dispatch.c \
+	remote/remote_daemon_dispatch.h \
+	remote/remote_daemon_stream.c \
+	remote/remote_daemon_stream.h \
+	$(LIBVIRTD_GENERATED) \
+	$(NULL)
+
+
+LOGROTATE_FILES_IN += \
+	remote/libvirtd.qemu.logrotate.in \
+	remote/libvirtd.lxc.logrotate.in \
+	remote/libvirtd.libxl.logrotate.in \
+	remote/libvirtd.logrotate.in \
+	$(NULL)
+
+SYSCONF_FILES += remote/libvirtd.sysconf
+
+PODFILES += remote/libvirtd.pod
+MANINFILES += libvirtd.8.in
+
+SYSTEMD_UNIT_FILES_IN += \
+	remote/libvirtd.service.in \
+	remote/virt-guest-shutdown.target.in \
+	$(NULL)
+
+REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
+LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x
+QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
+REMOTE_DRIVER_PROTOCOL = \
+	$(REMOTE_PROTOCOL) \
+	$(QEMU_PROTOCOL) \
+	$(LXC_PROTOCOL) \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(REMOTE_DRIVER_SOURCES)
+
+EXTRA_DIST += \
+	$(REMOTE_DRIVER_PROTOCOL) \
+	$(REMOTE_DRIVER_SOURCES) \
+	$(LIBVIRTD_SOURCES) \
+	remote/test_libvirtd.aug.in \
+	remote/libvirtd.aug \
+	remote/libvirtd.conf \
+	remote/libvirtd.policy \
+	remote/libvirtd.rules \
+	remote/libvirtd.sasl \
+	remote/libvirtd.sysctl \
+	$(NULL)
+
+# Needed to build libvirt.pot, so must be listed outside
+# the WITH_REMOTE/WITH_LIBVIRTD conditionals
+BUILT_SOURCES += \
+	$(REMOTE_DRIVER_GENERATED) \
+	$(LIBVIRTD_GENERATED) \
+	$(NULL)
+MAINTAINERCLEANFILES += \
+	$(REMOTE_DRIVER_GENERATED) \
+	$(LIBVIRTD_GENERATED) \
+	$(NULL)
+
+if WITH_REMOTE
+noinst_LTLIBRARIES += libvirt_driver_remote.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_remote.la
+libvirt_driver_remote_la_CFLAGS = \
+	$(XDR_CFLAGS) \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/rpc \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
+
+endif WITH_REMOTE
+
+if WITH_REMOTE
+USED_SYM_FILES += $(srcdir)/libvirt_remote.syms
+else ! WITH_REMOTE
+SYM_FILES += $(srcdir)/libvirt_remote.syms
+endif ! WITH_REMOTE
+
+if WITH_LIBVIRTD
+
+sbin_PROGRAMS += libvirtd
+
+augeas_DATA += remote/libvirtd.aug
+
+augeastest_DATA += test_libvirtd.aug
+
+conf_DATA += remote/libvirtd.conf
+
+CLEANFILES += test_libvirtd.aug
+
+man8_MANS += libvirtd.8
+
+libvirtd_SOURCES = $(LIBVIRTD_SOURCES)
+
+libvirtd_CFLAGS = \
+	$(LIBXML_CFLAGS) \
+	$(GNUTLS_CFLAGS) \
+	$(SASL_CFLAGS) \
+	$(XDR_CFLAGS) \
+	$(DBUS_CFLAGS) \
+	$(LIBNL_CFLAGS) \
+	$(WARN_CFLAGS) \
+	$(PIE_CFLAGS) \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/rpc \
+	$(NULL)
+
+libvirtd_LDFLAGS = \
+	$(RELRO_LDFLAGS) \
+	$(PIE_LDFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
+	$(NO_UNDEFINED_LDFLAGS) \
+	$(NULL)
+
+libvirtd_LDADD = \
+	libvirt_driver_admin.la \
+	libvirt-lxc.la \
+	libvirt-qemu.la \
+	libvirt.la \
+	$(LIBXML_LIBS) \
+	$(GNUTLS_LIBS) \
+	$(SASL_LIBS) \
+	$(DBUS_LIBS) \
+	$(LIBNL_LIBS) \
+	$(NULL)
+
+if WITH_DTRACE_PROBES
+libvirtd_LDADD += ../src/libvirt_probes.lo
+endif WITH_DTRACE_PROBES
+
+libvirtd_LDADD += \
+	../gnulib/lib/libgnu.la \
+	$(LIBSOCKET) \
+	$(NULL)
+
+INSTALL_DATA_DIRS += remote
+
+install-data-remote:
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt"
+
+uninstall-data-remote:
+	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt" ||:
+
+AUGEAS_DIRS += remote
+
+test_libvirtd.aug: remote/test_libvirtd.aug.in \
+		remote/libvirtd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/remote/libvirtd.conf $< $@
+
+check-augeas-remote: test_libvirtd.aug
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/remote test_libvirtd.aug; \
+	fi
+
+if WITH_SYSCTL
+# Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
+# /usr/lib/sysctl.d/ even when libdir is /usr/lib64
+sysctldir = $(prefix)/lib/sysctl.d
+
+install-sysctl:
+	$(MKDIR_P) $(DESTDIR)$(sysctldir)
+	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sysctl \
+	  $(DESTDIR)$(sysctldir)/60-libvirtd.conf
+
+uninstall-sysctl:
+	rm -f $(DESTDIR)$(sysctldir)/60-libvirtd.conf
+	rmdir $(DESTDIR)$(sysctldir) || :
+
+INSTALL_DATA_LOCAL += install-sysctl
+UNINSTALL_LOCAL += uninstall-sysctl
+endif WITH_SYSCTL
+
+if WITH_POLKIT
+polkitdir = $(datadir)/polkit-1
+polkitactionsdir = $(polkitdir)/actions
+polkitrulesdir = $(polkitdir)/rules.d
+
+install-polkit:
+	$(MKDIR_P) $(DESTDIR)$(polkitactionsdir)
+	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.policy \
+		$(DESTDIR)$(polkitactionsdir)/org.libvirt.unix.policy
+	$(MKDIR_P) $(DESTDIR)$(polkitrulesdir)
+	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.rules \
+		$(DESTDIR)$(polkitrulesdir)/50-libvirt.rules
+
+uninstall-polkit:
+	rm -f $(DESTDIR)$(polkitactionsdir)/org.libvirt.unix.policy
+	rmdir $(DESTDIR)$(polkitactionsdir) || :
+	rm -f $(DESTDIR)$(polkitrulesdir)/50-libvirt.rules
+	rmdir $(DESTDIR)$(polkitrulesdir) || :
+
+INSTALL_DATA_LOCAL += install-polkit
+UNINSTALL_LOCAL += uninstall-polkit
+endif WITH_POLKIT
+
+endif WITH_LIBVIRTD
+
+.PHONY: \
+	install-data-remote \
+	uninstall-data-remote \
+	check-augeas-remote \
+	$(NULL)
+
+# This is needed for clients too, so can't wrap in
+# the WITH_LIBVIRTD conditional
+if WITH_SASL
+sasldir = $(sysconfdir)/sasl2
+
+install-sasl:
+	$(MKDIR_P) $(DESTDIR)$(sasldir)
+	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sasl \
+		$(DESTDIR)$(sasldir)/libvirt.conf
+
+uninstall-sasl:
+	rm -f $(DESTDIR)$(sasldir)/libvirt.conf
+	rmdir $(DESTDIR)$(sasldir) || :
+
+INSTALL_DATA_LOCAL += install-sasl
+UNINSTALL_LOCAL += uninstall-sasl
+endif WITH_SASL
+
+libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    chmod a+x $@-t && \
+	    mv $@-t $@
+
+libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+virt-guest-shutdown.target: remote/virt-guest-shutdown.target.in \
+			$(top_builddir)/config.status
+	$(AM_V_GEN)cp $< $@
+
+
+remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+		$(REMOTE_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
+	  remote REMOTE $(REMOTE_PROTOCOL) \
+	  > $(srcdir)/remote/remote_client_bodies.h
+
+remote/lxc_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+		$(LXC_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
+	  lxc LXC $(LXC_PROTOCOL) \
+	  > $(srcdir)/remote/lxc_client_bodies.h
+
+remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+		$(QEMU_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
+	  qemu QEMU $(QEMU_PROTOCOL) \
+	  > $(srcdir)/remote/qemu_client_bodies.h
+
+remote/remote_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+		$(REMOTE_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
+	  --mode=server remote REMOTE $(REMOTE_PROTOCOL) \
+	  > $(srcdir)/remote/remote_daemon_dispatch_stubs.h
+
+remote/remote_daemon_dispatch_lxc_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+		$(LXC_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
+	  --mode=server lxc LXC $(LXC_PROTOCOL) \
+	  > $(srcdir)/remote/remote_daemon_dispatch_lxc_stubs.h
+
+remote/remote_daemon_dispatch_qemu_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+		$(QEMU_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
+	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
+	  > $(srcdir)/remote/remote_daemon_dispatch_qemu_stubs.h
+
+libvirtd.8.in: remote/libvirtd.pod
+	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
+	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
+	sed \
+		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
+		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
+		< $@-t1 > $@-t2 && \
+	rm -f $@-t1 && \
+	mv $@-t2 $@

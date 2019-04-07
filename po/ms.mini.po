@@ -1,0 +1,188 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel  <veillard@redhat.com>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-27 02:47+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Malay (http://www.transifex.com/projects/p/fedora/language/"
+"ms/)\n"
+"Language: ms\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  HURAIAN\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  PILIHAN\n"
+
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  SINOPSIS\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Masa: %.3f ms)\n"
+"\n"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: gagal untuk mengumpukkan %d byte"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s: %d: gagal untuk mengumpukkan %lu byte"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <number>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <string>"
+
+msgid "CPU model:"
+msgstr "Model CPU:"
+
+msgid "CPU:"
+msgstr "CPU:"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+msgid "Name"
+msgstr "Nama"
+
+msgid "Name:"
+msgstr "Nama:"
+
+msgid "State"
+msgstr "Keadaan"
+
+msgid "State:"
+msgstr "Keadaan:"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "VCPU:"
+msgstr "VCPU:"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "arahan '%s' tidak menyokong pilihan --%s"
+
+msgid "error"
+msgstr "ralat"
+
+msgid "error: "
+msgstr "ralat:"
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "sintaks dijangka: --%s <%s>"
+
+msgid "expecting a name"
+msgstr "menjangkan nama"
+
+msgid "expecting a separator"
+msgstr "menjangka pemisah"
+
+msgid "expecting a separator in list"
+msgstr "menjangka pembahagi dalam senarai"
+
+msgid "expecting a value"
+msgstr "menjangka nilai"
+
+msgid "expecting an assignment"
+msgstr "menjangka umpukan"
+
+msgid "failed to connect to the hypervisor"
+msgstr "gala untuk menyambung ke hipervisor"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "gagal untuk mendapatkan domain '%s'"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "gagal untuk mendapatkan rangkaian '%s'"
+
+msgid "failed to open file"
+msgstr "gagal untuk membuka fail"
+
+msgid "failed to save content"
+msgstr "gagal untuk menyimpan kandungan"
+
+msgid "failed to write the log file"
+msgstr "gagal untuk menulis ke fail log"
+
+msgid "in shutdown"
+msgstr "dalam dimatikan"
+
+msgid "missing \""
+msgstr "hilang \""
+
+msgid "no valid connection"
+msgstr "tiada sambungan sah"
+
+msgid "number"
+msgstr "nombor"
+
+msgid "offline"
+msgstr "luartalian"
+
+msgid "running"
+msgstr "terlaksana"
+
+msgid "shut off"
+msgstr "matikan"
+
+msgid "string"
+msgstr "rentetan"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "data tidak dijangka '%s'"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "arahan tidak diketahui: '%s'"
+
+msgid "unterminated number"
+msgstr "nombor tidak ditamatkan"
+
+msgid "unterminated string"
+msgstr "rentetan tidak ditamatkan"
+
+msgid "warning"
+msgstr "amaran"

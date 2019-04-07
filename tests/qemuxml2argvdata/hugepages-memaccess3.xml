@@ -1,0 +1,29 @@
+<domain type='kvm'>
+  <name>fedora</name>
+  <uuid>63840878-0deb-4095-97e6-fc444d9bc9fa</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <memoryBacking>
+    <hugepages/>
+    <access mode='shared'/>
+  </memoryBacking>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-2.9'>hvm</type>
+    <bootmenu enable='yes'/>
+  </os>
+  <cpu mode='host-model' check='partial'>
+    <model fallback='allow'/>
+  </cpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

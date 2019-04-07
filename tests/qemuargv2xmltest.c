@@ -1,9 +1,6 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -65,7 +62,8 @@ static int testCompareXMLToArgvFiles(const char *xmlfile,
     if (virTestLoadFile(cmdfile, &cmd) < 0)
         goto fail;
 
-    if (!(vmdef = qemuParseCommandLineString(driver.caps, driver.xmlopt,
+    if (!(vmdef = qemuParseCommandLineString(driver.qemuCapsCache,
+                                             driver.caps, driver.xmlopt,
                                              cmd, NULL, NULL, NULL)))
         goto fail;
 
@@ -95,7 +93,7 @@ static int testCompareXMLToArgvFiles(const char *xmlfile,
     if (testSanitizeDef(vmdef) < 0)
         goto fail;
 
-    if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
+    if (!virDomainDefCheckABIStability(vmdef, vmdef, driver.xmlopt)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xmlfile);
         goto fail;
     }
@@ -130,9 +128,9 @@ testCompareXMLToArgvHelper(const void *data)
     char *xml = NULL;
     char *args = NULL;
 
-    if (virAsprintf(&xml, "%s/qemuargv2xmldata/qemuargv2xml-%s.xml",
+    if (virAsprintf(&xml, "%s/qemuargv2xmldata/%s.xml",
                     abs_srcdir, info->name) < 0 ||
-        virAsprintf(&args, "%s/qemuargv2xmldata/qemuargv2xml-%s.args",
+        virAsprintf(&args, "%s/qemuargv2xmldata/%s.args",
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
@@ -154,16 +152,30 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-
-# define DO_TEST_FULL(name, flags)                                      \
-    do {                                                                \
-        const struct testInfo info = { name, (flags) };                 \
-        if (virTestRun("QEMU ARGV-2-XML " name,                         \
-                       testCompareXMLToArgvHelper, &info) < 0)          \
-            ret = -1;                                                   \
+# define LOAD_CAPS(arch) \
+    do { \
+        virQEMUCapsPtr qemuCaps; \
+        qemuCaps = qemuTestParseCapabilitiesArch(VIR_ARCH_X86_64, \
+                                                 abs_srcdir "/qemucapabilitiesdata/caps_2.12.0." arch ".xml"); \
+        if (virFileCacheInsertData(driver.qemuCapsCache, \
+                                   "/usr/bin/qemu-system-" arch, \
+                                   qemuCaps) < 0) \
+            return EXIT_FAILURE; \
     } while (0)
 
-# define DO_TEST(name)                                                  \
+    LOAD_CAPS("x86_64");
+    LOAD_CAPS("aarch64");
+    LOAD_CAPS("ppc64");
+
+# define DO_TEST_FULL(name, flags) \
+    do { \
+        const struct testInfo info = { name, (flags) }; \
+        if (virTestRun("QEMU ARGV-2-XML " name, \
+                       testCompareXMLToArgvHelper, &info) < 0) \
+            ret = -1; \
+    } while (0)
+
+# define DO_TEST(name) \
         DO_TEST_FULL(name, 0)
 
     setenv("PATH", "/bin", 1);
@@ -265,6 +277,7 @@ mymain(void)
     DO_TEST("hostdev-pci-address");
 
     DO_TEST("mem-scale");
+    DO_TEST("mem-scale-maxmemory");
     DO_TEST("smp");
 
     DO_TEST("hyperv");
@@ -288,12 +301,15 @@ mymain(void)
     DO_TEST("machine-deakeywrap-off-argv");
     DO_TEST("machine-keywrap-none-argv");
 
+    DO_TEST("nomachine-x86_64");
+    DO_TEST("nomachine-ppc64");
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

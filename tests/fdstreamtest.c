@@ -14,18 +14,15 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library;  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <fcntl.h>
 
 #include "testutils.h"
 
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "datatypes.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -250,14 +247,16 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
         goto cleanup;
 
     for (i = 0; i < 10; i++) {
-        size_t want;
+        size_t want, got;
         if (i == 9)
             want = PATTERN_LEN / 2;
         else
             want = PATTERN_LEN;
 
-        if (saferead(fd, buf, want) != want) {
-            virFilePrintf(stderr, "Short read from data\n");
+        if ((got = saferead(fd, buf, want)) != want) {
+            virFilePrintf(stderr,
+                          "Short read from data, i=%zu got=%zu want=%zu\n",
+                          i, got, want);
             goto cleanup;
         }
 
@@ -314,7 +313,7 @@ static int testFDStreamWriteNonblock(const void *data)
     return testFDStreamWriteCommon(data, false);
 }
 
-#define SCRATCHDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
+#define SCRATCHDIRTEMPLATE abs_builddir "/fdstreamdir-XXXXXX"
 
 static int
 mymain(void)
@@ -323,7 +322,7 @@ mymain(void)
     int ret = 0;
 
     if (!mkdtemp(scratchdir)) {
-        virFilePrintf(stderr, "Cannot create fakesysfsdir");
+        virFilePrintf(stderr, "Cannot create fdstreamdir");
         abort();
     }
 
@@ -342,4 +341,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

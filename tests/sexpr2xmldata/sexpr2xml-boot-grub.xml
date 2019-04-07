@@ -15,11 +15,11 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='block' device='disk'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <source dev='/dev/MainVG/GuestVG'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <console type='pty'>
       <target type='xen' port='0'/>
     </console>

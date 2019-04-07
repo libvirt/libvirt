@@ -1,10 +1,7 @@
 /*
  * Copyright IBM Corp. 2008
  *
- * lxc_container.h: header file for fcns run inside container
- *
- * Authors:
- *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
+ * lxc_container.h: Performs container setup tasks
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,17 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LXC_CONTAINER_H
-# define LXC_CONTAINER_H
+#ifndef LIBVIRT_LXC_CONTAINER_H
+# define LIBVIRT_LXC_CONTAINER_H
 
 # include "lxc_conf.h"
 # include "lxc_domain.h"
 # include "security/security_manager.h"
-
-enum {
-    LXC_CONTAINER_FEATURE_NET = (1 << 0),
-    LXC_CONTAINER_FEATURE_USER = (1 << 1),
-};
 
 # define LXC_DEV_MAJ_MEMORY  1
 # define LXC_DEV_MIN_NULL    3
@@ -65,8 +57,6 @@ int lxcContainerStart(virDomainDefPtr def,
                       size_t nttyPaths,
                       char **ttyPaths);
 
-int lxcContainerAvailable(int features);
-
 int lxcContainerSetupHostdevCapsMakePath(const char *dev);
 
 virArch lxcContainerGetAlt32bitArch(virArch arch);
@@ -75,4 +65,4 @@ int lxcContainerChown(virDomainDefPtr def, const char *path);
 
 bool lxcIsBasicMountLocation(const char *path);
 
-#endif /* LXC_CONTAINER_H */
+#endif /* LIBVIRT_LXC_CONTAINER_H */

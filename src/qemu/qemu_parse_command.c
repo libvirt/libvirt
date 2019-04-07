@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -28,9 +26,9 @@
 #include "dirname.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virsecret.h"
 #include "virstring.h"
 #include "c-ctype.h"
-#include "secret_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -61,7 +59,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     char *sock = NULL;
     char *volimg = NULL;
     char *secret = NULL;
-    virStorageAuthDefPtr authdef = NULL;
+    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
 
     if (VIR_ALLOC(def->src->hosts) < 0)
         goto error;
@@ -92,8 +90,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
         if (VIR_STRDUP(def->src->hosts->name, uri->server) < 0)
             goto error;
 
-        if (virAsprintf(&def->src->hosts->port, "%d", uri->port) < 0)
-            goto error;
+        def->src->hosts->port = uri->port;
     } else {
         def->src->hosts->name = NULL;
         def->src->hosts->port = 0;
@@ -136,8 +133,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
             if (VIR_STRDUP(authdef->secrettype, secrettype) < 0)
                 goto error;
         }
-        def->src->auth = authdef;
-        authdef = NULL;
+        VIR_STEAL_PTR(def->src->auth, authdef);
 
         /* Cannot formulate a secretType (eg, usage or uuid) given
          * what is provided.
@@ -155,7 +151,6 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
  error:
     virStorageNetHostDefClear(def->src->hosts);
     VIR_FREE(def->src->hosts);
-    virStorageAuthDefFree(authdef);
     goto cleanup;
 }
 
@@ -240,7 +235,7 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
         if (src)
             *src++ = '\0';
 
-        if (VIR_STRDUP(h->port, port) < 0)
+        if (virStringParsePort(port, &h->port) < 0)
             goto error;
     }
 
@@ -382,6 +377,22 @@ static const char *qemuFindEnv(char **progenv,
     return NULL;
 }
 
+
+void
+qemuParseKeywordsFree(int nkeywords,
+                      char **keywords,
+                      char **values)
+{
+    size_t i;
+    for (i = 0; i < nkeywords; i++) {
+        VIR_FREE(keywords[i]);
+        VIR_FREE(values[i]);
+    }
+    VIR_FREE(keywords);
+    VIR_FREE(values);
+}
+
+
 /*
  * Takes a string containing a set of key=value,key=value,key...
  * parameters and splits them up, returning two arrays with
@@ -402,7 +413,6 @@ qemuParseKeywords(const char *str,
     char **values = NULL;
     const char *start = str;
     const char *end;
-    size_t i;
 
     *retkeywords = NULL;
     *retvalues = NULL;
@@ -417,7 +427,7 @@ qemuParseKeywords(const char *str,
 
         endmark = start;
         do {
-            /* Qemu accepts ',,' as an escape for a literal comma;
+            /* QEMU accepts ',,' as an escape for a literal comma;
              * skip past those here while searching for the end of the
              * value, then strip them down below */
             endmark = strchr(endmark, ',');
@@ -480,12 +490,7 @@ qemuParseKeywords(const char *str,
     return 0;
 
  error:
-    for (i = 0; i < keywordCount; i++) {
-        VIR_FREE(keywords[i]);
-        VIR_FREE(values[i]);
-    }
-    VIR_FREE(keywords);
-    VIR_FREE(values);
+    qemuParseKeywordsFree(keywordCount, keywords, values);
     return -1;
 }
 
@@ -649,12 +654,10 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                           0) < 0)
         return NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDiskDefNew(xmlopt)))
         goto cleanup;
-    if (VIR_ALLOC(def->src) < 0)
-        goto error;
 
-    if (qemuDomainMachineIsPSeries(dom))
+    if (qemuDomainIsPSeries(dom))
         def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
     else
        def->bus = VIR_DOMAIN_DISK_BUS_IDE;
@@ -730,13 +733,18 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                             goto error;
                         def->src->nhosts = 1;
                         def->src->hosts->name = def->src->path;
-                        if (VIR_STRDUP(def->src->hosts->port, port) < 0)
+                        if (virStringParsePort(port, &def->src->hosts->port) < 0)
                             goto error;
                         def->src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
                         def->src->hosts->socket = NULL;
                         if (VIR_STRDUP(def->src->path, vdi) < 0)
                             goto error;
                     }
+                } else if (STRPREFIX(def->src->path, "vxhs:")) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("VxHS protocol does not support URI syntax '%s'"),
+                                   def->src->path);
+                    goto error;
                 } else {
                     def->src->type = VIR_STORAGE_TYPE_FILE;
                 }
@@ -746,7 +754,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         } else if (STREQ(keywords[i], "if")) {
             if (STREQ(values[i], "ide")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
-                if (qemuDomainMachineIsPSeries(dom)) {
+                if (qemuDomainIsPSeries(dom)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("pseries systems do not support ide devices '%s'"), val);
                     goto error;
@@ -771,7 +779,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 def->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
             }
         } else if (STREQ(keywords[i], "format")) {
-            if (VIR_STRDUP(def->src->driverName, "qemu") < 0)
+            if (virDomainDiskSetDriver(def, "qemu") < 0)
                 goto error;
             def->src->format = virStorageFileFormatTypeFromString(values[i]);
         } else if (STREQ(keywords[i], "cache")) {
@@ -941,18 +949,11 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     if (virDomainDiskDefAssignAddress(xmlopt, def, dom) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid device name '%s'"), def->dst);
-        virDomainDiskDefFree(def);
-        def = NULL;
-        goto cleanup;
+        goto error;
     }
 
  cleanup:
-    for (i = 0; i < nkeywords; i++) {
-        VIR_FREE(keywords[i]);
-        VIR_FREE(values[i]);
-    }
-    VIR_FREE(keywords);
-    VIR_FREE(values);
+    qemuParseKeywordsFree(nkeywords, keywords, values);
     return def;
 
  error:
@@ -1051,9 +1052,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
             if (virStrToLong_i(values[i], NULL, 10, &wantvlan) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse vlan in '%s'"), val);
-                virDomainNetDefFree(def);
-                def = NULL;
-                goto cleanup;
+                goto error;
             }
         } else if (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
                    STREQ(keywords[i], "script") && STRNEQ(values[i], "")) {
@@ -1072,18 +1071,13 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
      */
 
     nic = qemuFindNICForVLAN(nnics, nics, wantvlan);
-    if (!nic) {
-        virDomainNetDefFree(def);
-        def = NULL;
-        goto cleanup;
-    }
+    if (!nic)
+        goto error;
 
     if (!STRPREFIX(nic, "nic")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot parse NIC definition '%s'"), nic);
-        virDomainNetDefFree(def);
-        def = NULL;
-        goto cleanup;
+        goto error;
     }
 
     for (i = 0; i < nkeywords; i++) {
@@ -1099,9 +1093,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
                               &values,
                               &nkeywords,
                               0) < 0) {
-            virDomainNetDefFree(def);
-            def = NULL;
-            goto cleanup;
+            goto error;
         }
     } else {
         nkeywords = 0;
@@ -1114,9 +1106,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unable to parse mac address '%s'"),
                                values[i]);
-                virDomainNetDefFree(def);
-                def = NULL;
-                goto cleanup;
+                goto error;
             }
         } else if (STREQ(keywords[i], "model")) {
             def->model = values[i];
@@ -1131,9 +1121,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
             if (virStrToLong_ul(values[i], NULL, 10, &def->tune.sndbuf) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse sndbuf size in '%s'"), val);
-                virDomainNetDefFree(def);
-                def = NULL;
-                goto cleanup;
+                goto error;
             }
             def->tune.sndbuf_specified = true;
         }
@@ -1143,13 +1131,13 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
         virDomainNetGenerateMAC(xmlopt, &def->mac);
 
  cleanup:
-    for (i = 0; i < nkeywords; i++) {
-        VIR_FREE(keywords[i]);
-        VIR_FREE(values[i]);
-    }
-    VIR_FREE(keywords);
-    VIR_FREE(values);
+    qemuParseKeywordsFree(nkeywords, keywords, values);
     return def;
+
+ error:
+    virDomainNetDefFree(def);
+    def = NULL;
+    goto cleanup;
 }
 
 
@@ -1162,7 +1150,7 @@ qemuParseCommandLinePCI(const char *val)
     int bus = 0, slot = 0, func = 0;
     const char *start;
     char *end;
-    virDomainHostdevDefPtr def = virDomainHostdevDefAlloc(NULL);
+    virDomainHostdevDefPtr def = virDomainHostdevDefNew();
 
     if (!def)
         goto error;
@@ -1212,7 +1200,7 @@ qemuParseCommandLinePCI(const char *val)
 static virDomainHostdevDefPtr
 qemuParseCommandLineUSB(const char *val)
 {
-    virDomainHostdevDefPtr def = virDomainHostdevDefAlloc(NULL);
+    virDomainHostdevDefPtr def = virDomainHostdevDefNew();
     virDomainHostdevSubsysUSBPtr usbsrc;
     int first = 0, second = 0;
     const char *start;
@@ -1441,8 +1429,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*feature == '\0')
                 goto syntax;
 
-            if (dom->os.arch != VIR_ARCH_X86_64 &&
-                dom->os.arch != VIR_ARCH_I686) {
+            if (!ARCH_IS_X86(dom->os.arch)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("%s platform doesn't support CPU features'"),
                                virArchToString(dom->os.arch));
@@ -1545,6 +1532,11 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             case VIR_DOMAIN_HYPERV_SYNIC:
             case VIR_DOMAIN_HYPERV_STIMER:
             case VIR_DOMAIN_HYPERV_RESET:
+            case VIR_DOMAIN_HYPERV_FREQUENCIES:
+            case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+            case VIR_DOMAIN_HYPERV_TLBFLUSH:
+            case VIR_DOMAIN_HYPERV_IPI:
+            case VIR_DOMAIN_HYPERV_EVMCS:
                 if (value) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("HyperV feature '%s' should not "
@@ -1606,7 +1598,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                 goto cleanup;
 
             is_32bit = (virCPUDataCheckFeature(cpuData, "lm") != 1);
-            cpuDataFree(cpuData);
+            virCPUDataFree(cpuData);
         } else if (model) {
             is_32bit = STREQ(model, "qemu32");
         }
@@ -1634,26 +1626,85 @@ static int
 qemuParseCommandLineMem(virDomainDefPtr dom,
                         const char *val)
 {
-    unsigned long long mem;
+    unsigned long long mem = 0;
+    unsigned long long size = 0;
+    unsigned long long maxmem = 0;
+    unsigned int slots = 0;
     char *end;
+    size_t i;
+    int nkws;
+    char **kws;
+    char **vals;
+    int n;
+    int ret = -1;
 
-    if (virStrToLong_ull(val, &end, 10, &mem) < 0) {
+    if (qemuParseKeywords(val, &kws, &vals, &nkws, 1) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse memory level '%s'"), val);
-        return -1;
+                       _("cannot parse memory '%s'"), val);
+        goto cleanup;
     }
 
-    if (virScaleInteger(&mem, end, 1024*1024, ULLONG_MAX) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot scale memory: %s"),
-                       virGetLastErrorMessage());
-        return -1;
+    for (i = 0; i < nkws; i++) {
+        if (vals[i] == NULL) {
+            if (i > 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse memory '%s'"), val);
+                goto cleanup;
+            }
+            if (virStrToLong_ull(kws[i], &end, 10, &mem) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse memory value '%s'"), kws[i]);
+                goto cleanup;
+            }
+            if (virScaleInteger(&mem, end, 1024*1024, ULLONG_MAX) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot scale memory: %s"),
+                               virGetLastErrorMessage());
+                goto cleanup;
+            }
+
+            size = mem;
+
+        } else {
+            if (STREQ(kws[i], "size") || STREQ(kws[i], "maxmem")) {
+                if (virStrToLong_ull(vals[i], &end, 10, &mem) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot parse memory value '%s'"), vals[i]);
+                    goto cleanup;
+                }
+                if (virScaleInteger(&mem, end, 1024*1024, ULLONG_MAX) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot scale memory: %s"),
+                                   virGetLastErrorMessage());
+                    goto cleanup;
+                }
+
+                STREQ(kws[i], "size") ? (size = mem) : (maxmem = mem);
+
+            }
+            if (STREQ(kws[i], "slots")) {
+                if (virStrToLong_i(vals[i], &end, 10, &n) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot parse slots value '%s'"), vals[i]);
+                    goto cleanup;
+                }
+
+               slots = n;
+
+            }
+        }
     }
 
-    virDomainDefSetMemoryTotal(dom, mem / 1024);
-    dom->mem.cur_balloon = mem / 1024;
+    virDomainDefSetMemoryTotal(dom, size / 1024);
+    dom->mem.cur_balloon = size / 1024;
+    dom->mem.memory_slots = slots;
+    dom->mem.max_memory = maxmem / 1024;
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    qemuParseKeywordsFree(nkws, kws, vals);
+    return ret;
 }
 
 
@@ -1737,13 +1788,7 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     ret = 0;
 
  cleanup:
-    for (i = 0; i < nkws; i++) {
-        VIR_FREE(kws[i]);
-        VIR_FREE(vals[i]);
-    }
-    VIR_FREE(kws);
-    VIR_FREE(vals);
-
+    qemuParseKeywordsFree(nkws, kws, vals);
     return ret;
 
  syntax:
@@ -1782,7 +1827,8 @@ qemuParseCommandLineBootDevs(virDomainDefPtr def, const char *str)
  * as is practical. This is not an exact science....
  */
 static virDomainDefPtr
-qemuParseCommandLine(virCapsPtr caps,
+qemuParseCommandLine(virFileCachePtr capsCache,
+                     virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
                      char **progenv,
                      char **progargv,
@@ -1790,7 +1836,7 @@ qemuParseCommandLine(virCapsPtr caps,
                      virDomainChrSourceDefPtr *monConfig,
                      bool *monJSON)
 {
-    virDomainDefPtr def;
+    virDomainDefPtr def = NULL;
     size_t i;
     bool nographics = false;
     bool fullscreen = false;
@@ -1804,6 +1850,7 @@ qemuParseCommandLine(virCapsPtr caps,
     virDomainDiskDefPtr disk = NULL;
     const char *ceph_args = qemuFindEnv(progenv, "CEPH_ARGS");
     bool have_sdl = false;
+    virQEMUCapsPtr qemuCaps = NULL;
 
     if (pidfile)
         *pidfile = NULL;
@@ -1817,6 +1864,9 @@ qemuParseCommandLine(virCapsPtr caps,
                        "%s", _("no emulator path found"));
         return NULL;
     }
+
+    if (!(qemuCaps = virQEMUCapsCacheLookup(capsCache, progargv[0])))
+        goto error;
 
     if (!(def = virDomainDefNew()))
         goto error;
@@ -1840,9 +1890,9 @@ qemuParseCommandLine(virCapsPtr caps,
         goto error;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
 
-    def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
-    def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
-    def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+    def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
+    def->onCrash = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
+    def->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     def->virtType = VIR_DOMAIN_VIRT_QEMU;
     if (VIR_STRDUP(def->emulator, progargv[0]) < 0)
         goto error;
@@ -1863,16 +1913,15 @@ qemuParseCommandLine(virCapsPtr caps,
     else
         def->os.arch = VIR_ARCH_I686;
 
-    if ((def->os.arch == VIR_ARCH_I686) ||
-        (def->os.arch == VIR_ARCH_X86_64))
+    if (ARCH_IS_X86(def->os.arch))
         def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
 
-#define WANT_VALUE()                                                   \
-    const char *val = progargv[++i];                                   \
-    if (!val) {                                                        \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                         \
-                       _("missing value for %s argument"), arg);       \
-        goto error;                                                    \
+#define WANT_VALUE() \
+    const char *val = progargv[++i]; \
+    if (!val) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       _("missing value for %s argument"), arg); \
+        goto error; \
     }
 
     /* One initial loop to get list of NICs, so we
@@ -1890,6 +1939,99 @@ qemuParseCommandLine(virCapsPtr caps,
                 VIR_APPEND_ELEMENT(nics, nnics, val) < 0)
                 goto error;
         }
+    }
+
+    /* Detect machine type before processing any other arguments,
+     * because they might depend on it */
+    for (i = 1; progargv[i]; i++) {
+        const char *arg = progargv[i];
+
+        /* Make sure we have a single - for all options to
+           simplify next logic */
+        if (STRPREFIX(arg, "--"))
+            arg++;
+
+        if (STREQ(arg, "-M") ||
+            STREQ(arg, "-machine")) {
+            char *param;
+            size_t j = 0;
+
+            /* -machine [type=]name[,prop[=value][,...]]
+             * Set os.machine only if first parameter lacks '=' or
+             * contains explicit type='...' */
+            WANT_VALUE();
+            if (!(list = virStringSplit(val, ",", 0)))
+                goto error;
+            param = list[0];
+
+            if (STRPREFIX(param, "type="))
+                param += strlen("type=");
+            if (!strchr(param, '=')) {
+                if (VIR_STRDUP(def->os.machine, param) < 0)
+                    goto error;
+                j++;
+            }
+
+            /* handle all remaining "-machine" parameters */
+            while ((param = list[j++])) {
+                if (STRPREFIX(param, "dump-guest-core=")) {
+                    param += strlen("dump-guest-core=");
+                    def->mem.dump_core = virTristateSwitchTypeFromString(param);
+                    if (def->mem.dump_core <= 0)
+                        def->mem.dump_core = VIR_TRISTATE_SWITCH_ABSENT;
+                } else if (STRPREFIX(param, "mem-merge=off")) {
+                    def->mem.nosharepages = true;
+                } else if (STRPREFIX(param, "accel=kvm")) {
+                    def->virtType = VIR_DOMAIN_VIRT_KVM;
+                    def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
+                } else if (STRPREFIX(param, "aes-key-wrap=")) {
+                    if (STREQ(arg, "-M")) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("aes-key-wrap is not supported with "
+                                         "this QEMU binary"));
+                        goto error;
+                    }
+                    param += strlen("aes-key-wrap=");
+                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
+                        goto error;
+                    def->keywrap->aes = virTristateSwitchTypeFromString(param);
+                    if (def->keywrap->aes < 0)
+                        def->keywrap->aes = VIR_TRISTATE_SWITCH_ABSENT;
+                } else if (STRPREFIX(param, "dea-key-wrap=")) {
+                    if (STREQ(arg, "-M")) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("dea-key-wrap is not supported with "
+                                         "this QEMU binary"));
+                        goto error;
+                    }
+                    param += strlen("dea-key-wrap=");
+                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
+                        goto error;
+                    def->keywrap->dea = virTristateSwitchTypeFromString(param);
+                    if (def->keywrap->dea < 0)
+                        def->keywrap->dea = VIR_TRISTATE_SWITCH_ABSENT;
+                }
+            }
+            virStringListFree(list);
+            list = NULL;
+        }
+    }
+
+    /* If no machine type has been found among the arguments, then figure
+     * out a reasonable value by using capabilities */
+    if (!def->os.machine) {
+        const char *mach = virQEMUCapsGetDefaultMachine(qemuCaps);
+
+        if (!mach) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Binary '%s' does not have a default machine type "
+                             "and no '-machine' arg is present"),
+                           progargv[0]);
+            goto error;
+        }
+
+        if (VIR_STRDUP(def->os.machine, mach) < 0)
+            goto error;
     }
 
     /* Now the real processing loop */
@@ -1947,12 +2089,16 @@ qemuParseCommandLine(virCapsPtr caps,
                 disk->src->type = VIR_STORAGE_TYPE_NETWORK;
                 disk->src->protocol = VIR_STORAGE_NET_PROTOCOL_SHEEPDOG;
                 val += strlen("sheepdog:");
+            } else if (STRPREFIX(val, "vxhs:")) {
+                disk->src->type = VIR_STORAGE_TYPE_NETWORK;
+                disk->src->protocol = VIR_STORAGE_NET_PROTOCOL_VXHS;
+                val += strlen("vxhs:");
             } else {
                 disk->src->type = VIR_STORAGE_TYPE_FILE;
             }
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-                if (qemuDomainMachineIsPSeries(def))
+                if (qemuDomainIsPSeries(def))
                     disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 if (VIR_STRDUP(disk->dst, "hdc") < 0)
                     goto error;
@@ -1967,7 +2113,7 @@ qemuParseCommandLine(virCapsPtr caps,
                         disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
                     else
                         disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
-                   if (qemuDomainMachineIsPSeries(def))
+                   if (qemuDomainIsPSeries(def))
                        disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 }
                 if (VIR_STRDUP(disk->dst, arg + 1) < 0)
@@ -2007,7 +2153,7 @@ qemuParseCommandLine(virCapsPtr caps,
                             goto error;
                         disk->src->nhosts = 1;
                         disk->src->hosts->name = disk->src->path;
-                        if (VIR_STRDUP(disk->src->hosts->port, port) < 0)
+                        if (virStringParsePort(port, &disk->src->hosts->port) < 0)
                             goto error;
                         if (VIR_STRDUP(disk->src->path, vdi) < 0)
                             goto error;
@@ -2022,6 +2168,12 @@ qemuParseCommandLine(virCapsPtr caps,
                     if (qemuParseISCSIString(disk) < 0)
                         goto error;
 
+                    break;
+                case VIR_STORAGE_NET_PROTOCOL_VXHS:
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("VxHS protocol does not support URI "
+                                   "syntax '%s'"), disk->src->path);
+                    goto error;
                     break;
                 case VIR_STORAGE_NET_PROTOCOL_HTTP:
                 case VIR_STORAGE_NET_PROTOCOL_HTTPS:
@@ -2048,7 +2200,7 @@ qemuParseCommandLine(virCapsPtr caps,
         } else if (STREQ(arg, "-no-acpi")) {
             def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ABSENT;
         } else if (STREQ(arg, "-no-reboot")) {
-            def->onReboot = VIR_DOMAIN_LIFECYCLE_DESTROY;
+            def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
         } else if (STREQ(arg, "-no-kvm")) {
             def->virtType = VIR_DOMAIN_VIRT_QEMU;
         } else if (STREQ(arg, "-enable-kvm")) {
@@ -2135,69 +2287,6 @@ qemuParseCommandLine(virCapsPtr caps,
             }
             if (STREQ(def->name, ""))
                 VIR_FREE(def->name);
-        } else if (STREQ(arg, "-M") ||
-                   STREQ(arg, "-machine")) {
-            char *param;
-            size_t j = 0;
-
-            /* -machine [type=]name[,prop[=value][,...]]
-             * Set os.machine only if first parameter lacks '=' or
-             * contains explicit type='...' */
-            WANT_VALUE();
-            if (!(list = virStringSplit(val, ",", 0)))
-                goto error;
-            param = list[0];
-
-            if (STRPREFIX(param, "type="))
-                param += strlen("type=");
-            if (!strchr(param, '=')) {
-                if (VIR_STRDUP(def->os.machine, param) < 0)
-                    goto error;
-                j++;
-            }
-
-            /* handle all remaining "-machine" parameters */
-            while ((param = list[j++])) {
-                if (STRPREFIX(param, "dump-guest-core=")) {
-                    param += strlen("dump-guest-core=");
-                    def->mem.dump_core = virTristateSwitchTypeFromString(param);
-                    if (def->mem.dump_core <= 0)
-                        def->mem.dump_core = VIR_TRISTATE_SWITCH_ABSENT;
-                } else if (STRPREFIX(param, "mem-merge=off")) {
-                    def->mem.nosharepages = true;
-                } else if (STRPREFIX(param, "accel=kvm")) {
-                    def->virtType = VIR_DOMAIN_VIRT_KVM;
-                    def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
-                } else if (STRPREFIX(param, "aes-key-wrap=")) {
-                    if (STREQ(arg, "-M")) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("aes-key-wrap is not supported with "
-                                         "this QEMU binary"));
-                        goto error;
-                    }
-                    param += strlen("aes-key-wrap=");
-                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
-                        goto error;
-                    def->keywrap->aes = virTristateSwitchTypeFromString(param);
-                    if (def->keywrap->aes < 0)
-                        def->keywrap->aes = VIR_TRISTATE_SWITCH_ABSENT;
-                } else if (STRPREFIX(param, "dea-key-wrap=")) {
-                    if (STREQ(arg, "-M")) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("dea-key-wrap is not supported with "
-                                         "this QEMU binary"));
-                        goto error;
-                    }
-                    param += strlen("dea-key-wrap=");
-                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
-                        goto error;
-                    def->keywrap->dea = virTristateSwitchTypeFromString(param);
-                    if (def->keywrap->dea < 0)
-                        def->keywrap->dea = VIR_TRISTATE_SWITCH_ABSENT;
-                }
-            }
-            virStringListFree(list);
-            list = NULL;
         } else if (STREQ(arg, "-serial")) {
             WANT_VALUE();
             if (STRNEQ(val, "none")) {
@@ -2402,11 +2491,11 @@ qemuParseCommandLine(virCapsPtr caps,
             if (monConfig) {
                 virDomainChrSourceDefPtr chr;
 
-                if (VIR_ALLOC(chr) < 0)
+                if (!(chr = virDomainChrSourceDefNew(NULL)))
                     goto error;
 
                 if (qemuParseCommandLineChr(chr, val) < 0) {
-                    virDomainChrSourceDefFree(chr);
+                    virObjectUnref(chr);
                     goto error;
                 }
 
@@ -2487,6 +2576,11 @@ qemuParseCommandLine(virCapsPtr caps,
 
                 argRecognized = false;
             }
+        } else if (STREQ(arg, "-M") ||
+                   STREQ(arg, "-machine")) {
+            /* This option has already been processed before entering this
+             * loop, so we just need to skip its argument and move along */
+            WANT_VALUE();
         } else {
             argRecognized = false;
         }
@@ -2543,12 +2637,12 @@ qemuParseCommandLine(virCapsPtr caps,
             port = strchr(token, ':');
             if (port) {
                 *port++ = '\0';
-                if (VIR_STRDUP(port, port) < 0) {
+                if (virStringParsePort(port,
+                                       &first_rbd_disk->src->hosts[first_rbd_disk->src->nhosts].port) < 0) {
                     VIR_FREE(hosts);
                     goto error;
                 }
             }
-            first_rbd_disk->src->hosts[first_rbd_disk->src->nhosts].port = port;
             if (VIR_STRDUP(first_rbd_disk->src->hosts[first_rbd_disk->src->nhosts].name,
                            token) < 0) {
                 VIR_FREE(hosts);
@@ -2567,20 +2661,6 @@ qemuParseCommandLine(virCapsPtr caps,
                            _("found no rbd hosts in CEPH_ARGS '%s'"), ceph_args);
             goto error;
         }
-    }
-
-    if (!def->os.machine) {
-        virCapsDomainDataPtr capsdata;
-
-        if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
-                def->os.arch, def->virtType, NULL, NULL)))
-            goto error;
-
-        if (VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0) {
-            VIR_FREE(capsdata);
-            goto error;
-        }
-        VIR_FREE(capsdata);
     }
 
     if (!nographics && (def->ngraphics == 0 || have_sdl)) {
@@ -2608,19 +2688,9 @@ qemuParseCommandLine(virCapsPtr caps,
 
     if (def->ngraphics) {
         virDomainVideoDefPtr vid;
-        if (VIR_ALLOC(vid) < 0)
+        if (!(vid = virDomainVideoDefNew()))
             goto error;
-        if (def->virtType == VIR_DOMAIN_VIRT_XEN)
-            vid->type = VIR_DOMAIN_VIDEO_TYPE_XEN;
-        else
-            vid->type = video;
-        if (vid->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
-            vid->vgamem = QEMU_QXL_VGAMEM_DEFAULT;
-        } else {
-            vid->ram = 0;
-            vid->vgamem = 0;
-        }
-        vid->heads = 1;
+        vid->type = video;
 
         if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, vid) < 0) {
             virDomainVideoDefFree(vid);
@@ -2652,6 +2722,7 @@ qemuParseCommandLine(virCapsPtr caps,
     else
         qemuDomainCmdlineDefFree(cmd);
 
+    virObjectUnref(qemuCaps);
     return def;
 
  error:
@@ -2661,16 +2732,18 @@ qemuParseCommandLine(virCapsPtr caps,
     virStringListFree(list);
     VIR_FREE(nics);
     if (monConfig) {
-        virDomainChrSourceDefFree(*monConfig);
+        virObjectUnref(*monConfig);
         *monConfig = NULL;
     }
     if (pidfile)
         VIR_FREE(*pidfile);
+    virObjectUnref(qemuCaps);
     return NULL;
 }
 
 
-virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
+virDomainDefPtr qemuParseCommandLineString(virFileCachePtr capsCache,
+                                           virCapsPtr caps,
                                            virDomainXMLOptionPtr xmlopt,
                                            const char *args,
                                            char **pidfile,
@@ -2684,7 +2757,7 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
     if (qemuStringToArgvEnv(args, &progenv, &progargv) < 0)
         goto cleanup;
 
-    def = qemuParseCommandLine(caps, xmlopt, progenv, progargv,
+    def = qemuParseCommandLine(capsCache, caps, xmlopt, progenv, progargv,
                                pidfile, monConfig, monJSON);
 
  cleanup:
@@ -2742,7 +2815,8 @@ static int qemuParseProcFileStrings(int pid_value,
     return ret;
 }
 
-virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
+virDomainDefPtr qemuParseCommandLinePid(virFileCachePtr capsCache,
+                                        virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
                                         pid_t pid,
                                         char **pidfile,
@@ -2757,22 +2831,22 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
 
     /* The parser requires /proc/pid, which only exists on platforms
      * like Linux where pid_t fits in int.  */
-    if ((int) pid != pid ||
+    if ((int)pid != pid ||
         qemuParseProcFileStrings(pid, "cmdline", &progargv) < 0 ||
         qemuParseProcFileStrings(pid, "environ", &progenv) < 0)
         goto cleanup;
 
-    if (!(def = qemuParseCommandLine(caps, xmlopt, progenv, progargv,
+    if (!(def = qemuParseCommandLine(capsCache, caps, xmlopt, progenv, progargv,
                                      pidfile, monConfig, monJSON)))
         goto cleanup;
 
-    if (virAsprintf(&exepath, "/proc/%d/exe", (int) pid) < 0)
+    if (virAsprintf(&exepath, "/proc/%d/exe", (int)pid) < 0)
         goto cleanup;
 
     if (virFileResolveLink(exepath, &emulator) < 0) {
         virReportSystemError(errno,
                              _("Unable to resolve %s for pid %u"),
-                             exepath, (int) pid);
+                             exepath, (int)pid);
         goto cleanup;
     }
     VIR_FREE(def->emulator);

@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -27,6 +25,10 @@
 #include <execinfo.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
+#ifdef HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
 
 #include "internal.h"
 #include "configmake.h"
@@ -34,33 +36,10 @@
 #include "viralloc.h"
 #include "virfile.h"
 
-/* stat can be a macro as follows:
- *
- *   #define stat stat64
- *
- * This wouldn't fly with our mock. Make sure that the macro (and
- * all its friends) are undefined. We don't want anybody mangling
- * our code. */
-#undef stat
-#undef stat64
-#undef __xstat
-#undef __xstat64
-#undef lstat
-#undef lstat64
-#undef __lxstat
-#undef __lxstat64
-
 static int (*real_open)(const char *path, int flags, ...);
 static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
-static int (*real_stat)(const char *path, struct stat *sb);
-static int (*real_stat64)(const char *path, void *sb);
-static int (*real___xstat)(int ver, const char *path, struct stat *sb);
-static int (*real___xstat64)(int ver, const char *path, void *sb);
-static int (*real_lstat)(const char *path, struct stat *sb);
-static int (*real_lstat64)(const char *path, void *sb);
-static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
-static int (*real___lxstat64)(int ver, const char *path, void *sb);
+static int (*real_connect)(int fd, const struct sockaddr *addr, socklen_t addrlen);
 
 static const char *progname;
 const char *output;
@@ -75,14 +54,12 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(fopen);
     VIR_MOCK_REAL_INIT(access);
-    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
-    VIR_MOCK_REAL_INIT_ALT(stat64, __xstat64);
-    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
-    VIR_MOCK_REAL_INIT_ALT(lstat64, __lxstat64);
+    VIR_MOCK_REAL_INIT(connect);
 }
 
 static void
-printFile(const char *file)
+printFile(const char *file,
+          const char *func)
 {
     FILE *fp;
     const char *testname = getenv("VIR_TEST_MOCK_TESTNAME");
@@ -110,9 +87,9 @@ printFile(const char *file)
     }
 
     /* Now append the following line into the output file:
-     * $file: $progname $testname */
+     * $file: $progname: $func: $testname */
 
-    fprintf(fp, "%s: %s", file, progname);
+    fprintf(fp, "%s: %s: %s", file, func, progname);
     if (testname)
         fprintf(fp, ": %s", testname);
 
@@ -122,8 +99,12 @@ printFile(const char *file)
     fclose(fp);
 }
 
+#define CHECK_PATH(path) \
+    checkPath(path, __FUNCTION__)
+
 static void
-checkPath(const char *path)
+checkPath(const char *path,
+          const char *func)
 {
     char *fullPath = NULL;
     char *relPath = NULL;
@@ -133,12 +114,11 @@ checkPath(const char *path)
         virAsprintfQuiet(&relPath, "./%s", path) < 0)
         goto error;
 
-    /* Le sigh. Both canonicalize_file_name() and realpath()
-     * expect @path to exist otherwise they return an error. So
-     * if we are called over an non-existent file, this could
-     * return an error. In that case do our best and hope we will
-     * catch possible error. */
-    if ((fullPath = canonicalize_file_name(relPath ? relPath : path))) {
+    /* Le sigh. virFileCanonicalizePath() expects @path to exist, otherwise
+     * it will return an error. So if we are called over an non-existent
+     * file, this could return an error. In that case do our best and hope
+     * we will catch possible errors. */
+    if ((fullPath = virFileCanonicalizePath(relPath ? relPath : path))) {
         path = fullPath;
     } else {
         /* Yeah, our worst nightmares just became true. Path does
@@ -148,14 +128,14 @@ checkPath(const char *path)
 
         virFileRemoveLastComponent(crippledPath);
 
-        if ((fullPath = canonicalize_file_name(crippledPath)))
+        if ((fullPath = virFileCanonicalizePath(crippledPath)))
             path = fullPath;
     }
 
 
-    if (!STRPREFIX(path, abs_topsrcdir) &&
-        !STRPREFIX(path, abs_topbuilddir)) {
-        printFile(path);
+    if (!STRPREFIX(path, abs_top_srcdir) &&
+        !STRPREFIX(path, abs_top_builddir)) {
+        printFile(path, func);
     }
 
     VIR_FREE(crippledPath);
@@ -175,13 +155,13 @@ int open(const char *path, int flags, ...)
 
     init_syms();
 
-    checkPath(path);
+    CHECK_PATH(path);
 
     if (flags & O_CREAT) {
         va_list ap;
         mode_t mode;
         va_start(ap, flags);
-        mode = va_arg(ap, mode_t);
+        mode = (mode_t) va_arg(ap, int);
         va_end(ap);
         ret = real_open(path, flags, mode);
     } else {
@@ -194,7 +174,7 @@ FILE *fopen(const char *path, const char *mode)
 {
     init_syms();
 
-    checkPath(path);
+    CHECK_PATH(path);
 
     return real_fopen(path, mode);
 }
@@ -204,121 +184,33 @@ int access(const char *path, int mode)
 {
     init_syms();
 
-    checkPath(path);
+    CHECK_PATH(path);
 
     return real_access(path, mode);
 }
 
-/* Okay, the following ifdef rain forest may look messy at a
- * first glance. But here's the thing: during run time linking of
- * a binary, stat() may not be acutally needing symbol stat. It
- * might as well not had been stat() in the first place (see the
- * reasoning at the beginning of this file). However, if we would
- * expose stat symbol here, we will poison the well and trick
- * dynamic linker into thinking we are some old binary that still
- * uses the symbol. So whenever code from upper layers calls
- * stat(), the control would get here, but real_stat can actually
- * be a NULL pointer because newer glibc have __xstat instead.
- * Worse, it can have __xstat64 instead __xstat.
- *
- * Anyway, these ifdefs are there to implement the following
- * preference function:
- *
- * stat < stat64 < __xstat < __xstat64
- *
- * It's the same story with lstat.
- * Also, I feel sorry for you that you had to read this.
- */
-#if defined(HAVE_STAT) && !defined(HAVE___XSTAT)
-int stat(const char *path, struct stat *sb)
+
+#define VIR_MOCK_STAT_HOOK CHECK_PATH(path)
+
+#include "virmockstathelpers.c"
+
+static int virMockStatRedirect(const char *path ATTRIBUTE_UNUSED, char **newpath ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 {
     init_syms();
 
-    checkPath(path);
-
-    return real_stat(path, sb);
-}
+#ifdef HAVE_SYS_UN_H
+    if (addrlen == sizeof(struct sockaddr_un)) {
+        struct sockaddr_un *tmp = (struct sockaddr_un *) addr;
+        if (tmp->sun_family == AF_UNIX)
+            CHECK_PATH(tmp->sun_path);
+    }
 #endif
 
-#if defined(HAVE_STAT64) && !defined(HAVE___XSTAT64)
-int stat64(const char *path, struct stat64 *sb)
-{
-    init_syms();
-
-    checkPath(path);
-
-    return real_stat64(path, sb);
+    return real_connect(sockfd, addr, addrlen);
 }
-#endif
-
-#if defined(HAVE___XSTAT) && !defined(HAVE___XSTAT64)
-int
-__xstat(int ver, const char *path, struct stat *sb)
-{
-    init_syms();
-
-    checkPath(path);
-
-    return real___xstat(ver, path, sb);
-}
-#endif
-
-#if defined(HAVE___XSTAT64)
-int
-__xstat64(int ver, const char *path, struct stat64 *sb)
-{
-    init_syms();
-
-    checkPath(path);
-
-    return real___xstat64(ver, path, sb);
-}
-#endif
-
-#if defined(HAVE_LSTAT) && !defined(HAVE___LXSTAT)
-int
-lstat(const char *path, struct stat *sb)
-{
-    init_syms();
-
-    checkPath(path);
-
-    return real_lstat(path, sb);
-}
-#endif
-
-#if defined(HAVE_LSTAT64) && !defined(HAVE___LXSTAT64)
-int
-lstat64(const char *path, struct stat64 *sb)
-{
-    init_syms();
-
-    checkPath(path);
-
-    return real_lstat64(path, sb);
-}
-#endif
-
-#if defined(HAVE___LXSTAT) && !defined(HAVE___LXSTAT64)
-int
-__lxstat(int ver, const char *path, struct stat *sb)
-{
-    init_syms();
-
-    checkPath(path);
-
-    return real___lxstat(ver, path, sb);
-}
-#endif
-
-#if defined(HAVE___LXSTAT64)
-int
-__lxstat64(int ver, const char *path, struct stat64 *sb)
-{
-    init_syms();
-
-    checkPath(path);
-
-    return real___lxstat64(ver, path, sb);
-}
-#endif

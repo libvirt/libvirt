@@ -1,0 +1,5 @@
+module Test_libvirtd_bhyve =
+  ::CONFIG::
+
+  test Libvirtd_bhyve.lns get conf =
+{ "firmware_dir" = "/usr/local/share/uefi-firmware" }

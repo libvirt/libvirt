@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>libvirt Application Development Guides</h1>
@@ -12,10 +12,10 @@
     </p>
 
     <ul>
-      <li><a href="http://libvirt.org/docs/libvirt-appdev-guide/en-US/html/">Application Development Guide (C language) HTML</a></li>
-      <li><a href="http://libvirt.org/docs/libvirt-appdev-guide/en-US/pdf/">Application Development Guide (C language) PDF</a></li>
-      <li><a href="http://libvirt.org/docs/libvirt-appdev-guide-python/en-US/html/">Application Development Guide (Python language) HTML</a></li>
-      <li><a href="http://libvirt.org/docs/libvirt-appdev-guide-python/en-US/pdf/">Application Development Guide (Python language) PDF</a></li>
+      <li><a href="https://libvirt.org/docs/libvirt-appdev-guide/en-US/html/">Application Development Guide (C language) HTML</a></li>
+      <li><a href="https://libvirt.org/docs/libvirt-appdev-guide/en-US/pdf/">Application Development Guide (C language) PDF</a></li>
+      <li><a href="https://libvirt.org/docs/libvirt-appdev-guide-python/en-US/html/">Application Development Guide (Python language) HTML</a></li>
+      <li><a href="https://libvirt.org/docs/libvirt-appdev-guide-python/en-US/pdf/">Application Development Guide (Python language) PDF</a></li>
     </ul>
 
     <h2>Contributing content</h2>
@@ -29,13 +29,13 @@
 
     <pre>
 # C language
-$ git clone <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git">git://libvirt.org/libvirt-appdev-guide.git</a>
+$ git clone <a href="https://libvirt.org/git/?p=libvirt-appdev-guide.git">https://libvirt.org/git/libvirt-appdev-guide.git</a>
 
 # Python language
-$ git clone <a href="http://libvirt.org/git/?p=libvirt-appdev-guide-python.git">git://libvirt.org/libvirt-appdev-guide-python.git</a>
+$ git clone <a href="https://libvirt.org/git/?p=libvirt-appdev-guide-python.git">https://libvirt.org/git/libvirt-appdev-guide-python.git</a>
 
 # Publican Style/Theme
-$ git clone <a href="http://libvirt.org/git/?p=libvirt-publican.git">git://libvirt.org/libvirt-publican.git</a>
+$ git clone <a href="https://libvirt.org/git/?p=libvirt-publican.git">https://libvirt.org/git/libvirt-publican.git</a>
     </pre>
 
   </body>

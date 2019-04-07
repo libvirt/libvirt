@@ -14,14 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Francesco Romani <fromani@redhat.com>
  */
 
 #include <config.h>
 
 #include "testutils.h"
+#include "testutilsqemu.h"
 #include "qemu/qemu_capabilities.h"
 
 
@@ -31,9 +29,23 @@
 typedef struct _testQemuData testQemuData;
 typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
+    const char *inputDir;
+    const char *outputDir;
     const char *base;
-    virArch guestarch;
+    const char *archName;
+    int ret;
 };
+
+static int
+testQemuDataInit(testQemuDataPtr data)
+{
+    data->inputDir = abs_srcdir "/qemucapabilitiesdata";
+    data->outputDir = abs_srcdir "/qemucaps2xmloutdata";
+
+    data->ret = 0;
+
+    return 0;
+}
 
 static virQEMUCapsPtr
 testQemuGetCaps(char *caps)
@@ -87,23 +99,26 @@ testGetCaps(char *capsData, const testQemuData *data)
 {
     virQEMUCapsPtr qemuCaps = NULL;
     virCapsPtr caps = NULL;
+    virArch arch = virArchFromString(data->archName);
+    char *binary = NULL;
+
+    if (virAsprintf(&binary, "/usr/bin/qemu-system-%s", data->archName) < 0)
+        goto error;
 
     if ((qemuCaps = testQemuGetCaps(capsData)) == NULL) {
         fprintf(stderr, "failed to parse qemu capabilities flags");
         goto error;
     }
 
-    if ((caps = virCapabilitiesNew(data->guestarch, false, false)) == NULL) {
+    if ((caps = virCapabilitiesNew(arch, false, false)) == NULL) {
         fprintf(stderr, "failed to create the fake capabilities");
         goto error;
     }
 
     if (virQEMUCapsInitGuestFromBinary(caps,
-                                       "/usr/bin/qemu-system-i386",
+                                       binary,
                                        qemuCaps,
-                                       NULL,
-                                       NULL,
-                                       data->guestarch) < 0) {
+                                       arch) < 0) {
         fprintf(stderr, "failed to create the capabilities from qemu");
         goto error;
     }
@@ -114,6 +129,7 @@ testGetCaps(char *capsData, const testQemuData *data)
  error:
     virObjectUnref(qemuCaps);
     virObjectUnref(caps);
+    VIR_FREE(binary);
     return NULL;
 }
 
@@ -127,12 +143,12 @@ testQemuCapsXML(const void *opaque)
     char *capsXml = NULL;
     virCapsPtr capsProvided = NULL;
 
-    if (virAsprintf(&xmlFile, "%s/qemucaps2xmldata/%s.xml",
-                    abs_srcdir, data->base) < 0)
+    if (virAsprintf(&xmlFile, "%s/caps.%s.xml",
+                    data->outputDir, data->archName) < 0)
         goto cleanup;
 
-    if (virAsprintf(&capsFile, "%s/qemucaps2xmldata/%s.caps",
-                    abs_srcdir, data->base) < 0)
+    if (virAsprintf(&capsFile, "%s/%s.%s.xml",
+                    data->inputDir, data->base, data->archName) < 0)
         goto cleanup;
 
     if (virTestLoadFile(capsFile, &capsData) < 0)
@@ -159,14 +175,32 @@ testQemuCapsXML(const void *opaque)
 }
 
 static int
+doCapsTest(const char *base,
+           const char *archName,
+           void *opaque)
+{
+    testQemuDataPtr data = (testQemuDataPtr) opaque;
+    VIR_AUTOFREE(char *) title = NULL;
+
+    if (virAsprintf(&title, "%s (%s)", base, archName) < 0)
+        return -1;
+
+    data->base = base;
+    data->archName = archName;
+
+    if (virTestRun(title, testQemuCapsXML, data) < 0)
+        data->ret = -1;
+
+    return 0;
+}
+
+static int
 mymain(void)
 {
-    int ret = 0;
-
     testQemuData data;
 
 #if !WITH_YAJL
-    fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
+    fputs("libvirt not compiled with JSON support, skipping this test\n", stderr);
     return EXIT_AM_SKIP;
 #endif
 
@@ -175,18 +209,13 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-#define DO_TEST_FULL(name, guest)                       \
-    data.base = name;                                   \
-    data.guestarch = guest;                             \
-    if (virTestRun(name, testQemuCapsXML, &data) < 0)   \
-        ret = -1
+    if (testQemuDataInit(&data) < 0)
+        return EXIT_FAILURE;
 
-#define DO_TEST(name) DO_TEST_FULL(name, VIR_ARCH_I686)
+    if (testQemuCapsIterate(data.inputDir, ".xml", doCapsTest, &data) < 0)
+        return EXIT_FAILURE;
 
-    DO_TEST("all_1.6.0-1");
-    DO_TEST("nodisksnapshot_1.6.0-1");
-
-    return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return (data.ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/qemucaps2xmlmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/qemucaps2xmlmock.so")

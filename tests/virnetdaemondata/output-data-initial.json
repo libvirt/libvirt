@@ -42,6 +42,7 @@
         {
           "id": 1,
           "auth": 1,
+          "auth_pending": true,
           "readonly": true,
           "nrequests_max": 15,
           "sock": {
@@ -49,11 +50,13 @@
             "errfd": -1,
             "pid": -1,
             "isClient": true
-          }
+          },
+          "privateData": 1729
         },
         {
           "id": 2,
           "auth": 2,
+          "auth_pending": true,
           "readonly": true,
           "nrequests_max": 66,
           "sock": {
@@ -61,7 +64,8 @@
             "errfd": -1,
             "pid": -1,
             "isClient": true
-          }
+          },
+          "privateData": 1729
         }
       ]
     }

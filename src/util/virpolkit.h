@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_POLKIT_H__
-# define __VIR_POLKIT_H__
+#ifndef LIBVIRT_VIRPOLKIT_H
+# define LIBVIRT_VIRPOLKIT_H
 
 # include "internal.h"
 # include "vircommand.h"
@@ -40,4 +40,4 @@ typedef virPolkitAgent *virPolkitAgentPtr;
 void virPolkitAgentDestroy(virPolkitAgentPtr cmd);
 virPolkitAgentPtr virPolkitAgentCreate(void);
 
-#endif /* __VIR_POLKIT_H__ */
+#endif /* LIBVIRT_VIRPOLKIT_H */

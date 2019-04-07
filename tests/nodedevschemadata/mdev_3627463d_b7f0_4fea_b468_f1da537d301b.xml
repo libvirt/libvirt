@@ -1,0 +1,8 @@
+<device>
+  <name>mdev_3627463d_b7f0_4fea_b468_f1da537d301b</name>
+  <parent>computer</parent>
+  <capability type='mdev'>
+    <type id='mtty-1'/>
+    <iommuGroup number='12'/>
+  </capability>
+</device>

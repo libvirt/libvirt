@@ -19,12 +19,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NET_SERVER_MDNS_H__
-# define __VIR_NET_SERVER_MDNS_H__
+#ifndef LIBVIRT_VIRNETSERVERMDNS_H
+# define LIBVIRT_VIRNETSERVERMDNS_H
 
 # include "internal.h"
 
@@ -106,4 +104,4 @@ void virNetServerMDNSFree(virNetServerMDNSPtr ptr);
 void virNetServerMDNSGroupFree(virNetServerMDNSGroupPtr ptr);
 void virNetServerMDNSEntryFree(virNetServerMDNSEntryPtr ptr);
 
-#endif /* __VIR_NET_SERVER_MDNS_H__ */
+#endif /* LIBVIRT_VIRNETSERVERMDNS_H */

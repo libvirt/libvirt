@@ -1,9 +1,6 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -23,27 +20,39 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
 {
     char *actual = NULL;
     int ret = -1;
-    virNetworkDefPtr dev = NULL;
+    virNetworkDefPtr def = NULL;
     virNetworkObjPtr obj = NULL;
     virCommandPtr cmd = NULL;
     char *pidfile = NULL;
     dnsmasqContext *dctx = NULL;
 
-    if (!(dev = virNetworkDefParseFile(inxml)))
+    if (!(def = virNetworkDefParseFile(inxml)))
         goto fail;
 
     if (!(obj = virNetworkObjNew()))
         goto fail;
 
-    obj->def = dev;
-    dctx = dnsmasqContextNew(dev->name, "/var/lib/libvirt/dnsmasq");
+    virNetworkObjSetDef(obj, def);
+
+    dctx = dnsmasqContextNew(def->name, "/var/lib/libvirt/dnsmasq");
 
     if (dctx == NULL)
         goto fail;
 
-    if (networkDnsmasqConfContents(obj, pidfile, &actual,
-                        dctx, caps) < 0)
+    if (networkDnsmasqConfContents(obj, pidfile, &actual, dctx, caps) < 0)
         goto fail;
+
+    /* Any changes to this function ^^ should be reflected here too. */
+#ifndef __linux__
+    char * tmp;
+
+    if (!(tmp = virStringReplace(actual,
+                                 "except-interface=lo0\n",
+                                 "except-interface=lo\n")))
+        goto fail;
+    VIR_FREE(actual);
+    VIR_STEAL_PTR(actual, tmp);
+#endif
 
     if (virTestCompareToFile(actual, outconf) < 0)
         goto fail;
@@ -54,7 +63,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     VIR_FREE(actual);
     VIR_FREE(pidfile);
     virCommandFree(cmd);
-    virObjectUnref(obj);
+    virNetworkObjEndAPI(&obj);
     dnsmasqContextFree(dctx);
     return ret;
 }
@@ -70,20 +79,20 @@ testCompareXMLToConfHelper(const void *data)
     int result = -1;
     const testInfo *info = data;
     char *inxml = NULL;
-    char *outxml = NULL;
+    char *outconf = NULL;
 
     if (virAsprintf(&inxml, "%s/networkxml2confdata/%s.xml",
                     abs_srcdir, info->name) < 0 ||
-        virAsprintf(&outxml, "%s/networkxml2confdata/%s.conf",
+        virAsprintf(&outconf, "%s/networkxml2confdata/%s.conf",
                     abs_srcdir, info->name) < 0) {
         goto cleanup;
     }
 
-    result = testCompareXMLToConfFiles(inxml, outxml, info->caps);
+    result = testCompareXMLToConfFiles(inxml, outconf, info->caps);
 
  cleanup:
     VIR_FREE(inxml);
-    VIR_FREE(outxml);
+    VIR_FREE(outconf);
 
     return result;
 }
@@ -99,16 +108,16 @@ mymain(void)
     dnsmasqCapsPtr dhcpv6
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.64\n--bind-dynamic", DNSMASQ);
 
-#define DO_TEST(xname, xcaps)                                        \
-    do {                                                             \
-        static testInfo info;                                        \
-                                                                     \
-        info.name = xname;                                           \
-        info.caps = xcaps;                                           \
-        if (virTestRun("Network XML-2-Conf " xname,                  \
-                       testCompareXMLToConfHelper, &info) < 0) {     \
-            ret = -1;                                                \
-        }                                                            \
+#define DO_TEST(xname, xcaps) \
+    do { \
+        static testInfo info; \
+ \
+        info.name = xname; \
+        info.caps = xcaps; \
+        if (virTestRun("Network XML-2-Conf " xname, \
+                       testCompareXMLToConfHelper, &info) < 0) { \
+            ret = -1; \
+        } \
     } while (0)
 
     DO_TEST("isolated-network", restricted);
@@ -125,7 +134,9 @@ mymain(void)
     DO_TEST("nat-network-dns-hosts", full);
     DO_TEST("nat-network-dns-forward-plain", full);
     DO_TEST("nat-network-dns-forwarders", full);
+    DO_TEST("nat-network-dns-forwarder-no-resolv", full);
     DO_TEST("nat-network-dns-local-domain", full);
+    DO_TEST("nat-network-mtu", dhcpv6);
     DO_TEST("dhcp6-network", dhcpv6);
     DO_TEST("dhcp6-nat-network", dhcpv6);
     DO_TEST("dhcp6host-routed-network", dhcpv6);
@@ -138,4 +149,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

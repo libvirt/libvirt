@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
 
@@ -15,7 +15,7 @@
       potential security issues.
     </p>
 
-    <h2><a name="reporting">Reporting security issues</a></h2>
+    <h2><a id="reporting">Reporting security issues</a></h2>
 
     <p>
       In the event that a bug in libvirt is found which is
@@ -37,7 +37,20 @@
       moderator and the reporter copied on any replies.
     </p>
 
-    <h2><a name="seclist">Security team</a></h2>
+    <h2><a id="secnotice">Security notices</a></h2>
+
+    <p>
+      Information for all historical security issues is maintained in
+      machine parsable format in the
+      <a href="https://libvirt.org/git/?p=libvirt-security-notice.git;a=log">libvirt-security-notice GIT repository</a> and
+      <a href="https://security.libvirt.org">published online</a>
+      in text, HTML and XML formats. Security notices are published
+      on the <a href="https://libvirt.org/contact.html#email">libvirt-announce mailing list</a>
+      when any embargo is lifted, or as soon as triaged if already
+      public knowledge.
+    </p>
+
+    <h2><a id="seclist">Security team</a></h2>
 
     <p>
       The libvirt security team is made up of a subset of the libvirt
@@ -61,7 +74,7 @@
       described below.
     </p>
 
-    <h2><a name="embargo">Publication embargo policy</a></h2>
+    <h2><a id="embargo">Publication embargo policy</a></h2>
 
     <p>
       The libvirt security team operates a policy of
@@ -84,7 +97,7 @@
     </p>
 
 
-    <h2><a name="cve">CVE allocation</a></h2>
+    <h2><a id="cve">CVE allocation</a></h2>
 
     <p>
       The libvirt security team will associate each security issue with
@@ -92,7 +105,7 @@
       the vendor security engineers on the security team.
     </p>
 
-    <h2><a name="branches">Branch fixing policy</a></h2>
+    <h2><a id="branches">Branch fixing policy</a></h2>
 
     <p>
       The libvirt community maintains one or more stable release branches
@@ -101,13 +114,6 @@
       each currently maintained stable release branch. The distro maintainers
       will be responsible for backporting the officially published fixes to
       other release branches where applicable.
-    </p>
-
-    <h2><a name="notification">Notification of issues</a></h2>
-
-    <p>
-      When an embargo expires, security issues will be announced on both
-      the libvirt development and announcement <a href="http://libvirt.org/contact.html#email">mailing lists</a>.
     </p>
   </body>
 </html>

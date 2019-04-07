@@ -1,0 +1,24 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-1.0'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+  </devices>
+  <launchSecurity type='sev'>
+    <cbitpos>47</cbitpos>
+    <reducedPhysBits>1</reducedPhysBits>
+    <policy>0x0001</policy>
+    <dhCert>AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA</dhCert>
+    <session>IHAVENOIDEABUTJUSTPROVIDINGASTRING</session>
+  </launchSecurity>
+</domain>

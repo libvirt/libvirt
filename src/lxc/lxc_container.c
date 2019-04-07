@@ -3,11 +3,7 @@
  * Copyright (C) 2008 IBM Corp.
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
- * lxc_container.c: file description
- *
- * Authors:
- *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
- *  Daniel P. Berrange <berrange@redhat.com>
+ * lxc_container.c: Performs container setup tasks
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,10 +23,6 @@
 #include <config.h>
 
 #include <fcntl.h>
-#include <sched.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include <sys/wait.h>
@@ -50,7 +42,7 @@
 #endif
 
 #if WITH_BLKID
-# include <blkid/blkid.h>
+# include <blkid.h>
 #endif
 
 #if WITH_SELINUX
@@ -246,6 +238,13 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef,
     virCommandAddEnvPair(cmd, "LIBVIRT_LXC_NAME", vmDef->name);
     if (vmDef->os.cmdline)
         virCommandAddEnvPair(cmd, "LIBVIRT_LXC_CMDLINE", vmDef->os.cmdline);
+    if (vmDef->os.initdir)
+        virCommandSetWorkingDirectory(cmd, vmDef->os.initdir);
+
+    for (i = 0; vmDef->os.initenv[i]; i++) {
+        virCommandAddEnvPair(cmd, vmDef->os.initenv[i]->name,
+                                  vmDef->os.initenv[i]->value);
+    }
 
     virBufferFreeAndReset(&buf);
     return cmd;
@@ -568,7 +567,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     const char *failedUmount = NULL;
     int ret = -1;
 
-    VIR_DEBUG("Unmount subtreee from %s", prefix);
+    VIR_DEBUG("Unmount subtree from %s", prefix);
 
     if (virFileGetMountReverseSubtree("/proc/mounts", prefix,
                                       &mounts, &nmounts) < 0)
@@ -714,7 +713,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     VIR_DEBUG("Pivot via %s", root->src->path);
 
     /* root->parent must be private, so make / private. */
-    if (mount("", "/", NULL, MS_PRIVATE|MS_REC, NULL) < 0) {
+    if (mount("", "/", "none", MS_PRIVATE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to make root private"));
         goto err;
@@ -751,7 +750,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     }
 
     /* ... and mount our root onto it */
-    if (mount(root->src->path, newroot, NULL, MS_BIND|MS_REC, NULL) < 0) {
+    if (mount(root->src->path, newroot, "none", MS_BIND|MS_REC, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to bind %s to new root %s"),
                              root->src->path, newroot);
@@ -759,7 +758,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     }
 
     if (root->readonly) {
-        if (mount(root->src->path, newroot, NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
+        if (mount(root->src->path, newroot, "none", MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make new root %s readonly"),
                                  root->src->path);
@@ -809,9 +808,9 @@ typedef struct {
 
 static const virLXCBasicMountInfo lxcBasicMounts[] = {
     { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, false, false, false },
-    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
-    { "/.oldroot/proc/sys/net/ipv4", "/proc/sys/net/ipv4", NULL, MS_BIND, false, false, true },
-    { "/.oldroot/proc/sys/net/ipv6", "/proc/sys/net/ipv6", NULL, MS_BIND, false, false, true },
+    { "/proc/sys", "/proc/sys", "none", MS_BIND|MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
+    { "/.oldroot/proc/sys/net/ipv4", "/proc/sys/net/ipv4", "none", MS_BIND, false, false, true },
+    { "/.oldroot/proc/sys/net/ipv6", "/proc/sys/net/ipv6", "none", MS_BIND, false, false, true },
     { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
     { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true, true, false },
 #if WITH_SELINUX
@@ -864,13 +863,17 @@ static int lxcContainerSetReadOnly(void)
         }
     }
 
-    if (mounts)
-        qsort(mounts, nmounts, sizeof(mounts[0]),
-              virStringSortRevCompare);
+    if (!mounts) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    qsort(mounts, nmounts, sizeof(mounts[0]),
+          virStringSortRevCompare);
 
     for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Bind readonly %s", mounts[i]);
-        if (mount(mounts[i], mounts[i], NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
+        if (mount(mounts[i], mounts[i], "none", MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make mount %s readonly"),
                                  mounts[i]);
@@ -880,9 +883,7 @@ static int lxcContainerSetReadOnly(void)
 
     ret = 0;
  cleanup:
-    for (i = 0; i < nmounts; i++)
-        VIR_FREE(mounts[i]);
-    VIR_FREE(mounts);
+    virStringListFreeCount(mounts, nmounts);
     endmntent(procmnt);
     return ret;
 
@@ -977,21 +978,21 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
          */
         bindOverReadonly = !!(mnt_mflags & MS_RDONLY);
 
-        VIR_DEBUG("Mount %s on %s type=%s flags=%x",
+        VIR_DEBUG("Mount %s on %s type=%s flags=0x%x",
                   mnt_src, mnt->dst, mnt->type, mnt_mflags & ~MS_RDONLY);
         if (mount(mnt_src, mnt->dst, mnt->type, mnt_mflags & ~MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to mount %s on %s type %s flags=%x"),
+                                 _("Failed to mount %s on %s type %s flags=0x%x"),
                                  mnt_src, mnt->dst, NULLSTR(mnt->type),
                                  mnt_mflags & ~MS_RDONLY);
             goto cleanup;
         }
 
         if (bindOverReadonly &&
-            mount(mnt_src, mnt->dst, NULL,
+            mount(mnt_src, mnt->dst, "none",
                   MS_BIND|MS_REMOUNT|mnt_mflags|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to re-mount %s on %s flags=%x"),
+                                 _("Failed to re-mount %s on %s flags=0x%x"),
                                  mnt_src, mnt->dst,
                                  MS_BIND|MS_REMOUNT|MS_RDONLY);
             goto cleanup;
@@ -1063,7 +1064,7 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
     VIR_DEBUG("Trying to %s %s to /dev", def->idmap.nuidmap ?
               "bind" : "move", path);
 
-    if (mount(path, "/dev", NULL, flags, NULL) < 0) {
+    if (mount(path, "/dev", "none", flags, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev"),
                              path);
@@ -1099,7 +1100,7 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
     VIR_DEBUG("Trying to %s %s to /dev/pts", def->idmap.nuidmap ?
               "bind" : "move", path);
 
-    if (mount(path, "/dev/pts", NULL, flags, NULL) < 0) {
+    if (mount(path, "/dev/pts", "none", flags, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev/pts"),
                              path);
@@ -1144,8 +1145,8 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
             return -1;
 
         if (virFileBindMountDevice(ttyPaths[i], tty) < 0) {
-            return -1;
             VIR_FREE(tty);
+            return -1;
         }
 
         VIR_FREE(tty);
@@ -1209,7 +1210,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
         }
     }
 
-    if (mount(src, fs->dst, NULL, MS_BIND, NULL) < 0) {
+    if (mount(src, fs->dst, "none", MS_BIND, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to bind mount directory %s to %s"),
                              src, fs->dst);
@@ -1218,7 +1219,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
 
     if (fs->readonly) {
         VIR_DEBUG("Binding %s readonly", fs->dst);
-        if (mount(src, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+        if (mount(src, fs->dst, "none", MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make directory %s readonly"),
                                  fs->dst);
@@ -1543,7 +1544,7 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
 
     if (fs->readonly) {
         VIR_DEBUG("Binding %s readonly", fs->dst);
-        if (mount(fs->dst, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+        if (mount(fs->dst, fs->dst, "none", MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make directory %s readonly"),
                                  fs->dst);
@@ -2029,7 +2030,7 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
             break;
 
         case VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT:
-            switch ((virDomainCapsFeature) i) {
+            switch (i) {
             case VIR_DOMAIN_CAPS_FEATURE_SYS_BOOT: /* No use of reboot */
                 toDrop = !keepReboot && (state != VIR_TRISTATE_SWITCH_ON);
                 break;
@@ -2043,7 +2044,7 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
             default: /* User specified capabilities to drop */
                 toDrop = (state == VIR_TRISTATE_SWITCH_OFF);
             }
-            /* Fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
 
         case VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW:
             if (policy == VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW)
@@ -2060,10 +2061,10 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
             }
             break;
 
+        case VIR_DOMAIN_CAPABILITIES_POLICY_LAST:
         default:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported capabilities policy: %s"),
-                           virDomainCapabilitiesPolicyTypeToString(policy));
+            virReportEnumRangeError(virDomainCapabilitiesPolicy, policy);
+            return -1;
         }
     }
 
@@ -2104,6 +2105,86 @@ static int lxcAttachNS(int *ns_fd)
     return 0;
 }
 
+/**
+ * lxcContainerSetUserGroup:
+ * @cmd: command to update
+ * @vmDef: domain definition for the container
+ * @ttyPath: guest path to the tty
+ *
+ * Set the command UID and GID. As this function attempts at
+ * converting the user/group name into uid/gid, it needs to
+ * be called after the pivot root is done.
+ *
+ * The owner of the tty is also changed to the given user.
+ */
+static int lxcContainerSetUserGroup(virCommandPtr cmd,
+                                    virDomainDefPtr vmDef,
+                                    const char *ttyPath)
+{
+    uid_t uid;
+    gid_t gid;
+
+    if (vmDef->os.inituser) {
+        if (virGetUserID(vmDef->os.inituser, &uid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("User %s doesn't exist"),
+                           vmDef->os.inituser);
+            return -1;
+        }
+        virCommandSetUID(cmd, uid);
+
+        /* Change the newly created tty owner to the inituid for
+         * shells to have job control. */
+        if (chown(ttyPath, uid, -1) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to change ownership of tty %s"),
+                                 ttyPath);
+            return -1;
+        }
+    }
+
+    if (vmDef->os.initgroup) {
+        if (virGetGroupID(vmDef->os.initgroup, &gid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Group %s doesn't exist"),
+                           vmDef->os.initgroup);
+            return -1;
+        }
+        virCommandSetGID(cmd, gid);
+    }
+
+    return 0;
+}
+
+static const char hostname_validchars[] =
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "0123456789-";
+
+static int lxcContainerSetHostname(virDomainDefPtr def)
+{
+    int ret = -1;
+    char *name = NULL;
+    char *hostname = NULL;
+
+    /* Filter the VM name to get a valid hostname */
+    if (VIR_STRDUP(name, def->name) < 0)
+        goto cleanup;
+
+    /* RFC 1123 allows 0-9 digits as a first character in hostname */
+    virStringFilterChars(name, hostname_validchars);
+    hostname = name;
+    if (strlen(name) > 0 && name[0] == '-')
+        hostname = name + 1;
+
+    if (sethostname(hostname, strlen(hostname)) < 0) {
+        virReportSystemError(errno, "%s", _("Failed to set hostname"));
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    return ret;
+}
 
 /**
  * lxcContainerChild:
@@ -2112,7 +2193,7 @@ static int lxcAttachNS(int *ns_fd)
  * This function is run in the process clone()'d in lxcStartContainer.
  * Perform a number of container setup tasks:
  *     Setup container file system
- *     mount container /proca
+ *     mount container /proc
  * Then exec's the container init
  *
  * Returns 0 on success or -1 in case of error
@@ -2127,6 +2208,8 @@ static int lxcContainerChild(void *data)
     virDomainFSDefPtr root;
     virCommandPtr cmd = NULL;
     int hasReboot;
+    gid_t *groups = NULL;
+    int ngroups;
 
     if (NULL == vmDef) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2197,10 +2280,13 @@ static int lxcContainerChild(void *data)
 
     if (!virFileExists(vmDef->os.init)) {
         virReportSystemError(errno,
-                    _("cannot find init path '%s' relative to container root"),
-                    vmDef->os.init);
+                             _("cannot find init path '%s' relative to container root"),
+                             vmDef->os.init);
         goto cleanup;
     }
+
+    if (lxcContainerSetUserGroup(cmd, vmDef, argv->ttyPaths[0]) < 0)
+        goto cleanup;
 
     /* rename and enable interfaces */
     if (lxcContainerRenameAndEnableInterfaces(vmDef,
@@ -2209,13 +2295,17 @@ static int lxcContainerChild(void *data)
         goto cleanup;
     }
 
+    if (lxcContainerSetHostname(vmDef) < 0)
+        goto cleanup;
+
+
     /* drop a set of root capabilities */
     if (lxcContainerDropCapabilities(vmDef, !!hasReboot) < 0)
         goto cleanup;
 
     if (lxcContainerSendContinue(argv->handshakefd) < 0) {
         virReportSystemError(errno, "%s",
-                            _("Failed to send continue signal to controller"));
+                             _("Failed to send continue signal to controller"));
         goto cleanup;
     }
 
@@ -2239,6 +2329,13 @@ static int lxcContainerChild(void *data)
         goto cleanup;
     }
 
+    /* TODO is it safe to call it here or should this call be moved in
+     * front of the clone() as otherwise there might be a risk for a
+     * deadlock */
+    if ((ngroups = virGetGroupList(virCommandGetUID(cmd), virCommandGetGID(cmd),
+                                   &groups)) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     VIR_FREE(ttyPath);
@@ -2249,7 +2346,7 @@ static int lxcContainerChild(void *data)
     if (ret == 0) {
         VIR_DEBUG("Executing init binary");
         /* this function will only return if an error occurred */
-        ret = virCommandExec(cmd);
+        ret = virCommandExec(cmd, groups, ngroups);
     }
 
     if (ret != 0) {
@@ -2259,13 +2356,9 @@ static int lxcContainerChild(void *data)
                 virGetLastErrorMessage());
     }
 
+    VIR_FREE(groups);
     virCommandFree(cmd);
     return ret;
-}
-
-static int userns_supported(void)
-{
-    return lxcContainerAvailable(LXC_CONTAINER_FEATURE_USER) == 0;
 }
 
 static int userns_required(virDomainDefPtr def)
@@ -2291,6 +2384,8 @@ virArch lxcContainerGetAlt32bitArch(virArch arch)
         return VIR_ARCH_MIPS;
     if (arch == VIR_ARCH_MIPS64EL)
         return VIR_ARCH_MIPSEL;
+    if (arch == VIR_ARCH_AARCH64)
+        return VIR_ARCH_ARMV7L;
 
     return VIR_ARCH_NONE;
 }
@@ -2347,15 +2442,14 @@ int lxcContainerStart(virDomainDefPtr def,
     cflags = CLONE_NEWPID|CLONE_NEWNS|SIGCHLD;
 
     if (userns_required(def)) {
-        if (userns_supported()) {
-            VIR_DEBUG("Enable user namespace");
-            cflags |= CLONE_NEWUSER;
-        } else {
+        if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_USER) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Kernel doesn't support user namespace"));
             VIR_FREE(stack);
             return -1;
         }
+        VIR_DEBUG("Enable user namespace");
+        cflags |= CLONE_NEWUSER;
     }
     if (!nsInheritFDs || nsInheritFDs[VIR_LXC_DOMAIN_NAMESPACE_SHARENET] == -1) {
         if (lxcNeedNetworkNamespace(def)) {
@@ -2397,47 +2491,6 @@ int lxcContainerStart(virDomainDefPtr def,
     }
 
     return pid;
-}
-
-ATTRIBUTE_NORETURN static int
-lxcContainerDummyChild(void *argv ATTRIBUTE_UNUSED)
-{
-    _exit(0);
-}
-
-int lxcContainerAvailable(int features)
-{
-    int flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|
-        CLONE_NEWIPC|SIGCHLD;
-    int cpid;
-    char *childStack;
-    char *stack;
-    int stacksize = getpagesize() * 4;
-
-    if (features & LXC_CONTAINER_FEATURE_USER)
-        flags |= CLONE_NEWUSER;
-
-    if (features & LXC_CONTAINER_FEATURE_NET)
-        flags |= CLONE_NEWNET;
-
-    if (VIR_ALLOC_N(stack, stacksize) < 0)
-        return -1;
-
-    childStack = stack + stacksize;
-
-    cpid = clone(lxcContainerDummyChild, childStack, flags, NULL);
-    VIR_FREE(stack);
-    if (cpid < 0) {
-        char ebuf[1024] ATTRIBUTE_UNUSED;
-        VIR_DEBUG("clone call returned %s, container support is not enabled",
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
-        return -1;
-    } else if (virProcessWait(cpid, NULL, false) < 0) {
-        return -1;
-    }
-
-    VIR_DEBUG("container support is enabled");
-    return 0;
 }
 
 int lxcContainerChown(virDomainDefPtr def, const char *path)

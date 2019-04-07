@@ -1,0 +1,1194 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel <veillard@redhat.com>, 2011
+# pmdaniel <danielthpro@gmail.com>, 2013
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-24 02:16+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Portuguese <trans-pt@lists.fedoraproject.org>\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  (specify help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (indique help <comando> para saber mais detalhes do comando)\n"
+"\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  DESCRIÇÃO\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  OPÇÕES\n"
+
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  RESUMO\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Tempo: %.3f ms)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  NOME\n"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: não foi possível reservar %d 'bytes'"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s: %d: não foi possível reservar %lu 'bytes'"
+
+#, c-format
+msgid "%s: failed to write log file: %s"
+msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+
+msgid "(re)connect to hypervisor"
+msgstr "ligar (de novo) ao supervisor"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <número>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <texto>"
+
+msgid "Attach device from an XML <file>."
+msgstr "Associa um dispositivo a partir de um <ficheiro> em XML."
+
+msgid "Attach new disk device."
+msgstr "Anexar um dispositivo em disco novo."
+
+msgid "Attach new network interface."
+msgstr "Anexar uma interface de rede nova."
+
+msgid "Autostart"
+msgstr "Arranque automático"
+
+msgid "CPU Affinity:"
+msgstr "Afinidade do CPU:"
+
+msgid "CPU frequency:"
+msgstr "Frequência do CPU:"
+
+msgid "CPU model:"
+msgstr "Modelo do CPU:"
+
+msgid "CPU socket(s):"
+msgstr "'Sockets' do CPU:"
+
+msgid "CPU time:"
+msgstr "Tempo de CPU:"
+
+msgid "CPU(s):"
+msgstr "CPU(s):"
+
+msgid "CPU:"
+msgstr "CPU:"
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Não é possível extrair a versão do supervisor %s em execução\n"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Mudar a reserva de memória actual no domínio convidado."
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "Mudar o limite de memória reservada para o domínio convidado."
+
+msgid "Configure a domain to be automatically started at boot."
+msgstr "Configurar um domínio para se iniciar automaticamente no arranque."
+
+msgid "Configure a network to be automatically started at boot."
+msgstr "Configurar uma rede para se iniciar automaticamente no arranque."
+
+msgid "Connect the virtual serial console for the guest"
+msgstr "Ligar à consola série virtual do sistema convidado"
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Ligar ao supervisor local. Este é um comando incorporado após o arranque da "
+"linha de comandos."
+
+msgid "Core dump a domain."
+msgstr "Gerar o 'core' de um domínio."
+
+msgid "Core(s) per socket:"
+msgstr "Núcleos por 'socket':"
+
+msgid "Create a domain."
+msgstr "Criar um domínio."
+
+msgid "Create a network."
+msgstr "Criar uma rede."
+
+msgid "Define a domain."
+msgstr "Definir um domínio."
+
+msgid "Detach device from an XML <file>"
+msgstr "Remove a associação do dispositivo ao <ficheiro> XML"
+
+msgid "Detach disk device."
+msgstr "Desligar o dispositivo de disco."
+
+msgid "Detach network interface."
+msgstr "Desligar a interface de rede."
+
+msgid "Display the system version information."
+msgstr "Mostrar a informação da versão do sistema."
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "O domínio %s foi criado a partir do %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Domínio %s definido a partir do %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "O domínio %s foi destruído\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "O domínio %s ficou indefinido\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "O domínio %s está a ser reiniciado\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "O domínio %s está a ser encerrado\n"
+
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "O domínio %s foi marcado como de arranque automático\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "O domínio %s foi reposto em execução\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "O domínio %s foi iniciado\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "Domínio %s suspenso\n"
+
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "O domínio %s foi desmarcado como de arranque automático\n"
+
+msgid "Domain is already active"
+msgstr "O domínio já está activo"
+
+msgid "Domain is already running"
+msgstr "O domínio já está em execução"
+
+msgid "Domain not found"
+msgstr "O domínio não foi encontrado"
+
+#, c-format
+msgid "Domain not found: %s"
+msgstr "O domínio não foi encontrado: %s"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "O domínio foi reposto a partir do %s\n"
+
+msgid "Failed to allocate memory"
+msgstr "Não foi possível reservar memória"
+
+#, c-format
+msgid "Failed to attach device from %s"
+msgstr "Não foi possível associar o dispositivo a partir de %s"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Não foi possível gravar o 'core' do domínio %s em %s"
+
+msgid "Failed to create XML"
+msgstr "Não foi possível criar o XML"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Não foi possível criar o domínio do %s"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "Não foi possível criar a rede a partir do %s"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Não foi possível definir o domínio a partir do %s"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "Não foi possível definir a rede a partir do %s"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "Não foi possível destruir o domínio %s"
+
+#, c-format
+msgid "Failed to destroy network %s"
+msgstr "Não foi possível destruir a rede %s"
+
+#, c-format
+msgid "Failed to detach device from %s"
+msgstr "Não foi possível remover a associação do dispositivo de %s"
+
+msgid "Failed to find the network"
+msgstr "Não foi possível encontrar a rede"
+
+#, c-format
+msgid "Failed to find the network: %s"
+msgstr "Não foi possível encontrar a rede: %s"
+
+#, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "Não foi possível obter o estado do bloco %s %s"
+
+msgid "Failed to get disk information"
+msgstr "Não foi possível obter a informação do disco"
+
+msgid "Failed to get interface information"
+msgstr "Não foi possível obter a informação da interface"
+
+#, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "Não foi possível obter o estado da interface %s %s"
+
+msgid "Failed to list active domains"
+msgstr "Não foi possível listar os domínios activos"
+
+msgid "Failed to list active networks"
+msgstr "Não foi possível listar as redes activas"
+
+msgid "Failed to list inactive domains"
+msgstr "Não foi possível listar os domínios inactivos"
+
+msgid "Failed to list inactive networks"
+msgstr "Não foi possível listar as redes inactivas"
+
+#, c-format
+msgid "Failed to mark domain %s as autostarted"
+msgstr "Não foi possível marcar o domínio %s como de arranque automático"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Não foi possível reiniciar o domínio %s"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Não foi possível repor o domínio a partir de %s"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "Não foi possível prosseguir com o domínio %s"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Não foi possível gravar o domínio %s em %s"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Não foi possível encerrar o domínio %s"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Não foi possível iniciar o domínio %s"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Não foi possível iniciar a rede %s"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "Não foi possível suspender o domínio %s"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Não foi possível remover a definição do domínio %s"
+
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "Não foi possível remover a definição da rede %s"
+
+#, c-format
+msgid "Failed to unmark domain %s as autostarted"
+msgstr "Não foi possível desmarcar o domínio %s como de arranque automático"
+
+msgid "GET operation failed"
+msgstr "A operação GET falhou"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "A operação GET falhou: %s"
+
+msgid "GNUTLS call error"
+msgstr "erro na chamada do GNUTLS"
+
+msgid "Get network interface stats for a running domain."
+msgstr "Obter o estado de uma interface de rede para um domínio em execução."
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+msgid "Invalid CPU topology"
+msgstr "Topologia do CPU inválida"
+
+msgid "Max memory:"
+msgstr "Memória máx:"
+
+msgid "Memory size:"
+msgstr "Tamanho da memória:"
+
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr ""
+"Migrar o domínio para outra máquina. Adicione --live para uma migração em "
+"tempo-real."
+
+msgid "NUMA cell number"
+msgstr "Número da célula NUMA"
+
+msgid "NUMA cell(s):"
+msgstr "Células NUMA:"
+
+msgid "NUMA free memory"
+msgstr "Memória livre do NUMA"
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "Name:"
+msgstr "Nome:"
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "A rede %s foi criada a partir do %s\n"
+
+#, c-format
+msgid "Network %s defined from %s\n"
+msgstr "Rede %s definida a partir do %s\n"
+
+#, c-format
+msgid "Network %s destroyed\n"
+msgstr "A rede %s foi destruída\n"
+
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "A rede %s ficou indefinida\n"
+
+#, c-format
+msgid "Network %s marked as autostarted\n"
+msgstr "A rede %s foi marcada como de arranque automático\n"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "A rede %s foi iniciada\n"
+
+#, c-format
+msgid "Network %s unmarked as autostarted\n"
+msgstr "A rede %s foi desmarcada como de arranque automático\n"
+
+msgid "Network not found"
+msgstr "A rede não foi encontrada"
+
+#, c-format
+msgid "Network not found: %s"
+msgstr "A rede não foi encontrada: %s"
+
+msgid "No error message provided"
+msgstr "Não foi indicada nenhuma mensagem de erro"
+
+msgid "OS Type:"
+msgstr "Tipo de SO:"
+
+msgid "Output the IP address and port number for the VNC display."
+msgstr "Devolve o endereço IP e o número de porto da consola de VNC."
+
+msgid "Output the device for the TTY console."
+msgstr "Mostra o dispositivo para a consola TTY."
+
+msgid "Output the domain information as an XML dump to stdout."
+msgstr "Envia a informação do domínio em XML para o 'stdout'."
+
+msgid "Output the network information as an XML dump to stdout."
+msgstr "Envia a informação da rede em XML para o 'stdout'."
+
+msgid "POST operation failed"
+msgstr "A operação POST falhou"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "A operação POST falhou: %s"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Fixar os VCPUs do domínio nos CPUs físicos do anfitrião."
+
+msgid "RPC error"
+msgstr "erro de RPC"
+
+msgid "Restore a domain."
+msgstr "Repor um domínio."
+
+msgid "Resume a previously suspended domain."
+msgstr "Repor em funcionamento um domínio previamente suspenso."
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Devolve a informação básica acerca dos CPUs virtuais do domínio."
+
+msgid "Returns basic information about the domain."
+msgstr "Devolve a informação básica acerca do domínio."
+
+msgid "Returns basic information about the node."
+msgstr "Devolve informações básicas acerca do nó."
+
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Devolve as capacidades do supervisor/controlador."
+
+msgid "Returns list of domains."
+msgstr "Devolve a lista de domínios."
+
+msgid "Returns list of networks."
+msgstr "Devolve a lista de redes."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Executar um comando de reinício no domínio-alvo."
+
+msgid "Run shutdown in the target domain."
+msgstr "Executar o encerramento no domínio-alvo."
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "A executar o supervisor: %s %d.%d.%d\n"
+
+msgid "Scheduler"
+msgstr "Escalonamento"
+
+msgid "Show/Set scheduler parameters."
+msgstr "Mostra/altera os parâmetros de escalonamento."
+
+msgid "Start a network."
+msgstr "Iniciar uma rede."
+
+msgid "State"
+msgstr "Estado"
+
+msgid "State:"
+msgstr "Estado:"
+
+msgid "Suspend a running domain."
+msgstr "Suspender um domínio em execução."
+
+msgid "Thread(s) per core:"
+msgstr "Tarefas por núcleo:"
+
+msgid "Total"
+msgstr "Total"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Escreva:  'help' para obter ajuda sobre os comandos\n"
+"          'quit' para sair\n"
+"\n"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Unable to change MaxMemorySize"
+msgstr "Não é possível alterar o Tamanho Máximo de Memória"
+
+msgid "Unknown"
+msgstr "Desconhecido"
+
+#, c-format
+msgid "Unknown protocol '%s'"
+msgstr "Protocolo desconhecido '%s'"
+
+msgid "Used memory:"
+msgstr "Memória usada:"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "A usar a API: %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "VCPU:"
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Bem-vindo ao %s, o terminal interactivo de virtualização.\n"
+"\n"
+
+msgid "XML file"
+msgstr "ficheiro XML"
+
+msgid "active"
+msgstr "activo"
+
+msgid "attach device from an XML file"
+msgstr "associar um dispositivo a partir de um ficheiro XML"
+
+msgid "attach disk device"
+msgstr "anexar um dispositivo em disco"
+
+msgid "attach network interface"
+msgstr "anexar a interface de rede"
+
+msgid "authentication failed"
+msgstr "a autenticação falhou"
+
+#, c-format
+msgid "authentication failed: %s"
+msgstr "a autenticação falhou: %s"
+
+msgid "autostart a domain"
+msgstr "iniciar automaticamente um domínio"
+
+msgid "autostart a network"
+msgstr "iniciar automaticamente uma rede"
+
+msgid "block device"
+msgstr "dispositivo em bloco"
+
+msgid "cannot parse vbd filename, missing driver name"
+msgstr ""
+"não é possível processar o nome do ficheiro 'vbd', falta o nome do "
+"controlador"
+
+msgid "cannot parse vbd filename, missing driver type"
+msgstr ""
+"não é possível processar o nome do ficheiro 'vbd', falta o tipo do "
+"controlador"
+
+msgid "cap for XEN_CREDIT"
+msgstr "valor do XEN_CREDIT"
+
+msgid "capabilities"
+msgstr "capacidades"
+
+msgid "change maximum memory limit"
+msgstr "mudar o limite máximo de memória"
+
+msgid "change memory allocation"
+msgstr "mudar a reserva de memória"
+
+msgid "change number of virtual CPUs"
+msgstr "mudar o número de CPUs virtuais"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "o comando '%s' não suporta a opção --%s"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "o comando '%s' precisa da opção --%s"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "o comando '%s' precisa da opção <%s>"
+
+msgid "configuration file syntax error"
+msgstr "erro de sintaxe no ficheiro de configuração"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "erro de sintaxe no ficheiro de configuração: %s"
+
+msgid "connect to the guest console"
+msgstr "ligar à consola-convidada"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "converter um ID ou UUID do domínio para um nome"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "converter um nome ou UUID de um domínio para um ID"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "converter um nome ou ID de um domínio para um UUID"
+
+msgid "convert a network UUID to network name"
+msgstr "converter um UUID de rede para um nome de rede"
+
+msgid "convert a network name to network UUID"
+msgstr "converter um nome ou ID de uma rede para um UUID"
+
+msgid "could not connect to Xen Store"
+msgstr "não foi possível ligar ao Armazém do Xen"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "não foi possível ligar ao Armazém do Xen %s"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "não foi possível usar o item do supervisor do Xen"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "não foi possível usar o item %s do supervisor do Xen"
+
+msgid "crashed"
+msgstr "estoirado"
+
+msgid "create a domain from an XML file"
+msgstr "criar um domínio a partir de um ficheiro XML"
+
+msgid "create a network from an XML file"
+msgstr "criar uma rede a partir de um ficheiro XML"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "definir (mas não iniciar) um domínio a partir de um ficheiro XML"
+
+msgid "detach device from an XML file"
+msgstr "remover a associação do dispositivo ao ficheiro XML"
+
+msgid "detach disk device"
+msgstr "desligar o dispositivo de disco"
+
+msgid "detach network interface"
+msgstr "desligar a interface de rede"
+
+msgid "disable autostarting"
+msgstr "desactivar o arranque automático"
+
+msgid "display available free memory for the NUMA cell."
+msgstr "mostrar a memória livre para a célula NUMA."
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "o domínio %s já existe"
+
+msgid "domain id or name"
+msgstr "ID ou nome do domínio"
+
+msgid "domain id or uuid"
+msgstr "ID ou UUID do domínio"
+
+msgid "domain information"
+msgstr "informação do domínio"
+
+msgid "domain information in XML"
+msgstr "informação do domínio em XML"
+
+msgid "domain information incomplete, missing kernel & bootloader"
+msgstr ""
+"informação do domínio incompleta, falta o 'kernel' & o gestor de arranque"
+
+msgid "domain information incomplete, missing name"
+msgstr "informação do domínio incompleta, falta o nome"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "informação do domínio incompleta, o 'vbd' não tem dispositivo"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "informação do domínio incompleta, o 'vbd' não tem origem"
+
+msgid "domain name or uuid"
+msgstr "nome ou UUID do domínio"
+
+msgid "domain state"
+msgstr "estado do domínio"
+
+msgid "driver of disk device"
+msgstr "controlador do dispositivo de disco"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "colocar o núcleo de um domínio num ficheiro para análise"
+
+msgid "error"
+msgstr "erro"
+
+msgid "error: "
+msgstr "erro: "
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "sintaxe esperada: --%s <%s>"
+
+msgid "expecting a name"
+msgstr "era esperado um nome"
+
+msgid "expecting a separator"
+msgstr "era esperado um separador"
+
+msgid "expecting a separator in list"
+msgstr "era esperado um separador na lista"
+
+msgid "expecting a value"
+msgstr "era esperado um valor"
+
+msgid "expecting an assignment"
+msgstr "era esperada uma atribuição"
+
+msgid "failed to connect to the hypervisor"
+msgstr "não foi possível ligar ao supervisor"
+
+msgid "failed to get URI"
+msgstr "não foi possível obter o URI"
+
+msgid "failed to get capabilities"
+msgstr "não foi possível obter as capacidades"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "não foi possível obter o domínio '%s'"
+
+msgid "failed to get domain UUID"
+msgstr "não foi possível obter o UUID do domínio"
+
+msgid "failed to get hostname"
+msgstr "não foi possível obter o nome da máquina"
+
+msgid "failed to get hypervisor type"
+msgstr "não foi possível obter o tipo de supervisor"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "não foi possível obter a rede '%s'"
+
+msgid "failed to get network UUID"
+msgstr "não foi possível obter o UUID da rede"
+
+msgid "failed to get node information"
+msgstr "não foi possível obter a informação do nó"
+
+msgid "failed to get the hypervisor version"
+msgstr "não foi possível obter a versão do supervisor"
+
+msgid "failed to get the library version"
+msgstr "não foi possível obter a versão da biblioteca"
+
+#, c-format
+msgid "failed to mark network %s as autostarted"
+msgstr "não foi possível marcar a rede %s como iniciada automaticamente"
+
+msgid "failed to open file"
+msgstr "não foi possível aceder ao ficheiro"
+
+msgid "failed to open the log file. check the log file path"
+msgstr ""
+"não é possível aceder ao ficheiro de registo. Verifique a localização do "
+"registo"
+
+msgid "failed to parse configuration file"
+msgstr "não foi possível processar o ficheiro de configuração"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "não foi possível processar o ficheiro de configuração %s"
+
+msgid "failed to read configuration file"
+msgstr "não foi possível ler o ficheiro de configuração"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "não foi possível ler o ficheiro de configuração %s"
+
+msgid "failed to save content"
+msgstr "não foi possível gravar o conteúdo"
+
+msgid "failed to serialize S-Expr"
+msgstr "não foi possível serializar a Expr-S"
+
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "não foi possível serializar a Expr-S: %s"
+
+#, c-format
+msgid "failed to unmark network %s as autostarted"
+msgstr "não foi possível desmarcar a rede %s como iniciada automaticamente"
+
+msgid "failed to write configuration file"
+msgstr "não foi possível gravar o ficheiro de configuração"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "não foi possível gravar o ficheiro de configuração: %s"
+
+msgid "failed to write the log file"
+msgstr "não foi possível gravar o ficheiro de registo"
+
+msgid "file containing an XML domain description"
+msgstr "ficheiro que contém uma descrição em XML do domínio"
+
+msgid "file containing an XML network description"
+msgstr "ficheiro que contém uma descrição em XML da rede"
+
+msgid "get device block stats for a domain"
+msgstr "obter as estatísticas do bloco do dispositivo para um domínio"
+
+msgid "get network interface stats for a domain"
+msgstr "obter a interface de rede de um domínio"
+
+msgid "getting time of day"
+msgstr "a obter a data de hoje"
+
+msgid "gracefully shutdown a domain"
+msgstr "terminar um domínio ordeiramente"
+
+msgid "hypervisor connection URI"
+msgstr "URI de ligação ao supervisor"
+
+msgid "in shutdown"
+msgstr "em encerramento"
+
+msgid "inactive"
+msgstr "inactivo"
+
+msgid "internal error"
+msgstr "erro interno"
+
+msgid "invalid connection pointer in"
+msgstr "ponteiro de ligação inválido em"
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "ponteiro de ligação inválido em %s"
+
+msgid "invalid domain pointer in"
+msgstr "ponteiro do domínio inválido em"
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "ponteiro do domínio inválido em %s"
+
+msgid "invalid network pointer in"
+msgstr "ponteiro de rede inválido em"
+
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "ponteiro de rede inválido em %s"
+
+msgid "list domains"
+msgstr "listar os domínios"
+
+msgid "list inactive & active domains"
+msgstr "listar os domínios activos e inactivos"
+
+msgid "list inactive & active networks"
+msgstr "listar as redes activas e inactivas"
+
+msgid "list inactive domains"
+msgstr "listar os domínios inactivos"
+
+msgid "list inactive networks"
+msgstr "listar as redes inactivas"
+
+msgid "list networks"
+msgstr "listar as redes"
+
+msgid "live migration"
+msgstr "migração em tempo-real"
+
+msgid "migrate domain to another host"
+msgstr "migrar o domínio para outra máquina"
+
+msgid "migration URI, usually can be omitted"
+msgstr "O URI da migração, que poderá estar em branco"
+
+msgid "missing \""
+msgstr "falta o \""
+
+msgid "missing devices information"
+msgstr "falta a informação dos dispositivos"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "falta a informação dos dispositivos em %s"
+
+msgid "missing kernel information"
+msgstr "falta a informação do 'kernel'"
+
+msgid "missing operating system information"
+msgstr "falta a informação do sistema operativo"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "falta a informação do sistema operativo em %s"
+
+msgid "missing root device information"
+msgstr "falta a informação do dispositivo de raiz"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "falta a informação do dispositivo de raiz em %s"
+
+msgid "missing source information for device"
+msgstr "falta a informação de origem do dispositivo"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "falta a informação de origem do dispositivo %s"
+
+msgid "missing target information for device"
+msgstr "falta a informação do destino do dispositivo"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "falta a informação do destino do dispositivo %s"
+
+msgid "mode of device reading and writing"
+msgstr "modo de leitura e escrita do dispositivo"
+
+msgid "name of the inactive domain"
+msgstr "nome do domínio inactivo"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "a rede %s já existe"
+
+msgid "network information in XML"
+msgstr "informação da rede em XML"
+
+msgid "network interface type"
+msgstr "tipo da interface de rede"
+
+msgid "network name"
+msgstr "nome da rede"
+
+msgid "network name or uuid"
+msgstr "nome ou UUID da rede"
+
+msgid "network uuid"
+msgstr "UUID da rede"
+
+msgid "no autostart"
+msgstr "sem arranque automático"
+
+msgid "no limit"
+msgstr "sem limite"
+
+msgid "no state"
+msgstr "sem estado"
+
+msgid "no valid connection"
+msgstr "sem ligação válida"
+
+msgid "node information"
+msgstr "informação do nó"
+
+msgid "number"
+msgstr "número"
+
+msgid "number of virtual CPUs"
+msgstr "número de CPUs virtuais"
+
+msgid "offline"
+msgstr "inacessível"
+
+msgid "operation failed"
+msgstr "a operação falhou"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "a operação falhou: %s"
+
+msgid "operation forbidden for read only access"
+msgstr "a operação é proibida para o acesso apenas para leitura"
+
+msgid "out of memory"
+msgstr "sem memória"
+
+msgid "parser error"
+msgstr "erro de processamento"
+
+msgid "paused"
+msgstr "em pausa"
+
+msgid "print help"
+msgstr "imprimir a ajuda"
+
+msgid "print the hypervisor canonical URI"
+msgstr "imprimir o URI canónico do supervisor"
+
+msgid "print the hypervisor hostname"
+msgstr "imprimir o nome da máquina supervisora"
+
+msgid "quit this interactive terminal"
+msgstr "sair deste terminal interactivo"
+
+msgid "read-only connection"
+msgstr "ligação apenas para leitura"
+
+msgid "reboot a domain"
+msgstr "reiniciar um domínio"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "repor um domínio a partir de um estado gravado em ficheiro"
+
+msgid "resume a domain"
+msgstr "prosseguir um domínio"
+
+msgid "running"
+msgstr "em execução"
+
+msgid "save a domain state to a file"
+msgstr "gravar o estado de um domínio num ficheiro"
+
+msgid "script used to bridge network interface"
+msgstr "programa usado para interligar a interface de rede"
+
+msgid "show version"
+msgstr "mostrar a versão"
+
+msgid "show/set scheduler parameters"
+msgstr "mostrar/alterar os parâmetros de escalonamento"
+
+msgid "shut off"
+msgstr "desligado"
+
+msgid "source of disk device"
+msgstr "origem do dispositivo de disco"
+
+msgid "source of network interface"
+msgstr "origem da interface de rede"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "iniciar um domínio inactivo (previamente definido)"
+
+msgid "start a (previously defined) inactive network"
+msgstr "iniciar uma rede inactiva (previamente definida)"
+
+msgid "string"
+msgstr "texto"
+
+msgid "subdriver of disk device"
+msgstr "sub-controlador do dispositivo de disco"
+
+msgid "suspend a domain"
+msgstr "suspender um domínio"
+
+msgid "system call error"
+msgstr "erro na chamada do sistema"
+
+msgid "target device type"
+msgstr "tipo do dispositivo de destino"
+
+msgid "target network name"
+msgstr "nome da rede de destino"
+
+msgid "target of disk device"
+msgstr "destino do dispositivo de disco"
+
+msgid "testOpen: supply a path or use test:///default"
+msgstr "testOpen: Indique uma localização ou use a 'test:///default'"
+
+msgid "the state to restore"
+msgstr "o estado a repor"
+
+msgid "this domain exists already"
+msgstr "este domínio já existe"
+
+msgid "this network exists already"
+msgstr "esta rede já existe"
+
+msgid "too many drivers registered"
+msgstr "estão demasiados controladores registados"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "estão demasiados controladores registados em %s"
+
+msgid "tty console"
+msgstr "consola TTY"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "dados '%s' inesperados"
+
+msgid "unknown OS type"
+msgstr "tipo de SO desconhecido"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "tipo de SO desconhecido %s"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "comando desconhecido: '%s'"
+
+msgid "unknown host"
+msgstr "máquina desconhecida"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "máquina desconhecida %s"
+
+#, c-format
+msgid "unknown procedure: %d"
+msgstr "procedimento desconhecido: %d"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "a opção '-%c' não é suportada. Veja o --help."
+
+msgid "unterminated number"
+msgstr "número sem terminação"
+
+msgid "unterminated string"
+msgstr "texto sem terminação"
+
+msgid "vcpu number"
+msgstr "número do vCPU"
+
+msgid "vnc display"
+msgstr "visualização de VNC"
+
+msgid "warning"
+msgstr "atenção"
+
+msgid "weight for XEN_CREDIT"
+msgstr "peso no XEN_CREDIT"
+
+msgid "where to dump the core"
+msgstr "onde gravar o 'core'"
+
+msgid "where to save the data"
+msgstr "onde gravar os dados"

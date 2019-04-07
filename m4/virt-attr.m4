@@ -5,7 +5,7 @@ AC_DEFUN([LIBVIRT_ARG_ATTR],[
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_ATTR],[
-  LIBVIRT_CHECK_LIB([ATTR], [attr], [getxattr], [attr/xattr.h])
+  LIBVIRT_CHECK_LIB([ATTR], [attr], [getxattr], [sys/xattr.h])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_ATTR],[

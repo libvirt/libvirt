@@ -1,0 +1,44 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>Westmere</model>
+  <vendor>Intel</vendor>
+  <feature name='vme'/>
+  <feature name='ds'/>
+  <feature name='acpi'/>
+  <feature name='ss'/>
+  <feature name='ht'/>
+  <feature name='tm'/>
+  <feature name='pbe'/>
+  <feature name='pclmuldq'/>
+  <feature name='dtes64'/>
+  <feature name='monitor'/>
+  <feature name='ds_cpl'/>
+  <feature name='vmx'/>
+  <feature name='est'/>
+  <feature name='tm2'/>
+  <feature name='fma'/>
+  <feature name='xtpr'/>
+  <feature name='pdcm'/>
+  <feature name='pcid'/>
+  <feature name='movbe'/>
+  <feature name='tsc-deadline'/>
+  <feature name='xsave'/>
+  <feature name='osxsave'/>
+  <feature name='avx'/>
+  <feature name='f16c'/>
+  <feature name='rdrand'/>
+  <feature name='arat'/>
+  <feature name='fsgsbase'/>
+  <feature name='tsc_adjust'/>
+  <feature name='bmi1'/>
+  <feature name='avx2'/>
+  <feature name='smep'/>
+  <feature name='bmi2'/>
+  <feature name='erms'/>
+  <feature name='invpcid'/>
+  <feature name='xsaveopt'/>
+  <feature name='pdpe1gb'/>
+  <feature name='rdtscp'/>
+  <feature name='abm'/>
+  <feature name='invtsc'/>
+</cpu>

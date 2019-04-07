@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <signal.h>
 #ifdef HAVE_IFADDRS_H
 # include <ifaddrs.h>
@@ -115,118 +112,199 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
     return ret;
 }
 
+struct testClientData {
+    const char *path;
+    const char *cnode;
+    const char *portstr;
+};
 
-struct testTCPData {
+static void
+testSocketClient(void *opaque)
+{
+    struct testClientData *data = opaque;
+    char c;
+    virNetSocketPtr csock = NULL;
+
+    if (data->path) {
+        if (virNetSocketNewConnectUNIX(data->path, false,
+                                       NULL, &csock) < 0)
+            return;
+    } else {
+        if (virNetSocketNewConnectTCP(data->cnode, data->portstr,
+                                      AF_UNSPEC,
+                                      &csock) < 0)
+            return;
+    }
+
+    virNetSocketSetBlocking(csock, true);
+
+    if (virNetSocketRead(csock, &c, 1) != 1) {
+        VIR_DEBUG("Cannot read from server");
+        goto done;
+    }
+    if (virNetSocketWrite(csock, &c, 1) != 1) {
+        VIR_DEBUG("Cannot write to server");
+        goto done;
+    }
+
+ done:
+    virObjectUnref(csock);
+}
+
+
+static void
+testSocketIncoming(virNetSocketPtr sock,
+                   int events ATTRIBUTE_UNUSED,
+                   void *opaque)
+{
+    virNetSocketPtr *retsock = opaque;
+    VIR_DEBUG("Incoming sock=%p events=%d", sock, events);
+    *retsock = sock;
+}
+
+
+struct testSocketData {
     const char *lnode;
     int port;
     const char *cnode;
 };
 
-static int testSocketTCPAccept(const void *opaque)
+
+static int
+testSocketAccept(const void *opaque)
 {
     virNetSocketPtr *lsock = NULL; /* Listen socket */
     size_t nlsock = 0, i;
     virNetSocketPtr ssock = NULL; /* Server socket */
-    virNetSocketPtr csock = NULL; /* Client socket */
-    const struct testTCPData *data = opaque;
+    virNetSocketPtr rsock = NULL; /* Incoming client socket */
+    const struct testSocketData *data = opaque;
     int ret = -1;
     char portstr[100];
+    char *tmpdir = NULL;
+    char *path = NULL;
+    char template[] = "/tmp/libvirt_XXXXXX";
+    virThread th;
+    struct testClientData cdata = { 0 };
+    bool goodsock = false;
+    char a = 'a';
+    char b = '\0';
 
-    snprintf(portstr, sizeof(portstr), "%d", data->port);
+    if (!data) {
+        virNetSocketPtr usock;
+        tmpdir = mkdtemp(template);
+        if (tmpdir == NULL) {
+            VIR_WARN("Failed to create temporary directory");
+            goto cleanup;
+        }
+        if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
+            goto cleanup;
 
-    if (virNetSocketNewListenTCP(data->lnode, portstr,
-                                 AF_UNSPEC,
-                                 &lsock, &nlsock) < 0)
-        goto cleanup;
+        if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &usock) < 0)
+            goto cleanup;
+
+        if (VIR_ALLOC_N(lsock, 1) < 0) {
+            virObjectUnref(usock);
+            goto cleanup;
+        }
+
+        lsock[0] = usock;
+        nlsock = 1;
+
+        cdata.path = path;
+    } else {
+        snprintf(portstr, sizeof(portstr), "%d", data->port);
+        if (virNetSocketNewListenTCP(data->lnode, portstr,
+                                     AF_UNSPEC,
+                                     &lsock, &nlsock) < 0)
+            goto cleanup;
+
+        cdata.cnode = data->cnode;
+        cdata.portstr = portstr;
+    }
 
     for (i = 0; i < nlsock; i++) {
         if (virNetSocketListen(lsock[i], 0) < 0)
             goto cleanup;
+
+        if (virNetSocketAddIOCallback(lsock[i],
+                                      VIR_EVENT_HANDLE_READABLE,
+                                      testSocketIncoming,
+                                      &rsock,
+                                      NULL) < 0) {
+            goto cleanup;
+        }
     }
 
-    if (virNetSocketNewConnectTCP(data->cnode, portstr,
-                                  AF_UNSPEC,
-                                  &csock) < 0)
+    if (virThreadCreate(&th, true,
+                        testSocketClient,
+                        &cdata) < 0)
         goto cleanup;
 
-    virObjectUnref(csock);
+    while (rsock == NULL) {
+        if (virEventRunDefaultImpl() < 0)
+            break;
+    }
 
     for (i = 0; i < nlsock; i++) {
-        if (virNetSocketAccept(lsock[i], &ssock) != -1 && ssock) {
-            char c = 'a';
-            if (virNetSocketWrite(ssock, &c, 1) != -1 &&
-                virNetSocketRead(ssock, &c, 1) != -1) {
-                VIR_DEBUG("Unexpected client socket present");
-                goto cleanup;
-            }
+        if (lsock[i] == rsock) {
+            goodsock = true;
+            break;
         }
-        virObjectUnref(ssock);
-        ssock = NULL;
     }
+
+    if (!goodsock) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unexpected server socket seen");
+        goto join;
+    }
+
+    if (virNetSocketAccept(rsock, &ssock) < 0)
+        goto join;
+
+    if (!ssock) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Client went away unexpectedly");
+        goto join;
+    }
+
+    virNetSocketSetBlocking(ssock, true);
+
+    if (virNetSocketWrite(ssock, &a, 1) < 0 ||
+        virNetSocketRead(ssock, &b, 1) < 0) {
+        goto join;
+    }
+
+    if (a != b) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Bad data received '%x' != '%x'", a, b);
+        goto join;
+    }
+
+    virObjectUnref(ssock);
+    ssock = NULL;
 
     ret = 0;
 
+ join:
+    virThreadJoin(&th);
+
  cleanup:
     virObjectUnref(ssock);
-    for (i = 0; i < nlsock; i++)
+    for (i = 0; i < nlsock; i++) {
+        virNetSocketRemoveIOCallback(lsock[i]);
+        virNetSocketClose(lsock[i]);
         virObjectUnref(lsock[i]);
+    }
     VIR_FREE(lsock);
+    VIR_FREE(path);
+    if (tmpdir)
+        rmdir(tmpdir);
     return ret;
 }
 #endif
 
 
 #ifndef WIN32
-static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
-{
-    virNetSocketPtr lsock = NULL; /* Listen socket */
-    virNetSocketPtr ssock = NULL; /* Server socket */
-    virNetSocketPtr csock = NULL; /* Client socket */
-    int ret = -1;
-
-    char *path = NULL;
-    char *tmpdir;
-    char template[] = "/tmp/libvirt_XXXXXX";
-
-    tmpdir = mkdtemp(template);
-    if (tmpdir == NULL) {
-        VIR_WARN("Failed to create temporary directory");
-        goto cleanup;
-    }
-    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
-        goto cleanup;
-
-    if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &lsock) < 0)
-        goto cleanup;
-
-    if (virNetSocketListen(lsock, 0) < 0)
-        goto cleanup;
-
-    if (virNetSocketNewConnectUNIX(path, false, NULL, &csock) < 0)
-        goto cleanup;
-
-    virObjectUnref(csock);
-
-    if (virNetSocketAccept(lsock, &ssock) != -1) {
-        char c = 'a';
-        if (virNetSocketWrite(ssock, &c, 1) != -1) {
-            VIR_DEBUG("Unexpected client socket present");
-            goto cleanup;
-        }
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(path);
-    virObjectUnref(lsock);
-    virObjectUnref(ssock);
-    if (tmpdir)
-        rmdir(tmpdir);
-    return ret;
-}
-
-
 static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
 {
     virNetSocketPtr lsock = NULL; /* Listen socket */
@@ -449,6 +527,8 @@ mymain(void)
 
     signal(SIGPIPE, SIG_IGN);
 
+    virEventRegisterDefaultImpl();
+
 #ifdef HAVE_IFADDRS_H
     if (checkProtocols(&hasIPv4, &hasIPv6, &freePort) < 0) {
         fprintf(stderr, "Cannot identify IPv4/6 availability\n");
@@ -456,28 +536,28 @@ mymain(void)
     }
 
     if (hasIPv4) {
-        struct testTCPData tcpData = { "127.0.0.1", freePort, "127.0.0.1" };
-        if (virTestRun("Socket TCP/IPv4 Accept", testSocketTCPAccept, &tcpData) < 0)
+        struct testSocketData tcpData = { "127.0.0.1", freePort, "127.0.0.1" };
+        if (virTestRun("Socket TCP/IPv4 Accept", testSocketAccept, &tcpData) < 0)
             ret = -1;
     }
     if (hasIPv6) {
-        struct testTCPData tcpData = { "::1", freePort, "::1" };
-        if (virTestRun("Socket TCP/IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        struct testSocketData tcpData = { "::1", freePort, "::1" };
+        if (virTestRun("Socket TCP/IPv6 Accept", testSocketAccept, &tcpData) < 0)
             ret = -1;
     }
     if (hasIPv6 && hasIPv4) {
-        struct testTCPData tcpData = { NULL, freePort, "127.0.0.1" };
-        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        struct testSocketData tcpData = { NULL, freePort, "127.0.0.1" };
+        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketAccept, &tcpData) < 0)
             ret = -1;
 
         tcpData.cnode = "::1";
-        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketAccept, &tcpData) < 0)
             ret = -1;
     }
 #endif
 
 #ifndef WIN32
-    if (virTestRun("Socket UNIX Accept", testSocketUNIXAccept, NULL) < 0)
+    if (virTestRun("Socket UNIX Accept", testSocketAccept, NULL) < 0)
         ret = -1;
 
     if (virTestRun("Socket UNIX Addrs", testSocketUNIXAddrs, NULL) < 0)
@@ -491,7 +571,7 @@ mymain(void)
     struct testSSHData sshData1 = {
         .nodename = "somehost",
         .path = "/tmp/socket",
-        .expectOut = "somehost sh -c 'if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+        .expectOut = "-- somehost sh -c 'if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                                          "ARG=-q0;"
                                      "else "
                                          "ARG=;"
@@ -509,7 +589,7 @@ mymain(void)
         .noTTY = true,
         .noVerify = false,
         .path = "/tmp/socket",
-        .expectOut = "-p 9000 -l fred -T -o BatchMode=yes -e none somehost sh -c '"
+        .expectOut = "-p 9000 -l fred -T -o BatchMode=yes -e none -- somehost sh -c '"
                      "if 'netcat' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
@@ -528,7 +608,7 @@ mymain(void)
         .noTTY = false,
         .noVerify = true,
         .path = "/tmp/socket",
-        .expectOut = "-p 9000 -l fred -o StrictHostKeyChecking=no somehost sh -c '"
+        .expectOut = "-p 9000 -l fred -o StrictHostKeyChecking=no -- somehost sh -c '"
                      "if 'netcat' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
@@ -550,7 +630,7 @@ mymain(void)
     struct testSSHData sshData5 = {
         .nodename = "crashyhost",
         .path = "/tmp/socket",
-        .expectOut = "crashyhost sh -c "
+        .expectOut = "-- crashyhost sh -c "
                      "'if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
@@ -567,7 +647,7 @@ mymain(void)
         .path = "/tmp/socket",
         .keyfile = "/root/.ssh/example_key",
         .noVerify = true,
-        .expectOut = "-i /root/.ssh/example_key -o StrictHostKeyChecking=no example.com sh -c '"
+        .expectOut = "-i /root/.ssh/example_key -o StrictHostKeyChecking=no -- example.com sh -c '"
                      "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
@@ -582,7 +662,7 @@ mymain(void)
         .nodename = "somehost",
         .netcat = "nc -4",
         .path = "/tmp/socket",
-        .expectOut = "somehost sh -c 'if ''nc -4'' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+        .expectOut = "-- somehost sh -c 'if ''nc -4'' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                                          "ARG=-q0;"
                                      "else "
                                          "ARG=;"
@@ -597,4 +677,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

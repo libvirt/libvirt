@@ -14,14 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
 
 #include "testutils.h"
-#define __VIR_COMMAND_PRIV_H_ALLOW__
+#define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 #include "vircommandpriv.h"
 #include "virnetdevbandwidth.h"
 #include "netdev_bandwidth_conf.c"
@@ -41,27 +39,27 @@ struct testSetStruct {
     const bool hierarchical_class;
 };
 
-#define PARSE(xml, var)                                                 \
-    do {                                                                \
-        int rc;                                                         \
-        xmlDocPtr doc;                                                  \
-        xmlXPathContextPtr ctxt = NULL;                                 \
-                                                                        \
-        if (!xml)                                                       \
-            break;                                                      \
-                                                                        \
-        if (!(doc = virXMLParseStringCtxt((xml),                        \
-                                          "bandwidth definition",       \
-                                          &ctxt)))                      \
-            goto cleanup;                                               \
-                                                                        \
-        rc = virNetDevBandwidthParse(&(var),                            \
-                                     ctxt->node,                        \
-                                     VIR_DOMAIN_NET_TYPE_NETWORK);      \
-        xmlFreeDoc(doc);                                                \
-        xmlXPathFreeContext(ctxt);                                      \
-        if (rc < 0)                                                     \
-            goto cleanup;                                               \
+#define PARSE(xml, var) \
+    do { \
+        int rc; \
+        xmlDocPtr doc; \
+        xmlXPathContextPtr ctxt = NULL; \
+ \
+        if (!xml) \
+            break; \
+ \
+        if (!(doc = virXMLParseStringCtxt((xml), \
+                                          "bandwidth definition", \
+                                          &ctxt))) \
+            goto cleanup; \
+ \
+        rc = virNetDevBandwidthParse(&(var), \
+                                     ctxt->node, \
+                                     VIR_DOMAIN_NET_TYPE_NETWORK); \
+        xmlFreeDoc(doc); \
+        xmlXPathFreeContext(ctxt); \
+        if (rc < 0) \
+            goto cleanup; \
     } while (0)
 
 static int
@@ -81,7 +79,7 @@ testVirNetDevBandwidthSet(const void *data)
 
     virCommandSetDryRun(&buf, NULL, NULL);
 
-    if (virNetDevBandwidthSet(iface, band, info->hierarchical_class) < 0)
+    if (virNetDevBandwidthSet(iface, band, info->hierarchical_class, true) < 0)
         goto cleanup;
 
     if (!(actual_cmd = virBufferContentAndReset(&buf))) {
@@ -115,15 +113,15 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_SET(Band, Exp_cmd, ...)                     \
-    do {                                                    \
-        struct testSetStruct data = {.band = Band,          \
-                                     .exp_cmd = Exp_cmd,    \
-                                     __VA_ARGS__};          \
-        if (virTestRun("virNetDevBandwidthSet",             \
-                       testVirNetDevBandwidthSet,           \
-                       &data) < 0)                          \
-            ret = -1;                                       \
+#define DO_TEST_SET(Band, Exp_cmd, ...) \
+    do { \
+        struct testSetStruct data = {.band = Band, \
+                                     .exp_cmd = Exp_cmd, \
+                                     __VA_ARGS__}; \
+        if (virTestRun("virNetDevBandwidthSet", \
+                       testVirNetDevBandwidthSet, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
 
 
@@ -167,4 +165,4 @@ mymain(void)
     return ret;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetdevbandwidthmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetdevbandwidthmock.so")

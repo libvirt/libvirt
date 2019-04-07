@@ -1,0 +1,20 @@
+{
+  "foo": {
+    "int": 1,
+    "string": "string",
+    "object": {
+      "data": "value",
+      "foo": "bar"
+    }
+  },
+  "bar": {
+    "int": 1
+  },
+  "blurb": {
+    "string": "string",
+    "object": {
+      "data": "value",
+      "foo": "bar"
+    }
+  }
+}

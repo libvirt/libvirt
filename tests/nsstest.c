@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -24,7 +22,6 @@
 
 #ifdef NSS
 
-# include <stdbool.h>
 # include <arpa/inet.h>
 # include "libvirt_nss.h"
 # include "virsocketaddr.h"
@@ -174,14 +171,14 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST(name, family, ...)                             \
-    do {                                                        \
-        const char *addr[] = { __VA_ARGS__, NULL};              \
-        struct testNSSData data = {                             \
-            .hostname = name, .ipAddr = addr, .af = family,     \
-        };                                                      \
-        if (virTestRun(name, testGetHostByName, &data) < 0)     \
-            ret = -1;                                           \
+# define DO_TEST(name, family, ...) \
+    do { \
+        const char *addr[] = { __VA_ARGS__, NULL}; \
+        struct testNSSData data = { \
+            .hostname = name, .ipAddr = addr, .af = family, \
+        }; \
+        if (virTestRun(name, testGetHostByName, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 # if !defined(LIBVIRT_NSS_GUEST)
@@ -198,7 +195,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/nssmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/nssmock.so")
 #else
 int
 main(void)

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Virsh Command Reference</h1>
 
     <ul id="toc"></ul>
 
-    <h2><a name="description">Description</a></h2>
+    <h2><a id="description">Description</a></h2>
 
     <p>
       The new <b>Virsh Command Reference</b>, for documenting the commands
@@ -22,9 +22,7 @@
       <a href="contact.html">official libvirt mailing lists</a>.
     </p>
 
-    <p>&nbsp;</p>
-
-   <h2><a name="viewing">Viewing Online</a></h2>
+   <h2><a id="viewing">Viewing Online</a></h2>
 
     <p>
       The latest version can be viewed directly online:
@@ -32,16 +30,14 @@
 
     <ul>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/html/">Standard HTML format, multiple pages</a>
+        <a href="https://libvirt.org/sources/virshcmdref/html/">Standard HTML format, multiple pages</a>
       </li>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/html-single/">HTML format, one long page</a>
+        <a href="https://libvirt.org/sources/virshcmdref/html-single/">HTML format, one long page</a>
       </li>
     </ul>
 
-    <p>&nbsp;</p>
-
-    <h2><a name="downloading">Downloading</a></h2>
+    <h2><a id="downloading">Downloading</a></h2>
 
     <p>
       The latest version of the Virsh Command Reference can be downloaded:
@@ -50,33 +46,33 @@
     <ul>
       <li>
         Standard HTML format, multiple pages
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.tar.gz">.tar.gz</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.tar.bz2">.tar.bz2</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.zip">.zip</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.tar.gz">.tar.gz</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.tar.bz2">.tar.bz2</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.zip">.zip</a>)
       </li>
       <li>
         HTML format, one long page
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.tar.gz">.tar.gz</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.tar.bz2">.tar.bz2</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.zip">.zip</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.tar.gz">.tar.gz</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.tar.bz2">.tar.bz2</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.zip">.zip</a>)
       </li>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1.pdf">PDF format</a>
+        <a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1.pdf">PDF format</a>
       </li>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1.epub">ePub format</a>
+        <a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1.epub">ePub format</a>
       </li>
     </ul>
 
-    <h2><a name="git">DocBook source GIT repository</a></h2>
+    <h2><a id="git">DocBook source GIT repository</a></h2>
     <p>
       The DocBook source is maintained in a <a
       href="http://git-scm.com/">git</a> repository available on
-      <a href="http://libvirt.org/git/">libvirt.org</a>:
+      <a href="https://libvirt.org/git/">libvirt.org</a>:
     </p>
 
 <pre>
-git clone git://libvirt.org/libvirt-virshcmdref.git
+git clone https://libvirt.org/git/libvirt-virshcmdref.git
 </pre>
 
     <p>
@@ -84,10 +80,8 @@ git clone git://libvirt.org/libvirt-virshcmdref.git
     </p>
 
 <pre>
-<a href="http://libvirt.org/git/?p=libvirt-virshcmdref.git">http://libvirt.org/git/?p=libvirt-virshcmdref.git</a>
+<a href="https://libvirt.org/git/?p=libvirt-virshcmdref.git">https://libvirt.org/git/?p=libvirt-virshcmdref.git</a>
 </pre>
-
-    <p>&nbsp;</p>
 
   </body>
 </html>

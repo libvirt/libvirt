@@ -1,0 +1,46 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <bootloader>/usr/local/sbin/grub-bhyve</bootloader>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd1.img'/>
+      <target dev='hda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='2' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd2.img'/>
+      <target dev='hdb' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='4' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd3.img'/>
+      <target dev='hdc' bus='sata'/>
+      <boot order='1'/>
+      <address type='drive' controller='0' bus='0' target='6' unit='0'/>
+    </disk>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
+    <interface type='bridge'>
+      <mac address='52:54:00:f4:6c:be'/>
+      <source bridge='virbr0'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+  </devices>
+</domain>

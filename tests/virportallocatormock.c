@@ -14,12 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
-#include <stdlib.h>
 
 #if HAVE_DLFCN_H
 # include <dlfcn.h>
@@ -28,10 +25,8 @@
 #if defined(__linux__) && defined(RTLD_NEXT)
 # include "internal.h"
 # include <sys/socket.h>
-# include <errno.h>
 # include <arpa/inet.h>
 # include <netinet/in.h>
-# include <stdio.h>
 # include <unistd.h>
 
 static bool host_has_ipv6;

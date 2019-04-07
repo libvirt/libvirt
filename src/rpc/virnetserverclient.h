@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NET_SERVER_CLIENT_H__
-# define __VIR_NET_SERVER_CLIENT_H__
+#ifndef LIBVIRT_VIRNETSERVERCLIENT_H
+# define LIBVIRT_VIRNETSERVERCLIENT_H
 
 # include "viridentity.h"
 # include "virnetsocket.h"
@@ -30,22 +28,37 @@
 # include "virobject.h"
 # include "virjson.h"
 
+typedef struct _virNetServer virNetServer;
+typedef virNetServer *virNetServerPtr;
+
 typedef struct _virNetServerClient virNetServerClient;
 typedef virNetServerClient *virNetServerClientPtr;
 
-typedef int (*virNetServerClientDispatchFunc)(virNetServerClientPtr client,
-                                              virNetMessagePtr msg,
-                                              void *opaque);
+/* This function owns the "msg" pointer it is passed and
+ * must arrange for virNetMessageFree to be called on it
+ */
+typedef void (*virNetServerClientDispatchFunc)(virNetServerClientPtr client,
+                                               virNetMessagePtr msg,
+                                               void *opaque);
 
 typedef int (*virNetServerClientFilterFunc)(virNetServerClientPtr client,
                                             virNetMessagePtr msg,
                                             void *opaque);
 
+/*
+ * @data: value allocated by virNetServerClintPrivNew(PostExecRestart) callback
+ */
 typedef virJSONValuePtr (*virNetServerClientPrivPreExecRestart)(virNetServerClientPtr client,
                                                                 void *data);
+/*
+ * @opaque: value of @privOpaque from virNetServerClientNewPostExecRestart
+ */
 typedef void *(*virNetServerClientPrivNewPostExecRestart)(virNetServerClientPtr client,
                                                           virJSONValuePtr object,
                                                           void *opaque);
+/*
+ * @opaque: value of @privOpaque from virNetServerClientNew
+ */
 typedef void *(*virNetServerClientPrivNew)(virNetServerClientPtr client,
                                            void *opaque);
 
@@ -54,20 +67,21 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
-# ifdef WITH_GNUTLS
                                             virNetTLSContextPtr tls,
-# endif
                                             virNetServerClientPrivNew privNew,
                                             virNetServerClientPrivPreExecRestart privPreExecRestart,
                                             virFreeCallback privFree,
-                                            void *privOpaque);
+                                            void *privOpaque)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(9);
 
-virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr object,
+virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
+                                                           virJSONValuePtr object,
                                                            virNetServerClientPrivNewPostExecRestart privNew,
                                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                                            virFreeCallback privFree,
-                                                           void *privOpaque,
-                                                           void *opaque);
+                                                           void *privOpaque)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 
 virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client);
 
@@ -79,16 +93,15 @@ void virNetServerClientRemoveFilter(virNetServerClientPtr client,
                                     int filterID);
 
 int virNetServerClientGetAuth(virNetServerClientPtr client);
-void virNetServerClientSetAuth(virNetServerClientPtr client, int auth);
+void virNetServerClientSetAuthLocked(virNetServerClientPtr client, int auth);
 bool virNetServerClientGetReadonly(virNetServerClientPtr client);
+void virNetServerClientSetReadonly(virNetServerClientPtr client, bool readonly);
 unsigned long long virNetServerClientGetID(virNetServerClientPtr client);
 long long virNetServerClientGetTimestamp(virNetServerClientPtr client);
 
-# ifdef WITH_GNUTLS
 bool virNetServerClientHasTLSSession(virNetServerClientPtr client);
 virNetTLSSessionPtr virNetServerClientGetTLSSession(virNetServerClientPtr client);
 int virNetServerClientGetTLSKeySize(virNetServerClientPtr client);
-# endif
 
 # ifdef WITH_SASL
 bool virNetServerClientHasSASLSession(virNetServerClientPtr client);
@@ -123,11 +136,12 @@ void virNetServerClientSetDispatcher(virNetServerClientPtr client,
                                      virNetServerClientDispatchFunc func,
                                      void *opaque);
 void virNetServerClientClose(virNetServerClientPtr client);
-bool virNetServerClientIsClosed(virNetServerClientPtr client);
+void virNetServerClientCloseLocked(virNetServerClientPtr client);
+bool virNetServerClientIsClosedLocked(virNetServerClientPtr client);
 
 void virNetServerClientDelayedClose(virNetServerClientPtr client);
 void virNetServerClientImmediateClose(virNetServerClientPtr client);
-bool virNetServerClientWantClose(virNetServerClientPtr client);
+bool virNetServerClientWantCloseLocked(virNetServerClientPtr client);
 
 int virNetServerClientInit(virNetServerClientPtr client);
 
@@ -145,11 +159,15 @@ const char *virNetServerClientRemoteAddrStringURI(virNetServerClientPtr client);
 int virNetServerClientSendMessage(virNetServerClientPtr client,
                                   virNetMessagePtr msg);
 
-bool virNetServerClientNeedAuth(virNetServerClientPtr client);
+bool virNetServerClientIsAuthenticated(virNetServerClientPtr client);
+bool virNetServerClientIsAuthPendingLocked(virNetServerClientPtr client);
+void virNetServerClientSetAuthPendingLocked(virNetServerClientPtr client, bool auth_pending);
 
 int virNetServerClientGetTransport(virNetServerClientPtr client);
 int virNetServerClientGetInfo(virNetServerClientPtr client,
                               bool *readonly, char **sock_addr,
                               virIdentityPtr *identity);
 
-#endif /* __VIR_NET_SERVER_CLIENT_H__ */
+void virNetServerClientSetQuietEOF(virNetServerClientPtr client);
+
+#endif /* LIBVIRT_VIRNETSERVERCLIENT_H */

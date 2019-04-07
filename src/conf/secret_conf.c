@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Red Hat Author: Miloslav Trmač <mitr@redhat.com>
  */
 
 #include <config.h>
@@ -30,6 +28,7 @@
 #include "secret_conf.h"
 #include "virsecretobj.h"
 #include "virerror.h"
+#include "virsecret.h"
 #include "virstring.h"
 #include "virxml.h"
 #include "viruuid.h"
@@ -38,34 +37,6 @@
 
 VIR_LOG_INIT("conf.secret_conf");
 
-VIR_ENUM_IMPL(virSecretUsage, VIR_SECRET_USAGE_TYPE_LAST,
-              "none", "volume", "ceph", "iscsi", "tls")
-
-const char *
-virSecretUsageIDForDef(virSecretDefPtr def)
-{
-    switch (def->usage_type) {
-    case VIR_SECRET_USAGE_TYPE_NONE:
-        return "";
-
-    case VIR_SECRET_USAGE_TYPE_VOLUME:
-        return def->usage.volume;
-
-    case VIR_SECRET_USAGE_TYPE_CEPH:
-        return def->usage.ceph;
-
-    case VIR_SECRET_USAGE_TYPE_ISCSI:
-        return def->usage.target;
-
-    case VIR_SECRET_USAGE_TYPE_TLS:
-        return def->usage.name;
-
-    default:
-        return NULL;
-    }
-}
-
-
 void
 virSecretDefFree(virSecretDefPtr def)
 {
@@ -73,30 +44,7 @@ virSecretDefFree(virSecretDefPtr def)
         return;
 
     VIR_FREE(def->description);
-    switch (def->usage_type) {
-    case VIR_SECRET_USAGE_TYPE_NONE:
-        break;
-
-    case VIR_SECRET_USAGE_TYPE_VOLUME:
-        VIR_FREE(def->usage.volume);
-        break;
-
-    case VIR_SECRET_USAGE_TYPE_CEPH:
-        VIR_FREE(def->usage.ceph);
-        break;
-
-    case VIR_SECRET_USAGE_TYPE_ISCSI:
-        VIR_FREE(def->usage.target);
-        break;
-
-    case VIR_SECRET_USAGE_TYPE_TLS:
-        VIR_FREE(def->usage.name);
-        break;
-
-    default:
-        VIR_ERROR(_("unexpected secret usage type %d"), def->usage_type);
-        break;
-    }
+    VIR_FREE(def->usage_id);
     VIR_FREE(def);
 }
 
@@ -127,8 +75,8 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_VOLUME:
-        def->usage.volume = virXPathString("string(./usage/volume)", ctxt);
-        if (!def->usage.volume) {
+        def->usage_id = virXPathString("string(./usage/volume)", ctxt);
+        if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("volume usage specified, but volume path is missing"));
             return -1;
@@ -136,8 +84,8 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
-        def->usage.ceph = virXPathString("string(./usage/name)", ctxt);
-        if (!def->usage.ceph) {
+        def->usage_id = virXPathString("string(./usage/name)", ctxt);
+        if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Ceph usage specified, but name is missing"));
             return -1;
@@ -145,8 +93,8 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
-        def->usage.target = virXPathString("string(./usage/target)", ctxt);
-        if (!def->usage.target) {
+        def->usage_id = virXPathString("string(./usage/target)", ctxt);
+        if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("iSCSI usage specified, but target is missing"));
             return -1;
@@ -154,8 +102,8 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_TLS:
-        def->usage.name = virXPathString("string(./usage/name)", ctxt);
-        if (!def->usage.name) {
+        def->usage_id = virXPathString("string(./usage/name)", ctxt);
+        if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("TLS usage specified, but name is missing"));
             return -1;
@@ -179,7 +127,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     char *prop = NULL;
     char *uuidstr = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "secret")) {
+    if (!virXMLNodeNameEqual(root, "secret")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <secret>"),
@@ -199,11 +147,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 
     prop = virXPathString("string(./@ephemeral)", ctxt);
     if (prop != NULL) {
-        if (STREQ(prop, "yes")) {
-            def->isephemeral = true;
-        } else if (STREQ(prop, "no")) {
-            def->isephemeral = false;
-        } else {
+        if (virStringParseYesNo(prop, &def->isephemeral) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid value of 'ephemeral'"));
             goto cleanup;
@@ -213,11 +157,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 
     prop = virXPathString("string(./@private)", ctxt);
     if (prop != NULL) {
-        if (STREQ(prop, "yes")) {
-            def->isprivate = true;
-        } else if (STREQ(prop, "no")) {
-            def->isprivate = false;
-        } else {
+        if (virStringParseYesNo(prop, &def->isprivate) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid value of 'private'"));
             goto cleanup;
@@ -227,7 +167,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 
     uuidstr = virXPathString("string(./uuid)", ctxt);
     if (!uuidstr) {
-        if (virUUIDGenerate(def->uuid)) {
+        if (virUUIDGenerate(def->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Failed to generate UUID"));
             goto cleanup;
@@ -245,8 +185,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     if (virXPathNode("./usage", ctxt) != NULL
         && virSecretDefParseUsage(ctxt, def) < 0)
         goto cleanup;
-    ret = def;
-    def = NULL;
+    VIR_STEAL_PTR(ret, def);
 
  cleanup:
     VIR_FREE(prop);
@@ -303,19 +242,19 @@ virSecretDefFormatUsage(virBufferPtr buf,
         break;
 
     case VIR_SECRET_USAGE_TYPE_VOLUME:
-        virBufferEscapeString(buf, "<volume>%s</volume>\n", def->usage.volume);
+        virBufferEscapeString(buf, "<volume>%s</volume>\n", def->usage_id);
         break;
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
-        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage.ceph);
+        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage_id);
         break;
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
-        virBufferEscapeString(buf, "<target>%s</target>\n", def->usage.target);
+        virBufferEscapeString(buf, "<target>%s</target>\n", def->usage_id);
         break;
 
     case VIR_SECRET_USAGE_TYPE_TLS:
-        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage.name);
+        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage_id);
         break;
 
     default:

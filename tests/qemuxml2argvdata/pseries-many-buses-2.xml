@@ -1,0 +1,18 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <!-- PCI buses 0 and 2 are present in the configuration, libvirt will
+         have to fill in the blanks and add bus 1 -->
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='pci' index='2' model='pci-root'/>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

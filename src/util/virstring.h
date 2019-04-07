@@ -14,17 +14,15 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_STRING_H__
-# define __VIR_STRING_H__
+#ifndef LIBVIRT_VIRSTRING_H
+# define LIBVIRT_VIRSTRING_H
 
 # include <stdarg.h>
 
 # include "internal.h"
+# include "viralloc.h"
 
 char **virStringSplitCount(const char *string,
                            const char *delim,
@@ -41,12 +39,19 @@ char *virStringListJoin(const char **strings,
                         const char *delim)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-char **virStringListAdd(const char **strings,
-                        const char *item);
+int virStringListAdd(char ***strings,
+                     const char *item);
 void virStringListRemove(char ***strings,
                          const char *item);
 
+int virStringListMerge(char ***dst,
+                       char ***src);
+
+int virStringListCopy(char ***dst,
+                      const char **src);
+
 void virStringListFree(char **strings);
+void virStringListAutoFree(char ***strings);
 void virStringListFreeCount(char **strings,
                             size_t count);
 
@@ -55,8 +60,6 @@ bool virStringListHasString(const char **strings,
 char *virStringListGetFirstWithPrefix(char **strings,
                                       const char *prefix)
     ATTRIBUTE_NONNULL(2);
-
-char *virArgvToString(const char *const *argv);
 
 int virStrToLong_i(char const *s,
                    char **end_ptr,
@@ -109,6 +112,9 @@ int virStrToDouble(char const *s,
                    double *result)
     ATTRIBUTE_RETURN_CHECK;
 
+int virDoubleToStr(char **strp, double number)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 void virSkipSpaces(const char **str) ATTRIBUTE_NONNULL(1);
 void virSkipSpacesAndBackslash(const char **str) ATTRIBUTE_NONNULL(1);
 void virTrimSpaces(char *str, char **endp) ATTRIBUTE_NONNULL(1);
@@ -117,9 +123,9 @@ void virSkipSpacesBackwards(const char *str, char **endp)
 
 bool virStringIsEmpty(const char *str);
 
-char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
+int virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
-char *virStrcpy(char *dest, const char *src, size_t destbytes)
+int virStrcpy(char *dest, const char *src, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 # define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
@@ -186,7 +192,7 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  * Returns -1 on failure (with OOM error reported), 0 if @src was NULL,
  * 1 if @src was copied
  */
-# define VIR_STRNDUP(dst, src, n) virStrndup(&(dst), src, n, true,    \
+# define VIR_STRNDUP(dst, src, n) virStrndup(&(dst), src, n, true, \
                                              VIR_FROM_THIS, __FILE__, \
                                              __FUNCTION__, __LINE__)
 
@@ -239,7 +245,7 @@ size_t virStringListLength(const char * const *strings);
  * @strp: variable to hold result (char **)
  * @fmt: printf format
  *
- * Like glibc's_asprintf but makes sure *strp == NULL on failure, in which case
+ * Like glibc's asprintf but makes sure *strp == NULL on failure, in which case
  * the OOM error is reported too.
  *
  * Returns -1 on failure (with OOM error reported), number of bytes printed
@@ -255,7 +261,7 @@ size_t virStringListLength(const char * const *strings);
  * @strp: variable to hold result (char **)
  * @fmt: printf format
  *
- * Like glibc's_asprintf but makes sure *strp == NULL on failure.
+ * Like glibc's asprintf but makes sure *strp == NULL on failure.
  *
  * Returns -1 on failure, number of bytes printed on success.
  */
@@ -274,18 +280,52 @@ ssize_t virStringSearch(const char *str,
                         char ***matches)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
+bool virStringMatch(const char *str,
+                    const char *regexp);
+
 char *virStringReplace(const char *haystack,
                        const char *oldneedle,
                        const char *newneedle)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+bool virStringHasSuffix(const char *str,
+                        const char *suffix);
+bool virStringHasCaseSuffix(const char *str,
+                            const char *suffix);
+bool virStringStripSuffix(char *str,
+                          const char *suffix) ATTRIBUTE_RETURN_CHECK;
+bool virStringMatchesNameSuffix(const char *file,
+                                const char *name,
+                                const char *suffix);
+
 void virStringStripIPv6Brackets(char *str);
+bool virStringHasChars(const char *str,
+                       const char *chars);
 bool virStringHasControlChars(const char *str);
 void virStringStripControlChars(char *str);
+void virStringFilterChars(char *str, const char *valid);
 
 bool virStringIsPrintable(const char *str);
 bool virStringBufferIsPrintable(const uint8_t *buf, size_t buflen);
 
 char *virStringEncodeBase64(const uint8_t *buf, size_t buflen);
 
-#endif /* __VIR_STRING_H__ */
+void virStringTrimOptionalNewline(char *str);
+
+int virStringParsePort(const char *str,
+                       unsigned int *port)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virStringParseYesNo(const char *str,
+                        bool *result)
+    ATTRIBUTE_RETURN_CHECK;
+/**
+ * VIR_AUTOSTRINGLIST:
+ *
+ * Declares a NULL-terminated list of strings which will be automatically freed
+ * when the pointer goes out of scope.
+ */
+# define VIR_AUTOSTRINGLIST \
+        __attribute__((cleanup(virStringListAutoFree))) char **
+
+#endif /* LIBVIRT_VIRSTRING_H */

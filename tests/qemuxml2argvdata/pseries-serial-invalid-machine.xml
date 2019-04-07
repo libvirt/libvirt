@@ -1,0 +1,19 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
+    <!-- The spapr-vio-serial target type can only be used for pSeries
+         guests, so this should be rejected -->
+    <serial type='pty'>
+      <target type='spapr-vio-serial'/>
+    </serial>
+    <memballoon model='none'/>
+  </devices>
+</domain>

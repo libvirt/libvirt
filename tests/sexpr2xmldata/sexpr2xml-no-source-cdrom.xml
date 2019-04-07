@@ -19,20 +19,20 @@
   <on_reboot>destroy</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
+    <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
     <disk type='block' device='disk'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <source dev='/dev/sda8'/>
-      <backingStore/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
-      <backingStore/>
+      <driver type='raw'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:16:3e:0a:7b:39'/>
@@ -51,7 +51,7 @@
       <listen type='address'/>
     </graphics>
     <video>
-      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
     </video>
     <memballoon model='xen'/>
   </devices>

@@ -14,18 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
+#ifndef LIBVIRT_VIRNETTLSHELPERS_H
+# define LIBVIRT_VIRNETTLSHELPERS_H
 
-#if !defined WIN32 && HAVE_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
+# include <gnutls/gnutls.h>
+# include <gnutls/x509.h>
 
-# include <libtasn1.h>
+# if !defined WIN32 && HAVE_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
 
-# include "rpc/virnettlscontext.h"
+#  include <libtasn1.h>
+
+#  include "rpc/virnettlscontext.h"
 
 /*
  * This contains parameter about how to generate
@@ -76,4 +77,6 @@ void testTLSDiscardCert(struct testTLSCertReq *req);
 void testTLSInit(const char *keyfile);
 void testTLSCleanup(const char *keyfile);
 
-#endif
+# endif
+
+#endif /* LIBVIRT_VIRNETTLSHELPERS_H */

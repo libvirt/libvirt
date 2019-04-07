@@ -17,11 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
-
-#include <config.h>
 
 #include <errno.h>
 #include <getopt.h>
@@ -39,7 +35,7 @@ static int debug;
  *
  *  CC       domtop.o
  *domtop.c:40:0: warning: "ERROR" redefined [enabled by default]
- * #define ERROR(...)                                              \
+ * #define ERROR(...) \
  * ^
  *In file included from /usr/i686-w64-mingw32/sys-root/mingw/include/windows.h:71:0,
  *                 from /usr/i686-w64-mingw32/sys-root/mingw/include/winsock2.h:23,
@@ -49,20 +45,20 @@ static int debug;
  * #define ERROR 0
  */
 #undef ERROR
-#define ERROR(...)                                              \
-do {                                                            \
-    fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__);  \
-    fprintf(stderr, __VA_ARGS__);                               \
-    fprintf(stderr, "\n");                                      \
+#define ERROR(...) \
+do { \
+    fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
 } while (0)
 
-#define DEBUG(...)                                              \
-do {                                                            \
-    if (!debug)                                                 \
-        break;                                                  \
-    fprintf(stderr, "DEBUG %s:%d : ", __FUNCTION__, __LINE__);  \
-    fprintf(stderr, __VA_ARGS__);                               \
-    fprintf(stderr, "\n");                                      \
+#define DEBUG(...) \
+do { \
+    if (!debug) \
+        break; \
+    fprintf(stderr, "DEBUG %s:%d : ", __FUNCTION__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
 } while (0)
 
 static void

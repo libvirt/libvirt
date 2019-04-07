@@ -1,0 +1,11 @@
+10:hugetlb:/
+9:net_prio:/
+8:blkio:/
+7:net_cls:/
+6:freezer:/
+5:devices:/
+4:memory:/
+3:cpuacct:/
+2:cpu:/
+1:cpuset:/
+0:name=openrc:/

@@ -1,0 +1,947 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Arpad Biro <biro_arpad@yahoo.com>, 2007.
+# Daniel  <veillard@redhat.com>, 2011.
+# Gabor Egry <gaba@freemail.hu>, 2007.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-27 04:56+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Hungarian (http://www.transifex.com/projects/p/fedora/"
+"language/hu/)\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  LEÍRÁS\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  OPCIÓK\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Idő: %.3f ms)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  NÉV\n"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: nem sikerült lefoglalni %d bájtot"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s: %d: nem sikerült lefoglalni %lu bájtot"
+
+msgid "(re)connect to hypervisor"
+msgstr "(újra) csatlakozás a felügyelőhöz"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <szám>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <szöveg>"
+
+msgid "Autostart"
+msgstr "Automatikus indítás"
+
+msgid "CPU Affinity:"
+msgstr "Processzor-affinitás:"
+
+msgid "CPU frequency:"
+msgstr "Processzor-frekvencia:"
+
+msgid "CPU model:"
+msgstr "Processzormodell:"
+
+msgid "CPU socket(s):"
+msgstr "Processzor-foglalat(ok):"
+
+msgid "CPU time:"
+msgstr "Processzoridő:"
+
+msgid "CPU(s):"
+msgstr "Processzor(ok):"
+
+msgid "CPU:"
+msgstr "Processzor:"
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Nem lehet meghatározni a(z) %s futó felügyelő verzióját\n"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Az aktuális memória-lefoglalás megváltoztatása a vendégtartományban."
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr ""
+"A maximális memória-lefoglalási korlát megváltoztatása a vendégtartományban."
+
+msgid "Configure a domain to be automatically started at boot."
+msgstr ""
+"Beállít egy tartományt arra, hogy rendszerindításkor automatikusan "
+"elinduljon."
+
+msgid "Configure a network to be automatically started at boot."
+msgstr "Hálózat beállítása, hogy automatikusan induljon el rendszerindításkor."
+
+msgid "Connect the virtual serial console for the guest"
+msgstr "Csatlakozás a vendégrendszer virtuális soros konzoljához"
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Csatlakozás a helyi felügyelőhöz. Ez egy beépített parancs a "
+"parancsértelmező indítása után."
+
+msgid "Core dump a domain."
+msgstr "Egy tartomány magjának (core) kimentése."
+
+msgid "Core(s) per socket:"
+msgstr "Mag(ok) foglalatonként:"
+
+msgid "Create a domain."
+msgstr "Egy tartomány létrehozása."
+
+msgid "Create a network."
+msgstr "Egy hálózat létrehozása."
+
+msgid "Define a domain."
+msgstr "Egy tartomány megadása."
+
+msgid "Display the system version information."
+msgstr "Megjeleníti a rendszer verzióinformációját."
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "%s tartomány létrehozva ebből: %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "A(z) %s tartomány definiálva lett ebből: %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "%s tartomány megsemmisítve\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "A(z) %s tartomány definíciója el lett távolítva\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "%s tartomány újra lesz indítva\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "%s tartomány leállítása folyamatban\n"
+
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "%s tartomány megjelölve automatikus indításra\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "%s tartomány felélesztve\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "%s tartomány elindítva\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "%s tartomány felfüggesztve\n"
+
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "%s tartomány automatikus indításra való jelölése törölve\n"
+
+msgid "Domain is already active"
+msgstr "A tartomány már aktív"
+
+msgid "Domain is already running"
+msgstr "A tartomány már fut"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "A tartomány vissza lett állítva ebből: %s\n"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Nem sikerült kimenteni a(z) %s tartomány mag-kivonatát ide: %s"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Nem sikerült létrehozni tartományt ebből: %s"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "Nem sikerült létrehozni hálózatot ebből: %s"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Nem sikerült definiálni a tartományt ebből: %s"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "Nem sikerült definiálni a hálózatot ebből: %s"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "%s tartomány megsemmisítése nem sikerült"
+
+#, c-format
+msgid "Failed to destroy network %s"
+msgstr "%s hálózat megsemmisítése nem sikerült"
+
+msgid "Failed to list active domains"
+msgstr "Aktív tartományok listázása nem sikerült"
+
+msgid "Failed to list active networks"
+msgstr "Aktív hálózatok listázása nem sikerült"
+
+msgid "Failed to list inactive domains"
+msgstr "Inaktív tartományok listázása nem sikerült"
+
+msgid "Failed to list inactive networks"
+msgstr "Inaktív hálózatok listázása nem sikerült"
+
+#, c-format
+msgid "Failed to mark domain %s as autostarted"
+msgstr "Nem sikerült megjelölni a(z) %s tartományt automatikus indításra"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "%s tartomány újraindítása nem sikerült"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "%s tartomány felélesztése nem sikerült"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Nem sikerült menteni a(z) %s tartományt ide: %s"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "%s tartomány leállítása nem sikerült"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "%s tartomány indítása nem sikerült"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "%s hálózat indítása nem sikerült"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "%s tartomány felfüggesztése nem sikerült"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Nem sikerült eltávolítani a(z) %s tartomány definícióját"
+
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "Nem sikerült eltávolítani a(z) %s hálózat definícióját"
+
+#, c-format
+msgid "Failed to unmark domain %s as autostarted"
+msgstr ""
+"Nem sikerült törölni a(z) %s tartomány automatikus indításra való jelölését"
+
+msgid "GET operation failed"
+msgstr "GET művelet nem sikerült"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "GET művelet nem sikerült: %s"
+
+msgid "Id"
+msgstr "Azonosító"
+
+msgid "Id:"
+msgstr "Azonosító:"
+
+msgid "Max memory:"
+msgstr "Max. memória:"
+
+msgid "Memory size:"
+msgstr "Memória mérete:"
+
+msgid "NUMA cell(s):"
+msgstr "NUMA-cella:"
+
+msgid "Name"
+msgstr "Név"
+
+msgid "Name:"
+msgstr "Név:"
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "%s hálózat létrehozva ebből: %s\n"
+
+#, c-format
+msgid "Network %s defined from %s\n"
+msgstr "A(z) %s hálózat definiálva lett ebből: %s\n"
+
+#, c-format
+msgid "Network %s destroyed\n"
+msgstr "%s hálózat megsemmisítve\n"
+
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "A(z) %s hálózat definíciója el lett távolítva\n"
+
+#, c-format
+msgid "Network %s marked as autostarted\n"
+msgstr "%s hálózat megjelölve automatikus indításra\n"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "%s hálózat elindítva\n"
+
+#, c-format
+msgid "Network %s unmarked as autostarted\n"
+msgstr "%s hálózat automatikus indításra való jelölése törölve\n"
+
+msgid "No error message provided"
+msgstr "Nincs megadva hibaüzenet"
+
+msgid "OS Type:"
+msgstr "OS-típus:"
+
+msgid "Output the IP address and port number for the VNC display."
+msgstr "A VNC-képernyőhöz tartozó IP-cím és portszám kiírása."
+
+msgid "Output the domain information as an XML dump to stdout."
+msgstr "A tartományinformáció kiírása a szabványos kimenetre XML-kivonatként."
+
+msgid "Output the network information as an XML dump to stdout."
+msgstr "A hálózatinformáció kiírása a szabványos kimenetre XML-kivonatként."
+
+msgid "POST operation failed"
+msgstr "POST művelet nem sikerült"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "POST művelet nem sikerült: %s"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Tartomány-VCPU-k hozzárendelése a gazdagép fizikai processzoraihoz."
+
+msgid "Restore a domain."
+msgstr "Egy tartomány visszaállítása."
+
+msgid "Resume a previously suspended domain."
+msgstr "Előzőleg felfüggesztett tartomány felélesztése."
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Alapvető információkat ad a tartomány virtuális processzorairól."
+
+msgid "Returns basic information about the domain."
+msgstr "Alapvető információkat ad a tartományról."
+
+msgid "Returns basic information about the node."
+msgstr "Alapvető információkat ad a csomópontról."
+
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Megadja a felügyelő/meghajtóprogram képességeit."
+
+msgid "Returns list of domains."
+msgstr "Megadja a tartományok listáját."
+
+msgid "Returns list of networks."
+msgstr "Megadja a hálózatok listáját."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Egy újraindítás parancs futtatása a céltartományban."
+
+msgid "Run shutdown in the target domain."
+msgstr "Leállítás futtatása a céltartományban."
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Futó felügyelő: %s %d.%d.%d\n"
+
+msgid "Start a network."
+msgstr "Egy hálózat indítása."
+
+msgid "State"
+msgstr "Állapot"
+
+msgid "State:"
+msgstr "Állapot:"
+
+msgid "Suspend a running domain."
+msgstr "Egy futó tartomány felfüggesztése."
+
+msgid "Thread(s) per core:"
+msgstr "Szál(ak) magonként:"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Típus:  'help' segítség a parancsokkal együtt\n"
+"       'quit' a kilépéshez\n"
+"\n"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Used memory:"
+msgstr "Felhasznált memória:"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Ezen API használata: %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "VCPU:"
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Üdvözli a(z) %s, a virtualizációs interaktív terminál.\n"
+"\n"
+
+msgid "active"
+msgstr "aktív"
+
+msgid "autostart a domain"
+msgstr "egy tartomány automatikus indítása"
+
+msgid "autostart a network"
+msgstr "hálózat automatikus indítása"
+
+msgid "cannot parse vbd filename, missing driver name"
+msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram neve"
+
+msgid "cannot parse vbd filename, missing driver type"
+msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram típusa"
+
+msgid "capabilities"
+msgstr "képességek"
+
+msgid "change maximum memory limit"
+msgstr "maximális memóriakorlát megváltoztatása"
+
+msgid "change memory allocation"
+msgstr "memória-lefoglalás megváltoztatása"
+
+msgid "change number of virtual CPUs"
+msgstr "virtuális processzorok számának megváltoztatása"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "'%s' parancs nem támogatja a(z) --%s opciót"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "'%s' parancs a(z) --%s opciót igényli"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "'%s' parancs a(z) <%s> opciót igényli"
+
+msgid "configuration file syntax error"
+msgstr "formai hiba a beállítási fájlban"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "formai hiba a beállítási fájlban: %s"
+
+msgid "connect to the guest console"
+msgstr "kapcsolódás a vendégrendszer konzoljához"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "tartományazonosító vagy -UUID átalakítása tartománynévvé"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "tartománynév vagy -UUID átalakítása tartományazonosítóvá"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "tartománynév vagy -azonosító átalakítása tartomány-UUID-vé"
+
+msgid "convert a network UUID to network name"
+msgstr "hálózat-UUID átalakítása hálózatnévvé"
+
+msgid "convert a network name to network UUID"
+msgstr "hálózatnév átalakítása hálózat-UUID-vé"
+
+msgid "could not connect to Xen Store"
+msgstr "nem lehet csatlakozni a Xen-tárolóhoz"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "nem lehet csatlakozni a(z) %s Xen-tárolóhoz"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "a Xen-felügyelő-bejegyzés nem használható"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "%s Xen-felügyelő-bejegyzés nem használható"
+
+msgid "crashed"
+msgstr "összeomlott"
+
+msgid "create a domain from an XML file"
+msgstr "egy tartomány létrehozása egy XML-fájlból"
+
+msgid "create a network from an XML file"
+msgstr "egy hálózat létrehozása egy XML-fájlból"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "egy tartomány definiálása (de el nem indítása) egy XML-fájlból"
+
+msgid "disable autostarting"
+msgstr "automatikus indítás letiltása"
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "%s tartomány már létezik"
+
+msgid "domain id or name"
+msgstr "tartományazonosító vagy -név"
+
+msgid "domain id or uuid"
+msgstr "tartományazonosító vagy -uuid"
+
+msgid "domain information"
+msgstr "tartományinformáció"
+
+msgid "domain information in XML"
+msgstr "tartományinformáció XML-ben"
+
+msgid "domain information incomplete, missing kernel & bootloader"
+msgstr ""
+"a tartományinformáció nem teljes - hiányzik a rendszermag és a rendszerindító"
+
+msgid "domain information incomplete, missing name"
+msgstr "a tartományinformáció nem teljes - hiányzik a név"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "a tartományinformáció nem teljes - vbd nem rendelkezik eszközzel (dev)"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "a tartományinformáció nem teljes - vbd nem rendelkezik forrással"
+
+msgid "domain name or uuid"
+msgstr "tartománynév vagy uuid"
+
+msgid "domain state"
+msgstr "tartományállapot"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "egy tartomány magjának (core) kimentése fájlba elemzés céljából"
+
+msgid "error"
+msgstr "hiba"
+
+msgid "error: "
+msgstr "hiba: "
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "várt forma: --%s <%s>"
+
+msgid "expecting a name"
+msgstr "egy név várása"
+
+msgid "expecting a separator"
+msgstr "egy elválasztó várása"
+
+msgid "expecting a separator in list"
+msgstr "egy lista elválasztó várása"
+
+msgid "expecting a value"
+msgstr "egy érték várása"
+
+msgid "expecting an assignment"
+msgstr "egy hozzárendelés várása"
+
+msgid "failed to connect to the hypervisor"
+msgstr "nem sikerült csatlakozni a felügyelőhöz"
+
+msgid "failed to get capabilities"
+msgstr "nem sikerült a képességek lekérdezése"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "\"%s\" tartomány lekérdezése nem sikerült"
+
+msgid "failed to get domain UUID"
+msgstr "nem sikerült lekérdezni a tartomány-UUID-t"
+
+msgid "failed to get hypervisor type"
+msgstr "nem sikerült lekérdezni a felügyelő típusát"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "'%s' hálózat lekérdezése nem sikerült"
+
+msgid "failed to get network UUID"
+msgstr "nem sikerült lekérdezni a hálózat-UUID-t"
+
+msgid "failed to get node information"
+msgstr "csomópont-információ lekérdezése nem sikerült"
+
+msgid "failed to get the hypervisor version"
+msgstr "nem sikerült lekérdezni a felügyelő verzióját"
+
+msgid "failed to get the library version"
+msgstr "nem sikerült lekérdezni a programkönyvtár verzióját"
+
+#, c-format
+msgid "failed to mark network %s as autostarted"
+msgstr "Nem sikerült megjelölni a(z) %s hálózatot automatikus indításra"
+
+msgid "failed to open file"
+msgstr "a fájl megnyitása nem sikerült"
+
+msgid "failed to parse configuration file"
+msgstr "nem sikerült értelmezni a beállítási fájlt"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "nem sikerült értelmezni a(z) %s beállítási fájlt"
+
+msgid "failed to read configuration file"
+msgstr "nem sikerült olvasni a beállítási fájlt"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "nem sikerült olvasni a(z) %s beállítási fájlt"
+
+msgid "failed to save content"
+msgstr "a tartalom mentése nem sikerült"
+
+msgid "failed to serialize S-Expr"
+msgstr "S-kifejezés kibontása nem sikerült"
+
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "S-kifejezés kibontása nem sikerült: %s"
+
+#, c-format
+msgid "failed to unmark network %s as autostarted"
+msgstr ""
+"Nem sikerült törölni a(z) %s hálózat automatikus indításra való jelölését"
+
+msgid "failed to write configuration file"
+msgstr "a beállítási fájl írása nem sikerült"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "a beállítási fájl írása nem sikerült: %s"
+
+msgid "file containing an XML domain description"
+msgstr "egy XML-tartományleírást tartalmazó fájl"
+
+msgid "file containing an XML network description"
+msgstr "egy XML-hálózatleírást tartalmazó fájl"
+
+msgid "getting time of day"
+msgstr "aktuális idő beolvasása"
+
+msgid "gracefully shutdown a domain"
+msgstr "egy tartomány elegáns leállítása"
+
+msgid "hypervisor connection URI"
+msgstr "felügyelő csatlakozási URI"
+
+msgid "in shutdown"
+msgstr "leállítás alatt"
+
+msgid "inactive"
+msgstr "inaktív"
+
+msgid "internal error"
+msgstr "belső hiba"
+
+msgid "invalid connection pointer in"
+msgstr "érvénytelen csatlakozás-mutató itt:"
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "érvénytelen csatlakozás-mutató itt: %s"
+
+msgid "invalid domain pointer in"
+msgstr "érvénytelen tartománymutató itt:"
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "érvénytelen tartománymutató itt: %s"
+
+msgid "invalid network pointer in"
+msgstr "érvénytelen hálózati mutató ebben:"
+
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "érvénytelen hálózati mutató ebben: %s"
+
+msgid "list domains"
+msgstr "tartományok listázása"
+
+msgid "list inactive & active domains"
+msgstr "inaktív és aktív tartományok listázása"
+
+msgid "list inactive & active networks"
+msgstr "inaktív és aktív hálózatok listázása"
+
+msgid "list inactive domains"
+msgstr "inaktív tartományok listázása"
+
+msgid "list inactive networks"
+msgstr "inaktív hálózatok listázása"
+
+msgid "list networks"
+msgstr "hálózatok listázása"
+
+msgid "missing \""
+msgstr "hiányzó \""
+
+msgid "missing devices information"
+msgstr "hiányzó eszközinformáció"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "hiányzó eszközinformáció ehhez: %s"
+
+msgid "missing kernel information"
+msgstr "hiányzó rendszermag-információ"
+
+msgid "missing operating system information"
+msgstr "hiányzó operációsrendszer-információ"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "hiányzó operációsrendszer-információ ehhez: %s"
+
+msgid "missing root device information"
+msgstr "hiányzó gyökéreszköz-információ"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "hiányzó gyökéreszköz-információ itt: %s"
+
+msgid "missing source information for device"
+msgstr "hiányzó forrásinformáció az eszközhöz"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "hiányzó forrásinformáció a(z) %s eszközhöz"
+
+msgid "missing target information for device"
+msgstr "hiányzó célinformáció az eszközhöz"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "hiányzó célinformáció a(z) %s eszközhöz"
+
+msgid "name of the inactive domain"
+msgstr "az inaktív tartomány neve"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "%s hálózat már létezik"
+
+msgid "network information in XML"
+msgstr "hálózatinformáció XML-ben"
+
+msgid "network name"
+msgstr "hálózatnév"
+
+msgid "network name or uuid"
+msgstr "hálózatnév vagy -uuid"
+
+msgid "network uuid"
+msgstr "hálózat-uuid"
+
+msgid "no autostart"
+msgstr "nincs automatikus indítás"
+
+msgid "no limit"
+msgstr "nincs korlátozás"
+
+msgid "no state"
+msgstr "nincs állapot"
+
+msgid "no valid connection"
+msgstr "nem érvényes csatlakozás"
+
+msgid "node information"
+msgstr "csomópont-információ"
+
+msgid "number"
+msgstr "szám"
+
+msgid "number of virtual CPUs"
+msgstr "virtuális processzorok száma"
+
+msgid "offline"
+msgstr "lekapcsolt"
+
+msgid "operation failed"
+msgstr "művelet nem sikerült"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "művelet nem sikerült: %s"
+
+msgid "operation forbidden for read only access"
+msgstr "művelet tiltott a csak olvasható hozzáférésnél"
+
+msgid "out of memory"
+msgstr "nincs több memória"
+
+msgid "parser error"
+msgstr "feldolgozási hiba"
+
+msgid "paused"
+msgstr "megállítva"
+
+msgid "print help"
+msgstr "segítség kiírása"
+
+msgid "quit this interactive terminal"
+msgstr "kilépés ebből az interaktív terminálból"
+
+msgid "read-only connection"
+msgstr "csak olvasható csatlakozás"
+
+msgid "reboot a domain"
+msgstr "egy tartomány újraindítása"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "egy tartomány visszaállítása egy fájlba mentett állapotból"
+
+msgid "resume a domain"
+msgstr "egy tartomány felélesztése"
+
+msgid "running"
+msgstr "fut"
+
+msgid "save a domain state to a file"
+msgstr "egy tartományállapot mentése egy fájlba"
+
+msgid "show version"
+msgstr "verzió megjelenítése"
+
+msgid "shut off"
+msgstr "leállt"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "egy (előzőleg definiált) inaktív tartomány indítása"
+
+msgid "start a (previously defined) inactive network"
+msgstr "egy (előzőleg definiált) inaktív hálózat indítása"
+
+msgid "string"
+msgstr "szöveg"
+
+msgid "suspend a domain"
+msgstr "tartomány felfüggesztése"
+
+msgid "system call error"
+msgstr "rendszerhívási hiba"
+
+msgid "the state to restore"
+msgstr "állapot visszaállítása"
+
+msgid "this domain exists already"
+msgstr "ez a tartomány már létezik"
+
+msgid "this network exists already"
+msgstr "ez a hálózat már létezik"
+
+msgid "too many drivers registered"
+msgstr "túl sok meghajtóprogram van regisztrálva"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "túl sok meghajtóprogram van regisztrálva itt: %s"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "váratlan adat: '%s'"
+
+msgid "unknown OS type"
+msgstr "ismeretlen OS-típus"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "ismeretlen OS-típus: %s"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "ismeretlen parancs: '%s'"
+
+msgid "unknown host"
+msgstr "ismeretlen gép"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "ismeretlen gép: %s"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "nem támogatott '-%c' opció. Lásd --help."
+
+msgid "unterminated number"
+msgstr "lezáratlan szám"
+
+msgid "unterminated string"
+msgstr "lezáratlan szöveg"
+
+msgid "vcpu number"
+msgstr "VCPU-szám"
+
+msgid "vnc display"
+msgstr "VNC-képernyő"
+
+msgid "warning"
+msgstr "figyelmeztetés"
+
+msgid "where to dump the core"
+msgstr "hova íródjon ki a mag-kivonat"
+
+msgid "where to save the data"
+msgstr "hova legyen mentve az adat"

@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Sharadha Prabhakar <sharadha.prabhakar@citrix.com>
  */
 
-#ifndef __VIR_XENAPI_UTILS__
-# define __VIR_XENAPI_UTILS__
+#ifndef LIBVIRT_XENAPI_UTILS_H
+# define LIBVIRT_XENAPI_UTILS_H
 
 # include <xen/api/xen_all.h>
 # include "internal.h"
@@ -46,7 +44,7 @@ enum xen_on_normal_exit
 actionShutdownLibvirt2XenapiEnum(virDomainLifecycleAction action);
 
 enum xen_on_crash_behaviour
-actionCrashLibvirt2XenapiEnum(virDomainLifecycleCrashAction action);
+actionCrashLibvirt2XenapiEnum(virDomainLifecycleAction action);
 
 char *
 createXenAPIBootOrderString(int nboot, int *bootDevs);
@@ -56,7 +54,7 @@ virDomainBootOrder map2LibvirtBootOrder(char c);
 virDomainLifecycleAction
 xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action);
 
-virDomainLifecycleCrashAction
+virDomainLifecycleAction
 xenapiCrashExitEnum2virDomainLifecycle(enum xen_on_crash_behaviour action);
 
 void getCpuBitMapfromString(char *mask, unsigned char *cpumap, int maplen);
@@ -78,4 +76,4 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr defPtr,
 int
 allocStringMap (xen_string_string_map **strings, char *key, char *val);
 
-#endif /* __VIR_XENAPI_UTILS__ */
+#endif /* LIBVIRT_XENAPI_UTILS_H */

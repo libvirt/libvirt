@@ -72,7 +72,6 @@
 	  <xsl:if test="deprecated">
 	    <p> WARNING: this module is deprecated !</p>
 	  </xsl:if>
-	  <p>Author(s): <xsl:value-of select="author"/></p>
 	  <div class="refsynopsisdiv">
 	  <h2>Synopsis</h2>
 	  <pre class="synopsis">

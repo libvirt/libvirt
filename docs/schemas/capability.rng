@@ -40,10 +40,19 @@
         <ref name='power_management'/>
       </optional>
       <optional>
+        <ref name='iommu_support'/>
+      </optional>
+      <optional>
         <ref name='migration'/>
       </optional>
       <optional>
         <ref name='topology'/>
+      </optional>
+      <optional>
+        <ref name='cache'/>
+      </optional>
+      <optional>
+        <ref name='memory_bandwidth'/>
       </optional>
       <zeroOrMore>
         <ref name='secmodel'/>
@@ -54,21 +63,21 @@
   <define name='secmodel'>
     <element name='secmodel'>
       <interleave>
-          <element name='model'>
-            <text/>
-          </element>
-          <element name='doi'>
-            <text/>
-          </element>
-          <zeroOrMore>
-            <element name='baselabel'>
-              <attribute name='type'>
-                <text/>
-              </attribute>
+        <element name='model'>
+          <text/>
+        </element>
+        <element name='doi'>
+          <text/>
+        </element>
+        <zeroOrMore>
+          <element name='baselabel'>
+            <attribute name='type'>
               <text/>
-            </element>
-          </zeroOrMore>
-       </interleave>
+            </attribute>
+            <text/>
+          </element>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 
@@ -99,6 +108,13 @@
         <text/>
       </element>
     </optional>
+    <optional>
+      <element name='microcode'>
+        <attribute name='version'>
+          <ref name='positiveInteger'/>
+        </attribute>
+      </element>
+    </optional>
     <element name='topology'>
       <attribute name='sockets'>
         <ref name='positiveInteger'/>
@@ -119,7 +135,7 @@
       </element>
     </zeroOrMore>
     <zeroOrMore>
-      <ref name='pagesElem'/>
+      <ref name='pagesHost'/>
     </zeroOrMore>
   </define>
 
@@ -145,6 +161,16 @@
     </element>
   </define>
 
+  <define name='iommu_support'>
+    <element name='iommu'>
+      <optional>
+        <attribute name='support'>
+          <ref name='virYesNo'/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
   <define name='migration'>
     <element name='migration_features'>
       <optional>
@@ -157,9 +183,10 @@
           <oneOrMore>
             <element name='uri_transport'>
               <choice>
-                <value>esx</value>
+                <value>vpxmigr</value>
                 <value>tcp</value>
-                <value>xenmigr</value>
+                <value>rdma</value>
+                <value>vzmigr</value>
               </choice>
             </element>
           </oneOrMore>
@@ -192,7 +219,7 @@
       </optional>
 
       <zeroOrMore>
-        <ref name='pagesElem'/>
+        <ref name='pagesNuma'/>
       </zeroOrMore>
 
       <optional>
@@ -248,6 +275,125 @@
     </element>
   </define>
 
+  <define name='cache'>
+    <element name='cache'>
+      <oneOrMore>
+        <element name='bank'>
+          <attribute name='id'>
+            <ref name='unsignedInt'/>
+          </attribute>
+          <attribute name='level'>
+            <ref name='unsignedInt'/>
+          </attribute>
+          <ref name='cacheType'/>
+          <attribute name='size'>
+            <ref name='unsignedInt'/>
+          </attribute>
+          <attribute name='unit'>
+            <ref name='unit'/>
+          </attribute>
+          <attribute name='cpus'>
+            <ref name='cpuset'/>
+          </attribute>
+          <zeroOrMore>
+            <element name='control'>
+              <attribute name='granularity'>
+                <ref name='unsignedInt'/>
+              </attribute>
+              <optional>
+                <attribute name='min'>
+                  <ref name='unsignedInt'/>
+                </attribute>
+              </optional>
+              <attribute name='unit'>
+                <ref name='unit'/>
+              </attribute>
+              <ref name='cacheType'/>
+              <attribute name='maxAllocs'>
+                <ref name='unsignedInt'/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </element>
+      </oneOrMore>
+      <optional>
+        <ref name='cpuMonitor'/>
+      </optional>
+    </element>
+  </define>
+
+  <define name='cacheType'>
+    <attribute name='type'>
+      <choice>
+        <value>both</value>
+        <value>code</value>
+        <value>data</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <define name='memory_bandwidth'>
+    <element name='memory_bandwidth'>
+      <oneOrMore>
+        <element name='node'>
+          <attribute name='id'>
+            <ref name='unsignedInt'/>
+          </attribute>
+          <attribute name='cpus'>
+            <ref name='cpuset'/>
+          </attribute>
+          <zeroOrMore>
+            <element name='control'>
+              <attribute name='granularity'>
+                <ref name='unsignedInt'/>
+              </attribute>
+            <optional>
+              <attribute name='min'>
+                <ref name='unsignedInt'/>
+              </attribute>
+            </optional>
+              <attribute name='maxAllocs'>
+                <ref name='unsignedInt'/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </element>
+      </oneOrMore>
+      <optional>
+        <ref name='cpuMonitor'/>
+      </optional>
+    </element>
+  </define>
+
+  <define name='cpuMonitor'>
+    <element name='monitor'>
+      <optional>
+        <attribute name='level'>
+          <ref name='unsignedInt'/>
+        </attribute>
+        <attribute name='reuseThreshold'>
+          <ref name='unsignedInt'/>
+        </attribute>
+      </optional>
+      <attribute name='maxMonitors'>
+        <ref name='unsignedInt'/>
+      </attribute>
+      <oneOrMore>
+        <element name='feature'>
+          <attribute name='name'>
+            <ref name='monitorFeature'/>
+          </attribute>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name='monitorFeature'>
+    <data type='string'>
+      <param name='pattern'>(llc_|mbm_)[a-zA-Z0-9\-_]+</param>
+    </data>
+  </define>
+
   <define name='guestcaps'>
     <element name='guest'>
       <ref name='ostype'/>
@@ -266,7 +412,7 @@
                                   but is also used by phyp driver -->
         <value>hvm</value> <!-- unmodified OS -->
         <value>exe</value> <!-- For container based virt -->
-        <value>uml</value> <!-- user mode linux -->
+        <value>uml</value> <!-- user mode linux; NOT USED ANYMORE -->
       </choice>
     </element>
   </define>
@@ -338,7 +484,7 @@
           <value>kqemu</value>
           <value>kvm</value>
           <value>xen</value>
-          <value>uml</value>
+          <value>uml</value> <!-- NOT USED ANYMORE -->
           <value>lxc</value>
           <value>openvz</value>
           <value>test</value>
@@ -419,17 +565,25 @@
     </data>
   </define>
 
-  <define name='pagesElem'>
+  <define name='pagesHost'>
     <element name='pages'>
-      <optional>
-        <attribute name='unit'>
-          <ref name='unit'/>
-        </attribute>
-      </optional>
-      <attribute name='size'>
-        <ref name='unsignedInt'/>
-      </attribute>
+      <ref name='pagesElem'/>
+    </element>
+  </define>
+  <define name='pagesNuma'>
+    <element name='pages'>
+      <ref name='pagesElem'/>
       <ref name='unsignedInt'/>
     </element>
+  </define>
+  <define name='pagesElem'>
+    <optional>
+      <attribute name='unit'>
+        <ref name='unit'/>
+      </attribute>
+    </optional>
+    <attribute name='size'>
+      <ref name='unsignedInt'/>
+    </attribute>
   </define>
 </grammar>

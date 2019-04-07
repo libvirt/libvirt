@@ -17,21 +17,18 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *  Dan Smith <danms@us.ibm.com>
  */
 
-#ifndef __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
+#ifndef LIBVIRT_VIRCGROUPPRIV_H_ALLOW
 # error "vircgrouppriv.h may only be included by vircgroup.c or its test suite"
-#endif
+#endif /* LIBVIRT_VIRCGROUPPRIV_H_ALLOW */
 
-#ifndef __VIR_CGROUP_PRIV_H__
-# define __VIR_CGROUP_PRIV_H__
+#pragma once
 
-# include "vircgroup.h"
+#include "vircgroup.h"
+#include "vircgroupbackend.h"
 
-struct virCgroupController {
+struct _virCgroupV1Controller {
     int type;
     char *mountPoint;
     /* If mountPoint holds several controllers co-mounted,
@@ -41,15 +38,91 @@ struct virCgroupController {
     char *linkPoint;
     char *placement;
 };
+typedef struct _virCgroupV1Controller virCgroupV1Controller;
+typedef virCgroupV1Controller *virCgroupV1ControllerPtr;
 
-struct virCgroup {
+struct _virCgroupV2Controller {
+    int controllers;
+    char *mountPoint;
+    char *placement;
+};
+typedef struct _virCgroupV2Controller virCgroupV2Controller;
+typedef virCgroupV2Controller *virCgroupV2ControllerPtr;
+
+struct _virCgroup {
     char *path;
 
-    struct virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
+    virCgroupBackendPtr backends[VIR_CGROUP_BACKEND_TYPE_LAST];
+
+    virCgroupV1Controller legacy[VIR_CGROUP_CONTROLLER_LAST];
+    virCgroupV2Controller unified;
 };
 
-int virCgroupDetectMountsFromFile(virCgroupPtr group,
-                                  const char *path,
-                                  bool checkLinks);
+int virCgroupSetValueStr(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         const char *value);
 
-#endif /* __VIR_CGROUP_PRIV_H__ */
+int virCgroupGetValueStr(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         char **value);
+
+int virCgroupSetValueU64(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         unsigned long long int value);
+
+int virCgroupGetValueU64(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         unsigned long long int *value);
+
+int virCgroupSetValueI64(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         long long int value);
+
+int virCgroupGetValueI64(virCgroupPtr group,
+                         int controller,
+                         const char *key,
+                         long long int *value);
+
+int virCgroupPartitionEscape(char **path);
+
+char *virCgroupGetBlockDevString(const char *path);
+
+int virCgroupGetValueForBlkDev(virCgroupPtr group,
+                               int controller,
+                               const char *key,
+                               const char *path,
+                               char **value);
+
+int virCgroupNew(pid_t pid,
+                 const char *path,
+                 virCgroupPtr parent,
+                 int controllers,
+                 virCgroupPtr *group);
+
+int virCgroupNewPartition(const char *path,
+                          bool create,
+                          int controllers,
+                          virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+
+int virCgroupNewDomainPartition(virCgroupPtr partition,
+                                const char *driver,
+                                const char *name,
+                                bool create,
+                                virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
+
+int virCgroupRemoveRecursively(char *grppath);
+
+
+int virCgroupKillRecursiveInternal(virCgroupPtr group,
+                                   int signum,
+                                   virHashTablePtr pids,
+                                   int controller,
+                                   const char *taskFile,
+                                   bool dormdir);

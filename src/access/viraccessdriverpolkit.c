@@ -33,8 +33,8 @@
 
 VIR_LOG_INIT("access.accessdriverpolkit");
 
-#define virAccessError(code, ...)                                       \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
+#define virAccessError(code, ...) \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__, \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define VIR_ACCESS_DRIVER_POLKIT_ACTION_PREFIX "org.libvirt.api"
@@ -135,7 +135,7 @@ virAccessDriverPolkitCheck(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
         goto cleanup;
 
     VIR_DEBUG("Check action '%s' for process '%lld' time %lld uid %d",
-              actionid, (long long) pid, startTime, uid);
+              actionid, (long long)pid, startTime, uid);
 
     rv = virPolkitCheckAuth(actionid,
                             pid,
@@ -277,6 +277,26 @@ virAccessDriverPolkitCheckNWFilter(virAccessManagerPtr manager,
 }
 
 static int
+virAccessDriverPolkitCheckNWFilterBinding(virAccessManagerPtr manager,
+                                          const char *driverName,
+                                          virNWFilterBindingDefPtr binding,
+                                          virAccessPermNWFilterBinding perm)
+{
+    const char *attrs[] = {
+        "connect_driver", driverName,
+        "nwfilter_binding_portdev", binding->portdevname,
+        "nwfilter_binding_linkdev", binding->linkdevname,
+        "nwfilter_binding_filter", binding->filter,
+        NULL,
+    };
+
+    return virAccessDriverPolkitCheck(manager,
+                                      "nwfilter_binding",
+                                      virAccessPermNWFilterBindingTypeToString(perm),
+                                      attrs);
+}
+
+static int
 virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
                                  const char *driverName,
                                  virSecretDefPtr secret,
@@ -303,7 +323,7 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
         const char *attrs[] = {
             "connect_driver", driverName,
             "secret_uuid", uuidstr,
-            "secret_usage_volume", secret->usage.volume,
+            "secret_usage_volume", secret->usage_id,
             NULL,
         };
 
@@ -316,7 +336,7 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
         const char *attrs[] = {
             "connect_driver", driverName,
             "secret_uuid", uuidstr,
-            "secret_usage_ceph", secret->usage.ceph,
+            "secret_usage_ceph", secret->usage_id,
             NULL,
         };
 
@@ -329,7 +349,7 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
         const char *attrs[] = {
             "connect_driver", driverName,
             "secret_uuid", uuidstr,
-            "secret_usage_target", secret->usage.target,
+            "secret_usage_target", secret->usage_id,
             NULL,
         };
 
@@ -342,7 +362,7 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
         const char *attrs[] = {
                     "connect_driver", driverName,
                     "secret_uuid", uuidstr,
-                    "secret_usage_name", secret->usage.name,
+                    "secret_usage_name", secret->usage_id,
                     NULL,
                 };
 
@@ -409,6 +429,7 @@ virAccessDriver accessDriverPolkit = {
     .checkNetwork = virAccessDriverPolkitCheckNetwork,
     .checkNodeDevice = virAccessDriverPolkitCheckNodeDevice,
     .checkNWFilter = virAccessDriverPolkitCheckNWFilter,
+    .checkNWFilterBinding = virAccessDriverPolkitCheckNWFilterBinding,
     .checkSecret = virAccessDriverPolkitCheckSecret,
     .checkStoragePool = virAccessDriverPolkitCheckStoragePool,
     .checkStorageVol = virAccessDriverPolkitCheckStorageVol,

@@ -16,13 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <signal.h>
 #include <time.h>
 
@@ -523,9 +520,9 @@ mymain(void)
     if (finishJob("Write duplicate", 1, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
-    //pthread_kill(eventThread, SIGTERM);
+    /* pthread_kill(eventThread, SIGTERM); */
 
     return EXIT_SUCCESS;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

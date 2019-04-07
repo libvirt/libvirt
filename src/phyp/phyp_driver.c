@@ -4,9 +4,6 @@
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
  *
- * Authors:
- *  Eduardo Otubo <otubo at linux.vnet.ibm.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -26,13 +23,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <limits.h>
-#include <string.h>
-#include <stdio.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <libssh2.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -53,7 +45,6 @@
 #include "viruuid.h"
 #include "domain_conf.h"
 #include "storage_conf.h"
-#include "nodeinfo.h"
 #include "virfile.h"
 #include "interface_conf.h"
 #include "phyp_driver.h"
@@ -331,15 +322,18 @@ phypCapsInit(void)
                                    false, false)) == NULL)
         goto no_memory;
 
-    /* Some machines have problematic NUMA toplogy causing
+    /* Some machines have problematic NUMA topology causing
      * unexpected failures. We don't want to break the QEMU
      * driver in this scenario, so log errors & carry on
      */
-    if (nodeCapsInitNUMA(caps) < 0) {
+    if (virCapabilitiesInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
         VIR_WARN
             ("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
+
+    if (virCapabilitiesInitCaches(caps) < 0)
+        VIR_WARN("Failed to get host CPU cache info");
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          VIR_DOMAIN_OSTYPE_LINUX,
@@ -528,7 +522,7 @@ phypUUIDTable_Push(virConnectPtr conn)
         channel =
             libssh2_scp_send(session, remote_file,
                              0x1FF & local_fileinfo.st_mode,
-                             (unsigned long) local_fileinfo.st_size);
+                             (unsigned long)local_fileinfo.st_size);
 
         if ((!channel) && (libssh2_session_last_errno(session) !=
                            LIBSSH2_ERROR_EAGAIN))
@@ -566,6 +560,7 @@ phypUUIDTable_Push(virConnectPtr conn)
     ret = 0;
 
  cleanup:
+    VIR_FREE(remote_file);
     if (channel) {
         libssh2_channel_send_eof(channel);
         libssh2_channel_wait_eof(channel);
@@ -868,10 +863,10 @@ phypUUIDTable_Free(uuid_tablePtr uuid_table)
     VIR_FREE(uuid_table);
 }
 
-#define SPECIALCHARACTER_CASES                                                \
-    case '&': case ';': case '`': case '@': case '"': case '|': case '*':     \
-    case '?': case '~': case '<': case '>': case '^': case '(': case ')':     \
-    case '[': case ']': case '{': case '}': case '$': case '%': case '#':     \
+#define SPECIALCHARACTER_CASES \
+    case '&': case ';': case '`': case '@': case '"': case '|': case '*': \
+    case '?': case '~': case '<': case '>': case '^': case '(': case ')': \
+    case '[': case ']': case '{': case '}': case '$': case '%': case '#': \
     case '\\': case '\n': case '\r': case '\t':
 
 static bool
@@ -954,19 +949,9 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto err;
     } else {
-        if (auth == NULL || auth->cb == NULL) {
-            virReportError(VIR_ERR_AUTH_FAILED,
-                           "%s", _("No authentication callback provided."));
+        if (!(username = virAuthGetUsername(conn, auth, "ssh", NULL,
+                                            conn->uri->server)))
             goto err;
-        }
-
-        username = virAuthGetUsername(conn, auth, "ssh", NULL, conn->uri->server);
-
-        if (username == NULL) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("Username request failed"));
-            goto err;
-        }
     }
 
     memset(&hints, 0, sizeof(hints));
@@ -1036,19 +1021,10 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     if (rc == LIBSSH2_ERROR_SOCKET_NONE
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED) {
-        if (auth == NULL || auth->cb == NULL) {
-            virReportError(VIR_ERR_AUTH_FAILED,
-                           "%s", _("No authentication callback provided."));
-            goto disconnect;
-        }
 
-        password = virAuthGetPassword(conn, auth, "ssh", username, conn->uri->server);
-
-        if (password == NULL) {
-            virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("Password request failed"));
+        if (!(password = virAuthGetPassword(conn, auth, "ssh", username,
+                                            conn->uri->server)))
             goto disconnect;
-        }
 
         while ((rc =
                 libssh2_userauth_password(session, username,
@@ -1138,18 +1114,6 @@ phypConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (!conn || !conn->uri)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->uri->scheme == NULL || STRNEQ(conn->uri->scheme, "phyp"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (conn->uri->server == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing server name in phyp:// URI"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     if (VIR_ALLOC(phyp_driver) < 0)
         goto failure;
 
@@ -1158,7 +1122,7 @@ phypConnectOpen(virConnectPtr conn,
     if (VIR_ALLOC(uuid_table) < 0)
         goto failure;
 
-    if (conn->uri->path) {
+    if (conn->uri->path[0] != '\0') {
         /* need to shift one byte in order to remove the first "/" of URI component */
         if (VIR_STRDUP(managed_system,
                        conn->uri->path + (conn->uri->path[0] == '/')) < 0)
@@ -1200,7 +1164,7 @@ phypConnectOpen(virConnectPtr conn,
         goto failure;
 
     if (!(phyp_driver->xmlopt = virDomainXMLOptionNew(&virPhypDriverDomainDefParserConfig,
-                                                      NULL, NULL)))
+                                                      NULL, NULL, NULL, NULL)))
         goto failure;
 
     conn->privateData = phyp_driver;
@@ -1504,8 +1468,7 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
         if (VIR_STRDUP(backing_device, char_ptr) < 0)
             goto cleanup;
     } else {
-        backing_device = ret;
-        ret = NULL;
+        VIR_STEAL_PTR(backing_device, ret);
     }
 
     char_ptr = strchr(backing_device, '\n');
@@ -1989,11 +1952,11 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
 {
     virCheckFlags(0, NULL);
 
-    virStorageVolDefPtr voldef = NULL;
-    virStoragePoolDefPtr spdef = NULL;
     virStorageVolPtr vol = NULL;
     virStorageVolPtr dup_vol = NULL;
     char *key = NULL;
+    VIR_AUTOPTR(virStorageVolDef) voldef = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) spdef = NULL;
 
     if (VIR_ALLOC(spdef) < 0)
         return NULL;
@@ -2073,8 +2036,6 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
 
  err:
     VIR_FREE(key);
-    virStorageVolDefFree(voldef);
-    virStoragePoolDefFree(spdef);
     virObjectUnref(vol);
     return NULL;
 }
@@ -2467,8 +2428,7 @@ phypBuildStoragePool(virConnectPtr conn, virStoragePoolDefPtr def)
     int exit_status = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (source.adapter.type !=
-        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+    if (source.adapter.type != VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Only 'scsi_host' adapter is supported"));
         goto cleanup;
@@ -3216,10 +3176,7 @@ phypDomainLookupByName(virConnectPtr conn, const char *lpar_name)
     if (phypGetLparUUID(lpar_uuid, lpar_id, conn) == -1)
         return NULL;
 
-    dom = virGetDomain(conn, lpar_name, lpar_uuid);
-
-    if (dom)
-        dom->id = lpar_id;
+    dom = virGetDomain(conn, lpar_name, lpar_uuid, lpar_id);
 
     return dom;
 }
@@ -3239,10 +3196,7 @@ phypDomainLookupByID(virConnectPtr conn, int lpar_id)
     if (phypGetLparUUID(lpar_uuid, lpar_id, conn) == -1)
         goto cleanup;
 
-    dom = virGetDomain(conn, lpar_name, lpar_uuid);
-
-    if (dom)
-        dom->id = lpar_id;
+    dom = virGetDomain(conn, lpar_name, lpar_uuid, lpar_id);
 
  cleanup:
     VIR_FREE(lpar_name);
@@ -3260,7 +3214,7 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     unsigned long long memory;
     unsigned int vcpus;
 
-    /* Flags checked by virDomainDefFormat */
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     memset(&def, 0, sizeof(virDomainDef));
 
@@ -3595,7 +3549,7 @@ phypDomainCreateXML(virConnectPtr conn,
         }
     }
 
-    if ((dom = virGetDomain(conn, def->name, def->uuid)) == NULL)
+    if ((dom = virGetDomain(conn, def->name, def->uuid, def->id)) == NULL)
         goto err;
 
     if (phypBuildLpar(conn, def) == -1)
@@ -3687,7 +3641,6 @@ phypDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 static int
 phypDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
-
     phyp_driverPtr phyp_driver = dom->conn->privateData;
     LIBSSH2_SESSION *session = phyp_driver->session;
     char *managed_system = phyp_driver->managed_system;
@@ -3770,6 +3723,8 @@ static virInterfaceDriver phypInterfaceDriver = {
 };
 
 static virConnectDriver phypConnectDriver = {
+    .remoteOnly = true,
+    .uriSchemes = (const char *[]){ "phyp", NULL },
     .hypervisorDriver = &phypHypervisorDriver,
     .interfaceDriver = &phypInterfaceDriver,
     .storageDriver = &phypStorageDriver,

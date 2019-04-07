@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LXC_PROCESS_H__
-# define __LXC_PROCESS_H__
+#ifndef LIBVIRT_LXC_PROCESS_H
+# define LIBVIRT_LXC_PROCESS_H
 
 # include "lxc_conf.h"
 
@@ -55,4 +55,4 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
                                         virDomainDefPtr def,
                                         virDomainNetDefPtr net);
 
-#endif /* __LXC_PROCESS_H__ */
+#endif /* LIBVIRT_LXC_PROCESS_H */

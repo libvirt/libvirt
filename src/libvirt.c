@@ -17,15 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Daniel Veillard <veillard@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -54,9 +49,6 @@
 #include "configmake.h"
 #include "virconf.h"
 #if WITH_GNUTLS
-# if WITH_GNUTLS_GCRYPT
-#  include <gcrypt.h>
-# endif
 # include "rpc/virnettlscontext.h"
 #endif
 #include "vircommand.h"
@@ -121,28 +113,6 @@ static virSecretDriverPtr virSharedSecretDriver;
 static virNWFilterDriverPtr virSharedNWFilterDriver;
 
 
-#if defined(POLKIT_AUTH)
-static int
-virConnectAuthGainPolkit(const char *privilege)
-{
-    virCommandPtr cmd;
-    int ret = -1;
-
-    if (geteuid() == 0)
-        return 0;
-
-    cmd = virCommandNewArgList(POLKIT_AUTH, "--obtain", privilege, NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virCommandFree(cmd);
-    return ret;
-}
-#endif
-
-
 static int
 virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
                               unsigned int ncred,
@@ -160,16 +130,11 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
             if (STRNEQ(cred[i].challenge, "PolicyKit"))
                 return -1;
 
-#if defined(POLKIT_AUTH)
-            if (virConnectAuthGainPolkit(cred[i].prompt) < 0)
-                return -1;
-#else
             /*
              * Ignore & carry on. Although we can't auth
              * directly, the user may have authenticated
              * themselves already outside context of libvirt
              */
-#endif
             break;
         }
 
@@ -263,75 +228,11 @@ virWinsockInit(void)
     WSADATA winsock_data;
 
     /* http://msdn2.microsoft.com/en-us/library/ms742213.aspx */
-    winsock_version = MAKEWORD (2, 2);
-    err = WSAStartup (winsock_version, &winsock_data);
+    winsock_version = MAKEWORD(2, 2);
+    err = WSAStartup(winsock_version, &winsock_data);
     return err == 0 ? 0 : -1;
 }
 #endif
-
-
-#ifdef WITH_GNUTLS_GCRYPT
-static int
-virTLSMutexInit(void **priv)
-{
-    virMutexPtr lock = NULL;
-
-    if (VIR_ALLOC_QUIET(lock) < 0)
-        return ENOMEM;
-
-    if (virMutexInit(lock) < 0) {
-        VIR_FREE(lock);
-        return errno;
-    }
-
-    *priv = lock;
-    return 0;
-}
-
-
-static int
-virTLSMutexDestroy(void **priv)
-{
-    virMutexPtr lock = *priv;
-    virMutexDestroy(lock);
-    VIR_FREE(lock);
-    return 0;
-}
-
-
-static int
-virTLSMutexLock(void **priv)
-{
-    virMutexPtr lock = *priv;
-    virMutexLock(lock);
-    return 0;
-}
-
-
-static int
-virTLSMutexUnlock(void **priv)
-{
-    virMutexPtr lock = *priv;
-    virMutexUnlock(lock);
-    return 0;
-}
-
-
-static struct gcry_thread_cbs virTLSThreadImpl = {
-    /* GCRY_THREAD_OPTION_VERSION was added in gcrypt 1.4.2 */
-# ifdef GCRY_THREAD_OPTION_VERSION
-    (GCRY_THREAD_OPTION_PTHREAD | (GCRY_THREAD_OPTION_VERSION << 8)),
-# else
-    GCRY_THREAD_OPTION_PTHREAD,
-# endif
-    NULL,
-    virTLSMutexInit,
-    virTLSMutexDestroy,
-    virTLSMutexLock,
-    virTLSMutexUnlock,
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
-};
-#endif /* WITH_GNUTLS_GCRYPT */
 
 
 static bool virGlobalError;
@@ -357,22 +258,6 @@ virGlobalInit(void)
     }
 #endif
 
-#ifdef WITH_GNUTLS_GCRYPT
-    /*
-     * This sequence of API calls it copied exactly from
-     * gnutls 2.12.23 source lib/gcrypt/init.c, with
-     * exception that GCRYCTL_ENABLE_QUICK_RANDOM, is
-     * dropped
-     */
-    if (gcry_control(GCRYCTL_ANY_INITIALIZATION_P) == 0) {
-        gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
-        gcry_check_version(NULL);
-
-        gcry_control(GCRYCTL_DISABLE_SECMEM, NULL, 0);
-        gcry_control(GCRYCTL_INITIALIZATION_FINISHED, NULL, 0);
-    }
-#endif
-
     virLogSetFromEnv();
 
 #ifdef WITH_GNUTLS
@@ -390,8 +275,10 @@ virGlobalInit(void)
         goto error;
 #endif
 
+#ifdef HAVE_LIBINTL_H
     if (!bindtextdomain(PACKAGE, LOCALEDIR))
         goto error;
+#endif /* HAVE_LIBINTL_H */
 
     /*
      * Note we must avoid everything except 'remote' driver
@@ -745,11 +632,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
  * @callback: callback to invoke to inhibit shutdown of the daemon
  * @opaque: data to pass to @callback
  *
- * Initialize all virtualization drivers. Accomplished in two phases,
- * the first being state and structure initialization followed by any
- * auto start supported by the driver.  This is done to ensure dependencies
- * that some drivers may have on another driver having been initialized
- * will exist, such as the storage driver's need to use the secret driver.
+ * Initialize all virtualization drivers.
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
@@ -775,14 +658,6 @@ virStateInitialize(bool privileged,
                           virGetLastErrorMessage());
                 return -1;
             }
-        }
-    }
-
-    for (i = 0; i < virStateDriverTabCount; i++) {
-        if (virStateDriverTab[i]->stateAutoStart) {
-            VIR_DEBUG("Running global auto start for %s state driver",
-                      virStateDriverTab[i]->name);
-            virStateDriverTab[i]->stateAutoStart();
         }
     }
     return 0;
@@ -932,7 +807,7 @@ virConnectGetDefaultURI(virConfPtr conf,
 static int
 virConnectCheckURIMissingSlash(const char *uristr, virURIPtr uri)
 {
-    if (!uri->scheme || !uri->path || !uri->server)
+    if (!uri->path || !uri->server)
         return 0;
 
     /* To avoid false positives, only check drivers that mandate
@@ -981,15 +856,15 @@ virConnectOpenInternal(const char *name,
         goto failed;
     }
 
-    /* Convert xen -> xen:/// for back compat */
+    /* Convert xen -> xen:///system for back compat */
     if (name && STRCASEEQ(name, "xen"))
-        name = "xen:///";
+        name = "xen:///system";
 
-    /* Convert xen:// -> xen:/// because xmlParseURI cannot parse the
+    /* Convert xen:// -> xen:///system because xmlParseURI cannot parse the
      * former.  This allows URIs such as xen://localhost to work.
      */
     if (name && STREQ(name, "xen://"))
-        name = "xen:///";
+        name = "xen:///system";
 
     /*
      * If no URI is passed, then check for an environment string if not
@@ -1002,6 +877,19 @@ virConnectOpenInternal(const char *name,
     } else {
         if (virConnectGetDefaultURI(conf, &uristr) < 0)
             goto failed;
+
+        if (uristr == NULL) {
+            VIR_DEBUG("Trying to probe for default URI");
+            for (i = 0; i < virConnectDriverTabCount && uristr == NULL; i++) {
+                if (virConnectDriverTab[i]->hypervisorDriver->connectURIProbe) {
+                    if (virConnectDriverTab[i]->hypervisorDriver->connectURIProbe(&uristr) < 0)
+                        goto failed;
+                    VIR_DEBUG("%s driver URI probe returned '%s'",
+                              virConnectDriverTab[i]->hypervisorDriver->name,
+                              NULLSTR_EMPTY(uristr));
+                }
+            }
+        }
     }
 
     if (uristr) {
@@ -1021,6 +909,12 @@ virConnectOpenInternal(const char *name,
             goto failed;
         }
 
+        /* Avoid need for drivers to worry about NULLs, as
+         * no one needs to distinguish "" vs NULL */
+        if (ret->uri->path == NULL &&
+            VIR_STRDUP(ret->uri->path, "") < 0)
+            goto failed;
+
         VIR_DEBUG("Split \"%s\" to URI components:\n"
                   "  scheme %s\n"
                   "  server %s\n"
@@ -1030,7 +924,14 @@ virConnectOpenInternal(const char *name,
                   uristr,
                   NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->server),
                   NULLSTR(ret->uri->user), ret->uri->port,
-                  NULLSTR(ret->uri->path));
+                  ret->uri->path);
+
+        if (ret->uri->scheme == NULL) {
+            virReportError(VIR_ERR_NO_CONNECT,
+                           _("URI '%s' does not include a driver name"),
+                           name);
+            goto failed;
+        }
 
         if (virConnectCheckURIMissingSlash(uristr,
                                            ret->uri) < 0) {
@@ -1052,7 +953,7 @@ virConnectOpenInternal(const char *name,
          * not being able to connect to libvirtd or not being able to find
          * certificates. */
         if (STREQ(virConnectDriverTab[i]->hypervisorDriver->name, "remote") &&
-            ret->uri != NULL && ret->uri->scheme != NULL &&
+            ret->uri != NULL &&
             (
 #ifndef WITH_PHYP
              STRCASEEQ(ret->uri->scheme, "phyp") ||
@@ -1081,6 +982,42 @@ virConnectOpenInternal(const char *name,
 
         VIR_DEBUG("trying driver %zu (%s) ...",
                   i, virConnectDriverTab[i]->hypervisorDriver->name);
+
+        if (virConnectDriverTab[i]->localOnly && ret->uri && ret->uri->server) {
+            VIR_DEBUG("Server present, skipping local only driver");
+            continue;
+        }
+
+        /* Filter drivers based on declared URI schemes */
+        if (virConnectDriverTab[i]->uriSchemes) {
+            bool matchScheme = false;
+            size_t s;
+            if (!ret->uri) {
+                VIR_DEBUG("No URI, skipping driver with URI whitelist");
+                continue;
+            }
+            VIR_DEBUG("Checking for supported URI schemes");
+            for (s = 0; virConnectDriverTab[i]->uriSchemes[s] != NULL; s++) {
+                if (STREQ(ret->uri->scheme, virConnectDriverTab[i]->uriSchemes[s])) {
+                    VIR_DEBUG("Matched URI scheme '%s'", ret->uri->scheme);
+                    matchScheme = true;
+                    break;
+                }
+            }
+            if (!matchScheme) {
+                VIR_DEBUG("No matching URI scheme");
+                continue;
+            }
+        } else {
+            VIR_DEBUG("Matching any URI scheme for '%s'", ret->uri ? ret->uri->scheme : "");
+        }
+
+        /* before starting the new connection, check if the driver only works
+         * with a server, and so return an error if the server is missing */
+        if (virConnectDriverTab[i]->remoteOnly && ret->uri && !ret->uri->server) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s", _("URI is missing the server part"));
+            goto failed;
+        }
 
         ret->driver = virConnectDriverTab[i]->hypervisorDriver;
         ret->interfaceDriver = virConnectDriverTab[i]->interfaceDriver;
@@ -1151,7 +1088,7 @@ virConnectOpenInternal(const char *name,
  * if not already running. This can be prevented by setting the
  * environment variable LIBVIRT_AUTOSTART=0
  *
- * URIs are documented at http://libvirt.org/uri.html
+ * URIs are documented at https://libvirt.org/uri.html
  *
  * virConnectClose should be used to release the resources after the connection
  * is no longer needed.
@@ -1190,7 +1127,7 @@ virConnectOpen(const char *name)
  * See virConnectOpen for notes about environment variables which can
  * have an effect on opening drivers and freeing the connection resources
  *
- * URIs are documented at http://libvirt.org/uri.html
+ * URIs are documented at https://libvirt.org/uri.html
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
@@ -1228,7 +1165,7 @@ virConnectOpenReadOnly(const char *name)
  * See virConnectOpen for notes about environment variables which can
  * have an effect on opening drivers and freeing the connection resources
  *
- * URIs are documented at http://libvirt.org/uri.html
+ * URIs are documented at https://libvirt.org/uri.html
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
@@ -1242,7 +1179,7 @@ virConnectOpenAuth(const char *name,
     if (virInitialize() < 0)
         goto error;
 
-    VIR_DEBUG("name=%s, auth=%p, flags=%x", NULLSTR(name), auth, flags);
+    VIR_DEBUG("name=%s, auth=%p, flags=0x%x", NULLSTR(name), auth, flags);
     virResetLastError();
     ret = virConnectOpenInternal(name, auth, flags);
     if (!ret)

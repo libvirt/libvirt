@@ -18,8 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Richard Jones <rjones@redhat.com>
  */
 
 /* Notes:
@@ -80,19 +78,22 @@ const REMOTE_NETWORK_LIST_MAX = 16384;
 const REMOTE_INTERFACE_LIST_MAX = 16384;
 
 /* Upper limit on lists of storage pools. */
-const REMOTE_STORAGE_POOL_LIST_MAX = 4096;
+const REMOTE_STORAGE_POOL_LIST_MAX = 16384;
 
 /* Upper limit on lists of storage vols. */
 const REMOTE_STORAGE_VOL_LIST_MAX = 16384;
 
 /* Upper limit on lists of node devices. */
-const REMOTE_NODE_DEVICE_LIST_MAX = 16384;
+const REMOTE_NODE_DEVICE_LIST_MAX = 65536;
 
 /* Upper limit on lists of node device capabilities. */
 const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 65536;
 
 /* Upper limit on lists of network filters. */
-const REMOTE_NWFILTER_LIST_MAX = 1024;
+const REMOTE_NWFILTER_LIST_MAX = 16384;
+
+/* Upper limit on lists of network filter bindings. */
+const REMOTE_NWFILTER_BINDING_LIST_MAX = 16384;
 
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
@@ -137,7 +138,7 @@ const REMOTE_AUTH_TYPE_LIST_MAX = 20;
 const REMOTE_DOMAIN_MEMORY_STATS_MAX = 1024;
 
 /* Upper limit on lists of domain snapshots. */
-const REMOTE_DOMAIN_SNAPSHOT_LIST_MAX = 1024;
+const REMOTE_DOMAIN_SNAPSHOT_LIST_MAX = 16384;
 
 /* Maximum length of a block peek buffer message.
  * Note applications need to be aware of this limit and issue multiple
@@ -233,7 +234,7 @@ const REMOTE_DOMAIN_FSFREEZE_MOUNTPOINTS_MAX = 256;
 const REMOTE_NETWORK_DHCP_LEASES_MAX = 65536;
 
 /* Upper limit on count of parameters returned via bulk stats API */
-const REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX = 4096;
+const REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX = 262144;
 
 /* Upper limit of message size for tunable event. */
 const REMOTE_DOMAIN_EVENT_TUNABLE_MAX = 2048;
@@ -252,6 +253,15 @@ const REMOTE_DOMAIN_IP_ADDR_MAX = 2048;
 
 /* Upper limit on number of guest vcpu information entries */
 const REMOTE_DOMAIN_GUEST_VCPU_PARAMS_MAX = 64;
+
+/* Upper limit on number of IOThread parameter set entries */
+const REMOTE_DOMAIN_IOTHREAD_PARAMS_MAX = 64;
+
+/* Upper limit on number of SEV parameters */
+const REMOTE_NODE_SEV_INFO_MAX = 64;
+
+/* Upper limit on number of launch security information entries */
+const REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX = 64;
 
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
@@ -273,6 +283,12 @@ struct remote_nonnull_network {
 struct remote_nonnull_nwfilter {
     remote_nonnull_string name;
     remote_uuid uuid;
+};
+
+/* A network filter binding which may not be NULL. */
+struct remote_nonnull_nwfilter_binding {
+    remote_nonnull_string portdev;
+    remote_nonnull_string filtername;
 };
 
 /* An interface which may not be NULL. */
@@ -316,9 +332,11 @@ struct remote_nonnull_domain_snapshot {
 typedef remote_nonnull_domain *remote_domain;
 typedef remote_nonnull_network *remote_network;
 typedef remote_nonnull_nwfilter *remote_nwfilter;
+typedef remote_nonnull_nwfilter_binding *remote_nwfilter_binding;
 typedef remote_nonnull_storage_pool *remote_storage_pool;
 typedef remote_nonnull_storage_vol *remote_storage_vol;
 typedef remote_nonnull_node_device *remote_node_device;
+typedef remote_nonnull_secret *remote_secret;
 
 /* Error message. See <virterror.h> for explanation of fields. */
 
@@ -681,7 +699,7 @@ struct remote_domain_block_stats_flags_ret {
 
 struct remote_domain_interface_stats_args {
     remote_nonnull_domain dom;
-    remote_nonnull_string path;
+    remote_nonnull_string device;
 };
 
 struct remote_domain_interface_stats_ret { /* insert@2 */
@@ -1232,6 +1250,13 @@ struct remote_domain_del_iothread_args {
     unsigned int flags;
 };
 
+struct remote_domain_set_iothread_params_args {
+    remote_nonnull_domain dom;
+    unsigned int iothread_id;
+    remote_typed_param params<REMOTE_DOMAIN_IOTHREAD_PARAMS_MAX>;
+    unsigned int flags;
+};
+
 struct remote_domain_get_security_label_args {
     remote_nonnull_domain dom;
 };
@@ -1280,6 +1305,12 @@ struct remote_domain_detach_device_flags_args {
 struct remote_domain_update_device_flags_args {
     remote_nonnull_domain dom;
     remote_nonnull_string xml;
+    unsigned int flags;
+};
+
+struct remote_domain_detach_device_alias_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string alias;
     unsigned int flags;
 };
 
@@ -1760,6 +1791,14 @@ struct remote_storage_pool_lookup_by_volume_ret {
     remote_nonnull_storage_pool pool;
 };
 
+struct remote_storage_pool_lookup_by_target_path_args {
+    remote_nonnull_string path;
+};
+
+struct remote_storage_pool_lookup_by_target_path_ret {
+    remote_nonnull_storage_pool pool;
+};
+
 struct remote_storage_pool_create_xml_args {
     remote_nonnull_string xml;
     unsigned int flags;
@@ -2019,7 +2058,7 @@ struct remote_node_device_get_parent_args {
 };
 
 struct remote_node_device_get_parent_ret {
-    remote_string parent;
+    remote_string parentName;
 };
 
 struct remote_node_device_num_of_caps_args {
@@ -2325,6 +2364,15 @@ struct remote_domain_abort_job_args {
 };
 
 
+struct remote_domain_migrate_get_max_downtime_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_migrate_get_max_downtime_ret {
+     unsigned hyper downtime; /* insert@1 */
+};
+
 struct remote_domain_migrate_set_max_downtime_args {
     remote_nonnull_domain dom;
     unsigned hyper downtime;
@@ -2543,6 +2591,21 @@ struct remote_domain_has_managed_save_image_ret {
 
 struct remote_domain_managed_save_remove_args {
     remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_managed_save_get_xml_desc_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_managed_save_get_xml_desc_ret {
+    remote_nonnull_string xml;
+};
+
+struct remote_domain_managed_save_define_xml_args {
+    remote_nonnull_domain dom;
+    remote_string dxml;
     unsigned int flags;
 };
 
@@ -3070,6 +3133,15 @@ struct remote_domain_event_block_job_2_msg {
     int status;
 };
 
+struct remote_domain_event_block_threshold_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_nonnull_string dev;
+    remote_string path;
+    unsigned hyper threshold;
+    unsigned hyper excess;
+};
+
 struct remote_domain_event_callback_tunable_msg {
     int callbackID;
     remote_nonnull_domain dom;
@@ -3352,6 +3424,154 @@ struct remote_domain_set_guest_vcpus_args {
     unsigned int flags;
 };
 
+struct remote_domain_set_vcpu_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string cpumap;
+    int state;
+    unsigned int flags;
+};
+
+
+struct remote_domain_event_callback_metadata_change_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    int type;
+    remote_string nsuri;
+};
+
+struct remote_connect_secret_event_register_any_args {
+    int eventID;
+    remote_secret secret;
+};
+
+struct remote_connect_secret_event_register_any_ret {
+    int callbackID;
+};
+
+struct remote_connect_secret_event_deregister_any_args {
+    int callbackID;
+};
+
+struct remote_secret_event_lifecycle_msg {
+    int callbackID;
+    remote_nonnull_secret secret;
+    int event;
+    int detail;
+};
+
+struct remote_secret_event_value_changed_msg {
+    int callbackID;
+    remote_nonnull_secret secret;
+};
+
+struct remote_domain_set_block_threshold_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string dev;
+    unsigned hyper threshold;
+    unsigned int flags;
+};
+
+struct remote_domain_set_lifecycle_action_args {
+    remote_nonnull_domain dom;
+    unsigned int type;
+    unsigned int action;
+    unsigned int flags;
+};
+
+struct remote_connect_compare_hypervisor_cpu_args {
+    remote_string emulator;
+    remote_string arch;
+    remote_string machine;
+    remote_string virttype;
+    remote_nonnull_string xmlCPU;
+    unsigned int flags;
+};
+
+struct remote_connect_compare_hypervisor_cpu_ret {
+    int result;
+};
+
+struct remote_connect_baseline_hypervisor_cpu_args {
+    remote_string emulator;
+    remote_string arch;
+    remote_string machine;
+    remote_string virttype;
+    remote_nonnull_string xmlCPUs<REMOTE_CPU_BASELINE_MAX>; /* (const char **) */
+    unsigned int flags;
+};
+
+struct remote_connect_baseline_hypervisor_cpu_ret {
+    remote_nonnull_string cpu;
+};
+
+struct remote_node_get_sev_info_args {
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_node_get_sev_info_ret {
+    remote_typed_param params<REMOTE_NODE_SEV_INFO_MAX>;
+    int nparams;
+};
+
+struct remote_domain_get_launch_security_info_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_launch_security_info_ret {
+    remote_typed_param params<REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX>;
+};
+
+/* nwfilter binding */
+
+struct remote_nwfilter_binding_lookup_by_port_dev_args {
+    remote_nonnull_string name;
+};
+
+struct remote_nwfilter_binding_lookup_by_port_dev_ret {
+    remote_nonnull_nwfilter_binding nwfilter;
+};
+
+struct remote_nwfilter_binding_create_xml_args {
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
+struct remote_nwfilter_binding_create_xml_ret {
+    remote_nonnull_nwfilter_binding nwfilter;
+};
+
+struct remote_nwfilter_binding_delete_args {
+    remote_nonnull_nwfilter_binding nwfilter;
+};
+
+struct remote_nwfilter_binding_get_xml_desc_args {
+    remote_nonnull_nwfilter_binding nwfilter;
+    unsigned int flags;
+};
+
+struct remote_nwfilter_binding_get_xml_desc_ret {
+    remote_nonnull_string xml;
+};
+
+struct remote_connect_list_all_nwfilter_bindings_args {
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_connect_list_all_nwfilter_bindings_ret { /* insert@1 */
+    remote_nonnull_nwfilter_binding bindings<REMOTE_NWFILTER_BINDING_LIST_MAX>;
+    unsigned int ret;
+};
+
+struct remote_connect_get_storage_pool_capabilities_args {
+    unsigned int flags;
+};
+
+struct remote_connect_get_storage_pool_capabilities_ret {
+    remote_nonnull_string capabilities;
+};
 
 /*----- Protocol. -----*/
 
@@ -4690,7 +4910,7 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      * @acl: domain:read
-     * @acl: domain:read_secure:VIR_DOMAIN_XML_SECURE
+     * @acl: domain:read_secure:VIR_DOMAIN_SNAPSHOT_XML_SECURE
      */
     REMOTE_PROC_DOMAIN_SNAPSHOT_GET_XML_DESC = 186,
 
@@ -4752,7 +4972,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195,
 
     /**
-     * @generate: server
+     * @generate: both
      * @acl: domain:start
      */
     REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196,
@@ -4839,6 +5059,7 @@ enum remote_procedure {
     /**
      * @generate: both
      * @writestream: 1
+     * @sparseflag: VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM
      * @acl: storage_vol:data_write
      */
     REMOTE_PROC_STORAGE_VOL_UPLOAD = 208,
@@ -4846,6 +5067,7 @@ enum remote_procedure {
     /**
      * @generate: both
      * @readstream: 1
+     * @sparseflag: VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM
      * @acl: storage_vol:data_read
      */
     REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209,
@@ -5021,7 +5243,7 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      * @acl: domain:read
-     * @acl: domain:read_secure:VIR_DOMAIN_XML_SECURE
+     * @acl: domain:read_secure:VIR_DOMAIN_SAVE_IMAGE_XML_SECURE
      */
     REMOTE_PROC_DOMAIN_SAVE_IMAGE_GET_XML_DESC = 235,
 
@@ -5952,5 +6174,173 @@ enum remote_procedure {
      * @priority: high
      * @acl: storage_vol:read
      */
-    REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378
+    REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE = 379,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:search_secrets
+     * @aclfilter: secret:getattr
+     */
+    REMOTE_PROC_CONNECT_SECRET_EVENT_REGISTER_ANY = 380,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_SECRET_EVENT_DEREGISTER_ANY = 381,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_SECRET_EVENT_LIFECYCLE = 382,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED = 383,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_SET_VCPU = 384,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD = 385,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_SET_BLOCK_THRESHOLD = 386,
+
+    /**
+     * @generate: both
+     * @acl: domain:migrate
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_DOWNTIME = 387,
+
+    /**
+     * @generate: both
+     * @acl: domain:read
+     * @acl: domain:read_secure:VIR_DOMAIN_SAVE_IMAGE_XML_SECURE
+     */
+    REMOTE_PROC_DOMAIN_MANAGED_SAVE_GET_XML_DESC = 388,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:hibernate
+     */
+    REMOTE_PROC_DOMAIN_MANAGED_SAVE_DEFINE_XML = 389,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_SET_LIFECYCLE_ACTION = 390,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: storage_pool:getattr
+     */
+    REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_DETACH_DEVICE_ALIAS = 392,
+
+    /**
+     * @generate: both
+     * @acl: connect:write
+     */
+    REMOTE_PROC_CONNECT_COMPARE_HYPERVISOR_CPU = 393,
+
+    /**
+     * @generate: both
+     * @acl: connect:write
+     */
+    REMOTE_PROC_CONNECT_BASELINE_HYPERVISOR_CPU = 394,
+
+    /**
+     * @generate: none
+     * @acl: connect:read
+     */
+    REMOTE_PROC_NODE_GET_SEV_INFO = 395,
+
+    /**
+     * @generate: none
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_GET_LAUNCH_SECURITY_INFO = 396,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter_binding:getattr
+     */
+    REMOTE_PROC_NWFILTER_BINDING_LOOKUP_BY_PORT_DEV = 397,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter_binding:read
+     */
+    REMOTE_PROC_NWFILTER_BINDING_GET_XML_DESC = 398,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter_binding:create
+     */
+    REMOTE_PROC_NWFILTER_BINDING_CREATE_XML = 399,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter_binding:delete
+     */
+    REMOTE_PROC_NWFILTER_BINDING_DELETE = 400,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: connect:search_nwfilter_bindings
+     * @aclfilter: nwfilter_binding:getattr
+     */
+    REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_SET_IOTHREAD_PARAMS = 402,
+
+    /**
+     * @generate: both
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_GET_STORAGE_POOL_CAPABILITIES = 403
 };

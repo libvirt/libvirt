@@ -19,26 +19,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- * Shuveb Hussain <shuveb@binarykarma.com>
- * Anoop Joe Cyriac <anoop@binarykarma.com>
- *
  */
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>
-#include <limits.h>
-#include <errno.h>
-#include <string.h>
 #include <sys/wait.h>
 
 #include "virerror.h"
@@ -47,10 +37,10 @@
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "nodeinfo.h"
 #include "virfile.h"
 #include "vircommand.h"
 #include "virstring.h"
+#include "virhostcpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -165,7 +155,10 @@ virCapsPtr openvzCapsInit(void)
                                    false, false)) == NULL)
         goto no_memory;
 
-    if (nodeCapsInitNUMA(caps) < 0)
+    if (virCapabilitiesInitNUMA(caps) < 0)
+        goto no_memory;
+
+    if (virCapabilitiesInitCaches(caps) < 0)
         goto no_memory;
 
     if ((guest = virCapabilitiesAddGuest(caps,
@@ -271,7 +264,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                     if (VIR_ALLOC_N(net->ifname, len+1) < 0)
                         goto error;
 
-                    if (virStrncpy(net->ifname, p, len, len+1) == NULL) {
+                    if (virStrncpy(net->ifname, p, len, len+1) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("Network ifname %s too long for destination"), p);
                         goto error;
@@ -288,7 +281,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                     if (VIR_ALLOC_N(net->data.bridge.brname, len+1) < 0)
                         goto error;
 
-                    if (virStrncpy(net->data.bridge.brname, p, len, len+1) == NULL) {
+                    if (virStrncpy(net->data.bridge.brname, p, len, len+1) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("Bridge name %s too long for destination"), p);
                         goto error;
@@ -301,7 +294,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                                        _("Wrong length MAC address"));
                         goto error;
                     }
-                    if (virStrncpy(cpy_temp, p, len, sizeof(cpy_temp)) == NULL) {
+                    if (virStrncpy(cpy_temp, p, len, sizeof(cpy_temp)) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("MAC address %s too long for destination"), p);
                         goto error;
@@ -570,7 +563,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         }
 
         if (ret == 0 || vcpus == 0)
-            vcpus = openvzGetNodeCPUs();
+            vcpus = virHostCPUGetCount();
 
         if (virDomainDefSetVcpusMax(def, vcpus, driver->xmlopt) < 0)
             goto cleanup;
@@ -608,7 +601,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         /* XXX OpenVZ doesn't appear to have concept of a transient domain */
         dom->persistent = 1;
 
-        virObjectUnlock(dom);
+        virDomainObjEndAPI(&dom);
         dom = NULL;
         def = NULL;
     }
@@ -623,20 +616,8 @@ int openvzLoadDomains(struct openvz_driver *driver)
     virCommandFree(cmd);
     VIR_FREE(temp);
     VIR_FREE(outbuf);
-    virObjectUnref(dom);
     virDomainDefFree(def);
     return -1;
-}
-
-unsigned int
-openvzGetNodeCPUs(void)
-{
-    virNodeInfo nodeinfo;
-
-    if (nodeGetInfo(&nodeinfo) < 0)
-        return 0;
-
-    return nodeinfo.cpus;
 }
 
 static int
@@ -965,7 +946,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
         uuidbuf = strtok_r(NULL, "\n", &saveptr);
 
         if (iden != NULL && uuidbuf != NULL && STREQ(iden, "#UUID:")) {
-            if (virStrcpy(uuidstr, uuidbuf, len) == NULL) {
+            if (virStrcpy(uuidstr, uuidbuf, len) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("invalid uuid %s"), uuidbuf);
                 goto cleanup;
@@ -1028,7 +1009,7 @@ openvzSetUUID(int vpsid)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
 
-    if (virUUIDGenerate(uuid)) {
+    if (virUUIDGenerate(uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to generate UUID"));
         return -1;

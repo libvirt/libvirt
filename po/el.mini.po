@@ -1,0 +1,716 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel  <veillard@redhat.com>, 2011.
+# Pierros Papadeas <pierros@papadeas.gr>, 2009.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-27 04:41+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Greek (http://www.transifex.com/projects/p/fedora/language/"
+"el/)\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+#, c-format
+msgid "Bridge generation exceeded max id %d"
+msgstr "η δημιουργία της γέφυρας δικτύωσης υπερέβει το μέγιστο id %d"
+
+msgid "Cannot parse <source> 'port' attribute with socket interface"
+msgstr ""
+"Αδυναμία ερμηνείας ιδιότητας <source>'port' για την διεπαφή σύνδεσης (socket "
+"interface)"
+
+#, c-format
+msgid "Failed to fork as daemon: %s"
+msgstr "Αποτυχία fork ως δαίμονα: %s"
+
+msgid "Failed to generate UUID"
+msgstr "αποτυχία δημιουργίας του UUID"
+
+#, c-format
+msgid "Failed to parse mode '%s'"
+msgstr "Αδυναμία επεξεργασίας της κατάστασης '%s'"
+
+msgid "Failed to register shutdown timeout"
+msgstr "Αδυναμία καταχώρησης διαστήματος αναμονής τερματισμού"
+
+#, c-format
+msgid "Invalid bus type '%s' for disk"
+msgstr "Απαράδεκτος τύπος διαύλου για το δίσκο '%s'"
+
+#, c-format
+msgid "Invalid bus type '%s' for floppy disk"
+msgstr "Απαράδεκτος τύπος διαύλου '%s' για τη μονάδα δισκέτας"
+
+#, c-format
+msgid "Invalid floppy device name: %s"
+msgstr "Απαράδεκτη ονομασία μονάδας εύκαμπτης δισκέτας: %s"
+
+#, c-format
+msgid "Invalid harddisk device name: %s"
+msgstr "Απαράδεκτη ονομασία μονάδας σκληρού δίσκου: %s"
+
+msgid "Invalid ip address prefix value"
+msgstr "απαράδεκτο πρόθεμα διεύθυνσης IP"
+
+msgid "Missing source host attribute for char device"
+msgstr ""
+"Ελλιπής τιμή για την ιδιότητα πηγαίος εξυπηρετητής (source host ) για τη "
+"συσκευή χαρακτήρων (char device)  "
+
+msgid "Missing source path attribute for char device"
+msgstr ""
+"Ελλιπής τιμή για την ιδιότητα πηγαία διαδρομή (source path) για τη συσκευή "
+"χαρακτήρων (char device)  "
+
+msgid "Missing source service attribute for char device"
+msgstr ""
+"Ελλιπής τιμή για την ιδιότητα πηγαία υπηρεσία (source service ) για τη "
+"συσκευή χαρακτήρων (char device)  "
+
+msgid "Model name contains invalid characters"
+msgstr "Το όνομα του μοντέλου περιέχει εσφαλμένους χαρακτήρες"
+
+#, c-format
+msgid "Network config filename '%s' does not match network name '%s'"
+msgstr ""
+"το όνομα του αρχείου ρυθμίσεων του δικτύου '%s' δεν ταιριάζει με το όνομα "
+"του δικτύου '%s' "
+
+msgid "No <source> 'address' attribute specified with socket interface"
+msgstr ""
+"Δεν καθορίσθηκε η τιμή της ιδιότητας <source>'address' για την διεπαφή "
+"σύνδεσης (socket interface)"
+
+msgid ""
+"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+msgstr ""
+"Δεν καθορίσθηκε η τιμή της ιδιότητας πηγή <source> 'bridge' με την "
+"καταχώρηση <interface type='bridge'/>"
+
+msgid ""
+"No <source> 'name' attribute specified with <interface type='internal'/>"
+msgstr ""
+"Δεν καθορίσθηκε η τιμή  της ιδιότητας <source>'name' για την καταχώρηση "
+"<interface type='internal' />"
+
+msgid ""
+"No <source> 'network' attribute specified with <interface type='network'/>"
+msgstr ""
+"Δεν καθορίσθηκε η τιμή της ιδιότητας  πηγαίο δίκτυο  <source> 'network'   με "
+"την καταχώρηση <interface type='network' />"
+
+msgid "No <source> 'port' attribute specified with socket interface"
+msgstr ""
+"Δεν καθορίσθηκε τιμή στην ιδιότητα πηγή θύρας <source> 'port' για την "
+"διεπαφή σύνδεσης (socket interface)"
+
+#, c-format
+msgid "Path %s too long for unix socket"
+msgstr "Η διαδρομή %s είναι πολύ μεγάλη για τις υποδοχές (socket) unix"
+
+#, c-format
+msgid "Unable to parse devaddr parameter '%s'"
+msgstr "Αδυναμία ερμηνείας παραμέτρων devaddr '%s'"
+
+#, c-format
+msgid "Unknown protocol '%s'"
+msgstr "Άγνωστο πρωτόκολλο '%s'"
+
+#, c-format
+msgid "Unknown source mode '%s'"
+msgstr "άγνωστος ρυθμός πηγής (source mode) '%s'"
+
+msgid "authentication required"
+msgstr "απαιτείται ταυτοποίηση χρήστη"
+
+msgid "bond arp monitoring has no target"
+msgstr "ο δεσμός παρακολούθησης arp δεν έχει ορισμένο στόχο "
+
+msgid "bond interface arpmon interval missing or invalid"
+msgstr ""
+"η τιμή της ιδιότητας interval για το δεσμό προσαρμογέα arpmon είναι μη "
+"αποδεκτή ή λείπει"
+
+msgid "bond interface arpmon target missing"
+msgstr ""
+"η τιμή της ιδιότητας target λείπει από τον ορισμό του δεσμού προσαρμογέα "
+"arpmon "
+
+msgid "bond interface miimon downdelay invalid"
+msgstr "η τιμή <downdelay> για το δεσμό προσαρμογέα miimon είναι μη αποδεκτή"
+
+msgid "bond interface miimon freq missing or invalid"
+msgstr ""
+"ο δεσμός προσαρμογέα miimon freq είτε δεν έχει ορισθεί ή η τιμή είναι "
+"απαράδεκτη"
+
+msgid "bond interface miimon updelay invalid"
+msgstr "η τιμή updelay για το δεσμό προσαρμογέα miimon είναι μη αποδεκτή"
+
+msgid "bond interface misses the bond element"
+msgstr ""
+"δεν έχει ορισθεί η ιδιότητα bond για το δεσμό προσαρμογέα (bonding interface)"
+
+msgid "bridge interface misses the bridge element"
+msgstr ""
+"ο προσαρμογέας δικτυακής γεφύρωσης (bridge) δεν έχει ορισμένο το αντικείμενο "
+"bridge"
+
+#, c-format
+msgid "bridge interface stp should be on or off got %s"
+msgstr ""
+"ο προσαρμογέας γεφύρωσης stp θα πρέπει να βρίσκεται στην κατάσταση 'on'  ή "
+"'off' τώρα βρίσκεται στην '%s'"
+
+#, c-format
+msgid "bridge name '%s' already in use."
+msgstr "το όνομα της δικτυακής γέφυρας '%s' χρησιμοποιείται ήδη"
+
+#, c-format
+msgid "cannot create config directory '%s'"
+msgstr "αδυναμία δημιουργίας καταλόγου ρυθμίσεων '%s'"
+
+msgid "cannot initialize condition variable"
+msgstr "αδύνατη η αρχικοποίηση υπο συνθήκη μεταβλητής (condition variable)"
+
+msgid "cannot initialize mutex"
+msgstr "αδύνατη η αρχικοποίηση του mutex"
+
+#, c-format
+msgid "cannot list SASL mechanisms %d (%s)"
+msgstr "αδυναμία απαρίθμησης μηχανισμών SASL %d (%s)"
+
+#, c-format
+msgid "cannot parse bus %s"
+msgstr "αδυναμία ερμηνείας διαύλου %s"
+
+#, c-format
+msgid "cannot parse device %s"
+msgstr "αδυναμία ερμηνείας της συσκευής %s"
+
+#, c-format
+msgid "cannot parse product %s"
+msgstr "αδυναμία ερμηνείας προϊόντος %s"
+
+#, c-format
+msgid "cannot parse rdp port %s"
+msgstr "αδυναμία ερμηνείας της πόρτας σύνδεσης rdp %s"
+
+#, c-format
+msgid "cannot parse vendor id %s"
+msgstr "αδυναμία ερμηνείας του αναγνωριστικού του κατασκευαστή (vendor id) %s"
+
+#, c-format
+msgid "cannot parse video heads '%s'"
+msgstr "αδυναμία ερμηνείας των κεφαλών βίντεο (video heads) '%s'"
+
+#, c-format
+msgid "cannot parse video ram '%s'"
+msgstr "αδυναμία ερμηνείας μνήμης βίντεο (video ram) '%s'"
+
+#, c-format
+msgid "cannot parse vnc port %s"
+msgstr "αδυναμία ερμηνείας πόρτας σύνδεσης vnc %s"
+
+#, c-format
+msgid "cannot query SASL ssf on connection %d (%s)"
+msgstr "αδυναμία ανάκτησης SASL ssf για την σύνδεση %d (%s)"
+
+#, c-format
+msgid "cannot query SASL username on connection %d (%s)"
+msgstr "αδυναμία ανάκτησης ονόματος χρήστη από το SASL για τη σύνδεση %d (%s) "
+
+#, c-format
+msgid "cannot remove config %s"
+msgstr "αδυναμία διαγραφής του αρχείου ρυθμίσεων '%s'"
+
+#, c-format
+msgid "cannot remove config file '%s'"
+msgstr "αδυναμία διαγραφής του αρχείου ρυθμίσεων '%s'"
+
+#, c-format
+msgid "cannot write config file '%s'"
+msgstr "αδυναμία εγγραφής του αρχείου ρυθμίσεων '%s'"
+
+msgid "client tried invalid PolicyKit init request"
+msgstr "ο πελάτης επεχείρησε μη υποστηριζόμενη κλήση αρχικοποίησης PolicyKit"
+
+msgid "client tried invalid SASL init request"
+msgstr "ο πελάτης δοκίμασε μη αποδεκτό αίτημα αρχικοποίησης SASL "
+
+msgid "client tried invalid SASL start request"
+msgstr "ο πελάτης δοκίμασε εσφαλμένη αίτηση εκκίνησης SASL"
+
+msgid "connection already open"
+msgstr "η σύνδεση είναι ήδη ανοικτή"
+
+msgid "connection not open"
+msgstr "η σύνδεση δεν είναι ανοικτή"
+
+msgid "interface has no name"
+msgstr "η διεπαφή/προσαρμογέας (interface) δεν έχει όνομα"
+
+#, c-format
+msgid "interface has unsupported type '%s'"
+msgstr "ο προσαρμογέας έχει μη υποστηριζόμενο τύπο '%s'"
+
+msgid "interface misses the type attribute"
+msgstr "η ιδιότητα <type> δεν είναι ορισμένη για τον προσαρμογέα"
+
+msgid "interface mtu value is improper"
+msgstr "η παράμετρος mtu της διεπαφής/προσαρμογέα (interface) δεν είναι σωστή"
+
+#, c-format
+msgid "invalid SCSI LUN ID supplied for '%s'"
+msgstr "εκχωρήθηκε μη αποδεκτή τιμή στην ιδιότητα SCSI LUN ID για το '%s'"
+
+#, c-format
+msgid "invalid SCSI bus ID supplied for '%s'"
+msgstr "η τιμή της παραμέτρου ID για το δίαυλο SCSI είναι μη αποδεκτή '%s'"
+
+#, c-format
+msgid "invalid SCSI host ID supplied for '%s'"
+msgstr ""
+"η τιμή της παραμέτρου ID που αποδόθηκε στον υποδοχέα SCSI '%s' είναι μη "
+"αποδεκτή"
+
+#, c-format
+msgid "invalid SCSI target ID supplied for '%s'"
+msgstr "μη αποδεκτή τιμή SCSI ID στόχου για το '%s'"
+
+#, c-format
+msgid "invalid USB bus number supplied for '%s'"
+msgstr "μη αποδεκτή τιμή αριθμού διαύλου (bus number) USB για το '%s'"
+
+#, c-format
+msgid "invalid USB device number supplied for '%s'"
+msgstr "αποδόθηκε μη αποδεκτή τιμή στον αριθμό συσκευής USB στο '%s'"
+
+#, c-format
+msgid "invalid USB interface class supplied for '%s'"
+msgstr "μη αποδεκτή τιμή κλάσης προσαρμογέα USB '%s'"
+
+#, c-format
+msgid "invalid USB interface number supplied for '%s'"
+msgstr "μη αποδεκτή τιμή αριθμού προσαρμογέα USB για το '%s'"
+
+#, c-format
+msgid "invalid USB interface protocol supplied for '%s'"
+msgstr "μη αποδεκτό πρωτόκολλο για το προσαρμογέα USB '%s' "
+
+#, c-format
+msgid "invalid USB interface subclass supplied for '%s'"
+msgstr "μη αποδεκτή υποκλάση για το προσαρμογέα USB '%s'"
+
+#, c-format
+msgid "invalid domain state '%s'"
+msgstr "απαράδεκτη κατάσταση τομέα (domain state) '%s'"
+
+#, c-format
+msgid "invalid domain type %s"
+msgstr "απαράδεκτος τύπος τομέα (domain) '%s'"
+
+#, c-format
+msgid "invalid network type supplied for '%s'"
+msgstr "αποδόθηκε μη αποδεκτή τιμή στη παράμετρο τύπος δικτύου του '%s'"
+
+msgid "invalid pid"
+msgstr "απαράδεκτη pid"
+
+#, c-format
+msgid "invalid removable media size supplied for '%s'"
+msgstr ""
+"μη αποδεκτό μέγεθος αφαιρούμενου αποθηκευτικού μέσου για τη συσκευή '%s' "
+
+#, c-format
+msgid "invalid size supplied for '%s'"
+msgstr "μη αποδεκτό μέγεθος για το '%s'"
+
+msgid "malformed uuid element"
+msgstr "αντικείμενο uuid δεν έχει την αναμενόμενη μορφή"
+
+msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+
+msgid "maxinfo > REMOTE_VCPUINFO_MAX"
+msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
+
+#, c-format
+msgid "missing SCSI host capability type for '%s'"
+msgstr "δεν ορίσθηκε τιμή για τον τύπο δυνατοτήτων του υποδοχέα SCSI '%s'"
+
+msgid "missing boot device"
+msgstr "δεν βρέθηκε η συσκευή εκκίνησης του λειτουργικού"
+
+msgid "missing domain state"
+msgstr "δεν ορίζεται η κατάσταση του τομέα (domain state)"
+
+msgid "missing domain type attribute"
+msgstr "δεν καθορίσθηκε η ιδιότητα τύπος τομέα  "
+
+msgid "missing graphics device type"
+msgstr "μη προσδιορισμένος τύπος μονάδας γραφικών"
+
+msgid "missing input device type"
+msgstr "δεν προσδιορίζεται ο τύπος της συσκευής εισόδου"
+
+msgid "missing product"
+msgstr "δεν δόθηκε τιμή στην παράμετρο προϊόν (product)"
+
+msgid "missing root element"
+msgstr "λείπει το ριζικό αντικείμενο (root element)"
+
+#, c-format
+msgid "missing storage capability type for '%s'"
+msgstr "δεν προσδιορίσθηκε ο τύπος της αποθηκευτικής ικανότητας για το '%s' "
+
+msgid "missing vendor"
+msgstr "δεν δόθηκε τιμή στην παράμετρο κατασκευαστής (vendor)"
+
+msgid "missing video model and cannot determine default"
+msgstr ""
+"ελλιπές μοντέλο βίντεο και αδύνατο να προσδιοριθεί το εξ ορισμού μοντέλο "
+"επίσης"
+
+#, c-format
+msgid "negotiated SSF %d was not strong enough"
+msgstr "το αιτούμενο SSf %d δεν είναι αρκετά ασφαλές"
+
+#, c-format
+msgid "no SCSI LUN ID supplied for '%s'"
+msgstr "δεν έχει αποδοθεί τιμή στην παράμετρο SCSI LUN ID για τη συσκευή '%s'"
+
+#, c-format
+msgid "no SCSI bus ID supplied for '%s'"
+msgstr "δεν έχει αποδοθεί η τιμή στο ID του διαύλου SCSI '%s'"
+
+#, c-format
+msgid "no SCSI host ID supplied for '%s'"
+msgstr "δεν ορίσθηκε της παραμέτρου ID του υποδοχέα SCSI για το '%s' "
+
+#, c-format
+msgid "no SCSI target ID supplied for '%s'"
+msgstr "δεν έχει αποδοθεί τιμή στην ιδιότητα SCSI target ID για το '%s' "
+
+#, c-format
+msgid "no USB bus number supplied for '%s'"
+msgstr "δεν αποδόθηκε τιμή στον αριθμό διαύλου (bus number) USB '%s'"
+
+#, c-format
+msgid "no USB device number supplied for '%s'"
+msgstr ""
+"δεν έχει ορισθεί τιμή για τον αριθμό συσκευής (device number) USB για το '%s'"
+
+#, c-format
+msgid "no USB interface class supplied for '%s'"
+msgstr "δεν ορίσθηκε κλάση προσαρμογέα USB για το '%s'"
+
+#, c-format
+msgid "no USB interface number supplied for '%s'"
+msgstr "δεν έχει ορισθεί η τιμή του αριθμού προσαρμογέα USB για το '%s'"
+
+#, c-format
+msgid "no USB interface protocol supplied for '%s'"
+msgstr "δεν αποδόθηκε τιμή στο πρωτόκολλο του προσαρμογέα USB '%s'"
+
+#, c-format
+msgid "no USB interface subclass supplied for '%s'"
+msgstr "δεν αποδόθηκε τιμή στην υποκλάση του προσαρμογέα USB '%s'"
+
+#, c-format
+msgid "no USB vendor ID supplied for '%s'"
+msgstr "δεν έχει ορισθεί τιμή για το ID παραγωγού (vendor) USB για το '%s'"
+
+#, c-format
+msgid "no block device path supplied for '%s'"
+msgstr "δεν προσδιορίσθηκε διαδρομή για την συσκευή αποθήκευσης '%s'"
+
+msgid "no client username was found"
+msgstr "δεν βρέθηκε όνομα χρήστη"
+
+msgid "no domain config"
+msgstr "δεν βρέθηκαν οι παράμετροι αρχικοποίησης (config) του τομέα (domain)"
+
+msgid "no monitor path"
+msgstr "δεν προσδιορίζεται η διαδρομή για το monitor"
+
+#, c-format
+msgid "no network interface supplied for '%s'"
+msgstr "δεν προσδιορίσθηκε ο προσαρμογέας δικτύου για το '%s' "
+
+#, c-format
+msgid "no removable media size supplied for '%s'"
+msgstr ""
+"δεν προσδιορίσθηκε το μέγεθος του αφιαρούμενου αποθηκευτικού μέσου '%s'"
+
+#, c-format
+msgid "no size supplied for '%s'"
+msgstr "δεν ορίσθηκε μέγεθος για το '%s' "
+
+msgid "nparams too large"
+msgstr "η nparams είναι πολύ μεγάλη"
+
+msgid "protocol misses the family attribute"
+msgstr "δεν καθορίζεται η ιδιότητα <οικογένεια> για το πρωτόκολλο "
+
+#, c-format
+msgid "ps2 bus does not support %s input device"
+msgstr "ο δίαυλος τύπου ps2 δεν υποστηρίζει την συσκευή εισόδου %s"
+
+#, c-format
+msgid "sasl start reply data too long %d"
+msgstr "το sasl απήντησε ότι τα δεδομένα έχουν πολύ μεγάλο μήκος %d"
+
+#, c-format
+msgid "sasl step reply data too long %d"
+msgstr "το βήμα SASL αναφέρει ότι τα δεδομένα είναι πολλά %d"
+
+msgid "security imagelabel is missing"
+msgstr "λείπει η εικόνα ετικέτα ασφαλείας "
+
+msgid "security label is missing"
+msgstr "λείπει η ετικέτα ασφαλείας"
+
+msgid "size > maximum buffer size"
+msgstr "μέγεθος > μέγιστου μήκους προσωρινής μνήμης"
+
+#, c-format
+msgid "stream aborted with unexpected status %d"
+msgstr "η ροή διεκόπη λόγω απρόσμενης κατάστασης %d"
+
+msgid "stream had I/O failure"
+msgstr "η ροή παρουσίασε σφάλμα εισόδου/εξόδου"
+
+msgid "stream had unexpected termination"
+msgstr "η ροή διεκόπη απρόσμενα"
+
+#, c-format
+msgid "unexpected boot device type %d"
+msgstr "απροσδόκητος τύπος συσκευής εκκίνησης λειτουργικού %d"
+
+#, c-format
+msgid "unexpected char type %d"
+msgstr "απροσδόκητος τύπος χαρακτήρα %d"
+
+#, c-format
+msgid "unexpected disk bus %d"
+msgstr "απρόσμενος τύπος διαύλου δίσκου %d"
+
+#, c-format
+msgid "unexpected disk device %d"
+msgstr "απρόσμενος τύπος συσκευής δίσκου %d"
+
+#, c-format
+msgid "unexpected disk type %d"
+msgstr "απρόσμενος τύπος δίσκου %d"
+
+#, c-format
+msgid "unexpected domain %s already exists"
+msgstr "ο τομέας %s υπάρχει ήδη"
+
+#, c-format
+msgid "unexpected domain type %d"
+msgstr "απρόσμενος τύπος τομέα %d"
+
+#, c-format
+msgid "unexpected filesystem type %d"
+msgstr "απροσδόκητος τύπος συστήματος αρχείων %d"
+
+#, c-format
+msgid "unexpected hostdev mode %d"
+msgstr "απροσδόκητη κατάσταση συσκευής υποδοχής (hostdev) %d"
+
+#, c-format
+msgid "unexpected hostdev type %d"
+msgstr "απροσδόκητος τύπος συσκευής υποδοχής (hostdev) %d"
+
+#, c-format
+msgid "unexpected input bus type %d"
+msgstr "απροσδόκητος τύπος διαύλου εισόδου %d"
+
+#, c-format
+msgid "unexpected input type %d"
+msgstr "απροσδόκητος τύπος εισόδου %d"
+
+#, c-format
+msgid "unexpected interface type %d"
+msgstr "απροσδόκητος τύπος προσαρμογέα %d"
+
+#, c-format
+msgid "unexpected net type %d"
+msgstr "απροσδόκητος τύπος δικτύου %d"
+
+#, c-format
+msgid "unexpected sound model %d"
+msgstr "απροσδόκητο μοντέλο ήχου %d"
+
+#, c-format
+msgid "unexpected video model %d"
+msgstr "απροσδόκητη κατάσταση βίντεο %d"
+
+#, c-format
+msgid "unknown SCSI host capability type '%s' for '%s'"
+msgstr "άγνωστος τύπος δυνατοτήτων '%s' για τον υποδοχέα SCSI '%s'"
+
+#, c-format
+msgid "unknown arp bonding validate %s"
+msgstr "άγνωστη επαλήθευση δεσμού (bonding) arp %s "
+
+#, c-format
+msgid "unknown bonding mode %s"
+msgstr "άγνωστος ρυθμός δεσμών (bonding mode) %s"
+
+#, c-format
+msgid "unknown boot device '%s'"
+msgstr "άγνωστη συσκευή εκκίνησης λειτουργικού '%s'"
+
+#, c-format
+msgid "unknown dhcp peerdns value %s"
+msgstr "άγνωστη τιμή dhcp peerdns %s"
+
+#, c-format
+msgid "unknown disk bus type '%s'"
+msgstr "άγνωστος τύπος διαύλου δίσκου '%s'"
+
+#, c-format
+msgid "unknown disk cache mode '%s'"
+msgstr "άγνωστη κατάσταση λανθάνουσας μνήμης δίσκου '%s'"
+
+#, c-format
+msgid "unknown disk device '%s'"
+msgstr "άγνωστη συσκευή δίσκου '%s'"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "άγνωστος τύπος δίσκου '%s'"
+
+#, c-format
+msgid "unknown filesystem type '%s'"
+msgstr "άγνωστο σύστημα αρχείων '%s'"
+
+#, c-format
+msgid "unknown forwarding type '%s'"
+msgstr "άγνωστος τύπος προώθησης '%s'"
+
+#, c-format
+msgid "unknown fullscreen value '%s'"
+msgstr "άγνωστη τιμή πλήρους οθόνης '%s'"
+
+#, c-format
+msgid "unknown graphics device type '%s'"
+msgstr "άγνωστος τύπος μονάδας γραφικών '%s'"
+
+#, c-format
+msgid "unknown hostdev mode '%s'"
+msgstr "άγνωστη λειτουργία hostdev '%s'"
+
+#, c-format
+msgid "unknown input bus type '%s'"
+msgstr "άγνωστος τύπος διαύλου εισόδου '%s'"
+
+#, c-format
+msgid "unknown input device type '%s'"
+msgstr "άγνωστος τύπος συσκευής εισόδου '%s'"
+
+#, c-format
+msgid "unknown interface startmode %s"
+msgstr "άγνωστη κατάσταση εκκίνησης διεπαφής/προσαρμογέα (start mode) '%s'"
+
+#, c-format
+msgid "unknown interface type %s"
+msgstr "άγνωστος τύπος προσαρμογέα %s"
+
+#, c-format
+msgid "unknown interface type '%s'"
+msgstr "Άγνωστος τύπος διεπαφής '%s'"
+
+#, c-format
+msgid "unknown mii bonding carrier %s"
+msgstr "άγνωστος φορέας δεσμού (bonding carrirer) mii %s"
+
+#, c-format
+msgid "unknown pci source type '%s'"
+msgstr "άγνωστος πηγαίος τύπος pci (source type) '%s'"
+
+#, c-format
+msgid "unknown procedure: %d"
+msgstr "άγνωστη συνάρτηση: %d"
+
+#, c-format
+msgid "unknown sound model '%s'"
+msgstr "άγνωστο μοντέλου ήχου '%s'"
+
+#, c-format
+msgid "unknown storage capability type '%s' for '%s'"
+msgstr "άγνωστος τύπος ικανότητας αποθήκευσης '%s' για τη συσκευή '%s'"
+
+#, c-format
+msgid "unknown usb source type '%s'"
+msgstr "άγνωστος τύπος πηγής usb '%s'"
+
+#, c-format
+msgid "unknown video model '%s'"
+msgstr "άγνωστο μοντέλο βίντεο '%s'"
+
+#, c-format
+msgid "unsupported input bus %s"
+msgstr "μη υποστηριζόμενος δίαυλος εισόδου '%s'"
+
+#, c-format
+msgid "unsupported monitor type '%s'"
+msgstr "μη υποστηριζόμενος τύπος monitor '%s'"
+
+#, c-format
+msgid "unsupported protocol family '%s'"
+msgstr "μη υποστηριζόμενη οικογένεια πρωτοκόλλου '%s'"
+
+msgid "usb address needs bus id"
+msgstr "η διεύθυνση του usb απαιτεί την ύπαρξη αναγνωριστικού διαύλου (bus id)"
+
+msgid "usb address needs device id"
+msgstr ""
+"η διεύθυνση του usb απαιτεί την ύπαρξη του αναγνωριστικού συσκευής (device "
+"id)"
+
+msgid "usb product needs id"
+msgstr "η συσκευή usb απαιτείται να έχει αναγνωριστικό (id)"
+
+msgid "usb vendor needs id"
+msgstr "ο κατασκευαστής usb απαιτείται να έχει αναγωριστικό (vendor id)"
+
+msgid "vendor cannot be 0."
+msgstr "ο κατασκευαστής δεν μπορεί να πάρει την τιμή 0"
+
+#, c-format
+msgid "version mismatch (actual %x, expected %x)"
+msgstr "πρόβλημα έκδοσης (τρέχουσα %x, αναμενόμενη %x)"
+
+msgid "virInterfaceDefFormat unknown startmode"
+msgstr "virInterfaceDefFormat άγνωστη κατάσταση εκκίνησης (startmode)"
+
+msgid "vlan interface misses name attribute"
+msgstr "η ιδιότητα <name> δεν είναι ορισμένη για τον προσαρμογέα vlan"
+
+msgid "vlan interface misses the tag attribute"
+msgstr "η ιδιότητα tag δεν έχει ορισθεί για τον προσαρμογέα vlan"
+
+msgid "vlan interface misses the vlan element"
+msgstr "δεν έχει ορισθεί η ιδιότητα vlan για τον προσαρμογέα vlan"
+
+msgid "vlan misses the tag name"
+msgstr "το εικονικό δίκτυο vlan δεν έχει ορισμένη τιμή για το tag name"
+
+#, c-format
+msgid "xen bus does not support %s input device"
+msgstr "ο δίαυλος xen δεν υποστηρίζει την %s μονάδα εισόδου"

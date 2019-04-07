@@ -1,0 +1,17 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>EPYC-IBPB</model>
+  <vendor>AMD</vendor>
+  <feature name='ht'/>
+  <feature name='osxsave'/>
+  <feature name='xsaves'/>
+  <feature name='cmp_legacy'/>
+  <feature name='extapic'/>
+  <feature name='skinit'/>
+  <feature name='wdt'/>
+  <feature name='tce'/>
+  <feature name='topoext'/>
+  <feature name='perfctr_core'/>
+  <feature name='perfctr_nb'/>
+  <feature name='invtsc'/>
+</cpu>

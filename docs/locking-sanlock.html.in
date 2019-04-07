@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Virtual machine lock manager, sanlock plugin</h1>
@@ -13,7 +13,7 @@
       plugin for virtual machine disk mutual exclusion.
     </p>
 
-    <h2><a name="sanlock">Sanlock daemon setup</a></h2>
+    <h2><a id="sanlock">Sanlock daemon setup</a></h2>
 
     <p>
       On many operating systems, the <strong>sanlock</strong> plugin
@@ -68,7 +68,7 @@ SANLOCKOPTS="-w 0"
       steps as necessary.
     </p>
 
-    <h2><a name="sanlockplugin">libvirt sanlock plugin configuration</a></h2>
+    <h2><a id="sanlockplugin">libvirt sanlock plugin configuration</a></h2>
 
     <p>
       Once the sanlock daemon is running, the next step is to
@@ -76,7 +76,7 @@ SANLOCKOPTS="-w 0"
       configuration file for each libvirt driver that is using
       sanlock. For QEMU, we will edit <code>/etc/libvirt/qemu-sanlock.conf</code>
       There is one mandatory parameter that needs to be set,
-      the <code>host_id</code>. This is a integer between
+      the <code>host_id</code>. This is an integer between
       1 and 2000, which must be set to a <strong>unique</strong>
       value on each host running virtual machines.
     </p>
@@ -91,7 +91,7 @@ $ su - root
       unique value for the host.
     </p>
 
-    <h2><a name="sanlockstorage">libvirt sanlock storage configuration</a></h2>
+    <h2><a id="sanlockstorage">libvirt sanlock storage configuration</a></h2>
 
     <p>
       The sanlock plugin needs to create leases in a directory
@@ -152,7 +152,7 @@ augtool -s set /files/etc/libvirt/qemu-sanlock.conf/group sanlock
       it should be sufficient to run the cleanup once a week.
     </p>
 
-    <h2><a name="qemuconfig">QEMU/KVM driver configuration</a></h2>
+    <h2><a id="qemuconfig">QEMU/KVM driver configuration</a></h2>
 
     <p>
       The QEMU/KVM driver is fully integrated with the lock
@@ -219,7 +219,7 @@ __LIBVIRT__DISKS__
 &lt;/pool&gt;
     </pre>
 
-    <h2><a name="domainconfig">Domain configuration</a></h2>
+    <h2><a id="domainconfig">Domain configuration</a></h2>
 
     <p>
       In case sanlock loses access to disk locks for some reason, it will

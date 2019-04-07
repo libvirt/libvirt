@@ -1,0 +1,11 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name QEMUGuest1 \
+-m 512 \
+-hda /dev/HostVG/QEMUGuest1 \
+-cdrom /root/boot.iso

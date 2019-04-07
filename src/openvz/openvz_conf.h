@@ -19,15 +19,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- * Shuveb Hussain <shuveb@binarykarma.com>
- * Anoop Joe Cyriac <anoop@binarykarma.com>
- *
  */
 
-#ifndef OPENVZ_CONF_H
-# define OPENVZ_CONF_H
+#ifndef LIBVIRT_OPENVZ_CONF_H
+# define LIBVIRT_OPENVZ_CONF_H
 
 # include "internal.h"
 # include "virdomainobjlist.h"
@@ -67,8 +62,7 @@ int openvzLoadDomains(struct openvz_driver *driver);
 void openvzFreeDriver(struct openvz_driver *driver);
 int strtoI(const char *str);
 int openvzSetDefinedUUID(int vpsid, unsigned char *uuid);
-unsigned int openvzGetNodeCPUs(void);
 int openvzGetVEID(const char *name);
 int openvzReadNetworkConf(virDomainDefPtr def, int veid);
 
-#endif /* OPENVZ_CONF_H */
+#endif /* LIBVIRT_OPENVZ_CONF_H */

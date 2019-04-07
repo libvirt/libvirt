@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Karel Zak <kzak@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdarg.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -31,9 +27,7 @@
 #include <sys/wait.h>
 #include <regex.h>
 #include <unistd.h>
-#include <string.h>
 #include <fcntl.h>
-#include <limits.h>
 #include "testutils.h"
 #include "internal.h"
 #include "viralloc.h"
@@ -92,7 +86,7 @@ bool virTestOOMActive(void)
 
 static int virTestUseTerminalColors(void)
 {
-    return isatty(STDIN_FILENO);
+    return isatty(STDOUT_FILENO);
 }
 
 static unsigned int
@@ -178,8 +172,7 @@ virTestRun(const char *title,
 
     virResetLastError();
     ret = body(data);
-    virErrorPtr err = virGetLastError();
-    if (err) {
+    if (virGetLastErrorCode()) {
         if (virTestGetVerbose() || virTestGetDebug())
             virDispatchError(NULL);
     }
@@ -240,7 +233,7 @@ virTestRun(const char *title,
         for (i = start; i < end; i++) {
             bool missingFail = false;
 # ifdef TEST_OOM_TRACE
-            memset(testAllocStack, 0, ARRAY_CARDINALITY(testAllocStack));
+            memset(testAllocStack, 0, sizeof(testAllocStack));
             ntestAllocStack = 0;
 # endif
             virAllocTestOOM(i + 1, 1);
@@ -258,8 +251,7 @@ virTestRun(const char *title,
                 fprintf(stderr, " alloc %zu failed but no err status\n", i + 1);
 # endif
             } else {
-                virErrorPtr lerr = virGetLastError();
-                if (!lerr) {
+                if (virGetLastErrorCode() == VIR_ERR_OK) {
 # if 0
                     fprintf(stderr, " alloc %zu failed but no error report\n", i + 1);
 # endif
@@ -289,9 +281,17 @@ virTestRun(const char *title,
     return ret;
 }
 
-/* Allocate BUF to the size of FILE. Read FILE into buffer BUF.
-   Upon any failure, diagnose it and return -1, but don't bother trying
-   to preserve errno. Otherwise, return the number of bytes copied into BUF. */
+
+/**
+ * virTestLoadFile:
+ * @file: name of the file to load
+ * @buf: buffer to load the file into
+ *
+ * Allocates @buf to the size of FILE. Reads FILE into buffer BUF.
+ * Upon any failure, error is printed to stderr and -1 is returned. 'errno' is
+ * not preserved. On success 0 is returned. Caller is responsible for freeing
+ * @buf.
+ */
 int
 virTestLoadFile(const char *file, char **buf)
 {
@@ -345,8 +345,93 @@ virTestLoadFile(const char *file, char **buf)
     }
 
     VIR_FORCE_FCLOSE(fp);
-    return strlen(*buf);
+    return 0;
 }
+
+
+static char *
+virTestLoadFileGetPath(const char *p,
+                       va_list ap)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *path = NULL;
+
+    virBufferAddLit(&buf, abs_srcdir "/");
+
+    if (p) {
+        virBufferAdd(&buf, p, -1);
+        virBufferStrcatVArgs(&buf, ap);
+    }
+
+    if (!(path = virBufferContentAndReset(&buf)))
+        VIR_TEST_VERBOSE("failed to format file path");
+
+    return path;
+}
+
+
+/**
+ * virTestLoadFilePath:
+ * @...: file name components terminated with a NULL
+ *
+ * Constructs the test file path from variable arguments and loads the file.
+ * 'abs_srcdir' is automatically prepended.
+ */
+char *
+virTestLoadFilePath(const char *p, ...)
+{
+    char *path = NULL;
+    char *ret = NULL;
+    va_list ap;
+
+    va_start(ap, p);
+
+    if (!(path = virTestLoadFileGetPath(p, ap)))
+        goto cleanup;
+
+    ignore_value(virTestLoadFile(path, &ret));
+
+ cleanup:
+    va_end(ap);
+    VIR_FREE(path);
+
+    return ret;
+}
+
+
+/**
+ * virTestLoadFileJSON:
+ * @...: name components terminated with a NULL
+ *
+ * Constructs the test file path from variable arguments and loads and parses
+ * the JSON file. 'abs_srcdir' is automatically prepended to the path.
+ */
+virJSONValuePtr
+virTestLoadFileJSON(const char *p, ...)
+{
+    virJSONValuePtr ret = NULL;
+    char *jsonstr = NULL;
+    char *path = NULL;
+    va_list ap;
+
+    va_start(ap, p);
+
+    if (!(path = virTestLoadFileGetPath(p, ap)))
+        goto cleanup;
+
+    if (virTestLoadFile(path, &jsonstr) < 0)
+        goto cleanup;
+
+    if (!(ret = virJSONValueFromString(jsonstr)))
+        VIR_TEST_VERBOSE("failed to parse json from file '%s'", path);
+
+ cleanup:
+    va_end(ap);
+    VIR_FREE(jsonstr);
+    VIR_FREE(path);
+    return ret;
+}
+
 
 #ifndef WIN32
 static
@@ -358,9 +443,6 @@ void virTestCaptureProgramExecChild(const char *const argv[],
     int stdinfd = -1;
     const char *const env[] = {
         "LANG=C",
-# if WITH_DRIVER_MODULES
-        "LIBVIRT_DRIVER_DIR=" TEST_DRIVER_DIR,
-# endif
         NULL
     };
 
@@ -442,8 +524,8 @@ virTestRewrapFile(const char *filename)
     char *script = NULL;
     virCommandPtr cmd = NULL;
 
-    if (!(virFileHasSuffix(filename, ".args") ||
-          virFileHasSuffix(filename, ".ldargs")))
+    if (!(virStringHasSuffix(filename, ".args") ||
+          virStringHasSuffix(filename, ".ldargs")))
         return 0;
 
     if (!perl) {
@@ -684,27 +766,37 @@ int virTestDifferenceBin(FILE *stream,
 }
 
 /*
- * @param strcontent: String input content
- * @param filename: File to compare strcontent against
+ * @param actual: String input content
+ * @param filename: File to compare @actual against
+ *
+ * If @actual is NULL, it's treated as an empty string.
  */
 int
-virTestCompareToFile(const char *strcontent,
+virTestCompareToFile(const char *actual,
                      const char *filename)
 {
     int ret = -1;
     char *filecontent = NULL;
     char *fixedcontent = NULL;
-    const char *cmpcontent = strcontent;
+    const char *cmpcontent = actual;
+
+    if (!cmpcontent)
+        cmpcontent = "";
 
     if (virTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
         goto failure;
 
-    if (filecontent &&
-        filecontent[strlen(filecontent) - 1] == '\n' &&
-        strcontent[strlen(strcontent) - 1] != '\n') {
-        if (virAsprintf(&fixedcontent, "%s\n", strcontent) < 0)
-            goto failure;
-        cmpcontent = fixedcontent;
+    if (filecontent) {
+        size_t filecontentLen = strlen(filecontent);
+        size_t cmpcontentLen = strlen(cmpcontent);
+
+        if (filecontentLen > 0 &&
+            filecontent[filecontentLen - 1] == '\n' &&
+            (cmpcontentLen == 0 || cmpcontent[cmpcontentLen - 1] != '\n')) {
+            if (virAsprintf(&fixedcontent, "%s\n", cmpcontent) < 0)
+                goto failure;
+            cmpcontent = fixedcontent;
+        }
     }
 
     if (STRNEQ_NULLABLE(cmpcontent, filecontent)) {
@@ -721,16 +813,28 @@ virTestCompareToFile(const char *strcontent,
     return ret;
 }
 
-/*
- * @param strcontent: String input content
- * @param strsrc: String source to compare strcontent against
- */
 int
-virTestCompareToString(const char *strcontent,
-                       const char *strsrc)
+virTestCompareToULL(unsigned long long expect,
+                    unsigned long long actual)
 {
-    if (STRNEQ_NULLABLE(strcontent, strsrc)) {
-        virTestDifference(stderr, strcontent, strsrc);
+    VIR_AUTOFREE(char *) expectStr = NULL;
+    VIR_AUTOFREE(char *) actualStr = NULL;
+
+    if (virAsprintf(&expectStr, "%llu", expect) < 0)
+        return -1;
+
+    if (virAsprintf(&actualStr, "%llu", actual) < 0)
+        return -1;
+
+    return virTestCompareToString(expectStr, actualStr);
+}
+
+int
+virTestCompareToString(const char *expect,
+                       const char *actual)
+{
+    if (STRNEQ_NULLABLE(expect, actual)) {
+        virTestDifference(stderr, expect, actual);
         return -1;
     }
 
@@ -877,11 +981,11 @@ int virTestMain(int argc,
     virLogOutputPtr *outputs = NULL;
 
     if (getenv("VIR_TEST_FILE_ACCESS"))
-        VIRT_TEST_PRELOAD(TEST_MOCK);
+        VIR_TEST_PRELOAD(TEST_MOCK);
 
     va_start(ap, func);
     while ((lib = va_arg(ap, const char *)))
-        VIRT_TEST_PRELOAD(lib);
+        VIR_TEST_PRELOAD(lib);
     va_end(ap);
 
     progname = last_component(argv[0]);
@@ -926,7 +1030,7 @@ int virTestMain(int argc,
     }
 
     if ((testRange = getenv("VIR_TEST_RANGE")) != NULL) {
-        if (virBitmapParseUnlimited(testRange, &testBitmap) < 0) {
+        if (!(testBitmap = virBitmapParseUnlimited(testRange))) {
             fprintf(stderr, "Cannot parse range %s\n", testRange);
             return EXIT_FAILURE;
         }
@@ -1070,7 +1174,12 @@ virCapsPtr virTestGenericCapsInit(void)
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
         goto error;
-
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
+                                       NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
+        goto error;
 
     if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
                                          "/usr/bin/acme-virt", NULL,
@@ -1079,9 +1188,15 @@ virCapsPtr virTestGenericCapsInit(void)
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
         goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
+                                       NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
+        goto error;
 
 
-    if (virTestGetDebug()) {
+    if (virTestGetDebug() > 1) {
         char *caps_str;
 
         caps_str = virCapabilitiesFormatXML(caps);
@@ -1100,24 +1215,72 @@ virCapsPtr virTestGenericCapsInit(void)
     return NULL;
 }
 
+
+#define MAX_CELLS 4
+#define MAX_CPUS_IN_CELL 2
+#define MAX_MEM_IN_CELL 2097152
+
+/*
+ * Build NUMA topology with cell id starting from (0 + seq)
+ * for testing
+ */
+int
+virTestCapsBuildNUMATopology(virCapsPtr caps,
+                             int seq)
+{
+    virCapsHostNUMACellCPUPtr cell_cpus = NULL;
+    int core_id, cell_id;
+    int id;
+
+    id = 0;
+    for (cell_id = 0; cell_id < MAX_CELLS; cell_id++) {
+        if (VIR_ALLOC_N(cell_cpus, MAX_CPUS_IN_CELL) < 0)
+            goto error;
+
+        for (core_id = 0; core_id < MAX_CPUS_IN_CELL; core_id++) {
+            cell_cpus[core_id].id = id + core_id;
+            cell_cpus[core_id].socket_id = cell_id + seq;
+            cell_cpus[core_id].core_id = id + core_id;
+            if (!(cell_cpus[core_id].siblings =
+                  virBitmapNew(MAX_CPUS_IN_CELL)))
+                goto error;
+            ignore_value(virBitmapSetBit(cell_cpus[core_id].siblings, id));
+        }
+        id++;
+
+        if (virCapabilitiesAddHostNUMACell(caps, cell_id + seq,
+                                           MAX_MEM_IN_CELL,
+                                           MAX_CPUS_IN_CELL, cell_cpus,
+                                           VIR_ARCH_NONE, NULL,
+                                           VIR_ARCH_NONE, NULL) < 0)
+           goto error;
+
+        cell_cpus = NULL;
+    }
+
+    return 0;
+
+ error:
+    virCapabilitiesClearHostNUMACellCPUTopology(cell_cpus, MAX_CPUS_IN_CELL);
+    VIR_FREE(cell_cpus);
+    return -1;
+}
+
 static virDomainDefParserConfig virTestGenericDomainDefParserConfig = {
     .features = VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS,
 };
-static virDomainXMLPrivateDataCallbacks virTestGenericPrivateDataCallbacks;
 
 virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&virTestGenericDomainDefParserConfig,
-                                 &virTestGenericPrivateDataCallbacks,
-                                 NULL);
+                                 NULL, NULL, NULL, NULL);
 }
 
 
 int
 testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
                            const char *infile, const char *outfile, bool live,
-                           testCompareDomXML2XMLPreFormatCallback cb,
-                           const void *opaque, unsigned int parseFlags,
+                           unsigned int parseFlags,
                            testCompareDomXML2XMLResult expectResult)
 {
     char *actual = NULL;
@@ -1142,14 +1305,9 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
         goto out;
     }
 
-    if (!virDomainDefCheckABIStability(def, def)) {
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", infile);
         result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_STABILITY;
-        goto out;
-    }
-
-    if (cb && cb(def, opaque) < 0) {
-        result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_CB;
         goto out;
     }
 

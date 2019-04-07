@@ -17,15 +17,15 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Stefan Berger <stefanb@us.ibm.com>
  */
-#ifndef NWFILTER_PARAMS_H
-# define NWFILTER_PARAMS_H
+
+#ifndef LIBVIRT_NWFILTER_PARAMS_H
+# define LIBVIRT_NWFILTER_PARAMS_H
 
 # include "virhash.h"
 # include "virbuffer.h"
 # include "virmacaddr.h"
+# include "virxml.h"
 
 typedef enum {
     NWFILTER_VALUE_TYPE_SIMPLE,
@@ -63,29 +63,16 @@ int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
 int virNWFilterVarValueAddValueCopy(virNWFilterVarValuePtr val, const char *value);
 int virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value);
 
-typedef struct _virNWFilterHashTable virNWFilterHashTable;
-typedef virNWFilterHashTable *virNWFilterHashTablePtr;
-struct _virNWFilterHashTable {
-    virHashTablePtr hashTable;
-};
-
-
-virNWFilterHashTablePtr virNWFilterParseParamAttributes(xmlNodePtr cur);
+virHashTablePtr virNWFilterParseParamAttributes(xmlNodePtr cur);
 int virNWFilterFormatParamAttributes(virBufferPtr buf,
-                                     virNWFilterHashTablePtr table,
+                                     virHashTablePtr table,
                                      const char *filterref);
 
-virNWFilterHashTablePtr virNWFilterHashTableCreate(int n);
-void virNWFilterHashTableFree(virNWFilterHashTablePtr table);
-int virNWFilterHashTablePut(virNWFilterHashTablePtr table,
-                            const char *name,
-                            virNWFilterVarValuePtr val);
-void *virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr table,
-                                      const char *name);
-int virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
-                               virNWFilterHashTablePtr dest);
-bool virNWFilterHashTableEqual(virNWFilterHashTablePtr a,
-                               virNWFilterHashTablePtr b);
+virHashTablePtr virNWFilterHashTableCreate(int n);
+int virNWFilterHashTablePutAll(virHashTablePtr src,
+                               virHashTablePtr dest);
+bool virNWFilterHashTableEqual(virHashTablePtr a,
+                               virHashTablePtr b);
 
 # define VALID_VARNAME \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
@@ -133,7 +120,7 @@ virNWFilterVarAccessType virNWFilterVarAccessGetType(
 unsigned int virNWFilterVarAccessGetIterId(const virNWFilterVarAccess *vap);
 unsigned int virNWFilterVarAccessGetIndex(const virNWFilterVarAccess *vap);
 bool virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *vap,
-                                     const virNWFilterHashTable *hash);
+                                     const virHashTable *hash);
 
 typedef struct _virNWFilterVarCombIterEntry virNWFilterVarCombIterEntry;
 typedef virNWFilterVarCombIterEntry *virNWFilterVarCombIterEntryPtr;
@@ -149,12 +136,12 @@ struct _virNWFilterVarCombIterEntry {
 typedef struct _virNWFilterVarCombIter virNWFilterVarCombIter;
 typedef virNWFilterVarCombIter *virNWFilterVarCombIterPtr;
 struct _virNWFilterVarCombIter {
-    virNWFilterHashTablePtr hashTable;
+    virHashTablePtr hashTable;
     size_t nIter;
     virNWFilterVarCombIterEntry iter[0];
 };
 virNWFilterVarCombIterPtr virNWFilterVarCombIterCreate(
-                             virNWFilterHashTablePtr hash,
+                             virHashTablePtr hash,
                              virNWFilterVarAccessPtr *vars,
                              size_t nVars);
 
@@ -165,4 +152,4 @@ const char *virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
                                               const virNWFilterVarAccess *);
 
 
-#endif /* NWFILTER_PARAMS_H */
+#endif /* LIBVIRT_NWFILTER_PARAMS_H */

@@ -27,6 +27,7 @@
 #include "storage_backend_zfs.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "storage_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -50,9 +51,9 @@ VIR_LOG_INIT("storage.storage_backend_zfs");
 static int
 virStorageBackendZFSVolModeNeeded(void)
 {
-    virCommandPtr cmd = NULL;
     int ret = -1, exit_code = -1;
-    char *error = NULL;
+    VIR_AUTOFREE(char *) error = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     /* 'zfs get' without arguments prints out
      * usage information to stderr, including
@@ -76,8 +77,6 @@ virStorageBackendZFSVolModeNeeded(void)
         ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(error);
     return ret;
 }
 
@@ -85,13 +84,13 @@ static int
 virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                               bool *isActive)
 {
-    char *devpath;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    VIR_AUTOFREE(char *) devpath = NULL;
 
     if (virAsprintf(&devpath, "/dev/zvol/%s",
-                    pool->def->source.name) == -1)
+                    def->source.name) < 0)
         return -1;
     *isActive = virFileIsDir(devpath);
-    VIR_FREE(devpath);
 
     return 0;
 }
@@ -102,12 +101,13 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
                              const char *volume_string)
 {
     int ret = -1;
-    char **tokens;
     size_t count;
-    char **name_tokens = NULL;
     char *vol_name;
     bool is_new_vol = false;
     virStorageVolDefPtr volume = NULL;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    VIR_AUTOSTRINGLIST tokens = NULL;
+    VIR_AUTOSTRINGLIST name_tokens = NULL;
 
     if (!(tokens = virStringSplitCount(volume_string, "\t", 0, &count)))
         return -1;
@@ -141,7 +141,7 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
 
     if (volume->target.path == NULL) {
         if (virAsprintf(&volume->target.path, "%s/%s",
-                        pool->def->target.path, volume->name) < 0)
+                        def->target.path, volume->name) < 0)
             goto cleanup;
     }
 
@@ -160,16 +160,12 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
     if (volume->target.allocation < volume->target.capacity)
         volume->target.sparse = true;
 
-    if (is_new_vol &&
-        VIR_APPEND_ELEMENT(pool->volumes.objs,
-                           pool->volumes.count,
-                           volume) < 0)
+    if (is_new_vol && virStoragePoolObjAddVol(pool, volume) < 0)
         goto cleanup;
+    volume = NULL;
 
     ret = 0;
  cleanup:
-    virStringListFree(tokens);
-    virStringListFree(name_tokens);
     if (is_new_vol)
         virStorageVolDefFree(volume);
     return ret;
@@ -179,10 +175,11 @@ static int
 virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
                              virStorageVolDefPtr vol)
 {
-    virCommandPtr cmd = NULL;
-    char *volumes_list = NULL;
-    char **lines = NULL;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     size_t i;
+    VIR_AUTOSTRINGLIST lines = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
+    VIR_AUTOFREE(char *) volumes_list = NULL;
 
     /**
      * $ zfs list -Hp -t volume -o name,volsize -r test
@@ -200,14 +197,14 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
                                "list", "-Hp",
                                "-t", "volume", "-r",
                                "-o", "name,volsize,refreservation",
-                               pool->def->source.name,
+                               def->source.name,
                                NULL);
     virCommandSetOutputBuffer(cmd, &volumes_list);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(lines = virStringSplit(volumes_list, "\n", 0)))
-        goto cleanup;
+        return -1;
 
     for (i = 0; lines[i]; i++) {
         if (STREQ(lines[i], ""))
@@ -217,23 +214,18 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
             continue;
     }
 
- cleanup:
-    virCommandFree(cmd);
-    virStringListFree(lines);
-    VIR_FREE(volumes_list);
-
     return 0;
 }
 
 static int
-virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                virStoragePoolObjPtr pool ATTRIBUTE_UNUSED)
+virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED)
 {
-    virCommandPtr cmd = NULL;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *zpool_props = NULL;
-    char **lines = NULL;
-    char **tokens = NULL;
     size_t i;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
+    VIR_AUTOSTRINGLIST lines = NULL;
+    VIR_AUTOSTRINGLIST tokens = NULL;
 
     /**
      * $ zpool get -Hp health,size,free,allocated test
@@ -248,7 +240,7 @@ virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     cmd = virCommandNewArgList(ZPOOL,
                                "get", "-Hp",
                                "health,size,free,allocated",
-                               pool->def->source.name,
+                               def->source.name,
                                NULL);
     virCommandSetOutputBuffer(cmd, &zpool_props);
     if (virCommandRun(cmd, NULL) < 0)
@@ -280,11 +272,11 @@ virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                 goto cleanup;
 
             if (STREQ(prop_name, "free"))
-                pool->def->available = value;
+                def->available = value;
             else if (STREQ(prop_name, "size"))
-                pool->def->capacity = value;
+                def->capacity = value;
             else if (STREQ(prop_name, "allocated"))
-                pool->def->allocation = value;
+                def->allocation = value;
         }
     }
 
@@ -293,22 +285,19 @@ virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
  cleanup:
-    virCommandFree(cmd);
-    virStringListFree(lines);
-    virStringListFree(tokens);
     VIR_FREE(zpool_props);
 
     return 0;
 }
 
 static int
-virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool,
+virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol)
 {
-    virCommandPtr cmd = NULL;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int ret = -1;
     int volmode_needed = -1;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -321,7 +310,7 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
-                    pool->def->target.path, vol->name) == -1)
+                    def->target.path, vol->name) < 0)
         return -1;
 
     if (VIR_STRDUP(vol->key, vol->target.path) < 0)
@@ -357,8 +346,7 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCommandAddArg(cmd, "-V");
     virCommandAddArgFormat(cmd, "%lluK",
                            VIR_DIV_UP(vol->target.capacity, 1024));
-    virCommandAddArgFormat(cmd, "%s/%s",
-                           pool->def->source.name, vol->name);
+    virCommandAddArgFormat(cmd, "%s/%s", def->source.name, vol->name);
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -368,90 +356,66 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = 0;
  cleanup:
-    virCommandFree(cmd);
     return ret;
 
 }
 
 static int
-virStorageBackendZFSDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool,
+virStorageBackendZFSDeleteVol(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol,
                               unsigned int flags)
 {
-    int ret = -1;
-    virCommandPtr destroy_cmd = NULL;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    VIR_AUTOPTR(virCommand) destroy_cmd = NULL;
 
     virCheckFlags(0, -1);
 
     destroy_cmd = virCommandNewArgList(ZFS, "destroy", NULL);
 
     virCommandAddArgFormat(destroy_cmd, "%s/%s",
-                           pool->def->source.name, vol->name);
+                           def->source.name, vol->name);
 
-    if (virCommandRun(destroy_cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virCommandFree(destroy_cmd);
-    return ret;
+    return virCommandRun(destroy_cmd, NULL);
 }
 
 static int
-virStorageBackendZFSBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool,
+virStorageBackendZFSBuildPool(virStoragePoolObjPtr pool,
                               unsigned int flags)
 {
-    virCommandPtr cmd = NULL;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     size_t i;
-    int ret = -1;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     virCheckFlags(0, -1);
 
-    if (pool->def->source.ndevice == 0) {
+    if (def->source.ndevice == 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("missing source devices"));
         return -1;
     }
 
     cmd = virCommandNewArgList(ZPOOL, "create",
-                               pool->def->source.name, NULL);
+                               def->source.name, NULL);
 
-    for (i = 0; i < pool->def->source.ndevice; i++)
-        virCommandAddArg(cmd, pool->def->source.devices[i].path);
+    for (i = 0; i < def->source.ndevice; i++)
+        virCommandAddArg(cmd, def->source.devices[i].path);
 
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return virCommandRun(cmd, NULL);
 }
 
 static int
-virStorageBackendZFSDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool,
+virStorageBackendZFSDeletePool(virStoragePoolObjPtr pool,
                                unsigned int flags)
 {
-    virCommandPtr cmd = NULL;
-    int ret = -1;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    VIR_AUTOPTR(virCommand) cmd = NULL;
 
     virCheckFlags(0, -1);
 
     cmd = virCommandNewArgList(ZPOOL, "destroy",
-                               pool->def->source.name, NULL);
+                               def->source.name, NULL);
 
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return virCommandRun(cmd, NULL);
 }
 
 virStorageBackend virStorageBackendZFS = {
@@ -466,3 +430,10 @@ virStorageBackend virStorageBackendZFS = {
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
 };
+
+
+int
+virStorageBackendZFSRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendZFS);
+}

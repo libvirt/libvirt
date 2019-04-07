@@ -294,7 +294,7 @@ test4(const void *data ATTRIBUTE_UNUSED)
     return -1;
 }
 
-/* test for virBitmapNewData/ToData/DataToString */
+/* test for virBitmapNewData/ToData/DataFormat */
 static int
 test5(const void *v ATTRIBUTE_UNUSED)
 {
@@ -336,12 +336,12 @@ test5(const void *v ATTRIBUTE_UNUSED)
         data2[4] != 0x04)
         goto error;
 
-    if (!(str = virBitmapDataToString(data, sizeof(data))))
+    if (!(str = virBitmapDataFormat(data, sizeof(data))))
         goto error;
     if (STRNEQ(str, "0,9,34"))
         goto error;
     VIR_FREE(str);
-    if (!(str = virBitmapDataToString(data2, len2)))
+    if (!(str = virBitmapDataFormat(data2, len2)))
         goto error;
     if (STRNEQ(str, "0,2,9,15,34"))
         goto error;
@@ -589,10 +589,11 @@ test11(const void *opaque)
         virBitmapParse(data->res, &resmap, 256) < 0)
         goto cleanup;
 
-    virBitmapSubtract(amap, bmap);
+    virBitmapIntersect(amap, bmap);
 
     if (!virBitmapEqual(amap, resmap)) {
-        fprintf(stderr, "\n bitmap subtraction failed: '%s'-'%s'!='%s'\n",
+        fprintf(stderr,
+                "\n bitmap intersection failed: intersect('%s','%s') !='%s'\n",
                 data->a, data->b, data->res);
         goto cleanup;
     }
@@ -607,24 +608,24 @@ test11(const void *opaque)
     return ret;
 }
 
-#define TEST_MAP(sz, expect)                                                   \
-    do {                                                                       \
-        char *actual;                                                          \
-        if (virBitmapSize(map) != sz) {                                        \
-            fprintf(stderr, "\n expected bitmap size: '%d' actual size: "      \
-                    "'%zu'\n", sz, virBitmapSize(map));                        \
-            goto cleanup;                                                      \
-        }                                                                      \
-                                                                               \
-        actual = virBitmapFormat(map);                                         \
-                                                                               \
-        if (STRNEQ_NULLABLE(expect, actual)) {                                 \
+#define TEST_MAP(sz, expect) \
+    do { \
+        char *actual; \
+        if (virBitmapSize(map) != sz) { \
+            fprintf(stderr, "\n expected bitmap size: '%d' actual size: " \
+                    "'%zu'\n", sz, virBitmapSize(map)); \
+            goto cleanup; \
+        } \
+ \
+        actual = virBitmapFormat(map); \
+ \
+        if (STRNEQ_NULLABLE(expect, actual)) { \
             fprintf(stderr, "\n expected bitmap contents '%s' actual contents "\
-                    "'%s'\n", NULLSTR(expect), NULLSTR(actual));               \
-            VIR_FREE(actual);                                                  \
-            goto cleanup;                                                      \
-        }                                                                      \
-        VIR_FREE(actual);                                                      \
+                    "'%s'\n", NULLSTR(expect), NULLSTR(actual)); \
+            VIR_FREE(actual); \
+            goto cleanup; \
+        } \
+        VIR_FREE(actual); \
     } while (0)
 
 /* test self-expanding bitmap APIs */
@@ -639,21 +640,27 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
 
     TEST_MAP(0, "");
 
-    if (virBitmapSetBitExpand(map, 100) < 0)
+    if (virBitmapSetBitExpand(map, 128) < 0)
         goto cleanup;
 
-    TEST_MAP(101, "100");
+    TEST_MAP(129, "128");
 
     if (virBitmapClearBitExpand(map, 150) < 0)
         goto cleanup;
 
-    TEST_MAP(151, "100");
+    TEST_MAP(151, "128");
 
     virBitmapFree(map);
-    if (virBitmapParseUnlimited("34,1023", &map) < 0)
+    if (!(map = virBitmapParseUnlimited("34,1023")))
         goto cleanup;
 
     TEST_MAP(1024, "34,1023");
+
+    virBitmapShrink(map, 35);
+    TEST_MAP(35, "34");
+
+    virBitmapShrink(map, 34);
+    TEST_MAP(34, "");
 
     ret = 0;
 
@@ -662,14 +669,83 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
     return ret;
 }
 
+
+/* virBitmap(New/To)String */
+static int
+test13(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virBitmapPtr map = NULL;
+    const char *strings[] = { "1234feebee", "000c0fefe" };
+    char *str = NULL;
+    size_t i = 0;
+    int ret = -1;
+
+    for (i = 0; i < ARRAY_CARDINALITY(strings); i++) {
+        map = virBitmapNewString(strings[i]);
+        str = virBitmapToString(map, false, true);
+
+        if (!map || !str)
+            goto cleanup;
+
+        if (STRNEQ(strings[i], str)) {
+            fprintf(stderr, "\n expected bitmap string '%s' actual string "
+                    "'%s'\n", strings[i], str);
+            goto cleanup;
+        }
+
+        VIR_FREE(str);
+        virBitmapFree(map);
+        map = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(str);
+    virBitmapFree(map);
+    return ret;
+}
+
 #undef TEST_MAP
 
+static int
+test14(const void *opaque)
+{
+    const struct testBinaryOpData *data = opaque;
+    virBitmapPtr amap = NULL;
+    virBitmapPtr bmap = NULL;
+    virBitmapPtr resmap = NULL;
+    int ret = -1;
 
-#define TESTBINARYOP(A, B, RES, FUNC)                                         \
-    testBinaryOpData.a = A;                                                   \
-    testBinaryOpData.b = B;                                                   \
-    testBinaryOpData.res = RES;                                               \
-    if (virTestRun(virTestCounterNext(), FUNC, &testBinaryOpData) < 0)        \
+    if (virBitmapParse(data->a, &amap, 256) < 0 ||
+        virBitmapParse(data->b, &bmap, 256) < 0 ||
+        virBitmapParse(data->res, &resmap, 256) < 0)
+        goto cleanup;
+
+    virBitmapSubtract(amap, bmap);
+
+    if (!virBitmapEqual(amap, resmap)) {
+        fprintf(stderr,
+                "\n bitmap subtraction failed: '%s' - '%s' != '%s'\n",
+                data->a, data->b, data->res);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virBitmapFree(amap);
+    virBitmapFree(bmap);
+    virBitmapFree(resmap);
+
+    return ret;
+}
+
+
+#define TESTBINARYOP(A, B, RES, FUNC) \
+    testBinaryOpData.a = A; \
+    testBinaryOpData.b = B; \
+    testBinaryOpData.res = RES; \
+    if (virTestRun(virTestCounterNext(), FUNC, &testBinaryOpData) < 0) \
         ret = -1;
 
 static int
@@ -700,18 +776,29 @@ mymain(void)
         ret = -1;
 
     virTestCounterReset("test11-");
-    TESTBINARYOP("0", "0", "0,^0", test11);
-    TESTBINARYOP("0-3", "0", "1-3", test11);
-    TESTBINARYOP("0-3", "0,3", "1-2", test11);
+    TESTBINARYOP("0", "0", "0", test11);
+    TESTBINARYOP("0-3", "0", "0", test11);
+    TESTBINARYOP("0-3", "0,3", "0,3", test11);
     TESTBINARYOP("0,^0", "0", "0,^0", test11);
-    TESTBINARYOP("0-3", "0-3", "0,^0", test11);
-    TESTBINARYOP("0-3", "0,^0", "0-3", test11);
-    TESTBINARYOP("0,2", "1,3", "0,2", test11);
+    TESTBINARYOP("0-3", "0-3", "0-3", test11);
+    TESTBINARYOP("0-3", "0,^0", "0,^0", test11);
+    TESTBINARYOP("0,2", "1,3", "0,^0", test11);
 
     if (virTestRun("test12", test12, NULL) < 0)
         ret = -1;
+    if (virTestRun("test13", test13, NULL) < 0)
+        ret = -1;
+
+    virTestCounterReset("test14-");
+    TESTBINARYOP("0", "0", "0,^0", test14);
+    TESTBINARYOP("0-3", "0", "1-3", test14);
+    TESTBINARYOP("0-3", "0,3", "1-2", test14);
+    TESTBINARYOP("0,^0", "0", "0,^0", test14);
+    TESTBINARYOP("0-3", "0-3", "0,^0", test14);
+    TESTBINARYOP("0-3", "0,^0", "0-3", test14);
+    TESTBINARYOP("0,2", "1,3", "0,2", test14);
 
     return ret;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

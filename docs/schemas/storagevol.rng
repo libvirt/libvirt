@@ -56,6 +56,11 @@
           <ref name='scaledInteger'/>
         </element>
       </optional>
+      <optional>
+        <element name='physical'>
+          <ref name='scaledInteger'/>
+        </element>
+      </optional>
     </interleave>
   </define>
 
@@ -134,6 +139,7 @@
         </element>
         <ref name='format'/>
         <ref name='permissions'/>
+        <ref name='timestamps'/>
       </interleave>
     </element>
   </define>

@@ -1,0 +1,46 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <controller type='virtio-serial' index='1'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+    </controller>
+    <redirdev bus='usb' type='tcp'>
+      <source mode='connect' host='localhost' service='3456'>
+        <reconnect enabled='yes' timeout='15'/>
+      </source>
+    </redirdev>
+    <smartcard mode='passthrough' type='unix'>
+      <source mode='connect' path='/tmp/channel/asdf'>
+        <reconnect enabled='yes' timeout='20'/>
+      </source>
+    </smartcard>
+    <channel type='tcp'>
+      <source mode='connect' host='localhost' service='1234'>
+        <reconnect enabled='yes' timeout='10'/>
+      </source>
+      <target type='virtio' name='asdf'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='connect' path='/tmp/channel/fdsa'>
+        <reconnect enabled='no'/>
+      </source>
+      <target type='virtio' name='fdsa'/>
+    </channel>
+    <memballoon model='none'/>
+    <rng model='virtio'>
+      <backend model='egd' type='tcp'>
+        <source mode='connect' host='localhost' service='2345'>
+          <reconnect enabled='yes' timeout='5'/>
+        </source>
+      </backend>
+    </rng>
+  </devices>
+</domain>

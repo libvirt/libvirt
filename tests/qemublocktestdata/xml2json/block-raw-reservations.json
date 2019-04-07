@@ -1,0 +1,14 @@
+{
+  "node-name": "node-a-fo",
+  "read-only": false,
+  "driver": "raw",
+  "file": "node-a-st"
+}
+{
+  "driver": "host_device",
+  "filename": "/dev/blah",
+  "pr-manager": "node-a-st-pr-alias",
+  "node-name": "node-a-st",
+  "read-only": false,
+  "discard": "unmap"
+}

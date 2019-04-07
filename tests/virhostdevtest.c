@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Chunyan Liu <cyliu@suse.com>
  */
 
 #include <config.h>
@@ -25,8 +23,6 @@
 
 #ifdef __linux__
 
-# include <stdlib.h>
-# include <stdio.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <sys/ioctl.h>
@@ -38,15 +34,15 @@
 
 VIR_LOG_INIT("tests.hostdevtest");
 
-# define CHECK_LIST_COUNT(list, cnt)                                        \
-    do {                                                                    \
-        size_t actualCount;                                                 \
-        if ((actualCount = virPCIDeviceListCount(list)) != cnt) {           \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                           "Unexpected count of items in " #list ": %zu, "  \
-                           "expecting %zu", actualCount, (size_t) cnt);     \
-            goto cleanup;                                                   \
-        }                                                                   \
+# define CHECK_LIST_COUNT(list, cnt) \
+    do { \
+        size_t actualCount; \
+        if ((actualCount = virPCIDeviceListCount(list)) != cnt) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Unexpected count of items in " #list ": %zu, " \
+                           "expecting %zu", actualCount, (size_t) cnt); \
+            goto cleanup; \
+        } \
     } while (0)
 
 # define TEST_STATE_DIR abs_builddir "/hostdevmgr"
@@ -73,8 +69,9 @@ myCleanup(void)
             virFileDeleteTree(mgr->stateDir);
 
         virObjectUnref(mgr->activePCIHostdevs);
-        virObjectUnref(mgr->inactivePCIHostdevs);
         virObjectUnref(mgr->activeUSBHostdevs);
+        virObjectUnref(mgr->inactivePCIHostdevs);
+        virObjectUnref(mgr->activeSCSIHostdevs);
         VIR_FREE(mgr->stateDir);
         VIR_FREE(mgr);
     }
@@ -87,7 +84,7 @@ myInit(void)
 
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevSubsys subsys;
-        hostdevs[i] = virDomainHostdevDefAlloc(NULL);
+        hostdevs[i] = virDomainHostdevDefNew();
         if (!hostdevs[i])
             goto cleanup;
         hostdevs[i]->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
@@ -607,11 +604,11 @@ mymain(void)
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
 
-# define DO_TEST(fnc)                                   \
-    do {                                                \
-        VIR_DEBUG("Testing: %s", #fnc);                 \
-        if (virTestRun(#fnc, fnc, NULL) < 0)            \
-            ret = -1;                                   \
+# define DO_TEST(fnc) \
+    do { \
+        VIR_DEBUG("Testing: %s", #fnc); \
+        if (virTestRun(#fnc, fnc, NULL) < 0) \
+            ret = -1; \
     } while (0)
 
     if (myInit() < 0)
@@ -633,7 +630,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virpcimock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virpcimock.so")
 #else
 int
 main(void)

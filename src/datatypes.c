@@ -1,7 +1,7 @@
 /*
  * datatypes.c: management of structs for public data types
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,11 +36,13 @@ VIR_LOG_INIT("datatypes");
 virClassPtr virConnectClass;
 virClassPtr virConnectCloseCallbackDataClass;
 virClassPtr virDomainClass;
+virClassPtr virDomainCheckpointClass;
 virClassPtr virDomainSnapshotClass;
 virClassPtr virInterfaceClass;
 virClassPtr virNetworkClass;
 virClassPtr virNodeDeviceClass;
 virClassPtr virNWFilterClass;
+virClassPtr virNWFilterBindingClass;
 virClassPtr virSecretClass;
 virClassPtr virStreamClass;
 virClassPtr virStorageVolClass;
@@ -49,11 +51,13 @@ virClassPtr virStoragePoolClass;
 static void virConnectDispose(void *obj);
 static void virConnectCloseCallbackDataDispose(void *obj);
 static void virDomainDispose(void *obj);
+static void virDomainCheckpointDispose(void *obj);
 static void virDomainSnapshotDispose(void *obj);
 static void virInterfaceDispose(void *obj);
 static void virNetworkDispose(void *obj);
 static void virNodeDeviceDispose(void *obj);
 static void virNWFilterDispose(void *obj);
+static void virNWFilterBindingDispose(void *obj);
 static void virSecretDispose(void *obj);
 static void virStreamDispose(void *obj);
 static void virStorageVolDispose(void *obj);
@@ -73,25 +77,24 @@ static void virAdmClientDispose(void *obj);
 static int
 virDataTypesOnceInit(void)
 {
-#define DECLARE_CLASS_COMMON(basename, parent)                   \
-    if (!(basename ## Class = virClassNew(parent,                \
-                                          #basename,             \
-                                          sizeof(basename),      \
-                                          basename ## Dispose))) \
+#define DECLARE_CLASS_COMMON(basename, parent) \
+    if (!(VIR_CLASS_NEW(basename, parent))) \
         return -1;
-#define DECLARE_CLASS(basename)                                  \
+#define DECLARE_CLASS(basename) \
     DECLARE_CLASS_COMMON(basename, virClassForObject())
-#define DECLARE_CLASS_LOCKABLE(basename)                         \
+#define DECLARE_CLASS_LOCKABLE(basename) \
     DECLARE_CLASS_COMMON(basename, virClassForObjectLockable())
 
     DECLARE_CLASS_LOCKABLE(virConnect);
     DECLARE_CLASS_LOCKABLE(virConnectCloseCallbackData);
     DECLARE_CLASS(virDomain);
+    DECLARE_CLASS(virDomainCheckpoint);
     DECLARE_CLASS(virDomainSnapshot);
     DECLARE_CLASS(virInterface);
     DECLARE_CLASS(virNetwork);
     DECLARE_CLASS(virNodeDevice);
     DECLARE_CLASS(virNWFilter);
+    DECLARE_CLASS(virNWFilterBinding);
     DECLARE_CLASS(virSecret);
     DECLARE_CLASS(virStream);
     DECLARE_CLASS(virStorageVol);
@@ -109,7 +112,7 @@ virDataTypesOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virDataTypes)
+VIR_ONCE_GLOBAL_INIT(virDataTypes);
 
 /**
  * virGetConnect:
@@ -193,11 +196,9 @@ void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr closeDat
         VIR_WARN("Attempt to register callback on armed"
                  " close callback object %p", closeData);
         goto cleanup;
-        return;
     }
 
-    closeData->conn = conn;
-    virObjectRef(closeData->conn);
+    closeData->conn = virObjectRef(conn);
     closeData->callback = cb;
     closeData->opaque = opaque;
     closeData->freeCallback = freecb;
@@ -261,6 +262,7 @@ virConnectCloseCallbackDataGetCallback(virConnectCloseCallbackDataPtr closeData)
  * @conn: the hypervisor connection
  * @name: pointer to the domain name
  * @uuid: pointer to the uuid
+ * @id: domain ID
  *
  * Allocates a new domain object. When the object is no longer needed,
  * virObjectUnref() must be called in order to not leak data.
@@ -268,7 +270,10 @@ virConnectCloseCallbackDataGetCallback(virConnectCloseCallbackDataPtr closeData)
  * Returns a pointer to the domain object, or NULL on error.
  */
 virDomainPtr
-virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid)
+virGetDomain(virConnectPtr conn,
+             const char *name,
+             const unsigned char *uuid,
+             int id)
 {
     virDomainPtr ret = NULL;
 
@@ -286,7 +291,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid)
         goto error;
 
     ret->conn = virObjectRef(conn);
-    ret->id = -1;
+    ret->id = id;
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
     return ret;
@@ -651,7 +656,7 @@ virNodeDeviceDispose(void *obj)
     VIR_DEBUG("release dev %p %s", dev, dev->name);
 
     VIR_FREE(dev->name);
-    VIR_FREE(dev->parent);
+    VIR_FREE(dev->parentName);
 
     virObjectUnref(dev->conn);
 }
@@ -678,14 +683,13 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
 
     virCheckConnectGoto(conn, error);
     virCheckNonNullArgGoto(uuid, error);
-    virCheckNonNullArgGoto(usageID, error);
 
     if (!(ret = virObjectNew(virSecretClass)))
         return NULL;
 
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
     ret->usageType = usageType;
-    if (VIR_STRDUP(ret->usageID, usageID) < 0)
+    if (VIR_STRDUP(ret->usageID, NULLSTR_EMPTY(usageID)) < 0)
         goto error;
 
     ret->conn = virObjectRef(conn);
@@ -762,6 +766,8 @@ virStreamDispose(void *obj)
     virStreamPtr st = obj;
     VIR_DEBUG("release dev %p", st);
 
+    if (st->ff)
+        st->ff(st->privateData);
     virObjectUnref(st->conn);
 }
 
@@ -829,6 +835,129 @@ virNWFilterDispose(void *obj)
 
     VIR_FREE(nwfilter->name);
     virObjectUnref(nwfilter->conn);
+}
+
+
+/**
+ * virGetNWFilterBinding:
+ * @conn: the hypervisor connection
+ * @portdev: pointer to the network filter port device name
+ * @filtername: name of the network filter
+ *
+ * Allocates a new network filter binding object. When the object is no longer
+ * needed, virObjectUnref() must be called in order to not leak data.
+ *
+ * Returns a pointer to the network filter binding object, or NULL on error.
+ */
+virNWFilterBindingPtr
+virGetNWFilterBinding(virConnectPtr conn, const char *portdev,
+                      const char *filtername)
+{
+    virNWFilterBindingPtr ret = NULL;
+
+    if (virDataTypesInitialize() < 0)
+        return NULL;
+
+    virCheckConnectGoto(conn, error);
+    virCheckNonNullArgGoto(portdev, error);
+
+    if (!(ret = virObjectNew(virNWFilterBindingClass)))
+        goto error;
+
+    if (VIR_STRDUP(ret->portdev, portdev) < 0)
+        goto error;
+
+    if (VIR_STRDUP(ret->filtername, filtername) < 0)
+        goto error;
+
+    ret->conn = virObjectRef(conn);
+
+    return ret;
+
+ error:
+    virObjectUnref(ret);
+    return NULL;
+}
+
+
+/**
+ * virNWFilterBindingDispose:
+ * @obj: the network filter binding to release
+ *
+ * Unconditionally release all memory associated with a nwfilter binding.
+ * The nwfilter binding object must not be used once this method returns.
+ *
+ * It will also unreference the associated connection object,
+ * which may also be released if its ref count hits zero.
+ */
+static void
+virNWFilterBindingDispose(void *obj)
+{
+    virNWFilterBindingPtr binding = obj;
+
+    VIR_DEBUG("release binding %p %s", binding, binding->portdev);
+
+    VIR_FREE(binding->portdev);
+    VIR_FREE(binding->filtername);
+    virObjectUnref(binding->conn);
+}
+
+
+/**
+ * virGetDomainCheckpoint:
+ * @domain: the domain to checkpoint
+ * @name: pointer to the domain checkpoint name
+ *
+ * Allocates a new domain checkpoint object. When the object is no longer needed,
+ * virObjectUnref() must be called in order to not leak data.
+ *
+ * Returns a pointer to the domain checkpoint object, or NULL on error.
+ */
+virDomainCheckpointPtr
+virGetDomainCheckpoint(virDomainPtr domain,
+                       const char *name)
+{
+    virDomainCheckpointPtr ret = NULL;
+
+    if (virDataTypesInitialize() < 0)
+        return NULL;
+
+    virCheckDomainGoto(domain, error);
+    virCheckNonNullArgGoto(name, error);
+
+    if (!(ret = virObjectNew(virDomainCheckpointClass)))
+        goto error;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto error;
+
+    ret->domain = virObjectRef(domain);
+
+    return ret;
+
+ error:
+    virObjectUnref(ret);
+    return NULL;
+}
+
+
+/**
+ * virDomainCheckpointDispose:
+ * @obj: the domain checkpoint to release
+ *
+ * Unconditionally release all memory associated with a checkpoint.
+ * The checkpoint object must not be used once this method returns.
+ *
+ * It will also unreference the associated connection object,
+ * which may also be released if its ref count hits zero.
+ */
+static void
+virDomainCheckpointDispose(void *obj)
+{
+    virDomainCheckpointPtr checkpoint = obj;
+    VIR_DEBUG("release checkpoint %p %s", checkpoint, checkpoint->name);
+
+    VIR_FREE(checkpoint->name);
+    virObjectUnref(checkpoint->domain);
 }
 
 
@@ -982,8 +1111,7 @@ virAdmConnectCloseCallbackDataRegister(virAdmConnectCloseCallbackDataPtr cbdata,
         goto cleanup;
     }
 
-    virObjectRef(conn);
-    cbdata->conn = conn;
+    cbdata->conn = virObjectRef(conn);
     cbdata->callback = cb;
     cbdata->opaque = opaque;
     cbdata->freeCallback = freecb;

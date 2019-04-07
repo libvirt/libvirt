@@ -1,0 +1,35 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>6</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='network'/>
+  </os>
+  <cpu match='exact'>
+    <model>core2duo</model>
+    <feature name='ds' policy='require'/>
+    <feature name='ht' policy='require'/>
+    <feature name='tm' policy='optional'/>
+    <feature name='ds_cpl' policy='require'/>
+    <feature name='xtpr' policy='require'/>
+    <feature name='3dnowext' policy='force'/>
+    <feature name='lahf_lm' policy='require'/>
+    <feature name='nx' policy='disable'/>
+    <feature name='cx16' policy='disable'/>
+    <feature name='tm2' policy='disable'/>
+    <feature name='pbe' policy='disable'/>
+    <feature name='ss' policy='disable'/>
+    <feature name='sse4a' policy='optional'/>
+    <feature name='wdt' policy='forbid'/>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+  </devices>
+</domain>

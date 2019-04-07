@@ -15,6 +15,7 @@
     <feature name='rxhash'/>
     <feature name='rdma'/>
     <feature name='txudptnl'/>
+    <feature name='switchdev'/>
     <capability type='80203'/>
   </capability>
 </device>

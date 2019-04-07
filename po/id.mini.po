@@ -1,0 +1,711 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel  <veillard@redhat.com>, 2011.
+# Muhammad Radifar <m_radifar05@yahoo.com>, 2011.
+# Teguh DC <dheche@songolimo.net>, 2007.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-27 05:03+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Indonesian (http://www.transifex.com/projects/p/libvirt/"
+"language/id/)\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  KETERANGAN\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  OPSI\n"
+
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  Ringkasan\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Waktu: %.3f ms)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  NAMA\n"
+
+msgid "Attach device from an XML <file>."
+msgstr "Pasang perangkat dari <berkas> XML"
+
+msgid "Attach new network interface."
+msgstr "Pasang antarmuka jaringan baru"
+
+msgid "CPU frequency:"
+msgstr "Frekuensi CPU:"
+
+msgid "CPU model:"
+msgstr "Model CPU:"
+
+msgid "CPU socket(s):"
+msgstr "Soket CPU:"
+
+msgid "CPU(s):"
+msgstr "CPU:"
+
+msgid "CPU:"
+msgstr "CPU:"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Ubah alokasi memori domain tamu saat ini."
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "Ubah batas alokasi memori maksimum di domain tamu."
+
+msgid "Core(s) per socket:"
+msgstr "Inti per soket:"
+
+msgid "Create a domain."
+msgstr "Buat sebuah domain."
+
+msgid "Create a network."
+msgstr "Buat jaringan."
+
+msgid "Define a domain."
+msgstr "Definisikan domain."
+
+msgid "Detach device from an XML <file>"
+msgstr "Lepas perangkat dari <berkas> XML"
+
+msgid "Detach network interface."
+msgstr "Lepas antarmuka jaringan."
+
+msgid "Display the system version information."
+msgstr "Tampilkan informasi versi sistem."
+
+msgid "Domain is already active"
+msgstr "Domain sudah aktif"
+
+msgid "Domain is already running"
+msgstr "Domain sudah berjalan"
+
+msgid "Domain not found"
+msgstr "Domain tidak ditemukan"
+
+#, c-format
+msgid "Domain not found: %s"
+msgstr "Domain tidak ditemukan: %s"
+
+msgid "Failed to allocate memory"
+msgstr "Gagal mengalokasikan memory"
+
+#, c-format
+msgid "Failed to attach device from %s"
+msgstr "Gagal memasang perangkat dari %s"
+
+msgid "Failed to create XML"
+msgstr "Gagal membuat XML"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Gagal membuat domain dari %s"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "Gagal membuat jaringan dari %s"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "Gagal menentukan jaringan dari %s"
+
+#, c-format
+msgid "Failed to detach device from %s"
+msgstr "Gagal melepas perangkat dari %s"
+
+msgid "Failed to find the network"
+msgstr "Gagal menemukan jaringan"
+
+#, c-format
+msgid "Failed to find the network: %s"
+msgstr "Gagal menemukan jaringan: %s"
+
+#, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "Gagal mendapatkan statistik blok %s %s"
+
+msgid "Failed to get disk information"
+msgstr "Gagal memperoleh informasi disk"
+
+msgid "Failed to get interface information"
+msgstr "Gagal memperoleh informasi antarmuka"
+
+#, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "Gagal mendapatkan statistik antarmuka %s %s"
+
+msgid "Failed to list active domains"
+msgstr "Gagal menampilkan domain aktif"
+
+msgid "Failed to list active networks"
+msgstr "Gagal menampilkan jaringan aktif"
+
+msgid "Failed to list inactive domains"
+msgstr "Gagal menampilkan domain nonaktif"
+
+msgid "Failed to list inactive networks"
+msgstr "Gagal menampilkan jaringan yang tidak aktif"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Gagal me-reboot domain %s"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Gagal menyimpan domain %s ke %s"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Gagal mematikan domain %s"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Gagal menjalankan domain %s"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Gagal memulai jaringan %s"
+
+msgid "GET operation failed"
+msgstr "operasi GET gagal"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "operasi GET gagal: %s"
+
+msgid "GNUTLS call error"
+msgstr "kesalahan panggilan GNUTLS"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+msgid "Max memory:"
+msgstr "Memori maks:"
+
+msgid "Memory size:"
+msgstr "Ukuran memory:"
+
+msgid "NUMA cell(s):"
+msgstr "Sel NUMA:"
+
+msgid "Name"
+msgstr "Nama"
+
+msgid "Name:"
+msgstr "Nama:"
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "Jaringan %s dibuat dari %s\n"
+
+msgid "Network not found"
+msgstr "Jaringan tidak ditemukan"
+
+#, c-format
+msgid "Network not found: %s"
+msgstr "Jaringan tidak ditemukan: %s"
+
+msgid "No error message provided"
+msgstr "Tidak ada pesan kesalahan yang tersedia"
+
+msgid "OS Type:"
+msgstr "Jenis OS:"
+
+msgid "POST operation failed"
+msgstr "operasi POST gagal"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "operasi POST gagal: %s"
+
+msgid "RPC error"
+msgstr "kesalahan RPC"
+
+msgid "Restore a domain."
+msgstr "Kembalikan domain."
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Kembalikan informasi dasar tentang domain CPU virtual"
+
+msgid "Returns basic information about the domain."
+msgstr "Kembalikan informasi dasar tentang domain."
+
+msgid "Returns basic information about the node."
+msgstr "Kembalikan informasi dasar tentang node."
+
+msgid "Returns list of domains."
+msgstr "Kembalikan daftar domain"
+
+msgid "Returns list of networks."
+msgstr "Mengembalikan daftar jaringan."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Jalankan perintah reboot di domain target."
+
+msgid "Start a network."
+msgstr "Hidupkan jaringan"
+
+msgid "State"
+msgstr "Status"
+
+msgid "State:"
+msgstr "Status:"
+
+msgid "Thread(s) per core:"
+msgstr "Thread per inti:"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Unable to change MaxMemorySize"
+msgstr "Tidak dapat mengubah MaxMemorySize"
+
+msgid "Unknown"
+msgstr "Tidak diketahui"
+
+msgid "Used memory:"
+msgstr "Memory terpakai:"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Mempergunakan API: %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "VCPU:"
+
+msgid "XML file"
+msgstr "berkas XML"
+
+msgid "active"
+msgstr "aktif"
+
+msgid "attach device from an XML file"
+msgstr "pasang perangkat dari berkas XML"
+
+msgid "attach network interface"
+msgstr "pasang antarmuka jaringan"
+
+msgid "authentication required"
+msgstr "otentikasi diperlukan"
+
+msgid "autostart a network"
+msgstr "otomatis mulai jaringan"
+
+msgid "block device"
+msgstr "perangkat blok"
+
+msgid "capabilities"
+msgstr "kemampuan"
+
+msgid "change maximum memory limit"
+msgstr "ubah batas memori maksimum"
+
+msgid "change memory allocation"
+msgstr "ubah alokasi memori"
+
+msgid "change number of virtual CPUs"
+msgstr "ubah jumlah CPU virtual"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "perintah '%s' tidak mendukung opsi --%s"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "perintah '%s' membutuhkan opsi --%s "
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "perintah '%s' membutuhkan opsi <%s>"
+
+msgid "configuration file syntax error"
+msgstr "kesalahan sintak berkas konfigurasi"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "kesalahan sintak berkas konfigurasi: %s"
+
+msgid "connect to the guest console"
+msgstr "sambungkan ke konsol tamu"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "ubah id domain atau UUID ke nama domain"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "ubah nama domain atau UUID ke id domain"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "ubah nama domain atau id ke UUID domain"
+
+msgid "convert a network UUID to network name"
+msgstr "ubah UUID jaringan ke nama jaringan"
+
+msgid "convert a network name to network UUID"
+msgstr "ubah nama jaringan ke UUID jaringan"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "tidak dapat memakai isian hypervisor Xen"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "tidak dapat memakai isian hypervisor Xen %s"
+
+msgid "create a domain from an XML file"
+msgstr "buat domain dari berkas XML"
+
+msgid "create a network from an XML file"
+msgstr "buat jaringan dari berkas XML"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "definisikan (tapi jangan jalankan) domain dari berkas XML"
+
+msgid "detach device from an XML file"
+msgstr "lepas perangkat dari berkas XML"
+
+msgid "detach network interface"
+msgstr "lepas antarmuka jaringan"
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "domain %s sudah ada"
+
+msgid "domain id or name"
+msgstr "id domain atau nama"
+
+msgid "domain id or uuid"
+msgstr "id domain atau uuid"
+
+msgid "domain information"
+msgstr "informasi domain"
+
+msgid "domain information in XML"
+msgstr "informasi domain di XML"
+
+msgid "domain information incomplete, missing name"
+msgstr "informasi domain tidak lengkap, name tidak ada"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "informasi domain tidak lengkap, vbd tidak memiliki dev"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "informasi domain tidak lengkap, vbd tidak memiliki src"
+
+msgid "domain name or uuid"
+msgstr "nama domain atau uuid"
+
+msgid "domain state"
+msgstr "status domain"
+
+msgid "error"
+msgstr "kesalahan"
+
+msgid "error: "
+msgstr "kesalahan: "
+
+msgid "failed to connect to the hypervisor"
+msgstr "gagal terkoneksi ke hypervisor"
+
+msgid "failed to get URI"
+msgstr "gagal mendapatkan URI"
+
+msgid "failed to get capabilities"
+msgstr "Gagal mendapatkan kemampuan"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "gagal mendapatkan domain '%s'"
+
+msgid "failed to get domain UUID"
+msgstr "gagal mendapatkan UUID domain"
+
+msgid "failed to get hostname"
+msgstr "Gagal mendapatkan nama-host"
+
+msgid "failed to get hypervisor type"
+msgstr "gagal mendapatkan jenis hypervisor"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "gagal mendapatkan jaringan '%s"
+
+msgid "failed to get network UUID"
+msgstr "gagal mendapatkan UUID jaringan"
+
+msgid "failed to get node information"
+msgstr "gagal mendapatkan informasi node"
+
+msgid "failed to get the hypervisor version"
+msgstr "gagal mendapatkan versi hypervisor"
+
+msgid "failed to get the library version"
+msgstr "gagal mendapatkan versi pustaka"
+
+msgid "failed to open file"
+msgstr "gagal membuka berkas"
+
+msgid "failed to read configuration file"
+msgstr "gagal membaca berkas konfigurasi"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "gagal membaca berkas konfigurasi %s"
+
+msgid "failed to save content"
+msgstr "gagal menyimpan konten"
+
+msgid "failed to write configuration file"
+msgstr "gagal menulis berkas konfigurasi"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "gagal menulis berkas konfigurasi: %s"
+
+msgid "failed to write the log file"
+msgstr "gagal menulis pada berkas log"
+
+msgid "file containing an XML domain description"
+msgstr "berkas yang berisi XML keterangan domain"
+
+msgid "hypervisor connection URI"
+msgstr "URI koneksi hypervisor"
+
+msgid "inactive"
+msgstr "tidak aktif"
+
+msgid "internal error"
+msgstr "kesalahan internal"
+
+msgid "list domains"
+msgstr "daftar domain"
+
+msgid "list inactive & active domains"
+msgstr "tampilkan domain yang tidak aktif dan aktif"
+
+msgid "list inactive & active networks"
+msgstr "tampilkan jaringan yang aktif dan tidak aktif"
+
+msgid "list inactive domains"
+msgstr "tampilkan domain yang tidak aktif"
+
+msgid "list inactive networks"
+msgstr "tampilkan jaringan yang tidak aktif"
+
+msgid "list networks"
+msgstr "tampilkan jaringan"
+
+msgid "live migration"
+msgstr "migrasi langsung"
+
+msgid "migrate domain to another host"
+msgstr "migrasi domain ke host lainnya"
+
+msgid "missing devices information"
+msgstr "informasi perangkat tidak ada"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "informasi perangkat %s tidak ada"
+
+msgid "missing kernel information"
+msgstr "informasi kernel tidak ada"
+
+msgid "missing operating system information"
+msgstr "informasi sistem operasi tidak ada"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "informasi sistem operasi untuk %s tidak ada"
+
+msgid "missing source information for device"
+msgstr "informasi sumber untuk perangkat tidak ada"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "informasi sumber untuk perangkat %s tidak ada"
+
+msgid "missing target information for device"
+msgstr "informasi target untuk perangkat tidak ada"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "informasi target untuk perangkat %s tidak ada"
+
+msgid "name of the inactive domain"
+msgstr "nama domain yg nonaktif"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "jaringan %s sudah ada"
+
+msgid "network information in XML"
+msgstr "informasi jaringan dalam XML"
+
+msgid "network interface type"
+msgstr "jenis antarmuka jaringan"
+
+msgid "network name"
+msgstr "nama jaringan"
+
+msgid "network name or uuid"
+msgstr "nama jaringan atau uuid"
+
+msgid "network uuid"
+msgstr "uuid jaringan"
+
+msgid "no autostart"
+msgstr "Tidak otomatis mulai"
+
+msgid "no limit"
+msgstr "tidak terbatas"
+
+msgid "no state"
+msgstr "tidak ada status"
+
+msgid "no valid connection"
+msgstr "tidak ada koneksi yang valid"
+
+msgid "node information"
+msgstr "informasi node"
+
+msgid "number of virtual CPUs"
+msgstr "jumlah CPU virtual"
+
+msgid "operation failed"
+msgstr "operasi gagal"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "operasi gagal: %s"
+
+msgid "out of memory"
+msgstr "kehabisan memori"
+
+msgid "print help"
+msgstr "cetak bantuan"
+
+msgid "print the hypervisor hostname"
+msgstr "cetak nama-host hypervisor"
+
+msgid "quit this interactive terminal"
+msgstr "keluar dari terminal interaktif ini"
+
+msgid "read-only connection"
+msgstr "read-only connectio"
+
+msgid "reboot a domain"
+msgstr "reboot domain"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "kembalikan domain dari status yg tersimpan di berkas"
+
+msgid "save a domain state to a file"
+msgstr "simpan status domain ke berkas"
+
+msgid "show version"
+msgstr "tampilkan versi"
+
+msgid "source of network interface"
+msgstr "sumber antarmuka jaringan"
+
+msgid "system call error"
+msgstr "Kesalahan panggilan sistem"
+
+msgid "target network name"
+msgstr "nama jaringan target"
+
+msgid "this domain exists already"
+msgstr "domain ini sudah ada"
+
+msgid "this network exists already"
+msgstr "jaringan ini sudah ada"
+
+msgid "too many drivers registered"
+msgstr "terlalu banyak driver yang didaftarkan"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "terlalu banyak driver yang didaftarkan di %s"
+
+msgid "tty console"
+msgstr "konsol tty"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "data yang tidak diharapkan '%s'"
+
+msgid "unknown OS type"
+msgstr "jenis OS tidak diketahui"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "jenis OS %s tidak diketahui"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "perintah tidak diketahui: '%s'"
+
+msgid "unknown host"
+msgstr "host tidak diketahui"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "host %s tidak diketahui"
+
+#, c-format
+msgid "unknown procedure: %d"
+msgstr "prosedur tidak dikenali: %d"
+
+msgid "unterminated number"
+msgstr "nomer yang tidak ditutup"
+
+msgid "unterminated string"
+msgstr "string yang tidak ditutup"
+
+msgid "vcpu number"
+msgstr "jumlah vcpu"
+
+#, c-format
+msgid "version mismatch (actual %x, expected %x)"
+msgstr "versi tidak sesuai (kenyataan %x, diharapkan %x)"
+
+msgid "vnc display"
+msgstr "tampilan vnc"
+
+msgid "warning"
+msgstr "peringatan"
+
+msgid "where to save the data"
+msgstr "tempat menyimpan data"

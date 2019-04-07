@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1 >Handling of errors</h1>
@@ -29,7 +29,7 @@ set specifically to a connection with</p>
         call it with the error information</li><li>otherwise call <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>
         which is the default error function of the library issuing the error
         on stderr</li><li>save the error in the connection for later retrieval with <a href="html/libvirt-virterror.html#virConnGetLastError">virConnGetLastError</a></li></ol></li>
-      <li>otherwise like when failing to create an hypervisor connection:
+      <li>otherwise like when failing to create a hypervisor connection:
     <ol><li>if there is a global callback set with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>,
         call it with the error information</li><li>otherwise call <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>
         which is the default error function of the library issuing the error

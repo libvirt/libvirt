@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_ACCESS_DRIVER_H__
-# define __VIR_ACCESS_DRIVER_H__
+#ifndef LIBVIRT_VIRACCESSDRIVER_H
+# define LIBVIRT_VIRACCESSDRIVER_H
 
 # include "conf/domain_conf.h"
 # include "access/viraccessmanager.h"
@@ -47,6 +47,10 @@ typedef int (*virAccessDriverCheckNWFilterDrv)(virAccessManagerPtr manager,
                                                const char *driverName,
                                                virNWFilterDefPtr nwfilter,
                                                virAccessPermNWFilter av);
+typedef int (*virAccessDriverCheckNWFilterBindingDrv)(virAccessManagerPtr manager,
+                                                      const char *driverName,
+                                                      virNWFilterBindingDefPtr binding,
+                                                      virAccessPermNWFilterBinding av);
 typedef int (*virAccessDriverCheckSecretDrv)(virAccessManagerPtr manager,
                                              const char *driverName,
                                              virSecretDefPtr secret,
@@ -80,10 +84,11 @@ struct _virAccessDriver {
     virAccessDriverCheckNetworkDrv checkNetwork;
     virAccessDriverCheckNodeDeviceDrv checkNodeDevice;
     virAccessDriverCheckNWFilterDrv checkNWFilter;
+    virAccessDriverCheckNWFilterBindingDrv checkNWFilterBinding;
     virAccessDriverCheckSecretDrv checkSecret;
     virAccessDriverCheckStoragePoolDrv checkStoragePool;
     virAccessDriverCheckStorageVolDrv checkStorageVol;
 };
 
 
-#endif /* __VIR_ACCESS_DRIVER_H__ */
+#endif /* LIBVIRT_VIRACCESSDRIVER_H */

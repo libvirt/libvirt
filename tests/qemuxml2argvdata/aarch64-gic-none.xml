@@ -1,0 +1,15 @@
+<domain type='kvm'>
+  <name>aarch64test</name>
+  <uuid>6ba410c5-1e5c-4d57-bee7-2228e7ffa32f</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+  </os>
+  <cpu mode='host-passthrough'/>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='usb' index='0' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

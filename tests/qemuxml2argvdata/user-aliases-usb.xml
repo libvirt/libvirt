@@ -1,0 +1,78 @@
+<domain type='kvm'>
+  <name>gentoo</name>
+  <uuid>a75aca4b-a02f-2bcb-4a91-c93cd848c34b</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-1.4'>hvm</type>
+    <boot dev='hd'/>
+    <boot dev='cdrom'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <pm>
+    <suspend-to-mem enabled='yes'/>
+    <suspend-to-disk enabled='yes'/>
+  </pm>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='ich9-ehci1'>
+      <alias name='ua-myUSB1'/>
+      <address type='pci' domain='0' bus='0' slot='4' function='7'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci1'>
+      <alias name='ua-myUSB2'/>
+      <master startport='0'/>
+      <address type='pci' domain='0' bus='0' slot='4' function='0' multifunction='on'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci2'>
+      <alias name='ua-myUSB3'/>
+      <master startport='2'/>
+      <address type='pci' domain='0' bus='0' slot='4' function='1'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci3'>
+      <alias name='ua-myUSB4'/>
+      <master startport='4'/>
+      <address type='pci' domain='0' bus='0' slot='4' function='2'/>
+    </controller>
+    <controller type='usb' index='1' model='ich9-ehci1'>
+      <alias name='ua-myUSB5'/>
+      <address type='pci' domain='0' bus='0' slot='5' function='7'/>
+    </controller>
+    <controller type='usb' index='1' model='ich9-uhci1'>
+      <alias name='ua-myUSB6'/>
+      <master startport='0'/>
+      <address type='pci' domain='0' bus='0' slot='5' function='0' multifunction='on'/>
+    </controller>
+    <controller type='usb' index='1' model='ich9-uhci2'>
+      <alias name='ua-myUSB7'/>
+      <master startport='2'/>
+      <address type='pci' domain='0' bus='0' slot='5' function='1'/>
+    </controller>
+    <controller type='usb' index='1' model='ich9-uhci3'>
+      <alias name='ua-myUSB8'/>
+      <master startport='4'/>
+      <address type='pci' domain='0' bus='0' slot='5' function='2'/>
+    </controller>
+    <hostdev mode='subsystem' type='usb' managed='yes'>
+      <source>
+        <address bus='14' device='6'/>
+      </source>
+      <address type='usb' bus='0' port='3'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='usb' managed='yes'>
+      <source>
+        <address bus='15' device='6'/>
+      </source>
+      <address type='usb' bus='1' port='3'/>
+    </hostdev>
+  </devices>
+</domain>

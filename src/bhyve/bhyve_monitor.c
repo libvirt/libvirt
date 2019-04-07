@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Conrad Meyer <cse.cem@gmail.com>
  */
 
 #include <config.h>
@@ -35,7 +33,7 @@
 #include "virfile.h"
 #include "virlog.h"
 
-#define VIR_FROM_THIS	VIR_FROM_BHYVE
+#define VIR_FROM_THIS   VIR_FROM_BHYVE
 
 VIR_LOG_INIT("bhyve.bhyve_monitor");
 
@@ -177,7 +175,6 @@ bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver)
 void
 bhyveMonitorClose(bhyveMonitorPtr mon)
 {
-
     if (mon == NULL)
         return;
 

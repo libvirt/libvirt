@@ -1,5 +1,5 @@
-/*---------------------------------------------------------------------------*/
-/* Copyright 2010, diateam (www.diateam.net)
+/*
+ * Copyright 2010, diateam (www.diateam.net)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,11 +15,10 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-/*---------------------------------------------------------------------------*/
 
-#ifndef VMWARE_DRIVER_H
-# define VMWARE_DRIVER_H
+#ifndef LIBVIRT_VMWARE_DRIVER_H
+# define LIBVIRT_VMWARE_DRIVER_H
 
 int vmwareRegister(void);
 
-#endif
+#endif /* LIBVIRT_VMWARE_DRIVER_H */

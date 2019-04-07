@@ -1,0 +1,14 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>SandyBridge-IBRS</model>
+  <vendor>Intel</vendor>
+  <feature policy='require' name='vme'/>
+  <feature policy='require' name='ss'/>
+  <feature policy='require' name='pcid'/>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='arat'/>
+  <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='stibp'/>
+  <feature policy='require' name='ssbd'/>
+  <feature policy='require' name='xsaveopt'/>
+  <feature policy='require' name='pdpe1gb'/>
+</cpu>

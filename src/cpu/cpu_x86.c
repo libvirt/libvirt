@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Jiri Denemark <jdenemar@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdint.h>
 
 #include "virlog.h"
 #include "viralloc.h"
@@ -33,6 +29,7 @@
 #include "virbuffer.h"
 #include "virendian.h"
 #include "virstring.h"
+#include "virhostcpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
@@ -60,18 +57,18 @@ struct _virCPUx86Feature {
 };
 
 
-#define KVM_FEATURE_DEF(Name, Eax_in, Eax)                          \
-    static virCPUx86CPUID Name ## _cpuid[] = {                      \
-        { .eax_in = Eax_in, .eax = Eax },                           \
+#define KVM_FEATURE_DEF(Name, Eax_in, Eax) \
+    static virCPUx86CPUID Name ## _cpuid[] = { \
+        { .eax_in = Eax_in, .eax = Eax }, \
     }
 
-#define KVM_FEATURE(Name)                                           \
-    {                                                               \
-        .name = (char *) Name,                                      \
-        .data = {                                                   \
-            .len = ARRAY_CARDINALITY(Name ## _cpuid),               \
-            .data = Name ## _cpuid                                  \
-        }                                                           \
+#define KVM_FEATURE(Name) \
+    { \
+        .name = (char *) Name, \
+        .data = { \
+            .len = ARRAY_CARDINALITY(Name ## _cpuid), \
+            .data = Name ## _cpuid \
+        } \
     }
 
 KVM_FEATURE_DEF(VIR_CPU_x86_KVM_CLOCKSOURCE,
@@ -100,7 +97,7 @@ KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_STIMER,
                 0x40000003, 0x00000008);
 KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_RELAXED,
                 0x40000003, 0x00000020);
-KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_SPINLOCK,
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_SPINLOCKS,
                 0x40000003, 0x00000022);
 KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_VAPIC,
                 0x40000003, 0x00000030);
@@ -108,6 +105,16 @@ KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_VPINDEX,
                 0x40000003, 0x00000040);
 KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_RESET,
                 0x40000003, 0x00000080);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_FREQUENCIES,
+                0x40000003, 0x00000800);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_REENLIGHTENMENT,
+                0x40000003, 0x00002000);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_TLBFLUSH,
+                0x40000004, 0x00000004);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_IPI,
+                0x40000004, 0x00000400);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_EVMCS,
+                0x40000004, 0x00004000);
 
 static virCPUx86Feature x86_kvm_features[] =
 {
@@ -124,10 +131,15 @@ static virCPUx86Feature x86_kvm_features[] =
     KVM_FEATURE(VIR_CPU_x86_KVM_HV_SYNIC),
     KVM_FEATURE(VIR_CPU_x86_KVM_HV_STIMER),
     KVM_FEATURE(VIR_CPU_x86_KVM_HV_RELAXED),
-    KVM_FEATURE(VIR_CPU_x86_KVM_HV_SPINLOCK),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_SPINLOCKS),
     KVM_FEATURE(VIR_CPU_x86_KVM_HV_VAPIC),
     KVM_FEATURE(VIR_CPU_x86_KVM_HV_VPINDEX),
     KVM_FEATURE(VIR_CPU_x86_KVM_HV_RESET),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_FREQUENCIES),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_REENLIGHTENMENT),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_TLBFLUSH),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_IPI),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_EVMCS),
 };
 
 typedef struct _virCPUx86Model virCPUx86Model;
@@ -135,7 +147,8 @@ typedef virCPUx86Model *virCPUx86ModelPtr;
 struct _virCPUx86Model {
     char *name;
     virCPUx86VendorPtr vendor;
-    uint32_t signature;
+    size_t nsignatures;
+    uint32_t *signatures;
     virCPUx86Data data;
 };
 
@@ -153,8 +166,10 @@ struct _virCPUx86Map {
 };
 
 static virCPUx86MapPtr cpuMap;
-int virCPUx86MapOnceInit(void);
-VIR_ONCE_GLOBAL_INIT(virCPUx86Map);
+static unsigned int microcodeVersion;
+
+int virCPUx86DriverOnceInit(void);
+VIR_ONCE_GLOBAL_INIT(virCPUx86Driver);
 
 
 typedef enum {
@@ -240,6 +255,37 @@ x86cpuidAndBits(virCPUx86CPUID *cpuid,
     cpuid->edx &= mask->edx;
 }
 
+
+static virCPUx86FeaturePtr
+x86FeatureFind(virCPUx86MapPtr map,
+               const char *name)
+{
+    size_t i;
+
+    for (i = 0; i < map->nfeatures; i++) {
+        if (STREQ(map->features[i]->name, name))
+            return map->features[i];
+    }
+
+    return NULL;
+}
+
+
+static virCPUx86FeaturePtr
+x86FeatureFindInternal(const char *name)
+{
+    size_t i;
+    size_t count = ARRAY_CARDINALITY(x86_kvm_features);
+
+    for (i = 0; i < count; i++) {
+        if (STREQ(x86_kvm_features[i].name, name))
+            return x86_kvm_features + i;
+    }
+
+    return NULL;
+}
+
+
 static int
 virCPUx86CPUIDSorter(const void *a, const void *b)
 {
@@ -293,7 +339,7 @@ x86DataCpuid(const virCPUx86Data *data,
     return NULL;
 }
 
-void
+static void
 virCPUx86DataClear(virCPUx86Data *data)
 {
     if (!data)
@@ -303,24 +349,8 @@ virCPUx86DataClear(virCPUx86Data *data)
 }
 
 
-virCPUDataPtr
-virCPUx86MakeData(virArch arch, virCPUx86Data *data)
-{
-    virCPUDataPtr cpuData;
-
-    if (VIR_ALLOC(cpuData) < 0)
-        return NULL;
-
-    cpuData->arch = arch;
-    cpuData->data.x86 = *data;
-    data->len = 0;
-    data->data = NULL;
-
-    return cpuData;
-}
-
 static void
-x86FreeCPUData(virCPUDataPtr data)
+virCPUx86DataFree(virCPUDataPtr data)
 {
     if (!data)
         return;
@@ -346,9 +376,9 @@ x86DataCopy(virCPUx86Data *dst, const virCPUx86Data *src)
 }
 
 
-int
-virCPUx86DataAddCPUID(virCPUx86Data *data,
-                      const virCPUx86CPUID *cpuid)
+static int
+virCPUx86DataAddCPUIDInt(virCPUx86Data *data,
+                         const virCPUx86CPUID *cpuid)
 {
     virCPUx86CPUID *existing;
 
@@ -381,7 +411,7 @@ x86DataAdd(virCPUx86Data *data1,
         if (cpuid1) {
             x86cpuidSetBits(cpuid1, cpuid2);
         } else {
-            if (virCPUx86DataAddCPUID(data1, cpuid2) < 0)
+            if (virCPUx86DataAddCPUIDInt(data1, cpuid2) < 0)
                 return -1;
         }
     }
@@ -436,7 +466,6 @@ static bool
 x86DataIsSubset(const virCPUx86Data *data,
                 const virCPUx86Data *subset)
 {
-
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit((virCPUx86Data *)subset);
     const virCPUx86CPUID *cpuid;
     const virCPUx86CPUID *cpuidSubset;
@@ -494,9 +523,30 @@ x86DataToVendor(const virCPUx86Data *data,
 }
 
 
+static int
+virCPUx86VendorToCPUID(const char *vendor,
+                       virCPUx86CPUID *cpuid)
+{
+    if (strlen(vendor) != VENDOR_STRING_LENGTH) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid CPU vendor string '%s'"), vendor);
+        return -1;
+    }
+
+    cpuid->eax_in = 0;
+    cpuid->ecx_in = 0;
+    cpuid->ebx = virReadBufInt32LE(vendor);
+    cpuid->edx = virReadBufInt32LE(vendor + 4);
+    cpuid->ecx = virReadBufInt32LE(vendor + 8);
+
+    return 0;
+}
+
+
 static uint32_t
 x86MakeSignature(unsigned int family,
-                 unsigned int model)
+                 unsigned int model,
+                 unsigned int stepping)
 {
     uint32_t sig = 0;
 
@@ -516,6 +566,7 @@ x86MakeSignature(unsigned int family,
      *
      * family = eax[27:20] + eax[11:8]
      * model = eax[19:16] << 4 + eax[7:4]
+     * stepping = eax[3:0]
      */
 
     /* extFam */
@@ -535,11 +586,30 @@ x86MakeSignature(unsigned int family,
     /* Mod */
     sig |= (model & 0xf) << 4;
 
-    /* Step is irrelevant, it is used to distinguish different revisions
-     * of the same CPU model
-     */
+    /* Step */
+    sig |= stepping & 0xf;
 
     return sig;
+}
+
+
+static void
+x86DataToSignatureFull(const virCPUx86Data *data,
+                       unsigned int *family,
+                       unsigned int *model,
+                       unsigned int *stepping)
+{
+    virCPUx86CPUID leaf1 = { .eax_in = 0x1 };
+    virCPUx86CPUID *cpuid;
+
+    *family = *model = *stepping = 0;
+
+    if (!(cpuid = x86DataCpuid(data, &leaf1)))
+        return;
+
+    *family = ((cpuid->eax >> 20) & 0xff) + ((cpuid->eax >> 8) & 0xf);
+    *model = ((cpuid->eax >> 12) & 0xf0) + ((cpuid->eax >> 4) & 0xf);
+    *stepping = cpuid->eax & 0xf;
 }
 
 
@@ -565,14 +635,15 @@ x86DataAddSignature(virCPUx86Data *data,
 {
     virCPUx86CPUID cpuid = { .eax_in = 0x1, .eax = signature };
 
-    return virCPUx86DataAddCPUID(data, &cpuid);
+    return virCPUx86DataAddCPUIDInt(data, &cpuid);
 }
 
 
 static virCPUDefPtr
 x86DataToCPU(const virCPUx86Data *data,
              virCPUx86ModelPtr model,
-             virCPUx86MapPtr map)
+             virCPUx86MapPtr map,
+             virDomainCapsCPUModelPtr hvModel)
 {
     virCPUDefPtr cpu;
     virCPUx86Data copy = VIR_CPU_X86_DATA_INIT;
@@ -591,6 +662,21 @@ x86DataToCPU(const virCPUx86Data *data,
 
     x86DataSubtract(&copy, &modelData);
     x86DataSubtract(&modelData, data);
+
+    /* The hypervisor's version of the CPU model (hvModel) may contain
+     * additional features which may be currently unavailable. Such features
+     * block usage of the CPU model and we need to explicitly disable them.
+     */
+    if (hvModel && hvModel->blockers) {
+        char **blocker;
+        virCPUx86FeaturePtr feature;
+
+        for (blocker = hvModel->blockers; *blocker; blocker++) {
+            if ((feature = x86FeatureFind(map, *blocker)) &&
+                !x86DataIsSubset(&copy, &feature->data))
+                x86DataAdd(&modelData, &feature->data);
+        }
+    }
 
     /* because feature policy is ignored for host CPU */
     cpu->type = VIR_CPU_TYPE_GUEST;
@@ -637,27 +723,26 @@ x86VendorFind(virCPUx86MapPtr map,
 }
 
 
-static virCPUx86VendorPtr
+static int
 x86VendorParse(xmlXPathContextPtr ctxt,
-               virCPUx86MapPtr map)
+               const char *name,
+               void *data)
 {
+    virCPUx86MapPtr map = data;
     virCPUx86VendorPtr vendor = NULL;
     char *string = NULL;
+    int ret = -1;
 
     if (VIR_ALLOC(vendor) < 0)
-        goto error;
+        goto cleanup;
 
-    vendor->name = virXPathString("string(@name)", ctxt);
-    if (!vendor->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing CPU vendor name"));
-        goto error;
-    }
+    if (VIR_STRDUP(vendor->name, name) < 0)
+        goto cleanup;
 
     if (x86VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
-        goto error;
+        goto cleanup;
     }
 
     string = virXPathString("string(@string)", ctxt);
@@ -665,51 +750,21 @@ x86VendorParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing vendor string for CPU vendor %s"),
                        vendor->name);
-        goto error;
-    }
-    if (strlen(string) != VENDOR_STRING_LENGTH) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid CPU vendor string '%s'"), string);
-        goto error;
+        goto cleanup;
     }
 
-    vendor->cpuid.eax_in = 0;
-    vendor->cpuid.ecx_in = 0;
-    vendor->cpuid.ebx = virReadBufInt32LE(string);
-    vendor->cpuid.edx = virReadBufInt32LE(string + 4);
-    vendor->cpuid.ecx = virReadBufInt32LE(string + 8);
+    if (virCPUx86VendorToCPUID(string, &vendor->cpuid) < 0)
+        goto cleanup;
+
+    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
-    VIR_FREE(string);
-    return vendor;
-
- error:
     x86VendorFree(vendor);
-    vendor = NULL;
-    goto cleanup;
-}
-
-
-static int
-x86VendorsLoad(virCPUx86MapPtr map,
-               xmlXPathContextPtr ctxt,
-               xmlNodePtr *nodes,
-               int n)
-{
-    virCPUx86VendorPtr vendor;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->vendors, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(vendor = x86VendorParse(ctxt, map)))
-            return -1;
-        map->vendors[map->nvendors++] = vendor;
-    }
-
-    return 0;
+    VIR_FREE(string);
+    return ret;
 }
 
 
@@ -734,36 +789,6 @@ x86FeatureFree(virCPUx86FeaturePtr feature)
     VIR_FREE(feature->name);
     virCPUx86DataClear(&feature->data);
     VIR_FREE(feature);
-}
-
-
-static virCPUx86FeaturePtr
-x86FeatureFind(virCPUx86MapPtr map,
-               const char *name)
-{
-    size_t i;
-
-    for (i = 0; i < map->nfeatures; i++) {
-        if (STREQ(map->features[i]->name, name))
-            return map->features[i];
-    }
-
-    return NULL;
-}
-
-
-static virCPUx86FeaturePtr
-x86FeatureFindInternal(const char *name)
-{
-    size_t i;
-    size_t count = ARRAY_CARDINALITY(x86_kvm_features);
-
-    for (i = 0; i < count; i++) {
-        if (STREQ(x86_kvm_features[i].name, name))
-            return x86_kvm_features + i;
-    }
-
-    return NULL;
 }
 
 
@@ -864,32 +889,32 @@ x86ParseCPUID(xmlXPathContextPtr ctxt,
 }
 
 
-static virCPUx86FeaturePtr
+static int
 x86FeatureParse(xmlXPathContextPtr ctxt,
-                virCPUx86MapPtr map)
+                const char *name,
+                void *data)
 {
+    virCPUx86MapPtr map = data;
     xmlNodePtr *nodes = NULL;
     virCPUx86FeaturePtr feature;
     virCPUx86CPUID cpuid;
     size_t i;
     int n;
     char *str = NULL;
+    int ret = -1;
 
     if (!(feature = x86FeatureNew()))
-        goto error;
+        goto cleanup;
 
     feature->migratable = true;
-    feature->name = virXPathString("string(@name)", ctxt);
-    if (!feature->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU feature name"));
-        goto error;
-    }
+
+    if (VIR_STRDUP(feature->name, name) < 0)
+        goto cleanup;
 
     if (x86FeatureFind(map, feature->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU feature %s already defined"), feature->name);
-        goto error;
+        goto cleanup;
     }
 
     str = virXPathString("string(@migratable)", ctxt);
@@ -898,7 +923,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
 
     n = virXPathNodeSet("./cpuid", ctxt, &nodes);
     if (n < 0)
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
@@ -906,71 +931,28 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid cpuid[%zu] in %s feature"),
                            i, feature->name);
-            goto error;
+            goto cleanup;
         }
-        if (virCPUx86DataAddCPUID(&feature->data, &cpuid))
-            goto error;
+        if (virCPUx86DataAddCPUIDInt(&feature->data, &cpuid))
+            goto cleanup;
     }
+
+    if (!feature->migratable &&
+        VIR_APPEND_ELEMENT_COPY(map->migrate_blockers,
+                                map->nblockers,
+                                feature) < 0)
+        goto cleanup;
+
+    if (VIR_APPEND_ELEMENT(map->features, map->nfeatures, feature) < 0)
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
+    x86FeatureFree(feature);
     VIR_FREE(nodes);
     VIR_FREE(str);
-    return feature;
-
- error:
-    x86FeatureFree(feature);
-    feature = NULL;
-    goto cleanup;
-}
-
-
-static int
-x86FeaturesLoad(virCPUx86MapPtr map,
-                xmlXPathContextPtr ctxt,
-                xmlNodePtr *nodes,
-                int n)
-{
-    virCPUx86FeaturePtr feature;
-    size_t i;
-
-    if (VIR_ALLOC_N(map->features, n) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (!(feature = x86FeatureParse(ctxt, map)))
-            return -1;
-        map->features[map->nfeatures++] = feature;
-        if (!feature->migratable &&
-            VIR_APPEND_ELEMENT(map->migrate_blockers,
-                               map->nblockers,
-                               feature) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-static int
-x86DataFromCPUFeatures(virCPUx86Data *data,
-                       virCPUDefPtr cpu,
-                       virCPUx86MapPtr map)
-{
-    size_t i;
-
-    for (i = 0; i < cpu->nfeatures; i++) {
-        virCPUx86FeaturePtr feature;
-        if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown CPU feature %s"), cpu->features[i].name);
-            return -1;
-        }
-
-        if (x86DataAdd(data, &feature->data) < 0)
-            return -1;
-    }
-
-    return 0;
+    return ret;
 }
 
 
@@ -993,8 +975,29 @@ x86ModelFree(virCPUx86ModelPtr model)
         return;
 
     VIR_FREE(model->name);
+    VIR_FREE(model->signatures);
     virCPUx86DataClear(&model->data);
     VIR_FREE(model);
+}
+
+
+static int
+x86ModelCopySignatures(virCPUx86ModelPtr dst,
+                       virCPUx86ModelPtr src)
+{
+    size_t i;
+
+    if (src->nsignatures == 0)
+        return 0;
+
+    if (VIR_ALLOC_N(dst->signatures, src->nsignatures) < 0)
+        return -1;
+
+    dst->nsignatures = src->nsignatures;
+    for (i = 0; i < src->nsignatures; i++)
+        dst->signatures[i] = src->signatures[i];
+
+    return 0;
 }
 
 
@@ -1005,13 +1008,13 @@ x86ModelCopy(virCPUx86ModelPtr model)
 
     if (VIR_ALLOC(copy) < 0 ||
         VIR_STRDUP(copy->name, model->name) < 0 ||
+        x86ModelCopySignatures(copy, model) < 0 ||
         x86DataCopy(&copy->data, &model->data) < 0) {
         x86ModelFree(copy);
         return NULL;
     }
 
     copy->vendor = model->vendor;
-    copy->signature = model->signature;
 
     return copy;
 }
@@ -1169,153 +1172,201 @@ x86ModelCompare(virCPUx86ModelPtr model1,
 }
 
 
-static virCPUx86ModelPtr
-x86ModelParse(xmlXPathContextPtr ctxt,
-              virCPUx86MapPtr map)
+static int
+x86ModelParseAncestor(virCPUx86ModelPtr model,
+                      xmlXPathContextPtr ctxt,
+                      virCPUx86MapPtr map)
 {
-    xmlNodePtr *nodes = NULL;
-    virCPUx86ModelPtr model;
-    char *vendor = NULL;
-    size_t i;
-    int n;
+    VIR_AUTOFREE(char *) name = NULL;
+    virCPUx86ModelPtr ancestor;
+    int rc;
 
-    if (!(model = x86ModelNew()))
-        goto error;
+    if ((rc = virXPathBoolean("boolean(./model)", ctxt)) <= 0)
+        return rc;
 
-    model->name = virXPathString("string(@name)", ctxt);
-    if (!model->name) {
+    name = virXPathString("string(./model/@name)", ctxt);
+    if (!name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU model name"));
-        goto error;
+                       _("Missing ancestor's name in CPU model %s"),
+                       model->name);
+        return -1;
     }
 
-    if (virXPathNode("./model", ctxt)) {
-        virCPUx86ModelPtr ancestor;
-        char *name;
-
-        name = virXPathString("string(./model/@name)", ctxt);
-        if (!name) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing ancestor's name in CPU model %s"),
-                           model->name);
-            goto error;
-        }
-
-        if (!(ancestor = x86ModelFind(map, name))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Ancestor model %s not found for CPU model %s"),
-                           name, model->name);
-            VIR_FREE(name);
-            goto error;
-        }
-
-        VIR_FREE(name);
-
-        model->vendor = ancestor->vendor;
-        if (x86DataCopy(&model->data, &ancestor->data) < 0)
-            goto error;
+    if (!(ancestor = x86ModelFind(map, name))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Ancestor model %s not found for CPU model %s"),
+                       name, model->name);
+        return -1;
     }
 
-    if (virXPathBoolean("boolean(./signature)", ctxt)) {
-        unsigned int sigFamily = 0;
-        unsigned int sigModel = 0;
-        int rc;
+    model->vendor = ancestor->vendor;
+    if (x86ModelCopySignatures(model, ancestor) < 0 ||
+        x86DataCopy(&model->data, &ancestor->data) < 0)
+        return -1;
 
-        rc = virXPathUInt("string(./signature/@family)", ctxt, &sigFamily);
-        if (rc < 0 || sigFamily == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid CPU signature family in model %s"),
-                           model->name);
-            goto cleanup;
-        }
-
-        rc = virXPathUInt("string(./signature/@model)", ctxt, &sigModel);
-        if (rc < 0 || sigModel == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid CPU signature model in model %s"),
-                           model->name);
-            goto cleanup;
-        }
-
-        model->signature = x86MakeSignature(sigFamily, sigModel);
-    }
-
-    if (virXPathBoolean("boolean(./vendor)", ctxt)) {
-        vendor = virXPathString("string(./vendor/@name)", ctxt);
-        if (!vendor) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid vendor element in CPU model %s"),
-                           model->name);
-            goto error;
-        }
-
-        if (!(model->vendor = x86VendorFind(map, vendor))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown vendor %s referenced by CPU model %s"),
-                           vendor, model->name);
-            goto error;
-        }
-    }
-
-    n = virXPathNodeSet("./feature", ctxt, &nodes);
-    if (n < 0)
-        goto error;
-
-    for (i = 0; i < n; i++) {
-        virCPUx86FeaturePtr feature;
-        char *name;
-
-        if (!(name = virXMLPropString(nodes[i], "name"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing feature name for CPU model %s"), model->name);
-            goto error;
-        }
-
-        if (!(feature = x86FeatureFind(map, name))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Feature %s required by CPU model %s not found"),
-                           name, model->name);
-            VIR_FREE(name);
-            goto error;
-        }
-        VIR_FREE(name);
-
-        if (x86DataAdd(&model->data, &feature->data))
-            goto error;
-    }
-
- cleanup:
-    VIR_FREE(vendor);
-    VIR_FREE(nodes);
-    return model;
-
- error:
-    x86ModelFree(model);
-    model = NULL;
-    goto cleanup;
+    return 0;
 }
 
 
 static int
-x86ModelsLoad(virCPUx86MapPtr map,
-              xmlXPathContextPtr ctxt,
-              xmlNodePtr *nodes,
-              int n)
+x86ModelParseSignatures(virCPUx86ModelPtr model,
+                        xmlXPathContextPtr ctxt)
 {
-    virCPUx86ModelPtr model;
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    xmlNodePtr root = ctxt->node;
     size_t i;
+    int n;
 
-    if (VIR_ALLOC_N(map->models, n) < 0)
-        return -1;
+    if ((n = virXPathNodeSet("./signature", ctxt, &nodes)) <= 0)
+        return n;
+
+    /* Remove inherited signatures. */
+    VIR_FREE(model->signatures);
+
+    model->nsignatures = n;
+    if (VIR_ALLOC_N(model->signatures, n) < 0)
+       return -1;
 
     for (i = 0; i < n; i++) {
+        unsigned int sigFamily = 0;
+        unsigned int sigModel = 0;
+        int rc;
+
         ctxt->node = nodes[i];
-        if (!(model = x86ModelParse(ctxt, map)))
+
+        rc = virXPathUInt("string(@family)", ctxt, &sigFamily);
+        if (rc < 0 || sigFamily == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid CPU signature family in model %s"),
+                           model->name);
             return -1;
-        map->models[map->nmodels++] = model;
+        }
+
+        rc = virXPathUInt("string(@model)", ctxt, &sigModel);
+        if (rc < 0 || sigModel == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid CPU signature model in model %s"),
+                           model->name);
+            return -1;
+        }
+
+        model->signatures[i] = x86MakeSignature(sigFamily, sigModel, 0);
+    }
+
+    ctxt->node = root;
+    return 0;
+}
+
+
+static int
+x86ModelParseVendor(virCPUx86ModelPtr model,
+                    xmlXPathContextPtr ctxt,
+                    virCPUx86MapPtr map)
+{
+    VIR_AUTOFREE(char *) vendor = NULL;
+    int rc;
+
+    if ((rc = virXPathBoolean("boolean(./vendor)", ctxt)) <= 0)
+        return rc;
+
+    vendor = virXPathString("string(./vendor/@name)", ctxt);
+    if (!vendor) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid vendor element in CPU model %s"),
+                       model->name);
+        return -1;
+    }
+
+    if (!(model->vendor = x86VendorFind(map, vendor))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown vendor %s referenced by CPU model %s"),
+                       vendor, model->name);
+        return -1;
     }
 
     return 0;
+}
+
+
+static int
+x86ModelParseFeatures(virCPUx86ModelPtr model,
+                      xmlXPathContextPtr ctxt,
+                      virCPUx86MapPtr map)
+{
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) <= 0)
+        return n;
+
+    for (i = 0; i < n; i++) {
+        VIR_AUTOFREE(char *) ftname = NULL;
+        virCPUx86FeaturePtr feature;
+
+        if (!(ftname = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Missing feature name for CPU model %s"),
+                           model->name);
+            return -1;
+        }
+
+        if (!(feature = x86FeatureFind(map, ftname))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Feature %s required by CPU model %s not found"),
+                           ftname, model->name);
+            return -1;
+        }
+
+        if (x86DataAdd(&model->data, &feature->data))
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+x86ModelParse(xmlXPathContextPtr ctxt,
+              const char *name,
+              void *data)
+{
+    virCPUx86MapPtr map = data;
+    virCPUx86ModelPtr model = NULL;
+    int ret = -1;
+
+    if (x86ModelFind(map, name)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Multiple definitions of CPU model '%s'"), name);
+        goto cleanup;
+    }
+
+    if (!(model = x86ModelNew()))
+        goto cleanup;
+
+    if (VIR_STRDUP(model->name, name) < 0)
+        goto cleanup;
+
+    if (x86ModelParseAncestor(model, ctxt, map) < 0)
+        goto cleanup;
+
+    if (x86ModelParseSignatures(model, ctxt) < 0)
+        goto cleanup;
+
+    if (x86ModelParseVendor(model, ctxt, map) < 0)
+        goto cleanup;
+
+    if (x86ModelParseFeatures(model, ctxt, map) < 0)
+        goto cleanup;
+
+    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    x86ModelFree(model);
+    return ret;
 }
 
 
@@ -1348,30 +1399,6 @@ x86MapFree(virCPUx86MapPtr map)
 }
 
 
-static int
-x86MapLoadCallback(cpuMapElement element,
-                   xmlXPathContextPtr ctxt,
-                   xmlNodePtr *nodes,
-                   int n,
-                   void *data)
-{
-    virCPUx86MapPtr map = data;
-
-    switch (element) {
-    case CPU_MAP_ELEMENT_VENDOR:
-        return x86VendorsLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_FEATURE:
-        return x86FeaturesLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_MODEL:
-        return x86ModelsLoad(map, ctxt, nodes, n);
-    case CPU_MAP_ELEMENT_LAST:
-        break;
-    }
-
-    return 0;
-}
-
-
 static virCPUx86MapPtr
 virCPUx86LoadMap(void)
 {
@@ -1380,7 +1407,7 @@ virCPUx86LoadMap(void)
     if (VIR_ALLOC(map) < 0)
         return NULL;
 
-    if (cpuMapLoad("x86", x86MapLoadCallback, map) < 0)
+    if (cpuMapLoad("x86", x86VendorParse, x86FeatureParse, x86ModelParse, map) < 0)
         goto error;
 
     return map;
@@ -1392,10 +1419,12 @@ virCPUx86LoadMap(void)
 
 
 int
-virCPUx86MapOnceInit(void)
+virCPUx86DriverOnceInit(void)
 {
     if (!(cpuMap = virCPUx86LoadMap()))
         return -1;
+
+    microcodeVersion = virHostCPUGetMicrocodeVersion();
 
     return 0;
 }
@@ -1404,7 +1433,7 @@ virCPUx86MapOnceInit(void)
 static virCPUx86MapPtr
 virCPUx86GetMap(void)
 {
-    if (virCPUx86MapInitialize() < 0)
+    if (virCPUx86DriverInitialize() < 0)
         return NULL;
 
     return cpuMap;
@@ -1441,7 +1470,6 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
     virCPUDataPtr cpuData = NULL;
-    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
     virCPUx86CPUID cpuid;
     size_t i;
     int n;
@@ -1450,26 +1478,31 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
     if (n <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no x86 CPU data found"));
-        goto cleanup;
+        goto error;
     }
+
+    if (!(cpuData = virCPUDataNew(VIR_ARCH_X86_64)))
+        goto error;
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
         if (x86ParseCPUID(ctxt, &cpuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse cpuid[%zu]"), i);
-            goto cleanup;
+            goto error;
         }
-        if (virCPUx86DataAddCPUID(&data, &cpuid) < 0)
-            goto cleanup;
+        if (virCPUx86DataAddCPUID(cpuData, &cpuid) < 0)
+            goto error;
     }
-
-    cpuData = virCPUx86MakeData(VIR_ARCH_X86_64, &data);
 
  cleanup:
     VIR_FREE(nodes);
-    virCPUx86DataClear(&data);
     return cpuData;
+
+ error:
+    virCPUx86DataFree(cpuData);
+    cpuData = NULL;
+    goto cleanup;
 }
 
 
@@ -1481,21 +1514,21 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
  *
  * This macro generates the error string outputs it into logs.
  */
-#define virX86CpuIncompatible(MSG, CPU_DEF)                             \
-        do {                                                            \
-            char *flagsStr = NULL;                                      \
-            if (!(flagsStr = x86FeatureNames(map, ", ", (CPU_DEF)))) {  \
-                virReportOOMError();                                    \
-                goto error;                                             \
-            }                                                           \
-            if (message &&                                              \
+#define virX86CpuIncompatible(MSG, CPU_DEF) \
+        do { \
+            char *flagsStr = NULL; \
+            if (!(flagsStr = x86FeatureNames(map, ", ", (CPU_DEF)))) { \
+                virReportOOMError(); \
+                goto error; \
+            } \
+            if (message && \
                 virAsprintf(message, "%s: %s", _(MSG), flagsStr) < 0) { \
-                VIR_FREE(flagsStr);                                     \
-                goto error;                                             \
-            }                                                           \
-            VIR_DEBUG("%s: %s", MSG, flagsStr);                         \
-            VIR_FREE(flagsStr);                                         \
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE;                         \
+                VIR_FREE(flagsStr); \
+                goto error; \
+            } \
+            VIR_DEBUG("%s: %s", MSG, flagsStr); \
+            VIR_FREE(flagsStr); \
+            ret = VIR_CPU_COMPARE_INCOMPATIBLE; \
         } while (0)
 
 
@@ -1514,7 +1547,7 @@ x86Compute(virCPUDefPtr host,
     virCPUx86ModelPtr cpu_forbid = NULL;
     virCPUx86ModelPtr diff = NULL;
     virCPUx86ModelPtr guest_model = NULL;
-    virCPUx86Data guestData = VIR_CPU_X86_DATA_INIT;
+    virCPUDataPtr guestData = NULL;
     virCPUCompareResult ret;
     virCPUx86CompareResult result;
     virArch arch;
@@ -1617,11 +1650,12 @@ x86Compute(virCPUDefPtr host,
             goto error;
 
         if (cpu->vendor && host_model->vendor &&
-            virCPUx86DataAddCPUID(&guest_model->data,
-                                  &host_model->vendor->cpuid) < 0)
+            virCPUx86DataAddCPUIDInt(&guest_model->data,
+                                     &host_model->vendor->cpuid) < 0)
             goto error;
 
-        if (x86DataAddSignature(&guest_model->data, host_model->signature) < 0)
+        if (host_model->signatures &&
+            x86DataAddSignature(&guest_model->data, *host_model->signatures) < 0)
             goto error;
 
         if (cpu->type == VIR_CPU_TYPE_GUEST
@@ -1633,9 +1667,11 @@ x86Compute(virCPUDefPtr host,
 
         x86DataSubtract(&guest_model->data, &cpu_disable->data);
 
-        if (x86DataCopy(&guestData, &guest_model->data) < 0 ||
-            !(*guest = virCPUx86MakeData(arch, &guestData)))
+        if (!(guestData = virCPUDataNew(arch)) ||
+            x86DataCopy(&guestData->data.x86, &guest_model->data) < 0)
             goto error;
+
+        *guest = guestData;
     }
 
  cleanup:
@@ -1647,11 +1683,11 @@ x86Compute(virCPUDefPtr host,
     x86ModelFree(cpu_disable);
     x86ModelFree(cpu_forbid);
     x86ModelFree(guest_model);
-    virCPUx86DataClear(&guestData);
 
     return ret;
 
  error:
+    virCPUx86DataFree(guestData);
     ret = VIR_CPU_COMPARE_ERROR;
     goto cleanup;
 }
@@ -1725,6 +1761,41 @@ virCPUx86Compare(virCPUDefPtr host,
 }
 
 
+static bool
+x86ModelHasSignature(virCPUx86ModelPtr model,
+                     uint32_t signature)
+{
+    size_t i;
+
+    for (i = 0; i < model->nsignatures; i++) {
+        if (model->signatures[i] == signature)
+            return true;
+    }
+
+    return false;
+}
+
+
+static char *
+x86FormatSignatures(virCPUx86ModelPtr model)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    for (i = 0; i < model->nsignatures; i++) {
+        virBufferAsprintf(&buf, "%06lx,",
+                          (unsigned long)model->signatures[i]);
+    }
+
+    virBufferTrim(&buf, ",", -1);
+
+    if (virBufferCheckError(&buf) < 0)
+        return NULL;
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 /*
  * Checks whether a candidate model is a better fit for the CPU data than the
  * current model.
@@ -1751,44 +1822,91 @@ x86DecodeUseCandidate(virCPUx86ModelPtr current,
         }
     }
 
-    if (preferred &&
-        STREQ(cpuCandidate->model, preferred))
+    if (preferred && STREQ(cpuCandidate->model, preferred)) {
+        VIR_DEBUG("%s is the preferred model", cpuCandidate->model);
         return 2;
+    }
 
-    if (!cpuCurrent)
+    if (!cpuCurrent) {
+        VIR_DEBUG("%s is better than nothing", cpuCandidate->model);
         return 1;
+    }
 
     /* Ideally we want to select a model with family/model equal to
      * family/model of the real CPU. Once we found such model, we only
      * consider candidates with matching family/model.
      */
     if (signature &&
-        current->signature == signature &&
-        candidate->signature != signature)
+        x86ModelHasSignature(current, signature) &&
+        !x86ModelHasSignature(candidate, signature)) {
+        VIR_DEBUG("%s differs in signature from matching %s",
+                  cpuCandidate->model, cpuCurrent->model);
         return 0;
+    }
 
-    if (cpuCurrent->nfeatures > cpuCandidate->nfeatures)
+    if (cpuCurrent->nfeatures > cpuCandidate->nfeatures) {
+        VIR_DEBUG("%s results in shorter feature list than %s",
+                  cpuCandidate->model, cpuCurrent->model);
         return 1;
+    }
 
     /* Prefer a candidate with matching signature even though it would
      * result in longer list of features.
      */
     if (signature &&
-        candidate->signature == signature &&
-        current->signature != signature)
+        x86ModelHasSignature(candidate, signature) &&
+        !x86ModelHasSignature(current, signature)) {
+        VIR_DEBUG("%s provides matching signature", cpuCandidate->model);
         return 1;
+    }
 
+    VIR_DEBUG("%s does not result in shorter feature list than %s",
+              cpuCandidate->model, cpuCurrent->model);
     return 0;
+}
+
+
+/**
+ * Drop broken TSX features.
+ */
+static void
+x86DataFilterTSX(virCPUx86Data *data,
+                 virCPUx86VendorPtr vendor,
+                 virCPUx86MapPtr map)
+{
+    unsigned int family;
+    unsigned int model;
+    unsigned int stepping;
+
+    if (!vendor || STRNEQ(vendor->name, "Intel"))
+        return;
+
+    x86DataToSignatureFull(data, &family, &model, &stepping);
+
+    if (family == 6 &&
+        ((model == 63 && stepping < 4) ||
+         model == 60 ||
+         model == 69 ||
+         model == 70)) {
+        virCPUx86FeaturePtr feature;
+
+        VIR_DEBUG("Dropping broken TSX");
+
+        if ((feature = x86FeatureFind(map, "hle")))
+            x86DataSubtract(data, &feature->data);
+
+        if ((feature = x86FeatureFind(map, "rtm")))
+            x86DataSubtract(data, &feature->data);
+    }
 }
 
 
 static int
 x86Decode(virCPUDefPtr cpu,
-          const virCPUx86Data *data,
-          const char **models,
-          unsigned int nmodels,
+          const virCPUx86Data *cpuData,
+          virDomainCapsCPUModelsPtr models,
           const char *preferred,
-          unsigned int flags)
+          bool migratable)
 {
     int ret = -1;
     virCPUx86MapPtr map;
@@ -1796,28 +1914,34 @@ x86Decode(virCPUDefPtr cpu,
     virCPUDefPtr cpuCandidate;
     virCPUx86ModelPtr model = NULL;
     virCPUDefPtr cpuModel = NULL;
+    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
     virCPUx86Data copy = VIR_CPU_X86_DATA_INIT;
     virCPUx86Data features = VIR_CPU_X86_DATA_INIT;
     virCPUx86VendorPtr vendor;
+    virDomainCapsCPUModelPtr hvModel = NULL;
+    VIR_AUTOFREE(char *) sigs = NULL;
     uint32_t signature;
     ssize_t i;
     int rc;
 
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, -1);
-
-    if (!data || !(map = virCPUx86GetMap()))
+    if (!cpuData || x86DataCopy(&data, cpuData) < 0)
         return -1;
 
-    vendor = x86DataToVendor(data, map);
-    signature = x86DataToSignature(data);
+    if (!(map = virCPUx86GetMap()))
+        goto cleanup;
+
+    vendor = x86DataToVendor(&data, map);
+    signature = x86DataToSignature(&data);
+
+    x86DataFilterTSX(&data, vendor, map);
 
     /* Walk through the CPU models in reverse order to check newest
      * models first.
      */
     for (i = map->nmodels - 1; i >= 0; i--) {
         candidate = map->models[i];
-        if (!virCPUModelIsAllowed(candidate->name, models, nmodels)) {
+        if (models &&
+            !(hvModel = virDomainCapsCPUModelsGet(models, candidate->name))) {
             if (preferred && STREQ(candidate->name, preferred)) {
                 if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1845,7 +1969,7 @@ x86Decode(virCPUDefPtr cpu,
             continue;
         }
 
-        if (!(cpuCandidate = x86DataToCPU(data, candidate, map)))
+        if (!(cpuCandidate = x86DataToCPU(&data, candidate, map, hvModel)))
             goto cleanup;
         cpuCandidate->type = cpu->type;
 
@@ -1872,7 +1996,7 @@ x86Decode(virCPUDefPtr cpu,
     /* Remove non-migratable features if requested
      * Note: this only works as long as no CPU model contains non-migratable
      * features directly */
-    if (flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) {
+    if (migratable) {
         i = 0;
         while (i < cpuModel->nfeatures) {
             if (x86FeatureIsMigratable(cpuModel->features[i].name, map)) {
@@ -1885,19 +2009,13 @@ x86Decode(virCPUDefPtr cpu,
         }
     }
 
-    if (flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) {
-        if (x86DataCopy(&copy, &model->data) < 0 ||
-            x86DataFromCPUFeatures(&features, cpuModel, map) < 0)
-            goto cleanup;
-
-        x86DataSubtract(&copy, &features);
-        if (x86DataToCPUFeatures(cpuModel, VIR_CPU_FEATURE_REQUIRE,
-                                 &copy, map) < 0)
-            goto cleanup;
-    }
-
     if (vendor && VIR_STRDUP(cpu->vendor, vendor->name) < 0)
         goto cleanup;
+
+    sigs = x86FormatSignatures(model);
+
+    VIR_DEBUG("Using CPU model %s (signatures %s) for CPU with signature %06lx",
+              model->name, NULLSTR(sigs), (unsigned long)signature);
 
     VIR_STEAL_PTR(cpu->model, cpuModel->model);
     VIR_STEAL_PTR(cpu->features, cpuModel->features);
@@ -1910,6 +2028,7 @@ x86Decode(virCPUDefPtr cpu,
 
  cleanup:
     virCPUDefFree(cpuModel);
+    virCPUx86DataClear(&data);
     virCPUx86DataClear(&copy);
     virCPUx86DataClear(&features);
     return ret;
@@ -1918,12 +2037,9 @@ x86Decode(virCPUDefPtr cpu,
 static int
 x86DecodeCPUData(virCPUDefPtr cpu,
                  const virCPUData *data,
-                 const char **models,
-                 unsigned int nmodels,
-                 const char *preferred,
-                 unsigned int flags)
+                 virDomainCapsCPUModelsPtr models)
 {
-    return x86Decode(cpu, &data->data.x86, models, nmodels, preferred, flags);
+    return x86Decode(cpu, &data->data.x86, models, NULL, false);
 }
 
 
@@ -1958,12 +2074,12 @@ x86Encode(virArch arch,
           virCPUDataPtr *vendor)
 {
     virCPUx86MapPtr map = NULL;
-    virCPUx86Data data_forced = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_required = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_optional = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_disabled = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_forbidden = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_vendor = VIR_CPU_X86_DATA_INIT;
+    virCPUDataPtr data_forced = NULL;
+    virCPUDataPtr data_required = NULL;
+    virCPUDataPtr data_optional = NULL;
+    virCPUDataPtr data_disabled = NULL;
+    virCPUDataPtr data_forbidden = NULL;
+    virCPUDataPtr data_vendor = NULL;
 
     if (forced)
         *forced = NULL;
@@ -1982,23 +2098,33 @@ x86Encode(virArch arch,
         goto error;
 
     if (forced &&
-        x86EncodePolicy(&data_forced, cpu, map, VIR_CPU_FEATURE_FORCE) < 0)
+        (!(data_forced = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_forced->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_FORCE) < 0))
         goto error;
 
     if (required &&
-        x86EncodePolicy(&data_required, cpu, map, VIR_CPU_FEATURE_REQUIRE) < 0)
+        (!(data_required = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_required->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_REQUIRE) < 0))
         goto error;
 
     if (optional &&
-        x86EncodePolicy(&data_optional, cpu, map, VIR_CPU_FEATURE_OPTIONAL) < 0)
+        (!(data_optional = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_optional->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_OPTIONAL) < 0))
         goto error;
 
     if (disabled &&
-        x86EncodePolicy(&data_disabled, cpu, map, VIR_CPU_FEATURE_DISABLE) < 0)
+        (!(data_disabled = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_disabled->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_DISABLE) < 0))
         goto error;
 
     if (forbidden &&
-        x86EncodePolicy(&data_forbidden, cpu, map, VIR_CPU_FEATURE_FORBID) < 0)
+        (!(data_forbidden = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_forbidden->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_FORBID) < 0))
         goto error;
 
     if (vendor) {
@@ -2010,50 +2136,35 @@ x86Encode(virArch arch,
             goto error;
         }
 
-        if (v && virCPUx86DataAddCPUID(&data_vendor, &v->cpuid) < 0)
+        if (!(data_vendor = virCPUDataNew(arch)))
+            goto error;
+
+        if (v && virCPUx86DataAddCPUID(data_vendor, &v->cpuid) < 0)
             goto error;
     }
 
-    if (forced &&
-        !(*forced = virCPUx86MakeData(arch, &data_forced)))
-        goto error;
-    if (required &&
-        !(*required = virCPUx86MakeData(arch, &data_required)))
-        goto error;
-    if (optional &&
-        !(*optional = virCPUx86MakeData(arch, &data_optional)))
-        goto error;
-    if (disabled &&
-        !(*disabled = virCPUx86MakeData(arch, &data_disabled)))
-        goto error;
-    if (forbidden &&
-        !(*forbidden = virCPUx86MakeData(arch, &data_forbidden)))
-        goto error;
-    if (vendor &&
-        !(*vendor = virCPUx86MakeData(arch, &data_vendor)))
-        goto error;
+    if (forced)
+        *forced = data_forced;
+    if (required)
+        *required = data_required;
+    if (optional)
+        *optional = data_optional;
+    if (disabled)
+        *disabled = data_disabled;
+    if (forbidden)
+        *forbidden = data_forbidden;
+    if (vendor)
+        *vendor = data_vendor;
 
     return 0;
 
  error:
-    virCPUx86DataClear(&data_forced);
-    virCPUx86DataClear(&data_required);
-    virCPUx86DataClear(&data_optional);
-    virCPUx86DataClear(&data_disabled);
-    virCPUx86DataClear(&data_forbidden);
-    virCPUx86DataClear(&data_vendor);
-    if (forced)
-        x86FreeCPUData(*forced);
-    if (required)
-        x86FreeCPUData(*required);
-    if (optional)
-        x86FreeCPUData(*optional);
-    if (disabled)
-        x86FreeCPUData(*disabled);
-    if (forbidden)
-        x86FreeCPUData(*forbidden);
-    if (vendor)
-        x86FreeCPUData(*vendor);
+    virCPUx86DataFree(data_forced);
+    virCPUx86DataFree(data_required);
+    virCPUx86DataFree(data_optional);
+    virCPUx86DataFree(data_disabled);
+    virCPUx86DataFree(data_forbidden);
+    virCPUx86DataFree(data_vendor);
     return -1;
 }
 
@@ -2098,7 +2209,7 @@ cpuidCall(virCPUx86CPUID *cpuid)
  * Sub leaf n+1 is invalid if eax[4:0] in sub leaf n equals 0.
  */
 static int
-cpuidSetLeaf4(virCPUx86Data *data,
+cpuidSetLeaf4(virCPUDataPtr data,
               virCPUx86CPUID *subLeaf0)
 {
     virCPUx86CPUID cpuid = *subLeaf0;
@@ -2121,7 +2232,7 @@ cpuidSetLeaf4(virCPUx86Data *data,
  * Sub leaf n is invalid if n > eax in sub leaf 0.
  */
 static int
-cpuidSetLeaf7(virCPUx86Data *data,
+cpuidSetLeaf7(virCPUDataPtr data,
               virCPUx86CPUID *subLeaf0)
 {
     virCPUx86CPUID cpuid = { .eax_in = 0x7 };
@@ -2148,7 +2259,7 @@ cpuidSetLeaf7(virCPUx86Data *data,
  * meaningful data even if it was (theoretically) considered invalid.
  */
 static int
-cpuidSetLeafB(virCPUx86Data *data,
+cpuidSetLeafB(virCPUDataPtr data,
               virCPUx86CPUID *subLeaf0)
 {
     virCPUx86CPUID cpuid = *subLeaf0;
@@ -2172,7 +2283,7 @@ cpuidSetLeafB(virCPUx86Data *data,
  * and edx[n-32] from sub leaf 1 is not set.
  */
 static int
-cpuidSetLeafD(virCPUx86Data *data,
+cpuidSetLeafD(virCPUDataPtr data,
               virCPUx86CPUID *subLeaf0)
 {
     virCPUx86CPUID cpuid = { .eax_in = 0xd };
@@ -2219,7 +2330,7 @@ cpuidSetLeafD(virCPUx86Data *data,
  * 0x10: Sub leaf n is valid if ebx[n] (= res[ResID]) from sub leaf 0 is set.
  */
 static int
-cpuidSetLeafResID(virCPUx86Data *data,
+cpuidSetLeafResID(virCPUDataPtr data,
                   virCPUx86CPUID *subLeaf0,
                   uint32_t res)
 {
@@ -2247,13 +2358,13 @@ cpuidSetLeafResID(virCPUx86Data *data,
  * Sub leaves n >= 2 are valid as long as eax[3:0] != 0.
  */
 static int
-cpuidSetLeaf12(virCPUx86Data *data,
+cpuidSetLeaf12(virCPUDataPtr data,
                virCPUx86CPUID *subLeaf0)
 {
     virCPUx86CPUID cpuid = { .eax_in = 0x7 };
     virCPUx86CPUID *cpuid7;
 
-    if (!(cpuid7 = x86DataCpuid(data, &cpuid)) ||
+    if (!(cpuid7 = x86DataCpuid(&data->data.x86, &cpuid)) ||
         !(cpuid7->ebx & (1 << 2)))
         return 0;
 
@@ -2283,7 +2394,7 @@ cpuidSetLeaf12(virCPUx86Data *data,
  * Sub leaf 0 reports the maximum supported sub leaf in eax.
  */
 static int
-cpuidSetLeaf14(virCPUx86Data *data,
+cpuidSetLeaf14(virCPUDataPtr data,
                virCPUx86CPUID *subLeaf0)
 {
     virCPUx86CPUID cpuid = { .eax_in = 0x14 };
@@ -2308,7 +2419,7 @@ cpuidSetLeaf14(virCPUx86Data *data,
  * Sub leaf 0 reports the maximum supported sub leaf in eax.
  */
 static int
-cpuidSetLeaf17(virCPUx86Data *data,
+cpuidSetLeaf17(virCPUDataPtr data,
                virCPUx86CPUID *subLeaf0)
 {
     virCPUx86CPUID cpuid = { .eax_in = 0x17 };
@@ -2331,7 +2442,7 @@ cpuidSetLeaf17(virCPUx86Data *data,
 
 
 static int
-cpuidSet(uint32_t base, virCPUx86Data *data)
+cpuidSet(uint32_t base, virCPUDataPtr data)
 {
     int rc;
     uint32_t max;
@@ -2378,37 +2489,39 @@ cpuidSet(uint32_t base, virCPUx86Data *data)
 }
 
 
-static virCPUDataPtr
-x86NodeData(virArch arch)
+static int
+virCPUx86GetHost(virCPUDefPtr cpu,
+                 virDomainCapsCPUModelsPtr models)
 {
     virCPUDataPtr cpuData = NULL;
-    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
+    int ret = -1;
 
-    if (cpuidSet(CPUX86_BASIC, &data) < 0)
-        goto error;
+    if (virCPUx86DriverInitialize() < 0)
+        goto cleanup;
 
-    if (cpuidSet(CPUX86_EXTENDED, &data) < 0)
-        goto error;
+    if (!(cpuData = virCPUDataNew(archs[0])))
+        goto cleanup;
 
-    if (!(cpuData = virCPUx86MakeData(arch, &data)))
-        goto error;
+    if (cpuidSet(CPUX86_BASIC, cpuData) < 0 ||
+        cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
+        goto cleanup;
 
-    return cpuData;
+    ret = x86DecodeCPUData(cpu, cpuData, models);
+    cpu->microcodeVersion = microcodeVersion;
 
- error:
-    virCPUx86DataClear(&data);
-
-    return NULL;
+ cleanup:
+    virCPUx86DataFree(cpuData);
+    return ret;
 }
 #endif
 
 
 static virCPUDefPtr
-x86Baseline(virCPUDefPtr *cpus,
-            unsigned int ncpus,
-            const char **models,
-            unsigned int nmodels,
-            unsigned int flags)
+virCPUx86Baseline(virCPUDefPtr *cpus,
+                  unsigned int ncpus,
+                  virDomainCapsCPUModelsPtr models,
+                  const char **features,
+                  bool migratable)
 {
     virCPUx86MapPtr map = NULL;
     virCPUx86ModelPtr base_model = NULL;
@@ -2419,20 +2532,17 @@ x86Baseline(virCPUDefPtr *cpus,
     bool outputVendor = true;
     const char *modelName;
     bool matchingNames = true;
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
+    virCPUDataPtr featData = NULL;
 
     if (!(map = virCPUx86GetMap()))
         goto error;
 
-    if (!(base_model = x86ModelFromCPU(cpus[0], map, VIR_CPU_FEATURE_REQUIRE)))
+    if (!(base_model = x86ModelFromCPU(cpus[0], map, -1)))
         goto error;
 
     if (VIR_ALLOC(cpu) < 0)
         goto error;
 
-    cpu->arch = cpus[0]->arch;
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
 
@@ -2457,7 +2567,7 @@ x86Baseline(virCPUDefPtr *cpus,
             }
         }
 
-        if (!(model = x86ModelFromCPU(cpus[i], map, VIR_CPU_FEATURE_REQUIRE)))
+        if (!(model = x86ModelFromCPU(cpus[i], map, -1)))
             goto error;
 
         if (cpus[i]->vendor && model->vendor &&
@@ -2495,16 +2605,32 @@ x86Baseline(virCPUDefPtr *cpus,
         model = NULL;
     }
 
+    if (features) {
+        virCPUx86FeaturePtr feat;
+
+        if (!(featData = virCPUDataNew(archs[0])))
+            goto cleanup;
+
+        for (i = 0; features[i]; i++) {
+            if ((feat = x86FeatureFind(map, features[i])) &&
+                x86DataAdd(&featData->data.x86, &feat->data) < 0)
+                goto cleanup;
+        }
+
+        x86DataIntersect(&base_model->data, &featData->data.x86);
+    }
+
     if (x86DataIsEmpty(&base_model->data)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("CPUs are incompatible"));
         goto error;
     }
 
-    if (vendor && virCPUx86DataAddCPUID(&base_model->data, &vendor->cpuid) < 0)
+    if (vendor &&
+        virCPUx86DataAddCPUIDInt(&base_model->data, &vendor->cpuid) < 0)
         goto error;
 
-    if (x86Decode(cpu, &base_model->data, models, nmodels, modelName, flags) < 0)
+    if (x86Decode(cpu, &base_model->data, models, modelName, migratable) < 0)
         goto error;
 
     if (STREQ_NULLABLE(cpu->model, modelName))
@@ -2513,10 +2639,9 @@ x86Baseline(virCPUDefPtr *cpus,
     if (!outputVendor)
         VIR_FREE(cpu->vendor);
 
-    cpu->arch = VIR_ARCH_NONE;
-
  cleanup:
     x86ModelFree(base_model);
+    virCPUx86DataFree(featData);
 
     return cpu;
 
@@ -2530,8 +2655,7 @@ x86Baseline(virCPUDefPtr *cpus,
 
 static int
 x86UpdateHostModel(virCPUDefPtr guest,
-                   const virCPUDef *host,
-                   virCPUx86MapPtr map)
+                   const virCPUDef *host)
 {
     virCPUDefPtr updated = NULL;
     size_t i;
@@ -2540,11 +2664,9 @@ x86UpdateHostModel(virCPUDefPtr guest,
     if (!(updated = virCPUDefCopyWithoutModel(host)))
         goto cleanup;
 
-    /* Remove non-migratable features by default */
     updated->type = VIR_CPU_TYPE_GUEST;
     updated->mode = VIR_CPU_MODE_CUSTOM;
-    if (virCPUDefCopyModelFilter(updated, host, true,
-                                 x86FeatureIsMigratable, map) < 0)
+    if (virCPUDefCopyModel(updated, host, true) < 0)
         goto cleanup;
 
     if (guest->vendor_id) {
@@ -2608,12 +2730,117 @@ virCPUx86Update(virCPUDefPtr guest,
 
     if (guest->mode == VIR_CPU_MODE_HOST_MODEL ||
         guest->match == VIR_CPU_MATCH_MINIMUM)
-        ret = x86UpdateHostModel(guest, host, map);
+        ret = x86UpdateHostModel(guest, host);
     else
         ret = 0;
 
  cleanup:
     x86ModelFree(model);
+    return ret;
+}
+
+
+static int
+virCPUx86UpdateLive(virCPUDefPtr cpu,
+                    virCPUDataPtr dataEnabled,
+                    virCPUDataPtr dataDisabled)
+{
+    virCPUx86MapPtr map;
+    virCPUx86ModelPtr model = NULL;
+    virCPUx86Data enabled = VIR_CPU_X86_DATA_INIT;
+    virCPUx86Data disabled = VIR_CPU_X86_DATA_INIT;
+    virBuffer bufAdded = VIR_BUFFER_INITIALIZER;
+    virBuffer bufRemoved = VIR_BUFFER_INITIALIZER;
+    char *added = NULL;
+    char *removed = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    if (!(model = x86ModelFromCPU(cpu, map, -1)))
+        goto cleanup;
+
+    if (dataEnabled &&
+        x86DataCopy(&enabled, &dataEnabled->data.x86) < 0)
+        goto cleanup;
+
+    if (dataDisabled &&
+        x86DataCopy(&disabled, &dataDisabled->data.x86) < 0)
+        goto cleanup;
+
+    for (i = 0; i < map->nfeatures; i++) {
+        virCPUx86FeaturePtr feature = map->features[i];
+
+        if (x86DataIsSubset(&enabled, &feature->data) &&
+            !x86DataIsSubset(&model->data, &feature->data)) {
+            VIR_DEBUG("Feature '%s' enabled by the hypervisor", feature->name);
+            if (cpu->check == VIR_CPU_CHECK_FULL)
+                virBufferAsprintf(&bufAdded, "%s,", feature->name);
+            else if (virCPUDefUpdateFeature(cpu, feature->name,
+                                            VIR_CPU_FEATURE_REQUIRE) < 0)
+                goto cleanup;
+        }
+
+        if (x86DataIsSubset(&disabled, &feature->data) ||
+            (x86DataIsSubset(&model->data, &feature->data) &&
+             !x86DataIsSubset(&enabled, &feature->data))) {
+            VIR_DEBUG("Feature '%s' disabled by the hypervisor", feature->name);
+            if (cpu->check == VIR_CPU_CHECK_FULL)
+                virBufferAsprintf(&bufRemoved, "%s,", feature->name);
+            else if (virCPUDefUpdateFeature(cpu, feature->name,
+                                            VIR_CPU_FEATURE_DISABLE) < 0)
+                goto cleanup;
+        }
+    }
+
+    virBufferTrim(&bufAdded, ",", -1);
+    virBufferTrim(&bufRemoved, ",", -1);
+
+    if (virBufferCheckError(&bufAdded) < 0 ||
+        virBufferCheckError(&bufRemoved) < 0)
+        goto cleanup;
+
+    added = virBufferContentAndReset(&bufAdded);
+    removed = virBufferContentAndReset(&bufRemoved);
+
+    if (added || removed) {
+        if (added && removed)
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("guest CPU doesn't match specification: "
+                             "extra features: %s, missing features: %s"),
+                           added, removed);
+        else if (added)
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("guest CPU doesn't match specification: "
+                             "extra features: %s"),
+                           added);
+        else
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("guest CPU doesn't match specification: "
+                             "missing features: %s"),
+                           removed);
+        goto cleanup;
+    }
+
+    if (cpu->check == VIR_CPU_CHECK_FULL &&
+        !x86DataIsEmpty(&disabled)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("guest CPU doesn't match specification"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    x86ModelFree(model);
+    virCPUx86DataClear(&enabled);
+    virCPUx86DataClear(&disabled);
+    VIR_FREE(added);
+    VIR_FREE(removed);
+    virBufferFreeAndReset(&bufAdded);
+    virBufferFreeAndReset(&bufRemoved);
     return ret;
 }
 
@@ -2684,8 +2911,7 @@ virCPUx86GetModels(char ***models)
 
 static int
 virCPUx86Translate(virCPUDefPtr cpu,
-                   const char **models,
-                   unsigned int nmodels)
+                   virDomainCapsCPUModelsPtr models)
 {
     virCPUDefPtr translated = NULL;
     virCPUx86MapPtr map;
@@ -2700,20 +2926,17 @@ virCPUx86Translate(virCPUDefPtr cpu,
         goto cleanup;
 
     if (model->vendor &&
-        virCPUx86DataAddCPUID(&model->data, &model->vendor->cpuid) < 0)
+        virCPUx86DataAddCPUIDInt(&model->data, &model->vendor->cpuid) < 0)
         goto cleanup;
 
-    if (x86DataAddSignature(&model->data, model->signature) < 0)
+    if (model->signatures &&
+        x86DataAddSignature(&model->data, model->signatures[0]) < 0)
         goto cleanup;
 
     if (!(translated = virCPUDefCopyWithoutModel(cpu)))
         goto cleanup;
 
-    if (VIR_STRDUP(translated->vendor, cpu->vendor) < 0 ||
-        VIR_STRDUP(translated->vendor_id, cpu->vendor_id) < 0)
-        goto cleanup;
-
-    if (x86Decode(translated, &model->data, models, nmodels, NULL, 0) < 0)
+    if (x86Decode(translated, &model->data, models, NULL, false) < 0)
         goto cleanup;
 
     for (i = 0; i < cpu->nfeatures; i++) {
@@ -2732,6 +2955,171 @@ virCPUx86Translate(virCPUDefPtr cpu,
 }
 
 
+static int
+virCPUx86ExpandFeatures(virCPUDefPtr cpu)
+{
+    virCPUx86MapPtr map;
+    virCPUDefPtr expanded = NULL;
+    virCPUx86ModelPtr model = NULL;
+    bool host = cpu->type == VIR_CPU_TYPE_HOST;
+    size_t i;
+    int ret = -1;
+
+    if (!(map = virCPUx86GetMap()))
+        goto cleanup;
+
+    if (!(expanded = virCPUDefCopy(cpu)))
+        goto cleanup;
+
+    virCPUDefFreeFeatures(expanded);
+
+    if (!(model = x86ModelFind(map, cpu->model))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown CPU model %s"), cpu->model);
+        goto cleanup;
+    }
+
+    if (!(model = x86ModelCopy(model)) ||
+        x86DataToCPUFeatures(expanded, host ? -1 : VIR_CPU_FEATURE_REQUIRE,
+                             &model->data, map) < 0)
+        goto cleanup;
+
+    for (i = 0; i < cpu->nfeatures; i++) {
+        virCPUFeatureDefPtr f = cpu->features + i;
+
+        if (!host &&
+            f->policy != VIR_CPU_FEATURE_REQUIRE &&
+            f->policy != VIR_CPU_FEATURE_DISABLE)
+            continue;
+
+        if (virCPUDefUpdateFeature(expanded, f->name, f->policy) < 0)
+            goto cleanup;
+    }
+
+    virCPUDefFreeModel(cpu);
+
+    ret = virCPUDefCopyModel(cpu, expanded, false);
+
+ cleanup:
+    virCPUDefFree(expanded);
+    x86ModelFree(model);
+    return ret;
+}
+
+
+static virCPUDefPtr
+virCPUx86CopyMigratable(virCPUDefPtr cpu)
+{
+    virCPUDefPtr copy;
+    virCPUx86MapPtr map;
+
+    if (!(map = virCPUx86GetMap()))
+        return NULL;
+
+    if (!(copy = virCPUDefCopyWithoutModel(cpu)))
+        return NULL;
+
+    if (virCPUDefCopyModelFilter(copy, cpu, false,
+                                 x86FeatureIsMigratable, map) < 0)
+        goto error;
+
+    return copy;
+
+ error:
+    virCPUDefFree(copy);
+    return NULL;
+}
+
+
+static int
+virCPUx86ValidateFeatures(virCPUDefPtr cpu)
+{
+    virCPUx86MapPtr map;
+    size_t i;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    for (i = 0; i < cpu->nfeatures; i++) {
+        if (!x86FeatureFind(map, cpu->features[i].name)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown CPU feature: %s"),
+                           cpu->features[i].name);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+int
+virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
+                      const virCPUx86CPUID *cpuid)
+{
+    return virCPUx86DataAddCPUIDInt(&cpuData->data.x86, cpuid);
+}
+
+
+int
+virCPUx86DataSetSignature(virCPUDataPtr cpuData,
+                          unsigned int family,
+                          unsigned int model,
+                          unsigned int stepping)
+{
+    uint32_t signature = x86MakeSignature(family, model, stepping);
+
+    return x86DataAddSignature(&cpuData->data.x86, signature);
+}
+
+
+uint32_t
+virCPUx86DataGetSignature(virCPUDataPtr cpuData,
+                          unsigned int *family,
+                          unsigned int *model,
+                          unsigned int *stepping)
+{
+    x86DataToSignatureFull(&cpuData->data.x86, family, model, stepping);
+
+    return x86MakeSignature(*family, *model, *stepping);
+}
+
+
+int
+virCPUx86DataSetVendor(virCPUDataPtr cpuData,
+                       const char *vendor)
+{
+    virCPUx86CPUID cpuid = { 0 };
+
+    if (virCPUx86VendorToCPUID(vendor, &cpuid) < 0)
+        return -1;
+
+    return virCPUx86DataAddCPUID(cpuData, &cpuid);
+}
+
+
+int
+virCPUx86DataAddFeature(virCPUDataPtr cpuData,
+                        const char *name)
+{
+    virCPUx86FeaturePtr feature;
+    virCPUx86MapPtr map;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    /* ignore unknown features */
+    if (!(feature = x86FeatureFind(map, name)) &&
+        !(feature = x86FeatureFindInternal(name)))
+        return 0;
+
+    if (x86DataAdd(&cpuData->data.x86, &feature->data) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
@@ -2739,18 +3127,20 @@ struct cpuArchDriver cpuDriverX86 = {
     .compare    = virCPUx86Compare,
     .decode     = x86DecodeCPUData,
     .encode     = x86Encode,
-    .free       = x86FreeCPUData,
+    .dataFree   = virCPUx86DataFree,
 #if defined(__i386__) || defined(__x86_64__)
-    .nodeData   = x86NodeData,
-#else
-    .nodeData   = NULL,
+    .getHost    = virCPUx86GetHost,
 #endif
-    .baseline   = x86Baseline,
+    .baseline   = virCPUx86Baseline,
     .update     = virCPUx86Update,
+    .updateLive = virCPUx86UpdateLive,
     .checkFeature = virCPUx86CheckFeature,
     .dataCheckFeature = virCPUx86DataCheckFeature,
     .dataFormat = virCPUx86DataFormat,
     .dataParse  = virCPUx86DataParse,
     .getModels  = virCPUx86GetModels,
     .translate  = virCPUx86Translate,
+    .expandFeatures = virCPUx86ExpandFeatures,
+    .copyMigratable = virCPUx86CopyMigratable,
+    .validateFeatures = virCPUx86ValidateFeatures,
 };

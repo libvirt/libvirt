@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "testutils.h"
 #include "verify.h"
@@ -33,6 +30,53 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.stringtest");
+
+struct testStreqData {
+    const char *a;
+    const char *b;
+};
+
+static int testStreq(const void *args)
+{
+    const struct testStreqData *data = args;
+    int ret = -1;
+    bool equal = true;
+    bool streq_rv, strneq_rv;
+    size_t i;
+
+    if ((size_t) data->a ^ (size_t) data->b)
+        equal = false;
+    if (data->a && data->b) {
+        for (i = 0; data->a[i] != '\0'; i++) {
+            if (data->b[i] == '\0' ||
+                data->a[i] != data->b[i]) {
+                equal = false;
+                break;
+            }
+        }
+    }
+
+    streq_rv = STREQ_NULLABLE(data->a, data->b);
+    strneq_rv = STRNEQ_NULLABLE(data->a, data->b);
+
+    if (streq_rv != equal) {
+        virFilePrintf(stderr,
+                      "STREQ not working correctly. Expected %d got %d",
+                      (int) equal, (int) streq_rv);
+        goto cleanup;
+    }
+
+    if (strneq_rv == equal) {
+        virFilePrintf(stderr,
+                      "STRNEQ not working correctly. Expected %d got %d",
+                      (int) equal, (int) strneq_rv);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
 
 struct testSplitData {
     const char *string;
@@ -132,12 +176,8 @@ static int testAdd(const void *args)
     size_t i;
 
     for (i = 0; data->tokens[i]; i++) {
-        char **tmp = virStringListAdd((const char **)list, data->tokens[i]);
-        if (!tmp)
+        if (virStringListAdd(&list, data->tokens[i]) < 0)
             goto cleanup;
-        virStringListFree(list);
-        list = tmp;
-        tmp = NULL;
     }
 
     if (!list &&
@@ -433,6 +473,38 @@ testStringSearch(const void *opaque)
 }
 
 
+struct stringMatchData {
+    const char *str;
+    const char *regexp;
+    bool expectMatch;
+};
+
+static int
+testStringMatch(const void *opaque)
+{
+    const struct stringMatchData *data = opaque;
+    bool match;
+
+    match = virStringMatch(data->str, data->regexp);
+
+    if (data->expectMatch) {
+        if (!match) {
+            fprintf(stderr, "expected match for '%s' on '%s' but got no match\n",
+                    data->regexp, data->str);
+            return -1;
+        }
+    } else {
+        if (match) {
+            fprintf(stderr, "expected no match for '%s' on '%s' but got match\n",
+                    data->regexp, data->str);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 struct stringReplaceData {
     const char *haystack;
     const char *oldneedle;
@@ -504,32 +576,32 @@ testStringToLong(const void *opaque)
     else
         negative = !!strchr(data->str, '-');
 
-#define TEST_ONE(Str, Suff, Type, Fn, Fmt, Exp, Exp_ret)                \
-    do {                                                                \
-        Type value = 5;                                                 \
-        int result;                                                     \
-        end = (char *) "oops";                                          \
-        result = virStrToLong_ ## Fn(Str, Suff ? &end : NULL,           \
-                                     0, &value);                        \
-        /* On failure, end is modified, value is unchanged */           \
-        if (result != (Exp_ret)) {                                      \
-            fprintf(stderr,                                             \
-                    "type " #Fn " returned %d expected %d\n",           \
-                    result, Exp_ret);                                   \
-            ret = -1;                                                   \
-        }                                                               \
-        if (value != ((Exp_ret) ? 5 : Exp)) {                           \
-            fprintf(stderr,                                             \
-                    "type " #Fn " value " Fmt " expected " Fmt "\n",    \
-                    value, ((Exp_ret) ? 5 : Exp));                      \
-            ret = -1;                                                   \
-        }                                                               \
-        if (Suff && STRNEQ_NULLABLE(Suff, end)) {                       \
-            fprintf(stderr,                                             \
-                    "type " #Fn " end '%s' expected '%s'\n",            \
-                    NULLSTR(end), Suff);                                \
-            ret = -1;                                                   \
-        }                                                               \
+#define TEST_ONE(Str, Suff, Type, Fn, Fmt, Exp, Exp_ret) \
+    do { \
+        Type value = 5; \
+        int result; \
+        end = (char *) "oops"; \
+        result = virStrToLong_ ## Fn(Str, Suff ? &end : NULL, \
+                                     0, &value); \
+        /* On failure, end is modified, value is unchanged */ \
+        if (result != (Exp_ret)) { \
+            fprintf(stderr, \
+                    "type " #Fn " returned %d expected %d\n", \
+                    result, Exp_ret); \
+            ret = -1; \
+        } \
+        if (value != ((Exp_ret) ? 5 : Exp)) { \
+            fprintf(stderr, \
+                    "type " #Fn " value " Fmt " expected " Fmt "\n", \
+                    value, ((Exp_ret) ? 5 : Exp)); \
+            ret = -1; \
+        } \
+        if (Suff && STRNEQ_NULLABLE(Suff, end)) { \
+            fprintf(stderr, \
+                    "type " #Fn " end '%s' expected '%s'\n", \
+                    NULLSTR(end), Suff); \
+            ret = -1; \
+        } \
     } while (0)
 
     TEST_ONE(data->str, data->suffix, int, i, "%d",
@@ -572,6 +644,48 @@ testStringToLong(const void *opaque)
     return ret;
 }
 
+
+struct stringToDoubleData {
+    const char *str;
+    const char *end_ptr;
+    double res;
+};
+
+/* This test checks if double strings are successfully converted to double
+ * number considering the byproduct string too. */
+static int
+testStringToDouble(const void *opaque)
+{
+    const struct stringToDoubleData *data = opaque;
+    int ret = -1;
+    char *end_ptr = NULL;
+    double res = 0;
+
+    /* end_ptr returns or a substring or an empty string.
+     * It never returns a NULL pointer. */
+    if ((ret = virStrToDouble(data->str,
+                              data->end_ptr ? &end_ptr : NULL,
+                              &res)) < 0) {
+        fprintf(stderr, "Convert error of '%s', expected '%lf'\n",
+                data->str, data->res);
+        return ret;
+    }
+
+    if (res != data->res) {
+        fprintf(stderr, "Returned '%lf', expected '%lf'\n",
+                res, data->res);
+        return -1;
+    }
+
+    /* Comparing substrings. */
+    if (STRNEQ_NULLABLE(end_ptr, data->end_ptr)) {
+        fprintf(stderr, "Expected substring '%s', but got '%s'\n",
+                end_ptr, data->end_ptr);
+        return -1;
+    }
+
+    return ret;
+}
 
 /* The point of this test is to check whether all members of the array are
  * freed. The test has to be checked using valgrind. */
@@ -646,32 +760,76 @@ static int testStripControlChars(const void *args)
     return ret;
 }
 
+struct testFilterData {
+    const char *string;
+    const char *valid;
+    const char *result;
+};
+
+static int testFilterChars(const void *args)
+{
+    const struct testFilterData *data = args;
+    int ret = -1;
+    char *res = NULL;
+
+    if (VIR_STRDUP(res, data->string) < 0)
+        goto cleanup;
+
+    virStringFilterChars(res, data->valid);
+
+    if (STRNEQ_NULLABLE(res, data->result)) {
+        fprintf(stderr, "Returned '%s', expected '%s'\n",
+                NULLSTR(res), NULLSTR(data->result));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(res);
+    return ret;
+}
+
 static int
 mymain(void)
 {
     int ret = 0;
 
-#define TEST_SPLIT(str, del, max, toks)                                 \
-    do {                                                                \
-        struct testSplitData splitData = {                              \
-            .string = str,                                              \
-            .delim = del,                                               \
-            .max_tokens = max,                                          \
-            .tokens = toks,                                             \
-        };                                                              \
-        struct testJoinData joinData = {                                \
-            .string = str,                                              \
-            .delim = del,                                               \
-            .tokens = toks,                                             \
-        };                                                              \
-        if (virTestRun("Split " #str, testSplit, &splitData) < 0)       \
-            ret = -1;                                                   \
-        if (virTestRun("Join " #str, testJoin, &joinData) < 0)          \
-            ret = -1;                                                   \
-        if (virTestRun("Add " #str, testAdd, &joinData) < 0)            \
-            ret = -1;                                                   \
-        if (virTestRun("Remove " #str, testRemove, &splitData) < 0)     \
-            ret = -1;                                                   \
+#define TEST_STREQ(aa, bb) \
+    do { \
+        struct testStreqData streqData = {.a = aa, .b = bb}; \
+        if (virTestRun("Streq", testStreq, &streqData) < 0) \
+            ret = -1; \
+    } while (0)
+
+    TEST_STREQ("hello", "world");
+    TEST_STREQ(NULL, NULL);
+    TEST_STREQ(NULL, "");
+    TEST_STREQ("", NULL);
+    TEST_STREQ("", "");
+    TEST_STREQ("hello", "hello");
+
+#define TEST_SPLIT(str, del, max, toks) \
+    do { \
+        struct testSplitData splitData = { \
+            .string = str, \
+            .delim = del, \
+            .max_tokens = max, \
+            .tokens = toks, \
+        }; \
+        struct testJoinData joinData = { \
+            .string = str, \
+            .delim = del, \
+            .tokens = toks, \
+        }; \
+        if (virTestRun("Split " #str, testSplit, &splitData) < 0) \
+            ret = -1; \
+        if (virTestRun("Join " #str, testJoin, &joinData) < 0) \
+            ret = -1; \
+        if (virTestRun("Add " #str, testAdd, &joinData) < 0) \
+            ret = -1; \
+        if (virTestRun("Remove " #str, testRemove, &splitData) < 0) \
+            ret = -1; \
     } while (0)
 
     const char *tokens1[] = { NULL };
@@ -707,18 +865,18 @@ mymain(void)
     if (virTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
         ret = -1;
 
-#define TEST_SEARCH(s, r, x, n, m, e)                                      \
-    do {                                                                   \
-        struct stringSearchData data = {                                   \
-            .str = s,                                                      \
-            .maxMatches = x,                                               \
-            .regexp = r,                                                   \
-            .expectNMatches = n,                                           \
-            .expectMatches = m,                                            \
-            .expectError = e,                                              \
-        };                                                                 \
+#define TEST_SEARCH(s, r, x, n, m, e) \
+    do { \
+        struct stringSearchData data = { \
+            .str = s, \
+            .maxMatches = x, \
+            .regexp = r, \
+            .expectNMatches = n, \
+            .expectMatches = m, \
+            .expectError = e, \
+        }; \
         if (virTestRun("virStringSearch " s, testStringSearch, &data) < 0) \
-            ret = -1;                                                      \
+            ret = -1; \
     } while (0)
 
     /* error due to missing () in regexp */
@@ -742,16 +900,31 @@ mymain(void)
     const char *matches3[] = { "foo", "bar" };
     TEST_SEARCH("1foo2bar3eek", "([a-z]+)", 2, 2, matches3, false);
 
-#define TEST_REPLACE(h, o, n, r)                                             \
-    do {                                                                     \
-        struct stringReplaceData data = {                                    \
-            .haystack = h,                                                   \
-            .oldneedle = o,                                                  \
-            .newneedle = n,                                                  \
-            .result = r                                                      \
-        };                                                                   \
+#define TEST_MATCH(s, r, m) \
+    do { \
+        struct stringMatchData data = { \
+            .str = s, \
+            .regexp = r, \
+            .expectMatch = m, \
+        }; \
+        if (virTestRun("virStringMatch " s, testStringMatch, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    TEST_MATCH("foo", "foo", true);
+    TEST_MATCH("foobar", "f[o]+", true);
+    TEST_MATCH("foobar", "^f[o]+$", false);
+
+#define TEST_REPLACE(h, o, n, r) \
+    do { \
+        struct stringReplaceData data = { \
+            .haystack = h, \
+            .oldneedle = o, \
+            .newneedle = n, \
+            .result = r \
+        }; \
         if (virTestRun("virStringReplace " h, testStringReplace, &data) < 0) \
-            ret = -1;                                                        \
+            ret = -1; \
     } while (0)
 
     /* no matches */
@@ -773,15 +946,15 @@ mymain(void)
     TEST_REPLACE("fooooofoooo", "foo", "barwizzeek", "barwizzeekooobarwizzeekoo");
     TEST_REPLACE("fooooofoooo", "foooo", "foo", "fooofoo");
 
-#define TEST_STRTOL(str, suff, i, i_ret, u, u_ret,                      \
-                    ll, ll_ret, ull, ull_ret)                           \
-    do {                                                                \
-        struct stringToLongData data = {                                \
-            str, suff, i, i_ret, u, u_ret, ll, ll_ret, ull, ull_ret,    \
-        };                                                              \
-        if (virTestRun("virStringToLong '" str "'", testStringToLong,   \
-                       &data) < 0)                                      \
-            ret = -1;                                                   \
+#define TEST_STRTOL(str, suff, i, i_ret, u, u_ret, \
+                    ll, ll_ret, ull, ull_ret) \
+    do { \
+        struct stringToLongData data = { \
+            str, suff, i, i_ret, u, u_ret, ll, ll_ret, ull, ull_ret, \
+        }; \
+        if (virTestRun("virStringToLong '" str "'", testStringToLong, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
 
     /* Start simple */
@@ -857,20 +1030,58 @@ mymain(void)
     TEST_STRTOL("-18446744073709551616", NULL, 0, -1, 0U, -1,
                 0LL, -1, 0ULL, -1);
 
+#define TEST_STRTOD(str, end_ptr, res) \
+    do { \
+        struct stringToDoubleData data = { \
+            str, end_ptr, res, \
+        }; \
+        if (virTestRun("virStringToDouble '" str "'", \
+                       testStringToDouble, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    /* Simple numbers. */
+    TEST_STRTOD("0.0", NULL, 0);
+    TEST_STRTOD("1.0", NULL, 1);
+    TEST_STRTOD("3.14159", NULL, 3.14159);
+    TEST_STRTOD("0.57721", NULL, 0.57721);
+
+    /* Testing ending string. */
+    TEST_STRTOD("2.718", "", 2.718);
+    TEST_STRTOD("2.718 281 828 459", " 281 828 459", 2.718);
+    TEST_STRTOD("2.718,281,828,459", ",281,828,459", 2.718);
+
+    /* Scientific numbers. */
+    TEST_STRTOD("3.14159e+000", NULL, 3.14159);
+    TEST_STRTOD("2.00600e+003", NULL, 2006);
+    TEST_STRTOD("1.00000e-010", NULL, 1e-010);
+
+    /* Negative numbers. */
+    TEST_STRTOD("-1.6180339887", NULL, -1.6180339887);
+    TEST_STRTOD("-0.00031e-010", NULL, -0.00031e-010);
+
+    /* Long numbers. */
+    TEST_STRTOD("57089907708238388904078437636832797971793838081897.0",
+                NULL,
+                57089907708238388904078437636832797971793838081897.0);
+    TEST_STRTOD("3.141592653589793238462643383279502884197169399375105",
+                NULL,
+                3.141592653589793238462643383279502884197169399375105);
+
     /* test virStringListFreeCount */
     if (virTestRun("virStringListFreeCount", testVirStringListFreeCount,
                    NULL) < 0)
         ret = -1;
 
-#define TEST_STRIP_IPV6_BRACKETS(str, res)                              \
-    do {                                                                \
-        struct testStripData stripData = {                              \
-            .string = str,                                              \
-            .result = res,                                              \
-        };                                                              \
-        if (virTestRun("Strip brackets from IPv6 " #str,                \
-                       testStripIPv6Brackets, &stripData) < 0)          \
-            ret = -1;                                                   \
+#define TEST_STRIP_IPV6_BRACKETS(str, res) \
+    do { \
+        struct testStripData stripData = { \
+            .string = str, \
+            .result = res, \
+        }; \
+        if (virTestRun("Strip brackets from IPv6 " #str, \
+                       testStripIPv6Brackets, &stripData) < 0) \
+            ret = -1; \
     } while (0)
 
     TEST_STRIP_IPV6_BRACKETS(NULL, NULL);
@@ -881,15 +1092,15 @@ mymain(void)
     TEST_STRIP_IPV6_BRACKETS(":hello]", ":hello]");
     TEST_STRIP_IPV6_BRACKETS(":[]:", ":[]:");
 
-#define TEST_STRIP_CONTROL_CHARS(str, res)                              \
-    do {                                                                \
-        struct testStripData stripData = {                              \
-            .string = str,                                              \
-            .result = res,                                              \
-        };                                                              \
-        if (virTestRun("Strip control chars from " #str,                \
-                       testStripControlChars, &stripData) < 0)          \
-            ret = -1;                                                   \
+#define TEST_STRIP_CONTROL_CHARS(str, res) \
+    do { \
+        struct testStripData stripData = { \
+            .string = str, \
+            .result = res, \
+        }; \
+        if (virTestRun("Strip control chars from " #str, \
+                       testStripControlChars, &stripData) < 0) \
+            ret = -1; \
     } while (0)
 
     TEST_STRIP_CONTROL_CHARS(NULL, NULL);
@@ -897,7 +1108,23 @@ mymain(void)
     TEST_STRIP_CONTROL_CHARS("\x01H\x02" "E\x03L\x04L\x05O", "HELLO");
     TEST_STRIP_CONTROL_CHARS("\x01\x02\x03\x04HELL\x05O", "HELLO");
     TEST_STRIP_CONTROL_CHARS("\nhello \x01\x07hello\t", "\nhello hello\t");
+
+#define TEST_FILTER_CHARS(str, filter, res) \
+    do { \
+        struct testFilterData filterData = { \
+            .string = str, \
+            .valid = filter, \
+            .result = res, \
+        }; \
+        if (virTestRun("Filter chars from " #str, \
+                       testFilterChars, &filterData) < 0) \
+            ret = -1; \
+    } while (0)
+
+    TEST_FILTER_CHARS(NULL, NULL, NULL);
+    TEST_FILTER_CHARS("hello 123 hello", "helo", "hellohello");
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __LXC_HOSTDEV_H__
-# define __LXC_HOSTDEV_H__
+#ifndef LIBVIRT_LXC_HOSTDEV_H
+# define LIBVIRT_LXC_HOSTDEV_H
 
 # include "lxc_conf.h"
 # include "domain_conf.h"
@@ -40,4 +38,4 @@ int virLXCPrepareHostDevices(virLXCDriverPtr driver,
 void virLXCDomainReAttachHostDevices(virLXCDriverPtr driver,
                                      virDomainDefPtr def);
 
-#endif /* __LXC_HOSTDEV_H__ */
+#endif /* LIBVIRT_LXC_HOSTDEV_H */

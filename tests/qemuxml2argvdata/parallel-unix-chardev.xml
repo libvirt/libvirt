@@ -1,0 +1,30 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='ide' index='0'/>
+    <parallel type='unix'>
+      <source mode='bind' path='/tmp/parport0.socket'/>
+      <protocol type='raw'/>
+      <target port='0'/>
+    </parallel>
+    <parallel type='unix'>
+      <source mode='connect' path='/tmp/parport1.socket'/>
+      <protocol type='raw'/>
+      <target port='1'/>
+    </parallel>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

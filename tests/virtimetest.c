@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <signal.h>
 
 #include "testutils.h"
@@ -46,13 +43,13 @@ static int testTimeFields(const void *args)
 
     virTimeFieldsThen(data->when, &actual);
 
-#define COMPARE(field)                                          \
-    do {                                                        \
-        if (data->fields.field != actual.field) {               \
-            VIR_DEBUG("Expect " #field " %d got %d",            \
-                      data->fields.field, actual.field);        \
-            return -1;                                          \
-        }                                                       \
+#define COMPARE(field) \
+    do { \
+        if (data->fields.field != actual.field) { \
+            VIR_DEBUG("Expect " #field " %d got %d", \
+                      data->fields.field, actual.field); \
+            return -1; \
+        } \
     } while (0)
 
     /* tm_year value 0 is based off epoch 1900 */
@@ -128,24 +125,24 @@ mymain(void)
 
     signal(SIGPIPE, SIG_IGN);
 
-#define TEST_FIELDS(ts, year, mon, day, hour, min, sec)                              \
-    do {                                                                             \
-        struct testTimeFieldsData data = {                                           \
-            .when = ts,                                                              \
-            .fields = {                                                              \
-                .tm_year = year,                                                     \
-                .tm_mon = mon,                                                       \
-                .tm_mday = day,                                                      \
-                .tm_hour = hour,                                                     \
-                .tm_min = min,                                                       \
-                .tm_sec = sec,                                                       \
-                .tm_wday = 0,                                                        \
-                .tm_yday = 0,                                                        \
-                .tm_isdst = 0,                                                       \
-            },                                                                       \
-        };                                                                           \
+#define TEST_FIELDS(ts, year, mon, day, hour, min, sec) \
+    do { \
+        struct testTimeFieldsData data = { \
+            .when = ts, \
+            .fields = { \
+                .tm_year = year, \
+                .tm_mon = mon, \
+                .tm_mday = day, \
+                .tm_hour = hour, \
+                .tm_min = min, \
+                .tm_sec = sec, \
+                .tm_wday = 0, \
+                .tm_yday = 0, \
+                .tm_isdst = 0, \
+            }, \
+        }; \
         if (virTestRun("Test fields " #ts " " #year " ", testTimeFields, &data) < 0) \
-            ret = -1;                                                                \
+            ret = -1; \
     } while (0)
 
     TEST_FIELDS(0ull,           1970,  1,  1,  0,  0,  0);
@@ -168,15 +165,15 @@ mymain(void)
 
     TEST_FIELDS(2147483648000ull, 2038,  1, 19,  3, 14,  8);
 
-#define TEST_LOCALOFFSET(tz, off)                         \
-    do {                                                  \
-       testTimeLocalOffsetData data = {                   \
-           .zone =  tz,                                   \
-           .offset = off,                                 \
-        };                                                \
-        if (virTestRun("Test localtime offset for " #tz,  \
-                       testTimeLocalOffset, &data) < 0)   \
-            ret = -1;                                     \
+#define TEST_LOCALOFFSET(tz, off) \
+    do { \
+       testTimeLocalOffsetData data = { \
+           .zone =  tz, \
+           .offset = off, \
+        }; \
+        if (virTestRun("Test localtime offset for " #tz, \
+                       testTimeLocalOffset, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     TEST_LOCALOFFSET("VIR00:30", -30 * 60);
@@ -223,4 +220,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

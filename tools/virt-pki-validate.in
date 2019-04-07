@@ -2,7 +2,7 @@
 #
 # This shell script checks the TLS certificates and options needed
 # for the secure client/server support of libvirt as documented at
-# http://libvirt.org/remote.html#Remote_certificates
+# https://libvirt.org/remote.html#Remote_certificates
 #
 # Copyright (C) 2009-2013 Red Hat, Inc.
 #
@@ -166,7 +166,7 @@ if [ ! -f "$CA/cacert.pem" ]
 then
     echo the CA certificate $CA/cacert.pem is missing while it
     echo should be installed on both client and servers
-    echo "see http://libvirt.org/remote.html#Remote_TLS_CA"
+    echo "see https://libvirt.org/remote.html#Remote_TLS_CA"
     echo on how to install it
     exit 1
 fi
@@ -186,7 +186,7 @@ if [ "$ORG" = "" ]
 then
     echo the CA certificate $CA/cacert.pem does not define the organization
     echo it should probably regenerated
-    echo "see http://libvirt.org/remote.html#Remote_TLS_CA"
+    echo "see https://libvirt.org/remote.html#Remote_TLS_CA"
     echo on how to regenerate it
     exit 1
 fi
@@ -201,14 +201,14 @@ then
         echo Client certificate $LIBVIRT/clientcert.pem should be world readable
         echo "as root do: chown root:root $LIBVIRT/clientcert.pem ; chmod 644 $LIBVIRT/clientcert.pem"
     else
-        S_ORG=`"$CERTOOL" -i --infile "$LIBVIRT/clientcert.pem" | grep Subject: | sed 's+.*O=\([a-zA-Z \._-]*\).*+\1+'`
-        if [ "$ORG" != "$S_ORG" ]
+        C_ORG=`"$CERTOOL" -i --infile "$LIBVIRT/clientcert.pem" | grep Subject: | sed 's+.*O=\([^,]*\).*+\1+'`
+        if [ "$ORG" != "$C_ORG" ]
         then
             echo The CA certificate and the client certificate do not match
             echo CA organization: $ORG
-            echo Client organization: $S_ORG
+            echo Client organization: $C_ORG
         fi
-        CLIENT=`"$CERTOOL" -i --infile "$LIBVIRT/clientcert.pem" | grep Subject: | sed 's+.*CN=\(.[a-zA-Z \._-]*\).*+\1+'`
+        CLIENT=`"$CERTOOL" -i --infile "$LIBVIRT/clientcert.pem" | grep Subject: | sed 's+.*CN=\(.[^,]*\).*+\1+'`
         echo Found client certificate $LIBVIRT/clientcert.pem for $CLIENT
         if [ ! -e "$LIBVIRTP/clientkey.pem" ]
         then
@@ -234,7 +234,7 @@ then
 else
     echo Did not find "$LIBVIRT/clientcert.pem" client certificate
     echo The machine cannot act as a client
-    echo "see http://libvirt.org/remote.html#Remote_TLS_client_certificates"
+    echo "see https://libvirt.org/remote.html#Remote_TLS_client_certificates"
     echo on how to regenerate it
     CLIENT=0
 fi
@@ -248,14 +248,14 @@ then
         echo Server certificate $LIBVIRT/servercert.pem should be world readable
         echo "as root do: chown root:root $LIBVIRT/servercert.pem ; chmod 644 $LIBVIRT/servercert.pem"
     else
-        S_ORG=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*O=\([a-zA-Z\. _-]*\).*+\1+'`
+        S_ORG=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*O=\([^,]*\).*+\1+'`
         if [ "$ORG" != "$S_ORG" ]
         then
             echo The CA certificate and the server certificate do not match
             echo CA organization: $ORG
             echo Server organization: $S_ORG
         fi
-        S_HOST=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*CN=\([a-zA-Z\. _-]*\)+\1+'`
+        S_HOST=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*CN=\([^,]*\).*+\1+'`
         if test "$S_HOST" != "`hostname -s`" && test "$S_HOST" != "`hostname`"
         then
             echo The server certificate does not seem to match the host name
@@ -287,7 +287,7 @@ then
 else
     echo Did not find $LIBVIRT/servercert.pem server certificate
     echo The machine cannot act as a server
-    echo "see http://libvirt.org/remote.html#Remote_TLS_server_certificates"
+    echo "see https://libvirt.org/remote.html#Remote_TLS_server_certificates"
     echo on how to regenerate it
     SERVER=0
 fi

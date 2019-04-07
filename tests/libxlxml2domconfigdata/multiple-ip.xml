@@ -1,0 +1,22 @@
+<domain type='xen'>
+  <name>test-pv</name>
+  <uuid>039e9ee6-4a84-3055-4c81-8ba426ae2656</uuid>
+  <memory>524288</memory>
+  <currentMemory>524288</currentMemory>
+  <vcpu>4</vcpu>
+  <os>
+    <type arch='x86_64' machine='xenpv'>linux</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <interface type='ethernet'>
+      <ip address='10.0.0.1' family='ipv4'/>
+      <ip address='2000:abcd::1' family='ipv6'/>
+      <mac address='00:16:3e:3e:86:60'/>
+      <script path='/etc/xen/scripts/vif-bridge'/>
+    </interface>
+  </devices>
+</domain>

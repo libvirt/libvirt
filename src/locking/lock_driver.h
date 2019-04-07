@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_PLUGINS_LOCK_DRIVER_H__
-# define __VIR_PLUGINS_LOCK_DRIVER_H__
+#ifndef LIBVIRT_LOCK_DRIVER_H
+# define LIBVIRT_LOCK_DRIVER_H
 
 # include "internal.h"
 # include "domain_conf.h"
@@ -106,9 +106,9 @@ struct _virLockManagerParam {
 # define VIR_LOCK_MANAGER_VERSION_MINOR 0
 # define VIR_LOCK_MANAGER_VERSION_MICRO 0
 
-# define VIR_LOCK_MANAGER_VERSION                           \
-    ((VIR_LOCK_MANAGER_VERSION_MAJOR * 1000 * 1000) +       \
-     (VIR_LOCK_MANAGER_VERSION_MINOR * 1000) +              \
+# define VIR_LOCK_MANAGER_VERSION \
+    ((VIR_LOCK_MANAGER_VERSION_MAJOR * 1000 * 1000) + \
+     (VIR_LOCK_MANAGER_VERSION_MINOR * 1000) + \
      (VIR_LOCK_MANAGER_VERSION_MICRO))
 
 
@@ -124,7 +124,7 @@ struct _virLockManagerParam {
  * too old to support key features.
  *
  * NB: A plugin may be loaded multiple times, for different
- * libvirt drivers (eg QEMU, LXC, UML)
+ * libvirt drivers (eg QEMU, LXC)
  *
  * Returns -1 if the requested version/flags were inadequate
  */
@@ -316,4 +316,4 @@ struct _virLockDriver {
 };
 
 
-#endif /* __VIR_PLUGINS_LOCK_DRIVER_H__ */
+#endif /* LIBVIRT_LOCK_DRIVER_H */

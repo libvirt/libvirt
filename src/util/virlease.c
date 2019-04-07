@@ -42,54 +42,43 @@
 #define VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX (32 * 1024 * 1024)
 
 
-/*
- * Use this when passing possibly-NULL strings to printf-a-likes.
- * Required for unknown parameters during init call.
- */
-#define EMPTY_STR(s) ((s) ? (s) : "*")
-
-
 int
 virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
                             const char *custom_lease_file,
                             const char *ip_to_delete,
                             char **server_duid)
 {
-    char *lease_entries = NULL;
-    virJSONValuePtr leases_array = NULL;
+    VIR_AUTOFREE(char *) lease_entries = NULL;
+    VIR_AUTOPTR(virJSONValue) leases_array = NULL;
     long long expirytime;
     int custom_lease_file_len = 0;
     virJSONValuePtr lease_tmp = NULL;
     const char *ip_tmp = NULL;
     const char *server_duid_tmp = NULL;
     size_t i;
-    int ret = -1;
 
     /* Read entire contents */
     if ((custom_lease_file_len = virFileReadAll(custom_lease_file,
                                                 VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX,
                                                 &lease_entries)) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* Check for previous leases */
-    if (custom_lease_file_len == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (custom_lease_file_len == 0)
+        return 0;
 
     if (!(leases_array = virJSONValueFromString(lease_entries))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid json in file: %s, rewriting it"),
                        custom_lease_file);
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (!virJSONValueIsArray(leases_array)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("couldn't fetch array of leases"));
-        goto cleanup;
+        return -1;
     }
 
     i = 0;
@@ -97,14 +86,14 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
         if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to parse json"));
-            goto cleanup;
+            return -1;
         }
 
         if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address")) ||
             (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime) < 0)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to parse json"));
-            goto cleanup;
+            return -1;
         }
 
         /* Check whether lease has to be included or not */
@@ -121,14 +110,14 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
                     /* Control reaches here when the 'action' is not for an
                      * ipv6 lease or, for some weird reason the env var
                      * DNSMASQ_SERVER_DUID wasn't set*/
-                    goto cleanup;
+                    return -1;
                 }
             } else {
                 /* Inject server-duid into those ipv6 leases which
                  * didn't have it previously, for example, those
                  * created by leaseshelper from libvirt 1.2.6 */
                 if (virJSONValueObjectAppendString(lease_tmp, "server-duid", *server_duid) < 0)
-                    goto cleanup;
+                    return -1;
             }
         }
 
@@ -136,18 +125,13 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
         if (virJSONValueArrayAppend(leases_array_new, lease_tmp) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create json"));
-            goto cleanup;
+            return -1;
         }
 
         ignore_value(virJSONValueArraySteal(leases_array, i));
     }
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(leases_array);
-    VIR_FREE(lease_entries);
-    return ret;
+    return 0;
 }
 
 
@@ -158,7 +142,6 @@ virLeasePrintLeases(virJSONValuePtr leases_array_new,
     virJSONValuePtr lease_tmp = NULL;
     const char *ip_tmp = NULL;
     long long expirytime = 0;
-    int ret = -1;
     size_t i;
 
     /* Man page of dnsmasq says: the script (helper program, in our case)
@@ -175,7 +158,7 @@ virLeasePrintLeases(virJSONValuePtr leases_array_new,
         if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to parse json"));
-            goto cleanup;
+            return -1;
         }
         if (!strchr(ip_tmp, ':')) {
             if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time",
@@ -186,8 +169,8 @@ virLeasePrintLeases(virJSONValuePtr leases_array_new,
                    expirytime,
                    virJSONValueObjectGetString(lease_tmp, "mac-address"),
                    virJSONValueObjectGetString(lease_tmp, "ip-address"),
-                   EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
-                   EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
+                   NULLSTR_STAR(virJSONValueObjectGetString(lease_tmp, "hostname")),
+                   NULLSTR_STAR(virJSONValueObjectGetString(lease_tmp, "client-id")));
         }
     }
 
@@ -199,7 +182,7 @@ virLeasePrintLeases(virJSONValuePtr leases_array_new,
             if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to parse json"));
-                goto cleanup;
+                return -1;
             }
             if (strchr(ip_tmp, ':')) {
                 if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time",
@@ -210,16 +193,13 @@ virLeasePrintLeases(virJSONValuePtr leases_array_new,
                        expirytime,
                        virJSONValueObjectGetString(lease_tmp, "iaid"),
                        virJSONValueObjectGetString(lease_tmp, "ip-address"),
-                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
-                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
+                       NULLSTR_STAR(virJSONValueObjectGetString(lease_tmp, "hostname")),
+                       NULLSTR_STAR(virJSONValueObjectGetString(lease_tmp, "client-id")));
             }
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return  0;
 }
 
 
@@ -232,24 +212,21 @@ virLeaseNew(virJSONValuePtr *lease_ret,
             const char *iaid,
             const char *server_duid)
 {
-    virJSONValuePtr lease_new = NULL;
+    VIR_AUTOPTR(virJSONValue) lease_new = NULL;
     const char *exptime_tmp = virGetEnvAllowSUID("DNSMASQ_LEASE_EXPIRES");
     long long expirytime = 0;
-    char *exptime = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(char *) exptime = NULL;
 
     /* In case hostname is still unknown, use the last known one */
     if (!hostname)
         hostname = virGetEnvAllowSUID("DNSMASQ_OLD_HOSTNAME");
 
-    if (!mac) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!mac)
+        return 0;
 
     if (exptime_tmp) {
         if (VIR_STRDUP(exptime, exptime_tmp) < 0)
-            goto cleanup;
+            return -1;
 
         /* Removed extraneous trailing space in DNSMASQ_LEASE_EXPIRES
          * (dnsmasq < 2.52) */
@@ -262,36 +239,32 @@ virLeaseNew(virJSONValuePtr *lease_ret,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to convert lease expiry time to long long: %s"),
                        NULLSTR(exptime));
-        goto cleanup;
+        return -1;
     }
 
     /* Create new lease */
     if (!(lease_new = virJSONValueNewObject())) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to create json"));
-        goto cleanup;
+        return -1;
     }
 
     if (iaid && virJSONValueObjectAppendString(lease_new, "iaid", iaid) < 0)
-        goto cleanup;
+        return -1;
     if (ip && virJSONValueObjectAppendString(lease_new, "ip-address", ip) < 0)
-        goto cleanup;
+        return -1;
     if (mac && virJSONValueObjectAppendString(lease_new, "mac-address", mac) < 0)
-        goto cleanup;
+        return -1;
     if (hostname && virJSONValueObjectAppendString(lease_new, "hostname", hostname) < 0)
-        goto cleanup;
+        return -1;
     if (clientid && virJSONValueObjectAppendString(lease_new, "client-id", clientid) < 0)
-        goto cleanup;
+        return -1;
     if (server_duid && virJSONValueObjectAppendString(lease_new, "server-duid", server_duid) < 0)
-        goto cleanup;
+        return -1;
     if (expirytime && virJSONValueObjectAppendNumberLong(lease_new, "expiry-time", expirytime) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
     *lease_ret = lease_new;
     lease_new = NULL;
- cleanup:
-    VIR_FREE(exptime);
-    virJSONValueFree(lease_new);
-    return ret;
+    return 0;
 }

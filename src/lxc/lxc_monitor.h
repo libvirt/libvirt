@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LXC_MONITOR_H__
-# define __LXC_MONITOR_H__
+#ifndef LIBVIRT_LXC_MONITOR_H
+# define LIBVIRT_LXC_MONITOR_H
 
 # include "virobject.h"
 # include "domain_conf.h"
@@ -60,4 +60,4 @@ void virLXCMonitorClose(virLXCMonitorPtr mon);
 void virLXCMonitorLock(virLXCMonitorPtr mon);
 void virLXCMonitorUnlock(virLXCMonitorPtr mon);
 
-#endif /* __LXC_MONITOR_H__ */
+#endif /* LIBVIRT_LXC_MONITOR_H */

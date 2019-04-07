@@ -16,13 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Jiri Denemark <jdenemar@redhat.com>
  */
 
-#ifndef __VIR_CPU_CONF_H__
-# define __VIR_CPU_CONF_H__
+#ifndef LIBVIRT_CPU_CONF_H
+# define LIBVIRT_CPU_CONF_H
 
 # include "virutil.h"
 # include "virbuffer.h"
@@ -41,7 +38,7 @@ typedef enum {
     VIR_CPU_TYPE_LAST
 } virCPUType;
 
-VIR_ENUM_DECL(virCPU)
+VIR_ENUM_DECL(virCPU);
 
 typedef enum {
     VIR_CPU_MODE_CUSTOM,
@@ -51,7 +48,7 @@ typedef enum {
     VIR_CPU_MODE_LAST
 } virCPUMode;
 
-VIR_ENUM_DECL(virCPUMode)
+VIR_ENUM_DECL(virCPUMode);
 
 typedef enum {
     VIR_CPU_MATCH_MINIMUM,
@@ -61,7 +58,18 @@ typedef enum {
     VIR_CPU_MATCH_LAST
 } virCPUMatch;
 
-VIR_ENUM_DECL(virCPUMatch)
+VIR_ENUM_DECL(virCPUMatch);
+
+typedef enum {
+    VIR_CPU_CHECK_DEFAULT,
+    VIR_CPU_CHECK_NONE,
+    VIR_CPU_CHECK_PARTIAL,
+    VIR_CPU_CHECK_FULL,
+
+    VIR_CPU_CHECK_LAST
+} virCPUCheck;
+
+VIR_ENUM_DECL(virCPUCheck);
 
 typedef enum {
     VIR_CPU_FALLBACK_ALLOW,
@@ -70,7 +78,7 @@ typedef enum {
     VIR_CPU_FALLBACK_LAST
 } virCPUFallback;
 
-VIR_ENUM_DECL(virCPUFallback)
+VIR_ENUM_DECL(virCPUFallback);
 
 typedef enum {
     VIR_CPU_FEATURE_FORCE,
@@ -82,7 +90,7 @@ typedef enum {
     VIR_CPU_FEATURE_LAST
 } virCPUFeaturePolicy;
 
-VIR_ENUM_DECL(virCPUFeaturePolicy)
+VIR_ENUM_DECL(virCPUFeaturePolicy);
 
 typedef struct _virCPUFeatureDef virCPUFeatureDef;
 typedef virCPUFeatureDef *virCPUFeatureDefPtr;
@@ -92,25 +100,49 @@ struct _virCPUFeatureDef {
 };
 
 
+typedef enum {
+    VIR_CPU_CACHE_MODE_EMULATE,
+    VIR_CPU_CACHE_MODE_PASSTHROUGH,
+    VIR_CPU_CACHE_MODE_DISABLE,
+
+    VIR_CPU_CACHE_MODE_LAST
+} virCPUCacheMode;
+
+VIR_ENUM_DECL(virCPUCacheMode);
+
+typedef struct _virCPUCacheDef virCPUCacheDef;
+typedef virCPUCacheDef *virCPUCacheDefPtr;
+struct _virCPUCacheDef {
+    int level;          /* -1 for unspecified */
+    virCPUCacheMode mode;
+};
+
+
 typedef struct _virCPUDef virCPUDef;
 typedef virCPUDef *virCPUDefPtr;
 struct _virCPUDef {
     int type;           /* enum virCPUType */
     int mode;           /* enum virCPUMode */
     int match;          /* enum virCPUMatch */
+    virCPUCheck check;
     virArch arch;
     char *model;
     char *vendor_id;    /* vendor id returned by CPUID in the guest */
     int fallback;       /* enum virCPUFallback */
     char *vendor;
+    unsigned int microcodeVersion;
     unsigned int sockets;
     unsigned int cores;
     unsigned int threads;
     size_t nfeatures;
     size_t nfeatures_max;
     virCPUFeatureDefPtr features;
+    virCPUCacheDefPtr cache;
 };
 
+
+void ATTRIBUTE_NONNULL(1)
+virCPUDefFreeFeatures(virCPUDefPtr def);
 
 void ATTRIBUTE_NONNULL(1)
 virCPUDefFreeModel(virCPUDefPtr def);
@@ -148,29 +180,28 @@ virCPUDefCopy(const virCPUDef *cpu);
 virCPUDefPtr
 virCPUDefCopyWithoutModel(const virCPUDef *cpu);
 
-virCPUDefPtr
-virCPUDefParseXML(xmlNodePtr node,
-                  xmlXPathContextPtr ctxt,
-                  virCPUType mode);
+int
+virCPUDefParseXML(xmlXPathContextPtr ctxt,
+                  const char *xpath,
+                  virCPUType mode,
+                  virCPUDefPtr *cpu);
 
 bool
 virCPUDefIsEqual(virCPUDefPtr src,
-                 virCPUDefPtr dst);
+                 virCPUDefPtr dst,
+                 bool reportError);
 
 char *
 virCPUDefFormat(virCPUDefPtr def,
-                virDomainNumaPtr numa,
-                bool updateCPU);
+                virDomainNumaPtr numa);
 
 int
 virCPUDefFormatBuf(virBufferPtr buf,
-                   virCPUDefPtr def,
-                   bool updateCPU);
+                   virCPUDefPtr def);
 int
 virCPUDefFormatBufFull(virBufferPtr buf,
                        virCPUDefPtr def,
-                       virDomainNumaPtr numa,
-                       bool updateCPU);
+                       virDomainNumaPtr numa);
 
 int
 virCPUDefAddFeature(virCPUDefPtr cpu,
@@ -182,4 +213,15 @@ virCPUDefUpdateFeature(virCPUDefPtr cpu,
                        const char *name,
                        int policy);
 
-#endif /* __VIR_CPU_CONF_H__ */
+virCPUFeatureDefPtr
+virCPUDefFindFeature(virCPUDefPtr def,
+                     const char *name);
+
+virCPUDefPtr *
+virCPUDefListParse(const char **xmlCPUs,
+                   unsigned int ncpus,
+                   virCPUType cpuType);
+void
+virCPUDefListFree(virCPUDefPtr *cpus);
+
+#endif /* LIBVIRT_CPU_CONF_H */

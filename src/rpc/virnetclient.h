@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NET_CLIENT_H__
-# define __VIR_NET_CLIENT_H__
+#ifndef LIBVIRT_VIRNETCLIENT_H
+# define LIBVIRT_VIRNETCLIENT_H
 
 # ifdef WITH_GNUTLS
 #  include "virnettlscontext.h"
@@ -111,15 +109,12 @@ void virNetClientRemoveStream(virNetClientPtr client,
 int virNetClientSendWithReply(virNetClientPtr client,
                               virNetMessagePtr msg);
 
-int virNetClientSendNoReply(virNetClientPtr client,
-                            virNetMessagePtr msg);
-
 int virNetClientSendNonBlock(virNetClientPtr client,
                              virNetMessagePtr msg);
 
-int virNetClientSendWithReplyStream(virNetClientPtr client,
-                                    virNetMessagePtr msg,
-                                    virNetClientStreamPtr st);
+int virNetClientSendStream(virNetClientPtr client,
+                           virNetMessagePtr msg,
+                           virNetClientStreamPtr st);
 
 # ifdef WITH_SASL
 void virNetClientSetSASLSession(virNetClientPtr client,
@@ -150,4 +145,4 @@ int virNetClientKeepAliveStart(virNetClientPtr client,
 
 void virNetClientKeepAliveStop(virNetClientPtr client);
 
-#endif /* __VIR_NET_CLIENT_H__ */
+#endif /* LIBVIRT_VIRNETCLIENT_H */

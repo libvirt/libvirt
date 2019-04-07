@@ -1,0 +1,15 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <serial type='unix'>
+      <target type='pci-serial'/>
+    </serial>
+  </devices>
+</domain>

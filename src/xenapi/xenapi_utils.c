@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Sharadha Prabhakar <sharadha.prabhakar@citrix.com>
  */
 
 #include <config.h>
 
-#include <stdio.h>
-#include <string.h>
 #include <xen/api/xen_all.h>
 #include "internal.h"
 #include "domain_conf.h"
@@ -131,29 +127,29 @@ enum xen_on_normal_exit
 actionShutdownLibvirt2XenapiEnum(virDomainLifecycleAction action)
 {
     enum xen_on_normal_exit num = XEN_ON_NORMAL_EXIT_RESTART;
-    if (action == VIR_DOMAIN_LIFECYCLE_DESTROY)
+    if (action == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY)
         num = XEN_ON_NORMAL_EXIT_DESTROY;
-    else if (action == VIR_DOMAIN_LIFECYCLE_RESTART)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART)
         num = XEN_ON_NORMAL_EXIT_RESTART;
     return num;
 }
 
 
 enum xen_on_crash_behaviour
-actionCrashLibvirt2XenapiEnum(virDomainLifecycleCrashAction action)
+actionCrashLibvirt2XenapiEnum(virDomainLifecycleAction action)
 {
     enum xen_on_crash_behaviour num = XEN_ON_CRASH_BEHAVIOUR_RESTART;
-    if (action == VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY)
+    if (action == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY)
         num = XEN_ON_CRASH_BEHAVIOUR_DESTROY;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_RESTART)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART)
         num = XEN_ON_CRASH_BEHAVIOUR_RESTART;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE)
         num = XEN_ON_CRASH_BEHAVIOUR_PRESERVE;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME)
         num = XEN_ON_CRASH_BEHAVIOUR_RENAME_RESTART;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY)
         num = XEN_ON_CRASH_BEHAVIOUR_COREDUMP_AND_DESTROY;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART)
         num = XEN_ON_CRASH_BEHAVIOUR_COREDUMP_AND_RESTART;
     return num;
 }
@@ -201,31 +197,31 @@ map2LibvirtBootOrder(char c)
 virDomainLifecycleAction
 xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action)
 {
-    virDomainLifecycleAction num = VIR_DOMAIN_LIFECYCLE_RESTART;
+    virDomainLifecycleAction num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     if (action == XEN_ON_NORMAL_EXIT_DESTROY)
-        num = VIR_DOMAIN_LIFECYCLE_DESTROY;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     else if (action == XEN_ON_NORMAL_EXIT_RESTART)
-        num = VIR_DOMAIN_LIFECYCLE_RESTART;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     return num;
 }
 
 
-virDomainLifecycleCrashAction
+virDomainLifecycleAction
 xenapiCrashExitEnum2virDomainLifecycle(enum xen_on_crash_behaviour action)
 {
-    virDomainLifecycleCrashAction num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART;
+    virDomainLifecycleAction num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     if (action == XEN_ON_CRASH_BEHAVIOUR_DESTROY)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_RESTART)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_PRESERVE)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_RENAME_RESTART)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_COREDUMP_AND_DESTROY)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_COREDUMP_AND_RESTART)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART;
     return num;
 }
 

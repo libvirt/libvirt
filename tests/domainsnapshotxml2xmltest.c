@@ -1,9 +1,6 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -81,13 +78,17 @@ testCompareXMLToXMLFiles(const char *inxml,
     char *actual = NULL;
     int ret = -1;
     virDomainSnapshotDefPtr def = NULL;
-    unsigned int flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
+    unsigned int parseflags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
+    unsigned int formatflags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE;
+    bool cur;
 
-    if (internal)
-        flags |= VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL;
+    if (internal) {
+        parseflags |= VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL;
+        formatflags |= VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL;
+    }
 
     if (redefine)
-        flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
+        parseflags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     if (virTestLoadFile(inxml, &inXmlData) < 0)
         goto cleanup;
@@ -96,13 +97,15 @@ testCompareXMLToXMLFiles(const char *inxml,
         goto cleanup;
 
     if (!(def = virDomainSnapshotDefParseString(inXmlData, driver.caps,
-                                                driver.xmlopt,
-                                                flags)))
+                                                driver.xmlopt, &cur,
+                                                parseflags)))
         goto cleanup;
+    if (cur)
+        formatflags |= VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT;
 
     if (!(actual = virDomainSnapshotDefFormat(uuid, def, driver.caps,
-                                              VIR_DOMAIN_DEF_FORMAT_SECURE,
-                                              internal)))
+                                              driver.xmlopt,
+                                              formatflags)))
         goto cleanup;
 
     if (!redefine) {
@@ -155,9 +158,6 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    /* TODO: test with format probing disabled too */
-    driver.config->allowDiskFormatProbing = true;
-
     if (VIR_ALLOC(testSnapshotXMLVariableLineRegex) < 0)
         goto cleanup;
 
@@ -170,14 +170,14 @@ mymain(void)
     }
 
 
-# define DO_TEST(prefix, name, inpath, outpath, uuid, internal, redefine)     \
-    do {                                                                      \
-        const struct testInfo info = {abs_srcdir "/" inpath "/" name ".xml",  \
+# define DO_TEST(prefix, name, inpath, outpath, uuid, internal, redefine) \
+    do { \
+        const struct testInfo info = {abs_srcdir "/" inpath "/" name ".xml", \
                                       abs_srcdir "/" outpath "/" name ".xml", \
-                                      uuid, internal, redefine};              \
-        if (virTestRun("SNAPSHOT XML-2-XML " prefix " " name,                 \
-                       testCompareXMLToXMLHelper, &info) < 0)                 \
-            ret = -1;                                                         \
+                                      uuid, internal, redefine}; \
+        if (virTestRun("SNAPSHOT XML-2-XML " prefix " " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
 # define DO_TEST_IN(name, uuid) DO_TEST("in->in", name,\
@@ -230,7 +230,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

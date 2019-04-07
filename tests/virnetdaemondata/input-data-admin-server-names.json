@@ -48,7 +48,8 @@
             "errfd": -1,
             "pid": -1,
             "isClient": true
-            }
+            },
+	    "privateData": 1729
         },
         {
             "auth": 2,
@@ -59,7 +60,8 @@
             "errfd": -1,
             "pid": -1,
             "isClient": true
-            }
+            },
+	    "privateData": 1729
         }
             ]
     },
@@ -110,7 +112,8 @@
             "errfd": -1,
             "pid": -1,
             "isClient": true
-            }
+            },
+	    "privateData": 1729
         },
         {
             "auth": 2,
@@ -121,7 +124,8 @@
             "errfd": -1,
             "pid": -1,
             "isClient": true
-            }
+            },
+	    "privateData": 1729
         }
             ]
     }

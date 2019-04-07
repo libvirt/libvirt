@@ -17,16 +17,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <dirent.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <errno.h>
 
 #include "qemu_hostdev.h"
 #include "virlog.h"
@@ -83,6 +79,22 @@ qemuHostdevUpdateActiveSCSIDevices(virQEMUDriverPtr driver,
                                              QEMU_DRIVER_NAME, def->name);
 }
 
+
+int
+qemuHostdevUpdateActiveMediatedDevices(virQEMUDriverPtr driver,
+                                       virDomainDefPtr def)
+{
+    virHostdevManagerPtr mgr = driver->hostdevMgr;
+
+    if (!def->nhostdevs)
+        return 0;
+
+    return virHostdevUpdateActiveMediatedDevices(mgr, def->hostdevs,
+                                                 def->nhostdevs,
+                                                 QEMU_DRIVER_NAME, def->name);
+}
+
+
 int
 qemuHostdevUpdateActiveDomainDevices(virQEMUDriverPtr driver,
                                      virDomainDefPtr def)
@@ -99,39 +111,24 @@ qemuHostdevUpdateActiveDomainDevices(virQEMUDriverPtr driver,
     if (qemuHostdevUpdateActiveSCSIDevices(driver, def) < 0)
         return -1;
 
+    if (qemuHostdevUpdateActiveMediatedDevices(driver, def) < 0)
+        return -1;
+
     return 0;
 }
 
 bool
 qemuHostdevHostSupportsPassthroughVFIO(void)
 {
-    DIR *iommuDir = NULL;
-    struct dirent *iommuGroup = NULL;
-    bool ret = false;
-    int direrr;
-
-    /* condition 1 - /sys/kernel/iommu_groups/ contains entries */
-    if (virDirOpenQuiet(&iommuDir, "/sys/kernel/iommu_groups/") < 0)
-        goto cleanup;
-
-    while ((direrr = virDirRead(iommuDir, &iommuGroup, NULL)) > 0) {
-        /* assume we found a group */
-        break;
-    }
-
-    if (direrr < 0 || !iommuGroup)
-        goto cleanup;
-    /* okay, iommu is on and recognizes groups */
+    /* condition 1 - host has IOMMU */
+    if (!virHostHasIOMMU())
+        return false;
 
     /* condition 2 - /dev/vfio/vfio exists */
     if (!virFileExists("/dev/vfio/vfio"))
-        goto cleanup;
+        return false;
 
-    ret = true;
-
- cleanup:
-    VIR_DIR_CLOSE(iommuDir);
-    return ret;
+    return true;
 }
 
 
@@ -186,7 +183,7 @@ qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        switch ((virDomainHostdevSubsysPCIBackendType) *backend) {
+        switch ((virDomainHostdevSubsysPCIBackendType)*backend) {
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
             if (supportsPassthroughVFIO &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
@@ -278,6 +275,9 @@ qemuHostdevPrepareSCSIDevices(virQEMUDriverPtr driver,
     for (i = 0; i < nhostdevs; i++) {
         virDomainDeviceDef dev;
 
+        if (!virHostdevIsSCSIDevice(hostdevs[i]))
+            continue;
+
         dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
         dev.data.hostdev = hostdevs[i];
 
@@ -305,6 +305,37 @@ qemuHostdevPrepareSCSIVHostDevices(virQEMUDriverPtr driver,
 }
 
 int
+qemuHostdevPrepareMediatedDevices(virQEMUDriverPtr driver,
+                                  const char *name,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs)
+{
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    bool supportsVFIO;
+    size_t i;
+
+    /* Checking for VFIO only is fine with mdev, as IOMMU isolation is achieved
+     * by the physical parent device.
+     */
+    supportsVFIO = virFileExists("/dev/vfio/vfio");
+
+    for (i = 0; i < nhostdevs; i++) {
+        if (virHostdevIsMdevDevice(hostdevs[i])) {
+            if (!supportsVFIO) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Mediated host device assignment requires "
+                                 "VFIO support"));
+                return -1;
+            }
+            break;
+        }
+    }
+
+    return virHostdevPrepareMediatedDevices(hostdev_mgr, QEMU_DRIVER_NAME,
+                                            name, hostdevs, nhostdevs);
+}
+
+int
 qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
                                 virDomainDefPtr def,
                                 virQEMUCapsPtr qemuCaps,
@@ -328,6 +359,10 @@ qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
 
     if (qemuHostdevPrepareSCSIVHostDevices(driver, def->name,
                                            def->hostdevs, def->nhostdevs) < 0)
+        return -1;
+
+    if (qemuHostdevPrepareMediatedDevices(driver, def->name,
+                                          def->hostdevs, def->nhostdevs) < 0)
         return -1;
 
     return 0;
@@ -397,6 +432,18 @@ qemuHostdevReAttachSCSIVHostDevices(virQEMUDriverPtr driver,
 }
 
 void
+qemuHostdevReAttachMediatedDevices(virQEMUDriverPtr driver,
+                                   const char *name,
+                                   virDomainHostdevDefPtr *hostdevs,
+                                   int nhostdevs)
+{
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    virHostdevReAttachMediatedDevices(hostdev_mgr, QEMU_DRIVER_NAME,
+                                      name, hostdevs, nhostdevs);
+}
+
+void
 qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
                                  virDomainDefPtr def)
 {
@@ -414,4 +461,7 @@ qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
 
     qemuHostdevReAttachSCSIVHostDevices(driver, def->name, def->hostdevs,
                                         def->nhostdevs);
+
+    qemuHostdevReAttachMediatedDevices(driver, def->name, def->hostdevs,
+                                       def->nhostdevs);
 }

@@ -11,17 +11,7 @@ virsh_cmd="$virsh_bin"
 counter=0
 ret=0
 
-cleanup_() { rm -rf "$tmphome"; }
-
-# Create all mock files/directories to avoid permission problems
-tmphome="$PWD/tmp_home"
-export XDG_CONFIG_HOME="$tmphome/.config"
-export XDG_CACHE_HOME="$tmphome/.cache"
-export XDG_RUNTIME_HOME="XDG_CACHE_HOME"
-
-mkdir -p "$XDG_CONFIG_HOME/libvirt" "$XDG_CONFIG_HOME/virsh"
-mkdir -p "$XDG_CACHE_HOME/libvirt" "$XDG_CACHE_HOME/virsh"
-mkdir -p "$XDG_RUNTIME_HOME/libvirt" "$XDG_RUNTIME_HOME/virsh"
+mock_xdg_ || framework_failure
 
 is_uri_good()
 {

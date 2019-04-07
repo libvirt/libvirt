@@ -1,0 +1,34 @@
+<filter name='clean-traffic-gateway'>
+    <!-- An example of a traffic filter enforcing clean traffic
+            from a VM by
+              - preventing MAC spoofing -->
+    <filterref filter='no-mac-spoofing'/>
+
+    <!-- preventing IP spoofing on outgoing -->
+    <filterref filter='no-ip-spoofing'/>
+
+    <!-- preventing ARP spoofing/poisoning -->
+    <filterref filter='no-arp-spoofing'/>
+
+    <!-- accept all other incoming and outgoing ARP traffic -->
+    <rule action='accept' direction='inout' priority='-500'>
+        <mac protocolid='arp'/>
+    </rule>
+
+    <!-- accept traffic only from specified MAC address -->
+    <rule action='accept' direction='in'>
+        <mac match='yes' srcmacaddr='$GATEWAY_MAC'/>
+    </rule>
+
+    <!-- allow traffic only to specified MAC address -->
+    <rule action='accept' direction='out'>
+        <mac match='yes' dstmacaddr='$GATEWAY_MAC'/>
+    </rule>
+
+    <!-- preventing any other traffic than between specified MACs
+    and ARP -->
+    <filterref filter='no-other-l2-traffic'/>
+
+    <!-- allow qemu to send a self-announce upon migration end -->
+    <filterref filter='qemu-announce-self'/>
+</filter>

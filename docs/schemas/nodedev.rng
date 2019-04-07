@@ -16,7 +16,23 @@
         <element name="path"><text/></element>
       </optional>
       <optional>
-        <element name="parent"><text/></element>
+        <element name="devnode">
+          <attribute name='type'>
+            <value>dev</value>
+          </attribute>
+          <text/>
+        </element>
+      </optional>
+      <zeroOrMore>
+        <element name="devnode">
+          <attribute name='type'>
+            <value>link</value>
+          </attribute>
+          <text/>
+        </element>
+      </zeroOrMore>
+      <optional>
+        <ref name="parent"/>
       </optional>
 
       <optional>
@@ -28,6 +44,29 @@
       <zeroOrMore>
         <ref name="capability"/>
       </zeroOrMore>
+    </element>
+  </define>
+
+  <define name='parent'>
+    <element name='parent'>
+      <choice>
+        <group>
+          <attribute name='wwnn'>
+            <ref name='wwn'/>
+          </attribute>
+          <attribute name='wwpn'>
+            <ref name='wwn'/>
+          </attribute>
+          <empty/>
+        </group>
+        <group>
+          <attribute name='fabric_wwn'>
+            <ref name='wwn'/>
+          </attribute>
+          <empty/>
+        </group>
+        <text/>
+      </choice>
     </element>
   </define>
 
@@ -43,6 +82,9 @@
         <ref name="capscsitarget"/>
         <ref name="capscsi"/>
         <ref name="capstorage"/>
+        <ref name="capdrm"/>
+        <ref name="capmdev"/>
+        <ref name="capccwdev"/>
       </choice>
     </element>
   </define>
@@ -91,6 +133,13 @@
       <value>pci</value>
     </attribute>
 
+    <optional>
+      <element name='class'>
+        <data type="string">
+          <param name="pattern">0x[0-9a-fA-F]{6}</param>
+        </data>
+      </element>
+    </optional>
     <element name='domain'>
       <ref name='unsignedLong'/>
     </element>
@@ -161,6 +210,30 @@
             <value>cardbus-bridge</value>
           </choice>
         </attribute>
+      </element>
+    </optional>
+
+    <optional>
+      <element name='capability'>
+        <attribute name='type'>
+          <value>mdev_types</value>
+        </attribute>
+        <oneOrMore>
+          <element name='type'>
+            <attribute name='id'>
+              <data type='string'/>
+            </attribute>
+            <optional>
+              <element name='name'><text/></element>
+            </optional>
+            <element name='deviceAPI'>
+              <value>vfio-pci</value>
+            </element>
+            <element name='availableInstances'>
+              <ref name='unsignedInt'/>
+            </element>
+          </element>
+        </oneOrMore>
       </element>
     </optional>
 
@@ -344,9 +417,11 @@
       <ref name='wwn'/>
     </element>
 
-    <element name='fabric_wwn'>
-      <ref name='wwn'/>
-    </element>
+    <optional>
+      <element name='fabric_wwn'>
+        <ref name='wwn'/>
+      </element>
+    </optional>
   </define>
 
   <define name='capsvports'>
@@ -388,6 +463,20 @@
     </optional>
   </define>
 
+  <define name='capsfcrport'>
+    <attribute name='type'>
+      <value>fc_remote_port</value>
+    </attribute>
+
+    <element name='rport'>
+      <text/>
+    </element>
+
+    <element name='wwpn'>
+      <ref name='wwn'/>
+    </element>
+  </define>
+
   <define name='capscsitarget'>
     <attribute name='type'>
       <value>scsi_target</value>
@@ -396,6 +485,12 @@
     <element name='target'>
       <text/>
     </element>
+
+    <optional>
+      <element name='capability'>
+        <ref name='capsfcrport'/>
+      </element>
+    </optional>
   </define>
 
   <define name='capscsi'>
@@ -443,7 +538,7 @@
     <optional>
       <element name='model'>
         <text/>
-        </element>
+      </element>
     </optional>
     <optional>
       <element name='vendor'>
@@ -490,12 +585,69 @@
           <text/>
         </element>
       </optional>
+      <ref name='blockData'/>
     </element>
   </define>
 
   <define name='capstoragefixed'>
     <element name='size'>
       <ref name='unsignedLong'/>
+    </element>
+    <ref name='blockData'/>
+  </define>
+
+  <define name='blockData'>
+    <optional>
+      <element name='logical_block_size'>
+        <ref name='unsignedLong'/>
+      </element>
+      <element name='num_blocks'>
+        <ref name='unsignedLong'/>
+      </element>
+    </optional>
+  </define>
+
+  <define name='capdrm'>
+    <attribute name='type'>
+      <value>drm</value>
+    </attribute>
+    <element name='type'>
+      <choice>
+        <value>primary</value>
+        <value>control</value>
+        <value>render</value>
+      </choice>
+    </element>
+  </define>
+
+  <define name='capmdev'>
+    <attribute name='type'>
+      <value>mdev</value>
+    </attribute>
+    <element name='type'>
+      <attribute name='id'>
+        <data type='string'/>
+      </attribute>
+    </element>
+    <element name='iommuGroup'>
+      <attribute name='number'>
+        <ref name='unsignedInt'/>
+      </attribute>
+    </element>
+  </define>
+
+  <define name='capccwdev'>
+    <attribute name='type'>
+      <value>ccw</value>
+    </attribute>
+    <element name='cssid'>
+      <ref name='ccwCssidRange'/>
+    </element>
+    <element name='ssid'>
+      <ref name='ccwSsidRange'/>
+    </element>
+    <element name='devno'>
+      <ref name='ccwDevnoRange'/>
     </element>
   </define>
 

@@ -21,6 +21,10 @@ struct remote_nonnull_nwfilter {
         remote_nonnull_string      name;
         remote_uuid                uuid;
 };
+struct remote_nonnull_nwfilter_binding {
+        remote_nonnull_string      portdev;
+        remote_nonnull_string      filtername;
+};
 struct remote_nonnull_interface {
         remote_nonnull_string      name;
         remote_nonnull_string      mac;
@@ -348,7 +352,7 @@ struct remote_domain_block_stats_flags_ret {
 };
 struct remote_domain_interface_stats_args {
         remote_nonnull_domain      dom;
-        remote_nonnull_string      path;
+        remote_nonnull_string      device;
 };
 struct remote_domain_interface_stats_ret {
         int64_t                    rx_bytes;
@@ -862,6 +866,15 @@ struct remote_domain_del_iothread_args {
         u_int                      iothread_id;
         u_int                      flags;
 };
+struct remote_domain_set_iothread_params_args {
+        remote_nonnull_domain      dom;
+        u_int                      iothread_id;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
 struct remote_domain_get_security_label_args {
         remote_nonnull_domain      dom;
 };
@@ -913,6 +926,11 @@ struct remote_domain_detach_device_flags_args {
 struct remote_domain_update_device_flags_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      xml;
+        u_int                      flags;
+};
+struct remote_domain_detach_device_alias_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      alias;
         u_int                      flags;
 };
 struct remote_domain_get_autostart_args {
@@ -1330,6 +1348,12 @@ struct remote_storage_pool_lookup_by_volume_args {
 struct remote_storage_pool_lookup_by_volume_ret {
         remote_nonnull_storage_pool pool;
 };
+struct remote_storage_pool_lookup_by_target_path_args {
+        remote_nonnull_string      path;
+};
+struct remote_storage_pool_lookup_by_target_path_ret {
+        remote_nonnull_storage_pool pool;
+};
 struct remote_storage_pool_create_xml_args {
         remote_nonnull_string      xml;
         u_int                      flags;
@@ -1535,7 +1559,7 @@ struct remote_node_device_get_parent_args {
         remote_nonnull_string      name;
 };
 struct remote_node_device_get_parent_ret {
-        remote_string              parent;
+        remote_string              parentName;
 };
 struct remote_node_device_num_of_caps_args {
         remote_nonnull_string      name;
@@ -1773,6 +1797,13 @@ struct remote_domain_get_job_stats_ret {
 struct remote_domain_abort_job_args {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_migrate_get_max_downtime_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_migrate_get_max_downtime_ret {
+        uint64_t                   downtime;
+};
 struct remote_domain_migrate_set_max_downtime_args {
         remote_nonnull_domain      dom;
         uint64_t                   downtime;
@@ -1961,6 +1992,18 @@ struct remote_domain_has_managed_save_image_ret {
 };
 struct remote_domain_managed_save_remove_args {
         remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_managed_save_get_xml_desc_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_managed_save_get_xml_desc_ret {
+        remote_nonnull_string      xml;
+};
+struct remote_domain_managed_save_define_xml_args {
+        remote_nonnull_domain      dom;
+        remote_string              dxml;
         u_int                      flags;
 };
 struct remote_domain_snapshot_create_xml_args {
@@ -2516,6 +2559,14 @@ struct remote_domain_event_block_job_2_msg {
         int                        type;
         int                        status;
 };
+struct remote_domain_event_block_threshold_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      dev;
+        remote_string              path;
+        uint64_t                   threshold;
+        uint64_t                   excess;
+};
 struct remote_domain_event_callback_tunable_msg {
         int                        callbackID;
         remote_nonnull_domain      dom;
@@ -2799,6 +2850,136 @@ struct remote_domain_set_guest_vcpus_args {
         remote_nonnull_string      cpumap;
         int                        state;
         u_int                      flags;
+};
+struct remote_domain_set_vcpu_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      cpumap;
+        int                        state;
+        u_int                      flags;
+};
+struct remote_domain_event_callback_metadata_change_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        int                        type;
+        remote_string              nsuri;
+};
+struct remote_connect_secret_event_register_any_args {
+        int                        eventID;
+        remote_secret              secret;
+};
+struct remote_connect_secret_event_register_any_ret {
+        int                        callbackID;
+};
+struct remote_connect_secret_event_deregister_any_args {
+        int                        callbackID;
+};
+struct remote_secret_event_lifecycle_msg {
+        int                        callbackID;
+        remote_nonnull_secret      secret;
+        int                        event;
+        int                        detail;
+};
+struct remote_secret_event_value_changed_msg {
+        int                        callbackID;
+        remote_nonnull_secret      secret;
+};
+struct remote_domain_set_block_threshold_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      dev;
+        uint64_t                   threshold;
+        u_int                      flags;
+};
+struct remote_domain_set_lifecycle_action_args {
+        remote_nonnull_domain      dom;
+        u_int                      type;
+        u_int                      action;
+        u_int                      flags;
+};
+struct remote_connect_compare_hypervisor_cpu_args {
+        remote_string              emulator;
+        remote_string              arch;
+        remote_string              machine;
+        remote_string              virttype;
+        remote_nonnull_string      xmlCPU;
+        u_int                      flags;
+};
+struct remote_connect_compare_hypervisor_cpu_ret {
+        int                        result;
+};
+struct remote_connect_baseline_hypervisor_cpu_args {
+        remote_string              emulator;
+        remote_string              arch;
+        remote_string              machine;
+        remote_string              virttype;
+        struct {
+                u_int              xmlCPUs_len;
+                remote_nonnull_string * xmlCPUs_val;
+        } xmlCPUs;
+        u_int                      flags;
+};
+struct remote_connect_baseline_hypervisor_cpu_ret {
+        remote_nonnull_string      cpu;
+};
+struct remote_node_get_sev_info_args {
+        int                        nparams;
+        u_int                      flags;
+};
+struct remote_node_get_sev_info_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        int                        nparams;
+};
+struct remote_domain_get_launch_security_info_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_launch_security_info_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
+struct remote_nwfilter_binding_lookup_by_port_dev_args {
+        remote_nonnull_string      name;
+};
+struct remote_nwfilter_binding_lookup_by_port_dev_ret {
+        remote_nonnull_nwfilter_binding nwfilter;
+};
+struct remote_nwfilter_binding_create_xml_args {
+        remote_nonnull_string      xml;
+        u_int                      flags;
+};
+struct remote_nwfilter_binding_create_xml_ret {
+        remote_nonnull_nwfilter_binding nwfilter;
+};
+struct remote_nwfilter_binding_delete_args {
+        remote_nonnull_nwfilter_binding nwfilter;
+};
+struct remote_nwfilter_binding_get_xml_desc_args {
+        remote_nonnull_nwfilter_binding nwfilter;
+        u_int                      flags;
+};
+struct remote_nwfilter_binding_get_xml_desc_ret {
+        remote_nonnull_string      xml;
+};
+struct remote_connect_list_all_nwfilter_bindings_args {
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_connect_list_all_nwfilter_bindings_ret {
+        struct {
+                u_int              bindings_len;
+                remote_nonnull_nwfilter_binding * bindings_val;
+        } bindings;
+        u_int                      ret;
+};
+struct remote_connect_get_storage_pool_capabilities_args {
+        u_int                      flags;
+};
+struct remote_connect_get_storage_pool_capabilities_ret {
+        remote_nonnull_string      capabilities;
 };
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
@@ -3179,4 +3360,29 @@ enum remote_procedure {
         REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE = 376,
         REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE = 377,
         REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE = 379,
+        REMOTE_PROC_CONNECT_SECRET_EVENT_REGISTER_ANY = 380,
+        REMOTE_PROC_CONNECT_SECRET_EVENT_DEREGISTER_ANY = 381,
+        REMOTE_PROC_SECRET_EVENT_LIFECYCLE = 382,
+        REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED = 383,
+        REMOTE_PROC_DOMAIN_SET_VCPU = 384,
+        REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD = 385,
+        REMOTE_PROC_DOMAIN_SET_BLOCK_THRESHOLD = 386,
+        REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_DOWNTIME = 387,
+        REMOTE_PROC_DOMAIN_MANAGED_SAVE_GET_XML_DESC = 388,
+        REMOTE_PROC_DOMAIN_MANAGED_SAVE_DEFINE_XML = 389,
+        REMOTE_PROC_DOMAIN_SET_LIFECYCLE_ACTION = 390,
+        REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391,
+        REMOTE_PROC_DOMAIN_DETACH_DEVICE_ALIAS = 392,
+        REMOTE_PROC_CONNECT_COMPARE_HYPERVISOR_CPU = 393,
+        REMOTE_PROC_CONNECT_BASELINE_HYPERVISOR_CPU = 394,
+        REMOTE_PROC_NODE_GET_SEV_INFO = 395,
+        REMOTE_PROC_DOMAIN_GET_LAUNCH_SECURITY_INFO = 396,
+        REMOTE_PROC_NWFILTER_BINDING_LOOKUP_BY_PORT_DEV = 397,
+        REMOTE_PROC_NWFILTER_BINDING_GET_XML_DESC = 398,
+        REMOTE_PROC_NWFILTER_BINDING_CREATE_XML = 399,
+        REMOTE_PROC_NWFILTER_BINDING_DELETE = 400,
+        REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401,
+        REMOTE_PROC_DOMAIN_SET_IOTHREAD_PARAMS = 402,
+        REMOTE_PROC_CONNECT_GET_STORAGE_POOL_CAPABILITIES = 403,
 };

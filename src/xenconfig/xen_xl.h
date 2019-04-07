@@ -2,6 +2,7 @@
  * xen_xl.h: Xen XL parsing functions
  *
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (c) 2014 David Kiarie Kahurani
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,11 +18,10 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Author: Kiarie Kahurani<davidkiarie4@gmail.com>
  */
 
-#ifndef __VIR_XEN_XL_H__
-# define __VIR_XEN_XL_H__
+#ifndef LIBVIRT_XEN_XL_H
+# define LIBVIRT_XEN_XL_H
 
 # include "virconf.h"
 # include "domain_conf.h"
@@ -33,4 +33,6 @@ virDomainDefPtr xenParseXL(virConfPtr conn,
 
 virConfPtr xenFormatXL(virDomainDefPtr def, virConnectPtr);
 
-#endif /* __VIR_XEN_XL_H__ */
+const char *xenTranslateCPUFeature(const char *feature_name, bool from_libxl);
+
+#endif /* LIBVIRT_XEN_XL_H */

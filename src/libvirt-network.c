@@ -36,10 +36,6 @@ VIR_LOG_INIT("libvirt.network");
  * reference counter on the connection is not increased by this
  * call.
  *
- * WARNING: When writing libvirt bindings in other languages, do
- * not use this function.  Instead, store the connection and
- * the network object together.
- *
  * Returns the virConnectPtr or NULL in case of failure.
  */
 virConnectPtr
@@ -95,7 +91,7 @@ virConnectListAllNetworks(virConnectPtr conn,
                           virNetworkPtr **nets,
                           unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, nets=%p, flags=%x", conn, nets, flags);
+    VIR_DEBUG("conn=%p, nets=%p, flags=0x%x", conn, nets, flags);
 
     virResetLastError();
 
@@ -683,7 +679,7 @@ int
 virNetworkRef(virNetworkPtr network)
 {
     VIR_DEBUG("network=%p refs=%d", network,
-              network ? network->object.u.s.refs : 0);
+              network ? network->parent.u.s.refs : 0);
 
     virResetLastError();
 
@@ -787,14 +783,14 @@ virNetworkGetUUIDString(virNetworkPtr network, char *buf)
  * VIR_NETWORK_XML_INACTIVE, then the expansion of virtual interfaces is
  * not performed.
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("network=%p, flags=%x", network, flags);
+    VIR_DEBUG("network=%p, flags=0x%x", network, flags);
 
     virResetLastError();
 
@@ -824,8 +820,8 @@ virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
  * Provides a bridge interface name to which a domain may connect
  * a network interface in order to join the network.
  *
- * Returns a 0 terminated interface name, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated interface name, or NULL in case of
+ * error. The caller must free() the returned value.
  */
 char *
 virNetworkGetBridgeName(virNetworkPtr network)
@@ -1203,7 +1199,7 @@ virNetworkGetDHCPLeases(virNetworkPtr network,
                         unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("network=%p, mac='%s' leases=%p, flags=%x",
+    VIR_DEBUG("network=%p, mac='%s' leases=%p, flags=0x%x",
                network, NULLSTR(mac), leases, flags);
 
     virResetLastError();

@@ -1,0 +1,72 @@
+{
+    "servers": {
+        "testServer0": {
+            "min_workers": 10,
+            "max_workers": 50,
+            "priority_workers": 5,
+            "max_clients": 100,
+            "max_anonymous_clients": 10,
+            "keepaliveInterval": 120,
+            "keepaliveCount": 5,
+            "next_client_id": 5,
+            "services": [
+                {
+                    "auth": 0,
+                    "readonly": true,
+                    "nrequests_client_max": 2,
+                    "socks": [
+                        {
+                            "fd": 100,
+                            "errfd": -1,
+                            "pid": 0,
+                            "isClient": false
+                        }
+                    ]
+                },
+                {
+                    "auth": 2,
+                    "readonly": false,
+                    "nrequests_client_max": 5,
+                    "socks": [
+                        {
+                            "fd": 101,
+                            "errfd": -1,
+                            "pid": 0,
+                            "isClient": false
+                        }
+                    ]
+                }
+            ],
+            "clients": [
+                {
+                    "id": 2,
+                    "auth": 0,
+                    "auth_pending": false,
+                    "readonly": true,
+                    "nrequests_max": 15,
+                    "sock": {
+                        "fd": 102,
+                        "errfd": -1,
+                        "pid": -1,
+                        "isClient": true
+                    },
+		    "privateData": 1729
+                },
+                {
+                    "id": 3,
+                    "auth": 2,
+                    "auth_pending": true,
+                    "readonly": true,
+                    "nrequests_max": 66,
+                    "sock": {
+                        "fd": 103,
+                        "errfd": -1,
+                        "pid": -1,
+                        "isClient": true
+                    },
+                    "privateData": 1729
+                }
+            ]
+        }
+    }
+}

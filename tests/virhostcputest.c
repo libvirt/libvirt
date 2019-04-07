@@ -1,17 +1,18 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #include "testutils.h"
 #include "internal.h"
+#define LIBVIRT_VIRHOSTCPUPRIV_H_ALLOW
 #include "virhostcpupriv.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "virfilewrapper.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+#define SYSFS_SYSTEM_PATH "/sys/devices/system"
 
 #if !(defined __linux__)
 
@@ -46,7 +47,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
                                        &nodeinfo.nodes, &nodeinfo.sockets,
                                        &nodeinfo.cores, &nodeinfo.threads) < 0) {
         if (virTestGetDebug()) {
-            if (virGetLastError())
+            if (virGetLastErrorCode())
                 VIR_TEST_DEBUG("\n%s\n", virGetLastErrorMessage());
         }
         VIR_FORCE_FCLOSE(cpuinfo);
@@ -72,7 +73,6 @@ linuxTestCompareFiles(const char *cpuinfofile,
     return ret;
 }
 
-# define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / sysconf(_SC_CLK_TCK))
 
 static int
 linuxCPUStatsToBuf(virBufferPtr buf,
@@ -81,6 +81,15 @@ linuxCPUStatsToBuf(virBufferPtr buf,
                    size_t nparams)
 {
     size_t i = 0;
+    unsigned long long tick_to_nsec;
+    long long sc_clk_tck;
+
+    if ((sc_clk_tck = sysconf(_SC_CLK_TCK)) < 0) {
+        fprintf(stderr, "sysconf(_SC_CLK_TCK) fails : %s\n",
+                strerror(errno));
+        return -1;
+    }
+    tick_to_nsec = (1000ull * 1000ull * 1000ull) / sc_clk_tck;
 
     if (cpu < 0)
         virBufferAddLit(buf, "cpu:\n");
@@ -89,7 +98,7 @@ linuxCPUStatsToBuf(virBufferPtr buf,
 
     for (i = 0; i < nparams; i++)
         virBufferAsprintf(buf, "%s: %llu\n", param[i].field,
-                          param[i].value / TICK_TO_NSEC);
+                          param[i].value / tick_to_nsec);
 
     virBufferAddChar(buf, '\n');
     return 0;
@@ -177,9 +186,9 @@ linuxTestHostCPU(const void *opaque)
         goto cleanup;
     }
 
-    virHostCPUSetSysFSSystemPathLinux(sysfs_prefix);
+    virFileWrapperAddPrefix(SYSFS_SYSTEM_PATH, sysfs_prefix);
     result = linuxTestCompareFiles(cpuinfo, data->arch, output);
-    virHostCPUSetSysFSSystemPathLinux(NULL);
+    virFileWrapperRemovePrefix(SYSFS_SYSTEM_PATH);
 
  cleanup:
     VIR_FREE(cpuinfo);
@@ -236,6 +245,8 @@ mymain(void)
         {"raspberrypi", VIR_ARCH_ARMV6L},
         {"f21-mustang", VIR_ARCH_AARCH64},
         {"rhelsa-3.19.0-mustang", VIR_ARCH_AARCH64},
+        {"rhel74-moonshot", VIR_ARCH_AARCH64},
+        {"high-ids", VIR_ARCH_AARCH64},
         {"deconf-cpus", VIR_ARCH_PPC64},
         /* subcores, default configuration */
         {"subcores1", VIR_ARCH_PPC64},
@@ -243,14 +254,15 @@ mymain(void)
         {"subcores2", VIR_ARCH_PPC64},
         /* subcores, invalid configuration */
         {"subcores3", VIR_ARCH_PPC64},
+        {"with-frequency", VIR_ARCH_S390X},
     };
 
     if (virInitialize() < 0)
         return EXIT_FAILURE;
 
     for (i = 0; i < ARRAY_CARDINALITY(nodeData); i++)
-      if (virTestRun(nodeData[i].testName, linuxTestHostCPU, &nodeData[i]) != 0)
-        ret = -1;
+        if (virTestRun(nodeData[i].testName, linuxTestHostCPU, &nodeData[i]) != 0)
+            ret = -1;
 
 # define DO_TEST_CPU_STATS(name, ncpus) \
     do { \
@@ -264,6 +276,6 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virhostcpumock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virhostcpumock.so")
 
 #endif /* __linux__ */

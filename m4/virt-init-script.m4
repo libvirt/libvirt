@@ -19,16 +19,12 @@ dnl
 
 AC_DEFUN([LIBVIRT_ARG_INIT_SCRIPT],[
     LIBVIRT_ARG_WITH([INIT_SCRIPT],
-                     [Style of init script to install: redhat, systemd,
-                      systemd+redhat, upstart, check, none], [check])
+                     [Style of init script to install: systemd, check, none],
+                     [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
     AC_MSG_CHECKING([for init script type])
-
-    init_redhat=no
-    init_systemd=no
-    init_upstart=no
 
     if test "$with_init_script" = check && test "$cross_compiling" = yes; then
         with_init_script=none
@@ -36,36 +32,20 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
     if test "$with_init_script" = check && type systemctl >/dev/null 2>&1; then
         with_init_script=systemd
     fi
-    if test "$with_init_script" = check && test -f /etc/redhat-release; then
-        with_init_script=redhat
-    fi
     if test "$with_init_script" = check; then
         with_init_script=none
     fi
 
     AS_CASE([$with_init_script],
-        [systemd+redhat],[
-            init_redhat=yes
-            init_systemd=yes
-        ],
-        [systemd],[
-            init_systemd=yes
-        ],
-        [upstart],[
-            init_upstart=yes
-        ],
-        [redhat],[
-            init_redhat=yes
-        ],
+        [systemd],[],
         [none],[],
         [*],[
             AC_MSG_ERROR([Unknown initscript flavour $with_init_script])
         ]
     )
 
-    AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_RED_HAT], test "$init_redhat" = "yes")
-    AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_UPSTART], test "$init_upstart" = "yes")
-    AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD], test "$init_systemd" = "yes")
+    AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD],
+                   [test "$with_init_script" = "systemd"])
 
     AC_MSG_RESULT($with_init_script)
 ])

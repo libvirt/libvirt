@@ -1,12 +1,8 @@
-#include <config.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #include <inttypes.h>
-
-#include <verify.h>
 
 #define VIR_ENUM_SENTINELS
 
@@ -15,6 +11,15 @@
 
 #define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
 #define STREQ(a, b) (strcmp(a, b) == 0)
+#define NULLSTR(s) ((s) ? (s) : "<null>")
+
+#if (4 < __GNUC__ + (6 <= __GNUC_MINOR__) \
+     && (201112L <= __STDC_VERSION__  || !defined __STRICT_ANSI__) \
+     && !defined __cplusplus)
+# define verify(cond) _Static_assert(cond, "verify (" #cond ")")
+#else
+# define verify(cond)
+#endif
 
 #ifndef ATTRIBUTE_UNUSED
 # define ATTRIBUTE_UNUSED __attribute__((__unused__))
@@ -239,6 +244,12 @@ eventDetailToString(int event,
             case VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED:
                 return "Finished";
 
+            case VIR_DOMAIN_EVENT_SHUTDOWN_GUEST:
+                return "Guest request";
+
+            case VIR_DOMAIN_EVENT_SHUTDOWN_HOST:
+                return "Host request";
+
             case VIR_DOMAIN_EVENT_SHUTDOWN_LAST:
                 break;
             }
@@ -349,6 +360,10 @@ storagePoolEventToString(int event)
             return "Started";
         case VIR_STORAGE_POOL_EVENT_STOPPED:
             return "Stopped";
+        case VIR_STORAGE_POOL_EVENT_CREATED:
+            return "Created";
+        case VIR_STORAGE_POOL_EVENT_DELETED:
+            return "Deleted";
         case VIR_STORAGE_POOL_EVENT_LAST:
             break;
     }
@@ -366,6 +381,24 @@ nodeDeviceEventToString(int event)
         case VIR_NODE_DEVICE_EVENT_LAST:
             break;
     }
+    return "unknown";
+}
+
+
+static const char *
+secretEventToString(int event)
+{
+    switch ((virSecretEventLifecycleType) event) {
+        case VIR_SECRET_EVENT_DEFINED:
+            return "Defined";
+
+        case VIR_SECRET_EVENT_UNDEFINED:
+            return "Undefined";
+
+        case VIR_SECRET_EVENT_LAST:
+            break;
+    }
+
     return "unknown";
 }
 
@@ -728,6 +761,35 @@ myNodeDeviceEventUpdateCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+mySecretEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virSecretPtr secret,
+                      int event,
+                      int detail,
+                      void *opaque ATTRIBUTE_UNUSED)
+{
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    virSecretGetUUIDString(secret, uuid);
+    printf("%s EVENT: Secret %s %s %d\n", __func__,
+           uuid,
+           secretEventToString(event),
+           detail);
+    return 0;
+}
+
+
+static int
+mySecretEventValueChanged(virConnectPtr conn ATTRIBUTE_UNUSED,
+                          virSecretPtr secret,
+                          void *opaque ATTRIBUTE_UNUSED)
+{
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    virSecretGetUUIDString(secret, uuid);
+    printf("%s EVENT: Secret %s\n", __func__, uuid);
+    return 0;
+}
+
+
 static void
 eventTypedParamsPrint(virTypedParameterPtr params,
                       int nparams)
@@ -878,6 +940,24 @@ myDomainEventBlockJobCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
+myDomainEventBlockThresholdCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainPtr dom,
+                                    const char *dev,
+                                    const char *path,
+                                    unsigned long long threshold,
+                                    unsigned long long excess,
+                                    void *opaque ATTRIBUTE_UNUSED)
+{
+    /* Casts to uint64_t to work around mingw not knowing %lld */
+    printf("%s EVENT: Domain %s(%d) block threshold callback dev '%s'(%s), "
+           "threshold: '%" PRIu64 "', excess: '%" PRIu64 "'",
+           __func__, virDomainGetName(dom), virDomainGetID(dom),
+           dev, NULLSTR(path), (uint64_t)threshold, (uint64_t)excess);
+    return 0;
+}
+
+
+static int
 myDomainEventMigrationIterationCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                         virDomainPtr dom,
                                         int iteration,
@@ -917,6 +997,40 @@ myDomainEventDeviceRemovalFailedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static const char *
+metadataTypeToStr(int status)
+{
+    switch ((virDomainMetadataType) status) {
+    case VIR_DOMAIN_METADATA_DESCRIPTION:
+        return "description";
+
+    case VIR_DOMAIN_METADATA_TITLE:
+        return "title";
+
+    case VIR_DOMAIN_METADATA_ELEMENT:
+        return "element";
+
+    case VIR_DOMAIN_METADATA_LAST:
+        break;
+    }
+
+    return "unknown";
+}
+
+static int
+myDomainEventMetadataChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainPtr dom,
+                                    int type,
+                                    const char *nsuri,
+                                    void *opaque ATTRIBUTE_UNUSED)
+{
+    const char *typestr = metadataTypeToStr(type);
+    printf("%s EVENT: Domain %s(%d) metadata type: %s (%s)\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom), typestr, nsuri ? nsuri : "n/a");
+    return 0;
+}
+
+
 
 static void
 myFreeFunc(void *opaque)
@@ -944,7 +1058,7 @@ struct domainEventData {
 };
 
 
-#define DOMAIN_EVENT(event, callback)                                          \
+#define DOMAIN_EVENT(event, callback) \
     {event, -1, VIR_DOMAIN_EVENT_CALLBACK(callback), #event}
 
 struct domainEventData domainEvents[] = {
@@ -971,6 +1085,8 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION, myDomainEventMigrationIterationCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_JOB_COMPLETED, myDomainEventJobCompletedCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED, myDomainEventDeviceRemovalFailedCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_METADATA_CHANGE, myDomainEventMetadataChangeCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD, myDomainEventBlockThresholdCallback),
 };
 
 struct storagePoolEventData {
@@ -980,7 +1096,7 @@ struct storagePoolEventData {
     const char *name;
 };
 
-#define STORAGE_POOL_EVENT(event, callback)                                          \
+#define STORAGE_POOL_EVENT(event, callback) \
     {event, -1, VIR_STORAGE_POOL_EVENT_CALLBACK(callback), #event}
 
 struct storagePoolEventData storagePoolEvents[] = {
@@ -995,7 +1111,7 @@ struct nodeDeviceEventData {
     const char *name;
 };
 
-#define NODE_DEVICE_EVENT(event, callback)                                          \
+#define NODE_DEVICE_EVENT(event, callback) \
     {event, -1, VIR_NODE_DEVICE_EVENT_CALLBACK(callback), #event}
 
 struct nodeDeviceEventData nodeDeviceEvents[] = {
@@ -1003,10 +1119,26 @@ struct nodeDeviceEventData nodeDeviceEvents[] = {
     NODE_DEVICE_EVENT(VIR_NODE_DEVICE_EVENT_ID_UPDATE, myNodeDeviceEventUpdateCallback),
 };
 
+struct secretEventData {
+    int event;
+    int id;
+    virConnectSecretEventGenericCallback cb;
+    const char *name;
+};
+
+#define SECRET_EVENT(event, callback) \
+    {event, -1, VIR_SECRET_EVENT_CALLBACK(callback), #event}
+
+struct secretEventData secretEvents[] = {
+    SECRET_EVENT(VIR_SECRET_EVENT_ID_LIFECYCLE, mySecretEventCallback),
+    SECRET_EVENT(VIR_SECRET_EVENT_ID_VALUE_CHANGED, mySecretEventValueChanged),
+};
+
 /* make sure that the events are kept in sync */
 verify(ARRAY_CARDINALITY(domainEvents) == VIR_DOMAIN_EVENT_ID_LAST);
 verify(ARRAY_CARDINALITY(storagePoolEvents) == VIR_STORAGE_POOL_EVENT_ID_LAST);
 verify(ARRAY_CARDINALITY(nodeDeviceEvents) == VIR_NODE_DEVICE_EVENT_ID_LAST);
+verify(ARRAY_CARDINALITY(secretEvents) == VIR_SECRET_EVENT_ID_LAST);
 
 int
 main(int argc, char **argv)
@@ -1015,12 +1147,7 @@ main(int argc, char **argv)
     virConnectPtr dconn = NULL;
     int callback1ret = -1;
     int callback16ret = -1;
-    struct sigaction action_stop;
     size_t i;
-
-    memset(&action_stop, 0, sizeof(action_stop));
-
-    action_stop.sa_handler = stop;
 
     if (argc > 1 && STREQ(argv[1], "--help")) {
         printf("%s uri\n", argv[0]);
@@ -1052,8 +1179,10 @@ main(int argc, char **argv)
         goto cleanup;
     }
 
-    sigaction(SIGTERM, &action_stop, NULL);
-    sigaction(SIGINT, &action_stop, NULL);
+    /* The ideal program would use sigaction to set this handler, but
+     * this way is portable to mingw. */
+    signal(SIGTERM, stop);
+    signal(SIGINT, stop);
 
     printf("Registering event callbacks\n");
 
@@ -1114,6 +1243,22 @@ main(int argc, char **argv)
         }
     }
 
+    /* register common secret callbacks */
+    for (i = 0; i < ARRAY_CARDINALITY(secretEvents); i++) {
+        struct secretEventData *event = secretEvents + i;
+
+        event->id = virConnectSecretEventRegisterAny(dconn, NULL,
+                                                     event->event,
+                                                     event->cb,
+                                                     strdup(event->name),
+                                                     myFreeFunc);
+
+        if (event->id < 0) {
+            fprintf(stderr, "Failed to register event '%s'\n", event->name);
+            goto cleanup;
+        }
+    }
+
     if ((callback1ret == -1) ||
         (callback16ret == -1))
         goto cleanup;
@@ -1154,6 +1299,12 @@ main(int argc, char **argv)
     for (i = 0; i < ARRAY_CARDINALITY(nodeDeviceEvents); i++) {
         if (nodeDeviceEvents[i].id > 0)
             virConnectNodeDeviceEventDeregisterAny(dconn, nodeDeviceEvents[i].id);
+    }
+
+    printf("Deregistering secret event callbacks\n");
+    for (i = 0; i < ARRAY_CARDINALITY(secretEvents); i++) {
+        if (secretEvents[i].id > 0)
+            virConnectSecretEventDeregisterAny(dconn, secretEvents[i].id);
     }
 
 

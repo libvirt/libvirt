@@ -22,8 +22,6 @@
 
 #ifdef WITH_VMWARE
 
-# include <stdio.h>
-# include <stdlib.h>
 
 # include "vmware/vmware_conf.h"
 
@@ -77,14 +75,14 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST(vmware_type, name, version)                            \
-    do {                                                                \
-        struct testInfo info = {                                        \
-            vmware_type, name, version                                  \
-        };                                                              \
-        if (virTestRun("VMware Version String Parsing " name,           \
-                       testVerStrParse, &info) < 0)                     \
-            ret = -1;                                                   \
+# define DO_TEST(vmware_type, name, version) \
+    do { \
+        struct testInfo info = { \
+            vmware_type, name, version \
+        }; \
+        if (virTestRun("VMware Version String Parsing " name, \
+                       testVerStrParse, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("ws", "workstation-7.0.0", 7000000);
@@ -94,7 +92,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

@@ -1,5 +1,5 @@
 # Customize Makefile.maint.                           -*- makefile -*-
-# Copyright (C) 2008-2015 Red Hat, Inc.
+# Copyright (C) 2008-2019 Red Hat, Inc.
 # Copyright (C) 2003-2008 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -32,8 +32,8 @@ gnulib_dir = $(srcdir)/.gnulib
 # List of additional files that we want to pick up in our POTFILES.in
 # This is all gnulib files, as well as generated files for RPC code.
 generated_files = \
-  $(srcdir)/daemon/*_dispatch.h \
-  $(srcdir)/src/*/*_dispatch.h \
+  $(srcdir)/src/*/{remote_daemon,admin_server,log_daemon,lock_daemon}_dispatch_*stubs.h \
+  $(srcdir)/src/lxc/{lxc_monitor,lxc_controller}_dispatch.h \
   $(srcdir)/src/remote/*_client_bodies.h \
   $(srcdir)/src/*/*_protocol.[ch] \
   $(srcdir)/gnulib/lib/*.[ch]
@@ -42,40 +42,40 @@ generated_files = \
 _test_script_regex = \<\(init\|test-lib\)\.sh\>
 
 # Tests not to run as part of "make distcheck".
-local-checks-to-skip =			\
-  changelog-check			\
-  makefile-check			\
-  makefile_path_separator_check		\
-  patch-check				\
-  sc_GPL_version			\
-  sc_always_defined_macros		\
-  sc_cast_of_alloca_return_value	\
-  sc_cross_check_PATH_usage_in_tests	\
-  sc_dd_max_sym_length			\
-  sc_error_exit_success			\
-  sc_file_system			\
-  sc_immutable_NEWS			\
-  sc_makefile_path_separator_check	\
-  sc_obsolete_symbols			\
-  sc_prohibit_S_IS_definition		\
-  sc_prohibit_atoi_atof			\
-  sc_prohibit_hash_without_use		\
-  sc_prohibit_jm_in_m4			\
-  sc_prohibit_quote_without_use		\
-  sc_prohibit_quotearg_without_use	\
-  sc_prohibit_stat_st_blocks		\
-  sc_prohibit_undesirable_word_seq	\
-  sc_root_tests				\
-  sc_space_tab				\
-  sc_sun_os_names			\
-  sc_system_h_headers			\
-  sc_texinfo_acronym			\
-  sc_tight_scope			\
-  sc_two_space_separator_in_usage	\
-  sc_error_message_uppercase		\
-  sc_program_name			\
-  sc_require_test_exit_idiom		\
-  sc_makefile_check			\
+local-checks-to-skip = \
+  changelog-check \
+  makefile-check \
+  makefile_path_separator_check \
+  patch-check \
+  sc_GPL_version \
+  sc_always_defined_macros \
+  sc_cast_of_alloca_return_value \
+  sc_cross_check_PATH_usage_in_tests \
+  sc_dd_max_sym_length \
+  sc_error_exit_success \
+  sc_file_system \
+  sc_immutable_NEWS \
+  sc_makefile_path_separator_check \
+  sc_obsolete_symbols \
+  sc_prohibit_S_IS_definition \
+  sc_prohibit_atoi_atof \
+  sc_prohibit_hash_without_use \
+  sc_prohibit_jm_in_m4 \
+  sc_prohibit_quote_without_use \
+  sc_prohibit_quotearg_without_use \
+  sc_prohibit_stat_st_blocks \
+  sc_prohibit_undesirable_word_seq \
+  sc_root_tests \
+  sc_space_tab \
+  sc_sun_os_names \
+  sc_system_h_headers \
+  sc_texinfo_acronym \
+  sc_tight_scope \
+  sc_two_space_separator_in_usage \
+  sc_error_message_uppercase \
+  sc_program_name \
+  sc_require_test_exit_idiom \
+  sc_makefile_check \
   sc_useless_cpp_parens
 
 # Most developers don't run 'make distcheck'.  We want the official
@@ -91,94 +91,93 @@ endif
 
 # Files that should never cause syntax check failures.
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
-  (^(HACKING|docs/(news(-[0-9]*)?\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
+  (^(docs/(news(-[0-9]*)?\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
 
 # Functions like free() that are no-ops on NULL arguments.
-useless_free_options =				\
-  --name=VBOX_UTF16_FREE			\
-  --name=VBOX_UTF8_FREE				\
-  --name=VBOX_COM_UNALLOC_MEM			\
-  --name=VIR_FREE				\
-  --name=qemuCapsFree				\
-  --name=qemuMigrationCookieFree                \
-  --name=qemuMigrationCookieGraphicsFree        \
-  --name=sexpr_free				\
-  --name=usbFreeDevice                          \
-  --name=virBandwidthDefFree			\
-  --name=virBitmapFree                          \
-  --name=virCPUDefFree				\
-  --name=virCapabilitiesFree			\
-  --name=virCapabilitiesFreeGuest		\
-  --name=virCapabilitiesFreeGuestDomain		\
-  --name=virCapabilitiesFreeGuestFeature	\
-  --name=virCapabilitiesFreeGuestMachine	\
-  --name=virCapabilitiesFreeHostNUMACell	\
-  --name=virCapabilitiesFreeMachines		\
-  --name=virCgroupFree				\
-  --name=virCommandFree				\
-  --name=virConfFreeList			\
-  --name=virConfFreeValue			\
-  --name=virDomainActualNetDefFree		\
-  --name=virDomainChrDefFree			\
-  --name=virDomainChrSourceDefFree		\
-  --name=virDomainControllerDefFree		\
-  --name=virDomainDefFree			\
-  --name=virDomainDeviceDefFree			\
-  --name=virDomainDiskDefFree			\
-  --name=virDomainEventCallbackListFree		\
-  --name=virObjectEventQueueFree		\
-  --name=virDomainFSDefFree			\
-  --name=virDomainGraphicsDefFree		\
-  --name=virDomainHostdevDefFree		\
-  --name=virDomainInputDefFree			\
-  --name=virDomainNetDefFree			\
-  --name=virDomainObjFree			\
-  --name=virDomainSmartcardDefFree		\
-  --name=virDomainSnapshotDefFree		\
-  --name=virDomainSnapshotObjFree		\
-  --name=virDomainSoundDefFree			\
-  --name=virDomainVideoDefFree			\
-  --name=virDomainWatchdogDefFree		\
-  --name=virFileDirectFdFree			\
-  --name=virHashFree				\
-  --name=virInterfaceDefFree			\
-  --name=virInterfaceIpDefFree			\
-  --name=virInterfaceObjFree			\
-  --name=virInterfaceProtocolDefFree		\
-  --name=virJSONValueFree			\
-  --name=virLastErrFreeData			\
-  --name=virNetMessageFree                      \
-  --name=virNetServerMDNSFree                   \
-  --name=virNetServerMDNSEntryFree              \
-  --name=virNetServerMDNSGroupFree              \
-  --name=virNWFilterDefFree			\
-  --name=virNWFilterEntryFree			\
-  --name=virNWFilterHashTableFree		\
-  --name=virNWFilterIPAddrLearnReqFree		\
-  --name=virNWFilterIncludeDefFree		\
-  --name=virNWFilterObjFree			\
-  --name=virNWFilterRuleDefFree			\
-  --name=virNWFilterRuleInstFree		\
-  --name=virNetworkDefFree			\
-  --name=virNodeDeviceDefFree			\
-  --name=virNodeDeviceObjFree			\
-  --name=virObjectUnref                         \
-  --name=virObjectFreeCallback                  \
-  --name=virPCIDeviceFree                       \
-  --name=virSecretDefFree			\
-  --name=virStorageEncryptionFree		\
-  --name=virStorageEncryptionSecretFree		\
-  --name=virStorageFileFreeMetadata		\
-  --name=virStoragePoolDefFree			\
-  --name=virStoragePoolObjFree			\
-  --name=virStoragePoolSourceFree		\
-  --name=virStorageVolDefFree			\
-  --name=virThreadPoolFree			\
-  --name=xmlBufferFree				\
-  --name=xmlFree				\
-  --name=xmlFreeDoc				\
-  --name=xmlFreeNode				\
-  --name=xmlXPathFreeContext			\
+useless_free_options = \
+  --name=VBOX_UTF16_FREE \
+  --name=VBOX_UTF8_FREE \
+  --name=VBOX_COM_UNALLOC_MEM \
+  --name=VIR_FREE \
+  --name=qemuCapsFree \
+  --name=qemuMigrationCookieFree \
+  --name=qemuMigrationCookieGraphicsFree \
+  --name=sexpr_free \
+  --name=usbFreeDevice \
+  --name=virBandwidthDefFree \
+  --name=virBitmapFree \
+  --name=virCPUDefFree \
+  --name=virCapabilitiesFree \
+  --name=virCapabilitiesFreeGuest \
+  --name=virCapabilitiesFreeGuestDomain \
+  --name=virCapabilitiesFreeGuestFeature \
+  --name=virCapabilitiesFreeGuestMachine \
+  --name=virCapabilitiesFreeHostNUMACell \
+  --name=virCapabilitiesFreeMachines \
+  --name=virCgroupFree \
+  --name=virCommandFree \
+  --name=virConfFreeList \
+  --name=virConfFreeValue \
+  --name=virDomainActualNetDefFree \
+  --name=virDomainChrDefFree \
+  --name=virDomainControllerDefFree \
+  --name=virDomainDefFree \
+  --name=virDomainDeviceDefFree \
+  --name=virDomainDiskDefFree \
+  --name=virDomainEventCallbackListFree \
+  --name=virObjectEventQueueFree \
+  --name=virDomainFSDefFree \
+  --name=virDomainGraphicsDefFree \
+  --name=virDomainHostdevDefFree \
+  --name=virDomainInputDefFree \
+  --name=virDomainNetDefFree \
+  --name=virDomainObjFree \
+  --name=virDomainSmartcardDefFree \
+  --name=virDomainSnapshotDefFree \
+  --name=virDomainSnapshotObjFree \
+  --name=virDomainSoundDefFree \
+  --name=virDomainVideoDefFree \
+  --name=virDomainWatchdogDefFree \
+  --name=virFileDirectFdFree \
+  --name=virHashFree \
+  --name=virInterfaceDefFree \
+  --name=virInterfaceIpDefFree \
+  --name=virInterfaceObjFree \
+  --name=virInterfaceProtocolDefFree \
+  --name=virJSONValueFree \
+  --name=virLastErrFreeData \
+  --name=virNetMessageFree \
+  --name=virNetServerMDNSFree \
+  --name=virNetServerMDNSEntryFree \
+  --name=virNetServerMDNSGroupFree \
+  --name=virNWFilterDefFree \
+  --name=virNWFilterEntryFree \
+  --name=virNWFilterHashTableFree \
+  --name=virNWFilterIPAddrLearnReqFree \
+  --name=virNWFilterIncludeDefFree \
+  --name=virNWFilterObjFree \
+  --name=virNWFilterRuleDefFree \
+  --name=virNWFilterRuleInstFree \
+  --name=virNetworkDefFree \
+  --name=virNodeDeviceDefFree \
+  --name=virNodeDeviceObjFree \
+  --name=virObjectUnref \
+  --name=virObjectFreeCallback \
+  --name=virPCIDeviceFree \
+  --name=virSecretDefFree \
+  --name=virStorageEncryptionFree \
+  --name=virStorageEncryptionSecretFree \
+  --name=virStorageFileFreeMetadata \
+  --name=virStoragePoolDefFree \
+  --name=virStoragePoolObjFree \
+  --name=virStoragePoolSourceFree \
+  --name=virStorageVolDefFree \
+  --name=virThreadPoolFree \
+  --name=xmlBufferFree \
+  --name=xmlFree \
+  --name=xmlFreeDoc \
+  --name=xmlFreeNode \
+  --name=xmlXPathFreeContext \
   --name=xmlXPathFreeObject
 
 # The following template was generated by this command:
@@ -277,18 +276,18 @@ useless_free_options =				\
 # Avoid uses of write(2).  Either switch to streams (fwrite), or use
 # the safewrite wrapper.
 sc_avoid_write:
-	@prohibit='\<write *\('						\
-	in_vc_files='\.c$$'						\
-	halt='consider using safewrite instead of write'		\
+	@prohibit='\<write *\(' \
+	in_vc_files='\.c$$' \
+	halt='consider using safewrite instead of write' \
 	  $(_sc_search_regexp)
 
 # In debug statements, print flags as bitmask and mode_t as octal.
 sc_flags_debug:
-	@prohibit='\<mode=%[0-9.]*[diux]'				\
-	halt='use %o to debug mode_t values'				\
+	@prohibit='\<mode=%[0-9.]*[diuxo]' \
+	halt='use \"0%o\" to debug mode_t values' \
 	  $(_sc_search_regexp)
-	@prohibit='[Ff]lags=%[0-9.]*l*[diou]'				\
-	halt='use %x to debug flag values'				\
+	@prohibit='[Ff]lags=%[0-9.]*l*[dioux]' \
+	halt='use \"0x%x\" to debug flag values' \
 	  $(_sc_search_regexp)
 
 # Prefer 'unsigned int flags', along with checks for unknown flags.
@@ -300,167 +299,181 @@ sc_flags_debug:
 # than d).  The existence of long long, and of documentation about
 # flags, makes the regex in the third test slightly harder.
 sc_flags_usage:
-	@test "$$(cat $(srcdir)/include/libvirt/libvirt-domain.h	\
-	    $(srcdir)/include/libvirt/virterror.h			\
-	    $(srcdir)/include/libvirt/libvirt-qemu.h			\
-	    $(srcdir)/include/libvirt/libvirt-lxc.h			\
-	    $(srcdir)/include/libvirt/libvirt-admin.h			\
-	  | grep -c '\(long\|unsigned\) flags')" != 4 &&		\
-	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2;	\
+	@test "$$(cat $(srcdir)/include/libvirt/libvirt-domain.h \
+	    $(srcdir)/include/libvirt/virterror.h \
+	    $(srcdir)/include/libvirt/libvirt-qemu.h \
+	    $(srcdir)/include/libvirt/libvirt-lxc.h \
+	    $(srcdir)/include/libvirt/libvirt-admin.h \
+	  | $(GREP) -c '\(long\|unsigned\) flags')" != 4 && \
+	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2; \
 	    exit 1; } || :
-	@prohibit=' flags ATTRIBUTE_UNUSED'				\
-	halt='flags should be checked with virCheckFlags'		\
+	@prohibit=' flags ATTRIBUTE_UNUSED' \
+	exclude='virSecurityDomainImageLabelFlags' \
+	halt='flags should be checked with virCheckFlags' \
 	  $(_sc_search_regexp)
-	@prohibit='^[^@]*([^d] (int|long long)|[^dg] long) flags[;,)]'	\
-	halt='flags should be unsigned'					\
+	@prohibit='^[^@]*([^d] (int|long long)|[^dg] long) flags[;,)]' \
+	halt='flags should be unsigned' \
 	  $(_sc_search_regexp)
 
 # Avoid functions that should only be called via macro counterparts.
 sc_prohibit_internal_functions:
 	@prohibit='vir(Free|AllocN?|ReallocN|(Insert|Delete)ElementsN|File(Close|Fclose|Fdopen)) *\(' \
-	halt='use VIR_ macros instead of internal functions'		\
+	halt='use VIR_ macros instead of internal functions' \
+	  $(_sc_search_regexp)
+
+sc_prohibit_raw_virclassnew:
+	@prohibit='virClassNew *\(' \
+	halt='use VIR_CLASS_NEW instead of virClassNew' \
 	  $(_sc_search_regexp)
 
 # Avoid raw malloc and free, except in documentation comments.
 sc_prohibit_raw_allocation:
-	@prohibit='^.[^*].*\<((m|c|re)alloc|free) *\([^)]'		\
-	halt='use VIR_ macros from viralloc.h instead of malloc/free'	\
+	@prohibit='^.[^*].*\<((m|c|re)alloc|free) *\([^)]' \
+	halt='use VIR_ macros from viralloc.h instead of malloc/free' \
 	  $(_sc_search_regexp)
 
 # Avoid functions that can lead to double-close bugs.
 sc_prohibit_close:
-	@prohibit='([^>.]|^)\<[fp]?close *\('				\
-	halt='use VIR_{FORCE_}[F]CLOSE instead of [f]close'		\
+	@prohibit='([^>.]|^)\<[fp]?close *\(' \
+	halt='use VIR_{FORCE_}[F]CLOSE instead of [f]close' \
 	  $(_sc_search_regexp)
-	@prohibit='\<fdopen *\('					\
-	halt='use VIR_FDOPEN instead of fdopen'				\
+	@prohibit='\<fdopen *\(' \
+	halt='use VIR_FDOPEN instead of fdopen' \
 	  $(_sc_search_regexp)
 
 # Prefer virCommand for all child processes.
 sc_prohibit_fork_wrappers:
-	@prohibit='= *\<(fork|popen|system) *\('			\
-	halt='use virCommand for child processes'			\
+	@prohibit='= *\<(fork|popen|system) *\(' \
+	halt='use virCommand for child processes' \
 	  $(_sc_search_regexp)
 
 # Prefer mkostemp with O_CLOEXEC.
 sc_prohibit_mkstemp:
-	@prohibit='[^"]\<mkstemps? *\('					\
-	halt='use mkostemp with O_CLOEXEC instead of mkstemp'		\
+	@prohibit='[^"]\<mkstemps? *\(' \
+	halt='use mkostemp with O_CLOEXEC instead of mkstemp' \
 	  $(_sc_search_regexp)
 
 # access with X_OK accepts directories, but we can't exec() those.
 # access with F_OK or R_OK is okay, though.
 sc_prohibit_access_xok:
-	@prohibit='access(at)? *\(.*X_OK'				\
-	halt='use virFileIsExecutable instead of access(,X_OK)'		\
+	@prohibit='access(at)? *\(.*X_OK' \
+	halt='use virFileIsExecutable instead of access(,X_OK)' \
 	  $(_sc_search_regexp)
 
 # Similar to the gnulib maint.mk rule for sc_prohibit_strcmp
 # Use STREQLEN or STRPREFIX rather than comparing strncmp == 0, or != 0.
 snp_ = strncmp *\(.+\)
 sc_prohibit_strncmp:
-	@prohibit='! *strncmp *\(|\<$(snp_) *[!=]=|[!=]= *$(snp_)'	\
-	exclude=':# *define STR(N?EQLEN|PREFIX)\('			\
-	halt='use STREQLEN or STRPREFIX instead of strncmp'		\
+	@prohibit='! *strncmp *\(|\<$(snp_) *[!=]=|[!=]= *$(snp_)' \
+	exclude=':# *define STR(N?EQLEN|PREFIX)\(' \
+	halt='use STREQLEN or STRPREFIX instead of strncmp' \
 	  $(_sc_search_regexp)
 
 # strtol and friends are too easy to misuse
 sc_prohibit_strtol:
-	@prohibit='\bstrto(u?ll?|[ui]max) *\('				\
-	exclude='exempt from syntax-check'				\
-	halt='use virStrToLong_*, not strtol variants'			\
+	@prohibit='\bstrto(u?ll?|[ui]max) *\(' \
+	exclude='exempt from syntax-check' \
+	halt='use virStrToLong_*, not strtol variants' \
 	  $(_sc_search_regexp)
-	@prohibit='\bstrto[df] *\('					\
-	exclude='exempt from syntax-check'				\
-	halt='use virStrToDouble, not strtod variants'			\
+	@prohibit='\bstrto[df] *\(' \
+	exclude='exempt from syntax-check' \
+	halt='use virStrToDouble, not strtod variants' \
 	  $(_sc_search_regexp)
 
 # Use virAsprintf rather than as'printf since *strp is undefined on error.
 # But for plain %s, virAsprintf is overkill compared to strdup.
 sc_prohibit_asprintf:
-	@prohibit='\<v?a[s]printf\>'					\
-	halt='use virAsprintf, not asprintf'				\
+	@prohibit='\<v?a[s]printf\>' \
+	halt='use virAsprintf, not asprintf' \
 	  $(_sc_search_regexp)
-	@prohibit='virAsprintf.*, *"%s",'				\
-	halt='use VIR_STRDUP instead of virAsprintf with "%s"'		\
+	@prohibit='virAsprintf.*, *"%s",' \
+	halt='use VIR_STRDUP instead of virAsprintf with "%s"' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_strdup:
-	@prohibit='\<strn?dup\> *\('					\
-	halt='use VIR_STRDUP, not strdup'				\
+	@prohibit='\<strn?dup\> *\(' \
+	halt='use VIR_STRDUP, not strdup' \
 	  $(_sc_search_regexp)
 
 # Prefer virSetUIDGID.
 sc_prohibit_setuid:
-	@prohibit='\<set(re)?[ug]id\> *\('				\
-	halt='use virSetUIDGID, not raw set*id'				\
+	@prohibit='\<set(re)?[ug]id\> *\(' \
+	halt='use virSetUIDGID, not raw set*id' \
 	  $(_sc_search_regexp)
 
 # Don't compare *id_t against raw -1.
 sc_prohibit_risky_id_promotion:
-	@prohibit='\b(user|group|[ug]id) *[=!]= *-'			\
-	halt='cast -1 to ([ug]id_t) before comparing against id'	\
+	@prohibit='\b(user|group|[ug]id) *[=!]= *-' \
+	halt='cast -1 to ([ug]id_t) before comparing against id' \
 	  $(_sc_search_regexp)
 
 # Use snprintf rather than s'printf, even if buffer is provably large enough,
 # since gnulib has more guarantees for snprintf portability
 sc_prohibit_sprintf:
-	@prohibit='\<[s]printf\>'					\
-	halt='use snprintf, not sprintf'				\
+	@prohibit='\<[s]printf\>' \
+	halt='use snprintf, not sprintf' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_readlink:
-	@prohibit='\<readlink *\('					\
-	halt='use virFileResolveLink, not readlink'			\
+	@prohibit='\<readlink *\(' \
+	halt='use virFileResolveLink, not readlink' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_gethostname:
-	@prohibit='gethostname *\('					\
-	halt='use virGetHostname, not gethostname'			\
+	@prohibit='gethostname *\(' \
+	halt='use virGetHostname, not gethostname' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_readdir:
-	@prohibit='\b(read|close|open)dir *\('				\
-	exclude='exempt from syntax-check'				\
-	halt='use virDirOpen, virDirRead and VIR_DIR_CLOSE'		\
+	@prohibit='\b(read|close|open)dir *\(' \
+	exclude='exempt from syntax-check' \
+	halt='use virDirOpen, virDirRead and VIR_DIR_CLOSE' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_gettext_noop:
-	@prohibit='gettext_noop *\('					\
-	halt='use N_, not gettext_noop'					\
+	@prohibit='gettext_noop *\(' \
+	halt='use N_, not gettext_noop' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_VIR_ERR_NO_MEMORY:
-	@prohibit='\<VIR_ERR_NO_MEMORY\>'				\
-	halt='use virReportOOMError, not VIR_ERR_NO_MEMORY'		\
+	@prohibit='\<VIR_ERR_NO_MEMORY\>' \
+	halt='use virReportOOMError, not VIR_ERR_NO_MEMORY' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_PATH_MAX:
-	@prohibit='\<PATH_MAX\>'				\
-	halt='dynamically allocate paths, do not use PATH_MAX'	\
+	@prohibit='\<PATH_MAX\>' \
+	halt='dynamically allocate paths, do not use PATH_MAX' \
 	  $(_sc_search_regexp)
 
 include $(srcdir)/Makefile.nonreentrant
 sc_prohibit_nonreentrant:
-	@prohibit="\\<(${NON_REENTRANT_RE}) *\\("			\
-	halt="use re-entrant functions (usually ending with _r)"	\
+	@prohibit="\\<(${NON_REENTRANT_RE}) *\\(" \
+	halt="use re-entrant functions (usually ending with _r)" \
 	  $(_sc_search_regexp)
 
 sc_prohibit_select:
-	@prohibit='\<select *\('					\
-	halt='use poll(), not select()'					\
+	@prohibit='\<select *\(' \
+	halt='use poll(), not select()' \
 	  $(_sc_search_regexp)
 
 # Prohibit the inclusion of <ctype.h>.
 sc_prohibit_ctype_h:
-	@prohibit='^# *include  *<ctype\.h>'				\
-	halt='use c-ctype.h instead of ctype.h'				\
+	@prohibit='^# *include  *<ctype\.h>' \
+	halt='use c-ctype.h instead of ctype.h' \
+	  $(_sc_search_regexp)
+
+# We have our own wrapper for mocking purposes
+sc_prohibit_canonicalize_file_name:
+	@prohibit='\<canonicalize_file_name\(' \
+	exclude='exempt from syntax-check' \
+	halt='use virFileCanonicalizePath() instead of canonicalize_file_name()' \
 	  $(_sc_search_regexp)
 
 # Insist on correct types for [pug]id.
 sc_correct_id_types:
-	@prohibit='\<(int|long) *[pug]id\>'				\
-	halt='use pid_t for pid, uid_t for uid, gid_t for gid'		\
+	@prohibit='\<(int|long) *[pug]id\>' \
+	exclude='exempt from syntax-check' \
+	halt='use pid_t for pid, uid_t for uid, gid_t for gid' \
 	  $(_sc_search_regexp)
 
 # "const fooPtr a" is the same as "foo * const a", even though it is
@@ -468,26 +481,26 @@ sc_correct_id_types:
 # the confusing mix of typedef vs. const placement.
 # Also requires that all 'fooPtr' typedefs are actually pointers.
 sc_forbid_const_pointer_typedef:
-	@prohibit='(^|[^"])const \w*Ptr'				\
-	halt='"const fooPtr var" does not declare what you meant'	\
+	@prohibit='(^|[^"])const \w*Ptr' \
+	halt='"const fooPtr var" does not declare what you meant' \
 	  $(_sc_search_regexp)
-	@prohibit='typedef [^(]+ [^*]\w*Ptr\b'				\
-	halt='use correct style and type for Ptr typedefs'		\
+	@prohibit='typedef [^(]+ [^*]\w*Ptr\b' \
+	halt='use correct style and type for Ptr typedefs' \
 	  $(_sc_search_regexp)
 
 # Forbid sizeof foo or sizeof (foo), require sizeof(foo)
 sc_size_of_brackets:
-	@prohibit='sizeof\s'						\
-	halt='use sizeof(foo), not sizeof (foo) or sizeof foo'		\
+	@prohibit='sizeof\s' \
+	halt='use sizeof(foo), not sizeof (foo) or sizeof foo' \
 	  $(_sc_search_regexp)
 
 # Ensure that no C source file, docs, or rng schema uses TABs for
 # indentation.  Also match *.h.in files, to get libvirt.h.in.  Exclude
 # files in gnulib, since they're imported.
-space_indent_files=(\.(rng|s?[ch](\.in)?|html.in|py|pl|syms)|(daemon|tools)/.*\.in)
+space_indent_files=(\.(aug(\.in)?|rng|s?[ch](\.in)?|html.in|py|pl|syms)|(daemon|tools)/.*\.in)
 sc_TAB_in_indentation:
-	@prohibit='^ *	'						\
-	in_vc_files='$(space_indent_files)$$'				\
+	@prohibit='^ *	' \
+	in_vc_files='$(space_indent_files)$$' \
 	halt='indent with space, not TAB, in C, sh, html, py, syms and RNG schemas' \
 	  $(_sc_search_regexp)
 
@@ -495,94 +508,95 @@ ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
 |isprint|ispunct|isspace|isupper|isxdigit|tolower|toupper
 
 sc_avoid_ctype_macros:
-	@prohibit='\b($(ctype_re)) *\('					\
-	halt='use c-ctype.h instead of ctype macros'			\
+	@prohibit='\b($(ctype_re)) *\(' \
+	in_vc_files='\.[ch]$$' \
+	halt='use c-ctype.h instead of ctype macros' \
 	  $(_sc_search_regexp)
 
 sc_avoid_strcase:
-	@prohibit='\bstrn?case(cmp|str) *\('				\
-	halt='use c-strcase.h instead of raw strcase functions'		\
+	@prohibit='\bstrn?case(cmp|str) *\(' \
+	halt='use c-strcase.h instead of raw strcase functions' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_virBufferAdd_with_string_literal:
-	@prohibit='\<virBufferAdd *\([^,]+, *"[^"]'			\
+	@prohibit='\<virBufferAdd *\([^,]+, *"[^"]' \
 	halt='use virBufferAddLit, not virBufferAdd, with a string literal' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_virBufferAsprintf_with_string_literal:
-	@prohibit='\<virBufferAsprintf *\([^,]+, *"([^%"\]|\\.|%%)*"\)'		\
+	@prohibit='\<virBufferAsprintf *\([^,]+, *"([^%"\]|\\.|%%)*"\)' \
 	halt='use virBufferAddLit, not virBufferAsprintf, with a string literal' \
 	  $(_sc_search_regexp)
 
 sc_forbid_manual_xml_indent:
-	@prohibit='virBuffer.*" +<'					      \
+	@prohibit='virBuffer.*" +<' \
 	halt='use virBufferAdjustIndent instead of spaces when indenting xml' \
 	  $(_sc_search_regexp)
 
 # dirname and basename from <libgen.h> are not required to be thread-safe
 sc_prohibit_libgen:
-	@prohibit='( (base|dir)name *\(|include .libgen\.h)'		\
-	halt='use functions from gnulib "dirname.h", not <libgen.h>'	\
+	@prohibit='( (base|dir)name *\(|include .libgen\.h)' \
+	halt='use functions from gnulib "dirname.h", not <libgen.h>' \
 	  $(_sc_search_regexp)
 
 # raw xmlGetProp requires some nasty casts
 sc_prohibit_xmlGetProp:
-	@prohibit='\<xmlGetProp *\('					\
-	halt='use virXMLPropString, not xmlGetProp'			\
+	@prohibit='\<xmlGetProp *\(' \
+	halt='use virXMLPropString, not xmlGetProp' \
 	  $(_sc_search_regexp)
 
 # xml(ParseURI|SaveUri) doesn't handle IPv6 URIs well
 sc_prohibit_xmlURI:
-	@prohibit='\<xml(ParseURI|SaveUri) *\('				\
-	halt='use virURI(Parse|Format), not xml(ParseURI|SaveUri)'	\
+	@prohibit='\<xml(ParseURI|SaveUri) *\(' \
+	halt='use virURI(Parse|Format), not xml(ParseURI|SaveUri)' \
 	  $(_sc_search_regexp)
 
 # we don't want old old-style return with parentheses around argument
 sc_prohibit_return_as_function:
-	@prohibit='\<return *\(([^()]*(\([^()]*\)[^()]*)*)\) *;'    \
-	halt='avoid extra () with return statements'                \
+	@prohibit='\<return *\(([^()]*(\([^()]*\)[^()]*)*)\) *;' \
+	halt='avoid extra () with return statements' \
 	  $(_sc_search_regexp)
 
 # ATTRIBUTE_UNUSED should only be applied in implementations, not
 # header declarations
 sc_avoid_attribute_unused_in_header:
-	@prohibit='^[^#]*ATTRIBUTE_UNUSED([^:]|$$)'			\
-	in_vc_files='\.h$$'						\
-	halt='use ATTRIBUTE_UNUSED in .c rather than .h files'		\
+	@prohibit='^[^#]*ATTRIBUTE_UNUSED([^:]|$$)' \
+	in_vc_files='\.h$$' \
+	halt='use ATTRIBUTE_UNUSED in .c rather than .h files' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_int_index:
-	@prohibit='\<(int|unsigned)\s*\*?index\>(\s|,|;)'	\
-	halt='use different name than 'index' for declaration'	        \
+	@prohibit='\<(int|unsigned)\s*\*?index\>(\s|,|;)' \
+	halt='use different name than 'index' for declaration' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_int_ijk:
-	@prohibit='\<(int|unsigned) ([^(=]* )*(i|j|k)\>(\s|,|;)'	\
-	exclude='exempt from syntax-check'				\
-	halt='use size_t, not int/unsigned int for loop vars i, j, k'	\
+	@prohibit='\<(int|unsigned) ([^(=]* )*(i|j|k)\>(\s|,|;)' \
+	exclude='exempt from syntax-check' \
+	halt='use size_t, not int/unsigned int for loop vars i, j, k' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_loop_iijjkk:
-	@prohibit='\<(int|unsigned) ([^=]+ )*(ii|jj|kk)\>(\s|,|;)'	\
-	halt='use i, j, k for loop iterators, not ii, jj, kk'		\
+	@prohibit='\<(int|unsigned) ([^=]+ )*(ii|jj|kk)\>(\s|,|;)' \
+	halt='use i, j, k for loop iterators, not ii, jj, kk' \
 	  $(_sc_search_regexp)
 
 # RHEL 5 gcc can't grok "for (int i..."
 sc_prohibit_loop_var_decl:
-	@prohibit='\<for *\(\w+[ *]+\w+'				\
-	in_vc_files='\.[ch]$$'						\
-	halt='declare loop iterators outside the for statement'		\
+	@prohibit='\<for *\(\w+[ *]+\w+' \
+	in_vc_files='\.[ch]$$' \
+	halt='declare loop iterators outside the for statement' \
 	  $(_sc_search_regexp)
 
 # Use 'bool', not 'int', when assigning true or false
 sc_prohibit_int_assign_bool:
-	@prohibit='\<int\>.*= *(true|false)'				\
-	halt='use bool type for boolean values'				\
+	@prohibit='\<int\>.*= *(true|false)' \
+	halt='use bool type for boolean values' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_unsigned_pid:
-	@prohibit='\<unsigned\> [^,=;(]+pid'				\
-	halt='use signed type for pid values'				\
+	@prohibit='\<unsigned\> [^,=;(]+pid' \
+	halt='use signed type for pid values' \
 	  $(_sc_search_regexp)
 
 # Many of the function names below came from this filter:
@@ -621,15 +635,17 @@ func_re= ($(subst $(space),|,$(msg_gen_function)))
 #    _("...: "
 #    "%s", _("no storage vol w..."
 sc_libvirt_unmarked_diagnostics:
-	@prohibit='\<$(func_re) *\([^"]*"[^"]*[a-z]{3}'			\
-	exclude='_\('							\
-	halt='found unmarked diagnostic(s)'				\
+	@prohibit='\<$(func_re) *\([^"]*"[^"]*[a-z]{3}' \
+	exclude='_\(' \
+	halt='found unmarked diagnostic(s)' \
 	  $(_sc_search_regexp)
-	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
-	   grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
-	   | $(SED) 's/_("\([^\"]\|\\.\)\+"//;s/[	 ]"%s"//'		\
-	   | grep '[	 ]"' &&						\
-	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
+	@{ $(VC_LIST_EXCEPT) | xargs \
+		$(GREP)     -nE '\<$(func_re) *\(.*;$$' /dev/null; \
+	   $(VC_LIST_EXCEPT) | xargs \
+		$(GREP) -A1 -nE '\<$(func_re) *\(.*,$$' /dev/null; } \
+	   | $(SED) -E 's/_\("([^\"]|\\.)+"//;s/"%s"//' \
+	   | $(GREP) '"' && \
+	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2; \
 	    exit 1; } || :
 
 # Like the above, but prohibit a newline at the end of a diagnostic.
@@ -640,103 +656,105 @@ sc_libvirt_unmarked_diagnostics:
 # there are functions to which this one applies but that do not get marked
 # diagnostics.
 sc_prohibit_newline_at_end_of_diagnostic:
-	@grep -A2 -nE							\
-	    '\<$(func_re) *\(' $$($(VC_LIST_EXCEPT))			\
-	    | grep '\\n"'						\
-	  && { echo '$(ME): newline at end of message(s)' 1>&2;		\
+	@$(VC_LIST_EXCEPT) | xargs $(GREP) -A2 -nE \
+	    '\<$(func_re) *\(' /dev/null \
+	    | $(GREP) '\\n"' \
+	  && { echo '$(ME): newline at end of message(s)' 1>&2; \
 	    exit 1; } || :
 
 # Look for diagnostics that lack a % in the format string, except that we
 # allow VIR_ERROR to do this, and ignore functions that take a single
 # string rather than a format argument.
 sc_prohibit_diagnostic_without_format:
-	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
-	   grep -A2 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
-	   | $(SED) -rn -e ':l; /[,"]$$/ {N;b l;}'				 \
-		-e '/(xenapiSessionErrorHandler|vah_(error|warning))/d'	 \
-		-e '/\<$(func_re) *\([^"]*"([^%"]|"\n[^"]*")*"[,)]/p'	 \
-           | grep -vE 'VIR_ERROR' &&					 \
-	  { echo '$(ME): found diagnostic without %' 1>&2;		 \
+	@{ $(VC_LIST_EXCEPT) | xargs \
+		$(GREP)     -nE '\<$(func_re) *\(.*;$$' /dev/null; \
+	   $(VC_LIST_EXCEPT) | xargs \
+		$(GREP) -A2 -nE '\<$(func_re) *\(.*,$$' /dev/null; } \
+	   | $(SED) -rn -e ':l; /[,"]$$/ {N;b l;}' \
+		-e '/(xenapiSessionErrorHandler|vah_(error|warning))/d' \
+		-e '/\<$(func_re) *\([^"]*"([^%"]|"\n[^"]*")*"[,)]/p' \
+           | $(GREP) -vE 'VIR_ERROR' && \
+	  { echo '$(ME): found diagnostic without %' 1>&2; \
 	    exit 1; } || :
 
 # The strings "" and "%s" should never be marked for translation.
 # Files under tests/ and examples/ should not be translated.
 sc_prohibit_useless_translation:
-	@prohibit='_\("(%s)?"\)'					\
-	halt='found useless translation'				\
+	@prohibit='_\("(%s)?"\)' \
+	halt='found useless translation' \
 	  $(_sc_search_regexp)
-	@prohibit='\<N?_ *\('						\
-	in_vc_files='^(tests|examples)/'				\
-	halt='no translations in tests or examples'			\
+	@prohibit='\<N?_ *\(' \
+	in_vc_files='(tests|examples)/' \
+	halt='no translations in tests or examples' \
 	  $(_sc_search_regexp)
 
 # When splitting a diagnostic across lines, ensure that there is a space
 # or \n on one side of the split.
 sc_require_whitespace_in_translation:
-	@grep -n -A1 '"$$' $$($(VC_LIST_EXCEPT))   			\
-	   | $(SED) -ne ':l; /"$$/ {N;b l;}; s/"\n[^"]*"/""/g; s/\\n/ /g'	\
-		-e '/_(.*[^\ ]""[^\ ]/p' | grep . &&			\
-	  { echo '$(ME): missing whitespace at line split' 1>&2;	\
+	@$(VC_LIST_EXCEPT) | xargs $(GREP) -n -A1 '"$$' /dev/null \
+	   | $(SED) -ne ':l; /"$$/ {N;b l;}; s/"\n[^"]*"/""/g; s/\\n/ /g' \
+		-e '/_(.*[^\ ]""[^\ ]/p' | $(GREP) . && \
+	  { echo '$(ME): missing whitespace at line split' 1>&2; \
 	    exit 1; } || :
 
 # Enforce recommended preprocessor indentation style.
 sc_preprocessor_indentation:
-	@if cppi --version >/dev/null 2>&1; then			\
-	  $(VC_LIST_EXCEPT) | grep -E '\.[ch](\.in)?$$' | xargs cppi -a -c	\
-	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2;	\
-		exit 1; };						\
-	else								\
-	  echo '$(ME): skipping test $@: cppi not installed' 1>&2;	\
+	@if cppi --version >/dev/null 2>&1; then \
+	  $(VC_LIST_EXCEPT) | $(GREP) -E '\.[ch](\.in)?$$' | xargs cppi -a -c \
+	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2; \
+		exit 1; }; \
+	else \
+	  echo '$(ME): skipping test $@: cppi not installed' 1>&2; \
 	fi
 
 # Enforce similar spec file indentation style, by running cppi on a
 # (comment-only) C file that mirrors the same layout as the spec file.
 sc_spec_indentation:
-	@if cppi --version >/dev/null 2>&1; then			\
-	  for f in $$($(VC_LIST_EXCEPT) | grep '\.spec\.in$$'); do	\
-	    $(SED) -e 's|#|// #|; s|%ifn*\(arch\)* |#if a // |'		\
-		-e 's/%\(else\|endif\|define\)/#\1/'			\
-		-e 's/^\( *\)\1\1\1#/#\1/'				\
-		-e 's|^\( *[^#/ ]\)|// \1|; s|^\( */[^/]\)|// \1|' $$f	\
-	    | cppi -a -c 2>&1 | $(SED) "s|standard input|$$f|";		\
-	  done | { if grep . >&2; then false; else :; fi; }		\
-	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2;	\
-		exit 1; };						\
-	else								\
-	  echo '$(ME): skipping test $@: cppi not installed' 1>&2;	\
+	@if cppi --version >/dev/null 2>&1; then \
+	  for f in $$($(VC_LIST_EXCEPT) | $(GREP) '\.spec\.in$$'); do \
+	    $(SED) -e 's|#|// #|; s|%ifn*\(arch\)* |#if a // |' \
+		-e 's/%\(else\|endif\|define\)/#\1/' \
+		-e 's/^\( *\)\1\1\1#/#\1/' \
+		-e 's|^\( *[^#/ ]\)|// \1|; s|^\( */[^/]\)|// \1|' $$f \
+	    | cppi -a -c 2>&1 | $(SED) "s|standard input|$$f|"; \
+	  done | { if $(GREP) . >&2; then false; else :; fi; } \
+	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2; \
+		exit 1; }; \
+	else \
+	  echo '$(ME): skipping test $@: cppi not installed' 1>&2; \
 	fi
 
 # Nested conditionals are easier to understand if we enforce that endifs
 # can be paired back to the if
 sc_makefile_conditionals:
-	@prohibit='(else|endif)($$| *#)'				\
-	in_vc_files='Makefile\.am'					\
-	halt='match "if FOO" with "endif FOO" in Makefiles'		\
+	@prohibit='(else|endif)($$| *#)' \
+	in_vc_files='Makefile\.am' \
+	halt='match "if FOO" with "endif FOO" in Makefiles' \
 	  $(_sc_search_regexp)
 
 # Long lines can be harder to diff; too long, and git send-email chokes.
 # For now, only enforce line length on files where we have intentionally
 # fixed things and don't want to regress.
 sc_prohibit_long_lines:
-	@prohibit='.{90}'						\
-	in_vc_files='\.arg[sv]'						\
-	halt='Wrap long lines in expected output files'			\
+	@prohibit='.{90}' \
+	in_vc_files='\.arg[sv]' \
+	halt='Wrap long lines in expected output files' \
 	  $(_sc_search_regexp)
-	@prohibit='.{80}'						\
-	in_vc_files='Makefile\.am'					\
-	halt='Wrap long lines in Makefiles'				\
+	@prohibit='.{80}' \
+	in_vc_files='Makefile\.am' \
+	halt='Wrap long lines in Makefiles' \
 	  $(_sc_search_regexp)
 
 sc_copyright_format:
-	@require='Copyright .*Red 'Hat', Inc\.'				\
-	containing='Copyright .*Red 'Hat				\
-	halt='Red Hat copyright is missing Inc.'			\
+	@require='Copyright .*Red 'Hat', Inc\.' \
+	containing='Copyright .*Red 'Hat \
+	halt='Red Hat copyright is missing Inc.' \
 	  $(_sc_search_regexp)
-	@prohibit='Copyright [^(].*Red 'Hat				\
-	halt='consistently use (C) in Red Hat copyright'		\
+	@prohibit='Copyright [^(].*Red 'Hat \
+	halt='consistently use (C) in Red Hat copyright' \
 	  $(_sc_search_regexp)
-	@prohibit='\<RedHat\>'						\
-	halt='spell Red Hat as two words'				\
+	@prohibit='\<RedHat\>' \
+	halt='spell Red Hat as two words' \
 	  $(_sc_search_regexp)
 
 # Prefer the new URL listing over the old street address listing when
@@ -746,220 +764,214 @@ sc_copyright_format:
 # version.  Note that our typical copyright boilerplate refers to the
 # license by name, not by reference to a top-level file.
 sc_copyright_usage:
-	@prohibit=Boston,' MA'						\
-	halt='Point to <http://www.gnu.org/licenses/>, not an address'	\
+	@prohibit=Boston,' MA' \
+	halt='Point to <http://www.gnu.org/licenses/>, not an address' \
 	  $(_sc_search_regexp)
-	@require='COPYING\.LESSER'					\
-	containing='COPYING'						\
-	halt='Refer to COPYING.LESSER for LGPL'				\
+	@require='COPYING\.LESSER' \
+	containing='COPYING' \
+	halt='Refer to COPYING.LESSER for LGPL' \
 	  $(_sc_search_regexp)
-	@prohibit='COPYING\.LIB'					\
-	halt='Refer to COPYING.LESSER for LGPL'				\
+	@prohibit='COPYING\.LIB' \
+	halt='Refer to COPYING.LESSER for LGPL' \
 	  $(_sc_search_regexp)
 
 # Some functions/macros produce messages intended solely for developers
 # and maintainers.  Do not mark them for translation.
 sc_prohibit_gettext_markup:
-	@prohibit='\<VIR_(WARN|INFO|DEBUG) *\(_\('			\
-	halt='do not mark these strings for translation'		\
+	@prohibit='\<VIR_(WARN|INFO|DEBUG) *\(_\(' \
+	halt='do not mark these strings for translation' \
 	  $(_sc_search_regexp)
 
 # Our code is divided into modular subdirectories for a reason, and
 # lower-level code must not include higher-level headers.
 cross_dirs=$(patsubst $(srcdir)/src/%.,%,$(wildcard $(srcdir)/src/*/.))
 cross_dirs_re=($(subst / ,/|,$(cross_dirs)))
-mid_dirs=access|conf|cpu|locking|logging|network|node_device|rpc|security|storage
+mid_dirs=access|admin|conf|cpu|locking|logging|rpc|security
 sc_prohibit_cross_inclusion:
-	@for dir in $(cross_dirs); do					\
-	  case $$dir in							\
-	    util/) safe="util";;					\
-	    access/ | conf/) safe="($$dir|conf|util)";;			\
-	    locking/) safe="($$dir|util|conf|rpc)";;			\
-	    cpu/| network/| node_device/| rpc/| security/| storage/)	\
-	      safe="($$dir|util|conf|storage)";;			\
-	    xenapi/ | xenconfig/ ) safe="($$dir|util|conf|xen)";;	\
-	    *) safe="($$dir|$(mid_dirs)|util)";;			\
-	  esac;								\
-	  in_vc_files="^src/$$dir"					\
-	  prohibit='^# *include .$(cross_dirs_re)'			\
-	  exclude="# *include .$$safe"					\
-	  halt='unsafe cross-directory include'				\
-	    $(_sc_search_regexp)					\
+	@for dir in $(cross_dirs); do \
+	  case $$dir in \
+	    util/) safe="util";; \
+	    access/ | conf/) safe="($$dir|conf|util)";; \
+	    cpu/| network/| node_device/| rpc/| security/| storage/) \
+	      safe="($$dir|util|conf|storage)";; \
+	    xenapi/ | xenconfig/ ) safe="($$dir|util|conf|xen|cpu)";; \
+	    *) safe="($$dir|$(mid_dirs)|util)";; \
+	  esac; \
+	  in_vc_files="^src/$$dir" \
+	  prohibit='^# *include .$(cross_dirs_re)' \
+	  exclude="# *include .$$safe" \
+	  halt='unsafe cross-directory include' \
+	    $(_sc_search_regexp) \
 	done
 
 # When converting an enum to a string, make sure that we track any new
 # elements added to the enum by using a _LAST marker.
 sc_require_enum_last_marker:
-	@grep -A1 -nE '^[^#]*VIR_ENUM_IMPL *\(' $$($(VC_LIST_EXCEPT))	\
-	   | $(SED) -ne '/VIR_ENUM_IMPL[^,]*,$$/N'				\
-	     -e '/VIR_ENUM_IMPL[^,]*,[^,]*[^_,][^L,][^A,][^S,][^T,],/p'	\
-	     -e '/VIR_ENUM_IMPL[^,]*,[^,]\{0,4\},/p'			\
-	   | grep . &&							\
-	  { echo '$(ME): enum impl needs to use _LAST marker' 1>&2;	\
+	@$(VC_LIST_EXCEPT) | xargs \
+		$(GREP) -A1 -nE '^[^#]*VIR_ENUM_IMPL *\(' /dev/null \
+	   | $(SED) -ne '/VIR_ENUM_IMPL[^,]*,$$/N' \
+	     -e '/VIR_ENUM_IMPL[^,]*,[^,]*[^_,][^L,][^A,][^S,][^T,],/p' \
+	     -e '/VIR_ENUM_IMPL[^,]*,[^,]\{0,4\},/p' \
+	   | $(GREP) . && \
+	  { echo '$(ME): enum impl needs to use _LAST marker' 1>&2; \
 	    exit 1; } || :
 
 # In Python files we don't want to end lines with a semicolon like in C
 sc_prohibit_semicolon_at_eol_in_python:
-	@prohibit='^[^#].*\;$$'			                        \
-	in_vc_files='\.py$$'						\
-	halt='python does not require to end lines with a semicolon'	\
+	@prohibit='^[^#].*\;$$' \
+	in_vc_files='\.py$$' \
+	halt='python does not require to end lines with a semicolon' \
 	  $(_sc_search_regexp)
 
 # mymain() in test files should use return, not exit, for nicer output
 sc_prohibit_exit_in_tests:
-	@prohibit='\<exit *\('						\
-	in_vc_files='^tests/'						\
-	halt='use return, not exit(), in tests'				\
+	@prohibit='\<exit *\(' \
+	in_vc_files='tests/.*\.c$$' \
+	halt='use return, not exit(), in tests' \
 	  $(_sc_search_regexp)
 
 # Don't include "libvirt/*.h" in "" form.
 sc_prohibit_include_public_headers_quote:
-	@prohibit='# *include *"libvirt/.*\.h"'				\
-	in_vc_files='\.[ch]$$'						\
-	halt='Do not include libvirt/*.h in internal source'		\
+	@prohibit='# *include *"libvirt/.*\.h"' \
+	in_vc_files='\.[ch]$$' \
+	halt='Do not include libvirt/*.h in internal source' \
 	  $(_sc_search_regexp)
 
 # Don't include "libvirt/*.h" in <> form. Except for external tools,
 # e.g. Python binding, examples and tools subdirectories.
 sc_prohibit_include_public_headers_brackets:
-	@prohibit='# *include *<libvirt/.*\.h>'				\
-	in_vc_files='\.[ch]$$'						\
-	halt='Do not include libvirt/*.h in internal source'		\
+	@prohibit='# *include *<libvirt/.*\.h>' \
+	in_vc_files='\.[ch]$$' \
+	halt='Do not include libvirt/*.h in internal source' \
 	  $(_sc_search_regexp)
 
 # <config.h> is only needed in .c files; .h files do not need it since
 # .c files must include config.h before any other .h.
 sc_prohibit_config_h_in_headers:
-	@prohibit='^# *include\>.*config\.h'				\
-	in_vc_files='\.h$$'						\
-	halt='headers should not include <config.h>'			\
+	@prohibit='^# *include\>.*config\.h' \
+	in_vc_files='\.h$$' \
+	halt='headers should not include <config.h>' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_unbounded_arrays_in_rpc:
-	@prohibit='<>'							\
-	in_vc_files='\.x$$'						\
-	halt='Arrays in XDR must have a upper limit set for <NNN>'	\
+	@prohibit='<>' \
+	in_vc_files='\.x$$' \
+	halt='Arrays in XDR must have a upper limit set for <NNN>' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_getenv:
-	@prohibit='\b(secure_)?getenv *\('				\
-	exclude='exempt from syntax-check'				\
-	halt='Use virGetEnv{Allow,Block}SUID instead of getenv'		\
+	@prohibit='\b(secure_)?getenv *\(' \
+	exclude='exempt from syntax-check' \
+	halt='Use virGetEnv{Allow,Block}SUID instead of getenv' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_atoi:
-	@prohibit='\bato(i|f|l|ll|q) *\('	\
+	@prohibit='\bato(i|f|l|ll|q) *\(' \
 	halt='Use virStrToLong* instead of atoi, atol, atof, atoq, atoll' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_wrong_filename_in_comment:
-	@fail=0;                                                       \
-	awk 'BEGIN {                                                   \
-	  fail=0;                                                      \
-	} FNR < 3 {                                                    \
+	@$(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$'	| xargs awk 'BEGIN { \
+	  fail=0; \
+	} FNR < 3 { \
 	  n=match($$0, /[[:space:]][^[:space:]]*[.][ch][[:space:]:]/); \
-	  if (n > 0) {                                                 \
-	    A=substr($$0, RSTART+1, RLENGTH-2);                        \
-	    n=split(FILENAME, arr, "/");                               \
-	    if (A != arr[n]) {                                         \
-	      print "in " FILENAME ": " A " mentioned in comments ";   \
-	      fail=1;                                                  \
-	    }                                                          \
-	  }                                                            \
-	} END {                                                        \
-	  if (fail == 1) {                                             \
-	    exit 1;                                                    \
-	  }                                                            \
-	}' $$($(VC_LIST_EXCEPT) | grep '\.[ch]$$') || fail=1;          \
-	if test $$fail -eq 1; then                                     \
-	  { echo '$(ME): The file name in comments must match the'     \
-	    'actual file name' 1>&2; exit 1; }	                       \
-	fi;
+	  if (n > 0) { \
+	    A=substr($$0, RSTART+1, RLENGTH-2); \
+	    n=split(FILENAME, arr, "/"); \
+	    if (A != arr[n]) { \
+	      print "in " FILENAME ": " A " mentioned in comments "; \
+	      fail=1; \
+	    } \
+	  } \
+	} END { \
+	  if (fail == 1) { \
+	    exit 1; \
+	  } \
+	}' || { echo '$(ME): The file name in comments must match the' \
+	    'actual file name' 1>&2; exit 1; }
 
 sc_prohibit_virConnectOpen_in_virsh:
-	@prohibit='\bvirConnectOpen[a-zA-Z]* *\('                      \
-	in_vc_files='^tools/virsh-.*\.[ch]$$'                          \
-	halt='Use vshConnect() in virsh instead of virConnectOpen*'    \
+	@prohibit='\bvirConnectOpen[a-zA-Z]* *\(' \
+	in_vc_files='tools/virsh-.*\.[ch]$$' \
+	halt='Use vshConnect() in virsh instead of virConnectOpen*' \
 	  $(_sc_search_regexp)
 
 sc_require_space_before_label:
-	@prohibit='^(   ?)?[_a-zA-Z0-9]+:$$'                           \
-	in_vc_files='\.[ch]$$'                                         \
-	halt='Top-level labels should be indented by one space'        \
+	@prohibit='^(   ?)?[_a-zA-Z0-9]+:$$' \
+	in_vc_files='\.[ch]$$' \
+	halt='Top-level labels should be indented by one space' \
 	  $(_sc_search_regexp)
 
 # Allow for up to three spaces before the label: this is to avoid running
 # into situations where neither this rule nor require_space_before_label
 # would apply, eg. a line matching ^[a-zA-Z0-9]+ :$
 sc_prohibit_space_in_label:
-	@prohibit='^ {0,3}[_a-zA-Z0-9]+ +:$$'                          \
-	in_vc_files='\.[ch]$$'                                         \
-	halt='There should be no space between label name and colon'   \
+	@prohibit='^ {0,3}[_a-zA-Z0-9]+ +:$$' \
+	in_vc_files='\.[ch]$$' \
+	halt='There should be no space between label name and colon' \
 	  $(_sc_search_regexp)
 
 # Doesn't catch all cases of mismatched braces across if-else, but it helps
 sc_require_if_else_matching_braces:
-	@prohibit='(  else( if .*\))? {|} else( if .*\))?$$)'		\
-	in_vc_files='\.[chx]$$'						\
-	halt='if one side of if-else uses {}, both sides must use it'	\
+	@prohibit='(  else( if .*\))? {|} else( if .*\))?$$)' \
+	in_vc_files='\.[chx]$$' \
+	halt='if one side of if-else uses {}, both sides must use it' \
 	  $(_sc_search_regexp)
 
 sc_curly_braces_style:
-	@files=$$($(VC_LIST_EXCEPT) | grep '\.[ch]$$');			\
-	if $(GREP) -nHP							\
-'^\s*(?!([a-zA-Z_]*for_?each[a-zA-Z_]*) ?\()([_a-zA-Z0-9]+( [_a-zA-Z0-9]+)* ?\()?(\*?[_a-zA-Z0-9]+(,? \*?[_a-zA-Z0-9\[\]]+)+|void)\) ?\{'		\
-	$$files; then							\
-	  echo '$(ME): Non-K&R style used for curly braces around'	\
-		'function body, see HACKING' 1>&2; exit 1;		\
-	fi;								\
-	if $(GREP) -A1 -En ' ((if|for|while|switch) \(|(else|do)\b)[^{]*$$'\
-	  $$files | $(GREP) '^[^ ]*- *{'; then				\
-	  echo '$(ME): Use hanging braces for compound statements,'	\
-		'see HACKING' 1>&2; exit 1;				\
+	@if $(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | xargs $(GREP) -nHP \
+'^\s*(?!([a-zA-Z_]*for_?each[a-zA-Z_]*) ?\()([_a-zA-Z0-9]+( [_a-zA-Z0-9]+)* ?\()?(\*?[_a-zA-Z0-9]+(,? \*?[_a-zA-Z0-9\[\]]+)+|void)\) ?\{' \
+	/dev/null; then \
+	  echo '$(ME): Non-K&R style used for curly braces around' \
+	    'function body' 1>&2; exit 1; \
+	fi; \
+	if $(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | xargs \
+	    $(GREP) -A1 -En ' ((if|for|while|switch) \(|(else|do)\b)[^{]*$$' \
+	    /dev/null | $(GREP) '^[^ ]*- *{'; then \
+	  echo '$(ME): Use hanging braces for compound statements' 1>&2; exit 1; \
 	fi
 
 sc_prohibit_windows_special_chars_in_filename:
-	@files=$$($(VC_LIST_EXCEPT) | grep '[:*?"<>|]');               \
-	test -n "$$files" && { echo '$(ME): Windows special chars'     \
-	  'in filename not allowed:' 1>&2; echo $$files 1>&2; exit 1; } || :
+	@$(VC_LIST_EXCEPT) | $(GREP) '[:*?"<>|]' && \
+	{ echo '$(ME): Windows special chars in filename not allowed' 1>&2; echo exit 1; } || :
 
 sc_prohibit_mixed_case_abbreviations:
-	@prohibit='Pci|Usb|Scsi'			\
-	in_vc_files='\.[ch]$$'				\
-	halt='Use PCI, USB, SCSI, not Pci, Usb, Scsi'	\
+	@prohibit='Pci|Usb|Scsi' \
+	in_vc_files='\.[ch]$$' \
+	halt='Use PCI, USB, SCSI, not Pci, Usb, Scsi' \
 	  $(_sc_search_regexp)
 
 # Require #include <locale.h> in all files that call setlocale()
 sc_require_locale_h:
-	@require='include.*locale\.h'					\
-	containing='setlocale *('					\
-	halt='setlocale() requires <locale.h>'				\
+	@require='include.*locale\.h' \
+	containing='setlocale *(' \
+	halt='setlocale() requires <locale.h>' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_empty_first_line:
-	@awk 'BEGIN { fail=0; }						\
-	FNR == 1 { if ($$0 == "") { print FILENAME ":1:"; fail=1; } }	\
-	END { if (fail == 1) {						\
-	  print "$(ME): Prohibited empty first line" > "/dev/stderr";	\
-	} exit fail; }' $$($(VC_LIST_EXCEPT));
+	@$(VC_LIST_EXCEPT) | xargs awk 'BEGIN { fail=0; } \
+	FNR == 1 { if ($$0 == "") { print FILENAME ":1:"; fail=1; } } \
+	END { if (fail == 1) { \
+	  print "$(ME): Prohibited empty first line" > "/dev/stderr"; \
+	} exit fail; }'
 
 sc_prohibit_paren_brace:
-	@prohibit='\)\{$$'						\
-	in_vc_files='\.[chx]$$'						\
-	halt='Put space between closing parenthesis and opening brace'	\
+	@prohibit='\)\{$$' \
+	in_vc_files='\.[chx]$$' \
+	halt='Put space between closing parenthesis and opening brace' \
 	  $(_sc_search_regexp)
 
 # C guarantees that static variables are zero initialized, and some compilers
 # waste space by sticking explicit initializers in .data instead of .bss
 sc_prohibit_static_zero_init:
-	@prohibit='\bstatic\b.*= *(0[^xX0-9]|NULL|false)'		\
-	in_vc_files='\.[chx](\.in)?$$'					\
+	@prohibit='\bstatic\b.*= *(0[^xX0-9]|NULL|false)' \
+	in_vc_files='\.[chx](\.in)?$$' \
 	halt='static variables do not need explicit zero initialization'\
 	  $(_sc_search_regexp)
 
 # FreeBSD exports the "devname" symbol which produces a warning.
 sc_prohibit_devname:
-	@prohibit='\bdevname\b'	\
+	@prohibit='\bdevname\b' \
 	exclude='sc_prohibit_devname' \
 	halt='avoid using devname as FreeBSD exports the symbol' \
 	  $(_sc_search_regexp)
@@ -973,7 +985,7 @@ sc_prohibit_system_error_with_vir_err:
 # functions. There's a corresponding exclude to allow usage within tests,
 # docs, examples, tools, src/libvirt-*.c, and include/libvirt/libvirt-*.h
 sc_prohibit_virXXXFree:
-	@prohibit='\bvir(Domain|Network|NodeDevice|StorageVol|StoragePool|Stream|Secret|NWFilter|Interface|DomainSnapshot)Free\b'	\
+	@prohibit='\bvir(Domain|Network|NodeDevice|StorageVol|StoragePool|Stream|Secret|NWFilter|Interface|DomainSnapshot)Free\b' \
 	exclude='sc_prohibit_virXXXFree' \
 	halt='avoid using virXXXFree, use virObjectUnref instead' \
 	  $(_sc_search_regexp)
@@ -983,6 +995,12 @@ sc_prohibit_sysconf_pagesize:
 	halt='use virGetSystemPageSize[KB] instead of sysconf(_SC_PAGESIZE)' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_virSecurity:
+	@$(VC_LIST_EXCEPT) | $(GREP) 'src/qemu/' | \
+		$(GREP) -v 'src/qemu/qemu_security' | \
+		xargs $(GREP) -Pn 'virSecurityManager(?!Ptr)' /dev/null && \
+		{ echo '$(ME): prefer qemuSecurity wrappers' 1>&2; exit 1; } || :
+
 sc_prohibit_pthread_create:
 	@prohibit='\bpthread_create\b' \
 	exclude='sc_prohibit_pthread_create' \
@@ -990,58 +1008,125 @@ sc_prohibit_pthread_create:
 	  $(_sc_search_regexp)
 
 sc_prohibit_not_streq:
-	@prohibit='! *STRN?EQ *\(.*\)'		\
-	halt='Use STRNEQ instead of !STREQ and STREQ instead of !STRNEQ'	\
+	@prohibit='! *STRN?EQ *\(.*\)' \
+	halt='Use STRNEQ instead of !STREQ and STREQ instead of !STRNEQ' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_verbose_strcat:
-	@prohibit='strncat\([^,]*,\s+([^,]*),\s+strlen\(\1\)\)'     \
-	in_vc_files='\.[ch]$$'                                      \
+	@prohibit='strncat\([^,]*,\s+([^,]*),\s+strlen\(\1\)\)' \
+	in_vc_files='\.[ch]$$' \
 	halt='Use strcat(a, b) instead of strncat(a, b, strlen(b))' \
 	  $(_sc_search_regexp)
 
 # Ensure that each .c file containing a "main" function also
 # calls virGettextInitialize
 sc_gettext_init:
-	@require='virGettextInitialize *\('					\
-	in_vc_files='\.c$$'						\
-	containing='\<main *('						\
-	halt='the above files do not call virGettextInitialize'		\
+	@require='virGettextInitialize *\(' \
+	in_vc_files='\.c$$' \
+	containing='\<main *(' \
+	halt='the above files do not call virGettextInitialize' \
 	  $(_sc_search_regexp)
+
+sc_prohibit_obj_free_apis_in_virsh:
+	@prohibit='\bvir(Domain|DomainSnapshot)Free\b' \
+	in_vc_files='virsh.*\.[ch]$$' \
+	exclude='sc_prohibit_obj_free_apis_in_virsh' \
+	halt='avoid using virDomain(Snapshot)Free in virsh, use virsh-prefixed wrappers instead' \
+	  $(_sc_search_regexp)
+
+https_sites = www.libvirt.org
+https_sites += libvirt.org
+https_sites += security.libvirt.org
+https_sites += qemu.org
+https_sites += www.qemu.org
+https_sites += wiki.qemu.org
+https_sites += linux-kvm.org
+https_sites += www.linux-kvm.org
+
+https_re= ($(subst $(space),|,$(https_sites)))
+
+sc_prohibit_http_urls:
+	@prohibit='http://$(https_re)' \
+	exclude="/schemas/" \
+	halt='Links must use https:// protocol' \
+	  $(_sc_search_regexp)
+
+sc_prohibit_author:
+	@prohibit="(\*|#)\s*(A|a)uthors?:" \
+	halt="Author: statements are prohibited in source comments" \
+	  $(_sc_search_regexp)
+
+# Alignment is usually achieved through spaces (at least two of them)
+# or tabs (at least one of them) right before the trailing backslash
+sc_prohibit_backslash_alignment:
+	@prohibit='(  |	)\\$$' \
+	in_vc_files='*\.([chx]|am|mk)$$' \
+	halt='Do not attempt to right-align backslashes' \
+	  $(_sc_search_regexp)
+
+# Some syntax rules pertaining to the usage of cleanup macros
+# implementing GNU C's cleanup attribute
+
+# Rule to ensure that variables declared using a cleanup macro are
+# always initialized.
+sc_require_attribute_cleanup_initialization:
+	@prohibit='VIR_AUTO((FREE|PTR|UNREF|CLEAN)\(.+\)|CLOSE|STRINGLIST) *[^=]+;' \
+	in_vc_files='\.[chx]$$' \
+	halt='variable declared with a cleanup macro must be initialized' \
+	  $(_sc_search_regexp)
+
+# "class" in headers is not good because by default Vim treats it as a keyword
+# Let's prohibit it in source files as well.
+sc_prohibit_class:
+	@prohibit=' +_?class *;' \
+	in_vc_files='\.[chx]$$' \
+	halt='use klass instead of class or _class' \
+	  $(_sc_search_regexp)
+
+# The dirent "d_type" field is non-portable and even when it
+# exists some filesystems will only ever return DT_UNKNOWN.
+# This field should only be used by code which is exclusively
+# run platforms supporting "d_type" and must expect DT_UNKNOWN.
+# We blacklist it to discourage accidental usage which has
+# happened many times. Add an exclude rule if it is genuinely
+# needed and the above restrictions are acceptable.
+sc_prohibit_dirent_d_type:
+	@prohibit='(->|\.)d_type' \
+	in_vc_files='\.[chx]$$' \
+	halt='do not use the d_type field in "struct dirent"' \
+	  $(_sc_search_regexp)
+
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
 ifneq ($(_gl-Makefile),)
 ifeq (0,$(MAKELEVEL))
-  _curr_status = .git-module-status
-  # The sed filter accommodates those who check out on a commit from which
-  # no tag is reachable.  In that case, git submodule status prints a "-"
-  # in column 1 and does not print a "git describe"-style string after the
-  # submodule name.  Contrast these:
-  # -b653eda3ac4864de205419d9f41eec267cb89eeb .gnulib
-  #  b653eda3ac4864de205419d9f41eec267cb89eeb .gnulib (v0.0-2286-gb653eda)
-  # $ cat .git-module-status
-  # b653eda3ac4864de205419d9f41eec267cb89eeb
-  #
-  # Keep this logic in sync with autogen.sh.
-  _submodule_hash = $(SED) 's/^[ +-]//;s/ .*//'
-  _update_required := $(shell						\
-      cd '$(srcdir)';							\
-      test -d .git || { echo 0; exit; };				\
-      test -f po/Makevars || { echo 1; exit; };				\
-      test -f AUTHORS || { echo 1; exit; };				\
-      test "no-git" = "$$(cat $(_curr_status))" && { echo 0; exit; };	\
-      actual=$$(git submodule status | $(_submodule_hash);		\
-		git hash-object bootstrap.conf;				\
-		git ls-tree -d HEAD gnulib/local | awk '{print $$3}';	\
-		git diff .gnulib);					\
-      stamp="$$($(_submodule_hash) $(_curr_status) 2>/dev/null)";	\
-      test "$$stamp" = "$$actual"; echo $$?)
+  _dry_run_result := $(shell \
+      cd '$(srcdir)'; \
+      test -d .git || test -f .git || { echo 0; exit; }; \
+      $(srcdir)/autogen.sh --dry-run >/dev/null 2>&1; \
+      echo $$?; \
+  )
   _clean_requested = $(filter %clean,$(MAKECMDGOALS))
-  ifeq (1,$(_update_required)$(_clean_requested))
-    $(info INFO: gnulib update required; running ./autogen.sh first)
-    $(shell touch $(srcdir)/AUTHORS $(srcdir)/ChangeLog)
+
+  # A return value of 0 means no action is required
+
+  # A return value of 1 means a genuine error has occurred while
+  # performing the dry run, and it should be reported so it can
+  # be investigated
+  ifeq (1,$(_dry_run_result))
+    $(info INFO: autogen.sh error, running again to show details)
+maint.mk Makefile: _autogen_error
+  endif
+
+  # A return value of 2 means that autogen.sh needs to be executed
+  # in earnest before building, probably because of gnulib updates.
+  # We don't run autogen.sh if the clean target has been invoked,
+  # though, as it would be quite pointless
+  ifeq (2,$(_dry_run_result)$(_clean_requested))
+    $(info INFO: running autogen.sh is required, running it now...)
+    $(shell touch $(srcdir)/AUTHORS)
 maint.mk Makefile: _autogen
   endif
 endif
@@ -1054,52 +1139,66 @@ _autogen:
 	$(srcdir)/autogen.sh
 	./config.status
 
-# regenerate HACKING as part of the syntax-check
+.PHONY: _autogen_error
+_autogen_error:
+	$(srcdir)/autogen.sh --dry-run
+
 ifneq ($(_gl-Makefile),)
-syntax-check: $(top_srcdir)/HACKING spacing-check test-wrap-argv \
-	prohibit-duplicate-header
+syntax-check: spacing-check test-wrap-argv \
+	prohibit-duplicate-header mock-noinline group-qemu-caps \
+        header-ifdef
 endif
 
 # Don't include duplicate header in the source (either *.c or *.h)
 prohibit-duplicate-header:
-	$(AM_V_GEN)files=$$($(VC_LIST_EXCEPT) | grep '\.[chx]$$'); \
-	$(PERL) -W $(top_srcdir)/build-aux/prohibit-duplicate-header.pl $$files
+	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[chx]$$' | xargs \
+	$(PERL) -W $(top_srcdir)/build-aux/prohibit-duplicate-header.pl
 
 spacing-check:
-	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
-	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl $$files || \
-	  { echo '$(ME): incorrect formatting, see HACKING for rules' 1>&2; \
-	    exit 1; }
+	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.c$$' | xargs \
+	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl || \
+	  { echo '$(ME): incorrect formatting' 1>&2; exit 1; }
+
+mock-noinline:
+	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[ch]$$' | xargs \
+	$(PERL) $(top_srcdir)/build-aux/mock-noinline.pl
+
+header-ifdef:
+	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[h]$$' | xargs \
+	$(PERL) $(top_srcdir)/build-aux/header-ifdef.pl
 
 test-wrap-argv:
-	$(AM_V_GEN)files=`$(VC_LIST) | grep -E '\.(ldargs|args)'`; \
-	$(PERL) $(top_srcdir)/tests/test-wrap-argv.pl --check $$files
+	$(AM_V_GEN)$(VC_LIST) | $(GREP) -E '\.(ldargs|args)' | xargs \
+	$(PERL) $(top_srcdir)/tests/test-wrap-argv.pl --check
+
+group-qemu-caps:
+	$(AM_V_GEN)$(PERL) $(top_srcdir)/tests/group-qemu-caps.pl --check $(top_srcdir)/
 
 # sc_po_check can fail if generated files are not built first
 sc_po_check: \
-		$(srcdir)/daemon/remote_dispatch.h \
-		$(srcdir)/daemon/qemu_dispatch.h \
+		$(srcdir)/src/remote/remote_daemon_dispatch_stubs.h \
+		$(srcdir)/src/remote/remote_daemon_dispatch_qemu_stubs.h \
 		$(srcdir)/src/remote/remote_client_bodies.h \
-		$(srcdir)/daemon/admin_dispatch.h \
+		$(srcdir)/src/admin/admin_server_dispatch_stubs.h \
 		$(srcdir)/src/admin/admin_client.h
-$(srcdir)/daemon/remote_dispatch.h: $(srcdir)/src/remote/remote_protocol.x
-	$(MAKE) -C daemon remote_dispatch.h
-$(srcdir)/daemon/qemu_dispatch.h: $(srcdir)/src/remote/qemu_protocol.x
-	$(MAKE) -C daemon qemu_dispatch.h
+$(srcdir)/src/remote/remote_daemon_dispatch_stubs.h: $(srcdir)/src/remote/remote_protocol.x
+	$(MAKE) -C src remote/remote_daemon_dispatch_stubs.h
+$(srcdir)/src/remote/remote_daemon_dispatch_qemu_stubs.h: $(srcdir)/src/remote/qemu_protocol.x
+	$(MAKE) -C src remote/remote_daemon_dispatch_qemu_stubs.h
 $(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protocol.x
 	$(MAKE) -C src remote/remote_client_bodies.h
-$(srcdir)/daemon/admin_dispatch.h: $(srcdir)/src/admin/admin_protocol.x
-	$(MAKE) -C daemon admin_dispatch.h
+$(srcdir)/src/admin/admin_server_dispatch_stubs.h: $(srcdir)/src/admin/admin_protocol.x
+	$(MAKE) -C src admin/admin_server_dispatch_stubs.h
 $(srcdir)/src/admin/admin_client.h: $(srcdir)/src/admin/admin_protocol.x
 	$(MAKE) -C src admin/admin_client.h
 
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
 
-_src1=libvirt-stream|fdstream|qemu/qemu_monitor|util/(vircommand|virfile)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon
-_test1=shunloadtest|virnettlscontexttest|virnettlssessiontest|vircgroupmock
+_src1=libvirt-stream|qemu/qemu_monitor|util/vir(command|file|fdstream)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon
+_test1=shunloadtest|virnettlscontexttest|virnettlssessiontest|vircgroupmock|commandhelper
 exclude_file_name_regexp--sc_avoid_write = \
-  ^(src/($(_src1))|daemon/libvirtd|tools/virsh-console|tests/($(_test1)))\.c$$
+  ^(src/($(_src1))|tools/virsh-console|tests/($(_test1)))\.c$$
 
 exclude_file_name_regexp--sc_bindtextdomain = .*
 
@@ -1112,7 +1211,7 @@ exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)$$
 
 exclude_file_name_regexp--sc_flags_usage = \
-  ^(cfg\.mk|docs/|src/util/virnetdevtap\.c$$|tests/(vir(cgroup|pci|test|usb)|nss|qemuxml2argv)mock\.c$$)
+  ^(cfg\.mk|docs/|src/util/virnetdevtap\.c$$|tests/((vir(cgroup|pci|test|usb)|nss|qemuxml2argv|qemusecurity)mock|virfilewrapper)\.c$$)
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
   ^(src/rpc/gendispatch\.pl$$|tests/)
@@ -1120,7 +1219,7 @@ exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
 exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$)
 
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
-  ^(cfg\.mk|include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
+  ^(cfg\.mk|include/libvirt/virterror\.h|src/remote/remote_daemon_dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
 
 exclude_file_name_regexp--sc_prohibit_PATH_MAX = \
 	^cfg\.mk$$
@@ -1132,34 +1231,40 @@ exclude_file_name_regexp--sc_prohibit_asprintf = \
   ^(cfg\.mk|bootstrap.conf$$|examples/|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
-  ^(docs/|examples/|src/util/virstring\.c|tests/vir(netserverclient|cgroup)mock.c$$)
+  ^(docs/|examples/|src/util/virstring\.c|tests/vir(netserverclient|cgroup)mock.c|tests/commandhelper\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
-  (\.p[yl]$$|\.spec\.in$$|^docs/|^(src/util/virfile\.c|src/libvirt-stream\.c|tests/vir.+mock\.c)$$)
+  (\.p[yl]$$|\.spec\.in$$|^docs/|^(src/util/virfile\.c|src/libvirt-stream\.c|tests/(vir.+mock\.c|commandhelper\.c|qemusecuritymock\.c))$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  (^tests/(qemuhelp|virhostcpu|virpcitest)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)
+  (^tests/(virhostcpu|virpcitest)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)
 
-_src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon)
+_src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon|remote/remote_daemon)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
-  (^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
+  (^($(_src2)|tests/testutils)\.c$$)
 
-exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/virutil\.c$$
+exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/vir(util|log)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_internal_functions = \
   ^src/(util/(viralloc|virutil|virfile)\.[hc]|esx/esx_vi\.c)$$
+
+exclude_file_name_regexp--sc_prohibit_raw_virclassnew = \
+  ^src/util/virobject\.[hc]$$
 
 exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
 
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
-  ^((po|tests)/|docs/.*(py|js|html\.in)|run.in$$|tools/wireshark/util/genxdrstub\.pl$$)
+  ^((po|tests|examples/admin)/|docs/.*(py|js|html\.in)|run.in$$|tools/wireshark/util/genxdrstub\.pl$$)
 
 exclude_file_name_regexp--sc_prohibit_select = \
 	^cfg\.mk$$
 
+exclude_file_name_regexp--sc_prohibit_canonicalize_file_name = \
+  ^(cfg\.mk|tests/virfilemock\.c)$$
+
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock)\.c|tools/wireshark/src/packet-libvirt\.c)$$
+  ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$
@@ -1180,13 +1285,13 @@ exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
 exclude_file_name_regexp--sc_prohibit_return_as_function = \.py$$
 
 exclude_file_name_regexp--sc_require_config_h = \
-	^(examples/|tools/virsh-edit\.c$$)
+	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers.c)
 
 exclude_file_name_regexp--sc_require_config_h_first = \
-	^(examples/|tools/virsh-edit\.c$$)
+	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers.c)
 
 exclude_file_name_regexp--sc_trailing_blank = \
-  /qemuhelpdata/|/sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo$$
+  /sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo|^gnulib/local/.*/.*diff$$
 
 exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(docs/apibuild.py|tests/virt-aa-helper-test|docs/js/.*\.js)$$
@@ -1199,7 +1304,7 @@ exclude_file_name_regexp--sc_correct_id_types = \
 exclude_file_name_regexp--sc_m4_quote_check = m4/virt-lib.m4
 
 exclude_file_name_regexp--sc_prohibit_include_public_headers_quote = \
-  ^(src/internal\.h$$|tools/wireshark/src/packet-libvirt.h$$)
+  ^(src/internal\.h$$|tools/wireshark/src/packet-libvirt.c$$)
 
 exclude_file_name_regexp--sc_prohibit_include_public_headers_brackets = \
   ^(tools/|examples/|include/libvirt/(virterror|libvirt(-(admin|qemu|lxc))?)\.h$$)
@@ -1220,7 +1325,7 @@ exclude_file_name_regexp--sc_prohibit_mixed_case_abbreviations = \
   ^src/(vbox/vbox_CAPI.*.h|esx/esx_vi.(c|h)|esx/esx_storage_backend_iscsi.c)$$
 
 exclude_file_name_regexp--sc_prohibit_empty_first_line = \
-  ^(README|daemon/THREADS\.txt|src/esx/README|tests/(vmwarever|virhostcpu)data/.*)$$
+  ^(README|src/esx/README|tests/(vmwarever|virhostcpu)data/.*)$$
 
 exclude_file_name_regexp--sc_prohibit_useless_translation = \
   ^tests/virpolkittest.c
@@ -1241,4 +1346,10 @@ exclude_file_name_regexp--sc_prohibit_always-defined_macros = \
   ^tests/virtestmock.c$$
 
 exclude_file_name_regexp--sc_prohibit_readdir = \
-  ^tests/.*mock\.c$$
+  ^tests/(.*mock|virfilewrapper)\.c$$
+
+exclude_file_name_regexp--sc_prohibit_cross_inclusion = \
+  ^(src/util/virclosecallbacks\.h|src/util/virhostdev\.h)$$
+
+exclude_file_name_regexp--sc_prohibit_dirent_d_type = \
+  ^(src/util/vircgroup.c)$

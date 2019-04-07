@@ -1,0 +1,4 @@
+{"return":[{"filename":\
+"unix:/home/berrange/.libvirt/qemu/lib/tck.monitor,server",\
+"label":"charmonitor"},{"filename":"pty:/dev/pts/158",\
+"label":"charserial0"}],"id":"libvirt-3"}

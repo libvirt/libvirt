@@ -65,6 +65,17 @@
       </data>
     </choice>
   </define>
+  <define name="uint32">
+    <choice>
+      <data type="string">
+        <param name="pattern">(0x)?[0-9a-fA-F]{1,8}</param>
+      </data>
+      <data type="unsignedInt">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">4294967295</param>
+      </data>
+    </choice>
+  </define>
 
   <define name="UUID">
     <choice>
@@ -75,6 +86,13 @@
         <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
       </data>
     </choice>
+  </define>
+
+  <define name="numaDistanceValue">
+    <data type="unsignedInt">
+      <param name="minInclusive">10</param>
+      <param name="maxInclusive">255</param>
+    </data>
   </define>
 
   <define name="pciaddress">
@@ -102,6 +120,22 @@
       <attribute name="multifunction">
         <ref name="virOnOff"/>
       </attribute>
+    </optional>
+  </define>
+  <define name="zpciaddress">
+    <optional>
+      <element name="zpci">
+        <optional>
+          <attribute name="uid">
+            <ref name="uint16"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="fid">
+            <ref name="uint32"/>
+          </attribute>
+        </optional>
+      </element>
     </optional>
   </define>
 
@@ -245,6 +279,12 @@
     </data>
   </define>
 
+  <define name="zoneName">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9_\-]+</param>
+    </data>
+  </define>
+
   <define name="filePath">
     <data type="string">
       <param name="pattern">.+</param>
@@ -318,6 +358,37 @@
     </data>
   </define>
 
+  <define name="ccwCssidRange">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-eA-E][0-9a-fA-F]?</param>
+      </data>
+      <data type="string">
+        <param name="pattern">0x[fF][0-9a-eA-E]?</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">254</param>
+      </data>
+    </choice>
+  </define>
+  <define name="ccwSsidRange">
+    <data type="string">
+      <param name="pattern">(0x)?[0-3]</param>
+    </data>
+  </define>
+  <define name="ccwDevnoRange">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,4}</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">65535</param>
+      </data>
+    </choice>
+  </define>
+
   <define name="cpuset">
     <data type="string">
       <param name="pattern">([0-9]+(-[0-9]+)?|\^[0-9]+)(,([0-9]+(-[0-9]+)?|\^[0-9]+))*</param>
@@ -341,6 +412,7 @@
     <choice>
       <value>aarch64</value>
       <value>alpha</value>
+      <value>armv6l</value>
       <value>armv7l</value>
       <value>cris</value>
       <value>i686</value>
@@ -360,6 +432,8 @@
       <value>ppc64</value>
       <value>ppc64le</value>
       <value>ppcemb</value>
+      <value>riscv32</value>
+      <value>riscv64</value>
       <value>s390</value>
       <value>s390x</value>
       <value>sh4</value>
@@ -425,6 +499,21 @@
           <optional>
             <attribute name='managed'>
               <ref name="virYesNo"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name='parent_wwnn'>
+              <ref name='wwn'/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name='parent_wwpn'>
+              <ref name='wwn'/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name='parent_fabric_wwn'>
+              <ref name='wwn'/>
             </attribute>
           </optional>
           <attribute name='wwnn'>

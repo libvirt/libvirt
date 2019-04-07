@@ -14,15 +14,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: John Ferlan <jferlan@redhat.com>
  */
 
 #include <config.h>
 
 #ifndef WIN32
 
+# include <gnutls/gnutls.h>
+
 # include "internal.h"
+# include "virstring.h"
 # include "virrandom.h"
 # include "virmock.h"
 
@@ -40,10 +41,22 @@ virRandomBytes(unsigned char *buf,
     return 0;
 }
 
+uint64_t virRandomBits(int nbits)
+{
+    /* Chosen by a fair roll of a 2^64 sided dice */
+    uint64_t ret = 0x0706050403020100;
+    if (nbits < 64)
+        ret &= ((1ULL << nbits) - 1);
+    return ret;
+}
 
-# ifdef WITH_GNUTLS
-#  include <stdio.h>
-#  include <gnutls/gnutls.h>
+int virRandomGenerateWWN(char **wwn,
+                         const char *virt_type ATTRIBUTE_UNUSED)
+{
+    return virAsprintf(wwn, "5100000%09llx",
+                       (unsigned long long)virRandomBits(36));
+}
+
 
 static int (*real_gnutls_dh_params_generate2)(gnutls_dh_params_t dparams,
                                               unsigned int bits);
@@ -78,7 +91,6 @@ gnutls_dh_params_generate2(gnutls_dh_params_t dparams,
 
     return gnutls_dh_params_cpy(dparams, params_cache);
 }
-# endif
 #else /* WIN32 */
 /* Can't mock on WIN32 */
 #endif

@@ -17,9 +17,10 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#ifndef __VIR_GETTEXT_H__
-# define __VIR_GETTEXT_H__
+
+#ifndef LIBVIRT_VIRGETTEXT_H
+# define LIBVIRT_VIRGETTEXT_H
 
 int virGettextInitialize(void);
 
-#endif /* __VIR_GETTEXT_H__ */
+#endif /* LIBVIRT_VIRGETTEXT_H */

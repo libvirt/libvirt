@@ -17,8 +17,6 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Author: Daniel P. Berrange <berrange@redhat.com>
- *
  * Current support
  *   - Read existing file
  *   - Write existing file
@@ -29,8 +27,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "virutil.h"
 #include "virthread.h"
@@ -44,38 +40,9 @@
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 static int
-prepare(const char *path, int oflags, int mode,
-        unsigned long long offset)
+runIO(const char *path, int fd, int oflags)
 {
-    int fd = -1;
-
-    if (oflags & O_CREAT) {
-        fd = open(path, oflags, mode);
-    } else {
-        fd = open(path, oflags);
-    }
-    if (fd < 0) {
-        virReportSystemError(errno, _("Unable to open %s"), path);
-        goto cleanup;
-    }
-
-    if (offset) {
-        if (lseek(fd, offset, SEEK_SET) < 0) {
-            virReportSystemError(errno, _("Unable to seek %s to %llu"),
-                                 path, offset);
-            VIR_FORCE_CLOSE(fd);
-            goto cleanup;
-        }
-    }
-
- cleanup:
-    return fd;
-}
-
-static int
-runIO(const char *path, int fd, int oflags, unsigned long long length)
-{
-    void *base = NULL; /* Location to be freed */
+    VIR_AUTOFREE(void *) base = NULL; /* Location to be freed */
     char *buf = NULL; /* Aligned location within base */
     size_t buflen = 1024*1024;
     intptr_t alignMask = 64*1024 - 1;
@@ -84,7 +51,6 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
     const char *fdinname, *fdoutname;
     unsigned long long total = 0;
     bool direct = O_DIRECT && ((oflags & O_DIRECT) != 0);
-    bool shortRead = false; /* true if we hit a short read */
     off_t end = 0;
 
 #if HAVE_POSIX_MEMALIGN
@@ -108,7 +74,7 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
         fdoutname = "stdout";
         /* To make the implementation simpler, we give up on any
          * attempt to use O_DIRECT in a non-trivial manner.  */
-        if (direct && ((end = lseek(fd, 0, SEEK_CUR)) != 0 || length)) {
+        if (direct && ((end = lseek(fd, 0, SEEK_CUR)) != 0)) {
             virReportSystemError(end < 0 ? errno : EINVAL, "%s",
                                  _("O_DIRECT read needs entire seekable file"));
             goto cleanup;
@@ -139,40 +105,50 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
     while (1) {
         ssize_t got;
 
-        if (length &&
-            (length - total) < buflen)
-            buflen = length - total;
+        /* If we read with O_DIRECT from file we can't use saferead as
+         * it can lead to unaligned read after reading last bytes.
+         * If we write with O_DIRECT use should use saferead so that
+         * writes will be aligned.
+         * In other cases using saferead reduces number of syscalls.
+         */
+        if (fdin == fd && direct) {
+            if ((got = read(fdin, buf, buflen)) < 0 &&
+                errno == EINTR)
+                continue;
+        } else {
+            got = saferead(fdin, buf, buflen);
+        }
 
-        if (buflen == 0)
-            break; /* End of requested data from client */
-
-        if ((got = saferead(fdin, buf, buflen)) < 0) {
+        if (got < 0) {
             virReportSystemError(errno, _("Unable to read %s"), fdinname);
             goto cleanup;
         }
         if (got == 0)
-            break; /* End of file before end of requested data */
-        if (got < buflen || (buflen & alignMask)) {
-            /* O_DIRECT can handle at most one short read, at end of file */
-            if (direct && shortRead) {
-                virReportSystemError(EINVAL, "%s",
-                                     _("Too many short reads for O_DIRECT"));
-            }
-            shortRead = true;
-        }
+            break;
 
         total += got;
-        if (fdout == fd && direct && shortRead) {
-            end = total;
-            memset(buf + got, 0, buflen - got);
-            got = (got + alignMask) & ~alignMask;
+
+        /* handle last write size align in direct case */
+        if (got < buflen && direct && fdout == fd) {
+            ssize_t aligned_got = (got + alignMask) & ~alignMask;
+
+            memset(buf + got, 0, aligned_got - got);
+
+            if (safewrite(fdout, buf, aligned_got) < 0) {
+                virReportSystemError(errno, _("Unable to write %s"), fdoutname);
+                goto cleanup;
+            }
+
+            if (ftruncate(fd, total) < 0) {
+                virReportSystemError(errno, _("Unable to truncate %s"), fdoutname);
+                goto cleanup;
+            }
+
+            break;
         }
+
         if (safewrite(fdout, buf, got) < 0) {
             virReportSystemError(errno, _("Unable to write %s"), fdoutname);
-            goto cleanup;
-        }
-        if (end && ftruncate(fd, end) < 0) {
-            virReportSystemError(errno, _("Unable to truncate %s"), fdoutname);
             goto cleanup;
         }
     }
@@ -194,8 +170,6 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
         virReportSystemError(errno, _("Unable to close %s"), path);
         ret = -1;
     }
-
-    VIR_FREE(base);
     return ret;
 }
 
@@ -207,9 +181,7 @@ usage(int status)
     if (status) {
         fprintf(stderr, _("%s: try --help for more details"), program_name);
     } else {
-        printf(_("Usage: %s FILENAME OFLAGS MODE OFFSET LENGTH DELETE\n"
-                 "   or: %s FILENAME LENGTH FD\n"),
-               program_name, program_name);
+        printf(_("Usage: %s FILENAME FD"), program_name);
     }
     exit(status);
 }
@@ -218,20 +190,15 @@ int
 main(int argc, char **argv)
 {
     const char *path;
-    unsigned long long offset;
-    unsigned long long length;
     int oflags = -1;
-    int mode;
-    unsigned int delete = 0;
     int fd = -1;
-    int lengthIndex = 0;
 
     program_name = argv[0];
 
     if (virGettextInitialize() < 0 ||
         virThreadInitialize() < 0 ||
         virErrorInitialize() < 0) {
-        fprintf(stderr, _("%s: initialization failed\n"), program_name);
+        fprintf(stderr, _("%s: initialization failed"), program_name);
         exit(EXIT_FAILURE);
     }
 
@@ -239,32 +206,8 @@ main(int argc, char **argv)
 
     if (argc > 1 && STREQ(argv[1], "--help"))
         usage(EXIT_SUCCESS);
-    if (argc == 7) { /* FILENAME OFLAGS MODE OFFSET LENGTH DELETE */
-        lengthIndex = 5;
-        if (virStrToLong_i(argv[2], NULL, 10, &oflags) < 0) {
-            fprintf(stderr, _("%s: malformed file flags %s"),
-                    program_name, argv[2]);
-            exit(EXIT_FAILURE);
-        }
-        if (virStrToLong_i(argv[3], NULL, 10, &mode) < 0) {
-            fprintf(stderr, _("%s: malformed file mode %s"),
-                    program_name, argv[3]);
-            exit(EXIT_FAILURE);
-        }
-        if (virStrToLong_ull(argv[4], NULL, 10, &offset) < 0) {
-            fprintf(stderr, _("%s: malformed file offset %s"),
-                    program_name, argv[4]);
-            exit(EXIT_FAILURE);
-        }
-        if (argc == 7 && virStrToLong_ui(argv[6], NULL, 10, &delete) < 0) {
-            fprintf(stderr, _("%s: malformed delete flag %s"),
-                    program_name, argv[6]);
-            exit(EXIT_FAILURE);
-        }
-        fd = prepare(path, oflags, mode, offset);
-    } else if (argc == 4) { /* FILENAME LENGTH FD */
-        lengthIndex = 2;
-        if (virStrToLong_i(argv[3], NULL, 10, &fd) < 0) {
+    if (argc == 3) { /* FILENAME FD */
+        if (virStrToLong_i(argv[2], NULL, 10, &fd) < 0) {
             fprintf(stderr, _("%s: malformed fd %s"),
                     program_name, argv[3]);
             exit(EXIT_FAILURE);
@@ -287,22 +230,13 @@ main(int argc, char **argv)
         usage(EXIT_FAILURE);
     }
 
-    if (virStrToLong_ull(argv[lengthIndex], NULL, 10, &length) < 0) {
-        fprintf(stderr, _("%s: malformed file length %s"),
-                program_name, argv[lengthIndex]);
-        exit(EXIT_FAILURE);
-    }
-
-    if (fd < 0 || runIO(path, fd, oflags, length) < 0)
+    if (fd < 0 || runIO(path, fd, oflags) < 0)
         goto error;
-
-    if (delete)
-        unlink(path);
 
     return 0;
 
  error:
-    fprintf(stderr, _("%s: failure with %s\n: %s"),
+    fprintf(stderr, _("%s: failure with %s: %s"),
             program_name, path, virGetLastErrorMessage());
     exit(EXIT_FAILURE);
 }

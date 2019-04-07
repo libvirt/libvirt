@@ -17,9 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Chuck Short <chuck.short@canonical.com>
  */
 
 #include <config.h>
@@ -36,12 +33,6 @@ static const virArch archs[] = {
     VIR_ARCH_ARMV7L,
     VIR_ARCH_AARCH64,
 };
-
-static void
-armDataFree(virCPUDataPtr data)
-{
-    VIR_FREE(data);
-}
 
 
 static int
@@ -79,16 +70,13 @@ virCPUarmUpdate(virCPUDefPtr guest,
 
 
 static virCPUDefPtr
-armBaseline(virCPUDefPtr *cpus,
-            unsigned int ncpus ATTRIBUTE_UNUSED,
-            const char **models ATTRIBUTE_UNUSED,
-            unsigned int nmodels ATTRIBUTE_UNUSED,
-            unsigned int flags)
+virCPUarmBaseline(virCPUDefPtr *cpus,
+                  unsigned int ncpus ATTRIBUTE_UNUSED,
+                  virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
+                  const char **features ATTRIBUTE_UNUSED,
+                  bool migratable ATTRIBUTE_UNUSED)
 {
     virCPUDefPtr cpu = NULL;
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
     if (VIR_ALLOC(cpu) < 0 ||
         VIR_STRDUP(cpu->model, cpus[0]->model) < 0) {
@@ -117,8 +105,6 @@ struct cpuArchDriver cpuDriverArm = {
     .compare = virCPUarmCompare,
     .decode = NULL,
     .encode = NULL,
-    .free = armDataFree,
-    .nodeData = NULL,
-    .baseline = armBaseline,
+    .baseline = virCPUarmBaseline,
     .update = virCPUarmUpdate,
 };

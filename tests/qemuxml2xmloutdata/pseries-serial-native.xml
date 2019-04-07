@@ -1,0 +1,35 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+    </controller>
+    <serial type='pty'>
+      <target type='spapr-vio-serial' port='0'>
+        <model name='spapr-vty'/>
+      </target>
+      <address type='spapr-vio' reg='0x30000000'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+      <address type='spapr-vio' reg='0x30000000'/>
+    </console>
+    <memballoon model='none'/>
+    <panic model='pseries'/>
+  </devices>
+</domain>

@@ -22,8 +22,7 @@
 
 #ifdef __linux__
 
-# include <stdlib.h>
-# define __VIR_COMMAND_PRIV_H_ALLOW__
+# define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
 # include "virkmod.h"
 # include "virstring.h"
@@ -47,7 +46,12 @@ testKModConfig(const void *args ATTRIBUTE_UNUSED)
      */
     outbuf = virKModConfig();
     if (!outbuf) {
-        fprintf(stderr, "Failed to get config\n");
+        if (virFileIsExecutable(MODPROBE)) {
+            fprintf(stderr, "Failed to get config\n");
+        } else {
+            /* modprobe doesn't exist, do not claim error. */
+            ret = 0;
+        }
         goto cleanup;
     }
     ret = 0;
@@ -157,13 +161,13 @@ mymain(void)
      * the output of the created command against what we'd expect to be
      * created. So let's at least do that.
      */
-# define DO_TEST(_name, _cb, _blkflag, _exp_cmd)              \
-    do {                                                      \
-        struct testInfo data = {.module = "vfio-pci",         \
-                                .exp_cmd = _exp_cmd,          \
-                                .useBlacklist = _blkflag};    \
-        if (virTestRun(_name, _cb,  &data) < 0)               \
-            ret = -1;                                         \
+# define DO_TEST(_name, _cb, _blkflag, _exp_cmd) \
+    do { \
+        struct testInfo data = {.module = "vfio-pci", \
+                                .exp_cmd = _exp_cmd, \
+                                .useBlacklist = _blkflag}; \
+        if (virTestRun(_name, _cb,  &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("load", testKModLoad, false, MODPROBE " vfio-pci\n");
@@ -174,7 +178,7 @@ mymain(void)
 
 }
 
-VIRT_TEST_MAIN(mymain);
+VIR_TEST_MAIN(mymain);
 #else
 int
 main(void)

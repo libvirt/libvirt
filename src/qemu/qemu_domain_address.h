@@ -17,20 +17,26 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __QEMU_DOMAIN_ADDRESS_H__
+#ifndef LIBVIRT_QEMU_DOMAIN_ADDRESS_H
+# define LIBVIRT_QEMU_DOMAIN_ADDRESS_H
 
 # include "domain_addr.h"
 # include "domain_conf.h"
 # include "qemu_conf.h"
 # include "qemu_capabilities.h"
 
+int qemuDomainGetSCSIControllerModel(const virDomainDef *def,
+                                     const virDomainControllerDef *cont,
+                                     virQEMUCapsPtr qemuCaps);
+
 int qemuDomainSetSCSIControllerModel(const virDomainDef *def,
-                                     virQEMUCapsPtr qemuCaps,
-                                     int *model);
+                                     virDomainControllerDefPtr cont,
+                                     virQEMUCapsPtr qemuCaps);
+
+int qemuDomainFindSCSIControllerModel(const virDomainDef *def,
+                                      virDomainDeviceInfoPtr info);
 
 int qemuDomainAssignAddresses(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
@@ -44,18 +50,19 @@ int qemuDomainEnsurePCIAddress(virDomainObjPtr obj,
                                virQEMUDriverPtr driver)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
-                                    virDomainDeviceInfoPtr info,
-                                    const char *devstr);
+int qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
+                                       virDomainDeviceDefPtr dev)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-virDomainCCWAddressSetPtr
-qemuDomainCCWAddrSetCreateFromDomain(virDomainDefPtr def)
-    ATTRIBUTE_NONNULL(1);
+void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
+                                    virDomainDeviceInfoPtr info);
 
 int qemuDomainAssignMemoryDeviceSlot(virDomainDefPtr def,
                                      virDomainMemoryDefPtr mem);
 
+int qemuDomainEnsureVirtioAddress(bool *releaseAddr,
+                                  virDomainObjPtr vm,
+                                  virDomainDeviceDefPtr dev,
+                                  const char *devicename);
 
-# define __QEMU_DOMAIN_ADDRESS_H__
-
-#endif /* __QEMU_DOMAIN_ADDRESS_H__ */
+#endif /* LIBVIRT_QEMU_DOMAIN_ADDRESS_H */

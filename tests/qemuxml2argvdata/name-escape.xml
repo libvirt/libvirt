@@ -1,0 +1,62 @@
+<domain type='qemu'>
+  <name>foo=1,bar=2</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <iotune>
+        <total_bytes_sec>5000</total_bytes_sec>
+        <total_iops_sec>6000</total_iops_sec>
+        <total_bytes_sec_max>10000</total_bytes_sec_max>
+        <total_iops_sec_max>11000</total_iops_sec_max>
+        <group_name>libvirt_iotune_group1,foo</group_name>
+      </iotune>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='virtio-scsi'/>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+        <source protocol='iscsi' name='iqn.1992-01.com.example:my,storage/1'>
+        <host name='example.foo.org' port='3260'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='4'/>
+    </hostdev>
+    <graphics type='vnc'>
+      <listen type='socket'/>
+    </graphics>
+    <graphics type='spice'>
+      <listen type='socket'/>
+      <gl enable='yes' rendernode='/dev/dri/foo,bar'/>
+    </graphics>
+    <serial type='dev'>
+      <source path='/dev/ttyS2,foo'/>
+    </serial>
+    <serial type='file'>
+      <source path='/tmp/serial.log,foo' append='on'/>
+      <target port='0'/>
+    </serial>
+    <channel type='pipe'>
+      <source path='/tmp/guestfwd,foo'/>
+      <target type='guestfwd' address='10.0.2.1' port='4600'/>
+    </channel>
+    <smartcard mode='host-certificates'>
+      <certificate>cert1,foo</certificate>
+      <certificate>cert2</certificate>
+      <certificate>cert3</certificate>
+      <database>/etc/pki/nssdb,foo</database>
+    </smartcard>
+  </devices>
+</domain>

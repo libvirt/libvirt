@@ -16,22 +16,24 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='block' device='disk'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <source dev='/dev/MainVG/GuestVG'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <console type='pty'>
       <target type='xen' port='0'/>
     </console>
     <input type='mouse' bus='xen'/>
     <input type='keyboard' bus='xen'/>
     <hostdev mode='subsystem' type='pci' managed='no'>
+      <driver name='xen'/>
       <source>
         <address domain='0x0001' bus='0x0c' slot='0x1b' function='0x2'/>
       </source>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
+      <driver name='xen'/>
       <source>
         <address domain='0x0000' bus='0x01' slot='0x13' function='0x0'/>
       </source>

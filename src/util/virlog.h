@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIRTLOG_H_
-# define __VIRTLOG_H_
+#ifndef LIBVIRT_VIRLOG_H
+# define LIBVIRT_VIRLOG_H
 
 # include "internal.h"
 # include "virbuffer.h"
@@ -34,7 +34,7 @@
      "libvirt version: " VERSION ", package: " PACKAGER_VERSION
 #  endif
 # else
-#  define VIR_LOG_VERSION_STRING  \
+#  define VIR_LOG_VERSION_STRING \
     "libvirt version: " VERSION
 # endif
 
@@ -73,13 +73,13 @@ struct _virLogSource {
  * log statements in a file are conditionally disabled
  * at compile time due to configure options.
  */
-# define VIR_LOG_INIT(n)                                \
+# define VIR_LOG_INIT(n) \
     static ATTRIBUTE_UNUSED virLogSource virLogSelf = { \
-        .name = "" n "",                                \
-        .priority = VIR_LOG_ERROR,                      \
-        .serial = 0,                                    \
-        .flags = 0,                                     \
-    };
+        .name = "" n "", \
+        .priority = VIR_LOG_ERROR, \
+        .serial = 0, \
+        .flags = 0, \
+    }
 
 /*
  * If configured with --enable-debug=yes then library calls
@@ -87,7 +87,7 @@ struct _virLogSource {
  * defined at runtime from the libvirt daemon configuration file
  */
 # ifdef ENABLE_DEBUG
-#  define VIR_DEBUG_INT(src, filename, linenr, funcname, ...)           \
+#  define VIR_DEBUG_INT(src, filename, linenr, funcname, ...) \
     virLogMessage(src, VIR_LOG_DEBUG, filename, linenr, funcname, NULL, __VA_ARGS__)
 # else
 /**
@@ -100,24 +100,24 @@ static inline void virLogEatParams(virLogSourcePtr unused, ...)
     /* Silence gcc */
     unused = unused;
 }
-#  define VIR_DEBUG_INT(src, filename, linenr, funcname, ...)           \
+#  define VIR_DEBUG_INT(src, filename, linenr, funcname, ...) \
     virLogEatParams(src, filename, linenr, funcname, __VA_ARGS__)
 # endif /* !ENABLE_DEBUG */
 
-# define VIR_INFO_INT(src, filename, linenr, funcname, ...)             \
+# define VIR_INFO_INT(src, filename, linenr, funcname, ...) \
     virLogMessage(src, VIR_LOG_INFO, filename, linenr, funcname, NULL, __VA_ARGS__)
-# define VIR_WARN_INT(src, filename, linenr, funcname, ...)             \
+# define VIR_WARN_INT(src, filename, linenr, funcname, ...) \
     virLogMessage(src, VIR_LOG_WARN, filename, linenr, funcname, NULL, __VA_ARGS__)
-# define VIR_ERROR_INT(src, filename, linenr, funcname, ...)            \
+# define VIR_ERROR_INT(src, filename, linenr, funcname, ...) \
     virLogMessage(src, VIR_LOG_ERROR, filename, linenr, funcname, NULL, __VA_ARGS__)
 
-# define VIR_DEBUG(...)                                                 \
+# define VIR_DEBUG(...) \
     VIR_DEBUG_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
-# define VIR_INFO(...)                                                  \
+# define VIR_INFO(...) \
     VIR_INFO_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
-# define VIR_WARN(...)                                                  \
+# define VIR_WARN(...) \
     VIR_WARN_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
-# define VIR_ERROR(...)                                                 \
+# define VIR_ERROR(...) \
     VIR_ERROR_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
 
@@ -174,7 +174,7 @@ typedef void (*virLogCloseFunc) (void *data);
 
 typedef enum {
     VIR_LOG_STACK_TRACE = (1 << 0),
-} virLogFlags;
+} virLogFilterFlags;
 
 int virLogGetNbFilters(void);
 int virLogGetNbOutputs(void);
@@ -239,4 +239,4 @@ int virLogParseOutputs(const char *src,
 int virLogParseFilters(const char *src,
                        virLogFilterPtr **filters) ATTRIBUTE_NONNULL(1);
 
-#endif
+#endif /* LIBVIRT_VIRLOG_H */

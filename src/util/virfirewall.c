@@ -16,25 +16,20 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *    Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#define __VIR_FIREWALL_PRIV_H_ALLOW__
-
 #include <stdarg.h>
 
-#include "viralloc.h"
+#define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 #include "virfirewallpriv.h"
+#include "virfirewalld.h"
 #include "virerror.h"
 #include "virutil.h"
 #include "virstring.h"
 #include "vircommand.h"
 #include "virlog.h"
-#include "virdbus.h"
 #include "virfile.h"
 #include "virthread.h"
 
@@ -45,16 +40,12 @@ VIR_LOG_INIT("util.firewall");
 typedef struct _virFirewallGroup virFirewallGroup;
 typedef virFirewallGroup *virFirewallGroupPtr;
 
-VIR_ENUM_DECL(virFirewallLayerCommand)
+VIR_ENUM_DECL(virFirewallLayerCommand);
 VIR_ENUM_IMPL(virFirewallLayerCommand, VIR_FIREWALL_LAYER_LAST,
               EBTABLES_PATH,
               IPTABLES_PATH,
-              IP6TABLES_PATH);
-
-VIR_ENUM_DECL(virFirewallLayerFirewallD)
-VIR_ENUM_IMPL(virFirewallLayerFirewallD, VIR_FIREWALL_LAYER_LAST,
-              "eb", "ipv4", "ipv6")
-
+              IP6TABLES_PATH,
+);
 
 struct _virFirewallRule {
     virFirewallLayer layer;
@@ -102,7 +93,7 @@ virFirewallOnceInit(void)
     return virFirewallValidateBackend(currentBackend);
 }
 
-VIR_ONCE_GLOBAL_INIT(virFirewall)
+VIR_ONCE_GLOBAL_INIT(virFirewall);
 
 static bool iptablesUseLock;
 static bool ip6tablesUseLock;
@@ -120,14 +111,13 @@ virFirewallCheckUpdateLock(bool *lockflag,
                            const char *const*args)
 {
     int status; /* Ignore failed commands without logging them */
-    virCommandPtr cmd = virCommandNewArgs(args);
+    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgs(args);
     if (virCommandRun(cmd, &status) < 0 || status) {
         VIR_INFO("locking not supported by %s", args[0]);
     } else {
         VIR_INFO("using locking for %s", args[0]);
         *lockflag = true;
     }
-    virCommandFree(cmd);
 }
 
 static void
@@ -158,7 +148,7 @@ virFirewallValidateBackend(virFirewallBackend backend)
     VIR_DEBUG("Validating backend %d", backend);
     if (backend == VIR_FIREWALL_BACKEND_AUTOMATIC ||
         backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        int rv = virDBusIsServiceRegistered(VIR_FIREWALL_FIREWALLD_SERVICE);
+        int rv = virFirewallDIsRegistered();
 
         VIR_DEBUG("Firewalld is registered ? %d", rv);
         if (rv < 0) {
@@ -306,33 +296,33 @@ void virFirewallFree(virFirewallPtr firewall)
     VIR_FREE(firewall);
 }
 
-#define VIR_FIREWALL_RETURN_IF_ERROR(firewall)              \
-    do {                                                    \
-        if (!firewall || firewall->err)                     \
-            return;                                         \
+#define VIR_FIREWALL_RETURN_IF_ERROR(firewall) \
+    do { \
+        if (!firewall || firewall->err) \
+            return; \
     } while (0)
 
 #define VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule)\
-    do {                                                    \
-        if (!firewall || firewall->err || !rule)            \
-            return;                                         \
+    do { \
+        if (!firewall || firewall->err || !rule) \
+            return; \
     } while (0)
 
-#define VIR_FIREWALL_RETURN_NULL_IF_ERROR(firewall)         \
-    do {                                                    \
-        if (!firewall || firewall->err)                     \
-            return NULL;                                    \
+#define VIR_FIREWALL_RETURN_NULL_IF_ERROR(firewall) \
+    do { \
+        if (!firewall || firewall->err) \
+            return NULL; \
     } while (0)
 
-#define ADD_ARG(rule, str)                                  \
-    do {                                                    \
-        if (VIR_RESIZE_N(rule->args,                        \
-                         rule->argsAlloc,                   \
-                         rule->argsLen, 1) < 0)             \
-            goto no_memory;                                 \
-                                                            \
+#define ADD_ARG(rule, str) \
+    do { \
+        if (VIR_RESIZE_N(rule->args, \
+                         rule->argsAlloc, \
+                         rule->argsLen, 1) < 0) \
+            goto no_memory; \
+ \
         if (VIR_STRDUP(rule->args[rule->argsLen++], str) < 0) \
-            goto no_memory;                                 \
+            goto no_memory; \
     } while (0)
 
 static virFirewallRulePtr
@@ -403,29 +393,6 @@ virFirewallAddRuleFullV(virFirewallPtr firewall,
     firewall->err = ENOMEM;
     virFirewallRuleFree(rule);
     return NULL;
-}
-
-/**
- * virFirewallAddRule:
- * @firewall: firewall ruleset to add to
- * @layer: the firewall layer to change
- * @...: NULL terminated list of strings for the rule
- *
- * Add any type of rule to the firewall ruleset.
- *
- * Returns the new rule
- */
-virFirewallRulePtr
-virFirewallAddRule(virFirewallPtr firewall,
-                   virFirewallLayer layer,
-                   ...)
-{
-    virFirewallRulePtr rule;
-    va_list args;
-    va_start(args, layer);
-    rule = virFirewallAddRuleFullV(firewall, layer, false, NULL, NULL, args);
-    va_end(args);
-    return rule;
 }
 
 
@@ -535,7 +502,7 @@ void virFirewallRuleAddArgFormat(virFirewallPtr firewall,
                                  virFirewallRulePtr rule,
                                  const char *fmt, ...)
 {
-    char *arg;
+    VIR_AUTOFREE(char *) arg = NULL;
     va_list list;
 
     VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule);
@@ -549,13 +516,11 @@ void virFirewallRuleAddArgFormat(virFirewallPtr firewall,
 
     va_end(list);
 
-    VIR_FREE(arg);
     return;
 
  no_memory:
     firewall->err = ENOMEM;
     va_end(list);
-    VIR_FREE(arg);
 }
 
 
@@ -699,16 +664,15 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
 {
     size_t i;
     const char *bin = virFirewallLayerCommandTypeToString(rule->layer);
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
     int status;
-    int ret = -1;
-    char *error = NULL;
+    VIR_AUTOFREE(char *) error = NULL;
 
     if (!bin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown firewall layer %d"),
                        rule->layer);
-        goto cleanup;
+        return -1;
     }
 
     cmd = virCommandNewArgList(bin, NULL);
@@ -720,27 +684,22 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
     virCommandSetErrorBuffer(cmd, &error);
 
     if (virCommandRun(cmd, &status) < 0)
-        goto cleanup;
+        return -1;
 
     if (status != 0) {
         if (ignoreErrors) {
             VIR_DEBUG("Ignoring error running command");
         } else {
-            char *args = virCommandToString(cmd);
+            VIR_AUTOFREE(char *) args = virCommandToString(cmd, false);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to apply firewall rules %s: %s"),
                            NULLSTR(args), NULLSTR(error));
-            VIR_FREE(args);
             VIR_FREE(*output);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(error);
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 
@@ -749,81 +708,8 @@ virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
                               bool ignoreErrors,
                               char **output)
 {
-    const char *ipv = virFirewallLayerFirewallDTypeToString(rule->layer);
-    DBusConnection *sysbus = virDBusGetSystemBus();
-    DBusMessage *reply = NULL;
-    virError error;
-    int ret = -1;
-
-    if (!sysbus)
-        return -1;
-
-    memset(&error, 0, sizeof(error));
-
-    if (!ipv) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown firewall layer %d"),
-                       rule->layer);
-        goto cleanup;
-    }
-
-    if (virDBusCallMethod(sysbus,
-                          &reply,
-                          &error,
-                          VIR_FIREWALL_FIREWALLD_SERVICE,
-                          "/org/fedoraproject/FirewallD1",
-                          "org.fedoraproject.FirewallD1.direct",
-                          "passthrough",
-                          "sa&s",
-                          ipv,
-                          (int)rule->argsLen,
-                          rule->args) < 0)
-        goto cleanup;
-
-    if (error.level == VIR_ERR_ERROR) {
-        /*
-         * As of firewalld-0.3.9.3-1.fc20.noarch the name and
-         * message fields in the error look like
-         *
-         *    name="org.freedesktop.DBus.Python.dbus.exceptions.DBusException"
-         * message="COMMAND_FAILED: '/sbin/iptables --table filter --delete
-         *          INPUT --in-interface virbr0 --protocol udp --destination-port 53
-         *          --jump ACCEPT' failed: iptables: Bad rule (does a matching rule
-         *          exist in that chain?)."
-         *
-         * We'd like to only ignore DBus errors precisely related to the failure
-         * of iptables/ebtables commands. A well designed DBus interface would
-         * return specific named exceptions not the top level generic python dbus
-         * exception name. With this current scheme our only option is todo a
-         * sub-string match for 'COMMAND_FAILED' on the message. eg like
-         *
-         * if (ignoreErrors &&
-         *     STREQ(error.name,
-         *           "org.freedesktop.DBus.Python.dbus.exceptions.DBusException") &&
-         *     STRPREFIX(error.message, "COMMAND_FAILED"))
-         *    ...
-         *
-         * But this risks our error detecting code being broken if firewalld changes
-         * ever alter the message string, so we're avoiding doing that.
-         */
-        if (ignoreErrors) {
-            VIR_DEBUG("Ignoring error '%s': '%s'",
-                      error.str1, error.message);
-        } else {
-            virReportErrorObject(&error);
-            goto cleanup;
-        }
-    } else {
-        if (virDBusMessageRead(reply, "s", output) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    virResetError(&error);
-    virDBusMessageUnref(reply);
-    return ret;
+    /* wrapper necessary because virFirewallRule is a private struct */
+    return virFirewallDApplyRule(rule->layer, rule->args, rule->argsLen, ignoreErrors, output);
 }
 
 static int
@@ -831,12 +717,10 @@ virFirewallApplyRule(virFirewallPtr firewall,
                      virFirewallRulePtr rule,
                      bool ignoreErrors)
 {
-    char *output = NULL;
-    char **lines = NULL;
-    int ret = -1;
-    char *str = virFirewallRuleToString(rule);
+    VIR_AUTOFREE(char *) output = NULL;
+    VIR_AUTOFREE(char *) str = virFirewallRuleToString(rule);
+    VIR_AUTOSTRINGLIST lines = NULL;
     VIR_INFO("Applying rule '%s'", NULLSTR(str));
-    VIR_FREE(str);
 
     if (rule->ignoreErrors)
         ignoreErrors = rule->ignoreErrors;
@@ -850,37 +734,35 @@ virFirewallApplyRule(virFirewallPtr firewall,
         if (virFirewallApplyRuleFirewallD(rule, ignoreErrors, &output) < 0)
             return -1;
         break;
+
+    case VIR_FIREWALL_BACKEND_AUTOMATIC:
+    case VIR_FIREWALL_BACKEND_LAST:
     default:
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unexpected firewall engine backend"));
+        virReportEnumRangeError(virFirewallBackend, currentBackend);
         return -1;
     }
 
     if (rule->queryCB && output) {
         if (!(lines = virStringSplit(output, "\n", -1)))
-            goto cleanup;
+            return -1;
 
         VIR_DEBUG("Invoking query %p with '%s'", rule->queryCB, output);
-        if (rule->queryCB(firewall, (const char *const *)lines, rule->queryOpaque) < 0)
-            goto cleanup;
+        if (rule->queryCB(firewall, rule->layer, (const char *const *)lines, rule->queryOpaque) < 0)
+            return -1;
 
         if (firewall->err == ENOMEM) {
             virReportOOMError();
-            goto cleanup;
+            return -1;
         }
         if (firewall->err) {
             virReportSystemError(firewall->err, "%s",
                                  _("Unable to create rule"));
-            goto cleanup;
+            return -1;
         }
 
     }
 
-    ret = 0;
- cleanup:
-    virStringListFree(lines);
-    VIR_FREE(output);
-    return ret;
+    return 0;
 }
 
 static int
@@ -891,7 +773,7 @@ virFirewallApplyGroup(virFirewallPtr firewall,
     bool ignoreErrors = (group->actionFlags & VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
     size_t i;
 
-    VIR_INFO("Starting transaction for firewall=%p group=%p flags=%x",
+    VIR_INFO("Starting transaction for firewall=%p group=%p flags=0x%x",
              firewall, group, group->actionFlags);
     firewall->currentGroup = idx;
     group->addingRollback = false;
@@ -954,7 +836,7 @@ virFirewallApply(virFirewallPtr firewall)
         if (virFirewallApplyGroup(firewall, i) < 0) {
             VIR_DEBUG("Rolling back groups up to %zu for %p", i, firewall);
             size_t first = i;
-            virErrorPtr saved_error = virSaveLastError();
+            VIR_AUTOPTR(virError) saved_error = virSaveLastError();
 
             /*
              * Look at any inheritance markers to figure out
@@ -975,7 +857,6 @@ virFirewallApply(virFirewallPtr firewall)
             }
 
             virSetError(saved_error);
-            virFreeError(saved_error);
             VIR_DEBUG("Done rolling back groups for %p", firewall);
             goto cleanup;
         }

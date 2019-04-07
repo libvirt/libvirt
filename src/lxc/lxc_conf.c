@@ -4,9 +4,6 @@
  *
  * lxc_conf.c: config functions for managing linux containers
  *
- * Authors:
- *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -28,7 +25,6 @@
 
 #include "lxc_conf.h"
 #include "lxc_domain.h"
-#include "nodeinfo.h"
 #include "virerror.h"
 #include "virconf.h"
 #include "viralloc.h"
@@ -49,16 +45,13 @@ static void virLXCDriverConfigDispose(void *obj);
 
 static int virLXCConfigOnceInit(void)
 {
-    if (!(virLXCDriverConfigClass = virClassNew(virClassForObject(),
-                                                 "virLXCDriverConfig",
-                                                 sizeof(virLXCDriverConfig),
-                                                 virLXCDriverConfigDispose)))
+    if (!VIR_CLASS_NEW(virLXCDriverConfig, virClassForObject()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virLXCConfig)
+VIR_ONCE_GLOBAL_INIT(virLXCConfig);
 
 
 /* Functions */
@@ -73,19 +66,26 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
                                    false, false)) == NULL)
         goto error;
 
-    /* Some machines have problematic NUMA toplogy causing
+    /* Some machines have problematic NUMA topology causing
      * unexpected failures. We don't want to break the lxc
      * driver in this scenario, so log errors & carry on
      */
-    if (nodeCapsInitNUMA(caps) < 0) {
+    if (virCapabilitiesInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
+
+    if (virCapabilitiesInitCaches(caps) < 0)
+        VIR_WARN("Failed to get host CPU cache info");
 
     /* Only probe for power management capabilities in the driver,
      * not in the emulator */
     if (driver && virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
+
+    /* Add huge pages info */
+    if (virCapabilitiesInitPages(caps) < 0)
+        VIR_WARN("Failed to get pages info");
 
     if (virGetHostUUID(caps->host.host_uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -94,7 +94,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
     }
 
     if (!(lxc_path = virFileFindResource("libvirt_lxc",
-                                         abs_topbuilddir "/src",
+                                         abs_top_builddir "/src",
                                          LIBEXECDIR)))
         goto error;
 
@@ -213,7 +213,8 @@ lxcDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&virLXCDriverDomainDefParserConfig,
                                  &virLXCDriverPrivateDataCallbacks,
-                                 &virLXCDriverDomainXMLNamespace);
+                                 &virLXCDriverDomainXMLNamespace,
+                                 NULL, NULL);
 }
 
 

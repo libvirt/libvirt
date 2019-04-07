@@ -1,0 +1,33 @@
+<domain type='qemu'>
+  <name>q35-test</name>
+  <uuid>11dbdcdd-4c3b-482b-8903-9bdb8c0a2774</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static' cpuset='0-1'>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='pci' index='0' model='pcie-root'>
+      <pcihole64 unit='KiB'>1048576</pcihole64>
+    </controller>
+    <controller type='sata' index='0'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <video>
+      <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1'/>
+    </video>
+    <memballoon model='none'/>
+  </devices>
+</domain>

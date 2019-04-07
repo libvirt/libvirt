@@ -16,9 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Eric Farman <farman@linux.vnet.ibm.com>
  */
 
 #include <config.h>
@@ -26,7 +23,6 @@
 
 #include "virscsivhost.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virstring.h"
@@ -70,24 +66,25 @@ virSCSIVHostDeviceListDispose(void *obj)
 static int
 virSCSIVHostOnceInit(void)
 {
-    if (!(virSCSIVHostDeviceListClass = virClassNew(virClassForObjectLockable(),
-                                                    "virSCSIVHostDeviceList",
-                                                    sizeof(virSCSIVHostDeviceList),
-                                                    virSCSIVHostDeviceListDispose)))
+    if (!VIR_CLASS_NEW(virSCSIVHostDeviceList, virClassForObjectLockable()))
         return -1;
 
     return 0;
 }
 
 
-VIR_ONCE_GLOBAL_INIT(virSCSIVHost)
+VIR_ONCE_GLOBAL_INIT(virSCSIVHost);
 
 
 int
 virSCSIVHostOpenVhostSCSI(int *vhostfd)
 {
-    if (!virFileExists(VHOST_SCSI_DEVICE))
-        goto error;
+    if (!virFileExists(VHOST_SCSI_DEVICE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("vhost-scsi device file '%s' cannot be found"),
+                       VHOST_SCSI_DEVICE);
+        return -1;
+    }
 
     *vhostfd = open(VHOST_SCSI_DEVICE, O_RDWR);
 
@@ -109,8 +106,7 @@ void
 virSCSIVHostDeviceListDel(virSCSIVHostDeviceListPtr list,
                           virSCSIVHostDevicePtr dev)
 {
-    virSCSIVHostDevicePtr tmp = virSCSIVHostDeviceListSteal(list, dev);
-    virSCSIVHostDeviceFree(tmp);
+    virSCSIVHostDeviceFree(virSCSIVHostDeviceListSteal(list, dev));
 }
 
 
@@ -253,7 +249,8 @@ virSCSIVHostDeviceGetPath(virSCSIVHostDevicePtr dev)
 virSCSIVHostDevicePtr
 virSCSIVHostDeviceNew(const char *name)
 {
-    virSCSIVHostDevicePtr dev;
+    VIR_AUTOPTR(virSCSIVHostDevice) dev = NULL;
+    virSCSIVHostDevicePtr ret = NULL;
 
     if (VIR_ALLOC(dev) < 0)
         return NULL;
@@ -262,22 +259,18 @@ virSCSIVHostDeviceNew(const char *name)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->name buffer overflow: %s"),
                        name);
-        goto error;
+        return NULL;
     }
 
     if (virAsprintf(&dev->path, "%s/%s",
                     SYSFS_VHOST_SCSI_DEVICES, name) < 0)
-        goto error;
+        return NULL;
 
     VIR_DEBUG("%s: initialized", dev->name);
 
- cleanup:
-    return dev;
+    VIR_STEAL_PTR(ret, dev);
 
- error:
-    virSCSIVHostDeviceFree(dev);
-    dev = NULL;
-    goto cleanup;
+    return ret;
 }
 
 

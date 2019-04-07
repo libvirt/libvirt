@@ -1,8 +1,10 @@
 [Unit]
 Description=Virtual machine lock manager
 Requires=virtlockd.socket
+Requires=virtlockd-admin.socket
+Before=libvirtd.service
 Documentation=man:virtlockd(8)
-Documentation=http://libvirt.org
+Documentation=https://libvirt.org
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/virtlockd
@@ -12,6 +14,10 @@ ExecReload=/bin/kill -USR1 $MAINPID
 # cause the machine to be fenced (rebooted), so make
 # sure we discourage OOM killer
 OOMScoreAdjust=-900
+# Needs to allow for max guests * average disks per guest
+# libvirtd.service written to expect 4096 guests, so if we
+# allow for 10 disks per guest, we get:
+LimitNOFILE=40960
 
 [Install]
 Also=virtlockd.socket

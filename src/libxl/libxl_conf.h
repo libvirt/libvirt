@@ -17,14 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Jim Fehlig <jfehlig@novell.com>
- *     Markus Groß <gross@univention.de>
  */
 
-#ifndef LIBXL_CONF_H
-# define LIBXL_CONF_H
+#ifndef LIBVIRT_LIBXL_CONF_H
+# define LIBVIRT_LIBXL_CONF_H
 
 # include <libxl.h>
 
@@ -41,6 +37,7 @@
 # include "locking/lock_manager.h"
 # include "virfirmware.h"
 # include "libxl_capabilities.h"
+# include "libxl_logger.h"
 
 # define LIBXL_DRIVER_NAME "xenlight"
 # define LIBXL_VNC_PORT_MIN  5900
@@ -74,8 +71,7 @@ struct _libxlDriverConfig {
     unsigned int version;
 
     /* log stream for driver-wide libxl ctx */
-    FILE *logger_file;
-    xentoollog_logger *logger;
+    libxlLoggerPtr logger;
     /* libxl ctx for driver wide ops; getVersion, getNodeInfo, ... */
     libxl_ctx *ctx;
 
@@ -87,6 +83,8 @@ struct _libxlDriverConfig {
 
     int keepAliveInterval;
     unsigned int keepAliveCount;
+
+    bool nested_hvm;
 
     /* Once created, caps are immutable */
     virCapsPtr caps;
@@ -130,11 +128,11 @@ struct _libxlDriverPrivate {
     /* Immutable pointer, self-locking APIs */
     virObjectEventStatePtr domainEventState;
 
-    /* Immutable pointer, self-locking APIs */
-    virPortAllocatorPtr reservedGraphicsPorts;
+    /* Immutable pointer, immutable object */
+    virPortAllocatorRangePtr reservedGraphicsPorts;
 
-    /* Immutable pointer, self-locking APIs */
-    virPortAllocatorPtr migrationPorts;
+    /* Immutable pointer, immutable object */
+    virPortAllocatorRangePtr migrationPorts;
 
     /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
@@ -174,14 +172,22 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
                               const char *filename);
 
 int
+libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
+                             unsigned long long *maxmem);
+
+int
 libxlMakeDisk(virDomainDiskDefPtr l_dev, libxl_device_disk *x_dev);
+
+void
+libxlUpdateDiskDef(virDomainDiskDefPtr l_dev, libxl_device_disk *x_dev);
+
 int
 libxlMakeNic(virDomainDefPtr def,
              virDomainNetDefPtr l_nic,
              libxl_device_nic *x_nic,
              bool attach);
 int
-libxlMakeVfb(virPortAllocatorPtr graphicsports,
+libxlMakeVfb(virPortAllocatorRangePtr graphicsports,
              virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb);
 
 int
@@ -205,10 +211,9 @@ libxlCreateXMLConf(void);
 #  define LIBXL_ATTR_UNUSED ATTRIBUTE_UNUSED
 # endif
 int
-libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
+libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
                        virDomainDefPtr def,
-                       const char *channelDir LIBXL_ATTR_UNUSED,
-                       libxl_ctx *ctx,
+                       libxlDriverConfigPtr cfg,
                        libxl_domain_config *d_config);
 
 static inline void
@@ -223,4 +228,4 @@ libxlDriverUnlock(libxlDriverPrivatePtr driver)
     virMutexUnlock(&driver->lock);
 }
 
-#endif /* LIBXL_CONF_H */
+#endif /* LIBVIRT_LIBXL_CONF_H */

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_SECRET_UTIL_H__
-# define __VIR_SECRET_UTIL_H__
+#ifndef LIBVIRT_SECRET_UTIL_H
+# define LIBVIRT_SECRET_UTIL_H
 
 # include "internal.h"
 # include "virsecret.h"
@@ -32,4 +32,4 @@ int virSecretGetSecretString(virConnectPtr conn,
                              size_t *ret_secret_size)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
-#endif /* __VIR_SECRET_UTIL_H__ */
+#endif /* LIBVIRT_SECRET_UTIL_H */

@@ -1,0 +1,58 @@
+{
+  "node-name": "node-b-f",
+  "read-only": false,
+  "driver": "qcow2",
+  "encrypt": {
+    "format": "luks",
+    "key-secret": "node-b-f-encalias"
+  },
+  "file": "node-a-s",
+  "backing": "node-b-f"
+}
+{
+  "driver": "rbd",
+  "pool": "rbdpool",
+  "image": "rbdimg",
+  "server": [
+    {
+      "host": "host1.example.com",
+      "port": "0"
+    },
+    {
+      "host": "host2.example.com",
+      "port": "0"
+    }
+  ],
+  "user": "testuser-rbd",
+  "auth-client-required": [
+    "cephx",
+    "none"
+  ],
+  "key-secret": "node-a-s-secalias",
+  "node-name": "node-a-s",
+  "read-only": false,
+  "discard": "unmap"
+}
+{
+  "node-name": "node-b-f",
+  "read-only": true,
+  "driver": "qcow2",
+  "encrypt": {
+    "format": "luks",
+    "key-secret": "node-b-f-encalias"
+  },
+  "file": "node-b-s",
+  "backing": null
+}
+{
+  "driver": "iscsi",
+  "portal": "example.org:3260",
+  "target": "iqn.2016-09.com.example:iscsitarget",
+  "lun": 1,
+  "transport": "tcp",
+  "user": "testuser-iscsi",
+  "password-secret": "node-b-s-secalias",
+  "node-name": "node-b-s",
+  "read-only": true,
+  "discard": "unmap"
+}

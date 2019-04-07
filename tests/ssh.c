@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdio.h>
 #include "internal.h"
 #define NO_LIBVIRT /* This file intentionally does not link to libvirt */
 #include "testutils.h"

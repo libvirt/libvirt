@@ -1,0 +1,22 @@
+<domain type="qemu">
+  <name>aarch64-virt-default-nic</name>
+  <uuid>6ba410c5-1e5c-4d57-bee7-2228e7ffa32f</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>1</vcpu>
+  <cpu match='exact'>
+    <model>cortex-a53</model>
+  </cpu>
+  <os>
+    <type arch="aarch64" machine="virt">hvm</type>
+    <kernel>/aarch64.kernel</kernel>
+    <initrd>/aarch64.initrd</initrd>
+    <cmdline>console=ttyAMA0</cmdline>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <interface type='user'>
+      <mac address='52:54:00:09:a4:37'/>
+    </interface>
+  </devices>
+</domain>

@@ -16,13 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Jim Fehlig <jfehlig@suse.com>
  */
 
-#ifndef LIBXL_DOMAIN_H
-# define LIBXL_DOMAIN_H
+#ifndef LIBVIRT_LIBXL_DOMAIN_H
+# define LIBVIRT_LIBXL_DOMAIN_H
 
 # include <libxl.h>
 
@@ -30,9 +27,9 @@
 # include "libxl_conf.h"
 # include "virchrdev.h"
 
-# define JOB_MASK(job)                  (1 << (job - 1))
-# define DEFAULT_JOB_MASK               \
-    (JOB_MASK(LIBXL_JOB_DESTROY) |      \
+# define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
+# define DEFAULT_JOB_MASK \
+    (JOB_MASK(LIBXL_JOB_DESTROY) | \
      JOB_MASK(LIBXL_JOB_ABORT))
 
 /* Only 1 job is allowed at any time
@@ -46,7 +43,7 @@ enum libxlDomainJob {
 
     LIBXL_JOB_LAST
 };
-VIR_ENUM_DECL(libxlDomainJob)
+VIR_ENUM_DECL(libxlDomainJob);
 
 
 struct libxlDomainJobObj {
@@ -65,6 +62,10 @@ struct _libxlDomainObjPrivate {
     /* console */
     virChrdevsPtr devs;
     libxl_evgen_domain_death *deathW;
+    /* Flag to indicate the upcoming LIBXL_EVENT_TYPE_DOMAIN_DEATH is caused
+     * by libvirt and should not be handled separately */
+    bool ignoreDeathEvent;
+    virThreadPtr migrationDstReceiveThr;
     unsigned short migrationPort;
     char *lockState;
 
@@ -94,10 +95,6 @@ libxlDomainObjEndJob(libxlDriverPrivatePtr driver,
 int
 libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
     ATTRIBUTE_RETURN_CHECK;
-
-void
-libxlDomainEventQueue(libxlDriverPrivatePtr driver,
-                      virObjectEventPtr event);
 
 char *
 libxlDomainManagedSavePath(libxlDriverPrivatePtr driver,
@@ -159,4 +156,4 @@ libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
                                 virDomainDefPtr src,
                                 virDomainDefPtr dst);
 
-#endif /* LIBXL_DOMAIN_H */
+#endif /* LIBVIRT_LIBXL_DOMAIN_H */

@@ -1,7 +1,7 @@
 /*
  * snapshot_conf.h: domain snapshot XML processing
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -17,15 +17,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Eric Blake <eblake@redhat.com>
  */
 
-#ifndef __SNAPSHOT_CONF_H
-# define __SNAPSHOT_CONF_H
+#ifndef LIBVIRT_SNAPSHOT_CONF_H
+# define LIBVIRT_SNAPSHOT_CONF_H
 
 # include "internal.h"
 # include "domain_conf.h"
+# include "moment_conf.h"
 
 /* Items related to snapshot state */
 
@@ -38,11 +37,26 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_LOCATION_LAST
 } virDomainSnapshotLocation;
 
+/**
+ * This enum has to map all known domain states from the public enum
+ * virDomainState, before adding one additional state possible only
+ * for snapshots.
+ */
 typedef enum {
-    /* Inherit the VIR_DOMAIN_* states from virDomainState.  */
-    VIR_DOMAIN_DISK_SNAPSHOT = VIR_DOMAIN_LAST,
-    VIR_DOMAIN_SNAPSHOT_STATE_LAST
+    /* Mapped to public enum */
+    VIR_DOMAIN_SNAPSHOT_NOSTATE = VIR_DOMAIN_NOSTATE,
+    VIR_DOMAIN_SNAPSHOT_RUNNING = VIR_DOMAIN_RUNNING,
+    VIR_DOMAIN_SNAPSHOT_BLOCKED = VIR_DOMAIN_BLOCKED,
+    VIR_DOMAIN_SNAPSHOT_PAUSED = VIR_DOMAIN_PAUSED,
+    VIR_DOMAIN_SNAPSHOT_SHUTDOWN = VIR_DOMAIN_SHUTDOWN,
+    VIR_DOMAIN_SNAPSHOT_SHUTOFF = VIR_DOMAIN_SHUTOFF,
+    VIR_DOMAIN_SNAPSHOT_CRASHED = VIR_DOMAIN_CRASHED,
+    VIR_DOMAIN_SNAPSHOT_PMSUSPENDED = VIR_DOMAIN_PMSUSPENDED,
+    /* Additional enum values local to snapshots */
+    VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT,
+    VIR_DOMAIN_SNAPSHOT_LAST
 } virDomainSnapshotState;
+verify((int)VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT == VIR_DOMAIN_LAST);
 
 /* Stores disk-snapshot information */
 typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;
@@ -58,14 +72,10 @@ struct _virDomainSnapshotDiskDef {
 };
 
 /* Stores the complete snapshot metadata */
-typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
-typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
 struct _virDomainSnapshotDef {
-    /* Public XML.  */
-    char *name;
-    char *description;
-    char *parent;
-    long long creationTime; /* in seconds */
+    virDomainMomentDef common;
+
+    /* Additional public XML.  */
     int state; /* virDomainSnapshotState */
 
     int memory; /* virDomainMemorySnapshot */
@@ -74,25 +84,8 @@ struct _virDomainSnapshotDef {
     size_t ndisks; /* should not exceed dom->ndisks */
     virDomainSnapshotDiskDef *disks;
 
-    virDomainDefPtr dom;
-
-    /* Internal use.  */
-    bool current; /* At most one snapshot in the list should have this set */
+    virObjectPtr cookie;
 };
-
-struct _virDomainSnapshotObj {
-    virDomainSnapshotDefPtr def; /* non-NULL except for metaroot */
-
-    virDomainSnapshotObjPtr parent; /* non-NULL except for metaroot, before
-                                       virDomainSnapshotUpdateRelations, or
-                                       after virDomainSnapshotDropParent */
-    virDomainSnapshotObjPtr sibling; /* NULL if last child of parent */
-    size_t nchildren;
-    virDomainSnapshotObjPtr first_child; /* NULL if no children */
-};
-
-virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
-void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
 
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE = 1 << 0,
@@ -101,90 +94,53 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE  = 1 << 3,
 } virDomainSnapshotParseFlags;
 
+typedef enum {
+    VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE   = 1 << 0,
+    VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL = 1 << 1,
+    VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT  = 1 << 2,
+} virDomainSnapshotFormatFlags;
+
+unsigned int virDomainSnapshotFormatConvertXMLFlags(unsigned int flags);
+
 virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
                                                         virCapsPtr caps,
                                                         virDomainXMLOptionPtr xmlopt,
+                                                        bool *current,
                                                         unsigned int flags);
 virDomainSnapshotDefPtr virDomainSnapshotDefParseNode(xmlDocPtr xml,
                                                       xmlNodePtr root,
                                                       virCapsPtr caps,
                                                       virDomainXMLOptionPtr xmlopt,
+                                                      bool *current,
                                                       unsigned int flags);
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
-char *virDomainSnapshotDefFormat(const char *domain_uuid,
+char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  virDomainSnapshotDefPtr def,
                                  virCapsPtr caps,
-                                 unsigned int flags,
-                                 int internal);
+                                 virDomainXMLOptionPtr xmlopt,
+                                 unsigned int flags);
 int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
                                 int default_snapshot,
                                 bool require_match);
-virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
-                                                   virDomainSnapshotDefPtr def);
-
-int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                     virDomainSnapshotObjPtr from,
-                                     char **const names, int maxnames,
-                                     unsigned int flags);
-int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
-                                virDomainSnapshotObjPtr from,
-                                unsigned int flags);
-virDomainSnapshotObjPtr virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
-                                                    const char *name);
-void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
-                                    virDomainSnapshotObjPtr snapshot);
-int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
-                             virHashIterator iter,
-                             void *data);
-int virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
-                                  virHashIterator iter,
-                                  void *data);
-int virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
-                                       virHashIterator iter,
-                                       void *data);
-int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
-void virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot);
-
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA           \
-               (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \
-                VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA)
-
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES             \
-               (VIR_DOMAIN_SNAPSHOT_LIST_LEAVES       | \
-                VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES)
-
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS             \
-               (VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE     | \
-                VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE       | \
-                VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY)
-
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION           \
-               (VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL     | \
-                VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL)
-
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL                \
-               (VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA  | \
-                VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES    | \
-                VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS    | \
-                VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION)
-
-int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
-                           virDomainSnapshotObjPtr from,
-                           virDomainPtr dom,
-                           virDomainSnapshotPtr **snaps,
-                           unsigned int flags);
 
 bool virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def);
-bool virDomainSnapshotIsExternal(virDomainSnapshotObjPtr snap);
+bool virDomainSnapshotIsExternal(virDomainMomentObjPtr snap);
 
 int virDomainSnapshotRedefinePrep(virDomainPtr domain,
                                   virDomainObjPtr vm,
                                   virDomainSnapshotDefPtr *def,
-                                  virDomainSnapshotObjPtr *snap,
+                                  virDomainMomentObjPtr *snap,
+                                  virDomainXMLOptionPtr xmlopt,
                                   bool *update_current,
                                   unsigned int flags);
 
-VIR_ENUM_DECL(virDomainSnapshotLocation)
-VIR_ENUM_DECL(virDomainSnapshotState)
+int virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
+                                      const unsigned char *domain_uuid,
+                                      virDomainMomentObjPtr other,
+                                      virDomainXMLOptionPtr xmlopt,
+                                      unsigned int flags);
 
-#endif /* __SNAPSHOT_CONF_H */
+VIR_ENUM_DECL(virDomainSnapshotLocation);
+VIR_ENUM_DECL(virDomainSnapshotState);
+
+#endif /* LIBVIRT_SNAPSHOT_CONF_H */

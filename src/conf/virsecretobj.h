@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIRSECRETOBJ_H__
-# define __VIRSECRETOBJ_H__
+#ifndef LIBVIRT_VIRSECRETOBJ_H
+# define LIBVIRT_VIRSECRETOBJ_H
 
 # include "internal.h"
 
@@ -29,82 +29,93 @@
 typedef struct _virSecretObj virSecretObj;
 typedef virSecretObj *virSecretObjPtr;
 
-virSecretObjPtr virSecretObjNew(void);
-
-void virSecretObjEndAPI(virSecretObjPtr *secret);
+void
+virSecretObjEndAPI(virSecretObjPtr *obj);
 
 typedef struct _virSecretObjList virSecretObjList;
 typedef virSecretObjList *virSecretObjListPtr;
 
-virSecretObjListPtr virSecretObjListNew(void);
+virSecretObjListPtr
+virSecretObjListNew(void);
 
-virSecretObjPtr virSecretObjListFindByUUIDLocked(virSecretObjListPtr secrets,
-                                                 const unsigned char *uuid);
+virSecretObjPtr
+virSecretObjListFindByUUID(virSecretObjListPtr secrets,
+                           const char *uuidstr);
 
-virSecretObjPtr virSecretObjListFindByUUID(virSecretObjListPtr secrets,
-                                           const unsigned char *uuid);
+virSecretObjPtr
+virSecretObjListFindByUsage(virSecretObjListPtr secrets,
+                            int usageType,
+                            const char *usageID);
 
-virSecretObjPtr virSecretObjListFindByUsageLocked(virSecretObjListPtr secrets,
-                                                  int usageType,
-                                                  const char *usageID);
+void
+virSecretObjListRemove(virSecretObjListPtr secrets,
+                       virSecretObjPtr obj);
 
-virSecretObjPtr virSecretObjListFindByUsage(virSecretObjListPtr secrets,
-                                            int usageType,
-                                            const char *usageID);
+virSecretObjPtr
+virSecretObjListAdd(virSecretObjListPtr secrets,
+                    virSecretDefPtr newdef,
+                    const char *configDir,
+                    virSecretDefPtr *oldDef);
 
-void virSecretObjListRemove(virSecretObjListPtr secrets,
-                            virSecretObjPtr secret);
+typedef bool
+(*virSecretObjListACLFilter)(virConnectPtr conn,
+                             virSecretDefPtr def);
 
-virSecretObjPtr virSecretObjListAddLocked(virSecretObjListPtr secrets,
-                                          virSecretDefPtr def,
-                                          const char *configDir,
-                                          virSecretDefPtr *oldDef);
-
-virSecretObjPtr virSecretObjListAdd(virSecretObjListPtr secrets,
-                                    virSecretDefPtr def,
-                                    const char *configDir,
-                                    virSecretDefPtr *oldDef);
-
-typedef bool (*virSecretObjListACLFilter)(virConnectPtr conn,
-                                          virSecretDefPtr def);
-
-int virSecretObjListNumOfSecrets(virSecretObjListPtr secrets,
-                                 virSecretObjListACLFilter filter,
-                                 virConnectPtr conn);
-
-int virSecretObjListExport(virConnectPtr conn,
-                           virSecretObjListPtr secretobjs,
-                           virSecretPtr **secrets,
-                           virSecretObjListACLFilter filter,
-                           unsigned int flags);
-
-int virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
-                             char **uuids,
-                             int nuuids,
+int
+virSecretObjListNumOfSecrets(virSecretObjListPtr secrets,
                              virSecretObjListACLFilter filter,
                              virConnectPtr conn);
 
-int virSecretObjDeleteConfig(virSecretObjPtr secret);
+int
+virSecretObjListExport(virConnectPtr conn,
+                       virSecretObjListPtr secretobjs,
+                       virSecretPtr **secrets,
+                       virSecretObjListACLFilter filter,
+                       unsigned int flags);
 
-void virSecretObjDeleteData(virSecretObjPtr secret);
+int
+virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
+                         char **uuids,
+                         int maxuuids,
+                         virSecretObjListACLFilter filter,
+                         virConnectPtr conn);
 
-int virSecretObjSaveConfig(virSecretObjPtr secret);
+int
+virSecretObjDeleteConfig(virSecretObjPtr obj);
 
-int virSecretObjSaveData(virSecretObjPtr secret);
+void
+virSecretObjDeleteData(virSecretObjPtr obj);
 
-virSecretDefPtr virSecretObjGetDef(virSecretObjPtr secret);
+int
+virSecretObjSaveConfig(virSecretObjPtr obj);
 
-void virSecretObjSetDef(virSecretObjPtr secret, virSecretDefPtr def);
+int
+virSecretObjSaveData(virSecretObjPtr obj);
 
-unsigned char *virSecretObjGetValue(virSecretObjPtr secret);
+virSecretDefPtr
+virSecretObjGetDef(virSecretObjPtr obj);
 
-int virSecretObjSetValue(virSecretObjPtr secret,
-                         const unsigned char *value, size_t value_size);
+void
+virSecretObjSetDef(virSecretObjPtr obj,
+                   virSecretDefPtr def);
 
-size_t virSecretObjGetValueSize(virSecretObjPtr secret);
+unsigned char *
+virSecretObjGetValue(virSecretObjPtr obj);
 
-void virSecretObjSetValueSize(virSecretObjPtr secret, size_t value_size);
+int
+virSecretObjSetValue(virSecretObjPtr obj,
+                     const unsigned char *value,
+                     size_t value_size);
 
-int virSecretLoadAllConfigs(virSecretObjListPtr secrets,
-                            const char *configDir);
-#endif /* __VIRSECRETOBJ_H__ */
+size_t
+virSecretObjGetValueSize(virSecretObjPtr obj);
+
+void
+virSecretObjSetValueSize(virSecretObjPtr obj,
+                         size_t value_size);
+
+int
+virSecretLoadAllConfigs(virSecretObjListPtr secrets,
+                        const char *configDir);
+
+#endif /* LIBVIRT_VIRSECRETOBJ_H */

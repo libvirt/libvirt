@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -90,15 +88,15 @@ mymain(void)
     if (!(xmlopt = virTestGenericDomainXMLConfInit()))
         goto cleanup;
 
-#define DO_TEST_GET_FS(fspath, expect)                                  \
-    do {                                                                \
-        struct testGetFilesystemData data = {                           \
-            .filename = "getfilesystem",                                \
-            .path = fspath,                                             \
-            .expectEntry = expect,                                      \
-        };                                                              \
+#define DO_TEST_GET_FS(fspath, expect) \
+    do { \
+        struct testGetFilesystemData data = { \
+            .filename = "getfilesystem", \
+            .path = fspath, \
+            .expectEntry = expect, \
+        }; \
         if (virTestRun("Get FS " fspath, testGetFilesystem, &data) < 0) \
-            ret = -1;                                                   \
+            ret = -1; \
     } while (0)
 
     DO_TEST_GET_FS("/", true);
@@ -113,4 +111,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

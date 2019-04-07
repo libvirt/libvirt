@@ -17,16 +17,15 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_STORAGE_FILE_H__
-# define __VIR_STORAGE_FILE_H__
+#ifndef LIBVIRT_VIRSTORAGEFILE_H
+# define LIBVIRT_VIRSTORAGEFILE_H
 
 # include <sys/stat.h>
 
 # include "virbitmap.h"
+# include "virobject.h"
 # include "virseclabel.h"
 # include "virstorageencryption.h"
 # include "virutil.h"
@@ -56,7 +55,7 @@ typedef enum {
     VIR_STORAGE_TYPE_LAST
 } virStorageType;
 
-VIR_ENUM_DECL(virStorage)
+VIR_ENUM_DECL(virStorage);
 
 
 typedef enum {
@@ -134,11 +133,12 @@ typedef enum {
     VIR_STORAGE_NET_PROTOCOL_FTPS,
     VIR_STORAGE_NET_PROTOCOL_TFTP,
     VIR_STORAGE_NET_PROTOCOL_SSH,
+    VIR_STORAGE_NET_PROTOCOL_VXHS,
 
     VIR_STORAGE_NET_PROTOCOL_LAST
 } virStorageNetProtocol;
 
-VIR_ENUM_DECL(virStorageNetProtocol)
+VIR_ENUM_DECL(virStorageNetProtocol);
 
 
 typedef enum {
@@ -149,13 +149,13 @@ typedef enum {
     VIR_STORAGE_NET_HOST_TRANS_LAST
 } virStorageNetHostTransport;
 
-VIR_ENUM_DECL(virStorageNetHostTransport)
+VIR_ENUM_DECL(virStorageNetHostTransport);
 
 typedef struct _virStorageNetHostDef virStorageNetHostDef;
 typedef virStorageNetHostDef *virStorageNetHostDefPtr;
 struct _virStorageNetHostDef {
     char *name;
-    char *port;
+    unsigned int port;
     int transport; /* virStorageNetHostTransport */
     char *socket;  /* path to unix socket */
 };
@@ -182,7 +182,7 @@ typedef enum {
     VIR_STORAGE_SOURCE_POOL_MODE_LAST
 } virStorageSourcePoolMode;
 
-VIR_ENUM_DECL(virStorageSourcePoolMode)
+VIR_ENUM_DECL(virStorageSourcePoolMode);
 
 typedef struct _virStorageSourcePoolDef virStorageSourcePoolDef;
 struct _virStorageSourcePoolDef {
@@ -191,7 +191,7 @@ struct _virStorageSourcePoolDef {
     int voltype; /* virStorageVolType, internal only */
     int pooltype; /* virStoragePoolType from storage_conf.h, internal only */
     int actualtype; /* virStorageType, internal only */
-    int mode; /* virStorageSourcePoolMode */
+    int mode; /* virStorageSourcePoolMode, currently makes sense only for iscsi pool */
 };
 typedef virStorageSourcePoolDef *virStorageSourcePoolDefPtr;
 
@@ -203,7 +203,7 @@ typedef enum {
 
     VIR_STORAGE_AUTH_TYPE_LAST,
 } virStorageAuthType;
-VIR_ENUM_DECL(virStorageAuth)
+VIR_ENUM_DECL(virStorageAuth);
 
 typedef struct _virStorageAuthDef virStorageAuthDef;
 typedef virStorageAuthDef *virStorageAuthDefPtr;
@@ -212,6 +212,22 @@ struct _virStorageAuthDef {
     char *secrettype; /* <secret type='%s' for disk source */
     int authType;     /* virStorageAuthType */
     virSecretLookupTypeDef seclookupdef;
+};
+
+typedef struct _virStoragePRDef virStoragePRDef;
+typedef virStoragePRDef *virStoragePRDefPtr;
+struct _virStoragePRDef {
+    int managed; /* enum virTristateBool */
+    char *path;
+
+    /* manager object alias */
+    char *mgralias;
+};
+
+typedef struct _virStorageSourceInitiatorDef virStorageSourceInitiatorDef;
+typedef virStorageSourceInitiatorDef *virStorageSourceInitiatorDefPtr;
+struct _virStorageSourceInitiatorDef {
+    char *iqn; /* Initiator IQN */
 };
 
 typedef struct _virStorageDriverData virStorageDriverData;
@@ -226,6 +242,9 @@ typedef virStorageSource *virStorageSourcePtr;
  * IMPORTANT: When adding fields to this struct it's also necessary to add
  * appropriate code to the virStorageSourceCopy deep copy function */
 struct _virStorageSource {
+    virObject parent;
+
+    unsigned int id; /* backing chain identifier, 0 is unset */
     int type; /* virStorageType */
     char *path;
     int protocol; /* virStorageNetProtocol */
@@ -237,9 +256,15 @@ struct _virStorageSource {
     virStorageNetHostDefPtr hosts;
     virStorageSourcePoolDefPtr srcpool;
     virStorageAuthDefPtr auth;
+    bool authInherited;
     virStorageEncryptionPtr encryption;
+    bool encryptionInherited;
+    virStoragePRDefPtr pr;
 
-    char *driverName;
+    virStorageSourceInitiatorDef initiator;
+
+    virObjectPtr privateData;
+
     int format; /* virStorageFileFormat in domain backing chains, but
                  * pool-specific enum for storage volumes */
     virBitmapPtr features;
@@ -276,6 +301,41 @@ struct _virStorageSource {
     /* Name of the child backing store recorded in metadata of the
      * current file.  */
     char *backingStoreRaw;
+
+    /* metadata that allows identifying given storage source */
+    char *nodeformat;  /* name of the format handler object */
+    char *nodestorage; /* name of the storage object */
+
+    /* An optional setting to enable usage of TLS for the storage source */
+    int haveTLS; /* enum virTristateBool */
+
+    /* Indication whether the haveTLS value was altered due to qemu.conf
+     * setting when haveTLS is missing from the domain config file */
+    bool tlsFromConfig;
+
+    /* If TLS is used, then mgmt of the TLS credentials occurs via an
+     * object that is generated using a specific alias for a specific
+     * certificate directory with listen and verify bools. */
+    char *tlsAlias;
+    char *tlsCertdir;
+
+    bool detected; /* true if this entry was not provided by the user */
+
+    unsigned int debugLevel;
+    bool debug;
+
+    /* Libvirt currently stores the following properties in virDomainDiskDef.
+     * These instances are currently just copies from the parent definition and
+     * are not mapped back to the XML */
+    int iomode; /* enum virDomainDiskIo */
+    int cachemode; /* enum virDomainDiskCache */
+    int discard; /* enum virDomainDiskDiscard */
+    int detect_zeroes; /* enum virDomainDiskDetectZeroes */
+
+    bool floppyimg; /* set to true if the storage source is going to be used
+                       as a source for floppy drive */
+
+    bool hostcdrom; /* backing device is a cdrom */
 };
 
 
@@ -289,7 +349,7 @@ int virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                       char *buf,
                                       size_t len,
                                       int *backingFormat)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 virStorageSourcePtr virStorageFileGetMetadataFromFD(const char *path,
                                                     int fd,
@@ -309,6 +369,11 @@ int virStorageFileParseChainIndex(const char *diskTarget,
                                   unsigned int *chainIndex)
     ATTRIBUTE_NONNULL(3);
 
+int virStorageFileParseBackingStoreStr(const char *str,
+                                       char **target,
+                                       unsigned int *chainIndex)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
 virStorageSourcePtr virStorageFileChainLookup(virStorageSourcePtr chain,
                                               virStorageSourcePtr startFrom,
                                               const char *name,
@@ -318,21 +383,37 @@ virStorageSourcePtr virStorageFileChainLookup(virStorageSourcePtr chain,
 
 int virStorageFileResize(const char *path,
                          unsigned long long capacity,
-                         unsigned long long orig_capacity,
                          bool pre_allocate);
 
 int virStorageFileIsClusterFS(const char *path);
 bool virStorageIsFile(const char *path);
+bool virStorageIsRelative(const char *backing);
 
 int virStorageFileGetLVMKey(const char *path,
                             char **key);
 int virStorageFileGetSCSIKey(const char *path,
+                             char **key,
+                             bool ignoreError);
+int virStorageFileGetNPIVKey(const char *path,
                              char **key);
 
 void virStorageAuthDefFree(virStorageAuthDefPtr def);
 virStorageAuthDefPtr virStorageAuthDefCopy(const virStorageAuthDef *src);
-virStorageAuthDefPtr virStorageAuthDefParse(xmlDocPtr xml, xmlNodePtr root);
-int virStorageAuthDefFormat(virBufferPtr buf, virStorageAuthDefPtr authdef);
+virStorageAuthDefPtr virStorageAuthDefParse(xmlNodePtr node,
+                                            xmlXPathContextPtr ctxt);
+void virStorageAuthDefFormat(virBufferPtr buf, virStorageAuthDefPtr authdef);
+
+void virStoragePRDefFree(virStoragePRDefPtr prd);
+virStoragePRDefPtr virStoragePRDefParseXML(xmlXPathContextPtr ctxt);
+void virStoragePRDefFormat(virBufferPtr buf,
+                           virStoragePRDefPtr prd,
+                           bool migratable);
+bool virStoragePRDefIsEqual(virStoragePRDefPtr a,
+                            virStoragePRDefPtr b);
+bool virStoragePRDefIsManaged(virStoragePRDefPtr prd);
+
+bool
+virStorageSourceChainHasManagedPR(virStorageSourcePtr src);
 
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
@@ -349,10 +430,10 @@ int virStorageSourceInitChainElement(virStorageSourcePtr newelem,
 void virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
 void virStorageSourceClear(virStorageSourcePtr def);
 int virStorageSourceGetActualType(const virStorageSource *def);
-bool virStorageSourceIsLocalStorage(virStorageSourcePtr src);
+bool virStorageSourceIsLocalStorage(const virStorageSource *src);
 bool virStorageSourceIsEmpty(virStorageSourcePtr src);
 bool virStorageSourceIsBlockLocal(const virStorageSource *src);
-void virStorageSourceFree(virStorageSourcePtr def);
+virStorageSourcePtr virStorageSourceNew(void);
 void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
 int virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
                                        int fd, struct stat const *sb);
@@ -366,6 +447,9 @@ virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
 virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
                                          bool backingChain)
     ATTRIBUTE_NONNULL(1);
+bool virStorageSourceIsSameLocation(virStorageSourcePtr a,
+                                    virStorageSourcePtr b)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virStorageSourceParseRBDColonString(const char *rbdstr,
                                         virStorageSourcePtr src)
@@ -390,4 +474,77 @@ virStorageSourcePtr virStorageSourceNewFromBackingAbsolute(const char *path);
 
 bool virStorageSourceIsRelative(virStorageSourcePtr src);
 
-#endif /* __VIR_STORAGE_FILE_H__ */
+virStorageSourcePtr
+virStorageSourceFindByNodeName(virStorageSourcePtr top,
+                               const char *nodeName,
+                               unsigned int *index)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+void
+virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
+    ATTRIBUTE_NONNULL(1);
+
+bool
+virStorageSourceIsBacking(const virStorageSource *src);
+bool
+virStorageSourceHasBacking(const virStorageSource *src);
+
+
+int
+virStorageSourcePrivateDataParseRelPath(xmlXPathContextPtr ctxt,
+                                        virStorageSourcePtr src);
+int
+virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
+                                         virBufferPtr buf);
+
+void
+virStorageSourceInitiatorParseXML(xmlXPathContextPtr ctxt,
+                                  virStorageSourceInitiatorDefPtr initiator);
+
+void
+virStorageSourceInitiatorFormatXML(virStorageSourceInitiatorDefPtr initiator,
+                                   virBufferPtr buf);
+
+int
+virStorageSourceInitiatorCopy(virStorageSourceInitiatorDefPtr dest,
+                              const virStorageSourceInitiatorDef *src);
+
+void
+virStorageSourceInitiatorClear(virStorageSourceInitiatorDefPtr initiator);
+
+int virStorageFileInit(virStorageSourcePtr src);
+int virStorageFileInitAs(virStorageSourcePtr src,
+                         uid_t uid, gid_t gid);
+void virStorageFileDeinit(virStorageSourcePtr src);
+
+int virStorageFileCreate(virStorageSourcePtr src);
+int virStorageFileUnlink(virStorageSourcePtr src);
+int virStorageFileStat(virStorageSourcePtr src,
+                       struct stat *stat);
+ssize_t virStorageFileRead(virStorageSourcePtr src,
+                           size_t offset,
+                           size_t len,
+                           char **buf);
+const char *virStorageFileGetUniqueIdentifier(virStorageSourcePtr src);
+int virStorageFileAccess(virStorageSourcePtr src, int mode);
+int virStorageFileChown(const virStorageSource *src, uid_t uid, gid_t gid);
+
+int virStorageFileSupportsSecurityDriver(const virStorageSource *src);
+int virStorageFileSupportsAccess(const virStorageSource *src);
+
+int virStorageFileGetMetadata(virStorageSourcePtr src,
+                              uid_t uid, gid_t gid,
+                              bool report_broken)
+    ATTRIBUTE_NONNULL(1);
+
+int virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
+                                     char **backing)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+void virStorageFileReportBrokenChain(int errcode,
+                                     virStorageSourcePtr src,
+                                     virStorageSourcePtr parent);
+
+VIR_DEFINE_AUTOPTR_FUNC(virStorageAuthDef, virStorageAuthDefFree);
+
+#endif /* LIBVIRT_VIRSTORAGEFILE_H */

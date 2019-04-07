@@ -44,7 +44,6 @@ static vboxUniformedAPI gVBoxAPI;
 
 static int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-
     /** Currently only one pool supported, the default one
      * given by ISystemProperties::defaultHardDiskFolder()
      */
@@ -106,7 +105,7 @@ static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     }
 
     for (i = 0; i < hardDisks.count; ++i) {
-        IHardDisk *hardDisk = hardDisks.items[i];
+        IMedium *hardDisk = hardDisks.items[i];
         PRUint32 hddstate;
 
         if (!hardDisk)
@@ -147,7 +146,7 @@ vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nname
     }
 
     for (i = 0; i < hardDisks.count && numActive < nnames; ++i) {
-        IHardDisk *hardDisk = hardDisks.items[i];
+        IMedium *hardDisk = hardDisks.items[i];
         PRUint32 hddstate;
         char *nameUtf8 = NULL;
         PRUnichar *nameUtf16 = NULL;
@@ -201,7 +200,7 @@ vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
         return ret;
 
     for (i = 0; i < hardDisks.count; ++i) {
-        IHardDisk *hardDisk = hardDisks.items[i];
+        IMedium *hardDisk = hardDisks.items[i];
         PRUint32 hddstate;
         char *nameUtf8 = NULL;
         PRUnichar *nameUtf16 = NULL;
@@ -221,7 +220,7 @@ vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
         }
 
         if (nameUtf8 && STREQ(nameUtf8, name)) {
-            vboxIIDUnion hddIID;
+            vboxIID hddIID;
             unsigned char uuid[VIR_UUID_BUFLEN];
             char key[VIR_UUID_STRING_BUFLEN] = "";
 
@@ -257,9 +256,9 @@ static virStorageVolPtr
 vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
     vboxDriverPtr data = conn->privateData;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    IHardDisk *hardDisk = NULL;
+    IMedium *hardDisk = NULL;
     PRUnichar *hddNameUtf16 = NULL;
     char *hddNameUtf8 = NULL;
     PRUint32 hddstate;
@@ -325,12 +324,12 @@ vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
     vboxDriverPtr data = conn->privateData;
     PRUnichar *hddPathUtf16 = NULL;
-    IHardDisk *hardDisk = NULL;
+    IMedium *hardDisk = NULL;
     PRUnichar *hddNameUtf16 = NULL;
     char *hddNameUtf8 = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char key[VIR_UUID_STRING_BUFLEN] = "";
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     PRUint32 hddstate;
     nsresult rc;
     virStorageVolPtr ret = NULL;
@@ -402,20 +401,20 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
                         const char *xml, unsigned int flags)
 {
     vboxDriverPtr data = pool->conn->privateData;
-    virStorageVolDefPtr def = NULL;
     PRUnichar *hddFormatUtf16 = NULL;
     PRUnichar *hddNameUtf16 = NULL;
     virStoragePoolDef poolDef;
     nsresult rc;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char key[VIR_UUID_STRING_BUFLEN] = "";
-    IHardDisk *hardDisk = NULL;
+    IMedium *hardDisk = NULL;
     IProgress *progress = NULL;
     PRUint64 logicalSize = 0;
     PRUint32 variant = HardDiskVariant_Standard;
     resultCodeUnion resultCode;
     virStorageVolPtr ret = NULL;
+    VIR_AUTOPTR(virStorageVolDef) def = NULL;
 
     if (!data->vboxObj)
         return ret;
@@ -469,7 +468,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     if (def->target.capacity == def->target.allocation)
         variant = HardDiskVariant_Fixed;
 
-    rc = gVBoxAPI.UIHardDisk.CreateBaseStorage(hardDisk, logicalSize, variant, &progress);
+    rc = gVBoxAPI.UIMedium.CreateBaseStorage(hardDisk, logicalSize, variant, &progress);
     if (NS_FAILED(rc) || !progress) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not create base storage, rc=%08x"),
@@ -502,7 +501,6 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     VBOX_RELEASE(progress);
     VBOX_UTF16_FREE(hddFormatUtf16);
     VBOX_UTF16_FREE(hddNameUtf16);
-    virStorageVolDefFree(def);
     return ret;
 }
 
@@ -510,14 +508,14 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 {
     vboxDriverPtr data = vol->conn->privateData;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    IHardDisk *hardDisk = NULL;
+    IMedium *hardDisk = NULL;
     int deregister = 0;
     PRUint32 hddstate = 0;
     size_t i = 0;
     size_t j = 0;
     PRUint32 machineIdsSize = 0;
     vboxArray machineIds = VBOX_ARRAY_INITIALIZER;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     int ret = -1;
 
     if (!data->vboxObj)
@@ -562,20 +560,18 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 
     for (i = 0; i < machineIds.count; i++) {
         IMachine *machine = NULL;
-        vboxIIDUnion machineId;
+        vboxIID machineId;
         vboxArray hddAttachments = VBOX_ARRAY_INITIALIZER;
 
         VBOX_IID_INITIALIZE(&machineId);
         vboxIIDFromArrayItem(&machineId, &machineIds, i);
 
-        if (gVBoxAPI.getMachineForSession) {
-            if (NS_FAILED(gVBoxAPI.UIVirtualBox.GetMachine(data->vboxObj,
-                                                           &machineId,
-                                                           &machine))) {
-                virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                               _("no domain with matching uuid"));
-                break;
-            }
+        if (NS_FAILED(gVBoxAPI.UIVirtualBox.GetMachine(data->vboxObj,
+                                                       &machineId,
+                                                       &machine))) {
+            virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                           _("no domain with matching uuid"));
+            break;
         }
 
         if (NS_FAILED(gVBoxAPI.UISession.Open(data, &machineId, machine))) {
@@ -592,8 +588,8 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 
         for (j = 0; j < hddAttachments.count; j++) {
             IMediumAttachment *hddAttachment = hddAttachments.items[j];
-            IHardDisk *hdd = NULL;
-            vboxIIDUnion iid;
+            IMedium *hdd = NULL;
+            vboxIID iid;
 
             if (!hddAttachment)
                 continue;
@@ -646,7 +642,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 
     if (machineIdsSize == 0 || machineIdsSize == deregister) {
         IProgress *progress = NULL;
-        if (NS_SUCCEEDED(gVBoxAPI.UIHardDisk.DeleteStorage(hardDisk, &progress)) &&
+        if (NS_SUCCEEDED(gVBoxAPI.UIMedium.DeleteStorage(hardDisk, &progress)) &&
             progress) {
             gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
             VBOX_RELEASE(progress);
@@ -664,12 +660,12 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
 {
     vboxDriverPtr data = vol->conn->privateData;
-    IHardDisk *hardDisk = NULL;
+    IMedium *hardDisk = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRUint32 hddstate;
     PRUint64 hddLogicalSize = 0;
     PRUint64 hddActualSize = 0;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     nsresult rc;
     int ret = -1;
 
@@ -697,7 +693,7 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
 
     info->type = VIR_STORAGE_VOL_FILE;
 
-    gVBoxAPI.UIHardDisk.GetLogicalSizeInByte(hardDisk, &hddLogicalSize);
+    gVBoxAPI.UIMedium.GetLogicalSize(hardDisk, &hddLogicalSize);
     info->capacity = hddLogicalSize;
 
     gVBoxAPI.UIMedium.GetSize(hardDisk, &hddActualSize);
@@ -719,7 +715,7 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
 static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 {
     vboxDriverPtr data = vol->conn->privateData;
-    IHardDisk *hardDisk = NULL;
+    IMedium *hardDisk = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRUnichar *hddFormatUtf16 = NULL;
     char *hddFormatUtf8 = NULL;
@@ -727,7 +723,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     PRUint64 hddActualSize = 0;
     virStoragePoolDef pool;
     virStorageVolDef def;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     PRUint32 hddstate;
     nsresult rc;
     char *ret = NULL;
@@ -764,7 +760,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     pool.type = VIR_STORAGE_POOL_DIR;
     def.type = VIR_STORAGE_VOL_FILE;
 
-    rc = gVBoxAPI.UIHardDisk.GetLogicalSizeInByte(hardDisk, &hddLogicalSize);
+    rc = gVBoxAPI.UIMedium.GetLogicalSize(hardDisk, &hddLogicalSize);
     if (NS_FAILED(rc))
         goto cleanup;
 
@@ -780,7 +776,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     if (VIR_STRDUP(def.key, vol->key) < 0)
         goto cleanup;
 
-    rc = gVBoxAPI.UIHardDisk.GetFormat(hardDisk, &hddFormatUtf16);
+    rc = gVBoxAPI.UIMedium.GetFormat(hardDisk, &hddFormatUtf16);
     if (NS_FAILED(rc))
         goto cleanup;
 
@@ -811,11 +807,11 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 static char *vboxStorageVolGetPath(virStorageVolPtr vol)
 {
     vboxDriverPtr data = vol->conn->privateData;
-    IHardDisk *hardDisk = NULL;
+    IMedium *hardDisk = NULL;
     PRUnichar *hddLocationUtf16 = NULL;
     char *hddLocationUtf8 = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     PRUint32 hddstate;
     nsresult rc;
     char *ret = NULL;
@@ -888,15 +884,7 @@ virStorageDriverPtr vboxGetStorageDriver(uint32_t uVersion)
     /* Install gVBoxAPI according to the vbox API version.
      * Return -1 for unsupported version.
      */
-    if (uVersion >= 2001052 && uVersion < 2002051) {
-        vbox22InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 2002051 && uVersion < 3000051) {
-        vbox30InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3000051 && uVersion < 3001051) {
-        vbox31InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3001051 && uVersion < 3002051) {
-        vbox32InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 3002051 && uVersion < 4000051) {
+    if (uVersion >= 3002051 && uVersion < 4000051) {
         vbox40InstallUniformedAPI(&gVBoxAPI);
     } else if (uVersion >= 4000051 && uVersion < 4001051) {
         vbox41InstallUniformedAPI(&gVBoxAPI);
@@ -912,6 +900,8 @@ virStorageDriverPtr vboxGetStorageDriver(uint32_t uVersion)
         vbox50InstallUniformedAPI(&gVBoxAPI);
     } else if (uVersion >= 5000051 && uVersion < 5001051) {
         vbox51InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 5001051 && uVersion < 5002051) {
+        vbox52InstallUniformedAPI(&gVBoxAPI);
     } else {
         return NULL;
     }

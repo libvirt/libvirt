@@ -16,14 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Martin Kletzander <mkletzan@redhat.com>
  */
 
 #include <config.h>
 
 #include <unistd.h>
-#include <string.h>
 #include <fcntl.h>
 
 #include "virnetdaemon.h"
@@ -47,7 +44,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
-VIR_LOG_INIT("rpc.netserver");
+VIR_LOG_INIT("rpc.netdaemon");
 
 typedef struct _virNetDaemonSignal virNetDaemonSignal;
 typedef virNetDaemonSignal *virNetDaemonSignalPtr;
@@ -110,16 +107,13 @@ virNetDaemonDispose(void *obj)
 static int
 virNetDaemonOnceInit(void)
 {
-    if (!(virNetDaemonClass = virClassNew(virClassForObjectLockable(),
-                                          "virNetDaemon",
-                                          sizeof(virNetDaemon),
-                                          virNetDaemonDispose)))
+    if (!VIR_CLASS_NEW(virNetDaemon, virClassForObjectLockable()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetDaemon)
+VIR_ONCE_GLOBAL_INIT(virNetDaemon);
 
 
 virNetDaemonPtr
@@ -195,6 +189,19 @@ virNetDaemonGetServer(virNetDaemonPtr dmn,
     return srv;
 }
 
+bool
+virNetDaemonHasServer(virNetDaemonPtr dmn,
+                      const char *serverName)
+{
+    void *ent;
+
+    virObjectLock(dmn);
+    ent = virHashLookup(dmn->servers, serverName);
+    virObjectUnlock(dmn);
+
+    return ent != NULL;
+}
+
 
 struct collectData {
     virNetServerPtr **servers;
@@ -249,84 +256,38 @@ virNetDaemonGetServers(virNetDaemonPtr dmn,
 }
 
 
-virNetServerPtr
-virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
-                              const char *serverName,
-                              virNetServerClientPrivNew clientPrivNew,
-                              virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
-                              virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
-                              virFreeCallback clientPrivFree,
-                              void *clientPrivOpaque)
+struct virNetDaemonServerData {
+    virNetDaemonPtr dmn;
+    virNetDaemonNewServerPostExecRestart cb;
+    void *opaque;
+};
+
+static int
+virNetDaemonServerIterator(const char *key,
+                           virJSONValuePtr value,
+                           void *opaque)
 {
-    virJSONValuePtr object = NULL;
-    virNetServerPtr srv = NULL;
+    struct virNetDaemonServerData *data = opaque;
+    virNetServerPtr srv;
 
-    virObjectLock(dmn);
-
-    if (!dmn->srvObject) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot add more servers post-exec than "
-                         "there were pre-exec"));
-        goto error;
-    }
-
-    if (virJSONValueIsArray(dmn->srvObject)) {
-        object = virJSONValueArraySteal(dmn->srvObject, 0);
-        if (virJSONValueArraySize(dmn->srvObject) == 0) {
-            virJSONValueFree(dmn->srvObject);
-            dmn->srvObject = NULL;
-        }
-    } else if (virJSONValueObjectGetByType(dmn->srvObject,
-                                           "min_workers",
-                                           VIR_JSON_TYPE_NUMBER)) {
-        object = dmn->srvObject;
-        dmn->srvObject = NULL;
-    } else {
-        int ret = virJSONValueObjectRemoveKey(dmn->srvObject,
-                                              serverName,
-                                              &object);
-        if (ret != 1) {
-            if (ret == 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Server '%s' not found in JSON"), serverName);
-            }
-            goto error;
-        }
-
-        if (virJSONValueObjectKeysNumber(dmn->srvObject) == 0) {
-            virJSONValueFree(dmn->srvObject);
-            dmn->srvObject = NULL;
-        }
-    }
-
-    srv = virNetServerNewPostExecRestart(object,
-                                         serverName,
-                                         clientPrivNew,
-                                         clientPrivNewPostExecRestart,
-                                         clientPrivPreExecRestart,
-                                         clientPrivFree,
-                                         clientPrivOpaque);
-
+    VIR_DEBUG("Creating server '%s'", key);
+    srv = data->cb(data->dmn, key, value, data->opaque);
     if (!srv)
-        goto error;
+        return -1;
 
-    if (virHashAddEntry(dmn->servers, serverName, srv) < 0)
-        goto error;
+    if (virHashAddEntry(data->dmn->servers, key, srv) < 0)
+        return -1;
 
-    virJSONValueFree(object);
-    virObjectUnlock(dmn);
-    return srv;
-
- error:
-    virObjectUnlock(dmn);
-    virObjectUnref(srv);
-    virJSONValueFree(object);
-    return NULL;
+    return 0;
 }
 
 
 virNetDaemonPtr
-virNetDaemonNewPostExecRestart(virJSONValuePtr object)
+virNetDaemonNewPostExecRestart(virJSONValuePtr object,
+                               size_t nDefServerNames,
+                               const char **defServerNames,
+                               virNetDaemonNewServerPostExecRestart cb,
+                               void *opaque)
 {
     virNetDaemonPtr dmn = NULL;
     virJSONValuePtr servers = virJSONValueObjectGet(object, "servers");
@@ -341,10 +302,59 @@ virNetDaemonNewPostExecRestart(virJSONValuePtr object)
         goto error;
     }
 
-    if (!(dmn->srvObject = virJSONValueCopy(new_version ? servers : object)))
-        goto error;
+    if (!new_version) {
+        virNetServerPtr srv;
+
+        if (nDefServerNames < 1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No default server names provided"));
+            goto error;
+        }
+
+        VIR_DEBUG("No 'servers' data, creating default '%s' name", defServerNames[0]);
+
+        srv = cb(dmn, defServerNames[0], object, opaque);
+
+        if (virHashAddEntry(dmn->servers, defServerNames[0], srv) < 0)
+            goto error;
+    } else if (virJSONValueIsArray(servers)) {
+        size_t i;
+        size_t n = virJSONValueArraySize(servers);
+        if (n > nDefServerNames) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Server count %zd greater than default name count %zu"),
+                           n, nDefServerNames);
+            goto error;
+        }
+
+        for (i = 0; i < n; i++) {
+            virNetServerPtr srv;
+            virJSONValuePtr value = virJSONValueArrayGet(servers, i);
+
+            VIR_DEBUG("Creating server '%s'", defServerNames[i]);
+            srv = cb(dmn, defServerNames[i], value, opaque);
+            if (!srv)
+                goto error;
+
+            if (virHashAddEntry(dmn->servers, defServerNames[i], srv) < 0) {
+                virObjectUnref(srv);
+                goto error;
+            }
+        }
+    } else {
+        struct virNetDaemonServerData data = {
+            dmn,
+            cb,
+            opaque,
+        };
+        if (virJSONValueObjectForeachKeyValue(servers,
+                                              virNetDaemonServerIterator,
+                                              &data) < 0)
+            goto error;
+    }
 
     return dmn;
+
  error:
     virObjectUnref(dmn);
     return NULL;
@@ -401,6 +411,7 @@ virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
         }
     }
 
+    VIR_FREE(srvArray);
     virObjectUnlock(dmn);
 
     return object;
@@ -436,16 +447,14 @@ virNetDaemonAutoShutdown(virNetDaemonPtr dmn,
 }
 
 
-#if defined(HAVE_DBUS) && defined(DBUS_TYPE_UNIX_FD)
+#if defined(WITH_DBUS) && defined(DBUS_TYPE_UNIX_FD)
 static void
-virNetDaemonGotInhibitReply(DBusPendingCall *pending,
-                            void *opaque)
+virNetDaemonGotInhibitReplyLocked(DBusPendingCall *pending,
+                                  virNetDaemonPtr dmn)
 {
-    virNetDaemonPtr dmn = opaque;
     DBusMessage *reply;
     int fd;
 
-    virObjectLock(dmn);
     dmn->autoShutdownCallingInhibit = false;
 
     VIR_DEBUG("dmn=%p", dmn);
@@ -459,14 +468,28 @@ virNetDaemonGotInhibitReply(DBusPendingCall *pending,
                               DBUS_TYPE_INVALID)) {
         if (dmn->autoShutdownInhibitions) {
             dmn->autoShutdownInhibitFd = fd;
+            VIR_DEBUG("Got inhibit FD %d", fd);
         } else {
             /* We stopped the last VM since we made the inhibit call */
+            VIR_DEBUG("Closing inhibit FD %d", fd);
             VIR_FORCE_CLOSE(fd);
         }
     }
     virDBusMessageUnref(reply);
 
  cleanup:
+    dbus_pending_call_unref(pending);
+}
+
+
+static void
+virNetDaemonGotInhibitReply(DBusPendingCall *pending,
+                            void *opaque)
+{
+    virNetDaemonPtr dmn = opaque;
+
+    virObjectLock(dmn);
+    virNetDaemonGotInhibitReplyLocked(pending, dmn);
     virObjectUnlock(dmn);
 }
 
@@ -480,7 +503,7 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
                         const char *mode)
 {
     DBusMessage *message;
-    DBusPendingCall *pendingReply;
+    DBusPendingCall *pendingReply = NULL;
     DBusConnection *systemBus;
 
     VIR_DEBUG("dmn=%p what=%s who=%s why=%s mode=%s",
@@ -507,13 +530,17 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
                              DBUS_TYPE_STRING, &mode,
                              DBUS_TYPE_INVALID);
 
-    pendingReply = NULL;
     if (dbus_connection_send_with_reply(systemBus, message,
                                         &pendingReply,
-                                        25*1000)) {
-        dbus_pending_call_set_notify(pendingReply,
-                                     virNetDaemonGotInhibitReply,
-                                     dmn, NULL);
+                                        25 * 1000) &&
+        pendingReply) {
+        if (dbus_pending_call_get_completed(pendingReply)) {
+            virNetDaemonGotInhibitReplyLocked(pendingReply, dmn);
+        } else {
+            dbus_pending_call_set_notify(pendingReply,
+                                         virNetDaemonGotInhibitReply,
+                                         dmn, NULL);
+        }
         dmn->autoShutdownCallingInhibit = true;
     }
     virDBusMessageUnref(message);
@@ -528,7 +555,7 @@ virNetDaemonAddShutdownInhibition(virNetDaemonPtr dmn)
 
     VIR_DEBUG("dmn=%p inhibitions=%zu", dmn, dmn->autoShutdownInhibitions);
 
-#if defined(HAVE_DBUS) && defined(DBUS_TYPE_UNIX_FD)
+#if defined(WITH_DBUS) && defined(DBUS_TYPE_UNIX_FD)
     if (dmn->autoShutdownInhibitions == 1)
         virNetDaemonCallInhibit(dmn,
                                 "shutdown",
@@ -549,8 +576,10 @@ virNetDaemonRemoveShutdownInhibition(virNetDaemonPtr dmn)
 
     VIR_DEBUG("dmn=%p inhibitions=%zu", dmn, dmn->autoShutdownInhibitions);
 
-    if (dmn->autoShutdownInhibitions == 0)
+    if (dmn->autoShutdownInhibitions == 0) {
+        VIR_DEBUG("Closing inhibit FD %d", dmn->autoShutdownInhibitFd);
         VIR_FORCE_CLOSE(dmn->autoShutdownInhibitFd);
+    }
 
     virObjectUnlock(dmn);
 }

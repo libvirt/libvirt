@@ -29,5 +29,5 @@ AC_DEFUN([LIBVIRT_CHECK_TLS_PRIORITY], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_TLS_PRIORITY], [
-  LIBVIRT_RESULT([TLS priority], [$with_tls_priority])
+  LIBVIRT_RESULT([      TLS priority], [$with_tls_priority])
 ])

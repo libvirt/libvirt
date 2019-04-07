@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Roman Bogorodskiy
  */
 
-#ifndef __BHYVE_DOMAIN_H__
-# define __BHYVE_DOMAIN_H__
+#ifndef LIBVIRT_BHYVE_DOMAIN_H
+# define LIBVIRT_BHYVE_DOMAIN_H
 
 # include "domain_addr.h"
 # include "domain_conf.h"
@@ -37,7 +35,12 @@ struct _bhyveDomainObjPrivate {
     bhyveMonitorPtr mon;
 };
 
+virDomainXMLOptionPtr virBhyveDriverCreateXMLConf(bhyveConnPtr);
+
 extern virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virBhyveDriverDomainDefParserConfig;
+extern virDomainXMLNamespace virBhyveDriverDomainXMLNamespace;
 
-#endif /* __BHYVE_DOMAIN_H__ */
+bool bhyveDomainDefNeedsISAController(virDomainDefPtr def);
+
+#endif /* LIBVIRT_BHYVE_DOMAIN_H */

@@ -18,12 +18,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_DRIVER_HYPERVISOR_H__
-# define __VIR_DRIVER_HYPERVISOR_H__
+#ifndef LIBVIRT_DRIVER_HYPERVISOR_H
+# define LIBVIRT_DRIVER_HYPERVISOR_H
 
 # ifndef __VIR_DRIVER_H_INCLUDES___
 #  error "Don't include this file directly, only use driver.h"
 # endif
+
+typedef int
+(*virDrvConnectURIProbe)(char **uri);
 
 typedef virDrvOpenStatus
 (*virDrvConnectOpen)(virConnectPtr conn,
@@ -404,6 +407,13 @@ typedef int
                            unsigned int flags);
 
 typedef int
+(*virDrvDomainSetIOThreadParams)(virDomainPtr domain,
+                                 unsigned int iothread_id,
+                                 virTypedParameterPtr params,
+                                 int nparams,
+                                 unsigned int flags);
+
+typedef int
 (*virDrvDomainGetSecurityLabel)(virDomainPtr domain,
                                 virSecurityLabelPtr seclabel);
 
@@ -436,6 +446,11 @@ typedef int
 typedef int
 (*virDrvDomainUpdateDeviceFlags)(virDomainPtr domain,
                                  const char *xml,
+                                 unsigned int flags);
+
+typedef int
+(*virDrvDomainDetachDeviceAlias)(virDomainPtr domain,
+                                 const char *alias,
                                  unsigned int flags);
 
 typedef int
@@ -486,7 +501,7 @@ typedef int
 
 typedef int
 (*virDrvDomainInterfaceStats)(virDomainPtr domain,
-                              const char *path,
+                              const char *device,
                               virDomainInterfaceStatsPtr stats);
 
 typedef int
@@ -670,11 +685,29 @@ typedef int
                            const char *cpu,
                            unsigned int flags);
 
+typedef int
+(*virDrvConnectCompareHypervisorCPU)(virConnectPtr conn,
+                                     const char *emulator,
+                                     const char *arch,
+                                     const char *machine,
+                                     const char *virttype,
+                                     const char *xmlCPU,
+                                     unsigned int flags);
+
 typedef char *
 (*virDrvConnectBaselineCPU)(virConnectPtr conn,
                             const char **xmlCPUs,
                             unsigned int ncpus,
                             unsigned int flags);
+typedef char *
+(*virDrvConnectBaselineHypervisorCPU)(virConnectPtr conn,
+                                      const char *emulator,
+                                      const char *arch,
+                                      const char *machine,
+                                      const char *virttype,
+                                      const char **xmlCPUs,
+                                      unsigned int ncpus,
+                                      unsigned int flags);
 
 typedef int
 (*virDrvConnectGetCPUModelNames)(virConnectPtr conn,
@@ -695,6 +728,11 @@ typedef int
 
 typedef int
 (*virDrvDomainAbortJob)(virDomainPtr domain);
+
+typedef int
+(*virDrvDomainMigrateGetMaxDowntime)(virDomainPtr domain,
+                                     unsigned long long *downtime,
+                                     unsigned int flags);
 
 typedef int
 (*virDrvDomainMigrateSetMaxDowntime)(virDomainPtr domain,
@@ -744,6 +782,15 @@ typedef int
 typedef int
 (*virDrvDomainManagedSaveRemove)(virDomainPtr domain,
                                  unsigned int flags);
+
+typedef char *
+(*virDrvDomainManagedSaveGetXMLDesc)(virDomainPtr domain,
+                                     unsigned int flags);
+
+typedef int
+(*virDrvDomainManagedSaveDefineXML)(virDomainPtr domain,
+                                    const char *dxml,
+                                    unsigned int flags);
 
 typedef virDomainSnapshotPtr
 (*virDrvDomainSnapshotCreateXML)(virDomainPtr domain,
@@ -1251,6 +1298,37 @@ typedef int
                              int state,
                              unsigned int flags);
 
+typedef int
+(*virDrvDomainSetVcpu)(virDomainPtr domain,
+                       const char *cpumap,
+                       int state,
+                       unsigned int flags);
+
+typedef int
+(*virDrvDomainSetBlockThreshold)(virDomainPtr domain,
+                                 const char *dev,
+                                 unsigned long long threshold,
+                                 unsigned int flags);
+
+typedef int
+(*virDrvDomainSetLifecycleAction)(virDomainPtr domain,
+                                  unsigned int type,
+                                  unsigned int action,
+                                  unsigned int flags);
+
+typedef int
+(*virDrvNodeGetSEVInfo)(virConnectPtr conn,
+                        virTypedParameterPtr *params,
+                        int *nparams,
+                        unsigned int flags);
+
+typedef int
+(*virDrvDomainGetLaunchSecurityInfo)(virDomainPtr domain,
+                                        virTypedParameterPtr *params,
+                                        int *nparams,
+                                        unsigned int flags);
+
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
 
@@ -1267,6 +1345,7 @@ typedef virHypervisorDriver *virHypervisorDriverPtr;
  */
 struct _virHypervisorDriver {
     const char *name; /* the name of the driver */
+    virDrvConnectURIProbe connectURIProbe;
     virDrvConnectOpen connectOpen;
     virDrvConnectClose connectClose;
     virDrvConnectSupportsFeature connectSupportsFeature;
@@ -1335,6 +1414,7 @@ struct _virHypervisorDriver {
     virDrvDomainPinIOThread domainPinIOThread;
     virDrvDomainAddIOThread domainAddIOThread;
     virDrvDomainDelIOThread domainDelIOThread;
+    virDrvDomainSetIOThreadParams domainSetIOThreadParams;
     virDrvDomainGetSecurityLabel domainGetSecurityLabel;
     virDrvDomainGetSecurityLabelList domainGetSecurityLabelList;
     virDrvNodeGetSecurityModel nodeGetSecurityModel;
@@ -1355,6 +1435,7 @@ struct _virHypervisorDriver {
     virDrvDomainDetachDevice domainDetachDevice;
     virDrvDomainDetachDeviceFlags domainDetachDeviceFlags;
     virDrvDomainUpdateDeviceFlags domainUpdateDeviceFlags;
+    virDrvDomainDetachDeviceAlias domainDetachDeviceAlias;
     virDrvDomainGetAutostart domainGetAutostart;
     virDrvDomainSetAutostart domainSetAutostart;
     virDrvDomainGetSchedulerType domainGetSchedulerType;
@@ -1399,6 +1480,7 @@ struct _virHypervisorDriver {
     virDrvDomainGetJobInfo domainGetJobInfo;
     virDrvDomainGetJobStats domainGetJobStats;
     virDrvDomainAbortJob domainAbortJob;
+    virDrvDomainMigrateGetMaxDowntime domainMigrateGetMaxDowntime;
     virDrvDomainMigrateSetMaxDowntime domainMigrateSetMaxDowntime;
     virDrvDomainMigrateGetCompressionCache domainMigrateGetCompressionCache;
     virDrvDomainMigrateSetCompressionCache domainMigrateSetCompressionCache;
@@ -1409,6 +1491,8 @@ struct _virHypervisorDriver {
     virDrvDomainManagedSave domainManagedSave;
     virDrvDomainHasManagedSaveImage domainHasManagedSaveImage;
     virDrvDomainManagedSaveRemove domainManagedSaveRemove;
+    virDrvDomainManagedSaveGetXMLDesc domainManagedSaveGetXMLDesc;
+    virDrvDomainManagedSaveDefineXML domainManagedSaveDefineXML;
     virDrvDomainSnapshotCreateXML domainSnapshotCreateXML;
     virDrvDomainSnapshotGetXMLDesc domainSnapshotGetXMLDesc;
     virDrvDomainSnapshotNum domainSnapshotNum;
@@ -1489,7 +1573,14 @@ struct _virHypervisorDriver {
     virDrvDomainMigrateStartPostCopy domainMigrateStartPostCopy;
     virDrvDomainGetGuestVcpus domainGetGuestVcpus;
     virDrvDomainSetGuestVcpus domainSetGuestVcpus;
+    virDrvDomainSetVcpu domainSetVcpu;
+    virDrvDomainSetBlockThreshold domainSetBlockThreshold;
+    virDrvDomainSetLifecycleAction domainSetLifecycleAction;
+    virDrvConnectCompareHypervisorCPU connectCompareHypervisorCPU;
+    virDrvConnectBaselineHypervisorCPU connectBaselineHypervisorCPU;
+    virDrvNodeGetSEVInfo nodeGetSEVInfo;
+    virDrvDomainGetLaunchSecurityInfo domainGetLaunchSecurityInfo;
 };
 
 
-#endif /* __VIR_DRIVER_HYPERVISOR_H__ */
+#endif /* LIBVIRT_DRIVER_HYPERVISOR_H */

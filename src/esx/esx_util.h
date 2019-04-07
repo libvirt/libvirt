@@ -19,12 +19,20 @@
  *
  */
 
-#ifndef __ESX_UTIL_H__
-# define __ESX_UTIL_H__
+#ifndef LIBVIRT_ESX_UTIL_H
+# define LIBVIRT_ESX_UTIL_H
 
 # include <netdb.h>
 # include "internal.h"
 # include "viruri.h"
+
+# define ESX_VI_CHECK_ARG_LIST(val) \
+    do { \
+        if (!val || *val) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
+            return -1; \
+        } \
+    } while (0)
 
 typedef struct _esxUtil_ParsedUri esxUtil_ParsedUri;
 
@@ -62,4 +70,4 @@ char *esxUtil_EscapeDatastoreItem(const char *string);
 
 char *esxUtil_EscapeForXml(const char *string);
 
-#endif /* __ESX_UTIL_H__ */
+#endif /* LIBVIRT_ESX_UTIL_H */

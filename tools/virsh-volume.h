@@ -16,15 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
-#ifndef VIRSH_VOLUME_H
-# define VIRSH_VOLUME_H
+#ifndef LIBVIRT_VIRSH_VOLUME_H
+# define LIBVIRT_VIRSH_VOLUME_H
 
 # include "virsh.h"
 
@@ -34,10 +29,10 @@ virStorageVolPtr virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                                       const char **name, unsigned int flags);
 
 /* default is lookup by Name and UUID */
-# define virshCommandOptVol(_ctl, _cmd, _optname, _pooloptname, _name)   \
-    virshCommandOptVolBy(_ctl, _cmd, _optname, _pooloptname, _name,      \
+# define virshCommandOptVol(_ctl, _cmd, _optname, _pooloptname, _name) \
+    virshCommandOptVolBy(_ctl, _cmd, _optname, _pooloptname, _name, \
                          VIRSH_BYUUID | VIRSH_BYNAME)
 
 extern const vshCmdDef storageVolCmds[];
 
-#endif /* VIRSH_VOLUME_H */
+#endif /* LIBVIRT_VIRSH_VOLUME_H */

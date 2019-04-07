@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Red Hat Author: Miloslav Trmač <mitr@redhat.com>
  */
 
-#ifndef __VIR_STORAGE_ENCRYPTION_H__
-# define __VIR_STORAGE_ENCRYPTION_H__
+#ifndef LIBVIRT_VIRSTORAGEENCRYPTION_H
+# define LIBVIRT_VIRSTORAGEENCRYPTION_H
 
 # include "internal.h"
 # include "virbuffer.h"
@@ -35,7 +33,7 @@ typedef enum {
 
     VIR_STORAGE_ENCRYPTION_SECRET_TYPE_LAST
 } virStorageEncryptionSecretType;
-VIR_ENUM_DECL(virStorageEncryptionSecret)
+VIR_ENUM_DECL(virStorageEncryptionSecret);
 
 typedef struct _virStorageEncryptionSecret virStorageEncryptionSecret;
 typedef virStorageEncryptionSecret *virStorageEncryptionSecretPtr;
@@ -64,12 +62,13 @@ typedef enum {
 
     VIR_STORAGE_ENCRYPTION_FORMAT_LAST,
 } virStorageEncryptionFormatType;
-VIR_ENUM_DECL(virStorageEncryptionFormat)
+VIR_ENUM_DECL(virStorageEncryptionFormat);
 
 typedef struct _virStorageEncryption virStorageEncryption;
 typedef virStorageEncryption *virStorageEncryptionPtr;
 struct _virStorageEncryption {
     int format; /* virStorageEncryptionFormatType */
+    int payload_offset;
 
     size_t nsecrets;
     virStorageEncryptionSecretPtr *secrets;
@@ -82,8 +81,8 @@ virStorageEncryptionPtr virStorageEncryptionCopy(const virStorageEncryption *src
 
 void virStorageEncryptionFree(virStorageEncryptionPtr enc);
 
-virStorageEncryptionPtr virStorageEncryptionParseNode(xmlDocPtr xml,
-                                                      xmlNodePtr root);
+virStorageEncryptionPtr virStorageEncryptionParseNode(xmlNodePtr node,
+                                                      xmlXPathContextPtr ctxt);
 int virStorageEncryptionFormat(virBufferPtr buf,
                                virStorageEncryptionPtr enc);
 
@@ -94,4 +93,4 @@ enum {
 
 int virStorageGenerateQcowPassphrase(unsigned char *dest);
 
-#endif /* __VIR_STORAGE_ENCRYPTION_H__ */
+#endif /* LIBVIRT_VIRSTORAGEENCRYPTION_H */

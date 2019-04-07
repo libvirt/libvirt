@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library;  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "testutils.h"
 
@@ -41,22 +38,25 @@ static int testKeycodeMapping(const void *data ATTRIBUTE_UNUSED)
     int ret = -1;
     int got;
 
-#define TRANSLATE(from, to, val, want)                                  \
-    do {                                                                \
-        if ((got = virKeycodeValueTranslate(VIR_KEYCODE_SET_##from,     \
-                                            VIR_KEYCODE_SET_##to,       \
-                                            val)) != want) {            \
+#define TRANSLATE(from, to, val, want) \
+    do { \
+        if ((got = virKeycodeValueTranslate(VIR_KEYCODE_SET_##from, \
+                                            VIR_KEYCODE_SET_##to, \
+                                            val)) != want) { \
             fprintf(stderr, "Translating %d from %s to %s, got %d want %d\n", \
-                    val, #from, #to, got, want);                        \
-            goto cleanup;                                               \
-        }                                                               \
+                    val, #from, #to, got, want); \
+            goto cleanup; \
+        } \
     } while (0)
 
     TRANSLATE(LINUX, LINUX, 111, 111);
     TRANSLATE(LINUX, USB, 111, 76);
-    TRANSLATE(LINUX, RFB, 88, 88);
-    TRANSLATE(LINUX, RFB, 160, 163);
-    TRANSLATE(ATSET2, ATSET3, 259, 55);
+    TRANSLATE(LINUX, QNUM, 88, 88);
+    TRANSLATE(LINUX, QNUM, 160, 163);
+    TRANSLATE(ATSET2, ATSET3, 131, 55);
+    TRANSLATE(OSX, WIN32, 90, 131);
+    TRANSLATE(OSX, ATSET1, 90, 90);
+    TRANSLATE(OSX, ATSET1, 3200, -1);
 
 #undef TRANSLATE
 
@@ -71,17 +71,19 @@ static int testKeycodeStrings(const void *data ATTRIBUTE_UNUSED)
     int ret = -1;
     int got;
 
-#define TRANSLATE(from, str, want)                                      \
-    do {                                                                \
-        if ((got = virKeycodeValueFromString(VIR_KEYCODE_SET_##from,    \
-                                             str)) != want) {           \
-            fprintf(stderr, "Converting %s from %s, got %d want %d\n",  \
-                    str, #from, got, want);                             \
-            goto cleanup;                                               \
-        }                                                               \
+#define TRANSLATE(from, str, want) \
+    do { \
+        if ((got = virKeycodeValueFromString(VIR_KEYCODE_SET_##from, \
+                                             str)) != want) { \
+            fprintf(stderr, "Converting %s from %s, got %d want %d\n", \
+                    str, #from, got, want); \
+            goto cleanup; \
+        } \
     } while (0)
 
     TRANSLATE(LINUX, "KEY_DELETE", 111);
+    TRANSLATE(LINUX, "KEY_RFKILL", 524);
+    TRANSLATE(LINUX, "KEY_WIBBLE", -1);
     TRANSLATE(OSX, "Function", 0x3f);
     TRANSLATE(WIN32, "VK_UP", 0x26);
 
@@ -105,4 +107,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

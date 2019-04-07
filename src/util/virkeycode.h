@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_UTIL_VIRTKEYCODE_H__
-# define __VIR_UTIL_VIRTKEYCODE_H__
+#ifndef LIBVIRT_VIRKEYCODE_H
+# define LIBVIRT_VIRKEYCODE_H
 
 # include "virutil.h"
 
@@ -30,4 +30,4 @@ int virKeycodeValueTranslate(virKeycodeSet from_codeset,
                         virKeycodeSet to_offset,
                         int key_value);
 
-#endif
+#endif /* LIBVIRT_VIRKEYCODE_H */

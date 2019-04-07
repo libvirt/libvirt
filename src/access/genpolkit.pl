@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright (C) 2012-2013 Red Hat, Inc.
 #
@@ -22,8 +22,8 @@ use warnings;
 
 my @objects = (
     "CONNECT", "DOMAIN", "INTERFACE",
-    "NETWORK","NODE_DEVICE", "NWFILTER",
-     "SECRET", "STORAGE_POOL", "STORAGE_VOL",
+    "NETWORK","NODE_DEVICE", "NWFILTER_BINDING", "NWFILTER",
+    "SECRET", "STORAGE_POOL", "STORAGE_VOL",
     );
 
 my $objects = join ("|", @objects);
@@ -81,7 +81,7 @@ print <<EOF;
     "http://www.freedesktop.org/software/polkit/policyconfig-1.dtd">
 <policyconfig>
   <vendor>Libvirt Project</vendor>
-  <vendor_url>http://libvirt.org</vendor_url>
+  <vendor_url>https://libvirt.org</vendor_url>
 EOF
 
 foreach my $object (sort { $a cmp $b } keys %perms) {

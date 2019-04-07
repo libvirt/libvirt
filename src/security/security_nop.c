@@ -56,14 +56,6 @@ virSecurityDriverGetDOINop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 }
 
 static int
-virSecurityDomainRestoreDiskLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                     virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                     virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-static int
 virSecurityDomainSetDaemonSocketLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                          virDomainDefPtr vm ATTRIBUTE_UNUSED)
 {
@@ -80,14 +72,6 @@ virSecurityDomainSetSocketLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 virSecurityDomainClearSocketLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                      virDomainDefPtr vm ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-static int
-virSecurityDomainSetDiskLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                 virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                 virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -151,7 +135,8 @@ virSecurityDomainReleaseLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 virSecurityDomainSetAllLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                 virDomainDefPtr sec ATTRIBUTE_UNUSED,
-                                const char *stdin_path ATTRIBUTE_UNUSED)
+                                const char *stdin_path ATTRIBUTE_UNUSED,
+                                bool chardevStdioLogd ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -159,7 +144,8 @@ virSecurityDomainSetAllLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 virSecurityDomainRestoreAllLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                     virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                    bool migrated ATTRIBUTE_UNUSED)
+                                    bool migrated ATTRIBUTE_UNUSED,
+                                    bool chardevStdioLogd ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -223,7 +209,8 @@ virSecurityGetBaseLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 virSecurityDomainRestoreImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                       virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                      virStorageSourcePtr src ATTRIBUTE_UNUSED)
+                                      virStorageSourcePtr src ATTRIBUTE_UNUSED,
+                                      virSecurityDomainImageLabelFlags flags ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -231,11 +218,53 @@ virSecurityDomainRestoreImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED
 static int
 virSecurityDomainSetImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                  virStorageSourcePtr src ATTRIBUTE_UNUSED)
+                                  virStorageSourcePtr src ATTRIBUTE_UNUSED,
+                                  virSecurityDomainImageLabelFlags flags ATTRIBUTE_UNUSED)
 {
     return 0;
 }
 
+static int
+virSecurityDomainSetMemoryLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                   virDomainMemoryDefPtr mem ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+virSecurityDomainRestoreMemoryLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                       virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                       virDomainMemoryDefPtr mem ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+virSecurityDomainInputLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                               virDomainDefPtr def ATTRIBUTE_UNUSED,
+                               virDomainInputDefPtr input ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+virSecurityDomainSetChardevLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                    virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                    virDomainChrSourceDefPtr dev_source ATTRIBUTE_UNUSED,
+                                    bool chardevStdioLogd ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+virSecurityDomainRestoreChardevLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                        virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                        virDomainChrSourceDefPtr dev_source ATTRIBUTE_UNUSED,
+                                        bool chardevStdioLogd ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
 
 virSecurityDriver virSecurityDriverNop = {
     .privateDataLen                     = 0,
@@ -249,11 +278,14 @@ virSecurityDriver virSecurityDriverNop = {
 
     .domainSecurityVerify               = virSecurityDomainVerifyNop,
 
-    .domainSetSecurityDiskLabel         = virSecurityDomainSetDiskLabelNop,
-    .domainRestoreSecurityDiskLabel     = virSecurityDomainRestoreDiskLabelNop,
-
     .domainSetSecurityImageLabel        = virSecurityDomainSetImageLabelNop,
     .domainRestoreSecurityImageLabel    = virSecurityDomainRestoreImageLabelNop,
+
+    .domainSetSecurityMemoryLabel       = virSecurityDomainSetMemoryLabelNop,
+    .domainRestoreSecurityMemoryLabel   = virSecurityDomainRestoreMemoryLabelNop,
+
+    .domainSetSecurityInputLabel        = virSecurityDomainInputLabelNop,
+    .domainRestoreSecurityInputLabel    = virSecurityDomainInputLabelNop,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityDomainSetDaemonSocketLabelNop,
     .domainSetSecuritySocketLabel       = virSecurityDomainSetSocketLabelNop,
@@ -282,4 +314,7 @@ virSecurityDriver virSecurityDriverNop = {
     .domainGetSecurityMountOptions      = virSecurityDomainGetMountOptionsNop,
 
     .getBaseLabel                       = virSecurityGetBaseLabel,
+
+    .domainSetSecurityChardevLabel      = virSecurityDomainSetChardevLabelNop,
+    .domainRestoreSecurityChardevLabel  = virSecurityDomainRestoreChardevLabelNop,
 };

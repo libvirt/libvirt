@@ -1,0 +1,28 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name QEMUGuest1 \
+-S \
+-machine pseries,accel=kvm,usb=off,dump-guest-core=off \
+-cpu host,compat=power7 \
+-m 256 \
+-smp 4,sockets=4,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-usb \
+-chardev pty,id=charserial0 \
+-device spapr-vty,chardev=charserial0,id=serial0,reg=0x30000000

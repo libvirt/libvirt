@@ -17,8 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VBOX_COMMON_H
-# define VBOX_COMMON_H
+#ifndef LIBVIRT_VBOX_COMMON_H
+# define LIBVIRT_VBOX_COMMON_H
 
 # ifdef ___VirtualBox_CXPCOM_h
 #  error this file should not be included after vbox_CAPI_v*.h
@@ -235,6 +235,19 @@ enum StorageBus
     StorageBus_SAS = 5
 };
 
+enum StorageControllerType
+{
+    StorageControllerType_Null = 0,
+    StorageControllerType_LsiLogic = 1,
+    StorageControllerType_BusLogic = 2,
+    StorageControllerType_IntelAhci = 3,
+    StorageControllerType_PIIX3 = 4,
+    StorageControllerType_PIIX4 = 5,
+    StorageControllerType_ICH6 = 6,
+    StorageControllerType_I82078 = 7,
+    StorageControllerType_LsiLogicSas = 8
+};
+
 enum AccessMode
 {
     AccessMode_ReadOnly = 1,
@@ -313,6 +326,14 @@ enum HardDiskVariant
 # define VBOX_E_INVALID_SESSION_STATE 0x80BB000B
 # define VBOX_E_OBJECT_IN_USE 0x80BB000C
 
+/* VBOX storage controller name definitions */
+
+# define VBOX_CONTROLLER_IDE_NAME "IDE Controller"
+# define VBOX_CONTROLLER_FLOPPY_NAME "Floppy Controller"
+# define VBOX_CONTROLLER_SATA_NAME "SATA Controller"
+# define VBOX_CONTROLLER_SCSI_NAME "SCSI Controller"
+# define VBOX_CONTROLLER_SAS_NAME "SAS Controller"
+
 /* Simplied definitions in vbox_CAPI_*.h */
 
 typedef void const *PCVBOXXPCOM;
@@ -328,7 +349,7 @@ typedef nsISupports IAudioAdapter;
 typedef nsISupports INetworkAdapter;
 typedef nsISupports ISerialPort;
 typedef nsISupports IParallelPort;
-typedef nsISupports IVRDxServer;
+typedef nsISupports IVRDEServer;
 typedef nsISupports IUSBCommon;
 typedef nsISupports IUSBDeviceFilter;
 typedef nsISupports IMedium;
@@ -340,7 +361,6 @@ typedef nsISupports IDisplay;
 typedef nsISupports IHost;
 typedef nsISupports IHostNetworkInterface;
 typedef nsISupports IDHCPServer;
-typedef IMedium IHardDisk;
 typedef nsISupports IKeyboard;
 
 /* Macros for all vbox drivers. */
@@ -348,28 +368,28 @@ typedef nsISupports IKeyboard;
 # define RC_SUCCEEDED(rc) NS_SUCCEEDED(rc.resultCode)
 # define RC_FAILED(rc) NS_FAILED(rc.resultCode)
 
-# define VBOX_UTF16_FREE(arg)                                            \
-    do {                                                                \
-        if (arg) {                                                      \
-            gVBoxAPI.UPFN.Utf16Free(data->pFuncs, arg);                 \
-            (arg) = NULL;                                               \
-        }                                                               \
+# define VBOX_UTF16_FREE(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.UPFN.Utf16Free(data->pFuncs, arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
-# define VBOX_UTF8_FREE(arg)                                             \
-    do {                                                                \
-        if (arg) {                                                      \
-            gVBoxAPI.UPFN.Utf8Free(data->pFuncs, arg);                  \
-            (arg) = NULL;                                               \
-        }                                                               \
+# define VBOX_UTF8_FREE(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.UPFN.Utf8Free(data->pFuncs, arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
-# define VBOX_COM_UNALLOC_MEM(arg)                                       \
-    do {                                                                \
-        if (arg) {                                                      \
-            gVBoxAPI.UPFN.ComUnallocMem(data->pFuncs, arg);             \
-            (arg) = NULL;                                               \
-        }                                                               \
+# define VBOX_COM_UNALLOC_MEM(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.UPFN.ComUnallocMem(data->pFuncs, arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
 # define VBOX_UTF16_TO_UTF8(arg1, arg2)  gVBoxAPI.UPFN.Utf16ToUtf8(data->pFuncs, arg1, arg2)
@@ -377,20 +397,20 @@ typedef nsISupports IKeyboard;
 
 # define VBOX_ADDREF(arg)                gVBoxAPI.nsUISupports.AddRef((void *)(arg))
 
-# define VBOX_RELEASE(arg)                                                     \
-    do {                                                                      \
-        if (arg) {                                                            \
-            gVBoxAPI.nsUISupports.Release((void *)arg);                        \
-            (arg) = NULL;                                                     \
-        }                                                                     \
+# define VBOX_RELEASE(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.nsUISupports.Release((void *)arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
-# define VBOX_MEDIUM_RELEASE(arg)                                              \
-    do {                                                                      \
-        if (arg) {                                                            \
-            gVBoxAPI.UIMedium.Release(arg);                                   \
-            (arg) = NULL;                                                     \
-        }                                                                     \
+# define VBOX_MEDIUM_RELEASE(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.UIMedium.Release(arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
 # define vboxIIDUnalloc(iid)                     gVBoxAPI.UIID.vboxIIDUnalloc(data, iid)
@@ -407,36 +427,30 @@ typedef nsISupports IKeyboard;
     (gVBoxAPI.UArray.handleGetMachines(data->vboxObj))
 
 /* Set result to -1 in case of failure. */
-# define installUniformedAPI(gVBoxAPI, result)                          \
-    do {                                                                \
-        result = 0;                                                     \
-        if (uVersion >= 2001052 && uVersion < 2002051) {                \
-            vbox22InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 2002051 && uVersion < 3000051) {         \
-            vbox30InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 3000051 && uVersion < 3001051) {         \
-            vbox31InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 3001051 && uVersion < 3002051) {         \
-            vbox32InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 3002051 && uVersion < 4000051) {         \
-            vbox40InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 4000051 && uVersion < 4001051) {         \
-            vbox41InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 4001051 && uVersion < 4002020) {         \
-            vbox42InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 4002020 && uVersion < 4002051) {         \
-            vbox42_20InstallUniformedAPI(&gVBoxAPI);                    \
-        } else if (uVersion >= 4002051 && uVersion < 4003004) {         \
-            vbox43InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 4003004 && uVersion < 4003051) {         \
-            vbox43_4InstallUniformedAPI(&gVBoxAPI);                     \
-        } else if (uVersion >= 4003051 && uVersion < 5000051) {         \
-            vbox50InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 5000051 && uVersion < 5001051) {         \
-            vbox51InstallUniformedAPI(&gVBoxAPI);                       \
-        } else {                                                        \
-            result = -1;                                                \
-        }                                                               \
+# define installUniformedAPI(gVBoxAPI, result) \
+    do { \
+        result = 0; \
+        if (uVersion >= 3002051 && uVersion < 4000051) { \
+            vbox40InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4000051 && uVersion < 4001051) { \
+            vbox41InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4001051 && uVersion < 4002020) { \
+            vbox42InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4002020 && uVersion < 4002051) { \
+            vbox42_20InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4002051 && uVersion < 4003004) { \
+            vbox43InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4003004 && uVersion < 4003051) { \
+            vbox43_4InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4003051 && uVersion < 5000051) { \
+            vbox50InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 5000051 && uVersion < 5001051) { \
+            vbox51InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 5001051 && uVersion < 5002051) { \
+            vbox52InstallUniformedAPI(&gVBoxAPI); \
+        } else { \
+            result = -1; \
+        } \
     } while (0)
 
-#endif /* VBOX_COMMON_H */
+#endif /* LIBVIRT_VBOX_COMMON_H */

@@ -1,0 +1,2 @@
+none /not/really/sys/fs/cgroup tmpfs rw,rootcontext=system_u:object_r:sysfs_t:s0,seclabel,relatime,size=4k,mode=755 0 0
+systemd /not/really/sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,name=systemd 0 0

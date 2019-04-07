@@ -1,0 +1,9 @@
+{
+    "foo.double.nest1":"some",
+    "foo.double.nest2":"more",
+    "bar.double.nest3": {
+        "even":"objects"
+    },
+    "foo.very.deeply.nested.object.chains.nest1":"some",
+    "foo.very.deeply.nested.object.chains.nest2":"stuff"
+}

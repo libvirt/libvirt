@@ -1,0 +1,100 @@
+<domain type='xen'>
+  <name>test-hvm</name>
+  <description>None</description>
+  <uuid>2147d599-9cc6-c0dc-92ab-4064b5446e9b</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>6</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <clock offset='utc'/>
+  <os>
+    <type>hvm</type>
+    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <apic/>
+    <acpi/>
+    <pae/>
+  </features>
+  <cpu mode='host-passthrough'>
+    <numa>
+      <cell id='0' cpus='0' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='0' value='10'/>
+          <sibling id='1' value='21'/>
+          <sibling id='2' value='31'/>
+          <sibling id='3' value='41'/>
+          <sibling id='4' value='51'/>
+          <sibling id='5' value='61'/>
+        </distances>
+      </cell>
+      <cell id='1' cpus='1' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='0' value='21'/>
+          <sibling id='1' value='10'/>
+          <sibling id='2' value='21'/>
+          <sibling id='3' value='31'/>
+          <sibling id='4' value='41'/>
+          <sibling id='5' value='51'/>
+        </distances>
+      </cell>
+      <cell id='2' cpus='2' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='0' value='31'/>
+          <sibling id='1' value='21'/>
+          <sibling id='2' value='10'/>
+          <sibling id='3' value='21'/>
+          <sibling id='4' value='31'/>
+          <sibling id='5' value='41'/>
+        </distances>
+      </cell>
+      <cell id='3' cpus='3' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='0' value='41'/>
+          <sibling id='1' value='31'/>
+          <sibling id='2' value='21'/>
+          <sibling id='3' value='10'/>
+          <sibling id='4' value='21'/>
+          <sibling id='5' value='31'/>
+        </distances>
+      </cell>
+      <cell id='4' cpus='4' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='0' value='51'/>
+          <sibling id='1' value='41'/>
+          <sibling id='2' value='31'/>
+          <sibling id='3' value='21'/>
+          <sibling id='4' value='10'/>
+          <sibling id='5' value='21'/>
+        </distances>
+      </cell>
+      <cell id='5' cpus='5' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='0' value='61'/>
+          <sibling id='1' value='51'/>
+          <sibling id='2' value='41'/>
+          <sibling id='3' value='31'/>
+          <sibling id='4' value='21'/>
+          <sibling id='5' value='10'/>
+        </distances>
+      </cell>
+    </numa>
+  </cpu>
+  <devices>
+    <emulator>/bin/true</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu'/>
+      <source file='/var/lib/xen/images/test-hvm.img'/>
+      <target dev='hda'/>
+    </disk>
+    <interface type='bridge'>
+      <source bridge='br0'/>
+      <mac address='00:16:3e:66:12:b4'/>
+      <script path='/etc/xen/scripts/vif-bridge'/>
+    </interface>
+    <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'/>
+  </devices>
+</domain>

@@ -1,10 +1,6 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
 #include "security/security_driver.h"
 #include "virrandom.h"
 #include "testutils.h"
@@ -43,4 +39,4 @@ mymain(void)
     return 0;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

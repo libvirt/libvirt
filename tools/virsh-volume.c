@@ -16,15 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
 #include <config.h>
 #include "virsh-volume.h"
+#include "virsh-util.h"
 
 #include <fcntl.h>
 
@@ -41,25 +37,31 @@
 #include "virsh-pool.h"
 #include "virxml.h"
 #include "virstring.h"
+#include "vsh-table.h"
 
-#define VIRSH_COMMON_OPT_POOL_FULL                            \
-    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))            \
+#define VIRSH_COMMON_OPT_POOL_FULL \
+    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"), \
+                          VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)
 
-#define VIRSH_COMMON_OPT_POOL_NAME                            \
-    VIRSH_COMMON_OPT_POOL(N_("pool name"))                    \
+#define VIRSH_COMMON_OPT_POOL_NAME \
+    VIRSH_COMMON_OPT_POOL(N_("pool name"), \
+                          VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)
 
-#define VIRSH_COMMON_OPT_POOL_OPTIONAL                        \
-    {.name = "pool",                                          \
-     .type = VSH_OT_STRING,                                   \
-     .help = N_("pool name or uuid")                          \
-    }                                                         \
+#define VIRSH_COMMON_OPT_POOL_OPTIONAL \
+    {.name = "pool", \
+     .type = VSH_OT_STRING, \
+     .help = N_("pool name or uuid"), \
+     .completer = virshStoragePoolNameCompleter, \
+     .completer_flags = VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE, \
+    }
 
-#define VIRSH_COMMON_OPT_VOLUME_VOL                           \
-    {.name = "vol",                                           \
-     .type = VSH_OT_DATA,                                     \
-     .flags = VSH_OFLAG_REQ,                                  \
-     .help = N_("vol name, key or path")                      \
-    }                                                         \
+#define VIRSH_COMMON_OPT_VOLUME_VOL \
+    {.name = "vol", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("vol name, key or path"), \
+     .completer = virshStorageVolNameCompleter, \
+    }
 
 virStorageVolPtr
 virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
@@ -123,6 +125,8 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
         else
             vshError(ctl, _("failed to get vol '%s', specifying --%s "
                             "might help"), n, pooloptname);
+    } else {
+        vshResetLibvirtError();
     }
 
     /* If the pool was specified, then make sure that the returned
@@ -206,7 +210,7 @@ static int
 virshVolSize(const char *data, unsigned long long *val)
 {
     char *end;
-    if (virStrToLong_ull(data, &end, 10, val) < 0)
+    if (virStrToLong_ullp(data, &end, 10, val) < 0)
         return -1;
     return virScaleInteger(val, end, 1, ULLONG_MAX);
 }
@@ -512,7 +516,6 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 static xmlChar *
 virshMakeCloneXML(const char *origxml, const char *newname)
 {
-
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
@@ -659,17 +662,12 @@ static const vshCmdOptDef opts_vol_upload[] = {
      .type = VSH_OT_INT,
      .help = N_("amount of data to upload")
     },
+    {.name = "sparse",
+     .type = VSH_OT_BOOL,
+     .help = N_("preserve sparseness of volume")
+    },
     {.name = NULL}
 };
-
-static int
-cmdVolUploadSource(virStreamPtr st ATTRIBUTE_UNUSED,
-                   char *bytes, size_t nbytes, void *opaque)
-{
-    int *fd = opaque;
-
-    return saferead(*fd, bytes, nbytes);
-}
 
 static bool
 cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
@@ -682,6 +680,8 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
     virshControlPtr priv = ctl->privData;
+    unsigned int flags = 0;
+    virshStreamCallbackData cbData;
 
     if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0)
         return false;
@@ -700,19 +700,34 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
+    cbData.ctl = ctl;
+    cbData.fd = fd;
+
+    if (vshCommandOptBool(cmd, "sparse"))
+        flags |= VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM;
+
     if (!(st = virStreamNew(priv->conn, 0))) {
         vshError(ctl, _("cannot create a new stream"));
         goto cleanup;
     }
 
-    if (virStorageVolUpload(vol, st, offset, length, 0) < 0) {
+    if (virStorageVolUpload(vol, st, offset, length, flags) < 0) {
         vshError(ctl, _("cannot upload to volume %s"), name);
         goto cleanup;
     }
 
-    if (virStreamSendAll(st, cmdVolUploadSource, &fd) < 0) {
-        vshError(ctl, _("cannot send data to volume %s"), name);
-        goto cleanup;
+    if (flags & VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM) {
+        if (virStreamSparseSendAll(st, virshStreamSource,
+                                   virshStreamInData,
+                                   virshStreamSourceSkip, &cbData) < 0) {
+            vshError(ctl, _("cannot send data to volume %s"), name);
+            goto cleanup;
+        }
+    } else {
+        if (virStreamSendAll(st, virshStreamSource, &cbData) < 0) {
+            vshError(ctl, _("cannot send data to volume %s"), name);
+            goto cleanup;
+        }
     }
 
     if (VIR_CLOSE(fd) < 0) {
@@ -762,6 +777,10 @@ static const vshCmdOptDef opts_vol_download[] = {
      .type = VSH_OT_INT,
      .help = N_("amount of data to download")
     },
+    {.name = "sparse",
+     .type = VSH_OT_BOOL,
+     .help = N_("preserve sparseness of volume")
+    },
     {.name = NULL}
 };
 
@@ -777,6 +796,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     unsigned long long offset = 0, length = 0;
     bool created = false;
     virshControlPtr priv = ctl->privData;
+    unsigned int flags = 0;
 
     if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0)
         return false;
@@ -789,6 +809,9 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &file) < 0)
         goto cleanup;
+
+    if (vshCommandOptBool(cmd, "sparse"))
+        flags |= VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM;
 
     if ((fd = open(file, O_WRONLY|O_CREAT|O_EXCL, 0666)) < 0) {
         if (errno != EEXIST ||
@@ -805,12 +828,12 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virStorageVolDownload(vol, st, offset, length, 0) < 0) {
+    if (virStorageVolDownload(vol, st, offset, length, flags) < 0) {
         vshError(ctl, _("cannot download from volume %s"), name);
         goto cleanup;
     }
 
-    if (virStreamRecvAll(st, virshStreamSink, &fd) < 0) {
+    if (virStreamSparseRecvAll(st, virshStreamSink, virshStreamSkip, &fd) < 0) {
         vshError(ctl, _("cannot receive data from volume %s"), name);
         goto cleanup;
     }
@@ -912,7 +935,7 @@ static const vshCmdOptDef opts_vol_wipe[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virStorageVolWipeAlgorithm)
+VIR_ENUM_DECL(virStorageVolWipeAlgorithm);
 VIR_ENUM_IMPL(virStorageVolWipeAlgorithm, VIR_STORAGE_VOL_WIPE_ALG_LAST,
               "zero", "nnsa", "dod", "bsi", "gutmann", "schneier",
               "pfitzner7", "pfitzner33", "random", "trim");
@@ -958,7 +981,7 @@ cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
 }
 
 
-VIR_ENUM_DECL(virshStorageVol)
+VIR_ENUM_DECL(virshStorageVol);
 VIR_ENUM_IMPL(virshStorageVol,
               VIR_STORAGE_VOL_LAST,
               N_("file"),
@@ -966,7 +989,7 @@ VIR_ENUM_IMPL(virshStorageVol,
               N_("dir"),
               N_("network"),
               N_("netdir"),
-              N_("ploop"))
+              N_("ploop"));
 
 static const char *
 virshVolumeTypeToString(int type)
@@ -1281,10 +1304,8 @@ virshStorageVolListCollect(vshControl *ctl,
         goto cleanup;
     }
 
-    if (nvols == 0) {
-        success = true;
+    if (nvols == 0)
         return list;
-    }
 
     /* Retrieve the list of volume names in the pool */
     names = vshCalloc(ctl, nvols, sizeof(*names));
@@ -1357,16 +1378,11 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     virStorageVolInfo volumeInfo;
     virStoragePoolPtr pool;
-    char *outputStr = NULL;
     const char *unit;
     double val;
     bool details = vshCommandOptBool(cmd, "details");
     size_t i;
     bool ret = false;
-    int stringLength = 0;
-    size_t allocStrLength = 0, capStrLength = 0;
-    size_t nameStrLength = 0, pathStrLength = 0;
-    size_t typeStrLength = 0;
     struct volInfoText {
         char *allocation;
         char *capacity;
@@ -1375,6 +1391,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     };
     struct volInfoText *volInfoTexts = NULL;
     virshStorageVolListPtr list = NULL;
+    vshTablePtr table = NULL;
 
     /* Look up the pool information given to us by the user */
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
@@ -1421,36 +1438,6 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                                 "%.2lf %s", val, unit) < 0)
                     goto cleanup;
             }
-
-            /* Remember the largest length for each output string.
-             * This lets us displaying header and volume information rows
-             * using a single, properly sized, printf style output string.
-             */
-
-            /* Keep the length of name string if longest so far */
-            stringLength = strlen(virStorageVolGetName(list->vols[i]));
-            if (stringLength > nameStrLength)
-                nameStrLength = stringLength;
-
-            /* Keep the length of path string if longest so far */
-            stringLength = strlen(volInfoTexts[i].path);
-            if (stringLength > pathStrLength)
-                pathStrLength = stringLength;
-
-            /* Keep the length of type string if longest so far */
-            stringLength = strlen(volInfoTexts[i].type);
-            if (stringLength > typeStrLength)
-                typeStrLength = stringLength;
-
-            /* Keep the length of capacity string if longest so far */
-            stringLength = strlen(volInfoTexts[i].capacity);
-            if (stringLength > capStrLength)
-                capStrLength = stringLength;
-
-            /* Keep the length of allocation string if longest so far */
-            stringLength = strlen(volInfoTexts[i].allocation);
-            if (stringLength > allocStrLength)
-                allocStrLength = stringLength;
         }
     }
 
@@ -1462,13 +1449,19 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Output basic info then return if --details option not selected */
     if (!details) {
         /* The old output format */
-        vshPrintExtra(ctl, " %-20s %-40s\n", _("Name"), _("Path"));
-        vshPrintExtra(ctl, "---------------------------------------"
-                           "---------------------------------------\n");
+        table = vshTableNew(_("Name"), _("Path"), NULL);
+        if (!table)
+            goto cleanup;
+
         for (i = 0; i < list->nvols; i++) {
-            vshPrint(ctl, " %-20s %-40s\n", virStorageVolGetName(list->vols[i]),
-                     volInfoTexts[i].path);
+            if (vshTableRowAppend(table,
+                                  virStorageVolGetName(list->vols[i]),
+                                  volInfoTexts[i].path,
+                                  NULL) < 0)
+                goto cleanup;
         }
+
+        vshTablePrintToStdout(table, ctl);
 
         /* Cleanup and return */
         ret = true;
@@ -1477,75 +1470,30 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     /* We only get here if the --details option was selected. */
 
-    /* Use the length of name header string if it's longest */
-    stringLength = strlen(_("Name"));
-    if (stringLength > nameStrLength)
-        nameStrLength = stringLength;
-
-    /* Use the length of path header string if it's longest */
-    stringLength = strlen(_("Path"));
-    if (stringLength > pathStrLength)
-        pathStrLength = stringLength;
-
-    /* Use the length of type header string if it's longest */
-    stringLength = strlen(_("Type"));
-    if (stringLength > typeStrLength)
-        typeStrLength = stringLength;
-
-    /* Use the length of capacity header string if it's longest */
-    stringLength = strlen(_("Capacity"));
-    if (stringLength > capStrLength)
-        capStrLength = stringLength;
-
-    /* Use the length of allocation header string if it's longest */
-    stringLength = strlen(_("Allocation"));
-    if (stringLength > allocStrLength)
-        allocStrLength = stringLength;
-
-    /* Display the string lengths for debugging */
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest name string = %zu chars\n", nameStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest path string = %zu chars\n", pathStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest type string = %zu chars\n", typeStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest capacity string = %zu chars\n", capStrLength);
-    vshDebug(ctl, VSH_ERR_DEBUG,
-             "Longest allocation string = %zu chars\n", allocStrLength);
-
-    if (virAsprintf(&outputStr,
-                    " %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus\n",
-                    (unsigned long) nameStrLength,
-                    (unsigned long) pathStrLength,
-                    (unsigned long) typeStrLength,
-                    (unsigned long) capStrLength,
-                    (unsigned long) allocStrLength) < 0)
+    /* Insert the header into table */
+    table = vshTableNew(_("Name"), _("Path"), _("Type"), _("Capacity"), _("Allocation"), NULL);
+    if (!table)
         goto cleanup;
 
-    /* Display the header */
-    vshPrintExtra(ctl, outputStr, _("Name"), _("Path"), _("Type"),
-                  _("Capacity"), _("Allocation"));
-    for (i = nameStrLength + pathStrLength + typeStrLength
-                           + capStrLength + allocStrLength
-                           + 10; i > 0; i--)
-        vshPrintExtra(ctl, "-");
-    vshPrintExtra(ctl, "\n");
-
-    /* Display the volume info rows */
+    /* Insert the volume info rows into table */
     for (i = 0; i < list->nvols; i++) {
-        vshPrint(ctl, outputStr,
-                 virStorageVolGetName(list->vols[i]),
-                 volInfoTexts[i].path,
-                 volInfoTexts[i].type,
-                 volInfoTexts[i].capacity,
-                 volInfoTexts[i].allocation);
+        if (vshTableRowAppend(table,
+                              virStorageVolGetName(list->vols[i]),
+                              volInfoTexts[i].path,
+                              volInfoTexts[i].type,
+                              volInfoTexts[i].capacity,
+                              volInfoTexts[i].allocation,
+                              NULL) < 0)
+            goto cleanup;
     }
+
+    vshTablePrintToStdout(table, ctl);
 
     /* Cleanup and return */
     ret = true;
 
  cleanup:
+    vshTableFree(table);
 
     /* Safely free the memory allocated in this function */
     if (list && list->nvols) {
@@ -1559,7 +1507,6 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
 
     /* Cleanup remaining memory */
-    VIR_FREE(outputStr);
     VIR_FREE(volInfoTexts);
     virStoragePoolFree(pool);
     virshStorageVolListFree(list);

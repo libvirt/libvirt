@@ -1,0 +1,23 @@
+{
+  "node-name": "node-f",
+  "read-only": true,
+  "cache": {
+    "direct": true,
+    "no-flush": false
+  },
+  "driver": "raw",
+  "file": "node-s"
+}
+{
+  "driver": "vvfat",
+  "dir": "/var/somefiles",
+  "floppy": false,
+  "rw": false,
+  "node-name": "node-s",
+  "cache": {
+    "direct": true,
+    "no-flush": false
+  },
+  "read-only": true,
+  "discard": "unmap"
+}

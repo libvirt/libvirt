@@ -1,9 +1,6 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -20,30 +17,23 @@ static int
 testCompareXMLToXMLFiles(const char *poolxml, const char *inxml,
                          const char *outxml, unsigned int flags)
 {
-    char *actual = NULL;
-    int ret = -1;
-    virStoragePoolDefPtr pool = NULL;
-    virStorageVolDefPtr dev = NULL;
+    VIR_AUTOFREE(char *) actual = NULL;
+    VIR_AUTOPTR(virStoragePoolDef) pool = NULL;
+    VIR_AUTOPTR(virStorageVolDef) dev = NULL;
 
     if (!(pool = virStoragePoolDefParseFile(poolxml)))
-        goto fail;
+        return -1;
 
     if (!(dev = virStorageVolDefParseFile(pool, inxml, flags)))
-        goto fail;
+        return -1;
 
     if (!(actual = virStorageVolDefFormat(pool, dev)))
-        goto fail;
+        return -1;
 
     if (virTestCompareToFile(actual, outxml) < 0)
-        goto fail;
+        return -1;
 
-    ret = 0;
-
- fail:
-    VIR_FREE(actual);
-    virStoragePoolDefFree(pool);
-    virStorageVolDefFree(dev);
-    return ret;
+    return 0;
 }
 
 struct testInfo {
@@ -55,29 +45,20 @@ struct testInfo {
 static int
 testCompareXMLToXMLHelper(const void *data)
 {
-    int result = -1;
     const struct testInfo *info = data;
-    char *poolxml = NULL;
-    char *inxml = NULL;
-    char *outxml = NULL;
+    VIR_AUTOFREE(char *) poolxml = NULL;
+    VIR_AUTOFREE(char *) inxml = NULL;
+    VIR_AUTOFREE(char *) outxml = NULL;
 
     if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/%s.xml",
                     abs_srcdir, info->pool) < 0 ||
         virAsprintf(&inxml, "%s/storagevolxml2xmlin/%s.xml",
                     abs_srcdir, info->name) < 0 ||
         virAsprintf(&outxml, "%s/storagevolxml2xmlout/%s.xml",
-                    abs_srcdir, info->name) < 0) {
-        goto cleanup;
-    }
+                    abs_srcdir, info->name) < 0)
+        return -1;
 
-    result = testCompareXMLToXMLFiles(poolxml, inxml, outxml, info->flags);
-
- cleanup:
-    VIR_FREE(poolxml);
-    VIR_FREE(inxml);
-    VIR_FREE(outxml);
-
-    return result;
+    return testCompareXMLToXMLFiles(poolxml, inxml, outxml, info->flags);
 }
 
 
@@ -86,13 +67,13 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(pool, name, flags)                         \
-    do {                                                        \
-        struct testInfo info = { pool, name, flags };           \
-        if (virTestRun("Storage Vol XML-2-XML " name,           \
-                       testCompareXMLToXMLHelper, &info) < 0)   \
-            ret = -1;                                           \
-    }                                                           \
+#define DO_TEST_FULL(pool, name, flags) \
+    do { \
+        struct testInfo info = { pool, name, flags }; \
+        if (virTestRun("Storage Vol XML-2-XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
+    } \
     while (0);
 
 #define DO_TEST(pool, name) DO_TEST_FULL(pool, name, 0)
@@ -100,11 +81,13 @@ mymain(void)
     DO_TEST("pool-dir", "vol-file");
     DO_TEST("pool-dir", "vol-file-naming");
     DO_TEST("pool-dir", "vol-file-backing");
+    DO_TEST("pool-dir", "vol-file-iso");
     DO_TEST("pool-dir", "vol-qcow2");
     DO_TEST("pool-dir", "vol-qcow2-1.1");
     DO_TEST("pool-dir", "vol-qcow2-lazy");
     DO_TEST("pool-dir", "vol-qcow2-0.10-lazy");
     DO_TEST("pool-dir", "vol-qcow2-nobacking");
+    DO_TEST("pool-dir", "vol-qcow2-encryption");
     DO_TEST("pool-dir", "vol-luks");
     DO_TEST("pool-dir", "vol-luks-cipher");
     DO_TEST("pool-disk", "vol-partition");
@@ -119,4 +102,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_DRIVER_STATE_H__
-# define __VIR_DRIVER_STATE_H__
+#ifndef LIBVIRT_DRIVER_STATE_H
+# define LIBVIRT_DRIVER_STATE_H
 
 # ifndef __VIR_DRIVER_H_INCLUDES___
 #  error "Don't include this file directly, only use driver.h"
@@ -29,9 +29,6 @@ typedef int
 (*virDrvStateInitialize)(bool privileged,
                          virStateInhibitCallback callback,
                          void *opaque);
-
-typedef void
-(*virDrvStateAutoStart)(void);
 
 typedef int
 (*virDrvStateCleanup)(void);
@@ -48,11 +45,10 @@ typedef virStateDriver *virStateDriverPtr;
 struct _virStateDriver {
     const char *name;
     virDrvStateInitialize stateInitialize;
-    virDrvStateAutoStart stateAutoStart;
     virDrvStateCleanup stateCleanup;
     virDrvStateReload stateReload;
     virDrvStateStop stateStop;
 };
 
 
-#endif /* __VIR_DRIVER_STATE_H__ */
+#endif /* LIBVIRT_DRIVER_STATE_H */

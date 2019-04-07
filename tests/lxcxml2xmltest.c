@@ -1,9 +1,6 @@
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -46,7 +43,7 @@ testCompareXMLToXMLHelper(const void *data)
     ret = testCompareDomXML2XMLFiles(caps, xmlopt, xml_in,
                                      info->different ? xml_out : xml_in,
                                      !info->inactive_only,
-                                     NULL, NULL, info->parse_flags,
+                                     info->parse_flags,
                                      TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
  cleanup:
     VIR_FREE(xml_in);
@@ -66,13 +63,13 @@ mymain(void)
     if (!(xmlopt = lxcDomainXMLConfInit()))
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, is_different, inactive, parse_flags)        \
-    do {                                                                \
-        const struct testInfo info = {name, is_different, inactive,     \
-                                      parse_flags};                     \
-        if (virTestRun("LXC XML-2-XML " name,                           \
-                       testCompareXMLToXMLHelper, &info) < 0)           \
-            ret = -1;                                                   \
+# define DO_TEST_FULL(name, is_different, inactive, parse_flags) \
+    do { \
+        const struct testInfo info = {name, is_different, inactive, \
+                                      parse_flags}; \
+        if (virTestRun("LXC XML-2-XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
 # define DO_TEST(name) \
@@ -96,8 +93,9 @@ mymain(void)
     DO_TEST("sharenet");
     DO_TEST("ethernet");
     DO_TEST("ethernet-hostip");
-    DO_TEST_FULL("filesystem-root", 0, false,
-                 VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS);
+    DO_TEST("initenv");
+    DO_TEST("initdir");
+    DO_TEST("inituser");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
@@ -105,7 +103,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

@@ -1,0 +1,38 @@
+VZ_DRIVER_SOURCES = \
+	vz/vz_driver.h \
+	vz/vz_driver.c \
+	vz/vz_utils.c \
+	vz/vz_utils.h \
+	vz/vz_sdk.h \
+	vz/vz_sdk.c \
+	$(NULL)
+
+
+DRIVER_SOURCE_FILES += $(VZ_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += $(VZ_DRIVER_SOURCES)
+EXTRA_DIST += $(VZ_DRIVER_SOURCES)
+
+
+if WITH_VZ
+noinst_LTLIBRARIES += libvirt_driver_vz_impl.la
+libvirt_driver_vz_la_SOURCES =
+libvirt_driver_vz_la_LIBADD = \
+	libvirt_driver_vz_impl.la \
+	libvirt.la \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+mod_LTLIBRARIES += libvirt_driver_vz.la
+libvirt_driver_vz_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+libvirt_driver_vz_impl_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/access \
+	$(AM_CFLAGS) \
+	$(PARALLELS_SDK_CFLAGS) \
+	$(LIBNL_CFLAGS) \
+	$(NULL)
+libvirt_driver_vz_impl_la_SOURCES = $(VZ_DRIVER_SOURCES)
+libvirt_driver_vz_impl_la_LIBADD = \
+	$(PARALLELS_SDK_LIBS) \
+	$(LIBNL_LIBS) \
+	$(NULL)
+endif WITH_VZ

@@ -1,0 +1,67 @@
+<domain type='xen'>
+  <name>XenGuest2</name>
+  <uuid>c7a5fdb2-cdaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>592896</memory>
+  <currentMemory unit='KiB'>403456</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='xenfv'>hvm</type>
+    <loader type='rom'>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='cdrom'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+    <hap state='off'/>
+  </features>
+  <clock offset='variable' adjustment='0' basis='utc'>
+    <timer name='tsc' present='yes' mode='native'/>
+    <timer name='hpet' present='yes'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
+    <disk type='block' device='disk'>
+      <driver name='phy' type='raw'/>
+      <source dev='/dev/HostVG/XenGuest2'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/XenGuest2-home'/>
+      <target dev='hdb' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/root/boot.iso'/>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
+    </disk>
+    <controller type='xenbus' index='0'/>
+    <controller type='ide' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:16:3e:66:92:9c'/>
+      <source bridge='xenbr1'/>
+      <bandwidth>
+        <outbound average='10240'/>
+      </bandwidth>
+      <script path='vif-bridge'/>
+      <model type='e1000'/>
+    </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
+    <video>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
+    </video>
+    <memballoon model='xen'/>
+  </devices>
+</domain>

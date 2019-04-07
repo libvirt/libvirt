@@ -16,18 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Daniel Veillard <veillard@redhat.com>
- * Karel Zak <kzak@redhat.com>
- * Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef VIRSH_H
-# define VIRSH_H
+#ifndef LIBVIRT_VIRSH_H
+# define LIBVIRT_VIRSH_H
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
 # include <stdarg.h>
 # include <unistd.h>
 # include <sys/stat.h>
@@ -38,6 +31,7 @@
 # include "virthread.h"
 # include "virpolkit.h"
 # include "vsh.h"
+# include "virsh-completer.h"
 
 # define VIRSH_PROMPT_RW    "virsh # "
 # define VIRSH_PROMPT_RO    "virsh > "
@@ -63,44 +57,76 @@
 /*
  * Common command options
  */
-# define VIRSH_COMMON_OPT_POOL(_helpstr)                          \
-    {.name = "pool",                                              \
-     .type = VSH_OT_DATA,                                         \
-     .flags = VSH_OFLAG_REQ,                                      \
-     .help = _helpstr                                             \
-    }                                                             \
+# define VIRSH_COMMON_OPT_POOL(_helpstr, cflags) \
+    {.name = "pool", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = _helpstr, \
+     .completer = virshStoragePoolNameCompleter, \
+     .completer_flags = cflags, \
+    }
 
-# define VIRSH_COMMON_OPT_DOMAIN(_helpstr)                        \
-    {.name = "domain",                                            \
-     .type = VSH_OT_DATA,                                         \
-     .flags = VSH_OFLAG_REQ,                                      \
-     .help = _helpstr                                             \
-    }                                                             \
+# define VIRSH_COMMON_OPT_DOMAIN(_helpstr, cflags) \
+    {.name = "domain", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = _helpstr, \
+     .completer = virshDomainNameCompleter, \
+     .completer_flags = cflags, \
+    }
 
-# define VIRSH_COMMON_OPT_CONFIG(_helpstr)                        \
-    {.name = "config",                                            \
-     .type = VSH_OT_BOOL,                                         \
-     .help = _helpstr                                             \
-    }                                                             \
+# define VIRSH_COMMON_OPT_DOMAIN_FULL(cflags) \
+    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid"), cflags)
 
-# define VIRSH_COMMON_OPT_LIVE(_helpstr)                          \
-    {.name = "live",                                              \
-     .type = VSH_OT_BOOL,                                         \
-     .help = _helpstr                                             \
-    }                                                             \
+# define VIRSH_COMMON_OPT_CONFIG(_helpstr) \
+    {.name = "config", \
+     .type = VSH_OT_BOOL, \
+     .help = _helpstr \
+    }
 
-# define VIRSH_COMMON_OPT_CURRENT(_helpstr)                       \
-    {.name = "current",                                           \
-     .type = VSH_OT_BOOL,                                         \
-     .help = _helpstr                                             \
-    }                                                             \
+# define VIRSH_COMMON_OPT_LIVE(_helpstr) \
+    {.name = "live", \
+     .type = VSH_OT_BOOL, \
+     .help = _helpstr \
+    }
 
-# define VIRSH_COMMON_OPT_FILE(_helpstr)                          \
-    {.name = "file",                                              \
-     .type = VSH_OT_DATA,                                         \
-     .flags = VSH_OFLAG_REQ,                                      \
-     .help = _helpstr                                             \
-    }                                                             \
+# define VIRSH_COMMON_OPT_CURRENT(_helpstr) \
+    {.name = "current", \
+     .type = VSH_OT_BOOL, \
+     .help = _helpstr \
+    }
+
+# define VIRSH_COMMON_OPT_FILE(_helpstr) \
+    {.name = "file", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = _helpstr \
+    }
+
+# define VIRSH_COMMON_OPT_DOMAIN_OT_STRING(_helpstr, oflags, cflags) \
+    {.name = "domain", \
+     .type = VSH_OT_STRING, \
+     .flags = oflags, \
+     .help = _helpstr, \
+     .completer = virshDomainNameCompleter, \
+     .completer_flags = cflags, \
+    }
+
+# define VIRSH_COMMON_OPT_DOMAIN_OT_STRING_FULL(oflags, cflags) \
+    VIRSH_COMMON_OPT_DOMAIN_OT_STRING(N_("domain name, id or uuid"), \
+                                      oflags, cflags)
+
+# define VIRSH_COMMON_OPT_DOMAIN_OT_ARGV(_helpstr, cflags) \
+    {.name = "domain", \
+     .type = VSH_OT_ARGV, \
+     .flags = VSH_OFLAG_NONE, \
+     .help = _helpstr, \
+     .completer = virshDomainNameCompleter, \
+     .completer_flags = cflags, \
+    }
+
+# define VIRSH_COMMON_OPT_DOMAIN_OT_ARGV_FULL(cflags) \
+    VIRSH_COMMON_OPT_DOMAIN_OT_ARGV(N_("domain name, id or uuid"), cflags)
 
 typedef struct _virshControl virshControl;
 typedef virshControl *virshControlPtr;
@@ -145,9 +171,5 @@ typedef enum {
 } virshLookupByFlags;
 
 virConnectPtr virshConnect(vshControl *ctl, const char *uri, bool readonly);
-int virshDomainState(vshControl *ctl, virDomainPtr dom, int *reason);
 
-int virshStreamSink(virStreamPtr st, const char *bytes, size_t nbytes,
-                    void *opaque);
-
-#endif /* VIRSH_H */
+#endif /* LIBVIRT_VIRSH_H */

@@ -281,15 +281,6 @@ int virDomainLockImageAttach(virLockManagerPluginPtr plugin,
 }
 
 
-int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
-                            const char *uri,
-                            virDomainObjPtr dom,
-                            virDomainDiskDefPtr disk)
-{
-    return virDomainLockImageAttach(plugin, uri, dom, disk->src);
-}
-
-
 int virDomainLockImageDetach(virLockManagerPluginPtr plugin,
                              virDomainObjPtr dom,
                              virStorageSourcePtr src)
@@ -314,14 +305,6 @@ int virDomainLockImageDetach(virLockManagerPluginPtr plugin,
     virLockManagerFree(lock);
 
     return ret;
-}
-
-
-int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
-                            virDomainObjPtr dom,
-                            virDomainDiskDefPtr disk)
-{
-    return virDomainLockImageDetach(plugin, dom, disk->src);
 }
 
 

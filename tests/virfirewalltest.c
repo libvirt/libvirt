@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
-
-#define __VIR_FIREWALL_PRIV_H_ALLOW__
-#define __VIR_COMMAND_PRIV_H_ALLOW__
 
 #include "testutils.h"
 
 #if defined(__linux__)
 
 # include "virbuffer.h"
+# define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
+# define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 # include "virfirewallpriv.h"
+# define LIBVIRT_VIRFIREWALLDPRIV_H_ALLOW
+# include "virfirewalldpriv.h"
 # include "virmock.h"
+# define LIBVIRT_VIRDBUSPRIV_H_ALLOW
 # include "virdbuspriv.h"
 
 # define VIR_FROM_THIS VIR_FROM_FIREWALL
@@ -43,27 +43,27 @@ static bool fwDisabled = true;
 static virBufferPtr fwBuf;
 static bool fwError;
 
-# define TEST_FILTER_TABLE_LIST                                 \
-    "Chain INPUT (policy ACCEPT)\n"                             \
-    "target     prot opt source               destination\n"    \
-    "\n"                                                        \
-    "Chain FORWARD (policy ACCEPT)\n"                           \
-    "target     prot opt source               destination\n"    \
-    "\n"                                                        \
-    "Chain OUTPUT (policy ACCEPT)\n"                            \
+# define TEST_FILTER_TABLE_LIST \
+    "Chain INPUT (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain FORWARD (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain OUTPUT (policy ACCEPT)\n" \
     "target     prot opt source               destination\n"
 
-# define TEST_NAT_TABLE_LIST                                            \
-    "Chain PREROUTING (policy ACCEPT)\n"                                \
-    "target     prot opt source               destination\n"            \
-    "\n"                                                                \
-    "Chain INPUT (policy ACCEPT)\n"                                     \
-    "target     prot opt source               destination\n"            \
-    "\n"                                                                \
-    "Chain OUTPUT (policy ACCEPT)\n"                                    \
-    "target     prot opt source               destination\n"            \
-    "\n"                                                                \
-    "Chain POSTROUTING (policy ACCEPT)\n"                               \
+# define TEST_NAT_TABLE_LIST \
+    "Chain PREROUTING (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain INPUT (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain OUTPUT (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain POSTROUTING (policy ACCEPT)\n" \
     "target     prot opt source               destination\n"
 
 # if WITH_DBUS
@@ -240,7 +240,7 @@ testFirewallSingleGroup(const void *opaque)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -306,7 +306,7 @@ testFirewallRemoveRule(const void *opaque)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -379,7 +379,7 @@ testFirewallManyGroups(const void *opaque ATTRIBUTE_UNUSED)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -475,7 +475,7 @@ testFirewallIgnoreFailGroup(const void *opaque ATTRIBUTE_UNUSED)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -549,7 +549,7 @@ testFirewallIgnoreFailRule(const void *opaque ATTRIBUTE_UNUSED)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -620,7 +620,7 @@ testFirewallNoRollback(const void *opaque ATTRIBUTE_UNUSED)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -710,7 +710,7 @@ testFirewallSingleRollback(const void *opaque ATTRIBUTE_UNUSED)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -803,7 +803,7 @@ testFirewallManyRollback(const void *opaque ATTRIBUTE_UNUSED)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -926,7 +926,7 @@ testFirewallChainedRollback(const void *opaque ATTRIBUTE_UNUSED)
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -992,11 +992,12 @@ testFirewallQueryHook(const char *const*args,
 
 static int
 testFirewallQueryCallback(virFirewallPtr fw,
+                          virFirewallLayer layer,
                           const char *const *lines,
                           void *opaque ATTRIBUTE_UNUSED)
 {
     size_t i;
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
+    virFirewallAddRule(fw, layer,
                        "-A", "INPUT",
                        "--source-host", "!192.168.122.129",
                        "--jump", "REJECT", NULL);
@@ -1109,7 +1110,7 @@ testFirewallQuery(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     if (STRNEQ_NULLABLE(expected, actual)) {
-        fprintf(stderr, "Unexected command execution\n");
+        fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
@@ -1123,47 +1124,60 @@ testFirewallQuery(const void *opaque ATTRIBUTE_UNUSED)
     return ret;
 }
 
+static bool
+hasNetfilterTools(void)
+{
+    return virFileIsExecutable(IPTABLES_PATH) &&
+        virFileIsExecutable(IP6TABLES_PATH) &&
+        virFileIsExecutable(EBTABLES_PATH);
+}
+
 static int
 mymain(void)
 {
     int ret = 0;
 
-# define RUN_TEST_DIRECT(name, method)                                  \
-    do {                                                                \
-        struct testFirewallData data;                                   \
-        data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;               \
-        data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT;               \
-        data.fwDisabled = true;                                         \
-        if (virTestRun(name " auto direct", method, &data) < 0)         \
-            ret = -1;                                                   \
-        data.tryBackend = VIR_FIREWALL_BACKEND_DIRECT;                  \
-        data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT;               \
-        data.fwDisabled = true;                                         \
-        if (virTestRun(name " manual direct", method, &data) < 0)       \
-            ret = -1;                                                   \
+    if (!hasNetfilterTools()) {
+        fprintf(stderr, "iptables/ip6tables/ebtables tools not present");
+        return EXIT_AM_SKIP;
+    }
+
+# define RUN_TEST_DIRECT(name, method) \
+    do { \
+        struct testFirewallData data; \
+        data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC; \
+        data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT; \
+        data.fwDisabled = true; \
+        if (virTestRun(name " auto direct", method, &data) < 0) \
+            ret = -1; \
+        data.tryBackend = VIR_FIREWALL_BACKEND_DIRECT; \
+        data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT; \
+        data.fwDisabled = true; \
+        if (virTestRun(name " manual direct", method, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 # if WITH_DBUS
-#  define RUN_TEST_FIREWALLD(name, method)                              \
-    do {                                                                \
-        struct testFirewallData data;                                   \
-        data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;               \
-        data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD;            \
-        data.fwDisabled = false;                                        \
-        if (virTestRun(name " auto firewalld", method, &data) < 0)      \
-            ret = -1;                                                   \
-        data.tryBackend = VIR_FIREWALL_BACKEND_FIREWALLD;               \
-        data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD;            \
-        data.fwDisabled = false;                                        \
-        if (virTestRun(name " manual firewalld", method, &data) < 0)    \
-            ret = -1;                                                   \
+#  define RUN_TEST_FIREWALLD(name, method) \
+    do { \
+        struct testFirewallData data; \
+        data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC; \
+        data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD; \
+        data.fwDisabled = false; \
+        if (virTestRun(name " auto firewalld", method, &data) < 0) \
+            ret = -1; \
+        data.tryBackend = VIR_FIREWALL_BACKEND_FIREWALLD; \
+        data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD; \
+        data.fwDisabled = false; \
+        if (virTestRun(name " manual firewalld", method, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#  define RUN_TEST(name, method)                \
-    RUN_TEST_DIRECT(name, method);              \
+#  define RUN_TEST(name, method) \
+    RUN_TEST_DIRECT(name, method); \
     RUN_TEST_FIREWALLD(name, method)
 # else /* ! WITH_DBUS */
-#  define RUN_TEST(name, method)                \
+#  define RUN_TEST(name, method) \
     RUN_TEST_DIRECT(name, method)
 # endif /* ! WITH_DBUS */
 
@@ -1184,9 +1198,9 @@ mymain(void)
 }
 
 # if WITH_DBUS
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
 # else
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 # endif
 
 #else /* ! defined (__linux__) */

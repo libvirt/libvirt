@@ -17,7 +17,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
+    <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
     <interface type='ethernet'>
       <target dev='vif1.0'/>
       <mac address='00:16:3e:3b:b9:d7'/>

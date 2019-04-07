@@ -17,13 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Richard W.M. Jones <rjones@redhat.com>
- * Author: Markus Groß <gross@univention.de>
  */
 
-#ifndef __VIR_XENXS_PRIVATE_H__
-# define __VIR_XENXS_PRIVATE_H__
+#ifndef LIBVIRT_XENXS_PRIVATE_H
+# define LIBVIRT_XENXS_PRIVATE_H
 
 # include "internal.h"
 
@@ -46,4 +43,4 @@
 #  define DEFAULT_VIF_SCRIPT "vif-bridge"
 # endif
 
-#endif /* __VIR_XENXS_PRIVATE_H__ */
+#endif /* LIBVIRT_XENXS_PRIVATE_H */

@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdio.h>
 
 #include "c-ctype.h"
 #include "virlog.h"
@@ -334,7 +330,7 @@ void virKeyFileFree(virKeyFilePtr conf)
 
 
 bool virKeyFileHasGroup(virKeyFilePtr conf,
-                       const char *groupname)
+                        const char *groupname)
 {
     VIR_DEBUG("conf=%p groupname=%s", conf, groupname);
     return virHashLookup(conf->groups, groupname) != NULL;
@@ -342,8 +338,8 @@ bool virKeyFileHasGroup(virKeyFilePtr conf,
 
 
 bool virKeyFileHasValue(virKeyFilePtr conf,
-                       const char *groupname,
-                       const char *valuename)
+                        const char *groupname,
+                        const char *valuename)
 {
     virHashTablePtr group = virHashLookup(conf->groups, groupname);
     VIR_DEBUG("conf=%p groupname=%s valuename=%s", conf, groupname, valuename);

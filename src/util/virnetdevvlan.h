@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Laine Stump <laine@redhat.com>
  */
-#ifndef __VIR_NETDEV_VLAN_H__
-# define __VIR_NETDEV_VLAN_H__
+
+#ifndef LIBVIRT_VIRNETDEVVLAN_H
+# define LIBVIRT_VIRNETDEVVLAN_H
 
 # include <virutil.h>
+
+# include "viralloc.h"
 
 typedef enum {
     VIR_NATIVE_VLAN_MODE_DEFAULT = 0,
@@ -31,7 +31,7 @@ typedef enum {
     VIR_NATIVE_VLAN_MODE_LAST
 } virNativeVlanMode;
 
-VIR_ENUM_DECL(virNativeVlanMode)
+VIR_ENUM_DECL(virNativeVlanMode);
 
 typedef struct _virNetDevVlan virNetDevVlan;
 typedef virNetDevVlan *virNetDevVlanPtr;
@@ -48,4 +48,6 @@ void virNetDevVlanFree(virNetDevVlanPtr vlan);
 int virNetDevVlanEqual(const virNetDevVlan *a, const virNetDevVlan *b);
 int virNetDevVlanCopy(virNetDevVlanPtr dst, const virNetDevVlan *src);
 
-#endif /* __VIR_NETDEV_VLAN_H__ */
+VIR_DEFINE_AUTOPTR_FUNC(virNetDevVlan, virNetDevVlanFree);
+
+#endif /* LIBVIRT_VIRNETDEVVLAN_H */

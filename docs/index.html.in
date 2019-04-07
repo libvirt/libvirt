@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="js/moment.min.js"></script>
-    <script type="text/javascript" src="js/jquery.rss.min.js"></script>
+    <script type="text/javascript" src="js/jquery-3.1.1.min.js"> </script>
+    <script type="text/javascript" src="js/moment.min.js"> </script>
+    <script type="text/javascript" src="js/jquery.rss.min.js"> </script>
 
     <script type="text/javascript">
       <!--
@@ -28,7 +28,7 @@
         The libvirt project:
       </p>
       <ul>
-        <li>is a toolkit to manage virtualization hosts</li>
+        <li>is a toolkit to manage <a href="platforms.html">virtualization platforms</a></li>
         <li>is accessible from C, Python, Perl, Java and more</li>
         <li>is licensed under open source licenses</li>
         <li>supports <a href="drvqemu.html">KVM</a>,
@@ -52,23 +52,24 @@
         <dd>Get involved in the libvirt community &amp; student outreach programs</dd>
 
         <dt><a href="securityprocess.html">Security vulnerabilities</a></dt>
-        <dd>Report vulnerabilities to the libvirt security response team</dd>
+        <dd>View security notices and report vulnerabilities to the libvirt security response team</dd>
 
         <dt><a href="bugs.html">Bug reporting</a></dt>
         <dd>View and report bugs in libvirt packages</dd>
 
         <dt><a href="format.html">XML configuration</a></dt>
         <dd>Description of the XML schemas for
-          <a href="formatdomain.html" shape="rect">domains</a>,
-          <a href="formatnetwork.html" shape="rect">networks</a>,
-          <a href="formatnwfilter.html" shape="rect">network filtering</a>,
-          <a href="formatstorage.html" shape="rect">storage</a>,
-          <a href="formatstorageencryption.html" shape="rect">storage encryption</a>,
-          <a href="formatcaps.html" shape="rect">capabilities</a>,
-          <a href="formatdomaincaps.html" shape="rect">domain capabilities</a>,
-          <a href="formatnode.html" shape="rect">node devices</a>,
-          <a href="formatsecret.html" shape="rect">secrets</a>,
-          <a href="formatsnapshot.html" shape="rect">snapshots</a></dd>
+          <a href="formatdomain.html">domains</a>,
+          <a href="formatnetwork.html">networks</a>,
+          <a href="formatnwfilter.html">network filtering</a>,
+          <a href="formatstorage.html">storage</a>,
+          <a href="formatstorageencryption.html">storage encryption</a>,
+          <a href="formatcaps.html">capabilities</a>,
+          <a href="formatdomaincaps.html">domain capabilities</a>,
+          <a href="formatstoragecaps.html">storage pool capabilities</a>,
+          <a href="formatnode.html">node devices</a>,
+          <a href="formatsecret.html">secrets</a>,
+          <a href="formatsnapshot.html">snapshots</a></dd>
         <dt><a href="http://wiki.libvirt.org">Wiki</a></dt>
         <dd>Read further community contributed content</dd>
       </dl>

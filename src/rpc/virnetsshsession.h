@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Peter Krempa <pkrempa@redhat.com>
  */
-#ifndef __VIR_NET_SSH_SESSION_H__
-# define __VIR_NET_SSH_SESSION_H__
+
+#ifndef LIBVIRT_VIRNETSSHSESSION_H
+# define LIBVIRT_VIRNETSSHSESSION_H
 
 # include "internal.h"
 # include "viruri.h"
@@ -86,4 +85,4 @@ ssize_t virNetSSHChannelWrite(virNetSSHSessionPtr sess,
 
 bool virNetSSHSessionHasCachedData(virNetSSHSessionPtr sess);
 
-#endif /* ___VIR_NET_SSH_SESSION_H_ */
+#endif /* LIBVIRT_VIRNETSSHSESSION_H */

@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Jiri Denemark <jdenemar@redhat.com>
  */
 
 #include <config.h>
@@ -44,7 +42,7 @@ virThreadJobOnceInit(void)
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virThreadJob)
+VIR_ONCE_GLOBAL_INIT(virThreadJob);
 
 
 const char *

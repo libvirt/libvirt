@@ -17,7 +17,6 @@
 #  License along with this library.  If not, see
 #  <http://www.gnu.org/licenses/>.
 #
-#  Author: Cedric Bosdonnat <cbosdonnat@suse.com>
 
 handler_cleanup()
 {
@@ -123,5 +122,5 @@ if test -z "$mem_limit"; then
     echo "lxc.cgroup.memory.limit_in_bytes = $memory" >> "$conf_new"
 fi
 
-virsh -c lxc:/// domxml-from-native lxc-tools $conf_new
+virsh -c lxc:///system domxml-from-native lxc-tools $conf_new
 exit $?

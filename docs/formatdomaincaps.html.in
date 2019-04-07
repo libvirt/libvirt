@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Domain capabilities XML format</h1>
 
     <ul id="toc"></ul>
 
-    <h2><a name="Overview">Overview</a></h2>
+    <h2><a id="Overview">Overview</a></h2>
 
     <p>Sometimes, when a new domain is to be created it may come handy to know
     the capabilities of the hypervisor so the correct combination of devices and
@@ -37,7 +37,18 @@
     management application to choose an appropriate mode for a pass-through
     host device as well as which adapter to utilize.</p>
 
-    <h2><a name="elements">Element and attribute overview</a></h2>
+    <p>Some XML elements may be entirely omitted from the domaincapabilities
+    XML, depending on what the libvirt driver has filled in. Applications
+    should only act on what is explicitly reported in the domaincapabilities
+    XML. For example, if &lt;disk supported='yes'/&gt; is present, you can safely
+    assume the driver supports &lt;disk&gt; devices. If &lt;disk supported='no'/&gt; is
+    present, you can safely assume the driver does NOT support &lt;disk&gt;
+    devices. If the &lt;disk&gt; block is omitted entirely, the driver is not
+    indicating one way or the other whether it supports &lt;disk&gt; devices, and
+    applications should not interpret the missing block to mean any thing in
+    particular.</p>
+
+    <h2><a id="elements">Element and attribute overview</a></h2>
 
     <p> A new query interface was added to the virConnect API's to retrieve the
     XML listing of the set of domain capabilities (<span class="since">Since
@@ -70,7 +81,8 @@
 
       <dt><code>machine</code></dt>
       <dd>The domain's <a href="formatdomain.html#elementsOSBIOS">machine
-          type</a>.</dd>
+          type</a>. Since not every hypervisor has a sense of machine types
+          this element might be omitted in such drivers.</dd>
 
       <dt><code>arch</code></dt>
       <dd>The domain's <a href="formatdomain.html#elementsOSBIOS">
@@ -78,9 +90,9 @@
 
     </dl>
 
-    <h3><a name="elementsCPUAllocation">CPU Allocation</a></h3>
+    <h3><a id="elementsCPUAllocation">CPU Allocation</a></h3>
 
-    <p>Before any devices capability occurs, there might be a info on domain
+    <p>Before any devices capability occurs, there might be info on domain
     wide capabilities, e.g. virtual CPUs:</p>
 
 <pre>
@@ -96,7 +108,7 @@
       <dd>The maximum number of supported virtual CPUs</dd>
     </dl>
 
-    <h3><a name="elementsOSBIOS">BIOS bootloader</a></h3>
+    <h3><a id="elementsOSBIOS">BIOS bootloader</a></h3>
 
     <p>Sometimes users might want to tweak some BIOS knobs or use
     UEFI. For cases like that, <a
@@ -142,7 +154,7 @@
       &lt;loader/&gt; element.</dd>
     </dl>
 
-    <h3><a name="elementsCPU">CPU configuration</a></h3>
+    <h3><a id="elementsCPU">CPU configuration</a></h3>
 
     <p>
       The <code>cpu</code> element exposes options usable for configuring
@@ -207,7 +219,23 @@
       </dd>
     </dl>
 
-    <h3><a name="elementsDevices">Devices</a></h3>
+    <h3><a id="elementsIothreads">I/O Threads</a></h3>
+
+    <p>
+      The <code>iothread</code> elements indicates whether or not
+      <a href="formatdomain.html#elementsIOThreadsAllocation">I/O threads</a>
+      are supported.
+    </p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;iothread supported='yes'/&gt;
+  ...
+&lt;domainCapabilities&gt;
+</pre>
+
+    <h3><a id="elementsDevices">Devices</a></h3>
 
     <p>
       Another set of XML elements describe the supported devices and their
@@ -239,7 +267,7 @@
     support the values <code>disk</code>, <code>cdrom</code>,
     <code>floppy</code>, or <code>lun</code>.</p>
 
-    <h4><a name="elementsDisks">Hard drives, floppy disks, CDROMs</a></h4>
+    <h4><a id="elementsDisks">Hard drives, floppy disks, CDROMs</a></h4>
     <p>Disk capabilities are exposed under the <code>disk</code> element. For
     instance:</p>
 
@@ -261,7 +289,6 @@
         &lt;value&gt;virtio&lt;/value&gt;
         &lt;value&gt;xen&lt;/value&gt;
         &lt;value&gt;usb&lt;/value&gt;
-        &lt;value&gt;uml&lt;/value&gt;
         &lt;value&gt;sata&lt;/value&gt;
         &lt;value&gt;sd&lt;/value&gt;
       &lt;/enum&gt;
@@ -282,7 +309,7 @@
     </dl>
 
 
-    <h4><a name="elementsGraphics">Graphical framebuffers</a></h4>
+    <h4><a id="elementsGraphics">Graphical framebuffers</a></h4>
     <p>Graphics device capabilities are exposed under the
     <code>graphics</code> element. For instance:</p>
 
@@ -309,7 +336,7 @@
     </dl>
 
 
-    <h4><a name="elementsVideo">Video device</a></h4>
+    <h4><a id="elementsVideo">Video device</a></h4>
     <p>Video device capabilities are exposed under the
     <code>video</code> element. For instance:</p>
 
@@ -338,7 +365,7 @@
     </dl>
 
 
-    <h4><a name="elementsHostDev">Host device assignment</a></h4>
+    <h4><a id="elementsHostDev">Host device assignment</a></h4>
     <p>Some host devices can be passed through to a guest (e.g. USB, PCI and
     SCSI). Well, only if the following is enabled:</p>
 
@@ -400,7 +427,7 @@
       element.</dd>
     </dl>
 
-    <h3><a name="elementsFeatures">Features</a></h3>
+    <h3><a id="elementsFeatures">Features</a></h3>
 
     <p>One more set of XML elements describe the supported features and
     their capabilities. All features occur as children of the main
@@ -416,6 +443,12 @@
         &lt;value&gt;3&lt;/value&gt;
       &lt;/enum&gt;
     &lt;/gic&gt;
+    &lt;vmcoreinfo supported='yes'/&gt;
+    &lt;genid supported='yes'/&gt;
+    &lt;sev&gt;
+      &lt;cbitpos&gt;47&lt;/cbitpos&gt;
+      &lt;reduced-phys-bits&gt;1&lt;/reduced-phys-bits&gt;
+    &lt;/sev&gt;
   &lt;/features&gt;
 &lt;/domainCapabilities&gt;
 </pre>
@@ -430,7 +463,7 @@
     the domain XML documentation.
     </p>
 
-    <h4><a name="elementsGIC">GIC capabilities</a></h4>
+    <h4><a id="elementsGIC">GIC capabilities</a></h4>
 
     <p>GIC capabilities are exposed under the <code>gic</code> element.</p>
 
@@ -438,6 +471,40 @@
       <dt><code>version</code></dt>
       <dd>Options for the <code>version</code> attribute of the
       <code>gic</code> element.</dd>
+    </dl>
+
+    <h4><a id="elementsvmcoreinfo">vmcoreinfo</a></h4>
+
+    <p>Reports whether the vmcoreinfo feature can be enabled.</p>
+
+    <h4><a id="elementsgenid">genid</a></h4>
+
+    <p>Reports whether the genid feature can be used by the domain.</p>
+
+    <h4><a id="elementsSEV">SEV capabilities</a></h4>
+
+    <p>AMD Secure Encrypted Virtualization (SEV) capabilities are exposed under
+    the <code>sev</code> element.
+    SEV is an extension to the AMD-V architecture which supports running
+    virtual machines (VMs) under the control of a hypervisor. When supported,
+    guest owner can create a VM whose memory contents will be transparently
+    encrypted with a key unique to that VM.</p>
+
+    <p>
+    For more details on SEV feature see:
+      <a href="https://support.amd.com/TechDocs/55766_SEV-KM_API_Specification.pdf">
+        SEV API spec</a> and <a href="http://amd-dev.wpengine.netdna-cdn.com/wordpress/media/2013/12/AMD_Memory_Encryption_Whitepaper_v7-Public.pdf">
+        SEV White Paper</a>
+    </p>
+
+    <dl>
+      <dt><code>cbitpos</code></dt>
+      <dd>When memory encryption is enabled, one of the physical address bits
+      (aka the C-bit) is utilized to mark if a memory page is protected. The
+      C-bit position is Hypervisor dependent.</dd>
+      <dt><code>reducedPhysBits</code></dt>
+      <dd>When memory encryption is enabled, we lose certain bits in physical
+      address space. The number of bits we lose is hypervisor dependent.</dd>
     </dl>
 
   </body>

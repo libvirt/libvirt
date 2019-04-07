@@ -90,6 +90,13 @@
             </element>
           </element>
         </optional>
+        <optional>
+          <element name='cookie'>
+            <zeroOrMore>
+              <ref name='customElement'/>
+            </zeroOrMore>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

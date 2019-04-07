@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright (C) 2013-2014 Red Hat, Inc.
 #
@@ -59,27 +59,15 @@ my %whitelist = (
     "storageClose" => 1,
     "interfaceOpen" => 1,
     "interfaceClose" => 1,
+    "connectURIProbe" => 1,
+    "localOnly" => 1,
     );
 
-# Temp hack - remove it once xen driver is fixed
+# XXX this vzDomainMigrateConfirm3Params looks
+# bogus - determine why it doesn't have a valid
+# ACL check.
 my %implwhitelist = (
-    "xenUnifiedDomainRestore" => 1,
-    "xenUnifiedDomainRestoreFlags" => 1,
-    "xenUnifiedDomainMigratePrepare" => 1,
-    "xenUnifiedNodeDeviceDettach" => 1,
-    "xenUnifiedNodeDeviceDetachFlags" => 1,
-    "xenUnifiedNodeDeviceReset" => 1,
-    "xenUnifiedDomainIsActive" => 1,
-    "xenUnifiedDomainIsPersistent" => 1,
-    "xenUnifiedDomainIsUpdated" => 1,
-    "xenUnifiedDomainOpenConsole" => 1,
     "vzDomainMigrateConfirm3Params" => 1,
-    );
-my %filterimplwhitelist = (
-    "xenUnifiedConnectListDomains" => 1,
-    "xenUnifiedConnectNumOfDomains" => 1,
-    "xenUnifiedConnectListDefinedDomains" => 1,
-    "xenUnifiedConnectNumOfDefinedDomains" => 1,
     );
 
 my $lastfile;
@@ -234,8 +222,7 @@ while (<>) {
             }
 
             if (exists $filtered{$api} &&
-                !exists $aclfilters{$impl} &&
-                !exists $filterimplwhitelist{$impl}) {
+                !exists $aclfilters{$impl}) {
                 print "$ARGV:$. Missing ACL filter in function '$impl' for '$api'\n";
                 $status = 1;
             }

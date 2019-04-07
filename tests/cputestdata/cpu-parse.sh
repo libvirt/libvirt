@@ -16,9 +16,9 @@ fname=`sed -e 's/^ *//;
                s/ \(CPU\|Processor\)\>//;
                s/ @.*//;
                s/ APU .*//;
-               s/ \(v[0-9]\|SE\)$//;
+               s/ SE$//;
                s/ /-/g' <<<"$model"`
-fname="x86-cpuid-$fname"
+fname="x86_64-cpuid-$fname"
 
 xml()
 {
@@ -42,7 +42,7 @@ json()
     while read; do
         $first || echo
         first=false
-        json_reformat <<<"$REPLY" | tr -s '\n'
+        $(dirname $0)/cpu-reformat.py <<<"$REPLY"
     done
 }
 
@@ -52,6 +52,10 @@ echo $fname.xml
 json <<<"$data" >$fname.json
 if [[ -s $fname.json ]]; then
     echo $fname.json
+    if ! grep -q model-expansion $fname.json; then
+        $(dirname $0)/cpu-cpuid.py convert $fname.json
+    fi
+    $(dirname $0)/cpu-cpuid.py diff $fname.json
 else
-    rm $fname.new.json
+    rm $fname.json
 fi

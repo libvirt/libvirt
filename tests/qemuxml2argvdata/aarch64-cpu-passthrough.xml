@@ -1,0 +1,26 @@
+<domain type="kvm">
+  <name>aarch64test</name>
+  <uuid>496d7ea8-9739-544b-4ebd-ef08be936e8b</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch="aarch64" machine="virt">hvm</type>
+  </os>
+  <features>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu mode='host-passthrough'/>
+  <clock offset="utc"/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <disk type='file' device='disk'>
+      <source file='/aarch64.raw'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+  </devices>
+</domain>

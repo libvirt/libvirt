@@ -1,0 +1,12 @@
+<device>
+  <name>scsi_target1_0_0</name>
+  <path>/sys/devices/css0/0.0.0000/0.0.0000/host1/rport-1:0-0/target1:0:0</path>
+  <parent>scsi_host0</parent>
+  <capability type='scsi_target'>
+    <target>target1:0:0</target>
+    <capability type='fc_remote_port'>
+      <rport>rport-1:0-0</rport>
+      <wwpn>0x9d73bc45f0e21a86</wwpn>
+    </capability>
+  </capability>
+</device>

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VBOX_MSCOMGLUE_H__
-# define __VBOX_MSCOMGLUE_H__
+#ifndef LIBVIRT_VBOX_MSCOMGLUE_H
+# define LIBVIRT_VBOX_MSCOMGLUE_H
 
 # include "vbox_CAPI_v3_2.h"
 
@@ -45,4 +45,4 @@ nsresult vboxArrayGetWithUintArg(vboxArray *array, void *self, void *getter, PRU
 void vboxArrayRelease(vboxArray *array);
 # define vboxArrayUnalloc vboxArrayRelease
 
-#endif /* __VBOX_MSCOMGLUE_H__ */
+#endif /* LIBVIRT_VBOX_MSCOMGLUE_H */

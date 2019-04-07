@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -40,7 +38,7 @@
 VIR_LOG_INIT("rpc.netclientprogram");
 
 struct _virNetClientProgram {
-    virObject object;
+    virObject parent;
 
     unsigned program;
     unsigned version;
@@ -54,16 +52,13 @@ static void virNetClientProgramDispose(void *obj);
 
 static int virNetClientProgramOnceInit(void)
 {
-    if (!(virNetClientProgramClass = virClassNew(virClassForObject(),
-                                                 "virNetClientProgram",
-                                                 sizeof(virNetClientProgram),
-                                                 virNetClientProgramDispose)))
+    if (!VIR_CLASS_NEW(virNetClientProgram, virClassForObject()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetClientProgram)
+VIR_ONCE_GLOBAL_INIT(virNetClientProgram);
 
 
 virNetClientProgramPtr virNetClientProgramNew(unsigned program,
@@ -221,25 +216,25 @@ int virNetClientProgramDispatch(virNetClientProgramPtr prog,
 
     /* Check version, etc. */
     if (msg->header.prog != prog->program) {
-        VIR_ERROR(_("program mismatch in event (actual %x, expected %x)"),
+        VIR_ERROR(_("program mismatch in event (actual 0x%x, expected 0x%x)"),
                   msg->header.prog, prog->program);
         return -1;
     }
 
     if (msg->header.vers != prog->version) {
-        VIR_ERROR(_("version mismatch in event (actual %x, expected %x)"),
+        VIR_ERROR(_("version mismatch in event (actual 0x%x, expected 0x%x)"),
                   msg->header.vers, prog->version);
         return -1;
     }
 
     if (msg->header.status != VIR_NET_OK) {
-        VIR_ERROR(_("status mismatch in event (actual %x, expected %x)"),
+        VIR_ERROR(_("status mismatch in event (actual 0x%x, expected 0x%x)"),
                   msg->header.status, VIR_NET_OK);
         return -1;
     }
 
     if (msg->header.type != VIR_NET_MESSAGE) {
-        VIR_ERROR(_("type mismatch in event (actual %x, expected %x)"),
+        VIR_ERROR(_("type mismatch in event (actual 0x%x, expected 0x%x)"),
                   msg->header.type, VIR_NET_MESSAGE);
         return -1;
     }
@@ -247,7 +242,7 @@ int virNetClientProgramDispatch(virNetClientProgramPtr prog,
     event = virNetClientProgramGetEvent(prog, msg->header.proc);
 
     if (!event) {
-        VIR_ERROR(_("No event expected with procedure %x"),
+        VIR_ERROR(_("No event expected with procedure 0x%x"),
                   msg->header.proc);
         return -1;
     }
@@ -296,9 +291,9 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
     msg->header.type = noutfds ? VIR_NET_CALL_WITH_FDS : VIR_NET_CALL;
     msg->header.serial = serial;
     msg->header.proc = proc;
-    msg->nfds = noutfds;
-    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
+    if (VIR_ALLOC_N(msg->fds, noutfds) < 0)
         goto error;
+    msg->nfds = noutfds;
     for (i = 0; i < msg->nfds; i++)
         msg->fds[i] = -1;
     for (i = 0; i < msg->nfds; i++) {
@@ -384,6 +379,7 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
         virNetClientProgramDispatchError(prog, msg);
         goto error;
 
+    case VIR_NET_CONTINUE:
     default:
         virReportError(VIR_ERR_RPC,
                        _("Unexpected message status %d"), msg->header.status);

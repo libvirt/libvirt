@@ -19,20 +19,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
- * File created Jul 18, 2007 - Shuveb Hussain <shuveb@binarykarma.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <dirent.h>
-#include <stdio.h>
-#include <stdarg.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <poll.h>
 #include <sys/stat.h>
 
@@ -43,10 +35,7 @@
 #endif
 
 #include <sys/types.h>
-#include <sys/ioctl.h>
-#include <string.h>
 #include <termios.h>
-#include <locale.h>
 
 #if WITH_DEVMAPPER
 # include <libdevmapper.h>
@@ -70,13 +59,16 @@
 # include <shlobj.h>
 #endif
 
+#ifdef HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
+
 #include "c-ctype.h"
 #include "mgetgroups.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "virthread.h"
 #include "verify.h"
 #include "virfile.h"
 #include "vircommand.h"
@@ -95,12 +87,34 @@ VIR_LOG_INIT("util.util");
 VIR_ENUM_IMPL(virTristateBool, VIR_TRISTATE_BOOL_LAST,
               "default",
               "yes",
-              "no")
+              "no",
+);
 
 VIR_ENUM_IMPL(virTristateSwitch, VIR_TRISTATE_SWITCH_LAST,
               "default",
               "on",
-              "off")
+              "off",
+);
+
+
+virTristateBool
+virTristateBoolFromBool(bool val)
+{
+    if (val)
+        return VIR_TRISTATE_BOOL_YES;
+    else
+        return VIR_TRISTATE_BOOL_NO;
+}
+
+
+virTristateSwitch
+virTristateSwitchFromBool(bool val)
+{
+    if (val)
+        return VIR_TRISTATE_SWITCH_ON;
+    else
+        return VIR_TRISTATE_SWITCH_OFF;
+}
 
 
 #ifndef WIN32
@@ -177,88 +191,6 @@ int virSetSockReuseAddr(int fd, bool fatal)
 }
 #endif
 
-int
-virPipeReadUntilEOF(int outfd, int errfd,
-                    char **outbuf, char **errbuf) {
-
-    struct pollfd fds[2];
-    size_t i;
-    bool finished[2];
-
-    fds[0].fd = outfd;
-    fds[0].events = POLLIN;
-    fds[0].revents = 0;
-    finished[0] = false;
-    fds[1].fd = errfd;
-    fds[1].events = POLLIN;
-    fds[1].revents = 0;
-    finished[1] = false;
-
-    while (!(finished[0] && finished[1])) {
-
-        if (poll(fds, ARRAY_CARDINALITY(fds), -1) < 0) {
-            if ((errno == EAGAIN) || (errno == EINTR))
-                continue;
-            goto pollerr;
-        }
-
-        for (i = 0; i < ARRAY_CARDINALITY(fds); ++i) {
-            char data[1024], **buf;
-            int got, size;
-
-            if (!(fds[i].revents))
-                continue;
-            else if (fds[i].revents & POLLHUP)
-                finished[i] = true;
-
-            if (!(fds[i].revents & POLLIN)) {
-                if (fds[i].revents & POLLHUP)
-                    continue;
-
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("Unknown poll response."));
-                goto error;
-            }
-
-            got = read(fds[i].fd, data, sizeof(data));
-
-            if (got == sizeof(data))
-                finished[i] = false;
-
-            if (got == 0) {
-                finished[i] = true;
-                continue;
-            }
-            if (got < 0) {
-                if (errno == EINTR)
-                    continue;
-                if (errno == EAGAIN)
-                    break;
-                goto pollerr;
-            }
-
-            buf = ((fds[i].fd == outfd) ? outbuf : errbuf);
-            size = (*buf ? strlen(*buf) : 0);
-            if (VIR_REALLOC_N(*buf, size+got+1) < 0)
-                goto error;
-            memmove(*buf+size, data, got);
-            (*buf)[size+got] = '\0';
-        }
-        continue;
-
-    pollerr:
-        virReportSystemError(errno,
-                             "%s", _("poll error"));
-        goto error;
-    }
-
-    return 0;
-
- error:
-    VIR_FREE(*outbuf);
-    VIR_FREE(*errbuf);
-    return -1;
-}
 
 /* Convert C from hexadecimal character to integer.  */
 int
@@ -306,26 +238,26 @@ virScaleInteger(unsigned long long *value, const char *suffix,
             base = 1000;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                         _("unknown suffix '%s'"), suffix);
+                           _("unknown suffix '%s'"), suffix);
             return -1;
         }
         scale = 1;
         switch (c_tolower(*suffix)) {
         case 'e':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 'p':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 't':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 'g':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 'm':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 'k':
             scale *= base;
             break;
@@ -345,37 +277,6 @@ virScaleInteger(unsigned long long *value, const char *suffix,
     return 0;
 }
 
-
-/**
- * virParseNumber:
- * @str: pointer to the char pointer used
- *
- * Parse an unsigned number
- *
- * Returns the unsigned number or -1 in case of error. @str will be
- *         updated to skip the number.
- */
-int
-virParseNumber(const char **str)
-{
-    int ret = 0;
-    const char *cur = *str;
-
-    if ((*cur < '0') || (*cur > '9'))
-        return -1;
-
-    while (c_isdigit(*cur)) {
-        unsigned int c = *cur - '0';
-
-        if ((ret > INT_MAX / 10) ||
-            ((ret == INT_MAX / 10) && (c > INT_MAX % 10)))
-            return -1;
-        ret = ret * 10 + c;
-        cur++;
-    }
-    *str = cur;
-    return ret;
-}
 
 /**
  * virParseVersionString:
@@ -438,68 +339,6 @@ int virEnumFromString(const char *const*types,
     return -1;
 }
 
-/* In case thread-safe locales are available */
-#if HAVE_NEWLOCALE
-
-static locale_t virLocale;
-
-static int
-virLocaleOnceInit(void)
-{
-    virLocale = newlocale(LC_ALL_MASK, "C", (locale_t)0);
-    if (!virLocale)
-        return -1;
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(virLocale)
-#endif
-
-/**
- * virDoubleToStr
- *
- * converts double to string with C locale (thread-safe).
- *
- * Returns -1 on error, size of the string otherwise.
- */
-int
-virDoubleToStr(char **strp, double number)
-{
-    int ret = -1;
-
-#if HAVE_NEWLOCALE
-
-    locale_t old_loc;
-
-    if (virLocaleInitialize() < 0)
-        goto error;
-
-    old_loc = uselocale(virLocale);
-    ret = virAsprintf(strp, "%lf", number);
-    uselocale(old_loc);
-
-#else
-
-    char *radix, *tmp;
-    struct lconv *lc;
-
-    if ((ret = virAsprintf(strp, "%lf", number) < 0))
-        goto error;
-
-    lc = localeconv();
-    radix = lc->decimal_point;
-    tmp = strstr(*strp, radix);
-    if (tmp) {
-        *tmp = '.';
-        if (strlen(radix) > 1)
-            memmove(tmp + 1, tmp + strlen(radix), strlen(*strp) - (tmp - *strp));
-    }
-
-#endif /* HAVE_NEWLOCALE */
- error:
-    return ret;
-}
-
 
 /**
  * Format @val as a base-10 decimal number, in the
@@ -527,6 +366,56 @@ virFormatIntDecimal(char *buf, size_t buflen, int val)
         *--p = '-';
     }
     return p;
+}
+
+
+/**
+ * virFormatIntPretty
+ *
+ * @val: Value in bytes to be shortened
+ * @unit: unit to be used
+ *
+ * Similar to vshPrettyCapacity, but operates on integers and not doubles
+ *
+ * NB: Since using unsigned long long, we are limited to at most a "PiB"
+ *     to make pretty. This is because a PiB is 1152921504606846976 bytes,
+ *     but that value * 1024 > ULLONG_MAX value 18446744073709551615 bytes.
+ *
+ * Returns shortened value that can be used with @unit.
+ */
+unsigned long long
+virFormatIntPretty(unsigned long long val,
+                   const char **unit)
+{
+    unsigned long long limit = 1024;
+
+    if (val % limit || val == 0) {
+        *unit = "B";
+        return val;
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "KiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "MiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "GiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "TiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    *unit = "PiB";
+    return val / (limit / 1024);
 }
 
 
@@ -563,7 +452,7 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
         }
     }
 
-    if (!ptr)
+    if (!ptr || !c_islower(*ptr))
         return -1;
 
     for (i = 0; *ptr; i++) {
@@ -607,7 +496,7 @@ int virDiskNameToIndex(const char *name)
 {
     int idx;
 
-    if (virDiskNameParse(name, &idx, NULL))
+    if (virDiskNameParse(name, &idx, NULL) < 0)
         idx = -1;
 
     return idx;
@@ -644,6 +533,10 @@ char *virIndexToDiskName(int idx, const char *prefix)
 
 #ifndef AI_CANONIDN
 # define AI_CANONIDN 0
+#endif
+
+#ifndef HOST_NAME_MAX
+# define HOST_NAME_MAX 256
 #endif
 
 /* Who knew getting a hostname could be so delicate.  In Linux (and Unices
@@ -928,7 +821,7 @@ char *virGetUserConfigDirectory(void)
 
 char *virGetUserCacheDirectory(void)
 {
-     return virGetXDGDirectory("XDG_CACHE_HOME", ".cache");
+    return virGetXDGDirectory("XDG_CACHE_HOME", ".cache");
 }
 
 char *virGetUserRuntimeDirectory(void)
@@ -959,9 +852,11 @@ char *virGetGroupName(gid_t gid)
 
 /* Search in the password database for a user id that matches the user name
  * `name`. Returns 0 on success, -1 on failure or 1 if name cannot be found.
+ *
+ * Warns if @missing_ok is false
  */
 static int
-virGetUserIDByName(const char *name, uid_t *uid)
+virGetUserIDByName(const char *name, uid_t *uid, bool missing_ok)
 {
     char *strbuf = NULL;
     struct passwd pwbuf;
@@ -984,7 +879,7 @@ virGetUserIDByName(const char *name, uid_t *uid)
     }
 
     if (!pw) {
-        if (rc != 0) {
+        if (rc != 0 && !missing_ok) {
             char buf[1024];
             /* log the possible error from getpwnam_r. Unfortunately error
              * reporting from this function is bad and we can't really
@@ -997,7 +892,8 @@ virGetUserIDByName(const char *name, uid_t *uid)
         goto cleanup;
     }
 
-    *uid = pw->pw_uid;
+    if (uid)
+        *uid = pw->pw_uid;
     ret = 0;
 
  cleanup:
@@ -1020,7 +916,7 @@ virGetUserID(const char *user, uid_t *uid)
     if (*user == '+') {
         user++;
     } else {
-        int rc = virGetUserIDByName(user, uid);
+        int rc = virGetUserIDByName(user, uid, false);
         if (rc <= 0)
             return rc;
     }
@@ -1039,9 +935,11 @@ virGetUserID(const char *user, uid_t *uid)
 
 /* Search in the group database for a group id that matches the group name
  * `name`. Returns 0 on success, -1 on failure or 1 if name cannot be found.
+ *
+ * Warns if @missing_ok is false
  */
 static int
-virGetGroupIDByName(const char *name, gid_t *gid)
+virGetGroupIDByName(const char *name, gid_t *gid, bool missing_ok)
 {
     char *strbuf = NULL;
     struct group grbuf;
@@ -1064,7 +962,7 @@ virGetGroupIDByName(const char *name, gid_t *gid)
     }
 
     if (!gr) {
-        if (rc != 0) {
+        if (rc != 0 && !missing_ok) {
             char buf[1024];
             /* log the possible error from getgrnam_r. Unfortunately error
              * reporting from this function is bad and we can't really
@@ -1077,7 +975,8 @@ virGetGroupIDByName(const char *name, gid_t *gid)
         goto cleanup;
     }
 
-    *gid = gr->gr_gid;
+    if (gid)
+        *gid = gr->gr_gid;
     ret = 0;
 
  cleanup:
@@ -1100,7 +999,7 @@ virGetGroupID(const char *group, gid_t *gid)
     if (*group == '+') {
         group++;
     } else {
-        int rc = virGetGroupIDByName(group, gid);
+        int rc = virGetGroupIDByName(group, gid, false);
         if (rc <= 0)
             return rc;
     }
@@ -1115,6 +1014,24 @@ virGetGroupID(const char *group, gid_t *gid)
     *gid = uint_gid;
 
     return 0;
+}
+
+/* Silently checks if User @name exists.
+ * Returns if the user exists and fallbacks to false on error.
+ */
+bool
+virDoesUserExist(const char *name)
+{
+    return virGetUserIDByName(name, NULL, true) == 0;
+}
+
+/* Silently checks if Group @name exists.
+ * Returns if the group exists and fallbacks to false on error.
+ */
+bool
+virDoesGroupExist(const char *name)
+{
+    return virGetGroupIDByName(name, NULL, true) == 0;
 }
 
 
@@ -1210,6 +1127,18 @@ virGetGroupList(uid_t uid ATTRIBUTE_UNUSED, gid_t gid ATTRIBUTE_UNUSED,
 {
     *list = NULL;
     return 0;
+}
+
+bool
+virDoesUserExist(const char *name ATTRIBUTE_UNUSED)
+{
+    return false;
+}
+
+bool
+virDoesGroupExist(const char *name ATTRIBUTE_UNUSED)
+{
+    return false;
 }
 
 # ifdef WIN32
@@ -1462,8 +1391,10 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
 {
     size_t i;
     int capng_ret, ret = -1;
-    bool need_setgid = false, need_setuid = false;
+    bool need_setgid = false;
+    bool need_setuid = false;
     bool need_setpcap = false;
+    const char *capstr = NULL;
 
     /* First drop all caps (unless the requested uid is "unchanged" or
      * root and clearExistingCaps wasn't requested), then add back
@@ -1472,14 +1403,18 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
      */
 
     if (clearExistingCaps || (uid != (uid_t)-1 && uid != 0))
-       capng_clear(CAPNG_SELECT_BOTH);
+        capng_clear(CAPNG_SELECT_BOTH);
 
     for (i = 0; i <= CAP_LAST_CAP; i++) {
+        capstr = capng_capability_to_name(i);
+
         if (capBits & (1ULL << i)) {
             capng_update(CAPNG_ADD,
                          CAPNG_EFFECTIVE|CAPNG_INHERITABLE|
                          CAPNG_PERMITTED|CAPNG_BOUNDING_SET,
                          i);
+
+            VIR_DEBUG("Added '%s' to child capabilities' set", capstr);
         }
     }
 
@@ -1539,6 +1474,27 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
         goto cleanup;
     }
 
+# ifdef PR_CAP_AMBIENT
+    /* we couldn't do this in the loop earlier above, because the capabilities
+     * were not applied yet, since in order to add a capability into the AMBIENT
+     * set, it has to be present in both the PERMITTED and INHERITABLE sets
+     * (capabilities(7))
+     */
+    for (i = 0; i <= CAP_LAST_CAP; i++) {
+        capstr = capng_capability_to_name(i);
+
+        if (capBits & (1ULL << i)) {
+            if (prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, i, 0, 0) < 0) {
+                virReportSystemError(errno,
+                                     _("prctl failed to enable '%s' in the "
+                                       "AMBIENT set"),
+                                     capstr);
+                goto cleanup;
+            }
+        }
+    }
+# endif
+
     /* Set bounding set while we have CAP_SETPCAP.  Unfortunately we cannot
      * do this if we failed to get the capability above, so ignore the
      * return value.
@@ -1583,7 +1539,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
 
 
 #if defined(UDEVADM) || defined(UDEVSETTLE)
-void virFileWaitForDevices(void)
+void virWaitForDevices(void)
 {
 # ifdef UDEVADM
     const char *const settleprog[] = { UDEVADM, "settle", NULL };
@@ -1604,7 +1560,7 @@ void virFileWaitForDevices(void)
     ignore_value(virRun(settleprog, &exitstatus));
 }
 #else
-void virFileWaitForDevices(void)
+void virWaitForDevices(void)
 {}
 #endif
 
@@ -1676,7 +1632,6 @@ virGetDeviceID(const char *path ATTRIBUTE_UNUSED,
                int *maj ATTRIBUTE_UNUSED,
                int *min ATTRIBUTE_UNUSED)
 {
-
     return -ENOSYS;
 }
 #endif
@@ -1776,656 +1731,6 @@ virGetDeviceUnprivSGIO(const char *path,
     return ret;
 }
 
-#ifdef __linux__
-# define SYSFS_FC_HOST_PATH "/sys/class/fc_host"
-# define SYSFS_SCSI_HOST_PATH "/sys/class/scsi_host"
-
-/* virReadSCSIUniqueId:
- * @sysfs_prefix: "scsi_host" sysfs path, defaults to SYSFS_SCSI_HOST_PATH
- * @host: Host number, E.g. 5 of "scsi_host/host5"
- * @result: Return the entry value as an unsigned int
- *
- * Read the value of the "scsi_host" unique_id file.
- *
- * Returns 0 on success, and @result is filled with the unique_id value
- * Otherwise returns -1
- */
-int
-virReadSCSIUniqueId(const char *sysfs_prefix,
-                    int host,
-                    int *result)
-{
-    char *sysfs_path = NULL;
-    char *p = NULL;
-    int ret = -1;
-    char *buf = NULL;
-    int unique_id;
-
-    if (virAsprintf(&sysfs_path, "%s/host%d/unique_id",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH,
-                    host) < 0)
-        goto cleanup;
-
-    if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
-        goto cleanup;
-
-    if ((p = strchr(buf, '\n')))
-        *p = '\0';
-
-    if (virStrToLong_i(buf, NULL, 10, &unique_id) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to parse unique_id: %s"), buf);
-
-        goto cleanup;
-    }
-
-    *result = unique_id;
-    ret = 0;
-
- cleanup:
-    VIR_FREE(sysfs_path);
-    VIR_FREE(buf);
-    return ret;
-}
-
-/* virFindSCSIHostByPCI:
- * @sysfs_prefix: "scsi_host" sysfs path, defaults to SYSFS_SCSI_HOST_PATH
- * @parentaddr: string of the PCI address "scsi_host" device to be found
- * @unique_id: unique_id value of the to be found "scsi_host" device
- * @result: Return the host# of the matching "scsi_host" device
- *
- * Iterate over the SYSFS_SCSI_HOST_PATH entries looking for a matching
- * PCI Address in the expected format (dddd:bb:ss.f, where 'dddd' is the
- * 'domain' value, 'bb' is the 'bus' value, 'ss' is the 'slot' value, and
- * 'f' is the 'function' value from the PCI address) with a unique_id file
- * entry having the value expected. Unlike virReadSCSIUniqueId() we don't
- * have a host number yet and that's what we're looking for.
- *
- * Returns the host name of the "scsi_host" which must be freed by the caller,
- * or NULL on failure
- */
-char *
-virFindSCSIHostByPCI(const char *sysfs_prefix,
-                     const char *parentaddr,
-                     unsigned int unique_id)
-{
-    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH;
-    struct dirent *entry = NULL;
-    DIR *dir = NULL;
-    char *host_link = NULL;
-    char *host_path = NULL;
-    char *p = NULL;
-    char *ret = NULL;
-    char *buf = NULL;
-    char *unique_path = NULL;
-    unsigned int read_unique_id;
-
-    if (virDirOpen(&dir, prefix) < 0)
-        return NULL;
-
-    while (virDirRead(dir, &entry, prefix) > 0) {
-        if (!virFileIsLink(entry->d_name))
-            continue;
-
-        if (virAsprintf(&host_link, "%s/%s", prefix, entry->d_name) < 0)
-            goto cleanup;
-
-        if (virFileResolveLink(host_link, &host_path) < 0)
-            goto cleanup;
-
-        if (!strstr(host_path, parentaddr)) {
-            VIR_FREE(host_link);
-            VIR_FREE(host_path);
-            continue;
-        }
-        VIR_FREE(host_link);
-        VIR_FREE(host_path);
-
-        if (virAsprintf(&unique_path, "%s/%s/unique_id", prefix,
-                        entry->d_name) < 0)
-            goto cleanup;
-
-        if (!virFileExists(unique_path)) {
-            VIR_FREE(unique_path);
-            continue;
-        }
-
-        if (virFileReadAll(unique_path, 1024, &buf) < 0)
-            goto cleanup;
-
-        if ((p = strchr(buf, '\n')))
-            *p = '\0';
-
-        if (virStrToLong_ui(buf, NULL, 10, &read_unique_id) < 0)
-            goto cleanup;
-
-        VIR_FREE(buf);
-
-        if (read_unique_id != unique_id) {
-            VIR_FREE(unique_path);
-            continue;
-        }
-
-        ignore_value(VIR_STRDUP(ret, entry->d_name));
-        break;
-    }
-
- cleanup:
-    VIR_DIR_CLOSE(dir);
-    VIR_FREE(unique_path);
-    VIR_FREE(host_link);
-    VIR_FREE(host_path);
-    VIR_FREE(buf);
-    return ret;
-}
-
-/* virGetSCSIHostNumber:
- * @adapter_name: Name of the host adapter
- * @result: Return the entry value as unsigned int
- *
- * Convert the various forms of scsi_host names into the numeric
- * host# value that can be used in order to scan sysfs looking for
- * the specific host.
- *
- * Names can be either "scsi_host#" or just "host#", where
- * "host#" is the back-compat format, but both equate to
- * the same source adapter.  First check if both pool and def
- * are using same format (easier) - if so, then compare
- *
- * Returns 0 on success, and @result has the host number.
- * Otherwise returns -1.
- */
-int
-virGetSCSIHostNumber(const char *adapter_name,
-                     unsigned int *result)
-{
-    /* Specifying adapter like 'host5' is still supported for
-     * back-compat reason.
-     */
-    if (STRPREFIX(adapter_name, "scsi_host")) {
-        adapter_name += strlen("scsi_host");
-    } else if (STRPREFIX(adapter_name, "fc_host")) {
-        adapter_name += strlen("fc_host");
-    } else if (STRPREFIX(adapter_name, "host")) {
-        adapter_name += strlen("host");
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid adapter name '%s' for SCSI pool"),
-                       adapter_name);
-        return -1;
-    }
-
-    if (virStrToLong_ui(adapter_name, NULL, 10, result) == -1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid adapter name '%s' for SCSI pool"),
-                       adapter_name);
-        return -1;
-    }
-
-    return 0;
-}
-
-/* virGetSCSIHostNameByParentaddr:
- * @domain: The domain from the scsi_host parentaddr
- * @bus: The bus from the scsi_host parentaddr
- * @slot: The slot from the scsi_host parentaddr
- * @function: The function from the scsi_host parentaddr
- * @unique_id: The unique id value for parentaddr
- *
- * Generate a parentaddr and find the scsi_host host# for
- * the provided parentaddr PCI address fields.
- *
- * Returns the "host#" string which must be free'd by
- * the caller or NULL on error
- */
-char *
-virGetSCSIHostNameByParentaddr(unsigned int domain,
-                               unsigned int bus,
-                               unsigned int slot,
-                               unsigned int function,
-                               unsigned int unique_id)
-{
-    char *name = NULL;
-    char *parentaddr = NULL;
-
-    if (virAsprintf(&parentaddr, "%04x:%02x:%02x.%01x",
-                    domain, bus, slot, function) < 0)
-        goto cleanup;
-    if (!(name = virFindSCSIHostByPCI(NULL, parentaddr, unique_id))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Failed to find scsi_host using PCI '%s' "
-                         "and unique_id='%u'"),
-                       parentaddr, unique_id);
-        goto cleanup;
-    }
-
- cleanup:
-    VIR_FREE(parentaddr);
-    return name;
-}
-
-/* virReadFCHost:
- * @sysfs_prefix: "fc_host" sysfs path, defaults to SYSFS_FC_HOST_PATH
- * @host: Host number, E.g. 5 of "fc_host/host5"
- * @entry: Name of the sysfs entry to read
- *
- * Read the value of sysfs "fc_host" entry.
- *
- * Returns result as a stringon success, caller must free @result after
- * Otherwise returns NULL.
- */
-char *
-virReadFCHost(const char *sysfs_prefix,
-              int host,
-              const char *entry)
-{
-    char *sysfs_path = NULL;
-    char *p = NULL;
-    char *buf = NULL;
-    char *result = NULL;
-
-    if (virAsprintf(&sysfs_path, "%s/host%d/%s",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
-                    host, entry) < 0)
-        goto cleanup;
-
-    if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
-        goto cleanup;
-
-    if ((p = strchr(buf, '\n')))
-        *p = '\0';
-
-    if ((p = strstr(buf, "0x")))
-        p += strlen("0x");
-    else
-        p = buf;
-
-    ignore_value(VIR_STRDUP(result, p));
-
- cleanup:
-    VIR_FREE(sysfs_path);
-    VIR_FREE(buf);
-    return result;
-}
-
-bool
-virIsCapableFCHost(const char *sysfs_prefix,
-                   int host)
-{
-    char *sysfs_path = NULL;
-    bool ret = false;
-
-    if (virAsprintf(&sysfs_path, "%s/host%d",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
-                    host) < 0)
-        return false;
-
-    if (virFileExists(sysfs_path))
-        ret = true;
-
-    VIR_FREE(sysfs_path);
-    return ret;
-}
-
-bool
-virIsCapableVport(const char *sysfs_prefix,
-                  int host)
-{
-    char *scsi_host_path = NULL;
-    char *fc_host_path = NULL;
-    bool ret = false;
-
-    if (virAsprintf(&fc_host_path,
-                    "%s/host%d/%s",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
-                    host,
-                    "vport_create") < 0)
-        return false;
-
-    if (virAsprintf(&scsi_host_path,
-                    "%s/host%d/%s",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH,
-                    host,
-                    "vport_create") < 0)
-        goto cleanup;
-
-    if (virFileExists(fc_host_path) ||
-        virFileExists(scsi_host_path))
-        ret = true;
-
- cleanup:
-    VIR_FREE(fc_host_path);
-    VIR_FREE(scsi_host_path);
-    return ret;
-}
-
-int
-virManageVport(const int parent_host,
-               const char *wwpn,
-               const char *wwnn,
-               int operation)
-{
-    int ret = -1;
-    char *operation_path = NULL, *vport_name = NULL;
-    const char *operation_file = NULL;
-
-    switch (operation) {
-    case VPORT_CREATE:
-        operation_file = "vport_create";
-        break;
-    case VPORT_DELETE:
-        operation_file = "vport_delete";
-        break;
-    default:
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Invalid vport operation (%d)"), operation);
-        goto cleanup;
-    }
-
-    if (virAsprintf(&operation_path,
-                    "%s/host%d/%s",
-                    SYSFS_FC_HOST_PATH,
-                    parent_host,
-                    operation_file) < 0)
-        goto cleanup;
-
-    if (!virFileExists(operation_path)) {
-        VIR_FREE(operation_path);
-        if (virAsprintf(&operation_path,
-                        "%s/host%d/%s",
-                        SYSFS_SCSI_HOST_PATH,
-                        parent_host,
-                        operation_file) < 0)
-            goto cleanup;
-
-        if (!virFileExists(operation_path)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("vport operation '%s' is not supported for host%d"),
-                           operation_file, parent_host);
-            goto cleanup;
-        }
-    }
-
-    if (virAsprintf(&vport_name,
-                    "%s:%s",
-                    wwpn,
-                    wwnn) < 0)
-        goto cleanup;
-
-    if (virFileWriteStr(operation_path, vport_name, 0) == 0)
-        ret = 0;
-    else
-        virReportSystemError(errno,
-                             _("Write of '%s' to '%s' during "
-                               "vport create/delete failed"),
-                             vport_name, operation_path);
-
- cleanup:
-    VIR_FREE(vport_name);
-    VIR_FREE(operation_path);
-    return ret;
-}
-
-/* virGetFCHostNameByWWN:
- *
- * Iterate over the sysfs tree to get FC host name (e.g. host5)
- * by the provided "wwnn,wwpn" pair.
- *
- * Returns the FC host name which must be freed by the caller,
- * or NULL on failure.
- */
-char *
-virGetFCHostNameByWWN(const char *sysfs_prefix,
-                      const char *wwnn,
-                      const char *wwpn)
-{
-    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH;
-    struct dirent *entry = NULL;
-    DIR *dir = NULL;
-    char *wwnn_path = NULL;
-    char *wwpn_path = NULL;
-    char *wwnn_buf = NULL;
-    char *wwpn_buf = NULL;
-    char *p;
-    char *ret = NULL;
-
-    if (virDirOpen(&dir, prefix) < 0)
-        return NULL;
-
-# define READ_WWN(wwn_path, buf)                      \
-    do {                                              \
-        if (virFileReadAll(wwn_path, 1024, &buf) < 0) \
-            goto cleanup;                             \
-        if ((p = strchr(buf, '\n')))                  \
-            *p = '\0';                                \
-        if (STRPREFIX(buf, "0x"))                     \
-            p = buf + strlen("0x");                   \
-        else                                          \
-            p = buf;                                  \
-    } while (0)
-
-    while (virDirRead(dir, &entry, prefix) > 0) {
-        if (virAsprintf(&wwnn_path, "%s/%s/node_name", prefix,
-                        entry->d_name) < 0)
-            goto cleanup;
-
-        if (!virFileExists(wwnn_path)) {
-            VIR_FREE(wwnn_path);
-            continue;
-        }
-
-        READ_WWN(wwnn_path, wwnn_buf);
-
-        if (STRNEQ(wwnn, p)) {
-            VIR_FREE(wwnn_buf);
-            VIR_FREE(wwnn_path);
-            continue;
-        }
-
-        if (virAsprintf(&wwpn_path, "%s/%s/port_name", prefix,
-                        entry->d_name) < 0)
-            goto cleanup;
-
-        if (!virFileExists(wwpn_path)) {
-            VIR_FREE(wwnn_buf);
-            VIR_FREE(wwnn_path);
-            VIR_FREE(wwpn_path);
-            continue;
-        }
-
-        READ_WWN(wwpn_path, wwpn_buf);
-
-        if (STRNEQ(wwpn, p)) {
-            VIR_FREE(wwnn_path);
-            VIR_FREE(wwpn_path);
-            VIR_FREE(wwnn_buf);
-            VIR_FREE(wwpn_buf);
-            continue;
-        }
-
-        ignore_value(VIR_STRDUP(ret, entry->d_name));
-        break;
-    }
-
- cleanup:
-# undef READ_WWN
-    VIR_DIR_CLOSE(dir);
-    VIR_FREE(wwnn_path);
-    VIR_FREE(wwpn_path);
-    VIR_FREE(wwnn_buf);
-    VIR_FREE(wwpn_buf);
-    return ret;
-}
-
-# define PORT_STATE_ONLINE "Online"
-
-/* virFindFCHostCapableVport:
- *
- * Iterate over the sysfs and find out the first online HBA which
- * supports vport, and not saturated. Returns the host name (e.g.
- * host5) on success, or NULL on failure.
- */
-char *
-virFindFCHostCapableVport(const char *sysfs_prefix)
-{
-    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH;
-    DIR *dir = NULL;
-    struct dirent *entry = NULL;
-    char *max_vports = NULL;
-    char *vports = NULL;
-    char *state = NULL;
-    char *ret = NULL;
-
-    if (virDirOpen(&dir, prefix) < 0)
-        return NULL;
-
-    while (virDirRead(dir, &entry, prefix) > 0) {
-        unsigned int host;
-        char *p = NULL;
-
-        p = entry->d_name + strlen("host");
-        if (virStrToLong_ui(p, NULL, 10, &host) == -1) {
-            VIR_DEBUG("Failed to parse host number from '%s'",
-                      entry->d_name);
-            continue;
-        }
-
-        if (!virIsCapableVport(prefix, host))
-            continue;
-
-        if (!(state = virReadFCHost(prefix, host, "port_state"))) {
-             VIR_DEBUG("Failed to read port_state for host%d", host);
-             continue;
-        }
-
-        /* Skip the not online FC host */
-        if (STRNEQ(state, PORT_STATE_ONLINE)) {
-            VIR_FREE(state);
-            continue;
-        }
-        VIR_FREE(state);
-
-        if (!(max_vports = virReadFCHost(prefix, host, "max_npiv_vports"))) {
-             VIR_DEBUG("Failed to read max_npiv_vports for host%d", host);
-             continue;
-        }
-
-        if (!(vports = virReadFCHost(prefix, host, "npiv_vports_inuse"))) {
-             VIR_DEBUG("Failed to read npiv_vports_inuse for host%d", host);
-             VIR_FREE(max_vports);
-             continue;
-        }
-
-        /* Compare from the strings directly, instead of converting
-         * the strings to integers first
-         */
-        if ((strlen(max_vports) >= strlen(vports)) ||
-            ((strlen(max_vports) == strlen(vports)) &&
-             strcmp(max_vports, vports) > 0)) {
-            ignore_value(VIR_STRDUP(ret, entry->d_name));
-            goto cleanup;
-        }
-
-        VIR_FREE(max_vports);
-        VIR_FREE(vports);
-    }
-
- cleanup:
-    VIR_DIR_CLOSE(dir);
-    VIR_FREE(max_vports);
-    VIR_FREE(vports);
-    return ret;
-}
-#else
-int
-virReadSCSIUniqueId(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                    int host ATTRIBUTE_UNUSED,
-                    int *result ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return -1;
-}
-
-char *
-virFindSCSIHostByPCI(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                     const char *parentaddr ATTRIBUTE_UNUSED,
-                     unsigned int unique_id ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return NULL;
-}
-
-int
-virGetSCSIHostNumber(const char *adapter_name ATTRIBUTE_UNUSED,
-                     unsigned int *result ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return -1;
-}
-
-char *
-virGetSCSIHostNameByParentaddr(unsigned int domain ATTRIBUTE_UNUSED,
-                               unsigned int bus ATTRIBUTE_UNUSED,
-                               unsigned int slot ATTRIBUTE_UNUSED,
-                               unsigned int function ATTRIBUTE_UNUSED,
-                               unsigned int unique_id ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return NULL;
-}
-
-char *
-virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-              int host ATTRIBUTE_UNUSED,
-              const char *entry ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return NULL;
-}
-
-bool
-virIsCapableFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                   int host ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return false;
-}
-
-bool
-virIsCapableVport(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                  int host ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return false;
-}
-
-int
-virManageVport(const int parent_host ATTRIBUTE_UNUSED,
-               const char *wwpn ATTRIBUTE_UNUSED,
-               const char *wwnn ATTRIBUTE_UNUSED,
-               int operation ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return -1;
-}
-
-char *
-virGetFCHostNameByWWN(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                      const char *wwnn ATTRIBUTE_UNUSED,
-                      const char *wwpn ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return NULL;
-}
-
-char *
-virFindFCHostCapableVport(const char *sysfs_prefix ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return NULL;
-}
-
-#endif /* __linux__ */
 
 /**
  * virParseOwnershipIds:
@@ -2618,6 +1923,50 @@ virGetListenFDs(void)
 
 #endif /* WIN32 */
 
+#ifdef HAVE_SYS_UN_H
+char *virGetUNIXSocketPath(int fd)
+{
+    union {
+        struct sockaddr sa;
+        struct sockaddr_storage ss;
+        struct sockaddr_un un;
+    } addr = { .ss = { 0 } };
+    socklen_t len = sizeof(addr.ss);
+    char *path;
+
+    if (getsockname(fd, &addr.sa, &len) < 0) {
+        virReportSystemError(errno, _("Unable to get address of FD %d"), fd);
+        return NULL;
+    }
+
+    if (addr.ss.ss_family != AF_UNIX) {
+        virReportSystemError(EINVAL, _("FD %d is not a UNIX socket, has af=%d"),
+                             fd, addr.ss.ss_family);
+        return NULL;
+    }
+
+    if (addr.un.sun_path[0] == '\0')
+        addr.un.sun_path[0] = '@';
+
+    if (VIR_ALLOC_N(path, sizeof(addr.un.sun_path) + 1) < 0)
+        return NULL;
+
+    memcpy(path, addr.un.sun_path, sizeof(addr.un.sun_path));
+    path[sizeof(addr.un.sun_path)] = '\0';
+    return path;
+}
+
+#else /* HAVE_SYS_UN_H */
+
+char *virGetUNIXSocketPath(int fd ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("UNIX sockets not supported on this platform"));
+    return NULL;
+}
+
+#endif /* HAVE_SYS_UN_H */
+
 #ifndef WIN32
 long virGetSystemPageSize(void)
 {
@@ -2683,4 +2032,79 @@ virMemoryMaxValue(bool capped)
         return 1024ull * ULONG_MAX;
     else
         return LLONG_MAX;
+}
+
+
+bool
+virHostHasIOMMU(void)
+{
+    DIR *iommuDir = NULL;
+    struct dirent *iommuGroup = NULL;
+    bool ret = false;
+    int direrr;
+
+    if (virDirOpenQuiet(&iommuDir, "/sys/kernel/iommu_groups/") < 0)
+        goto cleanup;
+
+    while ((direrr = virDirRead(iommuDir, &iommuGroup, NULL)) > 0)
+        break;
+
+    if (direrr < 0 || !iommuGroup)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
+    VIR_DIR_CLOSE(iommuDir);
+    return ret;
+}
+
+
+/**
+ * virHostGetDRMRenderNode:
+ *
+ * Picks the first DRM render node available. Missing DRI or missing DRM render
+ * nodes in the system results in an error.
+ *
+ * Returns an absolute path to the first render node available or NULL in case
+ * of an error with the error being reported.
+ * Caller is responsible for freeing the result string.
+ *
+ */
+char *
+virHostGetDRMRenderNode(void)
+{
+    char *ret = NULL;
+    DIR *driDir = NULL;
+    const char *driPath = "/dev/dri";
+    struct dirent *ent = NULL;
+    int dirErr = 0;
+    bool have_rendernode = false;
+
+    if (virDirOpen(&driDir, driPath) < 0)
+        return NULL;
+
+    while ((dirErr = virDirRead(driDir, &ent, driPath)) > 0) {
+        if (STRPREFIX(ent->d_name, "renderD")) {
+            have_rendernode = true;
+            break;
+        }
+    }
+
+    if (dirErr < 0)
+        goto cleanup;
+
+    /* even if /dev/dri exists, there might be no renderDX nodes available */
+    if (!have_rendernode) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No DRM render nodes available"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&ret, "%s/%s", driPath, ent->d_name) < 0)
+        goto cleanup;
+
+ cleanup:
+    VIR_DIR_CLOSE(driDir);
+    return ret;
 }

@@ -2,7 +2,6 @@
  * libvirt-host.h
  * Summary: APIs for management of hosts
  * Description: Provides APIs for the management of hosts
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *
@@ -21,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_HOST_H__
-# define __VIR_LIBVIRT_HOST_H__
+#ifndef LIBVIRT_HOST_H
+# define LIBVIRT_HOST_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -432,6 +431,48 @@ typedef virNodeCPUStats *virNodeCPUStatsPtr;
 
 typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
 
+
+/**
+ *
+ * SEV Parameters
+ */
+
+/**
+ * VIR_NODE_SEV_PDH:
+ *
+ * Macro represents the Platform Diffie-Hellman key, as VIR_TYPED_PARAMS_STRING.
+ */
+# define VIR_NODE_SEV_PDH "pdh"
+
+/**
+ * VIR_NODE_SEV_CERT_CHAIN:
+ *
+ * Macro represents the platform certificate chain that includes the platform
+ * endorsement key (PEK), owner certificate authority (OCD) and chip
+ * endorsement key (CEK), as VIR_TYPED_PARAMS_STRING.
+ */
+# define VIR_NODE_SEV_CERT_CHAIN "cert-chain"
+
+/**
+ * VIR_NODE_SEV_CBITPOS:
+ *
+ * Macro represents the CBit Position used by hypervisor when SEV is enabled.
+ */
+# define VIR_NODE_SEV_CBITPOS "cbitpos"
+
+/**
+ * VIR_NODE_SEV_REDUCED_PHYS_BITS:
+ *
+ * Macro represents the number of bits we lose in physical address space
+ * when SEV is enabled in the guest.
+ */
+# define VIR_NODE_SEV_REDUCED_PHYS_BITS "reduced-phys-bits"
+
+int virNodeGetSEVInfo (virConnectPtr conn,
+                       virTypedParameterPtr *params,
+                       int *nparams,
+                       unsigned int flags);
+
 /**
  * virConnectFlags
  *
@@ -640,6 +681,13 @@ typedef enum {
 int virConnectCompareCPU(virConnectPtr conn,
                          const char *xmlDesc,
                          unsigned int flags);
+int virConnectCompareHypervisorCPU(virConnectPtr conn,
+                                   const char *emulator,
+                                   const char *arch,
+                                   const char *machine,
+                                   const char *virttype,
+                                   const char *xmlCPU,
+                                   unsigned int flags);
 
 int virConnectGetCPUModelNames(virConnectPtr conn,
                                const char *arch,
@@ -660,6 +708,14 @@ char *virConnectBaselineCPU(virConnectPtr conn,
                             const char **xmlCPUs,
                             unsigned int ncpus,
                             unsigned int flags);
+char *virConnectBaselineHypervisorCPU(virConnectPtr conn,
+                                      const char *emulator,
+                                      const char *arch,
+                                      const char *machine,
+                                      const char *virttype,
+                                      const char **xmlCPUs,
+                                      unsigned int ncpus,
+                                      unsigned int flags);
 
 
 int virNodeGetFreePages(virConnectPtr conn,
@@ -687,4 +743,4 @@ int virNodeAllocPages(virConnectPtr conn,
                       unsigned int flags);
 
 
-#endif /* __VIR_LIBVIRT_HOST_H__ */
+#endif /* LIBVIRT_HOST_H */

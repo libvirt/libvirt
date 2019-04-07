@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -68,7 +66,7 @@ virDomainLxcOpenNamespace(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "fdlist=%p flags=%x", fdlist, flags);
+    VIR_DOMAIN_DEBUG(domain, "fdlist=%p flags=0x%x", fdlist, flags);
 
     virResetLastError();
 
@@ -128,7 +126,7 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
     size_t i;
 
     VIR_DOMAIN_DEBUG(domain, "nfdlist=%d, fdlist=%p, "
-                     "noldfdlist=%p, oldfdlist=%p, flags=%x",
+                     "noldfdlist=%p, oldfdlist=%p, flags=0x%x",
                      nfdlist, fdlist, noldfdlist, oldfdlist, flags);
 
     virResetLastError();
@@ -190,7 +188,7 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
                                virSecurityLabelPtr oldlabel,
                                unsigned int flags)
 {
-    VIR_DEBUG("model=%p, label=%p, oldlabel=%p, flags=%x",
+    VIR_DEBUG("model=%p, label=%p, oldlabel=%p, flags=0x%x",
               model, label, oldlabel, flags);
 
     virResetLastError();
@@ -293,7 +291,7 @@ int virDomainLxcEnterCGroup(virDomainPtr domain,
     virConnectPtr conn;
     virCgroupPtr cgroup = NULL;
 
-    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+    VIR_DOMAIN_DEBUG(domain, "flags=0x%x", flags);
 
     virResetLastError();
 
@@ -306,7 +304,7 @@ int virDomainLxcEnterCGroup(virDomainPtr domain,
     if (virCgroupNewDetect(domain->id, -1, &cgroup) < 0)
         goto error;
 
-    if (virCgroupAddTask(cgroup, getpid()) < 0)
+    if (virCgroupAddProcess(cgroup, getpid()) < 0)
         goto error;
 
     virCgroupFree(&cgroup);

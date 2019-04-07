@@ -1,0 +1,17 @@
+<pool type='rbd' xmlns:rbd='http://libvirt.org/schemas/storagepool/rbd/1.0'>
+  <name>ceph</name>
+  <uuid>47c1faee-0207-e741-f5ae-d9b019b98fe2</uuid>
+  <source>
+    <name>rbd</name>
+    <host name='localhost' port='6789'/>
+    <host name='localhost' port='6790'/>
+    <auth username='admin' type='ceph'>
+      <secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/>
+    </auth>
+  </source>
+  <rbd:config_opts>
+    <rbd:option name='client_mount_timeout' value='45'/>
+    <rbd:option name='rados_mon_op_timeout' value='10'/>
+    <rbd:option name='rados_osd_op_timeout' value='20'/>
+  </rbd:config_opts>
+</pool>

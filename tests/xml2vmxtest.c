@@ -4,8 +4,6 @@
 
 #ifdef WITH_VMX
 
-# include <stdio.h>
-# include <string.h>
 # include <unistd.h>
 
 # include "internal.h"
@@ -82,7 +80,7 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
     if (def == NULL)
         goto failure;
 
-    if (!virDomainDefCheckABIStability(def, def)) {
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
         goto failure;
     }
@@ -199,14 +197,14 @@ mymain(void)
 {
     int result = 0;
 
-# define DO_TEST(_in, _out, _version)                                         \
-        do {                                                                  \
-            struct testInfo info = { _in, _out, _version };                   \
-            virResetLastError();                                              \
-            if (virTestRun("VMware XML-2-VMX "_in" -> "_out,                  \
-                           testCompareHelper, &info) < 0) {                   \
-                result = -1;                                                  \
-            }                                                                 \
+# define DO_TEST(_in, _out, _version) \
+        do { \
+            struct testInfo info = { _in, _out, _version }; \
+            virResetLastError(); \
+            if (virTestRun("VMware XML-2-VMX "_in" -> "_out, \
+                           testCompareHelper, &info) < 0) { \
+                result = -1; \
+            } \
         } while (0)
 
     testCapsInit();
@@ -279,6 +277,7 @@ mymain(void)
     DO_TEST("esx-in-the-wild-5", "esx-in-the-wild-5", 4);
     DO_TEST("esx-in-the-wild-6", "esx-in-the-wild-6", 4);
     DO_TEST("esx-in-the-wild-7", "esx-in-the-wild-7", 4);
+    DO_TEST("esx-in-the-wild-9", "esx-in-the-wild-9", 10);
 
     DO_TEST("gsx-in-the-wild-1", "gsx-in-the-wild-1", 4);
     DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2", 4);
@@ -304,7 +303,7 @@ mymain(void)
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

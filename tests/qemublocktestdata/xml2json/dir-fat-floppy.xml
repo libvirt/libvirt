@@ -1,0 +1,14 @@
+<disk type='dir' device='floppy'>
+  <driver name='qemu' type='fat'/>
+  <source dir='/var/somefiles'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='node-s'/>
+        <nodename type='format' name='node-f'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <target dev='fda'/>
+  <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+  <readonly/>
+</disk>

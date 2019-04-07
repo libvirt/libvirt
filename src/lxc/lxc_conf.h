@@ -4,9 +4,6 @@
  *
  * lxc_conf.h: header file for linux container config functions
  *
- * Authors:
- *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -22,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LXC_CONF_H
-# define LXC_CONF_H
+#ifndef LIBVIRT_LXC_CONF_H
+# define LIBVIRT_LXC_CONF_H
 
 # include "internal.h"
 # include "libvirt_internal.h"
@@ -124,4 +121,4 @@ static inline void lxcDriverUnlock(virLXCDriverPtr driver)
     virMutexUnlock(&driver->lock);
 }
 
-#endif /* LXC_CONF_H */
+#endif /* LIBVIRT_LXC_CONF_H */

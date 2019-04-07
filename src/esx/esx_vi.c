@@ -41,43 +41,40 @@
 
 VIR_LOG_INIT("esx.esx_vi");
 
-#define ESX_VI__SOAP__RESPONSE_XPATH(_type)                                   \
-    ((char *)"/soapenv:Envelope/soapenv:Body/"                                \
+#define ESX_VI__SOAP__RESPONSE_XPATH(_type) \
+    ((char *)"/soapenv:Envelope/soapenv:Body/" \
                "vim:"_type"Response/vim:returnval")
 
 
 
-#define ESX_VI__TEMPLATE__ALLOC(_type)                                        \
-    int                                                                       \
-    esxVI_##_type##_Alloc(esxVI_##_type **ptrptr)                             \
-    {                                                                         \
-        if (!ptrptr || *ptrptr) {                                             \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
-            return -1;                                                  \
-        }                                                               \
-                                                                        \
-        if (VIR_ALLOC(*ptrptr) < 0)                                     \
-            return -1;                                                  \
-        return 0;                                                       \
+#define ESX_VI__TEMPLATE__ALLOC(_type) \
+    int \
+    esxVI_##_type##_Alloc(esxVI_##_type **ptrptr) \
+    { \
+        ESX_VI_CHECK_ARG_LIST(ptrptr); \
+ \
+        if (VIR_ALLOC(*ptrptr) < 0) \
+            return -1; \
+        return 0; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__FREE(_type, _body)                                  \
-    void                                                                      \
-    esxVI_##_type##_Free(esxVI_##_type **ptrptr)                              \
-    {                                                                         \
-        esxVI_##_type *item ATTRIBUTE_UNUSED;                                 \
-                                                                              \
-        if (!ptrptr || !(*ptrptr)) {                                          \
-            return;                                                           \
-        }                                                                     \
-                                                                              \
-        item = *ptrptr;                                                       \
-                                                                              \
-        _body                                                                 \
-                                                                              \
-        VIR_FREE(*ptrptr);                                                    \
+#define ESX_VI__TEMPLATE__FREE(_type, _body) \
+    void \
+    esxVI_##_type##_Free(esxVI_##_type **ptrptr) \
+    { \
+        esxVI_##_type *item ATTRIBUTE_UNUSED; \
+ \
+        if (!ptrptr || !(*ptrptr)) { \
+            return; \
+        } \
+ \
+        item = *ptrptr; \
+ \
+        _body \
+ \
+        VIR_FREE(*ptrptr); \
     }
 
 
@@ -188,10 +185,8 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
     if (VIR_ALLOC_N(buffer, size + 1) < 0)
         return 0;
 
-    if (!virStrncpy(buffer, info, size, size + 1)) {
-        VIR_FREE(buffer);
-        return 0;
-    }
+    memcpy(buffer, info, size);
+    buffer[size] = '\0';
 
     switch (type) {
       case CURLINFO_TEXT:
@@ -210,11 +205,17 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
         break;
 
       case CURLINFO_DATA_IN:
+      case CURLINFO_SSL_DATA_IN:
         VIR_DEBUG("CURLINFO_DATA_IN [[[[%s]]]]", buffer);
         break;
 
       case CURLINFO_DATA_OUT:
+      case CURLINFO_SSL_DATA_OUT:
         VIR_DEBUG("CURLINFO_DATA_OUT [[[[%s]]]]", buffer);
+        break;
+
+      case CURLINFO_END:
+        VIR_DEBUG("CURLINFO_END [[[[%s]]]]", buffer);
         break;
 
       default:
@@ -372,10 +373,7 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     int responseCode = 0;
 
-    if (!content || *content) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(content);
 
     if (length && *length > 0) {
         /*
@@ -483,7 +481,7 @@ esxVI_SharedCURL_Lock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
     size_t i;
     esxVI_SharedCURL *shared = userptr;
 
-    switch (data) {
+    switch ((int)data) {
       case CURL_LOCK_DATA_SHARE:
         i = 0;
         break;
@@ -511,7 +509,7 @@ esxVI_SharedCURL_Unlock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
     size_t i;
     esxVI_SharedCURL *shared = userptr;
 
-    switch (data) {
+    switch ((int)data) {
       case CURL_LOCK_DATA_SHARE:
         i = 0;
         break;
@@ -1563,9 +1561,9 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
 
                 break;
 
+              case esxVI_Occurrence_Undefined:
               default:
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Invalid argument (occurrence)"));
+                virReportEnumRangeError(esxVI_Occurrence, occurrence);
                 goto cleanup;
             }
         }
@@ -1762,10 +1760,7 @@ esxVI_List_DeepCopy(esxVI_List **destList, esxVI_List *srcList,
     esxVI_List *dest = NULL;
     esxVI_List *src = NULL;
 
-    if (!destList || *destList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(destList);
 
     for (src = srcList; src; src = src->_next) {
         if (deepCopyFunc(&dest, src) < 0 ||
@@ -2170,10 +2165,7 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
     bool propertySpec_isAppended = false;
     esxVI_PropertyFilterSpec *propertyFilterSpec = NULL;
 
-    if (!objectContentList || *objectContentList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(objectContentList);
 
     if (esxVI_ObjectSpec_Alloc(&objectSpec) < 0)
         return -1;
@@ -2280,9 +2272,10 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                            type, root->type);
             break;
 
+          case esxVI_Occurrence_None:
+          case esxVI_Occurrence_Undefined:
           default:
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Invalid occurrence value"));
+            virReportEnumRangeError(esxVI_Occurrence, occurrence);
             break;
         }
 
@@ -2371,10 +2364,7 @@ esxVI_GetVirtualMachineQuestionInfo
 {
     esxVI_DynamicProperty *dynamicProperty;
 
-    if (!questionInfo || *questionInfo) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(questionInfo);
 
     for (dynamicProperty = virtualMachine->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
@@ -2390,6 +2380,19 @@ esxVI_GetVirtualMachineQuestionInfo
 }
 
 
+int
+esxVI_GetVirtualMachineMORef(esxVI_ObjectContent *virtualMachine,
+                             char **moref)
+{
+    for (; virtualMachine != NULL; virtualMachine = virtualMachine->_next) {
+        if (virtualMachine->obj &&
+            STREQ(virtualMachine->obj->type, "VirtualMachine") &&
+            virtualMachine->obj->value) {
+            return VIR_STRDUP(*moref, virtualMachine->obj->value);
+        }
+    }
+    return -1;
+}
 
 int
 esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,
@@ -2433,10 +2436,7 @@ esxVI_GetInt(esxVI_ObjectContent *objectContent, const char *propertyName,
 {
     esxVI_DynamicProperty *dynamicProperty;
 
-    if (!value || *value) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(value);
 
     for (dynamicProperty = objectContent->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
@@ -2465,10 +2465,7 @@ esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
 {
     esxVI_DynamicProperty *dynamicProperty;
 
-    if (!value || *value) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(value);
 
     for (dynamicProperty = objectContent->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
@@ -2498,10 +2495,7 @@ esxVI_GetStringValue(esxVI_ObjectContent *objectContent,
 {
     esxVI_DynamicProperty *dynamicProperty;
 
-    if (!value || *value) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(value);
 
     for (dynamicProperty = objectContent->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
@@ -2535,10 +2529,7 @@ esxVI_GetManagedObjectReference(esxVI_ObjectContent *objectContent,
 {
     esxVI_DynamicProperty *dynamicProperty;
 
-    if (!value || *value) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(value);
 
     for (dynamicProperty = objectContent->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
@@ -2849,10 +2840,7 @@ esxVI_GetSnapshotTreeBySnapshot
 {
     esxVI_VirtualMachineSnapshotTree *candidate;
 
-    if (!snapshotTree || *snapshotTree) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(snapshotTree);
 
     for (candidate = snapshotTreeList; candidate;
          candidate = candidate->_next) {
@@ -2914,10 +2902,7 @@ esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx, const unsigned char *uuid,
     esxVI_ManagedObjectReference *managedObjectReference = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
-    if (!virtualMachine || *virtualMachine) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(virtualMachine);
 
     virUUIDFormat(uuid, uuid_string);
 
@@ -2969,10 +2954,7 @@ esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
     esxVI_ObjectContent *candidate = NULL;
     char *name_candidate = NULL;
 
-    if (!virtualMachine || *virtualMachine) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(virtualMachine);
 
     if (esxVI_String_DeepCopyList(&completePropertyNameList,
                                   propertyNameList) < 0 ||
@@ -3000,16 +2982,10 @@ esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
         break;
     }
 
-    if (!(*virtualMachine)) {
-        if (occurrence == esxVI_Occurrence_OptionalItem) {
-            result = 0;
-
-            goto cleanup;
-        } else {
-            virReportError(VIR_ERR_NO_DOMAIN,
-                           _("Could not find domain with name '%s'"), name);
-            goto cleanup;
-        }
+    if (!(*virtualMachine) && occurrence != esxVI_Occurrence_OptionalItem) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("Could not find domain with name '%s'"), name);
+        goto cleanup;
     }
 
     result = 0;
@@ -3102,10 +3078,7 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
     esxVI_ObjectContent *candidate = NULL;
     char *name_candidate;
 
-    if (!datastore || *datastore) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(datastore);
 
     /* Get all datastores */
     if (esxVI_String_DeepCopyList(&completePropertyNameList,
@@ -3169,10 +3142,7 @@ esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
     esxVI_DatastoreHostMount *datastoreHostMountList = NULL;
     esxVI_DatastoreHostMount *datastoreHostMount = NULL;
 
-    if (!datastore || *datastore) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(datastore);
 
     /* Get all datastores */
     if (esxVI_String_DeepCopyList(&completePropertyNameList,
@@ -3255,10 +3225,7 @@ esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
     esxVI_DatastoreHostMount *hostMountList = NULL;
     esxVI_DatastoreHostMount *candidate = NULL;
 
-    if (!hostMount || *hostMount) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(hostMount);
 
     if (esxVI_String_AppendValueToList(&propertyNameList, "host") < 0 ||
         esxVI_LookupObjectContentByType(ctx, datastore, "Datastore",
@@ -3319,10 +3286,7 @@ esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
     esxVI_ObjectContent *objectContent = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (!taskInfo || *taskInfo) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(taskInfo);
 
     if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
         esxVI_LookupObjectContentByType(ctx, task, "Task", propertyNameList,
@@ -3367,10 +3331,7 @@ esxVI_LookupPendingTaskInfoListByVirtualMachine
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_TaskInfo *taskInfo = NULL;
 
-    if (!pendingTaskInfoList || *pendingTaskInfoList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(pendingTaskInfoList);
 
     /* Get list of recent tasks */
     for (dynamicProperty = virtualMachine->propSet; dynamicProperty;
@@ -3473,10 +3434,7 @@ esxVI_LookupRootSnapshotTreeList
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (!rootSnapshotTreeList || *rootSnapshotTreeList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(rootSnapshotTreeList);
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "snapshot.rootSnapshotList") < 0 ||
@@ -3528,10 +3486,7 @@ esxVI_LookupCurrentSnapshotTree
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
     esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
 
-    if (!currentSnapshotTree || *currentSnapshotTree) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(currentSnapshotTree);
 
     if (esxVI_String_AppendValueListToList(&propertyNameList,
                                            "snapshot.currentSnapshot\0"
@@ -3625,10 +3580,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     esxVI_TaskInfo *taskInfo = NULL;
     esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
 
-    if (!fileInfo || *fileInfo) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(fileInfo);
 
     if (esxUtil_ParseDatastorePath(datastorePath, &datastoreName,
                                    &directoryName, &directoryAndFileName) < 0) {
@@ -3821,10 +3773,7 @@ esxVI_LookupDatastoreContentByDatastoreName
     char *taskInfoErrorMessage = NULL;
     esxVI_TaskInfo *taskInfo = NULL;
 
-    if (!searchResultsList || *searchResultsList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(searchResultsList);
 
     /* Lookup Datastore and HostDatastoreBrowser */
     if (esxVI_String_AppendValueToList(&propertyNameList, "browser") < 0 ||
@@ -3933,10 +3882,7 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
     esxVI_FileInfo *fileInfo = NULL;
     char *uuid_string = NULL;
 
-    if (!key || *key) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(key);
 
     if (ctx->hasQueryVirtualDiskUuid) {
         if (esxVI_LookupFileInfoByDatastorePath
@@ -3987,10 +3933,7 @@ esxVI_LookupAutoStartDefaults(esxVI_Context *ctx,
     esxVI_ObjectContent *hostAutoStartManager = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (!defaults || *defaults) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(defaults);
 
     /*
      * Lookup HostAutoStartManagerConfig from the HostAutoStartManager because
@@ -4044,10 +3987,7 @@ esxVI_LookupAutoStartPowerInfoList(esxVI_Context *ctx,
     esxVI_ObjectContent *hostAutoStartManager = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (!powerInfoList || *powerInfoList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(powerInfoList);
 
     /*
      * Lookup HostAutoStartManagerConfig from the HostAutoStartManager because
@@ -4095,10 +4035,7 @@ esxVI_LookupPhysicalNicList(esxVI_Context *ctx,
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (!physicalNicList || *physicalNicList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(physicalNicList);
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "config.network.pnic") < 0 ||
@@ -4139,10 +4076,7 @@ esxVI_LookupPhysicalNicByName(esxVI_Context *ctx, const char *name,
     esxVI_PhysicalNic *physicalNicList = NULL;
     esxVI_PhysicalNic *candidate = NULL;
 
-    if (!physicalNic || *physicalNic) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(physicalNic);
 
     if (esxVI_LookupPhysicalNicList(ctx, &physicalNicList) < 0)
         goto cleanup;
@@ -4186,10 +4120,7 @@ esxVI_LookupPhysicalNicByMACAddress(esxVI_Context *ctx, const char *mac,
     esxVI_PhysicalNic *physicalNicList = NULL;
     esxVI_PhysicalNic *candidate = NULL;
 
-    if (!physicalNic || *physicalNic) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(physicalNic);
 
     if (esxVI_LookupPhysicalNicList(ctx, &physicalNicList) < 0)
         goto cleanup;
@@ -4233,10 +4164,7 @@ esxVI_LookupHostVirtualSwitchList(esxVI_Context *ctx,
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (!hostVirtualSwitchList || *hostVirtualSwitchList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(hostVirtualSwitchList);
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "config.network.vswitch") < 0 ||
@@ -4277,10 +4205,7 @@ esxVI_LookupHostVirtualSwitchByName(esxVI_Context *ctx, const char *name,
     esxVI_HostVirtualSwitch *hostVirtualSwitchList = NULL;
     esxVI_HostVirtualSwitch *candidate = NULL;
 
-    if (!hostVirtualSwitch || *hostVirtualSwitch) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(hostVirtualSwitch);
 
     if (esxVI_LookupHostVirtualSwitchList(ctx, &hostVirtualSwitchList) < 0)
         goto cleanup;
@@ -4328,10 +4253,7 @@ esxVI_LookupHostPortGroupList(esxVI_Context *ctx,
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (!hostPortGroupList || *hostPortGroupList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(hostPortGroupList);
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "config.network.portgroup") < 0 ||
@@ -4505,10 +4427,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
     bool blocked;
     esxVI_TaskInfo *taskInfo = NULL;
 
-    if (!errorMessage || *errorMessage) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(errorMessage);
 
     if (VIR_STRDUP(version, "") < 0)
         return -1;
@@ -4974,10 +4893,7 @@ esxVI_LookupHostScsiTopologyLunListByTargetName
     bool found = false;
     esxVI_HostInternetScsiTargetTransport *candidate = NULL;
 
-    if (!hostScsiTopologyLunList || *hostScsiTopologyLunList) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(hostScsiTopologyLunList);
 
     if (esxVI_String_AppendValueToList
           (&propertyNameList,
@@ -5068,10 +4984,7 @@ esxVI_LookupStoragePoolNameByScsiLunKey(esxVI_Context *ctx,
     esxVI_HostScsiTopologyLun *hostScsiTopologyLun;
     bool found = false;
 
-    if (!poolName || *poolName) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(poolName);
 
     if (esxVI_String_AppendValueToList
           (&propertyNameList,
@@ -5141,126 +5054,126 @@ esxVI_LookupStoragePoolNameByScsiLunKey(esxVI_Context *ctx,
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE_IGNORE(_name)          \
-    if (STREQ(dynamicProperty->name, #_name)) {                               \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE_IGNORE(_name) \
+    if (STREQ(dynamicProperty->name, #_name)) { \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE(_type, _name)          \
-    if (STREQ(dynamicProperty->name, #_name)) {                               \
-        if (esxVI_##_type##_CastFromAnyType(dynamicProperty->val,             \
-                                            &(*ptrptr)->_name) < 0) {         \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE(_type, _name) \
+    if (STREQ(dynamicProperty->name, #_name)) { \
+        if (esxVI_##_type##_CastFromAnyType(dynamicProperty->val, \
+                                            &(*ptrptr)->_name) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__CAST_LIST_FROM_ANY_TYPE(_type, _name)     \
-    if (STREQ(dynamicProperty->name, #_name)) {                               \
-        if (esxVI_##_type##_CastListFromAnyType(dynamicProperty->val,         \
-                                                &(*ptrptr)->_name) < 0) {     \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__CAST_LIST_FROM_ANY_TYPE(_type, _name) \
+    if (STREQ(dynamicProperty->name, #_name)) { \
+        if (esxVI_##_type##_CastListFromAnyType(dynamicProperty->val, \
+                                                &(*ptrptr)->_name) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__CAST_VALUE_FROM_ANY_TYPE(_type, _name)    \
-    if (STREQ(dynamicProperty->name, #_name)) {                               \
-        if (esxVI_##_type##_CastValueFromAnyType(dynamicProperty->val,        \
-                                                 &(*ptrptr)->_name) < 0) {    \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__CAST_VALUE_FROM_ANY_TYPE(_type, _name) \
+    if (STREQ(dynamicProperty->name, #_name)) { \
+        if (esxVI_##_type##_CastValueFromAnyType(dynamicProperty->val, \
+                                                 &(*ptrptr)->_name) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__LOOKUP(_type, _complete_properties,                 \
-                                 _cast_from_anytype)                          \
-    int                                                                       \
-    esxVI_Lookup##_type(esxVI_Context *ctx, const char* name /* optional */,  \
-                        esxVI_ManagedObjectReference *root,                   \
+#define ESX_VI__TEMPLATE__LOOKUP(_type, _complete_properties, \
+                                 _cast_from_anytype) \
+    int \
+    esxVI_Lookup##_type(esxVI_Context *ctx, const char* name /* optional */, \
+                        esxVI_ManagedObjectReference *root, \
                         esxVI_String *selectedPropertyNameList /* optional */,\
-                        esxVI_##_type **ptrptr, esxVI_Occurrence occurrence)  \
-    {                                                                         \
-        int result = -1;                                                      \
-        const char *completePropertyNameValueList = _complete_properties;     \
-        esxVI_String *propertyNameList = NULL;                                \
-        esxVI_ObjectContent *objectContent = NULL;                            \
-        esxVI_ObjectContent *objectContentList = NULL;                        \
-        esxVI_DynamicProperty *dynamicProperty = NULL;                        \
-                                                                              \
-        if (!ptrptr || *ptrptr) {                                             \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        propertyNameList = selectedPropertyNameList;                          \
-                                                                              \
-        if (!propertyNameList &&                                              \
-            esxVI_String_AppendValueListToList                                \
-              (&propertyNameList, completePropertyNameValueList) < 0) {       \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (esxVI_LookupManagedObjectHelper(ctx, name, root, #_type,          \
+                        esxVI_##_type **ptrptr, esxVI_Occurrence occurrence) \
+    { \
+        int result = -1; \
+        const char *completePropertyNameValueList = _complete_properties; \
+        esxVI_String *propertyNameList = NULL; \
+        esxVI_ObjectContent *objectContent = NULL; \
+        esxVI_ObjectContent *objectContentList = NULL; \
+        esxVI_DynamicProperty *dynamicProperty = NULL; \
+ \
+        if (!ptrptr || *ptrptr) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return -1; \
+        } \
+ \
+        propertyNameList = selectedPropertyNameList; \
+ \
+        if (!propertyNameList && \
+            esxVI_String_AppendValueListToList \
+              (&propertyNameList, completePropertyNameValueList) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        if (esxVI_LookupManagedObjectHelper(ctx, name, root, #_type, \
                                             propertyNameList, &objectContent, \
-                                            &objectContentList,               \
-                                            occurrence) < 0) {                \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (!objectContent) {                                                 \
-            /* not found, exit early */                                       \
-            result = 0;                                                       \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (esxVI_##_type##_Alloc(ptrptr) < 0) {                              \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (esxVI_ManagedObjectReference_DeepCopy(&(*ptrptr)->_reference,     \
-                                                  objectContent->obj) < 0) {  \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        for (dynamicProperty = objectContent->propSet;                        \
-             dynamicProperty;                                                 \
-             dynamicProperty = dynamicProperty->_next) {                      \
-            _cast_from_anytype                                                \
-                                                                              \
-            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);      \
-        }                                                                     \
-                                                                              \
+                                            &objectContentList, \
+                                            occurrence) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        if (!objectContent) { \
+            /* not found, exit early */ \
+            result = 0; \
+            goto cleanup; \
+        } \
+ \
+        if (esxVI_##_type##_Alloc(ptrptr) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        if (esxVI_ManagedObjectReference_DeepCopy(&(*ptrptr)->_reference, \
+                                                  objectContent->obj) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        for (dynamicProperty = objectContent->propSet; \
+             dynamicProperty; \
+             dynamicProperty = dynamicProperty->_next) { \
+            _cast_from_anytype \
+ \
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name); \
+        } \
+ \
         if (esxVI_##_type##_Validate(*ptrptr, selectedPropertyNameList) < 0) {\
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        result = 0;                                                           \
-                                                                              \
-      cleanup:                                                                \
-        if (result < 0) {                                                     \
-            esxVI_##_type##_Free(ptrptr);                                     \
-        }                                                                     \
-                                                                              \
-        if (propertyNameList != selectedPropertyNameList) {                   \
-            esxVI_String_Free(&propertyNameList);                             \
-        }                                                                     \
-                                                                              \
-        esxVI_ObjectContent_Free(&objectContentList);                         \
-                                                                              \
-        return result;                                                        \
+            goto cleanup; \
+        } \
+ \
+        result = 0; \
+ \
+      cleanup: \
+        if (result < 0) { \
+            esxVI_##_type##_Free(ptrptr); \
+        } \
+ \
+        if (propertyNameList != selectedPropertyNameList) { \
+            esxVI_String_Free(&propertyNameList); \
+        } \
+ \
+        esxVI_ObjectContent_Free(&objectContentList); \
+ \
+        return result; \
     }
 
 

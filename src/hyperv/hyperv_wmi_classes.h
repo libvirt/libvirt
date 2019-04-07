@@ -1,6 +1,7 @@
 /*
  * hyperv_wmi_classes.h: WMI classes for managing Microsoft Hyper-V hosts
  *
+ * Copyright (C) 2017 Datto Inc
  * Copyright (C) 2011 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Michael Sievers <msievers83@googlemail.com>
  *
@@ -20,12 +21,22 @@
  *
  */
 
-#ifndef __HYPERV_WMI_CLASSES_H__
-# define __HYPERV_WMI_CLASSES_H__
+#ifndef LIBVIRT_HYPERV_WMI_CLASSES_H
+# define LIBVIRT_HYPERV_WMI_CLASSES_H
 
+# include "internal.h"
 # include "openwsman.h"
 
 # include "hyperv_wmi_classes.generated.typedef"
+
+# define ROOT_CIMV2 \
+    "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"
+
+# define ROOT_VIRTUALIZATION \
+    "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization/*"
+
+# define ROOT_VIRTUALIZATION_V2 \
+    "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization/v2/*"
 
 
 
@@ -87,7 +98,46 @@ enum _Msvm_ConcreteJob_JobState {
 };
 
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * WMI
+ */
+
+typedef struct _hypervCimType hypervCimType;
+typedef hypervCimType *hypervCimTypePtr;
+struct _hypervCimType {
+    /* Parameter name */
+    const char *name;
+    /* Parameter type */
+    const char *type;
+    /* whether parameter is an array type */
+    bool isArray;
+};
+
+typedef struct _hypervWmiClassInfo hypervWmiClassInfo;
+typedef hypervWmiClassInfo *hypervWmiClassInfoPtr;
+struct _hypervWmiClassInfo {
+    /* The WMI class name */
+    const char *name;
+    /* The version of the WMI class as in "v1" or "v2" */
+    const char *version;
+    /* The URI for wsman enumerate request */
+    const char *rootUri;
+    /* The namespace URI for XML serialization */
+    const char *resourceUri;
+    /* The wsman serializer info - one of the *_TypeInfo structs */
+    XmlSerializerInfo *serializerInfo;
+    /* Property type information */
+    hypervCimTypePtr propertyInfo;
+};
+
+
+typedef struct _hypervWmiClassInfoList hypervWmiClassInfoList;
+typedef hypervWmiClassInfoList *hypervWmiClassInfoListPtr;
+struct _hypervWmiClassInfoList {
+    size_t count;
+    hypervWmiClassInfoPtr *objs;
+};
 
 # include "hyperv_wmi_classes.generated.h"
 
-#endif /* __HYPERV_WMI_CLASSES_H__ */
+#endif /* LIBVIRT_HYPERV_WMI_CLASSES_H */

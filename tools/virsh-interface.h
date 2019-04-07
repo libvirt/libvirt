@@ -16,15 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
-#ifndef VIRSH_INTERFACE_H
-# define VIRSH_INTERFACE_H
+#ifndef LIBVIRT_VIRSH_INTERFACE_H
+# define LIBVIRT_VIRSH_INTERFACE_H
 
 # include "virsh.h"
 
@@ -33,10 +28,10 @@ virInterfacePtr virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
                                            const char **name, unsigned int flags);
 
 /* default is lookup by Name and MAC */
-# define virshCommandOptInterface(_ctl, _cmd, _name)                    \
-    virshCommandOptInterfaceBy(_ctl, _cmd, NULL, _name,                 \
+# define virshCommandOptInterface(_ctl, _cmd, _name) \
+    virshCommandOptInterfaceBy(_ctl, _cmd, NULL, _name, \
                                VIRSH_BYMAC | VIRSH_BYNAME)
 
 extern const vshCmdDef ifaceCmds[];
 
-#endif /* VIRSH_INTERFACE_H */
+#endif /* LIBVIRT_VIRSH_INTERFACE_H */

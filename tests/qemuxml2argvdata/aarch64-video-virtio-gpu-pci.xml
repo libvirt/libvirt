@@ -1,0 +1,33 @@
+<domain type='qemu'>
+  <name>aarch64-vgpu</name>
+  <uuid>f3197c89-6457-44fe-b26d-897090ba6541</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+  </os>
+  <cpu mode='custom' match='exact'>
+    <model fallback='allow'>cortex-a57</model>
+  </cpu>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='pcie-root-port'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='2' model='pcie-root-port'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1' multifunction='on'/>
+    </controller>
+    <interface type='user'>
+      <mac address='52:54:00:73:34:53'/>
+      <model type='virtio'/>
+      <boot order='1'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </interface>
+    <video>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
+    </video>
+  </devices>
+</domain>

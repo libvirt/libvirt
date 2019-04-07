@@ -1,0 +1,29 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-guest \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name guest \
+-S \
+-machine pseries,accel=tcg,usb=off,dump-guest-core=off \
+-m 512 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-device spapr-pci-host-bridge,index=1,id=pci.1 \
+-device spapr-pci-host-bridge,index=2,id=pci.2 \
+-device virtio-scsi-pci,id=scsi0,bus=pci.1.0,addr=0x1 \
+-device vfio-pci,host=0001:01:00.0,id=hostdev0,bus=pci.1.0,addr=0x2 \
+-device vfio-pci,host=0005:90:01.0,id=hostdev1,bus=pci.2.0,addr=0x1

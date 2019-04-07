@@ -31,6 +31,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+
+virQEMUDriver driver;
+
+
 static int
 testQemuAgentFSFreeze(const void *data)
 {
@@ -167,7 +171,6 @@ static int
 testQemuAgentGetFSInfo(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    virCapsPtr caps = testQemuCapsInit();
     qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
     char *domain_filename = NULL;
     virDomainDefPtr def = NULL;
@@ -177,11 +180,11 @@ testQemuAgentGetFSInfo(const void *data)
     if (!test)
         return -1;
 
-    if (virAsprintf(&domain_filename, "%s/qemuagentdata/qemuagent-fsinfo.xml",
+    if (virAsprintf(&domain_filename, "%s/qemuagentdata/fsinfo.xml",
                     abs_srcdir) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseFile(domain_filename, caps, xmlopt,
+    if (!(def = virDomainDefParseFile(domain_filename, driver.caps, xmlopt,
                                       NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -293,7 +296,6 @@ testQemuAgentGetFSInfo(const void *data)
         virDomainFSInfoFree(info[i]);
     VIR_FREE(info);
     VIR_FREE(domain_filename);
-    virObjectUnref(caps);
     virDomainDefFree(def);
     qemuMonitorTestFree(test);
     return ret;
@@ -375,7 +377,8 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
     }
 
     if (STRNEQ(cmdname, "guest-shutdown")) {
-        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        ret = qemuMonitorTestAddInvalidCommandResponse(test, "guest-shutdown",
+                                                       cmdname);
         goto cleanup;
     }
 
@@ -902,11 +905,10 @@ testQemuAgentGetInterfaces(const void *data)
 static int
 mymain(void)
 {
-    virQEMUDriver driver;
     int ret = 0;
 
 #if !WITH_YAJL
-    fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
+    fputs("libvirt not compiled with JSON support, skipping this test\n", stderr);
     return EXIT_AM_SKIP;
 #endif
 
@@ -916,8 +918,8 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-#define DO_TEST(name)                                                  \
-    if (virTestRun(# name, testQemuAgent ## name, driver.xmlopt) < 0)  \
+#define DO_TEST(name) \
+    if (virTestRun(# name, testQemuAgent ## name, driver.xmlopt) < 0) \
         ret = -1
 
     DO_TEST(FSFreeze);
@@ -937,4 +939,4 @@ mymain(void)
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

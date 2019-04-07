@@ -14,23 +14,31 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Daniel Veillard <veillard@redhat.com>
- *     Laine Stump <laine@laine.org>
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_SOCKETADDR_H__
-# define __VIR_SOCKETADDR_H__
-
-# include "internal.h"
+#ifndef LIBVIRT_VIRSOCKETADDR_H
+# define LIBVIRT_VIRSOCKETADDR_H
 
 # include <netinet/in.h>
 # include <sys/socket.h>
 # ifdef HAVE_SYS_UN_H
 #  include <sys/un.h>
 # endif
+
+# include "internal.h"
+# include "viralloc.h"
+
+/* On architectures which lack these limits, define them (ie. Cygwin).
+ * Note that the libvirt code should be robust enough to handle the
+ * case where actual value is longer than these limits (eg. by setting
+ * length correctly in second argument to gethostname and by always
+ * using strncpy instead of strcpy).
+ */
+# ifndef INET_ADDRSTRLEN
+#  define INET_ADDRSTRLEN 16
+# endif
+
+# define VIR_LOOPBACK_IPV4_ADDR "127.0.0.1"
 
 typedef struct {
     union {
@@ -45,13 +53,13 @@ typedef struct {
     socklen_t len;
 } virSocketAddr;
 
-# define VIR_SOCKET_ADDR_VALID(s)               \
+# define VIR_SOCKET_ADDR_VALID(s) \
     ((s)->data.sa.sa_family != AF_UNSPEC)
 
-# define VIR_SOCKET_ADDR_IS_FAMILY(s, f)        \
+# define VIR_SOCKET_ADDR_IS_FAMILY(s, f) \
     ((s)->data.sa.sa_family == f)
 
-# define VIR_SOCKET_ADDR_FAMILY(s)              \
+# define VIR_SOCKET_ADDR_FAMILY(s) \
     ((s)->data.sa.sa_family)
 
 # define VIR_SOCKET_ADDR_IPV4_ALL "0.0.0.0"
@@ -79,6 +87,11 @@ struct _virPortRange {
 int virSocketAddrParse(virSocketAddrPtr addr,
                        const char *val,
                        int family);
+
+int virSocketAddrParseAny(virSocketAddrPtr addr,
+                          const char *val,
+                          int family,
+                          bool reportError);
 
 int virSocketAddrParseIPv4(virSocketAddrPtr addr,
                            const char *val);
@@ -145,4 +158,8 @@ int virSocketAddrPTRDomain(const virSocketAddr *addr,
                            char **ptr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
-#endif /* __VIR_SOCKETADDR_H__ */
+void virSocketAddrFree(virSocketAddrPtr addr);
+
+VIR_DEFINE_AUTOPTR_FUNC(virSocketAddr, virSocketAddrFree);
+
+#endif /* LIBVIRT_VIRSOCKETADDR_H */

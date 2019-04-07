@@ -2,41 +2,17 @@
   <qemuctime>0</qemuctime>
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
-  <usedQMP/>
   <flag name='kvm'/>
-  <flag name='mem-path'/>
-  <flag name='drive-serial'/>
-  <flag name='chardev'/>
-  <flag name='monitor-json'/>
-  <flag name='sdl'/>
-  <flag name='netdev'/>
-  <flag name='rtc'/>
-  <flag name='vhost-net'/>
   <flag name='no-hpet'/>
-  <flag name='no-kvm-pit'/>
-  <flag name='pci-configfd'/>
-  <flag name='nodefconfig'/>
-  <flag name='boot-menu'/>
-  <flag name='fsdev'/>
-  <flag name='name-process'/>
-  <flag name='smbios-type'/>
   <flag name='spice'/>
-  <flag name='vga-none'/>
-  <flag name='boot-index'/>
   <flag name='hda-duplex'/>
-  <flag name='drive-aio'/>
-  <flag name='pci-multibus'/>
-  <flag name='pci-bootindex'/>
   <flag name='ccid-emulated'/>
   <flag name='ccid-passthru'/>
-  <flag name='chardev-spicevmc'/>
   <flag name='virtio-tx-alg'/>
-  <flag name='pci-multifunction'/>
   <flag name='virtio-blk-pci.ioeventfd'/>
   <flag name='sga'/>
   <flag name='virtio-blk-pci.event_idx'/>
   <flag name='virtio-net-pci.event_idx'/>
-  <flag name='cache-directsync'/>
   <flag name='piix3-usb-uhci'/>
   <flag name='piix4-usb-uhci'/>
   <flag name='usb-ehci'/>
@@ -45,28 +21,14 @@
   <flag name='pci-ohci'/>
   <flag name='usb-redir'/>
   <flag name='usb-hub'/>
-  <flag name='no-shutdown'/>
-  <flag name='cache-unsafe'/>
   <flag name='ich9-ahci'/>
   <flag name='no-acpi'/>
-  <flag name='fsdev-readonly'/>
   <flag name='virtio-blk-pci.scsi'/>
-  <flag name='drive-copy-on-read'/>
-  <flag name='fsdev-writeout'/>
-  <flag name='drive-iotune'/>
-  <flag name='system_wakeup'/>
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
-  <flag name='transaction'/>
-  <flag name='block-job-async'/>
-  <flag name='scsi-cd'/>
-  <flag name='ide-cd'/>
-  <flag name='no-user-config'/>
   <flag name='hda-micro'/>
   <flag name='dump-guest-memory'/>
   <flag name='nec-usb-xhci'/>
-  <flag name='balloon-event'/>
-  <flag name='bridge'/>
   <flag name='lsi'/>
   <flag name='virtio-scsi-pci'/>
   <flag name='blockio'/>
@@ -77,41 +39,22 @@
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
-  <flag name='dump-guest-core'/>
-  <flag name='seamless-migration'/>
-  <flag name='block-commit'/>
   <flag name='vnc'/>
-  <flag name='drive-mirror'/>
-  <flag name='usb-redir.bootindex'/>
-  <flag name='usb-host.bootindex'/>
-  <flag name='blockdev-snapshot-sync'/>
   <flag name='qxl'/>
   <flag name='VGA'/>
   <flag name='cirrus-vga'/>
   <flag name='vmware-svga'/>
   <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
-  <flag name='usb-net'/>
-  <flag name='add-fd'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
-  <flag name='dtb'/>
   <flag name='megasas'/>
-  <flag name='ipv6-migration'/>
-  <flag name='machine-opt'/>
-  <flag name='machine-usb-opt'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='vfio-pci.bootindex'/>
-  <flag name='scsi-generic'/>
-  <flag name='scsi-generic.bootindex'/>
   <flag name='mem-merge'/>
-  <flag name='vnc-websocket'/>
   <flag name='mlock'/>
-  <flag name='vnc-share-policy'/>
-  <flag name='device-del-event'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='i440fx-pci-hole64-size'/>
   <flag name='q35-pci-hole64-size'/>
@@ -123,9 +66,7 @@
   <flag name='boot-strict'/>
   <flag name='pvpanic'/>
   <flag name='spice-file-xfer-disable'/>
-  <flag name='spiceport'/>
   <flag name='usb-kbd'/>
-  <flag name='host-pci-multidomain'/>
   <flag name='msg-timestamp'/>
   <flag name='usb-audio'/>
   <flag name='splash-timeout'/>
@@ -141,12 +82,16 @@
   <flag name='e1000'/>
   <flag name='virtio-net'/>
   <flag name='qxl.vram64_size_mb'/>
-  <flag name='device-tray-moved-event'/>
   <flag name='nec-usb-xhci-ports'/>
-  <flag name='display'/>
   <flag name='vhost-scsi'/>
+  <flag name='query-cpu-definitions'/>
+  <flag name='kernel-irqchip'/>
+  <flag name='isa-serial'/>
+  <flag name='hda-output'/>
+  <flag name='mch'/>
   <version>1006000</version>
   <kvmVersion>0</kvmVersion>
+  <microcodeVersion>43100761</microcodeVersion>
   <package></package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='Opteron_G5'/>
@@ -197,7 +142,7 @@
   <cpu type='tcg' name='core2duo'/>
   <cpu type='tcg' name='phenom'/>
   <cpu type='tcg' name='qemu64'/>
-  <machine name='pc-i440fx-1.6' alias='pc' maxCpus='255'/>
+  <machine name='pc-i440fx-1.6' alias='pc' maxCpus='255' default='yes'/>
   <machine name='pc-q35-1.4' maxCpus='255'/>
   <machine name='pc-q35-1.5' maxCpus='255'/>
   <machine name='pc-q35-1.6' alias='q35' maxCpus='255'/>

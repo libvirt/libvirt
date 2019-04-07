@@ -1,0 +1,104 @@
+LIBXL_DRIVER_SOURCES = \
+	libxl/libxl_conf.c \
+	libxl/libxl_conf.h \
+	libxl/libxl_capabilities.c \
+	libxl/libxl_capabilities.h \
+	libxl/libxl_domain.c \
+	libxl/libxl_domain.h \
+	libxl/libxl_driver.c \
+	libxl/libxl_driver.h \
+	libxl/libxl_logger.c \
+	libxl/libxl_logger.h \
+	libxl/libxl_migration.c \
+	libxl/libxl_migration.h \
+	$(NULL)
+
+XENCONFIG_LIBXL_SOURCES = \
+	$(XENCONFIG_SOURCES) \
+	xenconfig/xen_xl.c \
+	xenconfig/xen_xl.h \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(LIBXL_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += $(LIBXL_DRIVER_SOURCES)
+EXTRA_DIST += \
+	$(LIBXL_DRIVER_SOURCES) \
+	$(XENCONFIG_LIBXL_SOURCES) \
+	$(NULL)
+
+if WITH_LIBXL
+noinst_LTLIBRARIES += libvirt_xenconfig_libxl.la
+libvirt_xenconfig_libxl_la_LIBADD = $(LIBXL_LIBS)
+libvirt_xenconfig_libxl_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/libxl \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_xenconfig_libxl_la_SOURCES = $(XENCONFIG_LIBXL_SOURCES)
+
+noinst_LTLIBRARIES += libvirt_driver_libxl_impl.la
+libvirt_driver_libxl_la_SOURCES =
+libvirt_driver_libxl_la_LIBADD = \
+	libvirt_driver_libxl_impl.la \
+	libvirt.la \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+mod_LTLIBRARIES += libvirt_driver_libxl.la
+libvirt_driver_libxl_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+
+libvirt_driver_libxl_impl_la_CFLAGS = \
+	$(LIBXL_CFLAGS) \
+	$(LIBXML_CFLAGS) \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/secret \
+	-I$(srcdir)/xenconfig \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_libxl_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_libxl_impl_la_LIBADD = \
+	$(LIBXL_LIBS) \
+	$(LIBXML_LIBS) \
+	libvirt_xenconfig_libxl.la \
+	$(NULL)
+libvirt_driver_libxl_impl_la_SOURCES = $(LIBXL_DRIVER_SOURCES)
+
+conf_DATA += libxl/libxl.conf
+augeas_DATA += libxl/libvirtd_libxl.aug
+augeastest_DATA += test_libvirtd_libxl.aug
+CLEANFILES += test_libvirtd_libxl.aug
+
+AUGEAS_DIRS += libxl
+
+test_libvirtd_libxl.aug: libxl/test_libvirtd_libxl.aug.in \
+		$(srcdir)/libxl/libxl.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libxl/libxl.conf $< $@
+
+check-augeas-libxl: test_libvirtd_libxl.aug
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/libxl test_libvirtd_libxl.aug; \
+	fi
+
+INSTALL_DATA_DIRS += libxl
+
+install-data-libxl:
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/libxl"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/libxl"
+
+uninstall-data-libxl:
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/libxl" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/libxl" ||:
+
+endif WITH_LIBXL
+
+.PHONY: \
+	check-augeas-libxl \
+	$(NULL)
+
+EXTRA_DIST += \
+	libxl/libxl.conf \
+	libxl/libvirtd_libxl.aug \
+	libxl/test_libvirtd_libxl.aug.in \
+	$(NULL)

@@ -9,7 +9,7 @@ specification.
 
 See also:
 - http://www.google-melange.com/gsoc/project/google/gsoc2013/kawamuray/7001
-- http://wiki.qemu.org/Features/LibvirtWiresharkDissector
+- https://wiki.qemu.org/Features/LibvirtWiresharkDissector
 
 Installation
 =============

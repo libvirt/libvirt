@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -24,8 +22,10 @@
 
 #if defined(WITH_DBUS) && defined(__linux__)
 
-# include <stdlib.h>
 # include <dbus/dbus.h>
+
+# define LIBVIRT_VIRSYSTEMDPRIV_H_ALLOW
+# include "virsystemdpriv.h"
 
 # include "virsystemd.h"
 # include "virdbus.h"
@@ -410,8 +410,8 @@ testMachineName(const void *opaque)
     int ret = -1;
     char *actual = NULL;
 
-    if (!(actual = virSystemdMakeMachineName("qemu", data->id,
-                                             data->name, true)))
+    if (!(actual = virDomainGenerateMachineName("qemu", data->id,
+                                                data->name, true)))
         goto cleanup;
 
     if (STRNEQ(actual, data->expected)) {
@@ -518,38 +518,37 @@ mymain(void)
     if (virUUIDParse("c7a5fdbd-edaf-9455-926a-d65c16db1809", uuid) < 0)
         return EXIT_FAILURE;
 
-    if (virTestRun("Test create container ", testCreateContainer, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test terminate container ", testTerminateContainer, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create machine ", testCreateMachine, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test terminate machine ", testTerminateMachine, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create no systemd ", testCreateNoSystemd, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create systemd not running ",
-                   testCreateSystemdNotRunning, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create bad systemd ", testCreateBadSystemd, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create with network ", testCreateNetwork, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test getting machine name ", testGetMachineName, NULL) < 0)
-        ret = -1;
-
-# define TEST_SCOPE(_name, unitname, _legacy)                           \
-    do {                                                                \
-        struct testNameData data = {                                    \
-            .name = _name, .expected = unitname, .legacy = _legacy,     \
-        };                                                              \
-        if (virTestRun("Test scopename", testScopeName, &data) < 0)     \
-            ret = -1;                                                   \
+# define DO_TEST(_name, func) \
+    do { \
+        if (virTestRun(_name, func, NULL) < 0) \
+            ret = -1; \
+        if (virTestRun(_name "again ", func, NULL) < 0) \
+            ret = -1; \
+        virSystemdHasMachinedResetCachedValue(); \
     } while (0)
 
-# define TEST_SCOPE_OLD(name, unitname)         \
+    DO_TEST("Test create container ", testCreateContainer);
+    DO_TEST("Test terminate container ", testTerminateContainer);
+    DO_TEST("Test create machine ", testCreateMachine);
+    DO_TEST("Test terminate machine ", testTerminateMachine);
+    DO_TEST("Test create no systemd ", testCreateNoSystemd);
+    DO_TEST("Test create systemd not running ", testCreateSystemdNotRunning);
+    DO_TEST("Test create bad systemd ", testCreateBadSystemd);
+    DO_TEST("Test create with network ", testCreateNetwork);
+    DO_TEST("Test getting machine name ", testGetMachineName);
+
+# define TEST_SCOPE(_name, unitname, _legacy) \
+    do { \
+        struct testNameData data = { \
+            .name = _name, .expected = unitname, .legacy = _legacy, \
+        }; \
+        if (virTestRun("Test scopename", testScopeName, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+# define TEST_SCOPE_OLD(name, unitname) \
     TEST_SCOPE(name, unitname, true)
-# define TEST_SCOPE_NEW(name, unitname)         \
+# define TEST_SCOPE_NEW(name, unitname) \
     TEST_SCOPE(name, unitname, false)
 
     TEST_SCOPE_OLD("demo", "machine-lxc\\x2ddemo.scope");
@@ -560,13 +559,13 @@ mymain(void)
 
     TEST_SCOPE_NEW("qemu-3-demo", "machine-qemu\\x2d3\\x2ddemo.scope");
 
-# define TEST_MACHINE(_name, _id, machinename)                          \
-    do {                                                                \
-        struct testNameData data = {                                    \
-            .name = _name, .expected = machinename, .id = _id,          \
-        };                                                              \
-        if (virTestRun("Test scopename", testMachineName, &data) < 0)   \
-            ret = -1;                                                   \
+# define TEST_MACHINE(_name, _id, machinename) \
+    do { \
+        struct testNameData data = { \
+            .name = _name, .expected = machinename, .id = _id, \
+        }; \
+        if (virTestRun("Test scopename", testMachineName, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     TEST_MACHINE("demo", 1, "qemu-1-demo");
@@ -580,19 +579,19 @@ mymain(void)
     TEST_MACHINE("123456789012345678901234567890123456789012345678901234567890", 8,
                  "qemu-8-123456789012345678901234567890123456789012345678901234567");
 
-# define TESTS_PM_SUPPORT_HELPER(name, function)                           \
-    do {                                                                   \
-        struct testPMSupportData data = {                                  \
-            function                                                       \
-        };                                                                 \
-        if (virTestRun("Test " name " ", testPMSupportHelper, &data) < 0)  \
-            ret = -1;                                                      \
-        if (virTestRun("Test " name " no systemd ",                        \
-                       testPMSupportHelperNoSystemd, &data) < 0)           \
-            ret = -1;                                                      \
-        if (virTestRun("Test systemd " name " not running ",               \
-                       testPMSupportSystemdNotRunning, &data) < 0)         \
-            ret = -1;                                                      \
+# define TESTS_PM_SUPPORT_HELPER(name, function) \
+    do { \
+        struct testPMSupportData data = { \
+            function \
+        }; \
+        if (virTestRun("Test " name " ", testPMSupportHelper, &data) < 0) \
+            ret = -1; \
+        if (virTestRun("Test " name " no systemd ", \
+                       testPMSupportHelperNoSystemd, &data) < 0) \
+            ret = -1; \
+        if (virTestRun("Test systemd " name " not running ", \
+                       testPMSupportSystemdNotRunning, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     TESTS_PM_SUPPORT_HELPER("canSuspend", &virSystemdCanSuspend);
@@ -602,7 +601,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
 
 #else /* ! (WITH_DBUS && __linux__) */
 int

@@ -1,0 +1,25 @@
+{
+  "return": [
+    {
+      "arch": "s390",
+      "cpu-index": 0,
+      "props": {
+	  "core-id": 0
+      },
+      "qom-path": "/machine/unattached/device[0]",
+      "thread-id": 89504,
+      "cpu-state": "operating"
+    },
+    {
+      "arch": "s390",
+      "cpu-index": 1,
+      "props": {
+	  "core-id": 1
+      },
+      "qom-path": "/machine/unattached/device[1]",
+      "thread-id": 89505,
+      "cpu-state": "stopped"
+    }
+  ],
+  "id": "libvirt-42"
+}

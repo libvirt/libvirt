@@ -21,8 +21,8 @@
  * based on iptables.h
  */
 
-#ifndef __DNSMASQ_H__
-# define __DNSMASQ_H__
+#ifndef LIBVIRT_VIRDNSMASQ_H
+# define LIBVIRT_VIRDNSMASQ_H
 
 # include "virobject.h"
 # include "virsocketaddr.h"
@@ -111,12 +111,12 @@ unsigned long dnsmasqCapsGetVersion(dnsmasqCapsPtr caps);
 # define DNSMASQ_RA_MAJOR_REQD 2
 # define DNSMASQ_RA_MINOR_REQD 64
 
-# define DNSMASQ_DHCPv6_SUPPORT(CAPS)        \
-    (dnsmasqCapsGetVersion(CAPS) >=          \
+# define DNSMASQ_DHCPv6_SUPPORT(CAPS) \
+    (dnsmasqCapsGetVersion(CAPS) >= \
      (DNSMASQ_DHCPv6_MAJOR_REQD * 1000000) + \
      (DNSMASQ_DHCPv6_MINOR_REQD * 1000))
-# define DNSMASQ_RA_SUPPORT(CAPS)            \
-    (dnsmasqCapsGetVersion(CAPS) >=          \
-     (DNSMASQ_RA_MAJOR_REQD * 1000000) +     \
+# define DNSMASQ_RA_SUPPORT(CAPS) \
+    (dnsmasqCapsGetVersion(CAPS) >= \
+     (DNSMASQ_RA_MAJOR_REQD * 1000000) + \
      (DNSMASQ_RA_MINOR_REQD * 1000))
-#endif /* __DNSMASQ_H__ */
+#endif /* LIBVIRT_VIRDNSMASQ_H */

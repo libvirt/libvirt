@@ -1,0 +1,70 @@
+# Last Modified: Mon Apr  5 15:10:27 2010
+#include <tunables/global>
+
+profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
+  #include <abstractions/base>
+
+  # needed for searching directories
+  capability dac_override,
+  capability dac_read_search,
+
+  # needed for when disk is on a network filesystem
+  network inet,
+  network inet6,
+
+  deny @{PROC}/[0-9]*/mounts r,
+  @{PROC}/[0-9]*/net/psched r,
+  owner @{PROC}/[0-9]*/status r,
+  @{PROC}/filesystems r,
+
+  /etc/libnl-3/classid r,
+
+  # for gl enabled graphics
+  /dev/dri/{,*} r,
+
+  # for hostdev
+  /sys/devices/ r,
+  /sys/devices/** r,
+  /sys/bus/usb/devices/ r,
+  deny /dev/sd* r,
+  deny /dev/vd* r,
+  deny /dev/dm-* r,
+  deny /dev/drbd[0-9]* r,
+  deny /dev/dasd* r,
+  deny /dev/nvme* r,
+  deny /dev/zd[0-9]* r,
+  deny /dev/mapper/ r,
+  deny /dev/mapper/* r,
+
+  /usr/{lib,lib64}/libvirt/virt-aa-helper mr,
+  /{usr/,}sbin/apparmor_parser Ux,
+
+  /etc/apparmor.d/libvirt/* r,
+  /etc/apparmor.d/libvirt/libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]* rw,
+
+  # for backingstore -- allow access to non-hidden files in @{HOME} as well
+  # as storage pools
+  audit deny @{HOME}/.* mrwkl,
+  audit deny @{HOME}/.*/ rw,
+  audit deny @{HOME}/.*/** mrwkl,
+  audit deny @{HOME}/bin/ rw,
+  audit deny @{HOME}/bin/** mrwkl,
+  @{HOME}/ r,
+  @{HOME}/** r,
+  /var/lib/libvirt/images/ r,
+  /var/lib/libvirt/images/** r,
+  /var/lib/nova/instances/_base/* r,
+  /{media,mnt,opt,srv}/** r,
+  # For virt-sandbox
+  /{,var/}run/libvirt/**/[sv]d[a-z] r,
+
+  /**.img r,
+  /**.raw r,
+  /**.qcow{,2} r,
+  /**.qed r,
+  /**.vmdk r,
+  /**.[iI][sS][oO] r,
+  /**/disk{,.*} r,
+
+  #include <local/usr.lib.libvirt.virt-aa-helper>
+}

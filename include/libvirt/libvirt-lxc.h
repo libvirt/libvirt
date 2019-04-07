@@ -19,12 +19,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_LXC_H__
-# define __VIR_LXC_H__
+#ifndef LIBVIRT_LXC_H
+# define LIBVIRT_LXC_H
 
 # include <libvirt/libvirt.h>
 
@@ -53,4 +51,4 @@ int virDomainLxcEnterCGroup(virDomainPtr domain,
 }
 # endif
 
-#endif /* __VIR_LXC_H__ */
+#endif /* LIBVIRT_LXC_H */

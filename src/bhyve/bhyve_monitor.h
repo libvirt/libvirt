@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Conrad Meyer <cse.cem@gmail.com>
  */
 
-#ifndef BHYVE_MONITOR_H
-# define BHYVE_MONITOR_H
+#ifndef LIBVIRT_BHYVE_MONITOR_H
+# define LIBVIRT_BHYVE_MONITOR_H
 
 # include "internal.h"
 # include "domain_conf.h"
@@ -33,4 +31,4 @@ typedef bhyveMonitor *bhyveMonitorPtr;
 bhyveMonitorPtr bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver);
 void bhyveMonitorClose(bhyveMonitorPtr mon);
 
-#endif /* BHYVE_MONITOR_H */
+#endif /* LIBVIRT_BHYVE_MONITOR_H */

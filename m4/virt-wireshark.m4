@@ -18,14 +18,14 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_WIRESHARK],[
-  LIBVIRT_ARG_WITH_FEATURE([WIRESHARK_DISSECTOR], [wireshark], [check], [1.11.3])
+  LIBVIRT_ARG_WITH_FEATURE([WIRESHARK_DISSECTOR], [wireshark], [check], [2.4.0])
   LIBVIRT_ARG_WITH([WS_PLUGINDIR],
                    [wireshark plugins directory for use when installing
                    wireshark plugin], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[
-  LIBVIRT_CHECK_PKG([WIRESHARK_DISSECTOR], [wireshark], [1.11.3])
+  LIBVIRT_CHECK_PKG([WIRESHARK_DISSECTOR], [wireshark], [2.4.0])
 
   dnl Check for system location of wireshark plugins
   if test "x$with_wireshark_dissector" != "xno" ; then
@@ -50,6 +50,12 @@ AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[
         dnl time
         ws_plugindir='${exec_prefix}'"${ws_plugindir#$ws_exec_prefix}"
       fi
+
+      dnl Since wireshark 2.5.0 plugins can't live in top level
+      dnl plugindir but have to be under one of ["epan",
+      dnl "wiretap", "codecs"] subdir. The first one looks okay.
+      ws_plugindir="$ws_plugindir/epan"
+
     elif test "x$with_ws_plugindir" = "xno" || test "x$with_ws_plugindir" = "xyes"; then
       AC_MSG_ERROR([ws-plugindir must be used only with valid path])
     else

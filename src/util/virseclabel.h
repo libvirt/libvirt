@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SECLABEL_H
-# define __SECLABEL_H
+#ifndef LIBVIRT_VIRSECLABEL_H
+# define LIBVIRT_VIRSECLABEL_H
 
 typedef enum {
     VIR_DOMAIN_SECLABEL_DEFAULT,
@@ -68,4 +68,4 @@ virSecurityDeviceLabelDefCopy(const virSecurityDeviceLabelDef *src)
 void virSecurityLabelDefFree(virSecurityLabelDefPtr def);
 void virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDefPtr def);
 
-#endif /* __SECLABEL_H */
+#endif /* LIBVIRT_VIRSECLABEL_H */

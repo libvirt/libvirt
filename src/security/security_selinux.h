@@ -14,14 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     James Morris <jmorris@namei.org>
- *
  */
-#ifndef __VIR_SECURITY_SELINUX_H__
-# define __VIR_SECURITY_SELINUX_H__
+
+#ifndef LIBVIRT_SECURITY_SELINUX_H
+# define LIBVIRT_SECURITY_SELINUX_H
 
 extern virSecurityDriver virSecurityDriverSELinux;
 
-#endif /* __VIR_SECURITY_SELINUX_H__ */
+#endif /* LIBVIRT_SECURITY_SELINUX_H */

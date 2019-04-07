@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_URI_H__
-# define __VIR_URI_H__
+#ifndef LIBVIRT_VIRURI_H
+# define LIBVIRT_VIRURI_H
 
 # include <libxml/uri.h>
 
@@ -42,7 +42,7 @@ struct _virURI {
     char *scheme;       /* the URI scheme */
     char *server;       /* the server part */
     char *user;         /* the user part */
-    int port;           /* the port number */
+    unsigned int port;  /* the port number */
     char *path;         /* the path string */
     char *query;        /* the query string */
     char *fragment;     /* the fragment string */
@@ -64,4 +64,4 @@ int virURIResolveAlias(virConfPtr conf, const char *alias, char **uri);
 
 # define VIR_URI_SERVER(uri) ((uri) && (uri)->server ? (uri)->server : "localhost")
 
-#endif /* __VIR_URI_H__ */
+#endif /* LIBVIRT_VIRURI_H */

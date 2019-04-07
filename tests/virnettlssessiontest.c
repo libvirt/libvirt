@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 #include <fcntl.h>
 #include <sys/socket.h>
 
@@ -74,9 +71,9 @@ static ssize_t testRead(char *buf, size_t len, void *opaque)
  * This is replicating the checks that are done for an
  * active TLS session after handshake completes. To
  * simulate that we create our TLS contexts, skipping
- * sanity checks. When then get a socketpair, and
+ * sanity checks. We then get a socketpair, and
  * initiate a TLS session across them. Finally do
- * do actual cert validation tests
+ * actual cert validation tests
  */
 static int testTLSSessionInit(const void *opaque)
 {
@@ -113,7 +110,7 @@ static int testTLSSessionInit(const void *opaque)
                                            data->servercrt,
                                            KEYFILE,
                                            data->wildcards,
-                                           NULL,
+                                           "NORMAL",
                                            false,
                                            true);
 
@@ -121,7 +118,7 @@ static int testTLSSessionInit(const void *opaque)
                                            NULL,
                                            data->clientcrt,
                                            KEYFILE,
-                                           NULL,
+                                           "NORMAL",
                                            false,
                                            true);
 
@@ -180,7 +177,7 @@ static int testTLSSessionInit(const void *opaque)
             if (rv == VIR_NET_TLS_HANDSHAKE_COMPLETE)
                 clientShake = true;
         }
-    } while (!clientShake && !serverShake);
+    } while (!clientShake || !serverShake);
 
 
     /* Finally make sure the server validation does what
@@ -247,58 +244,58 @@ mymain(void)
     testTLSInit(KEYFILE);
 
 # define DO_SESS_TEST(_caCrt, _serverCrt, _clientCrt, _expectServerFail, \
-                      _expectClientFail, _hostname, _wildcards)          \
-    do {                                                                 \
-        static struct testTLSSessionData data;                           \
-        data.servercacrt = _caCrt;                                       \
-        data.clientcacrt = _caCrt;                                       \
-        data.servercrt = _serverCrt;                                     \
-        data.clientcrt = _clientCrt;                                     \
-        data.expectServerFail = _expectServerFail;                       \
-        data.expectClientFail = _expectClientFail;                       \
-        data.hostname = _hostname;                                       \
-        data.wildcards = _wildcards;                                     \
-        if (virTestRun("TLS Session " #_serverCrt " + " #_clientCrt,     \
-                       testTLSSessionInit, &data) < 0)                   \
-            ret = -1;                                                    \
+                      _expectClientFail, _hostname, _wildcards) \
+    do { \
+        static struct testTLSSessionData data; \
+        data.servercacrt = _caCrt; \
+        data.clientcacrt = _caCrt; \
+        data.servercrt = _serverCrt; \
+        data.clientcrt = _clientCrt; \
+        data.expectServerFail = _expectServerFail; \
+        data.expectClientFail = _expectClientFail; \
+        data.hostname = _hostname; \
+        data.wildcards = _wildcards; \
+        if (virTestRun("TLS Session " #_serverCrt " + " #_clientCrt, \
+                       testTLSSessionInit, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 # define DO_SESS_TEST_EXT(_serverCaCrt, _clientCaCrt, _serverCrt, _clientCrt, \
-                          _expectServerFail, _expectClientFail,               \
-                          _hostname, _wildcards)                              \
-    do {                                                                      \
-        static struct testTLSSessionData data;                                \
-        data.servercacrt = _serverCaCrt;                                      \
-        data.clientcacrt = _clientCaCrt;                                      \
-        data.servercrt = _serverCrt;                                          \
-        data.clientcrt = _clientCrt;                                          \
-        data.expectServerFail = _expectServerFail;                            \
-        data.expectClientFail = _expectClientFail;                            \
-        data.hostname = _hostname;                                            \
-        data.wildcards = _wildcards;                                          \
-        if (virTestRun("TLS Session " #_serverCrt " + " #_clientCrt,          \
-                       testTLSSessionInit, &data) < 0)                        \
-            ret = -1;                                                         \
+                          _expectServerFail, _expectClientFail, \
+                          _hostname, _wildcards) \
+    do { \
+        static struct testTLSSessionData data; \
+        data.servercacrt = _serverCaCrt; \
+        data.clientcacrt = _clientCaCrt; \
+        data.servercrt = _serverCrt; \
+        data.clientcrt = _clientCrt; \
+        data.expectServerFail = _expectServerFail; \
+        data.expectClientFail = _expectClientFail; \
+        data.hostname = _hostname; \
+        data.wildcards = _wildcards; \
+        if (virTestRun("TLS Session " #_serverCrt " + " #_clientCrt, \
+                       testTLSSessionInit, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-# define TLS_CERT_REQ(varname, cavarname,                               \
-                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
-                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
-    static struct testTLSCertReq varname = {                            \
-        NULL, #varname "-sess.pem",                                     \
-        co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
-        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so                     \
-    };                                                                  \
+# define TLS_CERT_REQ(varname, cavarname, \
+                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo) \
+    static struct testTLSCertReq varname = { \
+        NULL, #varname "-sess.pem", \
+        co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so \
+    }; \
     testTLSGenerateCert(&varname, cavarname.crt)
 
-# define TLS_ROOT_REQ(varname,                                          \
-                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
-                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
-    static struct testTLSCertReq varname = {                            \
-        NULL, #varname "-sess.pem",                                     \
-        co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
-        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so                     \
-    };                                                                  \
+# define TLS_ROOT_REQ(varname, \
+                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo) \
+    static struct testTLSCertReq varname = { \
+        NULL, #varname "-sess.pem", \
+        co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so \
+    }; \
     testTLSGenerateCert(&varname, NULL)
 
     /* A perfect CA, perfect client & perfect server */
@@ -487,7 +484,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virrandommock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virrandommock.so")
 
 #else
 

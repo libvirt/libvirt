@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Sharadha Prabhakar <sharadha.prabhakar@citrix.com>
  */
 
 #include <config.h>
 
-#include <limits.h>
-#include <string.h>
 #include <curl/curl.h>
 #include <xen/api/xen_all.h>
 #include "internal.h"
@@ -146,20 +142,9 @@ xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri == NULL || conn->uri->scheme == NULL ||
-        STRCASENEQ(conn->uri->scheme, "XenAPI")) {
-        return VIR_DRV_OPEN_DECLINED;
-    }
-
     if (conn->uri->server == NULL) {
         xenapiSessionErrorHandler(conn, VIR_ERR_INVALID_ARG,
                                   _("Server name not in URI"));
-        goto error;
-    }
-
-    if (auth == NULL) {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                  _("Authentication Credentials not found"));
         goto error;
     }
 
@@ -167,22 +152,14 @@ xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
         if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto error;
     } else {
-        username = virAuthGetUsername(conn, auth, "xen", NULL, conn->uri->server);
-
-        if (username == NULL) {
-            xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                      _("Username request failed"));
+        if (!(username = virAuthGetUsername(conn, auth, "xen", NULL,
+                                            conn->uri->server)))
             goto error;
-        }
     }
 
-    password = virAuthGetPassword(conn, auth, "xen", username, conn->uri->server);
-
-    if (password == NULL) {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                  _("Password request failed"));
+    if (!(password = virAuthGetPassword(conn, auth, "xen", username,
+                                        conn->uri->server)))
         goto error;
-    }
 
     if (VIR_ALLOC(privP) < 0)
         goto error;
@@ -200,7 +177,7 @@ xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     if (!(privP->xmlopt = virDomainXMLOptionNew(&xenapiDomainDefParserConfig,
-                                                NULL, NULL))) {
+                                                NULL, NULL, NULL, NULL))) {
         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("Failed to create XML conf object"));
         goto error;
@@ -435,7 +412,9 @@ xenapiNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     if (xen_host_cpu_get_all(session, &host_cpu_set)) {
         host_cpu = host_cpu_set->contents[0];
         xen_host_cpu_get_modelname(session, &modelname, host_cpu);
-        if (!virStrncpy(info->model, modelname, LIBVIRT_MODELNAME_LEN - 1, LIBVIRT_MODELNAME_LEN)) {
+        if (virStrncpy(info->model, modelname,
+                       MIN(strlen(modelname), LIBVIRT_MODELNAME_LEN - 1),
+                       LIBVIRT_MODELNAME_LEN) < 0) {
             virReportOOMError();
             xen_host_cpu_set_free(host_cpu_set);
             VIR_FREE(modelname);
@@ -464,7 +443,6 @@ xenapiNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 static char *
 xenapiConnectGetCapabilities(virConnectPtr conn)
 {
-
     virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
     if (caps)
         return virCapabilitiesFormatXML(caps);
@@ -580,14 +558,14 @@ xenapiDomainCreateXML(virConnectPtr conn,
         ignore_value(virUUIDParse(record->uuid, raw_uuid));
         if (vm) {
             if (xen_vm_start(priv->session, vm, false, false)) {
-                domP = virGetDomain(conn, record->name_label, raw_uuid);
+                domP = virGetDomain(conn, record->name_label,
+                                    raw_uuid, record->domid);
                 if (!domP) {
                     xen_vm_record_free(record);
                     xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                               _("Domain Pointer is invalid"));
                     return domP;
                 }
-                domP->id = record->domid;
                 xen_vm_free(vm);
             }
             else
@@ -627,18 +605,16 @@ xenapiDomainLookupByID(virConnectPtr conn, int id)
             for (i = 0; i < result->size; i++) {
                 xen_vm_get_domid(session, &domID, result->contents[i]);
                 if (domID == id) {
+                    int64_t domid = -1;
+
                     xen_vm_get_record(session, &record, result->contents[i]);
                     xen_vm_get_uuid(session, &uuid, result->contents[i]);
                     ignore_value(virUUIDParse(uuid, raw_uuid));
-                    domP = virGetDomain(conn, record->name_label, raw_uuid);
-                    if (domP) {
-                        int64_t domid = -1;
-                        xen_vm_get_domid(session, &domid, result->contents[i]);
-                        domP->id = domid;
-                    } else {
+                    xen_vm_get_domid(session, &domid, result->contents[i]);
+                    domP = virGetDomain(conn, record->name_label, raw_uuid, domid);
+                    if (!domP) {
                         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                                   _("Domain Pointer not valid"));
-                        domP = NULL;
                     }
                     xen_uuid_free(uuid);
                     xen_vm_record_free(record);
@@ -676,13 +652,10 @@ xenapiDomainLookupByUUID(virConnectPtr conn,
     if (xen_vm_get_by_uuid(session, &vm, uuidStr)) {
         xen_vm_get_record(session, &record, vm);
         if (record != NULL) {
-            domP = virGetDomain(conn, record->name_label, uuid);
+            domP = virGetDomain(conn, record->name_label, uuid, record->domid);
             if (!domP) {
                 xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                           _("Domain Pointer not valid"));
-                domP = NULL;
-            } else {
-                domP->id = record->domid;
             }
             xen_vm_record_free(record);
         } else {
@@ -722,12 +695,11 @@ xenapiDomainLookupByName(virConnectPtr conn,
         vm = vms->contents[0];
         xen_vm_get_uuid(session, &uuid, vm);
         if (uuid != NULL) {
+            int64_t domid = -1;
             ignore_value(virUUIDParse(uuid, raw_uuid));
-            domP = virGetDomain(conn, name, raw_uuid);
+            xen_vm_get_domid(session, &domid, vm);
+            domP = virGetDomain(conn, name, raw_uuid, domid);
             if (domP != NULL) {
-                int64_t domid = -1;
-                xen_vm_get_domid(session, &domid, vm);
-                domP->id = domid;
                 xen_uuid_free(uuid);
                 xen_vm_set_free(vms);
                 return domP;
@@ -1264,7 +1236,6 @@ xenapiDomainGetVcpus(virDomainPtr dom,
                      virVcpuInfoPtr info, int maxinfo,
                      unsigned char *cpumaps, int maplen)
 {
-
     xen_vm_set *vms = NULL;
     xen_vm vm = NULL;
     xen_string_string_map *vcpu_params = NULL;
@@ -1776,7 +1747,7 @@ xenapiDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     if (record != NULL) {
         unsigned char raw_uuid[VIR_UUID_BUFLEN];
         ignore_value(virUUIDParse(record->uuid, raw_uuid));
-        domP = virGetDomain(conn, record->name_label, raw_uuid);
+        domP = virGetDomain(conn, record->name_label, raw_uuid, -1);
         if (!domP && !priv->session->ok)
             xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, NULL);
         xen_vm_record_free(record);
@@ -2081,6 +2052,7 @@ static virHypervisorDriver xenapiHypervisorDriver = {
 
 
 static virConnectDriver xenapiConnectDriver = {
+    .uriSchemes = (const char *[]){ "xenapi", NULL },
     .hypervisorDriver = &xenapiHypervisorDriver,
 };
 

@@ -8,6 +8,7 @@
       <live/>
       <uri_transports>
         <uri_transport>tcp</uri_transport>
+        <uri_transport>rdma</uri_transport>
       </uri_transports>
     </migration_features>
     <topology>
@@ -34,14 +35,14 @@
     <os_type>hvm</os_type>
     <arch name='i686'>
       <wordsize>32</wordsize>
-      <emulator>/usr/bin/qemu</emulator>
+      <emulator>/usr/bin/qemu-system-i686</emulator>
       <machine maxCpus='255'>pc-0.11</machine>
       <machine canonical='pc-0.11' maxCpus='255'>pc</machine>
       <machine maxCpus='255'>pc-0.10</machine>
       <machine maxCpus='1'>isapc</machine>
       <domain type='qemu'/>
       <domain type='kvm'>
-        <emulator>/usr/bin/qemu-kvm</emulator>
+        <emulator>/usr/bin/qemu-system-i686</emulator>
         <machine maxCpus='255'>pc-0.11</machine>
         <machine canonical='pc-0.11' maxCpus='255'>pc</machine>
         <machine maxCpus='255'>pc-0.10</machine>
@@ -67,7 +68,7 @@
       <machine>isapc</machine>
       <domain type='qemu'/>
       <domain type='kvm'>
-        <emulator>/usr/bin/qemu-kvm</emulator>
+        <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <machine>pc-0.11</machine>
         <machine canonical='pc-0.11'>pc</machine>
         <machine>pc-0.10</machine>
@@ -78,6 +79,72 @@
       <acpi default='on' toggle='yes'/>
       <apic default='on' toggle='no'/>
     </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='armv6l'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-arm</emulator>
+      <machine maxCpus='1'>integratorcp</machine>
+      <machine maxCpus='2'>nuri</machine>
+      <machine maxCpus='1'>mps2-an511</machine>
+      <machine maxCpus='1'>verdex</machine>
+      <machine maxCpus='1'>mps2-an505</machine>
+      <machine maxCpus='512'>virt-3.0</machine>
+      <machine canonical='virt-3.0' maxCpus='512'>virt</machine>
+      <machine maxCpus='1'>ast2500-evb</machine>
+      <machine maxCpus='2'>smdkc210</machine>
+      <machine maxCpus='1'>collie</machine>
+      <machine maxCpus='1'>imx25-pdk</machine>
+      <machine maxCpus='1'>spitz</machine>
+      <machine maxCpus='4'>realview-pbx-a9</machine>
+      <machine maxCpus='1'>realview-eb</machine>
+      <machine maxCpus='1'>realview-pb-a8</machine>
+      <machine maxCpus='1'>versatilepb</machine>
+      <machine maxCpus='1'>emcraft-sf2</machine>
+      <machine maxCpus='255'>virt-2.9</machine>
+      <machine maxCpus='1'>musicpal</machine>
+      <machine maxCpus='1'>z2</machine>
+      <machine maxCpus='1'>akita</machine>
+      <machine maxCpus='255'>virt-2.7</machine>
+      <machine maxCpus='1'>kzm</machine>
+      <machine maxCpus='255'>virt-2.8</machine>
+      <machine maxCpus='4'>realview-eb-mpcore</machine>
+      <machine maxCpus='2'>mcimx7d-sabre</machine>
+      <machine maxCpus='1'>sx1</machine>
+      <machine maxCpus='1'>sx1-v1</machine>
+      <machine maxCpus='255'>virt-2.6</machine>
+      <machine maxCpus='1'>cubieboard</machine>
+      <machine maxCpus='4'>highbank</machine>
+      <machine maxCpus='4'>raspi2</machine>
+      <machine maxCpus='1'>netduino2</machine>
+      <machine maxCpus='1'>terrier</machine>
+      <machine maxCpus='1'>n810</machine>
+      <machine maxCpus='1'>mainstone</machine>
+      <machine maxCpus='1'>palmetto-bmc</machine>
+      <machine maxCpus='4'>sabrelite</machine>
+      <machine maxCpus='4'>midway</machine>
+      <machine maxCpus='1'>romulus-bmc</machine>
+      <machine maxCpus='1'>cheetah</machine>
+      <machine maxCpus='1'>tosa</machine>
+      <machine maxCpus='1'>borzoi</machine>
+      <machine maxCpus='1'>versatileab</machine>
+      <machine maxCpus='1'>lm3s6965evb</machine>
+      <machine maxCpus='1'>n800</machine>
+      <machine maxCpus='255'>virt-2.10</machine>
+      <machine maxCpus='255'>virt-2.11</machine>
+      <machine maxCpus='1'>connex</machine>
+      <machine maxCpus='255'>virt-2.12</machine>
+      <machine maxCpus='1'>witherspoon-bmc</machine>
+      <machine maxCpus='1'>xilinx-zynq-a9</machine>
+      <machine maxCpus='1'>mps2-an385</machine>
+      <machine maxCpus='4'>vexpress-a9</machine>
+      <machine maxCpus='4'>vexpress-a15</machine>
+      <machine maxCpus='1'>canon-a1100</machine>
+      <machine maxCpus='1'>lm3s811evb</machine>
+      <domain type='qemu'/>
+    </arch>
   </guest>
 
   <guest>
@@ -205,6 +272,42 @@
       <machine>prep</machine>
       <domain type='qemu'/>
     </arch>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='riscv32'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-riscv32</emulator>
+      <machine maxCpus='1'>spike_v1.10</machine>
+      <machine maxCpus='1'>spike_v1.9.1</machine>
+      <machine maxCpus='1'>sifive_e</machine>
+      <machine maxCpus='8'>virt</machine>
+      <machine maxCpus='1'>sifive_u</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <disksnapshot default='on' toggle='no'/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='riscv64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-riscv64</emulator>
+      <machine maxCpus='1'>spike_v1.10</machine>
+      <machine maxCpus='1'>spike_v1.9.1</machine>
+      <machine maxCpus='1'>sifive_e</machine>
+      <machine maxCpus='8'>virt</machine>
+      <machine maxCpus='1'>sifive_u</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <disksnapshot default='on' toggle='no'/>
+    </features>
   </guest>
 
   <guest>

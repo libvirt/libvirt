@@ -67,7 +67,7 @@ upgrades of the virtlogd service.
 
 =over
 
-=item F<SYSCONFDIR/virtlogd.conf>
+=item F<SYSCONFDIR/libvirt/virtlogd.conf>
 
 The default configuration file used by virtlogd, unless overridden on the
 command line using the B<-f>|B<--config> option.
@@ -86,7 +86,7 @@ The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
 
 =over
 
-=item F<$XDG_CONFIG_HOME/virtlogd.conf>
+=item F<$XDG_CONFIG_HOME/libvirt/virtlogd.conf>
 
 The default configuration file used by libvirtd, unless overridden on the
 command line using the B<-f>|B<--config> option.
@@ -128,7 +128,7 @@ Please report all bugs you discover.  This should be done via either:
 
 =item a) the mailing list
 
-L<http://libvirt.org/contact.html>
+L<https://libvirt.org/contact.html>
 
 =item or,
 
@@ -136,7 +136,7 @@ B<>
 
 =item b) the bug tracker
 
-L<http://libvirt.org/bugs.html>
+L<https://libvirt.org/bugs.html>
 
 =item Alternatively, you may report bugs to your software distributor / vendor.
 
@@ -160,6 +160,6 @@ PURPOSE
 
 =head1 SEE ALSO
 
-L<libvirtd(8)>,  L<http://www.libvirt.org/>
+L<libvirtd(8)>,  L<https://libvirt.org/>
 
 =cut

@@ -1,0 +1,47 @@
+<domain type='qemu'>
+  <name>machine</name>
+  <uuid>2187c512-ff97-47d7-b67c-c02d3bdc219d</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <serial type='file'>
+      <source path='/tmp/serial.file'>
+        <seclabel model='dac' relabel='no'/>
+      </source>
+      <target port='0'/>
+    </serial>
+    <serial type='unix'>
+      <source mode='connect' path='/tmp/serial.sock'>
+        <seclabel model='dac' relabel='no'/>
+      </source>
+      <target port='1'/>
+    </serial>
+    <console type='file'>
+      <source path='/tmp/serial.file'>
+        <seclabel model='dac' relabel='no'/>
+      </source>
+      <target type='serial' port='0'/>
+    </console>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='virtio'/>
+    <rng model='virtio'>
+      <backend model='egd' type='pipe'>
+        <source path='/dev/null'/>
+      </backend>
+    </rng>
+  </devices>
+</domain>

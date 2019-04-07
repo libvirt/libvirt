@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -24,7 +22,6 @@
 
 #if defined(__ELF__)
 
-# include <stdlib.h>
 # include <dbus/dbus.h>
 
 # include "virpolkit.h"
@@ -350,7 +347,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
 
 #else /* ! __ELF__ */
 int

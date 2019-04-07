@@ -1,0 +1,34 @@
+{
+    "description": "UEFI firmware for x86_64 virtual machines",
+    "interface-types": [
+        "uefi"
+    ],
+    "mapping": {
+        "device": "flash",
+        "executable": {
+            "filename": "/usr/share/OVMF/OVMF_CODE.fd",
+            "format": "raw"
+        },
+        "nvram-template": {
+            "filename": "/usr/share/OVMF/OVMF_VARS.fd",
+            "format": "raw"
+        }
+    },
+    "targets": [
+        {
+            "architecture": "x86_64",
+            "machines": [
+                "pc-i440fx-*",
+                "pc-q35-*"
+            ]
+        }
+    ],
+    "features": [
+        "acpi-s3",
+        "amd-sev",
+        "verbose-dynamic"
+    ],
+    "tags": [
+
+    ]
+}

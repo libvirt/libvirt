@@ -35,10 +35,6 @@ VIR_LOG_INIT("libvirt.interface");
  * reference counter on the connection is not increased by this
  * call.
  *
- * WARNING: When writing libvirt bindings in other languages, do
- * not use this function.  Instead, store the connection and
- * the interface object together.
- *
  * Returns the virConnectPtr or NULL in case of failure.
  */
 virConnectPtr
@@ -86,7 +82,7 @@ virConnectListAllInterfaces(virConnectPtr conn,
                             virInterfacePtr **ifaces,
                             unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, ifaces=%p, flags=%x", conn, ifaces, flags);
+    VIR_DEBUG("conn=%p, ifaces=%p, flags=0x%x", conn, ifaces, flags);
 
     virResetLastError();
 
@@ -407,14 +403,14 @@ virInterfaceGetMACString(virInterfacePtr iface)
  * is not set, the ip address and netmask will be the current live
  * setting of the interface, not the settings from the config files.
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("iface=%p, flags=%x", iface, flags);
+    VIR_DEBUG("iface=%p, flags=0x%x", iface, flags);
 
     virResetLastError();
 
@@ -464,7 +460,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 virInterfacePtr
 virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, NULLSTR(xml), flags);
+    VIR_DEBUG("conn=%p, xml=%s, flags=0x%x", conn, NULLSTR(xml), flags);
 
     virResetLastError();
 
@@ -554,7 +550,7 @@ int
 virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("iface=%p, flags=%x", iface, flags);
+    VIR_DEBUG("iface=%p, flags=0x%x", iface, flags);
 
     virResetLastError();
 
@@ -601,7 +597,7 @@ int
 virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("iface=%p, flags=%x", iface, flags);
+    VIR_DEBUG("iface=%p, flags=0x%x", iface, flags);
 
     virResetLastError();
 
@@ -646,7 +642,7 @@ virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
 int
 virInterfaceRef(virInterfacePtr iface)
 {
-    VIR_DEBUG("iface=%p refs=%d", iface, iface ? iface->object.u.s.refs : 0);
+    VIR_DEBUG("iface=%p refs=%d", iface, iface ? iface->parent.u.s.refs : 0);
 
     virResetLastError();
 
@@ -700,7 +696,7 @@ virInterfaceFree(virInterfacePtr iface)
 int
 virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
 
     virResetLastError();
 
@@ -740,7 +736,7 @@ virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
 int
 virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
 
     virResetLastError();
 
@@ -780,7 +776,7 @@ virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
 int
 virInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
 
     virResetLastError();
 

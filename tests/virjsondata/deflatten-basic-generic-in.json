@@ -1,0 +1,14 @@
+{
+    "foo.int": 1,
+    "bar.int": 1,
+    "foo.string": "string",
+    "foo.object": {
+        "data":"value",
+        "foo":"bar"
+    },
+    "blurb.string": "string",
+    "blurb.object": {
+        "data":"value",
+        "foo":"bar"
+    }
+}

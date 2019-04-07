@@ -1,0 +1,42 @@
+INTERFACE_DRIVER_SOURCES = \
+	interface/interface_driver.h \
+	interface/interface_driver.c \
+	$(NULL)
+
+INTERFACE_DRIVER_NETCF_SOURCES = interface/interface_backend_netcf.c
+INTERFACE_DRIVER_UDEV_SOURCES = interface/interface_backend_udev.c
+
+DRIVER_SOURCE_FILES += $(INTERFACE_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += $(INTERFACE_DRIVER_SOURCES)
+
+EXTRA_DIST += \
+	$(INTERFACE_DRIVER_SOURCES) \
+	$(INTERFACE_DRIVER_NETCF_SOURCES) \
+	$(INTERFACE_DRIVER_UDEV_SOURCES) \
+	$(NULL)
+
+if WITH_INTERFACE
+mod_LTLIBRARIES += libvirt_driver_interface.la
+libvirt_driver_interface_la_CFLAGS = \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(LIBNL_CFLAGS) \
+	$(NULL)
+libvirt_driver_interface_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+libvirt_driver_interface_la_LIBADD = \
+	libvirt.la \
+	$(NULL)
+libvirt_driver_interface_la_SOURCES = $(INTERFACE_DRIVER_SOURCES)
+if WITH_NETCF
+libvirt_driver_interface_la_CFLAGS += $(NETCF_CFLAGS)
+libvirt_driver_interface_la_LIBADD += $(NETCF_LIBS)
+libvirt_driver_interface_la_SOURCES += $(INTERFACE_DRIVER_NETCF_SOURCES)
+endif WITH_NETCF
+if WITH_UDEV
+libvirt_driver_interface_la_CFLAGS += $(UDEV_CFLAGS)
+libvirt_driver_interface_la_LIBADD += $(UDEV_LIBS)
+libvirt_driver_interface_la_SOURCES += $(INTERFACE_DRIVER_UDEV_SOURCES)
+endif WITH_UDEV
+libvirt_driver_interface_la_LIBADD += ../gnulib/lib/libgnu.la
+endif WITH_INTERFACE

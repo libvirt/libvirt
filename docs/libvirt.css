@@ -100,14 +100,15 @@
     margin-right: auto;
     padding: 0px;
     padding-bottom: 1em;
-    max-width: 60em;
+    max-width: 95%;
+    width: 70em;
 }
 
 body.index #content,
 body.docs #content,
 body.hvsupport #content
 {
-    max-width: inherit;
+    width: inherit;
 }
 
 pre {
@@ -393,6 +394,7 @@ table.acl {
 
 table.acl tr, table.acl td {
     padding: 0.3em;
+    border: 1px solid #ccc;
 }
 
 table.acl thead {
@@ -535,4 +537,8 @@ dl.mail dt a {
 dl.mail dt a:hover {
     color:  rgb(255, 230, 0);
     text-decoration: none;
+}
+
+td.enumvalue {
+    white-space: nowrap;
 }

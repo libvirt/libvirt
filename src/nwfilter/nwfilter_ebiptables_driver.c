@@ -18,13 +18,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Stefan Berger <stefanb@us.ibm.com>
  */
 
 #include <config.h>
 
-#include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
@@ -168,7 +165,7 @@ printVar(virNWFilterVarCombIterPtr vars,
             return -1;
         }
 
-        if (!virStrcpy(buf, val, bufsize)) {
+        if (virStrcpy(buf, val, bufsize) < 0) {
             const char *varName;
 
             varName = virNWFilterVarAccessGetVarName(item->varAccess);
@@ -282,7 +279,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     break;
 
     case DATATYPE_IPSETNAME:
-        if (virStrcpy(buf, item->u.ipset.setname, bufsize) == NULL) {
+        if (virStrcpy(buf, item->u.ipset.setname, bufsize) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer to small for ipset name"));
             return -1;
@@ -311,7 +308,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
 
         flags = virBufferContentAndReset(&vb);
 
-        if (virStrcpy(buf, flags, bufsize) == NULL) {
+        if (virStrcpy(buf, flags, bufsize) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer too small for IPSETFLAGS type"));
             VIR_FREE(flags);
@@ -320,11 +317,16 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         VIR_FREE(flags);
     break;
 
-    default:
+    case DATATYPE_STRING:
+    case DATATYPE_STRINGCOPY:
+    case DATATYPE_BOOLEAN:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unhandled datatype %x"), item->datatype);
+                       _("Cannot print data type %x"), item->datatype);
         return -1;
-    break;
+    case DATATYPE_LAST:
+    default:
+        virReportEnumRangeError(virNWFilterAttrDataType, item->datatype);
+        return -1;
     }
 
     return 0;
@@ -1183,7 +1185,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
 
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
-    switch (rule->prtclType) {
+    switch ((int)rule->prtclType) {
     case VIR_NWFILTER_RULE_PROTOCOL_TCP:
     case VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6:
         fwrule = virFirewallAddRule(fw, layer,
@@ -1836,44 +1838,44 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
         PRINT_CHAIN(chain, chainPrefix, ifname,
                     chainSuffix);
 
-#define INST_ITEM(STRUCT, ITEM, CLI)                                    \
-        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) {                     \
-            if (printDataType(vars,                                     \
-                              field, sizeof(field),                     \
-                              &rule->p.STRUCT.ITEM) < 0)                \
-                goto cleanup;                                           \
-            virFirewallRuleAddArg(fw, fwrule, CLI);                     \
-            if (ENTRY_WANT_NEG_SIGN(&rule->p.STRUCT.ITEM))              \
-                virFirewallRuleAddArg(fw, fwrule, "!");                 \
-            virFirewallRuleAddArg(fw, fwrule, field);                   \
+#define INST_ITEM(STRUCT, ITEM, CLI) \
+        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
+            if (printDataType(vars, \
+                              field, sizeof(field), \
+                              &rule->p.STRUCT.ITEM) < 0) \
+                goto cleanup; \
+            virFirewallRuleAddArg(fw, fwrule, CLI); \
+            if (ENTRY_WANT_NEG_SIGN(&rule->p.STRUCT.ITEM)) \
+                virFirewallRuleAddArg(fw, fwrule, "!"); \
+            virFirewallRuleAddArg(fw, fwrule, field); \
         }
 
-#define INST_ITEM_2PARMS(STRUCT, ITEM, ITEM_HI, CLI, SEP)               \
-        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) {                     \
-            if (printDataType(vars,                                     \
-                              field, sizeof(field),                     \
-                              &rule->p.STRUCT.ITEM) < 0)                \
-                goto cleanup;                                           \
-            virFirewallRuleAddArg(fw, fwrule, CLI);                     \
-            if (ENTRY_WANT_NEG_SIGN(&rule->p.STRUCT.ITEM))              \
-                virFirewallRuleAddArg(fw, fwrule, "!");                 \
-            if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM_HI)) {              \
-                if (printDataType(vars,                                 \
-                                  fieldalt, sizeof(fieldalt),           \
-                                  &rule->p.STRUCT.ITEM_HI) < 0)         \
-                    goto cleanup;                                       \
-                virFirewallRuleAddArgFormat(fw, fwrule,                 \
+#define INST_ITEM_2PARMS(STRUCT, ITEM, ITEM_HI, CLI, SEP) \
+        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
+            if (printDataType(vars, \
+                              field, sizeof(field), \
+                              &rule->p.STRUCT.ITEM) < 0) \
+                goto cleanup; \
+            virFirewallRuleAddArg(fw, fwrule, CLI); \
+            if (ENTRY_WANT_NEG_SIGN(&rule->p.STRUCT.ITEM)) \
+                virFirewallRuleAddArg(fw, fwrule, "!"); \
+            if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM_HI)) { \
+                if (printDataType(vars, \
+                                  fieldalt, sizeof(fieldalt), \
+                                  &rule->p.STRUCT.ITEM_HI) < 0) \
+                    goto cleanup; \
+                virFirewallRuleAddArgFormat(fw, fwrule, \
                                             "%s%s%s", field, SEP, fieldalt); \
-            } else  {                                                   \
-                virFirewallRuleAddArg(fw, fwrule, field);               \
-            }                                                           \
+            } else  { \
+                virFirewallRuleAddArg(fw, fwrule, field); \
+            } \
         }
 #define INST_ITEM_RANGE(S, I, I_HI, C) \
     INST_ITEM_2PARMS(S, I, I_HI, C, ":")
 #define INST_ITEM_MASK(S, I, MASK, C) \
     INST_ITEM_2PARMS(S, I, MASK, C, "/")
 
-    switch (rule->prtclType) {
+    switch ((int)rule->prtclType) {
     case VIR_NWFILTER_RULE_PROTOCOL_MAC:
         fwrule = virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
                                     "-t", "nat",
@@ -2677,7 +2679,7 @@ ebtablesCreateTmpSubChainFW(virFirewallPtr fw,
     fwrule = virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
                                 "-t", "nat", "-A", rootchain, NULL);
 
-    switch (protoidx) {
+    switch ((int)protoidx) {
     case L2_PROTO_MAC_IDX:
         break;
     case L2_PROTO_STP_IDX:
@@ -2699,6 +2701,7 @@ ebtablesCreateTmpSubChainFW(virFirewallPtr fw,
 
 static int
 ebtablesRemoveSubChainsQuery(virFirewallPtr fw,
+                             virFirewallLayer layer,
                              const char *const *lines,
                              void *opaque)
 {
@@ -2715,14 +2718,14 @@ ebtablesRemoveSubChainsQuery(virFirewallPtr fw,
             if (tmp[0] == chainprefixes[j] &&
                 tmp[1] == '-') {
                 VIR_DEBUG("Processing chain '%s'", tmp);
-                virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                virFirewallAddRuleFull(fw, layer,
                                        false, ebtablesRemoveSubChainsQuery,
                                        (void *)chainprefixes,
                                         "-t", "nat", "-L", tmp, NULL);
-                virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                virFirewallAddRuleFull(fw, layer,
                                        true, NULL, NULL,
                                        "-t", "nat", "-F", tmp, NULL);
-                virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+                virFirewallAddRuleFull(fw, layer,
                                        true, NULL, NULL,
                                        "-t", "nat", "-X", tmp, NULL);
             }
@@ -2800,6 +2803,7 @@ ebtablesRenameTmpRootChainFW(virFirewallPtr fw,
 
 static int
 ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
+                                       virFirewallLayer layer,
                                        const char *const *lines,
                                        void *opaque ATTRIBUTE_UNUSED)
 {
@@ -2824,17 +2828,17 @@ ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
         else
             newchain[0] = CHAINPREFIX_HOST_OUT;
         VIR_DEBUG("Renaming chain '%s' to '%s'", tmp, newchain);
-        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+        virFirewallAddRuleFull(fw, layer,
                                false, ebtablesRenameTmpSubAndRootChainsQuery,
                                NULL,
                                "-t", "nat", "-L", tmp, NULL);
-        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+        virFirewallAddRuleFull(fw, layer,
                                true, NULL, NULL,
                                "-t", "nat", "-F", newchain, NULL);
-        virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_ETHERNET,
+        virFirewallAddRuleFull(fw, layer,
                                true, NULL, NULL,
                                "-t", "nat", "-X", newchain, NULL);
-        virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
+        virFirewallAddRule(fw, layer,
                            "-t", "nat", "-E", tmp, newchain, NULL);
     }
 
@@ -3756,6 +3760,7 @@ ebiptablesDriverProbeCtdir(void)
 
 static int
 ebiptablesDriverProbeStateMatchQuery(virFirewallPtr fw ATTRIBUTE_UNUSED,
+                                     virFirewallLayer layer ATTRIBUTE_UNUSED,
                                      const char *const *lines,
                                      void *opaque)
 {

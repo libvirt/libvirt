@@ -1,0 +1,13 @@
+{
+  "node-name": "0123456789ABCDEF0123456789ABCDE",
+  "read-only": false,
+  "driver": "raw",
+  "file": "0123456789ABCDEF0123456789ABCDE"
+}
+{
+  "driver": "host_device",
+  "filename": "/dev/blah",
+  "node-name": "0123456789ABCDEF0123456789ABCDE",
+  "read-only": false,
+  "discard": "unmap"
+}

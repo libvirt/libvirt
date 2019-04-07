@@ -4,9 +4,6 @@
  *
  * Copyright (C) 2010, 2012 IBM Corp.
  *
- * Author:
- *     Stefan Berger <stefanb@linux.vnet.ibm.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -26,7 +23,9 @@
 
 #include "internal.h"
 
+#include "viralloc.h"
 #include "virerror.h"
+#include "virstring.h"
 #include "datatypes.h"
 #include "nwfilter_params.h"
 #include "nwfilter_ipaddrmap.h"
@@ -34,7 +33,7 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 static virMutex ipAddressMapLock = VIR_MUTEX_INITIALIZER;
-static virNWFilterHashTablePtr ipAddressMap;
+static virHashTablePtr ipAddressMap;
 
 
 /* Add an IP address to the list of IP addresses an interface is
@@ -51,26 +50,35 @@ int
 virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
 {
     int ret = -1;
+    char *addrCopy;
     virNWFilterVarValuePtr val;
+
+    if (VIR_STRDUP(addrCopy, addr) < 0)
+        return -1;
 
     virMutexLock(&ipAddressMapLock);
 
-    val = virHashLookup(ipAddressMap->hashTable, ifname);
+    val = virHashLookup(ipAddressMap, ifname);
     if (!val) {
-        val = virNWFilterVarValueCreateSimple(addr);
+        val = virNWFilterVarValueCreateSimple(addrCopy);
         if (!val)
             goto cleanup;
-        ret = virNWFilterHashTablePut(ipAddressMap, ifname, val);
+        addrCopy = NULL;
+        ret = virHashUpdateEntry(ipAddressMap, ifname, val);
+        if (ret < 0)
+            virNWFilterVarValueFree(val);
         goto cleanup;
     } else {
-        if (virNWFilterVarValueAddValue(val, addr) < 0)
+        if (virNWFilterVarValueAddValue(val, addrCopy) < 0)
             goto cleanup;
+        addrCopy = NULL;
     }
 
     ret = 0;
 
  cleanup:
     virMutexUnlock(&ipAddressMapLock);
+    VIR_FREE(addrCopy);
 
     return ret;
 }
@@ -98,7 +106,7 @@ virNWFilterIPAddrMapDelIPAddr(const char *ifname, const char *ipaddr)
     virMutexLock(&ipAddressMapLock);
 
     if (ipaddr != NULL) {
-        val = virHashLookup(ipAddressMap->hashTable, ifname);
+        val = virHashLookup(ipAddressMap, ifname);
         if (val) {
             if (virNWFilterVarValueGetCardinality(val) == 1 &&
                 STREQ(ipaddr,
@@ -110,8 +118,7 @@ virNWFilterIPAddrMapDelIPAddr(const char *ifname, const char *ipaddr)
     } else {
  remove_entry:
         /* remove whole entry */
-        val = virNWFilterHashTableRemoveEntry(ipAddressMap, ifname);
-        virNWFilterVarValueFree(val);
+        virHashRemoveEntry(ipAddressMap, ifname);
         ret = 0;
     }
 
@@ -133,7 +140,7 @@ virNWFilterIPAddrMapGetIPAddr(const char *ifname)
 
     virMutexLock(&ipAddressMapLock);
 
-    res = virHashLookup(ipAddressMap->hashTable, ifname);
+    res = virHashLookup(ipAddressMap, ifname);
 
     virMutexUnlock(&ipAddressMapLock);
 
@@ -153,6 +160,6 @@ virNWFilterIPAddrMapInit(void)
 void
 virNWFilterIPAddrMapShutdown(void)
 {
-    virNWFilterHashTableFree(ipAddressMap);
+    virHashFree(ipAddressMap);
     ipAddressMap = NULL;
 }

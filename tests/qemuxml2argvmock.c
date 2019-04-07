@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -28,6 +26,7 @@
 #include "virnetdev.h"
 #include "virnetdevip.h"
 #include "virnetdevtap.h"
+#include "virnetdevopenvswitch.h"
 #include "virnuma.h"
 #include "virrandom.h"
 #include "virscsi.h"
@@ -35,8 +34,11 @@
 #include "virstring.h"
 #include "virtpm.h"
 #include "virutil.h"
+#include "qemu/qemu_interface.h"
+#include "qemu/qemu_command.h"
 #include <time.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -53,25 +55,45 @@ time_t time(time_t *t)
     return ret;
 }
 
+bool
+virNumaIsAvailable(void)
+{
+    return true;
+}
+
 int
 virNumaGetMaxNode(void)
 {
-   const int maxnodesNum = 7;
-
-   return maxnodesNum;
+    return 7;
 }
 
-#if WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET
-/*
- * In case libvirt is compiled with full NUMA support, we need to mock
- * this function in order to fake what numa nodes are available.
- */
+/* We shouldn't need to mock virNumaNodeIsAvailable() and *definitely* not
+ * virNumaNodesetIsAvailable(), but it seems to be the only way to get
+ * mocking to work with Clang on FreeBSD, so keep these duplicates around
+ * until we figure out a cleaner solution */
 bool
 virNumaNodeIsAvailable(int node)
 {
     return node >= 0 && node <= virNumaGetMaxNode();
 }
-#endif /* WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET */
+
+bool
+virNumaNodesetIsAvailable(virBitmapPtr nodeset)
+{
+    ssize_t bit = -1;
+
+    if (!nodeset)
+        return true;
+
+    while ((bit = virBitmapNextSetBit(nodeset, bit)) >= 0) {
+        if (virNumaNodeIsAvailable(bit))
+            continue;
+
+        return false;
+    }
+
+    return true;
+}
 
 char *
 virTPMCreateCancelPath(const char *devpath)
@@ -160,23 +182,91 @@ virNetDevRunEthernetScript(const char *ifname ATTRIBUTE_UNUSED,
     return 0;
 }
 
-void
-virCommandPassFD(virCommandPtr cmd ATTRIBUTE_UNUSED,
-                 int fd ATTRIBUTE_UNUSED,
-                 unsigned int flags ATTRIBUTE_UNUSED)
+char *
+virHostGetDRMRenderNode(void)
 {
-    /* nada */
+    char *dst = NULL;
+
+    ignore_value(VIR_STRDUP(dst, "/dev/dri/foo"));
+    return dst;
 }
 
-uint8_t *
-virCryptoGenerateRandom(size_t nbytes)
+static void (*real_virCommandPassFD)(virCommandPtr cmd, int fd, unsigned int flags);
+
+static const int testCommandPassSafeFDs[] = { 1730, 1731 };
+
+void
+virCommandPassFD(virCommandPtr cmd,
+                 int fd,
+                 unsigned int flags)
 {
-    uint8_t *buf;
+    size_t i;
 
-    if (VIR_ALLOC_N(buf, nbytes) < 0)
-        return NULL;
+    for (i = 0; i < ARRAY_CARDINALITY(testCommandPassSafeFDs); i++) {
+        if (testCommandPassSafeFDs[i] == fd) {
+            if (!real_virCommandPassFD)
+                VIR_MOCK_REAL_INIT(virCommandPassFD);
 
-    ignore_value(virRandomBytes(buf, nbytes));
+            real_virCommandPassFD(cmd, fd, flags);
+            return;
+        }
+    }
+}
 
-    return buf;
+int
+virNetDevOpenvswitchGetVhostuserIfname(const char *path ATTRIBUTE_UNUSED,
+                                       char **ifname)
+{
+    return VIR_STRDUP(*ifname, "vhost-user0");
+}
+
+int
+qemuInterfaceOpenVhostNet(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                          virDomainNetDefPtr net,
+                          int *vhostfd,
+                          size_t *vhostfdSize)
+{
+    size_t i;
+
+    if (!virDomainNetIsVirtioModel(net)) {
+        *vhostfdSize = 0;
+        return 0;
+    }
+
+    for (i = 0; i < *vhostfdSize; i++)
+        vhostfd[i] = STDERR_FILENO + 42 + i;
+    return 0;
+}
+
+
+int
+qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev ATTRIBUTE_UNUSED)
+
+{
+    /* We need to return an FD number for a UNIX listener socket,
+     * which will be given to QEMU via a CLI arg. We need a fixed
+     * number to get stable tests. This is obviously not a real
+     * FD number, so when virCommand closes the FD in the parent
+     * it will get EINVAL, but that's (hopefully) not going to
+     * be a problem....
+     */
+    if (fcntl(1729, F_GETFD) != -1)
+        abort();
+    return 1729;
+}
+
+
+int
+qemuBuildTPMOpenBackendFDs(const char *tpmdev ATTRIBUTE_UNUSED,
+                           const char *cancel_path ATTRIBUTE_UNUSED,
+                           int *tpmfd,
+                           int *cancelfd)
+{
+    if (fcntl(1730, F_GETFD) != -1 ||
+        fcntl(1731, F_GETFD) != -1)
+        abort();
+
+    *tpmfd = 1730;
+    *cancelfd = 1731;
+    return 0;
 }

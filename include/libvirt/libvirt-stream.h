@@ -2,7 +2,6 @@
  * libvirt-stream.h
  * Summary: APIs for management of streams
  * Description: Provides APIs for the management of streams
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *
@@ -21,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_STREAM_H__
-# define __VIR_LIBVIRT_STREAM_H__
+#ifndef LIBVIRT_STREAM_H
+# define LIBVIRT_STREAM_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -45,6 +44,23 @@ int virStreamRecv(virStreamPtr st,
                   char *data,
                   size_t nbytes);
 
+typedef enum {
+    VIR_STREAM_RECV_STOP_AT_HOLE = (1 << 0),
+} virStreamRecvFlagsValues;
+
+int virStreamRecvFlags(virStreamPtr st,
+                       char *data,
+                       size_t nbytes,
+                       unsigned int flags);
+
+int virStreamSendHole(virStreamPtr st,
+                      long long length,
+                      unsigned int flags);
+
+int virStreamRecvHole(virStreamPtr,
+                      long long *length,
+                      unsigned int flags);
+
 
 /**
  * virStreamSourceFunc:
@@ -54,9 +70,9 @@ int virStreamRecv(virStreamPtr st,
  * @nbytes: size of the data array
  * @opaque: optional application provided data
  *
- * The virStreamSourceFunc callback is used together
- * with the virStreamSendAll function for libvirt to
- * obtain the data that is to be sent.
+ * The virStreamSourceFunc callback is used together with
+ * the virStreamSendAll and virStreamSparseSendAll functions
+ * for libvirt to obtain the data that is to be sent.
  *
  * The callback will be invoked multiple times,
  * fetching data in small chunks. The application
@@ -65,7 +81,10 @@ int virStreamRecv(virStreamPtr st,
  * of bytes. The callback will continue to be
  * invoked until it indicates the end of the source
  * has been reached by returning 0. A return value
- * of -1 at any time will abort the send operation
+ * of -1 at any time will abort the send operation.
+ *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
  *
  * Returns the number of bytes filled, 0 upon end
  * of file, or -1 upon error
@@ -80,6 +99,71 @@ int virStreamSendAll(virStreamPtr st,
                      void *opaque);
 
 /**
+ * virStreamSourceHoleFunc:
+ * @st: the stream object
+ * @inData: are we in data section
+ * @length: how long is the section we are currently in
+ * @opaque: optional application provided data
+ *
+ * The virStreamSourceHoleFunc callback is used together with the
+ * virStreamSparseSendAll function for libvirt to obtain the
+ * length of section stream is currently in.
+ *
+ * Moreover, upon successful return, @length should be updated
+ * with how many bytes are left until the current section ends
+ * (either data section or hole section). Also the stream is
+ * currently in data section, @inData should be set to a non-zero
+ * value and vice versa.
+ *
+ * NB: there's an implicit hole at the end of each file. If
+ * that's the case, @inData and @length should be both set to 0.
+ *
+ * This function should not adjust the current position within
+ * the file.
+ *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
+ *
+ * Returns 0 on success,
+ *        -1 upon error
+ */
+typedef int (*virStreamSourceHoleFunc)(virStreamPtr st,
+                                       int *inData,
+                                       long long *length,
+                                       void *opaque);
+
+/**
+ * virStreamSourceSkipFunc:
+ * @st: the stream object
+ * @length: stream hole size
+ * @opaque: optional application provided data
+ *
+ * This callback is used together with the virStreamSparseSendAll
+ * to skip holes in the underlying file as reported by
+ * virStreamSourceHoleFunc.
+ *
+ * The callback may be invoked multiple times as holes are found
+ * during processing a stream. The application should skip
+ * processing the hole in the stream source and then return.
+ * A return value of -1 at any time will abort the send operation.
+ *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
+ *
+ * Returns 0 on success,
+ *        -1 upon error.
+ */
+typedef int (*virStreamSourceSkipFunc)(virStreamPtr st,
+                                       long long length,
+                                       void *opaque);
+
+int virStreamSparseSendAll(virStreamPtr st,
+                           virStreamSourceFunc handler,
+                           virStreamSourceHoleFunc holeHandler,
+                           virStreamSourceSkipFunc skipHandler,
+                           void *opaque);
+
+/**
  * virStreamSinkFunc:
  *
  * @st: the stream object
@@ -87,9 +171,9 @@ int virStreamSendAll(virStreamPtr st,
  * @nbytes: size of the data array
  * @opaque: optional application provided data
  *
- * The virStreamSinkFunc callback is used together
- * with the virStreamRecvAll function for libvirt to
- * provide the data that has been received.
+ * The virStreamSinkFunc callback is used together with the
+ * virStreamRecvAll or virStreamSparseRecvAll functions for
+ * libvirt to provide the data that has been received.
  *
  * The callback will be invoked multiple times,
  * providing data in small chunks. The application
@@ -99,6 +183,9 @@ int virStreamSendAll(virStreamPtr st,
  * invoked until it indicates the end of the stream
  * has been reached. A return value of -1 at any time
  * will abort the receive operation
+ *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
  *
  * Returns the number of bytes consumed or -1 upon
  * error
@@ -111,6 +198,36 @@ typedef int (*virStreamSinkFunc)(virStreamPtr st,
 int virStreamRecvAll(virStreamPtr st,
                      virStreamSinkFunc handler,
                      void *opaque);
+
+/**
+ * virStreamSinkHoleFunc:
+ * @st: the stream object
+ * @length: stream hole size
+ * @opaque: optional application provided data
+ *
+ * This callback is used together with the virStreamSparseRecvAll
+ * function for libvirt to provide the size of a hole that
+ * occurred in the stream.
+ *
+ * The callback may be invoked multiple times as holes are found
+ * during processing a stream. The application should create the
+ * hole in the stream target and then return. A return value of
+ * -1 at any time will abort the receive operation.
+ *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
+ *
+ * Returns 0 on success,
+ *        -1 upon error
+ */
+typedef int (*virStreamSinkHoleFunc)(virStreamPtr st,
+                                     long long length,
+                                     void *opaque);
+
+int virStreamSparseRecvAll(virStreamPtr stream,
+                           virStreamSinkFunc handler,
+                           virStreamSinkHoleFunc holeHandler,
+                           void *opaque);
 
 typedef enum {
     VIR_STREAM_EVENT_READABLE  = (1 << 0),
@@ -149,4 +266,4 @@ int virStreamAbort(virStreamPtr st);
 
 int virStreamFree(virStreamPtr st);
 
-#endif /* __VIR_LIBVIRT_STREAM_H__ */
+#endif /* LIBVIRT_STREAM_H */

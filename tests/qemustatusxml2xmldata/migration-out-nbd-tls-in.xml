@@ -1,0 +1,485 @@
+<domstatus state='running' reason='booted' pid='68472'>
+  <taint flag='high-privileges'/>
+  <monitor path='/var/lib/libvirt/qemu/domain-3-upstream/monitor.sock' json='1' type='unix'/>
+  <namespaces>
+    <mount/>
+  </namespaces>
+  <vcpus>
+    <vcpu id='0' pid='68477'/>
+    <vcpu id='1' pid='68478'/>
+  </vcpus>
+  <qemuCaps>
+    <flag name='kvm'/>
+    <flag name='mem-path'/>
+    <flag name='drive-serial'/>
+    <flag name='monitor-json'/>
+    <flag name='sdl'/>
+    <flag name='netdev'/>
+    <flag name='rtc'/>
+    <flag name='vhost-net'/>
+    <flag name='no-hpet'/>
+    <flag name='no-kvm-pit'/>
+    <flag name='nodefconfig'/>
+    <flag name='boot-menu'/>
+    <flag name='fsdev'/>
+    <flag name='name-process'/>
+    <flag name='smbios-type'/>
+    <flag name='spice'/>
+    <flag name='vga-none'/>
+    <flag name='boot-index'/>
+    <flag name='hda-duplex'/>
+    <flag name='drive-aio'/>
+    <flag name='ccid-emulated'/>
+    <flag name='ccid-passthru'/>
+    <flag name='chardev-spicevmc'/>
+    <flag name='virtio-tx-alg'/>
+    <flag name='pci-multifunction'/>
+    <flag name='virtio-blk-pci.ioeventfd'/>
+    <flag name='sga'/>
+    <flag name='virtio-blk-pci.event_idx'/>
+    <flag name='virtio-net-pci.event_idx'/>
+    <flag name='cache-directsync'/>
+    <flag name='piix3-usb-uhci'/>
+    <flag name='piix4-usb-uhci'/>
+    <flag name='usb-ehci'/>
+    <flag name='ich9-usb-ehci1'/>
+    <flag name='vt82c686b-usb-uhci'/>
+    <flag name='pci-ohci'/>
+    <flag name='usb-redir'/>
+    <flag name='usb-hub'/>
+    <flag name='no-shutdown'/>
+    <flag name='cache-unsafe'/>
+    <flag name='ich9-ahci'/>
+    <flag name='no-acpi'/>
+    <flag name='fsdev-readonly'/>
+    <flag name='virtio-blk-pci.scsi'/>
+    <flag name='drive-copy-on-read'/>
+    <flag name='fsdev-writeout'/>
+    <flag name='drive-iotune'/>
+    <flag name='system_wakeup'/>
+    <flag name='scsi-disk.channel'/>
+    <flag name='scsi-block'/>
+    <flag name='transaction'/>
+    <flag name='block-job-async'/>
+    <flag name='scsi-cd'/>
+    <flag name='ide-cd'/>
+    <flag name='no-user-config'/>
+    <flag name='hda-micro'/>
+    <flag name='dump-guest-memory'/>
+    <flag name='nec-usb-xhci'/>
+    <flag name='balloon-event'/>
+    <flag name='bridge'/>
+    <flag name='lsi'/>
+    <flag name='virtio-scsi-pci'/>
+    <flag name='blockio'/>
+    <flag name='disable-s3'/>
+    <flag name='disable-s4'/>
+    <flag name='usb-redir.filter'/>
+    <flag name='ide-drive.wwn'/>
+    <flag name='scsi-disk.wwn'/>
+    <flag name='seccomp-sandbox'/>
+    <flag name='reboot-timeout'/>
+    <flag name='dump-guest-core'/>
+    <flag name='seamless-migration'/>
+    <flag name='block-commit'/>
+    <flag name='vnc'/>
+    <flag name='drive-mirror'/>
+    <flag name='usb-redir.bootindex'/>
+    <flag name='usb-host.bootindex'/>
+    <flag name='blockdev-snapshot-sync'/>
+    <flag name='qxl'/>
+    <flag name='VGA'/>
+    <flag name='cirrus-vga'/>
+    <flag name='vmware-svga'/>
+    <flag name='device-video-primary'/>
+    <flag name='usb-serial'/>
+    <flag name='usb-net'/>
+    <flag name='add-fd'/>
+    <flag name='nbd-server'/>
+    <flag name='virtio-rng'/>
+    <flag name='rng-random'/>
+    <flag name='rng-egd'/>
+    <flag name='dtb'/>
+    <flag name='megasas'/>
+    <flag name='ipv6-migration'/>
+    <flag name='machine-opt'/>
+    <flag name='machine-usb-opt'/>
+    <flag name='tpm-passthrough'/>
+    <flag name='tpm-tis'/>
+    <flag name='pci-bridge'/>
+    <flag name='vfio-pci'/>
+    <flag name='vfio-pci.bootindex'/>
+    <flag name='scsi-generic'/>
+    <flag name='scsi-generic.bootindex'/>
+    <flag name='mem-merge'/>
+    <flag name='vnc-websocket'/>
+    <flag name='drive-discard'/>
+    <flag name='mlock'/>
+    <flag name='vnc-share-policy'/>
+    <flag name='device-del-event'/>
+    <flag name='dmi-to-pci-bridge'/>
+    <flag name='i440fx-pci-hole64-size'/>
+    <flag name='q35-pci-hole64-size'/>
+    <flag name='usb-storage'/>
+    <flag name='usb-storage.removable'/>
+    <flag name='virtio-mmio'/>
+    <flag name='ich9-intel-hda'/>
+    <flag name='kvm-pit-lost-tick-policy'/>
+    <flag name='boot-strict'/>
+    <flag name='pvpanic'/>
+    <flag name='spice-file-xfer-disable'/>
+    <flag name='spiceport'/>
+    <flag name='usb-kbd'/>
+    <flag name='host-pci-multidomain'/>
+    <flag name='msg-timestamp'/>
+    <flag name='active-commit'/>
+    <flag name='change-backing-file'/>
+    <flag name='memory-backend-ram'/>
+    <flag name='numa'/>
+    <flag name='memory-backend-file'/>
+    <flag name='usb-audio'/>
+    <flag name='rtc-reset-reinjection'/>
+    <flag name='splash-timeout'/>
+    <flag name='iothread'/>
+    <flag name='migrate-rdma'/>
+    <flag name='ivshmem'/>
+    <flag name='drive-iotune-max'/>
+    <flag name='VGA.vgamem_mb'/>
+    <flag name='vmware-svga.vgamem_mb'/>
+    <flag name='qxl.vgamem_mb'/>
+    <flag name='pc-dimm'/>
+    <flag name='machine-vmport-opt'/>
+    <flag name='aes-key-wrap'/>
+    <flag name='dea-key-wrap'/>
+    <flag name='pci-serial'/>
+    <flag name='vhost-user-multiqueue'/>
+    <flag name='migration-event'/>
+    <flag name='ioh3420'/>
+    <flag name='x3130-upstream'/>
+    <flag name='xio3130-downstream'/>
+    <flag name='rtl8139'/>
+    <flag name='e1000'/>
+    <flag name='virtio-net'/>
+    <flag name='gic-version'/>
+    <flag name='incoming-defer'/>
+    <flag name='virtio-gpu'/>
+    <flag name='virtio-gpu.virgl'/>
+    <flag name='virtio-keyboard'/>
+    <flag name='virtio-mouse'/>
+    <flag name='virtio-tablet'/>
+    <flag name='virtio-input-host'/>
+    <flag name='chardev-file-append'/>
+    <flag name='ich9-disable-s3'/>
+    <flag name='ich9-disable-s4'/>
+    <flag name='vserport-change-event'/>
+    <flag name='virtio-balloon-pci.deflate-on-oom'/>
+    <flag name='mptsas1068'/>
+    <flag name='qxl.vram64_size_mb'/>
+    <flag name='chardev-logfile'/>
+    <flag name='debug-threads'/>
+    <flag name='secret'/>
+    <flag name='pxb'/>
+    <flag name='pxb-pcie'/>
+    <flag name='device-tray-moved-event'/>
+    <flag name='nec-usb-xhci-ports'/>
+    <flag name='virtio-scsi-pci.iothread'/>
+    <flag name='name-guest'/>
+    <flag name='qxl.max_outputs'/>
+    <flag name='spice-unix'/>
+    <flag name='drive-detect-zeroes'/>
+    <flag name='tls-creds-x509'/>
+    <flag name='display'/>
+    <flag name='intel-iommu'/>
+    <flag name='smm'/>
+    <flag name='virtio-pci-disable-legacy'/>
+    <flag name='query-hotpluggable-cpus'/>
+    <flag name='virtio-net.rx_queue_size'/>
+    <flag name='virtio-vga'/>
+    <flag name='drive-iotune-max-length'/>
+    <flag name='ivshmem-plain'/>
+    <flag name='ivshmem-doorbell'/>
+    <flag name='query-qmp-schema'/>
+    <flag name='gluster.debug_level'/>
+    <flag name='vhost-scsi'/>
+    <flag name='drive-iotune-group'/>
+    <flag name='query-cpu-model-expansion'/>
+    <flag name='virtio-net.host_mtu'/>
+    <flag name='nvdimm'/>
+    <flag name='pcie-root-port'/>
+    <flag name='query-cpu-definitions'/>
+    <flag name='block-write-threshold'/>
+    <flag name='query-named-block-nodes'/>
+    <flag name='cpu-cache'/>
+    <flag name='qemu-xhci'/>
+    <flag name='kernel-irqchip'/>
+    <flag name='kernel-irqchip.split'/>
+    <flag name='intel-iommu.intremap'/>
+    <flag name='intel-iommu.caching-mode'/>
+    <flag name='intel-iommu.eim'/>
+    <flag name='intel-iommu.device-iotlb'/>
+    <flag name='virtio.iommu_platform'/>
+    <flag name='virtio.ats'/>
+    <flag name='loadparm'/>
+    <flag name='vnc-multi-servers'/>
+    <flag name='virtio-net.tx_queue_size'/>
+    <flag name='chardev-reconnect'/>
+    <flag name='virtio-gpu.max_outputs'/>
+    <flag name='vxhs'/>
+    <flag name='virtio-blk.num-queues'/>
+    <flag name='vmcoreinfo'/>
+    <flag name='numa.dist'/>
+    <flag name='disk-share-rw'/>
+    <flag name='iscsi.password-secret'/>
+    <flag name='isa-serial'/>
+    <flag name='dump-completed'/>
+    <flag name='nbd-tls'/>
+    <flag name='blockdev-del'/>
+  </qemuCaps>
+  <job type='none' async='migration out' phase='perform3' flags='0x0'>
+    <disk dev='vdb' migrating='yes'>
+      <migrationSource type='network' format='raw'>
+        <source protocol='nbd' name='drive-virtio-disk1' tlsFromConfig='0'>
+          <host name='andariel.usersys.redhat.com' port='49152'/>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='migration-vdb-storage'/>
+              <nodename type='format' name='migration-vdb-format'/>
+            </nodenames>
+          </privateData>
+        </source>
+      </migrationSource>
+    </disk>
+    <disk dev='vdc' migrating='yes'>
+      <migrationSource type='network' format='raw' protocol='nbd' name='drive-virtio-disk2' tlsFromConfig='0'>
+        <host name='andariel.usersys.redhat.com' port='49152'/>
+        <privateData>
+          <nodenames>
+            <nodename type='storage' name='migration-vdc-storage'/>
+            <nodename type='format' name='migration-vdc-format'/>
+          </nodenames>
+        </privateData>
+      </migrationSource>
+    </disk>
+    <disk dev='hda' migrating='no'/>
+  </job>
+  <devices>
+    <device alias='rng0'/>
+    <device alias='sound0-codec0'/>
+    <device alias='virtio-disk1'/>
+    <device alias='virtio-serial0'/>
+    <device alias='video0'/>
+    <device alias='serial0'/>
+    <device alias='sound0'/>
+    <device alias='balloon0'/>
+    <device alias='channel1'/>
+    <device alias='channel0'/>
+    <device alias='net0'/>
+    <device alias='input0'/>
+    <device alias='redir0'/>
+    <device alias='redir1'/>
+    <device alias='scsi0'/>
+    <device alias='usb'/>
+    <device alias='ide0-0-0'/>
+  </devices>
+  <numad nodeset='0' cpuset='0-7'/>
+  <libDir path='/var/lib/libvirt/qemu/domain-3-upstream'/>
+  <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-3-upstream'/>
+  <chardevStdioLogd/>
+  <allowReboot value='yes'/>
+  <blockjobs active='no'/>
+  <domain type='kvm' id='3'>
+    <name>upstream</name>
+    <uuid>dcf47dbd-46d1-4d5b-b442-262a806a333a</uuid>
+    <memory unit='KiB'>1024000</memory>
+    <currentMemory unit='KiB'>1024000</currentMemory>
+    <memoryBacking>
+      <access mode='shared'/>
+    </memoryBacking>
+    <vcpu placement='auto' current='2'>8</vcpu>
+    <numatune>
+      <memory mode='strict' placement='auto'/>
+    </numatune>
+    <resource>
+      <partition>/machine</partition>
+    </resource>
+    <os>
+      <type arch='x86_64' machine='pc-i440fx-2.9'>hvm</type>
+      <bootmenu enable='yes'/>
+    </os>
+    <features>
+      <acpi/>
+      <apic/>
+      <vmport state='off'/>
+    </features>
+    <cpu>
+      <numa>
+        <cell id='0' cpus='0,2,4,6' memory='512000' unit='KiB'/>
+        <cell id='1' cpus='1,3,5,7' memory='512000' unit='KiB'/>
+      </numa>
+    </cpu>
+    <clock offset='utc'>
+      <timer name='rtc' tickpolicy='catchup'/>
+      <timer name='pit' tickpolicy='delay'/>
+      <timer name='hpet' present='no'/>
+    </clock>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>restart</on_crash>
+    <pm>
+      <suspend-to-mem enabled='no'/>
+      <suspend-to-disk enabled='no'/>
+    </pm>
+    <devices>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2' discard='unmap' detect_zeroes='on'/>
+        <source file='/var/lib/libvirt/images/a.qcow2'/>
+        <backingStore type='file' index='1'>
+          <format type='qcow2'/>
+          <source file='/var/lib/libvirt/images/base.qcow2'>
+            <privateData>
+              <relPath>base.qcow2</relPath>
+            </privateData>
+          </source>
+          <backingStore/>
+        </backingStore>
+        <target dev='vdb' bus='virtio'/>
+        <alias name='virtio-disk1'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+      </disk>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2'/>
+        <source file='/var/lib/libvirt/images/b.qcow2'/>
+        <backingStore/>
+        <target dev='vdc' bus='virtio'/>
+        <alias name='virtio-disk2'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
+      </disk>
+      <disk type='file' device='cdrom'>
+        <driver name='qemu' type='raw'/>
+        <source file='/var/lib/libvirt/images/systemrescuecd-x86-4.9.5.iso'/>
+        <backingStore/>
+        <target dev='hda' bus='ide'/>
+        <readonly/>
+        <boot order='1'/>
+        <alias name='ide0-0-0'/>
+        <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+      </disk>
+      <controller type='usb' index='0' model='ich9-ehci1'>
+        <alias name='usb'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x7'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci1'>
+        <alias name='usb'/>
+        <master startport='0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0' multifunction='on'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci2'>
+        <alias name='usb'/>
+        <master startport='2'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x1'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci3'>
+        <alias name='usb'/>
+        <master startport='4'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x2'/>
+      </controller>
+      <controller type='pci' index='0' model='pci-root'>
+        <alias name='pci.0'/>
+      </controller>
+      <controller type='virtio-serial' index='0'>
+        <alias name='virtio-serial0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      </controller>
+      <controller type='ide' index='0'>
+        <alias name='ide'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+      </controller>
+      <controller type='scsi' index='0' model='lsilogic'>
+        <alias name='scsi0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+      </controller>
+      <controller type='fdc' index='0'>
+        <alias name='fdc0'/>
+      </controller>
+      <interface type='network'>
+        <mac address='52:54:00:36:bd:3b'/>
+        <source network='default'/>
+        <actual type='network'>
+          <source bridge='virbr0'/>
+        </actual>
+        <target dev='vnet0'/>
+        <model type='virtio'/>
+        <alias name='net0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      </interface>
+      <serial type='pty'>
+        <source path='/dev/pts/67'/>
+        <target type='isa-serial' port='0'>
+          <model name='isa-serial'/>
+        </target>
+        <alias name='serial0'/>
+      </serial>
+      <console type='pty' tty='/dev/pts/67'>
+        <source path='/dev/pts/67'/>
+        <target type='serial' port='0'/>
+        <alias name='serial0'/>
+      </console>
+      <channel type='unix'>
+        <source mode='bind' path='/var/lib/libvirt/qemu/channel/target/domain-3-upstream/org.qemu.guest_agent.0'/>
+        <target type='virtio' name='org.qemu.guest_agent.0' state='disconnected'/>
+        <alias name='channel0'/>
+        <address type='virtio-serial' controller='0' bus='0' port='1'/>
+      </channel>
+      <channel type='spicevmc'>
+        <target type='virtio' name='com.redhat.spice.0' state='disconnected'/>
+        <alias name='channel1'/>
+        <address type='virtio-serial' controller='0' bus='0' port='2'/>
+      </channel>
+      <input type='tablet' bus='usb'>
+        <alias name='input0'/>
+        <address type='usb' bus='0' port='1'/>
+      </input>
+      <input type='mouse' bus='ps2'>
+        <alias name='input1'/>
+      </input>
+      <input type='keyboard' bus='ps2'>
+        <alias name='input2'/>
+      </input>
+      <graphics type='spice' port='5900' autoport='yes' listen='127.0.0.1'>
+        <listen type='address' address='127.0.0.1' fromConfig='1' autoGenerated='no'/>
+        <image compression='off'/>
+      </graphics>
+      <sound model='ich6'>
+        <alias name='sound0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      </sound>
+      <video>
+        <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
+        <alias name='video0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      </video>
+      <redirdev bus='usb' type='spicevmc'>
+        <alias name='redir0'/>
+        <address type='usb' bus='0' port='2'/>
+      </redirdev>
+      <redirdev bus='usb' type='spicevmc'>
+        <alias name='redir1'/>
+        <address type='usb' bus='0' port='3'/>
+      </redirdev>
+      <memballoon model='virtio'>
+        <alias name='balloon0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+      </memballoon>
+      <rng model='virtio'>
+        <backend model='random'>/dev/random</backend>
+        <alias name='rng0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+      </rng>
+    </devices>
+    <seclabel type='dynamic' model='dac' relabel='yes'>
+      <label>+0:+0</label>
+      <imagelabel>+0:+0</imagelabel>
+    </seclabel>
+  </domain>
+</domstatus>

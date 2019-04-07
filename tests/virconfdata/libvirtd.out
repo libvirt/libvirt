@@ -1,6 +1,6 @@
 # Master libvirt daemon configuration file
 #
-# For further information consult http://libvirt.org/format.html
+# For further information consult https://libvirt.org/format.html
 #################################################################
 #
 # Network connectivitiy controls

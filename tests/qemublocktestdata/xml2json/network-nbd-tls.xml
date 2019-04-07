@@ -1,0 +1,18 @@
+<disk type='network' device='disk'>
+  <driver name='qemu' type='qcow2'/>
+  <source protocol='nbd' tls='yes'>
+    <host name='host1.example.com'/>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='node-a-s'/>
+        <nodename type='format' name='node-b-f'/>
+      </nodenames>
+      <objects>
+        <TLSx509 alias='node-a-s-tls0'/>
+      </objects>
+    </privateData>
+  </source>
+  <backingStore/>
+  <target dev='vda' bus='virtio'/>
+  <alias name='virtio-disk0'/>
+</disk>

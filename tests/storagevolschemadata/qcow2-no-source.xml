@@ -3,6 +3,7 @@
   <key>/var/lib/libvirt/images/OtherDemo.img</key>
   <capacity unit="G">5</capacity>
   <allocation>294912</allocation>
+  <physical unit="G">5</physical>
   <target>
     <path>/var/lib/libvirt/images/OtherDemo.img</path>
     <format type='qcow2'/>

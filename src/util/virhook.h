@@ -17,18 +17,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel Veillard <veillard@redhat.com>
  */
 
-#ifndef __VIR_HOOKS_H__
-# define __VIR_HOOKS_H__
+#ifndef LIBVIRT_VIRHOOK_H
+# define LIBVIRT_VIRHOOK_H
 
 # include "internal.h"
 
 typedef enum {
     VIR_HOOK_DRIVER_DAEMON = 0,        /* Daemon related events */
-    VIR_HOOK_DRIVER_QEMU,              /* QEmu domains related events */
+    VIR_HOOK_DRIVER_QEMU,              /* QEMU domains related events */
     VIR_HOOK_DRIVER_LXC,               /* LXC domains related events */
     VIR_HOOK_DRIVER_NETWORK,           /* network related events */
     VIR_HOOK_DRIVER_LIBXL,             /* Xen libxl domains related events */
@@ -107,4 +105,4 @@ int virHookPresent(int driver);
 int virHookCall(int driver, const char *id, int op, int sub_op,
                 const char *extra, const char *input, char **output);
 
-#endif /* __VIR_HOOKS_H__ */
+#endif /* LIBVIRT_VIRHOOK_H */

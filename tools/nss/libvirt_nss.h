@@ -21,13 +21,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Michal Privoznik <mprivozn@redhat.com>
  */
 
-#ifndef __LIBVIRT_NSS_H__
-# define __LIBVIRT_NSS_H__
+#ifndef LIBVIRT_NSS_H
+# define LIBVIRT_NSS_H
 
 # include <nss.h>
 # include <netdb.h>
@@ -64,4 +61,4 @@ nss_module_register(const char *name, unsigned int *size,
                     nss_module_unregister_fn *unregister);
 # endif /* HAVE_BSD_NSS */
 
-#endif /* __LIBVIRT_NSS_H__ */
+#endif /* LIBVIRT_NSS_H */

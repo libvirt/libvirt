@@ -2,7 +2,6 @@
  * libvirt-storage.h
  * Summary: APIs for management of storage pools and volumes
  * Description: Provides APIs for the management of storage pools and volumes
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2016 Red Hat, Inc.
  *
@@ -21,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_STORAGE_H__
-# define __VIR_LIBVIRT_STORAGE_H__
+#ifndef LIBVIRT_STORAGE_H
+# define LIBVIRT_STORAGE_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -194,6 +193,10 @@ typedef enum {
  */
 virConnectPtr           virStoragePoolGetConnect        (virStoragePoolPtr pool);
 
+/* Storage Pool capabilities */
+char *virConnectGetStoragePoolCapabilities(virConnectPtr conn,
+                                           unsigned int flags);
+
 /*
  * List active storage pools
  */
@@ -240,6 +243,7 @@ typedef enum {
     VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG      = 1 << 15,
     VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER       = 1 << 16,
     VIR_CONNECT_LIST_STORAGE_POOLS_ZFS           = 1 << 17,
+    VIR_CONNECT_LIST_STORAGE_POOLS_VSTORAGE      = 1 << 18,
 } virConnectListAllStoragePoolsFlags;
 
 int                     virConnectListAllStoragePools(virConnectPtr conn,
@@ -263,6 +267,8 @@ virStoragePoolPtr       virStoragePoolLookupByUUID      (virConnectPtr conn,
 virStoragePoolPtr       virStoragePoolLookupByUUIDString(virConnectPtr conn,
                                                          const char *uuid);
 virStoragePoolPtr       virStoragePoolLookupByVolume    (virStorageVolPtr vol);
+virStoragePoolPtr       virStoragePoolLookupByTargetPath(virConnectPtr conn,
+                                                         const char *path);
 
 /*
  * Creating/destroying pools
@@ -345,11 +351,20 @@ virStorageVolPtr        virStorageVolCreateXMLFrom      (virStoragePoolPtr pool,
                                                          const char *xmldesc,
                                                          virStorageVolPtr clonevol,
                                                          unsigned int flags);
+
+typedef enum {
+    VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM = 1 << 0, /* Use sparse stream */
+} virStorageVolDownloadFlags;
+
 int                     virStorageVolDownload           (virStorageVolPtr vol,
                                                          virStreamPtr stream,
                                                          unsigned long long offset,
                                                          unsigned long long length,
                                                          unsigned int flags);
+typedef enum {
+    VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM = 1 << 0,  /* Use sparse stream */
+} virStorageVolUploadFlags;
+
 int                     virStorageVolUpload             (virStorageVolPtr vol,
                                                          virStreamPtr stream,
                                                          unsigned long long offset,
@@ -455,6 +470,8 @@ typedef enum {
     VIR_STORAGE_POOL_EVENT_UNDEFINED = 1,
     VIR_STORAGE_POOL_EVENT_STARTED = 2,
     VIR_STORAGE_POOL_EVENT_STOPPED = 3,
+    VIR_STORAGE_POOL_EVENT_CREATED = 4,
+    VIR_STORAGE_POOL_EVENT_DELETED = 5,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_POOL_EVENT_LAST
@@ -482,4 +499,4 @@ typedef void (*virConnectStoragePoolEventLifecycleCallback)(virConnectPtr conn,
                                                             int detail,
                                                             void *opaque);
 
-#endif /* __VIR_LIBVIRT_STORAGE_H__ */
+#endif /* LIBVIRT_STORAGE_H */

@@ -23,97 +23,249 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <c-ctype.h>
 
 #include "driver.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"
-#include "virutil.h"
+#include "virmodule.h"
+#include "virthread.h"
 #include "configmake.h"
-#include "virstring.h"
 
 VIR_LOG_INIT("driver");
 
-
-#ifdef WITH_DRIVER_MODULES
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 /* XXX re-implement this for other OS, or use libtools helper lib ? */
+#define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
 
-# include <dlfcn.h>
-# define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
 
-void *
-virDriverLoadModule(const char *name)
+
+int
+virDriverLoadModule(const char *name,
+                    const char *regfunc,
+                    bool required)
 {
-    char *modfile = NULL, *regfunc = NULL, *fixedname = NULL;
-    char *tmp;
-    void *handle = NULL;
-    int (*regsym)(void);
+    char *modfile = NULL;
+    int ret;
 
     VIR_DEBUG("Module load %s", name);
 
     if (!(modfile = virFileFindResourceFull(name,
                                             "libvirt_driver_",
                                             ".so",
-                                            abs_topbuilddir "/src/.libs",
+                                            abs_top_builddir "/src/.libs",
                                             DEFAULT_DRIVER_DIR,
                                             "LIBVIRT_DRIVER_DIR")))
-        return NULL;
+        return -1;
 
-    if (access(modfile, R_OK) < 0) {
-        VIR_INFO("Module %s not accessible", modfile);
-        goto cleanup;
-    }
-
-    virUpdateSelfLastChanged(modfile);
-
-    handle = dlopen(modfile, RTLD_NOW | RTLD_GLOBAL);
-    if (!handle) {
-        VIR_ERROR(_("failed to load module %s %s"), modfile, dlerror());
-        goto cleanup;
-    }
-
-    if (VIR_STRDUP_QUIET(fixedname, name) < 0) {
-        VIR_ERROR(_("out of memory"));
-        goto cleanup;
-    }
-
-    /* convert something_like_this into somethingLikeThis */
-    while ((tmp = strchr(fixedname, '_'))) {
-        memmove(tmp, tmp + 1, strlen(tmp));
-        *tmp = c_toupper(*tmp);
-    }
-
-    if (virAsprintfQuiet(&regfunc, "%sRegister", fixedname) < 0)
-        goto cleanup;
-
-    regsym = dlsym(handle, regfunc);
-    if (!regsym) {
-        VIR_ERROR(_("Missing module registration symbol %s"), regfunc);
-        goto cleanup;
-    }
-
-    if ((*regsym)() < 0) {
-        VIR_ERROR(_("Failed module registration %s"), regfunc);
-        goto cleanup;
-    }
+    ret = virModuleLoad(modfile, regfunc, required);
 
     VIR_FREE(modfile);
-    VIR_FREE(regfunc);
-    VIR_FREE(fixedname);
-    return handle;
 
- cleanup:
-    VIR_FREE(modfile);
-    VIR_FREE(regfunc);
-    VIR_FREE(fixedname);
-    if (handle)
-        dlclose(handle);
-    return NULL;
+    return ret;
 }
 
 
 /* XXX unload modules, but we can't until we can unregister libvirt drivers */
 
-#endif
+virThreadLocal connectInterface;
+virThreadLocal connectNetwork;
+virThreadLocal connectNWFilter;
+virThreadLocal connectNodeDev;
+virThreadLocal connectSecret;
+virThreadLocal connectStorage;
+
+static int
+virConnectCacheOnceInit(void)
+{
+    if (virThreadLocalInit(&connectInterface, NULL) < 0)
+        return -1;
+    if (virThreadLocalInit(&connectNetwork, NULL) < 0)
+        return -1;
+    if (virThreadLocalInit(&connectNWFilter, NULL) < 0)
+        return -1;
+    if (virThreadLocalInit(&connectNodeDev, NULL) < 0)
+        return -1;
+    if (virThreadLocalInit(&connectSecret, NULL) < 0)
+        return -1;
+    if (virThreadLocalInit(&connectStorage, NULL) < 0)
+        return -1;
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virConnectCache);
+
+virConnectPtr virGetConnectInterface(void)
+{
+    virConnectPtr conn;
+
+    if (virConnectCacheInitialize() < 0)
+        return NULL;
+
+    conn = virThreadLocalGet(&connectInterface);
+    if (conn) {
+        VIR_DEBUG("Return cached interface connection %p", conn);
+        virObjectRef(conn);
+    } else {
+        conn = virConnectOpen(geteuid() == 0 ? "interface:///system" : "interface:///session");
+        VIR_DEBUG("Opened new interface connection %p", conn);
+    }
+    return conn;
+}
+
+virConnectPtr virGetConnectNetwork(void)
+{
+    virConnectPtr conn;
+
+    if (virConnectCacheInitialize() < 0)
+        return NULL;
+
+    conn = virThreadLocalGet(&connectNetwork);
+    if (conn) {
+        VIR_DEBUG("Return cached network connection %p", conn);
+        virObjectRef(conn);
+    } else {
+        conn = virConnectOpen(geteuid() == 0 ? "network:///system" : "network:///session");
+        VIR_DEBUG("Opened new network connection %p", conn);
+    }
+    return conn;
+}
+
+virConnectPtr virGetConnectNWFilter(void)
+{
+    virConnectPtr conn;
+
+    if (virConnectCacheInitialize() < 0)
+        return NULL;
+
+    conn = virThreadLocalGet(&connectNWFilter);
+    if (conn) {
+        VIR_DEBUG("Return cached nwfilter connection %p", conn);
+        virObjectRef(conn);
+    } else {
+        conn = virConnectOpen(geteuid() == 0 ? "nwfilter:///system" : "nwfilter:///session");
+        VIR_DEBUG("Opened new nwfilter connection %p", conn);
+    }
+    return conn;
+}
+
+virConnectPtr virGetConnectNodeDev(void)
+{
+    virConnectPtr conn;
+
+    if (virConnectCacheInitialize() < 0)
+        return NULL;
+
+    conn = virThreadLocalGet(&connectNodeDev);
+    if (conn) {
+        VIR_DEBUG("Return cached nodedev connection %p", conn);
+        virObjectRef(conn);
+    } else {
+        conn = virConnectOpen(geteuid() == 0 ? "nodedev:///system" : "nodedev:///session");
+        VIR_DEBUG("Opened new nodedev connection %p", conn);
+    }
+    return conn;
+}
+
+virConnectPtr virGetConnectSecret(void)
+{
+    virConnectPtr conn;
+
+    if (virConnectCacheInitialize() < 0)
+        return NULL;
+
+    conn = virThreadLocalGet(&connectSecret);
+    if (conn) {
+        VIR_DEBUG("Return cached secret connection %p", conn);
+        virObjectRef(conn);
+    } else {
+        conn = virConnectOpen(geteuid() == 0 ? "secret:///system" : "secret:///session");
+        VIR_DEBUG("Opened new secret connection %p", conn);
+    }
+    return conn;
+}
+
+virConnectPtr virGetConnectStorage(void)
+{
+    virConnectPtr conn;
+
+    if (virConnectCacheInitialize() < 0)
+        return NULL;
+
+    conn = virThreadLocalGet(&connectStorage);
+    if (conn) {
+        VIR_DEBUG("Return cached storage connection %p", conn);
+        virObjectRef(conn);
+    } else {
+        conn = virConnectOpen(geteuid() == 0 ? "storage:///system" : "storage:///session");
+        VIR_DEBUG("Opened new storage connection %p", conn);
+    }
+    return conn;
+}
+
+
+int
+virSetConnectInterface(virConnectPtr conn)
+{
+    if (virConnectCacheInitialize() < 0)
+        return -1;
+
+    VIR_DEBUG("Override interface connection with %p", conn);
+    return virThreadLocalSet(&connectInterface, conn);
+}
+
+
+int
+virSetConnectNetwork(virConnectPtr conn)
+{
+    if (virConnectCacheInitialize() < 0)
+        return -1;
+
+    VIR_DEBUG("Override network connection with %p", conn);
+    return virThreadLocalSet(&connectNetwork, conn);
+}
+
+
+int
+virSetConnectNWFilter(virConnectPtr conn)
+{
+    if (virConnectCacheInitialize() < 0)
+        return -1;
+
+    VIR_DEBUG("Override nwfilter connection with %p", conn);
+    return virThreadLocalSet(&connectNWFilter, conn);
+}
+
+
+int
+virSetConnectNodeDev(virConnectPtr conn)
+{
+    if (virConnectCacheInitialize() < 0)
+        return -1;
+
+    VIR_DEBUG("Override nodedev connection with %p", conn);
+    return virThreadLocalSet(&connectNodeDev, conn);
+}
+
+
+int
+virSetConnectSecret(virConnectPtr conn)
+{
+    if (virConnectCacheInitialize() < 0)
+        return -1;
+
+    VIR_DEBUG("Override secret connection with %p", conn);
+    return virThreadLocalSet(&connectSecret, conn);
+}
+
+
+int
+virSetConnectStorage(virConnectPtr conn)
+{
+    if (virConnectCacheInitialize() < 0)
+        return -1;
+
+    VIR_DEBUG("Override storage connection with %p", conn);
+    return virThreadLocalSet(&connectStorage, conn);
+}

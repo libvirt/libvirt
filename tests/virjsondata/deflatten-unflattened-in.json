@@ -1,0 +1,12 @@
+{
+    "file.blah": {
+        "any":"possible",
+        "combination":{
+            "of":"json",
+            "nested":{
+                "objects":"should",
+                "be":"possible"
+            }
+        }
+    }
+}

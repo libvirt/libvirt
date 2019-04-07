@@ -3,3 +3,4 @@
 --exclude=*.html
 --exclude=*.html.in
 --langmap=c:+.h.in
+--c-kinds=+p

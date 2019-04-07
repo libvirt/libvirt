@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_SYSTEMD_H__
-# define __VIR_SYSTEMD_H__
+#ifndef LIBVIRT_VIRSYSTEMD_H
+# define LIBVIRT_VIRSYSTEMD_H
 
 # include "internal.h"
 
@@ -28,11 +28,6 @@ char *virSystemdMakeScopeName(const char *name,
                               const char *drivername,
                               bool legacy_behaviour);
 char *virSystemdMakeSliceName(const char *partition);
-
-char *virSystemdMakeMachineName(const char *drivername,
-                                int id,
-                                const char *name,
-                                bool privileged);
 
 int virSystemdCreateMachine(const char *name,
                             const char *drivername,
@@ -56,4 +51,4 @@ int virSystemdCanHybridSleep(bool *result);
 
 char *virSystemdGetMachineNameByPID(pid_t pid);
 
-#endif /* __VIR_SYSTEMD_H__ */
+#endif /* LIBVIRT_VIRSYSTEMD_H */

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright (C) 2013 Red Hat, Inc.
 #
@@ -67,7 +67,7 @@ while (<>) {
                 $status = 1;
             }
         }
-    } elsif (/^(?:static\s+)?(vir(?:\w+)?Driver)\s+/) {
+    } elsif (/^(?:static\s+)?(vir(?:\w+)?Driver)\s+(?!.*;)/) {
         next if $1 eq "virNWFilterCallbackDriver" ||
                 $1 eq "virNWFilterTechDriver" ||
                 $1 eq "virConnectDriver";

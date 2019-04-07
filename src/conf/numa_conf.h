@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Martin Kletzander <mkletzan@redhat.com>
  */
 
-#ifndef __NUMA_CONF_H__
-# define __NUMA_CONF_H__
+#ifndef LIBVIRT_NUMA_CONF_H
+# define LIBVIRT_NUMA_CONF_H
 
 # include <libxml/xpath.h>
 
@@ -42,18 +40,18 @@ typedef enum {
     VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST
 } virDomainNumatunePlacement;
 
-VIR_ENUM_DECL(virDomainNumatunePlacement)
-VIR_ENUM_DECL(virDomainNumatuneMemMode)
+VIR_ENUM_DECL(virDomainNumatunePlacement);
+VIR_ENUM_DECL(virDomainNumatuneMemMode);
 
 typedef enum {
-    VIR_NUMA_MEM_ACCESS_DEFAULT,
-    VIR_NUMA_MEM_ACCESS_SHARED,
-    VIR_NUMA_MEM_ACCESS_PRIVATE,
+    VIR_DOMAIN_MEMORY_ACCESS_DEFAULT = 0,  /*  No memory access defined */
+    VIR_DOMAIN_MEMORY_ACCESS_SHARED,    /* Memory access is set as shared */
+    VIR_DOMAIN_MEMORY_ACCESS_PRIVATE,   /* Memory access is set as private */
 
-    VIR_NUMA_MEM_ACCESS_LAST
-} virNumaMemAccess;
+    VIR_DOMAIN_MEMORY_ACCESS_LAST,
+} virDomainMemoryAccess;
+VIR_ENUM_DECL(virDomainMemoryAccess);
 
-VIR_ENUM_DECL(virNumaMemAccess)
 
 virDomainNumaPtr virDomainNumaNew(void);
 void virDomainNumaFree(virDomainNumaPtr numa);
@@ -85,13 +83,25 @@ int virDomainNumatuneMaybeGetNodeset(virDomainNumaPtr numatune,
                                      virBitmapPtr *retNodeset,
                                      int cellid);
 
-size_t virDomainNumaGetNodeCount(virDomainNumaPtr numa)
+size_t virDomainNumaGetNodeCount(virDomainNumaPtr numa);
+
+bool virDomainNumaNodeDistanceIsUsingDefaults(virDomainNumaPtr numa,
+                                              size_t node,
+                                              size_t sibling)
     ATTRIBUTE_NONNULL(1);
+size_t virDomainNumaGetNodeDistance(virDomainNumaPtr numa,
+                                    size_t node,
+                                    size_t sibling)
+    ATTRIBUTE_NONNULL(1);
+
 virBitmapPtr virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
                                          size_t node)
     ATTRIBUTE_NONNULL(1);
-virNumaMemAccess virDomainNumaGetNodeMemoryAccessMode(virDomainNumaPtr numa,
+virDomainMemoryAccess virDomainNumaGetNodeMemoryAccessMode(virDomainNumaPtr numa,
                                                       size_t node)
+    ATTRIBUTE_NONNULL(1);
+virTristateBool virDomainNumaGetNodeDiscard(virDomainNumaPtr numa,
+                                            size_t node)
     ATTRIBUTE_NONNULL(1);
 unsigned long long virDomainNumaGetNodeMemorySize(virDomainNumaPtr numa,
                                                   size_t node)
@@ -124,9 +134,29 @@ int virDomainNumatuneSet(virDomainNumaPtr numa,
                          virBitmapPtr nodeset)
     ATTRIBUTE_NONNULL(1);
 
+size_t virDomainNumaSetNodeCount(virDomainNumaPtr numa,
+                                 size_t nmem_nodes)
+    ATTRIBUTE_NONNULL(1);
+
 void virDomainNumaSetNodeMemorySize(virDomainNumaPtr numa,
                                     size_t node,
                                     unsigned long long size)
+    ATTRIBUTE_NONNULL(1);
+
+int virDomainNumaSetNodeDistance(virDomainNumaPtr numa,
+                                 size_t node,
+                                 size_t sibling,
+                                 unsigned int value)
+    ATTRIBUTE_NONNULL(1);
+
+size_t virDomainNumaSetNodeDistanceCount(virDomainNumaPtr numa,
+                                         size_t node,
+                                         size_t ndistances)
+    ATTRIBUTE_NONNULL(1);
+
+virBitmapPtr virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
+                                         size_t node,
+                                         virBitmapPtr cpumask)
     ATTRIBUTE_NONNULL(1);
 
 /*
@@ -151,9 +181,9 @@ bool virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
                                     int cellid);
 
 int virDomainNumaDefCPUParseXML(virDomainNumaPtr def, xmlXPathContextPtr ctxt);
-int virDomainNumaDefCPUFormat(virBufferPtr buf, virDomainNumaPtr def);
+int virDomainNumaDefCPUFormatXML(virBufferPtr buf, virDomainNumaPtr def);
 
 unsigned int virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa);
 
 
-#endif /* __NUMA_CONF_H__ */
+#endif /* LIBVIRT_NUMA_CONF_H */

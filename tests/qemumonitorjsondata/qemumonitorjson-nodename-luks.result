@@ -1,0 +1,6 @@
+drive-virtio-disk0
+filename    : '/var/lib/libvirt/images/luks'
+format node : '#block136'
+format drv  : 'luks'
+storage node: '#block033'
+storage drv : 'file'

@@ -18,13 +18,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
- * Author: Markus Groß <gross@univention.de>
  */
 
-#ifndef __VIR_XEN_XM_H__
-# define __VIR_XEN_XM_H__
+#ifndef LIBVIRT_XEN_XM_H
+# define LIBVIRT_XEN_XM_H
 
 # include "internal.h"
 # include "virconf.h"
@@ -35,4 +32,4 @@ virConfPtr xenFormatXM(virConnectPtr conn, virDomainDefPtr def);
 virDomainDefPtr xenParseXM(virConfPtr conf,
                            virCapsPtr caps, virDomainXMLOptionPtr xmlopt);
 
-#endif /* __VIR_XEN_XM_H__ */
+#endif /* LIBVIRT_XEN_XM_H */

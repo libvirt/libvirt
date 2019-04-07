@@ -1,0 +1,11 @@
+{
+  "compress-level": 1,
+  "compress-threads": 8,
+  "decompress-threads": 2,
+  "cpu-throttle-initial": 20,
+  "cpu-throttle-increment": 10,
+  "tls-creds": "objlibvirt_migrate_tls0",
+  "tls-hostname": "",
+  "max-bandwidth": 33554432,
+  "downtime-limit": 300
+}

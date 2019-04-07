@@ -2,39 +2,17 @@
   <qemuctime>0</qemuctime>
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
-  <usedQMP/>
   <flag name='kvm'/>
-  <flag name='mem-path'/>
-  <flag name='drive-serial'/>
-  <flag name='chardev'/>
-  <flag name='monitor-json'/>
-  <flag name='sdl'/>
-  <flag name='netdev'/>
-  <flag name='rtc'/>
-  <flag name='vhost-net'/>
   <flag name='no-hpet'/>
-  <flag name='no-kvm-pit'/>
-  <flag name='pci-configfd'/>
-  <flag name='nodefconfig'/>
-  <flag name='boot-menu'/>
-  <flag name='fsdev'/>
-  <flag name='name-process'/>
-  <flag name='smbios-type'/>
   <flag name='spice'/>
-  <flag name='vga-none'/>
-  <flag name='boot-index'/>
   <flag name='hda-duplex'/>
-  <flag name='drive-aio'/>
-  <flag name='pci-multibus'/>
-  <flag name='pci-bootindex'/>
-  <flag name='chardev-spicevmc'/>
+  <flag name='ccid-emulated'/>
+  <flag name='ccid-passthru'/>
   <flag name='virtio-tx-alg'/>
-  <flag name='pci-multifunction'/>
   <flag name='virtio-blk-pci.ioeventfd'/>
   <flag name='sga'/>
   <flag name='virtio-blk-pci.event_idx'/>
   <flag name='virtio-net-pci.event_idx'/>
-  <flag name='cache-directsync'/>
   <flag name='piix3-usb-uhci'/>
   <flag name='piix4-usb-uhci'/>
   <flag name='usb-ehci'/>
@@ -43,28 +21,14 @@
   <flag name='pci-ohci'/>
   <flag name='usb-redir'/>
   <flag name='usb-hub'/>
-  <flag name='no-shutdown'/>
-  <flag name='cache-unsafe'/>
   <flag name='ich9-ahci'/>
   <flag name='no-acpi'/>
-  <flag name='fsdev-readonly'/>
   <flag name='virtio-blk-pci.scsi'/>
-  <flag name='drive-copy-on-read'/>
-  <flag name='fsdev-writeout'/>
-  <flag name='drive-iotune'/>
-  <flag name='system_wakeup'/>
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
-  <flag name='transaction'/>
-  <flag name='block-job-async'/>
-  <flag name='scsi-cd'/>
-  <flag name='ide-cd'/>
-  <flag name='no-user-config'/>
   <flag name='hda-micro'/>
   <flag name='dump-guest-memory'/>
   <flag name='nec-usb-xhci'/>
-  <flag name='balloon-event'/>
-  <flag name='bridge'/>
   <flag name='lsi'/>
   <flag name='virtio-scsi-pci'/>
   <flag name='blockio'/>
@@ -75,44 +39,25 @@
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
-  <flag name='dump-guest-core'/>
-  <flag name='seamless-migration'/>
-  <flag name='block-commit'/>
   <flag name='vnc'/>
-  <flag name='drive-mirror'/>
-  <flag name='usb-redir.bootindex'/>
-  <flag name='usb-host.bootindex'/>
-  <flag name='blockdev-snapshot-sync'/>
   <flag name='qxl'/>
   <flag name='VGA'/>
   <flag name='cirrus-vga'/>
   <flag name='vmware-svga'/>
   <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
-  <flag name='usb-net'/>
-  <flag name='add-fd'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
-  <flag name='dtb'/>
   <flag name='megasas'/>
-  <flag name='ipv6-migration'/>
-  <flag name='machine-opt'/>
-  <flag name='machine-usb-opt'/>
   <flag name='tpm-passthrough'/>
   <flag name='tpm-tis'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='vfio-pci.bootindex'/>
-  <flag name='scsi-generic'/>
-  <flag name='scsi-generic.bootindex'/>
   <flag name='mem-merge'/>
-  <flag name='vnc-websocket'/>
   <flag name='drive-discard'/>
   <flag name='mlock'/>
-  <flag name='vnc-share-policy'/>
-  <flag name='device-del-event'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='i440fx-pci-hole64-size'/>
   <flag name='q35-pci-hole64-size'/>
@@ -124,9 +69,7 @@
   <flag name='boot-strict'/>
   <flag name='pvpanic'/>
   <flag name='spice-file-xfer-disable'/>
-  <flag name='spiceport'/>
   <flag name='usb-kbd'/>
-  <flag name='host-pci-multidomain'/>
   <flag name='msg-timestamp'/>
   <flag name='active-commit'/>
   <flag name='change-backing-file'/>
@@ -170,13 +113,13 @@
   <flag name='vserport-change-event'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
+  <flag name='spice-gl'/>
   <flag name='qxl.vram64_size_mb'/>
   <flag name='chardev-logfile'/>
   <flag name='debug-threads'/>
   <flag name='secret'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
-  <flag name='device-tray-moved-event'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
   <flag name='name-guest'/>
@@ -184,7 +127,6 @@
   <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>
-  <flag name='display'/>
   <flag name='intel-iommu'/>
   <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
@@ -198,14 +140,41 @@
   <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>
   <flag name='drive-iotune-group'/>
-  <version>2007093</version>
+  <flag name='query-cpu-definitions'/>
+  <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
+  <flag name='kernel-irqchip'/>
+  <flag name='kernel-irqchip.split'/>
+  <flag name='intel-iommu.intremap'/>
+  <flag name='intel-iommu.eim'/>
+  <flag name='vnc-multi-servers'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='virtio-gpu.max_outputs'/>
+  <flag name='virtio-blk.num-queues'/>
+  <flag name='isa-serial'/>
+  <flag name='dump-completed'/>
+  <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
+  <flag name='sdl-gl'/>
+  <flag name='hda-output'/>
+  <flag name='vhost-vsock'/>
+  <flag name='mch'/>
+  <version>2008000</version>
   <kvmVersion>0</kvmVersion>
-  <package> (v2.8.0-rc3-dirty)</package>
+  <microcodeVersion>43100764</microcodeVersion>
+  <package> (v2.8.0)</package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='host' usable='yes'/>
   <cpu type='kvm' name='qemu64' usable='yes'/>
   <cpu type='kvm' name='qemu32' usable='yes'/>
-  <cpu type='kvm' name='phenom' usable='no'/>
+  <cpu type='kvm' name='phenom' usable='no'>
+    <blocker name='mmxext'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='3dnowext'/>
+    <blocker name='3dnow'/>
+    <blocker name='sse4a'/>
+    <blocker name='npt'/>
+  </cpu>
   <cpu type='kvm' name='pentium3' usable='yes'/>
   <cpu type='kvm' name='pentium2' usable='yes'/>
   <cpu type='kvm' name='pentium' usable='yes'/>
@@ -214,14 +183,32 @@
   <cpu type='kvm' name='kvm32' usable='yes'/>
   <cpu type='kvm' name='coreduo' usable='yes'/>
   <cpu type='kvm' name='core2duo' usable='yes'/>
-  <cpu type='kvm' name='athlon' usable='no'/>
+  <cpu type='kvm' name='athlon' usable='no'>
+    <blocker name='mmxext'/>
+    <blocker name='3dnowext'/>
+    <blocker name='3dnow'/>
+  </cpu>
   <cpu type='kvm' name='Westmere' usable='yes'/>
   <cpu type='kvm' name='Skylake-Client' usable='yes'/>
   <cpu type='kvm' name='SandyBridge' usable='yes'/>
   <cpu type='kvm' name='Penryn' usable='yes'/>
-  <cpu type='kvm' name='Opteron_G5' usable='no'/>
-  <cpu type='kvm' name='Opteron_G4' usable='no'/>
-  <cpu type='kvm' name='Opteron_G3' usable='no'/>
+  <cpu type='kvm' name='Opteron_G5' usable='no'>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='xop'/>
+    <blocker name='fma4'/>
+    <blocker name='tbm'/>
+  </cpu>
+  <cpu type='kvm' name='Opteron_G4' usable='no'>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='xop'/>
+    <blocker name='fma4'/>
+  </cpu>
+  <cpu type='kvm' name='Opteron_G3' usable='no'>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+  </cpu>
   <cpu type='kvm' name='Opteron_G2' usable='yes'/>
   <cpu type='kvm' name='Opteron_G1' usable='yes'/>
   <cpu type='kvm' name='Nehalem' usable='yes'/>
@@ -232,10 +219,15 @@
   <cpu type='kvm' name='Broadwell' usable='yes'/>
   <cpu type='kvm' name='Broadwell-noTSX' usable='yes'/>
   <cpu type='kvm' name='486' usable='yes'/>
-  <cpu type='tcg' name='host' usable='no'/>
+  <cpu type='tcg' name='host' usable='no'>
+    <blocker name='kvm'/>
+  </cpu>
   <cpu type='tcg' name='qemu64' usable='yes'/>
   <cpu type='tcg' name='qemu32' usable='yes'/>
-  <cpu type='tcg' name='phenom' usable='no'/>
+  <cpu type='tcg' name='phenom' usable='no'>
+    <blocker name='fxsr-opt'/>
+    <blocker name='npt'/>
+  </cpu>
   <cpu type='tcg' name='pentium3' usable='yes'/>
   <cpu type='tcg' name='pentium2' usable='yes'/>
   <cpu type='tcg' name='pentium' usable='yes'/>
@@ -246,23 +238,113 @@
   <cpu type='tcg' name='core2duo' usable='yes'/>
   <cpu type='tcg' name='athlon' usable='yes'/>
   <cpu type='tcg' name='Westmere' usable='yes'/>
-  <cpu type='tcg' name='Skylake-Client' usable='no'/>
-  <cpu type='tcg' name='SandyBridge' usable='no'/>
+  <cpu type='tcg' name='Skylake-Client' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='rdrand'/>
+    <blocker name='hle'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='rtm'/>
+    <blocker name='rdseed'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='xsavec'/>
+  </cpu>
+  <cpu type='tcg' name='SandyBridge' usable='no'>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+  </cpu>
   <cpu type='tcg' name='Penryn' usable='yes'/>
-  <cpu type='tcg' name='Opteron_G5' usable='no'/>
-  <cpu type='tcg' name='Opteron_G4' usable='no'/>
-  <cpu type='tcg' name='Opteron_G3' usable='no'/>
+  <cpu type='tcg' name='Opteron_G5' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='misalignsse'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='xop'/>
+    <blocker name='fma4'/>
+    <blocker name='tbm'/>
+  </cpu>
+  <cpu type='tcg' name='Opteron_G4' usable='no'>
+    <blocker name='avx'/>
+    <blocker name='misalignsse'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='xop'/>
+    <blocker name='fma4'/>
+  </cpu>
+  <cpu type='tcg' name='Opteron_G3' usable='no'>
+    <blocker name='misalignsse'/>
+  </cpu>
   <cpu type='tcg' name='Opteron_G2' usable='yes'/>
   <cpu type='tcg' name='Opteron_G1' usable='yes'/>
   <cpu type='tcg' name='Nehalem' usable='yes'/>
-  <cpu type='tcg' name='IvyBridge' usable='no'/>
-  <cpu type='tcg' name='Haswell' usable='no'/>
-  <cpu type='tcg' name='Haswell-noTSX' usable='no'/>
+  <cpu type='tcg' name='IvyBridge' usable='no'>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='rdrand'/>
+  </cpu>
+  <cpu type='tcg' name='Haswell' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='rdrand'/>
+    <blocker name='hle'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='rtm'/>
+  </cpu>
+  <cpu type='tcg' name='Haswell-noTSX' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='rdrand'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+  </cpu>
   <cpu type='tcg' name='Conroe' usable='yes'/>
-  <cpu type='tcg' name='Broadwell' usable='no'/>
-  <cpu type='tcg' name='Broadwell-noTSX' usable='no'/>
+  <cpu type='tcg' name='Broadwell' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='rdrand'/>
+    <blocker name='hle'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='rtm'/>
+    <blocker name='rdseed'/>
+    <blocker name='3dnowprefetch'/>
+  </cpu>
+  <cpu type='tcg' name='Broadwell-noTSX' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='rdrand'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='rdseed'/>
+    <blocker name='3dnowprefetch'/>
+  </cpu>
   <cpu type='tcg' name='486' usable='yes'/>
-  <machine name='pc-i440fx-2.8' alias='pc' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.8' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes'/>
   <machine name='pc-0.12' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-1.3' hotplugCpus='yes' maxCpus='255'/>

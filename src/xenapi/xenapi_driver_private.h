@@ -15,13 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Sharadha Prabhakar <sharadha.prabhakar@citrix.com>
  */
 
-
-#ifndef __VIR_XENAPI_H__
-# define __VIR_XENAPI_H__
+#ifndef LIBVIRT_XENAPI_DRIVER_PRIVATE_H
+# define LIBVIRT_XENAPI_DRIVER_PRIVATE_H
 
 # include <libxml/tree.h>
 # include <xen/api/xen_common.h>
@@ -61,4 +58,4 @@ struct _xenapiPrivate {
     virDomainXMLOptionPtr xmlopt;
 };
 
-#endif /* __VIR_XENAPI_H__ */
+#endif /* LIBVIRT_XENAPI_DRIVER_PRIVATE_H */

@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Chris Lalancette <clalance@redhat.com>
  */
 
 #include <config.h>
@@ -70,7 +68,7 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "cmd=%s, result=%p, flags=%x",
+    VIR_DOMAIN_DEBUG(domain, "cmd=%s, result=%p, flags=0x%x",
                      cmd, result, flags);
 
     virResetLastError();
@@ -134,7 +132,7 @@ virDomainQemuAttach(virConnectPtr conn,
                     unsigned int flags)
 {
     pid_t pid = pid_value;
-    VIR_DEBUG("conn=%p, pid=%u, flags=%x", conn, pid_value, flags);
+    VIR_DEBUG("conn=%p, pid=%u, flags=0x%x", conn, pid_value, flags);
 
     virResetLastError();
 
@@ -193,7 +191,7 @@ virDomainQemuAgentCommand(virDomainPtr domain,
     virConnectPtr conn;
     char *ret;
 
-    VIR_DOMAIN_DEBUG(domain, "cmd=%s, timeout=%d, flags=%x",
+    VIR_DOMAIN_DEBUG(domain, "cmd=%s, timeout=%d, flags=0x%x",
                      cmd, timeout, flags);
 
     virResetLastError();
@@ -272,7 +270,7 @@ virConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
                                          unsigned int flags)
 {
     VIR_DOMAIN_DEBUG(dom,
-                     "conn=%p, event=%s, cb=%p, opaque=%p, freecb=%p, flags=%x",
+                     "conn=%p, event=%s, cb=%p, opaque=%p, freecb=%p, flags=0x%x",
                      conn, NULLSTR(event), cb, opaque, freecb, flags);
 
     virResetLastError();

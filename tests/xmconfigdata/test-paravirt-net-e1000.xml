@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>
-    <type arch='i686' machine='xenpv'>linux</type>
+    <type arch='x86_64' machine='xenpv'>linux</type>
   </os>
   <clock offset='utc' adjustment='reset'/>
   <on_poweroff>destroy</on_poweroff>
@@ -14,10 +14,11 @@
   <on_crash>restart</on_crash>
   <devices>
     <disk type='block' device='disk'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <source dev='/dev/HostVG/XenGuest1'/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <interface type='bridge'>
       <mac address='00:16:3e:66:94:9c'/>
       <source bridge='br0'/>

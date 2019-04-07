@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library;  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -82,7 +80,7 @@ virLogManagerConnect(bool privileged,
     if (!privileged &&
         !(daemonPath = virFileFindResourceFull("virtlogd",
                                                NULL, NULL,
-                                               abs_topbuilddir "/src",
+                                               abs_top_builddir "/src",
                                                SBINDIR,
                                                "VIRTLOGD_PATH")))
         goto error;

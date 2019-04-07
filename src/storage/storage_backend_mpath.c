@@ -17,14 +17,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Dave Allan <dallan@redhat.com>
  */
 
 #include <config.h>
 
 #include <unistd.h>
-#include <stdio.h>
 #include <fcntl.h>
 
 #include <libdevmapper.h>
@@ -32,10 +29,12 @@
 #include "virerror.h"
 #include "storage_conf.h"
 #include "storage_backend.h"
+#include "storage_backend_mpath.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "storage_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -46,41 +45,37 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
                              const int devnum,
                              const char *dev)
 {
-    virStorageVolDefPtr vol;
-    int ret = -1;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
 
     if (VIR_ALLOC(vol) < 0)
-        goto cleanup;
+        return -1;
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     if (virAsprintf(&(vol->name), "dm-%u", devnum) < 0)
-        goto cleanup;
+        return -1;
 
     if (virAsprintf(&vol->target.path, "/dev/%s", dev) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageBackendUpdateVolInfo(vol, true,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT, 0) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* XXX should use logical unit's UUID instead */
     if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-        goto cleanup;
+        return -1;
 
-    if (VIR_APPEND_ELEMENT_COPY(pool->volumes.objs, pool->volumes.count, vol) < 0)
-        goto cleanup;
-    pool->def->capacity += vol->target.capacity;
-    pool->def->allocation += vol->target.allocation;
-    ret = 0;
+    if (virStoragePoolObjAddVol(pool, vol) < 0)
+        return -1;
 
- cleanup:
+    def->capacity += vol->target.capacity;
+    def->allocation += vol->target.allocation;
+    vol = NULL;
 
-    if (ret != 0)
-        virStorageVolDefFree(vol);
-
-    return ret;
+    return 0;
 }
 
 
@@ -158,31 +153,31 @@ static int
 virStorageBackendCreateVols(virStoragePoolObjPtr pool,
                             struct dm_names *names)
 {
-    int retval = -1, is_mpath = 0;
-    char *map_device = NULL;
+    int is_mpath = 0;
     uint32_t minor = -1;
     uint32_t next;
+    VIR_AUTOFREE(char *) map_device = NULL;
 
     do {
         is_mpath = virStorageBackendIsMultipath(names->name);
 
         if (is_mpath < 0)
-            goto out;
+            return -1;
 
         if (is_mpath == 1) {
 
             if (virAsprintf(&map_device, "mapper/%s", names->name) < 0)
-                goto out;
+                return -1;
 
             if (virStorageBackendGetMinorNumber(names->name, &minor) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to get %s minor number"),
                                names->name);
-                goto out;
+                return -1;
             }
 
             if (virStorageBackendMpathNewVol(pool, minor, map_device) < 0)
-                goto out;
+                return -1;
 
             VIR_FREE(map_device);
         }
@@ -196,9 +191,7 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
     } while (next);
 
-    retval = 0;
- out:
-    return retval;
+    return 0;
 }
 
 
@@ -251,16 +244,16 @@ virStorageBackendMpathCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendMpathRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool)
+virStorageBackendMpathRefreshPool(virStoragePoolObjPtr pool)
 {
     int retval = 0;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
-    VIR_DEBUG("conn=%p, pool=%p", conn, pool);
+    VIR_DEBUG("pool=%p", pool);
 
-    pool->def->allocation = pool->def->capacity = pool->def->available = 0;
+    def->allocation = def->capacity = def->available = 0;
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     virStorageBackendGetMaps(pool);
 
@@ -277,3 +270,10 @@ virStorageBackend virStorageBackendMpath = {
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendVolWipeLocal,
 };
+
+
+int
+virStorageBackendMpathRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendMpath);
+}

@@ -3,7 +3,6 @@
  * Summary: common macros and enums for the libvirt and libvirt-admin library
  * Description: Provides common macros and enums needed by both libvirt and
  *              libvirt-admin libraries
- * Author: Erik Skultety <eskultet@redhat.com>
  *
  * Copyright (C) 2015 Red Hat, Inc.
  *

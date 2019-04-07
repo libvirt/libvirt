@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
-#ifndef __DOMAIN_CAPABILITIES_H__
-# define __DOMAIN_CAPABILITIES_H__
+#ifndef LIBVIRT_DOMAIN_CAPABILITIES_H
+# define LIBVIRT_DOMAIN_CAPABILITIES_H
 
 # include "internal.h"
 # include "domain_conf.h"
+# include "viralloc.h"
 
 typedef const char * (*virDomainCapsValToStr)(int value);
 
@@ -34,6 +33,7 @@ typedef virDomainCaps *virDomainCapsPtr;
 typedef struct _virDomainCapsEnum virDomainCapsEnum;
 typedef virDomainCapsEnum *virDomainCapsEnumPtr;
 struct _virDomainCapsEnum {
+    bool report; /* Whether the format the enum at all */
     unsigned int values; /* Bitmask of values supported in the corresponding enum */
 };
 
@@ -47,7 +47,7 @@ struct _virDomainCapsStringValues {
 typedef struct _virDomainCapsLoader virDomainCapsLoader;
 typedef virDomainCapsLoader *virDomainCapsLoaderPtr;
 struct _virDomainCapsLoader {
-    bool supported;
+    virTristateBool supported;
     virDomainCapsStringValues values;   /* Info about values for the element */
     virDomainCapsEnum type;     /* Info about virDomainLoader */
     virDomainCapsEnum readonly; /* Info about readonly:virTristateBool */
@@ -56,37 +56,38 @@ struct _virDomainCapsLoader {
 typedef struct _virDomainCapsOS virDomainCapsOS;
 typedef virDomainCapsOS *virDomainCapsOSPtr;
 struct _virDomainCapsOS {
-    bool supported;
+    virTristateBool supported;
     virDomainCapsLoader loader;     /* Info about virDomainLoaderDef */
 };
 
 typedef struct _virDomainCapsDeviceDisk virDomainCapsDeviceDisk;
 typedef virDomainCapsDeviceDisk *virDomainCapsDeviceDiskPtr;
 struct _virDomainCapsDeviceDisk {
-    bool supported;
+    virTristateBool supported;
     virDomainCapsEnum diskDevice;   /* Info about virDomainDiskDevice enum values */
     virDomainCapsEnum bus;          /* Info about virDomainDiskBus enum values */
+    virDomainCapsEnum model;        /* Info about virDomainDiskModel enum values */
     /* add new fields here */
 };
 
 typedef struct _virDomainCapsDeviceGraphics virDomainCapsDeviceGraphics;
 typedef virDomainCapsDeviceGraphics *virDomainCapsDeviceGraphicsPtr;
 struct _virDomainCapsDeviceGraphics {
-    bool supported;
+    virTristateBool supported;
     virDomainCapsEnum type;   /* virDomainGraphicsType */
 };
 
 typedef struct _virDomainCapsDeviceVideo virDomainCapsDeviceVideo;
 typedef virDomainCapsDeviceVideo *virDomainCapsDeviceVideoPtr;
 struct _virDomainCapsDeviceVideo {
-    bool supported;
+    virTristateBool supported;
     virDomainCapsEnum modelType;   /* virDomainVideoType */
 };
 
 typedef struct _virDomainCapsDeviceHostdev virDomainCapsDeviceHostdev;
 typedef virDomainCapsDeviceHostdev *virDomainCapsDeviceHostdevPtr;
 struct _virDomainCapsDeviceHostdev {
-    bool supported;
+    virTristateBool supported;
     virDomainCapsEnum mode;             /* Info about virDomainHostdevMode */
     virDomainCapsEnum startupPolicy;    /* Info about virDomainStartupPolicy */
     virDomainCapsEnum subsysType;       /* Info about virDomainHostdevSubsysType */
@@ -98,7 +99,7 @@ struct _virDomainCapsDeviceHostdev {
 typedef struct _virDomainCapsFeatureGIC virDomainCapsFeatureGIC;
 typedef virDomainCapsFeatureGIC *virDomainCapsFeatureGICPtr;
 struct _virDomainCapsFeatureGIC {
-    bool supported;
+    virTristateBool supported;
     virDomainCapsEnum version; /* Info about virGICVersion */
 };
 
@@ -116,6 +117,7 @@ typedef virDomainCapsCPUModel *virDomainCapsCPUModelPtr;
 struct _virDomainCapsCPUModel {
     char *name;
     virDomainCapsCPUUsable usable;
+    char **blockers; /* NULL-terminated list of usability blockers */
 };
 
 typedef struct _virDomainCapsCPUModels virDomainCapsCPUModels;
@@ -136,6 +138,15 @@ struct _virDomainCapsCPU {
     virDomainCapsCPUModelsPtr custom;
 };
 
+typedef struct _virSEVCapability virSEVCapability;
+typedef virSEVCapability *virSEVCapabilityPtr;
+struct _virSEVCapability {
+    char *pdh;
+    char *cert_chain;
+    unsigned int cbitpos;
+    unsigned int reduced_phys_bits;
+};
+
 struct _virDomainCaps {
     virObjectLockable parent;
 
@@ -146,6 +157,7 @@ struct _virDomainCaps {
 
     /* Some machine specific info */
     int maxvcpus;
+    virTristateBool iothreads;  /* Whether I/O threads are supported or not. */
 
     virDomainCapsOS os;
     virDomainCapsCPU cpu;
@@ -156,6 +168,9 @@ struct _virDomainCaps {
     /* add new domain devices here */
 
     virDomainCapsFeatureGIC gic;
+    virTristateBool vmcoreinfo;
+    virTristateBool genid;
+    virSEVCapabilityPtr sev;
     /* add new domain features here */
 };
 
@@ -171,18 +186,24 @@ virDomainCapsCPUModelsPtr virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr
                                                        const char **blacklist);
 int virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
                                    char **name,
-                                   virDomainCapsCPUUsable usable);
+                                   virDomainCapsCPUUsable usable,
+                                   char ***blockers);
 int virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                               const char *name,
                               ssize_t nameLen,
-                              virDomainCapsCPUUsable usable);
+                              virDomainCapsCPUUsable usable,
+                              char **blockers);
+virDomainCapsCPUModelPtr
+virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
+                          const char *name);
 
-# define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...)            \
-    do {                                                    \
-        unsigned int __values[] = {__VA_ARGS__};            \
-        size_t __nvalues = ARRAY_CARDINALITY(__values);     \
-        virDomainCapsEnumSet(&(capsEnum), #capsEnum,        \
-                             __nvalues, __values);          \
+
+# define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...) \
+    do { \
+        unsigned int __values[] = {__VA_ARGS__}; \
+        size_t __nvalues = ARRAY_CARDINALITY(__values); \
+        virDomainCapsEnumSet(&(capsEnum), #capsEnum, \
+                             __nvalues, __values); \
     } while (0)
 
 int virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,
@@ -192,4 +213,10 @@ int virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,
 void virDomainCapsEnumClear(virDomainCapsEnumPtr capsEnum);
 
 char * virDomainCapsFormat(virDomainCapsPtr const caps);
-#endif /* __DOMAIN_CAPABILITIES_H__ */
+
+void
+virSEVCapabilitiesFree(virSEVCapability *capabilities);
+
+VIR_DEFINE_AUTOPTR_FUNC(virSEVCapability, virSEVCapabilitiesFree);
+
+#endif /* LIBVIRT_DOMAIN_CAPABILITIES_H */

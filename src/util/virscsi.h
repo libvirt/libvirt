@@ -16,16 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Han Cheng <hanc.fnst@cn.fujitsu.com>
  */
 
-#ifndef __VIR_SCSI_H__
-# define __VIR_SCSI_H__
+#ifndef LIBVIRT_VIRSCSI_H
+# define LIBVIRT_VIRSCSI_H
 
 # include "internal.h"
 # include "virobject.h"
+# include "viralloc.h"
 
 typedef struct _virSCSIDevice virSCSIDevice;
 typedef virSCSIDevice *virSCSIDevicePtr;
@@ -37,7 +35,7 @@ char *virSCSIDeviceGetSgName(const char *sysfs_prefix,
                              const char *adapter,
                              unsigned int bus,
                              unsigned int target,
-                             unsigned long long unit);
+                             unsigned long long unit) ATTRIBUTE_NOINLINE;
 char *virSCSIDeviceGetDevName(const char *sysfs_prefix,
                               const char *adapter,
                               unsigned int bus,
@@ -95,4 +93,6 @@ void virSCSIDeviceListDel(virSCSIDeviceListPtr list,
 virSCSIDevicePtr virSCSIDeviceListFind(virSCSIDeviceListPtr list,
                                        virSCSIDevicePtr dev);
 
-#endif /* __VIR_SCSI_H__ */
+VIR_DEFINE_AUTOPTR_FUNC(virSCSIDevice, virSCSIDeviceFree);
+
+#endif /* LIBVIRT_VIRSCSI_H */

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_DOMAIN_LOCK_H__
-# define __VIR_DOMAIN_LOCK_H__
+#ifndef LIBVIRT_DOMAIN_LOCK_H
+# define LIBVIRT_DOMAIN_LOCK_H
 
 # include "internal.h"
 # include "domain_conf.h"
@@ -42,14 +42,6 @@ int virDomainLockProcessInquire(virLockManagerPluginPtr plugin,
                                 virDomainObjPtr dom,
                                 char **state);
 
-int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
-                            const char *uri,
-                            virDomainObjPtr dom,
-                            virDomainDiskDefPtr disk);
-int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
-                            virDomainObjPtr dom,
-                            virDomainDiskDefPtr disk);
-
 int virDomainLockImageAttach(virLockManagerPluginPtr plugin,
                              const char *uri,
                              virDomainObjPtr dom,
@@ -66,4 +58,4 @@ int virDomainLockLeaseDetach(virLockManagerPluginPtr plugin,
                              virDomainObjPtr dom,
                              virDomainLeaseDefPtr lease);
 
-#endif /* __VIR_DOMAIN_LOCK_H__ */
+#endif /* LIBVIRT_DOMAIN_LOCK_H */

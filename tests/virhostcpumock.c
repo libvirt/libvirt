@@ -26,7 +26,7 @@ virHostCPUGetThreadsPerSubcore(virArch arch)
 {
     int threads_per_subcore = 0;
 
-    // Emulate SMT=8 on POWER hardware
+    /* Emulate SMT=8 on POWER hardware */
     if (ARCH_IS_PPC64(arch))
         threads_per_subcore = 8;
 

@@ -18,12 +18,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * File created Jul 18, 2007 - Shuveb Hussain <shuveb@binarykarma.com>
  */
 
-#ifndef __VIR_UTIL_H__
-# define __VIR_UTIL_H__
+#ifndef LIBVIRT_VIRUTIL_H
+# define LIBVIRT_VIRUTIL_H
 
 # include "internal.h"
 # include <unistd.h>
@@ -43,13 +41,12 @@ int virSetInherit(int fd, bool inherit) ATTRIBUTE_RETURN_CHECK;
 int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
 int virSetSockReuseAddr(int fd, bool fatal) ATTRIBUTE_RETURN_CHECK;
 
-int virPipeReadUntilEOF(int outfd, int errfd,
-                        char **outbuf, char **errbuf);
-
 int virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups, int ngroups);
 int virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
                          unsigned long long capBits,
                          bool clearExistingCaps);
+
+void virWaitForDevices(void);
 
 int virScaleInteger(unsigned long long *value, const char *suffix,
                     unsigned long long scale, unsigned long long limit)
@@ -57,15 +54,15 @@ int virScaleInteger(unsigned long long *value, const char *suffix,
 
 int virHexToBin(unsigned char c);
 
-int virParseNumber(const char **str);
 int virParseVersionString(const char *str, unsigned long *version,
                           bool allowMissing);
 
-int virDoubleToStr(char **strp, double number)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-
 char *virFormatIntDecimal(char *buf, size_t buflen, int val)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
+unsigned long long
+virFormatIntPretty(unsigned long long val,
+                   const char **unit);
 
 int virDiskNameParse(const char *name, int *disk, int *partition);
 int virDiskNameToIndex(const char* str);
@@ -79,23 +76,23 @@ const char *virEnumToString(const char *const*types,
                             unsigned int ntypes,
                             int type);
 
-# define VIR_ENUM_IMPL(name, lastVal, ...)                               \
-    static const char *const name ## TypeList[] = { __VA_ARGS__ };      \
-    verify(ARRAY_CARDINALITY(name ## TypeList) == lastVal);             \
-    const char *name ## TypeToString(int type) {                        \
-        return virEnumToString(name ## TypeList,                        \
-                               ARRAY_CARDINALITY(name ## TypeList),     \
-                               type);                                   \
-    }                                                                   \
-    int name ## TypeFromString(const char *type) {                      \
-        return virEnumFromString(name ## TypeList,                      \
-                                 ARRAY_CARDINALITY(name ## TypeList),   \
-                                 type);                                 \
-    }
+# define VIR_ENUM_IMPL(name, lastVal, ...) \
+    static const char *const name ## TypeList[] = { __VA_ARGS__ }; \
+    const char *name ## TypeToString(int type) { \
+        return virEnumToString(name ## TypeList, \
+                               ARRAY_CARDINALITY(name ## TypeList), \
+                               type); \
+    } \
+    int name ## TypeFromString(const char *type) { \
+        return virEnumFromString(name ## TypeList, \
+                                 ARRAY_CARDINALITY(name ## TypeList), \
+                                 type); \
+    } \
+    verify(ARRAY_CARDINALITY(name ## TypeList) == lastVal)
 
-# define VIR_ENUM_DECL(name)                             \
-    const char *name ## TypeToString(int type);         \
-    int name ## TypeFromString(const char*type);
+# define VIR_ENUM_DECL(name) \
+    const char *name ## TypeToString(int type); \
+    int name ## TypeFromString(const char*type)
 
 /* No-op workarounds for functionality missing in mingw.  */
 # ifndef HAVE_GETUID
@@ -140,14 +137,18 @@ char *virGetUserConfigDirectory(void);
 char *virGetUserCacheDirectory(void);
 char *virGetUserRuntimeDirectory(void);
 char *virGetUserShell(uid_t uid);
-char *virGetUserName(uid_t uid);
-char *virGetGroupName(gid_t gid);
+char *virGetUserName(uid_t uid) ATTRIBUTE_NOINLINE;
+char *virGetGroupName(gid_t gid) ATTRIBUTE_NOINLINE;
 int virGetGroupList(uid_t uid, gid_t group, gid_t **groups)
     ATTRIBUTE_NONNULL(3);
 int virGetUserID(const char *name,
                  uid_t *uid) ATTRIBUTE_RETURN_CHECK;
 int virGetGroupID(const char *name,
                   gid_t *gid) ATTRIBUTE_RETURN_CHECK;
+
+bool virDoesUserExist(const char *name);
+bool virDoesGroupExist(const char *name);
+
 
 bool virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);
 
@@ -164,49 +165,6 @@ int virGetDeviceUnprivSGIO(const char *path,
                            int *unpriv_sgio);
 char *virGetUnprivSGIOSysfsPath(const char *path,
                                 const char *sysfs_dir);
-int virReadSCSIUniqueId(const char *sysfs_prefix,
-                        int host,
-                        int *result)
-    ATTRIBUTE_NONNULL(3);
-char *
-virFindSCSIHostByPCI(const char *sysfs_prefix,
-                     const char *parentaddr,
-                     unsigned int unique_id);
-int
-virGetSCSIHostNumber(const char *adapter_name,
-                     unsigned int *result)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-char *
-virGetSCSIHostNameByParentaddr(unsigned int domain,
-                               unsigned int bus,
-                               unsigned int slot,
-                               unsigned int function,
-                               unsigned int unique_id);
-char *virReadFCHost(const char *sysfs_prefix,
-                    int host,
-                    const char *entry)
-    ATTRIBUTE_NONNULL(3);
-
-bool virIsCapableFCHost(const char *sysfs_prefix, int host);
-bool virIsCapableVport(const char *sysfs_prefix, int host);
-
-enum {
-    VPORT_CREATE,
-    VPORT_DELETE,
-};
-
-int virManageVport(const int parent_host,
-                   const char *wwpn,
-                   const char *wwnn,
-                   int operation)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-char *virGetFCHostNameByWWN(const char *sysfs_prefix,
-                            const char *wwnn,
-                            const char *wwpn)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-char *virFindFCHostCapableVport(const char *sysfs_prefix);
 
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 
@@ -234,8 +192,11 @@ typedef enum {
     VIR_TRISTATE_SWITCH_LAST
 } virTristateSwitch;
 
-VIR_ENUM_DECL(virTristateBool)
-VIR_ENUM_DECL(virTristateSwitch)
+VIR_ENUM_DECL(virTristateBool);
+VIR_ENUM_DECL(virTristateSwitch);
+
+virTristateBool virTristateBoolFromBool(bool val);
+virTristateSwitch virTristateSwitchFromBool(bool val);
 
 /* the two enums must be in sync to be able to use helpers interchangeably in
  * some special cases */
@@ -244,13 +205,18 @@ verify((int)VIR_TRISTATE_BOOL_NO == (int)VIR_TRISTATE_SWITCH_OFF);
 verify((int)VIR_TRISTATE_BOOL_ABSENT == (int)VIR_TRISTATE_SWITCH_ABSENT);
 
 unsigned int virGetListenFDs(void);
+char *virGetUNIXSocketPath(int fd);
 
-long virGetSystemPageSize(void);
-long virGetSystemPageSizeKB(void);
+long virGetSystemPageSize(void) ATTRIBUTE_NOINLINE;
+long virGetSystemPageSizeKB(void) ATTRIBUTE_NOINLINE;
 
 unsigned long long virMemoryLimitTruncate(unsigned long long value);
 bool virMemoryLimitIsSet(unsigned long long value);
-unsigned long long virMemoryMaxValue(bool ulong);
+unsigned long long virMemoryMaxValue(bool ulong) ATTRIBUTE_NOINLINE;
+
+bool virHostHasIOMMU(void);
+
+char *virHostGetDRMRenderNode(void) ATTRIBUTE_NOINLINE;
 
 /**
  * VIR_ASSIGN_IS_OVERFLOW:
@@ -260,7 +226,7 @@ unsigned long long virMemoryMaxValue(bool ulong);
  * This macro assigns @lvalue to @rvalue and evaluates as true if the value of
  * @rvalue did not fit into the @lvalue.
  */
-# define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue)                                \
+# define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue) \
     (((lvalue) = (rvalue)) != (rvalue))
 
-#endif /* __VIR_UTIL_H__ */
+#endif /* LIBVIRT_VIRUTIL_H */

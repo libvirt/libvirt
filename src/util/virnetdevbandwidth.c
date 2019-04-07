@@ -14,10 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Michal Privoznik <mprivozn@redhat.com>
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -174,6 +170,7 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
  * @ifname: on which interface
  * @bandwidth: rates to set (may be NULL)
  * @hierarchical_class: whether to create hierarchical class
+ * @swapped: true if IN/OUT should be set contrariwise
  *
  * This function enables QoS on specified interface
  * and set given traffic limits for both, incoming
@@ -182,14 +179,23 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
  * hierarchical class. It is used to guarantee minimal
  * throughput ('floor' attribute in NIC).
  *
+ * If @swapped is set, the IN part of @bandwidth is set on
+ * @ifname's TX, and vice versa. If it is not set, IN is set on
+ * RX and OUT on TX. This is because for some types of interfaces
+ * domain and the host live on the same side of the interface (so
+ * domain's RX/TX is host's RX/TX), and for some it's swapped
+ * (domain's RX/TX is hosts's TX/RX).
+ *
  * Return 0 on success, -1 otherwise.
  */
 int
 virNetDevBandwidthSet(const char *ifname,
                       virNetDevBandwidthPtr bandwidth,
-                      bool hierarchical_class)
+                      bool hierarchical_class,
+                      bool swapped)
 {
     int ret = -1;
+    virNetDevBandwidthRatePtr rx = NULL, tx = NULL; /* From domain POV */
     virCommandPtr cmd = NULL;
     char *average = NULL;
     char *peak = NULL;
@@ -215,16 +221,24 @@ virNetDevBandwidthSet(const char *ifname,
         return -1;
     }
 
+    if (swapped) {
+        rx = bandwidth->out;
+        tx = bandwidth->in;
+    } else {
+        rx = bandwidth->in;
+        tx = bandwidth->out;
+    }
+
     virNetDevBandwidthClear(ifname);
 
-    if (bandwidth->in && bandwidth->in->average) {
-        if (virAsprintf(&average, "%llukbps", bandwidth->in->average) < 0)
+    if (tx && tx->average) {
+        if (virAsprintf(&average, "%llukbps", tx->average) < 0)
             goto cleanup;
-        if (bandwidth->in->peak &&
-            (virAsprintf(&peak, "%llukbps", bandwidth->in->peak) < 0))
+        if (tx->peak &&
+            (virAsprintf(&peak, "%llukbps", tx->peak) < 0))
             goto cleanup;
-        if (bandwidth->in->burst &&
-            (virAsprintf(&burst, "%llukb", bandwidth->in->burst) < 0))
+        if (tx->burst &&
+            (virAsprintf(&burst, "%llukb", tx->burst) < 0))
             goto cleanup;
 
         cmd = virCommandNew(TC);
@@ -262,7 +276,7 @@ virNetDevBandwidthSet(const char *ifname,
          *                                                +-----------+     +-----+
          *
          * After the routing decision, when is it clear a packet is to be sent
-         * via a particular NIC, it is sent to the root qdisc (queueing
+         * via a particular NIC, it is sent to the root qdisc (queuing
          * discipline). In this case HTB (Hierarchical Token Bucket). It has
          * only one direct child class (with id 1:1) which shapes the overall
          * rate that is sent through the NIC.  This class has at least one child
@@ -303,7 +317,7 @@ virNetDevBandwidthSet(const char *ifname,
             virCommandAddArgList(cmd, "class", "add", "dev", ifname, "parent",
                                  "1:", "classid", "1:1", "htb", "rate", average,
                                  "ceil", peak ? peak : average, NULL);
-            virNetDevBandwidthCmdAddOptimalQuantum(cmd, bandwidth->in);
+            virNetDevBandwidthCmdAddOptimalQuantum(cmd, tx);
             if (virCommandRun(cmd, NULL) < 0)
                 goto cleanup;
         }
@@ -319,7 +333,7 @@ virNetDevBandwidthSet(const char *ifname,
         if (burst)
             virCommandAddArgList(cmd, "burst", burst, NULL);
 
-        virNetDevBandwidthCmdAddOptimalQuantum(cmd, bandwidth->in);
+        virNetDevBandwidthCmdAddOptimalQuantum(cmd, tx);
         if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
 
@@ -347,11 +361,10 @@ virNetDevBandwidthSet(const char *ifname,
         VIR_FREE(burst);
     }
 
-    if (bandwidth->out) {
-        if (virAsprintf(&average, "%llukbps", bandwidth->out->average) < 0)
+    if (rx) {
+        if (virAsprintf(&average, "%llukbps", rx->average) < 0)
             goto cleanup;
-        if (virAsprintf(&burst, "%llukb", bandwidth->out->burst ?
-                        bandwidth->out->burst : bandwidth->out->average) < 0)
+        if (virAsprintf(&burst, "%llukb", rx->burst ? rx->burst : rx->average) < 0)
             goto cleanup;
 
         virCommandFree(cmd);

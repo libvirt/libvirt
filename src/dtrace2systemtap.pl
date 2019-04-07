@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright (C) 2011-2012 Red Hat, Inc.
 #
@@ -16,7 +16,6 @@
 # License along with this library.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-# Author: Daniel P. Berrange <berrange@redhat.com>
 #
 # Generate a set of systemtap probe definitions corresponding to
 # DTrace probe markers in libvirt.so

@@ -19,11 +19,9 @@
  *
  */
 
-#ifndef __VIR_STORAGE_BACKEND_ZFS_H__
-# define __VIR_STORAGE_BACKEND_ZFS_H__
+#ifndef LIBVIRT_STORAGE_BACKEND_ZFS_H
+# define LIBVIRT_STORAGE_BACKEND_ZFS_H
 
-# include "storage_backend.h"
+int virStorageBackendZFSRegister(void);
 
-extern virStorageBackend virStorageBackendZFS;
-
-#endif /* __VIR_STORAGE_BACKEND_ZFS_H__ */
+#endif /* LIBVIRT_STORAGE_BACKEND_ZFS_H */

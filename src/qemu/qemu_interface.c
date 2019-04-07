@@ -17,9 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Matthew J. Rosato <mjrosato@linux.vnet.ibm.com>
  */
 
 #include <config.h>
@@ -264,7 +261,7 @@ qemuInterfaceDirectConnect(virDomainDefPtr def,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
 
-    if (net->model && STREQ(net->model, "virtio"))
+    if (virDomainNetIsVirtioModel(net))
         macvlan_create_flags |= VIR_NETDEV_MACVLAN_VNET_HDR;
 
     if (virNetDevMacVLanCreateWithVPortProfile(net->ifname,
@@ -363,7 +360,7 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
         char ebuf[1024];
         char *errstr = NULL;
 
-        if (!(cmdstr = virCommandToString(cmd)))
+        if (!(cmdstr = virCommandToString(cmd, false)))
             goto cleanup;
         virCommandAbort(cmd);
 
@@ -374,7 +371,7 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
         virReportError(VIR_ERR_INTERNAL_ERROR,
             _("%s: failed to communicate with bridge helper: %s%s"),
             cmdstr, virStrerror(errno, ebuf, sizeof(ebuf)),
-            errstr ? errstr : "");
+            NULLSTR_EMPTY(errstr));
         VIR_FREE(errstr);
         goto cleanup;
     }
@@ -428,16 +425,16 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
     }
 
     if (!net->ifname ||
-        STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
+        STRPREFIX(net->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
         strchr(net->ifname, '%')) {
         VIR_FREE(net->ifname);
-        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_PREFIX "%d") < 0)
+        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_TAP_PREFIX "%d") < 0)
             goto cleanup;
         /* avoid exposing vnet%d in getXMLDesc or error outputs */
         template_ifname = true;
     }
 
-    if (net->model && STREQ(net->model, "virtio"))
+    if (virDomainNetIsVirtioModel(net))
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
 
     if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
@@ -467,7 +464,7 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
         goto cleanup;
 
     if (net->filter &&
-        virDomainConfNWFilterInstantiate(def->uuid, net) < 0) {
+        virDomainConfNWFilterInstantiate(def->name, def->uuid, net, false) < 0) {
         goto cleanup;
     }
 
@@ -527,16 +524,16 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
     }
 
     if (!net->ifname ||
-        STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
+        STRPREFIX(net->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
         strchr(net->ifname, '%')) {
         VIR_FREE(net->ifname);
-        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_PREFIX "%d") < 0)
+        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_TAP_PREFIX "%d") < 0)
             goto cleanup;
         /* avoid exposing vnet%d in getXMLDesc or error outputs */
         template_ifname = true;
     }
 
-    if (net->model && STREQ(net->model, "virtio"))
+    if (virDomainNetIsVirtioModel(net))
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
 
     if (virQEMUDriverIsPrivileged(driver)) {
@@ -544,6 +541,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
                                            def->uuid, tunpath, tapfd, *tapfdSize,
                                            virDomainNetGetActualVirtPortProfile(net),
                                            virDomainNetGetActualVlan(net),
+                                           net->coalesce, 0, NULL,
                                            tap_create_flags) < 0) {
             virDomainAuditNetDevice(def, net, tunpath, false);
             goto cleanup;
@@ -553,7 +551,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
             /* libvirt is managing the FDB of the bridge this device
              * is attaching to, so we need to turn off learning and
              * unicast_flood on the device to prevent the kernel from
-             * adding any FDB entries for it. We will add add an fdb
+             * adding any FDB entries for it. We will add an fdb
              * entry ourselves (during qemuInterfaceStartDevices(),
              * using the MAC address from the interface config.
              */
@@ -585,7 +583,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
         goto cleanup;
 
     if (net->filter &&
-        virDomainConfNWFilterInstantiate(def->uuid, net) < 0) {
+        virDomainConfNWFilterInstantiate(def->name, def->uuid, net, false) < 0) {
         goto cleanup;
     }
 
@@ -623,7 +621,6 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
 int
 qemuInterfaceOpenVhostNet(virDomainDefPtr def,
                           virDomainNetDefPtr net,
-                          virQEMUCapsPtr qemuCaps,
                           int *vhostfd,
                           size_t *vhostfdSize)
 {
@@ -641,11 +638,10 @@ qemuInterfaceOpenVhostNet(virDomainDefPtr def,
         return 0;
     }
 
-    /* If qemu doesn't support vhost-net mode (including the -netdev command
-     * option), don't try to open the device.
+    /* If qemu doesn't support vhost-net mode (including the -netdev and
+     * -device command options), don't try to open the device.
      */
-    if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOST_NET) &&
-          qemuDomainSupportsNetdev(def, qemuCaps, net))) {
+    if (!qemuDomainSupportsNicdev(def, net)) {
         if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("vhost-net is not supported with "
@@ -657,7 +653,7 @@ qemuInterfaceOpenVhostNet(virDomainDefPtr def,
     }
 
     /* If the nic model isn't virtio, don't try to open. */
-    if (!(net->model && STREQ(net->model, "virtio"))) {
+    if (!virDomainNetIsVirtioModel(net)) {
         if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("vhost-net is only supported for "

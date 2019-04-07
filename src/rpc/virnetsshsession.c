@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Peter Krempa <pkrempa@redhat.com>
  */
 #include <config.h>
 #include <libssh2.h>
@@ -167,10 +165,7 @@ static virClassPtr virNetSSHSessionClass;
 static int
 virNetSSHSessionOnceInit(void)
 {
-    if (!(virNetSSHSessionClass = virClassNew(virClassForObjectLockable(),
-                                              "virNetSSHSession",
-                                              sizeof(virNetSSHSession),
-                                              virNetSSHSessionDispose)))
+    if (!VIR_CLASS_NEW(virNetSSHSession, virClassForObjectLockable()))
         return -1;
 
     return 0;
@@ -709,9 +704,9 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
 
     if (priv->password) {
         /* tunelled password authentication */
-        if ((ret = libssh2_userauth_password(sess->session,
-                                             priv->username,
-                                             priv->password)) == 0) {
+        if ((rc = libssh2_userauth_password(sess->session,
+                                            priv->username,
+                                            priv->password)) == 0) {
             ret = 0;
             goto cleanup;
         }
@@ -729,11 +724,8 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
         while (true) {
             if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
                                                     "ssh", priv->username,
-                                                    sess->hostname))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to retrieve password"));
+                                                    sess->hostname)))
                 goto cleanup;
-            }
 
             /* tunelled password authentication */
             if ((rc = libssh2_userauth_password(sess->session,
@@ -743,7 +735,7 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
                 goto cleanup;
             }
 
-            if (ret != LIBSSH2_ERROR_AUTHENTICATION_FAILED)
+            if (rc != LIBSSH2_ERROR_AUTHENTICATION_FAILED)
                 break;
 
             VIR_FREE(password);
@@ -756,10 +748,10 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
                    _("authentication failed: %s"), errmsg);
 
     /* determine exist status */
-    if (ret == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
-        return 1;
+    if (rc == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
+        ret = 1;
     else
-        return -1;
+        ret = -1;
 
  cleanup:
     VIR_FREE(password);

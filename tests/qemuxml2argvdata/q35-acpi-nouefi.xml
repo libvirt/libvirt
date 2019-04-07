@@ -1,0 +1,22 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>496d7ea8-9739-544b-4ebd-ef08be936e8b</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <kernel>/var/lib/libvirt/images/guest.vmlinuz</kernel>
+    <initrd>/var/lib/libvirt/images/guest.initramfs</initrd>
+    <cmdline>rw root=/dev/vda rootwait</cmdline>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <cpu mode='custom'>
+    <model>Haswell</model>
+  </cpu>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <memballoon model='none'/>
+  </devices>
+</domain>

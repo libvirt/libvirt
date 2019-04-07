@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __HYPERV_UTIL_H__
-# define __HYPERV_UTIL_H__
+#ifndef LIBVIRT_HYPERV_UTIL_H
+# define LIBVIRT_HYPERV_UTIL_H
 
 # include "internal.h"
 # include "viruri.h"
@@ -35,4 +35,4 @@ int hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri);
 
 void hypervFreeParsedUri(hypervParsedUri **parsedUri);
 
-#endif /* __HYPERV_UTIL_H__ */
+#endif /* LIBVIRT_HYPERV_UTIL_H */

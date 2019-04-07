@@ -59,6 +59,12 @@
             </optional>
 
             <optional>
+              <attribute name="zone">
+                <ref name="zoneName"/>
+              </attribute>
+            </optional>
+
+            <optional>
               <attribute name="stp">
                 <ref name="virOnOff"/>
               </attribute>
@@ -77,6 +83,11 @@
             </optional>
 
           </element>
+        </optional>
+
+        <!-- <mtu> element -->
+        <optional>
+          <ref name="mtu"/>
         </optional>
 
         <!-- <mac> element -->
@@ -319,7 +330,7 @@
           <ref name="bandwidth"/>
         </optional>
         <optional>
-         <ref name="vlan"/>
+          <ref name="vlan"/>
         </optional>
 
         <!-- <ip> element -->

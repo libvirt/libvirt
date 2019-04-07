@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -51,6 +49,7 @@ struct _virNetServer {
 
     char *name;
 
+    /* Immutable pointer, self-locking APIs */
     virThreadPoolPtr workers;
 
     char *mdnsGroupName;
@@ -73,9 +72,7 @@ struct _virNetServer {
     int keepaliveInterval;
     unsigned int keepaliveCount;
 
-#ifdef WITH_GNUTLS
     virNetTLSContextPtr tls;
-#endif
 
     virNetServerClientPrivNew clientPrivNew;
     virNetServerClientPrivPreExecRestart clientPrivPreExecRestart;
@@ -93,16 +90,13 @@ static inline size_t virNetServerTrackCompletedAuthLocked(virNetServerPtr srv);
 
 static int virNetServerOnceInit(void)
 {
-    if (!(virNetServerClass = virClassNew(virClassForObjectLockable(),
-                                          "virNetServer",
-                                          sizeof(virNetServer),
-                                          virNetServerDispose)))
+    if (!VIR_CLASS_NEW(virNetServer, virClassForObjectLockable()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetServer)
+VIR_ONCE_GLOBAL_INIT(virNetServer);
 
 unsigned long long virNetServerNextClientID(virNetServerPtr srv)
 {
@@ -133,7 +127,7 @@ static int virNetServerProcessMsg(virNetServerPtr srv,
                                                 &msg->header) < 0)
                 goto cleanup;
         } else {
-            VIR_INFO("Dropping client mesage, unknown program %d version %d type %d proc %d",
+            VIR_INFO("Dropping client message, unknown program %d version %d type %d proc %d",
                      msg->header.prog, msg->header.vers,
                      msg->header.type, msg->header.proc);
             /* Send a dummy reply to free up 'msg' & unblock client rx */
@@ -182,15 +176,16 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
     VIR_FREE(job);
 }
 
-static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
-                                          virNetMessagePtr msg,
-                                          void *opaque)
+
+static void
+virNetServerDispatchNewMessage(virNetServerClientPtr client,
+                               virNetMessagePtr msg,
+                               void *opaque)
 {
     virNetServerPtr srv = opaque;
     virNetServerProgramPtr prog = NULL;
     unsigned int priority = 0;
     size_t i;
-    int ret = -1;
 
     VIR_DEBUG("server=%p client=%p message=%p",
               srv, client, msg);
@@ -202,37 +197,47 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
             break;
         }
     }
+    /* we can unlock @srv since @prog can only become invalid in case
+     * of disposing @srv, but let's grab a ref first to ensure nothing
+     * disposes of it before we use it. */
+    virObjectRef(srv);
+    virObjectUnlock(srv);
 
-    if (srv->workers) {
+    if (virThreadPoolGetMaxWorkers(srv->workers) > 0)  {
         virNetServerJobPtr job;
 
         if (VIR_ALLOC(job) < 0)
-            goto cleanup;
+            goto error;
 
         job->client = client;
         job->msg = msg;
 
         if (prog) {
-            virObjectRef(prog);
-            job->prog = prog;
+            job->prog = virObjectRef(prog);
             priority = virNetServerProgramGetPriority(prog, msg->header.proc);
         }
 
-        ret = virThreadPoolSendJob(srv->workers, priority, job);
-
-        if (ret < 0) {
+        virObjectRef(client);
+        if (virThreadPoolSendJob(srv->workers, priority, job) < 0) {
+            virObjectUnref(client);
             VIR_FREE(job);
             virObjectUnref(prog);
+            goto error;
         }
     } else {
-        ret = virNetServerProcessMsg(srv, client, prog, msg);
+        if (virNetServerProcessMsg(srv, client, prog, msg) < 0)
+            goto error;
     }
 
- cleanup:
-    virObjectUnlock(srv);
+    virObjectUnref(srv);
+    return;
 
-    return ret;
+ error:
+    virNetMessageFree(msg);
+    virNetServerClientClose(client);
+    virObjectUnref(srv);
 }
+
 
 /**
  * virNetServerCheckLimits:
@@ -284,11 +289,12 @@ int virNetServerAddClient(virNetServerPtr srv,
 
     if (VIR_EXPAND_N(srv->clients, srv->nclients, 1) < 0)
         goto error;
-    srv->clients[srv->nclients-1] = client;
-    virObjectRef(client);
+    srv->clients[srv->nclients-1] = virObjectRef(client);
 
-    if (virNetServerClientNeedAuth(client))
+    virObjectLock(client);
+    if (virNetServerClientIsAuthPendingLocked(client))
         virNetServerTrackPendingAuthLocked(srv);
+    virObjectUnlock(client);
 
     virNetServerCheckLimits(srv);
 
@@ -319,9 +325,7 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
                                          virNetServerServiceGetAuth(svc),
                                          virNetServerServiceIsReadonly(svc),
                                          virNetServerServiceGetMaxRequests(svc),
-#if WITH_GNUTLS
                                          virNetServerServiceGetTLSContext(svc),
-#endif
                                          srv->clientPrivNew,
                                          srv->clientPrivPreExecRestart,
                                          srv->clientPrivFree,
@@ -361,8 +365,7 @@ virNetServerPtr virNetServerNew(const char *name,
     if (!(srv = virObjectLockableNew(virNetServerClass)))
         return NULL;
 
-    if (max_workers &&
-        !(srv->workers = virThreadPoolNew(min_workers, max_workers,
+    if (!(srv->workers = virThreadPoolNew(min_workers, max_workers,
                                           priority_workers,
                                           virNetServerHandleJob,
                                           srv)))
@@ -410,7 +413,6 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
     virJSONValuePtr clients;
     virJSONValuePtr services;
     size_t i;
-    ssize_t n;
     unsigned int min_workers;
     unsigned int max_workers;
     unsigned int priority_workers;
@@ -491,14 +493,13 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    n =  virJSONValueArraySize(services);
-    if (n < 0) {
+    if (!virJSONValueIsArray(services)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed services data in JSON document"));
+                       _("Malformed services array"));
         goto error;
     }
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(services); i++) {
         virNetServerServicePtr service;
         virJSONValuePtr child = virJSONValueArrayGet(services, i);
         if (!child) {
@@ -524,14 +525,13 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    n =  virJSONValueArraySize(clients);
-    if (n < 0) {
+    if (!virJSONValueIsArray(clients)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed clients data in JSON document"));
+                       _("Malformed clients array"));
         goto error;
     }
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(clients); i++) {
         virNetServerClientPtr client;
         virJSONValuePtr child = virJSONValueArrayGet(clients, i);
         if (!child) {
@@ -540,12 +540,12 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
             goto error;
         }
 
-        if (!(client = virNetServerClientNewPostExecRestart(child,
+        if (!(client = virNetServerClientNewPostExecRestart(srv,
+                                                            child,
                                                             clientPrivNewPostExecRestart,
                                                             clientPrivPreExecRestart,
                                                             clientPrivFree,
-                                                            clientPrivOpaque,
-                                                            srv)))
+                                                            clientPrivOpaque)))
             goto error;
 
         if (virNetServerAddClient(srv, client) < 0) {
@@ -695,8 +695,7 @@ int virNetServerAddService(virNetServerPtr srv,
         }
     }
 
-    srv->services[srv->nservices-1] = svc;
-    virObjectRef(svc);
+    srv->services[srv->nservices-1] = virObjectRef(svc);
 
     virNetServerServiceSetDispatcher(svc,
                                      virNetServerDispatchNewClient,
@@ -728,14 +727,54 @@ int virNetServerAddProgram(virNetServerPtr srv,
     return -1;
 }
 
-#if WITH_GNUTLS
 int virNetServerSetTLSContext(virNetServerPtr srv,
                               virNetTLSContextPtr tls)
 {
     srv->tls = virObjectRef(tls);
     return 0;
 }
-#endif
+
+
+/**
+ * virNetServerSetClientAuthCompletedLocked:
+ * @srv: server must be locked by the caller
+ * @client: client must be locked by the caller
+ *
+ * If the client authentication was pending, clear that pending and
+ * update the server tracking.
+ */
+static void
+virNetServerSetClientAuthCompletedLocked(virNetServerPtr srv,
+                                         virNetServerClientPtr client)
+{
+    if (virNetServerClientIsAuthPendingLocked(client)) {
+        virNetServerClientSetAuthPendingLocked(client, false);
+        virNetServerTrackCompletedAuthLocked(srv);
+    }
+}
+
+
+/**
+ * virNetServerSetClientAuthenticated:
+ * @srv: server must be unlocked
+ * @client: client must be unlocked
+ *
+ * Mark @client as authenticated and tracks on @srv that the
+ * authentication of this @client has been completed. Also it checks
+ * the limits of @srv.
+ */
+void
+virNetServerSetClientAuthenticated(virNetServerPtr srv,
+                                   virNetServerClientPtr client)
+{
+    virObjectLock(srv);
+    virObjectLock(client);
+    virNetServerClientSetAuthLocked(client, VIR_NET_SERVER_SERVICE_AUTH_NONE);
+    virNetServerSetClientAuthCompletedLocked(srv, client);
+    virNetServerCheckLimits(srv);
+    virObjectUnlock(client);
+    virObjectUnlock(srv);
+}
 
 
 static void
@@ -764,9 +803,6 @@ void virNetServerDispose(void *obj)
 
     VIR_FREE(srv->name);
 
-    for (i = 0; i < srv->nservices; i++)
-        virNetServerServiceToggle(srv->services[i], false);
-
     virThreadPoolFree(srv->workers);
 
     for (i = 0; i < srv->nservices; i++)
@@ -777,10 +813,8 @@ void virNetServerDispose(void *obj)
         virObjectUnref(srv->programs[i]);
     VIR_FREE(srv->programs);
 
-    for (i = 0; i < srv->nclients; i++) {
-        virNetServerClientClose(srv->clients[i]);
+    for (i = 0; i < srv->nclients; i++)
         virObjectUnref(srv->clients[i]);
-    }
     VIR_FREE(srv->clients);
 
     VIR_FREE(srv->mdnsGroupName);
@@ -799,6 +833,9 @@ void virNetServerClose(virNetServerPtr srv)
     for (i = 0; i < srv->nservices; i++)
         virNetServerServiceClose(srv->services[i]);
 
+    for (i = 0; i < srv->nclients; i++)
+        virNetServerClientClose(srv->clients[i]);
+
     virObjectUnlock(srv);
 }
 
@@ -814,24 +851,6 @@ virNetServerTrackCompletedAuthLocked(virNetServerPtr srv)
     return --srv->nclients_unauth;
 }
 
-size_t virNetServerTrackPendingAuth(virNetServerPtr srv)
-{
-    size_t ret;
-    virObjectLock(srv);
-    ret = virNetServerTrackPendingAuthLocked(srv);
-    virObjectUnlock(srv);
-    return ret;
-}
-
-size_t virNetServerTrackCompletedAuth(virNetServerPtr srv)
-{
-    size_t ret;
-    virObjectLock(srv);
-    ret = virNetServerTrackCompletedAuthLocked(srv);
-    virNetServerCheckLimits(srv);
-    virObjectUnlock(srv);
-    return ret;
-}
 
 bool
 virNetServerHasClients(virNetServerPtr srv)
@@ -849,6 +868,7 @@ void
 virNetServerProcessClients(virNetServerPtr srv)
 {
     size_t i;
+    virNetServerClientPtr client;
 
     virObjectLock(srv);
 
@@ -857,15 +877,18 @@ virNetServerProcessClients(virNetServerPtr srv)
         /* Coverity 5.3.0 couldn't see that srv->clients is non-NULL
          * if srv->nclients is non-zero.  */
         sa_assert(srv->clients);
-        if (virNetServerClientWantClose(srv->clients[i]))
-            virNetServerClientClose(srv->clients[i]);
-        if (virNetServerClientIsClosed(srv->clients[i])) {
-            virNetServerClientPtr client = srv->clients[i];
 
+        client = srv->clients[i];
+        virObjectLock(client);
+        if (virNetServerClientWantCloseLocked(client))
+            virNetServerClientCloseLocked(client);
+
+        if (virNetServerClientIsClosedLocked(client)) {
             VIR_DELETE_ELEMENT(srv->clients, i, srv->nclients);
 
-            if (virNetServerClientNeedAuth(client))
-                virNetServerTrackCompletedAuthLocked(srv);
+            /* Update server authentication tracking */
+            virNetServerSetClientAuthCompletedLocked(srv, client);
+            virObjectUnlock(client);
 
             virNetServerCheckLimits(srv);
 
@@ -874,6 +897,8 @@ virNetServerProcessClients(virNetServerPtr srv)
             virObjectLock(srv);
 
             goto reprocess;
+        } else {
+            virObjectUnlock(client);
         }
     }
 

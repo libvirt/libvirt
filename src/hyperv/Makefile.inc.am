@@ -1,0 +1,59 @@
+HYPERV_DRIVER_SOURCES = \
+	hyperv/hyperv_private.h \
+	hyperv/hyperv_driver.c \
+	hyperv/hyperv_driver.h \
+	hyperv/hyperv_util.c \
+	hyperv/hyperv_util.h \
+	hyperv/hyperv_wmi.c \
+	hyperv/hyperv_wmi.h \
+	hyperv/hyperv_wmi_classes.c \
+	hyperv/hyperv_wmi_classes.h \
+	hyperv/openwsman.h \
+	$(NULL)
+
+HYPERV_DRIVER_GENERATED = \
+	hyperv/hyperv_wmi_classes.generated.c \
+	hyperv/hyperv_wmi_classes.generated.h \
+	hyperv/hyperv_wmi_classes.generated.typedef \
+	$(NULL)
+
+HYPERV_GENERATED_STAMP = .hyperv_wmi_generator.stamp
+
+HYPERV_DRIVER_EXTRA_DIST = \
+	hyperv/hyperv_wmi_generator.input \
+	hyperv/hyperv_wmi_generator.py \
+	$(HYPERV_DRIVER_GENERATED) \
+	$(HYPERV_GENERATED_STAMP) \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(HYPERV_DRIVER_SOURCES)
+
+EXTRA_DIST += \
+	$(HYPERV_DRIVER_SOURCES) \
+	$(HYPERV_DRIVER_EXTRA_DIST) \
+	$(NULL)
+
+BUILT_SOURCES += $(HYPERV_DRIVER_GENERATED)
+
+$(HYPERV_DRIVER_GENERATED): $(HYPERV_GENERATED_STAMP)
+
+$(HYPERV_GENERATED_STAMP): $(srcdir)/hyperv/hyperv_wmi_generator.input \
+                            $(srcdir)/hyperv/hyperv_wmi_generator.py
+	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) \
+	  $(srcdir)/hyperv/hyperv_wmi_generator.py \
+	  && touch $@
+
+MAINTAINERCLEANFILES += $(HYPERV_DRIVER_GENERATED) $(HYPERV_GENERATED_STAMP)
+
+if WITH_HYPERV
+noinst_LTLIBRARIES += libvirt_driver_hyperv.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_hyperv.la
+libvirt_driver_hyperv_la_CFLAGS = \
+	$(OPENWSMAN_CFLAGS) \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_hyperv_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_hyperv_la_LIBADD = $(OPENWSMAN_LIBS)
+libvirt_driver_hyperv_la_SOURCES = $(HYPERV_DRIVER_SOURCES)
+endif WITH_HYPERV

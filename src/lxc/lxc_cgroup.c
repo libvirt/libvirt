@@ -204,7 +204,7 @@ static int virLXCCgroupGetMemUsage(virCgroupPtr cgroup,
     unsigned long memUsage;
 
     ret = virCgroupGetMemoryUsage(cgroup, &memUsage);
-    meminfo->memusage = (unsigned long long) memUsage;
+    meminfo->memusage = (unsigned long long)memUsage;
 
     return ret;
 }
@@ -220,64 +220,13 @@ static int virLXCCgroupGetMemTotal(virCgroupPtr cgroup,
 static int virLXCCgroupGetMemStat(virCgroupPtr cgroup,
                                   virLXCMeminfoPtr meminfo)
 {
-    int ret = 0;
-    FILE *statfd = NULL;
-    char *statFile = NULL;
-    char *line = NULL;
-    size_t n;
-
-    ret = virCgroupPathOfController(cgroup, VIR_CGROUP_CONTROLLER_MEMORY,
-                                    "memory.stat", &statFile);
-    if (ret != 0) {
-        virReportSystemError(-ret, "%s",
-                             _("cannot get the path of MEMORY cgroup controller"));
-        return ret;
-    }
-
-    statfd = fopen(statFile, "r");
-    if (statfd == NULL) {
-        ret = -errno;
-        goto cleanup;
-    }
-
-    while (getline(&line, &n, statfd) > 0) {
-
-        char *value = strchr(line, ' ');
-        char *nl = value ? strchr(line, '\n') : NULL;
-        unsigned long long stat_value;
-
-        if (!value)
-            continue;
-
-        if (nl)
-            *nl = '\0';
-
-        *value = '\0';
-
-        if (virStrToLong_ull(value + 1, NULL, 10, &stat_value) < 0) {
-            ret = -EINVAL;
-            goto cleanup;
-        }
-        if (STREQ(line, "cache"))
-            meminfo->cached = stat_value >> 10;
-        else if (STREQ(line, "inactive_anon"))
-            meminfo->inactive_anon = stat_value >> 10;
-        else if (STREQ(line, "active_anon"))
-            meminfo->active_anon = stat_value >> 10;
-        else if (STREQ(line, "inactive_file"))
-            meminfo->inactive_file = stat_value >> 10;
-        else if (STREQ(line, "active_file"))
-            meminfo->active_file = stat_value >> 10;
-        else if (STREQ(line, "unevictable"))
-            meminfo->unevictable = stat_value >> 10;
-    }
-    ret = 0;
-
- cleanup:
-    VIR_FREE(line);
-    VIR_FREE(statFile);
-    VIR_FORCE_FCLOSE(statfd);
-    return ret;
+    return virCgroupGetMemoryStat(cgroup,
+                                  &meminfo->cached,
+                                  &meminfo->inactive_anon,
+                                  &meminfo->active_anon,
+                                  &meminfo->inactive_file,
+                                  &meminfo->active_file,
+                                  &meminfo->unevictable);
 }
 
 
@@ -485,10 +434,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                                 int *nicindexes)
 {
     virCgroupPtr cgroup = NULL;
-    char *machineName = virSystemdMakeMachineName("lxc",
-                                                  def->id,
-                                                  def->name,
-                                                  true);
+    char *machineName = virLXCDomainGetMachineName(def, 0);
 
     if (!machineName)
         goto cleanup;

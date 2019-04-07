@@ -48,10 +48,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
     int autoAnswer;
     char *tmp;
 
-    if (!parsedUri || *parsedUri) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(parsedUri);
 
     if (VIR_ALLOC(*parsedUri) < 0)
         return -1;

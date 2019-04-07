@@ -16,15 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *    Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_FIREWALL_H__
-# define __VIR_FIREWALL_H__
+#ifndef LIBVIRT_VIRFIREWALL_H
+# define LIBVIRT_VIRFIREWALL_H
 
 # include "internal.h"
+# include "viralloc.h"
 
 typedef struct _virFirewall virFirewall;
 typedef virFirewall *virFirewallPtr;
@@ -44,12 +42,21 @@ virFirewallPtr virFirewallNew(void);
 
 void virFirewallFree(virFirewallPtr firewall);
 
-virFirewallRulePtr virFirewallAddRule(virFirewallPtr firewall,
-                                      virFirewallLayer layer,
-                                      ...)
-    ATTRIBUTE_SENTINEL;
+/**
+ * virFirewallAddRule:
+ * @firewall: firewall ruleset to add to
+ * @layer: the firewall layer to change
+ * @...: NULL terminated list of strings for the rule
+ *
+ * Add any type of rule to the firewall ruleset.
+ *
+ * Returns the new rule
+ */
+# define virFirewallAddRule(firewall, layer, ...) \
+         virFirewallAddRuleFull(firewall, layer, false, NULL, NULL, __VA_ARGS__)
 
 typedef int (*virFirewallQueryCallback)(virFirewallPtr firewall,
+                                        virFirewallLayer layer,
                                         const char *const *lines,
                                         void *opaque);
 
@@ -108,4 +115,6 @@ int virFirewallApply(virFirewallPtr firewall);
 
 void virFirewallSetLockOverride(bool avoid);
 
-#endif /* __VIR_FIREWALL_H__ */
+VIR_DEFINE_AUTOPTR_FUNC(virFirewall, virFirewallFree);
+
+#endif /* LIBVIRT_VIRFIREWALL_H */

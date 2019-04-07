@@ -1,0 +1,1 @@
+mount localhost:/var/lib/libvirt/images /mnt -o nodev,nosuid,noexec

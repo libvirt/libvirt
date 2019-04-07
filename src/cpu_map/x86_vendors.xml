@@ -1,0 +1,4 @@
+<cpus>
+  <vendor name='Intel' string='GenuineIntel'/>
+  <vendor name='AMD' string='AuthenticAMD'/>
+</cpus>

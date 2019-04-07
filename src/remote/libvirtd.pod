@@ -1,0 +1,204 @@
+=head1 NAME
+
+libvirtd - libvirtd management daemon
+
+=head1 SYNOPSIS
+
+B<libvirtd> [I<OPTION>]...
+
+=head1 DESCRIPTION
+
+The B<libvirtd> program is the server side daemon component of the libvirt
+virtualization management system.
+
+This daemon runs on host servers and performs required management tasks for
+virtualized guests.  This includes activities such as starting, stopping
+and migrating guests between host servers, configuring and manipulating
+networking, and managing storage for use by guests.
+
+The libvirt client libraries and utilities connect to this daemon to issue
+tasks and collect information about the configuration and resources of the host
+system and guests.
+
+By default, the libvirtd daemon listens for requests on a local Unix domain
+socket.  Using the B<-l>|B<--listen> command line option, the libvirtd daemon
+can be instructed to additionally listen on a TCP/IP socket.  The TCP/IP socket
+to use is defined in the libvirtd configuration file.
+
+Restarting libvirtd does not impact running guests.  Guests continue to operate
+and will be picked up automatically if their XML configuration has been
+defined.  Any guests whose XML configuration has not been defined will be lost
+from the configuration.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h, --help>
+
+Display command line help usage then exit.
+
+=item B<-d, --daemon>
+
+Run as a daemon & write PID file.
+
+=item B<-f, --config> I<FILE>
+
+Use this configuration file, overriding the default value.
+
+=item B<-l, --listen>
+
+Listen for TCP/IP connections.
+
+=item B<-p, --pid-file> I<FILE>
+
+Use this name for the PID file, overriding the default value.
+
+=item B<-t, --timeout> I<SECONDS>
+
+Exit after timeout period (in seconds), provided there are neither any client
+connections nor any running domains.
+
+=item B<-v, --verbose>
+
+Enable output of verbose messages.
+
+=item B<    --version>
+
+Display version information then exit.
+
+=back
+
+=head1 SIGNALS
+
+On receipt of B<SIGHUP> libvirtd will reload its configuration.
+
+=head1 FILES
+
+=head2 When run as B<root>.
+
+=over
+
+=item F<SYSCONFDIR/libvirt/libvirtd.conf>
+
+The default configuration file used by libvirtd, unless overridden on the
+command line using the B<-f>|B<--config> option.
+
+=item F<LOCALSTATEDIR/run/libvirt/libvirt-sock>
+
+=item F<LOCALSTATEDIR/run/libvirt/libvirt-sock-ro>
+
+The sockets libvirtd will use.
+
+=item F<SYSCONFDIR/pki/CA/cacert.pem>
+
+The TLS B<Certificate Authority> certificate libvirtd will use.
+
+=item F<SYSCONFDIR/pki/libvirt/servercert.pem>
+
+The TLS B<Server> certificate libvirtd will use.
+
+=item F<SYSCONFDIR/pki/libvirt/private/serverkey.pem>
+
+The TLS B<Server> private key libvirtd will use.
+
+=item F<LOCALSTATEDIR/run/libvirtd.pid>
+
+The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
+
+=back
+
+=head2 When run as B<non-root>.
+
+=over
+
+=item F<$XDG_CONFIG_HOME/libvirt/libvirtd.conf>
+
+The default configuration file used by libvirtd, unless overridden on the
+command line using the B<-f>|B<--config> option.
+
+=item F<$XDG_RUNTIME_DIR/libvirt/libvirt-sock>
+
+The socket libvirtd will use.
+
+=item F<$HOME/.pki/libvirt/cacert.pem>
+
+The TLS B<Certificate Authority> certificate libvirtd will use.
+
+=item F<$HOME/.pki/libvirt/servercert.pem>
+
+The TLS B<Server> certificate libvirtd will use.
+
+=item F<$HOME/.pki/libvirt/serverkey.pem>
+
+The TLS B<Server> private key libvirtd will use.
+
+=item F<$XDG_RUNTIME_DIR/libvirt/libvirtd.pid>
+
+The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
+
+=item If $XDG_CONFIG_HOME is not set in your environment, libvirtd will use F<$HOME/.config>
+
+=item If $XDG_RUNTIME_DIR is not set in your environment, libvirtd will use F<$HOME/.cache>
+
+=back
+
+=head1 EXAMPLES
+
+To retrieve the version of libvirtd:
+
+ # libvirtd --version
+ libvirtd (libvirt) 0.8.2
+ #
+
+To start libvirtd, instructing it to daemonize and create a PID file:
+
+ # libvirtd -d
+ # ls -la LOCALSTATEDIR/run/libvirtd.pid
+ -rw-r--r-- 1 root root 6 Jul  9 02:40 LOCALSTATEDIR/run/libvirtd.pid
+ #
+
+=head1 BUGS
+
+Please report all bugs you discover.  This should be done via either:
+
+=over
+
+=item a) the mailing list
+
+L<https://libvirt.org/contact.html>
+
+=item or,
+
+B<>
+
+=item b) the bug tracker
+
+L<https://libvirt.org/bugs.html>
+
+=item Alternatively, you may report bugs to your software distributor / vendor.
+
+=back
+
+=head1 AUTHORS
+
+Please refer to the AUTHORS file distributed with libvirt.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2006-2012 Red Hat, Inc., and the authors listed in the
+libvirt AUTHORS file.
+
+=head1 LICENSE
+
+libvirtd is distributed under the terms of the GNU LGPL v2.1+.
+This is free software; see the source for copying conditions. There
+is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE
+
+=head1 SEE ALSO
+
+L<virsh(1)>, L<virt-install(1)>, L<virt-xml-validate(1)>, L<virt-top(1)>,
+L<virt-df(1)>, L<https://www.libvirt.org/>
+
+=cut

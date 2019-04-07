@@ -16,34 +16,18 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Daniel Veillard <veillard@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
 #include "c-ctype.h"
 
-#define __VIR_BUFFER_C__
-
 #include "virbuffer.h"
-#include "viralloc.h"
 #include "virerror.h"
+#include "virstring.h"
 
-
-/* If adding more fields, ensure to edit buf.h to match
-   the number of fields */
-struct _virBuffer {
-    unsigned int size;
-    unsigned int use;
-    unsigned int error; /* errno value, or -1 for usage error */
-    int indent;
-    char *content;
-};
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 /**
  * virBufferFail
@@ -86,6 +70,25 @@ virBufferAdjustIndent(virBufferPtr buf, int indent)
     }
     buf->indent += indent;
 }
+
+
+/**
+ * virBufferSetIndent:
+ * @buf: the buffer
+ * @indent: new indentation size.
+ *
+ * Set the auto-indent value to @indent. See virBufferAdjustIndent on how auto
+ * indentation is applied.
+ */
+void
+virBufferSetIndent(virBufferPtr buf, int indent)
+{
+    if (!buf || buf->error)
+        return;
+
+    buf->indent = indent;
+}
+
 
 /**
  * virBufferGetIndent:
@@ -336,7 +339,7 @@ virBufferCheckErrorInternal(const virBuffer *buf,
  *
  * Return the string usage in bytes
  */
-unsigned int
+size_t
 virBufferUse(const virBuffer *buf)
 {
     if (buf == NULL)
@@ -436,7 +439,8 @@ void
 virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
 {
     int len;
-    char *escaped, *out;
+    VIR_AUTOFREE(char *) escaped = NULL;
+    char *out;
     const char *cur;
     const char forbidden_characters[] = {
         0x01,   0x02,   0x03,   0x04,   0x05,   0x06,   0x07,   0x08,
@@ -513,7 +517,6 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
     *out = 0;
 
     virBufferAsprintf(buf, format, escaped);
-    VIR_FREE(escaped);
 }
 
 /**
@@ -536,6 +539,45 @@ virBufferEscapeSexpr(virBufferPtr buf,
 }
 
 /**
+ * virBufferEscapeRegex:
+ * @buf: the buffer to append to
+ * @format: a printf like format string but with only one %s parameter
+ * @str: the string argument which needs to be escaped
+ *
+ * Do a formatted print with a single string to a buffer.  The @str is
+ * escaped to avoid using POSIX extended regular expression meta-characters.
+ * Escaping is not applied to characters specified in @format. Auto
+ * indentation may be applied.
+ */
+void
+virBufferEscapeRegex(virBufferPtr buf,
+                     const char *format,
+                     const char *str)
+{
+    virBufferEscape(buf, '\\', "^$.|?*+()[]{}\\", format, str);
+}
+
+
+/**
+ * virBufferEscapeSQL:
+ * @buf: the buffer to append to
+ * @format: a printf like format string but with only one %s parameter
+ * @str: the string argument which needs to be escaped
+ *
+ * Do a formatted print with a single string to a buffer.  The @str is
+ * escaped to prevent SQL injection (format is expected to contain \"%s\").
+ * Auto indentation may be applied.
+ */
+void
+virBufferEscapeSQL(virBufferPtr buf,
+                   const char *format,
+                   const char *str)
+{
+    virBufferEscape(buf, '\\', "'\"\\", format, str);
+}
+
+
+/**
  * virBufferEscape:
  * @buf: the buffer to append to
  * @escape: the escape character to inject
@@ -553,7 +595,8 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
                 const char *format, const char *str)
 {
     int len;
-    char *escaped, *out;
+    VIR_AUTOFREE(char *) escaped = NULL;
+    char *out;
     const char *cur;
 
     if ((format == NULL) || (buf == NULL) || (str == NULL))
@@ -585,8 +628,8 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
     *out = 0;
 
     virBufferAsprintf(buf, format, escaped);
-    VIR_FREE(escaped);
 }
+
 
 /**
  * virBufferURIEncodeString:
@@ -649,7 +692,8 @@ void
 virBufferEscapeShell(virBufferPtr buf, const char *str)
 {
     int len;
-    char *escaped, *out;
+    VIR_AUTOFREE(char *) escaped = NULL;
+    char *out;
     const char *cur;
 
     if ((buf == NULL) || (str == NULL))
@@ -693,7 +737,26 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
     *out = 0;
 
     virBufferAdd(buf, escaped, -1);
-    VIR_FREE(escaped);
+}
+
+/**
+ * virBufferStrcatVArgs:
+ * @buf: the buffer to append to
+ * @ap: variable argument structure
+ *
+ * See virBufferStrcat.
+ */
+void
+virBufferStrcatVArgs(virBufferPtr buf,
+                     va_list ap)
+{
+    char *str;
+
+    if (buf->error)
+        return;
+
+    while ((str = va_arg(ap, char *)) != NULL)
+        virBufferAdd(buf, str, -1);
 }
 
 /**
@@ -708,14 +771,12 @@ void
 virBufferStrcat(virBufferPtr buf, ...)
 {
     va_list ap;
-    char *str;
 
-    if (buf->error)
+    if (!buf)
         return;
 
     va_start(ap, buf);
-    while ((str = va_arg(ap, char *)) != NULL)
-        virBufferAdd(buf, str, -1);
+    virBufferStrcatVArgs(buf, ap);
     va_end(ap);
 }
 

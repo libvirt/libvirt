@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1 >Windows support</h1>
@@ -12,7 +12,7 @@
       as well but we either haven't tested or received reports for them.
     </p>
 
-    <h2><a name="installer">Installation packages</a></h2>
+    <h2><a id="installer">Installation packages</a></h2>
 
     <p>
       Users who need pre-built Windows DLLs of libvirt are advised
@@ -29,7 +29,7 @@
       against libvirt.
     </p>
 
-    <h2><a name="conntypes">Connection types</a></h2>
+    <h2><a id="conntypes">Connection types</a></h2>
 
     <p>
       These connection types are known to work:
@@ -71,7 +71,7 @@
       be used in security sensitive environments.</b>
     </p>
 
-    <h2><a name="esx">Connecting to VMware ESX/vSphere</a></h2>
+    <h2><a id="esx">Connecting to VMware ESX/vSphere</a></h2>
 
     <p>
       Details on the capabilities, certificates, and connection string
@@ -79,9 +79,9 @@
       online here:<br />
     </p>
 
-    <a href="http://libvirt.org/drvesx.html">http://libvirt.org/drvesx.html</a>
+    <a href="https://libvirt.org/drvesx.html">https://libvirt.org/drvesx.html</a>
 
-    <h2><a name="tlscerts">TLS Certificates</a></h2>
+    <h2><a id="tlscerts">TLS Certificates</a></h2>
 
     <p>
       TLS certificates need to have been created and placed in the correct
@@ -141,21 +141,21 @@
       <li>C:\Users\someuser\AppData\Roaming\libvirt\pki\libvirt\private\clientkey.pem</li>
     </ul>
 
-    <h2><a name="feedback">Feedback</a></h2>
+    <h2><a id="feedback">Feedback</a></h2>
 
     <p>
       Feedback and suggestions on changes to make and what else to include
       <a href="contact.html">are desired</a>.
     </p>
 
-    <h2><a name="compiling">Compiling yourself</a></h2>
+    <h2><a id="compiling">Compiling yourself</a></h2>
 
     <p>
       Libvirt can be compiled on Windows using the free
       <a href="http://www.mingw.org/">MinGW compiler</a>.
     </p>
 
-    <h3><a name="msys_setup">MSYS Build script</a></h3>
+    <h3><a id="msys_setup">MSYS Build script</a></h3>
 
     <p>
       The easiest way is to use the <b>msys_setup</b> script, developed by
@@ -165,16 +165,14 @@
 
     <a href="https://github.com/photron/msys_setup">https://github.com/photron/msys_setup</a>
 
-    <h3><a name="cross-compile">Cross compiling</a></h3>
+    <h3><a id="cross-compile">Cross compiling</a></h3>
 
     <p>
       You can also cross-compile to a Windows target from a Fedora machine
-      using the packages available
-      <a href="http://hg.et.redhat.com/misc/fedora-mingw--devel/">from the Fedora MinGW project</a>
-      (which includes a working libvirt specfile).
+      using the packages available in the Fedora repos.
     </p>
 
-    <h3><a name="configure">By hand</a></h3>
+    <h3><a id="configure">By hand</a></h3>
 
     <p>
       Use these options when following the instructions on the
@@ -187,7 +185,7 @@
   --without-avahi \
   --without-polkit \
   --without-python \
-  --without-xen \
+  --without-libxl \
   --without-qemu \
   --without-lxc \
   --without-openvz \

@@ -1,0 +1,39 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+  </os>
+  <devices>
+    <disk type='block' device='disk' model='virtio-transitional'>
+      <driver name='qemu' type='raw'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <interface type='user'>
+      <mac address='00:11:22:33:44:55'/>
+      <model type='virtio-transitional'/>
+    </interface>
+    <hostdev mode='subsystem' type='scsi_host' managed='no' model='virtio-transitional'>
+      <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
+    </hostdev>
+    <rng model='virtio-transitional'>
+      <backend model='random'>/dev/urandom</backend>
+    </rng>
+    <filesystem type='mount' accessmode='passthrough' model='virtio-transitional'>
+      <source dir='/export/fs1'/>
+      <target dir='fs1'/>
+    </filesystem>
+    <input type='passthrough' bus='virtio' model='virtio-transitional'>
+      <source evdev='/dev/input/event1234'/>
+    </input>
+    <controller type='virtio-serial' model='virtio-transitional'/>
+    <controller type='scsi' model='virtio-transitional'/>
+    <controller type='usb' model='none'/>
+    <memballoon model='virtio-transitional'/>
+    <vsock model='virtio-transitional'>
+      <cid auto='no' address='4'/>
+    </vsock>
+  </devices>
+</domain>

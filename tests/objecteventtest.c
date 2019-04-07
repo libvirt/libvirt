@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library;  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Cedric Bosdonnat <cbosdonnat@suse.com>
  */
 
 #include <config.h>
@@ -63,11 +61,11 @@ static const char storagePoolDef[] =
 
 static const char nodeDeviceDef[] =
 "<device>\n"
-"  <parent>test-scsi-host-vport</parent>\n"
+"  <parent>scsi_host1</parent>\n"
 "  <capability type='scsi_host'>\n"
 "    <capability type='fc_host'>\n"
-"      <wwpn>1111222233334444</wwpn>\n"
-"      <wwnn>5555666677778888</wwnn>\n"
+"      <wwpn>1000000023452345</wwpn>\n"
+"      <wwnn>2000000023452345</wwnn>\n"
 "    </capability>\n"
 "  </capability>\n"
 "</device>\n";
@@ -167,6 +165,10 @@ storagePoolLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
         counter->defineEvents++;
     else if (event == VIR_STORAGE_POOL_EVENT_UNDEFINED)
         counter->undefineEvents++;
+    else if (event == VIR_STORAGE_POOL_EVENT_CREATED)
+        counter->createdEvents++;
+    else if (event == VIR_STORAGE_POOL_EVENT_DELETED)
+        counter->deletedEvents++;
 }
 
 static void
@@ -723,6 +725,69 @@ testStoragePoolStartStopEvent(const void *data)
 }
 
 static int
+testStoragePoolBuild(const void *data)
+{
+    const objecteventTest *test = data;
+    lifecycleEventCounter counter;
+    int id;
+    int ret = 0;
+
+    lifecycleEventCounter_reset(&counter);
+
+    id = virConnectStoragePoolEventRegisterAny(test->conn, NULL,
+                      VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
+                      VIR_STORAGE_POOL_EVENT_CALLBACK(&storagePoolLifecycleCb),
+                      &counter, NULL);
+
+    virStoragePoolBuild(test->pool, 0);
+
+    if (virEventRunDefaultImpl() < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (counter.createdEvents != 1) {
+        ret = -1;
+        goto cleanup;
+    }
+
+ cleanup:
+    virConnectStoragePoolEventDeregisterAny(test->conn, id);
+    return ret;
+}
+
+static int
+testStoragePoolDelete(const void *data)
+{
+    const objecteventTest *test = data;
+    lifecycleEventCounter counter;
+    int id;
+    int ret = 0;
+
+    lifecycleEventCounter_reset(&counter);
+
+    id = virConnectStoragePoolEventRegisterAny(test->conn, NULL,
+                      VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
+                      VIR_STORAGE_POOL_EVENT_CALLBACK(&storagePoolLifecycleCb),
+                      &counter, NULL);
+
+    virStoragePoolDelete(test->pool, 0);
+
+    if (virEventRunDefaultImpl() < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (counter.deletedEvents != 1) {
+        ret = -1;
+        goto cleanup;
+    }
+
+ cleanup:
+    virConnectStoragePoolEventDeregisterAny(test->conn, id);
+    return ret;
+}
+static int
 testNodeDeviceCreateXML(const void *data)
 {
     const objecteventTest *test = data;
@@ -768,7 +833,7 @@ timeout(int id ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
 static int
 mymain(void)
 {
-    objecteventTest test;
+    objecteventTest test = { 0 };
     int ret = EXIT_SUCCESS;
     int timer;
 
@@ -831,6 +896,13 @@ mymain(void)
     if (virTestRun("Storage pool start stop events ",
                    testStoragePoolStartStopEvent, &test) < 0)
         ret = EXIT_FAILURE;
+    /* Storage pool build and delete events */
+    if (virTestRun("Storage pool build event ",
+                   testStoragePoolBuild, &test) < 0)
+        ret = EXIT_FAILURE;
+    if (virTestRun("Storage pool delete event ",
+                   testStoragePoolDelete, &test) < 0)
+        ret = EXIT_FAILURE;
 
     /* Node device event tests */
     if (virTestRun("Node device createXML add event ",
@@ -849,4 +921,4 @@ mymain(void)
     return ret;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

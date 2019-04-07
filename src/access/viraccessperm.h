@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_ACCESS_PERM_H__
-# define __VIR_ACCESS_PERM_H__
+#ifndef LIBVIRT_VIRACCESSPERM_H
+# define LIBVIRT_VIRACCESSPERM_H
 
 # include "internal.h"
 # include "virutil.h"
@@ -94,6 +94,12 @@ typedef enum {
      */
     VIR_ACCESS_PERM_CONNECT_SEARCH_NWFILTERS,
 
+    /**
+     * @desc: List network filter bindings
+     * @message: Listing network filter bindings requires authorization
+     * @anonymous: 1
+     */
+    VIR_ACCESS_PERM_CONNECT_SEARCH_NWFILTER_BINDINGS,
 
     /**
      * @desc: Detect storage pools
@@ -411,7 +417,7 @@ typedef enum {
 
     /**
      * @desc: Access node device
-     * @message: Accesing node device requires authorization
+     * @message: Accessing node device requires authorization
      * @anonymous: 1
      */
     VIR_ACCESS_PERM_NODE_DEVICE_GETATTR,
@@ -485,6 +491,37 @@ typedef enum {
 
     VIR_ACCESS_PERM_NWFILTER_LAST
 } virAccessPermNWFilter;
+
+typedef enum {
+
+    /**
+     * @desc: Access network filter
+     * @message: Accessing network filter requires authorization
+     * @anonymous: 1
+     */
+    VIR_ACCESS_PERM_NWFILTER_BINDING_GETATTR,
+
+    /**
+     * @desc: Read network filter binding
+     * @message: Reading network filter configuration requires authorization
+     * @anonymous: 1
+     */
+    VIR_ACCESS_PERM_NWFILTER_BINDING_READ,
+
+    /**
+     * @desc: Create network filter binding
+     * @message: Creating network filter binding requires authorization
+     */
+    VIR_ACCESS_PERM_NWFILTER_BINDING_CREATE,
+
+    /**
+     * @desc: Delete network filter binding
+     * @message: Deleting network filter binding requires authorization
+     */
+    VIR_ACCESS_PERM_NWFILTER_BINDING_DELETE,
+
+    VIR_ACCESS_PERM_NWFILTER_BINDING_LAST
+} virAccessPermNWFilterBinding;
 
 typedef enum {
 
@@ -600,7 +637,7 @@ typedef enum {
 
     /**
      * @desc: Access storage volume
-     * @message: Acceessing storage volume requires authorization
+     * @message: Accessing storage volume requires authorization
      * @anonymous: 1
      */
     VIR_ACCESS_PERM_STORAGE_VOL_GETATTR,
@@ -657,8 +694,9 @@ VIR_ENUM_DECL(virAccessPermInterface);
 VIR_ENUM_DECL(virAccessPermNetwork);
 VIR_ENUM_DECL(virAccessPermNodeDevice);
 VIR_ENUM_DECL(virAccessPermNWFilter);
+VIR_ENUM_DECL(virAccessPermNWFilterBinding);
 VIR_ENUM_DECL(virAccessPermSecret);
 VIR_ENUM_DECL(virAccessPermStoragePool);
 VIR_ENUM_DECL(virAccessPermStorageVol);
 
-#endif /* __VIR_ACCESS_PERM_H__ */
+#endif /* LIBVIRT_VIRACCESSPERM_H */

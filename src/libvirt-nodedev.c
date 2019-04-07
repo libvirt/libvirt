@@ -44,7 +44,7 @@ VIR_LOG_INIT("libvirt.nodedev");
 int
 virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, cap=%s, flags=%x", conn, NULLSTR(cap), flags);
+    VIR_DEBUG("conn=%p, cap=%s, flags=0x%x", conn, NULLSTR(cap), flags);
 
     virResetLastError();
 
@@ -72,7 +72,7 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
  * @devices: Pointer to a variable to store the array containing the node
  *           device objects or NULL if the list is not required (just returns
  *           number of node devices).
- * @flags: bitwise-OR of virConnectListAllNodeDevices.
+ * @flags: bitwise-OR of virConnectListAllNodeDeviceFlags.
  *
  * Collect the list of node devices, and allocate an array to store those
  * objects.
@@ -97,6 +97,10 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV
  *
  * Returns the number of node devices found or -1 and sets @devices to NULL in
  * case of error.  On success, the array stored into @devices is guaranteed to
@@ -110,7 +114,7 @@ virConnectListAllNodeDevices(virConnectPtr conn,
                              virNodeDevicePtr **devices,
                              unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, devices=%p, flags=%x", conn, devices, flags);
+    VIR_DEBUG("conn=%p, devices=%p, flags=0x%x", conn, devices, flags);
 
     virResetLastError();
 
@@ -159,7 +163,7 @@ virNodeListDevices(virConnectPtr conn,
                    char **const names, int maxnames,
                    unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, cap=%s, names=%p, maxnames=%d, flags=%x",
+    VIR_DEBUG("conn=%p, cap=%s, names=%p, maxnames=%d, flags=0x%x",
               conn, NULLSTR(cap), names, maxnames, flags);
 
     virResetLastError();
@@ -242,7 +246,7 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                                  const char *wwpn,
                                  unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, wwnn=%s, wwpn=%s, flags=%x", conn, NULLSTR(wwnn), NULLSTR(wwpn), flags);
+    VIR_DEBUG("conn=%p, wwnn=%s, wwpn=%s, flags=0x%x", conn, NULLSTR(wwnn), NULLSTR(wwpn), flags);
 
     virResetLastError();
 
@@ -281,7 +285,7 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 char *
 virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
 {
-    VIR_DEBUG("dev=%p, conn=%p, flags=%x", dev, dev ? dev->conn : NULL, flags);
+    VIR_DEBUG("dev=%p, conn=%p, flags=0x%x", dev, dev ? dev->conn : NULL, flags);
 
     virResetLastError();
 
@@ -342,16 +346,16 @@ virNodeDeviceGetParent(virNodeDevicePtr dev)
 
     virCheckNodeDeviceReturn(dev, NULL);
 
-    if (!dev->parent) {
+    if (!dev->parentName) {
         if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceGetParent) {
-            dev->parent = dev->conn->nodeDeviceDriver->nodeDeviceGetParent(dev);
+            dev->parentName = dev->conn->nodeDeviceDriver->nodeDeviceGetParent(dev);
         } else {
             virReportUnsupportedError();
             virDispatchError(dev->conn);
             return NULL;
         }
     }
-    return dev->parent;
+    return dev->parentName;
 }
 
 
@@ -473,7 +477,7 @@ virNodeDeviceFree(virNodeDevicePtr dev)
 int
 virNodeDeviceRef(virNodeDevicePtr dev)
 {
-    VIR_DEBUG("dev=%p refs=%d", dev, dev ? dev->object.u.s.refs : 0);
+    VIR_DEBUG("dev=%p refs=%d", dev, dev ? dev->parent.u.s.refs : 0);
 
     virResetLastError();
 
@@ -566,7 +570,7 @@ virNodeDeviceDetachFlags(virNodeDevicePtr dev,
                          const char *driverName,
                          unsigned int flags)
 {
-    VIR_DEBUG("dev=%p, conn=%p driverName=%s flags=%x",
+    VIR_DEBUG("dev=%p, conn=%p driverName=%s flags=0x%x",
               dev, dev ? dev->conn : NULL,
               driverName ? driverName : "(default)", flags);
 
@@ -694,7 +698,7 @@ virNodeDeviceCreateXML(virConnectPtr conn,
                        const char *xmlDesc,
                        unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, NULLSTR(xmlDesc), flags);
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=0x%x", conn, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 

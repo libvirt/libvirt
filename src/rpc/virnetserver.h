@@ -17,16 +17,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NET_SERVER_H__
-# define __VIR_NET_SERVER_H__
+#ifndef LIBVIRT_VIRNETSERVER_H
+# define LIBVIRT_VIRNETSERVER_H
 
-# ifdef WITH_GNUTLS
-#  include "virnettlscontext.h"
-# endif
+# include "virnettlscontext.h"
 # include "virnetserverprogram.h"
 # include "virnetserverclient.h"
 # include "virnetserverservice.h"
@@ -47,7 +43,8 @@ virNetServerPtr virNetServerNew(const char *name,
                                 virNetServerClientPrivNew clientPrivNew,
                                 virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
                                 virFreeCallback clientPrivFree,
-                                void *clientPrivOpaque);
+                                void *clientPrivOpaque)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11) ATTRIBUTE_NONNULL(13);
 
 virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
                                                const char *name,
@@ -55,7 +52,9 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
                                                virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
                                                virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
                                                virFreeCallback clientPrivFree,
-                                               void *clientPrivOpaque);
+                                               void *clientPrivOpaque)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6);
 
 void virNetServerClose(virNetServerPtr srv);
 
@@ -65,24 +64,18 @@ int virNetServerAddService(virNetServerPtr srv,
                            virNetServerServicePtr svc,
                            const char *mdnsEntryName);
 
-int virNetServerAddClient(virNetServerPtr srv,
-                          virNetServerClientPtr client);
-
 int virNetServerAddProgram(virNetServerPtr srv,
                            virNetServerProgramPtr prog);
 
-# if WITH_GNUTLS
 int virNetServerSetTLSContext(virNetServerPtr srv,
                               virNetTLSContextPtr tls);
-# endif
 
-size_t virNetServerTrackPendingAuth(virNetServerPtr srv);
-size_t virNetServerTrackCompletedAuth(virNetServerPtr srv);
 
 int virNetServerAddClient(virNetServerPtr srv,
                           virNetServerClientPtr client);
 bool virNetServerHasClients(virNetServerPtr srv);
 void virNetServerProcessClients(virNetServerPtr srv);
+void virNetServerSetClientAuthenticated(virNetServerPtr srv, virNetServerClientPtr client);
 
 void virNetServerUpdateServices(virNetServerPtr srv, bool enabled);
 
@@ -120,4 +113,4 @@ int virNetServerSetClientLimits(virNetServerPtr srv,
                                 long long int maxClients,
                                 long long int maxClientsUnauth);
 
-#endif /* __VIR_NET_SERVER_H__ */
+#endif /* LIBVIRT_VIRNETSERVER_H */

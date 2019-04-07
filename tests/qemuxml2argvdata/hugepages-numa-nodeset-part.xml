@@ -1,0 +1,34 @@
+<domain type='qemu'>
+  <name>SomeDummyHugepagesGuest</name>
+  <uuid>ef1bdff4-27f3-4e85-a807-5fb4d58463cc</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <memoryBacking>
+    <hugepages>
+      <page size='1048576' unit='KiB' nodeset='1'/>
+    </hugepages>
+  </memoryBacking>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu>
+    <numa>
+      <cell id='0' cpus='0' memory='262144' unit='KiB'/>
+      <cell id='1' cpus='1' memory='786432' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

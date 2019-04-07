@@ -2,7 +2,6 @@
  * libvirt-domain-snapshot.h
  * Summary: APIs for management of domain snapshots
  * Description: Provides APIs for the management of domain snapshots
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *
@@ -21,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_DOMAIN_SNAPSHOT_H__
-# define __VIR_LIBVIRT_DOMAIN_SNAPSHOT_H__
+#ifndef LIBVIRT_DOMAIN_SNAPSHOT_H
+# define LIBVIRT_DOMAIN_SNAPSHOT_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -31,15 +30,17 @@
 /**
  * virDomainSnapshot:
  *
- * a virDomainSnapshot is a private structure representing a snapshot of
- * a domain.
+ * A virDomainSnapshot is a private structure representing a snapshot of
+ * a domain.  A snapshot captures the state of the domain at a point in
+ * time, with the intent that the guest can be reverted back to that
+ * state at a later time.
  */
 typedef struct _virDomainSnapshot virDomainSnapshot;
 
 /**
  * virDomainSnapshotPtr:
  *
- * a virDomainSnapshotPtr is pointer to a virDomainSnapshot private structure,
+ * A virDomainSnapshotPtr is pointer to a virDomainSnapshot private structure,
  * and is the type used to reference a domain snapshot in the API.
  */
 typedef virDomainSnapshot *virDomainSnapshotPtr;
@@ -58,7 +59,7 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_CREATE_HALT        = (1 << 3), /* Stop running guest
                                                           after snapshot */
     VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY   = (1 << 4), /* disk snapshot, not
-                                                          system checkpoint */
+                                                          full system */
     VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT   = (1 << 5), /* reuse any existing
                                                           external files */
     VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE     = (1 << 6), /* use guest agent to
@@ -76,6 +77,10 @@ typedef enum {
 virDomainSnapshotPtr virDomainSnapshotCreateXML(virDomainPtr domain,
                                                 const char *xmlDesc,
                                                 unsigned int flags);
+
+typedef enum {
+    VIR_DOMAIN_SNAPSHOT_XML_SECURE         = VIR_DOMAIN_XML_SECURE, /* dump security sensitive information too */
+} virDomainSnapshotXMLFlags;
 
 /* Dump the XML of a snapshot */
 char *virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
@@ -130,6 +135,10 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL    = (1 << 9), /* Filter by snapshots
                                                         that use files external
                                                         to disk images */
+
+    VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL = (1 << 10), /* Ensure parents occur
+                                                         before children in
+                                                         the resulting list */
 } virDomainSnapshotListFlags;
 
 /* Return the number of snapshots for this domain */
@@ -209,4 +218,4 @@ int virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 int virDomainSnapshotRef(virDomainSnapshotPtr snapshot);
 int virDomainSnapshotFree(virDomainSnapshotPtr snapshot);
 
-#endif /* __VIR_LIBVIRT_DOMAIN_SNAPSHOT_H__ */
+#endif /* LIBVIRT_DOMAIN_SNAPSHOT_H */

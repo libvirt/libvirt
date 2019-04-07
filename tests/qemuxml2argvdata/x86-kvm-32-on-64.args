@@ -1,0 +1,26 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-kvm \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-kvm/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-kvm/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-kvm/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name kvm \
+-S \
+-machine pc,accel=kvm,usb=off,dump-guest-core=off \
+-cpu qemu32 \
+-m 4096 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-kvm/monitor.sock,server,\
+nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi

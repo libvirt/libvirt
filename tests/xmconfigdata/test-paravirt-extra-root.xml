@@ -1,0 +1,35 @@
+<domain type='xen'>
+  <name>XenGuest1</name>
+  <uuid>c7a5fdb0-cdaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>524288</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <bootloader>/usr/bin/pygrub</bootloader>
+  <os>
+    <type arch='x86_64' machine='xenpv'>linux</type>
+    <cmdline>root=/dev/xvda2 console=hvc0</cmdline>
+  </os>
+  <clock offset='utc' adjustment='reset'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <disk type='block' device='disk'>
+      <driver name='phy' type='raw'/>
+      <source dev='/dev/HostVG/XenGuest1'/>
+      <target dev='xvda' bus='xen'/>
+    </disk>
+    <controller type='xenbus' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:16:3e:66:94:9c'/>
+      <source bridge='br0'/>
+      <script path='vif-bridge'/>
+    </interface>
+    <console type='pty'>
+      <target type='xen' port='0'/>
+    </console>
+    <input type='mouse' bus='xen'/>
+    <input type='keyboard' bus='xen'/>
+    <memballoon model='xen'/>
+  </devices>
+</domain>

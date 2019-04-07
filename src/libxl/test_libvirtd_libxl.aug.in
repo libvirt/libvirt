@@ -6,3 +6,4 @@ module Test_libvirtd_libxl =
 { "lock_manager" = "lockd" }
 { "keepalive_interval" = "5" }
 { "keepalive_count" = "5" }
+{ "nested_hvm" = "0" }

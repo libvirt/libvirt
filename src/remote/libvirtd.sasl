@@ -1,0 +1,45 @@
+# If you want to use the non-TLS socket, then you *must* pick a
+# mechanism which provides session encryption as well as
+# authentication.
+#
+# If you are only using TLS, then you can turn on any mechanisms
+# you like for authentication, because TLS provides the encryption
+#
+# If you are only using UNIX, sockets then encryption is not
+# required at all.
+#
+# Since SASL is the default for the libvirtd non-TLS socket, we
+# pick a strong mechanism by default.
+#
+# NB, previously DIGEST-MD5 was set as the default mechanism for
+# libvirt. Per RFC 6331 this is vulnerable to many serious security
+# flaws and should no longer be used. Thus GSSAPI is now the default.
+#
+# To use GSSAPI requires that a libvirtd service principal is
+# added to the Kerberos server for each host running libvirtd.
+# This principal needs to be exported to the keytab file listed below
+mech_list: gssapi
+
+# If using a TLS socket or UNIX socket only, it is possible to
+# enable plugins which don't provide session encryption. The
+# 'scram-sha-1' plugin allows plain username/password authentication
+# to be performed
+#
+#mech_list: scram-sha-1
+
+#
+# You can also list many mechanisms at once, then the user can choose
+# by adding  '?auth=sasl.gssapi' to their libvirt URI, eg
+#   qemu+tcp://hostname/system?auth=sasl.gssapi
+#mech_list: scram-sha-1 gssapi
+
+# Some older builds of MIT kerberos on Linux ignore this option &
+# instead need KRB5_KTNAME env var.
+# For modern Linux, and other OS, this should be sufficient
+#
+keytab: /etc/libvirt/krb5.tab
+
+# If using scram-sha-1 for username/passwds, then this is the file
+# containing the passwds. Use 'saslpasswd2 -a libvirt [username]'
+# to add entries, and 'sasldblistusers2 -f [sasldb_path]' to browse it
+#sasldb_path: /etc/libvirt/passwd.db

@@ -1,0 +1,23 @@
+<domain type='kvm'>
+  <name>cpu-empty</name>
+  <uuid>1aed4c39-ad6e-4a78-9264-4ce996290d17</uuid>
+  <memory unit='KiB'>4000768</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Out of memory testing</h1>
@@ -26,7 +26,7 @@ $ ./configure --enable-test-oom
 </pre>
 
 
-    <h2><a name="basicoom">Basic OOM testing support</a></h2>
+    <h2><a id="basicoom">Basic OOM testing support</a></h2>
 
     <p>
       The first step in validating OOM usage is to run a test suite
@@ -64,7 +64,7 @@ $ VIR_TEST_OOM=1 ./qemuxml2argvtest
       of memory allocations from that test case.
     </p>
 
-    <h3><a name="valgrind">Tracking failures with valgrind</a></h3>
+    <h3><a id="valgrind">Tracking failures with valgrind</a></h3>
 
     <p>
       The test suite should obviously *not* crash during OOM testing.
@@ -88,7 +88,7 @@ $ VIR_TEST_OOM=1 VIR_TEST_RANGE=5 ../run valgrind ./qemuxml2argvtest
       access.
     </p>
 
-    <h3><a name="stacktraces">Tracking failures with stack traces</a></h3>
+    <h3><a id="stacktraces">Tracking failures with stack traces</a></h3>
 
     <p>
       With some really difficult bugs valgrind is not sufficient to
@@ -191,7 +191,7 @@ _start
 ??:?
     </pre>
 
-    <h3><a name="noncrash">Non-crash related problems</a></h3>
+    <h3><a id="noncrash">Non-crash related problems</a></h3>
 
     <p>
       Not all memory allocation bugs result in code crashing. Sometimes

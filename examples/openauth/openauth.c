@@ -1,8 +1,6 @@
 /* This is a copy of the hellolibvirt example demonstaring how to use
  * virConnectOpenAuth with a custom auth callback */
 
-#include <config.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -216,7 +214,7 @@ static virConnectAuth auth = {
     credTypes,
     sizeof(credTypes) / sizeof(int),
     authCallback,
-    NULL, // cbdata will be initialized in main
+    NULL, /* cbdata will be initialized in main */
 };
 
 

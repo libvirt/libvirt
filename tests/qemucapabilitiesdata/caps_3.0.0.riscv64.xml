@@ -1,0 +1,106 @@
+<qemuCaps>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='dump-guest-memory'/>
+  <flag name='virtio-scsi-pci'/>
+  <flag name='scsi-disk.wwn'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='reboot-timeout'/>
+  <flag name='vnc'/>
+  <flag name='device-video-primary'/>
+  <flag name='nbd-server'/>
+  <flag name='virtio-rng'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='tpm-passthrough'/>
+  <flag name='mem-merge'/>
+  <flag name='drive-discard'/>
+  <flag name='mlock'/>
+  <flag name='virtio-mmio'/>
+  <flag name='boot-strict'/>
+  <flag name='msg-timestamp'/>
+  <flag name='active-commit'/>
+  <flag name='change-backing-file'/>
+  <flag name='memory-backend-ram'/>
+  <flag name='numa'/>
+  <flag name='memory-backend-file'/>
+  <flag name='splash-timeout'/>
+  <flag name='iothread'/>
+  <flag name='migrate-rdma'/>
+  <flag name='drive-iotune-max'/>
+  <flag name='machine-vmport-opt'/>
+  <flag name='aes-key-wrap'/>
+  <flag name='dea-key-wrap'/>
+  <flag name='vhost-user-multiqueue'/>
+  <flag name='migration-event'/>
+  <flag name='virtio-net'/>
+  <flag name='gic-version'/>
+  <flag name='incoming-defer'/>
+  <flag name='virtio-gpu'/>
+  <flag name='virtio-keyboard'/>
+  <flag name='virtio-mouse'/>
+  <flag name='virtio-tablet'/>
+  <flag name='virtio-input-host'/>
+  <flag name='chardev-file-append'/>
+  <flag name='vserport-change-event'/>
+  <flag name='virtio-balloon-pci.deflate-on-oom'/>
+  <flag name='chardev-logfile'/>
+  <flag name='debug-threads'/>
+  <flag name='secret'/>
+  <flag name='name-guest'/>
+  <flag name='drive-detect-zeroes'/>
+  <flag name='tls-creds-x509'/>
+  <flag name='smm'/>
+  <flag name='query-hotpluggable-cpus'/>
+  <flag name='drive-iotune-max-length'/>
+  <flag name='query-qmp-schema'/>
+  <flag name='gluster.debug_level'/>
+  <flag name='vhost-scsi'/>
+  <flag name='drive-iotune-group'/>
+  <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
+  <flag name='kernel-irqchip'/>
+  <flag name='kernel-irqchip.split'/>
+  <flag name='virtio.iommu_platform'/>
+  <flag name='loadparm'/>
+  <flag name='vnc-multi-servers'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='virtio-gpu.max_outputs'/>
+  <flag name='vxhs'/>
+  <flag name='numa.dist'/>
+  <flag name='disk-share-rw'/>
+  <flag name='iscsi.password-secret'/>
+  <flag name='dump-completed'/>
+  <flag name='qcow2-luks'/>
+  <flag name='seccomp-blacklist'/>
+  <flag name='query-cpus-fast'/>
+  <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
+  <flag name='pr-manager-helper'/>
+  <flag name='qom-list-properties'/>
+  <flag name='memory-backend-file.discard-data'/>
+  <flag name='sdl-gl'/>
+  <flag name='screendump_device'/>
+  <flag name='blockdev-del'/>
+  <flag name='vhost-vsock'/>
+  <flag name='chardev-fd-pass'/>
+  <flag name='tpm-emulator'/>
+  <flag name='egl-headless'/>
+  <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='iothread.poll-max-ns'/>
+  <flag name='memory-backend-file.align'/>
+  <version>3000000</version>
+  <kvmVersion>0</kvmVersion>
+  <microcodeVersion>0</microcodeVersion>
+  <package></package>
+  <arch>riscv64</arch>
+  <machine name='spike_v1.10' maxCpus='1' default='yes'/>
+  <machine name='spike_v1.9.1' maxCpus='1'/>
+  <machine name='sifive_e' maxCpus='1'/>
+  <machine name='virt' maxCpus='8'/>
+  <machine name='sifive_u' maxCpus='1'/>
+</qemuCaps>

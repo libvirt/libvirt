@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1 >Connection URIs</h1>
@@ -16,7 +16,7 @@ machine over the network.
 To this end, libvirt uses URIs as used on the Web and as defined in <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>. This page
 documents libvirt URIs.
 </p>
-    <h2><a name="URI_libvirt">Specifying URIs to libvirt</a></h2>
+    <h2><a id="URI_libvirt">Specifying URIs to libvirt</a></h2>
 
     <p>
       The URI is passed as the <code>name</code> parameter to
@@ -33,7 +33,7 @@ documents libvirt URIs.
 virConnectPtr conn = virConnectOpenReadOnly (<b>"test:///default"</b>);
 </pre>
     <h2>
-      <a name="URI_config">Configuring URI aliases</a>
+      <a id="URI_config">Configuring URI aliases</a>
     </h2>
 
     <p>
@@ -61,7 +61,7 @@ uri_aliases = [
   set, no alias lookup will be attempted.
 </p>
 
-    <h2><a name="URI_default">Default URI choice</a></h2>
+    <h2><a id="URI_default">Default URI choice</a></h2>
 
     <p>
 If the URI passed to <code>virConnectOpen*</code> is NULL, then libvirt will use the following
@@ -75,7 +75,7 @@ logic to determine what URI to use.
     </ol>
 
     <h2>
-      <a name="URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
+      <a id="URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
     </h2>
     <p>
 In virsh use the <code>-c</code> or <code>--connect</code> option:
@@ -107,7 +107,7 @@ In virt-install use the <code>--connect=</code><i>URI</i> option:
 virt-install <b>--connect=test:///default</b> <i>[other options]</i>
 </pre>
     <h2>
-      <a name="URI_xen">xen:/// URI</a>
+      <a id="URI_xen">xen:///system URI</a>
     </h2>
     <p>
       <i>This section describes a feature which is new in libvirt &gt;
@@ -115,10 +115,10 @@ virt-install <b>--connect=test:///default</b> <i>[other options]</i>
     </p>
     <p>
 To access a Xen hypervisor running on the local machine
-use the URI <code>xen:///</code>.
+use the URI <code>xen:///system</code>.
 </p>
     <h2>
-      <a name="URI_qemu">qemu:///... QEMU and KVM URIs</a>
+      <a id="URI_qemu">qemu:///... QEMU and KVM URIs</a>
     </h2>
     <p>
 To use QEMU support in libvirt you must be running the
@@ -150,7 +150,7 @@ KVM guests in the <a href="format.html#KVM1">guest XML as described
 here</a>.
 </p>
     <h2>
-      <a name="URI_remote">Remote URIs</a>
+      <a id="URI_remote">Remote URIs</a>
     </h2>
     <p>
 Remote URIs are formed by taking ordinary local URIs and adding a
@@ -167,10 +167,10 @@ a NULL URI for a local connection. For example:
       </tr>
       <tr>
         <td>
-          <code>xen:///</code>
+          <code>xen:///system</code>
         </td>
         <td>
-          <code>xen://oirase/</code>
+          <code>xen://oirase/system</code>
         </td>
         <td> Connect to the Xen hypervisor running on host <code>oirase</code>
   using TLS. </td>
@@ -187,10 +187,10 @@ a NULL URI for a local connection. For example:
       </tr>
       <tr>
         <td>
-          <code>xen:///</code>
+          <code>xen:///system</code>
         </td>
         <td>
-          <code>xen+ssh://oirase/</code>
+          <code>xen+ssh://oirase/system</code>
         </td>
         <td> Connect to the Xen hypervisor running on host <code>oirase</code>
   by going over an <code>ssh</code> connection. </td>
@@ -213,7 +213,7 @@ remote URI reference</a> and <a href="remote.html">full documentation
 for libvirt remote support</a>.
 </p>
     <h2>
-      <a name="URI_test">test:///... Test URIs</a>
+      <a id="URI_test">test:///... Test URIs</a>
     </h2>
     <p>
 The test driver is a dummy hypervisor for test purposes.
@@ -227,10 +227,10 @@ a set of host definitions held in the named file.
 </li>
     </ul>
     <h2>
-      <a name="URI_legacy">Other &amp; legacy URI formats</a>
+      <a id="URI_legacy">Other &amp; legacy URI formats</a>
     </h2>
     <h3>
-      <a name="URI_NULL">NULL and empty string URIs</a>
+      <a id="URI_NULL">NULL and empty string URIs</a>
     </h3>
     <p>
 Libvirt allows you to pass a <code>NULL</code> pointer to
@@ -251,89 +251,15 @@ In any case applications linked to libvirt can continue to pass
 user to override the URI, either by constructing one or by allowing
 the user to type a URI in directly (if that is appropriate).  If your
 application wishes to connect specifically to a Xen hypervisor, then
-for future proofing it should choose a full <a href="#URI_xen"><code>xen:///</code> URI</a>.
+for future proofing it should choose a full <a href="#URI_xen"><code>xen:///system</code> URI</a>.
 </p>
     <h3>
-      <a name="URI_file">File paths (xend-unix-server)</a>
-    </h3>
-    <p>
-If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
-</p>
-    <pre>
-(xend-unix-server yes)
-</pre>
-    <p>
-then it listens on a Unix domain socket, usually at
-<code>/var/lib/xend/xend-socket</code>.  You may pass a different path
-using a file URI such as:
-</p>
-    <pre>
-virsh -c ///var/run/xend/xend-socket
-</pre>
-    <h3>
-      <a name="URI_http">Legacy: <code>http://...</code> (xend-http-server)</a>
-    </h3>
-    <p>
-If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
-
-</p>
-    <pre>
-(xend-http-server yes)
-</pre>
-    <p>
-then it listens on TCP port 8000.  libvirt allows you to
-try to connect to xend running on remote machines by passing
-<code>http://<i>hostname</i>[:<i>port</i>]/</code>, for example:
-
-</p>
-    <pre>
-virsh -c http://oirase/ list
-</pre>
-    <p>
-This method is unencrypted and insecure and is definitely not
-recommended for production use.  Instead use <a href="remote.html">libvirt's remote support</a>.
-</p>
-    <p>
-Notes:
-</p>
-    <ol>
-      <li> The HTTP client does not fully support IPv6. </li>
-      <li> Many features do not work as expected across HTTP connections, in
- particular, <a href="html/libvirt-libvirt-host.html#virConnectGetCapabilities">virConnectGetCapabilities</a>.
- The <a href="remote.html">remote support</a> however does work
- correctly. </li>
-      <li> XenD's new-style XMLRPC interface is not supported by
- libvirt, only the old-style sexpr interface known in the Xen
- documentation as "unix server" or "http server".</li>
-    </ol>
-    <h3>
-      <a name="URI_legacy_xen">Legacy: <code>"xen"</code></a>
+      <a id="URI_legacy_xen">Legacy: <code>"xen"</code></a>
     </h3>
     <p>
 Another legacy URI is to specify name as the string
 <code>"xen"</code>.  This will continue to refer to the Xen
-hypervisor.  However you should prefer a full <a href="#URI_xen"><code>xen:///</code> URI</a> in all future code.
-</p>
-    <h3>
-      <a name="URI_legacy_proxy">Legacy: Xen proxy</a>
-    </h3>
-    <p>
-Libvirt continues to support connections to a separately running Xen
-proxy daemon.  This provides a way to allow non-root users to make a
-safe (read-only) subset of queries to the hypervisor.
-</p>
-    <p>
-There is no specific "Xen proxy" URI.  However if a Xen URI of any of
-the ordinary or legacy forms is used (eg. <code>NULL</code>,
-<code>""</code>, <code>"xen"</code>, ...) which fails, <i>and</i> the
-user is not root, <i>and</i> the Xen proxy socket can be connected to
-(<code>/tmp/libvirt_proxy_conn</code>), then libvirt will use a proxy
-connection.
-</p>
-    <p>
-You should consider using <a href="remote.html">libvirt remote support</a>
-in future. <span class="since">Since 0.8.6</span> libvirt doesn't contain
-the Xen proxy anymore and you should use libvirtd instead.
+hypervisor.  However you should prefer a full <a href="#URI_xen"><code>xen:///system</code> URI</a> in all future code.
 </p>
   </body>
 </html>

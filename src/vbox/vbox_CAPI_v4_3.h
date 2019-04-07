@@ -493,7 +493,7 @@ PL_GetEventQueueMonitor(PLEventQueue* self);
 #  define PL_ENTER_EVENT_QUEUE_MONITOR(queue) \
     PR_EnterMonitor(PL_GetEventQueueMonitor(queue))
 
-#  define PL_EXIT_EVENT_QUEUE_MONITOR(queue)  \
+#  define PL_EXIT_EVENT_QUEUE_MONITOR(queue) \
     PR_ExitMonitor(PL_GetEventQueueMonitor(queue))
 
 PR_EXTERN(PRStatus) PL_PostEvent(PLEventQueue* self, PLEvent* event);
@@ -654,8 +654,8 @@ typedef struct nsIException nsIException;   /* forward declaration */
  * To maintain binary compatibility with COM's IUnknown, we define the IID
  * of nsISupports to be the same as that of COM's IUnknown.
  */
-#  define NS_ISUPPORTS_IID                                                      \
-  { 0x00000000, 0x0000, 0x0000,                                               \
+#  define NS_ISUPPORTS_IID \
+  { 0x00000000, 0x0000, 0x0000, \
     {0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46} }
 
 /**

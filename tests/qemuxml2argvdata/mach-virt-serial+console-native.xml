@@ -1,0 +1,18 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='usb' model='none'/>
+    <!-- When both the <serial> and <console> elements are present, they will
+         be matched and end up representing the same native serial console -->
+    <serial type='pty'/>
+    <console type='pty'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

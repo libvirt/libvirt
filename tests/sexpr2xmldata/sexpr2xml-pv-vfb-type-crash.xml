@@ -13,13 +13,13 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
+    <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
     <disk type='block' device='disk'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <source dev='/dev/vg_dom0test/test2vm'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
+    <controller type='xenbus' index='0'/>
     <interface type='bridge'>
       <mac address='00:16:36:68:9f:5d'/>
       <source bridge='virbr0'/>

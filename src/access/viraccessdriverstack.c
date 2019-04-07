@@ -198,6 +198,29 @@ virAccessDriverStackCheckNWFilter(virAccessManagerPtr manager,
 }
 
 static int
+virAccessDriverStackCheckNWFilterBinding(virAccessManagerPtr manager,
+                                         const char *driverName,
+                                         virNWFilterBindingDefPtr binding,
+                                         virAccessPermNWFilterBinding perm)
+{
+    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    int ret = 1;
+    size_t i;
+
+    for (i = 0; i < priv->managersLen; i++) {
+        int rv;
+        /* We do not short-circuit on first denial - always check all drivers */
+        rv = virAccessManagerCheckNWFilterBinding(priv->managers[i], driverName, binding, perm);
+        if (rv == 0 && ret != -1)
+            ret = 0;
+        else if (rv < 0)
+            ret = -1;
+    }
+
+    return ret;
+}
+
+static int
 virAccessDriverStackCheckSecret(virAccessManagerPtr manager,
                                 const char *driverName,
                                 virSecretDefPtr secret,
@@ -277,6 +300,7 @@ virAccessDriver accessDriverStack = {
     .checkNetwork = virAccessDriverStackCheckNetwork,
     .checkNodeDevice = virAccessDriverStackCheckNodeDevice,
     .checkNWFilter = virAccessDriverStackCheckNWFilter,
+    .checkNWFilterBinding = virAccessDriverStackCheckNWFilterBinding,
     .checkSecret = virAccessDriverStackCheckSecret,
     .checkStoragePool = virAccessDriverStackCheckStoragePool,
     .checkStorageVol = virAccessDriverStackCheckStorageVol,

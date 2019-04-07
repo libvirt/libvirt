@@ -16,23 +16,17 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Daniel Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
 #ifndef WIN32
 
-# include <stdio.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
 # include <termios.h>
 # include <poll.h>
-# include <string.h>
-# include <errno.h>
 # include <unistd.h>
 # include <signal.h>
 # include <c-ctype.h>
@@ -66,9 +60,10 @@ struct virConsoleBuffer {
 typedef struct virConsole virConsole;
 typedef virConsole *virConsolePtr;
 struct virConsole {
+    virObjectLockable parent;
+
     virStreamPtr st;
     bool quit;
-    virMutex lock;
     virCond cond;
 
     int stdinWatch;
@@ -78,8 +73,22 @@ struct virConsole {
     struct virConsoleBuffer terminalToStream;
 
     char escapeChar;
+    virError error;
 };
 
+static virClassPtr virConsoleClass;
+static void virConsoleDispose(void *obj);
+
+static int
+virConsoleOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(virConsole, virClassForObjectLockable()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virConsole);
 
 static void
 virConsoleHandleSignal(int sig ATTRIBUTE_UNUSED)
@@ -90,6 +99,11 @@ virConsoleHandleSignal(int sig ATTRIBUTE_UNUSED)
 static void
 virConsoleShutdown(virConsolePtr con)
 {
+    virErrorPtr err = virGetLastError();
+
+    if (con->error.code == VIR_ERR_OK && err)
+        virCopyLastError(&con->error);
+
     if (con->st) {
         virStreamEventRemoveCallback(con->st);
         virStreamAbort(con->st);
@@ -104,22 +118,23 @@ virConsoleShutdown(virConsolePtr con)
         virEventRemoveHandle(con->stdoutWatch);
     con->stdinWatch = -1;
     con->stdoutWatch = -1;
-    con->quit = true;
-    virCondSignal(&con->cond);
+    if (!con->quit) {
+        con->quit = true;
+        virCondSignal(&con->cond);
+    }
 }
 
 
 static void
-virConsoleFree(virConsolePtr con)
+virConsoleDispose(void *obj)
 {
-    if (!con)
-        return;
+    virConsolePtr con = obj;
 
     if (con->st)
         virStreamFree(con->st);
-    virMutexDestroy(&con->lock);
+
     virCondDestroy(&con->cond);
-    VIR_FREE(con);
+    virResetError(&con->error);
 }
 
 
@@ -128,6 +143,12 @@ virConsoleEventOnStream(virStreamPtr st,
                         int events, void *opaque)
 {
     virConsolePtr con = opaque;
+
+    virObjectLock(con);
+
+    /* we got late event after console was shutdown */
+    if (!con->st)
+        goto cleanup;
 
     if (events & VIR_STREAM_EVENT_READABLE) {
         size_t avail = con->streamToTerminal.length -
@@ -138,7 +159,7 @@ virConsoleEventOnStream(virStreamPtr st,
             if (VIR_REALLOC_N(con->streamToTerminal.data,
                               con->streamToTerminal.length + 1024) < 0) {
                 virConsoleShutdown(con);
-                return;
+                goto cleanup;
             }
             con->streamToTerminal.length += 1024;
             avail += 1024;
@@ -149,10 +170,14 @@ virConsoleEventOnStream(virStreamPtr st,
                             con->streamToTerminal.offset,
                             avail);
         if (got == -2)
-            return; /* blocking */
+            goto cleanup; /* blocking */
         if (got <= 0) {
+            if (got == 0)
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("console stream EOF"));
+
             virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
         con->streamToTerminal.offset += got;
         if (con->streamToTerminal.offset)
@@ -168,10 +193,10 @@ virConsoleEventOnStream(virStreamPtr st,
                              con->terminalToStream.data,
                              con->terminalToStream.offset);
         if (done == -2)
-            return; /* blocking */
+            goto cleanup; /* blocking */
         if (done < 0) {
             virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
         memmove(con->terminalToStream.data,
                 con->terminalToStream.data + done,
@@ -193,6 +218,9 @@ virConsoleEventOnStream(virStreamPtr st,
         events & VIR_STREAM_EVENT_HANGUP) {
         virConsoleShutdown(con);
     }
+
+ cleanup:
+    virObjectUnlock(con);
 }
 
 
@@ -204,6 +232,12 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
 {
     virConsolePtr con = opaque;
 
+    virObjectLock(con);
+
+    /* we got late event after console was shutdown */
+    if (!con->st)
+        goto cleanup;
+
     if (events & VIR_EVENT_HANDLE_READABLE) {
         size_t avail = con->terminalToStream.length -
             con->terminalToStream.offset;
@@ -213,7 +247,7 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
             if (VIR_REALLOC_N(con->terminalToStream.data,
                               con->terminalToStream.length + 1024) < 0) {
                 virConsoleShutdown(con);
-                return;
+                goto cleanup;
             }
             con->terminalToStream.length += 1024;
             avail += 1024;
@@ -224,17 +258,20 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
                    con->terminalToStream.offset,
                    avail);
         if (got < 0) {
-            if (errno != EAGAIN)
+            if (errno != EAGAIN) {
+                virReportSystemError(errno, "%s", _("cannot read from stdin"));
                 virConsoleShutdown(con);
-            return;
+            }
+            goto cleanup;
         }
         if (got == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("EOF on stdin"));
             virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
         if (con->terminalToStream.data[con->terminalToStream.offset] == con->escapeChar) {
             virConsoleShutdown(con);
-            return;
+            goto cleanup;
         }
 
         con->terminalToStream.offset += got;
@@ -244,10 +281,20 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
                                          VIR_STREAM_EVENT_WRITABLE);
     }
 
-    if (events & VIR_EVENT_HANDLE_ERROR ||
-        events & VIR_EVENT_HANDLE_HANGUP) {
+    if (events & VIR_EVENT_HANDLE_ERROR) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("IO error on stdin"));
         virConsoleShutdown(con);
+        goto cleanup;
     }
+
+    if (events & VIR_EVENT_HANDLE_HANGUP) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("EOF on stdin"));
+        virConsoleShutdown(con);
+        goto cleanup;
+    }
+
+ cleanup:
+    virObjectUnlock(con);
 }
 
 
@@ -259,6 +306,12 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
 {
     virConsolePtr con = opaque;
 
+    virObjectLock(con);
+
+    /* we got late event after console was shutdown */
+    if (!con->st)
+        goto cleanup;
+
     if (events & VIR_EVENT_HANDLE_WRITABLE &&
         con->streamToTerminal.offset) {
         ssize_t done;
@@ -267,9 +320,11 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
                      con->streamToTerminal.data,
                      con->streamToTerminal.offset);
         if (done < 0) {
-            if (errno != EAGAIN)
+            if (errno != EAGAIN) {
+                virReportSystemError(errno, "%s", _("cannot write to stdout"));
                 virConsoleShutdown(con);
-            return;
+            }
+            goto cleanup;
         }
         memmove(con->streamToTerminal.data,
                 con->streamToTerminal.data + done,
@@ -287,10 +342,49 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
     if (!con->streamToTerminal.offset)
         virEventUpdateHandle(con->stdoutWatch, 0);
 
-    if (events & VIR_EVENT_HANDLE_ERROR ||
-        events & VIR_EVENT_HANDLE_HANGUP) {
+    if (events & VIR_EVENT_HANDLE_ERROR) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("IO error stdout"));
         virConsoleShutdown(con);
+        goto cleanup;
     }
+
+    if (events & VIR_EVENT_HANDLE_HANGUP) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("EOF on stdout"));
+        virConsoleShutdown(con);
+        goto cleanup;
+    }
+
+ cleanup:
+    virObjectUnlock(con);
+}
+
+
+static virConsolePtr
+virConsoleNew(void)
+{
+    virConsolePtr con;
+
+    if (virConsoleInitialize() < 0)
+        return NULL;
+
+    if (!(con = virObjectNew(virConsoleClass)))
+        return NULL;
+
+    if (virCondInit(&con->cond) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot initialize console condition"));
+
+        goto error;
+    }
+
+    con->stdinWatch = -1;
+    con->stdoutWatch = -1;
+
+    return con;
+
+ error:
+    virObjectUnref(con);
+    return NULL;
 }
 
 
@@ -330,6 +424,11 @@ virshRunConsole(vshControl *ctl,
     if (vshTTYMakeRaw(ctl, true) < 0)
         goto resettty;
 
+    if (!(con = virConsoleNew()))
+        goto resettty;
+
+    virObjectLock(con);
+
     /* Trap all common signals so that we can safely restore the original
      * terminal settings on STDIN before the process exits - people don't like
      * being left with a messed up terminal ! */
@@ -338,9 +437,6 @@ virshRunConsole(vshControl *ctl,
     sigaction(SIGINT,  &sighandler, &old_sigint);
     sigaction(SIGHUP,  &sighandler, &old_sighup);
     sigaction(SIGPIPE, &sighandler, &old_sigpipe);
-
-    if (VIR_ALLOC(con) < 0)
-        goto cleanup;
 
     con->escapeChar = virshGetEscapeChar(priv->escapeChar);
     con->st = virStreamNew(virDomainGetConnect(dom),
@@ -351,42 +447,58 @@ virshRunConsole(vshControl *ctl,
     if (virDomainOpenConsole(dom, dev_name, con->st, flags) < 0)
         goto cleanup;
 
-    if (virCondInit(&con->cond) < 0 || virMutexInit(&con->lock) < 0)
+    virObjectRef(con);
+    if ((con->stdinWatch = virEventAddHandle(STDIN_FILENO,
+                                             VIR_EVENT_HANDLE_READABLE,
+                                             virConsoleEventOnStdin,
+                                             con,
+                                             virObjectFreeCallback)) < 0) {
+        virObjectUnref(con);
         goto cleanup;
+    }
 
-    virMutexLock(&con->lock);
+    virObjectRef(con);
+    if ((con->stdoutWatch = virEventAddHandle(STDOUT_FILENO,
+                                              0,
+                                              virConsoleEventOnStdout,
+                                              con,
+                                              virObjectFreeCallback)) < 0) {
+        virObjectUnref(con);
+        goto cleanup;
+    }
 
-    con->stdinWatch = virEventAddHandle(STDIN_FILENO,
-                                        VIR_EVENT_HANDLE_READABLE,
-                                        virConsoleEventOnStdin,
-                                        con,
-                                        NULL);
-    con->stdoutWatch = virEventAddHandle(STDOUT_FILENO,
-                                         0,
-                                         virConsoleEventOnStdout,
-                                         con,
-                                         NULL);
-
-    virStreamEventAddCallback(con->st,
-                              VIR_STREAM_EVENT_READABLE,
-                              virConsoleEventOnStream,
-                              con,
-                              NULL);
+    virObjectRef(con);
+    if (virStreamEventAddCallback(con->st,
+                                  VIR_STREAM_EVENT_READABLE,
+                                  virConsoleEventOnStream,
+                                  con,
+                                  virObjectFreeCallback) < 0) {
+        virObjectUnref(con);
+        goto cleanup;
+    }
 
     while (!con->quit) {
-        if (virCondWait(&con->cond, &con->lock) < 0) {
-            virMutexUnlock(&con->lock);
-            VIR_ERROR(_("unable to wait on console condition"));
+        if (virCondWait(&con->cond, &con->parent.lock) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unable to wait on console condition"));
             goto cleanup;
         }
     }
 
-    virMutexUnlock(&con->lock);
-
-    ret = 0;
+    if (con->error.code == VIR_ERR_OK)
+        ret = 0;
 
  cleanup:
-    virConsoleFree(con);
+    virConsoleShutdown(con);
+
+    if (ret < 0) {
+        vshResetLibvirtError();
+        virSetError(&con->error);
+        vshSaveLibvirtHelperError();
+    }
+
+    virObjectUnlock(con);
+    virObjectUnref(con);
 
     /* Restore original signal handlers */
     sigaction(SIGQUIT, &old_sigquit, NULL);

@@ -1,0 +1,16 @@
+<domainCapabilities>
+  <path>/bin/emulatorbin</path>
+  <domain>kvm</domain>
+  <machine>my-machine-type</machine>
+  <arch>x86_64</arch>
+  <cpu>
+    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-model' supported='no'/>
+    <mode name='custom' supported='no'/>
+  </cpu>
+  <devices>
+  </devices>
+  <features>
+    <sev supported='no'/>
+  </features>
+</domainCapabilities>

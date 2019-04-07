@@ -14,9 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Laine Stump <laine@redhat.com>
  */
 
 #include <config.h>
@@ -24,7 +21,6 @@
 #include "internal.h"
 #include "virerror.h"
 #include "virnetdevvlan.h"
-#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

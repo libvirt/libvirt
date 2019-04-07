@@ -1,30 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Contributor guidelines</h1>
 
     <ul id="toc"></ul>
 
-    <h2><a name="patches">General tips for contributing patches</a></h2>
+    <h2><a id="patches">General tips for contributing patches</a></h2>
     <ol>
-      <li>Discuss any large changes on the mailing list first.  Post patches
-        early and listen to feedback.</li>
+      <li>
+        <p>Discuss any large changes on the mailing list first.  Post patches
+        early and listen to feedback.</p>
+      </li>
 
-      <li>Official upstream repository is kept in git
-        (<code>git://libvirt.org/libvirt.git</code>) and is browsable
+      <li>
+        <p>Official upstream repository is kept in git
+        (<code>https://libvirt.org/git/libvirt.git</code>) and is browsable
         along with other libvirt-related repositories
-        (e.g. libvirt-python) <a href="http://libvirt.org/git/">online</a>.</li>
+        (e.g. libvirt-python) <a href="https://libvirt.org/git/">online</a>.</p>
+      </li>
 
-      <li>Patches to translations are maintained via
+      <li>
+        <p>Patches to translations are maintained via
         the <a href="https://fedora.zanata.org/">zanata project</a>.
         If you want to fix a translation in a .po file, join the
         appropriate language team. The libvirt release process
         automatically pulls the latest version of each translation
-        file from zanata.</li>
+        file from zanata.</p>
+      </li>
 
-      <li><p>Post patches using "git send-email", with git rename
-        detection enabled.  You need a one-time setup of:</p>
+      <li><p>Post patches using <code>git send-email</code>, with git
+        rename detection enabled.  You need a one-time setup of:</p>
 <pre>
   git config diff.renames true
 </pre>
@@ -44,22 +50,44 @@
   git pull --rebase
   (fix any conflicts)
   git send-email --cover-letter --no-chain-reply-to --annotate \
-                 --to=libvir-list@redhat.com master
+                 --confirm=always --to=libvir-list@redhat.com master
 </pre>
-        <p>(Note that the "git send-email" subcommand may not be in
-        the main git package and using it may require installation of a
-        separate package, for example the "git-email" package in
-        Fedora.)  For a single patch you can omit
+        <p>For a single patch you can omit
         <code>--cover-letter</code>, but a series of two or more
-        patches needs a cover letter. If you get tired of typing
-        <code>--to=libvir-list@redhat.com</code> designation you can
-        set it in git config:</p>
+        patches needs a cover letter.</p>
+        <p>Note that the <code>git send-email</code> subcommand may not
+        be in the main git package and using it may require installation
+        of a separate package, for example the "git-email" package in
+        Fedora and Debian.  If this is your first time using
+        <code>git send-email</code>, you might need to configure it to
+        point it to your SMTP server with something like:</p>
+<pre>
+  git config --global sendemail.smtpServer stmp.youremailprovider.net
+</pre>
+        <p>If you get tired of typing
+        <code>--to=libvir-list@redhat.com</code> all the time, you can
+        configure that to be automatically handled as well:</p>
 <pre>
   git config sendemail.to libvir-list@redhat.com
 </pre>
+        <p>As a rule, patches should be sent to the mailing list only: all
+        developers are subscribed to libvir-list and read it regularly, so
+        please don't CC individual developers unless they've explicitly
+        asked you to.</p>
+        <p>Avoid using mail clients for sending patches, as most of them
+        will mangle the messages in some way, making them unusable for our
+        purposes.  Gmail and other Web-based mail clients are particularly
+        bad at this.</p>
+        <p>If everything went well, your patch should show up on the
+        <a href="https://www.redhat.com/archives/libvir-list/">libvir-list
+        archives</a> in a matter of minutes; if you still can't find it on
+        there after an hour or so, you should double-check your setup.  Note
+        that your very first post to the mailing list will be subject to
+        moderation, and it's not uncommon for that to take around a day.</p>
         <p>Please follow this as close as you can, especially the rebase and
-        git send-email part, as it makes life easier for other developers to
-        review your patch set. One should avoid sending patches as attachments,
+        <code>git send-email</code> part, as it makes life easier for other
+        developers to review your patch set.</p>
+        <p>One should avoid sending patches as attachments,
         but rather send them in email body along with commit message. If a
         developer is sending another version of the patch (e.g. to address
         review comments), they are advised to note differences to previous
@@ -80,11 +108,18 @@
           of the bug number is useful; but also summarize the issue
           rather than making all readers follow the link.  You can use
           'git shortlog -30' to get an idea of typical summary lines.
-          Libvirt does not currently attach any meaning to
-          Signed-off-by: lines, so it is up to you if you want to
-          include or omit them in the commit message.
         </p>
       </li>
+
+      <li><p>Contributors to libvirt projects <strong>must</strong>
+          assert that they are in compliance with the
+          <a href="https://developercertificate.org/">Developer
+          Certificate of Origin 1.1</a>. This is achieved by adding
+          a "Signed-off-by" line containing the contributor's name
+          and e-mail to every commit message. The presence
+          of this line attests that the contributor has read the
+          above lined DCO and agrees with its statements.
+      </p></li>
 
       <li><p>Split large changes into a series of smaller patches,
         self-contained if possible, with an explanation of each patch
@@ -98,8 +133,11 @@
         of <code>git bisect</code>, among other things).</p>
       </li>
 
-      <li>Make sure your patches apply against libvirt GIT.  Developers
-        only follow GIT and don't care much about released versions.</li>
+      <li>
+        <p>Make sure your patches apply against libvirt GIT.  Developers
+        only follow GIT and don't care much about released versions.</p>
+      </li>
+
       <li><p>Run the automated tests on your code before submitting any changes.
           In particular, configure with compile warnings set to
           -Werror.  This is done automatically for a git checkout; from a
@@ -280,8 +318,22 @@
 }
 </pre>
       </li>
-      <li>Update tests and/or documentation, particularly if you are adding
-        a new feature or changing the output of a program.</li>
+
+      <li>
+        <p>Update tests and/or documentation, particularly if you are adding
+        a new feature or changing the output of a program.</p>
+      </li>
+
+      <li>
+        <p>Don't forget to update the <a href="news.html">release notes</a>
+        by changing <code>docs/news.xml</code> if your changes are
+        significant. All user-visible changes, such as adding new XML elements
+        or fixing all but the most obscure bugs, must be (briefly) described
+        in a release notes entry; changes that are only relevant to other
+        libvirt developers, such as code refactoring, don't belong in the
+        release notes. Note that <code>docs/news.xml</code> should be updated
+        in its own commit not to get in the way of backports.</p>
+      </li>
     </ol>
 
     <p>
@@ -291,8 +343,121 @@
         Richard Jones' guide to working with open source projects</a>.
     </p>
 
+    <h2><a id="tooling">Tooling</a></h2>
 
-    <h2><a name="indent">Code indentation</a></h2>
+    <p>
+      libvirt includes support for some useful development tools right in its
+      source repository, meaning users will be able to take advantage of them
+      without little or no configuration. Examples include:
+    </p>
+
+    <ul>
+      <li>
+        <a href="https://github.com/jeaye/color_coded">color_coded</a>,
+        a vim plugin for libclang-powered semantic syntax highlighting;
+      </li>
+
+      <li>
+        <a href="http://valloric.github.io/YouCompleteMe/">YouCompleteMe</a>,
+        a vim plugin for libclang-powered semantic code completion.
+      </li>
+    </ul>
+
+    <h2><a id="naming">Naming conventions</a></h2>
+
+    <p>
+      When reading libvirt code, a number of different naming conventions will
+      be evident due to various changes in thinking over the course of the
+      project's lifetime. The conventions documented below should be followed
+      when creating any entirely new files in libvirt. When working on existing
+      files, while it is desirable to apply these conventions, keeping a
+      consistent style with existing code in that particular file is generally
+      more important. The overall guiding principal is that every file, enum,
+      struct, function, macro and typedef name must have a 'vir' or 'VIR' prefix.
+      All local scope variable names are exempt, and global variables are exempt,
+      unless exported in a header file.
+    </p>
+
+    <dl>
+      <dt>File names</dt>
+      <dd>
+        <p>
+          File naming varies depending on the subdirectory. The preferred
+          style is to have a 'vir' prefix, followed by a name which matches
+          the name of the functions / objects inside the file. For example,
+          a file containing an object  'virHashtable' is stored in files
+          'virhashtable.c' and 'virhashtable.h'. Sometimes, methods which
+          would otherwise be declared 'static' need to be exported for use
+          by a test suite. For this purpose a second header file should be
+          added with a suffix of 'priv', e.g. 'virhashtablepriv.h'. Use of
+          underscores in file names is discouraged when using the 'vir'
+          prefix style. The 'vir' prefix naming applies to src/util,
+          src/rpc and tests/ directories. Most other directories do not
+          follow this convention.
+        </p>
+      </dd>
+      <dt>Enum type &amp; field names</dt>
+      <dd>
+        <p>
+          All enums should have a 'vir' prefix in their typedef name,
+          and each following word should have its first letter in
+          uppercase. The enum name should match the typedef name with
+          a leading underscore. The enum member names should be in all
+          uppercase, and use an underscore to separate each word. The
+          enum member name prefix should match the enum typedef name.
+        </p>
+        <pre>
+    typedef enum _virSocketType virSocketType;
+    enum _virSocketType {
+        VIR_SOCKET_TYPE_IPV4,
+        VIR_SOCKET_TYPE_IPV6,
+    };</pre>
+      </dd>
+      <dt>Struct type names</dt>
+      <dd>
+        <p>
+          All structs should have a 'vir' prefix in their typedef name,
+          and each following word should have its first letter in
+          uppercase. The struct name should be the same as the typedef
+          name with a leading underscore. A second typedef should be
+          given for a pointer to the struct with a 'Ptr' suffix.
+        </p>
+        <pre>
+    typedef struct _virHashTable virHashTable;
+    typedef virHashTable *virHashTablePtr;
+    struct _virHashTable {
+       ...
+    };</pre>
+      </dd>
+      <dt>Function names</dt>
+      <dd>
+        <p>
+          All functions should have a 'vir' prefix in their name,
+          followed by one or more words with first letter of each
+          word capitalized. Underscores should not be used in function
+          names. If the function is operating on an object, then the
+          function name prefix should match the object typedef name,
+          otherwise it should match the filename. Following this
+          comes the verb / action name, and finally an optional
+          subject name. For example, given an object 'virHashTable',
+          all functions should have a name 'virHashTable$VERB' or
+          'virHashTable$VERB$SUBJECT", e.g. 'virHashTableLookup'
+          or 'virHashTableGetValue'.
+        </p>
+      </dd>
+      <dt>Macro names</dt>
+      <dd>
+        <p>
+          All macros should have a "VIR" prefix in their name, followed
+          by one or more uppercase words separated by underscores. The
+          macro argument names should be in lowercase. Aside from having
+          a "VIR" prefix there are no common practices for the rest of
+          the macro name.
+        </p>
+      </dd>
+    </dl>
+
+    <h2><a id="indent">Code indentation</a></h2>
     <p>
       Libvirt's C source code generally adheres to some basic code-formatting
       conventions.  The existing code base is not totally consistent on this
@@ -329,7 +494,7 @@
       which will load the .lvimrc only when you edit libvirt code.
     </p>
 
-    <h2><a name="formatting">Code formatting (especially for new code)</a></h2>
+    <h2><a id="formatting">Code formatting (especially for new code)</a></h2>
 
     <p>
       With new code, we can be even more strict.
@@ -365,7 +530,7 @@
     </p>
 
 
-    <h2><a name="bracket_spacing">Bracket spacing</a></h2>
+    <h2><a id="bracket_spacing">Bracket spacing</a></h2>
 
     <p>
       The keywords <code>if</code>, <code>for</code>, <code>while</code>,
@@ -414,7 +579,7 @@
       int foo(int wizz);    // Good
 </pre>
 
-    <h2><a name="comma">Commas</a></h2>
+    <h2><a id="comma">Commas</a></h2>
 
     <p>
       Commas should always be followed by a space or end of line, and
@@ -451,7 +616,7 @@
       };
 </pre>
 
-    <h2><a name="semicolon">Semicolons</a></h2>
+    <h2><a id="semicolon">Semicolons</a></h2>
 
     <p>
       Semicolons should never have a space beforehand.  Inside the
@@ -480,7 +645,7 @@
       }
 </pre>
 
-    <h2><a name="curly_braces">Curly braces</a></h2>
+    <h2><a id="curly_braces">Curly braces</a></h2>
 
     <p>
       Omit the curly braces around an <code>if</code>, <code>while</code>,
@@ -661,7 +826,7 @@
   }
 </pre>
 
-    <h2><a name="preprocessor">Preprocessor</a></h2>
+    <h2><a id="preprocessor">Preprocessor</a></h2>
 
     <p>Macros defined with an ALL_CAPS name should generally be
       assumed to be unsafe with regards to arguments with side-effects
@@ -686,7 +851,7 @@
   #endif
 </pre>
 
-    <h2><a name="types">C types</a></h2>
+    <h2><a id="types">C types</a></h2>
 
     <p>
       Use the right type.
@@ -761,7 +926,7 @@
       it points to, or it is aliased to another pointer that is.
     </p>
 
-    <h2><a name="memalloc">Low level memory management</a></h2>
+    <h2><a id="memalloc">Low level memory management</a></h2>
 
     <p>
       Use of the malloc/free/realloc/calloc APIs is deprecated in the libvirt
@@ -855,7 +1020,7 @@
       </li>
     </ul>
 
-    <h2><a name="file_handling">File handling</a></h2>
+    <h2><a id="file_handling">File handling</a></h2>
 
     <p>
       Usage of the <code>fdopen()</code>, <code>close()</code>, <code>fclose()</code>
@@ -901,7 +1066,7 @@
       </li>
     </ul>
 
-    <h2><a name="string_comparision">String comparisons</a></h2>
+    <h2><a id="string_comparision">String comparisons</a></h2>
 
     <p>
       Do not use the strcmp, strncmp, etc functions directly. Instead use
@@ -951,27 +1116,27 @@
     </ul>
 
 
-    <h2><a name="string_copying">String copying</a></h2>
+    <h2><a id="string_copying">String copying</a></h2>
 
     <p>
       Do not use the strncpy function.  According to the man page, it
       does <b>not</b> guarantee a NULL-terminated buffer, which makes
-      it extremely dangerous to use.  Instead, use one of the
-      functionally equivalent functions:
+      it extremely dangerous to use.  Instead, use one of the replacement
+      functions provided by libvirt:
     </p>
 
 <pre>
   virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
 </pre>
     <p>
-      The first three arguments have the same meaning as for strncpy;
-      namely the destination, source, and number of bytes to copy,
-      respectively.  The last argument is the number of bytes
-      available in the destination string; if a copy of the source
-      string (including a \0) will not fit into the destination, no
-      bytes are copied and the routine returns NULL.  Otherwise, n
-      bytes from the source are copied into the destination and a
-      trailing \0 is appended.
+      The first two arguments have the same meaning as for strncpy,
+      namely the destination and source of the copy operation.  Unlike
+      strncpy, the function will always copy exactly the number of bytes
+      requested and make sure the destination is NULL-terminated, as the
+      source is required to be; sanity checks are performed to ensure the
+      size of the destination, as specified by the last argument, is
+      sufficient for the operation to succeed.  On success, 0 is returned;
+      on failure, a value &lt;0 is returned instead.
     </p>
 
 <pre>
@@ -979,10 +1144,8 @@
 </pre>
     <p>
       Use this variant if you know you want to copy the entire src
-      string into dest.  Note that this is a macro, so arguments could
-      be evaluated more than once.  This is equivalent to
-      virStrncpy(dest, src, strlen(src), destbytes)
-      </p>
+      string into dest.
+    </p>
 
 <pre>
   virStrcpyStatic(char *dest, const char *src)
@@ -992,8 +1155,7 @@
       string into dest <b>and</b> you know that your destination string is
       a static string (i.e. that sizeof(dest) returns something
       meaningful).  Note that this is a macro, so arguments could be
-      evaluated more than once.  This is equivalent to
-      virStrncpy(dest, src, strlen(src), sizeof(dest)).
+      evaluated more than once.
     </p>
 
 <pre>
@@ -1011,7 +1173,7 @@
       and usually considered a flaw.
     </p>
 
-    <h2><a name="strbuf">Variable length string buffer</a></h2>
+    <h2><a id="strbuf">Variable length string buffer</a></h2>
 
     <p>
       If there is a need for complex string concatenations, avoid using
@@ -1044,7 +1206,7 @@
 </pre>
 
 
-    <h2><a name="includes">Include files</a></h2>
+    <h2><a id="includes">Include files</a></h2>
 
     <p>
       There are now quite a large number of include files, both libvirt
@@ -1093,7 +1255,7 @@
     </p>
 
 
-    <h2><a name="printf">Printf-style functions</a></h2>
+    <h2><a id="printf">Printf-style functions</a></h2>
 
     <p>
       Whenever you add a new printf-style function, i.e., one with a format
@@ -1122,7 +1284,7 @@
       does for snprintf.
     </p>
 
-    <h2><a name="goto">Use of goto</a></h2>
+    <h2><a id="goto">Use of goto</a></h2>
 
     <p>
       The use of goto is not forbidden, and goto is widely used
@@ -1205,7 +1367,7 @@ int foo()
 
 
 
-    <h2><a name="committers">Libvirt committer guidelines</a></h2>
+    <h2><a id="committers">Libvirt committer guidelines</a></h2>
 
     <p>
       The AUTHORS files indicates the list of people with commit access right
@@ -1250,5 +1412,34 @@ int foo()
         in the same way, but still make sure they get reviewed if non-trivial.
       </li>
     </ul>
+    <h2><a id="coverage">Code coverage reports</a></h2>
+
+    <p>
+      Code coverage HTML reports can be generated with:
+    </p>
+
+<pre>
+  make coverage
+</pre>
+
+    <p>
+      Reports will be generated in the <code>cov/</code> directory. Point a
+      web browser at <code>cov/index.html</code> for the full report.
+    </p>
+
+    <p>
+      The <code>make coverage</code> target is provided by <code>gnulib</code>.
+      It is a convenience helper for calling the following 3 targets in order.
+      It may be useful to occasionally call these directly.
+
+    <ul>
+      <li><code>make init-coverage</code>: run <code>make clean</code> and
+          remove all code coverage counter files (*.gcno, etc.)</li>
+      <li><code>make build-coverage</code>: run <code>make</code> and
+          <code>make check</code> with <code>CFLAGS</code> filled in with
+          necessary coverage flags</li>
+      <li><code>make gen-coverage</code>: generate the HTML report</li>
+    </ul>
+    </p>
   </body>
 </html>

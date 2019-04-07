@@ -1,0 +1,4157 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Alain PORTAL <aportal@univ-montp2.fr>, 2006-2007
+# Daniel <veillard@redhat.com>, 2011
+# Daniel <veillard@redhat.com>, 2011
+# deamn <deamicis@bluewin.ch>, 2013
+# deamn <deamicis@bluewin.ch>, 2012-2013
+# deamn <deamicis@bluewin.ch>, 2013
+# Decroux Fabien <fdecroux@redhat.com>, 2006
+# Gauthier Ancelin <gauthier.ancelin@laposte.net>, 2007
+# Guillaume CHARDIN <guillaume.chardin@gmail.com>, 2006
+# Jérôme Fenal <jfenal@gmail.com>, 2013
+# Mathieu Schopfer <mat.schopfer@bluewin.ch>, 2008
+# Philippe <kissifrot@gmail.com>, 2012
+# Philippe <kissifrot@gmail.com>, 2012
+# Sam Friedmann <sam.friedmann@redhat.com>, 2013
+# Stéphane Aulery <lkppo@free.fr>, 2012
+# Thomas Canniot <thomas.canniot@laposte.net>, 2007
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2015-02-26 09:47+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  (specify help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (spécifier help <commande> pour plus de détails sur la commande)\n"
+"\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  DESCRIPTION\n"
+
+msgid ""
+"\n"
+"  Default paths:\n"
+"\n"
+"    Configuration file (unless overridden by -f):\n"
+"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
+"\n"
+"    Sockets:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
+"\n"
+"    TLS:\n"
+"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
+"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
+"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
+"\n"
+"    PID file:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
+"\n"
+msgstr ""
+"\n"
+"  Chemins par défaut :\n"
+"\n"
+"    Fichier de configuration (sauf si remplacé par -f) :\n"
+"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
+"\n"
+"    Sockets :\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
+"\n"
+"    TLS:\n"
+"      Certificat CA :     $HOME/.pki/libvirt/cacert.pem\n"
+"      Certificat du serveur : $HOME/.pki/libvirt/servercert.pem\n"
+"      Clé privée du serveur : $HOME/.pki/libvirt/serverkey.pem\n"
+"\n"
+"    Fichier PID :\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
+"\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  OPTIONS\n"
+
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  SYNOPSIS\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Temps : %.3f ms)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  NOM\n"
+
+msgid " Hypervisors:"
+msgstr "Hyperviseurs :"
+
+msgid " Miscellaneous:"
+msgstr "Divers :"
+
+msgid " Networking:"
+msgstr "Réseau :"
+
+msgid " Storage:"
+msgstr "Stockage :"
+
+#, c-format
+msgid "%6s: Checking %-60s: "
+msgstr "%6s : Vérification %-60s : "
+
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
+
+#, c-format
+msgid ""
+"%s:\n"
+"%s%c"
+msgstr ""
+"%s:\n"
+"%s%c"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s : %d : impossible d'allouer %d octets"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s : %d : impossible d'allouer %lu octets"
+
+#, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#, c-format
+msgid ""
+"%s: error: %s. Check /var/log/messages or run without --daemon for more "
+"info.\n"
+msgstr ""
+"%s : erreur : %s. Vérifiez dans /var/log/messages ou exécutez le programme "
+"sans --daemon pour obtenir plus d'informations.\n"
+
+#, c-format
+msgid "%s: error: unable to determine if daemon is running: %s\n"
+msgstr "%s : erreur : impossible de déterminer si le daemon fonctionne : %s\n"
+
+#, c-format
+msgid "%s: failed to write log file: %s"
+msgstr "%s : impossible d'écrire dans le fichier journal : %s"
+
+#, c-format
+msgid "%s: initialization failed\n"
+msgstr "%s : l'initialisation a échoué\n"
+
+#, c-format
+msgid "%s: too many command line arguments\n"
+msgstr "%s : trop d'arguments sur la ligne de commande\n"
+
+#, c-format
+msgid "%s: unsupported hypervisor name %s\n"
+msgstr "%s : nom d'hyperviseur %s non pris en charge\n"
+
+#, c-format
+msgid "%s:%d: %s"
+msgstr "%s:%d: %s"
+
+#, c-format
+msgid ""
+"%s:%d: %s%s\n"
+"%s"
+msgstr ""
+"%s:%d: %s%s\n"
+"%s"
+
+#, c-format
+msgid "%s:%zu: %s '%s'"
+msgstr "%s:%zu: %s '%s'"
+
+#, c-format
+msgid "'%s' does not exist"
+msgstr "« %s » n'existe pas"
+
+#, c-format
+msgid "'%s' file does not fit in memory"
+msgstr "le fichier « %s » ne tient pas en mémoire"
+
+msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+msgstr ""
+"« adapter » et « address » doivent être spécifiés pour la source scsi hostdev"
+
+msgid "'adapter' must be specified for scsi hostdev source"
+msgstr "« adaptateur » doit être spécifié pour la source scsi hostdev"
+
+msgid ""
+"'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
+msgstr ""
+"« bus », « target » et « unit » doivent être spécifiés pour l'adresse source "
+"scsi hostdev"
+
+msgid "'pool' and 'volume' must be specified together for 'pool' type source"
+msgstr ""
+"« pool » et « volume » doivent être spécifiés ensemble pour la source du "
+"type de « pool »"
+
+#, c-format
+msgid "'queues' attribute must be positive number: %s"
+msgstr "l'attribut « queues » doit être un nombre positif : %s"
+
+msgid "(device_definition)"
+msgstr "(device_definition)"
+
+msgid "(domain_definition)"
+msgstr "(domain_definition)"
+
+msgid "(re)connect to hypervisor"
+msgstr "(re)connecter à l'hyperviseur"
+
+msgid "(volume_definition)"
+msgstr "(volume_definition)"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <nombre>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <chaîne>"
+
+#, c-format
+msgid "<virtualport> element unsupported for <interface type='%s'>"
+msgstr "élément <virtualport> non pris en charge pour <interface type='%s'>"
+
+#, c-format
+msgid ""
+"<virtualport> element unsupported for type='%s' in interface's <actual> "
+"element"
+msgstr ""
+"élément <virtualport> non pris en charge pour type='%s' dans l'élément "
+"<actual> de l'interface"
+
+msgid "Address family for hostname not supported"
+msgstr "Famille d'adresse pour le nom d'hôte non prise en charge"
+
+msgid "All requests done"
+msgstr "Toutes les requêtes sont achevées"
+
+msgid "Allocation"
+msgstr "Allocation"
+
+msgid "Allocation:"
+msgstr "Allocation :"
+
+msgid "Argument buffer too small"
+msgstr "Tampon des arguments trop petit"
+
+msgid "Attach device from an XML <file>."
+msgstr "Attacher un périphérique depuis un fichier XML <file>."
+
+msgid "Attach new disk device."
+msgstr "Attacher un nouveau périphérique disque."
+
+msgid "Attach new network interface."
+msgstr "Attacher une nouvelle interface réseau."
+
+#, c-format
+msgid "Attached device %s has no type"
+msgstr "Le périphérique attaché %s n'a pas de type"
+
+#, c-format
+msgid "Attempt to create %s without specifying mode"
+msgstr "Tentative de créer %s sans spécifier de mode"
+
+#, c-format
+msgid "Attempt to migrate guest to the same host %s"
+msgstr "Tentative de migrer un invité vers le même hôte %s"
+
+msgid "Attempt to send a non-blocking message with a synchronous reply"
+msgstr "Tentative d'envoyer un message non bloquant avec une réponse synchrone"
+
+msgid "Attempt to send an asynchronous message with a synchronous reply"
+msgstr "Tentative d'envoyer un message asynchrone avec une réponse synchrone"
+
+#, c-format
+msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+msgstr ""
+"Tentative de NAT « %s ». La traduction d'adresse n'est prise en charge que "
+"pour IPv4."
+
+msgid "Attribute mode is only allowed for guest CPU"
+msgstr "L'attribut mode n'est autorisé que pour les CPU des invités"
+
+msgid "Autostart"
+msgstr "Démarrage automatique"
+
+msgid "Autostart:"
+msgstr "Démarrage automatique :"
+
+msgid "Available"
+msgstr "Disponible"
+
+msgid "Available:"
+msgstr "Disponible :"
+
+msgid "Bad value for ai_flags"
+msgstr "Valeur invalide pour ai_flags"
+
+#, c-format
+msgid "Block device '%s' is resized"
+msgstr "La taille du périphérique bloc « %s » a été modifiée"
+
+msgid "Build a given pool."
+msgstr "Construire le pool indiqué."
+
+msgid "CPU Affinity:"
+msgstr "Affinité CPU :"
+
+msgid "CPU frequency:"
+msgstr "Fréquence de la CPU :"
+
+msgid "CPU map:"
+msgstr "Carte CPU :"
+
+#, c-format
+msgid "CPU model %s is not supported by hypervisor"
+msgstr "Le modèle de CPU « %s » n'est pas pris en charge par l'hyperviseur"
+
+#, c-format
+msgid "CPU model %s too long for destination"
+msgstr "Le modèle de CPU « %s » est trop long pour la destination"
+
+msgid "CPU model:"
+msgstr "modèle de CPU :"
+
+msgid "CPU socket(s):"
+msgstr "socket(s) CPU :"
+
+msgid "CPU time:"
+msgstr "Temps CPU :"
+
+msgid "CPU vendor specified without CPU model"
+msgstr "fabriquant de CPU spécifié sans modèle de CPU"
+
+msgid "CPU(s):"
+msgstr "CPU :"
+
+msgid "CPU:"
+msgstr "CPU :"
+
+msgid "Can't add USB hub: USB is disabled for this domain"
+msgstr ""
+"Impossible d'ajouter le concentrateur USB : USB désactivé sur ce domaine"
+
+msgid "Can't add USB input device. USB bus is disabled"
+msgstr ""
+"Impossible d'ajouter le périphérique d'entrée USB. Le bus USB est désactivé"
+
+msgid "Can't add another USB controller: USB is disabled for this domain"
+msgstr ""
+"Impossible d'ajouter un autre contrôleur USB : USB désactivé pour ce domaine"
+
+msgid "Can't add host USB device: USB is disabled in this host"
+msgstr ""
+"Impossible d'ajouter le périphérique USB hôte : USB désactivé sur cet hôte"
+
+msgid "Can't allocate memory"
+msgstr "Impossible d'allouer de la mémoire"
+
+msgid "Can't create initial configuration"
+msgstr "Impossible de créer la configuration initiale"
+
+msgid "Can't determine config path"
+msgstr "Impossibile de déterminer le chemin de config"
+
+msgid "Can't determine pid file path."
+msgstr "Impossible de déterminer le chemin du fichier pid."
+
+msgid "Can't determine socket paths"
+msgstr "Impossible de déterminer les chemins de socket"
+
+msgid "Can't determine user directory"
+msgstr "Impossible de déterminer le répertoire de l'utilisateur"
+
+msgid "Can't initialize access manager"
+msgstr "Impossible d'initialiser le gestionnaire d'accès"
+
+msgid "Can't initialize logging"
+msgstr "Impossible d'initialiser la journalisation"
+
+#, c-format
+msgid "Can't load config file: %s: %s"
+msgstr "Impossible de charger le fichier de configuration : %s : %s"
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr ""
+"Impossible d'extraire la version de l'hyperviseur %s en cours d'exécution\n"
+
+#, c-format
+msgid "Cannot find security driver '%s'"
+msgstr "Pilote de sécurité « %s » introuvable"
+
+msgid "Cannot parse <address> 'bus' attribute"
+msgstr "Impossible d'analyser l'attribut « bus » <address>"
+
+msgid "Cannot parse <address> 'controller' attribute"
+msgstr "Impossible d'analyser l'attribut « controller » <address> "
+
+msgid "Cannot parse <address> 'cssid' attribute"
+msgstr "Impossible d'analyser l'attribut « cssid » <address>"
+
+msgid "Cannot parse <address> 'devno' attribute"
+msgstr "Impossible d'analyser l'attribut « devno » <address>"
+
+msgid "Cannot parse <address> 'domain' attribute"
+msgstr "Impossible d'analyser l'attribut « domain » <address>"
+
+msgid "Cannot parse <address> 'function' attribute"
+msgstr "Impossible d'analyser l'attribut « function » <address>"
+
+msgid "Cannot parse <address> 'port' attribute"
+msgstr "Impossible d'analyser l'attribut « port » <address>"
+
+msgid "Cannot parse <address> 'reg' attribute"
+msgstr "Impossible d'analyser l'attribut « reg » <address>"
+
+msgid "Cannot parse <address> 'slot' attribute"
+msgstr "Impossible d'analyser l'attribut « slot » <address>"
+
+msgid "Cannot parse <address> 'ssid' attribute"
+msgstr "Impossible d'analyser l'attribut « ssid » <address>"
+
+msgid "Cannot parse <address> 'target' attribute"
+msgstr "Impossible d'analyser l'attribut « target » <address>"
+
+msgid "Cannot parse <address> 'unit' attribute"
+msgstr "Impossible d'analyser l'attribut « unit » <address>"
+
+msgid "Cannot parse <master> 'startport' attribute"
+msgstr "Impossible d'analyser l'attribut « startport » <master>"
+
+msgid "Cannot parse <source> 'port' attribute with socket interface"
+msgstr ""
+"Impossible d'analyser l'attribut <source> « port » avec l'interface du socket"
+
+#, c-format
+msgid "Cannot parse USB Class code %s"
+msgstr "Impossible d'analyser le code de la classe USB %s"
+
+#, c-format
+msgid "Cannot parse USB product ID %s"
+msgstr "Impossible d'analyser l'ID de produit USB %s"
+
+#, c-format
+msgid "Cannot parse USB vendor ID %s"
+msgstr "Impossible d'analyser l'ID de constructeur USB %s"
+
+#, c-format
+msgid "Cannot parse controller index %s"
+msgstr "Impossible d'analyser l'index de contrôleur %s"
+
+#, c-format
+msgid "Cannot specify a label if relabelling is turned off. model=%s"
+msgstr ""
+"Impossible de spécifier une étiquette si le réétiquetage est éteint. model=%s"
+
+msgid "Capacity:"
+msgstr "Capacité :"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Changer la mémoire allouée dans le domaine invité"
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "changer la limite maximum de mémoire allouée dans le domaine invité"
+
+msgid "Change the number of virtual CPUs in the guest domain."
+msgstr "Changer le nombre de CPU virtuelles dans le domaine invité"
+
+msgid ""
+"Check that the 'kvm-intel' or 'kvm-amd' modules are loaded & the BIOS has "
+"enabled virtualization"
+msgstr ""
+"Vérifier que les modules « kvm-intel » ou « kvm-amd » sont chargés et que le "
+"BIOS a l'option de virtualisation activée"
+
+msgid "Configure a domain to be automatically started at boot."
+msgstr "Configurer un domaine pour être lancé automatiquement au démarrage."
+
+msgid "Configure a network to be automatically started at boot."
+msgstr "Configurer un réseau pour être automatiquement lancé au démarrage."
+
+msgid "Configure a pool to be automatically started at boot."
+msgstr "Configurer un pool qui sera lancé automatiquement au démarrage."
+
+msgid "Connect the virtual serial console for the guest"
+msgstr "Connecter la console série virtuelle pour l'invité"
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Se connecte à l'hyperviseur local. Ceci est une commande interne après le "
+"démarrage du shell."
+
+msgid "Controllers must use the 'ccid' address type"
+msgstr "Les contrôleurs doivent utiliser le type d'adresse « ccid »"
+
+msgid "Copy aborted"
+msgstr "Copie interrompue"
+
+msgid "Core dump a domain."
+msgstr "Vider l'espace mémoire d'un domaine."
+
+msgid "Core(s) per socket:"
+msgstr "Coeur(s) par emplacements :"
+
+msgid "Could not find <uuid>"
+msgstr "Impossible de trouver l'<uuid>"
+
+msgid "Could not format channel target type"
+msgstr "Impossible de formater le type cible du canal"
+
+#, c-format
+msgid "Could not parse UUID from '%s'"
+msgstr "Impossible d'analyser l'UUID depuis '%s'"
+
+msgid "Could not set UUID"
+msgstr "Impossible de sélectionner l'UUID"
+
+msgid "Create a domain."
+msgstr "Créer un domaine"
+
+msgid "Create a network."
+msgstr "Créer un réseau"
+
+msgid "Create a pool."
+msgstr "Créer un pool"
+
+msgid "Create a vol."
+msgstr "Créer un volume."
+
+msgid "Define a domain."
+msgstr "Définir un domaine"
+
+msgid "Define a pool."
+msgstr "Définir un pool"
+
+msgid "Delete a given pool."
+msgstr "Détruire le pool indiqué"
+
+msgid "Delete a given vol."
+msgstr "Détruire le volume indiqué"
+
+msgid "Detach device from an XML <file>"
+msgstr "Détacher un périphérique depuis un fichier XML <file>"
+
+msgid "Detach disk device."
+msgstr "Détacher un périphérique disque."
+
+msgid "Detach network interface."
+msgstr "Détacher une interface réseau."
+
+#, c-format
+msgid "Device %s re-attached\n"
+msgstr "Périphérique %s réattaché\n"
+
+msgid "Device configuration is not compatible: Domain has no USB bus support"
+msgstr ""
+"La configuration du périphérique est incompatible : le domaine ne prend pas "
+"en charge le bus USB"
+
+msgid "Display the system version information."
+msgstr "Afficher la version du système."
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "Domaine %s créé depuis %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Domaine %s défini depuis %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "Domaine %s détruit\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "Le domaine %s a été supprimé\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "Le domaine %s est en cours de redémarrage\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "Le domaine %s est en cours d'arrêt\n"
+
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "Domaine %s marqué pour le démarrage automatique\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "Domaine %s réactivé\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "Domaine %s démarré\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "Domaine %s suspendu\n"
+
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "Domaine %s démarqué pour le démarrage automatique\n"
+
+msgid "Domain is already active"
+msgstr "Le domaine est déjà actif"
+
+msgid "Domain is already running"
+msgstr "Le domaine est déjà actif"
+
+msgid "Domain is not running"
+msgstr "Le domaine n'est pas actif"
+
+msgid "Domain not found"
+msgstr "Domaine non trouvé"
+
+#, c-format
+msgid "Domain not found: %s"
+msgstr "Domaine non trouvé : %s"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "Domaine restauré depuis %s\n"
+
+msgid "Domain title can't contain newlines"
+msgstr "Le titre du domaine ne peut pas contenir de newlines"
+
+msgid "Driver state initialization failed"
+msgstr "L'initialisation de l'état du pilote a échouée"
+
+msgid "Exiting due to failure to migrate profile"
+msgstr "Fin du programme suite à l'échec de migration du profil"
+
+msgid "FAIL"
+msgstr "FAIL"
+
+msgid "Failed to allocate memory"
+msgstr "Impossible d'allouer de la mémoire"
+
+#, c-format
+msgid "Failed to attach device from %s"
+msgstr "Impossible d'attacher le périphérique depuis %s"
+
+#, c-format
+msgid "Failed to autostart VM '%s': %s"
+msgstr "Impossible de démarrer automatiquement la VM « %s » : %s"
+
+#, c-format
+msgid "Failed to build pool %s"
+msgstr "Impossible de construire le pool %s"
+
+#, c-format
+msgid "Failed to compile regex %s"
+msgstr "impossible de compiler le regex %s"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Impossible de vider l'espace mémoire du domaine %s dans %s"
+
+msgid "Failed to create XML"
+msgstr "Impossible de créer XML"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Impossible de créer le domaine depuis %s"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "Impossible de créer le réseau depuis %s"
+
+#, c-format
+msgid "Failed to create pool %s"
+msgstr "Impossible de créer le pool %s"
+
+#, c-format
+msgid "Failed to create pool from %s"
+msgstr "Impossible de créer le pool depuis %s"
+
+#, c-format
+msgid "Failed to create vol %s"
+msgstr "Impossible de créer le volume %s"
+
+#, c-format
+msgid "Failed to create vol from %s"
+msgstr "Impossible de créer le volume depuis %s"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Impossible de définir le domaine depuis %s"
+
+#, c-format
+msgid "Failed to define network filter from %s"
+msgstr "Impossible de définir le filtre réseau depuis %s"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "Impossible de définir le réseau depuis %s"
+
+#, c-format
+msgid "Failed to define pool %s"
+msgstr "Impossible de définir le pool %s"
+
+#, c-format
+msgid "Failed to define pool from %s"
+msgstr "Impossible de définir le pool depuis %s"
+
+#, c-format
+msgid "Failed to delete autostart link '%s': %s"
+msgstr "Impossible de supprimer le lien de démarrage automatique « %s » : %s"
+
+#, c-format
+msgid "Failed to delete pool %s"
+msgstr "Impossible de supprimer le pool %s"
+
+#, c-format
+msgid "Failed to delete vol %s"
+msgstr "Impossible de détruire le volume %s"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "Impossible de détruire le domaine %s"
+
+#, c-format
+msgid "Failed to destroy network %s"
+msgstr "Impossible de détruire le réseau %s"
+
+#, c-format
+msgid "Failed to destroy pool %s"
+msgstr "Impossible de détruire le pool %s"
+
+#, c-format
+msgid "Failed to detach device from %s"
+msgstr "Impossible de détacher le périphérique depuis %s"
+
+msgid "Failed to find a storage driver"
+msgstr "Impossible de trouver un lecteur de stockage"
+
+#, c-format
+msgid "Failed to find a storage driver: %s"
+msgstr "Impossible de trouver un lecteur de stockage : %s"
+
+msgid "Failed to find the network"
+msgstr "Impossible d'accéder au réseau"
+
+#, c-format
+msgid "Failed to find the network: %s"
+msgstr "Impossible d'accéder au réseau : %s"
+
+#, c-format
+msgid "Failed to fork as daemon: %s"
+msgstr "Impossible de cloner en tant que démon : %s"
+
+msgid "Failed to generate UUID"
+msgstr "Echec de la génération de l'UUID"
+
+#, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "Impossible d'obtenir les statistiques du bloc %s %s"
+
+msgid "Failed to get disk information"
+msgstr "Impossible de récupérer les informations relatives au disque"
+
+msgid "Failed to get domain's UUID"
+msgstr "Impossible d'obtenir l'UUID du domaine"
+
+msgid "Failed to get interface information"
+msgstr "impossible de récupérer les informations relatives à l'interface"
+
+#, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "Impossible de récupérer les statistiques relatives à l'interface %s %s"
+
+msgid "Failed to initialize mutex"
+msgstr "Echec de l'initialisation du mutex"
+
+msgid "Failed to list active domains"
+msgstr "Impossible de lister les domaines actifs"
+
+msgid "Failed to list active networks"
+msgstr "Impossible de lister les réseaux actifs"
+
+msgid "Failed to list active pools"
+msgstr "Impossible de lister les pools actifs"
+
+msgid "Failed to list inactive domains"
+msgstr "Impossible de lister les domaines inactifs"
+
+msgid "Failed to list inactive networks"
+msgstr "Impossible de lister les réseaux actifs"
+
+msgid "Failed to list inactive pools"
+msgstr "Impossible de lister les pools inactifs"
+
+msgid "Failed to list storage volumes"
+msgstr "Impossible de lister les volumes de stockage"
+
+msgid "Failed to list volumes"
+msgstr "Impossible de lister les volumes"
+
+#, c-format
+msgid "Failed to mark domain %s as autostarted"
+msgstr "Impossible de marquer le domaine %s en démarrage automatique"
+
+#, c-format
+msgid "Failed to parse mode '%s'"
+msgstr "Impossible d'analyser le mode « %s »"
+
+#, c-format
+msgid "Failed to re-attach device %s"
+msgstr "Impossible de réattacher le périphérique %s"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Impossible de redémarrer le domaine %s"
+
+#, c-format
+msgid "Failed to refresh pool %s"
+msgstr "Impossible de réactiver le pool %s"
+
+msgid "Failed to register shutdown timeout"
+msgstr "Impossible d'enregistrer le temps d'arrêt limite"
+
+#, c-format
+msgid "Failed to resize block device '%s'"
+msgstr "Échec de la modification de la taille du périphérique bloc « %s »"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Impossible de restaurer le domaine depuis %s"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "Impossible de réactiver le domaine %s"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Impossible d'enregistrer le domaine %s dans %s"
+
+msgid "Failed to set non-blocking file descriptor flag"
+msgstr ""
+"Impossible de définir le drapeau descripteur de fichiers « non-blocking »"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Impossible d'arrêter le domaine %s"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Impossible de démarrer le domaine %s"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Impossible de démarrer le réseau %s"
+
+#, c-format
+msgid "Failed to start pool %s"
+msgstr "Impossible de démarrer le pool %s"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "Impossible de suspendre le domaine %s"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Impossible de supprimer le domaine %s"
+
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "Impossible de supprimer la définition du réseau %s"
+
+#, c-format
+msgid "Failed to undefine pool %s"
+msgstr "Impossible de supprimer le pool %s"
+
+#, c-format
+msgid "Failed to unmark domain %s as autostarted"
+msgstr "Impossible de démarquer le domaine %s en démarrage automatique"
+
+#, c-format
+msgid "File '%s' has unknown type"
+msgstr "Le fichier '%s' est de type inconnu"
+
+msgid "GET operation failed"
+msgstr "opération GET échouée"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "opération GET échouée : %s"
+
+msgid "GNUTLS call error"
+msgstr "erreur lors de l'appel système GNUTLS"
+
+msgid "Get network interface stats for a running domain."
+msgstr ""
+"Obtenir les statistiques d'une interface réseau pour un domaine en cours "
+"d'exécution."
+
+msgid "Get persistent config failed"
+msgstr "Échec de l'obtention de la configuration persistante"
+
+msgid "Id"
+msgstr "ID"
+
+msgid "Id:"
+msgstr "ID :"
+
+msgid "Interrupted by a signal"
+msgstr "Interruption par un signal"
+
+msgid "Invalid BIOS 'date' format"
+msgstr "Format « date » du BIOS invalide"
+
+msgid "Invalid CPU feature name"
+msgstr "Élément « CPU feature name » invalide"
+
+msgid "Invalid CPU feature policy"
+msgstr "Élément « CPU feature policy » invalide"
+
+msgid "Invalid CPU topology"
+msgstr "Élément « CPU topology » invalide"
+
+#, c-format
+msgid "Invalid USB Class code %s"
+msgstr "Code de la classe USB %s invalide"
+
+msgid "Invalid address for a USB device"
+msgstr "Adresse invalide pour un périphérique USB"
+
+msgid "Invalid allow value, either 'yes' or 'no'"
+msgstr "Valeur allow invalide, soit « oui » ou « non »"
+
+msgid "Invalid argument"
+msgstr "Argument invalide"
+
+msgid "Invalid back reference"
+msgstr "Référence inverse invalide"
+
+#, c-format
+msgid "Invalid bus type '%s' for disk"
+msgstr "Type de bus « %s » invalide pour un disque"
+
+#, c-format
+msgid "Invalid bus type '%s' for floppy disk"
+msgstr "Type de bus « %s » invalide pour un lecteur de disquette"
+
+msgid "Invalid call"
+msgstr "Appel invalide"
+
+msgid "Invalid call, no mutex"
+msgstr "appel invalide, aucun mutex"
+
+msgid "Invalid character class name"
+msgstr "Nom de classe de caractères invalide"
+
+msgid "Invalid collation character"
+msgstr "Caractère d'interclassement invalide"
+
+msgid "Invalid content of \\{\\}"
+msgstr "Contenu invalide de « \\{\\} »"
+
+msgid "Invalid fallback attribute"
+msgstr "Attribut fallback invalide"
+
+#, c-format
+msgid "Invalid floppy device name: %s"
+msgstr "Nom de périphérique disquette invalide : %s"
+
+#, c-format
+msgid "Invalid fromConfig value: %s"
+msgstr "Valeur fromConfig invalide : %s"
+
+#, c-format
+msgid "Invalid harddisk device name: %s"
+msgstr "Nom de périphérique disque dur invalide : %s"
+
+msgid "Invalid ip address prefix value"
+msgstr "Valeur du préfixe de l'adresse IP invalide"
+
+msgid "Invalid match attribute for CPU specification"
+msgstr "Attribut « match » invalide pour la spécification CPU"
+
+#, c-format
+msgid "Invalid memory core dump attribute value '%s'"
+msgstr "Valeur de l'attribut du vidage de cœur de la mémoire « %s » invalide"
+
+#, c-format
+msgid "Invalid mode attribute '%s'"
+msgstr "Attribut mode invalide « %s »"
+
+msgid "Invalid parameter to virXPathBoolean()"
+msgstr "Paramètre pour virXPathBoolean() invalide"
+
+msgid "Invalid parameter to virXPathNode()"
+msgstr "Paramètre pour virXPathNode() invalide"
+
+msgid "Invalid parameter to virXPathNodeSet()"
+msgstr "Paramètre pour virXPathNodeSet() invalide"
+
+msgid "Invalid parameter to virXPathNumber()"
+msgstr "Paramètre pour virXPathNumber() invalide"
+
+msgid "Invalid parameter to virXPathString()"
+msgstr "Paramètre pour virXPathString() invalide"
+
+msgid "Invalid partial specification for virtio ccw address"
+msgstr "Spécification partielle invalide pour l'adresse ccw virtio"
+
+#, c-format
+msgid "Invalid port number: %s"
+msgstr "Numéro de port invalide: %s"
+
+#, c-format
+msgid "Invalid ports: %s"
+msgstr "Ports invalides: %s"
+
+msgid "Invalid preceding regular expression"
+msgstr "Expression rationnelle précédente invalide"
+
+msgid "Invalid range end"
+msgstr "Fin de plage invalide"
+
+msgid "Invalid regular expression"
+msgstr "Expression rationnelle invalide"
+
+#, c-format
+msgid ""
+"Invalid specification for virtio ccw address: cssid='%s' ssid='%s' devno='%s'"
+msgstr ""
+"Spécification pour l'adresse ccw virtio invalide : cssid='%s' ssid='%s' "
+"devno='%s'"
+
+msgid "Invalid specification of multiple <filterref>s in a single <interface>"
+msgstr ""
+"Spécification de multiples <filterref> dans une seule <interface> invalide"
+
+msgid "Invalid value for timeout"
+msgstr "Valeur invalide pour le délai d'attente"
+
+#, c-format
+msgid "Invalid vectors: %s"
+msgstr "Vecteurs invalides: %s"
+
+msgid "Load the 'tun' module to enable networking for QEMU guests"
+msgstr "Charge le module « tun » pour activer le réseau pour les invités QEMU"
+
+msgid "Load the 'vhost_net' module to improve performance of virtio networking"
+msgstr ""
+"Charge le module « vhost_net » pour améliorer les performances du réseau "
+"virtio"
+
+msgid "MAC address"
+msgstr "adresse MAC"
+
+#, c-format
+msgid "Malformed 'queues' value '%s'"
+msgstr "valeur « %s » des « queues » (files) malformée"
+
+#, c-format
+msgid "Malformed size %s"
+msgstr "Taille %s non conforme"
+
+msgid "Max memory:"
+msgstr "Mémoire Max :"
+
+msgid "Memory allocation failure"
+msgstr "Échec d'allocation de mémoire"
+
+msgid "Memory exhausted"
+msgstr "Mémoire épuisée"
+
+msgid "Memory size:"
+msgstr "Taille mémoire :"
+
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr ""
+"Migrer un domaine vers un autre hôte. Ajouter « --live » pour une migration "
+"pendant l'exécution."
+
+#, c-format
+msgid "Missing '%s' property"
+msgstr "Propriété '%s' manquante"
+
+msgid "Missing 'cores' attribute in CPU topology"
+msgstr "L'attribut « core » est manquant dans la topologie CPU"
+
+msgid "Missing 'cpus' attribute in NUMA cell"
+msgstr "Attribut 'cpus' manquant dans la cellule NUMA"
+
+msgid "Missing 'key' element for lease"
+msgstr "Élément « clé » manquant à louer"
+
+msgid "Missing 'runtime.powerState' property"
+msgstr "Propriété 'runtime.powerState' manquante"
+
+msgid "Missing 'sockets' attribute in CPU topology"
+msgstr "L'attribut « sockets » est manquant dans la topologie CPU"
+
+msgid "Missing 'threads' attribute in CPU topology"
+msgstr "L'attribut « threads » est manquant dans la topologie CPU"
+
+msgid "Missing <block> element in hostdev storage device"
+msgstr "Élément <block> manquant sur le périphérique de stockage hostdev"
+
+msgid "Missing <char> element in hostdev character device"
+msgstr "Élément <char> manquant sur le périphérique de caractères hostdev"
+
+msgid "Missing <interface> element in hostdev net device"
+msgstr "Élément <interface> manquant sur le périphérique net hostdev"
+
+msgid "Missing <source> element in hostdev device"
+msgstr "Élément <source> manquant sur le périphérique hostdev"
+
+msgid "Missing CPU architecture"
+msgstr "Architecture CPU manquante"
+
+msgid "Missing CPU feature name"
+msgstr "Élément « CPU feature name » manquant"
+
+msgid "Missing CPU model name"
+msgstr "Nom du modèle de CPU manquant"
+
+msgid "Missing allow attribute for USB redirection filter"
+msgstr "Attribut allow pour le filtre de redirection USB manquant"
+
+msgid "Missing source host attribute for char device"
+msgstr "Attribut de l'hôte source manquant pour le périphérique de caractères"
+
+msgid "Missing source path attribute for char device"
+msgstr "Attribut du chemin source manquant pour le périphérique de caractères"
+
+msgid "Missing source service attribute for char device"
+msgstr "Attribut du service source manquant pour le périphérique de caractères"
+
+msgid "Model name contains invalid characters"
+msgstr "Le nom du modèle contient des caractères invalides"
+
+#, c-format
+msgid "Multiple '%s' controllers with index '%d'"
+msgstr "Multiples contrôleurs « %s » avec index « %d »"
+
+msgid "NOTE"
+msgstr "NOTE"
+
+msgid "NUMA cell number"
+msgstr "numéro de cellule NUMA"
+
+msgid "NUMA cell(s):"
+msgstr "cellule(s) NUMA :"
+
+msgid "NUMA free memory"
+msgstr "Mémoire NUMA disponible"
+
+msgid "NUMA topology defined without NUMA cells"
+msgstr "Topologie NUMA définie sans cellules NUMA"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Name or service not known"
+msgstr "Nom ou service inconu"
+
+msgid "Name:"
+msgstr "Nom :"
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "Réseau %s créé depuis %s\n"
+
+#, c-format
+msgid "Network %s defined from %s\n"
+msgstr "Réseau %s défini depuis %s\n"
+
+#, c-format
+msgid "Network %s destroyed\n"
+msgstr "Réseau %s détruit\n"
+
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "Le réseau %s n'est plus défini\n"
+
+#, c-format
+msgid "Network %s marked as autostarted\n"
+msgstr "Réseau %s marqué en démarrage automatique\n"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "Réseau %s démarré\n"
+
+#, c-format
+msgid "Network %s unmarked as autostarted\n"
+msgstr "Réseau %s démarqué en démarrage automatique\n"
+
+#, c-format
+msgid "Network config filename '%s' does not match network name '%s'"
+msgstr ""
+"Le nom du fichier de configuration « %s » ne correspond pas au nom du réseau "
+"« %s »"
+
+#, c-format
+msgid "Network filter %s defined from %s\n"
+msgstr "Filtre réseau %s défini depuis %s\n"
+
+msgid "Network not found"
+msgstr "Réseau non trouvé"
+
+#, c-format
+msgid "Network not found: %s"
+msgstr "Réseau non trouvé : %s"
+
+msgid "No <source> 'address' attribute specified with socket interface"
+msgstr ""
+"Aucun attribut <source> « address » spécifié avec l'interface du socket"
+
+msgid ""
+"No <source> 'bridge' attribute specified with <interface type='bridge'/>"
+msgstr ""
+"Aucun attribut <source> « bridge » spécifié avec <interface type='bridge'/>"
+
+msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
+msgstr ""
+"Aucun attribut <source> « dev » spécifié avec <interface type='direct'/>"
+
+msgid ""
+"No <source> 'name' attribute specified with <interface type='internal'/>"
+msgstr ""
+"Aucun attribut <source> « name » spécifié avec <interface type='internal'/>"
+
+msgid ""
+"No <source> 'network' attribute specified with <interface type='network'/>"
+msgstr ""
+"Aucun attribut <source> « network » spécifié avec <interface type='network'/>"
+
+msgid "No <source> 'port' attribute specified with socket interface"
+msgstr "Aucun attribut <source> « port » spécifié avec l'interface du socket"
+
+msgid "No UNIX process ID available"
+msgstr "Aucun ID de processus UNIX disponible"
+
+msgid "No address associated with hostname"
+msgstr "Aucune adresse associée avec le nom d'hôte"
+
+msgid "No data supplied for <initarg> element"
+msgstr "Aucune donnée fournie à l'élément <initarg>"
+
+#, c-format
+msgid "No domain with UUID %s"
+msgstr "Aucun domaine avec l'UUID %s"
+
+#, c-format
+msgid "No domain with matching uuid '%s'"
+msgstr "Aucun domaine ne correspond à l'UUID '%s'"
+
+msgid "No error message provided"
+msgstr "Pas de message d'erreur fourni"
+
+msgid "No master USB controller specified"
+msgstr "Aucun contrôleur USB maître spécifié"
+
+msgid "No match"
+msgstr "Aucune correspondance"
+
+msgid "No previous regular expression"
+msgstr "Aucune expression rationnelle précédente"
+
+msgid "No type specified for device address"
+msgstr "Aucun type spécifié pour l'adresse de pérphérique"
+
+msgid "Non-empty feature list specified without CPU model"
+msgstr "Liste de fonctions non-vide spécifiée sans le modèle de CPU"
+
+msgid "Non-recoverable failure in name resolution"
+msgstr "Échec non récupérable dans la résolution de nom"
+
+msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
+msgstr "Le nombre de CPU dans <numa> dépasse le compte <vcpu>"
+
+msgid "OS Type:"
+msgstr "Type de SE :"
+
+msgid ""
+"Only emulated CPUs are available, performance will be significantly limited"
+msgstr ""
+"Seuls les CPU émulés sont disponibles, la performance sera sérieusement "
+"impactée"
+
+msgid "Only one argument from --table, --name and --uuid may be specified."
+msgstr "Pour --table, --name et --uuid, un seul argument peut être spécifié."
+
+msgid "Only one primary video device is supported"
+msgstr "Un seul périphérique vidéo principale peut être pris en charge"
+
+msgid "Only the first console can be a serial port"
+msgstr "Seule la première console peut être un port série"
+
+msgid "Only x509 certificates are supported"
+msgstr "Seuls les certificats x509 sont supportés"
+
+msgid "Options --tree and --cap are incompatible"
+msgstr "Les options --tree et --cap sont incompatibles"
+
+msgid "Output the IP address and port number for the VNC display."
+msgstr "Afficher l'adresse IP et le numéro de port pour l'affichage de VNC."
+
+msgid "Output the device for the TTY console."
+msgstr "Afficher le périphérique pour la console TTY"
+
+msgid "Output the domain information as an XML dump to stdout."
+msgstr "Afficher les informations du domaine comme flux XML vers stdout."
+
+msgid "Output the network information as an XML dump to stdout."
+msgstr "Afficher les informations du réseau comme flux XML vers stdout."
+
+msgid "Output the pool information as an XML dump to stdout."
+msgstr "Afficher les informations du pool comme flux XML vers stdout."
+
+msgid "Output the vol information as an XML dump to stdout."
+msgstr "Afficher les informations du volume comme flux XML vers stdout."
+
+msgid "PASS"
+msgstr "PASS"
+
+msgid "PCI address Formatting failed"
+msgstr "Échec du formatage de l'adresse PCI "
+
+msgid "PCI host devices must use 'pci' address type"
+msgstr "Les périphériques hôte PCI doivent utiliser le type d'adresse « pci »"
+
+msgid "POST operation failed"
+msgstr "opération POST échouée"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "opération POST échouée : %s"
+
+msgid "Parameter string not correctly encoded"
+msgstr "Encodage de la chaîne de paramètres invalide"
+
+msgid "Path"
+msgstr "Chemin"
+
+#, c-format
+msgid "Path %s too long for unix socket"
+msgstr "Le chemin %s est trop long pour une socket Unix"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Épingler les VCPU d'un domaine pour héberger des CPU physiques."
+
+#, c-format
+msgid "Policy kit denied action %s from <anonymous>"
+msgstr "Policy kit a refusé l'action %s de <anonymous>"
+
+#, c-format
+msgid "Pool %s created\n"
+msgstr "Pool %s créé\n"
+
+#, c-format
+msgid "Pool %s created from %s\n"
+msgstr "Pool %s créé depuis %s\n"
+
+#, c-format
+msgid "Pool %s defined\n"
+msgstr "pool %s défini\n"
+
+#, c-format
+msgid "Pool %s defined from %s\n"
+msgstr "Pool %s défini depuis %s\n"
+
+#, c-format
+msgid "Pool %s deleted\n"
+msgstr "Pool %s détruit\n"
+
+#, c-format
+msgid "Pool %s destroyed\n"
+msgstr "Pool %s détruit\n"
+
+#, c-format
+msgid "Pool %s has been undefined\n"
+msgstr "Le pool %s a été supprimé\n"
+
+#, c-format
+msgid "Pool %s marked as autostarted\n"
+msgstr "Le pool %s démarrera automatiquement\n"
+
+#, c-format
+msgid "Pool %s refreshed\n"
+msgstr "Pool %s réactivé\n"
+
+#, c-format
+msgid "Pool %s started\n"
+msgstr "Pool %s démarré\n"
+
+#, c-format
+msgid "Pool %s unmarked as autostarted\n"
+msgstr "Le pool %s ne démarrera plus automatiquement\n"
+
+msgid "Premature end of regular expression"
+msgstr "Fin prématurée de l'expression rationnelle"
+
+msgid "Processing request in progress"
+msgstr "Traitement de la requête en cours"
+
+msgid "RPC error"
+msgstr "erreur RPC"
+
+msgid "Refresh a given pool."
+msgstr "Rafraichir le pool indiqué."
+
+msgid "Regular expression too big"
+msgstr "Expression rationnelle trop grande"
+
+msgid "Request canceled"
+msgstr "Requête annulée"
+
+msgid "Request not canceled"
+msgstr "Requête non annulée"
+
+msgid "Resize block device of domain."
+msgstr "Modifie la taille d'un périphérique bloc de domaine."
+
+msgid "Restore a domain."
+msgstr "Restaurer un domaine."
+
+msgid "Resume a previously suspended domain."
+msgstr "Réactiver un domaine précédemment suspendu"
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr ""
+"Renvoyer un résumé des informations sur les processeurs virtuels du domaine."
+
+msgid "Returns basic information about the domain."
+msgstr "Renvoyer un résumé des informations sur le domaine."
+
+msgid "Returns basic information about the node."
+msgstr "Renvoyer un résumé des informations à propos du noeud."
+
+msgid "Returns basic information about the storage pool."
+msgstr "Renvoyer un résumé des informations à propos du pool de stockage."
+
+msgid "Returns basic information about the storage vol."
+msgstr "Renvoyer un résumé des informations à propos du volume de stockage."
+
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Retourner les capacités de l'hyperviseur / du pilote."
+
+msgid "Returns list of domains."
+msgstr "Renvoyer la liste des domaines"
+
+msgid "Returns list of networks."
+msgstr "Renvoyer la liste des réseaux."
+
+msgid "Returns list of pools."
+msgstr "Renvoyer la liste des pools"
+
+msgid "Returns list of vols by pool."
+msgstr "Renvoyer la liste des volume par pool."
+
+msgid "Returns state about a domain."
+msgstr "Retourne l'état d'un domaine."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Exécuter une commande de redémarrage dans le domaine cible"
+
+msgid "Run shutdown in the target domain."
+msgstr "Exécuter la commande shutdown dans le domaine cible"
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Exécution de l'hyperviseur : %s %d.%d.%d\n"
+
+msgid "Scheduler"
+msgstr "Planificateur"
+
+msgid "Servname not supported for ai_socktype"
+msgstr "Servname n'est pas pris en charge pour ai_socktype"
+
+msgid "Setting startupPolicy is only allowed for USB devices"
+msgstr ""
+"La définition de startupPolicy est uniquement autorisée pour les "
+"périphériques USB"
+
+msgid "Show/Set scheduler parameters."
+msgstr "Montrer/Définir les paramètres du planificateur."
+
+#, c-format
+msgid "Size of volume '%s' successfully changed by %s\n"
+msgstr "Taille du volume « %s » modifiée avec succès de %s\n"
+
+#, c-format
+msgid "Size of volume '%s' successfully changed to %s\n"
+msgstr "Taille du volume « %s » modifiée avec succès à %s\n"
+
+msgid "Start a network."
+msgstr "Démarrer un réseau"
+
+msgid "Start a pool."
+msgstr "Démarrer un pool."
+
+msgid "State"
+msgstr "État"
+
+msgid "State:"
+msgstr "État :"
+
+msgid "Storage pool not found"
+msgstr "Pool de stockage introuvable"
+
+#, c-format
+msgid "Storage pool not found: %s"
+msgstr "Pool de stockage introuvable : %s"
+
+msgid "Storage volume not found"
+msgstr "Volume de stockage introuvable"
+
+#, c-format
+msgid "Storage volume not found: %s"
+msgstr "Volume de stockage introuvable : %s"
+
+msgid "Success"
+msgstr "Succès"
+
+msgid "Suspend a running domain."
+msgstr "Suspendre un domaine en cours d'exécution"
+
+msgid "System error"
+msgstr "Erreur système"
+
+#, c-format
+msgid "Target CPU arch %s does not match source %s"
+msgstr "L'architecture %s du CPU cible  ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target CPU cores %d does not match source %d"
+msgstr "Les cores du CPU cible %d ne correspond pas à la source %d"
+
+msgid "Target CPU does not match source"
+msgstr "Le CPU cible ne correspond pas à la source"
+
+#, c-format
+msgid "Target CPU feature %s does not match source %s"
+msgstr ""
+"La fonctionnalité du CPU cible %s ne correspond pas à celle de la source %s"
+
+#, c-format
+msgid "Target CPU feature count %zu does not match source %zu"
+msgstr ""
+"Le nombre de fonctionnalités du CPU cible %zu ne correspond pas à celui de "
+"la source %zu"
+
+#, c-format
+msgid "Target CPU feature policy %s does not match source %s"
+msgstr ""
+"La politique caractéristique du CPU cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target CPU mode %s does not match source %s"
+msgstr "Le mode %s du CPU cible  ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target CPU model %s does not match source %s"
+msgstr "Le modèle %s du CPU cible  ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target CPU sockets %d does not match source %d"
+msgstr "Les %d sockets du CPU cible  ne correspond pas à la source %d"
+
+#, c-format
+msgid "Target CPU threads %d does not match source %d"
+msgstr "Les threads du CPU cible %d  ne correspond pas à la source %d"
+
+#, c-format
+msgid "Target CPU type %s does not match source %s"
+msgstr "Le type %s du CPU cible  ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target CPU vendor %s does not match source %s"
+msgstr "Le fabriquant %s du CPU cible  ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target TSC frequency %lu does not match source %lu"
+msgstr "La fréquence TSC cible %lu ne correspond pas à la source %lu"
+
+#, c-format
+msgid "Target TSC mode %s does not match source %s"
+msgstr "Le mode TSC cible %s ne correspond pas à la source %s"
+
+msgid "Target USB product ID does not match source"
+msgstr "L'ID du produit USB cible ne correspond pas à la source"
+
+msgid "Target USB vendor ID does not match source"
+msgstr "L'ID du constructeur USB cible ne correspond pas à la source"
+
+msgid "Target USB version does not match source"
+msgstr "La version USB cible ne correspond pas à la source"
+
+#, c-format
+msgid "Target channel addr %s does not match source %s"
+msgstr "Le canal cible addr %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target channel name %s does not match source %s"
+msgstr "Le nom de canal cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target channel type %s does not match source %s"
+msgstr "Le type de canal cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target console type %s does not match source %s"
+msgstr "Le type de console cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target controller index %d does not match source %d"
+msgstr "L'index de contrôleur cible %d ne correspond pas à la source %d"
+
+#, c-format
+msgid "Target controller model %d does not match source %d"
+msgstr "Le modèle de contrôleur cible %d ne correspond pas à la source %d"
+
+#, c-format
+msgid "Target controller ports %d does not match source %d"
+msgstr "Les ports de contrôleurs cibles %d ne correspondent pas à la source %d"
+
+#, c-format
+msgid "Target controller type %s does not match source %s"
+msgstr "Le type de contrôleur cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target controller vectors %d does not match source %d"
+msgstr ""
+"Les vecteurs de contrôleurs cibles %d ne correspondent pas à la source %d"
+
+#, c-format
+msgid ""
+"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
+"%02x:%02x.%02x"
+msgstr ""
+"L'adresse PCI du périphérique cible %04x:%02x:%02x.%02x ne correspond pas à "
+"la source %04x:%02x:%02x.%02x"
+
+#, c-format
+msgid "Target device address type %s does not match source %s"
+msgstr ""
+"Le type de l'adresse du périphérique cible %s ne correspond pas à la source "
+"%s"
+
+#, c-format
+msgid "Target device ccid address %d:%d does not match source %d:%d"
+msgstr ""
+"L'adresse ccid du périphérique cible %d:%d ne correspond pas à la source %d:"
+"%d"
+
+#, c-format
+msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
+msgstr ""
+"L'adresse du lecteur du périphérique cible %d:%d:%d ne correspond pas à la "
+"source %d:%d:%d"
+
+#, c-format
+msgid ""
+"Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
+msgstr ""
+"L'adresse série virtio du périphérique cible %d:%d:%d ne correspond pas à la "
+"source %d:%d:%d"
+
+#, c-format
+msgid "Target disk %s does not match source %s"
+msgstr "Le disque cible %s ne correspond pas à la source %s"
+
+msgid "Target disk access mode does not match source"
+msgstr "Le mode d'accès du disque cible ne correspond pas à la source"
+
+#, c-format
+msgid "Target disk bus %s does not match source %s"
+msgstr "Le bus du disque cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target disk device %s does not match source %s"
+msgstr "Le périphérique de disque cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target domain OS type %s does not match source %s"
+msgstr ""
+"Le type de système d'exploitation du domaine cible %s ne correspond pas à la "
+"source %s"
+
+#, c-format
+msgid "Target domain SMBIOS mode %s does not match source %s"
+msgstr "Le mode SMBIOS du domaine cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target domain architecture %s does not match source %s"
+msgstr "L'architecture du domaine cible %s ne correpond pas à la source %s"
+
+#, c-format
+msgid "Target domain current memory %lld does not match source %lld"
+msgstr ""
+"La mémoire actuelle du domaine cible %lld ne correspond pas à la source %lld"
+
+#, c-format
+msgid "Target domain name '%s' does not match source '%s'"
+msgstr "Le nom de domaine cible « %s » ne correspond pas à la source « %s »"
+
+msgid "Target domain timers do not match source"
+msgstr "Les horloges du domaine ne correspondent pas à la source"
+
+#, c-format
+msgid "Target domain uuid %s does not match source %s"
+msgstr "L'uuid du domaine cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target domain virt type %s does not match source %s"
+msgstr "Le type de domain cible virt %s ne correspond pas à la source %s"
+
+msgid "Target filesystem access mode does not match source"
+msgstr ""
+"Le mode d'accès du système de fichiers cible ne correspond pas à la cible"
+
+#, c-format
+msgid "Target host device mode %s does not match source %s"
+msgstr "Le mode du périphérique hôte cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target host device subsystem %s does not match source %s"
+msgstr ""
+"Le sous-système du périphérique hôte cible %s ne correspond pas à la source "
+"%s"
+
+#, c-format
+msgid "Target input device bus %s does not match source %s"
+msgstr ""
+"Le bus du périphérique d'entrée cible %s ne correspond pas à la cible %s"
+
+#, c-format
+msgid "Target input device type %s does not match source %s"
+msgstr ""
+"Le type de périphérique d'entrée cible %s ne correspond pas à la cible %s"
+
+#, c-format
+msgid "Target network card mac %s does not match source %s"
+msgstr "La carte réseau mac cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target network card model %s does not match source %s"
+msgstr "Le modèle de carte réseau cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target parallel port %d does not match source %d"
+msgstr "Le port parallèle cible %d ne correspond pas à la source %d"
+
+#, c-format
+msgid "Target serial port %d does not match source %d"
+msgstr "Le port série cible %d ne correspond pas à la source %d"
+
+#, c-format
+msgid "Target sound card model %s does not match source %s"
+msgstr "Le modèle de carte son cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target timer %s does not match source %s"
+msgstr "L'horloge cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target timer presence %d does not match source %d"
+msgstr "La présence de l'horloge cible %d ne correspond pas à la source %d"
+
+#, c-format
+msgid "Target video card 2d accel %u does not match source %u"
+msgstr "La carte vidéo cible 2d accel %u ne correspond à la source %u"
+
+#, c-format
+msgid "Target video card 3d accel %u does not match source %u"
+msgstr "La carte vidéo cible 3d accel %u ne correspond pas à la source %u"
+
+msgid "Target video card acceleration does not match source"
+msgstr "L'accélération de la carte vidéo cible ne correspond pas à la source"
+
+#, c-format
+msgid "Target video card heads %u does not match source %u"
+msgstr "La carte vidéo cible heads %u ne correspond pas à la source %u"
+
+#, c-format
+msgid "Target video card model %s does not match source %s"
+msgstr "Le modèle de carte vidéo cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid "Target video card vram %u does not match source %u"
+msgstr "La carte vidéo cible vram %u ne correspond pas à la source %u"
+
+#, c-format
+msgid "Target watchdog model %s does not match source %s"
+msgstr "Le modèle de surveillance cible %s ne correspond pas à la source %s"
+
+msgid "Temporary failure in name resolution"
+msgstr "Échec temporaire dans la résolution de nom"
+
+msgid "The certificate has no peers"
+msgstr "Le certificat n'a pas de pair"
+
+msgid "Thread(s) per core:"
+msgstr "Thread(s) par coeur :"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Trailing backslash"
+msgstr "Barre oblique inverse à la fin"
+
+msgid "Type:"
+msgstr "Type :"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Taper :  « help » pour l'aide ou « help » avec la commande\n"
+"         « quit » pour quitter\n"
+"\n"
+
+msgid "UUID"
+msgstr "UUID"
+
+msgid "UUID mismatch between <uuid> and <sysinfo>"
+msgstr "Incohérence de l'UUID entre <uuid> et <sysinfo>"
+
+msgid "UUID:"
+msgstr "UUID :"
+
+msgid "Unable to change MaxMemorySize"
+msgstr "Impossible de modifier MaxMemorySize"
+
+msgid "Unable to format guestfwd port"
+msgstr "Impossible de formater le port guestfwd"
+
+msgid "Unable to generate random uuid."
+msgstr "Impossible de générer un UUID aléatoire."
+
+msgid "Unable to initialize certificate"
+msgstr "Impossible d'initialiser le certificat"
+
+msgid "Unable to initialize mutex"
+msgstr "Impossible d'initialiser le mutex"
+
+msgid "Unable to load certificate"
+msgstr "Impossible de charger le certificat"
+
+#, c-format
+msgid "Unable to migrate %s to %s"
+msgstr "Impossible de migrer %s vers %s"
+
+msgid "Unable to obtain host UUID"
+msgstr "Impossible d'obtenir l'UUID de l'hôte"
+
+#, c-format
+msgid "Unable to parse class id '%s'"
+msgstr "Impossible d'analyser l'ID de classe « %s »"
+
+#, c-format
+msgid "Unable to parse devaddr parameter '%s'"
+msgstr "Impossible d'analyser le paramètre devaddr « %s »"
+
+msgid "Undefine the configuration for an inactive pool."
+msgstr "Supprimer la configuration d'un pool inactif"
+
+#, c-format
+msgid "Unexpected CPU fallback value: %d"
+msgstr "Valeur de CPU de repli invalide : %d"
+
+#, c-format
+msgid "Unexpected CPU feature policy %d"
+msgstr "Élément « CPU feature policy » %d inattendu"
+
+#, c-format
+msgid "Unexpected CPU match policy %d"
+msgstr "Élément « CPU match policy » %d inattendu"
+
+#, c-format
+msgid "Unexpected CPU mode %d"
+msgstr "Mode CPU %d inattendu"
+
+#, c-format
+msgid "Unexpected disk sgio mode '%d'"
+msgstr "mode sgio du disque « %d » inattendu"
+
+#, c-format
+msgid "Unexpected hostdev mode %d"
+msgstr "mode hostdev %d inattendu"
+
+msgid "Unknown"
+msgstr "Inconnu"
+
+#, c-format
+msgid "Unknown PCI device <driver name='%s'/> has been specified"
+msgstr "Le périphérique PCI inconnu <driver name='%s'/> a été spécifié"
+
+#, c-format
+msgid "Unknown TPM backend type '%s'"
+msgstr "type de l'arrière-plan TPM « %s » inconnu"
+
+#, c-format
+msgid "Unknown TPM frontend model '%s'"
+msgstr "Modèle frontal TPM « %s » inconnu"
+
+#, c-format
+msgid "Unknown architecture %s"
+msgstr "Architecture %s inconnue"
+
+#, c-format
+msgid "Unknown controller type '%s'"
+msgstr "Type de contrôleur '%s' inconnu"
+
+#, c-format
+msgid "Unknown disk name '%s' and no address specified"
+msgstr "Nom de disque « %s » inconnu et aucune adresse n'a été spécifiée"
+
+msgid "Unknown error"
+msgstr "Erreur inconnue"
+
+#, c-format
+msgid "Unknown interface <driver name='%s'> has been specified"
+msgstr "Interface inconnue <driver name='%s'> spécifiée"
+
+#, c-format
+msgid "Unknown interface <driver txmode='%s'> has been specified"
+msgstr "Interface inconnue <driver txmode='%s'> spécifiée"
+
+msgid "Unknown job"
+msgstr "Tâche inconnue"
+
+#, c-format
+msgid "Unknown mode '%s' in interface <actual> element"
+msgstr "Mode « %s » inconnu dans l'élément <actual> de l'interface"
+
+msgid "Unknown mode has been specified"
+msgstr "Un mode inconnu a été spécifié"
+
+#, c-format
+msgid "Unknown model type '%s'"
+msgstr "Type de modèle '%s' inconnu"
+
+#, c-format
+msgid "Unknown protocol '%s'"
+msgstr "Protocole inconnu '%s'"
+
+#, c-format
+msgid "Unknown source mode '%s'"
+msgstr "Mode source '%s' inconnu"
+
+#, c-format
+msgid "Unknown startup policy '%s'"
+msgstr "Politique de démarrage « %s » inconnue"
+
+#, c-format
+msgid "Unknown value '%s' for <address> 'multifunction' attribute"
+msgstr "Valeur inconnue « %s » pour l'attribut « multifunction » <address>"
+
+msgid "Unmatched ( or \\("
+msgstr "« ( » ou « \\( » non fermé"
+
+msgid "Unmatched ) or \\)"
+msgstr "« ) » ou « \\) » non ouvert"
+
+msgid "Unmatched \\{"
+msgstr "« { » non fermé"
+
+#, c-format
+msgid "Unsupported CPU placement mode '%s'"
+msgstr "Mode de placement du CPU « %s » non-pris en charge"
+
+#, c-format
+msgid "Unsupported NUMA memory tuning mode '%s'"
+msgstr "Mode de réglage de la mémoire NUMA « %s » non-pris en charge"
+
+msgid "Upgrade to a kernel supporting namespaces"
+msgstr "Mise à jour vers un noyau prenant en charges les espaces de nommages"
+
+msgid "Used memory:"
+msgstr "Mémoire utilisée :"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Utilisation de l'API : %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "VCPU :"
+
+msgid "VNC supports connected='keep' only"
+msgstr "VNC prend uniquement en charge connected='keep'"
+
+#, c-format
+msgid "Vol %s created\n"
+msgstr "Volume %s créé\n"
+
+#, c-format
+msgid "Vol %s created from %s\n"
+msgstr "Volume %s créé depuis %s\n"
+
+#, c-format
+msgid "Vol %s deleted\n"
+msgstr "Volume %s détruit\n"
+
+msgid "WARN"
+msgstr "WARN"
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Bienvenue dans %s, le terminal de virtualisation interactif.\n"
+"\n"
+
+msgid "XML does not contain expected 'cpu' element"
+msgstr "Le XML ne contient pas l'élément « cpu » attendu"
+
+msgid "XML does not contain expected 'sysinfo' element"
+msgstr "Le XML ne contient pas l'élément « sysinfo » attendu"
+
+msgid "XML file"
+msgstr "fichier XML"
+
+msgid "active"
+msgstr "actif"
+
+#, c-format
+msgid "address type='%s' not supported in hostdev interfaces"
+msgstr "address type='%s' n'est pas pris en charge sur les interfaces hostdev"
+
+msgid "ai_family not supported"
+msgstr "ai_family non pris en charge"
+
+msgid "ai_socktype not supported"
+msgstr "ai_socktype non pris en charge"
+
+msgid "allow the resize to shrink the volume"
+msgstr "permet à l'opération de modification de taille de réduire le volume"
+
+msgid "attach device from an XML file"
+msgstr "attacher un périphérique depuis un fichier XML"
+
+msgid "attach disk device"
+msgstr "attacher un périphérique disque"
+
+msgid "attach network interface"
+msgstr "attacher une interface réseau"
+
+msgid "authentication failed"
+msgstr "échec de l'authentification"
+
+#, c-format
+msgid "authentication failed: %s"
+msgstr "l'authentification a échoué : %s"
+
+msgid "authentication required"
+msgstr "authentification requise"
+
+msgid "autostart a domain"
+msgstr "démarrer automatiquement un domaine"
+
+msgid "autostart a network"
+msgstr "démarrer automatiquement un réseau"
+
+msgid "autostart a pool"
+msgstr "démarrer automatiquement un pool"
+
+msgid "balloon memory must contain model name"
+msgstr "la mémoire ballon doit contenir le nom du modèle"
+
+msgid "block"
+msgstr "bloc"
+
+msgid "block device"
+msgstr "périphérique en mode bloc"
+
+#, c-format
+msgid "boot order '%s' used for more than one device"
+msgstr "ordre de démarrage « %s » utilisé par plus d'un périphérique"
+
+msgid "build a pool"
+msgstr "construire un pool"
+
+msgid "building"
+msgstr "construction"
+
+msgid "can't parse cputune emulator period value"
+msgstr "impossible d'analyser la valeur de la période de l'émulateur cputune"
+
+msgid "can't parse cputune emulator quota value"
+msgstr "impossible d'analyser la valeur du quota de l'émulateur cputune"
+
+msgid "can't parse cputune period value"
+msgstr "impossible d'analyser la valeur de la période cputune"
+
+msgid "can't parse cputune quota value"
+msgstr "impossible d'analyser la valeur du quota cputune"
+
+msgid "can't parse cputune shares value"
+msgstr "impossible d'analyser la valeur des partages cputunes"
+
+#, c-format
+msgid "cannot change to root directory: %s"
+msgstr "ne peut pas changer de répertoire racine: %s"
+
+#, c-format
+msgid "cannot create config directory '%s'"
+msgstr "impossible de créer le répertoire de configuration « %s »"
+
+msgid "cannot extract blkiotune nodes"
+msgstr "impossible d'extraire les nœuds blkiotune"
+
+msgid "cannot extract console devices"
+msgstr "impossible d'extraire les périphériques de consoles"
+
+msgid "cannot extract emulatorpin nodes"
+msgstr "impossible d'extraire les nœuds emulatorpin"
+
+msgid "cannot extract numatune nodes"
+msgstr "impossible d'extraire les nœuds numatune"
+
+msgid "cannot extract resource nodes"
+msgstr "impossible d'extraire les nœuds de ressources"
+
+msgid "cannot generate a random uuid for instanceid"
+msgstr "impossible de créer un UUID aléatoire pour interfaceid"
+
+msgid "cannot generate a random uuid for interfaceid"
+msgstr "Impossible de générer un UUID aléatoire pour interfaceid"
+
+msgid "cannot get the host uuid"
+msgstr "impossible d'obtenir l'uuid de l'hôte"
+
+msgid "cannot initialize condition variable"
+msgstr "Impossible d'initialiser la variable condition"
+
+msgid "cannot initialize mutex"
+msgstr "impossible d'initialiser le mutex"
+
+#, c-format
+msgid "cannot list SASL mechanisms %d (%s)"
+msgstr "Impossible de lister les mécanismes SASL %d (%s)"
+
+#, c-format
+msgid "cannot parse UUID '%s'"
+msgstr "impossible d'analyser l'UUID '%s'"
+
+#, c-format
+msgid "cannot parse bus %s"
+msgstr "impossible d'analyser le bus %s"
+
+#, c-format
+msgid "cannot parse bus '%s'"
+msgstr "impossible d'analyser le bus « %s »"
+
+#, c-format
+msgid "cannot parse device %s"
+msgstr "impossible d'analyser le périphérique %s"
+
+msgid "cannot parse device end location"
+msgstr "impossible d'analyser le périphérique et l'emplacement"
+
+msgid "cannot parse device start location"
+msgstr "impossible d'analyser la zone d'amorçage du périphérique"
+
+msgid "cannot parse instanceid parameter as a uuid"
+msgstr "impossible d'analyser le paramètre interfaceid en tant qu'uuid"
+
+msgid "cannot parse interfaceid parameter as a uuid"
+msgstr "Impossible d'analyser le paramètre interfaceid en tant qu'uuid"
+
+#, c-format
+msgid "cannot parse password validity time '%s', expect YYYY-MM-DDTHH:MM:SS"
+msgstr ""
+"impossible d'analyser le temps de validité du mot de passe « %s », AAAA-MM-"
+"JJTHH:MM:SS est attendu"
+
+#, c-format
+msgid "cannot parse product %s"
+msgstr "impossible d'analyser le produit %s"
+
+#, c-format
+msgid "cannot parse rdp port %s"
+msgstr "impossible d'analyser le port rdp %s"
+
+#, c-format
+msgid "cannot parse spice port %s"
+msgstr "impossible d'analyser le port spice %s"
+
+#, c-format
+msgid "cannot parse target '%s'"
+msgstr "impossible d'analyser la cible « %s »"
+
+#, c-format
+msgid "cannot parse unit '%s'"
+msgstr "impossible d'analyser l'unité « %s »"
+
+#, c-format
+msgid "cannot parse usage '%s' for RAM filesystem"
+msgstr ""
+"impossible d'analyser l'utilisation de « %s » pour le système de fichier RAM"
+
+msgid "cannot parse vbd filename, missing driver name"
+msgstr "impossible d'analyser le nom de fichier de vdb, nom de pilote manquant"
+
+msgid "cannot parse vbd filename, missing driver type"
+msgstr ""
+"impossible d'analyser le nom de fichier de vdb, type du pilote manquant"
+
+#, c-format
+msgid "cannot parse vendor id %s"
+msgstr "impossible d'analyser l'ID du constructeur %s"
+
+#, c-format
+msgid "cannot parse video heads '%s'"
+msgstr "impossible d'analyser les têtes vidéos « %s »"
+
+#, c-format
+msgid "cannot parse vnc WebSocket port %s"
+msgstr "impossible d'analyser le port WebSocket vnc %s"
+
+#, c-format
+msgid "cannot parse vnc port %s"
+msgstr "impossible d'analyser le port vnc %s"
+
+#, c-format
+msgid "cannot query SASL ssf on connection %d (%s)"
+msgstr "Impossible d'envoyer une requête SSF SASL lors de la connexion %d (%s)"
+
+#, c-format
+msgid "cannot query SASL username on connection %d (%s)"
+msgstr ""
+"Impossible d'envoyer une requête nom d'utilisateur SASL lors de la connexion "
+"%d (%s)"
+
+#, c-format
+msgid "cannot remove config %s"
+msgstr "impossible de supprimer la configuration %s"
+
+#, c-format
+msgid "cannot remove config for %s"
+msgstr "impossible de retirer la configuration pour %s"
+
+msgid "cannot resize the maximum memory on an active domain"
+msgstr "impossible de modifier la mémoire maximale sur un domaine actif"
+
+msgid "cap for XEN_CREDIT"
+msgstr "plafond pour XEN_CREDIT"
+
+msgid "capabilities"
+msgstr "capacités"
+
+msgid "change maximum memory limit"
+msgstr "changer la limite maximum de mémoire"
+
+msgid "change memory allocation"
+msgstr "changer la mémoire allouée"
+
+msgid "change number of virtual CPUs"
+msgstr "changer le nombre de processeurs virtuels"
+
+msgid "client tried invalid PolicyKit init request"
+msgstr ""
+"le client a envoyé une requête d'initialisation PolicyKit non prise en charge"
+
+msgid "client tried invalid SASL init request"
+msgstr "le client a lancé une requête d'initialisation SASL invalide"
+
+msgid "client tried invalid SASL start request"
+msgstr "le client a envoyé une requête de démarrage SASL non prise en charge"
+
+msgid "clone a volume."
+msgstr "cloner un volume."
+
+msgid "clone name"
+msgstr "nom du clone"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "la commande « %s » ne prend pas en charge l'option --%s"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "la commande « %s » nécessite l'option --%s"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "la commande « %s » nécessite l'option <%s>"
+
+msgid "configuration file syntax error"
+msgstr "erreur de syntaxe dans le fichier de configuration"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "erreur de syntaxe dans le fichier de configuration : %s"
+
+msgid "connect to the guest console"
+msgstr "se connecter à la console invitée"
+
+msgid "connection already open"
+msgstr "connexion déjà ouverte"
+
+msgid "connection not open"
+msgstr "la connexion n'est pas ouverte"
+
+#, c-format
+msgid "conversion from hyper to %s overflowed"
+msgstr "conversion de hyper à %s débordé"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "convertir l'ID ou l'UUID du domaine en nom de domaine"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "convertir un nom de domaine ou UUID en ID de domaine"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "convertir un ID ou un nom de domaine en UUID de domaine"
+
+msgid "convert a network UUID to network name"
+msgstr "convertir l'UUID d'un réseau en nom de réseau"
+
+msgid "convert a network name to network UUID"
+msgstr "convertir le nom d'un réseau en UUID de réseau"
+
+msgid "convert a pool UUID to pool name"
+msgstr "convertir l'UUID d'un pool en nom de pool"
+
+msgid "convert a pool name to pool UUID"
+msgstr "convertir le nom d'un pool en UUID de pool"
+
+msgid "could not connect to Xen Store"
+msgstr "impossible de se connecter au magasin Xen"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "impossible de se connecter au magasin Xen %s"
+
+msgid "could not get domain UUID"
+msgstr "impossible d'obtenir l'UUID du domaine"
+
+msgid "could not initialize domain event timer"
+msgstr "impossible d'initialiser l'horloge d'événements du domaine"
+
+#, c-format
+msgid "could not parse weight %s"
+msgstr "impossible d'analyser le poids %s"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "impossible d'utiliser l'entrée de l'hyperviseur Xen"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "impossible d'utiliser l'entrée de l'hyperviseur Xen %s"
+
+msgid "crashed"
+msgstr "a échoué"
+
+msgid "create a domain from an XML file"
+msgstr "créer un domaine depuis un fichier XML"
+
+msgid "create a network from an XML file"
+msgstr "créer un réseau depuis un fichier XML"
+
+msgid "create a pool from a set of args"
+msgstr "créer un pool depuis un ensemble d'arguments"
+
+msgid "create a pool from an XML file"
+msgstr "créer un pool depuis un fichier XML"
+
+msgid "create a vol from an XML file"
+msgstr "créer un volume depuis un fichier XML"
+
+msgid "create a volume from a set of args"
+msgstr "créer un volume depuis un ensemble d'arguments"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "définir (mais ne pas démarrer) un domaine depuis un fichier XML"
+
+msgid "define a pool from a set of args"
+msgstr "définir un pool à partir d'un ensemble d'argument"
+
+msgid "degraded"
+msgstr "endommagé"
+
+msgid "delete a pool"
+msgstr "effacer un pool"
+
+msgid "delete a vol"
+msgstr "supprimer un volume"
+
+msgid "detach device from an XML file"
+msgstr "détacher un périphérique depuis un fichier XML"
+
+msgid "detach disk device"
+msgstr "détacher un périphérique disque"
+
+msgid "detach network interface"
+msgstr "détacher une interface réseau"
+
+msgid "device key"
+msgstr "clé de périphérique"
+
+msgid "disable autostarting"
+msgstr "désactiver le démarrage automatique"
+
+msgid "disk event_idx mode supported only for virtio bus"
+msgstr "mode de disque event_idx uniquement pris en charge pour le bus virtio"
+
+msgid "disk ioeventfd mode supported only for virtio bus"
+msgstr "mode de disque ioeventfd uniquement pris en charge pour le bus virtio"
+
+msgid "disk product is more than 16 characters"
+msgstr "le produit du disque fait plus de 16 caractères"
+
+msgid "disk product is not printable string"
+msgstr "Le produit du disque n'est pas une chaîne imprimable"
+
+msgid "disk vendor is more than 8 characters"
+msgstr "le constructeur de disque fait plus de 8 caractères"
+
+msgid "disk vendor is not printable string"
+msgstr "le constructeur de disque n'est pas une chaîne imprimable"
+
+msgid "display available free memory for the NUMA cell."
+msgstr "afficher la quantité de mémoire disponible pour les cellules NUMA."
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "le domaine %s existe déjà"
+
+#, c-format
+msgid "domain '%s' already exists with uuid %s"
+msgstr "Le domaine « %s » existe déjà avec l'uuid %s"
+
+#, c-format
+msgid "domain '%s' is already defined with uuid %s"
+msgstr "Le domaine « %s » est déjà défini avec l'uuid %s"
+
+#, c-format
+msgid "domain event %d not registered"
+msgstr "l'événement du domaine %d n'est pas enregistré"
+
+msgid "domain id or name"
+msgstr "nom ou ID de domaine"
+
+msgid "domain id or uuid"
+msgstr "UUID ou ID de domaine"
+
+msgid "domain information"
+msgstr "informations du domaine"
+
+msgid "domain information in XML"
+msgstr "informations du domaine en XML"
+
+msgid "domain information incomplete, missing HVM loader"
+msgstr "informations de domaine incomplètes, chargeur HVM manquant"
+
+msgid "domain information incomplete, missing kernel & bootloader"
+msgstr ""
+"informations de domaine incomplètes, noyau et chargeur de démarrage manquants"
+
+msgid "domain information incomplete, missing name"
+msgstr "informations de domaine incomplètes, nom manquant"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "informations de domaine incomplètes, vbd n'a pas de dev"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "informations de domaine incomplètes, vbd n'a pas de src"
+
+msgid "domain is not running"
+msgstr "le domaine n'est pas actif"
+
+msgid "domain name or uuid"
+msgstr "nom du domaine ou UUID"
+
+msgid "domain state"
+msgstr "état du domaine"
+
+msgid "domainMigratePrepare did not set uri"
+msgstr "domainMigratePrepare n'a pas paramétré URI"
+
+msgid "driver of disk device"
+msgstr "pilote du périphérique disque"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "vider l'espace mémoire d'un domaine dans un fichier pour analyse"
+
+msgid "dynamic label type must use resource relabeling"
+msgstr ""
+"le type d'étiquetage dynamique doit utiliser le réétiquetage des ressources"
+
+msgid "error"
+msgstr "erreur"
+
+msgid "error copying UUID"
+msgstr "erreur de copie de l'UUID"
+
+msgid "error: "
+msgstr "erreur :"
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "syntaxe attendue : --%s <%s>"
+
+#, c-format
+msgid "expected unicast mac address, found multicast '%s'"
+msgstr "adresse monodiffusion mac attendue, multidiffusion « %s » trouvée"
+
+msgid "expecting a name"
+msgstr "nom attendu"
+
+msgid "expecting a separator"
+msgstr "séparateur attendu"
+
+msgid "expecting a separator in list"
+msgstr "séparateur attendu dans la liste"
+
+msgid "expecting a value"
+msgstr "valeur attendue"
+
+#, c-format
+msgid "expecting absolute path: %s"
+msgstr "chemin absolu attendu : %s"
+
+msgid "expecting an assignment"
+msgstr "affectation attendue"
+
+msgid "failed to connect to the hypervisor"
+msgstr "impossible de se connecter à l'hyperviseur"
+
+msgid "failed to copy security label"
+msgstr "Impossible de copier le module de sécurité"
+
+msgid "failed to generate XML"
+msgstr "impossible de créer XML"
+
+msgid "failed to generate uuid"
+msgstr "Impossible de générer l'UUID"
+
+msgid "failed to get URI"
+msgstr "impossible de récupérer l'URI"
+
+msgid "failed to get capabilities"
+msgstr "impossible d'obtenir les capacités"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "impossible de récupérer le domaine « %s »"
+
+msgid "failed to get domain UUID"
+msgstr "impossible de récupérer l'UUID du domaine"
+
+msgid "failed to get hostname"
+msgstr "impossible de récupérer le nom de l'hôte"
+
+msgid "failed to get hypervisor type"
+msgstr "impossible de récupérer le type d'hyperviseur"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "impossible de récupérer le réseau « %s »"
+
+msgid "failed to get network UUID"
+msgstr "impossible de récupérer l'UUID du réseau"
+
+msgid "failed to get node information"
+msgstr "impossible de récupérer les informations relatives au noeud"
+
+#, c-format
+msgid "failed to get pool '%s'"
+msgstr "impossible de récupérer le pool « %s »"
+
+msgid "failed to get pool UUID"
+msgstr "impossible de récupérer l'UUID du pool"
+
+msgid "failed to get the hypervisor version"
+msgstr "impossible de récupérer la version de l'hyperviseur"
+
+msgid "failed to get the library version"
+msgstr "impossible de récupérer la version de la bibliothèque"
+
+#, c-format
+msgid "failed to get vol '%s'"
+msgstr "impossible de récupérer le volume « %s »"
+
+#, c-format
+msgid "failed to mark network %s as autostarted"
+msgstr "impossible de marquer le réseau %s en démarrage automatique"
+
+#, c-format
+msgid "failed to mark pool %s as autostarted"
+msgstr "impossible de démarrer automatiquement le pool %s"
+
+msgid "failed to open file"
+msgstr "impossible d'ouvrir le fichier"
+
+msgid "failed to open the log file. check the log file path"
+msgstr "impossible d'ouvrir le fichier journal. Vérifiez son chemin d'accès"
+
+msgid "failed to parse configuration file"
+msgstr "impossible d'analyser le fichier de configuration"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "impossible d'analyser le fichier de configuration %s"
+
+msgid "failed to read configuration file"
+msgstr "impossible de lire le fichier de configuration"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "impossible de lire le fichier de configuration %s"
+
+#, c-format
+msgid "failed to resize the RBD image '%s'"
+msgstr "échec de la modification de taille de l'image RBD « %s »"
+
+msgid "failed to save content"
+msgstr "impossible d'enregistrer le contenu"
+
+msgid "failed to serialize S-Expr"
+msgstr "impossible de sérialiser S-Expr"
+
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "impossible de sérialiser S-Expr : %s"
+
+#, c-format
+msgid "failed to unmark network %s as autostarted"
+msgstr "impossible de démarquer le réseau %s en démarrage automatique"
+
+#, c-format
+msgid "failed to unmark pool %s as autostarted"
+msgstr "impossible d'annuler le démarrage automatique du pool %s"
+
+msgid "failed to write configuration file"
+msgstr "impossible d'écrire le fichier de configuration"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "impossible d'écrire le fichier de configuration : %s"
+
+msgid "failed to write the log file"
+msgstr "impossible d'écrire dans le fichier journal"
+
+msgid "file"
+msgstr "fichier"
+
+msgid "file containing an XML domain description"
+msgstr "fichier contenant la description XML d'un domaine"
+
+msgid "file containing an XML network description"
+msgstr "fichier contenant la description XML d'un réseau"
+
+msgid "file containing an XML pool description"
+msgstr "fichier contenant la description XML d'un pool"
+
+msgid "file containing an XML vol description"
+msgstr "fichier contenant la description XML d'un volume"
+
+msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
+msgstr "type de format de fichier raw,bochs,qcow,qcow2,qed,vmdk"
+
+#, c-format
+msgid "for Linux >= %d.%d.%d"
+msgstr "pour Linux >= %d.%d.%d"
+
+msgid "get device block stats for a domain"
+msgstr ""
+"retourner les statistiques d'un périphérique en mode bloc pour un domaine"
+
+msgid "get network interface stats for a domain"
+msgstr "obtenir les statistiques d'une interface réseau pour un domaine"
+
+msgid "getting time of day"
+msgstr "récupération de l'heure du jour"
+
+msgid "gracefully shutdown a domain"
+msgstr "arrêter un domaine proprement"
+
+msgid "graphics listen type must be specified"
+msgstr "le type d'écoute des graphismes doit être spécifié"
+
+msgid "guestfwd channel does not define a target address"
+msgstr "le canal guestfwd ne définit pas d'adresse cible"
+
+msgid "guestfwd channel does not define a target port"
+msgstr "le canal guestfwd ne définit pas de port cible"
+
+msgid "guestfwd channel only supports IPv4 addresses"
+msgstr "le canal guestfwd prend uniquement en charge les adresses IPv4"
+
+msgid "host-certificates mode needs exactly three certificates"
+msgstr "le mode host-certificates nécessite exactement trois certificats"
+
+msgid "hypervisor connection URI"
+msgstr "URI de connexion à l'hyperviseur"
+
+msgid "in shutdown"
+msgstr "en arrêt"
+
+msgid "inactive"
+msgstr "inactif"
+
+#, c-format
+msgid "incorrect boot order '%s', expecting positive integer"
+msgstr "ordre de démarrage « %s » inconnu, un entier positif est attendu"
+
+msgid "init binary must be specified"
+msgstr "le binaire init doit être indiqué"
+
+msgid "interface has no name"
+msgstr "l'interface n'a pas de nom"
+
+msgid "interface mtu value is improper"
+msgstr "la valeur mtu de l'interface est incorrecte"
+
+msgid "internal error"
+msgstr "erreur interne"
+
+msgid "invalid MAC address"
+msgstr "adresse MAC invalide"
+
+#, c-format
+msgid "invalid MAC address: %s"
+msgstr "adresse MAC invalide : %s"
+
+msgid "invalid RNG rate bytes value"
+msgstr "valeur des octets de la fréquence RNG invalide"
+
+msgid "invalid RNG rate period value"
+msgstr "valeur de la période de fréquence RNG invalide"
+
+msgid "invalid UUID"
+msgstr "UUID invalide"
+
+msgid "invalid connection pointer in"
+msgstr "pointeur de connexion invalide dans"
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "pointeur de connexion invalide dans %s"
+
+msgid "invalid domain pointer in"
+msgstr "pointeur de domaine invalide dans"
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "pointeur de domaine invalide dans %s"
+
+#, c-format
+msgid "invalid domain state '%s'"
+msgstr "état de domaine « %s »  invalide"
+
+#, c-format
+msgid "invalid domain state reason '%s'"
+msgstr "raison de l'état du domaine « %s » invalide"
+
+#, c-format
+msgid "invalid domain state: %d"
+msgstr "état du domaine invalide : %d"
+
+#, c-format
+msgid "invalid domain type %s"
+msgstr "type de domaine %s invalide"
+
+msgid "invalid geometry settings (cyls)"
+msgstr "paramètres de géométrie invalides (cyls)"
+
+msgid "invalid geometry settings (heads)"
+msgstr "paramètres de géométrie invalides (heads)"
+
+msgid "invalid geometry settings (secs)"
+msgstr "paramètres de géométrie invalides (secs)"
+
+#, c-format
+msgid "invalid host UUID: %s"
+msgstr "hôte invalide. UUID : %s"
+
+#, c-format
+msgid "invalid logical block size '%s'"
+msgstr "taille du bloc logique « %s » invalide"
+
+msgid "invalid network pointer in"
+msgstr "pointeur de réseau invalide dans"
+
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "pointeur de réseau invalide dans %s"
+
+#, c-format
+msgid "invalid path: %s"
+msgstr "chemin invalide : %s"
+
+#, c-format
+msgid "invalid physical block size '%s'"
+msgstr "taille du bloc physique « %s » invalide"
+
+msgid "invalid pid"
+msgstr "pid invalide"
+
+#, c-format
+msgid "invalid secret type %s"
+msgstr "type de secret %s invalide"
+
+#, c-format
+msgid "invalid secret type '%s'"
+msgstr "type de secret « %s » invalide"
+
+#, c-format
+msgid "invalid security relabel value %s"
+msgstr "valeur de réétiquetage de sécurité %s invalide"
+
+msgid "invalid storage pool pointer in"
+msgstr "pointeur de pool de stockage invalide dans"
+
+#, c-format
+msgid "invalid storage pool pointer in %s"
+msgstr "pointeur de pool de stockage invalide dans %s"
+
+msgid "invalid storage volume pointer in"
+msgstr "pointeur de volume de stockage invalide dans"
+
+#, c-format
+msgid "invalid storage volume pointer in %s"
+msgstr "pointeur de volume de stockage invalide dans %s"
+
+msgid "invalid timer frequency"
+msgstr "fréquence de l'horloge invalide"
+
+#, c-format
+msgid "invalid translation value '%s'"
+msgstr "valeur de traduction « %s » invalide "
+
+#, c-format
+msgid "invalid uuid %s"
+msgstr "uuid %s invalide"
+
+msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
+msgstr ""
+"valeur invalide pour rebootTimeout, doit se trouver dans la gamme [-1,65535]"
+
+#, c-format
+msgid "invalid value of state argument for HyperV Enlightenment feature '%s'"
+msgstr ""
+"valeur de l'argument de l'état de la fonctionnalité HyperV Enlightenment "
+"« %s » invalide"
+
+msgid "label overrides require relabeling to be enabled at the domain level"
+msgstr ""
+"les remplacements d'étiquettes nécessitent que le réétiquetage soit activé "
+"au niveau du domaine"
+
+msgid "list devices in a tree"
+msgstr "énumérer les périphériques en arbre"
+
+msgid "list domains"
+msgstr "lister les domaines"
+
+msgid "list inactive & active domains"
+msgstr "lister les domaines actifs et inactifs"
+
+msgid "list inactive & active networks"
+msgstr "lister les réseaux actifs et inactifs"
+
+msgid "list inactive & active pools"
+msgstr "lister les pools actifs et inactifs"
+
+msgid "list inactive domains"
+msgstr "lister les domaines inactifs"
+
+msgid "list inactive networks"
+msgstr "lister les réseaux inactifs"
+
+msgid "list inactive pools"
+msgstr "lister les pools inactifs"
+
+msgid "list is not closed with ]"
+msgstr "la liste n'est pas terminée avec « ] »"
+
+msgid "list networks"
+msgstr "lister les réseaux"
+
+msgid "list pools"
+msgstr "lister les pools"
+
+msgid "list snapshot names only"
+msgstr "liste des noms d'instantanés seulement"
+
+msgid "list uuid's only"
+msgstr "liste des uuid seulement"
+
+msgid "list vols"
+msgstr "lister les volumes"
+
+msgid "live migration"
+msgstr "migration pendant l'exécution"
+
+msgid "malformed <sysinfo> uuid element"
+msgstr "élément UUID <sysinfo> malformé"
+
+msgid "malformed capacity element"
+msgstr "capacité de l'élément non conforme"
+
+msgid "malformed group element"
+msgstr "groupe de l'élément non conforme"
+
+msgid "malformed octal mode"
+msgstr "mode octal non conforme"
+
+msgid "malformed owner element"
+msgstr "propriétaire de l'élément non conforme"
+
+msgid "malformed uuid element"
+msgstr "UUID de l'élément non conforme"
+
+msgid "malformed volume extent length value"
+msgstr "valeur de la longueur de l'extent du volume non conforme"
+
+msgid "malformed volume extent offset value"
+msgstr "valeur de décalage de l'extent du volume non conforme"
+
+msgid "malformed volume extent size value"
+msgstr "valeur de la taille de l'extent du volume non conforme"
+
+msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
+msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
+
+msgid "maxcells > REMOTE_NODE_MAX_CELLS"
+msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
+
+msgid "maxerrors too large"
+msgstr "maxerrors trop grand"
+
+msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+
+msgid "maxinfo > REMOTE_VCPUINFO_MAX"
+msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
+
+msgid "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+
+msgid "migrate domain to another host"
+msgstr "migrer un domaine vers un autre hôte"
+
+msgid "migration URI, usually can be omitted"
+msgstr "URI de migration, peut habituellement être omise"
+
+msgid "mirror requires file name"
+msgstr "le miroir requiert un nom de fichier"
+
+msgid "missing \""
+msgstr "manquant \""
+
+#, c-format
+msgid "missing 'state' attribute for HyperV Enlightenment feature '%s'"
+msgstr ""
+"attribut 'state' de la fonctionnalité HyperV Enlightenment « %s » manquant"
+
+msgid "missing 'timezone' attribute for clock with offset='timezone'"
+msgstr "attribut de l'horloge « timezone » avec offset='timezone' manquant"
+
+msgid "missing 'usage' attribute for RAM filesystem"
+msgstr "attribut « utilisation » manquant pour le système de fichiers RAM"
+
+msgid "missing RNG device model"
+msgstr "modèle de périphérique RNG manquant"
+
+msgid "missing TPM device backend"
+msgstr "l'arrière-plan du périphérique TPM est manquant"
+
+msgid "missing TPM device backend type"
+msgstr "le type de l'arrière-plan du périphérique TPM est manquant"
+
+#, c-format
+msgid "missing backend for pool type %d"
+msgstr "arrière-plan pour le type %d de pool manquant"
+
+msgid "missing boot device"
+msgstr "périphérique de démarrage manquant"
+
+msgid "missing boot order attribute"
+msgstr "attribut ordre de démarrage absent"
+
+msgid "missing capacity element"
+msgstr "capacité de l'élément manquante"
+
+msgid "missing cpuset for vcpupin"
+msgstr "cpuset manquant pour vcpupin"
+
+msgid "missing devices information"
+msgstr "périphériques non spécifiés"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "périphériques non spécifiés pour %s"
+
+msgid "missing domain state"
+msgstr "état du domaine manquant"
+
+msgid "missing domain type attribute"
+msgstr "attribut du type de domaine manquant"
+
+msgid "missing graphics device type"
+msgstr "type de périphérique graphique manquant"
+
+msgid "missing hub device type"
+msgstr "type du périphérique concentrateur manquant"
+
+msgid "missing input device type"
+msgstr "type de périphérique d'entrée manquant"
+
+msgid "missing kernel information"
+msgstr "noyau non spécifié"
+
+msgid "missing name for disk source"
+msgstr "Nom manquant pour le disque source"
+
+msgid "missing name for host"
+msgstr "nom manquant pour l'hôte"
+
+msgid "missing operating system information"
+msgstr "système d'exploitation non spécifié"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "système d'exploitation non spécifié pour %s"
+
+msgid "missing per-device path"
+msgstr "chemin « par périphérique » manquant"
+
+msgid "missing product"
+msgstr "produit manquant"
+
+msgid "missing resource partition attribute"
+msgstr "attribut de la partition des ressources manquant"
+
+msgid "missing root device information"
+msgstr "périphérique racine non spécifié"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "périphérique racine non spécifié dans %s"
+
+msgid "missing root element"
+msgstr "élément root manquant"
+
+msgid "missing security model in domain seclabel"
+msgstr "le modèle de sécurité est manquant dans le domaine seclabel"
+
+msgid "missing security model when using multiple labels"
+msgstr ""
+"modèle de sécurité manquant lors de l'utilisation de multiples étiquettes"
+
+msgid "missing smartcard device mode"
+msgstr "mode de périphérique smartcard manquant"
+
+msgid "missing socket for unix transport"
+msgstr "socket manquant pour le transport unix"
+
+msgid "missing source address type"
+msgstr "type d'adresse source manquant"
+
+msgid "missing source device"
+msgstr "périphérique source non spécifié"
+
+msgid "missing source host"
+msgstr "hôte source non spécifié"
+
+msgid "missing source information for device"
+msgstr "source non spécifiée pour le périphérique"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "source non spécifiée pour le périphérique %s"
+
+msgid "missing source path"
+msgstr "chemin source non spécifié"
+
+msgid "missing target information for device"
+msgstr "cible non spécifiée pour le périphérique"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "cible non spécifiée pour le périphérique %s"
+
+msgid "missing timer name"
+msgstr "nom de l'horloge manquant"
+
+msgid "missing type attribute in interface's <actual> element"
+msgstr "attribut de type manquant dans l'élément <actual> de l'interface"
+
+msgid "missing type in redirdev"
+msgstr "type manquant dans redirdev"
+
+msgid "missing username for auth"
+msgstr "nom d'utilisateur manquant pour auth"
+
+msgid "missing vendor"
+msgstr "fabriquant manquant"
+
+msgid "missing video model and cannot determine default"
+msgstr "modèle vidéo manquant et impossible de déterminer la valeur par défaut"
+
+msgid "mode of device reading and writing"
+msgstr "mode de lecture et d'écriture du périphérique"
+
+msgid "more than one adapters is specified for scsi hostdev source"
+msgstr "plus d'un adaptateur a été spécifié pour la source scsi hostdev"
+
+msgid "more than one source addresses is specified for scsi hostdev"
+msgstr "plus d'une source d'adresses est spécifiée pour scsi hostdev"
+
+msgid "mutex initialization failed"
+msgstr "initialisation du mutex échouée"
+
+msgid "name of the inactive domain"
+msgstr "nom du domaine inactif"
+
+msgid "name of the pool"
+msgstr "nom du pool"
+
+msgid "name of the volume"
+msgstr "nom du volume inactif"
+
+msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
+msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpus too large"
+msgstr "ncpus trop grand"
+
+#, c-format
+msgid "negotiated SSF %d was not strong enough"
+msgstr "le SSF %d negocié n'était pas assez robuste"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "le domaine %s existe déjà"
+
+msgid "network information in XML"
+msgstr "informations du réseau en XML"
+
+msgid "network interface type"
+msgstr "type d'interface réseau"
+
+msgid "network name"
+msgstr "nom du réseau"
+
+msgid "network name or uuid"
+msgstr "nom du domaine ou UUID"
+
+msgid "network uuid"
+msgstr "UUID réseau"
+
+msgid "no HVM domain loader"
+msgstr "aucun chargeur de domaine HVM"
+
+msgid "no autostart"
+msgstr "pas de démarrage automatique"
+
+msgid "no client username was found"
+msgstr "aucun nom d'utilisateur client n'a été trouvé"
+
+#, c-format
+msgid "no config file for %s"
+msgstr "aucun fichier de configuration pour %s"
+
+msgid "no domain config"
+msgstr "pas de configuration de domaine"
+
+#, c-format
+msgid "no domain with matching id %d"
+msgstr "aucun domaine ayant un id %d correspondant"
+
+msgid "no domain with matching uuid"
+msgstr "Aucun domaine ne correspond à l'UUID"
+
+#, c-format
+msgid "no domain with matching uuid '%s'"
+msgstr "aucun domaine ne correspond à l'UUID '%s'"
+
+msgid "no large enough free extent"
+msgstr "pas d'extent libre suffisamment grand"
+
+msgid "no limit"
+msgstr "aucune limite"
+
+msgid "no state"
+msgstr "sans état"
+
+#, c-format
+msgid "no system UUID supplied for '%s'"
+msgstr "aucun UUID système fourni pour '%s'"
+
+msgid "no valid connection"
+msgstr "pas de connexion valide"
+
+msgid "node information"
+msgstr "informations du noeud"
+
+msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
+msgstr ""
+"si « placement » est « static », nodeset doit être défini pour le réglage de "
+"la mémoire NUMA"
+
+msgid "nparams too large"
+msgstr "nombre de paramètres trop grand"
+
+msgid "number"
+msgstr "nombre"
+
+msgid "number of virtual CPUs"
+msgstr "nombre de CPU virtuelles"
+
+msgid "offline"
+msgstr "hors ligne"
+
+msgid "only a single TPM device is supported"
+msgstr "un seul périphérique TPM est pris en charge"
+
+msgid "only a single nvram device is supported"
+msgstr "un seul périphérique nvram est pris en charge"
+
+msgid "only one TPM backend is supported"
+msgstr "un seul arrière-plan TPM est pris en charge"
+
+msgid "only one emulatorpin is supported"
+msgstr "un seul emulatorpin est pris en charge"
+
+msgid "only one numatune is supported"
+msgstr "un seul numatune est pris en charge"
+
+msgid "only one resource element is supported"
+msgstr "un seul élément de ressources est pris en charge"
+
+msgid "only one set of redirection filter rule is supported"
+msgstr "un seul ensemble de règles de filtre de redirection est pris en charge"
+
+msgid "operation failed"
+msgstr "opération échouée"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "opération échouée : %s"
+
+msgid "operation forbidden for read only access"
+msgstr "opération interdite pour l'accès en lecture seule"
+
+msgid "out of memory"
+msgstr "plus de mémoire disponible"
+
+msgid "parser error"
+msgstr "erreur de l'analyseur"
+
+msgid "passthrough mode requires a character device type attribute"
+msgstr ""
+"le mode passthrough nécessite un attribut de type de périphérique de "
+"caractères"
+
+msgid "paused"
+msgstr "mis en pause"
+
+msgid "pool has no config file"
+msgstr "le pool ne possède aucun fichier de configuration"
+
+msgid "pool information in XML"
+msgstr "informations du pool en XML"
+
+msgid "pool name"
+msgstr "nom du pool"
+
+msgid "pool name or uuid"
+msgstr "nom du pool ou UUID"
+
+msgid "print help"
+msgstr "imprimer l'aide"
+
+msgid "print the hypervisor canonical URI"
+msgstr "afficher l'URI canonique de l'hyperviseur"
+
+msgid "print the hypervisor hostname"
+msgstr "afficher le nom d'hôte de l'hyperviseur"
+
+msgid "profileid parameter too long"
+msgstr "paramètre profileid trop long"
+
+#, c-format
+msgid "ps2 bus does not support %s input device"
+msgstr "le bus ps2 ne prend pas en charge le périphérique d'entrée %s"
+
+msgid "quit this interactive terminal"
+msgstr "quitter ce terminal interactif"
+
+msgid "read-only connection"
+msgstr "connexion en lecture seule"
+
+msgid "reboot a domain"
+msgstr "redémarrer un domaine"
+
+msgid "refresh a pool"
+msgstr "rafraichir un pool"
+
+msgid "remote_open: for 'ext' transport, command is required"
+msgstr "remote_open : pour le transport « ext », une commande est requise"
+
+msgid "resize a vol"
+msgstr "modifier la taille d'un volume"
+
+msgid "resource relabeling is not compatible with 'none' label type"
+msgstr ""
+"le réétiquetage de ressources n'est pas compatible avec le type d'étiquetage "
+"« none » (aucun)"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "restaurer un domaine à partir d'un état sauvé dans un fichier"
+
+msgid "resume a domain"
+msgstr "réactiver un domaine"
+
+msgid "return the pool uuid rather than pool name"
+msgstr "renvoie l'uuid du pool plutôt que son nom"
+
+msgid "returns the storage pool for a given volume key or path"
+msgstr "renvoie le pool de stockage pour un nom ou un chemin donné de volume"
+
+msgid "returns the volume key for a given volume name or path"
+msgstr "renvoie la clé du volume pour un nom ou un chemin donné de volume"
+
+msgid "returns the volume path for a given volume name or key"
+msgstr ""
+"renvoie le chemin vers le volume pour un nom ou une clé donnée de volume"
+
+msgid "running"
+msgstr "en cours d'exécution"
+
+#, c-format
+msgid "sasl start reply data too long %d"
+msgstr "données de réponse SASL de démarrage trop longues %d"
+
+#, c-format
+msgid "sasl step reply data too long %d"
+msgstr "données réponse SASL d'étape trop longues %d"
+
+msgid "save a domain state to a file"
+msgstr "enregistrer l'état du domaine dans un fichier"
+
+msgid "script used to bridge network interface"
+msgstr "script utilisé pour relier une interface réseau"
+
+msgid "secret UUID"
+msgstr "UUID secret"
+
+msgid "security imagelabel is missing"
+msgstr "imagelabel de sécurité est manquant"
+
+msgid "security label is missing"
+msgstr "l'étiquette de sécurité est manquante"
+
+msgid "sgio is only supported for scsi host device"
+msgstr "sgio est pris en charge pour les périphériques hôtes scsi uniquement"
+
+msgid "show version"
+msgstr "afficher la version"
+
+msgid "show/set scheduler parameters"
+msgstr "montrer/définir les paramètres du planificateur"
+
+msgid "shut off"
+msgstr "fermé"
+
+msgid "size > maximum buffer size"
+msgstr "taille > taille maximale du tampon"
+
+msgid "sndbuf must be a positive integer"
+msgstr "sndbuf doit être un entier positif"
+
+msgid "source device for underlying storage"
+msgstr "périphérique source pour le stockage sous-jacent"
+
+msgid "source of disk device"
+msgstr "source du périphérique disque"
+
+msgid "source of network interface"
+msgstr "source d'interface réseau"
+
+msgid "source path for underlying storage"
+msgstr "chemin source pour le stockage sous-jacent"
+
+msgid "source-host for underlying storage"
+msgstr "hôte source pour le stockage sous-jacent"
+
+msgid "spice channel missing name/mode"
+msgstr "nom ou mode du canal spice manquant"
+
+msgid "spice image missing compression"
+msgstr "compression de l'image spice manquante"
+
+msgid "spice jpeg missing compression"
+msgstr "compression jpeg spice manquante"
+
+msgid "spice mouse missing mode"
+msgstr "mode de la souris spice manquant"
+
+msgid "spice streaming missing mode"
+msgstr "mode de la diffusion spice manquant"
+
+msgid "spice zlib missing compression"
+msgstr "compression zlib spice manquante"
+
+msgid "spicevmc device type only supports virtio"
+msgstr "le type de périphérique spicevmc prend en charge virtio uniquement"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "démarrer un domaine (précédemment défini)"
+
+msgid "start a (previously defined) inactive network"
+msgstr "démarrer un réseau inactif (précédemment défini)"
+
+msgid "start a (previously defined) inactive pool"
+msgstr "démarrer un pool inactif (précédemment défini)"
+
+msgid "storage pool does not support vol deletion"
+msgstr "le pool de stockage ne prend pas en charge la suppression de volume"
+
+msgid "storage pool does not support volume creation"
+msgstr "le pool de stockage ne prend pas en charge la création de volume"
+
+msgid "storage pool information"
+msgstr "informations du pool de stockage"
+
+msgid "storage pool is not active"
+msgstr "le pool de stockage n'est pas actif"
+
+msgid "storage vol already exists"
+msgstr "le volume de stockage existe déjà"
+
+msgid "storage vol information"
+msgstr "informations du volume de stockage"
+
+#, c-format
+msgid "stream aborted with unexpected status %d"
+msgstr "flux interrompu avec un statut %d inattendu"
+
+msgid "stream had I/O failure"
+msgstr "le flux a eu des erreurs d'E/S"
+
+msgid "stream had unexpected termination"
+msgstr "le flux a eu une fin inattendue"
+
+msgid "string"
+msgstr "chaîne"
+
+msgid "subdriver of disk device"
+msgstr "pilote secondaire du périphérique disque"
+
+msgid "suspend a domain"
+msgstr "suspendre un domaine"
+
+msgid "sysinfo must contain a type attribute"
+msgstr "sysinfo doit contenir un attribut de type"
+
+msgid "system call error"
+msgstr "erreur lors de l'appel système"
+
+msgid "target device type"
+msgstr "type de périphérique cible"
+
+msgid "target for underlying storage"
+msgstr "cible pour le stockage sous-jacent"
+
+msgid "target network name"
+msgstr "nom du réseau cible"
+
+msgid "target of disk device"
+msgstr "cible du périphérique disque"
+
+#, c-format
+msgid "target type must be specified for %s device"
+msgstr "le type de cible doit être spécifié pour le périphérique %s"
+
+msgid "testOpen: supply a path or use test:///default"
+msgstr "testOpen : donnez un chemin d'accès ou utilisez test:///default"
+
+msgid "the state to restore"
+msgstr "l'état à restaurer"
+
+msgid "this domain exists already"
+msgstr "ce domaine existe déjà"
+
+msgid "this network exists already"
+msgstr "ce domaine existe déjà"
+
+msgid "too many drivers registered"
+msgstr "trop de pilotes enregistrés"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "trop de pilotes enregistrés dans %s"
+
+msgid "transient domains do not have any persistent config"
+msgstr "Les domaines temporaires n'ont pas de configuration persistante"
+
+msgid "transport methods unix, ssh and ext are not supported under Windows"
+msgstr ""
+"les méthodes de transport uni, xxh et ext, ne sont pas prises en charge sous "
+"Windows"
+
+msgid "tray is only valid for cdrom and floppy"
+msgstr ""
+"le plateau est uniquement valide pour le lecteur de CD-ROM et le lecteur de "
+"disquettes"
+
+msgid "tty console"
+msgstr "console TTY"
+
+msgid "type of the pool"
+msgstr "type du pool"
+
+#, c-format
+msgid "unable to create rundir %s: %s"
+msgstr "Impossible de créer le répertoire d'exécution %s : %s"
+
+msgid "unable to generate uuid"
+msgstr "impossible de générer l'UUID"
+
+#, c-format
+msgid "unable to parse mac address '%s'"
+msgstr "impossible d'analyser l'adresse mac « %s »"
+
+msgid "undefine an inactive pool"
+msgstr "supprimer un pool inactif"
+
+#, c-format
+msgid "unexpected %s action: %d"
+msgstr "action %s inattendue : %d"
+
+#, c-format
+msgid "unexpected accessmode %d"
+msgstr "accessmode %d inattendu"
+
+#, c-format
+msgid "unexpected boot device type %d"
+msgstr "type de périphérique de démarrage %d inattendu"
+
+#, c-format
+msgid "unexpected char device type %d"
+msgstr "type de périphérique de caractères %d inattendu"
+
+#, c-format
+msgid "unexpected char type %d"
+msgstr "type de caractère %d inattendu"
+
+#, c-format
+msgid "unexpected codec type %d"
+msgstr "type de codec %d inattendu"
+
+#, c-format
+msgid "unexpected controller type %d"
+msgstr "type de contrôleur %d inattendu"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "donnée inattendue « %s »"
+
+#, c-format
+msgid "unexpected disk bus %d"
+msgstr "bus de disque %d inattendu"
+
+#, c-format
+msgid "unexpected disk device %d"
+msgstr "périphérique de disque %d inattendu"
+
+#, c-format
+msgid "unexpected disk type %d"
+msgstr "type de disque %d inattendu"
+
+#, c-format
+msgid "unexpected disk type %s"
+msgstr "type de disque %s inattendu"
+
+#, c-format
+msgid "unexpected domain %s already exists"
+msgstr "le domaine inattendu %s existe déjà"
+
+#, c-format
+msgid "unexpected domain type %d"
+msgstr "type de domaine %d inattendu"
+
+#, c-format
+msgid "unexpected filesystem type %d"
+msgstr "type de système de fichiers %d inattendu"
+
+#, c-format
+msgid "unexpected hostdev mode %d"
+msgstr "mode hostdev %d inattendu"
+
+#, c-format
+msgid "unexpected hostdev type %d"
+msgstr "type hostdev %d inattendu"
+
+#, c-format
+msgid "unexpected input bus type %d"
+msgstr "type de bus d'entrée %d inattendu"
+
+#, c-format
+msgid "unexpected input type %d"
+msgstr "type d'entrée %d inattendu"
+
+#, c-format
+msgid "unexpected memballoon model %d"
+msgstr "modèle memballoon %d inattendu"
+
+#, c-format
+msgid "unexpected model type %d"
+msgstr "type de modèle %d inattendu"
+
+#, c-format
+msgid "unexpected net type %d"
+msgstr "type net %d inattendu"
+
+#, c-format
+msgid "unexpected pci hostdev driver name type %d"
+msgstr "type de nom du pilote pci hostdev %d inattendu"
+
+msgid "unexpected pool type"
+msgstr "type de pool inattendu"
+
+#, c-format
+msgid "unexpected root element <%s>, expecting <domain>"
+msgstr "élément racine <%s> inattendu, <domain> attendu"
+
+#, c-format
+msgid "unexpected root element <%s>, expecting <domstatus>"
+msgstr "élément racine <%s> inattendu, <domstatus> attendu"
+
+#, c-format
+msgid "unexpected smartcard type %d"
+msgstr "type de smartcard %d inattendu"
+
+#, c-format
+msgid "unexpected smbios mode %d"
+msgstr "mode smbios %d inattendu"
+
+#, c-format
+msgid "unexpected sound model %d"
+msgstr "modèle de son %d inattendu"
+
+#, c-format
+msgid "unexpected source mode %d"
+msgstr "mode source %d inattendu"
+
+#, c-format
+msgid "unexpected timer mode %d"
+msgstr "mode de l'horloge %d inattendu"
+
+#, c-format
+msgid "unexpected timer name %d"
+msgstr "nom d'horloge %d inattendu"
+
+#, c-format
+msgid "unexpected timer tickpolicy %d"
+msgstr "politique tickpolicy de l'horloge %d inattendue"
+
+#, c-format
+msgid "unexpected video model %d"
+msgstr "modèle vidéo %d inattendu"
+
+#, c-format
+msgid "unexpected watchdog action %d"
+msgstr "action de surveillance %d inattendue"
+
+#, c-format
+msgid "unexpected watchdog model %d"
+msgstr "modèle de surveillance %d inattendu"
+
+#, c-format
+msgid "unknown %s action: %s"
+msgstr "action %s inconnue : %s"
+
+msgid "unknown OS type"
+msgstr "type de SE inconnu"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "type de SE inconnu %s"
+
+#, c-format
+msgid "unknown PM state value %s"
+msgstr "valeur de l'état PM %s inconnue"
+
+#, c-format
+msgid "unknown RNG model '%s'"
+msgstr "modèle de RNG « %s » inconnu"
+
+#, c-format
+msgid "unknown accessmode '%s'"
+msgstr "mode d'accès '%s' inconnu"
+
+#, c-format
+msgid "unknown address type '%s'"
+msgstr "type d'adresse '%s' inconnue"
+
+#, c-format
+msgid "unknown auth type '%s'"
+msgstr "type auth « %s » inconnu"
+
+#, c-format
+msgid "unknown bonding mode %s"
+msgstr "mode de liaison %s inconnu"
+
+#, c-format
+msgid "unknown boot device '%s'"
+msgstr "périphérique de démarrage '%s' inconnu"
+
+#, c-format
+msgid "unknown character device type: %s"
+msgstr "type de périphérique de caractères inconnu : %s"
+
+#, c-format
+msgid "unknown clock adjustment '%s'"
+msgstr "ajustement de l'horloge « %s » inconnu"
+
+#, c-format
+msgid "unknown clock basis '%s'"
+msgstr "base de l'horloge « %s » inconnue"
+
+#, c-format
+msgid "unknown codec type '%s'"
+msgstr "type de code « %s » inconnu"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "commande inconnue : « %s »"
+
+#, c-format
+msgid "unknown connected value %s"
+msgstr "valeur connectée %s inconnue"
+
+#, c-format
+msgid "unknown default spice channel mode %s"
+msgstr "mode du canal spice par défaut %s"
+
+#, c-format
+msgid "unknown dhcp peerdns value %s"
+msgstr "valeur dhcp peerdns %s inconnue"
+
+#, c-format
+msgid "unknown disk bus type '%s'"
+msgstr "Type de bus disque « %s » inconnu"
+
+#, c-format
+msgid "unknown disk cache mode '%s'"
+msgstr "mode de mise en cache du disque « %s » inconnu"
+
+#, c-format
+msgid "unknown disk copy_on_read mode '%s'"
+msgstr "mode de disque copy_on_read « %s » inconnu"
+
+#, c-format
+msgid "unknown disk device '%s'"
+msgstr "périphérique disque « %s » inconnu"
+
+#, c-format
+msgid "unknown disk discard mode '%s'"
+msgstr "mode de disque abandon « %s » inconnu"
+
+#, c-format
+msgid "unknown disk error policy '%s'"
+msgstr "politique d'erreur de disque « %s » inconnue"
+
+#, c-format
+msgid "unknown disk event_idx mode '%s'"
+msgstr "mode de disque event_idx « %s » inconnu"
+
+#, c-format
+msgid "unknown disk io mode '%s'"
+msgstr "mode d'E/S de disque « %s » inconnu"
+
+#, c-format
+msgid "unknown disk ioeventfd mode '%s'"
+msgstr "mode de disque ioeventfd « %s » inconnu"
+
+#, c-format
+msgid "unknown disk rawio setting '%s'"
+msgstr "paramètre rawio de disque « %s » inconnu"
+
+#, c-format
+msgid "unknown disk read error policy '%s'"
+msgstr "politique d'erreur de lecture de disque « %s » inconnue"
+
+#, c-format
+msgid "unknown disk sgio mode '%s'"
+msgstr "mode sgio de disque « %s » inconnu"
+
+#, c-format
+msgid "unknown disk snapshot setting '%s'"
+msgstr "paramètre de l'instantané du disque « %s » inconnu"
+
+#, c-format
+msgid "unknown disk tray status '%s'"
+msgstr "statut du plateau de disques « %s » inconnu"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "Type de disque '%s' inconnu"
+
+#, c-format
+msgid "unknown driver format value '%s'"
+msgstr "valeur du format du pilote « %s » inconnue"
+
+#, c-format
+msgid "unknown filesystem type '%s'"
+msgstr "type de système de fichiers « %s » inconnu"
+
+#, c-format
+msgid "unknown filesystem write policy '%s'"
+msgstr "politique d'écriture « %s » du système de fichiers inconnue"
+
+#, c-format
+msgid "unknown fs driver type '%s'"
+msgstr "type de pilote fs « %s » inconnu"
+
+#, c-format
+msgid "unknown fullscreen value '%s'"
+msgstr "valeur de plein écran « %s » inconnue"
+
+#, c-format
+msgid "unknown graphics device type '%s'"
+msgstr "type de périphérique graphique « %s »  inconnu"
+
+#, c-format
+msgid "unknown graphics listen type '%s'"
+msgstr "type d'écoute des graphismes « %s » inconnu"
+
+msgid "unknown host"
+msgstr "hôte inconnu"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "hôte %s inconnu"
+
+#, c-format
+msgid "unknown host device source address type '%s'"
+msgstr "type d'adresse source « %s » du périphérique hôte inconnu"
+
+#, c-format
+msgid "unknown hostdev mode '%s'"
+msgstr "mode hostdev « %s » inconnu"
+
+#, c-format
+msgid "unknown hub device type '%s'"
+msgstr "type de périphérique concentrateur « %s » inconnu"
+
+#, c-format
+msgid "unknown input bus type '%s'"
+msgstr "type de bus d'entrée « %s » inconnu"
+
+#, c-format
+msgid "unknown input device type '%s'"
+msgstr "type de périphérique d'entrée « %s » inconnu"
+
+#, c-format
+msgid "unknown interface event_idx mode '%s'"
+msgstr "mode event_idx « %s » de l'interface inconnu"
+
+#, c-format
+msgid "unknown interface ioeventfd mode '%s'"
+msgstr "mode ioeventfd « %s » de l'interface inconnu"
+
+#, c-format
+msgid "unknown interface link state '%s'"
+msgstr "état « %s » du lien de l'interface inconnu"
+
+#, c-format
+msgid "unknown interface startmode %s"
+msgstr "startmode de l'interface %s inconnu"
+
+#, c-format
+msgid "unknown interface type %s"
+msgstr "type d'interface %s inconnu"
+
+#, c-format
+msgid "unknown interface type '%s'"
+msgstr "type d'interface '%s' inconnu"
+
+#, c-format
+msgid "unknown memory balloon model '%s'"
+msgstr "modèle de mémoire ballon « %s » inconnue"
+
+#, c-format
+msgid "unknown mirror format value '%s'"
+msgstr "valeur du format du miroir « %s » inconnue"
+
+#, c-format
+msgid "unknown mouse mode value '%s'"
+msgstr "valeur du mode de la souris « %s » inconnue"
+
+#, c-format
+msgid "unknown parameter type: %d"
+msgstr "type de paramètre inconnu : %d"
+
+#, c-format
+msgid "unknown pci source type '%s'"
+msgstr "type de source pci « %s » inconnu"
+
+#, c-format
+msgid "unknown procedure: %d"
+msgstr "procédure inconnue : %d"
+
+#, c-format
+msgid "unknown protocol transport type '%s'"
+msgstr "type de transport de protocole « %s » inconnu"
+
+#, c-format
+msgid "unknown protocol type '%s'"
+msgstr "Type de protocole '%s' inconnu"
+
+#, c-format
+msgid "unknown redirdev bus '%s'"
+msgstr "bus redirdev  « %s » inconnu"
+
+#, c-format
+msgid "unknown redirdev character device type '%s'"
+msgstr "type de périphérique de caractères redirdev « %s » inconnu"
+
+#, c-format
+msgid "unknown rom bar value '%s'"
+msgstr "valeur de la barre rom « %s » inconnue"
+
+#, c-format
+msgid "unknown sgio mode '%s'"
+msgstr "mode sgio « %s » inconnu"
+
+#, c-format
+msgid "unknown smartcard device mode: %s"
+msgstr "mode de périphérique smartcard inconnu : %s"
+
+msgid "unknown smartcard mode"
+msgstr "mode smartcard inconnu"
+
+#, c-format
+msgid "unknown smbios mode '%s'"
+msgstr "mode smbios inconnu '%s'"
+
+#, c-format
+msgid "unknown sound model '%s'"
+msgstr "modèle de son « %s » inconnu"
+
+#, c-format
+msgid "unknown spice channel mode %s"
+msgstr "mode du canal spice %s inconnu"
+
+#, c-format
+msgid "unknown spice channel name %s"
+msgstr "nom du canal spice %s inconnu"
+
+#, c-format
+msgid "unknown spice image compression %s"
+msgstr "compression %s de l'image spice inconnue"
+
+#, c-format
+msgid "unknown spice jpeg compression %s"
+msgstr "compression jpeg spice %s inconnue"
+
+msgid "unknown spice streaming mode"
+msgstr "mode de la diffusion spice inconnu"
+
+#, c-format
+msgid "unknown spice zlib compression %s"
+msgstr "compression zlib spice %s inconnue"
+
+#, c-format
+msgid "unknown startupPolicy value '%s'"
+msgstr "valeur startupPolicy « %s » inconnue"
+
+#, c-format
+msgid "unknown storage vol type %d"
+msgstr "type de volume de stockage %d inconnu"
+
+#, c-format
+msgid "unknown sysinfo type '%s'"
+msgstr "type sysinfo « %s » inconnu"
+
+#, c-format
+msgid "unknown target type '%s' specified for character device"
+msgstr ""
+"type de cible « %s » inconnu spécifié pour le périphérique de caractères"
+
+#, c-format
+msgid "unknown timer name '%s'"
+msgstr "Nom d'horloge « %s » inconnu"
+
+#, c-format
+msgid "unknown timer present value '%s'"
+msgstr "valeur actuelle « %s » de l'horloge inconnue"
+
+#, c-format
+msgid "unknown timer tickpolicy '%s'"
+msgstr "tickpolicy de l'horloge « %s » inconnu"
+
+#, c-format
+msgid "unknown type '%s' in interface's <actual> element"
+msgstr "type « %s » inconnu dans l'élément <actual> de l'interface"
+
+#, c-format
+msgid "unknown type presented to host for character device: %s"
+msgstr "type présenté à l'hôte pour le périphérique de caractères inconnu : %s"
+
+#, c-format
+msgid "unknown usb source type '%s'"
+msgstr "type de source USB « %s » inconnu"
+
+#, c-format
+msgid "unknown video model '%s'"
+msgstr "modèle vidéo « %s » inconnu"
+
+#, c-format
+msgid "unknown vnc display sharing policy '%s'"
+msgstr "politique de partage de l'affichage vnc « %s » inconnue"
+
+#, c-format
+msgid "unsupported HyperV Enlightenment feature: %s"
+msgstr "fonctionnalité HyperV Enlightenment non-prise en charge : %s"
+
+#, c-format
+msgid "unsupported element '%s' of 'origstates'"
+msgstr "élément « %s » de « origstates » non-pris en charge"
+
+#, c-format
+msgid "unsupported element '%s' of scsi hostdev source"
+msgstr "élément « %s » de la source scsi hostdev non-pris en charge"
+
+#, c-format
+msgid "unsupported event ID %d"
+msgstr "l'ID d'événement %d n'est pas supporté"
+
+#, c-format
+msgid "unsupported input bus %s"
+msgstr "le bus d'entrée %s n'est pas pris en charge"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "option « -%c » non prise en charge. Voir --help."
+
+#, c-format
+msgid "unsupported type '%s' in interface's <actual> element"
+msgstr "type « %s » non pris en charge dans l'élément <actual> de l'interface"
+
+msgid "unterminated number"
+msgstr "nombre sans fin"
+
+msgid "unterminated string"
+msgstr "chaîne sans fin"
+
+msgid "usb address needs bus id"
+msgstr "l'adresse USB requiert un ID de bus"
+
+msgid "usb address needs device id"
+msgstr "l'adresse USB requiert un ID de périphérique"
+
+msgid "usb product needs id"
+msgstr "le produit USB requiert l'ID"
+
+msgid "usb vendor needs id"
+msgstr "le constructeur USB requiert l'ID"
+
+msgid "usb-serial requires address of usb type"
+msgstr "usb-serial requiert l'adresse du type USB"
+
+#, c-format
+msgid "value for 'ram' must be less than '%u'"
+msgstr "valeur pour 'ram' doit être plus petit que '%u'"
+
+msgid "vcpu number"
+msgstr "numéro de VCPU"
+
+msgid "vendor cannot be 0."
+msgstr "le fabriquant ne peut être 0."
+
+msgid "vendor id is invalid"
+msgstr "vendor_id est invalide"
+
+#, c-format
+msgid "vendor_id must be exactly %d characters long"
+msgstr "vendor_id doit comporter exactement %d caractères"
+
+#, c-format
+msgid "version mismatch (actual %x, expected %x)"
+msgstr "la version ne correspond pas (actuelle %x, attendue %x)"
+
+msgid "vnc display"
+msgstr "affichage vnc"
+
+msgid "vol information in XML"
+msgstr "informations du volume en XML"
+
+msgid "vol name, key or path"
+msgstr "nom, clé ou chemin de volume"
+
+msgid "volume key or path"
+msgstr "clé ou chemin de volume"
+
+msgid "volume name or key"
+msgstr "nom ou clé de volume"
+
+msgid "volume name or path"
+msgstr "nom ou chemin de volume"
+
+msgid "warning"
+msgstr "attention"
+
+msgid "weight for XEN_CREDIT"
+msgstr "poids pour XEN_CREDIT"
+
+msgid "where to dump the core"
+msgstr "emplacement où vider l'espace mémoire"
+
+msgid "where to save the data"
+msgstr "où enregistrer les données"
+
+#, c-format
+msgid "xen bus does not support %s input device"
+msgstr "le bus xen ne prend pas en charge le périphérique d'entrée %s"

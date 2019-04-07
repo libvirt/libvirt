@@ -5,6 +5,7 @@
       <arch>x86_64</arch>
       <model>SandyBridge</model>
       <vendor>Intel</vendor>
+      <microcode version='36'/>
       <topology sockets='1' cores='2' threads='2'/>
       <feature name='osxsave'/>
       <feature name='pdcm'/>
@@ -23,6 +24,9 @@
       <feature name='acpi'/>
       <feature name='ds'/>
       <feature name='vme'/>
+      <pages unit='KiB' size='4'/>
+      <pages unit='KiB' size='2048'/>
+      <pages unit='KiB' size='1048576'/>
     </cpu>
     <power_management>
       <suspend_mem/>
@@ -53,7 +57,7 @@
       <machine>isapc</machine>
       <domain type='qemu'/>
       <domain type='kvm'>
-        <emulator>/usr/libexec/qemu-kvm</emulator>
+        <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <machine>pc-1.2</machine>
         <machine canonical='pc-1.2'>pc</machine>
         <machine>pc-1.1</machine>
@@ -95,7 +99,7 @@
       <machine>isapc</machine>
       <domain type='qemu'/>
       <domain type='kvm'>
-        <emulator>/usr/libexec/qemu-kvm</emulator>
+        <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <machine>pc-1.2</machine>
         <machine canonical='pc-1.2'>pc</machine>
         <machine>pc-1.1</machine>

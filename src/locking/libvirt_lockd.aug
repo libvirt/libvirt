@@ -20,8 +20,8 @@ module Libvirt_lockd =
    let entry = bool_entry "auto_disk_leases"
              | bool_entry "require_lease_for_disks"
              | str_entry "file_lockspace_dir"
-	     | str_entry "lvm_lockspace_dir"
-	     | str_entry "scsi_lockspace_dir"
+             | str_entry "lvm_lockspace_dir"
+             | str_entry "scsi_lockspace_dir"
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 

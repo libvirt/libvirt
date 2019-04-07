@@ -1,0 +1,10 @@
+<pool type="vstorage">
+  <name>vstorage</name>
+  <uuid>cfd270f9-acc7-4394-8685-4977eb318171</uuid>
+  <source>
+    <name>vzstorage-cluster</name>
+  </source>
+  <target>
+    <path>/mnt/vstorage_cluster</path>
+  </target>
+</pool>

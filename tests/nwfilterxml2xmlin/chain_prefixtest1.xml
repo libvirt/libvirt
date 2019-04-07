@@ -2,7 +2,6 @@
   <uuid>e5700920-a333-4c05-8016-b669e46b7599</uuid>
   <rule action='accept' direction='out'>
      <arp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
-          protocolid='arp'
           dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
           hwtype='12'
           protocoltype='34'

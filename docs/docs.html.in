@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body class="docs">
     <div class="panel">
@@ -54,16 +54,18 @@
         <dt><a href="virshcmdref.html">Virsh Commands</a></dt>
         <dd>Command reference for virsh</dd>
 
-        <dt><a href="bindings.html">Language bindings</a></dt>
+        <dt><a href="bindings.html">Language bindings and API modules</a></dt>
         <dd>Bindings of the libvirt API for
           <a href="csharp.html">c#</a>,
           <a href="https://godoc.org/github.com/libvirt/libvirt-go">go</a>,
           <a href="java.html">java</a>,
-          <a href="http://libvirt.org/ocaml/">ocaml</a>.
+          <a href="https://libvirt.org/ocaml/">ocaml</a>,
           <a href="http://search.cpan.org/dist/Sys-Virt/">perl</a>,
           <a href="python.html">python</a>,
           <a href="php.html">php</a>,
-          <a href="http://libvirt.org/ruby/">ruby</a></dd>
+          <a href="https://libvirt.org/ruby/">ruby</a>
+          and integration API modules for
+          <a href="dbus.html">D-Bus</a></dd>
 
 
         <dt><a href="format.html">XML schemas</a></dt>
@@ -75,6 +77,7 @@
           <a href="formatstorageencryption.html">storage encryption</a>,
           <a href="formatcaps.html">capabilities</a>,
           <a href="formatdomaincaps.html">domain capabilities</a>,
+          <a href="formatstoragecaps.html">storage pool capabilities</a>,
           <a href="formatnode.html">node devices</a>,
           <a href="formatsecret.html">secrets</a>,
           <a href="formatsnapshot.html">snapshots</a></dd>
@@ -109,6 +112,9 @@
 
         <dt><a href="drivers.html">Drivers</a></dt>
         <dd>Hypervisor specific driver information</dd>
+
+        <dt><a href="support.html">Support guarantees</a></dt>
+        <dd>Details of support status for various interfaces</dd>
 
         <dt><a href="hvsupport.html">Driver support</a></dt>
         <dd>matrix of API support per hypervisor per release</dd>

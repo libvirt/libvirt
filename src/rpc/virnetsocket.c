@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -82,6 +80,7 @@ struct _virNetSocket {
     int errfd;
     bool client;
     bool ownsFd;
+    bool quietEOF;
 
     /* Event callback fields */
     virNetSocketIOFunc func;
@@ -106,6 +105,7 @@ struct _virNetSocket {
 
     const char *saslEncoded;
     size_t saslEncodedLength;
+    size_t saslEncodedRawLength;
     size_t saslEncodedOffset;
 #endif
 #if WITH_SSH2
@@ -122,16 +122,13 @@ static void virNetSocketDispose(void *obj);
 
 static int virNetSocketOnceInit(void)
 {
-    if (!(virNetSocketClass = virClassNew(virClassForObjectLockable(),
-                                          "virNetSocket",
-                                          sizeof(virNetSocket),
-                                          virNetSocketDispose)))
+    if (!VIR_CLASS_NEW(virNetSocket, virClassForObjectLockable()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetSocket)
+VIR_ONCE_GLOBAL_INIT(virNetSocket);
 
 
 #ifndef WIN32
@@ -232,7 +229,7 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
     VIR_DEBUG("localAddr=%p remoteAddr=%p fd=%d errfd=%d pid=%lld",
               localAddr, remoteAddr,
-              fd, errfd, (long long) pid);
+              fd, errfd, (long long)pid);
 
     if (virSetCloseExec(fd) < 0) {
         virReportSystemError(errno, "%s",
@@ -287,7 +284,7 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
     PROBE(RPC_SOCKET_NEW,
           "sock=%p fd=%d errfd=%d pid=%lld localAddr=%s, remoteAddr=%s",
-          sock, fd, errfd, (long long) pid,
+          sock, fd, errfd, (long long)pid,
           NULLSTR(sock->localAddrStrSASL), NULLSTR(sock->remoteAddrStrSASL));
 
     return sock;
@@ -311,8 +308,8 @@ int virNetSocketNewListenTCP(const char *nodename,
     struct addrinfo hints;
     int fd = -1;
     size_t i;
-    bool addrInUse = false;
-    bool familyNotSupported = false;
+    int socketErrno = 0;
+    int bindErrno = 0;
     virSocketAddr tmp_addr;
 
     *retsocks = NULL;
@@ -331,7 +328,7 @@ int virNetSocketNewListenTCP(const char *nodename,
      * startup in most cases.
      */
     if (nodename &&
-        !(virSocketAddrParse(&tmp_addr, nodename, AF_UNSPEC) > 0 &&
+        !(virSocketAddrParseAny(&tmp_addr, nodename, AF_UNSPEC, false) > 0 &&
           virSocketAddrIsWildcard(&tmp_addr)))
         hints.ai_flags |= AI_ADDRCONFIG;
 
@@ -352,7 +349,7 @@ int virNetSocketNewListenTCP(const char *nodename,
         if ((fd = socket(runp->ai_family, runp->ai_socktype,
                          runp->ai_protocol)) < 0) {
             if (errno == EAFNOSUPPORT) {
-                familyNotSupported = true;
+                socketErrno = errno;
                 runp = runp->ai_next;
                 continue;
             }
@@ -383,11 +380,11 @@ int virNetSocketNewListenTCP(const char *nodename,
 #endif
 
         if (bind(fd, runp->ai_addr, runp->ai_addrlen) < 0) {
-            if (errno != EADDRINUSE) {
+            if (errno != EADDRINUSE && errno != EADDRNOTAVAIL) {
                 virReportSystemError(errno, "%s", _("Unable to bind to port"));
                 goto error;
             }
-            addrInUse = true;
+            bindErrno = errno;
             VIR_FORCE_CLOSE(fd);
             runp = runp->ai_next;
             continue;
@@ -410,14 +407,13 @@ int virNetSocketNewListenTCP(const char *nodename,
         fd = -1;
     }
 
-    if (nsocks == 0 && familyNotSupported) {
-        virReportSystemError(EAFNOSUPPORT, "%s", _("Unable to bind to port"));
-        goto error;
-    }
-
-    if (nsocks == 0 &&
-        addrInUse) {
-        virReportSystemError(EADDRINUSE, "%s", _("Unable to bind to port"));
+    if (nsocks == 0) {
+        if (bindErrno)
+            virReportSystemError(bindErrno, "%s", _("Unable to bind to port"));
+        else if (socketErrno)
+            virReportSystemError(socketErrno, "%s", _("Unable to create socket"));
+        else
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("No addresses to bind to"));
         goto error;
     }
 
@@ -460,7 +456,7 @@ int virNetSocketNewListenUNIX(const char *path,
     }
 
     addr.data.un.sun_family = AF_UNIX;
-    if (virStrcpyStatic(addr.data.un.sun_path, path) == NULL) {
+    if (virStrcpyStatic(addr.data.un.sun_path, path) < 0) {
         virReportSystemError(ENAMETOOLONG,
                              _("Path %s too long for unix socket"), path);
         goto error;
@@ -487,7 +483,7 @@ int virNetSocketNewListenUNIX(const char *path,
     if (grp != 0 && chown(path, user, grp)) {
         virReportSystemError(errno,
                              _("Failed to change ownership of '%s' to %d:%d"),
-                             path, (int) user, (int) grp);
+                             path, (int)user, (int)grp);
         goto error;
     }
 
@@ -691,7 +687,7 @@ int virNetSocketNewConnectUNIX(const char *path,
     }
 
     remoteAddr.data.un.sun_family = AF_UNIX;
-    if (virStrcpyStatic(remoteAddr.data.un.sun_path, path) == NULL) {
+    if (virStrcpyStatic(remoteAddr.data.un.sun_path, path) < 0) {
         virReportSystemError(ENOMEM, _("Path %s too long for unix socket"), path);
         goto cleanup;
     }
@@ -867,7 +863,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
     if (!netcat)
         netcat = "nc";
 
-    virCommandAddArgList(cmd, nodename, "sh", "-c", NULL);
+    virCommandAddArgList(cmd, "--", nodename, "sh", "-c", NULL);
 
     virBufferEscapeShell(&buf, netcat);
     if (virBufferCheckError(&buf) < 0) {
@@ -1792,13 +1788,22 @@ static ssize_t virNetSocketReadWire(virNetSocketPtr sock, char *buf, size_t len)
                                  _("Cannot recv data"));
         ret = -1;
     } else if (ret == 0) {
-        if (errout)
-            virReportSystemError(EIO,
-                                 _("End of file while reading data: %s"), errout);
-        else
-            virReportSystemError(EIO, "%s",
-                                 _("End of file while reading data"));
-        ret = -1;
+        if (sock->quietEOF) {
+            VIR_DEBUG("socket='%p' EOF while reading: errout='%s'",
+                      socket, NULLSTR(errout));
+
+            ret = -2;
+        } else {
+            if (errout)
+                virReportSystemError(EIO,
+                                     _("End of file while reading data: %s"),
+                                     errout);
+            else
+                virReportSystemError(EIO, "%s",
+                                     _("End of file while reading data"));
+
+            ret = -1;
+        }
     }
 
     VIR_FREE(errout);
@@ -1917,6 +1922,7 @@ static ssize_t virNetSocketWriteSASL(virNetSocketPtr sock, const char *buf, size
                                     &sock->saslEncodedLength) < 0)
             return -1;
 
+        sock->saslEncodedRawLength = tosend;
         sock->saslEncodedOffset = 0;
     }
 
@@ -1933,11 +1939,20 @@ static ssize_t virNetSocketWriteSASL(virNetSocketPtr sock, const char *buf, size
 
     /* Sent all encoded, so update raw buffer to indicate completion */
     if (sock->saslEncodedOffset == sock->saslEncodedLength) {
+        ssize_t done = sock->saslEncodedRawLength;
         sock->saslEncoded = NULL;
-        sock->saslEncodedOffset = sock->saslEncodedLength = 0;
+        sock->saslEncodedOffset = sock->saslEncodedLength = sock->saslEncodedRawLength = 0;
 
-        /* Mark as complete, so caller detects completion */
-        return tosend;
+        /* Mark as complete, so caller detects completion.
+         *
+         * Note that 'done' is possibly less than our current
+         * 'tosend' value, since if virNetSocketWriteWire
+         * only partially sent the data, we might have been
+         * called a 2nd time to write remaining cached
+         * encoded data. This means that the caller might
+         * also have further raw data pending that's included
+         * in 'tosend' */
+        return done;
     } else {
         /* Still have stuff pending in saslEncoded buffer.
          * Pretend to caller that we didn't send any yet.
@@ -2232,4 +2247,18 @@ void virNetSocketClose(virNetSocketPtr sock)
 #endif
 
     virObjectUnlock(sock);
+}
+
+
+/**
+ * virNetSocketSetQuietEOF:
+ * @sock: socket object pointer
+ *
+ * Disables reporting I/O errors as a virError when @socket is closed while
+ * reading data.
+ */
+void
+virNetSocketSetQuietEOF(virNetSocketPtr sock)
+{
+    sock->quietEOF = true;
 }

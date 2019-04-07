@@ -39,8 +39,6 @@
  *      - everything else is taken as success
  *      For example:
  *      #define EDIT_DEFINE (dom_edited = virDomainDefineXML(ctl->conn, doc_edited))
- *
- * Michal Privoznik <mprivozn@redhat.com>
  */
 
 #ifndef EDIT_GET_XML
@@ -138,9 +136,8 @@ do {
                 EDIT_RELAX;
                 relax_avail = false;
                 goto redefine;
-                break;
             }
-            /* fall-through */
+            ATTRIBUTE_FALLTHROUGH;
 #endif
 
         default:

@@ -1,7 +1,7 @@
 /*
  * virsh-snapshot.c: Commands to manage domain snapshot
  *
- * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+ * Copyright (C) 2005-2019 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,11 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- *  Daniel Veillard <veillard@redhat.com>
- *  Karel Zak <kzak@redhat.com>
- *  Daniel P. Berrange <berrange@redhat.com>
- *
  */
 
 #include <config.h>
@@ -37,13 +32,11 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
-#include "virsh-domain.h"
+#include "virsh-util.h"
 #include "virstring.h"
 #include "virxml.h"
-#include "conf/snapshot_conf.h"
-
-#define VIRSH_COMMON_OPT_DOMAIN_FULL                       \
-    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
+#include "conf/virdomainsnapshotobjlist.h"
+#include "vsh-table.h"
 
 /* Helper for snapshot-create and snapshot-create-as */
 static bool
@@ -53,9 +46,6 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     bool ret = false;
     virDomainSnapshotPtr snapshot;
     bool halt = false;
-    char *doc = NULL;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
     const char *name = NULL;
 
     snapshot = virDomainSnapshotCreateXML(dom, buffer, flags);
@@ -104,11 +94,7 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     ret = true;
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    VIR_FREE(doc);
+    virshDomainSnapshotFree(snapshot);
     return ret;
 }
 
@@ -126,7 +112,7 @@ static const vshCmdInfo info_snapshot_create[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_create[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "xmlfile",
      .type = VSH_OT_STRING,
      .help = N_("domain snapshot XML")
@@ -210,8 +196,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(buffer);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -321,7 +306,7 @@ static const vshCmdInfo info_snapshot_create_as[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_create_as[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "name",
      .type = VSH_OT_STRING,
      .help = N_("name of snapshot")
@@ -454,7 +439,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     virBufferFreeAndReset(&buf);
     VIR_FREE(buffer);
-    virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -510,10 +495,11 @@ static const vshCmdInfo info_snapshot_edit[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_edit[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("also set edited snapshot as current")),
     {.name = "rename",
@@ -556,16 +542,16 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 
 #define EDIT_GET_XML \
     virDomainSnapshotGetXMLDesc(snapshot, getxml_flags)
-#define EDIT_NOT_CHANGED                                                     \
-    do {                                                                     \
-        /* Depending on flags, we re-edit even if XML is unchanged.  */      \
-        if (!(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) {          \
-            vshPrintExtra(ctl,                                               \
+#define EDIT_NOT_CHANGED \
+    do { \
+        /* Depending on flags, we re-edit even if XML is unchanged.  */ \
+        if (!(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) { \
+            vshPrintExtra(ctl, \
                           _("Snapshot %s XML configuration not changed.\n"), \
-                          name);                                             \
-            ret = true;                                                      \
-            goto edit_cleanup;                                               \
-        }                                                                    \
+                          name); \
+            ret = true; \
+            goto edit_cleanup; \
+        } \
     } while (0)
 #define EDIT_DEFINE \
     (strstr(doc, "<state>disk-snapshot</state>") ? \
@@ -602,11 +588,9 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (!ret && name)
         vshError(ctl, _("Failed to update %s"), name);
-    if (edited)
-        virDomainSnapshotFree(edited);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    virDomainFree(dom);
+    virshDomainSnapshotFree(edited);
+    virshDomainSnapshotFree(snapshot);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -624,7 +608,7 @@ static const vshCmdInfo info_snapshot_current[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_current[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "name",
      .type = VSH_OT_BOOL,
      .help = N_("list the name, rather than the full xml")
@@ -635,7 +619,8 @@ static const vshCmdOptDef opts_snapshot_current[] = {
     },
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("name of existing snapshot to make current")
+     .help = N_("name of existing snapshot to make current"),
+     .completer = virshSnapshotNameCompleter,
     },
     {.name = NULL}
 };
@@ -682,7 +667,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         if (!(snapshot2 = virDomainSnapshotCreateXML(dom, xml, flags)))
             goto cleanup;
 
-        virDomainSnapshotFree(snapshot2);
+        virshDomainSnapshotFree(snapshot2);
         vshPrintExtra(ctl, _("Snapshot %s set as current"), snapshotname);
         ret = true;
         goto cleanup;
@@ -718,9 +703,8 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     if (!ret)
         vshReportError(ctl);
     VIR_FREE(xml);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    virDomainFree(dom);
+    virshDomainSnapshotFree(snapshot);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -778,8 +762,7 @@ virshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
     } else {
         vshResetLibvirtError();
     }
-    if (parent)
-        virDomainSnapshotFree(parent);
+    virshDomainSnapshotFree(parent);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xmldoc);
     VIR_FREE(xml);
@@ -857,10 +840,11 @@ static const vshCmdInfo info_snapshot_info[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_info[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("info on current snapshot")),
     {.name = NULL}
@@ -907,7 +891,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
         if (other) {
             if (STREQ(name, virDomainSnapshotGetName(other)))
                 current = 1;
-            virDomainSnapshotFree(other);
+            virshDomainSnapshotFree(other);
         }
     }
     vshPrint(ctl, "%-15s %s\n", _("Current:"),
@@ -961,7 +945,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     /* Since we already have the XML, there's no need to call
      * virDomainSnapshotGetParent */
     parent = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
-    vshPrint(ctl, "%-15s %s\n", _("Parent:"), parent ? parent : "-");
+    vshPrint(ctl, "%-15s %s\n", _("Parent:"), NULLSTR_MINUS(parent));
 
     /* Children, Descendants.  After this point, the fallback to
      * compute children is too expensive, so we gracefully quit if the
@@ -1006,9 +990,8 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     xmlFreeDoc(xmldoc);
     VIR_FREE(doc);
     VIR_FREE(parent);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    virDomainFree(dom);
+    virshDomainSnapshotFree(snapshot);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -1032,8 +1015,7 @@ virshSnapshotListFree(virshSnapshotListPtr snaplist)
         return;
     if (snaplist->snaps) {
         for (i = 0; i < snaplist->nsnaps; i++) {
-            if (snaplist->snaps[i].snap)
-                virDomainSnapshotFree(snaplist->snaps[i].snap);
+            virshDomainSnapshotFree(snaplist->snaps[i].snap);
             VIR_FREE(snaplist->snaps[i].parent);
         }
         VIR_FREE(snaplist->snaps);
@@ -1226,9 +1208,8 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     /* Now that we have a count, collect the list.  */
     if (from && !priv->useSnapshotOld) {
         if (tree) {
-            if (count)
-                count = virDomainSnapshotListChildrenNames(from, names + 1,
-                                                           count - 1, flags);
+            count = virDomainSnapshotListChildrenNames(from, names + 1,
+                                                       count - 1, flags);
             if (count >= 0) {
                 count++;
                 names[0] = vshStrdup(ctl, fromname);
@@ -1271,7 +1252,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
                            STRNEQ_NULLABLE(fromname,
                                            snaplist->snaps[i].parent)))) ||
                 (roots && snaplist->snaps[i].parent)) {
-                virDomainSnapshotFree(snaplist->snaps[i].snap);
+                virshDomainSnapshotFree(snaplist->snaps[i].snap);
                 snaplist->snaps[i].snap = NULL;
                 VIR_FREE(snaplist->snaps[i].parent);
                 deleted++;
@@ -1299,7 +1280,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
         for (i = 0; i < count; i++) {
             if (i == start_index || !snaplist->snaps[i].parent) {
                 VIR_FREE(names[i]);
-                virDomainSnapshotFree(snaplist->snaps[i].snap);
+                virshDomainSnapshotFree(snaplist->snaps[i].snap);
                 snaplist->snaps[i].snap = NULL;
                 VIR_FREE(snaplist->snaps[i].parent);
                 deleted++;
@@ -1337,7 +1318,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
                 if (!found_parent) {
                     changed = true;
                     VIR_FREE(names[i]);
-                    virDomainSnapshotFree(snaplist->snaps[i].snap);
+                    virshDomainSnapshotFree(snaplist->snaps[i].snap);
                     snaplist->snaps[i].snap = NULL;
                     VIR_FREE(snaplist->snaps[i].parent);
                     deleted++;
@@ -1360,7 +1341,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
             case 1:
                 break;
             case 0:
-                virDomainSnapshotFree(snaplist->snaps[i].snap);
+                virshDomainSnapshotFree(snaplist->snaps[i].snap);
                 snaplist->snaps[i].snap = NULL;
                 VIR_FREE(snaplist->snaps[i].parent);
                 deleted++;
@@ -1370,12 +1351,12 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
             }
         }
     }
-    qsort(snaplist->snaps, snaplist->nsnaps, sizeof(*snaplist->snaps),
-          virshSnapSorter);
+    if (!(orig_flags & VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL))
+        qsort(snaplist->snaps, snaplist->nsnaps, sizeof(*snaplist->snaps),
+              virshSnapSorter);
     snaplist->nsnaps -= deleted;
 
-    ret = snaplist;
-    snaplist = NULL;
+    VIR_STEAL_PTR(ret, snaplist);
 
  cleanup:
     virshSnapshotListFree(snaplist);
@@ -1409,7 +1390,7 @@ static const vshCmdInfo info_snapshot_list[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_list[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "parent",
      .type = VSH_OT_BOOL,
      .help = N_("add a column showing parent snapshot")
@@ -1440,7 +1421,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     },
     {.name = "active",
      .type = VSH_OT_BOOL,
-     .help = N_("filter by snapshots taken while active (system checkpoints)")
+     .help = N_("filter by snapshots taken while active (full system snapshots)")
     },
     {.name = "disk-only",
      .type = VSH_OT_BOOL,
@@ -1470,6 +1451,10 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     {.name = "name",
      .type = VSH_OT_BOOL,
      .help = N_("list snapshot names only")
+    },
+    {.name = "topological",
+     .type = VSH_OT_BOOL,
+     .help = N_("sort list topologically rather than by name"),
     },
 
     {.name = NULL}
@@ -1501,6 +1486,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     char *parent_snap = NULL;
     virDomainSnapshotPtr start = NULL;
     virshSnapshotListPtr snaplist = NULL;
+    vshTablePtr table = NULL;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(tree, name);
     VSH_EXCLUSIVE_OPTIONS_VAR(parent, roots);
@@ -1509,17 +1495,17 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(roots, from);
     VSH_EXCLUSIVE_OPTIONS_VAR(roots, current);
 
-#define FILTER(option, flag)                                          \
-    do {                                                              \
-        if (vshCommandOptBool(cmd, option)) {                         \
-            if (tree) {                                               \
-                vshError(ctl,                                         \
+#define FILTER(option, flag) \
+    do { \
+        if (vshCommandOptBool(cmd, option)) { \
+            if (tree) { \
+                vshError(ctl, \
                          _("--%s and --tree are mutually exclusive"), \
-                         option);                                     \
-                return false;                                         \
-            }                                                         \
-            flags |= VIR_DOMAIN_SNAPSHOT_LIST_ ## flag;               \
-        }                                                             \
+                         option); \
+                return false; \
+            } \
+            flags |= VIR_DOMAIN_SNAPSHOT_LIST_ ## flag; \
+        } \
     } while (0)
 
     FILTER("leaves", LEAVES);
@@ -1530,6 +1516,9 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     FILTER("internal", INTERNAL);
     FILTER("external", EXTERNAL);
 #undef FILTER
+
+    if (vshCommandOptBool(cmd, "topological"))
+        flags |= VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL;
 
     if (roots)
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
@@ -1561,15 +1550,12 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
     if (!tree && !name) {
         if (parent)
-            vshPrintExtra(ctl, " %-20s %-25s %-15s %s",
-                          _("Name"), _("Creation Time"), _("State"),
-                          _("Parent"));
+            table = vshTableNew(_("Name"), _("Creation Time"), _("State"), _("Parent"), NULL);
         else
-            vshPrintExtra(ctl, " %-20s %-25s %s",
-                          _("Name"), _("Creation Time"), _("State"));
-        vshPrintExtra(ctl, "\n"
-                           "------------------------------"
-                           "------------------------------\n");
+            table = vshTableNew(_("Name"), _("Creation Time"), _("State"), NULL);
+
+        if (!table)
+            goto cleanup;
     }
 
     if (tree) {
@@ -1628,12 +1614,20 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z",
                  &time_info);
 
-        if (parent)
-            vshPrint(ctl, " %-20s %-25s %-15s %s\n",
-                     snap_name, timestr, state, parent_snap);
-        else
-            vshPrint(ctl, " %-20s %-25s %s\n", snap_name, timestr, state);
+        if (parent) {
+            if (vshTableRowAppend(table, snap_name, timestr, state,
+                                  NULLSTR_EMPTY(parent_snap),
+                                  NULL) < 0)
+                goto cleanup;
+        } else {
+            if (vshTableRowAppend(table, snap_name, timestr, state,
+                                  NULL) < 0)
+                goto cleanup;
+        }
     }
+
+    if (table)
+        vshTablePrintToStdout(table, ctl);
 
     ret = true;
 
@@ -1642,12 +1636,12 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     virshSnapshotListFree(snaplist);
     VIR_FREE(parent_snap);
     VIR_FREE(state);
-    if (start)
-        virDomainSnapshotFree(start);
+    virshDomainSnapshotFree(start);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(doc);
-    virDomainFree(dom);
+    virshDomainFree(dom);
+    vshTableFree(table);
 
     return ret;
 }
@@ -1666,11 +1660,12 @@ static const vshCmdInfo info_snapshot_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_dumpxml[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     {.name = "security-info",
      .type = VSH_OT_BOOL,
@@ -1709,9 +1704,8 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(xml);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    virDomainFree(dom);
+    virshDomainSnapshotFree(snapshot);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -1730,10 +1724,11 @@ static const vshCmdInfo info_snapshot_parent[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_parent[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("find parent of snapshot name")
+     .help = N_("find parent of snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("find parent of current snapshot")),
     {.name = NULL}
@@ -1769,10 +1764,8 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(parent);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainSnapshotFree(snapshot);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -1791,10 +1784,11 @@ static const vshCmdInfo info_snapshot_revert[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_revert[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("revert to current snapshot")),
     {.name = "running",
@@ -1855,10 +1849,8 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainSnapshotFree(snapshot);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -1877,10 +1869,11 @@ static const vshCmdInfo info_snapshot_delete[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_delete[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("delete current snapshot")),
     {.name = "children",
@@ -1938,10 +1931,8 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainSnapshotFree(snapshot);
+    virshDomainFree(dom);
 
     return ret;
 }

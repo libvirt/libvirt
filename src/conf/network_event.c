@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Cedric Bosdonnat
  */
 
 #include <config.h>
@@ -57,22 +55,16 @@ static void virNetworkEventLifecycleDispose(void *obj);
 static int
 virNetworkEventsOnceInit(void)
 {
-    if (!(virNetworkEventClass =
-          virClassNew(virClassForObjectEvent(),
-                      "virNetworkEvent",
-                      sizeof(virNetworkEvent),
-                      virNetworkEventDispose)))
+    if (!VIR_CLASS_NEW(virNetworkEvent, virClassForObjectEvent()))
         return -1;
-    if (!(virNetworkEventLifecycleClass =
-          virClassNew(virNetworkEventClass,
-                      "virNetworkEventLifecycle",
-                      sizeof(virNetworkEventLifecycle),
-                      virNetworkEventLifecycleDispose)))
+
+    if (!VIR_CLASS_NEW(virNetworkEventLifecycle, virNetworkEventClass))
         return -1;
+
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetworkEvents)
+VIR_ONCE_GLOBAL_INIT(virNetworkEvents);
 
 static void
 virNetworkEventDispose(void *obj)

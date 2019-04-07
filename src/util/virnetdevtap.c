@@ -14,10 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Mark McLoughlin <markmc@redhat.com>
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -35,12 +31,8 @@
 #include "virstring.h"
 #include "datatypes.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <unistd.h>
 #include <regex.h>
-#include <dirent.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
@@ -48,7 +40,8 @@
 #ifdef __linux__
 # include <linux/if_tun.h>    /* IFF_TUN, IFF_NO_PI */
 #elif defined(__FreeBSD__)
-# include <net/if_tap.h>
+# include <net/if_mib.h>
+# include <sys/sysctl.h>
 #endif
 #if defined(HAVE_GETIFADDRS) && defined(AF_LINK)
 # include <ifaddrs.h>
@@ -101,55 +94,44 @@ virNetDevTapGetName(int tapfd ATTRIBUTE_UNUSED, char **ifname ATTRIBUTE_UNUSED)
 char*
 virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
 {
-#ifdef TAPGIFNAME
+#ifdef IFDATA_DRIVERNAME
+    int ifindex = 0;
+    int name[6];
+    size_t len = 0;
     char *ret = NULL;
-    struct dirent *dp;
-    DIR *dirp = NULL;
-    char *devpath = NULL;
-    int fd;
 
-    if (virDirOpen(&dirp, "/dev") < 0)
+    if ((ifindex = if_nametoindex(ifname)) == 0) {
+        virReportSystemError(errno,
+                             _("Unable to get interface index for '%s'"),
+                             ifname);
         return NULL;
-
-    while (virDirRead(dirp, &dp, "/dev") > 0) {
-        if (STRPREFIX(dp->d_name, "tap")) {
-            struct ifreq ifr;
-            if (virAsprintf(&devpath, "/dev/%s", dp->d_name) < 0)
-                goto cleanup;
-            if ((fd = open(devpath, O_RDWR)) < 0) {
-                if (errno == EBUSY) {
-                    VIR_FREE(devpath);
-                    continue;
-                }
-
-                virReportSystemError(errno, _("Unable to open '%s'"), devpath);
-                goto cleanup;
-            }
-
-            if (ioctl(fd, TAPGIFNAME, (void *)&ifr) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Unable to query tap interface name"));
-                goto cleanup;
-            }
-
-            if (STREQ(ifname, ifr.ifr_name)) {
-                /* we can ignore the return value
-                 * because we still have nothing
-                 * to do but return;
-                 */
-                ignore_value(VIR_STRDUP(ret, dp->d_name));
-                goto cleanup;
-            }
-
-            VIR_FREE(devpath);
-            VIR_FORCE_CLOSE(fd);
-        }
     }
 
- cleanup:
-    VIR_FREE(devpath);
-    VIR_FORCE_CLOSE(fd);
-    VIR_DIR_CLOSE(dirp);
+    name[0] = CTL_NET;
+    name[1] = PF_LINK;
+    name[2] = NETLINK_GENERIC;
+    name[3] = IFMIB_IFDATA;
+    name[4] = ifindex;
+    name[5] = IFDATA_DRIVERNAME;
+
+    if (sysctl(name, 6, NULL, &len, 0, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get driver name for '%s'"),
+                             ifname);
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(ret, len) < 0)
+        return NULL;
+
+    if (sysctl(name, 6, ret, &len, 0, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get driver name for '%s'"),
+                             ifname);
+        VIR_FREE(ret);
+        return NULL;
+    }
+
     return ret;
 #else
     return NULL;
@@ -281,7 +263,7 @@ int virNetDevTapCreate(char **ifname,
             ifr.ifr_flags |= IFF_VNET_HDR;
 # endif
 
-        if (virStrcpyStatic(ifr.ifr_name, *ifname) == NULL) {
+        if (virStrcpyStatic(ifr.ifr_name, *ifname) < 0) {
             virReportSystemError(ERANGE,
                                  _("Network interface name '%s' is too long"),
                                  *ifname);
@@ -347,7 +329,7 @@ int virNetDevTapDelete(const char *ifname,
     memset(&try, 0, sizeof(struct ifreq));
     try.ifr_flags = IFF_TAP|IFF_NO_PI;
 
-    if (virStrcpyStatic(try.ifr_name, ifname) == NULL) {
+    if (virStrcpyStatic(try.ifr_name, ifname) < 0) {
         virReportSystemError(ERANGE,
                              _("Network interface name '%s' is too long"),
                              ifname);
@@ -411,16 +393,15 @@ int virNetDevTapCreate(char **ifname,
     if (strstr(*ifname, "%d") != NULL) {
         size_t i;
         for (i = 0; i <= IF_MAXUNIT; i++) {
-            char *newname;
+            VIR_AUTOFREE(char *) newname = NULL;
+
             if (virAsprintf(&newname, *ifname, i) < 0)
                 goto cleanup;
 
             if (virNetDevExists(newname) == 0) {
-                newifname = newname;
+                VIR_STEAL_PTR(newifname, newname);
                 break;
             }
-
-            VIR_FREE(newname);
         }
         if (newifname) {
             VIR_FREE(*ifname);
@@ -434,7 +415,7 @@ int virNetDevTapCreate(char **ifname,
     }
 
     if (tapfd) {
-        char *dev_path = NULL;
+        VIR_AUTOFREE(char *) dev_path = NULL;
         if (virAsprintf(&dev_path, "/dev/%s", ifr.ifr_name) < 0)
             goto cleanup;
 
@@ -442,11 +423,8 @@ int virNetDevTapCreate(char **ifname,
             virReportSystemError(errno,
                                  _("Unable to open %s"),
                                  dev_path);
-            VIR_FREE(dev_path);
             goto cleanup;
         }
-
-        VIR_FREE(dev_path);
     }
 
     if (virNetDevSetName(ifr.ifr_name, *ifname) == -1)
@@ -505,6 +483,77 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED,
 
 
 /**
+ * virNetDevTapAttachBridge:
+ * @tapname: the tap interface name (or name template)
+ * @brname: the bridge name
+ * @macaddr: desired MAC address
+ * @virtPortProfile: bridge/port specific configuration
+ * @virtVlan: vlan tag info
+ * @mtu: requested MTU for port (or 0 for "default")
+ * @actualMTU: MTU actually set for port (after accounting for bridge's MTU)
+ *
+ * This attaches an existing tap device (@tapname) to a bridge
+ * (@brname).
+ *
+ * Returns 0 in case of success or -1 on failure
+ */
+int
+virNetDevTapAttachBridge(const char *tapname,
+                         const char *brname,
+                         const virMacAddr *macaddr,
+                         const unsigned char *vmuuid,
+                         virNetDevVPortProfilePtr virtPortProfile,
+                         virNetDevVlanPtr virtVlan,
+                         unsigned int mtu,
+                         unsigned int *actualMTU)
+{
+    /* If an MTU is specified for the new device, set it before
+     * attaching the device to the bridge, as it may affect the MTU of
+     * the bridge (in particular if it is the first device attached to
+     * the bridge, or if it is smaller than the current MTU of the
+     * bridge). If MTU isn't specified for the new device (i.e. 0),
+     * we need to set the interface MTU to the current MTU of the
+     * bridge (to avoid inadvertantly changing the bridge's MTU).
+     */
+    if (mtu > 0) {
+        if (virNetDevSetMTU(tapname, mtu) < 0)
+            goto error;
+    } else {
+        if (virNetDevSetMTUFromDevice(tapname, brname) < 0)
+            goto error;
+    }
+    if (actualMTU) {
+        int retMTU = virNetDevGetMTU(tapname);
+
+        if (retMTU < 0)
+            goto error;
+
+        *actualMTU = retMTU;
+    }
+
+
+    if (virtPortProfile) {
+        if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
+            if (virNetDevMidonetBindPort(tapname, virtPortProfile) < 0)
+                goto error;
+        } else if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+            if (virNetDevOpenvswitchAddPort(brname, tapname, macaddr, vmuuid,
+                                            virtPortProfile, virtVlan) < 0)
+                goto error;
+        }
+    } else {
+        if (virNetDevBridgeAddPort(brname, tapname) < 0)
+            goto error;
+    }
+
+    return 0;
+
+ error:
+    return -1;
+}
+
+
+/**
  * virNetDevTapCreateInBridgePort:
  * @brname: the bridge name
  * @ifname: the interface name (or name template)
@@ -513,6 +562,9 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED,
  * @tapfd: array of file descriptor return value for the new tap device
  * @tapfdSize: number of file descriptors in @tapfd
  * @virtPortProfile: bridge/port specific configuration
+ * @coalesce: optional coalesce parameters
+ * @mtu: requested MTU for port (or 0 for "default")
+ * @actualMTU: MTU actually set for port (after accounting for bridge's MTU)
  * @flags: OR of virNetDevTapCreateFlags:
 
  *   VIR_NETDEV_TAP_CREATE_IFUP
@@ -543,6 +595,9 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    size_t tapfdSize,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    virNetDevVlanPtr virtVlan,
+                                   virNetDevCoalescePtr coalesce,
+                                   unsigned int mtu,
+                                   unsigned int *actualMTU,
                                    unsigned int flags)
 {
     virMacAddr tapmac;
@@ -578,28 +633,15 @@ int virNetDevTapCreateInBridgePort(const char *brname,
     if (virNetDevSetMAC(*ifname, &tapmac) < 0)
         goto error;
 
-    /* We need to set the interface MTU before adding it
-     * to the bridge, because the bridge will have its
-     * MTU adjusted automatically when we add the new interface.
-     */
-    if (virNetDevSetMTUFromDevice(*ifname, brname) < 0)
+    if (virNetDevTapAttachBridge(*ifname, brname, macaddr, vmuuid,
+                                 virtPortProfile, virtVlan, mtu, actualMTU) < 0) {
         goto error;
-
-    if (virtPortProfile) {
-        if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
-            if (virNetDevMidonetBindPort(*ifname, virtPortProfile) < 0)
-                goto error;
-        } else if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
-            if (virNetDevOpenvswitchAddPort(brname, *ifname, macaddr, vmuuid,
-                                            virtPortProfile, virtVlan) < 0)
-                goto error;
-        }
-    } else {
-        if (virNetDevBridgeAddPort(brname, *ifname) < 0)
-            goto error;
     }
 
     if (virNetDevSetOnline(*ifname, !!(flags & VIR_NETDEV_TAP_CREATE_IFUP)) < 0)
+        goto error;
+
+    if (virNetDevSetCoalesce(*ifname, coalesce, false) < 0)
         goto error;
 
     return 0;
@@ -612,18 +654,37 @@ int virNetDevTapCreateInBridgePort(const char *brname,
 }
 
 /*-------------------- interface stats --------------------*/
-/* Just reads the named interface, so not Xen or QEMU-specific.
- * NB. Caller must check that libvirt user is trying to query
- * the interface of a domain they own.  We do no such checking.
+
+/**
+ * virNetDevTapInterfaceStats:
+ * @ifname: interface
+ * @stats: where to store statistics
+ * @swapped: whether to swap RX/TX fields
+ *
+ * Fetch RX/TX statistics for given named interface (@ifname) and
+ * store them at @stats. The returned statistics are always from
+ * domain POV. Because in some cases this means swapping RX/TX in
+ * the stats and in others this means no swapping (consider TAP
+ * vs macvtap) caller might choose if the returned stats should
+ * be @swapped or not.
+ *
+ * Returns 0 on success, -1 otherwise (with error reported).
  */
 #ifdef __linux__
 int
 virNetDevTapInterfaceStats(const char *ifname,
-                           virDomainInterfaceStatsPtr stats)
+                           virDomainInterfaceStatsPtr stats,
+                           bool swapped)
 {
     int ifname_len;
     FILE *fp;
     char line[256], *colon;
+
+    if (!ifname) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Interface name not provided"));
+        return -1;
+    }
 
     fp = fopen("/proc/net/dev", "r");
     if (!fp) {
@@ -654,30 +715,35 @@ virNetDevTapInterfaceStats(const char *ifname,
         *colon = '\0';
         if (colon-ifname_len >= line &&
             STREQ(colon-ifname_len, ifname)) {
-            /* IMPORTANT NOTE!
-             * /proc/net/dev vif<domid>.nn sees the network from the point
-             * of view of dom0 / hypervisor.  So bytes TRANSMITTED by dom0
-             * are bytes RECEIVED by the domain.  That's why the TX/RX fields
-             * appear to be swapped here.
-             */
             if (sscanf(colon+1,
                        "%lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
-                       &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
-                       &dummy, &dummy, &dummy, &dummy,
                        &rx_bytes, &rx_packets, &rx_errs, &rx_drop,
+                       &dummy, &dummy, &dummy, &dummy,
+                       &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
                        &dummy, &dummy, &dummy, &dummy) != 16)
                 continue;
 
-            stats->rx_bytes = rx_bytes;
-            stats->rx_packets = rx_packets;
-            stats->rx_errs = rx_errs;
-            stats->rx_drop = rx_drop;
-            stats->tx_bytes = tx_bytes;
-            stats->tx_packets = tx_packets;
-            stats->tx_errs = tx_errs;
-            stats->tx_drop = tx_drop;
-            VIR_FORCE_FCLOSE(fp);
+            if (swapped) {
+                stats->rx_bytes = tx_bytes;
+                stats->rx_packets = tx_packets;
+                stats->rx_errs = tx_errs;
+                stats->rx_drop = tx_drop;
+                stats->tx_bytes = rx_bytes;
+                stats->tx_packets = rx_packets;
+                stats->tx_errs = rx_errs;
+                stats->tx_drop = rx_drop;
+            } else {
+                stats->rx_bytes = rx_bytes;
+                stats->rx_packets = rx_packets;
+                stats->rx_errs = rx_errs;
+                stats->rx_drop = rx_drop;
+                stats->tx_bytes = tx_bytes;
+                stats->tx_packets = tx_packets;
+                stats->tx_errs = tx_errs;
+                stats->tx_drop = tx_drop;
+            }
 
+            VIR_FORCE_FCLOSE(fp);
             return 0;
         }
     }
@@ -690,11 +756,18 @@ virNetDevTapInterfaceStats(const char *ifname,
 #elif defined(HAVE_GETIFADDRS) && defined(AF_LINK)
 int
 virNetDevTapInterfaceStats(const char *ifname,
-                           virDomainInterfaceStatsPtr stats)
+                           virDomainInterfaceStatsPtr stats,
+                           bool swapped)
 {
     struct ifaddrs *ifap, *ifa;
     struct if_data *ifd;
     int ret = -1;
+
+    if (!ifname) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Interface name not provided"));
+        return -1;
+    }
 
     if (getifaddrs(&ifap) < 0) {
         virReportSystemError(errno, "%s",
@@ -703,23 +776,41 @@ virNetDevTapInterfaceStats(const char *ifname,
     }
 
     for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        if (!ifa->ifa_addr)
+            continue;
+
         if (ifa->ifa_addr->sa_family != AF_LINK)
             continue;
 
         if (STREQ(ifa->ifa_name, ifname)) {
             ifd = (struct if_data *)ifa->ifa_data;
-            stats->tx_bytes = ifd->ifi_ibytes;
-            stats->tx_packets = ifd->ifi_ipackets;
-            stats->tx_errs = ifd->ifi_ierrors;
-            stats->tx_drop = ifd->ifi_iqdrops;
-            stats->rx_bytes = ifd->ifi_obytes;
-            stats->rx_packets = ifd->ifi_opackets;
-            stats->rx_errs = ifd->ifi_oerrors;
+            if (swapped) {
+                stats->tx_bytes = ifd->ifi_ibytes;
+                stats->tx_packets = ifd->ifi_ipackets;
+                stats->tx_errs = ifd->ifi_ierrors;
+                stats->tx_drop = ifd->ifi_iqdrops;
+                stats->rx_bytes = ifd->ifi_obytes;
+                stats->rx_packets = ifd->ifi_opackets;
+                stats->rx_errs = ifd->ifi_oerrors;
 # ifdef HAVE_STRUCT_IF_DATA_IFI_OQDROPS
-            stats->rx_drop = ifd->ifi_oqdrops;
+                stats->rx_drop = ifd->ifi_oqdrops;
 # else
-            stats->rx_drop = 0;
+                stats->rx_drop = 0;
 # endif
+            } else {
+                stats->tx_bytes = ifd->ifi_obytes;
+                stats->tx_packets = ifd->ifi_opackets;
+                stats->tx_errs = ifd->ifi_oerrors;
+# ifdef HAVE_STRUCT_IF_DATA_IFI_OQDROPS
+                stats->tx_drop = ifd->ifi_oqdrops;
+# else
+                stats->tx_drop = 0;
+# endif
+                stats->rx_bytes = ifd->ifi_ibytes;
+                stats->rx_packets = ifd->ifi_ipackets;
+                stats->rx_errs = ifd->ifi_ierrors;
+                stats->rx_drop = ifd->ifi_iqdrops;
+            }
 
             ret = 0;
             break;
@@ -736,7 +827,8 @@ virNetDevTapInterfaceStats(const char *ifname,
 #else
 int
 virNetDevTapInterfaceStats(const char *ifname ATTRIBUTE_UNUSED,
-                           virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED)
+                           virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED,
+                           bool swapped ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("interface stats not implemented on this platform"));

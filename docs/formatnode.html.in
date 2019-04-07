@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Node devices XML format</h1>
 
     <ul id="toc"></ul>
 
-    <h2><a name="NodedevAttributes">Node Device XML</a></h2>
+    <h2><a id="NodedevAttributes">Node Device XML</a></h2>
 
     <p>
       There are several libvirt functions, all with the
@@ -37,6 +37,12 @@
       <dd>If this element is present, it names the parent device (that
         is, a controller to which this node belongs).
       </dd>
+      <dt><code>devnode</code></dt>
+      <dd>This node appears for each associated <code>/dev</code>
+      special file. A mandatory attribute <code>type</code> specify
+      the kind of file path, which may be either <code>dev</code> for
+      the main name, or <code>link</code> for additional symlinks.
+      </dd>
       <dt><code>capability</code></dt>
       <dd>This node appears for each capability that libvirt
         associates with a node.  A mandatory
@@ -64,6 +70,10 @@
           <dd>Describes a device on the host's PCI bus.  Sub-elements
             include:
             <dl>
+              <dt><code>class</code></dt>
+              <dd>Optional element for combined class, subclass and
+                programming interface codes as 6-digit hexadecimal number.
+                <span class="since">Since 5.2.0</span></dd>
               <dt><code>domain</code></dt>
               <dd>Which domain the device belongs to.</dd>
               <dt><code>bus</code></dt>
@@ -221,6 +231,7 @@
                     <dt><code>rxhash</code></dt><dd>receive-hashing</dd>
                     <dt><code>rdma</code></dt><dd>remote-direct-memory-access</dd>
                     <dt><code>txudptnl</code></dt><dd>tx-udp-tunnel-segmentation</dd>
+                    <dt><code>switchdev</code></dt><dd>kernel-forward-plane-offload</dd>
                 </dl>
               </dd>
               <dt><code>capability</code></dt>
@@ -254,7 +265,7 @@
                 number of vport in use. <code>max_vports</code> shows the
                 maximum vports the HBA supports. "fc_host" implies following
                 sub-elements: <code>wwnn</code>, <code>wwpn</code>, and
-                <code>fabric_wwn</code>.
+                optionally <code>fabric_wwn</code>.
               </dd>
             </dl>
           </dd>
@@ -308,11 +319,33 @@
                 and <code>media_label</code>.</dd>
             </dl>
           </dd>
+          <dt><code>drm</code></dt>
+          <dd>Describes a Direct Rendering Manager (DRM) device.
+          Sub-elements include:
+            <dl>
+              <dt><code>type</code></dt>
+              <dd>The type of DRM device. Could be
+              <code>primary</code>, <code>control</code> or
+              <code>render</code>.</dd>
+            </dl>
+          </dd>
+          <dt><code>ccw</code></dt>
+          <dd>Describes a Command Channel Word (CCW) device commonly found on
+          the S390 architecture. Sub-elements include:
+            <dl>
+              <dt><code>cssid</code></dt>
+              <dd>The channel subsystem identifier.</dd>
+              <dt><code>ssid</code></dt>
+              <dd>The subchannel-set identifier.</dd>
+              <dt><code>devno</code></dt>
+              <dd>The device number.</dd>
+            </dl>
+          </dd>
         </dl>
       </dd>
     </dl>
 
-    <h2><a name="nodeExample">Examples</a></h2>
+    <h2><a id="nodeExample">Examples</a></h2>
 
     <p>The following are some example node device XML outputs:</p>
     <pre>
@@ -352,6 +385,7 @@
     &lt;name&gt;igb&lt;/name&gt;
   &lt;/driver&gt;
   &lt;capability type='pci'&gt;
+    &lt;class&gt;0x020000&lt;/class&gt;
     &lt;domain&gt;0&lt;/domain&gt;
     &lt;bus&gt;2&lt;/bus&gt;
     &lt;slot&gt;0&lt;/slot&gt;

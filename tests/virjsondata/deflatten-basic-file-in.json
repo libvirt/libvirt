@@ -1,0 +1,8 @@
+{
+    "file.int": 1,
+    "file.string": "string",
+    "file.object": {
+        "data":"value",
+        "foo":"bar"
+    }
+}

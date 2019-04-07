@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>IBM PowerVM hypervisor driver (phyp)</h1>
@@ -10,7 +10,7 @@
     </p>
 
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
     <ul>
       <li>
         The <a href="http://www-03.ibm.com/systems/power/software/virtualization/index.html">IBM
@@ -19,7 +19,7 @@
     </ul>
 
 
-    <h2><a name="uri">Connections to the PowerVM driver</a></h2>
+    <h2><a id="uri">Connections to the PowerVM driver</a></h2>
     <p>
         Some example remote connection URIs for the driver are:
     </p>
@@ -38,7 +38,7 @@ phyp://user@ivm/system (IVM connection)
     </p>
 
 
-    <h3><a name="uriformat">URI Format</a></h3>
+    <h3><a id="uriformat">URI Format</a></h3>
     <p>
         URIs have this general form (<code>[...]</code> marks an
         optional part, <code>{...|...}</code> marks a mandatory choice).

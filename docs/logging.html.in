@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1 >Logging in the library and the daemon</h1>
@@ -12,7 +12,7 @@
     <ul id="toc"/>
 
     <h2>
-      <a name="log_library">Logging in the library</a>
+      <a id="log_library">Logging in the library</a>
     </h2>
     <p>The logging functionalities in libvirt are based on 3 key concepts,
        similar to the one present in other generic logging facilities like
@@ -30,7 +30,7 @@
           the message is discarded, if higher the message is output. If
           no filter matches, then a general priority level is applied to
           all remaining messages. This allows, for example, capturing all
-          debug messages for the QEmu driver, but otherwise only allowing
+          debug messages for the QEMU driver, but otherwise only allowing
           errors to show up from other parts.</li>
       <li><b>log outputs</b>: once a message has gone through filtering a set of
           output defines where to send the message, they can also filter
@@ -40,7 +40,7 @@
     </ul>
 
     <h2>
-      <a name="log_config">Configuring logging in the library</a>
+      <a id="log_config">Configuring logging in the library</a>
     </h2>
     <p>The library configuration of logging is through 3 environment variables
     allowing to control the logging behaviour:</p>
@@ -61,7 +61,7 @@
        have an error in a filter or output string, some of the settings may be
        applied up to the point at which libvirt encountered the error.</p>
     <h2>
-      <a name="log_daemon">Logging in the daemon</a>
+      <a id="log_daemon">Logging in the daemon</a>
     </h2>
     <p>Similarly the daemon logging behaviour can be tuned using 3 config
     variables, stored in the configuration file:</p>
@@ -96,7 +96,7 @@
        for debugging purposes by sending the daemon a USR2 signal:</p>
        <pre>killall -USR2 libvirtd</pre>
     <h2>
-      <a name="log_syntax">Syntax for filters and output values</a>
+      <a id="log_syntax">Syntax for filters and output values</a>
     </h2>
     <p>The syntax for filters and outputs is the same for both types of
        variables.</p>
@@ -149,7 +149,7 @@ x:+name (log message + stack trace)</pre>
        but also log all debug and information included in the
        file <code>/tmp/libvirt.log</code></p>
 
-    <h2><a name="journald">Systemd journal fields</a></h2>
+    <h2><a id="journald">Systemd journal fields</a></h2>
 
     <p>
       When logging to the systemd journal, the following fields
@@ -176,7 +176,7 @@ x:+name (log message + stack trace)</pre>
       <dd>The libvirt error code (values from virErrorCode enum), if LIBVIRT_SOURCE="error"</dd>
     </dl>
 
-    <h3><a name="journaldids">Well known message ID values</a></h3>
+    <h3><a id="journaldids">Well known message ID values</a></h3>
 
     <p>
       Certain areas of the code will emit log records tagged with well known
@@ -221,7 +221,7 @@ $ journalctl MESSAGE_ID=8ae2f3fb-2dbe-498e-8fbd-012d40afa361 --output=json
     </pre>
 
     <h2>
-      <a name="log_examples">Examples</a>
+      <a id="log_examples">Examples</a>
     </h2>
     <p>For example setting up the following:</p>
     <pre>export LIBVIRT_DEBUG=1
@@ -236,7 +236,7 @@ export LIBVIRT_LOG_OUTPUTS="1:file:virsh.log"</pre>
     what is happening and where things are going wrong, allowing to then
     put the correct breakpoints when running under a debugger.</p>
     <p>To activate full debug of the libvirt entry points, utility
-    functions and the QEmu/KVM driver, set:</p>
+    functions and the QEMU/KVM driver, set:</p>
     <pre>log_filters="1:libvirt 1:util 1:qemu"
 log_outputs="1:file:/var/log/libvirt/libvirtd.log"</pre>
     <p>in libvirtd.conf and restart the daemon will allow to

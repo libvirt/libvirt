@@ -49,11 +49,11 @@
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 
-#define VIR_FROM_THIS	VIR_FROM_BHYVE
+#define VIR_FROM_THIS   VIR_FROM_BHYVE
 
 VIR_LOG_INIT("bhyve.bhyve_process");
 
-static virDomainObjPtr
+static void
 bhyveProcessAutoDestroy(virDomainObjPtr vm,
                         virConnectPtr conn ATTRIBUTE_UNUSED,
                         void *opaque)
@@ -62,12 +62,8 @@ bhyveProcessAutoDestroy(virDomainObjPtr vm,
 
     virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
 
-    if (!vm->persistent) {
+    if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
-    }
-
-    return vm;
 }
 
 static void
@@ -93,7 +89,6 @@ bhyveNetCleanup(virDomainObjPtr vm)
 static int
 virBhyveFormatDevMapFile(const char *vm_name, char **fn_out)
 {
-
     return virAsprintf(fn_out, "%s/grub_bhyve-%s-device.map", BHYVE_STATE_DIR,
                        vm_name);
 }
@@ -165,38 +160,41 @@ virBhyveProcessStart(virConnectPtr conn,
     virCommandSetPidFile(cmd, privconn->pidfile);
     virCommandDaemonize(cmd);
 
-    /* Now bhyve command is constructed, meaning the
-     * domain is ready to be started, so we can build
-     * and execute bhyveload command */
-    rc = virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
-    if (rc < 0)
-        goto cleanup;
+    if (vm->def->os.loader == NULL) {
+        /* Now bhyve command is constructed, meaning the
+         * domain is ready to be started, so we can build
+         * and execute bhyveload command */
 
-    if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def, devmap_file,
-                                                 &devicemap)))
-        goto cleanup;
-    virCommandSetOutputFD(load_cmd, &logfd);
-    virCommandSetErrorFD(load_cmd, &logfd);
-
-    if (devicemap != NULL) {
-        rc = virFileWriteStr(devmap_file, devicemap, 0644);
-        if (rc) {
-            virReportSystemError(errno,
-                                 _("Cannot write device.map '%s'"),
-                                 devmap_file);
+        rc = virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
+        if (rc < 0)
             goto cleanup;
+
+        if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def, devmap_file,
+                                                     &devicemap)))
+            goto cleanup;
+        virCommandSetOutputFD(load_cmd, &logfd);
+        virCommandSetErrorFD(load_cmd, &logfd);
+
+        if (devicemap != NULL) {
+            rc = virFileWriteStr(devmap_file, devicemap, 0644);
+            if (rc) {
+                virReportSystemError(errno,
+                                     _("Cannot write device.map '%s'"),
+                                     devmap_file);
+                goto cleanup;
+            }
         }
+
+        /* Log generated command line */
+        virCommandWriteArgLog(load_cmd, logfd);
+        if ((pos = lseek(logfd, 0, SEEK_END)) < 0)
+            VIR_WARN("Unable to seek to end of logfile: %s",
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
+
+        VIR_DEBUG("Loading domain '%s'", vm->def->name);
+        if (virCommandRun(load_cmd, NULL) < 0)
+            goto cleanup;
     }
-
-    /* Log generated command line */
-    virCommandWriteArgLog(load_cmd, logfd);
-    if ((pos = lseek(logfd, 0, SEEK_END)) < 0)
-        VIR_WARN("Unable to seek to end of logfile: %s",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
-
-    VIR_DEBUG("Loading domain '%s'", vm->def->name);
-    if (virCommandRun(load_cmd, NULL) < 0)
-        goto cleanup;
 
     /* Now we can start the domain */
     VIR_DEBUG("Starting domain '%s'", vm->def->name);
@@ -289,6 +287,15 @@ virBhyveProcessStop(bhyveConnPtr driver,
 
     /* Cleanup network interfaces */
     bhyveNetCleanup(vm);
+
+    /* VNC autoport cleanup */
+    if ((vm->def->ngraphics == 1) &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        if (virPortAllocatorRelease(vm->def->graphics[0]->data.vnc.port) < 0) {
+            VIR_WARN("Failed to release VNC port for '%s'",
+                     vm->def->name);
+        }
+    }
 
     ret = 0;
 
@@ -409,6 +416,14 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
          if (STREQ(expected_proctitle, proc_argv[0])) {
              ret = 0;
              priv->mon = bhyveMonitorOpen(vm, data->driver);
+             if (vm->def->ngraphics == 1 &&
+                 vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+                 int vnc_port = vm->def->graphics[0]->data.vnc.port;
+                 if (virPortAllocatorSetUsed(vnc_port) < 0) {
+                     VIR_WARN("Failed to mark VNC port '%d' as used by '%s'",
+                              vnc_port, vm->def->name);
+                 }
+             }
          }
     }
 

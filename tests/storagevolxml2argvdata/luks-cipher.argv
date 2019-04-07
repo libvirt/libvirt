@@ -1,0 +1,5 @@
+qemu-img create -f luks \
+--object secret,id=LuksDemo.img_encrypt0,file=/path/to/secretFile \
+-o key-secret=LuksDemo.img_encrypt0,cipher-alg=serpent-256,cipher-mode=cbc,\
+hash-alg=sha256,ivgen-alg=plain64,ivgen-hash-alg=sha256 \
+/var/lib/libvirt/images/LuksDemo.img 5242880K

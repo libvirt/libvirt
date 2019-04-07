@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Stefan Berger <stefanb@linux.vnet.ibm.com>
  */
-#ifndef __VIR_TPM_H__
-# define __VIR_TPM_H__
 
-char *virTPMCreateCancelPath(const char *devpath);
+#ifndef LIBVIRT_VIRTPM_H
+# define LIBVIRT_VIRTPM_H
 
-#endif /* __VIR_TPM_H__ */
+char *virTPMCreateCancelPath(const char *devpath) ATTRIBUTE_NOINLINE;
+
+#endif /* LIBVIRT_VIRTPM_H */

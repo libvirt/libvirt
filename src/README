@@ -34,7 +34,6 @@ Then there are the hypervisor implementations:
  * qemu/         - QEMU / KVM using qemu CLI/monitor
  * remote/       - Generic libvirt native RPC client
  * test/         - A "mock" driver for testing
- * uml/          - User Mode Linux
  * vbox/         - Virtual Box using native API
  * vmware/       - VMware Workstation and Player using the vmrun tool
  * xen/          - Xen using hypercalls, XenD SEXPR & XenStore
@@ -42,7 +41,7 @@ Then there are the hypervisor implementations:
 
 
 Finally some secondary drivers that are shared for several HVs.
-Currently these are used by LXC, OpenVZ, QEMU, UML and Xen drivers.
+Currently these are used by LXC, OpenVZ, QEMU and Xen drivers.
 The ESX, Hyper-V, Power Hypervisor, Remote, Test & VirtualBox drivers all
 implement the secondary drivers directly
 

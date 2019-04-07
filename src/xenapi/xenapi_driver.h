@@ -15,14 +15,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Sharadha Prabhakar <sharadha.prabhakar@citrix.com>
  */
 
-
-#ifndef __VIR_XENAPI_PRIV_H__
-# define __VIR_XENAPI_PRIV_H__
+#ifndef LIBVIRT_XENAPI_DRIVER_H
+# define LIBVIRT_XENAPI_DRIVER_H
 
 int xenapiRegister(void);
 
-#endif /* __VIR_XENAPI_PRIV_H__ */
+#endif /* LIBVIRT_XENAPI_DRIVER_H */

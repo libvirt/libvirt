@@ -1,0 +1,14 @@
+{
+  "id": "libvirt-1",
+  "return": {
+    "decompress-threads": 2,
+    "cpu-throttle-increment": 10,
+    "compress-threads": 8,
+    "tls-hostname": "",
+    "compress-level": 1,
+    "cpu-throttle-initial": 20,
+    "tls-creds": "objlibvirt_migrate_tls0",
+    "max-bandwidth": 33554432,
+    "downtime-limit": 300
+  }
+}

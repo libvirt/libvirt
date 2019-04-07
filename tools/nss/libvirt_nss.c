@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Michal Privoznik <mprivozn@redhat.com>
  */
 #include <config.h>
 
@@ -51,20 +48,20 @@
 #include "virobject.h"
 
 #if 0
-# define ERROR(...)                                             \
-do {                                                            \
-    char ebuf[1024];                                            \
-    fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__);  \
-    fprintf(stderr, __VA_ARGS__);                               \
+# define ERROR(...) \
+do { \
+    char ebuf[1024]; \
+    fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
     fprintf(stderr, " : %s\n", virStrerror(errno, ebuf, sizeof(ebuf))); \
-    fprintf(stderr, "\n");                                      \
+    fprintf(stderr, "\n"); \
 } while (0)
 
-# define DEBUG(...)                                             \
-do {                                                            \
-    fprintf(stderr, "DEBUG %s:%d : ", __FUNCTION__, __LINE__);  \
-    fprintf(stderr, __VA_ARGS__);                               \
-    fprintf(stderr, "\n");                                      \
+# define DEBUG(...) \
+do { \
+    fprintf(stderr, "DEBUG %s:%d : ", __FUNCTION__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
 } while (0)
 #else
 # define ERROR(...) do { } while (0)
@@ -277,7 +274,7 @@ findLease(const char *name,
     while ((ret = virDirRead(dir, &entry, leaseDir)) > 0) {
         char *path;
 
-        if (virFileHasSuffix(entry->d_name, ".status")) {
+        if (virStringHasSuffix(entry->d_name, ".status")) {
             if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
                 goto cleanup;
 
@@ -288,7 +285,7 @@ findLease(const char *name,
                 goto cleanup;
             }
             VIR_FREE(path);
-        } else if (virFileHasSuffix(entry->d_name, ".macs")) {
+        } else if (virStringHasSuffix(entry->d_name, ".macs")) {
             if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
                 goto cleanup;
 
@@ -309,8 +306,7 @@ findLease(const char *name,
     }
     VIR_DIR_CLOSE(dir);
 
-    if ((nleases = virJSONValueArraySize(leases_array)) < 0)
-        goto cleanup;
+    nleases = virJSONValueArraySize(leases_array);
     DEBUG("Read %zd leases", nleases);
 
 #if !defined(LIBVIRT_NSS_GUEST)
@@ -360,9 +356,7 @@ NSS_NAME(gethostbyname)(const char *name, struct hostent *result,
                         char *buffer, size_t buflen, int *errnop,
                         int *herrnop)
 {
-    int af = ((_res.options & RES_USE_INET6) ? AF_INET6 : AF_INET);
-
-    return NSS_NAME(gethostbyname3)(name, af, result, buffer, buflen,
+    return NSS_NAME(gethostbyname3)(name, AF_INET, result, buffer, buflen,
                                     errnop, herrnop, NULL, NULL);
 }
 
@@ -645,6 +639,7 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
         hints.ai_family = af;
 
         if (getaddrinfo(ipAddr, NULL, &hints, &res0)) {
+            VIR_FREE(ipAddr);
             addrList++;
             continue;
         }
@@ -656,6 +651,7 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
         while ((*aip)->ai_next)
            *aip = (*aip)->ai_next;
 
+        VIR_FREE(ipAddr);
         addrList++;
     }
 }

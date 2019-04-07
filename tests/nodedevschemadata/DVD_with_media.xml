@@ -11,6 +11,8 @@
       <media_available>1</media_available>
       <media_size>12345678</media_size>
       <media_label>Windows_XP_Label</media_label>
+      <logical_block_size>2048</logical_block_size>
+      <num_blocks>6028</num_blocks>
     </capability>
   </capability>
 </device>

@@ -2,7 +2,7 @@
 (uuid 'b5d70dd2-75cd-aca5-1776-9660b059d8bc')(on_poweroff 'destroy')\
 (on_reboot 'restart')(on_crash 'restart')\
 (image (hvm (kernel '/usr/lib/xen/boot/hvmloader')(vcpus 1)(boot c)\
-(acpi 1)(usb 1)(parallel none)(serial none)\
+(acpi 1)(pae 1)(usb 1)(parallel none)(serial none)\
 (device_model '/usr/lib64/xen/bin/qemu-dm')(hpet 1)(vnc 1)\
 (vncunused 0)(vncdisplay 17)(keymap 'ja')(rtc_timeoffset 0)(localtime 0)))\
 (localtime 0)\

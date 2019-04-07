@@ -16,9 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Peter Krempa <pkrempa@redhat.com>
- * Author: Pino Toscano <ptoscano@redhat.com>
  */
 #include <config.h>
 #include <libssh/libssh.h>
@@ -160,11 +157,9 @@ static int
 virNetLibsshSessionOnceInit(void)
 {
     const char *dbgLevelStr;
+    int dbgLevel;
 
-    if (!(virNetLibsshSessionClass = virClassNew(virClassForObjectLockable(),
-                                                 "virNetLibsshSession",
-                                                 sizeof(virNetLibsshSession),
-                                                 virNetLibsshSessionDispose)))
+    if (!VIR_CLASS_NEW(virNetLibsshSession, virClassForObjectLockable()))
         return -1;
 
     if (ssh_init() < 0) {
@@ -178,10 +173,9 @@ virNetLibsshSessionOnceInit(void)
 #endif
 
     dbgLevelStr = virGetEnvAllowSUID("LIBVIRT_LIBSSH_DEBUG");
-    if (dbgLevelStr) {
-        int dbgLevel = virParseNumber(&dbgLevelStr);
+    if (dbgLevelStr &&
+        virStrToLong_i(dbgLevelStr, NULL, 10, &dbgLevel) >= 0)
         ssh_set_log_level(dbgLevel);
-    }
 
     return 0;
 }
@@ -217,7 +211,7 @@ virLibsshServerKeyAsString(virNetLibsshSessionPtr sess)
     size_t keyhashlen;
     char *str;
 
-    if (ssh_get_publickey(sess->session, &key) != SSH_OK) {
+    if (ssh_get_server_publickey(sess->session, &key) != SSH_OK) {
         virReportError(VIR_ERR_LIBSSH, "%s",
                        _("failed to get the key of the current "
                          "session"));
@@ -382,14 +376,16 @@ virNetLibsshCheckHostKey(virNetLibsshSessionPtr sess)
             VIR_FREE(askKey.result);
         }
 
-        /* write the host key file */
-        if (ssh_write_knownhost(sess->session) < 0) {
-            errmsg = ssh_get_error(sess->session);
-            virReportError(VIR_ERR_LIBSSH,
-                           _("failed to write known_host file '%s': %s"),
-                           sess->knownHostsFile,
-                           errmsg);
-            return -1;
+        /* write the host key file, if specified */
+        if (sess->knownHostsFile) {
+            if (ssh_write_knownhost(sess->session) < 0) {
+                errmsg = ssh_get_error(sess->session);
+                virReportError(VIR_ERR_LIBSSH,
+                               _("failed to write known_host file '%s': %s"),
+                               sess->knownHostsFile,
+                               errmsg);
+                return -1;
+            }
         }
         /* key was accepted and added */
         return 0;
@@ -425,7 +421,7 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
     virConnectCredential retr_passphrase;
     int cred_type;
     char *actual_prompt = NULL;
-    char *p;
+    int p;
 
     /* request user's key password */
     if (!sess->cred || !sess->cred->cb) {
@@ -460,7 +456,7 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
     p = virStrncpy(buf, retr_passphrase.result,
                    retr_passphrase.resultlen, len);
     VIR_DISPOSE_STRING(retr_passphrase.result);
-    if (!p) {
+    if (p < 0) {
         virReportError(VIR_ERR_LIBSSH, "%s",
                        _("passphrase is too long for the buffer"));
         goto error;
@@ -500,9 +496,7 @@ virNetLibsshImportPrivkey(virNetLibsshSessionPtr sess,
         err = SSH_AUTH_ERROR;
         goto error;
     } else if (ret == SSH_ERROR) {
-        virErrorPtr vir_err = virGetLastError();
-
-        if (!vir_err || !vir_err->code) {
+        if (virGetLastErrorCode() == VIR_ERR_OK) {
             virReportError(VIR_ERR_AUTH_FAILED,
                            _("error while opening private key '%s', wrong "
                              "passphrase?"),
@@ -611,7 +605,6 @@ static int
 virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
                                  virNetLibsshAuthMethodPtr priv)
 {
-    char *password = NULL;
     const char *errmsg;
     int ret = -1;
 
@@ -637,11 +630,11 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
         /* Try the authenticating the set amount of times. The server breaks the
          * connection if maximum number of bad auth tries is exceeded */
         while (true) {
+            VIR_AUTODISPOSE_STR password = NULL;
+
             if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
                                                     "ssh", sess->username,
                                                     sess->hostname))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to retrieve password"));
                 ret = SSH_AUTH_ERROR;
                 goto cleanup;
             }
@@ -653,8 +646,6 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
                 goto cleanup;
             }
 
-            VIR_DISPOSE_STRING(password);
-
             if (ret != SSH_AUTH_DENIED)
                 break;
         }
@@ -665,10 +656,7 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
     virReportError(VIR_ERR_AUTH_FAILED,
                    _("authentication failed: %s"), errmsg);
 
-    return ret;
-
  cleanup:
-    VIR_DISPOSE_STRING(password);
     return ret;
 }
 
@@ -1060,7 +1048,7 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
 {
     int ret;
     virNetLibsshAuthMethodPtr auth;
-    char *pass = NULL;
+    VIR_AUTODISPOSE_STR pass = NULL;
     char *file = NULL;
 
     if (!keyfile) {
@@ -1084,7 +1072,7 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
         goto error;
     }
 
-    auth->password = pass;
+    VIR_STEAL_PTR(auth->password, pass);
     auth->filename = file;
     auth->method = VIR_NET_LIBSSH_AUTH_PRIVKEY;
     auth->ssh_flags = SSH_AUTH_METHOD_PUBLICKEY;
@@ -1096,7 +1084,6 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
     return ret;
 
  error:
-    VIR_DISPOSE_STRING(pass);
     VIR_FREE(file);
     goto cleanup;
 }
@@ -1172,13 +1159,20 @@ virNetLibsshSessionSetHostKeyVerification(virNetLibsshSessionPtr sess,
             goto error;
     }
 
-    /* set the known hosts file */
-    if (ssh_options_set(sess->session, SSH_OPTIONS_KNOWNHOSTS, hostsfile) < 0)
-        goto error;
+    /* set the known hosts file, if specified */
+    if (hostsfile) {
+        if (ssh_options_set(sess->session, SSH_OPTIONS_KNOWNHOSTS, hostsfile) < 0)
+            goto error;
 
-    VIR_FREE(sess->knownHostsFile);
-    if (VIR_STRDUP(sess->knownHostsFile, hostsfile) < 0)
-        goto error;
+        VIR_FREE(sess->knownHostsFile);
+        if (VIR_STRDUP(sess->knownHostsFile, hostsfile) < 0)
+            goto error;
+    } else {
+        /* libssh does not support trying no known_host file at all:
+         * hence use /dev/null here, without storing it as file */
+        if (ssh_options_set(sess->session, SSH_OPTIONS_KNOWNHOSTS, "/dev/null") < 0)
+            goto error;
+    }
 
     virObjectUnlock(sess);
     return 0;

@@ -1,0 +1,94 @@
+@media (max-width: 1000px) {
+    #home {
+	width: 100%;
+	display: block;
+	margin: 0px;
+	background: white url(logos/logo-banner-dark-256.png) no-repeat center center;
+	height: 94px;
+    }
+    #home a {
+	width: 100%;
+    }
+    #search {
+	width: 100%;
+	display: block;
+	margin: 0px;
+	background: white;
+	padding: 0px;
+    }
+    #search form {
+	padding: 5px;
+    }
+    body.index h1 {
+	display: none;
+    }
+    #jumplinks {
+	padding: 0px;
+	display: block;
+	width: 100%;
+	text-align: center;
+	margin: 0px;
+	height: 1.3em;
+	font-size: 1em;
+	border-top: 3px solid rgb(60, 133, 124);
+	border-bottom: 3px solid rgb(60, 133, 124);
+    }
+    #jumplinks ul {
+	display: block;
+	padding: 0px;
+	margin: 0px;
+    }
+    #jumplinks li {
+	margin: 0px;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+    }
+    #nav {
+	border: 0px;
+    }
+
+    #search.navhide {
+	display: none !IMPORTANT;
+    }
+    #home.navhide {
+	position: fixed;
+	top: 0px;
+	z-index: 9001;
+	width: 6em;
+	display: block;
+	margin: 0px;
+	background: inherit;
+	height: 1.3em;
+	border-top: 3px solid rgb(60, 133, 124);
+	border-bottom: 3px solid rgb(60, 133, 124);
+	font-size: 1em;
+	text-indent: 0px;
+	font-weight: bold;
+	padding-left: 1em;
+    }
+    #home.navhide a {
+	color: white;
+	text-decoration: none;
+    }
+    #home.navhide a:hover {
+	color: rgb(255, 230, 0);
+    }
+    #jumplinks.navhide {
+	position: fixed;
+	text-align: right;
+	top: 0px;
+	z-index: 9000;
+	background: rgb(0, 95, 97);
+    }
+    #jumplinks.navhide ul {
+	z-index: 9001;
+    }
+    #body {
+	margin-top: 180px;
+    }
+    div.panel {
+	width: 80%;
+	float: none;
+	margin-bottom: 2em;
+    }
+}

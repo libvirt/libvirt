@@ -17,12 +17,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __QEMU_PARSE_COMMAND_H__
-# define __QEMU_PARSE_COMMAND_H__
+#ifndef LIBVIRT_QEMU_PARSE_COMMAND_H
+# define LIBVIRT_QEMU_PARSE_COMMAND_H
+
+# include "virfilecache.h"
 
 # define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
 
@@ -30,18 +30,25 @@
  * NB: def->name can be NULL upon return and the caller
  * *must* decide how to fill in a name in this case
  */
-virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
+virDomainDefPtr qemuParseCommandLineString(virFileCachePtr capsCache,
+                                           virCapsPtr caps,
                                            virDomainXMLOptionPtr xmlopt,
                                            const char *args,
                                            char **pidfile,
                                            virDomainChrSourceDefPtr *monConfig,
                                            bool *monJSON);
-virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
+virDomainDefPtr qemuParseCommandLinePid(virFileCachePtr capsCache,
+                                        virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
                                         pid_t pid,
                                         char **pidfile,
                                         virDomainChrSourceDefPtr *monConfig,
                                         bool *monJSON);
+
+void
+qemuParseKeywordsFree(int nkeywords,
+                     char **keywords,
+                     char **values);
 
 int
 qemuParseKeywords(const char *str,
@@ -50,4 +57,4 @@ qemuParseKeywords(const char *str,
                   int *retnkeywords,
                   int allowEmptyValue);
 
-#endif /* __QEMU_PARSE_COMMAND_H__*/
+#endif /* LIBVIRT_QEMU_PARSE_COMMAND_H */

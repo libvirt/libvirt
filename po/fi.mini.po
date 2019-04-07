@@ -1,0 +1,1238 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel  <veillard@redhat.com>, 2011.
+# Jiri Grönroos <jiri.gronroos@iki.fi>, 2017. #zanata
+# Toni Rantala <trantalafilo@gmail.com>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2017-03-26 10:24+0000\n"
+"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
+"Language-Team: Finnish (http://www.transifex.com/projects/p/fedora/language/"
+"fi/)\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  (specify help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (anna help <komento> saadaksesi tietoja komennosta)\n"
+"\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  KUVAUS\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  VALITSIMET\n"
+
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  TIIVISTELMÄ\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Aika: %.3f ms)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  NIMI\n"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: %d tavun varaus epäonnistui"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s: %d: %lu tavun varaaminen epäonnistui"
+
+#, c-format
+msgid "%s: failed to write log file: %s"
+msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
+
+msgid "(re)connect to hypervisor"
+msgstr "Yhdistä (uudelleen) hypervisoriin"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <numero>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <merkkijono>"
+
+msgid "Attach device from an XML <file>."
+msgstr "Liitä laite XML-tiedostosta <tiedosto>."
+
+msgid "Attach new disk device."
+msgstr "Lisää uusi levylaite."
+
+msgid "Attach new network interface."
+msgstr "Liitä uusi verkkolaite."
+
+msgid "Autostart"
+msgstr "Automaattikäynnistys"
+
+msgid "CPU Affinity:"
+msgstr "Prosessorin affiniteetti:"
+
+msgid "CPU frequency:"
+msgstr "Prosessorin taajuus: "
+
+msgid "CPU model:"
+msgstr "Prosessorin malli:"
+
+msgid "CPU socket(s):"
+msgstr "Prosessorikantoja:"
+
+msgid "CPU time:"
+msgstr "Prosessoriaika:"
+
+msgid "CPU vendor specified without CPU model"
+msgstr "CPU valmistaja määritetty ilman CPU mallia"
+
+msgid "CPU(s):"
+msgstr "Prosessori(t):"
+
+msgid "CPU:"
+msgstr "Prosessori:"
+
+#, c-format
+msgid "Can't read %s"
+msgstr "Ei voida lukea %s"
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Ei saada selville ajossa olevaa %s-hypervisor-versiota\n"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Muuta nykyistä muistinvarausta vierastoimialueella."
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "Muuta nykyistä muistinvarauksen enimmäisrajaa vierastoimialueella."
+
+msgid "Configure a domain to be automatically started at boot."
+msgstr ""
+"Aseta toimialue käynnistymään automaattisesti koneen käynnistymisen "
+"yhteydessä."
+
+msgid "Configure a network to be automatically started at boot."
+msgstr ""
+"Aseta verkkotuki käynnistymään automaattisesti käynnistyksen yhteydessä."
+
+msgid "Connect the virtual serial console for the guest"
+msgstr "Yhdistä vieraan virtuaalisarjakonsoli"
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Yhdistä paikalliseen hypervisoriin. Tämä on sisäänrakennettu komento "
+"komentotulkin käynnistymisen jälkeen."
+
+msgid "Core dump a domain."
+msgstr "Tee toimialueen muistivedos"
+
+msgid "Core(s) per socket:"
+msgstr "Ytimiä per kanta:"
+
+msgid "Create a domain."
+msgstr "Luo toimialue."
+
+msgid "Create a network."
+msgstr "Luo verkko."
+
+msgid "Define a domain."
+msgstr "Määritä toimialue."
+
+msgid "Detach device from an XML <file>"
+msgstr "Irrota laite XML-tiedostosta <tiedosto>"
+
+msgid "Detach disk device."
+msgstr "Irrota levylaite."
+
+msgid "Detach network interface."
+msgstr "Irrota verkkoliitäntä."
+
+msgid "Display the system version information."
+msgstr "Näytä järjestelmän versiotiedot."
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "Toimialue %s luotu tiedostosta %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Toimialue %s määritetty tiedostosta %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "Toimialue %s tuhottu\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "Toimialueen %s määritys on poistettu\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "Toimialuetta %s uudelleenkäynnistetään\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "Toimialuetta %s sammutetaan\n"
+
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "Toimialue %s merkitty automaattisesti käynnistyväksi\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "Toimialue %s palautettu\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "Toimialue %s käynnistetty\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "Toimialue %s keskeytystilassa\n"
+
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "Toimialueen %s automaattisen käynnistyksen merkintä poistettu\n"
+
+msgid "Domain is already active"
+msgstr "Toimialue on jo aktiivinen"
+
+msgid "Domain is already running"
+msgstr "toimialue on jo käynnissä"
+
+msgid "Domain is not running"
+msgstr "Toimialue ei ole käynnissä"
+
+msgid "Domain not found"
+msgstr "Toimialuetta ei löytynyt"
+
+#, c-format
+msgid "Domain not found: %s"
+msgstr "Toimialuetta ei löytynyt: %s"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "Toimialue palautettu tiedostosta %s\n"
+
+msgid "Failed to allocate memory"
+msgstr "Muistin varaus epäonnistui."
+
+#, c-format
+msgid "Failed to attach device from %s"
+msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Toimialueen %s muistivedoksen tallentaminen tiedostoon %s epäonnistui"
+
+msgid "Failed to create XML"
+msgstr "XML:n luonti epäonnistui"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "Verkon luominen tiedostosta %s epäonnistui"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Toimialueen määrittäminen tiedostosta %s epäonnistui"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "Verkon määrittäminen tiedostosta %s epäonnistui"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "Toimialueen %s tuhoaminen epäonnistui"
+
+#, c-format
+msgid "Failed to destroy network %s"
+msgstr "Verkon %s tuhoaminen epäonnistui"
+
+#, c-format
+msgid "Failed to detach device from %s"
+msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
+
+msgid "Failed to find the network"
+msgstr "Verkkoa ei löytynyt"
+
+#, c-format
+msgid "Failed to find the network: %s"
+msgstr "Verkkoa ei löytynyt: %s"
+
+msgid "Failed to generate uuid"
+msgstr "uuid luonti epäonnistui"
+
+#, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "Lohkotilastojen haku epäonnistui %s %s"
+
+msgid "Failed to get disk information"
+msgstr "Levytietojen haku epäonnistui"
+
+msgid "Failed to get interface information"
+msgstr "Liitännän tietojen haku epäonnistui"
+
+#, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "Liitäntätilastojen haku epäonnistui %s %s"
+
+msgid "Failed to list active domains"
+msgstr "Aktiivisten toimialueiden luettelointi epäonnistui"
+
+msgid "Failed to list active networks"
+msgstr "Aktiivisten verkkojen luettelointi epäonnistui"
+
+msgid "Failed to list inactive domains"
+msgstr "Epäaktiivisten toimialueiden luettelointi epäonnistui"
+
+msgid "Failed to list inactive networks"
+msgstr "Epäktiivisten verkkojen luettelointi epäonnistui"
+
+#, c-format
+msgid "Failed to mark domain %s as autostarted"
+msgstr ""
+"Toimialueen %s merkitseminen automaattisesti käynnistyväksi epäonnistui"
+
+#, c-format
+msgid "Failed to mkdir %s"
+msgstr "mkdir %s epäonnistui"
+
+#, c-format
+msgid "Failed to open '%s'"
+msgstr " '%s' ei voitu avata"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Toimialueen %s uudelleenkäynnistys epäonnistui"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Toimialueen palautetus tiedostosta %s epäonnistui"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "Toimialueen %s palautus epäonnistui"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Toimialueen %s sammutus epäonnistui"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Toimialueen %s käynnistys epäonnistui"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Verkon %s käynnistäminen epäonnistui"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "Toimialueen %s asettaminen keskeytystilaan epäonnistui"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
+
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "Verkon %s määritysten poistaminen epäonnistui."
+
+#, c-format
+msgid "Failed to unmark domain %s as autostarted"
+msgstr ""
+"Toimialueen %s automaattisen käynnistymisen merkinnän poistaminen epäonnistui"
+
+msgid "GET operation failed"
+msgstr "GET-toimenpide epäonnistui"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "GET-toimenpide epäonnistui: %s"
+
+msgid "GNUTLS call error"
+msgstr "GNUTLS-kutsuvirhe"
+
+msgid "Get network interface stats for a running domain."
+msgstr "Hae käynnissä olevan toimialueen verkkoliitäntätilastot."
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+msgid "Max memory:"
+msgstr "Enimmäismuisti:"
+
+msgid "Memory size:"
+msgstr "Muistin koko:"
+
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr ""
+"Siirrä toimialue toiseen koneeseen.  Valitsin --live siirtää käytettäessä."
+
+msgid "Missing CPU architecture"
+msgstr "Puuttuva CPU arkkitehtuuri"
+
+msgid "Missing CPU model name"
+msgstr "Puuttuva CPU mallinimi"
+
+msgid "Name"
+msgstr "Nimi"
+
+msgid "Name or service not known"
+msgstr "Nimi tai palvelu ei ole tunnettu"
+
+msgid "Name:"
+msgstr "Nimi:"
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "Verkko %s luotu tiedostosta %s\n"
+
+#, c-format
+msgid "Network %s defined from %s\n"
+msgstr "Verkko %s määritetty tiedostosta %s\n"
+
+#, c-format
+msgid "Network %s destroyed\n"
+msgstr "Verkko %s tuhottu\n"
+
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "Verkon %s määritykset on poistettu\n"
+
+#, c-format
+msgid "Network %s marked as autostarted\n"
+msgstr "Verkko %s merkitty automaattisesti käynnistyväksi\n"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "Verkko %s käynnistetty\n"
+
+#, c-format
+msgid "Network %s unmarked as autostarted\n"
+msgstr "Verkon %s automaattisen käynnistyksen merkintä poistettu\n"
+
+msgid "Network not found"
+msgstr "Verkkoa ei löytynyt"
+
+#, c-format
+msgid "Network not found: %s"
+msgstr "Verkkoa ei löytynyt %s"
+
+msgid "No error message provided"
+msgstr "Ei virheviestiä"
+
+msgid "No free USB ports"
+msgstr "Ei vapaita USB-portteja"
+
+msgid "No more available PCI slots"
+msgstr "Ei vapaita PCI-paikkoja vapaana"
+
+msgid "OS Type:"
+msgstr "Käyttöjärjestelmän tyyppi:"
+
+msgid "Output the IP address and port number for the VNC display."
+msgstr "Tulosta VNC-näytön IP-osoite ja porttinumero"
+
+msgid "Output the device for the TTY console."
+msgstr "Tulosta TTY-konsolin laite."
+
+msgid "Output the domain information as an XML dump to stdout."
+msgstr "Tulosta toimialuetiedot XML-muodossa oletustulosteeseen."
+
+msgid "Output the network information as an XML dump to stdout."
+msgstr "Tulosta verkkotiedot XML-muodossa oletustulosteeseen."
+
+msgid "POST operation failed"
+msgstr "POST-toimenpide epäonnistui"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "POST-toimenpide epäonnistui: %s"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr ""
+"Kiinnitä toimialueen virtuaaliprosessorit isännän fyysisiin prosessoreihin."
+
+msgid "RPC error"
+msgstr "RPC-virhe"
+
+msgid "Request canceled"
+msgstr "Pyyntö peruttu"
+
+msgid "Request not canceled"
+msgstr "Pyyntöä ei peruttu"
+
+msgid "Restore a domain."
+msgstr "Palauta toimialue."
+
+msgid "Resume a previously suspended domain."
+msgstr "Palauta aiemmin keskeytystilaan asetettu toimialue."
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Palauttaa perustietoja toimialueen virtuaalisista prosessoreista."
+
+msgid "Returns basic information about the domain."
+msgstr "Palauttaa perustietoja toimialueesta."
+
+msgid "Returns basic information about the node."
+msgstr "Palauttaa perustietoja solmusta."
+
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Palauttaa hypervisorin tai ajurin ominaisuudet"
+
+msgid "Returns list of domains."
+msgstr "Palauttaa listan toimialueista."
+
+msgid "Returns list of networks."
+msgstr "Palauttaa verkkoluettelon."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Aja uudelleenkäynnistyskomento kohdetoimialueella."
+
+msgid "Run shutdown in the target domain."
+msgstr "Aja sammutus kohdetoimialueella."
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Käytetään hypervisoria: %s %d.%d.%d\n"
+
+msgid "Scheduler"
+msgstr "Skeduloija"
+
+msgid "Show/Set scheduler parameters."
+msgstr "Näytä/aseta skeduloijan parametrit."
+
+msgid "Start a network."
+msgstr "Käynnistä verkko"
+
+msgid "State"
+msgstr "Tila"
+
+msgid "State:"
+msgstr "Tila:"
+
+msgid "Suspend a running domain."
+msgstr "Aseta suorituksessa oleva toimialue keskeytystilaan."
+
+msgid "System error"
+msgstr "Järjestelmä virhe"
+
+msgid "Temporary failure in name resolution"
+msgstr "Tiapäinen vrihe nimenselvityksessä"
+
+msgid "Thread(s) per core:"
+msgstr "Säikeitä per ydin:"
+
+msgid "Total"
+msgstr "Yhteensä"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Kirjoita:  'help' saadaksesi ohjeen ja komennot\n"
+"       'quit' poistuaksesi\n"
+"\n"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Unable to change MaxMemorySize"
+msgstr "Ei voi muuttaa MaxMemorySizeä"
+
+msgid "Unknown"
+msgstr "Tuntematon"
+
+#, c-format
+msgid "Unknown architecture %s"
+msgstr "Tuntematon arkkitehtuuri  %s"
+
+msgid "Unknown error"
+msgstr "Tuntematon virhe"
+
+#, c-format
+msgid "Unknown release: %s"
+msgstr "Tuntematon julkaisu: %s"
+
+msgid "Used memory:"
+msgstr "Käytetty muisti:"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Käytetään API:a: %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "Virtuaaliprosessori:"
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Tervetuloa ohjelmaan %s, virtualisoinnin vuorovaikutteiseen päätteeseen.\n"
+"\n"
+
+msgid "XML does not contain expected 'cpu' element"
+msgstr "XML ei sisällä odotettu 'cpu' elementtiä"
+
+msgid "XML file"
+msgstr "XML-tiedosto"
+
+msgid "active"
+msgstr "aktiivinen"
+
+msgid "ai_family not supported"
+msgstr "ai_family ei tuettu"
+
+msgid "ai_socktype not supported"
+msgstr "ai_socktype ei tuettu"
+
+msgid "attach device from an XML file"
+msgstr "liitä laite XML-tiedostosta"
+
+msgid "attach disk device"
+msgstr "liitä levylaite"
+
+msgid "attach network interface"
+msgstr "liitä verkkoliitäntä"
+
+msgid "authentication failed"
+msgstr "todennus epäonnistui"
+
+#, c-format
+msgid "authentication failed: %s"
+msgstr "todennus epäonnistui: %s"
+
+msgid "autostart a domain"
+msgstr "käynnistä toimialue automaattisesti"
+
+msgid "autostart a network"
+msgstr "käynnistä verkko automaattisesti"
+
+msgid "block device"
+msgstr "lohkolaite "
+
+msgid "capabilities"
+msgstr "ominaisuudet"
+
+msgid "change maximum memory limit"
+msgstr "muuta muistin enimmäisrajaa"
+
+msgid "change memory allocation"
+msgstr "muuta muistinvarausta"
+
+msgid "change number of virtual CPUs"
+msgstr "muuta virtuaaliprosessorien määrää"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "komento ”%s” ei tue valitsinta --%s"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "komento ”%s” vaatii valitsimen --%s"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "komento ”%s” vaatii valitsimen <%s>"
+
+msgid "configuration file syntax error"
+msgstr "asetustiedoston syntaksivirhe"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "asetustiedoston syntaksivirhe: %s"
+
+msgid "connect to the guest console"
+msgstr "Yhdistä vieraskonsoliin"
+
+msgid "connection already open"
+msgstr "yhteys on jo auki"
+
+msgid "connection not open"
+msgstr "yhteys ei ole auki"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "muunna toimialueen tunnus tai UUID toimialueen nimeksi"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "muunna toimialueen nimi tai UUID toimialueen tunnukseksi"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "muunna toimialueen nimi tai tunnus UUID:ksi"
+
+msgid "convert a network UUID to network name"
+msgstr "Muunna verkko-UUID verkkonimeksi"
+
+msgid "convert a network name to network UUID"
+msgstr "muunna verkon nimi verkon UUID:ksi"
+
+msgid "could not connect to Xen Store"
+msgstr "Xen Storeen yhdistäminen epäonnistui"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "Xen-hypervisoria ei voitu käyttää"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "Xen-hypervisoria %s ei voitu käyttää"
+
+msgid "crashed"
+msgstr "kaatui"
+
+msgid "create a domain from an XML file"
+msgstr "luo toimialue XML-tiedostosta"
+
+msgid "create a network from an XML file"
+msgstr "luo verkko XML-tiedostosta"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "määritä (mutta älä käynnistä) toimialue XML-tiedostosta"
+
+msgid "detach device from an XML file"
+msgstr "irrota laite XML-tiedostosta"
+
+msgid "detach disk device"
+msgstr "irrota levylaite"
+
+msgid "detach network interface"
+msgstr "irrota verkkoliitäntä"
+
+msgid "disable autostarting"
+msgstr "poista automaattikäynnistys käytöstä"
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "toimialue %s on jo olemassa"
+
+msgid "domain id or name"
+msgstr "toimialueen id tai nimi"
+
+msgid "domain id or uuid"
+msgstr "toimialueen id tai uuid"
+
+msgid "domain information"
+msgstr "toimialueen tiedot"
+
+msgid "domain information in XML"
+msgstr "toimialuetiedot XML-muodossa"
+
+msgid "domain information incomplete, missing kernel & bootloader"
+msgstr "toimialuetieto on epätäydellistä, ydin ja käynnistyslatain puuttuu"
+
+msgid "domain information incomplete, missing name"
+msgstr "toimialuetiedot ovat epätäydellisiä, nimi puuttuu"
+
+msgid "domain is not running"
+msgstr "toimialue ei ole käynnissä"
+
+msgid "domain name or uuid"
+msgstr "toimialueen nimi tai uuid"
+
+msgid "domain state"
+msgstr "toimialueen tila"
+
+msgid "driver of disk device"
+msgstr "levylaitteen ajuri"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "tallenna toimialueen muistivedos tiedostoon analysointia varten"
+
+msgid "error"
+msgstr "virhe"
+
+msgid "error: "
+msgstr "virhe: "
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "odotettu syntaksi: --%s <%s>"
+
+msgid "expecting a name"
+msgstr "odotetaan nimeä"
+
+msgid "expecting a separator"
+msgstr "odotetaan erotinta"
+
+msgid "expecting a separator in list"
+msgstr "odotetaan erotinta luettelossa"
+
+msgid "expecting a value"
+msgstr "odotetaan arvoa"
+
+msgid "expecting an assignment"
+msgstr "odotetaan sijoitusta"
+
+msgid "failed to connect to the hypervisor"
+msgstr "hypervisoriin ei saatu yhteyttä"
+
+msgid "failed to get URI"
+msgstr "URIn haku epäonnistui"
+
+msgid "failed to get capabilities"
+msgstr "ominaisuuksien hakeminen epäonnistui"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "toimialueen ”%s” hakeminen epäonnistui"
+
+msgid "failed to get domain UUID"
+msgstr "toimialueen UUID:n saanti epäonnistui"
+
+msgid "failed to get hostname"
+msgstr "konenimen haku epäonnistui"
+
+msgid "failed to get hypervisor type"
+msgstr "hypervisorin tyypin saanti epäonnistui"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "verkon ”%s” hakeminen epäonnistui"
+
+msgid "failed to get network UUID"
+msgstr "verkon UUID:n hakeminen epäonnistui"
+
+msgid "failed to get node information"
+msgstr "solmun tietojen saanti epäonnistui"
+
+msgid "failed to get the hypervisor version"
+msgstr "hypervisorin version saanti epäonnistui"
+
+msgid "failed to get the library version"
+msgstr "kirjastoversion saanti epäonnistui"
+
+#, c-format
+msgid "failed to mark network %s as autostarted"
+msgstr "verkon %s merkitseminen automaattisesti käynnistyväksi epäonnistui"
+
+msgid "failed to open file"
+msgstr "ei voitu avata tiedostoa"
+
+msgid "failed to open the log file. check the log file path"
+msgstr "lokitiedoston avaaminen epäonnistui, tarkista polku"
+
+msgid "failed to parse configuration file"
+msgstr "asetustiedoston jäsentäminen epäonnistui"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "asetustiedoston %s jäsentäminen epäonnistui"
+
+msgid "failed to read configuration file"
+msgstr "asetustiedoston lukeminen epäonnistui"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "asetustiedoston %s lukeminen epäonnistui"
+
+msgid "failed to save content"
+msgstr "sisältöä ei voitu tallentaa"
+
+#, c-format
+msgid "failed to unmark network %s as autostarted"
+msgstr ""
+"verkon %s automaattisen käynnistymisen merkinnän poistaminen epäonnistui"
+
+msgid "failed to write configuration file"
+msgstr "asetustiedoston kirjoitus epäonnistui"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "asetustiedoston kirjoitus epäonnistui: %s"
+
+msgid "failed to write the log file"
+msgstr "lokitiedoston kirjoitus epäonnistui"
+
+msgid "file containing an XML domain description"
+msgstr "tiedosto, joka sisältää XML-muotoisen toimialueen kuvauksen"
+
+msgid "file containing an XML network description"
+msgstr "tiedosto, joka sisältää XML-muotoisen verkkokuvauksen"
+
+msgid "get device block stats for a domain"
+msgstr "hae toimialueen laitelohkotilastot"
+
+msgid "get network interface stats for a domain"
+msgstr "hae toimialueen verkkoliitäntätilastot"
+
+msgid "getting time of day"
+msgstr "haetaan kellonaika"
+
+msgid "gracefully shutdown a domain"
+msgstr "sammuta toimialue siististi"
+
+msgid "hypervisor connection URI"
+msgstr "hypervisorin yhteysosoite"
+
+msgid "in shutdown"
+msgstr "sammutuksessa"
+
+msgid "inactive"
+msgstr "epäaktiivinen"
+
+msgid "internal error"
+msgstr "sisäinen virhe"
+
+msgid "invalid connection pointer in"
+msgstr "virheellinen yhteysosoitin kohteessa"
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "virheellinen yhteysosoitin kohteessa %s"
+
+msgid "invalid domain pointer in"
+msgstr "virheellinen toimialueosoitin kohteessa"
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "virheellinen toimialueosoitin kohteessa %s"
+
+msgid "invalid network pointer in"
+msgstr "virheellinen verkko-osoitin kohteessa"
+
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "virheellinen verkko-osoitin kohteessa %s"
+
+msgid "list domains"
+msgstr "luetteloi toimialueet"
+
+msgid "list inactive & active domains"
+msgstr "luetteloi epäaktiiviset ja aktiiviset toimialueet"
+
+msgid "list inactive & active networks"
+msgstr "luettele epäaktiiviset ja aktiiviset verkot"
+
+msgid "list inactive domains"
+msgstr "luetteloi epäaktiiviset toimialueet"
+
+msgid "list inactive networks"
+msgstr "luettele epäaktiiviset verkot"
+
+msgid "list networks"
+msgstr "luettele verkot"
+
+msgid "live migration"
+msgstr "siirto käytettäessä"
+
+msgid "migrate domain to another host"
+msgstr "siirrä toimialue toiseen koneeseen"
+
+msgid "migration URI, usually can be omitted"
+msgstr "siirto-URI, voidaan yleensä jättää pois"
+
+msgid "missing \""
+msgstr "\" puuttuu"
+
+msgid "missing devices information"
+msgstr "laitetietoja puuttuu"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "laitetietoja puuttuu kohteelle %s"
+
+msgid "missing kernel information"
+msgstr "ytimen tietoja puuttuu"
+
+msgid "missing operating system information"
+msgstr "käyttöjärjestelmätieto puuttuu"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "käyttöjärjestelmätieto puuttuu kohteelle %s"
+
+msgid "missing root device information"
+msgstr "juurilaitteen tietoja puuttuu"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "juurilaitteen tietoja puuttuu %s"
+
+msgid "missing source information for device"
+msgstr "lähdetietoja puuttuu laitteelle"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "lähdetietoja puuttuu laitteelle %s"
+
+msgid "missing target information for device"
+msgstr "kohdetietoja puuttuu laitteelle"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "kohdetietoja puuttuu laitteelle %s"
+
+msgid "name of the inactive domain"
+msgstr "Epäaktiivisen toimialueen nimi"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "verkko %s on jo olemassa"
+
+msgid "network information in XML"
+msgstr "verkkotiedot XML-muodossa"
+
+msgid "network interface type"
+msgstr "verkkoliitännän tyyppi"
+
+msgid "network name"
+msgstr "verkon nimi"
+
+msgid "network name or uuid"
+msgstr "verkon nimi tai uuid"
+
+msgid "network uuid"
+msgstr "verkko-UUID"
+
+msgid "no autostart"
+msgstr "Ei automaattikäynnistystä"
+
+msgid "no limit"
+msgstr "ei rajoitusta"
+
+msgid "no state"
+msgstr "ei tilaa"
+
+msgid "no valid connection"
+msgstr "ei sopivaa yhteyttä"
+
+msgid "node information"
+msgstr "solmun tiedot"
+
+msgid "number"
+msgstr "luku"
+
+msgid "number of virtual CPUs"
+msgstr "virtuaaliprosessorien määrä"
+
+msgid "offline"
+msgstr "yhteydetön"
+
+msgid "operation failed"
+msgstr "toimenpide epäonnistui"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "toimenpide epäonnistui: %s"
+
+msgid "operation forbidden for read only access"
+msgstr "toiminto on kielletty vain luku -käytössä"
+
+msgid "out of memory"
+msgstr "muisti lopussa"
+
+msgid "parser error"
+msgstr "jäsenninvirhe"
+
+msgid "paused"
+msgstr "pysäytetty"
+
+msgid "print help"
+msgstr "näytä ohje"
+
+msgid "print the hypervisor canonical URI"
+msgstr "tulosta hypervisorin kanoninen URI"
+
+msgid "print the hypervisor hostname"
+msgstr "tulosta hypervisorin konenimi"
+
+msgid "quit this interactive terminal"
+msgstr "poistu tästä vuorovaikutteisesta terminaalista"
+
+msgid "read-only connection"
+msgstr "vain luku -yhteys"
+
+msgid "reboot a domain"
+msgstr "käynnistä toimialue uudelleen"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "palauta toimialue tiedostoon tallennetusta tilasta"
+
+msgid "resume a domain"
+msgstr "palauta toimialue"
+
+msgid "running"
+msgstr "suoritetaan"
+
+msgid "save a domain state to a file"
+msgstr "tallenna toimialueen tila tiedostoon"
+
+msgid "script used to bridge network interface"
+msgstr "komentosarja verkkoliitännän siltaamiseen"
+
+msgid "show version"
+msgstr "näytä versio"
+
+msgid "show/set scheduler parameters"
+msgstr "näytä/aseta skeduloijan parametrit"
+
+msgid "shut off"
+msgstr "sammutettu"
+
+msgid "source of disk device"
+msgstr "levylaitteen lähde"
+
+msgid "source of network interface"
+msgstr "verkkoliitännän lähde"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "käynnistä (aikaisemmin määritetty) epäaktiivinen toimialue"
+
+msgid "start a (previously defined) inactive network"
+msgstr "käynnistä (aikaisemmin määritetty) epäaktiivinen verkko"
+
+msgid "string"
+msgstr "merkkijono"
+
+msgid "subdriver of disk device"
+msgstr "levylaitteen aliajuri"
+
+msgid "suspend a domain"
+msgstr "aseta toimialue keskeytystilaan"
+
+msgid "system call error"
+msgstr "järjestelmäkutsuvirhe"
+
+msgid "target device type"
+msgstr "kohdelaitetyyppi"
+
+msgid "target network name"
+msgstr "kohdeverkon nimi"
+
+msgid "target of disk device"
+msgstr "levylaitteen kohde"
+
+msgid "testOpen: supply a path or use test:///default"
+msgstr "testOpen: anna polku tai käytä test:///default"
+
+msgid "the state to restore"
+msgstr "palautettava tila"
+
+msgid "this domain exists already"
+msgstr "Tämä toimialue on jo olemassa"
+
+msgid "this network exists already"
+msgstr "Tämä verkko on jo olemassa"
+
+msgid "too many disks"
+msgstr "liian monta levyä"
+
+msgid "too many drivers registered"
+msgstr "liian monta rekisteröityä ajuria"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "liian monta rekisteröityä ajuria kohteessa %s"
+
+msgid "tty console"
+msgstr "tty-konsoli"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "odottamatonta dataa ”%s”"
+
+msgid "unknown OS type"
+msgstr "tuntematon käyttöjärjestelmän tyyppi"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+
+#, c-format
+msgid "unknown architecture: %s"
+msgstr "tuntematon arkkitehtuuri: %s"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "tuntematon komento: ”%s”"
+
+msgid "unknown host"
+msgstr "tuntematon kone"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "tuntematon kone %s"
+
+#, c-format
+msgid "unsupported architecture: %s"
+msgstr "ei tuettu arkkitehtuuri: %s"
+
+msgid "unsupported disk device"
+msgstr "levylaite ei tuettu"
+
+msgid "unsupported disk type"
+msgstr "levytyyppi ei tuettu"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "valitsinta ”-%c” ei tueta. Katso --help."
+
+msgid "unterminated number"
+msgstr "päättymätön numero"
+
+msgid "unterminated string"
+msgstr "päättämätön merkkijono"
+
+msgid "vcpu number"
+msgstr "virtuaaliprosessorin numero"
+
+msgid "vnc display"
+msgstr "vnc-näyttö"
+
+msgid "warning"
+msgstr "varoitus"
+
+msgid "where to dump the core"
+msgstr "mihin muistivedos tallennetaan"
+
+msgid "where to save the data"
+msgstr "mihin tiedot tallennetaan"

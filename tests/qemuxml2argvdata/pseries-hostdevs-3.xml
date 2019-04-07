@@ -1,0 +1,31 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <!-- This hostdev will cause a new PHB to be created because its isolation
+         group is 1 (IOMMU group 0). It will be PHB 2 due to the address -->
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0001' bus='0x01' slot='0x00' function='0x0'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x01' function='0x0'/>
+    </hostdev>
+    <!-- This hostdev will be placed on the same PHB, since its isolation
+         group is also 1 (IOMMU group 0) -->
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0001' bus='0x01' slot='0x00' function='0x1'/>
+      </source>
+    </hostdev>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

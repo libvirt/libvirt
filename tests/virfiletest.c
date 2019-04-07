@@ -14,18 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
+#include <fcntl.h>
 
 #include "testutils.h"
 #include "virfile.h"
 #include "virstring.h"
 
+#ifdef __linux__
+# include <linux/falloc.h>
+#endif
+
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int testFileCheckMounts(const char *prefix,
@@ -118,6 +121,235 @@ testFileSanitizePath(const void *opaque)
 }
 
 
+#if HAVE_DECL_SEEK_HOLE && defined(__linux__)
+
+/* Create a sparse file. @offsets in KiB. */
+static int
+makeSparseFile(const off_t offsets[],
+               const bool startData)
+{
+    int fd = -1;
+    char path[] = abs_builddir "fileInData.XXXXXX";
+    off_t len = 0;
+    size_t i;
+
+    if ((fd = mkostemp(path,  O_CLOEXEC|O_RDWR)) < 0)
+        goto error;
+
+    if (unlink(path) < 0)
+        goto error;
+
+    for (i = 0; offsets[i] != (off_t) -1; i++)
+        len += offsets[i] * 1024;
+
+    while (len) {
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+        off_t toWrite = sizeof(buf);
+
+        if (toWrite > len)
+            toWrite = len;
+
+        if (safewrite(fd, buf, toWrite) < 0) {
+            fprintf(stderr, "unable to write to %s (errno=%d)\n", path, errno);
+            goto error;
+        }
+
+        len -= toWrite;
+    }
+
+    len = 0;
+    for (i = 0; offsets[i] != (off_t) -1; i++) {
+        bool inData = startData;
+
+        if (i % 2)
+            inData = !inData;
+
+        if (!inData &&
+            fallocate(fd,
+                      FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
+                      len, offsets[i] * 1024) < 0) {
+            fprintf(stderr, "unable to punch a hole at offset %lld length %lld\n",
+                    (long long) len, (long long) offsets[i]);
+            goto error;
+        }
+
+        len += offsets[i] * 1024;
+    }
+
+    if (lseek(fd, 0, SEEK_SET) == (off_t) -1) {
+        fprintf(stderr, "unable to lseek (errno=%d)\n", errno);
+        goto error;
+    }
+
+    return fd;
+ error:
+    VIR_FORCE_CLOSE(fd);
+    return -1;
+}
+
+
+# define EXTENT 4
+static bool
+holesSupported(void)
+{
+    off_t offsets[] = {EXTENT, EXTENT, EXTENT, -1};
+    off_t tmp;
+    int fd;
+    bool ret = false;
+
+    if ((fd = makeSparseFile(offsets, true)) < 0)
+        goto cleanup;
+
+    /* The way this works is: there are 4K of data followed by 4K hole followed
+     * by 4K hole again. Check if the filesystem we are running the test suite
+     * on supports holes. */
+    if ((tmp = lseek(fd, 0, SEEK_DATA)) == (off_t) -1)
+        goto cleanup;
+
+    if (tmp != 0)
+        goto cleanup;
+
+    if ((tmp = lseek(fd, tmp, SEEK_HOLE)) == (off_t) -1)
+        goto cleanup;
+
+    if (tmp != EXTENT * 1024)
+        goto cleanup;
+
+    if ((tmp = lseek(fd, tmp, SEEK_DATA)) == (off_t) -1)
+        goto cleanup;
+
+    if (tmp != 2 * EXTENT * 1024)
+        goto cleanup;
+
+    if ((tmp = lseek(fd, tmp, SEEK_HOLE)) == (off_t) -1)
+        goto cleanup;
+
+    if (tmp != 3 * EXTENT * 1024)
+        goto cleanup;
+
+    ret = true;
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+#else /* !HAVE_DECL_SEEK_HOLE || !defined(__linux__)*/
+
+static int
+makeSparseFile(const off_t offsets[] ATTRIBUTE_UNUSED,
+               const bool startData ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+
+
+static bool
+holesSupported(void)
+{
+    return false;
+}
+
+#endif /* !HAVE_DECL_SEEK_HOLE || !defined(__linux__)*/
+
+struct testFileInData {
+    bool startData;     /* whether the list of offsets starts with data section */
+    off_t *offsets;
+};
+
+
+static int
+testFileInData(const void *opaque)
+{
+    const struct testFileInData *data = opaque;
+    int fd = -1;
+    int ret = -1;
+    size_t i;
+
+    if ((fd = makeSparseFile(data->offsets, data->startData)) < 0)
+        goto cleanup;
+
+    for (i = 0; data->offsets[i] != (off_t) -1; i++) {
+        bool shouldInData = data->startData;
+        int realInData;
+        long long shouldLen;
+        long long realLen;
+
+        if (i % 2)
+            shouldInData = !shouldInData;
+
+        if (virFileInData(fd, &realInData, &realLen) < 0)
+            goto cleanup;
+
+        if (realInData != shouldInData) {
+            fprintf(stderr, "Unexpected data/hole. Expected %s got %s\n",
+                    shouldInData ? "data" : "hole",
+                    realInData ? "data" : "hole");
+            goto cleanup;
+        }
+
+        shouldLen = data->offsets[i] * 1024;
+        if (realLen != shouldLen) {
+            fprintf(stderr, "Unexpected section length. Expected %lld got %lld\n",
+                    shouldLen, realLen);
+            goto cleanup;
+        }
+
+        if (lseek(fd, shouldLen, SEEK_CUR) < 0) {
+            fprintf(stderr, "Unable to seek\n");
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
+struct testFileIsSharedFSType {
+    const char *mtabFile;
+    const char *filename;
+    const bool expected;
+};
+
+static int
+testFileIsSharedFSType(const void *opaque ATTRIBUTE_UNUSED)
+{
+#ifndef __linux__
+    return EXIT_AM_SKIP;
+#else
+    const struct testFileIsSharedFSType *data = opaque;
+    char *mtabFile = NULL;
+    bool actual;
+    int ret = -1;
+
+    if (virAsprintf(&mtabFile, abs_srcdir "/virfiledata/%s", data->mtabFile) < 0)
+        return -1;
+
+    if (setenv("LIBVIRT_MTAB", mtabFile, 1) < 0) {
+        fprintf(stderr, "Unable to set env variable\n");
+        goto cleanup;
+    }
+
+    actual = virFileIsSharedFS(data->filename);
+
+    if (actual != data->expected) {
+        fprintf(stderr, "Unexpected FS type. Expected %d got %d\n",
+                data->expected, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(mtabFile);
+    unsetenv("LIBVIRT_MTAB");
+    return ret;
+#endif
+}
+
+
 static int
 mymain(void)
 {
@@ -141,13 +373,13 @@ mymain(void)
         "/etc/aliases.db"
     };
 
-# define DO_TEST_MOUNT_SUBTREE(name, path, prefix, mounts, rev)    \
-    do {                                                           \
-        struct testFileGetMountSubtreeData data = {                \
-            path, prefix, mounts, ARRAY_CARDINALITY(mounts), rev   \
-        };                                                         \
-        if (virTestRun(name, testFileGetMountSubtree, &data) < 0)  \
-            ret = -1;                                              \
+# define DO_TEST_MOUNT_SUBTREE(name, path, prefix, mounts, rev) \
+    do { \
+        struct testFileGetMountSubtreeData data = { \
+            path, prefix, mounts, ARRAY_CARDINALITY(mounts), rev \
+        }; \
+        if (virTestRun(name, testFileGetMountSubtree, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_MOUNT_SUBTREE("/proc normal", MTAB_PATH1, "/proc", wantmounts1, false);
@@ -156,13 +388,13 @@ mymain(void)
     DO_TEST_MOUNT_SUBTREE("/etc/aliases.db", MTAB_PATH2, "/etc/aliases.db", wantmounts2b, false);
 #endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 
-#define DO_TEST_SANITIZE_PATH(PATH, EXPECT)                                    \
-    do {                                                                       \
-        data1.path = PATH;                                                     \
-        data1.expect = EXPECT;                                                 \
-        if (virTestRun(virTestCounterNext(), testFileSanitizePath,             \
-                       &data1) < 0)                                            \
-            ret = -1;                                                          \
+#define DO_TEST_SANITIZE_PATH(PATH, EXPECT) \
+    do { \
+        data1.path = PATH; \
+        data1.expect = EXPECT; \
+        if (virTestRun(virTestCounterNext(), testFileSanitizePath, \
+                       &data1) < 0) \
+            ret = -1; \
     } while (0)
 
 #define DO_TEST_SANITIZE_PATH_SAME(PATH) DO_TEST_SANITIZE_PATH(PATH, PATH)
@@ -186,7 +418,52 @@ mymain(void)
     DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/fooo//hoo");
     DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/fooo///////hoo");
 
+#define DO_TEST_IN_DATA(inData, ...) \
+    do { \
+        off_t offsets[] = {__VA_ARGS__, -1}; \
+        struct testFileInData data = { \
+            .startData = inData, .offsets = offsets, \
+        }; \
+        if (virTestRun(virTestCounterNext(), testFileInData, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    if (holesSupported()) {
+        virTestCounterReset("testFileInData ");
+        DO_TEST_IN_DATA(true, 4, 4, 4);
+        DO_TEST_IN_DATA(false, 4, 4, 4);
+        DO_TEST_IN_DATA(true, 8, 8, 8);
+        DO_TEST_IN_DATA(false, 8, 8, 8);
+        DO_TEST_IN_DATA(true, 8, 16, 32, 64, 128, 256, 512);
+        DO_TEST_IN_DATA(false, 8, 16, 32, 64, 128, 256, 512);
+    }
+
+#define DO_TEST_FILE_IS_SHARED_FS_TYPE(mtab, file, exp) \
+    do { \
+        struct testFileIsSharedFSType data = { \
+            .mtabFile = mtab, .filename = file, .expected = exp \
+        }; \
+        if (virTestRun(virTestCounterNext(), testFileIsSharedFSType, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    virTestCounterReset("testFileIsSharedFSType ");
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts1.txt", "/boot/vmlinuz", false);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts2.txt", "/run/user/501/gvfs/some/file", false);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/nfs/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/nfs/blah", false);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/gluster/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/gluster/sshfs/file", false);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/some/symlink/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/ceph/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/ceph/multi/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/gpfs/data", true);
+
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-VIRT_TEST_MAIN(mymain)
+#ifdef __linux__
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virfilemock.so")
+#else
+VIR_TEST_MAIN(mymain)
+#endif

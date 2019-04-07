@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+
+<!--
+Policy definitions for libvirt daemon
+
+Copyright (C) 2012 Red Hat, Inc.
+Copyright (C) 2007 Daniel P. Berrange <berrange redhat com>
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library.  If not, see
+<http://www.gnu.org/licenses/>.
+-->
+
+<policyconfig>
+    <action id="org.libvirt.unix.monitor">
+      <description>Monitor local virtualized systems</description>
+      <message>System policy prevents monitoring of local virtualized systems</message>
+      <defaults>
+        <!-- Any program can use libvirt in read-only mode for monitoring,
+             even if not part of a session -->
+        <allow_any>yes</allow_any>
+        <allow_inactive>yes</allow_inactive>
+        <allow_active>yes</allow_active>
+      </defaults>
+    </action>
+
+    <action id="org.libvirt.unix.manage">
+      <description>Manage local virtualized systems</description>
+      <message>System policy prevents management of local virtualized systems</message>
+      <defaults>
+        <!-- Any program can use libvirt in read/write mode if they
+             provide the root password -->
+        <allow_any>auth_admin_keep</allow_any>
+        <allow_inactive>auth_admin_keep</allow_inactive>
+        <allow_active>auth_admin_keep</allow_active>
+      </defaults>
+    </action>
+</policyconfig>

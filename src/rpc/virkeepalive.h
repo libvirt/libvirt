@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Jiri Denemark <jdenemar@redhat.com>
  */
 
-#ifndef __VIR_KEEPALIVE_H__
-# define __VIR_KEEPALIVE_H__
+#ifndef LIBVIRT_VIRKEEPALIVE_H
+# define LIBVIRT_VIRKEEPALIVE_H
 
 # include "virnetmessage.h"
 # include "virobject.h"
@@ -55,4 +53,4 @@ bool virKeepAliveCheckMessage(virKeepAlivePtr ka,
                               virNetMessagePtr msg,
                               virNetMessagePtr *response);
 
-#endif /* __VIR_KEEPALIVE_H__ */
+#endif /* LIBVIRT_VIRKEEPALIVE_H */

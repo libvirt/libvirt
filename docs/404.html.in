@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>404 page not found</h1>
@@ -9,7 +9,7 @@
       page you were looking for. You might want to try
     </p>
     <ul>
-      <li>going back to the <a href="http://libvirt.org/">home page</a> to find
+      <li>going back to the <a href="https://libvirt.org/">home page</a> to find
         a collection of links to interesting pages on this site</li>
       <li>using the search box at the top right corner of the screen to
         locate the content on this site or mailing list archives</li>

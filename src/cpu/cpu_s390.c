@@ -17,9 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Thang Pham <thang.pham@us.ibm.com>
  */
 
 #include <config.h>
@@ -33,53 +30,95 @@
 
 static const virArch archs[] = { VIR_ARCH_S390, VIR_ARCH_S390X };
 
-static virCPUDataPtr
-s390NodeData(virArch arch)
+static virCPUCompareResult
+virCPUs390Compare(virCPUDefPtr host ATTRIBUTE_UNUSED,
+                  virCPUDefPtr cpu ATTRIBUTE_UNUSED,
+                  bool failMessages ATTRIBUTE_UNUSED)
 {
-    virCPUDataPtr data;
+    /* s390 relies on QEMU to perform all runability checking. Return
+     * VIR_CPU_COMPARE_IDENTICAL to bypass Libvirt checking.
+     */
+    return VIR_CPU_COMPARE_IDENTICAL;
+}
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+static int
+virCPUs390Update(virCPUDefPtr guest,
+                 const virCPUDef *host)
+{
+    virCPUDefPtr updated = NULL;
+    int ret = -1;
+    size_t i;
 
-    data->arch = arch;
+    if (guest->match == VIR_CPU_MATCH_MINIMUM) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("match mode %s not supported"),
+                       virCPUMatchTypeToString(guest->match));
+        goto cleanup;
+    }
 
-    return data;
+    if (guest->mode != VIR_CPU_MODE_HOST_MODEL) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!host) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unknown host CPU model"));
+        goto cleanup;
+    }
+
+    if (!(updated = virCPUDefCopyWithoutModel(guest)))
+        goto cleanup;
+
+    updated->mode = VIR_CPU_MODE_CUSTOM;
+    if (virCPUDefCopyModel(updated, host, true) < 0)
+        goto cleanup;
+
+    for (i = 0; i < guest->nfeatures; i++) {
+       if (virCPUDefUpdateFeature(updated,
+                                  guest->features[i].name,
+                                  guest->features[i].policy) < 0)
+           goto cleanup;
+    }
+
+    virCPUDefStealModel(guest, updated, false);
+    guest->mode = VIR_CPU_MODE_CUSTOM;
+    guest->match = VIR_CPU_MATCH_EXACT;
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(updated);
+    return ret;
 }
 
 
 static int
-s390Decode(virCPUDefPtr cpu,
-           const virCPUData *data ATTRIBUTE_UNUSED,
-           const char **models ATTRIBUTE_UNUSED,
-           unsigned int nmodels ATTRIBUTE_UNUSED,
-           const char *preferred ATTRIBUTE_UNUSED,
-           unsigned int flags)
+virCPUs390ValidateFeatures(virCPUDefPtr cpu)
 {
+    size_t i;
 
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
-
-    if (cpu->model == NULL &&
-        VIR_STRDUP(cpu->model, "host") < 0)
-        return -1;
+    for (i = 0; i < cpu->nfeatures; i++) {
+        if (cpu->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("only cpu feature policies 'require' and "
+                             "'disable' are supported for %s"),
+                           cpu->features[i].name);
+            return -1;
+        }
+    }
 
     return 0;
 }
 
-static void
-s390DataFree(virCPUDataPtr data)
-{
-    VIR_FREE(data);
-}
 
 struct cpuArchDriver cpuDriverS390 = {
     .name = "s390",
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
-    .compare    = NULL,
-    .decode     = s390Decode,
+    .compare    = virCPUs390Compare,
+    .decode     = NULL,
     .encode     = NULL,
-    .free       = s390DataFree,
-    .nodeData   = s390NodeData,
     .baseline   = NULL,
-    .update     = NULL,
+    .update     = virCPUs390Update,
+    .validateFeatures = virCPUs390ValidateFeatures,
 };

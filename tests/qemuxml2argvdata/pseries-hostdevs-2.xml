@@ -1,0 +1,37 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <!-- This device will cause a new PHB to be created because of its
+         address -->
+    <controller type='scsi' model='virtio-scsi'>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
+    </controller>
+    <!-- This hostdev will share the same PHB as the SCSI controller
+         despite being in the separate isolation group 1 (IOMMU group 0),
+         because the address has been requested explicitly by the user -->
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0001' bus='0x01' slot='0x00' function='0x0'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x02' function='0x0'/>
+    </hostdev>
+    <!-- This hostdev can use neither the PHB that was just created, nor the
+         default one, because it's in isolation group 2 (IOMMU group 1) -->
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0005' bus='0x90' slot='0x01' function='0x0'/>
+      </source>
+    </hostdev>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

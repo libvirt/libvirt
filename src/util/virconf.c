@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Daniel Veillard <veillard@redhat.com>
  */
 
 #include <config.h>
 
-#include <string.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -44,12 +40,6 @@
 
 VIR_LOG_INIT("util.conf");
 
-/************************************************************************
- *									*
- *	Structures and macros used by the mini parser			*
- *									*
- ************************************************************************/
-
 typedef struct _virConfParserCtxt virConfParserCtxt;
 typedef virConfParserCtxt *virConfParserCtxtPtr;
 
@@ -67,26 +57,21 @@ struct _virConfParserCtxt {
 #define NEXT if (ctxt->cur < ctxt->end) ctxt->cur++;
 #define IS_EOL(c) (((c) == '\n') || ((c) == '\r'))
 
-#define SKIP_BLANKS_AND_EOL                                             \
+#define SKIP_BLANKS_AND_EOL \
   do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR) || IS_EOL(CUR))) { \
-         if (CUR == '\n') ctxt->line++;	                                \
+         if (CUR == '\n') ctxt->line++; \
          ctxt->cur++; } } while (0)
-#define SKIP_BLANKS                                                     \
-  do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR)))              \
+#define SKIP_BLANKS \
+  do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR))) \
           ctxt->cur++; } while (0)
-
-/************************************************************************
- *									*
- *		Structures used by configuration data			*
- *									*
- ************************************************************************/
 
 VIR_ENUM_IMPL(virConf, VIR_CONF_LAST,
               "*unexpected*",
               "long",
               "unsigned long",
               "string",
-              "list");
+              "list",
+);
 
 typedef struct _virConfEntry virConfEntry;
 typedef virConfEntry *virConfEntryPtr;
@@ -132,12 +117,6 @@ virConfErrorHelper(const char *file, const char *func, size_t line,
     }
 }
 
-
-/************************************************************************
- *									*
- *		Structures allocations and deallocations		*
- *									*
- ************************************************************************/
 
 /**
  * virConfFreeList:
@@ -238,7 +217,10 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
     if ((comm == NULL) && (name == NULL))
         return NULL;
 
-    VIR_DEBUG("Add entry %s %p", name, value);
+    /* don't log fully commented out lines */
+    if (name)
+        VIR_DEBUG("Add entry %s %p", name, value);
+
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
@@ -257,11 +239,6 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
     return ret;
 }
 
-/************************************************************************
- *									*
- *			Serialization					*
- *									*
- ************************************************************************/
 
 /**
  * virConfSaveValue:
@@ -287,14 +264,16 @@ virConfSaveValue(virBufferPtr buf, virConfValuePtr val)
             virBufferAsprintf(buf, "%llu", val->l);
             break;
         case VIR_CONF_STRING:
-            if (strchr(val->str, '\n') != NULL) {
-                virBufferAsprintf(buf, "\"\"\"%s\"\"\"", val->str);
-            } else if (strchr(val->str, '"') == NULL) {
-                virBufferAsprintf(buf, "\"%s\"", val->str);
-            } else if (strchr(val->str, '\'') == NULL) {
-                virBufferAsprintf(buf, "'%s'", val->str);
-            } else {
-                virBufferAsprintf(buf, "\"\"\"%s\"\"\"", val->str);
+            if (val->str) {
+                if (strchr(val->str, '\n') != NULL) {
+                    virBufferAsprintf(buf, "\"\"\"%s\"\"\"", val->str);
+                } else if (strchr(val->str, '"') == NULL) {
+                    virBufferAsprintf(buf, "\"%s\"", val->str);
+                } else if (strchr(val->str, '\'') == NULL) {
+                    virBufferAsprintf(buf, "'%s'", val->str);
+                } else {
+                    virBufferAsprintf(buf, "\"\"\"%s\"\"\"", val->str);
+                }
             }
             break;
         case VIR_CONF_LIST: {
@@ -314,7 +293,9 @@ virConfSaveValue(virBufferPtr buf, virConfValuePtr val)
             virBufferAddLit(buf, " ]");
             break;
         }
+        case VIR_CONF_LAST:
         default:
+            virReportEnumRangeError(virConfType, val->type);
             return -1;
     }
     return 0;
@@ -348,11 +329,6 @@ virConfSaveEntry(virBufferPtr buf, virConfEntryPtr cur)
     return 0;
 }
 
-/************************************************************************
- *									*
- *			The parser core					*
- *									*
- ************************************************************************/
 
 /**
  * virConfParseLong:
@@ -484,7 +460,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         return NULL;
     }
     if ((CUR == '"') || (CUR == '\'') ||
-         (ctxt->conf->flags & VIR_CONF_FLAG_LXC_FORMAT)) {
+        (ctxt->conf->flags & VIR_CONF_FLAG_LXC_FORMAT)) {
         type = VIR_CONF_STRING;
         str = virConfParseString(ctxt);
         if (str == NULL)
@@ -728,7 +704,7 @@ virConfParse(const char *filename, const char *content, int len,
 
     ctxt.filename = filename;
     ctxt.base = ctxt.cur = content;
-    ctxt.end = content + len - 1;
+    ctxt.end = content + len;
     ctxt.line = 1;
 
     ctxt.conf = virConfCreate(filename, flags);
@@ -749,11 +725,6 @@ virConfParse(const char *filename, const char *content, int len,
     return NULL;
 }
 
-/************************************************************************
- *									*
- *			The module entry points				*
- *									*
- ************************************************************************/
 
 /* 10 MB limit on config file size as a sanity check */
 #define MAX_CONFIG_FILE_SIZE (1024*1024*10)
@@ -773,7 +744,7 @@ virConfReadFile(const char *filename, unsigned int flags)
 {
     char *content;
     int len;
-    virConfPtr conf = NULL;
+    virConfPtr conf;
 
     VIR_DEBUG("filename=%s", NULLSTR(filename));
 
@@ -785,44 +756,35 @@ virConfReadFile(const char *filename, unsigned int flags)
     if ((len = virFileReadAll(filename, MAX_CONFIG_FILE_SIZE, &content)) < 0)
         return NULL;
 
-    if (len && len < MAX_CONFIG_FILE_SIZE && content[len - 1] != '\n') {
-        VIR_DEBUG("appending newline to busted config file %s", filename);
-        if (VIR_REALLOC_N(content, len + 2) < 0)
-            goto cleanup;
-        content[len++] = '\n';
-        content[len] = '\0';
-    }
-
     conf = virConfParse(filename, content, len, flags);
 
- cleanup:
     VIR_FREE(content);
 
     return conf;
 }
 
 /**
- * virConfReadMem:
+ * virConfReadString:
  * @memory: pointer to the content of the configuration file
- * @len: length in byte
  * @flags: combination of virConfFlag(s)
  *
- * Reads a configuration file loaded in memory. The string can be
- * zero terminated in which case @len can be 0
+ * Reads a configuration file loaded in memory. The string must be
+ * zero terminated.
  *
  * Returns a handle to lookup settings or NULL if it failed to
  *         parse the content, use virConfFree() to free the data.
  */
 virConfPtr
-virConfReadMem(const char *memory, int len, unsigned int flags)
+virConfReadString(const char *memory, unsigned int flags)
 {
-    if ((memory == NULL) || (len < 0)) {
+    size_t len;
+
+    if (memory == NULL) {
         virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return NULL;
     }
-    if (len == 0)
-        len = strlen(memory);
 
+    len = strlen(memory);
     return virConfParse("memory conf", memory, len, flags);
 }
 
@@ -1021,14 +983,21 @@ int virConfGetValueStringList(virConfPtr conf,
             }
             break;
         }
-        /* fallthrough */
+        ATTRIBUTE_FALLTHROUGH;
 
-    default:
+    case VIR_CONF_LLONG:
+    case VIR_CONF_ULLONG:
+    case VIR_CONF_NONE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        compatString ?
                        _("%s: expected a string or string list for '%s' parameter") :
                        _("%s: expected a string list for '%s' parameter"),
                        conf->filename, setting);
+        return -1;
+
+    case VIR_CONF_LAST:
+    default:
+        virReportEnumRangeError(virConfType, cval->type);
         return -1;
     }
 
@@ -1456,7 +1425,7 @@ int virConfWalk(virConfPtr conf,
     cur = conf->entries;
     while (cur != NULL) {
         if (cur->name && cur->value &&
-                callback(cur->name, cur->value, opaque) < 0)
+            callback(cur->name, cur->value, opaque) < 0)
             return -1;
         cur = cur->next;
     }

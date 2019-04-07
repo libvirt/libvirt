@@ -1,0 +1,1571 @@
+# Libvirt package strings.
+# Copyright (C) 2019 Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Daniel <veillard@redhat.com>, 2011
+# jordimash <jmas@softcatala.org>, 2014
+# Xavier Conde Rueda <xavi.conde@gmail.com>, 2006
+# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2015. #zanata
+# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2016. #zanata
+# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2018. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt 4.10.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"PO-Revision-Date: 2018-02-24 11:19+0000\n"
+"Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
+"Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
+"ca/)\n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid ""
+"\n"
+"  (specify help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (especifiqueu --help <ordre> per als detalls quant a l'ordre)\n"
+
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  DESCRIPCIÓ\n"
+
+msgid ""
+"\n"
+"  Default paths:\n"
+"\n"
+"    Configuration file (unless overridden by -f):\n"
+"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
+"\n"
+"    Sockets:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
+"\n"
+"    TLS:\n"
+"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
+"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
+"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
+"\n"
+"    PID file:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
+"\n"
+msgstr ""
+"\n"
+"  Camis per defecte:\n"
+"\n"
+"    Fitxer de configuració (a menys que se sobreescrigui amb -f):\n"
+"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
+"\n"
+"    Sockets:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
+"\n"
+"    TLS:\n"
+"      Certificat de l'autoritat de certificació: $HOME/.pki/libvirt/cacert."
+"pem\n"
+"      Certificat del servidor: $HOME/.pki/libvirt/servercert.pem\n"
+"      Clau privada del servidor: $HOME/.pki/libvirt/serverkey.pem\n"
+"\n"
+"    Fitxer del PID:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
+"\n"
+
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  OPCIONS\n"
+
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  SINOPSI\n"
+
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Temps: %.3f ms)\n"
+"\n"
+
+msgid "  NAME\n"
+msgstr "  NOM\n"
+
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: no s'ha pogut assignar %d bytes"
+
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s: %d: no s'ha pogut assignar %lu bytes"
+
+#, c-format
+msgid "%s: %d: failed to allocate mountpoints"
+msgstr "%s: %d: ha fallat l'assignació dels punts de muntatge"
+
+#, c-format
+msgid "%s: initialization failed\n"
+msgstr "%s: la inicialització ha fallat\n"
+
+msgid "(re)connect to hypervisor"
+msgstr "torna a connectar a l'hipervisor"
+
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <número>"
+
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <cadena>"
+
+msgid "Attach device from an XML <file>."
+msgstr "Adjunta un dispositiu des d'un <fitxer> XML."
+
+msgid "Attach new disk device."
+msgstr "Adjunta un nou dispositiu de disc."
+
+msgid "Attach new network interface."
+msgstr "Adjunta una nova interfície de xarxa."
+
+msgid "Autostart"
+msgstr "Autoinici"
+
+msgid "CPU Affinity:"
+msgstr "Afinitat de la CPU:"
+
+msgid "CPU frequency:"
+msgstr "Freqüència de CPU:"
+
+msgid "CPU model:"
+msgstr "Model de CPU:"
+
+msgid "CPU socket(s):"
+msgstr "Sòcols de CPU:"
+
+msgid "CPU time:"
+msgstr "Temps de CPU:"
+
+msgid "CPU(s):"
+msgstr "Quantitat de CPU:"
+
+msgid "CPU:"
+msgstr "CPU:"
+
+msgid "Can't allocate memory"
+msgstr "No es pot assignar memòria"
+
+msgid "Can't create initial configuration"
+msgstr "No es pot crear la configuració inicial"
+
+msgid "Can't determine config path"
+msgstr "No es pot determinar el camí de configuració"
+
+#, c-format
+msgid "Can't load config file: %s: %s"
+msgstr "No es pot carregar el fitxer de configuració: %s: %s"
+
+#, c-format
+msgid "Can't read %s"
+msgstr "No es pot llegir %s"
+
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "No es pot extreure la versió de l'hipervisor %s en execució\n"
+
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Canvia l'assignació de memòria actual en el domini convidat."
+
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "Canvia el límit d'assignació màxima de memòria en el domini convidat."
+
+msgid "Configure a domain to be automatically started at boot."
+msgstr "Configura un domini perquè s'iniciï automàticament en arrencar."
+
+msgid "Configure a network to be automatically started at boot."
+msgstr "Configureu una xarxa perquè s'iniciï automàticament a l'arrencada."
+
+msgid "Connect the virtual serial console for the guest"
+msgstr "Connecta a la consola sèrie virtual per al convidat"
+
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Connecta a l'hipervisor local. És una ordre interna, després d'iniciar "
+"l'entorn d'ordres."
+
+msgid "Core dump a domain."
+msgstr "Bolca el nucli d'un domini."
+
+msgid "Core(s) per socket:"
+msgstr "Nuclis per sòcol:"
+
+#, c-format
+msgid "Could not complete transfer: %s (%d)"
+msgstr "No s'ha pogut completar la transferència: %s (%d)"
+
+#, c-format
+msgid "Could not create base storage, rc=%08x"
+msgstr "No es pot crear l'emmagatzematge base, rc=%08x"
+
+#, c-format
+msgid "Could not create harddisk, rc=%08x"
+msgstr "No es pot crear el disc dur, rc=%08x"
+
+#, c-format
+msgid "Could not set max-memory to %lu kilobytes: %s"
+msgstr "No s'ha pogut establir la memòria màxima a %lu kilobytes: %s"
+
+msgid "Could not set memory"
+msgstr "No s'ha pogut establir la memòria"
+
+#, c-format
+msgid "Could not set memory to %lu kilobytes: %s"
+msgstr "No s'ha pogut establir la memòria a %lu kilobytes: %s"
+
+#, c-format
+msgid "Could not set number of virtual CPUs to %d: %s"
+msgstr "No s'ha pogut establir el nombre de CPU virtuals a %d: %s"
+
+msgid "Create a domain."
+msgstr "Crea un domini."
+
+msgid "Create a network."
+msgstr "Crea una xarxa."
+
+msgid "Define a domain."
+msgstr "Defineix un domini."
+
+msgid "Detach device from an XML <file>"
+msgstr "desvincula un dispositiu d'un <fitxer> XML"
+
+msgid "Detach disk device."
+msgstr "Desvincula un dispositiu de disc."
+
+msgid "Detach network interface."
+msgstr "Desvincula la interfície de xarxa."
+
+msgid "Display the system version information."
+msgstr "Mostra la informació de la versió del sistema."
+
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "S'ha creat el domini %s des de %s\n"
+
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "El domini %s s'ha definit des de %s\n"
+
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "S'ha destruït el domini %s\n"
+
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "S'ha indefinit el domini %s\n"
+
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "S'està reiniciant el domini %s\n"
+
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "S'està apagant el domini %s\n"
+
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "S'ha marcat el domini %s com a autoiniciat\n"
+
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "S'ha recuperat el domini %s\n"
+
+#, c-format
+msgid "Domain %s started\n"
+msgstr "S'ha iniciat el domini %s\n"
+
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "S'ha suspès el domini %s\n"
+
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "S'ha desmarcat el domini %s com a autoiniciat\n"
+
+msgid "Domain is already active"
+msgstr "El domini ja és actiu"
+
+msgid "Domain is already running"
+msgstr "El domini ja s'està executant"
+
+msgid "Domain not found"
+msgstr "No s'ha trobat el domini"
+
+#, c-format
+msgid "Domain not found: %s"
+msgstr "No s'ha trobat el domini: %s"
+
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "S'ha restaurat un domini des de %s\n"
+
+msgid "Failed to allocate memory"
+msgstr "No s'ha pogut assignar memòria"
+
+#, c-format
+msgid "Failed to attach device from %s"
+msgstr "No s'ha pogut adjuntar el dispositiu des de %s"
+
+#, c-format
+msgid "Failed to autostart VM '%s': %s"
+msgstr "No s'ha pogut iniciar automàticament la VM '%s': %s"
+
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "No s'ha pogut bolcar el domini %s a %s"
+
+msgid "Failed to create XML"
+msgstr "No s'ha pogut crear l'XML"
+
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "No s'ha pogut crear un domini des de %s"
+
+#, c-format
+msgid "Failed to create network from %s"
+msgstr "No s'ha pogut crear la xarxa des de %s"
+
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "No s'ha pogut definir el domini des de %s"
+
+#, c-format
+msgid "Failed to define network from %s"
+msgstr "No s'ha pogut definir la xarxa des de %s"
+
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "No s'ha destruït el domini %s"
+
+#, c-format
+msgid "Failed to destroy network %s"
+msgstr "No s'ha pogut destruir la xarxa %s"
+
+#, c-format
+msgid "Failed to detach device from %s"
+msgstr "No s'ha pogut desvincular el dispositiu de %s"
+
+msgid "Failed to find the network"
+msgstr "No s'ha trobat la xarxa"
+
+#, c-format
+msgid "Failed to find the network: %s"
+msgstr "No s'ha trobat la xarxa: %s"
+
+#, c-format
+msgid "Failed to fork as daemon: %s"
+msgstr "No s'ha pogut bifurcar com a dimoni: %s"
+
+msgid "Failed to generate UUID"
+msgstr "no s'ha pogut obtenir un UUID de xarxa"
+
+#, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "No s'ha pogut obtenir les estadístiques dels blocs %s %s"
+
+msgid "Failed to get disk information"
+msgstr "No es pot obtenir informació de disc"
+
+msgid "Failed to get interface information"
+msgstr "No es pot obtenir informació de node"
+
+#, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "no es pot obtenir les estadístiques de la interfície %s %s"
+
+msgid "Failed to list active domains"
+msgstr "No s'ha pogut llistar els dominis actius"
+
+msgid "Failed to list active networks"
+msgstr "No s'ha pogut llistar les xarxes actives"
+
+msgid "Failed to list inactive domains"
+msgstr "No s'ha pogut llistar els dominis inactius"
+
+msgid "Failed to list inactive networks"
+msgstr "No s'ha pogut llistar les xarxes inactives"
+
+#, c-format
+msgid "Failed to mark domain %s as autostarted"
+msgstr "No s'ha pogut desar marcar el domini %s com a autoiniciat"
+
+#, c-format
+msgid "Failed to parse mode '%s'"
+msgstr "No s'ha pogut analitzar el mode '%s'"
+
+msgid "Failed to parse vzlist output"
+msgstr "No s'ha pogut analitzar la sortida de vzlist"
+
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "No s'ha pogut reiniciar el domini %s"
+
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "No s'ha pogut restaurar un domini des de %s"
+
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "No s'ha pogut recuperar el domini %s"
+
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "No s'ha pogut desar el domini %s a %s"
+
+msgid "Failed to set non-blocking file descriptor flag"
+msgstr "No s'ha pogut establir l'indicador de descriptor de fitxer no blocant"
+
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "No s'ha pogut apagar el domini %s"
+
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "No s'ha pogut iniciar el domini %s"
+
+#, c-format
+msgid "Failed to start network %s"
+msgstr "No s'ha pogut iniciar la xarxa %s"
+
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "No s'ha pogut suspendre el domini %s"
+
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "No s'ha definit el domini %s"
+
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "No s'ha definit la xarxa %s"
+
+#, c-format
+msgid "Failed to unmark domain %s as autostarted"
+msgstr "No s'ha pogut desmarcar el domini %s com a autoiniciat"
+
+msgid "GET operation failed"
+msgstr "ha fallat l'operació GET"
+
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "ha fallat l'operació GET: %s"
+
+msgid "GNUTLS call error"
+msgstr "error de crida del GNUTLS"
+
+msgid "Get network interface stats for a running domain."
+msgstr ""
+"Obté les estadístiques d'una interfície de xarxa referits a un domini en "
+"execució."
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Id:"
+msgstr "Id:"
+
+#, c-format
+msgid "Invalid bus type '%s' for floppy disk"
+msgstr "Tipus de bus '%s' no vàlid per al disquet"
+
+#, c-format
+msgid "Invalid floppy device name: %s"
+msgstr "Nom del dispositiu de disquet invàlid: %s"
+
+#, c-format
+msgid "Invalid harddisk device name: %s"
+msgstr "Nom del dispositiu de disc dur invàlid: %s"
+
+msgid "Max memory:"
+msgstr "Memòria màxima:"
+
+msgid "Memory size:"
+msgstr "Mida de memòria:"
+
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr ""
+"Migra els dominis a un altre amfitrió. Afegiu --live per a una migració "
+"activa."
+
+msgid "Model name contains invalid characters"
+msgstr "El nom de model conté caràcters invàlids"
+
+msgid "NOTE"
+msgstr "NOTA"
+
+msgid "NUMA cell(s):"
+msgstr "Cel·les NUMA:"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Name:"
+msgstr "Nom:"
+
+#, c-format
+msgid "Network %s created from %s\n"
+msgstr "S'ha creat la xarxa %s des de %s\n"
+
+#, c-format
+msgid "Network %s defined from %s\n"
+msgstr "S'ha definit la xarxa %s des de %s\n"
+
+#, c-format
+msgid "Network %s destroyed\n"
+msgstr "S'ha destruït la xarxa %s\n"
+
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "S'ha indefinit la xarxa %s\n"
+
+#, c-format
+msgid "Network %s marked as autostarted\n"
+msgstr "S'ha iniciat la xarxa %s\n"
+
+#, c-format
+msgid "Network %s started\n"
+msgstr "S'ha iniciat la xarxa %s\n"
+
+#, c-format
+msgid "Network %s unmarked as autostarted\n"
+msgstr "S'ha desmarcat la xarxa %s com a autoiniciada\n"
+
+#, c-format
+msgid "Network config filename '%s' does not match network name '%s'"
+msgstr ""
+"El nom del fitxer de configuració de la xarxa '%s' no concorda amb el nom de "
+"la xarxa '%s'"
+
+msgid "Network not found"
+msgstr "No s'ha trobat la xarxa"
+
+#, c-format
+msgid "Network not found: %s"
+msgstr "No s'ha trobat la xarxa: %s"
+
+#, c-format
+msgid "Network type %d is not supported"
+msgstr "El tipus de xarxa %d no està suportat"
+
+msgid "No error message provided"
+msgstr "No s'ha proporcionat cap missatge d'error"
+
+msgid "OS Type:"
+msgstr "Tipus SO:"
+
+msgid "Output the IP address and port number for the VNC display."
+msgstr "Escriu l'adreça IP i el número de port per a la visualització VNC."
+
+msgid "Output the device for the TTY console."
+msgstr "Escriu el dispositiu per la consola TTY."
+
+msgid "Output the domain information as an XML dump to stdout."
+msgstr ""
+"Escriu la informació de domini com a bolcat XML per la sortida estàndard."
+
+msgid "Output the network information as an XML dump to stdout."
+msgstr ""
+"Escriu la informació de la xarxa com a bolcat XML per la sortida estàndard."
+
+msgid "POST operation failed"
+msgstr "ha fallat l'operació POST"
+
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "ha fallat l'operació POST: %s"
+
+msgid "Path"
+msgstr "Camí"
+
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Associa les VCPU del domini a CPU físiques de l'amfitrió."
+
+msgid "RPC error"
+msgstr "error d'RPC"
+
+msgid "Restore a domain."
+msgstr "Restaura un domini."
+
+msgid "Resume a previously suspended domain."
+msgstr "Recupera un domini suspès anteriorment."
+
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Retorna informació bàsica quant a les CPU virtuals del domini."
+
+msgid "Returns basic information about the domain."
+msgstr "Retorna informació bàsica quant al domini."
+
+msgid "Returns basic information about the node."
+msgstr "Retorna informació bàsica quant al node."
+
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Retorna les capacitats de l'hipervisor/controlador."
+
+msgid "Returns list of domains."
+msgstr "Retorna una llista de dominis."
+
+msgid "Returns list of networks."
+msgstr "Retorna una llista de xarxes."
+
+msgid "Run a reboot command in the target domain."
+msgstr "Executeu una ordre de reinici en el domini destí."
+
+msgid "Run shutdown in the target domain."
+msgstr "Executa l'apagada en el domini destí."
+
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "S'està executant l'hipervisor: %s %d.%d.%d\n"
+
+msgid "Scheduler"
+msgstr "Planificador"
+
+msgid "Show/Set scheduler parameters."
+msgstr "Mostra/estableix els paràmetres del planificador."
+
+msgid "Start a network."
+msgstr "Inicia una xarxa."
+
+msgid "State"
+msgstr "Estat"
+
+msgid "State:"
+msgstr "Estat:"
+
+msgid "Suspend a running domain."
+msgstr "Suspèn un domini en execució."
+
+msgid "System error"
+msgstr "Error de sistema"
+
+msgid "Thread(s) per core:"
+msgstr "Fluxos per nucli:"
+
+#, c-format
+msgid "Time: %s"
+msgstr "Temps: %s"
+
+msgid "Type:"
+msgstr "Tipus:"
+
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Escriviu:  'help' per a obtenir ajuda amb les ordres\n"
+"           'quit' per sortir\n"
+"\n"
+
+msgid "UUID in config file malformed"
+msgstr "l'UUID del fitxer de configuració no és correcte"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Unable to add extra data"
+msgstr "No s'han pogut afegir les dades extra"
+
+msgid "Unable to add storage controller"
+msgstr "No s'ha pogut afegir el controlador d'emmagatzematge"
+
+msgid "Unable to change MaxMemorySize"
+msgstr "No es pot canviar MaxMemorySize"
+
+#, c-format
+msgid "Unable to create HardDisk, rc=%08x"
+msgstr "No es pot crear el disc dur, rc=%08x"
+
+msgid "Unable to get XML Desc of snapshot"
+msgstr "No es pot obtenir la descripció XML de la instantània"
+
+msgid "Unable to get the parent disk"
+msgstr "No es pot obtenir el disc primari"
+
+#, c-format
+msgid "Unable to migrate %s to %s"
+msgstr "No es pot migrar %s a %s"
+
+#, c-format
+msgid "Unable to obtain information about pid: %d"
+msgstr "No es pot obtenir la informació sobre el pid: %d"
+
+#, c-format
+msgid "Unable to open Machine, rc=%08x"
+msgstr "No es pot obrir la màquina, rc=%08x"
+
+#, c-format
+msgid "Unable to open monitor path %s"
+msgstr "No es pot obrir el camí al monitor %s"
+
+msgid "Unable to parse the xml"
+msgstr "No es pot analitzar sintàcticament l'xml"
+
+msgid "Unable to put monitor into non-blocking mode"
+msgstr "No es pot posar el monitor en mode no blocant"
+
+msgid "Unable to serialize the machine description"
+msgstr "No es pot serialitzar la descripció de la màquina."
+
+msgid "Unable to set monitor close-on-exec flag"
+msgstr "No es pot definir l'indicador de monitor close-on-exec"
+
+msgid "Unknown"
+msgstr "Desconegut"
+
+msgid "Unknown error"
+msgstr "Error desconegut"
+
+msgid "Used memory:"
+msgstr "Memòria utilitzada:"
+
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "S'està utilitzant l'API: %s %d.%d.%d\n"
+
+msgid "VCPU:"
+msgstr "VCPU:"
+
+msgid "VM is already active"
+msgstr "La VM ja és activa"
+
+msgid "WARN"
+msgstr "AVÍS"
+
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Benvinguts a %s, el terminal interactiu de virtualització.\n"
+"\n"
+
+msgid "XML file"
+msgstr "Fitxer XML"
+
+msgid "active"
+msgstr "actiu"
+
+msgid "attach device from an XML file"
+msgstr "adjunta un dispositiu des d'un fitxer XML"
+
+msgid "attach disk device"
+msgstr "adjunta un dispositiu de disc"
+
+msgid "attach network interface"
+msgstr "adjunta les interfícies de xarxa"
+
+msgid "authentication failed"
+msgstr "l'autenticació ha fallat"
+
+msgid "authentication required"
+msgstr "Es necessita autenticació"
+
+msgid "autostart a domain"
+msgstr "inicia un domini automàticament"
+
+msgid "autostart a network"
+msgstr "inicia automàticament una xarxa"
+
+msgid "block device"
+msgstr "dispositiu de blocs"
+
+#, c-format
+msgid "cannot list SASL mechanisms %d (%s)"
+msgstr "no es poden llistar els mecanismes SASL %d (%s)"
+
+msgid "cannot parse vbd filename, missing driver name"
+msgstr "no es pot analitzar el nom de fitxer vbd, falta el nom del controlador"
+
+msgid "cannot parse vbd filename, missing driver type"
+msgstr ""
+"no es pot analitzar el nom de fitxer vbd, falta el tipus de controlador"
+
+#, c-format
+msgid "cannot query SASL ssf on connection %d (%s)"
+msgstr "no es pot consultar el ssf de SASL en la connexió %d (%s)"
+
+#, c-format
+msgid "cannot query SASL username on connection %d (%s)"
+msgstr "no es pot consultar el nom d'usuari SASL en la connexió %d (%s)"
+
+#, c-format
+msgid "cannot remove config for %s"
+msgstr "no es pot eliminar la configuració de %s"
+
+msgid "capabilities"
+msgstr "capacitats"
+
+msgid "change maximum memory limit"
+msgstr "canvia el límit de memòria màxima"
+
+msgid "change memory allocation"
+msgstr "canvia l'assignació de memòria"
+
+msgid "change number of virtual CPUs"
+msgstr "canvia el nombre de CPU virtuals"
+
+msgid "client tried invalid PolicyKit init request"
+msgstr ""
+"el client ha intentat fer una sol·licitud d'inicialització de PolicyKit "
+"invàlida"
+
+msgid "client tried invalid SASL init request"
+msgstr "el client ha provat una sol·licitud d'inicialització SASL invàlida"
+
+msgid "client tried invalid SASL start request"
+msgstr ""
+"el client ha intentat fer una sol·licitud d'inicialització de SASL invàlida"
+
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "l'ordre '%s' no reconeix l'opció --%s"
+
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "l'ordre '%s' requereix l'opció --%s"
+
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "l'ordre '%s' requereix l'opció <%s>"
+
+msgid "configuration file syntax error"
+msgstr "error de sintaxi del fitxer de configuració"
+
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "error de sintaxi del fitxer de configuració: %s"
+
+msgid "connect to the guest console"
+msgstr "connecta a la consola del convidat"
+
+msgid "connection already open"
+msgstr "la connexió ja està oberta"
+
+msgid "connection not open"
+msgstr "la connexió no està oberta"
+
+msgid "convert a domain id or UUID to domain name"
+msgstr "converteix un id de domini o UUID a nom de domini"
+
+msgid "convert a domain name or UUID to domain id"
+msgstr "converteix un nom de domini o UUID a id de domini"
+
+msgid "convert a domain name or id to domain UUID"
+msgstr "converteix un nom de domini o id a UUID de domini"
+
+msgid "convert a network UUID to network name"
+msgstr "converteix un UUID de xarxa a nom de xarxa"
+
+msgid "convert a network name to network UUID"
+msgstr "converteix un nom de xarxa a UUID de xarxa"
+
+msgid "could not connect to Xen Store"
+msgstr "no s'ha pogut connectar al magatzem Xen"
+
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "no s'ha pogut connectar al magatzem Xen %s"
+
+msgid "could not use Xen hypervisor entry"
+msgstr "no s'ha pogut usar l'hipervisor Xen"
+
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "no s'ha pogut utilitzar l'entrada de l'hipervisor Xen %s"
+
+msgid "crashed"
+msgstr "ha fallat"
+
+msgid "create a domain from an XML file"
+msgstr "crea un domini des d'un fitxer XML"
+
+msgid "create a network from an XML file"
+msgstr "crea una xarxa des d'un fitxer XML"
+
+msgid "define (but don't start) a domain from an XML file"
+msgstr "defineix (però no iniciïs) un domini des d'un fitxer XML"
+
+msgid "detach device from an XML file"
+msgstr "desvincula un dispositiu d'un fitxer XML"
+
+msgid "detach disk device"
+msgstr "desvincula un dispositiu de disc"
+
+msgid "detach network interface"
+msgstr "desvincula la interfície de xarxa"
+
+msgid "disable autostarting"
+msgstr "inhabilita l'inici automàtic"
+
+#, c-format
+msgid "domain %s exists already"
+msgstr "el domini %s ja existeix"
+
+msgid "domain id or name"
+msgstr "id de domini o nom"
+
+msgid "domain id or uuid"
+msgstr "id de domini o uuid"
+
+msgid "domain information"
+msgstr "informació del domini"
+
+msgid "domain information in XML"
+msgstr "informació de domini en XML"
+
+msgid "domain information incomplete, missing kernel & bootloader"
+msgstr ""
+"la informació del domini és incompleta, falta el kernel i el gestor "
+"d'arrencada"
+
+msgid "domain information incomplete, missing name"
+msgstr "la informació del domini és incompleta, falta el nom"
+
+msgid "domain information incomplete, vbd has no dev"
+msgstr "la informació del domini és incompleta, vbd no té dev"
+
+msgid "domain information incomplete, vbd has no src"
+msgstr "la informació del domini és incompleta, vbd no té src"
+
+msgid "domain is not in running state"
+msgstr "el domini no està en estat d'execució"
+
+msgid "domain is not in shutoff state"
+msgstr "el domini no està en estat de tancament"
+
+msgid "domain is not running"
+msgstr "el domini no s'està executant"
+
+msgid "domain name or uuid"
+msgstr "nom de domini o uuid"
+
+msgid "domain state"
+msgstr "estat del domini"
+
+msgid "domainMigratePrepare did not set uri"
+msgstr "domainMigratePrepare no ha establert l'uri"
+
+msgid "domainMigratePrepare2 did not set uri"
+msgstr "domainMigratePrepare2 no ha establert l'uri"
+
+msgid "domainMigratePrepare3 did not set uri"
+msgstr "domainMigratePrepare3 no ha establert l'uri"
+
+msgid "driver of disk device"
+msgstr "controlador del dispositiu de disc"
+
+msgid "dump the core of a domain to a file for analysis"
+msgstr "bolca el nucli d'un domini a un fitxer per a analitzar-lo"
+
+msgid "error"
+msgstr "error"
+
+msgid "error: "
+msgstr "error: "
+
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "sintaxi inesperada: --%s <%s>"
+
+msgid "expecting a name"
+msgstr "s'espera un nom"
+
+msgid "expecting a separator"
+msgstr "s'espera un separador"
+
+msgid "expecting a separator in list"
+msgstr "s'espera un separador a la llista"
+
+msgid "expecting a value"
+msgstr "s'espera un valor"
+
+msgid "expecting an assignment"
+msgstr "s'espera una assignació"
+
+msgid "failed to connect to the hypervisor"
+msgstr "no s'ha pogut connectar a l'hipervisor"
+
+msgid "failed to get URI"
+msgstr "no s'ha pogut obtenir l'URI"
+
+msgid "failed to get capabilities"
+msgstr "no s'ha pogut obtenir les capacitats"
+
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "no s'ha pogut obtenir el domini '%s'"
+
+msgid "failed to get domain UUID"
+msgstr "no s'ha pogut obtenir un UUID de domini"
+
+msgid "failed to get hostname"
+msgstr "no s'ha pogut obtenir el nom d'amfitrió"
+
+msgid "failed to get hypervisor type"
+msgstr "no s'ha pogut obtenir el tipus d'hipervisor"
+
+#, c-format
+msgid "failed to get network '%s'"
+msgstr "no s'ha pogut obtenir la xarxa '%s'"
+
+msgid "failed to get network UUID"
+msgstr "no s'ha pogut obtenir un UUID de xarxa"
+
+msgid "failed to get node information"
+msgstr "no es pot obtenir informació de node"
+
+msgid "failed to get the hypervisor version"
+msgstr "no s'ha pogut obtenir la versió de l'hipervisor"
+
+msgid "failed to get the library version"
+msgstr "no s'ha pogut obtenir la versió de la biblioteca"
+
+#, c-format
+msgid "failed to mark network %s as autostarted"
+msgstr "no s'ha pogut marcar la xarxa %s com a autoiniciada"
+
+msgid "failed to open file"
+msgstr "no s'ha pogut obrir el fitxer"
+
+msgid "failed to open the log file. check the log file path"
+msgstr "no s'ha pogut obrir el fitxer de registre, comproveu el camí al fitxer"
+
+msgid "failed to parse configuration file"
+msgstr "no s'ha pogut analitzar el fitxer de configuració"
+
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "no s'ha pogut analitzar el fitxer de configuració %s"
+
+msgid "failed to read configuration file"
+msgstr "no s'ha pogut llegir el fitxer de configuració"
+
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "no s'ha pogut llegir el fitxer de configuració %s"
+
+msgid "failed to save content"
+msgstr "no s'ha pogut desar el contingut"
+
+msgid "failed to serialize S-Expr"
+msgstr "no s'ha pogut serialitzar l'S-Expr"
+
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "no s'ha pogut serialitzar l'S-Expr: %s"
+
+#, c-format
+msgid "failed to unmark network %s as autostarted"
+msgstr "no s'ha pogut desmarcar la xarxa %s com a autoiniciada"
+
+msgid "failed to write configuration file"
+msgstr "no s'ha pogut escriure el fitxer de configuració"
+
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "no s'ha pogut escriure el fitxer de configuració: %s"
+
+msgid "failed to write the log file"
+msgstr "no s'ha pogut escriure el fitxer de registre"
+
+msgid "file containing an XML domain description"
+msgstr "fitxer que conté una descripció de domini XML"
+
+msgid "file containing an XML network description"
+msgstr "fitxer que conté una descripció XML de la xarxa"
+
+msgid "get device block stats for a domain"
+msgstr "obté les estadístiques d'un dispositiu de blocs referits a un domini"
+
+msgid "get network interface stats for a domain"
+msgstr "obté les estadístiques d'una interfície de xarxa referits a un domini"
+
+msgid "getting time of day"
+msgstr "obtenció de la data i hora"
+
+msgid "gracefully shutdown a domain"
+msgstr "apaga un domini"
+
+msgid "hypervisor connection URI"
+msgstr "URI de la connexió de l'hipervisor"
+
+msgid "in shutdown"
+msgstr "apagant-se"
+
+msgid "inactive"
+msgstr "inactiu"
+
+msgid "internal error"
+msgstr "error intern"
+
+msgid "invalid connection pointer in"
+msgstr "punter de connexió invàlid a"
+
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "punter de connexió invàlid a %s"
+
+msgid "invalid domain pointer in"
+msgstr "punter de domini invàlid"
+
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "punter de domini invàlid a %s"
+
+msgid "invalid network pointer in"
+msgstr "punter de xarxa invàlid a"
+
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "punter de xarxa invàlid a %s"
+
+msgid "list domains"
+msgstr "llista els dominis"
+
+msgid "list inactive & active domains"
+msgstr "llista els dominis actius i inactius"
+
+msgid "list inactive & active networks"
+msgstr "llista les xarxes actives i inactives"
+
+msgid "list inactive domains"
+msgstr "llista els dominis inactius"
+
+msgid "list inactive networks"
+msgstr "llista les xarxes inactives"
+
+msgid "list is not closed with ]"
+msgstr "la llista no s'ha tancat amb ]"
+
+msgid "list networks"
+msgstr "llista de xarxes"
+
+msgid "live migration"
+msgstr "migració activa"
+
+msgid "malformed uuid element"
+msgstr "l'element uuid no és correcte"
+
+msgid "maxcells > REMOTE_NODE_MAX_CELLS"
+msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
+
+msgid "maxerrors too large"
+msgstr "maxerrors és massa gran"
+
+msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
+msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+
+msgid "maxinfo > REMOTE_VCPUINFO_MAX"
+msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
+
+msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
+msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX"
+msgstr "maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX"
+
+msgid "maxnames > REMOTE_INTERFACE_LIST_MAX"
+msgstr "maxnames > REMOTE_INTERFACE_LIST_MAX"
+
+msgid "maxnames > REMOTE_NETWORK_LIST_MAX"
+msgstr "maxnames > REMOTE_NETWORK_LIST_MAX"
+
+msgid "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+
+msgid "maxnames > REMOTE_NODE_DEVICE_LIST_MAX"
+msgstr "maxnames > REMOTE_NODE_DEVICE_LIST_MAX"
+
+msgid "maxnames > REMOTE_NWFILTER_LIST_MAX"
+msgstr "maxnames > REMOTE_NWFILTER_LIST_MAX"
+
+msgid "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
+msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
+
+msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
+msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
+
+msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
+msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
+
+msgid "migrate domain to another host"
+msgstr "migra el domini a un altre amfitrió"
+
+msgid "migration URI, usually can be omitted"
+msgstr "URI de la migració, normalment se sol ometre"
+
+msgid "missing \""
+msgstr "falta \""
+
+msgid "missing cellno argument"
+msgstr "falta l'argument cellno"
+
+msgid "missing devices information"
+msgstr "falta la informació dels dispositius"
+
+#, c-format
+msgid "missing devices information for %s"
+msgstr "falta la informació dels dispositius per a %s"
+
+msgid "missing domain type attribute"
+msgstr "falta l'atribut del tipus de domini"
+
+#, c-format
+msgid "missing element or attribute '%s'"
+msgstr "falta l'element o l'atribut '%s'"
+
+msgid "missing input device type"
+msgstr "falta el tipus de dispositiu d'entrada"
+
+msgid "missing kernel information"
+msgstr "falta la informació del kernel"
+
+msgid "missing operating system information"
+msgstr "falta la informació del sistema operatiu"
+
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "falta la informació del sistema operatiu per a %s"
+
+msgid "missing pagesize argument"
+msgstr "falta l'argument pagesize"
+
+msgid "missing root device information"
+msgstr "falta la informació del dispositiu arrel"
+
+#, c-format
+msgid "missing root device information in %s"
+msgstr "falta la informació del dispositiu arrel a %s"
+
+msgid "missing root element"
+msgstr "falta l'element primari"
+
+msgid "missing source devices"
+msgstr "falten els dispositius d'origen"
+
+msgid "missing source information for device"
+msgstr "falta la informació de l'origen per al dispositiu"
+
+#, c-format
+msgid "missing source information for device %s"
+msgstr "falta la informació de l'origen per al dispositiu %s"
+
+msgid "missing target information for device"
+msgstr "falta la informació de la destinació per al dispositiu"
+
+#, c-format
+msgid "missing target information for device %s"
+msgstr "falta la informació de la destinació per al dispositiu %s"
+
+msgid "mode of device reading and writing"
+msgstr "mode de lectura i escriptura del dispositiu"
+
+msgid "name of the inactive domain"
+msgstr "nom del domini inactiu"
+
+msgid "ncpus too large"
+msgstr "ncpus és massa gran"
+
+#, c-format
+msgid "negotiated SSF %d was not strong enough"
+msgstr "el SSF negociat %d no ha estat prou fort"
+
+#, c-format
+msgid "network %s exists already"
+msgstr "la xarxa %s ja existeix"
+
+msgid "network information in XML"
+msgstr "informació de la xarxa en XML"
+
+msgid "network interface type"
+msgstr "tipus d'interfície de xarxa"
+
+msgid "network is already active"
+msgstr "la xarxa ja és activa"
+
+msgid "network name"
+msgstr "nom de xarxa"
+
+msgid "network name or uuid"
+msgstr "nom de xarxa o uuid"
+
+msgid "network uuid"
+msgstr "uuid de xarxa"
+
+msgid "no autostart"
+msgstr "cap autoinici"
+
+msgid "no client username was found"
+msgstr "no s'ha trobat cap nom d'usuari de client"
+
+#, c-format
+msgid "no config file for %s"
+msgstr "no hi ha fitxer de configuració per a %s"
+
+#, c-format
+msgid "no domain with matching id %d"
+msgstr "no hi ha cap domini que coincideixi amb l'id %d"
+
+msgid "no domain with matching uuid"
+msgstr "no hi ha cap domini que concordi amb l'uuid"
+
+msgid "no limit"
+msgstr "cap límit"
+
+msgid "no state"
+msgstr "cap estat"
+
+msgid "no valid connection"
+msgstr "connexió invàlida"
+
+msgid "node information"
+msgstr "informació de node"
+
+msgid "nparams too large"
+msgstr "l'nparams és massa gran"
+
+msgid "number"
+msgstr "nombre"
+
+msgid "number of virtual CPUs"
+msgstr "nombre de CPU virtuals"
+
+msgid "offline"
+msgstr "desconnectat"
+
+msgid "operation failed"
+msgstr "ha fallat l'operació"
+
+#, c-format
+msgid "operation failed: %s"
+msgstr "ha fallat l'operació: %s"
+
+msgid "operation forbidden for read only access"
+msgstr "operació prohibida en accedir només per a llegir"
+
+msgid "out of memory"
+msgstr "sense memòria"
+
+msgid "parser error"
+msgstr "error d'anàlisi"
+
+msgid "paused"
+msgstr "aturat"
+
+msgid "print help"
+msgstr "escriu l'ajuda"
+
+msgid "print the hypervisor canonical URI"
+msgstr "escriu l'URI canònica de l'hipervisor"
+
+msgid "print the hypervisor hostname"
+msgstr "imprimeix el nom d'amfitrió de l'hipervisor"
+
+#, c-format
+msgid "ps2 bus does not support %s input device"
+msgstr "el bus ps2 no suporta el dispositiu d'entrada %s"
+
+msgid "quit this interactive terminal"
+msgstr "surt d'aquest terminal interactiu"
+
+msgid "read-only connection"
+msgstr "connexió només de lectura"
+
+msgid "reboot a domain"
+msgstr "reiniciar un domini"
+
+msgid "restore a domain from a saved state in a file"
+msgstr "restaura un domini des d'un estat desat en un fitxer"
+
+msgid "resume a domain"
+msgstr "recupera un domini"
+
+msgid "running"
+msgstr "s'està executant"
+
+#, c-format
+msgid "sasl start reply data too long %d"
+msgstr "la resposta d'inici de sasl és massa llarga %d"
+
+#, c-format
+msgid "sasl step reply data too long %d"
+msgstr "les dades de resposta del pas de sasl són massa llargues %d"
+
+msgid "save a domain state to a file"
+msgstr "desa un estat de domini a un fitxer"
+
+msgid "script used to bridge network interface"
+msgstr "script utilitzat com a pont de la interfície de xarxa"
+
+msgid "show version"
+msgstr "mostra la versió"
+
+msgid "show/set scheduler parameters"
+msgstr "mostra/estableix els paràmetres del planificador"
+
+msgid "shut off"
+msgstr "apagat"
+
+msgid "source of disk device"
+msgstr "origen del dispositiu de disc"
+
+msgid "source of network interface"
+msgstr "origen de la interfície de xarxa"
+
+msgid "start a (previously defined) inactive domain"
+msgstr "inicia un domini inactiu definit prèviament"
+
+msgid "start a (previously defined) inactive network"
+msgstr "inicia una xarxa inactiva definida prèviament"
+
+msgid "string"
+msgstr "cadena"
+
+msgid "subdriver of disk device"
+msgstr "subcontrolador del dispositiu de disc"
+
+msgid "suspend a domain"
+msgstr "suspèn un domini"
+
+msgid "system call error"
+msgstr "error de crida de sistema"
+
+msgid "target device type"
+msgstr "tipus de dispositiu destí"
+
+msgid "target network name"
+msgstr "nom de xarxa"
+
+msgid "target of disk device"
+msgstr "destí del dispositiu de disc"
+
+msgid "testOpen: supply a path or use test:///default"
+msgstr "testOpen: proporcioneu un camí o empreu test:///default"
+
+msgid "the state to restore"
+msgstr "l'estat a restaurar"
+
+msgid "this domain exists already"
+msgstr "aquest domini ja existeix"
+
+msgid "this network exists already"
+msgstr "aquesta xarxa ja existeix"
+
+msgid "too many drivers registered"
+msgstr "s'han registrat massa controladors"
+
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "s'han registrat massa controladors a %s"
+
+msgid "tty console"
+msgstr "consola tty"
+
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "dades inesperades '%s'"
+
+#, c-format
+msgid "unexpected domain type %d"
+msgstr "tipus de domini inesperat %d"
+
+msgid "unknown OS type"
+msgstr "tipus d'SO desconegut"
+
+#, c-format
+msgid "unknown OS type %s"
+msgstr "tipus d'SO desconegut %s"
+
+#, c-format
+msgid "unknown authentication type %s"
+msgstr "tipus d'autenticació desconegut: %s"
+
+#, c-format
+msgid "unknown boot device '%s'"
+msgstr "el dispositiu d'arrencada '%s' és desconegut"
+
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "ordre desconeguda: '%s'"
+
+msgid "unknown host"
+msgstr "es desconeix l'amfitrió"
+
+#, c-format
+msgid "unknown host %s"
+msgstr "es desconeix l'amfitrió %s"
+
+#, c-format
+msgid "unknown procedure: %d"
+msgstr "procediment desconegut: %d"
+
+#, c-format
+msgid "unsupported authentication type %d"
+msgstr "tipus d'autenticació %d no disponible"
+
+#, c-format
+msgid "unsupported input bus %s"
+msgstr "el bus d'entrada %s no està suportat"
+
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "l'opció '-%c' no està disponible. Veieu --help."
+
+msgid "unsupported value"
+msgstr "valor no suportat"
+
+msgid "unterminated number"
+msgstr "número no acabat"
+
+msgid "unterminated string"
+msgstr "cadena sense acabar"
+
+msgid "vcpu number"
+msgstr "números de vcpu"
+
+#, c-format
+msgid "version mismatch (actual %x, expected %x)"
+msgstr "S'ha produït un error de coincidència de versió (real %x, esperada %x)"
+
+msgid "vnc display"
+msgstr "visualització vnc"
+
+msgid "warning"
+msgstr "avís"
+
+msgid "where to dump the core"
+msgstr "on bolcar el nucli"
+
+msgid "where to save the data"
+msgstr "on desar les dades"
+
+#, c-format
+msgid "xen bus does not support %s input device"
+msgstr "el bus xen no disposa del dispositiu d'entrada %s"

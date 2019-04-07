@@ -1,0 +1,28 @@
+<cpus>
+  <model name='athlon'>
+    <vendor name='AMD'/>
+    <feature name='3dnow'/>
+    <feature name='3dnowext'/>
+    <feature name='apic'/>
+    <feature name='cmov'/>
+    <feature name='cx8'/>
+    <feature name='de'/>
+    <feature name='fpu'/>
+    <feature name='fxsr'/>
+    <feature name='mce'/>
+    <feature name='mmx'/>
+    <feature name='mmxext'/>
+    <feature name='msr'/>
+    <feature name='mtrr'/>
+    <feature name='pae'/>
+    <feature name='pat'/>
+    <feature name='pge'/>
+    <feature name='pse'/>
+    <feature name='pse36'/>
+    <feature name='sep'/>
+    <feature name='sse'/>
+    <feature name='sse2'/>
+    <feature name='tsc'/>
+    <feature name='vme'/>
+  </model>
+</cpus>

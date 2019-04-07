@@ -1,0 +1,10 @@
+[Unit]
+Description=Virtual machine log manager socket
+Before=libvirtd.service
+
+[Socket]
+ListenStream=@localstatedir@/run/libvirt/virtlogd-admin-sock
+Service=virtlogd.service
+
+[Install]
+WantedBy=sockets.target

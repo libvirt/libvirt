@@ -14,14 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Michal Privoznik <mprivozn@redhat.com>
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NETDEV_BANDWIDTH_H__
-# define __VIR_NETDEV_BANDWIDTH_H__
+#ifndef LIBVIRT_VIRNETDEVBANDWIDTH_H
+# define LIBVIRT_VIRNETDEVBANDWIDTH_H
 
 # include "internal.h"
 # include "virmacaddr.h"
@@ -45,7 +41,8 @@ void virNetDevBandwidthFree(virNetDevBandwidthPtr def);
 
 int virNetDevBandwidthSet(const char *ifname,
                           virNetDevBandwidthPtr bandwidth,
-                          bool hierarchical_class)
+                          bool hierarchical_class,
+                          bool swapped)
     ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthClear(const char *ifname);
 int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
@@ -59,8 +56,7 @@ int virNetDevBandwidthPlug(const char *brname,
                            const virMacAddr *ifmac_ptr,
                            virNetDevBandwidthPtr bandwidth,
                            unsigned int id)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevBandwidthUnplug(const char *brname,
@@ -78,4 +74,4 @@ int virNetDevBandwidthUpdateFilter(const char *ifname,
                                    unsigned int id)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_RETURN_CHECK;
-#endif /* __VIR_NETDEV_BANDWIDTH_H__ */
+#endif /* LIBVIRT_VIRNETDEVBANDWIDTH_H */

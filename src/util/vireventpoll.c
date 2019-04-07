@@ -17,17 +17,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <string.h>
 #include <poll.h>
 #include <sys/time.h>
-#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -545,10 +540,10 @@ static void virEventPollCleanupTimeouts(void)
         }
 
         if ((i+1) < eventLoop.timeoutsCount) {
+            size_t count = eventLoop.timeoutsCount - (i+1);
             memmove(eventLoop.timeouts+i,
                     eventLoop.timeouts+i+1,
-                    sizeof(struct virEventPollTimeout)*(eventLoop.timeoutsCount
-                                                    -(i+1)));
+                    sizeof(struct virEventPollTimeout)*count);
         }
         eventLoop.timeoutsCount--;
     }
@@ -594,10 +589,10 @@ static void virEventPollCleanupHandles(void)
         }
 
         if ((i+1) < eventLoop.handlesCount) {
+            size_t count = eventLoop.handlesCount - (i+1);
             memmove(eventLoop.handles+i,
                     eventLoop.handles+i+1,
-                    sizeof(struct virEventPollHandle)*(eventLoop.handlesCount
-                                                   -(i+1)));
+                    sizeof(struct virEventPollHandle)*count);
         }
         eventLoop.handlesCount--;
     }
@@ -618,7 +613,7 @@ static void virEventPollCleanupHandles(void)
  */
 int virEventPollRunOnce(void)
 {
-    struct pollfd *fds = NULL;
+    VIR_AUTOFREE(struct pollfd *) fds = NULL;
     int ret, timeout, nfds;
 
     virMutexLock(&eventLoop.lock);
@@ -643,9 +638,15 @@ int virEventPollRunOnce(void)
         EVENT_DEBUG("Poll got error event %d", errno);
         if (errno == EINTR || errno == EAGAIN)
             goto retry;
+#ifdef __APPLE__
+        if (errno == EBADF) {
+            virMutexLock(&eventLoop.lock);
+            goto cleanup;
+        }
+#endif
         virReportSystemError(errno, "%s",
                              _("Unable to poll on file handles"));
-        goto error_unlocked;
+        return -1;
     }
     EVENT_DEBUG("Poll got %d event(s)", ret);
 
@@ -660,15 +661,15 @@ int virEventPollRunOnce(void)
     virEventPollCleanupTimeouts();
     virEventPollCleanupHandles();
 
+#ifdef __APPLE__
+ cleanup:
+#endif
     eventLoop.running = 0;
     virMutexUnlock(&eventLoop.lock);
-    VIR_FREE(fds);
     return 0;
 
  error:
     virMutexUnlock(&eventLoop.lock);
- error_unlocked:
-    VIR_FREE(fds);
     return -1;
 }
 

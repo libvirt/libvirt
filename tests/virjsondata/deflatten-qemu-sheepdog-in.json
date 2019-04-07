@@ -1,0 +1,11 @@
+{
+    "driver": "raw",
+    "file": {
+        "server.host": "10.10.10.10",
+        "server.port": "7000",
+        "tag": "",
+        "driver": "sheepdog",
+        "server.type": "inet",
+        "vdi": "Alice"
+    }
+}

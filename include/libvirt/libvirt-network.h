@@ -2,7 +2,6 @@
  * libvirt-network.h
  * Summary: APIs for management of networks
  * Description: Provides APIs for the management of networks
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *
@@ -21,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_NETWORK_H__
-# define __VIR_LIBVIRT_NETWORK_H__
+#ifndef LIBVIRT_NETWORK_H
+# define LIBVIRT_NETWORK_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -334,4 +333,4 @@ int virConnectNetworkEventRegisterAny(virConnectPtr conn,
 int virConnectNetworkEventDeregisterAny(virConnectPtr conn,
                                         int callbackID);
 
-#endif /* __VIR_LIBVIRT_NETWORK_H__ */
+#endif /* LIBVIRT_NETWORK_H */

@@ -14,14 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Stefan Berger <stefanb@us.ibm.com>
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NETDEV_VPORT_PROFILE_CONF_H__
-# define __VIR_NETDEV_VPORT_PROFILE_CONF_H__
+#ifndef LIBVIRT_NETDEV_VPORT_PROFILE_CONF_H
+# define LIBVIRT_NETDEV_VPORT_PROFILE_CONF_H
 
 # include "internal.h"
 # include "virnetdevvportprofile.h"
@@ -49,4 +45,4 @@ virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
                             virBufferPtr buf);
 
 
-#endif /* __VIR_NETDEV_VPORT_PROFILE_CONF_H__ */
+#endif /* LIBVIRT_NETDEV_VPORT_PROFILE_CONF_H */

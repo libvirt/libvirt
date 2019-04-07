@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  *)
 
 open Pretty
@@ -123,7 +121,6 @@ let driverLockMethods = [
     "openvzDriverLock";
     "testDriverLock";
     "lxcDriverLock";
-    "umlDriverLock";
     "nodedevDriverLock";
     "networkDriverLock";
     "storageDriverLock";
@@ -138,7 +135,6 @@ let driverUnlockMethods = [
     "openvzDriverUnlock";
     "testDriverUnlock";
     "lxcDriverUnlock";
-    "umlDriverUnlock";
     "nodedevDriverUnlock";
     "networkDriverUnlock";
     "storageDriverUnlock";
@@ -155,7 +151,6 @@ let lockableDrivers = [
       "openvz_driver";
       "testConnPtr";
       "lxc_driver_t";
-      "uml_driver";
       "virStorageDriverStatePtr";
       "network_driver";
       "virNodeDeviceState";

@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_DRIVER_SECRET_H__
-# define __VIR_DRIVER_SECRET_H__
+#ifndef LIBVIRT_DRIVER_SECRET_H
+# define LIBVIRT_DRIVER_SECRET_H
 
 # ifndef __VIR_DRIVER_H_INCLUDES___
 #  error "Don't include this file directly, only use driver.h"
@@ -77,6 +77,18 @@ typedef int
                                virSecretPtr **secrets,
                                unsigned int flags);
 
+typedef int
+(*virDrvConnectSecretEventRegisterAny)(virConnectPtr conn,
+                                       virSecretPtr secret,
+                                       int eventID,
+                                       virConnectSecretEventGenericCallback cb,
+                                       void *opaque,
+                                       virFreeCallback freecb);
+
+typedef int
+(*virDrvConnectSecretEventDeregisterAny)(virConnectPtr conn,
+                                         int callbackID);
+
 typedef struct _virSecretDriver virSecretDriver;
 typedef virSecretDriver *virSecretDriverPtr;
 
@@ -98,7 +110,9 @@ struct _virSecretDriver {
     virDrvSecretSetValue secretSetValue;
     virDrvSecretGetValue secretGetValue;
     virDrvSecretUndefine secretUndefine;
+    virDrvConnectSecretEventRegisterAny connectSecretEventRegisterAny;
+    virDrvConnectSecretEventDeregisterAny connectSecretEventDeregisterAny;
 };
 
 
-#endif /* __VIR_DRIVER_SECRET_H__ */
+#endif /* LIBVIRT_DRIVER_SECRET_H */

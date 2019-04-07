@@ -16,13 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel Veillard <veillard@redhat.com>
- *         Laine Stump <laine@redhat.com>
  */
 
-#ifndef __INTERFACE_CONF_H__
-# define __INTERFACE_CONF_H__
+#ifndef LIBVIRT_INTERFACE_CONF_H
+# define LIBVIRT_INTERFACE_CONF_H
 
 # include <libxml/parser.h>
 # include <libxml/tree.h>
@@ -44,7 +41,7 @@ typedef enum {
     VIR_INTERFACE_TYPE_LAST,
 } virInterfaceType;
 
-VIR_ENUM_DECL(virInterface)
+VIR_ENUM_DECL(virInterface);
 
 /* types of start mode */
 
@@ -161,62 +158,24 @@ struct _virInterfaceDef {
     virInterfaceProtocolDefPtr *protos; /* ptr to array of protos[nprotos] */
 };
 
-typedef struct _virInterfaceObj virInterfaceObj;
-typedef virInterfaceObj *virInterfaceObjPtr;
-struct _virInterfaceObj {
-    virMutex lock;
+void
+virInterfaceDefFree(virInterfaceDefPtr def);
 
-    bool active;           /* true if interface is active (up) */
-    virInterfaceDefPtr def; /* The interface definition */
-};
+virInterfaceDefPtr
+virInterfaceDefParseString(const char *xmlStr);
 
-typedef struct _virInterfaceObjList virInterfaceObjList;
-typedef virInterfaceObjList *virInterfaceObjListPtr;
-struct _virInterfaceObjList {
-    size_t count;
-    virInterfaceObjPtr *objs;
-};
+virInterfaceDefPtr
+virInterfaceDefParseFile(const char *filename);
 
-static inline bool
-virInterfaceObjIsActive(const virInterfaceObj *iface)
-{
-    return iface->active;
-}
+virInterfaceDefPtr
+virInterfaceDefParseNode(xmlDocPtr xml,
+                         xmlNodePtr root);
 
-int virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
-                                const char *mac,
-                                virInterfaceObjPtr *matches, int maxmatches);
-virInterfaceObjPtr virInterfaceFindByName(virInterfaceObjListPtr interfaces,
-                                          const char *name);
+char *
+virInterfaceDefFormat(const virInterfaceDef *def);
 
-
-void virInterfaceDefFree(virInterfaceDefPtr def);
-void virInterfaceObjFree(virInterfaceObjPtr iface);
-void virInterfaceObjListFree(virInterfaceObjListPtr vms);
-int virInterfaceObjListClone(virInterfaceObjListPtr src,
-                             virInterfaceObjListPtr dest);
-
-
-virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
-                                         virInterfaceDefPtr def);
-void virInterfaceRemove(virInterfaceObjListPtr interfaces,
-                        virInterfaceObjPtr iface);
-
-virInterfaceDefPtr virInterfaceDefParseString(const char *xmlStr);
-virInterfaceDefPtr virInterfaceDefParseFile(const char *filename);
-virInterfaceDefPtr virInterfaceDefParseNode(xmlDocPtr xml,
-                                            xmlNodePtr root);
-
-char *virInterfaceDefFormat(const virInterfaceDef *def);
-
-void virInterfaceObjLock(virInterfaceObjPtr obj);
-void virInterfaceObjUnlock(virInterfaceObjPtr obj);
-
-typedef bool (*virInterfaceObjListFilter)(virConnectPtr conn,
-                                          virInterfaceDefPtr def);
-
-# define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE   \
+# define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE \
                 (VIR_CONNECT_LIST_INTERFACES_ACTIVE | \
                  VIR_CONNECT_LIST_INTERFACES_INACTIVE)
 
-#endif /* __INTERFACE_CONF_H__ */
+#endif /* LIBVIRT_INTERFACE_CONF_H */

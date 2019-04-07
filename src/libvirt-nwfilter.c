@@ -83,7 +83,7 @@ virConnectListAllNWFilters(virConnectPtr conn,
                            virNWFilterPtr **filters,
                            unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, filters=%p, flags=%x", conn, filters, flags);
+    VIR_DEBUG("conn=%p, filters=%p, flags=0x%x", conn, filters, flags);
 
     virResetLastError();
 
@@ -453,14 +453,14 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
  * Provide an XML description of the network filter. The description may be
  * reused later to redefine the network filter with virNWFilterCreateXML().
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
  */
 char *
 virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("nwfilter=%p, flags=%x", nwfilter, flags);
+    VIR_DEBUG("nwfilter=%p, flags=0x%x", nwfilter, flags);
 
     virResetLastError();
 
@@ -504,12 +504,329 @@ int
 virNWFilterRef(virNWFilterPtr nwfilter)
 {
     VIR_DEBUG("nwfilter=%p refs=%d", nwfilter,
-              nwfilter ? nwfilter->object.u.s.refs : 0);
+              nwfilter ? nwfilter->parent.u.s.refs : 0);
 
     virResetLastError();
 
     virCheckNWFilterReturn(nwfilter, -1);
 
     virObjectRef(nwfilter);
+    return 0;
+}
+
+
+/**
+ * virConnectListAllNWFilterBindings:
+ * @conn: Pointer to the hypervisor connection.
+ * @bindings: Pointer to a variable to store the array containing the network
+ *            filter objects or NULL if the list is not required (just returns
+ *            number of network filters).
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Collect the list of network filters, and allocate an array to store those
+ * objects.
+ *
+ * Returns the number of network filters found or -1 and sets @filters to  NULL
+ * in case of error.  On success, the array stored into @filters is guaranteed to
+ * have an extra allocated element set to NULL but not included in the return count,
+ * to make iteration easier.  The caller is responsible for calling
+ * virNWFilterFree() on each array element, then calling free() on @filters.
+ */
+int
+virConnectListAllNWFilterBindings(virConnectPtr conn,
+                                  virNWFilterBindingPtr **bindings,
+                                  unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, bindings=%p, flags=0x%x", conn, bindings, flags);
+
+    virResetLastError();
+
+    if (bindings)
+        *bindings = NULL;
+
+    virCheckConnectReturn(conn, -1);
+
+    if (conn->nwfilterDriver &&
+        conn->nwfilterDriver->connectListAllNWFilterBindings) {
+        int ret;
+        ret = conn->nwfilterDriver->connectListAllNWFilterBindings(conn, bindings, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virNWFilterBindingLookupByPortDev:
+ * @conn: pointer to the hypervisor connection
+ * @portdev: name for the network port device
+ *
+ * Try to lookup a network filter binding on the given hypervisor based
+ * on network port device name.
+ *
+ * virNWFilterBindingFree should be used to free the resources after the
+ * binding object is no longer needed.
+ *
+ * Returns a new binding object or NULL in case of failure.  If the
+ * network filter cannot be found, then VIR_ERR_NO_NWFILTER_BINDING
+ * error is raised.
+ */
+virNWFilterBindingPtr
+virNWFilterBindingLookupByPortDev(virConnectPtr conn, const char *portdev)
+{
+    VIR_DEBUG("conn=%p, name=%s", conn, NULLSTR(portdev));
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgGoto(portdev, error);
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterBindingLookupByPortDev) {
+        virNWFilterBindingPtr ret;
+        ret = conn->nwfilterDriver->nwfilterBindingLookupByPortDev(conn, portdev);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
+ * virNWFilterBindingFree:
+ * @binding: a binding object
+ *
+ * Free the binding object. The running instance is kept alive.
+ * The data structure is freed and should not be used thereafter.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNWFilterBindingFree(virNWFilterBindingPtr binding)
+{
+    VIR_DEBUG("binding=%p", binding);
+
+    virResetLastError();
+
+    virCheckNWFilterBindingReturn(binding, -1);
+
+    virObjectUnref(binding);
+    return 0;
+}
+
+
+/**
+ * virNWFilterBindingGetPortDev:
+ * @binding: a binding object
+ *
+ * Get the port dev name for the network filter binding
+ *
+ * Returns a pointer to the name or NULL, the string need not be deallocated
+ * its lifetime will be the same as the binding object.
+ */
+const char *
+virNWFilterBindingGetPortDev(virNWFilterBindingPtr binding)
+{
+    VIR_DEBUG("binding=%p", binding);
+
+    virResetLastError();
+
+    virCheckNWFilterBindingReturn(binding, NULL);
+
+    return binding->portdev;
+}
+
+
+/**
+ * virNWFilterBindingGetFilterName:
+ * @binding: a binding object
+ *
+ * Get the filter name for the network filter binding
+ *
+ * Returns a pointer to the name or NULL, the string need not be deallocated
+ * its lifetime will be the same as the binding object.
+ */
+const char *
+virNWFilterBindingGetFilterName(virNWFilterBindingPtr binding)
+{
+    VIR_DEBUG("binding=%p", binding);
+
+    virResetLastError();
+
+    virCheckNWFilterBindingReturn(binding, NULL);
+
+    return binding->filtername;
+}
+
+
+/**
+ * virNWFilterBindingCreateXML:
+ * @conn: pointer to the hypervisor connection
+ * @xml: an XML description of the binding
+ * @flags: currently unused, pass 0
+ *
+ * Define a new network filter, based on an XML description
+ * similar to the one returned by virNWFilterGetXMLDesc(). This
+ * API may be used to associate a filter with a currently running
+ * guest that does not have a filter defined for a specific network
+ * port. Since the bindings are generally automatically managed by
+ * the hypervisor, using this command to define a filter for a network
+ * port and then starting the guest afterwards may prevent the guest
+ * from starting if it attempts to use the network port and finds a
+ * filter already defined.
+ *
+ * virNWFilterFree should be used to free the resources after the
+ * binding object is no longer needed.
+ *
+ * Returns a new binding object or NULL in case of failure
+ */
+virNWFilterBindingPtr
+virNWFilterBindingCreateXML(virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xml=%s", conn, NULLSTR(xml));
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgGoto(xml, error);
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterBindingCreateXML) {
+        virNWFilterBindingPtr ret;
+        ret = conn->nwfilterDriver->nwfilterBindingCreateXML(conn, xml, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
+ * virNWFilterBindingDelete:
+ * @binding: a binding object
+ *
+ * Delete the binding object. This does not free the
+ * associated virNWFilterBindingPtr object. This API
+ * may be used to remove the network port binding filter
+ * currently in use for the guest while the guest is
+ * running without needing to restart the guest. Restoring
+ * the network port binding filter for the running guest
+ * would be accomplished by using virNWFilterBindingCreateXML.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNWFilterBindingDelete(virNWFilterBindingPtr binding)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("binding=%p", binding);
+
+    virResetLastError();
+
+    virCheckNWFilterBindingReturn(binding, -1);
+    conn = binding->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterBindingDelete) {
+        int ret;
+        ret = conn->nwfilterDriver->nwfilterBindingDelete(binding);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(binding->conn);
+    return -1;
+}
+
+
+/**
+ * virNWFilterBindingGetXMLDesc:
+ * @binding: a binding object
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Provide an XML description of the network filter. The description may be
+ * reused later to redefine the network filter with virNWFilterCreateXML().
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
+ * of error. The caller must free() the returned value.
+ */
+char *
+virNWFilterBindingGetXMLDesc(virNWFilterBindingPtr binding, unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("binding=%p, flags=0x%x", binding, flags);
+
+    virResetLastError();
+
+    virCheckNWFilterBindingReturn(binding, NULL);
+    conn = binding->conn;
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterBindingGetXMLDesc) {
+        char *ret;
+        ret = conn->nwfilterDriver->nwfilterBindingGetXMLDesc(binding, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(binding->conn);
+    return NULL;
+}
+
+
+/**
+ * virNWFilterBindingRef:
+ * @binding: the binding to hold a reference on
+ *
+ * Increment the reference count on the binding. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virNWFilterFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using an binding would increment
+ * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virNWFilterBindingRef(virNWFilterBindingPtr binding)
+{
+    VIR_DEBUG("binding=%p refs=%d", binding,
+              binding ? binding->parent.u.s.refs : 0);
+
+    virResetLastError();
+
+    virCheckNWFilterBindingReturn(binding, -1);
+
+    virObjectRef(binding);
     return 0;
 }

@@ -1,0 +1,63 @@
+<domain type='xen'>
+  <name>test-hvm</name>
+  <description>None</description>
+  <uuid>2147d599-9cc6-c0dc-92ab-4064b5446e9b</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>4</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <clock offset='variable' adjustment='0' basis='utc'>
+    <timer name='tsc' present='yes' mode='native'/>
+    <timer name='hpet' present='yes'/>
+  </clock>
+  <os>
+    <type>hvm</type>
+    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <apic/>
+    <acpi/>
+    <pae/>
+    <hap/>
+  </features>
+  <devices>
+    <emulator>/bin/true</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw' cache='default'/>
+      <source file='/var/lib/xen/images/test-hvm.img'/>
+      <target dev='hda'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw' cache='default'/>
+      <source file='/root/boot.iso'/>
+      <target dev='hdb'/>
+    </disk>
+    <interface type='bridge'>
+      <source bridge='br0'/>
+      <mac address='00:16:3e:7a:35:ce'/>
+      <script path='/etc/xen/scripts/vif-bridge'/>
+      <model type='netfront'/>
+    </interface>
+    <interface type='hostdev' managed='yes'>
+      <mac address='00:16:3e:2e:e7:fc'/>
+      <driver name='xen'/>
+      <source>
+        <address type='pci' domain='0x0000' bus='0x0a' slot='0x10' function='0x0'/>
+      </source>
+    </interface>
+    <graphics type='vnc'/>
+    <video>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
+    </video>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
+    <input type='mouse' bus='usb'/>
+    <input type='tablet' bus='usb'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+  </devices>
+</domain>

@@ -64,7 +64,7 @@ struct testInfo {
 };
 
 static int
-testCompareXMLToConfigHelper(const void *data)
+testCompareXMLToConfigHelperLegacy(const void *data)
 {
     int result = -1;
     const struct testInfo *info = data;
@@ -86,6 +86,29 @@ testCompareXMLToConfigHelper(const void *data)
 }
 
 static int
+testCompareXMLToConfigHelperV3(const void *data)
+{
+    int result = -1;
+    const struct testInfo *info = data;
+    char *xml = NULL;
+    char *config = NULL;
+
+    if (virAsprintf(&xml, "%s/lxcconf2xmldata/lxcconf2xml-%s.xml",
+                    abs_srcdir, info->name) < 0 ||
+        virAsprintf(&config, "%s/lxcconf2xmldata/lxcconf2xml-%s-v3.config",
+                    abs_srcdir, info->name) < 0)
+        goto cleanup;
+
+    result = testCompareXMLToConfigFiles(xml, config, info->expectError);
+
+ cleanup:
+    VIR_FREE(xml);
+    VIR_FREE(config);
+    return result;
+}
+
+
+static int
 mymain(void)
 {
     int ret = EXIT_SUCCESS;
@@ -98,13 +121,13 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-# define DO_TEST(name, expectError)                         \
-    do {                                                    \
+# define DO_TEST(name, expectError) \
+    do { \
         const struct testInfo info = { name, expectError }; \
-        if (virTestRun("LXC Native-2-XML " name,            \
-                       testCompareXMLToConfigHelper,        \
-                       &info) < 0)                          \
-            ret = EXIT_FAILURE;                             \
+        if (virTestRun("LXC Native-2-XML " name, \
+                       testCompareXMLToConfigHelperLegacy, \
+                       &info) < 0) \
+            ret = EXIT_FAILURE; \
     } while (0)
 
     DO_TEST("simple", false);
@@ -114,6 +137,7 @@ mymain(void)
     DO_TEST("physnetwork", false);
     DO_TEST("macvlannetwork", false);
     DO_TEST("vlannetwork", false);
+    DO_TEST("miscnetwork", false);
     DO_TEST("idmap", false);
     DO_TEST("memtune", false);
     DO_TEST("cputune", false);
@@ -121,13 +145,38 @@ mymain(void)
     DO_TEST("blkiotune", false);
     DO_TEST("ethernet", false);
 
+    /* Tests for LXC 3.0 and higher */
+# define DO_TEST3(name, expectError) \
+    do { \
+        const struct testInfo info = { name, expectError }; \
+        if (virTestRun("LXC Native-3-XML " name, \
+                       testCompareXMLToConfigHelperV3, \
+                       &info) < 0) \
+            ret = EXIT_FAILURE; \
+    } while (0)
+
+    DO_TEST3("simple", false);
+    DO_TEST3("fstab", true);
+    DO_TEST3("nonetwork", false);
+    DO_TEST3("nonenetwork", false);
+    DO_TEST3("physnetwork", false);
+    DO_TEST3("macvlannetwork", false);
+    DO_TEST3("vlannetwork", false);
+    DO_TEST3("miscnetwork", false);
+    DO_TEST3("idmap", false);
+    DO_TEST3("memtune", false);
+    DO_TEST3("cputune", false);
+    DO_TEST3("cpusettune", false);
+    DO_TEST3("blkiotune", false);
+    DO_TEST3("ethernet", false);
+
     virObjectUnref(xmlopt);
     virObjectUnref(caps);
 
     return ret;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 
 #else
 

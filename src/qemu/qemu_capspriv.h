@@ -17,45 +17,30 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Pavel Fedin <p.fedin@samsung.com>
  */
 
-#ifndef __QEMU_CAPSRIV_H_ALLOW__
+#ifndef LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 # error "qemu_capspriv.h may only be included by qemu_capabilities.c or test suites"
-#endif
+#endif /* LIBVIRT_QEMU_CAPSPRIV_H_ALLOW */
 
-#ifndef __QEMU_CAPSPRIV_H__
-# define __QEMU_CAPSPRIV_H__
-
-struct _virQEMUCapsCache {
-    virMutex lock;
-    virHashTablePtr binaries;
-    char *libDir;
-    char *cacheDir;
-    uid_t runUid;
-    gid_t runGid;
-};
+#ifndef LIBVIRT_QEMU_CAPSPRIV_H
+# define LIBVIRT_QEMU_CAPSPRIV_H
 
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
 
 virQEMUCapsPtr
-virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
+virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *binary,
                                 const char *libDir,
-                                const char *cacheDir,
                                 uid_t runUid,
                                 gid_t runGid,
-                                bool qmpOnly);
+                                unsigned int microcodeVersion,
+                                const char *kernelVersion);
 
-int virQEMUCapsLoadCache(virCapsPtr caps,
+int virQEMUCapsLoadCache(virArch hostArch,
                          virQEMUCapsPtr qemuCaps,
-                         const char *filename,
-                         time_t *selfctime,
-                         unsigned long *selfvers);
-char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
-                             time_t selfCTime,
-                             unsigned long selfVersion);
+                         const char *filename);
+char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps);
 
 int
 virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
@@ -71,5 +56,55 @@ virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
 
 void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
-                            virCapsPtr caps);
-#endif
+                            virArch hostArch,
+                            virDomainVirtType type);
+
+int
+virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
+                        virDomainVirtType type,
+                        virCPUDefPtr cpu,
+                        bool migratable);
+
+void
+virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps);
+
+qemuMonitorCPUModelInfoPtr
+virQEMUCapsGetCPUModelInfo(virQEMUCapsPtr qemuCaps,
+                           virDomainVirtType type);
+
+void
+virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
+                           virDomainVirtType type,
+                           qemuMonitorCPUModelInfoPtr modelInfo);
+
+virCPUDataPtr
+virQEMUCapsGetCPUModelX86Data(qemuMonitorCPUModelInfoPtr model,
+                              bool migratable);
+
+virCPUDefPtr
+virQEMUCapsProbeHostCPUForEmulator(virArch hostArch,
+                                   virQEMUCapsPtr qemuCaps,
+                                   virDomainVirtType type) ATTRIBUTE_NOINLINE;
+
+void
+virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
+                              virGICCapability *capabilities,
+                              size_t ncapabilities);
+
+void
+virQEMUCapsSetSEVCapabilities(virQEMUCapsPtr qemuCaps,
+                              virSEVCapability *capabilities);
+
+int
+virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                  qemuMonitorPtr mon,
+                                  bool tcg);
+
+void
+virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
+                               unsigned int microcodeVersion);
+
+void
+virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps);
+
+#endif /* LIBVIRT_QEMU_CAPSPRIV_H */

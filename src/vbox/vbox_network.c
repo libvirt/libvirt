@@ -255,7 +255,7 @@ static virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned 
     char *nameUtf8 = NULL;
     PRUnichar *nameUtf16 = NULL;
     IHostNetworkInterface *networkInterface = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IHost *host = NULL;
     virNetworkPtr ret = NULL;
 
@@ -307,7 +307,7 @@ static virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *nam
     IHostNetworkInterface *networkInterface = NULL;
     PRUint32 interfaceType = 0;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIIDUnion iid;
+    vboxIID iid;
     IHost *host = NULL;
     virNetworkPtr ret = NULL;
     nsresult rc;
@@ -378,7 +378,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     virNetworkDefPtr def = virNetworkDefParseString(xml);
     virNetworkIPDefPtr ipdef = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIIDUnion vboxnetiid;
+    vboxIID vboxnetiid;
     virSocketAddr netmask;
     IHost *host = NULL;
     virNetworkPtr ret = NULL;
@@ -413,7 +413,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
      * assign a name to it and it defaults to vboxnet*, for e.g:
      * vboxnet0, vboxnet1, etc. Also the UUID is assigned to it
      * automatically depending on the mac address and thus both
-     * these paramters are ignored here for now.
+     * these parameters are ignored here for now.
      *
      * If the vbox is in 2.x and the def->name not equal to vboxnet0,
      * the function call will fail and the networkInterface set to
@@ -603,8 +603,8 @@ vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
     if (interfaceType != HostNetworkInterfaceType_HostOnly)
         goto cleanup;
 
-    if (gVBoxAPI.networkRemoveInterface && removeinterface) {
-        vboxIIDUnion iid;
+    if (removeinterface) {
+        vboxIID iid;
         IProgress *progress = NULL;
         nsresult rc;
         resultCodeUnion resultCode;
@@ -769,7 +769,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
     PRUint32 interfaceType = 0;
     PRUnichar *networkNameUtf16 = NULL;
     IDHCPServer *dhcpServer = NULL;
-    vboxIIDUnion vboxnet0IID;
+    vboxIID vboxnet0IID;
     IHost *host = NULL;
     char *ret = NULL;
     nsresult rc;

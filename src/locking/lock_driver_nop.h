@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef __VIR_LOCK_DRIVER_NOP_H__
-# define __VIR_LOCK_DRIVER_NOP_H__
+#ifndef LIBVIRT_LOCK_DRIVER_NOP_H
+# define LIBVIRT_LOCK_DRIVER_NOP_H
 
 # include "lock_driver.h"
 
 extern virLockDriver virLockDriverNop;
 
 
-#endif /* __VIR_LOCK_DRIVER_NOP_H__ */
+#endif /* LIBVIRT_LOCK_DRIVER_NOP_H */

@@ -18,14 +18,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Anthony Liguori <aliguori@us.ibm.com>
- * Author: Daniel Veillard <veillard@redhat.com>
- * Author: Markus Groß <gross@univention.de>
  */
 
-#ifndef __VIR_XEN_SXPR_H__
-# define __VIR_XEN_SXPR_H__
+#ifndef LIBVIRT_XEN_SXPR_H
+# define LIBVIRT_XEN_SXPR_H
 
 # include "internal.h"
 # include "virconf.h"
@@ -70,4 +66,4 @@ int xenFormatSxprSound(virDomainDefPtr def, virBufferPtr buf);
 
 char * xenFormatSxpr(virConnectPtr conn, virDomainDefPtr def);
 
-#endif /* __VIR_XEN_SXPR_H__ */
+#endif /* LIBVIRT_XEN_SXPR_H */

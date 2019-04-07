@@ -17,27 +17,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Stefan Berger <stefanb@us.ibm.com>
  */
-#ifndef DOMAIN_NWFILTER_H
-# define DOMAIN_NWFILTER_H
 
-typedef int (*virDomainConfInstantiateNWFilter)(const unsigned char *vmuuid,
-                                                virDomainNetDefPtr net);
-typedef void (*virDomainConfTeardownNWFilter)(virDomainNetDefPtr net);
+#ifndef LIBVIRT_DOMAIN_NWFILTER_H
+# define LIBVIRT_DOMAIN_NWFILTER_H
 
-typedef struct {
-    virDomainConfInstantiateNWFilter instantiateFilter;
-    virDomainConfTeardownNWFilter    teardownFilter;
-} virDomainConfNWFilterDriver;
-typedef virDomainConfNWFilterDriver *virDomainConfNWFilterDriverPtr;
-
-void virDomainConfNWFilterRegister(virDomainConfNWFilterDriverPtr driver);
-
-int virDomainConfNWFilterInstantiate(const unsigned char *vmuuid,
-                                     virDomainNetDefPtr net);
+int virDomainConfNWFilterInstantiate(const char *vmname,
+                                     const unsigned char *vmuuid,
+                                     virDomainNetDefPtr net,
+                                     bool ignoreExists);
 void virDomainConfNWFilterTeardown(virDomainNetDefPtr net);
 void virDomainConfVMNWFilterTeardown(virDomainObjPtr vm);
 
-#endif /* DOMAIN_NWFILTER_H */
+#endif /* LIBVIRT_DOMAIN_NWFILTER_H */

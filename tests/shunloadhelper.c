@@ -27,7 +27,6 @@
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #include "internal.h"
 

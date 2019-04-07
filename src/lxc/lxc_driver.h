@@ -3,9 +3,6 @@
  *
  * lxc_driver.h: header file for linux container driver functions
  *
- * Authors:
- *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -21,10 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LXC_DRIVER_H
-# define LXC_DRIVER_H
+#ifndef LIBVIRT_LXC_DRIVER_H
+# define LIBVIRT_LXC_DRIVER_H
 
 /* Function declarations */
 int lxcRegister(void);
 
-#endif /* LXC_DRIVER_H */
+#endif /* LIBVIRT_LXC_DRIVER_H */

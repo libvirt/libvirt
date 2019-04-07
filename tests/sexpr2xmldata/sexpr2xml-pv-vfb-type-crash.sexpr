@@ -21,7 +21,7 @@
     (image
         (linux
             (kernel )
-            (device_model /usr/lib/xen/bin/qemu-dm)
+            (device_model /usr/lib/xen/bin/qemu-system-i386)
             (notes
                 (FEATURES
 'writable_page_tables|writable_descriptor_tables|auto_translated_physmap|pae_pgdir_above_4gb|supervisor_mode_kernel'

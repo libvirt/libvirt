@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>OpenVZ container driver</h1>
@@ -15,7 +15,7 @@
     undue trouble.
     </p>
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
@@ -24,7 +24,7 @@
       </li>
     </ul>
 
-    <h2><a name="connections">Connections to OpenVZ driver</a></h2>
+    <h2><a id="connections">Connections to OpenVZ driver</a></h2>
 
     <p>
     The libvirt OpenVZ driver is a single-instance privileged driver,
@@ -40,7 +40,7 @@ openvz+tcp://example.com/system      (remote access, SASl/Kerberos)
 openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
 </pre>
 
-    <h2><a name="notes">Notes on bridged networking</a></h2>
+    <h2><a id="notes">Notes on bridged networking</a></h2>
 
     <p>
     Bridged networking enables a guest domain (ie container) to have its
@@ -49,7 +49,7 @@ openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
     the host OS.
     </p>
 
-    <h3><a name="host">Host network devices</a></h3>
+    <h3><a id="host">Host network devices</a></h3>
 
     <p>
     One or more of the physical devices must be attached to a bridge. The
@@ -60,7 +60,7 @@ openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
     physical device "eth0", or a bonding device "bond0".
     </p>
 
-    <h3><a name="tools">OpenVZ tools configuration</a></h3>
+    <h3><a id="tools">OpenVZ tools configuration</a></h3>
 
     <p>
     OpenVZ releases later than 3.0.23 ship with a standard network device
@@ -85,7 +85,7 @@ EXTERNAL_SCRIPT="/usr/sbin/vznetaddbr"
     </p>
 
 
-    <h2><a name="example">Example guest domain XML configuration</a></h2>
+    <h2><a id="example">Example guest domain XML configuration</a></h2>
 
     <p>
     The current libvirt OpenVZ driver has a restriction that the

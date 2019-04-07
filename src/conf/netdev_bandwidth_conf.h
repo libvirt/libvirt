@@ -14,14 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Michal Privoznik <mprivozn@redhat.com>
- *     Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NETDEV_BANDWIDTH_CONF_H__
-# define __VIR_NETDEV_BANDWIDTH_CONF_H__
+#ifndef LIBVIRT_NETDEV_BANDWIDTH_CONF_H
+# define LIBVIRT_NETDEV_BANDWIDTH_CONF_H
 
 # include "internal.h"
 # include "virnetdevbandwidth.h"
@@ -32,10 +28,9 @@
 int virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                             xmlNodePtr node,
                             int net_type)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
-                             virBufferPtr buf)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+                             virBufferPtr buf);
 
 void virDomainClearNetBandwidth(virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1);
@@ -62,4 +57,4 @@ static inline bool virNetDevSupportBandwidth(virDomainNetType type)
     return false;
 }
 
-#endif /* __VIR_NETDEV_BANDWIDTH_CONF_H__ */
+#endif /* LIBVIRT_NETDEV_BANDWIDTH_CONF_H */

@@ -1,0 +1,64 @@
+{
+  "node-name": "node-b-f",
+  "read-only": false,
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "driver": "qcow2",
+  "file": "node-a-s",
+  "backing": "node-b-f"
+}
+{
+  "driver": "rbd",
+  "pool": "rbdpool",
+  "image": "rbdimg",
+  "server": [
+    {
+      "host": "host1.example.com",
+      "port": "0"
+    },
+    {
+      "host": "host2.example.com",
+      "port": "0"
+    }
+  ],
+  "user": "testuser-rbd",
+  "auth-client-required": [
+    "cephx",
+    "none"
+  ],
+  "key-secret": "node-a-s-secalias",
+  "node-name": "node-a-s",
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "read-only": false,
+  "discard": "unmap"
+}
+{
+  "node-name": "node-b-f",
+  "read-only": true,
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "driver": "qcow2",
+  "file": "node-b-s",
+  "backing": null
+}
+{
+  "driver": "iscsi",
+  "portal": "example.org:3260",
+  "target": "iscsitarget",
+  "lun": 1,
+  "transport": "tcp",
+  "node-name": "node-b-s",
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "read-only": true,
+  "discard": "unmap"
+}

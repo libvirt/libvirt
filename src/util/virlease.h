@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __VIR_LEASE_H_
-# define __VIR_LEASE_H_
+#ifndef LIBVIRT_VIRLEASE_H
+# define LIBVIRT_VIRLEASE_H
 
 # include "virjson.h"
 
@@ -41,4 +41,5 @@ int virLeaseNew(virJSONValuePtr *lease_ret,
                 const char *hostname,
                 const char *iaid,
                 const char *server_duid);
-#endif /* __VIR_LEASE_H */
+
+#endif /* LIBVIRT_VIRLEASE_H */

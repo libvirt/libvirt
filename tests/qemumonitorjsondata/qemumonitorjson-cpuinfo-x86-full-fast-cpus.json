@@ -1,0 +1,126 @@
+{
+  "return": [
+    {
+      "arch": "x86",
+      "cpu-index": 0,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "qom-path": "/machine/unattached/device[0]",
+      "thread-id": 895040
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 1,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "qom-path": "/machine/peripheral/vcpu1",
+      "thread-id": 895056
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 2,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 2
+      },
+      "qom-path": "/machine/peripheral/vcpu2",
+      "thread-id": 895057
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 3,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 3
+      },
+      "qom-path": "/machine/peripheral/vcpu3",
+      "thread-id": 895058
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 4,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 4
+      },
+      "qom-path": "/machine/peripheral/vcpu4",
+      "thread-id": 895059
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 5,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 5
+      },
+      "qom-path": "/machine/peripheral/vcpu5",
+      "thread-id": 895060
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 6,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 6
+      },
+      "qom-path": "/machine/peripheral/vcpu6",
+      "thread-id": 895061
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 7,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 7
+      },
+      "qom-path": "/machine/peripheral/vcpu7",
+      "thread-id": 895062
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 8,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 8
+      },
+      "qom-path": "/machine/peripheral/vcpu8",
+      "thread-id": 895063
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 9,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 9
+      },
+      "qom-path": "/machine/peripheral/vcpu9",
+      "thread-id": 895064
+    },
+    {
+      "arch": "x86",
+      "cpu-index": 10,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 10
+      },
+      "qom-path": "/machine/peripheral/vcpu10",
+      "thread-id": 895065
+    }
+  ],
+  "id": "libvirt-52"
+}

@@ -16,16 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *      Thang Pham <thang.pham@us.ibm.com>
  */
 
-#ifndef __VIR_CPU_S390X_H__
-# define __VIR_CPU_S390X_H__
+#ifndef LIBVIRT_CPU_S390_H
+# define LIBVIRT_CPU_S390_H
 
 # include "cpu.h"
 
 extern struct cpuArchDriver cpuDriverS390;
 
-#endif /* __VIR_CPU_S390X_H__ */
+#endif /* LIBVIRT_CPU_S390_H */

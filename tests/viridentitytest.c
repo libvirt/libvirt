@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library;  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <stdlib.h>
 
 #if WITH_SELINUX
 # include <selinux/selinux.h>
@@ -243,7 +240,7 @@ mymain(void)
 }
 
 #if WITH_SELINUX
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libsecurityselinuxhelper.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libsecurityselinuxhelper.so")
 #else
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 #endif

@@ -1,0 +1,24 @@
+<disk type='file' device='disk'>
+  <driver name='qemu' type='qcow2'/>
+  <source file='/var/lib/libvirt/images/rhel7.3.1507297895'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='#block004'/>
+        <nodename type='format' name='#block126'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <backingStore type='file' index='1'>
+    <format type='qcow2'/>
+    <source file='/var/lib/libvirt/images/rhel7.3.1484071872'>
+      <privateData>
+        <nodenames>
+          <nodename type='storage' name='#block256'/>
+          <nodename type='format' name='#block313'/>
+        </nodenames>
+      </privateData>
+    </source>
+  </backingStore>
+  <target dev='vda' bus='virtio'/>
+  <alias name='virtio-disk0'/>
+</disk>

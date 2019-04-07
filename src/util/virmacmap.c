@@ -16,9 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Michal Privoznik <mprivozn@redhat.com>
  */
 
 #include <config.h>
@@ -53,27 +50,28 @@ struct virMacMap {
 static virClassPtr virMacMapClass;
 
 
-static void
-virMacMapDispose(void *obj)
+static int
+virMacMapHashFree(void *payload,
+                  const void *name ATTRIBUTE_UNUSED,
+                  void *opaque ATTRIBUTE_UNUSED)
 {
-    virMacMapPtr mgr = obj;
-    virHashFree(mgr->macs);
+    virStringListFree(payload);
+    return 0;
 }
 
 
 static void
-virMacMapHashFree(void *payload, const void *name ATTRIBUTE_UNUSED)
+virMacMapDispose(void *obj)
 {
-    virStringListFree(payload);
+    virMacMapPtr mgr = obj;
+    virHashForEach(mgr->macs, virMacMapHashFree, NULL);
+    virHashFree(mgr->macs);
 }
 
 
 static int virMacMapOnceInit(void)
 {
-    if (!(virMacMapClass = virClassNew(virClassForObjectLockable(),
-                                       "virMacMapClass",
-                                       sizeof(virMacMap),
-                                       virMacMapDispose)))
+    if (!VIR_CLASS_NEW(virMacMap, virClassForObjectLockable()))
         return -1;
 
     return 0;
@@ -88,23 +86,20 @@ virMacMapAddLocked(virMacMapPtr mgr,
                    const char *mac)
 {
     int ret = -1;
-    const char **macsList = NULL;
-    char **newMacsList = NULL;
+    char **macsList = NULL;
 
     if ((macsList = virHashLookup(mgr->macs, domain)) &&
-        virStringListHasString(macsList, mac)) {
+        virStringListHasString((const char**) macsList, mac)) {
         ret = 0;
         goto cleanup;
     }
 
-    if (!(newMacsList = virStringListAdd(macsList, mac)) ||
-        virHashUpdateEntry(mgr->macs, domain, newMacsList) < 0)
+    if (virStringListAdd(&macsList, mac) < 0 ||
+        virHashUpdateEntry(mgr->macs, domain, macsList) < 0)
         goto cleanup;
-    newMacsList = NULL;
 
     ret = 0;
  cleanup:
-    virStringListFree(newMacsList);
     return ret;
 }
 
@@ -121,8 +116,8 @@ virMacMapRemoveLocked(virMacMapPtr mgr,
         return 0;
 
     newMacsList = macsList;
-    virStringListRemove(&macsList, mac);
-    if (!macsList) {
+    virStringListRemove(&newMacsList, mac);
+    if (!newMacsList) {
         virHashSteal(mgr->macs, domain);
     } else {
         if (macsList != newMacsList &&
@@ -289,6 +284,18 @@ virMacMapWriteFileLocked(virMacMapPtr mgr,
 }
 
 
+char *
+virMacMapFileName(const char *dnsmasqStateDir,
+                  const char *bridge)
+{
+    char *filename;
+
+    ignore_value(virAsprintf(&filename, "%s/%s.macs", dnsmasqStateDir, bridge));
+
+    return filename;
+}
+
+
 #define VIR_MAC_HASH_TABLE_SIZE 10
 
 virMacMapPtr
@@ -303,8 +310,7 @@ virMacMapNew(const char *file)
         return NULL;
 
     virObjectLock(mgr);
-    if (!(mgr->macs = virHashCreate(VIR_MAC_HASH_TABLE_SIZE,
-                                    virMacMapHashFree)))
+    if (!(mgr->macs = virHashCreate(VIR_MAC_HASH_TABLE_SIZE, NULL)))
         goto error;
 
     if (file &&

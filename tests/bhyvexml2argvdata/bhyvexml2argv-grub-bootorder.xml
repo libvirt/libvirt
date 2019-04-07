@@ -12,22 +12,23 @@
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd1.img'/>
       <target dev='hda' bus='sata'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <address type='drive' controller='0' bus='0' target='2' unit='0'/>
     </disk>
     <disk type='file'>
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd2.img'/>
       <target dev='hdb' bus='sata'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <address type='drive' controller='0' bus='0' target='4' unit='0'/>
     </disk>
     <disk type='file'>
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd3.img'/>
       <target dev='hdc' bus='sata'/>
       <boot order='1'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <address type='drive' controller='0' bus='0' target='6' unit='0'/>
     </disk>
     <interface type='bridge'>
+      <mac address='52:54:00:f4:6c:be'/>
       <model type='virtio'/>
       <source bridge="virbr0"/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>

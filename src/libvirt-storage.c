@@ -36,10 +36,6 @@ VIR_LOG_INIT("libvirt.storage");
  * reference counter on the connection is not increased by this
  * call.
  *
- * WARNING: When writing libvirt bindings in other languages, do
- * not use this function.  Instead, store the connection and
- * the pool object together.
- *
  * Returns the virConnectPtr or NULL in case of failure.
  */
 virConnectPtr
@@ -110,7 +106,7 @@ virConnectListAllStoragePools(virConnectPtr conn,
                               virStoragePoolPtr **pools,
                               unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, pools=%p, flags=%x", conn, pools, flags);
+    VIR_DEBUG("conn=%p, pools=%p, flags=0x%x", conn, pools, flags);
 
     virResetLastError();
 
@@ -323,7 +319,7 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
                                  const char *srcSpec,
                                  unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, type=%s, src=%s, flags=%x",
+    VIR_DEBUG("conn=%p, type=%s, src=%s, flags=0x%x",
               conn, NULLSTR(type), NULLSTR(srcSpec), flags);
 
     virResetLastError();
@@ -502,6 +498,46 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
 
 
 /**
+ * virStoragePoolLookupByTargetPath:
+ * @conn: pointer to hypervisor connection
+ * @path: path at which the pool is exposed
+ *
+ * Fetch a storage pool which maps to a particular target directory.
+ * If more than one pool maps to the path, it is undefined which
+ * will be returned first.
+ *
+ * virStoragePoolFree should be used to free the resources after the
+ * storage pool object is no longer needed.
+ *
+ * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
+ */
+virStoragePoolPtr
+virStoragePoolLookupByTargetPath(virConnectPtr conn,
+                                 const char *path)
+{
+    VIR_DEBUG("conn=%p, path=%s", conn, NULLSTR(path));
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgGoto(path, error);
+
+    if (conn->storageDriver && conn->storageDriver->storagePoolLookupByTargetPath) {
+        virStoragePoolPtr ret;
+        ret = conn->storageDriver->storagePoolLookupByTargetPath(conn, path);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
  * virStoragePoolCreateXML:
  * @conn: pointer to hypervisor connection
  * @xmlDesc: XML description for new pool
@@ -521,7 +557,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
                         const char *xmlDesc,
                         unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, NULLSTR(xmlDesc), flags);
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=0x%x", conn, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 
@@ -564,7 +600,7 @@ virStoragePoolDefineXML(virConnectPtr conn,
                         const char *xml,
                         unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, NULLSTR(xml), flags);
+    VIR_DEBUG("conn=%p, xml=%s, flags=0x%x", conn, NULLSTR(xml), flags);
 
     virResetLastError();
 
@@ -605,7 +641,7 @@ virStoragePoolBuild(virStoragePoolPtr pool,
                     unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("pool=%p, flags=%x", pool, flags);
+    VIR_DEBUG("pool=%p, flags=0x%x", pool, flags);
 
     virResetLastError();
 
@@ -681,7 +717,7 @@ virStoragePoolCreate(virStoragePoolPtr pool,
                      unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("pool=%p, flags=%x", pool, flags);
+    VIR_DEBUG("pool=%p, flags=0x%x", pool, flags);
 
     virResetLastError();
 
@@ -763,7 +799,7 @@ virStoragePoolDelete(virStoragePoolPtr pool,
                      unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("pool=%p, flags=%x", pool, flags);
+    VIR_DEBUG("pool=%p, flags=0x%x", pool, flags);
 
     virResetLastError();
 
@@ -832,7 +868,7 @@ virStoragePoolFree(virStoragePoolPtr pool)
 int
 virStoragePoolRef(virStoragePoolPtr pool)
 {
-    VIR_DEBUG("pool=%p refs=%d", pool, pool ? pool->object.u.s.refs : 0);
+    VIR_DEBUG("pool=%p refs=%d", pool, pool ? pool->parent.u.s.refs : 0);
 
     virResetLastError();
 
@@ -859,7 +895,7 @@ virStoragePoolRefresh(virStoragePoolPtr pool,
                       unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("pool=%p, flags=%x", pool, flags);
+    VIR_DEBUG("pool=%p, flags=0x%x", pool, flags);
 
     virResetLastError();
 
@@ -1023,7 +1059,7 @@ virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
                          unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("pool=%p, flags=%x", pool, flags);
+    VIR_DEBUG("pool=%p, flags=0x%x", pool, flags);
 
     virResetLastError();
 
@@ -1089,9 +1125,10 @@ virStoragePoolGetAutostart(virStoragePoolPtr pool,
 /**
  * virStoragePoolSetAutostart:
  * @pool: pointer to storage pool
- * @autostart: new flag setting
+ * @autostart: whether the storage pool should be automatically started 0 or 1
  *
- * Sets the autostart flag
+ * Configure the storage pool to be automatically started
+ * when the host machine boots.
  *
  * Returns 0 on success, -1 on failure
  */
@@ -1148,7 +1185,7 @@ virStoragePoolListAllVolumes(virStoragePoolPtr pool,
                              virStorageVolPtr **vols,
                              unsigned int flags)
 {
-    VIR_DEBUG("pool=%p, vols=%p, flags=%x", pool, vols, flags);
+    VIR_DEBUG("pool=%p, vols=%p, flags=0x%x", pool, vols, flags);
 
     virResetLastError();
 
@@ -1253,10 +1290,6 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
  * Provides the connection pointer associated with a storage volume.  The
  * reference counter on the connection is not increased by this
  * call.
- *
- * WARNING: When writing libvirt bindings in other languages, do
- * not use this function.  Instead, store the connection and
- * the volume object together.
  *
  * Returns the virConnectPtr or NULL in case of failure.
  */
@@ -1463,7 +1496,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
                        const char *xmlDesc,
                        unsigned int flags)
 {
-    VIR_DEBUG("pool=%p, xmlDesc=%s, flags=%x", pool, NULLSTR(xmlDesc), flags);
+    VIR_DEBUG("pool=%p, xmlDesc=%s, flags=0x%x", pool, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 
@@ -1515,7 +1548,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                            virStorageVolPtr clonevol,
                            unsigned int flags)
 {
-    VIR_DEBUG("pool=%p, xmlDesc=%s, clonevol=%p, flags=%x",
+    VIR_DEBUG("pool=%p, xmlDesc=%s, clonevol=%p, flags=0x%x",
               pool, NULLSTR(xmlDesc), clonevol, flags);
 
     virResetLastError();
@@ -1549,11 +1582,18 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
  * @stream: stream to use as output
  * @offset: position in @vol to start reading from
  * @length: limit on amount of data to download
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virStorageVolDownloadFlags
  *
  * Download the content of the volume as a stream. If @length
  * is zero, then the remaining contents of the volume after
  * @offset will be downloaded.
+ *
+ * If VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM is set in @flags
+ * effective transmission of holes is enabled. This assumes using
+ * the @stream with combination of virStreamSparseRecvAll() or
+ * virStreamRecvFlags(stream, ..., flags =
+ * VIR_STREAM_RECV_STOP_AT_HOLE) for honouring holes sent by
+ * server.
  *
  * This call sets up an asynchronous stream; subsequent use of
  * stream APIs is necessary to transfer the actual data,
@@ -1570,7 +1610,7 @@ virStorageVolDownload(virStorageVolPtr vol,
                       unsigned long long length,
                       unsigned int flags)
 {
-    VIR_DEBUG("vol=%p, stream=%p, offset=%llu, length=%llu, flags=%x",
+    VIR_DEBUG("vol=%p, stream=%p, offset=%llu, length=%llu, flags=0x%x",
               vol, stream, offset, length, flags);
 
     virResetLastError();
@@ -1613,13 +1653,18 @@ virStorageVolDownload(virStorageVolPtr vol,
  * @stream: stream to use as input
  * @offset: position to start writing to
  * @length: limit on amount of data to upload
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virStorageVolUploadFlags
  *
  * Upload new content to the volume from a stream. This call
  * will fail if @offset + @length exceeds the size of the
  * volume. Otherwise, if @length is non-zero, an error
  * will be raised if an attempt is made to upload greater
  * than @length bytes of data.
+ *
+ * If VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM is set in @flags
+ * effective transmission of holes is enabled. This assumes using
+ * the @stream with combination of virStreamSparseSendAll() or
+ * virStreamSendHole() to preserve source file sparseness.
  *
  * This call sets up an asynchronous stream; subsequent use of
  * stream APIs is necessary to transfer the actual data,
@@ -1628,7 +1673,8 @@ virStorageVolDownload(virStorageVolPtr vol,
  * another active stream is writing to the storage volume.
  *
  * When the data stream is closed whether the upload is successful
- * or not the target storage pool will be refreshed to reflect pool
+ * or not an attempt will be made to refresh the target storage pool
+ * if an asynchronous build is not running in order to reflect pool
  * and volume changes as a result of the upload. Depending on
  * the target volume storage backend and the source stream type
  * for a successful upload, the target volume may take on the
@@ -1644,7 +1690,7 @@ virStorageVolUpload(virStorageVolPtr vol,
                     unsigned long long length,
                     unsigned int flags)
 {
-    VIR_DEBUG("vol=%p, stream=%p, offset=%llu, length=%llu, flags=%x",
+    VIR_DEBUG("vol=%p, stream=%p, offset=%llu, length=%llu, flags=0x%x",
               vol, stream, offset, length, flags);
 
     virResetLastError();
@@ -1695,7 +1741,7 @@ virStorageVolDelete(virStorageVolPtr vol,
                     unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("vol=%p, flags=%x", vol, flags);
+    VIR_DEBUG("vol=%p, flags=0x%x", vol, flags);
 
     virResetLastError();
 
@@ -1744,7 +1790,7 @@ virStorageVolWipe(virStorageVolPtr vol,
                   unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("vol=%p, flags=%x", vol, flags);
+    VIR_DEBUG("vol=%p, flags=0x%x", vol, flags);
 
     virResetLastError();
 
@@ -1791,7 +1837,7 @@ virStorageVolWipePattern(virStorageVolPtr vol,
                          unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("vol=%p, algorithm=%u, flags=%x", vol, algorithm, flags);
+    VIR_DEBUG("vol=%p, algorithm=%u, flags=0x%x", vol, algorithm, flags);
 
     virResetLastError();
 
@@ -1859,7 +1905,7 @@ virStorageVolFree(virStorageVolPtr vol)
 int
 virStorageVolRef(virStorageVolPtr vol)
 {
-    VIR_DEBUG("vol=%p refs=%d", vol, vol ? vol->object.u.s.refs : 0);
+    VIR_DEBUG("vol=%p refs=%d", vol, vol ? vol->parent.u.s.refs : 0);
 
     virResetLastError();
 
@@ -1936,7 +1982,7 @@ virStorageVolGetInfoFlags(virStorageVolPtr vol,
                           unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("vol=%p, info=%p, flags=%x", vol, info, flags);
+    VIR_DEBUG("vol=%p, info=%p, flags=0x%x", vol, info, flags);
 
     virResetLastError();
 
@@ -1979,7 +2025,7 @@ virStorageVolGetXMLDesc(virStorageVolPtr vol,
                         unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("vol=%p, flags=%x", vol, flags);
+    VIR_DEBUG("vol=%p, flags=0x%x", vol, flags);
 
     virResetLastError();
 
@@ -2082,7 +2128,7 @@ virStorageVolResize(virStorageVolPtr vol,
                     unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("vol=%p capacity=%llu flags=%x", vol, capacity, flags);
+    VIR_DEBUG("vol=%p capacity=%llu flags=0x%x", vol, capacity, flags);
 
     virResetLastError();
 
@@ -2304,4 +2350,44 @@ virConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
  error:
     virDispatchError(conn);
     return -1;
+}
+
+
+/**
+ * virConnectGetStoragePoolCapabilities:
+ * @conn: pointer to the hypervisor connection
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Prior creating a storage pool (for instance via virStoragePoolCreateXML
+ * or virStoragePoolDefineXML) it may be suitable to know what pool types
+ * are supported along with the file/disk formats for each pool.
+ *
+ * Returns NULL in case of error or an XML string defining the capabilities.
+ */
+char *
+virConnectGetStoragePoolCapabilities(virConnectPtr conn,
+                                     unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+
+    if (conn->storageDriver &&
+        conn->storageDriver->connectGetStoragePoolCapabilities) {
+        char *ret;
+        ret = conn->storageDriver->connectGetStoragePoolCapabilities(conn,
+                                                                     flags);
+        if (!ret)
+            goto error;
+        VIR_DEBUG("conn=%p, ret=%s", conn, ret);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
 }

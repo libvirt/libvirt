@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Martin Kletzander <mkletzan@redhat.com>
  */
 
 #include <config.h>
@@ -29,24 +27,39 @@
 #include "virnuma.h"
 #include "virstring.h"
 
+/*
+ * Distance definitions defined Conform ACPI 2.0 SLIT.
+ * See include/linux/topology.h
+ */
+#define LOCAL_DISTANCE          10
+#define REMOTE_DISTANCE         20
+/* SLIT entry value is a one-byte unsigned integer. */
+#define UNREACHABLE            255
+
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
 VIR_ENUM_IMPL(virDomainNumatuneMemMode,
               VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "strict",
               "preferred",
-              "interleave");
+              "interleave",
+);
 
 VIR_ENUM_IMPL(virDomainNumatunePlacement,
               VIR_DOMAIN_NUMATUNE_PLACEMENT_LAST,
               "default",
               "static",
-              "auto");
+              "auto",
+);
 
-VIR_ENUM_IMPL(virNumaMemAccess, VIR_NUMA_MEM_ACCESS_LAST,
+VIR_ENUM_IMPL(virDomainMemoryAccess, VIR_DOMAIN_MEMORY_ACCESS_LAST,
               "default",
               "shared",
-              "private");
+              "private",
+);
+
+typedef struct _virDomainNumaDistance virDomainNumaDistance;
+typedef virDomainNumaDistance *virDomainNumaDistancePtr;
 
 typedef struct _virDomainNumaNode virDomainNumaNode;
 typedef virDomainNumaNode *virDomainNumaNodePtr;
@@ -64,7 +77,14 @@ struct _virDomainNuma {
         virBitmapPtr cpumask;   /* bitmap of vCPUs corresponding to the node */
         virBitmapPtr nodeset;   /* host memory nodes where this guest node resides */
         virDomainNumatuneMemMode mode;  /* memory mode selection */
-        virNumaMemAccess memAccess; /* shared memory access configuration */
+        virDomainMemoryAccess memAccess; /* shared memory access configuration */
+        virTristateBool discard; /* discard-data for memory-backend-file */
+
+        struct _virDomainNumaDistance {
+            unsigned int value; /* locality value for node i->j or j->i */
+            unsigned int cellid;
+        } *distances;           /* remote node distances */
+        size_t ndistances;
     } *mem_nodes;           /* guest node configuration */
     size_t nmem_nodes;
 
@@ -344,6 +364,9 @@ virDomainNumaFree(virDomainNumaPtr numa)
     for (i = 0; i < numa->nmem_nodes; i++) {
         virBitmapFree(numa->mem_nodes[i].cpumask);
         virBitmapFree(numa->mem_nodes[i].nodeset);
+
+        if (numa->mem_nodes[i].ndistances > 0)
+            VIR_FREE(numa->mem_nodes[i].distances);
     }
     VIR_FREE(numa->mem_nodes);
 
@@ -685,6 +708,145 @@ virDomainNumatuneNodesetIsAvailable(virDomainNumaPtr numatune,
 }
 
 
+static int
+virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
+                                     xmlXPathContextPtr ctxt,
+                                     unsigned int cur_cell)
+{
+    int ret = -1;
+    int sibling;
+    char *tmp = NULL;
+    xmlNodePtr *nodes = NULL;
+    size_t i, ndistances = def->nmem_nodes;
+
+    if (ndistances == 0)
+        return 0;
+
+    /* check if NUMA distances definition is present */
+    if (!virXPathNode("./distances[1]", ctxt))
+        return 0;
+
+    if ((sibling = virXPathNodeSet("./distances[1]/sibling", ctxt, &nodes)) <= 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("NUMA distances defined without siblings"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < sibling; i++) {
+        virDomainNumaDistancePtr ldist, rdist;
+        unsigned int sibling_id, sibling_value;
+
+        /* siblings are in order of parsing or explicitly numbered */
+        if (!(tmp = virXMLPropString(nodes[i], "id"))) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing 'id' attribute in NUMA "
+                             "distances under 'cell id %d'"),
+                           cur_cell);
+            goto cleanup;
+        }
+
+        /* The "id" needs to be applicable */
+        if (virStrToLong_uip(tmp, NULL, 10, &sibling_id) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid 'id' attribute in NUMA "
+                             "distances for sibling: '%s'"),
+                           tmp);
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+
+        /* The "id" needs to be within numa/cell range */
+        if (sibling_id >= ndistances) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("'sibling_id %d' does not refer to a "
+                             "valid cell within NUMA 'cell id %d'"),
+                           sibling_id, cur_cell);
+            goto cleanup;
+        }
+
+        /* We need a locality value. Check and correct
+         * distance to local and distance to remote node.
+         */
+        if (!(tmp = virXMLPropString(nodes[i], "value"))) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing 'value' attribute in NUMA distances "
+                             "under 'cell id %d' for 'sibling id %d'"),
+                           cur_cell, sibling_id);
+            goto cleanup;
+        }
+
+        /* The "value" needs to be applicable */
+        if (virStrToLong_uip(tmp, NULL, 10, &sibling_value) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("'value %s' is invalid for "
+                             "'sibling id %d' under NUMA 'cell id %d'"),
+                           tmp, sibling_id, cur_cell);
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+
+        /* Assure LOCAL_DISTANCE <= "value" <= UNREACHABLE
+         * and correct LOCAL_DISTANCE setting if such applies.
+         */
+        if ((sibling_value < LOCAL_DISTANCE ||
+             sibling_value > UNREACHABLE) ||
+            (sibling_id == cur_cell &&
+             sibling_value != LOCAL_DISTANCE) ||
+            (sibling_id != cur_cell &&
+             sibling_value == LOCAL_DISTANCE)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("'value %d' is invalid for "
+                             "'sibling id %d' under NUMA 'cell id %d'"),
+                           sibling_value, sibling_id, cur_cell);
+            goto cleanup;
+        }
+
+        /* Apply the local / remote distance */
+        ldist = def->mem_nodes[cur_cell].distances;
+        if (!ldist) {
+            if (VIR_ALLOC_N(ldist, ndistances) < 0)
+                goto cleanup;
+
+            ldist[cur_cell].value = LOCAL_DISTANCE;
+            ldist[cur_cell].cellid = cur_cell;
+            def->mem_nodes[cur_cell].ndistances = ndistances;
+            def->mem_nodes[cur_cell].distances = ldist;
+        }
+
+        ldist[sibling_id].cellid = sibling_id;
+        ldist[sibling_id].value = sibling_value;
+
+        /* Apply symmetry if none given */
+        rdist = def->mem_nodes[sibling_id].distances;
+        if (!rdist) {
+            if (VIR_ALLOC_N(rdist, ndistances) < 0)
+                goto cleanup;
+
+            rdist[sibling_id].value = LOCAL_DISTANCE;
+            rdist[sibling_id].cellid = sibling_id;
+            def->mem_nodes[sibling_id].ndistances = ndistances;
+            def->mem_nodes[sibling_id].distances = rdist;
+        }
+
+        rdist[cur_cell].cellid = cur_cell;
+        if (!rdist[cur_cell].value)
+            rdist[cur_cell].value = sibling_value;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0) {
+        for (i = 0; i < ndistances; i++)
+            VIR_FREE(def->mem_nodes[i].distances);
+        def->mem_nodes[i].ndistances = 0;
+    }
+    VIR_FREE(nodes);
+    VIR_FREE(tmp);
+
+    return ret;
+}
+
 int
 virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
                             xmlXPathContextPtr ctxt)
@@ -693,7 +855,7 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
     xmlNodePtr oldNode = ctxt->node;
     char *tmp = NULL;
     int n;
-    size_t i;
+    size_t i, j;
     int ret = -1;
 
     /* check if NUMA definition is present */
@@ -711,7 +873,6 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
     def->nmem_nodes = n;
 
     for (i = 0; i < n; i++) {
-        size_t j;
         int rc;
         unsigned int cur_cell = i;
 
@@ -777,7 +938,7 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
             goto cleanup;
 
         if ((tmp = virXMLPropString(nodes[i], "memAccess"))) {
-            if ((rc = virNumaMemAccessTypeFromString(tmp)) <= 0) {
+            if ((rc = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Invalid 'memAccess' attribute value '%s'"),
                                tmp);
@@ -787,6 +948,22 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
             def->mem_nodes[cur_cell].memAccess = rc;
             VIR_FREE(tmp);
         }
+
+        if ((tmp = virXMLPropString(nodes[i], "discard"))) {
+            if ((rc = virTristateBoolTypeFromString(tmp)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid 'discard' attribute value '%s'"),
+                               tmp);
+                goto cleanup;
+            }
+
+            def->mem_nodes[cur_cell].discard = rc;
+            VIR_FREE(tmp);
+        }
+
+        /* Parse NUMA distances info */
+        if (virDomainNumaDefNodeDistanceParseXML(def, ctxt, cur_cell) < 0)
+                goto cleanup;
     }
 
     ret = 0;
@@ -800,10 +977,11 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
 
 
 int
-virDomainNumaDefCPUFormat(virBufferPtr buf,
-                          virDomainNumaPtr def)
+virDomainNumaDefCPUFormatXML(virBufferPtr buf,
+                             virDomainNumaPtr def)
 {
-    virNumaMemAccess memAccess;
+    virDomainMemoryAccess memAccess;
+    virTristateBool discard;
     char *cpustr;
     size_t ncells = virDomainNumaGetNodeCount(def);
     size_t i;
@@ -814,7 +992,10 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<numa>\n");
     virBufferAdjustIndent(buf, 2);
     for (i = 0; i < ncells; i++) {
+        int ndistances;
+
         memAccess = virDomainNumaGetNodeMemoryAccessMode(def, i);
+        discard = virDomainNumaGetNodeDiscard(def, i);
 
         if (!(cpustr = virBitmapFormat(virDomainNumaGetNodeCpumask(def, i))))
             return -1;
@@ -827,8 +1008,37 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
         virBufferAddLit(buf, " unit='KiB'");
         if (memAccess)
             virBufferAsprintf(buf, " memAccess='%s'",
-                              virNumaMemAccessTypeToString(memAccess));
-        virBufferAddLit(buf, "/>\n");
+                              virDomainMemoryAccessTypeToString(memAccess));
+
+        if (discard)
+            virBufferAsprintf(buf, " discard='%s'",
+                              virTristateBoolTypeToString(discard));
+
+        ndistances = def->mem_nodes[i].ndistances;
+        if (ndistances == 0) {
+            virBufferAddLit(buf, "/>\n");
+        } else {
+            size_t j;
+            virDomainNumaDistancePtr distances = def->mem_nodes[i].distances;
+
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            virBufferAddLit(buf, "<distances>\n");
+            virBufferAdjustIndent(buf, 2);
+            for (j = 0; j < ndistances; j++) {
+                if (distances[j].value) {
+                    virBufferAddLit(buf, "<sibling");
+                    virBufferAsprintf(buf, " id='%d'", distances[j].cellid);
+                    virBufferAsprintf(buf, " value='%d'", distances[j].value);
+                    virBufferAddLit(buf, "/>\n");
+                }
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</distances>\n");
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</cell>\n");
+        }
+
         VIR_FREE(cpustr);
     }
     virBufferAdjustIndent(buf, -2);
@@ -884,6 +1094,7 @@ virDomainNumaCheckABIStability(virDomainNumaPtr src,
                                virDomainNumaPtr tgt)
 {
     size_t i;
+    size_t j;
 
     if (virDomainNumaGetNodeCount(src) != virDomainNumaGetNodeCount(tgt)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -912,6 +1123,17 @@ virDomainNumaCheckABIStability(virDomainNumaPtr src,
                              "match source"), i);
             return false;
         }
+
+        for (j = 0; j < virDomainNumaGetNodeCount(src); j++) {
+            if (virDomainNumaGetNodeDistance(src, i, j) !=
+                virDomainNumaGetNodeDistance(tgt, i, j)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Target NUMA distance from %zu to %zu "
+                                 "doesn't match source"), i, j);
+
+                return false;
+            }
+        }
     }
 
     return true;
@@ -928,6 +1150,153 @@ virDomainNumaGetNodeCount(virDomainNumaPtr numa)
 }
 
 
+size_t
+virDomainNumaSetNodeCount(virDomainNumaPtr numa, size_t nmem_nodes)
+{
+    if (!nmem_nodes) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set an empty mem_nodes set"));
+        return 0;
+    }
+
+    if (numa->mem_nodes) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot alter an existing mem_nodes set"));
+        return 0;
+    }
+
+    if (VIR_ALLOC_N(numa->mem_nodes, nmem_nodes) < 0)
+        return 0;
+
+    numa->nmem_nodes = nmem_nodes;
+
+    return numa->nmem_nodes;
+}
+
+
+bool
+virDomainNumaNodeDistanceIsUsingDefaults(virDomainNumaPtr numa,
+                                         size_t node,
+                                         size_t sibling)
+{
+    if (node >= numa->nmem_nodes ||
+        sibling >= numa->nmem_nodes)
+        return false;
+
+    if (!numa->mem_nodes[node].distances)
+        return true;
+
+    if (numa->mem_nodes[node].distances[sibling].value == LOCAL_DISTANCE ||
+        numa->mem_nodes[node].distances[sibling].value == REMOTE_DISTANCE)
+        return true;
+
+    return false;
+}
+
+
+size_t
+virDomainNumaGetNodeDistance(virDomainNumaPtr numa,
+                             size_t node,
+                             size_t cellid)
+{
+    virDomainNumaDistancePtr distances = NULL;
+
+    if (node < numa->nmem_nodes)
+        distances = numa->mem_nodes[node].distances;
+
+    /*
+     * Present the configured distance value. If
+     * out of range or not available set the platform
+     * defined default for local and remote nodes.
+     */
+    if (!distances ||
+        cellid >= numa->nmem_nodes ||
+        !distances[cellid].value)
+        return (node == cellid) ? LOCAL_DISTANCE : REMOTE_DISTANCE;
+
+    return distances[cellid].value;
+}
+
+
+int
+virDomainNumaSetNodeDistance(virDomainNumaPtr numa,
+                             size_t node,
+                             size_t cellid,
+                             unsigned int value)
+{
+    virDomainNumaDistancePtr distances;
+
+    if (node >= numa->nmem_nodes) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Argument 'node' %zu outranges "
+                         "defined number of NUMA nodes"),
+                       node);
+        return -1;
+    }
+
+    distances = numa->mem_nodes[node].distances;
+    if (!distances ||
+        cellid >= numa->mem_nodes[node].ndistances) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Arguments under memnode element do not "
+                         "correspond with existing guest's NUMA cell"));
+        return -1;
+    }
+
+    /*
+     * Advanced Configuration and Power Interface
+     * Specification version 6.1. Chapter 5.2.17
+     * System Locality Distance Information Table
+     * ... Distance values of 0-9 are reserved.
+     */
+    if (value < LOCAL_DISTANCE ||
+        value > UNREACHABLE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Distance value of %d is not in valid range"),
+                       value);
+        return -1;
+    }
+
+    if (value == LOCAL_DISTANCE && node != cellid) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Distance value %d under node %zu is "
+                         "LOCAL_DISTANCE and should be set to 10"),
+                       value, node);
+        return -1;
+    }
+
+    distances[cellid].cellid = cellid;
+    distances[cellid].value = value;
+
+    return distances[cellid].value;
+}
+
+
+size_t
+virDomainNumaSetNodeDistanceCount(virDomainNumaPtr numa,
+                                  size_t node,
+                                  size_t ndistances)
+{
+    virDomainNumaDistancePtr distances;
+
+    distances = numa->mem_nodes[node].distances;
+    if (distances) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot alter an existing nmem_nodes distances set for node: %zu"),
+                       node);
+        return 0;
+    }
+
+    if (VIR_ALLOC_N(distances, ndistances) < 0)
+        return 0;
+
+    numa->mem_nodes[node].distances = distances;
+    numa->mem_nodes[node].ndistances = ndistances;
+
+    return numa->mem_nodes[node].ndistances;
+}
+
+
 virBitmapPtr
 virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
                             size_t node)
@@ -936,11 +1305,30 @@ virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
 }
 
 
-virNumaMemAccess
+virBitmapPtr
+virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
+                            size_t node,
+                            virBitmapPtr cpumask)
+{
+    numa->mem_nodes[node].cpumask = cpumask;
+
+    return numa->mem_nodes[node].cpumask;
+}
+
+
+virDomainMemoryAccess
 virDomainNumaGetNodeMemoryAccessMode(virDomainNumaPtr numa,
                                      size_t node)
 {
     return numa->mem_nodes[node].memAccess;
+}
+
+
+virTristateBool
+virDomainNumaGetNodeDiscard(virDomainNumaPtr numa,
+                            size_t node)
+{
+    return numa->mem_nodes[node].discard;
 }
 
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Control Groups Resource Management</h1>
@@ -11,7 +11,7 @@
       for applying resource management to their virtual machines and containers.
     </p>
 
-    <h2><a name="requiredControllers">Required controllers</a></h2>
+    <h2><a id="requiredControllers">Required controllers</a></h2>
 
     <p>
       The control groups filesystem supports multiple "controllers". By default
@@ -23,12 +23,13 @@
 
     <p>
       The QEMU driver is capable of using the <code>cpuset</code>,
-      <code>cpu</code>, <code>memory</code>, <code>blkio</code> and
-      <code>devices</code> controllers. None of them are compulsory.
-      If any controller is not mounted, the resource management APIs
-      which use it will cease to operate. It is possible to explicitly
-      turn off use of a controller, even when mounted, via the
-      <code>/etc/libvirt/qemu.conf</code> configuration file.
+      <code>cpu</code>, <code>cpuacct</code>, <code>memory</code>,
+      <code>blkio</code> and <code>devices</code> controllers.
+      None of them are compulsory. If any controller is not mounted,
+      the resource management APIs which use it will cease to operate.
+      It is possible to explicitly turn off use of a controller,
+      even when mounted, via the <code>/etc/libvirt/qemu.conf</code>
+      configuration file.
     </p>
 
     <p>
@@ -42,7 +43,7 @@
       which use them will cease to operate.
     </p>
 
-    <h2><a name="currentLayout">Current cgroups layout</a></h2>
+    <h2><a id="currentLayout">Current cgroups layout</a></h2>
 
     <p>
       As of libvirt 1.0.5 or later, the cgroups layout created by libvirt has been
@@ -63,27 +64,29 @@
       in two, one describing systemd hosts and the other non-systemd hosts.
     </p>
 
-    <h3><a name="currentLayoutSystemd">Systemd cgroups integration</a></h3>
+    <h3><a id="currentLayoutSystemd">Systemd cgroups integration</a></h3>
 
     <p>
       On hosts which use systemd, each consumer maps to a systemd scope unit,
       while partitions map to a system slice unit.
     </p>
 
-    <h4><a name="systemdScope">Systemd scope naming</a></h4>
+    <h4><a id="systemdScope">Systemd scope naming</a></h4>
 
     <p>
       The systemd convention is for the scope name of virtual machines / containers
       to be of the general format <code>machine-$NAME.scope</code>. Libvirt forms the
-      <code>$NAME</code> part of this by concatenating the driver type with the name
-      of the guest, and then escaping any systemd reserved characters.
+      <code>$NAME</code> part of this by concatenating the driver type with the id
+      and truncated name of the guest, and then escaping any systemd reserved
+      characters.
       So for a guest <code>demo</code> running under the <code>lxc</code> driver,
-      we get a <code>$NAME</code> of <code>lxc-demo</code> which when escaped is
-      <code>lxc\x2ddemo</code>. So the complete scope name is <code>machine-lxc\x2ddemo.scope</code>.
+      we get a <code>$NAME</code> of <code>lxc-12345-demo</code> which when escaped
+      is <code>lxc\x2d12345\x2ddemo</code>. So the complete scope name is
+      <code>machine-lxc\x2d12345\x2ddemo.scope</code>.
       The scope names map directly to the cgroup directory names.
     </p>
 
-    <h4><a name="systemdSlice">Systemd slice naming</a></h4>
+    <h4><a id="systemdSlice">Systemd slice naming</a></h4>
 
     <p>
       The systemd convention for slice naming is that a slice should include the
@@ -96,7 +99,7 @@
       by libvirt will be associated with <code>machine.slice</code> by default.
     </p>
 
-    <h4><a name="systemdLayout">Systemd cgroup layout</a></h4>
+    <h4><a id="systemdLayout">Systemd cgroup layout</a></h4>
 
     <p>
       Given this, a possible systemd cgroups layout involving 3 qemu guests,
@@ -112,19 +115,19 @@ $ROOT
   |
   +- machine.slice
       |
-      +- machine-qemu\x2dvm1.scope
+      +- machine-qemu\x2d1\x2dvm1.scope
       |   |
       |   +- emulator
       |   +- vcpu0
       |   +- vcpu1
       |
-      +- machine-qemu\x2dvm2.scope
+      +- machine-qemu\x2d2\x2dvm2.scope
       |   |
       |   +- emulator
       |   +- vcpu0
       |   +- vcpu1
       |
-      +- machine-qemu\x2dvm3.scope
+      +- machine-qemu\x2d3\x2dvm3.scope
       |   |
       |   +- emulator
       |   +- vcpu0
@@ -134,18 +137,18 @@ $ROOT
       |   |
       |   +- machine-engineering-testing.slice
       |   |   |
-      |   |   +- machine-lxc\x2dcontainer1.scope
+      |   |   +- machine-lxc\x2d11111\x2dcontainer1.scope
       |   |
       |   +- machine-engineering-production.slice
       |       |
-      |       +- machine-lxc\x2dcontainer2.scope
+      |       +- machine-lxc\x2d22222\x2dcontainer2.scope
       |
       +- machine-marketing.slice
           |
-          +- machine-lxc\x2dcontainer3.scope
+          +- machine-lxc\x2d33333\x2dcontainer3.scope
     </pre>
 
-    <h3><a name="currentLayoutGeneric">Non-systemd cgroups layout</a></h3>
+    <h3><a id="currentLayoutGeneric">Non-systemd cgroups layout</a></h3>
 
     <p>
       On hosts which do not use systemd, each consumer has a corresponding cgroup
@@ -173,19 +176,19 @@ $ROOT
   |
   +- machine
       |
-      +- vm1.libvirt-qemu
+      +- qemu-1-vm1.libvirt-qemu
       |   |
       |   +- emulator
       |   +- vcpu0
       |   +- vcpu1
       |
-      +- vm2.libvirt-qemu
+      +- qeme-2-vm2.libvirt-qemu
       |   |
       |   +- emulator
       |   +- vcpu0
       |   +- vcpu1
       |
-      +- vm3.libvirt-qemu
+      +- qemu-3-vm3.libvirt-qemu
       |   |
       |   +- emulator
       |   +- vcpu0
@@ -195,18 +198,18 @@ $ROOT
       |   |
       |   +- testing.partition
       |   |   |
-      |   |   +- container1.libvirt-lxc
+      |   |   +- lxc-11111-container1.libvirt-lxc
       |   |
       |   +- production.partition
       |       |
-      |       +- container2.libvirt-lxc
+      |       +- lxc-22222-container2.libvirt-lxc
       |
       +- marketing.partition
           |
-          +- container3.libvirt-lxc
+          +- lxc-33333-container3.libvirt-lxc
     </pre>
 
-    <h2><a name="customPartiton">Using custom partitions</a></h2>
+    <h2><a id="customPartiton">Using custom partitions</a></h2>
 
     <p>
       If there is a need to apply resource constraints to groups of
@@ -255,7 +258,7 @@ $ROOT
       later in this document did not support customization per guest.
     </p>
 
-    <h3><a name="createSystemd">Creating custom partitions (systemd)</a></h3>
+    <h3><a id="createSystemd">Creating custom partitions (systemd)</a></h3>
 
     <p>
       Given the XML config above, the admin on a systemd based host would
@@ -272,7 +275,7 @@ EOF
 # systemctl start machine-testing.slice
     </pre>
 
-    <h3><a name="createNonSystemd">Creating custom partitions (non-systemd)</a></h3>
+    <h3><a id="createNonSystemd">Creating custom partitions (non-systemd)</a></h3>
 
     <p>
       Given the XML config above, the admin on a non-systemd based host
@@ -291,7 +294,7 @@ EOF
   done
 </pre>
 
-    <h2><a name="resourceAPIs">Resource management APIs/commands</a></h2>
+    <h2><a id="resourceAPIs">Resource management APIs/commands</a></h2>
 
     <p>
       Since libvirt aims to provide an API which is portable across
@@ -354,7 +357,7 @@ swap_hard_limit: unlimited
       network interfaces.
     </p>
 
-    <h2><a name="legacyLayout">Legacy cgroups layout</a></h2>
+    <h2><a id="legacyLayout">Legacy cgroups layout</a></h2>
 
     <p>
       Prior to libvirt 1.0.5, the cgroups layout created by libvirt was different

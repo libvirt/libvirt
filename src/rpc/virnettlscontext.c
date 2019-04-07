@@ -22,12 +22,9 @@
 
 #include <unistd.h>
 #include <fnmatch.h>
-#include <stdlib.h>
 
 #include <gnutls/gnutls.h>
-#if HAVE_GNUTLS_CRYPTO_H
-# include <gnutls/crypto.h>
-#endif
+#include <gnutls/crypto.h>
 #include <gnutls/x509.h>
 
 #include "virnettlscontext.h"
@@ -90,22 +87,16 @@ static void virNetTLSSessionDispose(void *obj);
 
 static int virNetTLSContextOnceInit(void)
 {
-    if (!(virNetTLSContextClass = virClassNew(virClassForObjectLockable(),
-                                              "virNetTLSContext",
-                                              sizeof(virNetTLSContext),
-                                              virNetTLSContextDispose)))
+    if (!VIR_CLASS_NEW(virNetTLSContext, virClassForObjectLockable()))
         return -1;
 
-    if (!(virNetTLSSessionClass = virClassNew(virClassForObjectLockable(),
-                                              "virNetTLSSession",
-                                              sizeof(virNetTLSSession),
-                                              virNetTLSSessionDispose)))
+    if (!VIR_CLASS_NEW(virNetTLSSession, virClassForObjectLockable()))
         return -1;
 
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(virNetTLSContext)
+VIR_ONCE_GLOBAL_INIT(virNetTLSContext);
 
 
 static int
@@ -1187,6 +1178,7 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
 {
     virNetTLSSessionPtr sess;
     int err;
+    const char *priority;
 
     VIR_DEBUG("ctxt=%p hostname=%s isServer=%d",
               ctxt, NULLSTR(hostname), ctxt->isServer);
@@ -1208,12 +1200,14 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     /* avoid calling all the priority functions, since the defaults
      * are adequate.
      */
+    priority = ctxt->priority ? ctxt->priority : TLS_PRIORITY;
+    VIR_DEBUG("Setting priority string '%s'", priority);
     if ((err = gnutls_priority_set_direct(sess->session,
-                                          ctxt->priority ? ctxt->priority : TLS_PRIORITY,
+                                          priority,
                                           NULL)) != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Failed to set TLS session priority to %s: %s"),
-                       ctxt->priority ? ctxt->priority : TLS_PRIORITY, gnutls_strerror(err));
+                       priority, gnutls_strerror(err));
         goto error;
     }
 

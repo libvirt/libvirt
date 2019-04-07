@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1 >Storage Management</h1>
@@ -83,46 +83,9 @@
     <p>
       Libvirt supports the following storage pool types:
     </p>
-    <ul>
-      <li>
-        <a href="#StorageBackendDir">Directory backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendFS">Local filesystem backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendNetFS">Network filesystem backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendLogical">Logical backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendDisk">Disk backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendISCSI">iSCSI backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendSCSI">SCSI backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendMultipath">Multipath backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendRBD">RBD (RADOS Block Device) backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendSheepdog">Sheepdog backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendGluster">Gluster backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendZFS">ZFS backend</a>
-      </li>
-    </ul>
+    <ul id="toc"></ul>
 
-    <h2><a name="StorageBackendDir">Directory pool</a></h2>
+    <h2><a id="StorageBackendDir">Directory pool</a></h2>
     <p>
       A pool with a type of <code>dir</code> provides the means to manage
       files within a directory. The files can be fully allocated raw files,
@@ -175,7 +138,7 @@
 
     </p>
 
-    <h2><a name="StorageBackendFS">Filesystem pool</a></h2>
+    <h2><a id="StorageBackendFS">Filesystem pool</a></h2>
     <p>
       This is a variant of the directory pool. Instead of creating a
       directory on an existing mounted filesystem though, it expects
@@ -249,7 +212,7 @@
     </p>
 
 
-    <h2><a name="StorageBackendNetFS">Network filesystem pool</a></h2>
+    <h2><a id="StorageBackendNetFS">Network filesystem pool</a></h2>
     <p>
       This is a variant of the filesystem pool. Instead of requiring
       a local block device as the source, it requires the name of a
@@ -303,7 +266,7 @@
     </p>
 
 
-    <h2><a name="StorageBackendLogical">Logical volume pools</a></h2>
+    <h2><a id="StorageBackendLogical">Logical volume pool</a></h2>
     <p>
       This provides a pool based on an LVM volume group. For a
       pre-defined LVM volume group, simply providing the group
@@ -340,14 +303,14 @@
     </p>
 
 
-    <h2><a name="StorageBackendDisk">Disk volume pools</a></h2>
+    <h2><a id="StorageBackendDisk">Disk pool</a></h2>
     <p>
       This provides a pool based on a physical disk. Volumes are created
       by adding partitions to the disk. Disk pools have constraints
       on the size and placement of volumes. The 'free extents'
       information will detail the regions which are available for creating
       new volumes. A volume cannot span across 2 different free extents.
-      It will default to using <code>msdos</code> as the pool source format.
+      It will default to using <code>dos</code> as the pool source format.
     </p>
 
     <h3>Example pool input</h3>
@@ -394,8 +357,10 @@
       </li>
     </ul>
     <p>
-      The <code>dos</code> or <code>gpt</code> formats are recommended for
-      best portability - the latter is needed for disks larger than 2TB.
+      The formats <code>dos</code> ("msdos" in parted terminology,
+      good for BIOS systems) or <code>gpt</code> (good for UEFI
+      systems) are recommended for best portability - the latter is
+      needed for disks larger than 2TB.
     </p>
 
     <h3>Valid volume format types</h3>
@@ -431,7 +396,7 @@
     </ul>
 
 
-    <h2><a name="StorageBackendISCSI">iSCSI volume pools</a></h2>
+    <h2><a id="StorageBackendISCSI">iSCSI pool</a></h2>
     <p>
       This provides a pool based on an iSCSI target. Volumes must be
       pre-allocated on the iSCSI server, and cannot be created via
@@ -470,7 +435,37 @@
       The iSCSI volume pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendSCSI">SCSI volume pools</a></h2>
+    <h2><a id="StorageBackendISCSIDirect">iSCSI direct pool</a></h2>
+    <p>
+      This is a variant of the iSCSI pool. Instead of using iscsiadm, it uses
+      libiscsi.
+      It requires a host, a path which is the target IQN, and an initiator IQN.
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+&lt;pool type="iscsi-direct"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;source&gt;
+    &lt;host name="iscsi.example.com"/&gt;
+    &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
+    &lt;initiator&gt;
+      &lt;iqn name="iqn.2013-06.com.example:iscsi-initiator"/&gt;
+    &lt;/initiator&gt;
+  &lt;/source&gt;
+&lt;/pool&gt;</pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The iSCSI direct volume pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The iSCSI direct volume pool does not use the volume format type element.
+    </p>
+
+    <h2><a id="StorageBackendSCSI">SCSI pool</a></h2>
     <p>
       This provides a pool based on a SCSI HBA. Volumes are preexisting SCSI
       LUNs, and cannot be created via the libvirt APIs. Since /dev/XXX names
@@ -502,7 +497,7 @@
       The SCSI volume pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendMultipath">Multipath pools</a></h2>
+    <h2><a id="StorageBackendMultipath">Multipath pool</a></h2>
     <p>
       This provides a pool that contains all the multipath devices on the
       host. Therefore, only one Multipath pool may be configured per host.
@@ -535,18 +530,18 @@
       The Multipath volume pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendRBD">RBD pools</a></h2>
+    <h2><a id="StorageBackendRBD">RBD pool</a></h2>
     <p>
       This storage driver provides a pool which contains all RBD
       images in a RADOS pool.  RBD (RADOS Block Device) is part
       of the Ceph distributed storage project.<br/>
-      This backend <i>only</i> supports Qemu with RBD support. Kernel RBD
+      This backend <i>only</i> supports QEMU with RBD support. Kernel RBD
       which exposes RBD devices as block devices in /dev is <i>not</i>
       supported. RBD images created with this storage backend
       can be accessed through kernel RBD if configured manually, but
       this backend does not provide mapping for these images.<br/>
-      Images created with this backend can be attached to Qemu guests
-      when Qemu is build with RBD support (Since Qemu 0.14.0). The
+      Images created with this backend can be attached to QEMU guests
+      when QEMU is build with RBD support (Since QEMU 0.14.0). The
       backend supports cephx authentication for communication with the
       Ceph cluster. Storing the cephx authentication key is done with
       the libvirt secret mechanism. The UUID in the example pool input
@@ -592,7 +587,7 @@
 &lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
-    <p>RBD images can be attached to Qemu guests when Qemu is built
+    <p>RBD images can be attached to QEMU guests when QEMU is built
     with RBD support. Information about attaching a RBD image to a
     guest can be found
     at <a href="formatdomain.html#elementsDisks">format domain</a>
@@ -608,7 +603,7 @@
       The RBD pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendSheepdog">Sheepdog pools</a></h2>
+    <h2><a id="StorageBackendSheepdog">Sheepdog pool</a></h2>
     <p>
       This provides a pool based on a Sheepdog Cluster.
       Sheepdog is a distributed storage system for QEMU/KVM.
@@ -651,7 +646,7 @@
 &lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
-    <p>Sheepdog images can be attached to Qemu guests.
+    <p>Sheepdog images can be attached to QEMU guests.
     Information about attaching a Sheepdog image to a
     guest can be found
     at the <a href="formatdomain.html#elementsDisks">format domain</a>
@@ -667,7 +662,7 @@
       The Sheepdog pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendGluster">Gluster pools</a></h2>
+    <h2><a id="StorageBackendGluster">Gluster pool</a></h2>
     <p>
       This provides a pool based on native Gluster access.  Gluster is
       a distributed file system that can be exposed to the user via
@@ -736,7 +731,7 @@
 &lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
-    <p>Files within a gluster volume can be attached to Qemu guests.
+    <p>Files within a gluster volume can be attached to QEMU guests.
     Information about attaching a Gluster image to a
     guest can be found
     at the <a href="formatdomain.html#elementsDisks">format domain</a>
@@ -753,7 +748,7 @@
       pool type.
     </p>
 
-    <h2><a name="StorageBackendZFS">ZFS pools</a></h2>
+    <h2><a id="StorageBackendZFS">ZFS pool</a></h2>
     <p>
       This provides a pool based on the ZFS filesystem. Initially it was developed
       for FreeBSD, and <span class="since">since 1.3.2</span> experimental support
@@ -787,10 +782,41 @@
       The ZFS volume pool does not use the pool format type element.
     </p>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid volume format types</h3>
     <p>
       The ZFS volume pool does not use the volume format type element.
     </p>
+    <h2><a id="StorageBackendVstorage">Vstorage pool</a></h2>
+    <p>
+      This provides a pool based on Virtuozzo storage. Virtuozzo Storage is
+      a highly available distributed software-defined storage with built-in
+      replication and disaster recovery. More detailed information about
+      Virtuozzo storage and its management can be found here:
 
+      <a href="https://openvz.org/Virtuozzo_Storage">Virtuozzo Storage</a>).
+    </p>
+    <p>Please refer to the Virtuozzo Storage documentation for details
+      on storage management and usage.</p>
+    <h3>Example pool input</h3>
+    <p>In order to create storage pool with Virtuozzo Storage backend you
+    have to provide cluster name and be authorized within the cluster.</p>
+     <pre>
+&lt;pool type="vstorage"&gt;
+  &lt;name&gt;myvstoragepool&lt;/name&gt;
+  &lt;source&gt;
+    &lt;name&gt;clustername&lt;/name&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/mnt/clustername&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The Vstorage volume pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>The valid volume types are the same as for the directory pool.</p>
   </body>
 </html>

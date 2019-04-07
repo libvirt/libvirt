@@ -4,6 +4,7 @@
   <machine>xenfv</machine>
   <arch>x86_64</arch>
   <vcpu max='128'/>
+  <iothreads supported='no'/>
   <os supported='yes'>
     <loader supported='yes'>
       <value>/usr/lib/xen/boot/hvmloader</value>
@@ -33,6 +34,7 @@
         <value>scsi</value>
         <value>xen</value>
       </enum>
+      <enum name='model'/>
     </disk>
     <graphics supported='yes'>
       <enum name='type'>
@@ -59,6 +61,7 @@
         <value>optional</value>
       </enum>
       <enum name='subsysType'>
+        <value>usb</value>
         <value>pci</value>
       </enum>
       <enum name='capsType'/>
@@ -69,5 +72,8 @@
   </devices>
   <features>
     <gic supported='no'/>
+    <vmcoreinfo supported='no'/>
+    <genid supported='no'/>
+    <sev supported='no'/>
   </features>
 </domainCapabilities>

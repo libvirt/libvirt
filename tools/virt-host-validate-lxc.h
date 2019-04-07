@@ -19,9 +19,9 @@
  *
  */
 
-#ifndef __VIRT_HOST_VALIDATE_LXC_H__
-# define __VIRT_HOST_VALIDATE_LXC_H__
+#ifndef LIBVIRT_VIRT_HOST_VALIDATE_LXC_H
+# define LIBVIRT_VIRT_HOST_VALIDATE_LXC_H
 
 int virHostValidateLXC(void);
 
-#endif /* __VIRT_HOST_VALIDATE_LXC_H__ */
+#endif /* LIBVIRT_VIRT_HOST_VALIDATE_LXC_H */

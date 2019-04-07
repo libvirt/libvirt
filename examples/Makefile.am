@@ -19,12 +19,6 @@
 FILTERS = $(wildcard $(srcdir)/xml/nwfilter/*.xml)
 
 EXTRA_DIST = \
-	apparmor/TEMPLATE.qemu \
-	apparmor/TEMPLATE.lxc \
-	apparmor/libvirt-qemu \
-	apparmor/libvirt-lxc \
-	apparmor/usr.lib.libvirt.virt-aa-helper \
-	apparmor/usr.sbin.libvirtd \
 	lxcconvert/virt-lxc-convert \
 	polkit/libvirt-acl.rules \
 	$(wildcard $(srcdir)/systemtap/*.stp) \
@@ -33,10 +27,11 @@ EXTRA_DIST = \
 	$(wildcard $(srcdir)/xml/test/*.xml)
 
 
-INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir) \
-	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib
-LDADD = $(STATIC_BINARIES) $(WARN_CFLAGS) $(COVERAGE_LDFLAGS) \
-	$(top_builddir)/src/libvirt.la $(top_builddir)/gnulib/lib/libgnu.la \
+AM_CPPFLAGS = \
+	-I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir) \
+	$(WARN_CFLAGS)
+LDADD = $(STATIC_BINARIES) $(WARN_CFLAGS) \
+	$(top_builddir)/src/libvirt.la \
 	$(top_builddir)/src/libvirt-admin.la
 
 noinst_PROGRAMS=dominfo/info1 dommigrate/dommigrate domsuspend/suspend \
@@ -52,7 +47,7 @@ domtop_domtop_SOURCES = domtop/domtop.c
 hellolibvirt_hellolibvirt_SOURCES = hellolibvirt/hellolibvirt.c
 
 object_events_event_test_CFLAGS = \
-		$(WARN_CFLAGS)						\
+		$(WARN_CFLAGS) \
 		$(NULL)
 object_events_event_test_SOURCES = object-events/event-test.c
 
@@ -67,38 +62,28 @@ admin_client_info_SOURCES = admin/client_info.c
 admin_client_close_SOURCES = admin/client_close.c
 admin_logging_SOURCES = admin/logging.c
 
-if WITH_APPARMOR_PROFILES
-apparmordir = $(sysconfdir)/apparmor.d/
-apparmor_DATA = \
-	apparmor/usr.lib.libvirt.virt-aa-helper \
-	apparmor/usr.sbin.libvirtd \
-	$(NULL)
-
-abstractionsdir = $(apparmordir)/abstractions
-abstractions_DATA = \
-	apparmor/libvirt-qemu \
-	apparmor/libvirt-lxc \
-	$(NULL)
-
-templatesdir = $(apparmordir)/libvirt
-templates_DATA = \
-	apparmor/TEMPLATE.qemu \
-	apparmor/TEMPLATE.lxc \
-	$(NULL)
-endif WITH_APPARMOR_PROFILES
+INSTALL_DATA_LOCAL =
+UNINSTALL_LOCAL =
 
 if WITH_NWFILTER
 NWFILTER_DIR = "$(DESTDIR)$(sysconfdir)/libvirt/nwfilter"
 
-install-data-local:
+install-nwfilter-local:
 	$(MKDIR_P) "$(NWFILTER_DIR)"
 	for f in $(FILTERS); do \
 		$(INSTALL_DATA) $$f "$(NWFILTER_DIR)"; \
 	done
 
-uninstall-local::
+uninstall-nwfilter-local::
 	for f in $(FILTERS); do \
 		rm -f "$(NWFILTER_DIR)/`basename $$f`"; \
 	done
 	-test -z "$(shell ls $(NWFILTER_DIR))" || rmdir $(NWFILTER_DIR)
+
+INSTALL_DATA_LOCAL += install-nwfilter-local
+UNINSTALL_LOCAL += uninstall-nwfilter-local
 endif WITH_NWFILTER
+
+install-data-local: $(INSTALL_DATA_LOCAL)
+
+uninstall-local: $(UNINSTALL_LOCAL)

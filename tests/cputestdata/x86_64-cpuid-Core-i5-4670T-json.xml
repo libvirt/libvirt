@@ -1,0 +1,14 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>Haswell-noTSX</model>
+  <vendor>Intel</vendor>
+  <feature policy='require' name='vme'/>
+  <feature policy='require' name='ss'/>
+  <feature policy='require' name='vmx'/>
+  <feature policy='require' name='f16c'/>
+  <feature policy='require' name='rdrand'/>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='xsaveopt'/>
+  <feature policy='require' name='pdpe1gb'/>
+  <feature policy='require' name='abm'/>
+</cpu>

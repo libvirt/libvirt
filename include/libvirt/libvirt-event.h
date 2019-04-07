@@ -2,7 +2,6 @@
  * libvirt-event.h
  * Summary: APIs for management of events
  * Description: Provides APIs for the management of events
- * Author: Daniel Veillard <veillard@redhat.com>
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
  *
@@ -21,8 +20,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_LIBVIRT_EVENT_H__
-# define __VIR_LIBVIRT_EVENT_H__
+#ifndef LIBVIRT_EVENT_H
+# define LIBVIRT_EVENT_H
 
 # ifndef __VIR_LIBVIRT_H_INCLUDES__
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
@@ -60,7 +59,7 @@ typedef void (*virEventHandleCallback)(int watch, int fd, int events, void *opaq
  * virEventAddHandleFunc:
  * @fd: file descriptor to listen on
  * @event: bitset of events on which to fire the callback
- * @cb: the callback to be called when an event occurrs
+ * @cb: the callback to be called when an event occurs
  * @opaque: user data to pass to the callback
  * @ff: the callback invoked to free opaque data blob
  *
@@ -187,4 +186,4 @@ void virEventUpdateTimeout(int timer, int frequency);
 int virEventRemoveTimeout(int timer);
 
 
-#endif /* __VIR_LIBVIRT_EVENT_H__ */
+#endif /* LIBVIRT_EVENT_H */

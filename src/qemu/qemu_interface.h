@@ -17,13 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Authors:
- *     Matthew J. Rosato <mjrosato@linux.vnet.ibm.com>
  */
 
-#ifndef __QEMU_INTERFACE_H__
-# define __QEMU_INTERFACE_H__
+#ifndef LIBVIRT_QEMU_INTERFACE_H
+# define LIBVIRT_QEMU_INTERFACE_H
 
 # include "domain_conf.h"
 # include "qemu_conf.h"
@@ -35,16 +32,17 @@ int qemuInterfaceStopDevice(virDomainNetDefPtr net);
 int qemuInterfaceStopDevices(virDomainDefPtr def);
 
 int qemuInterfaceDirectConnect(virDomainDefPtr def,
-                                virQEMUDriverPtr driver,
-                                virDomainNetDefPtr net,
-                                int *tapfd,
-                                size_t tapfdSize,
-                                virNetDevVPortProfileOp vmop);
-int qemuInterfaceEthernetConnect(virDomainDefPtr def,
                                virQEMUDriverPtr driver,
                                virDomainNetDefPtr net,
                                int *tapfd,
-                               size_t tapfdSize);
+                               size_t tapfdSize,
+                               virNetDevVPortProfileOp vmop);
+
+int qemuInterfaceEthernetConnect(virDomainDefPtr def,
+                                 virQEMUDriverPtr driver,
+                                 virDomainNetDefPtr net,
+                                 int *tapfd,
+                                 size_t tapfdSize);
 
 int qemuInterfaceBridgeConnect(virDomainDefPtr def,
                                virQEMUDriverPtr driver,
@@ -55,7 +53,6 @@ int qemuInterfaceBridgeConnect(virDomainDefPtr def,
 
 int qemuInterfaceOpenVhostNet(virDomainDefPtr def,
                               virDomainNetDefPtr net,
-                              virQEMUCapsPtr qemuCaps,
                               int *vhostfd,
                               size_t *vhostfdSize);
-#endif /* __QEMU_INTERFACE_H__ */
+#endif /* LIBVIRT_QEMU_INTERFACE_H */

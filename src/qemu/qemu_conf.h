@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __QEMUD_CONF_H
-# define __QEMUD_CONF_H
+#ifndef LIBVIRT_QEMU_CONF_H
+# define LIBVIRT_QEMU_CONF_H
 
 # include <unistd.h>
 
@@ -48,6 +46,7 @@
 # include "virclosecallbacks.h"
 # include "virhostdev.h"
 # include "virfile.h"
+# include "virfilecache.h"
 # include "virfirmware.h"
 
 # ifdef CPU_SETSIZE /* Linux */
@@ -91,6 +90,7 @@ struct _virQEMUDriverConfig {
     bool dynamicOwnership;
 
     virBitmapPtr namespaces;
+    bool rememberOwner;
 
     int cgroupControllers;
     char **cgroupDeviceACL;
@@ -101,7 +101,9 @@ struct _virQEMUDriverConfig {
     char *configDir;
     char *autostartDir;
     char *logDir;
+    char *swtpmLogDir;
     char *stateDir;
+    char *swtpmStateDir;
     /* These two directories are ones QEMU processes use (so must match
      * the QEMU user/group */
     char *libDir;
@@ -110,16 +112,20 @@ struct _virQEMUDriverConfig {
     char *snapshotDir;
     char *channelTargetDir;
     char *nvramDir;
+    char *swtpmStorageDir;
 
     char *defaultTLSx509certdir;
+    bool defaultTLSx509certdirPresent;
     bool defaultTLSx509verify;
     char *defaultTLSx509secretUUID;
 
     bool vncAutoUnixSocket;
     bool vncTLS;
     bool vncTLSx509verify;
+    bool vncTLSx509verifyPresent;
     bool vncSASL;
     char *vncTLSx509certdir;
+    char *vncTLSx509secretUUID;
     char *vncListen;
     char *vncPassword;
     char *vncSASLdir;
@@ -135,7 +141,13 @@ struct _virQEMUDriverConfig {
     bool chardevTLS;
     char *chardevTLSx509certdir;
     bool chardevTLSx509verify;
+    bool chardevTLSx509verifyPresent;
     char *chardevTLSx509secretUUID;
+
+    char *migrateTLSx509certdir;
+    bool migrateTLSx509verify;
+    bool migrateTLSx509verifyPresent;
+    char *migrateTLSx509secretUUID;
 
     unsigned int remotePortMin;
     unsigned int remotePortMax;
@@ -147,6 +159,7 @@ struct _virQEMUDriverConfig {
     size_t nhugetlbfs;
 
     char *bridgeHelperName;
+    char *prHelperName;
 
     bool macFilter;
 
@@ -154,7 +167,6 @@ struct _virQEMUDriverConfig {
     bool vncAllowHostAudio;
     bool nogfxAllowHostAudio;
     bool clearEmulatorCapabilities;
-    bool allowDiskFormatProbing;
     bool setProcessName;
 
     unsigned int maxProcesses;
@@ -195,6 +207,17 @@ struct _virQEMUDriverConfig {
     virFirmwarePtr *firmwares;
     size_t nfirmwares;
     unsigned int glusterDebugLevel;
+
+    char *memoryBackingDir;
+
+    bool vxhsTLS;
+    char *vxhsTLSx509certdir;
+
+    bool nbdTLS;
+    char *nbdTLSx509certdir;
+
+    uid_t swtpm_user;
+    gid_t swtpm_group;
 };
 
 /* Main driver state */
@@ -239,7 +262,7 @@ struct _virQEMUDriver {
     virDomainXMLOptionPtr xmlopt;
 
     /* Immutable pointer, self-locking APIs */
-    virQEMUCapsCachePtr qemuCapsCache;
+    virFileCachePtr qemuCapsCache;
 
     /* Immutable pointer, self-locking APIs */
     virObjectEventStatePtr domainEventState;
@@ -252,14 +275,14 @@ struct _virQEMUDriver {
     /* Immutable pointer. Unsafe APIs. XXX */
     virHashTablePtr sharedDevices;
 
-    /* Immutable pointer, self-locking APIs */
-    virPortAllocatorPtr remotePorts;
+    /* Immutable pointer, immutable object */
+    virPortAllocatorRangePtr remotePorts;
 
-    /* Immutable pointer, self-locking APIs */
-    virPortAllocatorPtr webSocketPorts;
+    /* Immutable pointer, immutable object */
+    virPortAllocatorRangePtr webSocketPorts;
 
-    /* Immutable pointer, self-locking APIs */
-    virPortAllocatorPtr migrationPorts;
+    /* Immutable pointer, immutable object */
+    virPortAllocatorRangePtr migrationPorts;
 
     /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
@@ -292,7 +315,14 @@ void qemuDomainCmdlineDefFree(qemuDomainCmdlineDefPtr def);
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged);
 
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
-                                const char *filename);
+                                const char *filename,
+                                bool privileged);
+
+int
+virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg);
+
+int
+virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg);
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver);
 bool virQEMUDriverIsPrivileged(virQEMUDriverPtr driver);
@@ -314,6 +344,11 @@ char *qemuGetSharedDeviceKey(const char *disk_path)
 
 void qemuSharedDeviceEntryFree(void *payload, const void *name);
 
+int qemuAddSharedDisk(virQEMUDriverPtr driver,
+                      virDomainDiskDefPtr disk,
+                      const char *name)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
 int qemuAddSharedDevice(virQEMUDriverPtr driver,
                         virDomainDeviceDefPtr dev,
                         const char *name)
@@ -334,8 +369,7 @@ int qemuSetUnprivSGIO(virDomainDeviceDefPtr dev);
 int qemuDriverAllocateID(virQEMUDriverPtr driver);
 virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver);
 
-int qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn,
-                                        virDomainSnapshotDiskDefPtr def);
+int qemuTranslateSnapshotDiskSourcePool(virDomainSnapshotDiskDefPtr def);
 
 char * qemuGetBaseHugepagePath(virHugeTLBFSPtr hugepage);
 char * qemuGetDomainHugepagePath(const virDomainDef *def,
@@ -348,4 +382,14 @@ int qemuGetDomainHupageMemPath(const virDomainDef *def,
                                virQEMUDriverConfigPtr cfg,
                                unsigned long long pagesize,
                                char **memPath);
-#endif /* __QEMUD_CONF_H */
+
+int qemuGetMemoryBackingBasePath(virQEMUDriverConfigPtr cfg,
+                                 char **path);
+int qemuGetMemoryBackingDomainPath(const virDomainDef *def,
+                                   virQEMUDriverConfigPtr cfg,
+                                   char **path);
+int qemuGetMemoryBackingPath(const virDomainDef *def,
+                             virQEMUDriverConfigPtr cfg,
+                             const char *alias,
+                             char **memPath);
+#endif /* LIBVIRT_QEMU_CONF_H */

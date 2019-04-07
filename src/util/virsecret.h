@@ -19,12 +19,15 @@
  *
  */
 
-#ifndef __VIR_SECRET_H__
-# define __VIR_SECRET_H__
+#ifndef LIBVIRT_VIRSECRET_H
+# define LIBVIRT_VIRSECRET_H
 
 # include "internal.h"
 
+# include "virutil.h"
 # include "virxml.h"
+
+VIR_ENUM_DECL(virSecretUsage);
 
 typedef enum {
     VIR_SECRET_LOOKUP_TYPE_NONE,
@@ -53,4 +56,4 @@ int virSecretLookupParseSecret(xmlNodePtr secretnode,
 void virSecretLookupFormatSecret(virBufferPtr buf,
                                  const char *secrettype,
                                  virSecretLookupTypeDefPtr def);
-#endif /* __VIR_SECRET_H__ */
+#endif /* LIBVIRT_VIRSECRET_H */

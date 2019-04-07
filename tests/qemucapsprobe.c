@@ -14,17 +14,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Jiri Denemark <jdenemar@redhat.com>
  */
 
 #include <config.h>
 
 #include "testutils.h"
 #include "internal.h"
+#include "virarch.h"
 #include "virthread.h"
 #include "qemu/qemu_capabilities.h"
-#define __QEMU_CAPSRIV_H_ALLOW__ 1
+#define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 #include "qemu/qemu_capspriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -48,7 +47,7 @@ main(int argc, char **argv)
     virThread thread;
     virQEMUCapsPtr caps;
 
-    VIRT_TEST_PRELOAD(abs_builddir "/.libs/qemucapsprobemock.so");
+    VIR_TEST_PRELOAD(abs_builddir "/.libs/qemucapsprobemock.so");
 
     if (argc != 2) {
         fprintf(stderr, "%s QEMU_binary\n", argv[0]);
@@ -70,8 +69,8 @@ main(int argc, char **argv)
     if (virThreadCreate(&thread, false, eventLoop, NULL) < 0)
         return EXIT_FAILURE;
 
-    if (!(caps = virQEMUCapsNewForBinaryInternal(NULL, argv[1], "/tmp", NULL,
-                                                 -1, -1, true)))
+    if (!(caps = virQEMUCapsNewForBinaryInternal(VIR_ARCH_NONE, argv[1], "/tmp",
+                                                 -1, -1, 0, NULL)))
         return EXIT_FAILURE;
 
     virObjectUnref(caps);

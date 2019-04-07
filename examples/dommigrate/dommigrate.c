@@ -18,8 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Sahid Orentino Ferdjaoui <sahid.ferdjaoui@cloudwatt.com>
  */
 
 #include <stdio.h>
@@ -81,8 +79,7 @@ main(int argc, char *argv[])
  cleanup:
     if (dom != NULL)
         virDomainFree(dom);
-    if (conn != NULL)
-        virConnectClose(conn);
+    virConnectClose(conn);
 
  out:
     return ret;
