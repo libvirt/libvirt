@@ -760,7 +760,7 @@ int virNetDevBridgeGetSTP(const char *brname,
                           bool *enabled)
 {
     int ret = -1;
-    unsigned long val;
+    unsigned long val = 0;
 
     ret = virNetDevBridgeGet(brname, "stp_state", &val);
     *enabled = val ? true : false;
