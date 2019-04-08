@@ -170,6 +170,7 @@
   <flag name='vhost-user-gpu'/>
   <flag name='ramfb'/>
   <flag name='arm-max-cpu'/>
+  <flag name='blockdev-file-dynamic-auto-read-only'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700242</microcodeVersion>

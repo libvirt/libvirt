@@ -212,6 +212,7 @@
   <flag name='vhost-user-gpu'/>
   <flag name='vhost-user-vga'/>
   <flag name='ramfb'/>
+  <flag name='blockdev-file-dynamic-auto-read-only'/>
   <version>4001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100241</microcodeVersion>
