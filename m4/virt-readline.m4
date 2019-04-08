@@ -63,10 +63,18 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
   # function, to ensure we aren't being confused by caching.
   LIBS=$lv_saved_libs
   AC_CHECK_LIB([readline], [rl_initialize],
-               [READLINE_CFLAGS="-D_FUNCTION_DEF $READLINE_CFLAGS"
-                AC_SUBST(READLINE_CFLAGS)],
+               [],
                [READLINE_LIBS="$READLINE_LIBS $extra_LIBS"])
   LIBS=$lv_saved_libs
+
+  # We need this to avoid compilation issues with modern compilers.
+  # See 9ea3424a178 for a more detailed explanation
+  if test "$with_readline" = "yes" ; then
+    case "$READLINE_CFLAGS" in
+      *-D_FUNCTION_DEF*) ;;
+      *) READLINE_CFLAGS="-D_FUNCTION_DEF $READLINE_CFLAGS" ;;
+    esac
+  fi
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_READLINE],[
