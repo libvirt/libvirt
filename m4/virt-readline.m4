@@ -37,6 +37,12 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
     LIBS="$lv_saved_libs $extra_LIBS"
   fi
 
+  # This function is present in all reasonable (5.0+) readline versions;
+  # however, the macOS base system contains a library called libedit which
+  # takes over the readline name despite lacking many of its features. We
+  # want to make sure we only enable readline support when linking against
+  # the actual readline library, and the availability of this specific
+  # functions is as good a witness for that fact as any.
   AC_CHECK_DECLS([rl_completion_quote_character],
                  [], [],
                  [[#include <stdio.h>
