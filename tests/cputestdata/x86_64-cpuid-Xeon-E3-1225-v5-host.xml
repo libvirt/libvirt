@@ -21,6 +21,7 @@
   <feature name='tsc_adjust'/>
   <feature name='clflushopt'/>
   <feature name='intel-pt'/>
+  <feature name='md-clear'/>
   <feature name='stibp'/>
   <feature name='ssbd'/>
   <feature name='xsaves'/>

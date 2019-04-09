@@ -317,6 +317,9 @@
   <feature name='avx512-4fmaps'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000008'/>
   </feature>
+  <feature name='md-clear'> <!-- md_clear -->
+    <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000400'/>
+  </feature>
   <feature name='pconfig'>
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00040000'/>
   </feature>
