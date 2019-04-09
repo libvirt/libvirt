@@ -2838,7 +2838,7 @@ struct testQAPISchemaData {
 
 
 static int
-testQAPISchema(const void *opaque)
+testQAPISchemaValidate(const void *opaque)
 {
     const struct testQAPISchemaData *data = opaque;
     virBuffer debug = VIR_BUFFER_INITIALIZER;
@@ -3054,42 +3054,42 @@ mymain(void)
 
 #undef DO_TEST_BLOCK_NODE_DETECT
 
-#define DO_TEST_QAPI_SCHEMA(nme, rootquery, scc, jsonstr) \
+#define DO_TEST_QAPI_VALIDATE(nme, rootquery, scc, jsonstr) \
     do { \
         qapiData.name = nme; \
         qapiData.query = rootquery; \
         qapiData.success = scc; \
         qapiData.json = jsonstr; \
-        if (virTestRun("qapi schema " nme, testQAPISchema, &qapiData) < 0)\
+        if (virTestRun("qapi schema validate" nme, testQAPISchemaValidate, &qapiData) < 0)\
             ret = -1; \
     } while (0)
 
 
-    DO_TEST_QAPI_SCHEMA("string", "trace-event-get-state/arg-type", true,
-                        "{\"name\":\"test\"}");
-    DO_TEST_QAPI_SCHEMA("all attrs", "trace-event-get-state/arg-type", true,
-                        "{\"name\":\"test\", \"vcpu\":123}");
-    DO_TEST_QAPI_SCHEMA("attr type mismatch", "trace-event-get-state/arg-type", false,
-                        "{\"name\":123}");
-    DO_TEST_QAPI_SCHEMA("missing mandatory attr", "trace-event-get-state/arg-type", false,
-                        "{\"vcpu\":123}");
-    DO_TEST_QAPI_SCHEMA("attr name not present", "trace-event-get-state/arg-type", false,
-                        "{\"name\":\"test\", \"blah\":123}");
-    DO_TEST_QAPI_SCHEMA("variant", "blockdev-add/arg-type", true,
-                        "{\"driver\":\"file\", \"filename\":\"ble\"}");
-    DO_TEST_QAPI_SCHEMA("variant wrong", "blockdev-add/arg-type", false,
-                        "{\"driver\":\"filefilefilefile\", \"filename\":\"ble\"}");
-    DO_TEST_QAPI_SCHEMA("variant missing mandatory", "blockdev-add/arg-type", false,
-                        "{\"driver\":\"file\", \"pr-manager\":\"ble\"}");
-    DO_TEST_QAPI_SCHEMA("variant missing discriminator", "blockdev-add/arg-type", false,
-                        "{\"node-name\":\"dfgfdg\"}");
-    DO_TEST_QAPI_SCHEMA("alternate 1", "blockdev-add/arg-type", true,
-                        "{\"driver\":\"qcow2\","
-                         "\"file\": { \"driver\":\"file\", \"filename\":\"ble\"}}");
-    DO_TEST_QAPI_SCHEMA("alternate 2", "blockdev-add/arg-type", true,
-                        "{\"driver\":\"qcow2\",\"file\": \"somepath\"}");
-    DO_TEST_QAPI_SCHEMA("alternate 2", "blockdev-add/arg-type", false,
-                        "{\"driver\":\"qcow2\",\"file\": 1234}");
+    DO_TEST_QAPI_VALIDATE("string", "trace-event-get-state/arg-type", true,
+                          "{\"name\":\"test\"}");
+    DO_TEST_QAPI_VALIDATE("all attrs", "trace-event-get-state/arg-type", true,
+                          "{\"name\":\"test\", \"vcpu\":123}");
+    DO_TEST_QAPI_VALIDATE("attr type mismatch", "trace-event-get-state/arg-type", false,
+                          "{\"name\":123}");
+    DO_TEST_QAPI_VALIDATE("missing mandatory attr", "trace-event-get-state/arg-type", false,
+                          "{\"vcpu\":123}");
+    DO_TEST_QAPI_VALIDATE("attr name not present", "trace-event-get-state/arg-type", false,
+                          "{\"name\":\"test\", \"blah\":123}");
+    DO_TEST_QAPI_VALIDATE("variant", "blockdev-add/arg-type", true,
+                          "{\"driver\":\"file\", \"filename\":\"ble\"}");
+    DO_TEST_QAPI_VALIDATE("variant wrong", "blockdev-add/arg-type", false,
+                          "{\"driver\":\"filefilefilefile\", \"filename\":\"ble\"}");
+    DO_TEST_QAPI_VALIDATE("variant missing mandatory", "blockdev-add/arg-type", false,
+                          "{\"driver\":\"file\", \"pr-manager\":\"ble\"}");
+    DO_TEST_QAPI_VALIDATE("variant missing discriminator", "blockdev-add/arg-type", false,
+                          "{\"node-name\":\"dfgfdg\"}");
+    DO_TEST_QAPI_VALIDATE("alternate 1", "blockdev-add/arg-type", true,
+                          "{\"driver\":\"qcow2\","
+                          "\"file\": { \"driver\":\"file\", \"filename\":\"ble\"}}");
+    DO_TEST_QAPI_VALIDATE("alternate 2", "blockdev-add/arg-type", true,
+                          "{\"driver\":\"qcow2\",\"file\": \"somepath\"}");
+    DO_TEST_QAPI_VALIDATE("alternate 2", "blockdev-add/arg-type", false,
+                          "{\"driver\":\"qcow2\",\"file\": 1234}");
 
     if (!(metaschema = testQEMUSchemaGetLatest()) ||
         !(metaschemastr = virJSONValueToString(metaschema, false))) {
@@ -3098,11 +3098,11 @@ mymain(void)
         goto cleanup;
     }
 
-    DO_TEST_QAPI_SCHEMA("schema-meta", "query-qmp-schema/ret-type", true,
+    DO_TEST_QAPI_VALIDATE("schema-meta", "query-qmp-schema/ret-type", true,
                         metaschemastr);
 
 
-#undef DO_TEST_QAPI_SCHEMA
+#undef DO_TEST_QAPI_VALIDATE
 
  cleanup:
     VIR_FREE(metaschemastr);
