@@ -107,68 +107,66 @@ virQEMUQAPISchemaTraverse(const char *baseName,
                           virHashTablePtr schema,
                           virJSONValuePtr *type)
 {
-    virJSONValuePtr base;
+    virJSONValuePtr curtype;
     virJSONValuePtr obj;
     const char *metatype;
+    const char *querytype = NULL;
     const char *querystr;
     char modifier;
 
-    while (1) {
-        if (!(base = virHashLookup(schema, baseName)))
-            return 0;
+    if (!(curtype = virHashLookup(schema, baseName)))
+        return 0;
 
-        if (!*query) {
-            if (type)
-                *type = base;
-            return 1;
-        }
+    if (!*query) {
+        if (type)
+            *type = curtype;
 
-        if (!(metatype = virJSONValueObjectGetString(base, "meta-type")))
-            return 0;
-
-        /* flatten arrays by default */
-        if (STREQ(metatype, "array")) {
-            if (!(baseName = virJSONValueObjectGetString(base, "element-type")))
-                return 0;
-
-            continue;
-        } else if (STREQ(metatype, "object")) {
-            querystr = *query;
-            modifier = **query;
-
-            if (!c_isalpha(modifier))
-                querystr++;
-
-            if (modifier == '+') {
-                baseName = virQEMUQAPISchemaObjectGetType("variants",
-                                                          querystr,
-                                                          "case", base);
-            } else {
-                obj = virQEMUQAPISchemaObjectGet("members", querystr,
-                                                 "name", base);
-
-                if (modifier == '*' &&
-                    !virJSONValueObjectHasKey(obj, "default"))
-                    return 0;
-
-                baseName = virQEMUQAPISchemaTypeFromObject(obj);
-            }
-
-            if (!baseName)
-                return 0;
-        } else if (STREQ(metatype, "command") ||
-                   STREQ(metatype, "event")) {
-            if (!(baseName = virJSONValueObjectGetString(base, *query)))
-                return 0;
-        } else {
-            /* alternates, basic types and enums can't be entered */
-            return 0;
-        }
-
-        query++;
+        return 1;
     }
 
-    return 0;
+    if (!(metatype = virJSONValueObjectGetString(curtype, "meta-type")))
+        return 0;
+
+    /* flatten arrays by default */
+    if (STREQ(metatype, "array")) {
+        if (!(querytype = virJSONValueObjectGetString(curtype, "element-type")))
+            return 0;
+    } else if (STREQ(metatype, "object")) {
+        querystr = *query;
+        modifier = **query;
+
+        if (!c_isalpha(modifier))
+            querystr++;
+
+        if (modifier == '+') {
+            querytype = virQEMUQAPISchemaObjectGetType("variants",
+                                                       querystr,
+                                                       "case", curtype);
+        } else {
+            obj = virQEMUQAPISchemaObjectGet("members", querystr,
+                                             "name", curtype);
+
+            if (modifier == '*' &&
+                !virJSONValueObjectHasKey(obj, "default"))
+                return 0;
+
+            querytype = virQEMUQAPISchemaTypeFromObject(obj);
+        }
+        query++;
+    } else if (STREQ(metatype, "command") ||
+               STREQ(metatype, "event")) {
+        if (!(querytype = virJSONValueObjectGetString(curtype, *query)))
+            return 0;
+        query++;
+    } else {
+        /* alternates, basic types and enums can't be entered */
+        return 0;
+    }
+
+    if (!querytype)
+        return 0;
+
+    return virQEMUQAPISchemaTraverse(querytype, query, schema, type);
 }
 
 
