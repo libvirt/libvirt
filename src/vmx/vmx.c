@@ -3409,6 +3409,10 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
             goto cleanup;
     }
 
+    /* vmx:firmware */
+    if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI)
+        virBufferAddLit(&buffer, "firmware = \"efi\"\n");
+
     if (virtualHW_version >= 7) {
         if (hasSCSI) {
             virBufferAddLit(&buffer, "pciBridge0.present = \"true\"\n");

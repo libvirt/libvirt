@@ -295,6 +295,8 @@ mymain(void)
 
     DO_TEST("svga", "svga", 4);
 
+    DO_TEST("firmware-efi", "firmware-efi", 4);
+
     DO_TEST("datacenterpath", "datacenterpath", 4);
 
     virObjectUnref(caps);
