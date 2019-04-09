@@ -26,6 +26,8 @@
 # include "virconf.h"
 # include "domain_conf.h"
 
+# define VMX_CONFIG_FORMAT_ARGV "vmware-vmx"
+
 typedef struct _virVMXContext virVMXContext;
 
 virDomainXMLOptionPtr virVMXDomainXMLConfInit(void);

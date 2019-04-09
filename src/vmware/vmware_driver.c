@@ -956,7 +956,7 @@ vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 
     virCheckFlags(0, NULL);
 
-    if (STRNEQ(nativeFormat, "vmware-vmx")) {
+    if (STRNEQ(nativeFormat, VMX_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Unsupported config format '%s'"), nativeFormat);
         return NULL;

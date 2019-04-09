@@ -2710,7 +2710,7 @@ esxConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 
     memset(&data, 0, sizeof(data));
 
-    if (STRNEQ(nativeFormat, "vmware-vmx")) {
+    if (STRNEQ(nativeFormat, VMX_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Unsupported config format '%s'"), nativeFormat);
         return NULL;
@@ -2755,7 +2755,7 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
 
     memset(&data, 0, sizeof(data));
 
-    if (STRNEQ(nativeFormat, "vmware-vmx")) {
+    if (STRNEQ(nativeFormat, VMX_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Unsupported config format '%s'"), nativeFormat);
         return NULL;
