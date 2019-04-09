@@ -6684,8 +6684,7 @@ qemuMonitorJSONBuildUnixSocketAddress(const char *path)
 
 int
 qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
-                              const char *host,
-                              unsigned int port,
+                              const virStorageNetHostDef *server,
                               const char *tls_alias)
 {
     int ret = -1;
@@ -6694,10 +6693,22 @@ qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
     virJSONValuePtr addr = NULL;
     char *port_str = NULL;
 
-    if (virAsprintf(&port_str, "%u", port) < 0)
-        return ret;
-
-    if (!(addr = qemuMonitorJSONBuildInetSocketAddress(host, port_str)))
+    switch ((virStorageNetHostTransport)server->transport) {
+    case VIR_STORAGE_NET_HOST_TRANS_TCP:
+        if (virAsprintf(&port_str, "%u", server->port) < 0)
+            return ret;
+        addr = qemuMonitorJSONBuildInetSocketAddress(server->name, port_str);
+        break;
+    case VIR_STORAGE_NET_HOST_TRANS_UNIX:
+        addr = qemuMonitorJSONBuildUnixSocketAddress(server->socket);
+        break;
+    case VIR_STORAGE_NET_HOST_TRANS_RDMA:
+    case VIR_STORAGE_NET_HOST_TRANS_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid server address"));
+        goto cleanup;
+    }
+    if (!addr)
         goto cleanup;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-start",

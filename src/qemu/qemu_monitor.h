@@ -1094,9 +1094,9 @@ int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
 char *qemuMonitorGetTargetArch(qemuMonitorPtr mon);
 
 int qemuMonitorNBDServerStart(qemuMonitorPtr mon,
-                              const char *host,
-                              unsigned int port,
-                              const char *tls_alias);
+                              const virStorageNetHostDef *server,
+                              const char *tls_alias)
+    ATTRIBUTE_NONNULL(2);
 int qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
                             const char *deviceID,
                             bool writable);

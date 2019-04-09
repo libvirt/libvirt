@@ -459,8 +459,7 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
 char *qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon);
 
 int qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
-                                  const char *host,
-                                  unsigned int port,
+                                  const virStorageNetHostDef *server,
                                   const char *tls_alias);
 int qemuMonitorJSONNBDServerAdd(qemuMonitorPtr mon,
                                 const char *deviceID,

@@ -380,6 +380,10 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
     unsigned short port = 0;
     char *diskAlias = NULL;
     size_t i;
+    virStorageNetHostDef server = {
+        .name = (char *)listenAddr, /* cast away const */
+        .transport = VIR_STORAGE_NET_HOST_TRANS_TCP,
+    };
 
     if (nbdPort < 0 || nbdPort > USHRT_MAX) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -415,7 +419,8 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
             else if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
                 goto exit_monitor;
 
-            if (qemuMonitorNBDServerStart(priv->mon, listenAddr, port, tls_alias) < 0)
+            server.port = port;
+            if (qemuMonitorNBDServerStart(priv->mon, &server, tls_alias) < 0)
                 goto exit_monitor;
         }
 

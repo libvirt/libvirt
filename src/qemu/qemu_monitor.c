@@ -3925,15 +3925,20 @@ qemuMonitorGetSEVCapabilities(qemuMonitorPtr mon,
 
 int
 qemuMonitorNBDServerStart(qemuMonitorPtr mon,
-                          const char *host,
-                          unsigned int port,
+                          const virStorageNetHostDef *server,
                           const char *tls_alias)
 {
-    VIR_DEBUG("host=%s port=%u tls_alias=%s", host, port, NULLSTR(tls_alias));
+    /* Peek inside the struct for nicer logging */
+    if (server->transport == VIR_STORAGE_NET_HOST_TRANS_TCP)
+        VIR_DEBUG("server={tcp host=%s port=%u} tls_alias=%s",
+                  NULLSTR(server->name), server->port, NULLSTR(tls_alias));
+    else
+        VIR_DEBUG("server={unix socket=%s} tls_alias=%s",
+                  NULLSTR(server->socket), NULLSTR(tls_alias));
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONNBDServerStart(mon, host, port, tls_alias);
+    return qemuMonitorJSONNBDServerStart(mon, server, tls_alias);
 }
 
 
