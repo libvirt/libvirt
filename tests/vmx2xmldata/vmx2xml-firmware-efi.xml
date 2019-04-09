@@ -1,0 +1,18 @@
+<domain type='vmware'>
+  <uuid>00000000-0000-0000-0000-000000000000</uuid>
+  <memory unit='KiB'>32768</memory>
+  <currentMemory unit='KiB'>32768</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os firmware='efi'>
+    <type arch='i686'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <video>
+      <model type='vmvga' vram='4096' primary='yes'/>
+    </video>
+  </devices>
+</domain>

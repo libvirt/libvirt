@@ -285,6 +285,8 @@ mymain(void)
 
     DO_TEST("svga", "svga");
 
+    DO_TEST("firmware-efi", "firmware-efi");
+
     ctx.datacenterPath = "folder1/folder2/datacenter1";
 
     DO_TEST("datacenterpath", "datacenterpath");

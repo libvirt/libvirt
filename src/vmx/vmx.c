@@ -1305,6 +1305,7 @@ virVMXParseConfig(virVMXContext *ctx,
     struct virVMXConfigScanResults results = { -1 };
     long long coresPerSocket = 0;
     virCPUDefPtr cpu = NULL;
+    char *firmware = NULL;
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1825,6 +1826,21 @@ virVMXParseConfig(virVMXContext *ctx,
 
         def->ns = *virDomainXMLOptionGetNamespace(xmlopt);
         def->namespaceData = nsdata;
+    }
+
+    /* vmx:firmware */
+    if (virVMXGetConfigString(conf, "firmware", &firmware, true) < 0)
+        goto cleanup;
+
+    if (firmware != NULL) {
+        if (STREQ(firmware, "efi")) {
+            def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_EFI;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("VMX entry 'firmware' has unknown value '%s'"),
+                           firmware);
+            goto cleanup;
+        }
     }
 
     if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
