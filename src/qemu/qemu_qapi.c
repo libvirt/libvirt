@@ -118,8 +118,9 @@ virQEMUQAPISchemaTraverse(const char *baseName,
             return 0;
 
         if (!*query) {
-            *type = base;
-            return 0;
+            if (type)
+                *type = base;
+            return 1;
         }
 
         if (!(metatype = virJSONValueObjectGetString(base, "meta-type")))
@@ -175,7 +176,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  * virQEMUQAPISchemaPathGet:
  * @query: string specifying the required data type (see below)
  * @schema: hash table containing the schema data
- * @entry: filled with the located schema object requested by @query
+ * @entry: filled with the located schema object requested by @query (optional)
  *
  * Retrieves the requested schema entry specified by @query to @entry. The
  * @query parameter has the following syntax which is very closely tied to the
@@ -201,8 +202,8 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  * The above types can be chained arbitrarily using slashes to construct any
  * path into the schema tree.
  *
- * Returns 0 on success (including if the requested schema was not found) and
- * fills @entry appropriately. On failure returns -1 and sets an appropriate
+ * Returns 1 if @query was found in @schema filling @entry if non-NULL, 0 if
+ * @query was not found in @schema and -1 on other errors along with an appropriate
  * error message.
  */
 int
@@ -212,7 +213,8 @@ virQEMUQAPISchemaPathGet(const char *query,
 {
     VIR_AUTOSTRINGLIST elems = NULL;
 
-    *entry = NULL;
+    if (entry)
+        *entry = NULL;
 
     if (!(elems = virStringSplit(query, "/", 0)))
         return -1;
@@ -222,10 +224,7 @@ virQEMUQAPISchemaPathGet(const char *query,
         return -1;
     }
 
-    if (virQEMUQAPISchemaTraverse(elems[0], elems + 1, schema, entry) < 0)
-        return -1;
-
-    return 0;
+    return virQEMUQAPISchemaTraverse(elems[0], elems + 1, schema, entry);
 }
 
 
@@ -233,12 +232,7 @@ bool
 virQEMUQAPISchemaPathExists(const char *query,
                             virHashTablePtr schema)
 {
-    virJSONValuePtr entry;
-
-    if (virQEMUQAPISchemaPathGet(query, schema, &entry))
-        return false;
-
-    return !!entry;
+    return virQEMUQAPISchemaPathGet(query, schema, NULL) == 1;
 }
 
 static int

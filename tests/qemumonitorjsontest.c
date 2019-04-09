@@ -3085,12 +3085,12 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    DO_TEST_QAPI_QUERY("command", "blockdev-add", 0, true);
-    DO_TEST_QAPI_QUERY("event", "RTC_CHANGE", 0, true);
-    DO_TEST_QAPI_QUERY("object property", "screendump/arg-type/device", 0, true);
-    DO_TEST_QAPI_QUERY("optional property", "block-commit/arg-type/*top", 0, true);
-    DO_TEST_QAPI_QUERY("variant", "blockdev-add/arg-type/+file", 0, true);
-    DO_TEST_QAPI_QUERY("variant property", "blockdev-add/arg-type/+file/filename", 0, true);
+    DO_TEST_QAPI_QUERY("command", "blockdev-add", 1, true);
+    DO_TEST_QAPI_QUERY("event", "RTC_CHANGE", 1, true);
+    DO_TEST_QAPI_QUERY("object property", "screendump/arg-type/device", 1, true);
+    DO_TEST_QAPI_QUERY("optional property", "block-commit/arg-type/*top", 1, true);
+    DO_TEST_QAPI_QUERY("variant", "blockdev-add/arg-type/+file", 1, true);
+    DO_TEST_QAPI_QUERY("variant property", "blockdev-add/arg-type/+file/filename", 1, true);
 
     DO_TEST_QAPI_QUERY("nonexistent command", "nonexistent", 0, false);
     DO_TEST_QAPI_QUERY("nonexistent attr", "screendump/arg-type/nonexistent", 0, false);
