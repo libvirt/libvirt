@@ -159,7 +159,10 @@
         For more information refer to firmware metadata specification as
         described in <code>docs/interop/firmware.json</code> in QEMU
         repository. Regular users do not need to bother.
-        <span class="since">Since 5.2.0 (QEMU and KVM only)</span>
+        <span class="since">Since 5.2.0 (QEMU and KVM only)</span><br/>
+        For VMware guests, this is set to <code>efi</code> when the guest
+        uses UEFI, and it is not set when using BIOS.
+        <span class="since">Since 5.3.0 (VMware ESX and Workstation/Player)</span>
       </dd>
       <dt><code>type</code></dt>
       <dd>The content of the <code>type</code> element specifies the
