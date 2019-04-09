@@ -22,7 +22,7 @@ cpumap_DATA = \
 	cpu_map/x86_cpu64-rhel5.xml \
 	cpu_map/x86_cpu64-rhel6.xml \
 	cpu_map/x86_EPYC.xml \
-	cpu_map/x86_EPYC-IBRS.xml \
+	cpu_map/x86_EPYC-IBPB.xml \
 	cpu_map/x86_Haswell.xml \
 	cpu_map/x86_Haswell-IBRS.xml \
 	cpu_map/x86_Haswell-noTSX.xml \
