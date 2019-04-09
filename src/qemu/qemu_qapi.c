@@ -207,7 +207,7 @@ virQEMUQAPISchemaPathGet(const char *query,
                          virHashTablePtr schema,
                          virJSONValuePtr *entry)
 {
-    char **elems = NULL;
+    VIR_AUTOSTRINGLIST elems = NULL;
 
     *entry = NULL;
 
@@ -216,13 +216,11 @@ virQEMUQAPISchemaPathGet(const char *query,
 
     if (!*elems) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("malformed query string"));
-        virStringListFree(elems);
         return -1;
     }
 
     *entry = virQEMUQAPISchemaTraverse(*elems, elems + 1, schema);
 
-    virStringListFree(elems);
     return 0;
 }
 
@@ -270,21 +268,16 @@ virQEMUQAPISchemaEntryProcess(size_t pos ATTRIBUTE_UNUSED,
 virHashTablePtr
 virQEMUQAPISchemaConvert(virJSONValuePtr schemareply)
 {
-    virHashTablePtr schema;
-    virHashTablePtr ret = NULL;
+    VIR_AUTOPTR(virHashTable) schema = NULL;
+    VIR_AUTOPTR(virJSONValue) schemajson = schemareply;
 
     if (!(schema = virHashCreate(512, virJSONValueHashFree)))
-        goto cleanup;
+        return NULL;
 
-    if (virJSONValueArrayForeachSteal(schemareply,
+    if (virJSONValueArrayForeachSteal(schemajson,
                                       virQEMUQAPISchemaEntryProcess,
                                       schema) < 0)
-        goto cleanup;
+        return NULL;
 
-    VIR_STEAL_PTR(ret, schema);
-
- cleanup:
-    virJSONValueFree(schemareply);
-    virHashFree(schema);
-    return ret;
+    VIR_RETURN_PTR(schema);
 }
