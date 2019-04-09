@@ -2834,7 +2834,28 @@ struct testQAPISchemaData {
     const char *query;
     const char *json;
     bool success;
+    int rc;
+    bool replyobj;
 };
+
+
+static int
+testQAPISchemaQuery(const void *opaque)
+{
+    const struct testQAPISchemaData *data = opaque;
+    virJSONValuePtr replyobj = NULL;
+    int rc;
+
+    rc = virQEMUQAPISchemaPathGet(data->query, data->schema, &replyobj);
+
+    if (data->rc != rc || data->replyobj != !!replyobj) {
+        VIR_TEST_VERBOSE("\n success: expected '%d' got '%d', replyobj: expected '%d' got '%d'",
+                         data->rc, rc, data->replyobj, !!replyobj);
+        return -1;
+    }
+
+    return 0;
+}
 
 
 static int
@@ -3053,6 +3074,30 @@ mymain(void)
     DO_TEST_BLOCK_NODE_DETECT("empty");
 
 #undef DO_TEST_BLOCK_NODE_DETECT
+
+#define DO_TEST_QAPI_QUERY(nme, qry, scc, rplobj) \
+    do { \
+        qapiData.name = nme; \
+        qapiData.query = qry; \
+        qapiData.rc = scc; \
+        qapiData.replyobj = rplobj; \
+        if (virTestRun("qapi schema query" nme, testQAPISchemaQuery, &qapiData) < 0)\
+            ret = -1; \
+    } while (0)
+
+    DO_TEST_QAPI_QUERY("command", "blockdev-add", 0, true);
+    DO_TEST_QAPI_QUERY("event", "RTC_CHANGE", 0, true);
+    DO_TEST_QAPI_QUERY("object property", "screendump/arg-type/device", 0, true);
+    DO_TEST_QAPI_QUERY("optional property", "block-commit/arg-type/*top", 0, true);
+    DO_TEST_QAPI_QUERY("variant", "blockdev-add/arg-type/+file", 0, true);
+    DO_TEST_QAPI_QUERY("variant property", "blockdev-add/arg-type/+file/filename", 0, true);
+
+    DO_TEST_QAPI_QUERY("nonexistent command", "nonexistent", 0, false);
+    DO_TEST_QAPI_QUERY("nonexistent attr", "screendump/arg-type/nonexistent", 0, false);
+    DO_TEST_QAPI_QUERY("nonexistent variant", "blockdev-add/arg-type/+nonexistent", 0, false);
+
+#undef DO_TEST_QAPI_QUERY
+
 
 #define DO_TEST_QAPI_VALIDATE(nme, rootquery, scc, jsonstr) \
     do { \
