@@ -101,10 +101,11 @@ virQEMUQAPISchemaObjectGetType(const char *field,
 }
 
 
-static virJSONValuePtr
+static int
 virQEMUQAPISchemaTraverse(const char *baseName,
                           char **query,
-                          virHashTablePtr schema)
+                          virHashTablePtr schema,
+                          virJSONValuePtr *type)
 {
     virJSONValuePtr base;
     virJSONValuePtr obj;
@@ -114,18 +115,20 @@ virQEMUQAPISchemaTraverse(const char *baseName,
 
     while (1) {
         if (!(base = virHashLookup(schema, baseName)))
-            return NULL;
+            return 0;
 
-        if (!*query)
-            return base;
+        if (!*query) {
+            *type = base;
+            return 0;
+        }
 
         if (!(metatype = virJSONValueObjectGetString(base, "meta-type")))
-            return NULL;
+            return 0;
 
         /* flatten arrays by default */
         if (STREQ(metatype, "array")) {
             if (!(baseName = virJSONValueObjectGetString(base, "element-type")))
-                return NULL;
+                return 0;
 
             continue;
         } else if (STREQ(metatype, "object")) {
@@ -145,26 +148,26 @@ virQEMUQAPISchemaTraverse(const char *baseName,
 
                 if (modifier == '*' &&
                     !virJSONValueObjectHasKey(obj, "default"))
-                    return NULL;
+                    return 0;
 
                 baseName = virQEMUQAPISchemaTypeFromObject(obj);
             }
 
             if (!baseName)
-                return NULL;
+                return 0;
         } else if (STREQ(metatype, "command") ||
                    STREQ(metatype, "event")) {
             if (!(baseName = virJSONValueObjectGetString(base, *query)))
-                return NULL;
+                return 0;
         } else {
             /* alternates, basic types and enums can't be entered */
-            return NULL;
+            return 0;
         }
 
         query++;
     }
 
-    return NULL;
+    return 0;
 }
 
 
@@ -219,7 +222,8 @@ virQEMUQAPISchemaPathGet(const char *query,
         return -1;
     }
 
-    *entry = virQEMUQAPISchemaTraverse(*elems, elems + 1, schema);
+    if (virQEMUQAPISchemaTraverse(elems[0], elems + 1, schema, entry) < 0)
+        return -1;
 
     return 0;
 }
