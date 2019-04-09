@@ -24,6 +24,7 @@
   <feature name='intel-pt'/>
   <feature name='pku'/>
   <feature name='ospke'/>
+  <feature name='md-clear'/>
   <feature name='stibp'/>
   <feature name='arch-capabilities'/>
   <feature name='xsaves'/>
