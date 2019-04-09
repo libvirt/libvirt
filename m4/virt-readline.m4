@@ -32,8 +32,7 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
     AC_SEARCH_LIBS([tgetent], [ncurses curses termcap termlib])
     case $LIBS in
       no*) ;;  # handle "no" and "none required"
-      *) # anything else is a -lLIBRARY
-	extra_LIBS=$LIBS ;;
+      *) extra_LIBS=$LIBS ;; # anything else is a -lLIBRARY
     esac
     LIBS="$lv_saved_libs $extra_LIBS"
   fi
@@ -41,7 +40,7 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
   AC_CHECK_DECLS([rl_completion_quote_character],
                  [], [],
                  [[#include <stdio.h>
-                  #include <readline/readline.h>]])
+                   #include <readline/readline.h>]])
 
   if test "$ac_cv_have_decl_rl_completion_quote_character" = "no" ; then
     if test "$with_readline" = "yes" ; then
@@ -58,9 +57,9 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
   # function, to ensure we aren't being confused by caching.
   LIBS=$lv_saved_libs
   AC_CHECK_LIB([readline], [rl_initialize],
-    [READLINE_CFLAGS="-D_FUNCTION_DEF $READLINE_CFLAGS"
-     AC_SUBST(READLINE_CFLAGS)],
-    [READLINE_LIBS="$READLINE_LIBS $extra_LIBS"])
+               [READLINE_CFLAGS="-D_FUNCTION_DEF $READLINE_CFLAGS"
+                AC_SUBST(READLINE_CFLAGS)],
+               [READLINE_LIBS="$READLINE_LIBS $extra_LIBS"])
   LIBS=$lv_saved_libs
 ])
 
