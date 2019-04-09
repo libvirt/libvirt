@@ -5,6 +5,7 @@
   <feature policy='require' name='hypervisor'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='clflushopt'/>
+  <feature policy='require' name='md-clear'/>
   <feature policy='require' name='ssbd'/>
   <feature policy='require' name='pdpe1gb'/>
 </cpu>
