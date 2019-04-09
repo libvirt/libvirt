@@ -62,6 +62,23 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
       *) READLINE_CFLAGS="-D_FUNCTION_DEF $READLINE_CFLAGS" ;;
     esac
   fi
+
+  # Gross kludge for readline include path obtained through pkg-config.
+  #
+  # As of 8.0, upstream readline.pc has -I${includedir}/readline among
+  # its Cflags, which is clearly wrong. This does not affect Linux
+  # because ${includedir} is already part of the default include path,
+  # but on other platforms that's not the case and the result is that
+  # <readline/readline.h> can't be located, causing the build to fail.
+  # A patch solving this issue has already been posted upstream, so once
+  # the fix has landed in FreeBSD ports and macOS homebrew we can safely
+  # drop the kludge and rely on pkg-config alone on those platforms.
+  #
+  # [1] http://lists.gnu.org/archive/html/bug-readline/2019-04/msg00007.html
+  case "$READLINE_CFLAGS" in
+    *include/readline*) READLINE_CFLAGS=$(echo $READLINE_CFLAGS | sed s,include/readline,include,g) ;;
+    *) ;;
+  esac
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_READLINE],[
