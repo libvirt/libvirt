@@ -512,6 +512,7 @@ qemuHotplugDiskSourceDataFree(qemuHotplugDiskSourceDataPtr data)
     for (i = 0; i < data->nbackends; i++)
         qemuBlockStorageSourceAttachDataFree(data->backends[i]);
 
+    VIR_FREE(data->backends);
     VIR_FREE(data);
 }
 
