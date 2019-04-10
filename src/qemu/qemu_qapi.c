@@ -105,68 +105,107 @@ static int
 virQEMUQAPISchemaTraverse(const char *baseName,
                           char **query,
                           virHashTablePtr schema,
+                          virJSONValuePtr *type);
+
+
+static int
+virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
+                                char **query,
+                                virHashTablePtr schema,
+                                virJSONValuePtr *type)
+{
+    virJSONValuePtr obj;
+    const char *querytype = NULL;
+    const char *querystr = *query;
+    char modifier = *querystr;
+
+    if (!c_isalpha(modifier))
+        querystr++;
+
+    if (modifier == '+') {
+        querytype = virQEMUQAPISchemaObjectGetType("variants",
+                                                   querystr,
+                                                   "case", cur);
+    } else {
+        obj = virQEMUQAPISchemaObjectGet("members", querystr, "name", cur);
+
+        if (modifier == '*' &&
+            !virJSONValueObjectHasKey(obj, "default"))
+            return 0;
+
+        querytype = virQEMUQAPISchemaTypeFromObject(obj);
+    }
+
+    return virQEMUQAPISchemaTraverse(querytype, query + 1, schema, type);
+}
+
+
+static int
+virQEMUQAPISchemaTraverseArray(virJSONValuePtr cur,
+                               char **query,
+                               virHashTablePtr schema,
+                               virJSONValuePtr *type)
+{
+    const char *querytype;
+
+    /* arrays are just flattened by default */
+    if (!(querytype = virJSONValueObjectGetString(cur, "element-type")))
+        return 0;
+
+    return virQEMUQAPISchemaTraverse(querytype, query, schema, type);
+}
+
+
+static int
+virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
+                                 char **query,
+                                 virHashTablePtr schema,
+                                 virJSONValuePtr *type)
+{
+    const char *querytype;
+
+    if (!(querytype = virJSONValueObjectGetString(cur, *query)))
+        return 0;
+
+    return virQEMUQAPISchemaTraverse(querytype, query + 1, schema, type);
+}
+
+
+static int
+virQEMUQAPISchemaTraverse(const char *baseName,
+                          char **query,
+                          virHashTablePtr schema,
                           virJSONValuePtr *type)
 {
-    virJSONValuePtr curtype;
-    virJSONValuePtr obj;
+    virJSONValuePtr cur;
     const char *metatype;
-    const char *querytype = NULL;
-    const char *querystr;
-    char modifier;
 
-    if (!(curtype = virHashLookup(schema, baseName)))
+    if (!(cur = virHashLookup(schema, baseName)))
         return 0;
 
     if (!*query) {
         if (type)
-            *type = curtype;
+            *type = cur;
 
         return 1;
     }
 
-    if (!(metatype = virJSONValueObjectGetString(curtype, "meta-type")))
+    if (!(metatype = virJSONValueObjectGetString(cur, "meta-type")))
         return 0;
 
-    /* flatten arrays by default */
     if (STREQ(metatype, "array")) {
-        if (!(querytype = virJSONValueObjectGetString(curtype, "element-type")))
-            return 0;
+        return virQEMUQAPISchemaTraverseArray(cur, query, schema, type);
     } else if (STREQ(metatype, "object")) {
-        querystr = *query;
-        modifier = **query;
-
-        if (!c_isalpha(modifier))
-            querystr++;
-
-        if (modifier == '+') {
-            querytype = virQEMUQAPISchemaObjectGetType("variants",
-                                                       querystr,
-                                                       "case", curtype);
-        } else {
-            obj = virQEMUQAPISchemaObjectGet("members", querystr,
-                                             "name", curtype);
-
-            if (modifier == '*' &&
-                !virJSONValueObjectHasKey(obj, "default"))
-                return 0;
-
-            querytype = virQEMUQAPISchemaTypeFromObject(obj);
-        }
-        query++;
+        return virQEMUQAPISchemaTraverseObject(cur, query, schema, type);
     } else if (STREQ(metatype, "command") ||
                STREQ(metatype, "event")) {
-        if (!(querytype = virJSONValueObjectGetString(curtype, *query)))
-            return 0;
-        query++;
+        return virQEMUQAPISchemaTraverseCommand(cur, query, schema, type);
     } else {
         /* alternates, basic types and enums can't be entered */
         return 0;
     }
 
-    if (!querytype)
-        return 0;
-
-    return virQEMUQAPISchemaTraverse(querytype, query, schema, type);
+    return 0;
 }
 
 
