@@ -182,6 +182,7 @@ qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
     if (strstr(reply, "Error while creating snapshot") ||
         strstr(reply, "Could not open VM state file") ||
         strstr(reply, "State blocked by non-migratable device") ||
+        strstr(reply, "Error: ") ||
         (strstr(reply, "Error") && strstr(reply, "while writing VM"))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to take snapshot: %s"), reply);
@@ -229,6 +230,7 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
                        _("Failed to load snapshot: %s"), reply);
         goto cleanup;
     } else if (strstr(reply, "Could not open VM state file") ||
+               strstr(reply, "Error: ") ||
                (strstr(reply, "Error") &&
                 (strstr(reply, "while loading VM state") ||
                  strstr(reply, "while activating snapshot on")))) {
@@ -266,8 +268,9 @@ int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     } else if (strstr(reply, "Snapshots not supported on device")) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", reply);
         goto cleanup;
-    } else if (strstr(reply, "Error") &&
-               strstr(reply, "while deleting snapshot")) {
+    } else if (strstr(reply, "Error: ") ||
+               (strstr(reply, "Error") &&
+                strstr(reply, "while deleting snapshot"))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to delete snapshot: %s"), reply);
         goto cleanup;
