@@ -755,6 +755,21 @@ int qemuDomainMomentDiscardAll(void *payload,
 int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm);
 
+int qemuDomainCheckpointWriteMetadata(virDomainObjPtr vm,
+                                      virDomainMomentObjPtr checkpoint,
+                                      virCapsPtr caps,
+                                      virDomainXMLOptionPtr xmlopt,
+                                      const char *checkpointDir);
+
+int qemuDomainCheckpointDiscard(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                virDomainMomentObjPtr chk,
+                                bool update_current,
+                                bool metadata_only);
+
+int qemuDomainCheckpointDiscardAllMetadata(virQEMUDriverPtr driver,
+                                           virDomainObjPtr vm);
+
 void qemuDomainRemoveInactive(virQEMUDriverPtr driver,
                               virDomainObjPtr vm);
 

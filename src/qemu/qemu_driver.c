@@ -104,6 +104,7 @@
 #include "virqemu.h"
 #include "virdomainsnapshotobjlist.h"
 #include "virenum.h"
+#include "virdomaincheckpointobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -221,6 +222,40 @@ qemuSnapObjFromSnapshot(virDomainObjPtr vm,
                         virDomainSnapshotPtr snapshot)
 {
     return qemuSnapObjFromName(vm, snapshot->name);
+}
+
+/* Looks up the domain object from checkpoint and unlocks the
+ * driver. The returned domain object is locked and ref'd and the
+ * caller must call virDomainObjEndAPI() on it. */
+static virDomainObjPtr
+qemuDomObjFromCheckpoint(virDomainCheckpointPtr checkpoint)
+{
+    return qemuDomObjFromDomain(checkpoint->domain);
+}
+
+
+/* Looks up checkpoint object from VM and name */
+static virDomainMomentObjPtr
+qemuCheckpointObjFromName(virDomainObjPtr vm,
+                          const char *name)
+{
+    virDomainMomentObjPtr chk = NULL;
+    chk = virDomainCheckpointFindByName(vm->checkpoints, name);
+    if (!chk)
+        virReportError(VIR_ERR_NO_DOMAIN_CHECKPOINT,
+                       _("no domain checkpoint with matching name '%s'"),
+                       name);
+
+    return chk;
+}
+
+
+/* Looks up checkpoint object from VM and checkpointPtr */
+static virDomainMomentObjPtr
+qemuCheckpointObjFromCheckpoint(virDomainObjPtr vm,
+                                virDomainCheckpointPtr checkpoint)
+{
+    return qemuCheckpointObjFromName(vm, checkpoint->name);
 }
 
 static int
@@ -520,6 +555,113 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
  cleanup:
     VIR_DIR_CLOSE(dir);
     VIR_FREE(snapDir);
+    virObjectUnref(caps);
+    virObjectUnlock(vm);
+    return ret;
+}
+
+
+static int
+qemuDomainCheckpointLoad(virDomainObjPtr vm,
+                         void *data)
+{
+    char *baseDir = (char *)data;
+    char *chkDir = NULL;
+    DIR *dir = NULL;
+    struct dirent *entry;
+    char *xmlStr;
+    char *fullpath;
+    virDomainCheckpointDefPtr def = NULL;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainMomentObjPtr current = NULL;
+    unsigned int flags = VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;
+    int ret = -1;
+    virCapsPtr caps = NULL;
+    int direrr;
+
+    virObjectLock(vm);
+    if (virAsprintf(&chkDir, "%s/%s", baseDir, vm->def->name) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to allocate memory for "
+                       "checkpoint directory for domain %s"),
+                       vm->def->name);
+        goto cleanup;
+    }
+
+    if (!(caps = virQEMUDriverGetCapabilities(qemu_driver, false)))
+        goto cleanup;
+
+    VIR_INFO("Scanning for checkpoints for domain %s in %s", vm->def->name,
+             chkDir);
+
+    if (virDirOpenIfExists(&dir, chkDir) <= 0)
+        goto cleanup;
+
+    while ((direrr = virDirRead(dir, &entry, NULL)) > 0) {
+        /* NB: ignoring errors, so one malformed config doesn't
+           kill the whole process */
+        VIR_INFO("Loading checkpoint file '%s'", entry->d_name);
+
+        if (virAsprintf(&fullpath, "%s/%s", chkDir, entry->d_name) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to allocate memory for path"));
+            continue;
+        }
+
+        if (virFileReadAll(fullpath, 1024*1024*1, &xmlStr) < 0) {
+            /* Nothing we can do here, skip this one */
+            virReportSystemError(errno,
+                                 _("Failed to read checkpoint file %s"),
+                                 fullpath);
+            VIR_FREE(fullpath);
+            continue;
+        }
+
+        def = virDomainCheckpointDefParseString(xmlStr, caps,
+                                                qemu_driver->xmlopt,
+                                                flags);
+        if (!def || virDomainCheckpointAlignDisks(def) < 0) {
+            /* Nothing we can do here, skip this one */
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to parse checkpoint XML from file '%s'"),
+                           fullpath);
+            VIR_FREE(fullpath);
+            VIR_FREE(xmlStr);
+            virObjectUnref(def);
+            continue;
+        }
+
+        chk = virDomainCheckpointAssignDef(vm->checkpoints, def);
+        if (chk == NULL)
+            virObjectUnref(def);
+
+        VIR_FREE(fullpath);
+        VIR_FREE(xmlStr);
+    }
+    if (direrr < 0)
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to fully read directory %s"),
+                       chkDir);
+
+    if (virDomainCheckpointUpdateRelations(vm->checkpoints, &current) < 0)
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Checkpoints have inconsistent relations for domain %s"),
+                       vm->def->name);
+    virDomainCheckpointSetCurrent(vm->checkpoints, current);
+
+    /* Note that it is not practical to automatically construct
+     * checkpoints based solely on qcow2 bitmaps, since qemu does not
+     * track parent relations which we find important in our metadata.
+     * Perhaps we could double-check that our just-loaded checkpoint
+     * metadata is consistent with existing qcow2 bitmaps, but a user
+     * that changes things behind our backs deserves what happens. */
+
+    virResetLastError();
+
+    ret = 0;
+ cleanup:
+    VIR_DIR_CLOSE(dir);
+    VIR_FREE(chkDir);
     virObjectUnref(caps);
     virObjectUnlock(vm);
     return ret;
@@ -911,6 +1053,10 @@ qemuStateInitialize(bool privileged,
     virDomainObjListForEach(qemu_driver->domains,
                             qemuDomainSnapshotLoad,
                             cfg->snapshotDir);
+
+    virDomainObjListForEach(qemu_driver->domains,
+                            qemuDomainCheckpointLoad,
+                            cfg->checkpointDir);
 
     virDomainObjListForEach(qemu_driver->domains,
                             qemuDomainManagedSaveLoad,
@@ -7739,10 +7885,12 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     char *name = NULL;
     int ret = -1;
     int nsnapshots;
+    int ncheckpoints;
     virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE |
                   VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA |
+                  VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA |
                   VIR_DOMAIN_UNDEFINE_NVRAM |
                   VIR_DOMAIN_UNDEFINE_KEEP_NVRAM, -1);
 
@@ -7780,6 +7928,19 @@ qemuDomainUndefineFlags(virDomainPtr dom,
             goto endjob;
         }
         if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0)
+            goto endjob;
+    }
+    if (!virDomainObjIsActive(vm) &&
+        (ncheckpoints = virDomainListCheckpoints(vm->checkpoints, NULL, dom,
+                                                 NULL, flags)) > 0) {
+        if (!(flags & VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("cannot delete inactive domain with %d "
+                             "checkpoints"),
+                           ncheckpoints);
+            goto endjob;
+        }
+        if (qemuDomainCheckpointDiscardAllMetadata(driver, vm) < 0)
             goto endjob;
     }
 
@@ -16814,6 +16975,443 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
+
+/* Called inside job lock */
+static int
+qemuDomainCheckpointPrepare(virQEMUDriverPtr driver, virCapsPtr caps,
+                            virDomainObjPtr vm,
+                            virDomainCheckpointDefPtr def)
+{
+    int ret = -1;
+    size_t i;
+    char *xml = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    /* Easiest way to clone inactive portion of vm->def is via
+     * conversion in and back out of xml.  */
+    if (!(xml = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU,
+                                        true, true)) ||
+        !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
+                                                    VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                                    VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+        goto cleanup;
+
+    if (virDomainCheckpointAlignDisks(def) < 0)
+        goto cleanup;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainCheckpointDiskDefPtr disk = &def->disks[i];
+
+        if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+            continue;
+
+        if (vm->def->disks[i]->src->format != VIR_STORAGE_FILE_QCOW2) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("checkpoint for disk %s unsupported "
+                             "for storage type %s"),
+                           disk->name,
+                           virStorageFileFormatTypeToString(
+                               vm->def->disks[i]->src->format));
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(xml);
+    return ret;
+}
+
+
+static virDomainCheckpointPtr
+qemuDomainCheckpointCreateXML(virDomainPtr domain,
+                              const char *xmlDesc,
+                              unsigned int flags)
+{
+    virQEMUDriverPtr driver = domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char *xml = NULL;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainCheckpointPtr checkpoint = NULL;
+    bool update_current = true;
+    bool redefine = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
+    unsigned int parse_flags = 0;
+    virDomainMomentObjPtr other = NULL;
+    virQEMUDriverConfigPtr cfg = NULL;
+    virCapsPtr caps = NULL;
+    VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE, NULL);
+    /* TODO: VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE */
+
+    if (redefine) {
+        parse_flags |= VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;
+        update_current = false;
+    }
+
+    if (!(vm = qemuDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot create checkpoint while snapshot exists"));
+        goto cleanup;
+    }
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainCheckpointCreateXMLEnsureACL(domain->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (qemuProcessAutoDestroyActive(driver, vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is marked for auto destroy"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot create checkpoint for inactive domain"));
+        goto cleanup;
+    }
+
+    if (!(def = virDomainCheckpointDefParseString(xmlDesc, caps, driver->xmlopt,
+                                                  parse_flags)))
+        goto cleanup;
+    /* Unlike snapshots, the RNG schema already ensured a sane filename. */
+
+    /* We are going to modify the domain below. */
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (redefine) {
+        if (virDomainCheckpointRedefinePrep(domain, vm, &def, &chk,
+                                            driver->xmlopt,
+                                            &update_current) < 0)
+            goto endjob;
+    } else if (qemuDomainCheckpointPrepare(driver, caps, vm, def) < 0) {
+        goto endjob;
+    }
+
+    if (!chk) {
+        if (!(chk = virDomainCheckpointAssignDef(vm->checkpoints, def)))
+            goto endjob;
+
+        def = NULL;
+    }
+
+    other = virDomainCheckpointGetCurrent(vm->checkpoints);
+    if (other) {
+        if (!redefine &&
+            VIR_STRDUP(chk->def->parent_name, other->def->name) < 0)
+            goto endjob;
+        if (update_current) {
+            virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+            if (qemuDomainCheckpointWriteMetadata(vm, other,
+                                                  driver->caps, driver->xmlopt,
+                                                  cfg->checkpointDir) < 0)
+                goto endjob;
+        }
+    }
+
+    /* actually do the checkpoint */
+    if (redefine) {
+        /* XXX Should we validate that the redefined checkpoint even
+         * makes sense, such as checking that qemu-img recognizes the
+         * checkpoint bitmap name in at least one of the domain's disks?  */
+    } else {
+        /* TODO: issue QMP transaction command */
+    }
+
+    /* If we fail after this point, there's not a whole lot we can do;
+     * we've successfully created the checkpoint, so we have to go
+     * forward the best we can.
+     */
+    checkpoint = virGetDomainCheckpoint(domain, chk->def->name);
+
+ endjob:
+    if (checkpoint) {
+        if (update_current)
+            virDomainCheckpointSetCurrent(vm->checkpoints, chk);
+        if (qemuDomainCheckpointWriteMetadata(vm, chk, driver->caps,
+                                              driver->xmlopt,
+                                              cfg->checkpointDir) < 0) {
+            /* if writing of metadata fails, error out rather than trying
+             * to silently carry on without completing the checkpoint */
+            virObjectUnref(checkpoint);
+            checkpoint = NULL;
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to save metadata for checkpoint %s"),
+                           chk->def->name);
+            virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+        } else {
+            virDomainCheckpointLinkParent(vm->checkpoints, chk);
+        }
+    } else if (chk) {
+        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+    }
+
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    VIR_FREE(xml);
+    virObjectUnref(caps);
+    virObjectUnref(cfg);
+    return checkpoint;
+}
+
+
+static int
+qemuDomainListAllCheckpoints(virDomainPtr domain,
+                             virDomainCheckpointPtr **chks,
+                             unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_LIST_ROOTS |
+                  VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL |
+                  VIR_DOMAIN_CHECKPOINT_FILTERS_ALL, -1);
+
+    if (!(vm = qemuDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainListAllCheckpointsEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    n = virDomainListCheckpoints(vm->checkpoints, NULL, domain, chks, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return n;
+}
+
+
+static int
+qemuDomainCheckpointListAllChildren(virDomainCheckpointPtr checkpoint,
+                                    virDomainCheckpointPtr **chks,
+                                    unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainMomentObjPtr chk = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL |
+                  VIR_DOMAIN_CHECKPOINT_FILTERS_ALL, -1);
+
+    if (!(vm = qemuDomObjFromCheckpoint(checkpoint)))
+        return -1;
+
+    if (virDomainCheckpointListAllChildrenEnsureACL(checkpoint->domain->conn,
+                                                    vm->def) < 0)
+        goto cleanup;
+
+    if (!(chk = qemuCheckpointObjFromCheckpoint(vm, checkpoint)))
+        goto cleanup;
+
+    n = virDomainListCheckpoints(vm->checkpoints, chk, checkpoint->domain,
+                                 chks, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return n;
+}
+
+
+static virDomainCheckpointPtr
+qemuDomainCheckpointLookupByName(virDomainPtr domain,
+                                 const char *name,
+                                 unsigned int flags)
+{
+    virDomainObjPtr vm;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainCheckpointPtr checkpoint = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(vm = qemuDomObjFromDomain(domain)))
+        return NULL;
+
+    if (virDomainCheckpointLookupByNameEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!(chk = qemuCheckpointObjFromName(vm, name)))
+        goto cleanup;
+
+    checkpoint = virGetDomainCheckpoint(domain, chk->def->name);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return checkpoint;
+}
+
+
+static virDomainCheckpointPtr
+qemuDomainCheckpointGetParent(virDomainCheckpointPtr checkpoint,
+                              unsigned int flags)
+{
+    virDomainObjPtr vm;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainCheckpointPtr parent = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(vm = qemuDomObjFromCheckpoint(checkpoint)))
+        return NULL;
+
+    if (virDomainCheckpointGetParentEnsureACL(checkpoint->domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!(chk = qemuCheckpointObjFromCheckpoint(vm, checkpoint)))
+        goto cleanup;
+
+    if (!chk->def->parent_name) {
+        virReportError(VIR_ERR_NO_DOMAIN_CHECKPOINT,
+                       _("checkpoint '%s' does not have a parent"),
+                       chk->def->name);
+        goto cleanup;
+    }
+
+    parent = virGetDomainCheckpoint(checkpoint->domain, chk->def->parent_name);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return parent;
+}
+
+
+static char *
+qemuDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
+                               unsigned int flags)
+{
+    virQEMUDriverPtr driver = checkpoint->domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char *xml = NULL;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainCheckpointDefPtr chkdef;
+    unsigned int format_flags;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_XML_SECURE |
+                  VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN, NULL);
+
+    if (!(vm = qemuDomObjFromCheckpoint(checkpoint)))
+        return NULL;
+
+    if (virDomainCheckpointGetXMLDescEnsureACL(checkpoint->domain->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (!(chk = qemuCheckpointObjFromCheckpoint(vm, checkpoint)))
+        goto cleanup;
+    chkdef = virDomainCheckpointObjGetDef(chk);
+
+    format_flags = virDomainCheckpointFormatConvertXMLFlags(flags);
+    xml = virDomainCheckpointDefFormat(chkdef, driver->caps, driver->xmlopt,
+                                       format_flags);
+
+    if (flags & VIR_DOMAIN_CHECKPOINT_XML_SIZE)
+        qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return xml;
+}
+
+
+static int
+qemuDomainCheckpointDelete(virDomainCheckpointPtr checkpoint,
+                           unsigned int flags)
+{
+    virQEMUDriverPtr driver = checkpoint->domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    virDomainMomentObjPtr chk = NULL;
+    virQEMUMomentRemove rem;
+    virQEMUMomentReparent rep;
+    bool metadata_only = !!(flags & VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY);
+    virQEMUDriverConfigPtr cfg = NULL;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN |
+                  VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY |
+                  VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY, -1);
+
+    if (!(vm = qemuDomObjFromCheckpoint(checkpoint)))
+        return -1;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainCheckpointDeleteEnsureACL(checkpoint->domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!(chk = qemuCheckpointObjFromCheckpoint(vm, checkpoint)))
+        goto endjob;
+
+    if (flags & (VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN |
+                 VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY)) {
+        rem.driver = driver;
+        rem.vm = vm;
+        rem.metadata_only = metadata_only;
+        rem.err = 0;
+        rem.current = virDomainCheckpointGetCurrent(vm->checkpoints);
+        rem.found = false;
+        rem.momentDiscard = qemuDomainCheckpointDiscard;
+        virDomainMomentForEachDescendant(chk, qemuDomainMomentDiscardAll,
+                                         &rem);
+        if (rem.err < 0)
+            goto endjob;
+        if (rem.found) {
+            virDomainCheckpointSetCurrent(vm->checkpoints, chk);
+            if (flags & VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY) {
+                if (qemuDomainCheckpointWriteMetadata(vm, chk, driver->caps,
+                                                      driver->xmlopt,
+                                                      cfg->checkpointDir) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("failed to set checkpoint '%s' as current"),
+                                   chk->def->name);
+                    virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+                    goto endjob;
+                }
+            }
+        }
+    } else if (chk->nchildren) {
+        rep.dir = cfg->checkpointDir;
+        rep.parent = chk->parent;
+        rep.vm = vm;
+        rep.err = 0;
+        rep.caps = driver->caps;
+        rep.xmlopt = driver->xmlopt;
+        rep.writeMetadata = qemuDomainCheckpointWriteMetadata;
+        virDomainMomentForEachChild(chk, qemuDomainMomentReparentChildren,
+                                    &rep);
+        if (rep.err < 0)
+            goto endjob;
+        virDomainMomentMoveChildren(chk, chk->parent);
+    }
+
+    if (flags & VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY) {
+        virDomainMomentDropChildren(chk);
+        ret = 0;
+    } else {
+        ret = qemuDomainCheckpointDiscard(driver, vm, chk, true, metadata_only);
+    }
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    virObjectUnref(cfg);
+    return ret;
+}
+
 static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
                                         char **result, unsigned int flags)
 {
@@ -22557,6 +23155,14 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .connectBaselineHypervisorCPU = qemuConnectBaselineHypervisorCPU, /* 4.4.0 */
     .nodeGetSEVInfo = qemuNodeGetSEVInfo, /* 4.5.0 */
     .domainGetLaunchSecurityInfo = qemuDomainGetLaunchSecurityInfo, /* 4.5.0 */
+    .domainCheckpointCreateXML = qemuDomainCheckpointCreateXML, /* 5.6.0 */
+    .domainCheckpointGetXMLDesc = qemuDomainCheckpointGetXMLDesc, /* 5.6.0 */
+
+    .domainListAllCheckpoints = qemuDomainListAllCheckpoints, /* 5.6.0 */
+    .domainCheckpointListAllChildren = qemuDomainCheckpointListAllChildren, /* 5.6.0 */
+    .domainCheckpointLookupByName = qemuDomainCheckpointLookupByName, /* 5.6.0 */
+    .domainCheckpointGetParent = qemuDomainCheckpointGetParent, /* 5.6.0 */
+    .domainCheckpointDelete = qemuDomainCheckpointDelete, /* 5.6.0 */
 };
 
 

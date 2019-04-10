@@ -56,6 +56,7 @@
 #include "logging/log_manager.h"
 #include "locking/domain_lock.h"
 #include "virdomainsnapshotobjlist.h"
+#include "virdomaincheckpointobjlist.h"
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
@@ -9138,6 +9139,37 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     return ret;
 }
 
+int
+qemuDomainCheckpointWriteMetadata(virDomainObjPtr vm,
+                                  virDomainMomentObjPtr checkpoint,
+                                  virCapsPtr caps,
+                                  virDomainXMLOptionPtr xmlopt,
+                                  const char *checkpointDir)
+{
+    unsigned int flags = VIR_DOMAIN_CHECKPOINT_FORMAT_SECURE;
+    virDomainCheckpointDefPtr def = virDomainCheckpointObjGetDef(checkpoint);
+    VIR_AUTOFREE(char *) newxml = NULL;
+    VIR_AUTOFREE(char *) chkDir = NULL;
+    VIR_AUTOFREE(char *) chkFile = NULL;
+
+    newxml = virDomainCheckpointDefFormat(def, caps, xmlopt, flags);
+    if (newxml == NULL)
+        return -1;
+
+    if (virAsprintf(&chkDir, "%s/%s", checkpointDir, vm->def->name) < 0)
+        return -1;
+    if (virFileMakePath(chkDir) < 0) {
+        virReportSystemError(errno, _("cannot create checkpoint directory '%s'"),
+                             chkDir);
+        return -1;
+    }
+
+    if (virAsprintf(&chkFile, "%s/%s.xml", chkDir, def->parent.name) < 0)
+        return -1;
+
+    return virXMLSaveFile(chkFile, NULL, "checkpoint-edit", newxml);
+}
+
 /* The domain is expected to be locked and inactive. Return -1 on normal
  * failure, 1 if we skipped a disk due to try_all.  */
 static int
@@ -9334,12 +9366,81 @@ qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
 }
 
 
+/* Discard one checkpoint (or its metadata), without reparenting any children.  */
+int
+qemuDomainCheckpointDiscard(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainMomentObjPtr chk,
+                            bool update_parent,
+                            bool metadata_only)
+{
+    virDomainMomentObjPtr parent = NULL;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOFREE(char *) chkFile = NULL;
+
+    if (!metadata_only && !virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot remove checkpoint from inactive domain"));
+        return -1;
+    }
+
+    if (virAsprintf(&chkFile, "%s/%s/%s.xml", cfg->checkpointDir,
+                    vm->def->name, chk->def->name) < 0)
+        return -1;
+
+    /* TODO: Implement QMP sequence to merge bitmaps */
+    parent = virDomainCheckpointFindByName(vm->checkpoints,
+                                           chk->def->parent_name);
+
+    if (chk == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+        virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+        if (update_parent && parent) {
+            virDomainCheckpointSetCurrent(vm->checkpoints, parent);
+            if (qemuDomainCheckpointWriteMetadata(vm, parent, driver->caps,
+                                                  driver->xmlopt,
+                                                  cfg->checkpointDir) < 0) {
+                VIR_WARN("failed to set parent checkpoint '%s' as current",
+                         chk->def->parent_name);
+                virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+            }
+        }
+    }
+
+    if (unlink(chkFile) < 0)
+        VIR_WARN("Failed to unlink %s", chkFile);
+    if (update_parent)
+        virDomainMomentDropParent(chk);
+    virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+
+    return 0;
+}
+
+int
+qemuDomainCheckpointDiscardAllMetadata(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm)
+{
+    virQEMUMomentRemove rem = {
+        .driver = driver,
+        .vm = vm,
+        .metadata_only = true,
+        .momentDiscard = qemuDomainCheckpointDiscard,
+    };
+
+    virDomainCheckpointForEach(vm->checkpoints, qemuDomainMomentDiscardAll,
+                               &rem);
+    virDomainCheckpointObjListRemoveAll(vm->checkpoints);
+
+    return rem.err;
+}
+
+
 static void
 qemuDomainRemoveInactiveCommon(virQEMUDriverPtr driver,
                                virDomainObjPtr vm)
 {
     virQEMUDriverConfigPtr cfg;
     VIR_AUTOFREE(char *) snapDir = NULL;
+    VIR_AUTOFREE(char *) chkDir = NULL;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -9353,6 +9454,17 @@ qemuDomainRemoveInactiveCommon(virQEMUDriverPtr driver,
                  cfg->snapshotDir, vm->def->name);
     } else if (rmdir(snapDir) < 0 && errno != ENOENT) {
         VIR_WARN("unable to remove snapshot directory %s", snapDir);
+    }
+    /* Remove any checkpoint metadata prior to removing the domain */
+    if (qemuDomainCheckpointDiscardAllMetadata(driver, vm) < 0) {
+        VIR_WARN("unable to remove all checkpoints for domain %s",
+                 vm->def->name);
+    } else if (virAsprintf(&chkDir, "%s/%s", cfg->checkpointDir,
+                           vm->def->name) < 0) {
+        VIR_WARN("unable to remove checkpoint directory %s/%s",
+                 cfg->checkpointDir, vm->def->name);
+    } else if (rmdir(chkDir) < 0 && errno != ENOENT) {
+        VIR_WARN("unable to remove checkpoint directory %s", chkDir);
     }
     qemuExtDevicesCleanupHost(driver, vm->def);
 
