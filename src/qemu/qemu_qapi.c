@@ -164,12 +164,30 @@ virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
 }
 
 
+typedef int (*virQEMUQAPISchemaTraverseFunc)(virJSONValuePtr cur,
+                                             struct virQEMUQAPISchemaTraverseContext *ctxt);
+
+struct virQEMUQAPISchemaTraverseMetaType {
+    const char *metatype;
+    virQEMUQAPISchemaTraverseFunc func;
+};
+
+
+static const struct virQEMUQAPISchemaTraverseMetaType traverseMetaType[] = {
+    { "object", virQEMUQAPISchemaTraverseObject },
+    { "array", virQEMUQAPISchemaTraverseArray },
+    { "command", virQEMUQAPISchemaTraverseCommand },
+    { "event", virQEMUQAPISchemaTraverseCommand },
+};
+
+
 static int
 virQEMUQAPISchemaTraverse(const char *baseName,
                           struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     virJSONValuePtr cur;
     const char *metatype;
+    size_t i;
 
     if (!(cur = virHashLookup(ctxt->schema, baseName)))
         return 0;
@@ -182,16 +200,9 @@ virQEMUQAPISchemaTraverse(const char *baseName,
     if (!(metatype = virJSONValueObjectGetString(cur, "meta-type")))
         return 0;
 
-    if (STREQ(metatype, "array")) {
-        return virQEMUQAPISchemaTraverseArray(cur, ctxt);
-    } else if (STREQ(metatype, "object")) {
-        return virQEMUQAPISchemaTraverseObject(cur, ctxt);
-    } else if (STREQ(metatype, "command") ||
-               STREQ(metatype, "event")) {
-        return virQEMUQAPISchemaTraverseCommand(cur, ctxt);
-    } else {
-        /* alternates, basic types and enums can't be entered */
-        return 0;
+    for (i = 0; i < ARRAY_CARDINALITY(traverseMetaType); i++) {
+        if (STREQ(metatype, traverseMetaType[i].metatype))
+            return traverseMetaType[i].func(cur, ctxt);
     }
 
     return 0;
