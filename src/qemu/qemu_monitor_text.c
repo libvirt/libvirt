@@ -215,28 +215,25 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
     if (qemuMonitorHMPCommand(mon, cmd, &reply))
         goto cleanup;
 
-    if (strstr(reply, "No block device supports snapshots") != NULL) {
+    if (strstr(reply, "No block device supports snapshots")) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("this domain does not have a device to load snapshots"));
         goto cleanup;
-    } else if (strstr(reply, "Could not find snapshot") != NULL) {
+    } else if (strstr(reply, "Could not find snapshot")) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("the snapshot '%s' does not exist, and was not loaded"),
                        name);
         goto cleanup;
-    } else if (strstr(reply, "Snapshots not supported on device") != NULL) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s", reply);
+    } else if (strstr(reply, "Snapshots not supported on device")) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Failed to load snapshot: %s"), reply);
         goto cleanup;
-    } else if (strstr(reply, "Could not open VM state file") != NULL) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
-        goto cleanup;
-    } else if (strstr(reply, "Error") != NULL
-             && strstr(reply, "while loading VM state") != NULL) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
-        goto cleanup;
-    } else if (strstr(reply, "Error") != NULL
-             && strstr(reply, "while activating snapshot on") != NULL) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
+    } else if (strstr(reply, "Could not open VM state file") ||
+               (strstr(reply, "Error") &&
+                (strstr(reply, "while loading VM state") ||
+                 strstr(reply, "while activating snapshot on")))) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Failed to load snapshot: %s"), reply);
         goto cleanup;
     }
 
