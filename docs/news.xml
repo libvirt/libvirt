@@ -49,6 +49,18 @@
           release.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Advertise firmware autoselection in domain capabilities
+        </summary>
+        <description>
+          The firmware autoselection feature is now exposed in
+          domain capabilities and management applications can
+          query for accepted values, i.e. values that are accepted
+          and for which libvirt found firmware descriptor files.
+          Firmware Secure Boot support is also advertised.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
