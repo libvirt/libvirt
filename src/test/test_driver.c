@@ -39,6 +39,7 @@
 #include "viralloc.h"
 #include "virnetworkobj.h"
 #include "interface_conf.h"
+#include "checkpoint_conf.h"
 #include "domain_conf.h"
 #include "domain_event.h"
 #include "network_event.h"
@@ -63,6 +64,7 @@
 #include "virdomainobjlist.h"
 #include "virinterfaceobj.h"
 #include "virhostcpu.h"
+#include "virdomaincheckpointobjlist.h"
 #include "virdomainsnapshotobjlist.h"
 #include "virkeycode.h"
 
@@ -8084,7 +8086,366 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     return ret;
 }
 
+/*
+ * Checkpoint APIs
+ */
 
+static int
+testDomainCheckpointDiscardAll(void *payload,
+                               const void *name ATTRIBUTE_UNUSED,
+                               void *data)
+{
+    virDomainMomentObjPtr chk = payload;
+    testMomentRemoveDataPtr curr = data;
+
+    curr->current |= virDomainCheckpointObjListRemove(curr->vm->checkpoints,
+                                                      chk);
+    return 0;
+}
+
+static virDomainObjPtr
+testDomObjFromCheckpoint(virDomainCheckpointPtr checkpoint)
+{
+    return testDomObjFromDomain(checkpoint->domain);
+}
+
+static virDomainMomentObjPtr
+testCheckpointObjFromName(virDomainObjPtr vm,
+                          const char *name)
+{
+    virDomainMomentObjPtr chk = NULL;
+
+    chk = virDomainCheckpointFindByName(vm->checkpoints, name);
+    if (!chk)
+        virReportError(VIR_ERR_NO_DOMAIN_CHECKPOINT,
+                       _("no domain checkpoint with matching name '%s'"),
+                       name);
+
+    return chk;
+}
+
+static virDomainMomentObjPtr
+testCheckpointObjFromCheckpoint(virDomainObjPtr vm,
+                           virDomainCheckpointPtr checkpoint)
+{
+    return testCheckpointObjFromName(vm, checkpoint->name);
+}
+
+static virDomainCheckpointPtr
+testDomainCheckpointCreateXML(virDomainPtr domain,
+                              const char *xmlDesc,
+                              unsigned int flags)
+{
+    testDriverPtr privconn = domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char *xml = NULL;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainCheckpointPtr checkpoint = NULL;
+    virDomainMomentObjPtr current = NULL;
+    bool update_current = true;
+    bool redefine = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
+    unsigned int parse_flags = 0;
+    VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE |
+                  VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE, NULL);
+
+    if (redefine) {
+        parse_flags |= VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;
+        update_current = false;
+    }
+
+    if (!(vm = testDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot create checkpoint for inactive domain"));
+        goto cleanup;
+    }
+
+    if (!(def = virDomainCheckpointDefParseString(xmlDesc, privconn->caps,
+                                                  privconn->xmlopt,
+                                                  parse_flags)))
+        goto cleanup;
+
+    if (redefine) {
+        if (virDomainCheckpointRedefinePrep(domain, vm, &def, &chk,
+                                            privconn->xmlopt,
+                                            &update_current) < 0)
+            goto cleanup;
+    } else {
+        if (!(def->parent.dom = virDomainDefCopy(vm->def,
+                                                 privconn->caps,
+                                                 privconn->xmlopt,
+                                                 NULL,
+                                                 true)))
+            goto cleanup;
+
+        if (virDomainCheckpointAlignDisks(def) < 0)
+            goto cleanup;
+    }
+
+    if (!chk) {
+        if (!(chk = virDomainCheckpointAssignDef(vm->checkpoints, def)))
+            goto cleanup;
+
+        def = NULL;
+    }
+
+    current = virDomainCheckpointGetCurrent(vm->checkpoints);
+    if (current) {
+        if (!redefine &&
+            VIR_STRDUP(chk->def->parent_name, current->def->name) < 0)
+            goto cleanup;
+        if (update_current)
+            virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+    }
+
+    /* actually do the checkpoint - except the test driver has nothing
+     * to actually do here */
+
+    /* If we fail after this point, there's not a whole lot we can do;
+     * we've successfully created the checkpoint, so we have to go
+     * forward the best we can.
+     */
+    checkpoint = virGetDomainCheckpoint(domain, chk->def->name);
+
+ cleanup:
+    if (checkpoint) {
+        if (update_current)
+            virDomainCheckpointSetCurrent(vm->checkpoints, chk);
+        virDomainCheckpointLinkParent(vm->checkpoints, chk);
+    } else if (chk) {
+        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+    }
+
+    virDomainObjEndAPI(&vm);
+    VIR_FREE(xml);
+    return checkpoint;
+}
+
+
+static int
+testDomainListAllCheckpoints(virDomainPtr domain,
+                             virDomainCheckpointPtr **chks,
+                             unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_LIST_ROOTS |
+                  VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL |
+                  VIR_DOMAIN_CHECKPOINT_FILTERS_ALL, -1);
+
+    if (!(vm = testDomObjFromDomain(domain)))
+        return -1;
+
+    n = virDomainListCheckpoints(vm->checkpoints, NULL, domain, chks, flags);
+
+    virDomainObjEndAPI(&vm);
+    return n;
+}
+
+
+static int
+testDomainCheckpointListAllChildren(virDomainCheckpointPtr checkpoint,
+                                    virDomainCheckpointPtr **chks,
+                                    unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainMomentObjPtr chk = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL |
+                  VIR_DOMAIN_CHECKPOINT_FILTERS_ALL, -1);
+
+    if (!(vm = testDomObjFromCheckpoint(checkpoint)))
+        return -1;
+
+    if (!(chk = testCheckpointObjFromCheckpoint(vm, checkpoint)))
+        goto cleanup;
+
+    n = virDomainListCheckpoints(vm->checkpoints, chk, checkpoint->domain,
+                                 chks, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return n;
+}
+
+
+static virDomainCheckpointPtr
+testDomainCheckpointLookupByName(virDomainPtr domain,
+                                 const char *name,
+                                 unsigned int flags)
+{
+    virDomainObjPtr vm;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainCheckpointPtr checkpoint = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(vm = testDomObjFromDomain(domain)))
+        return NULL;
+
+    if (!(chk = testCheckpointObjFromName(vm, name)))
+        goto cleanup;
+
+    checkpoint = virGetDomainCheckpoint(domain, chk->def->name);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return checkpoint;
+}
+
+
+static virDomainCheckpointPtr
+testDomainCheckpointGetParent(virDomainCheckpointPtr checkpoint,
+                              unsigned int flags)
+{
+    virDomainObjPtr vm;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainCheckpointPtr parent = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(vm = testDomObjFromCheckpoint(checkpoint)))
+        return NULL;
+
+    if (!(chk = testCheckpointObjFromCheckpoint(vm, checkpoint)))
+        goto cleanup;
+
+    if (!chk->def->parent_name) {
+        virReportError(VIR_ERR_NO_DOMAIN_CHECKPOINT,
+                       _("checkpoint '%s' does not have a parent"),
+                       chk->def->name);
+        goto cleanup;
+    }
+
+    parent = virGetDomainCheckpoint(checkpoint->domain, chk->def->parent_name);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return parent;
+}
+
+
+static char *
+testDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
+                               unsigned int flags)
+{
+    testDriverPtr privconn = checkpoint->domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char *xml = NULL;
+    virDomainMomentObjPtr chk = NULL;
+    size_t i;
+    virDomainCheckpointDefPtr chkdef;
+    unsigned int format_flags;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_XML_SECURE |
+                  VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN |
+                  VIR_DOMAIN_CHECKPOINT_XML_SIZE, NULL);
+
+    if (!(vm = testDomObjFromCheckpoint(checkpoint)))
+        return NULL;
+
+    if (!(chk = testCheckpointObjFromCheckpoint(vm, checkpoint)))
+        goto cleanup;
+    chkdef = virDomainCheckpointObjGetDef(chk);
+
+    if (flags & VIR_DOMAIN_CHECKPOINT_XML_SIZE) {
+        if (virDomainObjCheckActive(vm) < 0)
+            goto cleanup;
+
+        for (i = 0; i < chkdef->ndisks; i++) {
+            virDomainCheckpointDiskDefPtr disk = &chkdef->disks[i];
+
+            if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+                continue;
+            disk->size = 1024; /* Any number will do... */
+        }
+    }
+
+    format_flags = virDomainCheckpointFormatConvertXMLFlags(flags);
+    xml = virDomainCheckpointDefFormat(chkdef, privconn->caps,
+                                       privconn->xmlopt, format_flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return xml;
+}
+
+
+static int
+testDomainCheckpointDelete(virDomainCheckpointPtr checkpoint,
+                           unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    virDomainMomentObjPtr chk = NULL;
+    virDomainMomentObjPtr parentchk = NULL;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN |
+                  VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY |
+                  VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY, -1);
+
+    if (!(vm = testDomObjFromCheckpoint(checkpoint)))
+        return -1;
+
+    if (!(chk = testCheckpointObjFromCheckpoint(vm, checkpoint)))
+        goto cleanup;
+
+    if (flags & (VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN |
+                 VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY)) {
+        testMomentRemoveData rem;
+
+        rem.vm = vm;
+        rem.current = false;
+        virDomainMomentForEachDescendant(chk, testDomainCheckpointDiscardAll,
+                                         &rem);
+        if (rem.current)
+            virDomainCheckpointSetCurrent(vm->checkpoints, chk);
+    } else if (chk->nchildren) {
+        testMomentReparentData rep;
+
+        rep.parent = chk->parent;
+        rep.vm = vm;
+        rep.err = 0;
+        virDomainMomentForEachChild(chk, testDomainMomentReparentChildren,
+                                    &rep);
+        if (rep.err < 0)
+            goto cleanup;
+        virDomainMomentMoveChildren(chk, chk->parent);
+    }
+
+    if (flags & VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY) {
+        virDomainMomentDropChildren(chk);
+    } else {
+        virDomainMomentDropParent(chk);
+        if (chk == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+            if (chk->def->parent_name) {
+                parentchk = virDomainCheckpointFindByName(vm->checkpoints,
+                                                          chk->def->parent_name);
+                if (!parentchk)
+                    VIR_WARN("missing parent checkpoint matching name '%s'",
+                             chk->def->parent_name);
+            }
+            virDomainCheckpointSetCurrent(vm->checkpoints, parentchk);
+        }
+        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+    }
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+/*
+ * Test driver
+ */
 static virHypervisorDriver testHypervisorDriver = {
     .name = "Test",
     .connectOpen = testConnectOpen, /* 0.1.1 */
@@ -8216,6 +8577,14 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSnapshotDelete = testDomainSnapshotDelete, /* 1.1.4 */
 
     .connectBaselineCPU = testConnectBaselineCPU, /* 1.2.0 */
+    .domainCheckpointCreateXML = testDomainCheckpointCreateXML, /* 5.6.0 */
+    .domainCheckpointGetXMLDesc = testDomainCheckpointGetXMLDesc, /* 5.6.0 */
+
+    .domainListAllCheckpoints = testDomainListAllCheckpoints, /* 5.6.0 */
+    .domainCheckpointListAllChildren = testDomainCheckpointListAllChildren, /* 5.6.0 */
+    .domainCheckpointLookupByName = testDomainCheckpointLookupByName, /* 5.6.0 */
+    .domainCheckpointGetParent = testDomainCheckpointGetParent, /* 5.6.0 */
+    .domainCheckpointDelete = testDomainCheckpointDelete, /* 5.6.0 */
 };
 
 static virNetworkDriver testNetworkDriver = {
