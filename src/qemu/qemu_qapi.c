@@ -109,6 +109,40 @@ virQEMUQAPISchemaTraverse(const char *baseName,
                           struct virQEMUQAPISchemaTraverseContext *ctxt);
 
 
+/**
+ * @featurename: name of 'feature' field to select
+ * @elem: QAPI JSON entry for a type
+ *
+ * Looks for @featurename in the array of 'features' for given type passed in
+ * via @elem. Returns 1 if @featurename is present, 0 if it's not present
+ * (or @elem has no 'features') or -2 if the schema is malformed.
+ * (see virQEMUQAPISchemaTraverseFunc)
+ */
+static int
+virQEMUQAPISchemaTraverseHasObjectFeature(const char *featurename,
+                                          virJSONValuePtr elem)
+{
+    virJSONValuePtr featuresarray;
+    virJSONValuePtr cur;
+    const char *curstr;
+    size_t i;
+
+    if (!(featuresarray = virJSONValueObjectGetArray(elem, "features")))
+        return 0;
+
+    for (i = 0; i < virJSONValueArraySize(featuresarray); i++) {
+        if (!(cur = virJSONValueArrayGet(featuresarray, i)) ||
+            !(curstr = virJSONValueGetString(cur)))
+            return -2;
+
+        if (STREQ(featurename, curstr))
+            return 1;
+    }
+
+    return 0;
+}
+
+
 static int
 virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
                                 struct virQEMUQAPISchemaTraverseContext *ctxt)
@@ -123,6 +157,13 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
     /* exit on modifers for other types */
     if (modifier == '^' || modifier == '!')
         return 0;
+
+    if (modifier == '$') {
+        if (virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt))
+            return -3;
+
+        return virQEMUQAPISchemaTraverseHasObjectFeature(query, cur);
+    }
 
     if (modifier == '+') {
         obj = virQEMUQAPISchemaObjectGet("variants", query, "case", cur);
@@ -339,6 +380,8 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  *   '!basictype': returns true if previously selected type is of 'basictype'
  *                 JSON type. Spported are 'null', 'string', 'number', 'value',
  *                 'int' and 'boolean.
+ *   '$feature': returns true if the previously selected type supports 'feature'
+ *               ('feature' is in the 'features' array of given type)
  *
  * If the name of any (sub)attribute starts with non-alphabetical symbols it
  * needs to be prefixed by a single space.
