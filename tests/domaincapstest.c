@@ -451,9 +451,7 @@ mymain(void)
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
     virObjectUnref(cfg);
 
-    virFileWrapperRemovePrefix(SYSCONFDIR "/qemu/firmware");
-    virFileWrapperRemovePrefix(PREFIX "/share/qemu/firmware");
-    virFileWrapperRemovePrefix("/home/user/.config/qemu/firmware");
+    virFileWrapperClearPrefixes();
 
 #endif /* WITH_QEMU */
 
@@ -475,8 +473,6 @@ mymain(void)
     bhyve_caps |= BHYVE_CAP_FBUF;
     DO_TEST_BHYVE("fbuf", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
 #endif /* WITH_BHYVE */
-
-    virFileWrapperClearPrefixes();
 
     return ret;
 }
