@@ -64,7 +64,6 @@
 #endif
 #include <sys/time.h>
 #include <fcntl.h>
-#include <unistd.h>
 #if defined(HAVE_SYS_MOUNT_H)
 # include <sys/mount.h>
 #endif

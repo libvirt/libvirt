@@ -23,7 +23,6 @@
 
 #include <config.h>
 
-#include <unistd.h>
 
 #include "virthread.h"
 #include "virfile.h"

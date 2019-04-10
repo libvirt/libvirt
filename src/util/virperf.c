@@ -17,7 +17,6 @@
  */
 #include <config.h>
 
-#include <unistd.h>
 #include <sys/ioctl.h>
 #if defined HAVE_SYS_SYSCALL_H
 # include <sys/syscall.h>

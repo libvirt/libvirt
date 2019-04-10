@@ -23,7 +23,6 @@
 # include <ifaddrs.h>
 #endif
 #include <netdb.h>
-#include <unistd.h>
 
 #include "testutils.h"
 #include "virutil.h"

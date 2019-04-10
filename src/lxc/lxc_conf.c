@@ -23,8 +23,6 @@
 /* includes */
 #include <config.h>
 
-#include "unistd.h"
-
 #include "lxc_conf.h"
 #include "lxc_domain.h"
 #include "virerror.h"

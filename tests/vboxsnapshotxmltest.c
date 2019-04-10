@@ -5,7 +5,6 @@
 #ifdef WITH_VBOX
 
 # include <regex.h>
-# include <unistd.h>
 # include "vbox/vbox_snapshot_conf.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE

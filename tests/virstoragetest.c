@@ -18,7 +18,6 @@
 
 #include <config.h>
 
-#include <unistd.h>
 
 #include "testutils.h"
 #include "vircommand.h"

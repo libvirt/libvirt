@@ -21,8 +21,6 @@
 
 #include <config.h>
 
-#include <unistd.h>
-
 #include "lock_daemon_config.h"
 #include "virconf.h"
 #include "viralloc.h"

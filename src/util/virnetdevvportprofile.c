@@ -18,8 +18,6 @@
 
 #include <config.h>
 
-#include <unistd.h>
-
 #include "virnetdevvportprofile.h"
 #include "virerror.h"
 #include "viralloc.h"

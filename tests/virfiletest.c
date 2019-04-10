@@ -19,7 +19,6 @@
 #include <config.h>
 
 #include <fcntl.h>
-#include <unistd.h>
 
 #include "testutils.h"
 #include "virfile.h"

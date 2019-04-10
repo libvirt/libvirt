@@ -20,7 +20,6 @@
 
 #include <fcntl.h>
 #include <sys/socket.h>
-#include <unistd.h>
 
 #include "virnettlshelpers.h"
 #include "viralloc.h"

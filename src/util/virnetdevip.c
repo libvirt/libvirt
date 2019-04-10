@@ -36,7 +36,6 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <fcntl.h>
-#include <unistd.h>
 
 #ifdef __linux__
 # include <linux/sockios.h>

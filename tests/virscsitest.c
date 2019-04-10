@@ -19,7 +19,6 @@
 
 #include <config.h>
 
-#include <unistd.h>
 
 #include "virscsi.h"
 #include "testutils.h"

@@ -24,6 +24,7 @@
 # define LIBVIRT_VIRUTIL_H
 
 # include "internal.h"
+# include <unistd.h>
 # include <sys/types.h>
 
 # ifndef MIN

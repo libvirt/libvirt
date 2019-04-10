@@ -21,7 +21,6 @@
 #ifndef WIN32
 
 # include <fcntl.h>
-# include <unistd.h>
 
 # include "viralloc.h"
 # include "virfile.h"

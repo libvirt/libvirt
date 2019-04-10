@@ -24,8 +24,6 @@
 
 #include <config.h>
 
-#include <unistd.h>
-
 #include "virnetdevmacvlan.h"
 #include "virmacaddr.h"
 #include "virerror.h"
