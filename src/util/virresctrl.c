@@ -411,6 +411,7 @@ virResctrlAllocDispose(void *obj)
         virResctrlAllocMemBWPtr mem_bw = alloc->mem_bw;
         for (i = 0; i < mem_bw->nbandwidths; i++)
             VIR_FREE(mem_bw->bandwidths[i]);
+        VIR_FREE(alloc->mem_bw->bandwidths);
         VIR_FREE(alloc->mem_bw);
     }
 
