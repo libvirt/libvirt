@@ -1183,6 +1183,12 @@ qemuDomainAttachSCSIDisk(virQEMUDriverPtr driver,
         return -1;
     }
 
+    if (virDomainSCSIDriveAddressIsUsed(vm->def, &disk->info.addr.drive)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain already contains a disk with that address"));
+        return -1;
+    }
+
     /* Let's make sure the disk has a controller defined and loaded before
      * trying to add it. The controller used by the disk must exist before a
      * qemu command line string is generated.
