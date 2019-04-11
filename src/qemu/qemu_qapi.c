@@ -120,6 +120,10 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
     if (!c_isalpha(modifier))
         query++;
 
+    /* exit on modifers for other types */
+    if (modifier == '^')
+        return 0;
+
     if (modifier == '+') {
         obj = virQEMUQAPISchemaObjectGet("variants", query, "case", cur);
     } else {
@@ -164,6 +168,41 @@ virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
     return virQEMUQAPISchemaTraverse(querytype, ctxt);
 }
 
+
+static int
+virQEMUQAPISchemaTraverseEnum(virJSONValuePtr cur,
+                              struct virQEMUQAPISchemaTraverseContext *ctxt)
+{
+    const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
+    virJSONValuePtr values;
+    virJSONValuePtr enumval;
+    const char *value;
+    size_t i;
+
+    if (query[0] != '^')
+        return 0;
+
+    if (virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt))
+        return -3;
+
+    query++;
+
+    if (!(values = virJSONValueObjectGetArray(cur, "values")))
+        return -2;
+
+    for (i = 0; i < virJSONValueArraySize(values); i++) {
+        if (!(enumval = virJSONValueArrayGet(values, i)) ||
+            !(value = virJSONValueGetString(enumval)))
+            continue;
+
+        if (STREQ(value, query))
+            return 1;
+    }
+
+    return 0;
+}
+
+
 /* The function must return 1 on successful query, 0 if the query was not found
  * -1 when a libvirt error is reported, -2 if the schema is invalid and -3 if
  *  the query component is malformed. */
@@ -181,6 +220,7 @@ static const struct virQEMUQAPISchemaTraverseMetaType traverseMetaType[] = {
     { "array", virQEMUQAPISchemaTraverseArray },
     { "command", virQEMUQAPISchemaTraverseCommand },
     { "event", virQEMUQAPISchemaTraverseCommand },
+    { "enum", virQEMUQAPISchemaTraverseEnum },
 };
 
 
@@ -239,7 +279,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  *               the prevously selected member
  *
  * - Boolean queries - @entry remains NULL, return value indicates success:
- *   (none)
+ *   '^enumval': returns true if the previously selected enum contains 'enumval'
  *
  * If the name of any (sub)attribute starts with non-alphabetical symbols it
  * needs to be prefixed by a single space.
