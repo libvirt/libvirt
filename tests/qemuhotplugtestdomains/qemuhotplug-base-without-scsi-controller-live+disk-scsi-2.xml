@@ -26,8 +26,8 @@
       <target dev='sdf' bus='scsi'/>
       <readonly/>
       <shareable/>
-      <alias name='scsi3-0-5-7'/>
-      <address type='drive' controller='3' bus='0' target='5' unit='7'/>
+      <alias name='scsi3-0-5-6'/>
+      <address type='drive' controller='3' bus='0' target='5' unit='6'/>
     </disk>
     <controller type='usb' index='0'>
       <alias name='usb'/>

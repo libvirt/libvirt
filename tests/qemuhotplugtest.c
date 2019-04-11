@@ -715,7 +715,7 @@ mymain(void)
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
     DO_TEST_DETACH("base-with-scsi-controller-live", "disk-scsi-2", false, false,
-                   "device_del", QMP_DEVICE_DELETED("scsi3-0-5-7") QMP_OK,
+                   "device_del", QMP_DEVICE_DELETED("scsi3-0-5-6") QMP_OK,
                    "human-monitor-command", HMP(""));
 
     DO_TEST_ATTACH("base-live", "qemu-agent", false, true,

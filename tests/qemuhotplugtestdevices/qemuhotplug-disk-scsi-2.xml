@@ -2,7 +2,7 @@
   <driver name='qemu' type='raw' cache='none'/>
   <source file='/dev/null'/>
   <target dev='sdf' bus='scsi'/>
-  <address type='drive' controller='3' bus='0' target='5' unit='7'/>
+  <address type='drive' controller='3' bus='0' target='5' unit='6'/>
   <readonly/>
   <shareable/>
 </disk>
