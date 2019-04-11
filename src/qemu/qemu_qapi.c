@@ -228,6 +228,35 @@ virQEMUQAPISchemaTraverseBuiltin(virJSONValuePtr cur,
 }
 
 
+static int
+virQEMUQAPISchemaTraverseAlternate(virJSONValuePtr cur,
+                                   struct virQEMUQAPISchemaTraverseContext *ctxt)
+{
+    struct virQEMUQAPISchemaTraverseContext savectxt = *ctxt;
+    virJSONValuePtr members;
+    virJSONValuePtr member;
+    const char *membertype;
+    int rc;
+    size_t i;
+
+    if (!(members = virJSONValueObjectGetArray(cur, "members")))
+        return -2;
+
+    for (i = 0; i < virJSONValueArraySize(members); i++) {
+        if (!(member = virJSONValueArrayGet(members, i)) ||
+            !(membertype = virJSONValueObjectGetString(member, "type")))
+            continue;
+
+        *ctxt = savectxt;
+
+        if ((rc = virQEMUQAPISchemaTraverse(membertype, ctxt)) != 0)
+            return rc;
+    }
+
+    return 0;
+}
+
+
 /* The function must return 1 on successful query, 0 if the query was not found
  * -1 when a libvirt error is reported, -2 if the schema is invalid and -3 if
  *  the query component is malformed. */
@@ -247,6 +276,7 @@ static const struct virQEMUQAPISchemaTraverseMetaType traverseMetaType[] = {
     { "event", virQEMUQAPISchemaTraverseCommand },
     { "enum", virQEMUQAPISchemaTraverseEnum },
     { "builtin", virQEMUQAPISchemaTraverseBuiltin },
+    { "alternate", virQEMUQAPISchemaTraverseAlternate },
 };
 
 
@@ -313,8 +343,8 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  * If the name of any (sub)attribute starts with non-alphabetical symbols it
  * needs to be prefixed by a single space.
  *
- * Array types are automatically flattened to the singular type. Alternate
- * types are currently not supported.
+ * Array types are automatically flattened to the singular type. Alternates are
+ * iterated until first success.
  *
  * The above types can be chained arbitrarily using slashes to construct any
  * path into the schema tree, booleans must be always the last component as they

@@ -3093,6 +3093,9 @@ mymain(void)
     DO_TEST_QAPI_QUERY("variant property", "blockdev-add/arg-type/+file/filename", 1, true);
     DO_TEST_QAPI_QUERY("enum value", "query-status/ret-type/status/^debug", 1, false);
     DO_TEST_QAPI_QUERY("builtin type", "query-qmp-schema/ret-type/name/!string", 1, false);
+    DO_TEST_QAPI_QUERY("alternate variant 1", "blockdev-add/arg-type/+qcow2/backing/!null", 1, false);
+    DO_TEST_QAPI_QUERY("alternate variant 2", "blockdev-add/arg-type/+qcow2/backing/!string", 1, false);
+    DO_TEST_QAPI_QUERY("alternate variant 3", "blockdev-add/arg-type/+qcow2/backing/+file/filename", 1, true);
 
     DO_TEST_QAPI_QUERY("nonexistent command", "nonexistent", 0, false);
     DO_TEST_QAPI_QUERY("nonexistent attr", "screendump/arg-type/nonexistent", 0, false);
