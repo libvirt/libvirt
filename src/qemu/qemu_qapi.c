@@ -121,7 +121,7 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
         query++;
 
     /* exit on modifers for other types */
-    if (modifier == '^')
+    if (modifier == '^' || modifier == '!')
         return 0;
 
     if (modifier == '+') {
@@ -203,6 +203,31 @@ virQEMUQAPISchemaTraverseEnum(virJSONValuePtr cur,
 }
 
 
+static int
+virQEMUQAPISchemaTraverseBuiltin(virJSONValuePtr cur,
+                                 struct virQEMUQAPISchemaTraverseContext *ctxt)
+{
+    const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
+    const char *jsontype;
+
+    if (query[0] != '!')
+        return 0;
+
+    if (virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt))
+        return -3;
+
+    query++;
+
+    if (!(jsontype = virJSONValueObjectGetString(cur, "json-type")))
+        return -1;
+
+    if (STREQ(jsontype, query))
+        return 1;
+
+    return 0;
+}
+
+
 /* The function must return 1 on successful query, 0 if the query was not found
  * -1 when a libvirt error is reported, -2 if the schema is invalid and -3 if
  *  the query component is malformed. */
@@ -221,6 +246,7 @@ static const struct virQEMUQAPISchemaTraverseMetaType traverseMetaType[] = {
     { "command", virQEMUQAPISchemaTraverseCommand },
     { "event", virQEMUQAPISchemaTraverseCommand },
     { "enum", virQEMUQAPISchemaTraverseEnum },
+    { "builtin", virQEMUQAPISchemaTraverseBuiltin },
 };
 
 
@@ -280,6 +306,9 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  *
  * - Boolean queries - @entry remains NULL, return value indicates success:
  *   '^enumval': returns true if the previously selected enum contains 'enumval'
+ *   '!basictype': returns true if previously selected type is of 'basictype'
+ *                 JSON type. Spported are 'null', 'string', 'number', 'value',
+ *                 'int' and 'boolean.
  *
  * If the name of any (sub)attribute starts with non-alphabetical symbols it
  * needs to be prefixed by a single space.
