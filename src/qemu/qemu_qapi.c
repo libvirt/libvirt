@@ -164,7 +164,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
         query++;
     }
 
-    return base;
+    return NULL;
 }
 
 
