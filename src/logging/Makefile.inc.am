@@ -88,6 +88,12 @@ if WITH_DTRACE_PROBES
 virtlogd_LDADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 
+if WITH_SASL
+virtlogd_CFLAGS += \
+	$(SASL_CFLAGS) \
+	$(NULL)
+endif WITH_SASL
+
 conf_DATA += logging/virtlogd.conf
 
 augeas_DATA += logging/virtlogd.aug

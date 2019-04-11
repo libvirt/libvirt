@@ -32,6 +32,12 @@ libvirt_driver_admin_la_CFLAGS = \
 libvirt_driver_admin_la_LIBADD = ../gnulib/lib/libgnu.la
 libvirt_driver_admin_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 
+if WITH_SASL
+libvirt_driver_admin_la_CFLAGS += \
+	$(SASL_CFLAGS) \
+	$(NULL)
+endif WITH_SASL
+
 # admin/admin_remote.c is being included in libvirt-admin.c, so we
 # need to include it in the dist
 EXTRA_DIST += admin/admin_remote.c

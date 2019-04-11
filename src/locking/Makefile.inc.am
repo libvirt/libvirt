@@ -105,6 +105,12 @@ if WITH_DTRACE_PROBES
 lockd_la_LIBADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 
+if WITH_SASL
+lockd_la_CFLAGS += \
+	$(SASL_CFLAGS) \
+	$(NULL)
+endif WITH_SASL
+
 if WITH_QEMU
 augeastest_DATA += test_libvirt_lockd.aug
 CLEANFILES += test_libvirt_lockd.aug
@@ -147,6 +153,12 @@ virtlockd_LDADD = \
 if WITH_DTRACE_PROBES
 virtlockd_LDADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES
+
+if WITH_SASL
+virtlockd_CFLAGS += \
+	$(SASL_CFLAGS) \
+	$(NULL)
+endif WITH_SASL
 
 if WITH_SANLOCK
 lockdriver_LTLIBRARIES += sanlock.la

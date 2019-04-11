@@ -99,6 +99,12 @@ libvirt_driver_remote_la_CFLAGS = \
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
+if WITH_SASL
+libvirt_driver_remote_la_CFLAGS += \
+	$(SASL_CFLAGS) \
+	$(NULL)
+endif WITH_SASL
+
 endif WITH_REMOTE
 
 if WITH_REMOTE
