@@ -28814,15 +28814,6 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
     if (oldDev)
         data.oldInfo = virDomainDeviceGetInfo(oldDev);
 
-    if (action == VIR_DOMAIN_DEVICE_ACTION_ATTACH &&
-        data.newInfo &&
-        data.newInfo->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-        virDomainDefHasDeviceAddress(def, data.newInfo)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Domain already contains a device with the same address"));
-        return -1;
-    }
-
     if (action == VIR_DOMAIN_DEVICE_ACTION_UPDATE &&
         live &&
         (data.newInfo && data.oldInfo &&
