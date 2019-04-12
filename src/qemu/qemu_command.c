@@ -7917,9 +7917,14 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
         qemuBuildMemPathStr(cfg, def, cmd, priv) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-realtime");
-    virCommandAddArgFormat(cmd, "mlock=%s",
-                           def->mem.locked ? "on" : "off");
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OVERCOMMIT)) {
+        virCommandAddArg(cmd, "-overcommit");
+        virCommandAddArgFormat(cmd, "mem-lock=%s", def->mem.locked ? "on" : "off");
+    } else {
+        virCommandAddArg(cmd, "-realtime");
+        virCommandAddArgFormat(cmd, "mlock=%s",
+                               def->mem.locked ? "on" : "off");
+    }
 
     return 0;
 }

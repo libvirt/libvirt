@@ -19,7 +19,7 @@ readonly=on \
 -drive file=/var/lib/libvirt/qemu/nvram/fedora_VARS.fd,if=pflash,format=raw,\
 unit=1 \
 -m 8 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 63840878-0deb-4095-97e6-fc444d9bc9fa \
 -display none \

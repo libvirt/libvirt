@@ -15,7 +15,7 @@ file=/tmp/lib/domain--1-instance-00000092/master-key.aes \
 -machine pc-i440fx-wily,accel=kvm,usb=off,dump-guest-core=off \
 -m 14336 \
 -mem-prealloc \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 8,sockets=1,cores=8,threads=1 \
 -object memory-backend-memfd,id=ram-node0,hugetlb=yes,hugetlbsize=2097152,\
 share=yes,size=15032385536,host-nodes=3,policy=preferred \
