@@ -543,12 +543,32 @@ firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
                              void *user_data)
 {
     virNetworkDriverStatePtr driver = user_data;
+    bool reload = false;
 
-    if (dbus_message_is_signal(message, DBUS_INTERFACE_DBUS,
-                               "NameOwnerChanged") ||
-        dbus_message_is_signal(message, "org.fedoraproject.FirewallD1",
-                               "Reloaded"))
-    {
+    if (dbus_message_is_signal(message,
+                               "org.fedoraproject.FirewallD1", "Reloaded")) {
+        reload = true;
+
+    } else if (dbus_message_is_signal(message,
+                                      DBUS_INTERFACE_DBUS, "NameOwnerChanged")) {
+
+        VIR_AUTOFREE(char *) name = NULL;
+        VIR_AUTOFREE(char *) old_owner = NULL;
+        VIR_AUTOFREE(char *) new_owner = NULL;
+
+        if (virDBusMessageDecode(message, "sss", &name, &old_owner, &new_owner) < 0) {
+            VIR_WARN("Failed to decode DBus NameOwnerChanged message");
+            return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+        }
+        /*
+         * if new_owner is empty, firewalld is shutting down. If it is
+         * non-empty, then it is starting
+         */
+        if (new_owner && *new_owner)
+            reload = true;
+    }
+
+    if (reload) {
         VIR_DEBUG("Reload in bridge_driver because of firewalld.");
         networkReloadFirewallRules(driver, false);
     }
