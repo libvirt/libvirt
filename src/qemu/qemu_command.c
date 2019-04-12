@@ -7917,16 +7917,9 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
         qemuBuildMemPathStr(cfg, def, cmd, priv) < 0)
         return -1;
 
-    if (def->mem.locked && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_REALTIME_MLOCK)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("memory locking not supported by QEMU binary"));
-        return -1;
-    }
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_REALTIME_MLOCK)) {
-        virCommandAddArg(cmd, "-realtime");
-        virCommandAddArgFormat(cmd, "mlock=%s",
-                               def->mem.locked ? "on" : "off");
-    }
+    virCommandAddArg(cmd, "-realtime");
+    virCommandAddArgFormat(cmd, "mlock=%s",
+                           def->mem.locked ? "on" : "off");
 
     return 0;
 }

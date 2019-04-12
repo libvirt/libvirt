@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine q35,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
+-realtime mlock=off \
 -smp 16,sockets=2,cores=4,threads=2 \
 -numa node,nodeid=0,cpus=0-7,mem=107 \
 -numa node,nodeid=1,cpus=8-15,mem=107 \

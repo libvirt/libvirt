@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine pc-q35-2.3,accel=kvm,usb=off,dump-guest-core=off \
 -m 128 \
+-realtime mlock=off \
 -smp 2,maxcpus=6,sockets=6,cores=1,threads=1 \
 -object iothread,id=iothread1 \
 -object iothread,id=iothread2 \

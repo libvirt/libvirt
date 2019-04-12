@@ -43,7 +43,6 @@
   <flag name='vfio-pci'/>
   <flag name='mem-merge'/>
   <flag name='drive-discard'/>
-  <flag name='mlock'/>
   <flag name='usb-storage'/>
   <flag name='usb-storage.removable'/>
   <flag name='virtio-mmio'/>

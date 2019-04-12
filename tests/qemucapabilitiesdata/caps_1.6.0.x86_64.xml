@@ -54,7 +54,6 @@
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
   <flag name='mem-merge'/>
-  <flag name='mlock'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='i440fx-pci-hole64-size'/>
   <flag name='q35-pci-hole64-size'/>

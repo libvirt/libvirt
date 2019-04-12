@@ -18,7 +18,6 @@
   <flag name='tpm-passthrough'/>
   <flag name='mem-merge'/>
   <flag name='drive-discard'/>
-  <flag name='mlock'/>
   <flag name='virtio-mmio'/>
   <flag name='boot-strict'/>
   <flag name='msg-timestamp'/>

@@ -254,7 +254,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_MEM_MERGE, /* -machine mem-merge */
     X_QEMU_CAPS_VNC_WEBSOCKET, /* -vnc x:y,websocket */
     QEMU_CAPS_DRIVE_DISCARD, /* -drive discard=off(ignore)|on(unmap) */
-    QEMU_CAPS_REALTIME_MLOCK, /* -realtime mlock=on|off */
+    X_QEMU_CAPS_REALTIME_MLOCK, /* -realtime mlock=on|off */
 
     /* 150 */
     X_QEMU_CAPS_VNC_SHARE_POLICY, /* set display sharing policy */

@@ -14,6 +14,7 @@ QEMU_AUDIO_DRV=none \
 file=/tmp/lib/domain--1-encryptdisk/master-key.aes \
 -machine pc-i440fx-2.1,accel=tcg,usb=off,dump-guest-core=off \
 -m 1024 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 496898a6-e6ff-f7c8-5dc2-3cf410945ee9 \
 -display none \

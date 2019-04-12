@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine virt,accel=tcg,usb=off,dump-guest-core=off \
 -m 1024 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 496d7ea8-9739-544b-4ebd-ef08be936e8b \
 -display none \

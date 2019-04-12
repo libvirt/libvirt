@@ -15,6 +15,7 @@ QEMU_AUDIO_DRV=none \
 readonly=on \
 -drive file=/usr/share/OVMF/OVMF_VARS.fd,if=pflash,format=raw,unit=1 \
 -m 1024 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 362d1fc1-df7d-193e-5c18-49a71bd1da66 \
 -display none \

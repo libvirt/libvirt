@@ -13,6 +13,7 @@ QEMU_AUDIO_DRV=none \
 -machine pc-i440fx-wily,accel=kvm,usb=off,dump-guest-core=off \
 -m 14336 \
 -mem-prealloc \
+-realtime mlock=off \
 -smp 8,sockets=1,cores=8,threads=1 \
 -object memory-backend-file,id=ram-node0,\
 mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-instance-00000092/ram-node0,\

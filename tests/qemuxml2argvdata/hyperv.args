@@ -15,6 +15,7 @@ QEMU_AUDIO_DRV=none \
 hv_synic,hv_stimer,hv_reset,hv_vendor_id=KVM Hv,hv_frequencies,\
 hv_reenlightenment,hv_tlbflush,hv_ipi,hv_evmcs' \
 -m 214 \
+-realtime mlock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \

@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine pc-i440fx-2.3,accel=tcg,usb=off,dump-guest-core=off \
 -m size=1048576k,slots=16,maxmem=1099511627776k \
+-realtime mlock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -numa node,nodeid=0,cpus=0-1,mem=1024 \
 -object memory-backend-file,id=memdimm0,prealloc=yes,\

@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine ppce500,accel=kvm,usb=off,dump-guest-core=off \
 -m 256 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 49545eb3-75e1-2d0a-acdd-f0294406c99e \
 -display none \

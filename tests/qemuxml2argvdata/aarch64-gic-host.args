@@ -13,6 +13,7 @@ QEMU_AUDIO_DRV=none \
 -machine virt,accel=kvm,usb=off,dump-guest-core=off,gic-version=host \
 -cpu host \
 -m 1024 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
 -display none \

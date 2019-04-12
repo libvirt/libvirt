@@ -14,6 +14,7 @@ QEMU_AUDIO_DRV=none \
 -cpu 'core2duo,vendor=Libvirt QEMU,+ds,+acpi,+ss,+ht,+tm,+pbe,+ds_cpl,+vmx,\
 +est,+tm2,+cx16,+xtpr,+lahf_lm' \
 -m 214 \
+-realtime mlock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \

@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off \
 -m 256 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 9aa4b45c-b9dd-45ef-91fe-862b27b4231f \
 -display none \

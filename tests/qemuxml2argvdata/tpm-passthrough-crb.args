@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off \
 -m 2048 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 11d7cd22-da89-3094-6212-079a48a309a1 \
 -display none \

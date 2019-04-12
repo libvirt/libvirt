@@ -13,6 +13,7 @@ QEMU_AUDIO_DRV=none \
 -machine pseries,accel=kvm,usb=off,dump-guest-core=off \
 -cpu host,compat=power7 \
 -m 256 \
+-realtime mlock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \

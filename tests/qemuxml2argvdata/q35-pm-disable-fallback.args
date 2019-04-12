@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine pc-q35-2.5,accel=tcg,usb=off,dump-guest-core=off \
 -m 1024 \
+-realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 56f5055c-1b8d-490c-844a-ad646a1caaaa \
 -display none \
