@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 BHYVE_DRIVER_SOURCES = \
 	bhyve/bhyve_capabilities.c \
 	bhyve/bhyve_capabilities.h \

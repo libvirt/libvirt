@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 VBOX_DRIVER_SOURCES = \
 	vbox/vbox_glue.c \
 	vbox/vbox_glue.h \

@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 QEMU_DRIVER_SOURCES = \
 	qemu/qemu_agent.c \
 	qemu/qemu_agent.h \

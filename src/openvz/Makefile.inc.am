@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 OPENVZ_DRIVER_SOURCES = \
 	openvz/openvz_conf.c \
 	openvz/openvz_conf.h \

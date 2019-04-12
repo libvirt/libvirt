@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 VMWARE_DRIVER_SOURCES = \
 	vmware/vmware_driver.c \
 	vmware/vmware_driver.h \

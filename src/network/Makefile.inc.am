@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 NETWORK_DRIVER_SOURCES = \
 	network/bridge_driver.h \
 	network/bridge_driver.c \

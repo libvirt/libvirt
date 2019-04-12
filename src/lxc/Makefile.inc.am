@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 LXC_MONITOR_PROTOCOL_GENERATED = \
 	lxc/lxc_monitor_protocol.h \
 	lxc/lxc_monitor_protocol.c \

@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 LIBXL_DRIVER_SOURCES = \
 	libxl/libxl_conf.c \
 	libxl/libxl_conf.h \

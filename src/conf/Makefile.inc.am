@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 NETDEV_CONF_SOURCES = \
 	conf/netdev_bandwidth_conf.h \
 	conf/netdev_bandwidth_conf.c \

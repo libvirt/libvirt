@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES = \

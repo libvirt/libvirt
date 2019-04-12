@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 STORAGE_DRIVER_BACKEND_SOURCES = \
 	storage/storage_backend.h \
 	storage/storage_backend.c \

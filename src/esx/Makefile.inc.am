@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 ESX_DRIVER_SOURCES = \
 	esx/esx_private.h \
 	esx/esx_driver.c \

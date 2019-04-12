@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 TEST_DRIVER_SOURCES = \
 	test/test_driver.c \
 	test/test_driver.h \

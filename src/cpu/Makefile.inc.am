@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 CPU_SOURCES = \
 	cpu/cpu.h \
 	cpu/cpu.c \

@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 PHYP_DRIVER_SOURCES = \
 	phyp/phyp_driver.c \
 	phyp/phyp_driver.h \

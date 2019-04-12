@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 INTERFACE_DRIVER_SOURCES = \
 	interface/interface_driver.h \
 	interface/interface_driver.c \

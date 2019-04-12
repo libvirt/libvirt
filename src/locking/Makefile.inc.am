@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 DRIVER_SOURCES += \
 	locking/lock_manager.c \
 	locking/lock_manager.h \

@@ -1,3 +1,5 @@
+# vim: filetype=automake
+
 VZ_DRIVER_SOURCES = \
 	vz/vz_driver.h \
 	vz/vz_driver.c \
