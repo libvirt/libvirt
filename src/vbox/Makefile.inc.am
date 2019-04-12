@@ -7,7 +7,6 @@ VBOX_DRIVER_SOURCES = \
 	vbox/vbox_driver.h \
 	vbox/vbox_snapshot_conf.c \
 	vbox/vbox_snapshot_conf.h \
-	vbox/vbox_CAPI_v4_2_20.h \
 	vbox/vbox_CAPI_v4_3.h \
 	vbox/vbox_CAPI_v4_3_4.h \
 	vbox/vbox_V5_0.c \
