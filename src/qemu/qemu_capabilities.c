@@ -5343,7 +5343,7 @@ virQEMUCapsNewData(const char *binary,
                                            priv->libDir,
                                            priv->runUid,
                                            priv->runGid,
-                                           priv->microcodeVersion,
+                                           virHostCPUGetMicrocodeVersion(),
                                            priv->kernelVersion,
                                            false);
 }
@@ -5427,8 +5427,7 @@ virFileCachePtr
 virQEMUCapsCacheNew(const char *libDir,
                     const char *cacheDir,
                     uid_t runUid,
-                    gid_t runGid,
-                    unsigned int microcodeVersion)
+                    gid_t runGid)
 {
     char *capsCacheDir = NULL;
     virFileCachePtr cache = NULL;
@@ -5452,7 +5451,6 @@ virQEMUCapsCacheNew(const char *libDir,
 
     priv->runUid = runUid;
     priv->runGid = runGid;
-    priv->microcodeVersion = microcodeVersion;
 
     if (uname(&uts) == 0 &&
         virAsprintf(&priv->kernelVersion, "%s %s", uts.release, uts.version) < 0)
@@ -5473,7 +5471,10 @@ virQEMUCapsPtr
 virQEMUCapsCacheLookup(virFileCachePtr cache,
                        const char *binary)
 {
+    virQEMUCapsCachePrivPtr priv = virFileCacheGetPriv(cache);
     virQEMUCapsPtr ret = NULL;
+
+    priv->microcodeVersion = virHostCPUGetMicrocodeVersion();
 
     ret = virFileCacheLookup(cache, binary);
 
@@ -5520,9 +5521,12 @@ virQEMUCapsPtr
 virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
                              virArch arch)
 {
+    virQEMUCapsCachePrivPtr priv = virFileCacheGetPriv(cache);
     virQEMUCapsPtr ret = NULL;
     virArch target;
     struct virQEMUCapsSearchData data = { .arch = arch };
+
+    priv->microcodeVersion = virHostCPUGetMicrocodeVersion();
 
     ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
     if (!ret) {
