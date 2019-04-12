@@ -2404,6 +2404,9 @@ mymain(void)
     DO_TEST("mlock-off", QEMU_CAPS_REALTIME_MLOCK);
     DO_TEST("mlock-unsupported", NONE);
 
+    DO_TEST_CAPS_VER("mlock-on", "3.0.0");
+    DO_TEST_CAPS_VER("mlock-off", "3.0.0");
+
     DO_TEST_PARSE_ERROR("pci-bridge-negative-index-invalid", NONE);
     DO_TEST_PARSE_ERROR("pci-bridge-duplicate-index", NONE);
     DO_TEST_PARSE_ERROR("pci-root-nonzero-index", NONE);
