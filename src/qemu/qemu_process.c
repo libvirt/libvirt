@@ -8448,6 +8448,21 @@ qemuProcessQMPNew(const char *binary,
 
 
 static int
+qemuProcessQEMULabelUniqPath(qemuProcessQMPPtr proc)
+{
+    /* We cannot use the security driver here, but we should not need to. */
+    if (chown(proc->uniqDir, proc->runUid, -1) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot chown uniq path: %s"),
+                             proc->uniqDir);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessQMPInit(qemuProcessQMPPtr proc)
 {
     char *template = NULL;
@@ -8465,6 +8480,9 @@ qemuProcessQMPInit(qemuProcessQMPPtr proc)
                              template);
         goto cleanup;
     }
+
+    if (qemuProcessQEMULabelUniqPath(proc) < 0)
+        goto cleanup;
 
     if (virAsprintf(&proc->monpath, "%s/%s", proc->uniqDir,
                     "qmp.monitor") < 0)
