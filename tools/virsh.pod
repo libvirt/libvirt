@@ -545,10 +545,10 @@ I<--table> output.
 Example:
 
 B<virsh> list --title
-  Id    Name                           State      Title
- --------------------------------------------------------------------------
-  0     Domain-0                       running    Mailserver 1
-  2     fedora                         paused
+  Id    Name        State      Title
+ -------------------------------------------
+  0     Domain-0    running    Mailserver 1
+  2     fedora      paused
 
 =item B<freecell> [{ [I<--cellno>] B<cellno> | I<--all> }]
 
