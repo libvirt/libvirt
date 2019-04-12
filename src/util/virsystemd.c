@@ -182,7 +182,7 @@ virSystemdGetMachineNameByPID(pid_t pid)
                           "u", pid) < 0)
         goto cleanup;
 
-    if (virDBusMessageRead(reply, "o", &object) < 0)
+    if (virDBusMessageDecode(reply, "o", &object) < 0)
         goto cleanup;
 
     virDBusMessageUnref(reply);
@@ -201,7 +201,7 @@ virSystemdGetMachineNameByPID(pid_t pid)
                           "Name") < 0)
         goto cleanup;
 
-    if (virDBusMessageRead(reply, "v", "s", &name) < 0)
+    if (virDBusMessageDecode(reply, "v", "s", &name) < 0)
         goto cleanup;
 
     VIR_DEBUG("Domain with pid %lld has machine name '%s'",
@@ -533,7 +533,7 @@ virSystemdPMSupportTarget(const char *methodName, bool *result)
                           NULL) < 0)
         return ret;
 
-    if ((ret = virDBusMessageRead(message, "s", &response)) < 0)
+    if ((ret = virDBusMessageDecode(message, "s", &response)) < 0)
         goto cleanup;
 
     *result = STREQ("yes", response) || STREQ("challenge", response);

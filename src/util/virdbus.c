@@ -1228,9 +1228,23 @@ int virDBusMessageEncode(DBusMessage* msg,
 }
 
 
-int virDBusMessageDecode(DBusMessage* msg,
-                         const char *types,
-                         ...)
+/**
+ * virDBusMessageDecode:
+ * @msg: the reply to decode
+ * @types: type signature for following return values
+ * @...: pointers in which to store return values
+ *
+ * The @types type signature is the same format as
+ * that used for the virDBusCallMethod. The difference
+ * is that each variadic parameter must be a pointer to
+ * be filled with the values. eg instead of passing an
+ * 'int', pass an 'int *'.
+ *
+ */
+int
+virDBusMessageDecode(DBusMessage* msg,
+                     const char *types,
+                     ...)
 {
     int ret;
     va_list args;
@@ -1654,32 +1668,6 @@ int virDBusCallMethod(DBusConnection *conn,
 }
 
 
-/**
- * virDBusMessageRead:
- * @msg: the reply to decode
- * @types: type signature for following return values
- * @...: pointers in which to store return values
- *
- * The @types type signature is the same format as
- * that used for the virDBusCallMethod. The difference
- * is that each variadic parameter must be a pointer to
- * be filled with the values. eg instead of passing an
- * 'int', pass an 'int *'.
- *
- */
-int virDBusMessageRead(DBusMessage *msg,
-                       const char *types, ...)
-{
-    va_list args;
-    int ret;
-
-    va_start(args, types);
-    ret = virDBusMessageDecodeArgs(msg, types, args);
-    va_end(args);
-
-    return ret;
-}
-
 static int virDBusIsServiceInList(const char *listMethod, const char *name)
 {
     DBusConnection *conn;
@@ -1854,13 +1842,6 @@ int virDBusCallMethod(DBusConnection *conn ATTRIBUTE_UNUSED,
     return -1;
 }
 
-int virDBusMessageRead(DBusMessage *msg ATTRIBUTE_UNUSED,
-                       const char *types ATTRIBUTE_UNUSED, ...)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("DBus support not compiled into this binary"));
-    return -1;
-}
 
 int virDBusMessageEncode(DBusMessage* msg ATTRIBUTE_UNUSED,
                          const char *types ATTRIBUTE_UNUSED,

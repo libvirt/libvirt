@@ -56,8 +56,4 @@ int virDBusMessageEncode(DBusMessage* msg,
                          const char *types,
                          ...);
 
-int virDBusMessageDecode(DBusMessage* msg,
-                         const char *types,
-                         ...);
-
 #endif /* LIBVIRT_VIRDBUSPRIV_H */

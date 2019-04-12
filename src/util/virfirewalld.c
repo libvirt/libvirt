@@ -102,7 +102,7 @@ virFirewallDGetVersion(unsigned long *version)
                           "version") < 0)
         goto cleanup;
 
-    if (virDBusMessageRead(reply, "v", "s", &versionStr) < 0)
+    if (virDBusMessageDecode(reply, "v", "s", &versionStr) < 0)
         goto cleanup;
 
     if (virParseVersionString(versionStr, version, false) < 0) {
@@ -163,7 +163,7 @@ virFirewallDGetBackend(void)
         goto cleanup;
     }
 
-    if (virDBusMessageRead(reply, "v", "s", &backendStr) < 0)
+    if (virDBusMessageDecode(reply, "v", "s", &backendStr) < 0)
         goto cleanup;
 
     VIR_DEBUG("FirewallD backend: %s", backendStr);
@@ -216,7 +216,7 @@ virFirewallDGetZones(char ***zones, size_t *nzones)
                           NULL) < 0)
         goto cleanup;
 
-    if (virDBusMessageRead(reply, "a&s", nzones, zones) < 0)
+    if (virDBusMessageDecode(reply, "a&s", nzones, zones) < 0)
         goto cleanup;
 
     ret = 0;
@@ -337,7 +337,7 @@ virFirewallDApplyRule(virFirewallLayer layer,
             goto cleanup;
         }
     } else {
-        if (virDBusMessageRead(reply, "s", output) < 0)
+        if (virDBusMessageDecode(reply, "s", output) < 0)
             goto cleanup;
     }
 

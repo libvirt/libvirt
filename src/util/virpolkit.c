@@ -97,12 +97,12 @@ int virPolkitCheckAuth(const char *actionid,
                           "" /* cancellation ID */) < 0)
         goto cleanup;
 
-    if (virDBusMessageRead(reply,
-                           "(bba&{ss})",
-                           &is_authorized,
-                           &is_challenge,
-                           &nretdetails,
-                           &retdetails) < 0)
+    if (virDBusMessageDecode(reply,
+                             "(bba&{ss})",
+                             &is_authorized,
+                             &is_challenge,
+                             &nretdetails,
+                             &retdetails) < 0)
         goto cleanup;
 
     for (i = 0; i < (nretdetails / 2); i++) {
