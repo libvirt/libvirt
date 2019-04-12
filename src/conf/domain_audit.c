@@ -420,7 +420,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
             if (VIR_STRDUP_QUIET(address, mdevsrc->uuidstr) < 0) {
-                VIR_WARN("OOM while enconding audit message");
+                VIR_WARN("OOM while encoding audit message");
                 goto cleanup;
             }
             break;
