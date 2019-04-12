@@ -55,6 +55,9 @@ void networkPreReloadFirewallRules(bool startup)
     if (rc < 0) {
         errInitV4 = virSaveLastError();
         virResetLastError();
+    } else {
+        virFreeError(errInitV4);
+        errInitV4 = NULL;
     }
     if (rc)
         created = true;
@@ -63,6 +66,9 @@ void networkPreReloadFirewallRules(bool startup)
     if (rc < 0) {
         errInitV6 = virSaveLastError();
         virResetLastError();
+    } else {
+        virFreeError(errInitV6);
+        errInitV6 = NULL;
     }
     if (rc)
         created = true;
