@@ -2399,11 +2399,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY);
 
-    DO_TEST("mlock-on", QEMU_CAPS_REALTIME_MLOCK);
-    DO_TEST_FAILURE("mlock-on", NONE);
-    DO_TEST("mlock-off", QEMU_CAPS_REALTIME_MLOCK);
-    DO_TEST("mlock-unsupported", NONE);
-
     DO_TEST_CAPS_VER("mlock-on", "3.0.0");
     DO_TEST_CAPS_VER("mlock-off", "3.0.0");
     DO_TEST_CAPS_LATEST("mlock-on");
