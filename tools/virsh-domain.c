@@ -8313,7 +8313,8 @@ static const vshCmdInfo info_desc[] = {
      .data = N_("show or set domain's description or title")
     },
     {.name = "desc",
-     .data = N_("Allows to show or modify description or title of a domain.")
+     .data = N_("Allows setting or modifying the description or title of "
+                "a domain.")
     },
     {.name = NULL}
 };

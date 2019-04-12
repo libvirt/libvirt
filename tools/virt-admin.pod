@@ -149,8 +149,8 @@ libvirtd:///system is used.
 
 =head1 DAEMON COMMANDS
 
-The following commands allow to monitor the daemon's state as well as directly
-change its internal configuration.
+The following commands allow one to monitor the daemon's state as well as
+directly change its internal configuration.
 
 =over 4
 

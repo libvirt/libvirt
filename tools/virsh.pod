@@ -778,7 +778,7 @@ effect on the next boot.
               New description or title message]
 
 Show or modify description and title of a domain. These values are user
-fields that allow to store arbitrary textual data to allow easy
+fields that allow storing arbitrary textual data to allow easy
 identification of domains. Title should be short, although it's not enforced.
 (See also B<metadata> that works with XML based domain metadata.)
 
@@ -1303,7 +1303,7 @@ within a certain range. Specifying I<buf-size> will control how much data can
 be simultaneously in-flight during the copy; larger values use more memory but
 may allow faster completion (the default value is usually correct).
 
-I<--transient-job> allows to specify that the user does not require the job to
+I<--transient-job> allows specifying that the user does not require the job to
 be recovered if the VM crashes or is turned off before the job completes. This
 flag removes the restriction of copy jobs to transient domains if that
 restriction is applied by the hypervisor.
@@ -1450,9 +1450,9 @@ bytes/s. Specifying a negative value is interpreted as an unsigned long
 value or essentially unlimited. The hypervisor can choose whether to
 reject the value or convert it to the maximum value allowed. Optionally a
 scaled positive number may be used as bandwidth (see B<NOTES> above). Using
-I<--bytes> with a scaled value allows to use finer granularity. A scaled value
-used without I<--bytes> will be rounded down to MiB/s. Note that the
-I<--bytes> may be unsupported by the hypervisor.
+I<--bytes> with a scaled value permits a finer granularity to be selected.
+A scaled value used without I<--bytes> will be rounded down to MiB/s. Note
+that the I<--bytes> may be unsupported by the hypervisor.
 
 
 =item B<domblkthreshold> I<domain> I<dev> I<threshold>
@@ -1876,7 +1876,7 @@ stats.
 [I<--edit>] [I<uri>] [I<key>] [I<set>] [I<--remove>]
 
 Show or modify custom XML metadata of a domain. The metadata is a user
-defined XML that allows to store arbitrary XML data in the domain definition.
+defined XML that allows storing arbitrary XML data in the domain definition.
 Multiple separate custom metadata pieces can be stored in the domain XML.
 The pieces are identified by a private XML namespace provided via the
 I<uri> argument. (See also B<desc> that works with textual metadata of
@@ -2327,8 +2327,8 @@ either parameter is the same as not specifying that parameter.
 =item B<screenshot> I<domain> [I<imagefilepath>] [I<--screen> B<screenID>]
 
 Takes a screenshot of a current domain console and stores it into a file.
-Optionally, if hypervisor supports more displays for a domain, I<screenID>
-allows to specify which screen will be captured. It is the sequential number
+Optionally, if the hypervisor supports more displays for a domain, I<screenID>
+allows specifying which screen will be captured. It is the sequential number
 of screen. In case of multiple graphics cards, heads are enumerated before
 devices, e.g. having two graphics cards, both with four heads, screen ID 5
 addresses the second head on the second card.
@@ -3392,8 +3392,8 @@ expected.
 
 Change media of CDROM or floppy drive. I<path> can be the fully-qualified path
 or the unique target name (<target dev='hdc'>) of the disk device. I<source>
-specifies the path of the media to be inserted or updated. Flag I<--block>
-allows to set the backing type in case a block device is used as media for the
+specifies the path of the media to be inserted or updated. The I<--block> flag
+allows setting the backing type in case a block device is used as media for the
 CDROM or floppy drive instead of a file.
 
 I<--eject> indicates the media will be ejected.
