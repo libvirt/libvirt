@@ -69,38 +69,6 @@ virQEMUQAPISchemaObjectGet(const char *field,
 }
 
 
-static const char *
-virQEMUQAPISchemaTypeFromObject(virJSONValuePtr obj)
-{
-    if (!obj)
-        return NULL;
-
-    return virJSONValueObjectGetString(obj, "type");
-}
-
-
-/**
- * virQEMUQAPISchemaObjectGetType:
- * @field: name of the object containing the requested type
- * @name: name of the requested type
- * @namefield: name of the object property holding @name
- * @elem: QAPI schema entry JSON object
- *
- * Helper that selects the type of a QMP schema object member or it's variant
- * member. Returns the type string on success or NULL on error.
- */
-static const char *
-virQEMUQAPISchemaObjectGetType(const char *field,
-                               const char *name,
-                               const char *namefield,
-                               virJSONValuePtr elem)
-{
-    virJSONValuePtr obj = virQEMUQAPISchemaObjectGet(field, name, namefield, elem);
-
-    return virQEMUQAPISchemaTypeFromObject(obj);
-}
-
-
 static int
 virQEMUQAPISchemaTraverse(const char *baseName,
                           char **query,
@@ -115,7 +83,6 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
                                 virJSONValuePtr *type)
 {
     virJSONValuePtr obj;
-    const char *querytype = NULL;
     const char *querystr = *query;
     char modifier = *querystr;
 
@@ -123,20 +90,20 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
         querystr++;
 
     if (modifier == '+') {
-        querytype = virQEMUQAPISchemaObjectGetType("variants",
-                                                   querystr,
-                                                   "case", cur);
+        obj = virQEMUQAPISchemaObjectGet("variants", querystr, "case", cur);
     } else {
         obj = virQEMUQAPISchemaObjectGet("members", querystr, "name", cur);
 
         if (modifier == '*' &&
             !virJSONValueObjectHasKey(obj, "default"))
             return 0;
-
-        querytype = virQEMUQAPISchemaTypeFromObject(obj);
     }
 
-    return virQEMUQAPISchemaTraverse(querytype, query + 1, schema, type);
+    if (!obj)
+        return 0;
+
+    return virQEMUQAPISchemaTraverse(virJSONValueObjectGetString(obj, "type"),
+                                     query + 1, schema, type);
 }
 
 
