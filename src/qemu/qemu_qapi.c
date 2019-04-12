@@ -71,9 +71,36 @@ virQEMUQAPISchemaObjectGet(const char *field,
 
 struct virQEMUQAPISchemaTraverseContext {
     virHashTablePtr schema;
-    char **query;
+    char **queries;
     virJSONValuePtr returnType;
 };
+
+
+static void
+virQEMUQAPISchemaTraverseContextInit(struct virQEMUQAPISchemaTraverseContext *ctxt,
+                                     char **queries,
+                                     virHashTablePtr schema)
+{
+    memset(ctxt, 0, sizeof(*ctxt));
+    ctxt->schema = schema;
+    ctxt->queries = queries;
+}
+
+
+static const char *
+virQEMUQAPISchemaTraverseContextNextQuery(struct virQEMUQAPISchemaTraverseContext *ctxt)
+{
+    const char *query = ctxt->queries[0];
+    ctxt->queries++;
+    return query;
+}
+
+
+static bool
+virQEMUQAPISchemaTraverseContextHasNextQuery(struct virQEMUQAPISchemaTraverseContext *ctxt)
+{
+    return !!ctxt->queries[0];
+}
 
 
 static int
@@ -86,7 +113,7 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
                                 struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     virJSONValuePtr obj;
-    const char *query = *ctxt->query;
+    const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
     char modifier = *query;
 
     if (!c_isalpha(modifier))
@@ -104,8 +131,6 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
 
     if (!obj)
         return 0;
-
-    ctxt->query++;
 
     return virQEMUQAPISchemaTraverse(virJSONValueObjectGetString(obj, "type"), ctxt);
 }
@@ -129,12 +154,11 @@ static int
 virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
                                  struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
+    const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
     const char *querytype;
 
-    if (!(querytype = virJSONValueObjectGetString(cur, *ctxt->query)))
+    if (!(querytype = virJSONValueObjectGetString(cur, query)))
         return 0;
-
-    ctxt->query++;
 
     return virQEMUQAPISchemaTraverse(querytype, ctxt);
 }
@@ -150,7 +174,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
     if (!(cur = virHashLookup(ctxt->schema, baseName)))
         return 0;
 
-    if (!ctxt->query[0]) {
+    if (!virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt)) {
         ctxt->returnType = cur;
         return 1;
     }
@@ -214,7 +238,7 @@ virQEMUQAPISchemaPathGet(const char *query,
                          virJSONValuePtr *entry)
 {
     VIR_AUTOSTRINGLIST elems = NULL;
-    struct virQEMUQAPISchemaTraverseContext ctxt = { .schema = schema };
+    struct virQEMUQAPISchemaTraverseContext ctxt;
     int rc;
 
     if (entry)
@@ -228,9 +252,9 @@ virQEMUQAPISchemaPathGet(const char *query,
         return -1;
     }
 
-    ctxt.query = elems + 1;
+    virQEMUQAPISchemaTraverseContextInit(&ctxt, elems, schema);
 
-    rc = virQEMUQAPISchemaTraverse(elems[0], &ctxt);
+    rc = virQEMUQAPISchemaTraverse(virQEMUQAPISchemaTraverseContextNextQuery(&ctxt), &ctxt);
 
     if (entry)
         *entry = ctxt.returnType;
