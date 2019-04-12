@@ -49,19 +49,7 @@
 #include "virutil.h"
 
 /* This one changes from version to version. */
-#if VBOX_API_VERSION == 4000000
-# include "vbox_CAPI_v4_0.h"
-#elif VBOX_API_VERSION == 4001000
-# include "vbox_CAPI_v4_1.h"
-#elif VBOX_API_VERSION == 4002000
-# include "vbox_CAPI_v4_2.h"
-#elif VBOX_API_VERSION == 4002020
-# include "vbox_CAPI_v4_2_20.h"
-#elif VBOX_API_VERSION == 4003000
-# include "vbox_CAPI_v4_3.h"
-#elif VBOX_API_VERSION == 4003004
-# include "vbox_CAPI_v4_3_4.h"
-#elif VBOX_API_VERSION == 5000000
+#if VBOX_API_VERSION == 5000000
 # include "vbox_CAPI_v5_0.h"
 #elif VBOX_API_VERSION == 5001000
 # include "vbox_CAPI_v5_1.h"
@@ -74,11 +62,7 @@
 /* Include this *last* or we'll get the wrong vbox_CAPI_*.h. */
 #include "vbox_glue.h"
 
-#if VBOX_API_VERSION < 4003000
-typedef IUSBController IUSBCommon;
-#else /* VBOX_API_VERSION >= 4003000 */
 typedef IUSBDeviceFilters IUSBCommon;
-#endif /* VBOX_API_VERSION >= 4003000 */
 
 
 #include "vbox_uniformed_api.h"
@@ -313,9 +297,6 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
                           ISnapshot *snapshot)
 {
     vboxDriverPtr data = dom->conn->privateData;
-#if VBOX_API_VERSION < 5000000
-    IConsole *console = NULL;
-#endif /*VBOX_API_VERSION < 5000000*/
     IProgress *progress = NULL;
     PRUint32 state;
     nsresult rc;
@@ -348,10 +329,6 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
     }
 
     rc = machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write);
-#if VBOX_API_VERSION < 5000000
-    if (NS_SUCCEEDED(rc))
-        rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
-#endif /*VBOX_API_VERSION < 5000000*/
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("could not open VirtualBox session with domain %s"),
@@ -359,11 +336,7 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
         goto cleanup;
     }
 
-#if VBOX_API_VERSION < 5000000
-    rc = console->vtbl->RestoreSnapshot(console, snapshot, &progress);
-#elif VBOX_API_VERSION >= 5000000  /*VBOX_API_VERSION < 5000000*/
     rc = machine->vtbl->RestoreSnapshot(machine, snapshot, &progress);
-#endif /*VBOX_API_VERSION >= 5000000*/
 
     if (NS_FAILED(rc) || !progress) {
         if (rc == VBOX_E_INVALID_VM_STATE) {
@@ -389,9 +362,6 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
 
  cleanup:
     VBOX_RELEASE(progress);
-#if VBOX_API_VERSION < 5000000
-    VBOX_RELEASE(console);
-#endif /*VBOX_API_VERSION < 5000000*/
     data->vboxSession->vtbl->UnlockMachine(data->vboxSession);
     vboxIIDUnalloc(&domiid);
     return ret;
@@ -449,20 +419,12 @@ _deleteConfig(IMachine *machine)
                                                  SAFEARRAY **media,
                                                  IProgress **progress);
 
-# if VBOX_API_VERSION < 4003000
-    ((IMachine_Delete)machine->vtbl->Delete)(machine, &safeArray, &progress);
-# else
     ((IMachine_Delete)machine->vtbl->DeleteConfig)(machine, &safeArray, &progress);
-# endif
 #else
     /* XPCOM doesn't like NULL as an array, even when the array size is 0.
      * Instead pass it a dummy array to avoid passing NULL. */
     IMedium *array[] = { NULL };
-# if VBOX_API_VERSION < 4003000
-    machine->vtbl->Delete(machine, 0, array, &progress);
-# else
     machine->vtbl->DeleteConfig(machine, 0, array, &progress);
-# endif
 #endif
     if (progress != NULL) {
         progress->vtbl->WaitForCompletion(progress, -1);
@@ -472,10 +434,10 @@ _deleteConfig(IMachine *machine)
 
 static int _pfnInitialize(vboxDriverPtr driver)
 {
+    nsresult rc;
+
     if (!(driver->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION)))
         return -1;
-#if VBOX_API_VERSION == 4002020 || VBOX_API_VERSION >= 4004004
-    nsresult rc;
 
     rc = driver->pFuncs->pfnClientInitialize(IVIRTUALBOXCLIENT_IID_STR,
                                              &driver->vboxClient);
@@ -486,10 +448,6 @@ static int _pfnInitialize(vboxDriverPtr driver)
         driver->vboxClient->vtbl->GetVirtualBox(driver->vboxClient, &driver->vboxObj);
         driver->vboxClient->vtbl->GetSession(driver->vboxClient, &driver->vboxSession);
     }
-#else
-    driver->pFuncs->pfnComInitialize(IVIRTUALBOX_IID_STR, &driver->vboxObj,
-                                     ISESSION_IID_STR, &driver->vboxSession);
-#endif
 
     return 0;
 }
@@ -497,15 +455,11 @@ static int _pfnInitialize(vboxDriverPtr driver)
 static void _pfnUninitialize(vboxDriverPtr data)
 {
     if (data->pFuncs) {
-#if VBOX_API_VERSION == 4002020 || VBOX_API_VERSION >= 4003004
         VBOX_RELEASE(data->vboxObj);
         VBOX_RELEASE(data->vboxSession);
         VBOX_RELEASE(data->vboxClient);
 
         data->pFuncs->pfnClientUninitialize();
-#else
-        data->pFuncs->pfnComUninitialize();
-#endif
     }
 }
 
@@ -664,16 +618,6 @@ _virtualboxCreateMachine(vboxDriverPtr data, virDomainDefPtr def, IMachine **mac
     VBOX_UTF8_TO_UTF16(def->name, &machineNameUtf16);
     vboxIIDFromUUID(&iid, def->uuid);
     {
-#if VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
-        PRBool override = PR_FALSE;
-        rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
-                                                NULL,
-                                                machineNameUtf16,
-                                                NULL,
-                                                iid.value,
-                                                override,
-                                                machine);
-#else /* VBOX_API_VERSION >= 4002000 */
         char *createFlags = NULL;
         PRUnichar *createFlagsUtf16 = NULL;
 
@@ -691,7 +635,6 @@ _virtualboxCreateMachine(vboxDriverPtr data, virDomainDefPtr def, IMachine **mac
                                                 machine);
  cleanup:
         VIR_FREE(createFlags);
-#endif /* VBOX_API_VERSION >= 4002000 */
     }
     VBOX_UTF16_FREE(machineNameUtf16);
     vboxIIDUnalloc(&iid);
@@ -702,16 +645,11 @@ static nsresult
 _virtualboxCreateHardDisk(IVirtualBox *vboxObj, PRUnichar *format,
                           PRUnichar *location, IMedium **medium)
 {
-    /* In vbox 2.2 and 3.0, this function will create a IHardDisk object.
-     * In vbox 3.1 and later, this function will create a IMedium object.
+    /* This function will create a IMedium object.
      */
-#if VBOX_API_VERSION < 5000000
-    return vboxObj->vtbl->CreateHardDisk(vboxObj, format, location, medium);
-#elif VBOX_API_VERSION >= 5000000 /*VBOX_API_VERSION >= 5000000*/
     return vboxObj->vtbl->CreateMedium(vboxObj, format, location,
                                        AccessMode_ReadWrite,
                                        DeviceType_HardDisk, medium);
-#endif /*VBOX_API_VERSION >= 5000000*/
 }
 
 static nsresult
@@ -727,12 +665,8 @@ _virtualboxFindHardDisk(IVirtualBox *vboxObj,
                         PRUint32 accessMode ATTRIBUTE_UNUSED,
                         IMedium **medium)
 {
-#if VBOX_API_VERSION < 4002000
-    return vboxObj->vtbl->FindMedium(vboxObj, location, deviceType, medium);
-#else /* VBOX_API_VERSION >= 4002000 */
     return vboxObj->vtbl->OpenMedium(vboxObj, location, deviceType, accessMode,
                                      PR_FALSE, medium);
-#endif /* VBOX_API_VERSION >= 4002000 */
 }
 
 static nsresult
@@ -742,25 +676,15 @@ _virtualboxOpenMedium(IVirtualBox *vboxObj,
                       PRUint32 accessMode,
                       IMedium **medium)
 {
-#if VBOX_API_VERSION == 4000000
-    return vboxObj->vtbl->OpenMedium(vboxObj, location, deviceType, accessMode,
-                                     medium);
-#elif VBOX_API_VERSION >= 4001000
     return vboxObj->vtbl->OpenMedium(vboxObj, location, deviceType, accessMode,
                                      false, medium);
-#endif
 }
 
 static nsresult
 _virtualboxGetHardDiskByIID(IVirtualBox *vboxObj, vboxIID *iid, IMedium **medium)
 {
-#if VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
-    return vboxObj->vtbl->FindMedium(vboxObj, iid->value, DeviceType_HardDisk,
-                                     medium);
-#else /* VBOX_API_VERSION >= 4002000 */
     return vboxObj->vtbl->OpenMedium(vboxObj, iid->value, DeviceType_HardDisk,
                                      AccessMode_ReadWrite, PR_FALSE, medium);
-#endif /* VBOX_API_VERSION >= 4002000 */
 }
 
 static nsresult
@@ -927,11 +851,7 @@ _machineGetVRDEServer(IMachine *machine, IVRDEServer **VRDEServer)
 static nsresult
 _machineGetUSBCommon(IMachine *machine, IUSBCommon **USBCommon)
 {
-#if VBOX_API_VERSION < 4003000
-    return machine->vtbl->GetUSBController(machine, USBCommon);
-#else
     return machine->vtbl->GetUSBDeviceFilters(machine, USBCommon);
-#endif
 }
 
 static nsresult
@@ -1101,9 +1021,6 @@ _sessionGetMachine(ISession *session, IMachine **machine)
 static nsresult
 _consoleSaveState(IConsole *console, IProgress **progress)
 {
-#if VBOX_API_VERSION < 5000000
-    return console->vtbl->SaveState(console, progress);
-#else /*VBOX_API_VERSION < 5000000*/
     IMachine *machine;
     nsresult rc;
 
@@ -1116,8 +1033,6 @@ _consoleSaveState(IConsole *console, IProgress **progress)
                        _("unable to get machine from console. (error %d)"), rc);
 
     return rc;
-
-#endif /*VBOX_API_VERSION >= 5000000*/
 }
 
 static nsresult
@@ -1162,9 +1077,6 @@ static nsresult
 _consoleTakeSnapshot(IConsole *console, PRUnichar *name,
                      PRUnichar *description, IProgress **progress)
 {
-#if VBOX_API_VERSION < 5000000
-    return console->vtbl->TakeSnapshot(console, name, description, progress);
-#else
     IMachine *machine;
     nsresult rc;
     PRUnichar *id = NULL;
@@ -1180,15 +1092,11 @@ _consoleTakeSnapshot(IConsole *console, PRUnichar *name,
 
     VBOX_RELEASE(machine);
     return rc;
-#endif /* VBOX_API_VERSION >= 5000000 */
 }
 
 static nsresult
 _consoleDeleteSnapshot(IConsole *console, vboxIID *iid, IProgress **progress)
 {
-#if VBOX_API_VERSION < 5000000 /* VBOX_API_VERSION < 5000000 */
-    return console->vtbl->DeleteSnapshot(console, iid->value, progress);
-#else /* VBOX_API_VERSION >= 5000000 */
     IMachine *machine;
     nsresult rc;
 
@@ -1203,7 +1111,6 @@ _consoleDeleteSnapshot(IConsole *console, vboxIID *iid, IProgress **progress)
     VBOX_RELEASE(machine);
 
     return rc;
-#endif /* VBOX_API_VERSION >= 5000000 */
 }
 
 static nsresult
@@ -1252,13 +1159,8 @@ static nsresult
 _systemPropertiesGetMaxNetworkAdapters(ISystemProperties *systemProperties, PRUint32 chipset ATTRIBUTE_UNUSED,
                                        PRUint32 *maxNetworkAdapters)
 {
-#if VBOX_API_VERSION < 4001000
-    return systemProperties->vtbl->GetNetworkAdapterCount(systemProperties,
-                                                          maxNetworkAdapters);
-#else  /* VBOX_API_VERSION >= 4000000 */
     return systemProperties->vtbl->GetMaxNetworkAdapters(systemProperties, chipset,
                                                          maxNetworkAdapters);
-#endif /* VBOX_API_VERSION >= 4000000 */
 }
 
 static nsresult
@@ -1396,58 +1298,6 @@ _networkAdapterSetMACAddress(INetworkAdapter *adapter, PRUnichar *MACAddress)
     return adapter->vtbl->SetMACAddress(adapter, MACAddress);
 }
 
-#if VBOX_API_VERSION < 4001000
-
-static nsresult
-_networkAdapterGetBridgedInterface(INetworkAdapter *adapter, PRUnichar **hostInterface)
-{
-    return adapter->vtbl->GetHostInterface(adapter, hostInterface);
-}
-
-static nsresult
-_networkAdapterSetBridgedInterface(INetworkAdapter *adapter, PRUnichar *hostInterface)
-{
-    return adapter->vtbl->SetHostInterface(adapter, hostInterface);
-}
-
-static nsresult
-_networkAdapterGetHostOnlyInterface(INetworkAdapter *adapter, PRUnichar **hostOnlyInterface)
-{
-    return adapter->vtbl->GetHostInterface(adapter, hostOnlyInterface);
-}
-
-static nsresult
-_networkAdapterSetHostOnlyInterface(INetworkAdapter *adapter, PRUnichar *hostOnlyInterface)
-{
-    return adapter->vtbl->SetHostInterface(adapter, hostOnlyInterface);
-}
-
-static nsresult
-_networkAdapterAttachToBridgedInterface(INetworkAdapter *adapter)
-{
-    return adapter->vtbl->AttachToBridgedInterface(adapter);
-}
-
-static nsresult
-_networkAdapterAttachToInternalNetwork(INetworkAdapter *adapter)
-{
-    return adapter->vtbl->AttachToInternalNetwork(adapter);
-}
-
-static nsresult
-_networkAdapterAttachToHostOnlyInterface(INetworkAdapter *adapter)
-{
-    return adapter->vtbl->AttachToHostOnlyInterface(adapter);
-}
-
-static nsresult
-_networkAdapterAttachToNAT(INetworkAdapter *adapter)
-{
-    return adapter->vtbl->AttachToNAT(adapter);
-}
-
-#else /* VBOX_API_VERSION >= 4001000 */
-
 static nsresult
 _networkAdapterGetBridgedInterface(INetworkAdapter *adapter, PRUnichar **bridgedInterface)
 {
@@ -1495,8 +1345,6 @@ _networkAdapterAttachToNAT(INetworkAdapter *adapter)
 {
     return adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_NAT);
 }
-
-#endif /* VBOX_API_VERSION >= 4001000 */
 
 static nsresult
 _serialPortGetEnabled(ISerialPort *port, PRBool *enabled)
@@ -1763,28 +1611,15 @@ _vrdeServerSetNetAddress(vboxDriverPtr data ATTRIBUTE_UNUSED,
 static nsresult
 _usbCommonEnable(IUSBCommon *USBCommon ATTRIBUTE_UNUSED)
 {
-    nsresult rc = 0;
-#if VBOX_API_VERSION < 4003000
-    USBCommon->vtbl->SetEnabled(USBCommon, 1);
-# if VBOX_API_VERSION < 4002000
-    rc = USBCommon->vtbl->SetEnabledEhci(USBCommon, 1);
-# else /* VBOX_API_VERSION >= 4002000 */
-    rc = USBCommon->vtbl->SetEnabledEHCI(USBCommon, 1);
-# endif /* VBOX_API_VERSION >= 4002000 */
-#endif /* VBOX_API_VERSION >= 4003000 */
     /* We don't need to set usb enabled for vbox 4.3 and later */
-    return rc;
+    return 0;
 }
 
 static nsresult
 _usbCommonGetEnabled(IUSBCommon *USBCommon ATTRIBUTE_UNUSED, PRBool *enabled)
 {
-#if VBOX_API_VERSION < 4003000
-    return USBCommon->vtbl->GetEnabled(USBCommon, enabled);
-#else /* VBOX_API_VERSION >= 4003000 */
     *enabled = true;
     return 0;
-#endif /* VBOX_API_VERSION >= 4003000 */
 }
 
 static nsresult
@@ -1921,26 +1756,14 @@ _mediumCreateDiffStorage(IMedium *medium ATTRIBUTE_UNUSED,
                          PRUint32 *variant ATTRIBUTE_UNUSED,
                          IProgress **progress ATTRIBUTE_UNUSED)
 {
-#if VBOX_API_VERSION < 4003000
-    if (variantSize == 0)
-        return 0;
-    if (variantSize > 1)
-        VIR_WARN("Only one variant is available in current version");
-    return medium->vtbl->CreateDiffStorage(medium, target, variant[0], progress);
-#else /* VBOX_API_VERSION >= 4003000 */
     return medium->vtbl->CreateDiffStorage(medium, target, variantSize, variant, progress);
-#endif /* VBOX_API_VERSION >= 4003000 */
 }
 
 static nsresult
 _mediumCreateBaseStorage(IMedium *medium, PRUint64 logicalSize,
                            PRUint32 variant, IProgress **progress)
 {
-#if VBOX_API_VERSION < 4003000
-    return medium->vtbl->CreateBaseStorage(medium, logicalSize, variant, progress);
-#else
     return medium->vtbl->CreateBaseStorage(medium, logicalSize, 1, &variant, progress);
-#endif
 }
 
 static nsresult
@@ -2075,20 +1898,11 @@ _displayGetScreenResolution(IDisplay *display ATTRIBUTE_UNUSED,
                             PRInt32 *xOrigin ATTRIBUTE_UNUSED,
                             PRInt32 *yOrigin ATTRIBUTE_UNUSED)
 {
-#if VBOX_API_VERSION < 4003000
-    return display->vtbl->GetScreenResolution(display, screenId, width,
-                                              height, bitsPerPixel);
-#elif VBOX_API_VERSION < 5000000 /* VBOX_API_VERSION >= 4003000 */
-    return display->vtbl->GetScreenResolution(display, screenId, width,
-                                              height, bitsPerPixel,
-                                              xOrigin, yOrigin);
-#else /*VBOX_API_VERSION >= 5000000 */
     PRUint32 gms;
 
     return display->vtbl->GetScreenResolution(display, screenId, width,
                                               height, bitsPerPixel,
                                               xOrigin, yOrigin, &gms);
-#endif /* VBOX_API_VERSION >= 5000000 */
 }
 
 static nsresult
@@ -2097,15 +1911,9 @@ _displayTakeScreenShotPNGToArray(IDisplay *display, PRUint32 screenId,
                                  PRUint32 *screenDataSize,
                                  PRUint8** screenData)
 {
-#if VBOX_API_VERSION >= 5000000
     return display->vtbl->TakeScreenShotToArray(display, screenId, width,
                                                 height, BitmapFormat_PNG,
                                                 screenDataSize, screenData);
-#else /* VBOX_API_VERSION < 5000000 */
-    return display->vtbl->TakeScreenShotPNGToArray(display, screenId, width,
-                                                   height, screenDataSize,
-                                                   screenData);
-#endif /* VBOX_API_VERSION >= 5000000 */
 }
 
 static nsresult
@@ -2197,31 +2005,19 @@ static nsresult
 _hnInterfaceEnableStaticIPConfig(IHostNetworkInterface *hni, PRUnichar *IPAddress,
                                  PRUnichar *networkMask)
 {
-#if VBOX_API_VERSION < 4002000
-    return hni->vtbl->EnableStaticIpConfig(hni, IPAddress, networkMask);
-#else
     return hni->vtbl->EnableStaticIPConfig(hni, IPAddress, networkMask);
-#endif
 }
 
 static nsresult
 _hnInterfaceEnableDynamicIPConfig(IHostNetworkInterface *hni)
 {
-#if VBOX_API_VERSION < 4002000
-    return hni->vtbl->EnableDynamicIpConfig(hni);
-#else
     return hni->vtbl->EnableDynamicIPConfig(hni);
-#endif
 }
 
 static nsresult
 _hnInterfaceDHCPRediscover(IHostNetworkInterface *hni)
 {
-#if VBOX_API_VERSION < 4002000
-    return hni->vtbl->DhcpRediscover(hni);
-#else
     return hni->vtbl->DHCPRediscover(hni);
-#endif
 }
 
 static nsresult
@@ -2695,15 +2491,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UIKeyboard = _UIKeyboard;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
-#if VBOX_API_VERSION >= 4001000
     pVBoxAPI->chipsetType = 1;
-#else /* VBOX_API_VERSION < 4001000 */
-    pVBoxAPI->chipsetType = 0;
-#endif /* VBOX_API_VERSION < 4001000 */
 
-#if VBOX_API_VERSION >= 4002000
     pVBoxAPI->vboxSnapshotRedefine = 1;
-#else /* VBOX_API_VERSION < 4002000 */
-    pVBoxAPI->vboxSnapshotRedefine = 0;
-#endif /* VBOX_API_VERSION < 4002000 */
 }

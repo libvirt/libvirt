@@ -85,7 +85,7 @@ struct _vboxDriver {
     PCVBOXXPCOM pFuncs;
     IVirtualBox *vboxObj;
     ISession *vboxSession;
-# if VBOX_API_VERSION == 4002020 || VBOX_API_VERSION >= 4003004
+# ifdef VBOX_API_VERSION
     IVirtualBoxClient *vboxClient;
 # endif
 
@@ -556,12 +556,6 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
 
 /* Version specified functions for installing uniformed API */
-void vbox40InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
-void vbox41InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
-void vbox42InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
-void vbox42_20InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
-void vbox43InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
-void vbox43_4InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox50InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox51InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox52InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);

@@ -884,19 +884,7 @@ virStorageDriverPtr vboxGetStorageDriver(uint32_t uVersion)
     /* Install gVBoxAPI according to the vbox API version.
      * Return -1 for unsupported version.
      */
-    if (uVersion >= 3002051 && uVersion < 4000051) {
-        vbox40InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4000051 && uVersion < 4001051) {
-        vbox41InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4001051 && uVersion < 4002020) {
-        vbox42InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4002020 && uVersion < 4002051) {
-        vbox42_20InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4002051 && uVersion < 4003004) {
-        vbox43InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4003004 && uVersion < 4003051) {
-        vbox43_4InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 4003051 && uVersion < 5000051) {
+    if (uVersion >= 5000000 && uVersion < 5000051) {
         vbox50InstallUniformedAPI(&gVBoxAPI);
     } else if (uVersion >= 5000051 && uVersion < 5001051) {
         vbox51InstallUniformedAPI(&gVBoxAPI);
