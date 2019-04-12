@@ -588,8 +588,7 @@ void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
 virFileCachePtr virQEMUCapsCacheNew(const char *libDir,
                                     const char *cacheDir,
                                     uid_t uid,
-                                    gid_t gid,
-                                    unsigned int microcodeVersion);
+                                    gid_t gid);
 virQEMUCapsPtr virQEMUCapsCacheLookup(virFileCachePtr cache,
                                       const char *binary);
 virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
