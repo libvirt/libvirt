@@ -525,6 +525,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "nvdimm.unarmed",
               "scsi-disk.device_id",
               "virtio-pci-non-transitional",
+              "overcommit",
     );
 
 
@@ -2659,6 +2660,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },
     { "sandbox", "elevateprivileges", QEMU_CAPS_SECCOMP_BLACKLIST },
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS },
+    { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
 };
 
 static int
