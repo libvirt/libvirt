@@ -86,16 +86,16 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
                                 struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     virJSONValuePtr obj;
-    const char *querystr = *ctxt->query;
-    char modifier = *querystr;
+    const char *query = *ctxt->query;
+    char modifier = *query;
 
     if (!c_isalpha(modifier))
-        querystr++;
+        query++;
 
     if (modifier == '+') {
-        obj = virQEMUQAPISchemaObjectGet("variants", querystr, "case", cur);
+        obj = virQEMUQAPISchemaObjectGet("variants", query, "case", cur);
     } else {
-        obj = virQEMUQAPISchemaObjectGet("members", querystr, "name", cur);
+        obj = virQEMUQAPISchemaObjectGet("members", query, "name", cur);
 
         if (modifier == '*' &&
             !virJSONValueObjectHasKey(obj, "default"))
