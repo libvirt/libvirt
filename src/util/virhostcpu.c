@@ -1301,7 +1301,7 @@ virHostCPUGetMSRFromKVM(unsigned long index ATTRIBUTE_UNUSED,
 /*
  * Returns 0 on success,
  *         1 when the MSR is not supported by the host CPU,
-*         -1 on error.
+ *        -1 on error.
  */
 int
 virHostCPUGetMSR(unsigned long index,
