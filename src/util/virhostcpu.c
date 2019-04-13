@@ -1257,7 +1257,9 @@ virHostCPUGetMicrocodeVersion(void)
 #endif /* __linux__ */
 
 
-#if HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS)
+#if HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
+    (defined(__i386__) || defined(__x86_64__)) && \
+    (defined(__linux__) || defined(__FreeBSD__))
 static int
 virHostCPUGetMSRFromKVM(unsigned long index,
                         uint64_t *result)
@@ -1284,19 +1286,6 @@ virHostCPUGetMSRFromKVM(unsigned long index,
     *result = msr.entry.data;
     return 0;
 }
-
-#else
-
-static int
-virHostCPUGetMSRFromKVM(unsigned long index ATTRIBUTE_UNUSED,
-                        uint64_t *result ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Reading MSRs via KVM is not supported on this platform"));
-    return -1;
-}
-#endif /* HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS) */
-
 
 /*
  * Returns 0 on success,
@@ -1334,3 +1323,18 @@ virHostCPUGetMSR(unsigned long index,
 
     return virHostCPUGetMSRFromKVM(index, msr);
 }
+
+#else
+
+int
+virHostCPUGetMSR(unsigned long index ATTRIBUTE_UNUSED,
+                 uint64_t *msr ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Reading MSRs is not supported on this platform"));
+    return -1;
+}
+
+#endif /* HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
+          (defined(__i386__) || defined(__x86_64__)) && \
+          (defined(__linux__) || defined(__FreeBSD__)) */
