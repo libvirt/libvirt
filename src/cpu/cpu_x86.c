@@ -2707,6 +2707,35 @@ cpuidSet(uint32_t base, virCPUDataPtr data)
 }
 
 
+
+
+static int
+virCPUx86GetHost(virCPUDefPtr cpu,
+                 virDomainCapsCPUModelsPtr models)
+{
+    virCPUDataPtr cpuData = NULL;
+    int ret = -1;
+
+    if (virCPUx86DriverInitialize() < 0)
+        goto cleanup;
+
+    if (!(cpuData = virCPUDataNew(archs[0])))
+        goto cleanup;
+
+    if (cpuidSet(CPUX86_BASIC, cpuData) < 0 ||
+        cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
+        goto cleanup;
+
+    ret = x86DecodeCPUData(cpu, cpuData, models);
+    cpu->microcodeVersion = virHostCPUGetMicrocodeVersion();
+
+ cleanup:
+    virCPUx86DataFree(cpuData);
+    return ret;
+}
+#endif
+
+
 static int
 virCPUx86CheckFeature(const virCPUDef *cpu,
                       const char *name)
@@ -2740,33 +2769,6 @@ virCPUx86DataCheckFeature(const virCPUData *data,
 
     return x86FeatureInData(name, &data->data.x86, map);
 }
-
-
-static int
-virCPUx86GetHost(virCPUDefPtr cpu,
-                 virDomainCapsCPUModelsPtr models)
-{
-    virCPUDataPtr cpuData = NULL;
-    int ret = -1;
-
-    if (virCPUx86DriverInitialize() < 0)
-        goto cleanup;
-
-    if (!(cpuData = virCPUDataNew(archs[0])))
-        goto cleanup;
-
-    if (cpuidSet(CPUX86_BASIC, cpuData) < 0 ||
-        cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
-        goto cleanup;
-
-    ret = x86DecodeCPUData(cpu, cpuData, models);
-    cpu->microcodeVersion = virHostCPUGetMicrocodeVersion();
-
- cleanup:
-    virCPUx86DataFree(cpuData);
-    return ret;
-}
-#endif
 
 
 static virCPUDefPtr
