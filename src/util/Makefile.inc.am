@@ -321,7 +321,9 @@ util/virkeycode-%.pod: $(srcdir)/keycodemapdb/data/keymaps.csv \
 					      -e 's,\.pod,,'` && \
 		$(MKDIR_P) util/ && \
 		$(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-		--lang pod --varname "Key code values for $$NAME" code-docs \
+		--lang pod \
+		--varname "virkeycode-$$NAME - Key code values for $$NAME" \
+		code-docs \
 		$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > \
 			$@-tmp && mv $@-tmp $@ || rm $@-tmp
 
@@ -331,7 +333,9 @@ util/virkeyname-%.pod: $(srcdir)/keycodemapdb/data/keymaps.csv \
 					      -e 's,\.pod,,'` && \
 		$(MKDIR_P) util/ && \
 		$(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-		--lang pod --varname "Key name values for $$NAME" name-docs \
+		--lang pod \
+		--varname "virkeyname-$$NAME - Key name values for $$NAME" \
+		name-docs \
 		$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > \
 			$@-tmp && mv $@-tmp $@ || rm $@-tmp
 
