@@ -90,19 +90,18 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 
 static int
 testInfoSetPaths(struct testQemuInfo *info,
-                 const char *name,
                  int when)
 {
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
 
     if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
-                    abs_srcdir, name) < 0)
+                    abs_srcdir, info->name) < 0)
         goto error;
 
     if (virAsprintf(&info->outfile,
                     "%s/qemuxml2xmloutdata/%s-%s.xml",
-                    abs_srcdir, name,
+                    abs_srcdir, info->name,
                     when == WHEN_ACTIVE ? "active" : "inactive") < 0)
         goto error;
 
@@ -111,7 +110,7 @@ testInfoSetPaths(struct testQemuInfo *info,
 
         if (virAsprintf(&info->outfile,
                         "%s/qemuxml2xmloutdata/%s.xml",
-                        abs_srcdir, name) < 0)
+                        abs_srcdir, info->name) < 0)
             goto error;
     }
 
@@ -126,11 +125,10 @@ testInfoSetPaths(struct testQemuInfo *info,
 static const char *statusPath = abs_srcdir "/qemustatusxml2xmldata/";
 
 static int
-testInfoSetStatusPaths(struct testQemuInfo *info,
-                       const char *name)
+testInfoSetStatusPaths(struct testQemuInfo *info)
 {
-    if (virAsprintf(&info->infile, "%s%s-in.xml", statusPath, name) < 0 ||
-        virAsprintf(&info->outfile, "%s%s-out.xml", statusPath, name) < 0)
+    if (virAsprintf(&info->infile, "%s%s-in.xml", statusPath, info->name) < 0 ||
+        virAsprintf(&info->outfile, "%s%s-out.xml", statusPath, info->name) < 0)
         goto error;
 
     return 0;
@@ -148,7 +146,6 @@ mymain(void)
 {
     int ret = 0;
     char *fakerootdir;
-    struct testQemuInfo info;
     virQEMUDriverConfigPtr cfg = NULL;
     virHashTablePtr capslatest = NULL;
 
@@ -168,39 +165,40 @@ mymain(void)
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
 
-    memset(&info, 0, sizeof(info));
-
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
     cfg = virQEMUDriverGetConfig(&driver);
 
-# define DO_TEST_FULL(name, when, ...) \
+# define DO_TEST_FULL(_name, when, ...) \
     do { \
+        static struct testQemuInfo info = { \
+            .name = _name, \
+        }; \
         if (testQemuInfoSetArgs(&info, capslatest, \
                                 __VA_ARGS__, \
                                 ARG_END) < 0 || \
             qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
-            VIR_TEST_DEBUG("Failed to generate test data for '%s'", name); \
+            VIR_TEST_DEBUG("Failed to generate test data for '%s'", _name); \
             return -1; \
         } \
  \
         if (when & WHEN_INACTIVE) { \
-            if (testInfoSetPaths(&info, name, WHEN_INACTIVE) < 0) { \
-                VIR_TEST_DEBUG("Failed to generate inactive paths for '%s'", name); \
+            if (testInfoSetPaths(&info, WHEN_INACTIVE) < 0) { \
+                VIR_TEST_DEBUG("Failed to generate inactive paths for '%s'", _name); \
                 return -1; \
             } \
-            if (virTestRun("QEMU XML-2-XML-inactive " name, \
+            if (virTestRun("QEMU XML-2-XML-inactive " _name, \
                             testXML2XMLInactive, &info) < 0) \
                 ret = -1; \
         } \
  \
         if (when & WHEN_ACTIVE) { \
-            if (testInfoSetPaths(&info, name, WHEN_ACTIVE) < 0) { \
-                VIR_TEST_DEBUG("Failed to generate active paths for '%s'", name); \
+            if (testInfoSetPaths(&info, WHEN_ACTIVE) < 0) { \
+                VIR_TEST_DEBUG("Failed to generate active paths for '%s'", _name); \
                 return -1; \
             } \
-            if (virTestRun("QEMU XML-2-XML-active " name, \
+            if (virTestRun("QEMU XML-2-XML-active " _name, \
                             testXML2XMLActive, &info) < 0) \
                 ret = -1; \
         } \
@@ -1253,18 +1251,21 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES);
 
-# define DO_TEST_STATUS(name) \
+# define DO_TEST_STATUS(_name) \
     do { \
+        static struct testQemuInfo info = { \
+            .name = _name, \
+        }; \
         if (testQemuInfoSetArgs(&info, capslatest, \
                                 ARG_QEMU_CAPS, QEMU_CAPS_LAST, \
                                 ARG_END) < 0 || \
             qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0 || \
-            testInfoSetStatusPaths(&info, name) < 0) { \
-            VIR_TEST_DEBUG("Failed to generate status test data for '%s'", name); \
+            testInfoSetStatusPaths(&info) < 0) { \
+            VIR_TEST_DEBUG("Failed to generate status test data for '%s'", _name); \
             return -1; \
         } \
 \
-        if (virTestRun("QEMU status XML-2-XML " name, \
+        if (virTestRun("QEMU status XML-2-XML " _name, \
                        testCompareStatusXMLToXMLFiles, &info) < 0) \
             ret = -1; \
 \
