@@ -43,6 +43,7 @@ prepareObjects(virQEMUDriverPtr driver,
     VIR_AUTOUNREF(virDomainObjPtr) vm = NULL;
     VIR_AUTOFREE(char *) filename = NULL;
     VIR_AUTOFREE(char *) domxml = NULL;
+    VIR_AUTOFREE(char *) latestCapsFile = NULL;
 
     if (virAsprintf(&filename, "%s/qemuxml2argvdata/%s.xml", abs_srcdir, xmlname) < 0)
         return -1;
@@ -58,21 +59,11 @@ prepareObjects(virQEMUDriverPtr driver,
     priv->chardevStdioLogd = false;
     priv->rememberOwner = true;
 
-    if (!(priv->qemuCaps = virQEMUCapsNew()))
+    if (!(latestCapsFile = testQemuGetLatestCapsForArch("x86_64", "xml")))
         return -1;
 
-    virQEMUCapsSetList(priv->qemuCaps,
-                       QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-                       QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-                       QEMU_CAPS_DEVICE_IOH3420,
-                       QEMU_CAPS_DEVICE_PCI_BRIDGE,
-                       QEMU_CAPS_DEVICE_PCI_BRIDGE,
-                       QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-                       QEMU_CAPS_DEVICE_VIRTIO_RNG,
-                       QEMU_CAPS_OBJECT_GPEX,
-                       QEMU_CAPS_OBJECT_RNG_RANDOM,
-                       QEMU_CAPS_VIRTIO_SCSI,
-                       QEMU_CAPS_LAST);
+    if (!(priv->qemuCaps = qemuTestParseCapabilitiesArch(VIR_ARCH_X86_64, latestCapsFile)))
+        return -1;
 
     if (qemuTestCapsCacheInsert(driver->qemuCapsCache, priv->qemuCaps) < 0)
         return -1;
@@ -148,11 +139,57 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    DO_TEST_DOMAIN("disk-virtio");
-    DO_TEST_DOMAIN("pci-bridge-many-disks");
-    DO_TEST_DOMAIN("arm-virt-virtio");
-    DO_TEST_DOMAIN("aarch64-virtio-pci-manual-addresses");
     DO_TEST_DOMAIN("acpi-table");
+    DO_TEST_DOMAIN("channel-unix-guestfwd");
+    DO_TEST_DOMAIN("console-virtio-unix");
+    DO_TEST_DOMAIN("controller-virtio-scsi");
+    DO_TEST_DOMAIN("disk-aio");
+    DO_TEST_DOMAIN("disk-cache");
+    DO_TEST_DOMAIN("disk-cdrom");
+    DO_TEST_DOMAIN("disk-cdrom-bus-other");
+    DO_TEST_DOMAIN("disk-cdrom-network");
+    DO_TEST_DOMAIN("disk-cdrom-tray");
+    DO_TEST_DOMAIN("disk-copy_on_read");
+    DO_TEST_DOMAIN("disk-detect-zeroes");
+    DO_TEST_DOMAIN("disk-error-policy");
+    DO_TEST_DOMAIN("disk-floppy");
+    DO_TEST_DOMAIN("disk-floppy-q35-2_11");
+    DO_TEST_DOMAIN("disk-floppy-q35-2_9");
+    DO_TEST_DOMAIN("disk-network-gluster");
+    DO_TEST_DOMAIN("disk-network-iscsi");
+    DO_TEST_DOMAIN("disk-network-nbd");
+    DO_TEST_DOMAIN("disk-network-rbd");
+    DO_TEST_DOMAIN("disk-network-sheepdog");
+    DO_TEST_DOMAIN("disk-network-source-auth");
+    DO_TEST_DOMAIN("disk-network-tlsx509");
+    DO_TEST_DOMAIN("disk-readonly-disk");
+    DO_TEST_DOMAIN("disk-scsi");
+    DO_TEST_DOMAIN("disk-scsi-device-auto");
+    DO_TEST_DOMAIN("disk-shared");
+    DO_TEST_DOMAIN("disk-virtio");
+    DO_TEST_DOMAIN("disk-virtio-scsi-reservations");
+    DO_TEST_DOMAIN("graphics-vnc-tls-secret");
+    DO_TEST_DOMAIN("hugepages-nvdimm");
+    DO_TEST_DOMAIN("iothreads-virtio-scsi-pci");
+    DO_TEST_DOMAIN("memory-hotplug-nvdimm");
+    DO_TEST_DOMAIN("memory-hotplug-nvdimm-access");
+    DO_TEST_DOMAIN("memory-hotplug-nvdimm-align");
+    DO_TEST_DOMAIN("memory-hotplug-nvdimm-label");
+    DO_TEST_DOMAIN("memory-hotplug-nvdimm-pmem");
+    DO_TEST_DOMAIN("memory-hotplug-nvdimm-readonly");
+    DO_TEST_DOMAIN("net-vhostuser");
+    DO_TEST_DOMAIN("os-firmware-bios");
+    DO_TEST_DOMAIN("os-firmware-efi");
+    DO_TEST_DOMAIN("os-firmware-efi-secboot");
+    DO_TEST_DOMAIN("pci-bridge-many-disks");
+    DO_TEST_DOMAIN("tseg-explicit-size");
+    DO_TEST_DOMAIN("usb-redir-unix");
+    DO_TEST_DOMAIN("virtio-non-transitional");
+    DO_TEST_DOMAIN("virtio-transitional");
+    DO_TEST_DOMAIN("x86_64-pc-graphics");
+    DO_TEST_DOMAIN("x86_64-pc-headless");
+    DO_TEST_DOMAIN("x86_64-q35-graphics");
+    DO_TEST_DOMAIN("x86_64-q35-headless");
 
  cleanup:
     qemuTestDriverFree(&driver);
