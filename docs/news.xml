@@ -35,6 +35,18 @@
 <libvirt>
   <release version="v5.3.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Add support for setting the emulator scheduler parameters
+        </summary>
+        <description>
+          I/O threads and vCPU threads already support setting schedulers, but
+          until now it was impossible to do so for the main QEMU thread
+          (emulator thread in the libvirt naming).  This is, however, requested
+          for some very specific scenarios, for example when vCPU threads are
+          running at such priority that could starve the main thread.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
