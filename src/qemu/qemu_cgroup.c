@@ -824,41 +824,6 @@ qemuSetupDevicesCgroup(virDomainObjPtr vm)
 }
 
 
-int
-qemuSetupCpusetMems(virDomainObjPtr vm)
-{
-    virCgroupPtr cgroup_temp = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainNumatuneMemMode mode;
-    char *mem_mask = NULL;
-    int ret = -1;
-
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
-        return 0;
-
-    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) < 0 ||
-        mode != VIR_DOMAIN_NUMATUNE_MEM_STRICT)
-        return 0;
-
-    if (virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
-                                            priv->autoNodeset,
-                                            &mem_mask, -1) < 0)
-        goto cleanup;
-
-    if (mem_mask)
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
-                               false, &cgroup_temp) < 0 ||
-            virCgroupSetCpusetMems(cgroup_temp, mem_mask) < 0)
-            goto cleanup;
-
-    ret = 0;
- cleanup:
-    VIR_FREE(mem_mask);
-    virCgroupFree(&cgroup_temp);
-    return ret;
-}
-
-
 static int
 qemuSetupCpusetCgroup(virDomainObjPtr vm)
 {

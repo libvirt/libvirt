@@ -61,7 +61,6 @@ int qemuConnectCgroup(virDomainObjPtr vm);
 int qemuSetupCgroup(virDomainObjPtr vm,
                     size_t nnicindexes,
                     int *nicindexes);
-int qemuSetupCpusetMems(virDomainObjPtr vm);
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);
