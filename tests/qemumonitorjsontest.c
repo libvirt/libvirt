@@ -874,7 +874,6 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt)
                       "'data':{'addr':{'type':'inet',"
                                       "'data':{'host':'example.com',"
                                               "'port':'1234'}},"
-                              "'wait':false,"
                               "'telnet':false,"
                               "'server':false}}}");
 
@@ -920,7 +919,6 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt)
            "'backend':{'type':'socket',"
                       "'data':{'addr':{'type':'unix',"
                                       "'data':{'path':'/path/to/socket'}},"
-                              "'wait':false,"
                               "'server':false}}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_SPICEVMC };
