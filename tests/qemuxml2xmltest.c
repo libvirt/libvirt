@@ -1319,24 +1319,8 @@ mymain(void)
     DO_TEST("riscv64-virt-pci",
             QEMU_CAPS_OBJECT_GPEX);
 
-    DO_TEST("virtio-transitional",
-            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-            QEMU_CAPS_DEVICE_VHOST_VSOCK,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("virtio-non-transitional",
-            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-            QEMU_CAPS_DEVICE_VHOST_VSOCK,
-            QEMU_CAPS_VIRTIO_INPUT_HOST,
-            QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_LATEST("virtio-transitional");
+    DO_TEST_CAPS_LATEST("virtio-non-transitional");
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
