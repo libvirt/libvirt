@@ -707,6 +707,13 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
 
     err = gnutls_certificate_allocate_credentials(&ctxt->x509cred);
     if (err) {
+        /* While gnutls_certificate_credentials_t will free any
+         * partially allocated credentials struct, it does not
+         * set the returned pointer back to NULL after it is
+         * freed in an error path.
+         */
+        ctxt->x509cred = NULL;
+
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Unable to allocate x509 credentials: %s"),
                        gnutls_strerror(err));
@@ -758,7 +765,9 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
  error:
     if (isServer)
         gnutls_dh_params_deinit(ctxt->dhParams);
-    gnutls_certificate_free_credentials(ctxt->x509cred);
+    if (ctxt->x509cred)
+        gnutls_certificate_free_credentials(ctxt->x509cred);
+    VIR_FREE(ctxt->priority);
     VIR_FREE(ctxt);
     return NULL;
 }
