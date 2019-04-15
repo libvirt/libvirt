@@ -70,6 +70,7 @@ virQEMUQAPISchemaObjectGet(const char *field,
 
 
 struct virQEMUQAPISchemaTraverseContext {
+    const char *prevquery;
     virHashTablePtr schema;
     char **queries;
     virJSONValuePtr returnType;
@@ -90,9 +91,9 @@ virQEMUQAPISchemaTraverseContextInit(struct virQEMUQAPISchemaTraverseContext *ct
 static const char *
 virQEMUQAPISchemaTraverseContextNextQuery(struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
-    const char *query = ctxt->queries[0];
+    ctxt->prevquery = ctxt->queries[0];
     ctxt->queries++;
-    return query;
+    return ctxt->prevquery;
 }
 
 
@@ -144,7 +145,7 @@ virQEMUQAPISchemaTraverseArray(virJSONValuePtr cur,
 
     /* arrays are just flattened by default */
     if (!(querytype = virJSONValueObjectGetString(cur, "element-type")))
-        return 0;
+        return -2;
 
     return virQEMUQAPISchemaTraverse(querytype, ctxt);
 }
@@ -163,7 +164,9 @@ virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
     return virQEMUQAPISchemaTraverse(querytype, ctxt);
 }
 
-
+/* The function must return 1 on successful query, 0 if the query was not found
+ * -1 when a libvirt error is reported, -2 if the schema is invalid and -3 if
+ *  the query component is malformed. */
 typedef int (*virQEMUQAPISchemaTraverseFunc)(virJSONValuePtr cur,
                                              struct virQEMUQAPISchemaTraverseContext *ctxt);
 
@@ -190,7 +193,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
     size_t i;
 
     if (!(cur = virHashLookup(ctxt->schema, baseName)))
-        return 0;
+        return -2;
 
     if (!virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt)) {
         ctxt->returnType = cur;
@@ -198,7 +201,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
     }
 
     if (!(metatype = virJSONValueObjectGetString(cur, "meta-type")))
-        return 0;
+        return -2;
 
     for (i = 0; i < ARRAY_CARDINALITY(traverseMetaType); i++) {
         if (STREQ(metatype, traverseMetaType[i].metatype))
@@ -250,6 +253,7 @@ virQEMUQAPISchemaPathGet(const char *query,
 {
     VIR_AUTOSTRINGLIST elems = NULL;
     struct virQEMUQAPISchemaTraverseContext ctxt;
+    const char *cmdname;
     int rc;
 
     if (entry)
@@ -264,13 +268,30 @@ virQEMUQAPISchemaPathGet(const char *query,
     }
 
     virQEMUQAPISchemaTraverseContextInit(&ctxt, elems, schema);
+    cmdname = virQEMUQAPISchemaTraverseContextNextQuery(&ctxt);
 
-    rc = virQEMUQAPISchemaTraverse(virQEMUQAPISchemaTraverseContextNextQuery(&ctxt), &ctxt);
+    if (!virHashLookup(schema, cmdname))
+        return 0;
+
+    rc = virQEMUQAPISchemaTraverse(cmdname, &ctxt);
 
     if (entry)
         *entry = ctxt.returnType;
 
-    return rc;
+    if (rc >= 0)
+        return rc;
+
+    if (rc == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("malformed QAPI schema when querying '%s' of '%s'"),
+                       NULLSTR(ctxt.prevquery), query);
+    } else if (rc == -3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("terminal QAPI query component '%s' of '%s' must not have followers"),
+                       NULLSTR(ctxt.prevquery), query);
+    }
+
+    return -1;
 }
 
 
