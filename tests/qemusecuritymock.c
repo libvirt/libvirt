@@ -366,7 +366,7 @@ checkOwner(void *payload,
         fprintf(stderr,
                 "Path %s wasn't restored back to its original owner\n",
                 (const char *) name);
-        *chown_fail = false;
+        *chown_fail = true;
     }
 
     return 0;
@@ -382,7 +382,7 @@ printXATTR(void *payload,
 
     /* The fact that we are in this function means that there are
      * some XATTRs left behind. This is enough to claim an error. */
-    *xattr_fail = false;
+    *xattr_fail = true;
 
     /* Hash table key consists of "$path:$xattr_name", xattr
      * value is then the value stored in the hash table. */
