@@ -37,29 +37,29 @@ struct testData {
 static int
 prepareObjects(virQEMUDriverPtr driver,
                const char *xmlname,
-               virDomainObjPtr *vm)
+               virDomainObjPtr *vm_ret)
 {
     qemuDomainObjPrivatePtr priv;
-    char *filename = NULL;
-    char *domxml = NULL;
-    int ret = -1;
+    VIR_AUTOUNREF(virDomainObjPtr) vm = NULL;
+    VIR_AUTOFREE(char *) filename = NULL;
+    VIR_AUTOFREE(char *) domxml = NULL;
 
     if (virAsprintf(&filename, "%s/qemuxml2argvdata/%s.xml", abs_srcdir, xmlname) < 0)
         return -1;
 
     if (virTestLoadFile(filename, &domxml) < 0)
-        goto cleanup;
+        return -1;
 
-    if (!(*vm = virDomainObjNew(driver->xmlopt)))
-        goto cleanup;
+    if (!(vm = virDomainObjNew(driver->xmlopt)))
+        return -1;
 
-    (*vm)->pid = -1;
-    priv = (*vm)->privateData;
+    vm->pid = -1;
+    priv = vm->privateData;
     priv->chardevStdioLogd = false;
     priv->rememberOwner = true;
 
     if (!(priv->qemuCaps = virQEMUCapsNew()))
-        goto cleanup;
+        return -1;
 
     virQEMUCapsSetList(priv->qemuCaps,
                        QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
@@ -75,24 +75,17 @@ prepareObjects(virQEMUDriverPtr driver,
                        QEMU_CAPS_LAST);
 
     if (qemuTestCapsCacheInsert(driver->qemuCapsCache, priv->qemuCaps) < 0)
-        goto cleanup;
+        return -1;
 
-    if (!((*vm)->def = virDomainDefParseString(domxml,
-                                               driver->caps,
-                                               driver->xmlopt,
-                                               NULL,
-                                               0)))
-        goto cleanup;
+    if (!(vm->def = virDomainDefParseString(domxml,
+                                            driver->caps,
+                                            driver->xmlopt,
+                                            NULL,
+                                            0)))
+        return -1;
 
-    ret = 0;
- cleanup:
-    if (ret < 0) {
-        virObjectUnref(*vm);
-        *vm = NULL;
-    }
-    VIR_FREE(domxml);
-    VIR_FREE(filename);
-    return ret;
+    VIR_STEAL_PTR(*vm_ret, vm);
+    return 0;
 }
 
 
@@ -100,7 +93,7 @@ static int
 testDomain(const void *opaque)
 {
     const struct testData *data = opaque;
-    virDomainObjPtr vm = NULL;
+    VIR_AUTOUNREF(virDomainObjPtr) vm = NULL;
     int ret = -1;
 
     if (prepareObjects(data->driver, data->file, &vm) < 0)
@@ -109,7 +102,7 @@ testDomain(const void *opaque)
     /* Mocking is enabled only when this env variable is set.
      * See mock code for explanation. */
     if (setenv(ENVVAR, "1", 0) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuSecuritySetAllLabel(data->driver, vm, NULL) < 0)
         goto cleanup;
@@ -122,7 +115,6 @@ testDomain(const void *opaque)
     ret = 0;
  cleanup:
     unsetenv(ENVVAR);
-    virObjectUnref(vm);
     freePaths();
     return ret;
 }
