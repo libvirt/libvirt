@@ -39,4 +39,6 @@ struct _virDomainMomentDef {
 
 void virDomainMomentDefClear(virDomainMomentDefPtr def);
 
+int virDomainMomentDefPostParse(virDomainMomentDefPtr def);
+
 #endif /* LIBVIRT_MOMENT_CONF_H */

@@ -23,7 +23,6 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <unistd.h>
 
 #include "internal.h"
@@ -199,7 +198,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     size_t i;
     int n;
     char *creation = NULL, *state = NULL;
-    struct timeval tv;
     int active;
     char *tmp;
     char *memorySnapshot = NULL;
@@ -210,8 +208,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     if (VIR_ALLOC(def) < 0)
         goto cleanup;
 
-    gettimeofday(&tv, NULL);
-
     def->common.name = virXPathString("string(./name)", ctxt);
     if (def->common.name == NULL) {
         if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
@@ -219,8 +215,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                            _("a redefined snapshot must have a name"));
             goto cleanup;
         }
-        if (virAsprintf(&def->common.name, "%lld", (long long)tv.tv_sec) < 0)
-            goto cleanup;
     }
 
     def->common.description = virXPathString("string(./description)", ctxt);
@@ -276,8 +270,8 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         } else {
             VIR_WARN("parsing older snapshot that lacks domain");
         }
-    } else {
-        def->common.creationTime = tv.tv_sec;
+    } else if (virDomainMomentDefPostParse(&def->common) < 0) {
+        goto cleanup;
     }
 
     memorySnapshot = virXPathString("string(./memory/@snapshot)", ctxt);

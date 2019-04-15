@@ -21,11 +21,14 @@
 
 #include <config.h>
 
+#include <sys/time.h>
+
 #include "internal.h"
 #include "moment_conf.h"
 #include "domain_conf.h"
 #include "virlog.h"
 #include "viralloc.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -37,4 +40,20 @@ void virDomainMomentDefClear(virDomainMomentDefPtr def)
     VIR_FREE(def->description);
     VIR_FREE(def->parent);
     virDomainDefFree(def->dom);
+}
+
+/* Provide defaults for creation time and moment name after parsing XML */
+int
+virDomainMomentDefPostParse(virDomainMomentDefPtr def)
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+
+    if (!def->name &&
+        virAsprintf(&def->name, "%lld", (long long)tv.tv_sec) < 0)
+        return -1;
+
+    def->creationTime = tv.tv_sec;
+    return 0;
 }
