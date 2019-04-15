@@ -33,6 +33,11 @@ static const char *testSnapshotXMLVariableLineRegexStr =
 
 regex_t *testSnapshotXMLVariableLineRegex = NULL;
 
+enum {
+    TEST_INTERNAL = 1 << 0, /* Test use of INTERNAL parse/format flag */
+    TEST_REDEFINE = 1 << 1, /* Test use of REDEFINE parse flag */
+};
+
 static char *
 testFilterXML(char *xml)
 {
@@ -70,8 +75,7 @@ static int
 testCompareXMLToXMLFiles(const char *inxml,
                          const char *outxml,
                          const char *uuid,
-                         bool internal,
-                         bool redefine)
+                         unsigned int flags)
 {
     char *inXmlData = NULL;
     char *outXmlData = NULL;
@@ -80,14 +84,14 @@ testCompareXMLToXMLFiles(const char *inxml,
     virDomainSnapshotDefPtr def = NULL;
     unsigned int parseflags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     unsigned int formatflags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE;
-    bool cur;
+    bool cur = false;
 
-    if (internal) {
+    if (flags & TEST_INTERNAL) {
         parseflags |= VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL;
         formatflags |= VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL;
     }
 
-    if (redefine)
+    if (flags & TEST_REDEFINE)
         parseflags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     if (virTestLoadFile(inxml, &inXmlData) < 0)
@@ -100,15 +104,18 @@ testCompareXMLToXMLFiles(const char *inxml,
                                                 driver.xmlopt, &cur,
                                                 parseflags)))
         goto cleanup;
-    if (cur)
+    if (cur) {
+        if (!(flags & TEST_INTERNAL))
+            goto cleanup;
         formatflags |= VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT;
+    }
 
     if (!(actual = virDomainSnapshotDefFormat(uuid, def, driver.caps,
                                               driver.xmlopt,
                                               formatflags)))
         goto cleanup;
 
-    if (!redefine) {
+    if (!(flags & TEST_REDEFINE)) {
         if (!(actual = testFilterXML(actual)))
             goto cleanup;
 
@@ -135,8 +142,7 @@ struct testInfo {
     const char *inxml;
     const char *outxml;
     const char *uuid;
-    bool internal;
-    bool redefine;
+    unsigned int flags;
 };
 
 
@@ -146,7 +152,7 @@ testCompareXMLToXMLHelper(const void *data)
     const struct testInfo *info = data;
 
     return testCompareXMLToXMLFiles(info->inxml, info->outxml, info->uuid,
-                                    info->internal, info->redefine);
+                                    info->flags);
 }
 
 
@@ -170,11 +176,11 @@ mymain(void)
     }
 
 
-# define DO_TEST(prefix, name, inpath, outpath, uuid, internal, redefine) \
+# define DO_TEST(prefix, name, inpath, outpath, uuid, flags) \
     do { \
         const struct testInfo info = {abs_srcdir "/" inpath "/" name ".xml", \
                                       abs_srcdir "/" outpath "/" name ".xml", \
-                                      uuid, internal, redefine}; \
+                                      uuid, flags}; \
         if (virTestRun("SNAPSHOT XML-2-XML " prefix " " name, \
                        testCompareXMLToXMLHelper, &info) < 0) \
             ret = -1; \
@@ -183,39 +189,43 @@ mymain(void)
 # define DO_TEST_IN(name, uuid) DO_TEST("in->in", name,\
                                         "domainsnapshotxml2xmlin",\
                                         "domainsnapshotxml2xmlin",\
-                                        uuid, false, false)
+                                        uuid, 0)
 
 # define DO_TEST_OUT(name, uuid, internal) DO_TEST("out->out", name,\
                                                    "domainsnapshotxml2xmlout",\
                                                    "domainsnapshotxml2xmlout",\
-                                                   uuid, internal, true)
+                                                   uuid, \
+                                                   internal | TEST_REDEFINE)
 
-# define DO_TEST_INOUT(name, uuid, internal, redefine) \
+# define DO_TEST_INOUT(name, uuid, flags) \
     DO_TEST("in->out", name,\
             "domainsnapshotxml2xmlin",\
             "domainsnapshotxml2xmlout",\
-            uuid, internal, redefine)
+            uuid, flags)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
      * values for these envvars */
     setenv("PATH", "/bin", 1);
 
-    DO_TEST_OUT("all_parameters", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", true);
-    DO_TEST_OUT("disk_snapshot_redefine", "c7a5fdbd-edaf-9455-926a-d65c16db1809", true);
-    DO_TEST_OUT("full_domain", "c7a5fdbd-edaf-9455-926a-d65c16db1809", true);
-    DO_TEST_OUT("noparent_nodescription_noactive", NULL, false);
-    DO_TEST_OUT("noparent_nodescription", NULL, true);
-    DO_TEST_OUT("noparent", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", false);
-    DO_TEST_OUT("metadata", "c7a5fdbd-edaf-9455-926a-d65c16db1809", false);
-    DO_TEST_OUT("external_vm_redefine", "c7a5fdbd-edaf-9455-926a-d65c16db1809", false);
+    DO_TEST_OUT("all_parameters", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8",
+                TEST_INTERNAL);
+    DO_TEST_OUT("disk_snapshot_redefine", "c7a5fdbd-edaf-9455-926a-d65c16db1809",
+                TEST_INTERNAL);
+    DO_TEST_OUT("full_domain", "c7a5fdbd-edaf-9455-926a-d65c16db1809",
+                TEST_INTERNAL);
+    DO_TEST_OUT("noparent_nodescription_noactive", NULL, 0);
+    DO_TEST_OUT("noparent_nodescription", NULL, TEST_INTERNAL);
+    DO_TEST_OUT("noparent", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", 0);
+    DO_TEST_OUT("metadata", "c7a5fdbd-edaf-9455-926a-d65c16db1809", 0);
+    DO_TEST_OUT("external_vm_redefine", "c7a5fdbd-edaf-9455-926a-d65c16db1809",
+                0);
 
-    DO_TEST_INOUT("empty", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", false, false);
-    DO_TEST_INOUT("noparent", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", false, false);
-    DO_TEST_INOUT("external_vm", NULL, false, false);
-    DO_TEST_INOUT("noparent", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", false, false);
-    DO_TEST_INOUT("disk_snapshot", NULL, false, false);
-    DO_TEST_INOUT("disk_driver_name_null", NULL, false, false);
+    DO_TEST_INOUT("empty", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", 0);
+    DO_TEST_INOUT("noparent", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", 0);
+    DO_TEST_INOUT("external_vm", NULL, 0);
+    DO_TEST_INOUT("disk_snapshot", NULL, 0);
+    DO_TEST_INOUT("disk_driver_name_null", NULL, 0);
 
     DO_TEST_IN("name_and_description", NULL);
     DO_TEST_IN("description_only", NULL);
