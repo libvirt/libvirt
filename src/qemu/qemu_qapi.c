@@ -222,16 +222,24 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  * @query parameter has the following syntax which is very closely tied to the
  * qemu schema syntax entries separated by slashes with a few special characters:
  *
- * "command_or_event/attribute/subattribute/+variant_discriminator/subattribute"
+ * "command_or_event/attribute/subattribute/subattribute/..."
  *
  * command_or_event: name of the event or attribute to introspect
  * attribute: selects whether arguments or return type should be introspected
  *            ("arg-type" or "ret-type" for commands, "arg-type" for events)
- * subattribute: specifies member name of object types
- * *subattribute: same as above but must be optional (has a property named
- *                'default' field in the schema)
- * +variant_discriminator: In the case of unionized objects, select a
- *                         specific case to introspect.
+ *
+ * 'subattribute' may be one or more of the following depending on the first
+ * character.
+ *
+ * - Type queries - @entry is filled on success with the corresponding schema entry:
+ *   'subattribute': selects a plain object member named 'subattribute'
+ *   '*subattribute': same as above but the selected member must be optional
+ *                    (has a property named 'default' in the schema)
+ *   '+variant": In the case of unionized objects, select a specific variant of
+ *               the prevously selected member
+ *
+ * - Boolean queries - @entry remains NULL, return value indicates success:
+ *   (none)
  *
  * If the name of any (sub)attribute starts with non-alphabetical symbols it
  * needs to be prefixed by a single space.
@@ -240,7 +248,8 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  * types are currently not supported.
  *
  * The above types can be chained arbitrarily using slashes to construct any
- * path into the schema tree.
+ * path into the schema tree, booleans must be always the last component as they
+ * don't refer to a type.
  *
  * Returns 1 if @query was found in @schema filling @entry if non-NULL, 0 if
  * @query was not found in @schema and -1 on other errors along with an appropriate
