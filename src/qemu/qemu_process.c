@@ -2683,7 +2683,7 @@ qemuProcessSetupEmulator(virDomainObjPtr vm)
                                0, vm->def->cputune.emulatorpin,
                                vm->def->cputune.emulator_period,
                                vm->def->cputune.emulator_quota,
-                               NULL);
+                               vm->def->cputune.emulatorsched);
 }
 
 
