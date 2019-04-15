@@ -940,14 +940,16 @@
 
       <dt><code>vcpusched</code> and <code>iothreadsched</code></dt>
       <dd>
-        The optional <code>vcpusched</code> elements specifies the scheduler
-        type (values <code>batch</code>, <code>idle</code>, <code>fifo</code>,
-        <code>rr</code>) for particular vCPU/IOThread threads (based on
-        <code>vcpus</code> and <code>iothreads</code>, leaving out
-        <code>vcpus</code>/<code>iothreads</code> sets the default). Valid
-        <code>vcpus</code> values start at 0 through one less than the
-        number of vCPU's defined for the domain. Valid <code>iothreads</code>
-        values are described in the <code>iothreadids</code>
+        The optional <code>vcpusched</code> and <code>iothreadsched</code>
+        elements specify the scheduler type
+        (values <code>batch</code>, <code>idle</code>, <code>fifo</code>,
+        <code>rr</code>) for particular vCPU and IOThread threads respecively.
+        The attributes <code>vcpus</code> and <code>iothreads</code> select
+        which vCPUs/IOThreads this setting applies to, leaving them out sets the
+        default.  Valid <code>vcpus</code> values start at 0 through one less
+        than the number of vCPU's defined for the
+        domain. Valid <code>iothreads</code> values are described in
+        the <code>iothreadids</code>
         <a href="#elementsIOThreadsAllocation"><code>description</code></a>.
         If no <code>iothreadids</code> are defined, then libvirt numbers
         IOThreads from 1 to the number of <code>iothreads</code> available
