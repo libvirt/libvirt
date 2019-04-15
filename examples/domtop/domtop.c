@@ -206,7 +206,7 @@ print_cpu_usage(size_t cpu,
     }
 
     for (i = 0; i < ncpus; i++) {
-        size_t pos;
+        size_t pos = 0;
         double usage;
 
         /* check if the vCPU is in the maps */
