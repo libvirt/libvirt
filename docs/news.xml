@@ -63,6 +63,16 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          rpc: cleanup in virNetTLSContextNew
+        </summary>
+        <description>
+          Failed new gnutls context allocations in virNetTLSContextNew
+          function results in double free and segfault. Occasional memory
+          leaks may also occur.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.2.0" date="2019-04-03">
