@@ -416,3 +416,11 @@ int checkPaths(void)
     virMutexUnlock(&m);
     return ret;
 }
+
+
+int
+virProcessRunInFork(virProcessForkCallback cb,
+                    void *opaque)
+{
+    return cb(-1, opaque);
+}
