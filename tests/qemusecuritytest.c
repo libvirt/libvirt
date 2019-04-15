@@ -125,6 +125,7 @@ testDomain(const void *opaque)
     unsetenv(ENVVAR);
     virObjectUnref(vm);
     virObjectUnref(securityManager);
+    freePaths();
     return ret;
 }
 

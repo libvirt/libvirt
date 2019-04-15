@@ -21,3 +21,5 @@
 #define ENVVAR "LIBVIRT_QEMU_SECURITY_TEST"
 
 extern int checkPaths(void);
+
+extern void freePaths(void);

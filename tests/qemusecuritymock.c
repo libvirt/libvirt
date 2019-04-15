@@ -411,10 +411,20 @@ int checkPaths(void)
 
     ret = 0;
  cleanup:
-    virHashRemoveAll(chown_paths);
-    virHashRemoveAll(xattr_paths);
     virMutexUnlock(&m);
     return ret;
+}
+
+
+void freePaths(void)
+{
+    virMutexLock(&m);
+    init_hash();
+
+    virHashFree(chown_paths);
+    virHashFree(xattr_paths);
+    chown_paths = xattr_paths = NULL;
+    virMutexUnlock(&m);
 }
 
 
