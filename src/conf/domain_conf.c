@@ -27205,22 +27205,25 @@ static void
 virDomainSchedulerFormat(virBufferPtr buf,
                          const char *name,
                          virDomainThreadSchedParamPtr sched,
-                         size_t id)
+                         size_t id,
+                         bool multiple_threads)
 {
     switch (sched->policy) {
         case VIR_PROC_POLICY_BATCH:
         case VIR_PROC_POLICY_IDLE:
-            virBufferAsprintf(buf, "<%ssched "
-                              "%ss='%zu' scheduler='%s'/>\n",
-                              name, name, id,
+            virBufferAsprintf(buf, "<%ssched", name);
+            if (multiple_threads)
+                virBufferAsprintf(buf, " %ss='%zu'", name, id);
+            virBufferAsprintf(buf, " scheduler='%s'/>\n",
                               virProcessSchedPolicyTypeToString(sched->policy));
             break;
 
         case VIR_PROC_POLICY_RR:
         case VIR_PROC_POLICY_FIFO:
-            virBufferAsprintf(buf, "<%ssched "
-                              "%ss='%zu' scheduler='%s' priority='%d'/>\n",
-                              name, name, id,
+            virBufferAsprintf(buf, "<%ssched", name);
+            if (multiple_threads)
+                virBufferAsprintf(buf, " %ss='%zu'", name, id);
+            virBufferAsprintf(buf, " scheduler='%s' priority='%d'/>\n",
                               virProcessSchedPolicyTypeToString(sched->policy),
                               sched->priority);
             break;
@@ -27489,13 +27492,14 @@ virDomainCputuneDefFormat(virBufferPtr buf,
 
     for (i = 0; i < def->maxvcpus; i++) {
         virDomainSchedulerFormat(&childrenBuf, "vcpu",
-                                 &def->vcpus[i]->sched, i);
+                                 &def->vcpus[i]->sched, i, true);
     }
 
     for (i = 0; i < def->niothreadids; i++) {
         virDomainSchedulerFormat(&childrenBuf, "iothread",
                                  &def->iothreadids[i]->sched,
-                                 def->iothreadids[i]->iothread_id);
+                                 def->iothreadids[i]->iothread_id,
+                                 true);
     }
 
     for (i = 0; i < def->nresctrls; i++)
