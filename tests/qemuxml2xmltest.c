@@ -90,6 +90,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 
 static int
 testInfoSetPaths(struct testQemuInfo *info,
+                 const char *suffix,
                  int when)
 {
     VIR_FREE(info->infile);
@@ -100,17 +101,18 @@ testInfoSetPaths(struct testQemuInfo *info,
         goto error;
 
     if (virAsprintf(&info->outfile,
-                    "%s/qemuxml2xmloutdata/%s-%s.xml",
+                    "%s/qemuxml2xmloutdata/%s-%s%s.xml",
                     abs_srcdir, info->name,
-                    when == WHEN_ACTIVE ? "active" : "inactive") < 0)
+                    when == WHEN_ACTIVE ? "active" : "inactive",
+                    suffix) < 0)
         goto error;
 
     if (!virFileExists(info->outfile)) {
         VIR_FREE(info->outfile);
 
         if (virAsprintf(&info->outfile,
-                        "%s/qemuxml2xmloutdata/%s.xml",
-                        abs_srcdir, info->name) < 0)
+                        "%s/qemuxml2xmloutdata/%s%s.xml",
+                        abs_srcdir, info->name, suffix) < 0)
             goto error;
     }
 
@@ -170,7 +172,7 @@ mymain(void)
 
     cfg = virQEMUDriverGetConfig(&driver);
 
-# define DO_TEST_FULL(_name, when, ...) \
+# define DO_TEST_INTERNAL(_name, suffix, when, ...) \
     do { \
         static struct testQemuInfo info = { \
             .name = _name, \
@@ -184,7 +186,7 @@ mymain(void)
         } \
  \
         if (when & WHEN_INACTIVE) { \
-            if (testInfoSetPaths(&info, WHEN_INACTIVE) < 0) { \
+            if (testInfoSetPaths(&info, suffix, WHEN_INACTIVE) < 0) { \
                 VIR_TEST_DEBUG("Failed to generate inactive paths for '%s'", _name); \
                 return -1; \
             } \
@@ -194,7 +196,7 @@ mymain(void)
         } \
  \
         if (when & WHEN_ACTIVE) { \
-            if (testInfoSetPaths(&info, WHEN_ACTIVE) < 0) { \
+            if (testInfoSetPaths(&info, suffix, WHEN_ACTIVE) < 0) { \
                 VIR_TEST_DEBUG("Failed to generate active paths for '%s'", _name); \
                 return -1; \
             } \
@@ -207,10 +209,33 @@ mymain(void)
 
 # define NONE QEMU_CAPS_LAST
 
+# define DO_TEST_FULL(name, when, ...) \
+    DO_TEST_INTERNAL(name, "", when, __VA_ARGS__)
+
 # define DO_TEST(name, ...) \
     DO_TEST_FULL(name, WHEN_BOTH, \
                  ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST)
 
+# define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
+    DO_TEST_INTERNAL(name, "." arch "-" ver, WHEN_BOTH, \
+                     ARG_CAPS_ARCH, arch, \
+                     ARG_CAPS_VER, ver, \
+                     __VA_ARGS__)
+
+# define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
+    DO_TEST_CAPS_INTERNAL(name, arch, ver, ARG_END)
+
+# define DO_TEST_CAPS_VER(name, ver) \
+    DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
+
+# define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
+    DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
+
+# define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
+
+# define DO_TEST_CAPS_LATEST(name) \
+    DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
 
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
