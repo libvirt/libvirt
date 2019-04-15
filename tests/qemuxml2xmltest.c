@@ -1003,30 +1003,9 @@ mymain(void)
     DO_TEST("smbios", NONE);
     DO_TEST("smbios-multiple-type2", NONE);
 
-    DO_TEST("os-firmware-bios",
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("os-firmware-efi",
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("os-firmware-efi-secboot",
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_DEVICE_QXL);
+    DO_TEST_CAPS_LATEST("os-firmware-bios");
+    DO_TEST_CAPS_LATEST("os-firmware-efi");
+    DO_TEST_CAPS_LATEST("os-firmware-efi-secboot");
 
     DO_TEST("aarch64-aavmf-virtio-mmio",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
