@@ -226,7 +226,7 @@ int virFileRemoveXAttr(const char *path,
                 sb->st_gid = DEFAULT_GID; \
             } else { \
                 /* Known path. Set values passed to chown() earlier */ \
-                sb->st_uid = *val % 16; \
+                sb->st_uid = *val & 0xffff; \
                 sb->st_gid = *val >> 16; \
             } \
 \
