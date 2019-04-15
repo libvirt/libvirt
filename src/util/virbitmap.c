@@ -825,10 +825,14 @@ virBitmapToDataBuf(virBitmapPtr bitmap,
                    unsigned char *bytes,
                    size_t len)
 {
+    size_t nbytes = bitmap->map_len * (VIR_BITMAP_BITS_PER_UNIT / CHAR_BIT);
     unsigned long *l;
     size_t i, j;
 
     memset(bytes, 0, len);
+
+    /* If bitmap and buffer differ in size, only fill to the smaller length */
+    len = MIN(len, nbytes);
 
     /* htole64 is not provided by gnulib, so we do the conversion by hand */
     l = bitmap->map;
