@@ -44,7 +44,7 @@ CI_CONFIGURE_ARGS =
 
 # Avoid pulling submodules over the network by locally
 # cloning them
-CI_SUBMODULES = .gnulib src/keycodemapdb
+CI_SUBMODULES = $(shell git submodule | awk '{ print $$2 }')
 
 # Location of the Docker images we're going to pull
 # Can be useful to overridde to use a locally built
