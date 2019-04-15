@@ -938,15 +938,19 @@
         <span class="since">Only QEMU driver support since 2.1.0</span>
       </dd>
 
-      <dt><code>vcpusched</code> and <code>iothreadsched</code></dt>
+      <dt><code>vcpusched</code>, <code>iothreadsched</code>
+      and <code>emulatorsched</code></dt>
       <dd>
-        The optional <code>vcpusched</code> and <code>iothreadsched</code>
-        elements specify the scheduler type
+        The optional
+        <code>vcpusched</code>, <code>iothreadsched</code>
+        and <code>emulatorsched</code> elements specify the scheduler type
         (values <code>batch</code>, <code>idle</code>, <code>fifo</code>,
-        <code>rr</code>) for particular vCPU and IOThread threads respecively.
-        The attributes <code>vcpus</code> and <code>iothreads</code> select
+        <code>rr</code>) for particular vCPU, IOThread and emulator threads
+        respecively.  For <code>vcpusched</code> and <code>iothreadsched</code>
+        the attributes <code>vcpus</code> and <code>iothreads</code> select
         which vCPUs/IOThreads this setting applies to, leaving them out sets the
-        default.  Valid <code>vcpus</code> values start at 0 through one less
+        default.  The element <code>emulatorsched</code> does not have that
+        attribute. Valid <code>vcpus</code> values start at 0 through one less
         than the number of vCPU's defined for the
         domain. Valid <code>iothreads</code> values are described in
         the <code>iothreadids</code>
@@ -958,6 +962,7 @@
         well (and is ignored for non-real-time ones). The value range
         for the priority depends on the host kernel (usually 1-99).
         <span class="since">Since 1.2.13</span>
+        <code>emulatorsched</code> <span class="since">since 5.3.0</span>
       </dd>
 
       <dt><code>cachetune</code><span class="since">Since 4.1.0</span></dt>

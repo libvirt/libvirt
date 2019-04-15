@@ -3396,6 +3396,7 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainIOThreadIDDefArrayFree(def->iothreadids, def->niothreadids);
 
     virBitmapFree(def->cputune.emulatorpin);
+    VIR_FREE(def->cputune.emulatorsched);
 
     virDomainNumaFree(def->numa);
 
@@ -18483,6 +18484,25 @@ virDomainSchedulerParseCommonAttrs(xmlNodePtr node,
 }
 
 
+static int
+virDomainEmulatorSchedParse(xmlNodePtr node,
+                            virDomainDefPtr def)
+{
+    VIR_AUTOFREE(virDomainThreadSchedParamPtr) sched = NULL;
+
+    if (VIR_ALLOC(sched) < 0)
+        return -1;
+
+    if (virDomainSchedulerParseCommonAttrs(node,
+                                           &sched->policy,
+                                           &sched->priority) < 0)
+        return -1;
+
+    VIR_STEAL_PTR(def->cputune.emulatorsched, sched);
+    return 0;
+}
+
+
 static virBitmapPtr
 virDomainSchedulerParse(xmlNodePtr node,
                         const char *name,
@@ -19909,6 +19929,25 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     for (i = 0; i < n; i++) {
         if (virDomainIOThreadSchedParse(nodes[i], def) < 0)
+            goto error;
+    }
+    VIR_FREE(nodes);
+
+    if ((n = virXPathNodeSet("./cputune/emulatorsched", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot extract emulatorsched nodes"));
+        goto error;
+    }
+
+    if (n) {
+        if (n > 1) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("only one emulatorsched is supported"));
+            VIR_FREE(nodes);
+            goto error;
+        }
+
+        if (virDomainEmulatorSchedParse(nodes[0], def) < 0)
             goto error;
     }
     VIR_FREE(nodes);
@@ -27488,6 +27527,11 @@ virDomainCputuneDefFormat(virBufferPtr buf,
 
         virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
+    }
+
+    if (def->cputune.emulatorsched) {
+        virDomainSchedulerFormat(&childrenBuf, "emulator",
+                                 def->cputune.emulatorsched, 0, false);
     }
 
     for (i = 0; i < def->maxvcpus; i++) {

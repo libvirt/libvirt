@@ -149,6 +149,8 @@ mymain(void)
 
     DO_TEST("launch-security-sev");
 
+    DO_TEST_DIFFERENT("cputune");
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 

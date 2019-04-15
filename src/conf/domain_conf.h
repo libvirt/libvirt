@@ -2159,6 +2159,7 @@ struct _virDomainCputune {
     unsigned long long iothread_period;
     long long iothread_quota;
     virBitmapPtr emulatorpin;
+    virDomainThreadSchedParamPtr emulatorsched;
 };
 
 
