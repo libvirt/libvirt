@@ -212,7 +212,7 @@ mymain(void)
     if (testQemuDataInit(&data) < 0)
         return EXIT_FAILURE;
 
-    if (testQemuCapsIterate(data.inputDir, ".xml", doCapsTest, &data) < 0)
+    if (testQemuCapsIterate(".xml", doCapsTest, &data) < 0)
         return EXIT_FAILURE;
 
     return (data.ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;

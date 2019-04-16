@@ -99,8 +99,7 @@ virHashTablePtr testQemuGetLatestCaps(void);
 typedef int (*testQemuCapsIterateCallback)(const char *base,
                                            const char *archName,
                                            void *opaque);
-int testQemuCapsIterate(const char *dirname,
-                        const char *suffix,
+int testQemuCapsIterate(const char *suffix,
                         testQemuCapsIterateCallback callback,
                         void *opaque);
 

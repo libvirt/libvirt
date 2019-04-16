@@ -903,8 +903,7 @@ testQemuGetLatestCaps(void)
 
 
 int
-testQemuCapsIterate(const char *dirname,
-                    const char *suffix,
+testQemuCapsIterate(const char *suffix,
                     testQemuCapsIterateCallback callback,
                     void *opaque)
 {
@@ -916,10 +915,10 @@ testQemuCapsIterate(const char *dirname,
     if (!callback)
         return 0;
 
-    if (virDirOpen(&dir, dirname) < 0)
+    if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
         goto cleanup;
 
-    while ((rc = virDirRead(dir, &ent, dirname) > 0)) {
+    while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH) > 0)) {
         char *tmp = ent->d_name;
         char *base = NULL;
         char *archName = NULL;

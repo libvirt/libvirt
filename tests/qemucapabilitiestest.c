@@ -221,7 +221,7 @@ mymain(void)
     if (testQemuDataInit(&data) < 0)
         return EXIT_FAILURE;
 
-    if (testQemuCapsIterate(data.dataDir, ".replies", doCapsTest, &data) < 0)
+    if (testQemuCapsIterate(".replies", doCapsTest, &data) < 0)
         return EXIT_FAILURE;
 
     /*
