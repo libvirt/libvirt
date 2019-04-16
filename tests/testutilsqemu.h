@@ -25,6 +25,8 @@
 #  include "qemu/qemu_capabilities.h"
 #  include "qemu/qemu_conf.h"
 
+#  define TEST_QEMU_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
+
 enum {
     GIC_NONE = 0,
     GIC_V2,

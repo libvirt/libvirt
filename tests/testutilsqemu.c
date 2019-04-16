@@ -957,8 +957,6 @@ testQemuCapsIterate(const char *dirname,
 }
 
 
-#define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
-
 int
 testQemuInfoSetArgs(struct testQemuInfo *info,
                     virHashTablePtr capslatest, ...)
@@ -1059,7 +1057,7 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
                 goto cleanup;
             stripmachinealiases = true;
         } else if (virAsprintf(&capsfile, "%s/caps_%s.%s.xml",
-                               TEST_CAPS_PATH, capsver, capsarch) < 0) {
+                               TEST_QEMU_CAPS_PATH, capsver, capsarch) < 0) {
             goto cleanup;
         }
 
