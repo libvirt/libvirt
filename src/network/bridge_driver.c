@@ -5225,10 +5225,13 @@ networkCheckBandwidth(virNetworkObjPtr obj,
         tmp_new_rate = netBand->in->peak;
         if (tmp_floor_sum > netBand->in->peak) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Cannot plug '%s' interface into '%s' because it "
-                             "would overcommit 'peak' on network '%s'"),
+                           _("Cannot plug '%s' interface into '%s' because "
+                             "new combined inbound floor=%llu would overcommit "
+                             "peak=%llu on network '%s'"),
                            ifmac,
                            def->bridge,
+                           tmp_floor_sum,
+                           netBand->in->peak,
                            def->name);
             goto cleanup;
         }
@@ -5236,10 +5239,13 @@ networkCheckBandwidth(virNetworkObjPtr obj,
         /* tmp_floor_sum can be between 'average' and 'peak' iff 'peak' is set.
          * Otherwise, tmp_floor_sum must be below 'average'. */
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Cannot plug '%s' interface into '%s' because it "
-                         "would overcommit 'average' on network '%s'"),
+                       _("Cannot plug '%s' interface into '%s' because "
+                         "new combined inbound floor=%llu would overcommit "
+                         "average=%llu on network '%s'"),
                        ifmac,
                        def->bridge,
+                       tmp_floor_sum,
+                       netBand->in->average,
                        def->name);
         goto cleanup;
     }
