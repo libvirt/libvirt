@@ -270,7 +270,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         } else {
             VIR_WARN("parsing older snapshot that lacks domain");
         }
-    } else if (virDomainMomentDefPostParse(&def->common) < 0) {
+    } else if (virDomainXMLOptionRunMomentPostParse(xmlopt, &def->common) < 0) {
         goto cleanup;
     }
 

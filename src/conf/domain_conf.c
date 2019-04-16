@@ -82,6 +82,9 @@ struct _virDomainXMLOption {
 
     /* Private data for save image stored in snapshot XML */
     virSaveCookieCallbacks saveCookie;
+
+    /* Snapshot postparse callbacks */
+    virDomainMomentPostParseCallback momentPostParse;
 };
 
 #define VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS \
@@ -1473,6 +1476,24 @@ virSaveCookieCallbacksPtr
 virDomainXMLOptionGetSaveCookie(virDomainXMLOptionPtr xmlopt)
 {
     return &xmlopt->saveCookie;
+}
+
+
+void
+virDomainXMLOptionSetMomentPostParse(virDomainXMLOptionPtr xmlopt,
+                                     virDomainMomentPostParseCallback cb)
+{
+    xmlopt->momentPostParse = cb;
+}
+
+
+int
+virDomainXMLOptionRunMomentPostParse(virDomainXMLOptionPtr xmlopt,
+                                     virDomainMomentDefPtr def)
+{
+    if (!xmlopt->momentPostParse)
+        return virDomainMomentDefPostParse(def);
+    return xmlopt->momentPostParse(def);
 }
 
 

@@ -608,6 +608,7 @@ virDomainWatchdogModelTypeToString;
 virDomainXMLOptionGetNamespace;
 virDomainXMLOptionGetSaveCookie;
 virDomainXMLOptionNew;
+virDomainXMLOptionSetMomentPostParse;
 
 
 # conf/domain_event.h
