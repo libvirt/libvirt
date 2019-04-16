@@ -2826,6 +2826,8 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
         goto cleanup;
     }
 
+    virNetworkObjSetFloorSum(obj, 0);
+
     /* finally we can call the 'started' hook script if any */
     if (networkRunHook(obj, NULL, NULL,
                        VIR_HOOK_NETWORK_OP_STARTED,
