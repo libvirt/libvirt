@@ -2894,7 +2894,7 @@ virDomainMigrateVersion2(virDomainPtr domain,
                        _("domainMigratePrepare2 did not set uri"));
         cancelled = 1;
         /* Make sure Finish doesn't overwrite the error */
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
         goto finish;
     }
     if (uri_out)
@@ -2909,7 +2909,7 @@ virDomainMigrateVersion2(virDomainPtr domain,
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0)
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
 
     /* If Perform returns < 0, then we need to cancel the VM
      * startup on the destination
@@ -2929,10 +2929,7 @@ virDomainMigrateVersion2(virDomainPtr domain,
         VIR_ERROR(_("finish step ignored that migration was cancelled"));
 
  done:
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     VIR_FREE(uri_out);
     VIR_FREE(cookie);
     return ddomain;
@@ -3076,7 +3073,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
             /* Begin already started a migration job so we need to cancel it by
              * calling Confirm while making sure it doesn't overwrite the error
              */
-            orig_err = virSaveLastError();
+            virErrorPreserveLast(&orig_err);
             goto confirm;
         } else {
             goto done;
@@ -3091,7 +3088,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
                                         VIR_MIGRATE_PARAM_URI,
                                         uri_out) < 0) {
             cancelled = 1;
-            orig_err = virSaveLastError();
+            virErrorPreserveLast(&orig_err);
             goto finish;
         }
     } else if (!uri &&
@@ -3100,7 +3097,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare3 did not set uri"));
         cancelled = 1;
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
         goto finish;
     }
 
@@ -3136,7 +3133,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0) {
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
         /* Perform failed so we don't need to call confirm to let source know
          * about the failure.
          */
@@ -3222,7 +3219,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
      * one we need to preserve it in case confirm3 overwrites
      */
     if (!orig_err)
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
 
  confirm:
     /*
@@ -3256,10 +3253,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
     }
 
  done:
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     VIR_FREE(dom_xml);
     VIR_FREE(uri_out);
     VIR_FREE(cookiein);
