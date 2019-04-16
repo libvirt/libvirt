@@ -39,7 +39,7 @@ struct _testQemuData {
 static int
 testQemuDataInit(testQemuDataPtr data)
 {
-    data->inputDir = abs_srcdir "/qemucapabilitiesdata";
+    data->inputDir = TEST_QEMU_CAPS_PATH;
     data->outputDir = abs_srcdir "/qemucaps2xmloutdata";
 
     data->ret = 0;

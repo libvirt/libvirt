@@ -156,7 +156,7 @@ mymain(void)
     do { \
         virQEMUCapsPtr qemuCaps; \
         qemuCaps = qemuTestParseCapabilitiesArch(VIR_ARCH_X86_64, \
-                                                 abs_srcdir "/qemucapabilitiesdata/caps_2.12.0." arch ".xml"); \
+                                                 TEST_QEMU_CAPS_PATH "/caps_2.12.0." arch ".xml"); \
         if (virFileCacheInsertData(driver.qemuCapsCache, \
                                    "/usr/bin/qemu-system-" arch, \
                                    qemuCaps) < 0) \

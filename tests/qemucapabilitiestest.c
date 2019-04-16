@@ -48,7 +48,7 @@ testQemuDataInit(testQemuDataPtr data)
     if (qemuTestDriverInit(&data->driver) < 0)
         return -1;
 
-    data->dataDir = abs_srcdir "/qemucapabilitiesdata";
+    data->dataDir = TEST_QEMU_CAPS_PATH;
 
     data->ret = 0;
 

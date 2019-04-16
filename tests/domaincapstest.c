@@ -88,8 +88,8 @@ fillQemuCaps(virDomainCapsPtr domCaps,
         fakeHostCPU(caps, domCaps->arch) < 0)
         goto cleanup;
 
-    if (virAsprintf(&path, "%s/qemucapabilitiesdata/%s.%s.xml",
-                    abs_srcdir, name, arch) < 0 ||
+    if (virAsprintf(&path, "%s/%s.%s.xml",
+                    TEST_QEMU_CAPS_PATH, name, arch) < 0 ||
         !(qemuCaps = qemuTestParseCapabilities(caps, path)))
         goto cleanup;
 
