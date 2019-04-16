@@ -1,5 +1,6 @@
 <domainsnapshot>
   <name>my snap name</name>
   <description>!@#$%^</description>
+  <creationTime>1555419243</creationTime>
   <memory snapshot='external' file='/dev/HostVG/GuestMemory'/>
 </domainsnapshot>

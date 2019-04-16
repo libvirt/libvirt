@@ -1,6 +1,7 @@
 <domainsnapshot>
   <name>my snap name</name>
   <description>!@#$%^</description>
+  <creationTime>1555419243</creationTime>
   <disks>
     <disk name='/dev/HostVG/QEMUGuest1'/>
     <disk name='hdb' snapshot='no'/>

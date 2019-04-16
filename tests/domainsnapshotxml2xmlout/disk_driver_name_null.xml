@@ -1,6 +1,7 @@
 <domainsnapshot>
   <name>asdf</name>
   <description>adsf</description>
+  <creationTime>1555419243</creationTime>
   <disks>
     <disk name='vda' snapshot='external' type='file'>
       <source file='/tmp/foo'/>
