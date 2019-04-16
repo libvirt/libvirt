@@ -245,7 +245,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
         def->state = virDomainSnapshotStateTypeFromString(state);
-        if (def->state < 0) {
+        if (def->state <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid state '%s' in domain snapshot XML"),
                            state);
@@ -810,8 +810,9 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
     if (def->common.description)
         virBufferEscapeString(buf, "<description>%s</description>\n",
                               def->common.description);
-    virBufferAsprintf(buf, "<state>%s</state>\n",
-                      virDomainSnapshotStateTypeToString(def->state));
+    if (def->state)
+        virBufferAsprintf(buf, "<state>%s</state>\n",
+                          virDomainSnapshotStateTypeToString(def->state));
 
     if (def->common.parent) {
         virBufferAddLit(buf, "<parent>\n");
@@ -821,8 +822,9 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
         virBufferAddLit(buf, "</parent>\n");
     }
 
-    virBufferAsprintf(buf, "<creationTime>%lld</creationTime>\n",
-                      def->common.creationTime);
+    if (def->common.creationTime)
+        virBufferAsprintf(buf, "<creationTime>%lld</creationTime>\n",
+                          def->common.creationTime);
 
     if (def->memory) {
         virBufferAsprintf(buf, "<memory snapshot='%s'",

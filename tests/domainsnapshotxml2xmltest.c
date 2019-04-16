@@ -24,18 +24,17 @@ static virQEMUDriver driver;
 /* This regex will skip the following XML constructs in test files
  * that are dynamically generated and thus problematic to test:
  * <name>1234352345</name> if the snapshot has no name,
- * <creationTime>23523452345</creationTime>,
- * <state>nostate</state> as the backend code doesn't fill this
+ * <creationTime>23523452345</creationTime>
  */
 static const char *testSnapshotXMLVariableLineRegexStr =
-    "(<(name|creationTime)>[0-9]+</(name|creationTime)>|"
-    "<state>nostate</state>)";
+    "<(name|creationTime)>[0-9]+</(name|creationTime)>";
 
 regex_t *testSnapshotXMLVariableLineRegex = NULL;
 
 enum {
     TEST_INTERNAL = 1 << 0, /* Test use of INTERNAL parse/format flag */
     TEST_REDEFINE = 1 << 1, /* Test use of REDEFINE parse flag */
+    TEST_RUNNING = 1 << 2, /* Set snapshot state to running after parse */
 };
 
 static char *
@@ -108,6 +107,11 @@ testCompareXMLToXMLFiles(const char *inxml,
         if (!(flags & TEST_INTERNAL))
             goto cleanup;
         formatflags |= VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT;
+    }
+    if (flags & TEST_RUNNING) {
+        if (def->state)
+            goto cleanup;
+        def->state = VIR_DOMAIN_RUNNING;
     }
 
     if (!(actual = virDomainSnapshotDefFormat(uuid, def, driver.caps,
@@ -222,7 +226,8 @@ mymain(void)
                 0);
 
     DO_TEST_INOUT("empty", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", 0);
-    DO_TEST_INOUT("noparent", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", 0);
+    DO_TEST_INOUT("noparent", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8",
+                  TEST_RUNNING);
     DO_TEST_INOUT("external_vm", NULL, 0);
     DO_TEST_INOUT("disk_snapshot", NULL, 0);
     DO_TEST_INOUT("disk_driver_name_null", NULL, 0);

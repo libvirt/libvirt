@@ -103,7 +103,6 @@
 
   <define name='state'>
     <choice>
-      <value>nostate</value>
       <value>running</value>
       <value>blocked</value>
       <value>paused</value>
