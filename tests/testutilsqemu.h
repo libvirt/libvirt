@@ -92,8 +92,7 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
 int testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
                        int gic);
 
-char *testQemuGetLatestCapsForArch(const char *dirname,
-                                   const char *arch,
+char *testQemuGetLatestCapsForArch(const char *arch,
                                    const char *suffix);
 virHashTablePtr testQemuGetLatestCaps(void);
 

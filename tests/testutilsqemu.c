@@ -805,8 +805,7 @@ testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
 
 
 char *
-testQemuGetLatestCapsForArch(const char *dirname,
-                             const char *arch,
+testQemuGetLatestCapsForArch(const char *arch,
                              const char *suffix)
 {
     struct dirent *ent;
@@ -822,10 +821,10 @@ testQemuGetLatestCapsForArch(const char *dirname,
     if (virAsprintf(&fullsuffix, "%s.%s", arch, suffix) < 0)
         goto cleanup;
 
-    if (virDirOpen(&dir, dirname) < 0)
+    if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
         goto cleanup;
 
-    while ((rc = virDirRead(dir, &ent, dirname)) > 0) {
+    while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
         VIR_FREE(tmp);
 
         if ((rc = VIR_STRDUP(tmp, STRSKIP(ent->d_name, "caps_"))) < 0)
@@ -853,11 +852,11 @@ testQemuGetLatestCapsForArch(const char *dirname,
 
     if (!maxname) {
         VIR_TEST_VERBOSE("failed to find capabilities for '%s' in '%s'\n",
-                         arch, dirname);
+                         arch, TEST_QEMU_CAPS_PATH);
         goto cleanup;
     }
 
-    ignore_value(virAsprintf(&ret, "%s/%s", dirname, maxname));
+    ignore_value(virAsprintf(&ret, "%s/%s", TEST_QEMU_CAPS_PATH, maxname));
 
  cleanup:
     VIR_FREE(tmp);
@@ -886,8 +885,7 @@ testQemuGetLatestCaps(void)
     VIR_TEST_VERBOSE("\n");
 
     for (i = 0; i < ARRAY_CARDINALITY(archs); ++i) {
-        char *cap = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
-                                                 archs[i], "xml");
+        char *cap = testQemuGetLatestCapsForArch(archs[i], "xml");
 
         if (!cap || virHashAddEntry(capslatest, archs[i], cap) < 0)
             goto error;

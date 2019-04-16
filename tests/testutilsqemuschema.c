@@ -533,8 +533,7 @@ testQEMUSchemaGetLatest(void)
     virJSONValuePtr reply = NULL;
     virJSONValuePtr schema = NULL;
 
-    if (!(capsLatestFile = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
-                                                        "x86_64", "replies"))) {
+    if (!(capsLatestFile = testQemuGetLatestCapsForArch("x86_64", "replies"))) {
         VIR_TEST_VERBOSE("failed to find latest caps replies\n");
         return NULL;
     }

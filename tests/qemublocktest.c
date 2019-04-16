@@ -327,8 +327,7 @@ mymain(void)
 
     diskxmljsondata.driver = &driver;
 
-    if (!(capslatest_x86_64 = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
-                                                           "x86_64", "xml")))
+    if (!(capslatest_x86_64 = testQemuGetLatestCapsForArch("x86_64", "xml")))
         return EXIT_FAILURE;
 
     VIR_TEST_VERBOSE("\nlatest caps x86_64: %s\n", capslatest_x86_64);
