@@ -30,6 +30,12 @@
     </section>
   </release>
 
+    If relevant for a given release, add a section for removed
+    features too
+
+    <section title="Removed features">
+    </section>
+
      -->
 
 <libvirt>
