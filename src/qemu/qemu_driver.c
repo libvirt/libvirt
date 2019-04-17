@@ -7411,12 +7411,11 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
         unsigned int bootIndex = net->info.bootIndex;
-        char *model = NULL;
+        VIR_AUTOFREE(char *) model = NULL;
         virMacAddr mac = net->mac;
         char *script = net->script;
 
-        if (virDomainNetGetModelString(net) &&
-            VIR_STRDUP(model, virDomainNetGetModelString(net)) < 0)
+        if (VIR_STRDUP(model, virDomainNetGetModelString(net)) < 0)
             goto cleanup;
 
         net->script = NULL;
@@ -7428,11 +7427,8 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         net->mac = mac;
         net->script = script;
 
-        if (model && virDomainNetSetModelString(net, model) < 0) {
-            VIR_FREE(model);
+        if (virDomainNetSetModelString(net, model) < 0)
             goto cleanup;
-        }
-        VIR_FREE(model);
     }
 
     if (!(cmd = qemuProcessCreatePretendCmd(driver, vm, NULL,
