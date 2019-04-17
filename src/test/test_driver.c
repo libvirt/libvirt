@@ -390,6 +390,14 @@ testDriverNew(void)
         .parse = testDomainDefNamespaceParse,
         .free = testDomainDefNamespaceFree,
     };
+    virDomainDefParserConfig config = {
+        .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |
+                    VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN |
+                    VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS |
+                    VIR_DOMAIN_DEF_FEATURE_USER_ALIAS |
+                    VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
+                    VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
+    };
     testDriverPtr ret;
 
     if (testDriverInitialize() < 0)
@@ -398,7 +406,7 @@ testDriverNew(void)
     if (!(ret = virObjectLockableNew(testDriverClass)))
         return NULL;
 
-    if (!(ret->xmlopt = virDomainXMLOptionNew(NULL, NULL, &ns, NULL, NULL)) ||
+    if (!(ret->xmlopt = virDomainXMLOptionNew(&config, NULL, &ns, NULL, NULL)) ||
         !(ret->eventState = virObjectEventStateNew()) ||
         !(ret->ifaces = virInterfaceObjListNew()) ||
         !(ret->domains = virDomainObjListNew()) ||
