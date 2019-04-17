@@ -2498,7 +2498,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
 
  err4:
     if (!save_err)
-        save_err = virSaveLastError();
+        virErrorPreserveLast(&save_err);
 
     dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
     if (dnsmasqPid > 0) {
@@ -2508,18 +2508,18 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
 
  err3:
     if (!save_err)
-        save_err = virSaveLastError();
+        virErrorPreserveLast(&save_err);
     ignore_value(virNetDevSetOnline(def->bridge, 0));
 
  err2:
     if (!save_err)
-        save_err = virSaveLastError();
+        virErrorPreserveLast(&save_err);
     if (def->forward.type != VIR_NETWORK_FORWARD_OPEN)
         networkRemoveFirewallRules(def);
 
  err1:
     if (!save_err)
-        save_err = virSaveLastError();
+        virErrorPreserveLast(&save_err);
 
     if (macTapIfName) {
         VIR_FORCE_CLOSE(tapfd);
@@ -2531,13 +2531,10 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
 
  err0:
     if (!save_err)
-        save_err = virSaveLastError();
+        virErrorPreserveLast(&save_err);
     ignore_value(virNetDevBridgeDelete(def->bridge));
 
-    if (save_err) {
-        virSetError(save_err);
-        virFreeError(save_err);
-    }
+    virErrorRestore(&save_err);
     /* coverity[leaked_handle] - 'tapfd' is not leaked */
     return -1;
 }
