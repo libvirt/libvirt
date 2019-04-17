@@ -7411,7 +7411,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
         unsigned int bootIndex = net->info.bootIndex;
-        char *model;
+        char *model = NULL;
         virMacAddr mac = net->mac;
         char *script = net->script;
 
