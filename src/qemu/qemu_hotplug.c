@@ -809,7 +809,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto cleanup;
 
-    if (qemuDomainStorageSourceChainAccessPrepare(driver, vm, newsrc, false) < 0)
+    if (qemuDomainStorageSourceChainAccessAllow(driver, vm, newsrc) < 0)
         goto cleanup;
 
     if (qemuHotplugAttachManagedPR(driver, vm, newsrc, QEMU_ASYNC_JOB_NONE) < 0)
@@ -828,7 +828,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     /* remove the old source from shared device list */
     disk->src = oldsrc;
     ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
-    ignore_value(qemuDomainStorageSourceChainAccessPrepare(driver, vm, oldsrc, true));
+    ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, oldsrc));
 
     /* media was changed, so we can remove the old media definition now */
     virObjectUnref(oldsrc);
@@ -843,7 +843,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         if (sharedAdded)
             ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
 
-        ignore_value(qemuDomainStorageSourceChainAccessPrepare(driver, vm, newsrc, true));
+        ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, newsrc));
     }
 
     /* remove PR manager object if unneeded */
@@ -873,7 +873,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     char *devstr = NULL;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
 
-    if (qemuDomainStorageSourceChainAccessPrepare(driver, vm, disk->src, false) < 0)
+    if (qemuDomainStorageSourceChainAccessAllow(driver, vm, disk->src) < 0)
         goto cleanup;
 
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
@@ -935,7 +935,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
  error:
-    ignore_value(qemuDomainStorageSourceChainAccessPrepare(driver, vm, disk->src, true));
+    ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src));
     goto cleanup;
 }
 
@@ -4476,7 +4476,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     qemuDomainReleaseDeviceAddress(vm, &disk->info);
 
     /* tear down disk security access */
-    qemuDomainStorageSourceChainAccessPrepare(driver, vm, disk->src, true);
+    qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src);
 
     dev.type = VIR_DOMAIN_DEVICE_DISK;
     dev.data.disk = disk;

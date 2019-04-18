@@ -770,10 +770,12 @@ int qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 
-int qemuDomainStorageSourceChainAccessPrepare(virQEMUDriverPtr driver,
-                                              virDomainObjPtr vm,
-                                              virStorageSourcePtr src,
-                                              bool teardown);
+int qemuDomainStorageSourceChainAccessAllow(virQEMUDriverPtr driver,
+                                            virDomainObjPtr vm,
+                                            virStorageSourcePtr src);
+int qemuDomainStorageSourceChainAccessRevoke(virQEMUDriverPtr driver,
+                                             virDomainObjPtr vm,
+                                             virStorageSourcePtr src);
 
 void qemuDomainStorageSourceAccessRevoke(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,

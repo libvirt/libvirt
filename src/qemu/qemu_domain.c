@@ -9224,7 +9224,7 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
  *
  * Returns 0 on success and -1 on error. Reports libvirt error.
  */
-int
+static int
 qemuDomainStorageSourceChainAccessPrepare(virQEMUDriverPtr driver,
                                           virDomainObjPtr vm,
                                           virStorageSourcePtr src,
@@ -9276,6 +9276,24 @@ qemuDomainStorageSourceChainAccessPrepare(virQEMUDriverPtr driver,
     virErrorRestore(&orig_err);
 
     return ret;
+}
+
+
+int
+qemuDomainStorageSourceChainAccessAllow(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        virStorageSourcePtr src)
+{
+    return qemuDomainStorageSourceChainAccessPrepare(driver, vm, src, false);
+}
+
+
+int
+qemuDomainStorageSourceChainAccessRevoke(virQEMUDriverPtr driver,
+                                         virDomainObjPtr vm,
+                                         virStorageSourcePtr src)
+{
+    return qemuDomainStorageSourceChainAccessPrepare(driver, vm, src, true);
 }
 
 
