@@ -100,7 +100,7 @@ testDomain(const void *opaque)
 
     qemuSecurityRestoreAllLabel(data->driver, vm, false);
 
-    if (checkPaths() < 0)
+    if (checkPaths(NULL) < 0)
         goto cleanup;
 
     ret = 0;
