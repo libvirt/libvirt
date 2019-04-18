@@ -9399,33 +9399,15 @@ qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
                                    bool readonly,
                                    bool newSource)
 {
-    bool was_readonly = elem->readonly;
-    virQEMUDriverConfigPtr cfg = NULL;
-    int ret = -1;
+    qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE;
 
-    cfg = virQEMUDriverGetConfig(driver);
+    if (readonly)
+        flags &= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY;
 
-    elem->readonly = readonly;
+    if (!newSource)
+        flags &= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS;
 
-    if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, elem) < 0)
-        goto cleanup;
-
-    if (newSource &&
-        qemuDomainNamespaceSetupDisk(vm, elem) < 0)
-        goto cleanup;
-
-    if (qemuSetupImageCgroup(vm, elem) < 0)
-        goto cleanup;
-
-    if (qemuSecuritySetImageLabel(driver, vm, elem, false) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    elem->readonly = was_readonly;
-    virObjectUnref(cfg);
-    return ret;
+    return qemuDomainStorageSourceAccessModify(driver, vm, elem, flags);
 }
 
 
