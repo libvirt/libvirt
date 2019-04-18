@@ -9211,16 +9211,21 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
 }
 
 
+typedef enum {
+    /* revoke access to the image instead of allowing it */
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE = 1 << 0,
+} qemuDomainStorageSourceAccessFlags;
+
+
 /**
  * qemuDomainStorageSourceAccessModify:
  * @driver: qemu driver struct
  * @vm: domain object
  * @src: Source to prepare
- * @teardown: Teardown the access to @src instead of adding it to a vm
+ * @flags: bitwise or of qemuDomainStorageSourceAccessFlags
  *
  * Setup the locks, cgroups and security permissions on a disk source and its
- * backing chain. If @teardown is true, then the labels and cgroups are removed
- * instead.
+ * backing chain.
  *
  * Returns 0 on success and -1 on error. Reports libvirt error.
  */
@@ -9228,7 +9233,7 @@ static int
 qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
                                     virDomainObjPtr vm,
                                     virStorageSourcePtr src,
-                                    bool teardown)
+                                    qemuDomainStorageSourceAccessFlags flags)
 {
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     const char *srcstr = NULLSTR(src->path);
@@ -9236,7 +9241,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     virErrorPtr orig_err = NULL;
 
     /* just tear down the disk access */
-    if (teardown) {
+    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE) {
         virErrorPreserveLast(&orig_err);
         ret = 0;
         goto rollback_cgroup;
@@ -9284,7 +9289,9 @@ qemuDomainStorageSourceChainAccessAllow(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         virStorageSourcePtr src)
 {
-    return qemuDomainStorageSourceAccessModify(driver, vm, src, false);
+    qemuDomainStorageSourceAccessFlags flags = 0;
+
+    return qemuDomainStorageSourceAccessModify(driver, vm, src, flags);
 }
 
 
@@ -9293,7 +9300,9 @@ qemuDomainStorageSourceChainAccessRevoke(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          virStorageSourcePtr src)
 {
-    return qemuDomainStorageSourceAccessModify(driver, vm, src, true);
+    qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE;
+
+    return qemuDomainStorageSourceAccessModify(driver, vm, src, flags);
 }
 
 
