@@ -9218,6 +9218,8 @@ typedef enum {
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN = 1 << 1,
     /* force permissions to read-only when allowing */
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY = 1 << 2,
+    /* don't revoke permissions when modification has failed */
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE = 1 << 3,
 } qemuDomainStorageSourceAccessFlags;
 
 
@@ -9294,6 +9296,9 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     goto cleanup;
 
  revoke:
+    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE)
+        goto cleanup;
+
     if (revoke_cgroup) {
         if (chain)
             rc = qemuTeardownImageChainCgroup(vm, src);
