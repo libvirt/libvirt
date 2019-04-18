@@ -9216,6 +9216,8 @@ typedef enum {
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE = 1 << 0,
     /* operate on full backing chain rather than single image */
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN = 1 << 1,
+    /* force permissions to read-only when allowing */
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY = 1 << 2,
 } qemuDomainStorageSourceAccessFlags;
 
 
@@ -9243,6 +9245,10 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     virErrorPtr orig_err = NULL;
     bool chain = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN;
     int rc;
+    bool was_readonly = src->readonly;
+
+    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY)
+        src->readonly = true;
 
     /* just tear down the disk access */
     if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE) {
@@ -9292,6 +9298,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
         VIR_WARN("Unable to release lock on %s", srcstr);
 
  cleanup:
+    src->readonly = was_readonly;
     virErrorRestore(&orig_err);
 
     return ret;
