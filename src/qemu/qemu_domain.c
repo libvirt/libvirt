@@ -9246,6 +9246,10 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     bool chain = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN;
     int rc;
     bool was_readonly = src->readonly;
+    bool revoke_cgroup = false;
+    bool revoke_label = false;
+    bool revoke_namespace = false;
+    bool revoke_lockspace = false;
 
     if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY)
         src->readonly = true;
@@ -9253,18 +9257,28 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     /* just tear down the disk access */
     if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE) {
         virErrorPreserveLast(&orig_err);
+        revoke_cgroup = true;
+        revoke_label = true;
+        revoke_namespace = true;
+        revoke_lockspace = true;
         ret = 0;
-        goto rollback_cgroup;
+        goto revoke;
     }
 
     if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, src) < 0)
-        goto cleanup;
+        goto revoke;
+
+    revoke_lockspace = true;
 
     if (qemuDomainNamespaceSetupDisk(vm, src) < 0)
-        goto rollback_lock;
+        goto revoke;
+
+    revoke_namespace = true;
 
     if (qemuSecuritySetImageLabel(driver, vm, src, chain) < 0)
-        goto rollback_namespace;
+        goto revoke;
+
+    revoke_label = true;
 
     if (chain)
         rc = qemuSetupImageChainCgroup(vm, src);
@@ -9272,30 +9286,38 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
         rc = qemuSetupImageCgroup(vm, src);
 
     if (rc < 0)
-        goto rollback_label;
+        goto revoke;
+
+    revoke_cgroup = true;
 
     ret = 0;
     goto cleanup;
 
- rollback_cgroup:
-    if (chain)
-        rc = qemuTeardownImageChainCgroup(vm, src);
-    else
-        rc = qemuTeardownImageCgroup(vm, src);
+ revoke:
+    if (revoke_cgroup) {
+        if (chain)
+            rc = qemuTeardownImageChainCgroup(vm, src);
+        else
+            rc = qemuTeardownImageCgroup(vm, src);
 
-    if (rc < 0)
-        VIR_WARN("Unable to tear down cgroup access on %s", srcstr);
- rollback_label:
-    if (qemuSecurityRestoreImageLabel(driver, vm, src, chain) < 0)
-        VIR_WARN("Unable to restore security label on %s", srcstr);
+        if (rc < 0)
+            VIR_WARN("Unable to tear down cgroup access on %s", srcstr);
+    }
 
- rollback_namespace:
-    if (qemuDomainNamespaceTeardownDisk(vm, src) < 0)
-        VIR_WARN("Unable to remove /dev entry for %s", srcstr);
+    if (revoke_label) {
+        if (qemuSecurityRestoreImageLabel(driver, vm, src, chain) < 0)
+            VIR_WARN("Unable to restore security label on %s", srcstr);
+    }
 
- rollback_lock:
-    if (virDomainLockImageDetach(driver->lockManager, vm, src) < 0)
-        VIR_WARN("Unable to release lock on %s", srcstr);
+    if (revoke_namespace) {
+        if (qemuDomainNamespaceTeardownDisk(vm, src) < 0)
+            VIR_WARN("Unable to remove /dev entry for %s", srcstr);
+    }
+
+    if (revoke_lockspace) {
+        if (virDomainLockImageDetach(driver->lockManager, vm, src) < 0)
+            VIR_WARN("Unable to release lock on %s", srcstr);
+    }
 
  cleanup:
     src->readonly = was_readonly;
