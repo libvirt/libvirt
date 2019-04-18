@@ -197,7 +197,7 @@ virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
 
     if (buf->error || toadd->error) {
         if (!buf->error)
-            buf->error = toadd->error;
+            virBufferSetError(buf, toadd->error);
         goto done;
     }
 
