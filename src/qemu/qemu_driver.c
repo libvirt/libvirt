@@ -15022,7 +15022,7 @@ struct _qemuDomainSnapshotDiskData {
     virStorageSourcePtr src;
     bool initialized; /* @src was initialized in the storage driver */
     bool created; /* @src was created by the snapshot code */
-    bool prepared; /* @src was prepared using qemuDomainDiskChainElementPrepare */
+    bool prepared; /* @src was prepared using qemuDomainStorageSourceAccessAllow */
     virDomainDiskDefPtr disk;
     char *relPath; /* relative path component to fill into original disk */
 
@@ -15053,7 +15053,7 @@ qemuDomainSnapshotDiskDataFree(qemuDomainSnapshotDiskDataPtr data,
                 virStorageFileDeinit(data[i].src);
 
             if (data[i].prepared)
-                qemuDomainDiskChainElementRevoke(driver, vm, data[i].src);
+                qemuDomainStorageSourceAccessRevoke(driver, vm, data[i].src);
 
             virObjectUnref(data[i].src);
         }
@@ -15213,8 +15213,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
     /* set correct security, cgroup and locking options on the new image */
-    if (qemuDomainDiskChainElementPrepare(driver, vm, dd->src, false, true) < 0) {
-        qemuDomainDiskChainElementRevoke(driver, vm, dd->src);
+    if (qemuDomainStorageSourceAccessAllow(driver, vm, dd->src, false, true) < 0) {
+        qemuDomainStorageSourceAccessRevoke(driver, vm, dd->src);
         goto cleanup;
     }
 
@@ -15311,7 +15311,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                 continue;
 
             if (diskdata[i].prepared)
-                qemuDomainDiskChainElementRevoke(driver, vm, diskdata[i].src);
+                qemuDomainStorageSourceAccessRevoke(driver, vm, diskdata[i].src);
 
             if (diskdata[i].created &&
                 virStorageFileUnlink(diskdata[i].src) < 0)
@@ -17749,8 +17749,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
             qemuSecuritySetImageLabel(driver, vm, mirror, true) < 0)
             goto endjob;
     } else {
-        if (qemuDomainDiskChainElementPrepare(driver, vm, mirror, false, true) < 0) {
-            qemuDomainDiskChainElementRevoke(driver, vm, mirror);
+        if (qemuDomainStorageSourceAccessAllow(driver, vm, mirror, false, true) < 0) {
+            qemuDomainStorageSourceAccessRevoke(driver, vm, mirror);
             goto endjob;
         }
     }
@@ -17771,7 +17771,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         ret = -1;
     if (ret < 0) {
         monitor_error = virSaveLastError();
-        qemuDomainDiskChainElementRevoke(driver, vm, mirror);
+        qemuDomainStorageSourceAccessRevoke(driver, vm, mirror);
         goto endjob;
     }
 
@@ -18146,9 +18146,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * operation succeeds, but doing that requires tracking the
      * operation in XML across libvirtd restarts.  */
     clean_access = true;
-    if (qemuDomainDiskChainElementPrepare(driver, vm, baseSource, false, false) < 0 ||
+    if (qemuDomainStorageSourceAccessAllow(driver, vm, baseSource, false, false) < 0 ||
         (top_parent && top_parent != disk->src &&
-         qemuDomainDiskChainElementPrepare(driver, vm, top_parent, false, false) < 0))
+         qemuDomainStorageSourceAccessAllow(driver, vm, top_parent, false, false) < 0))
         goto endjob;
 
     if (!(job = qemuBlockJobDiskNew(disk, jobtype, device)))
@@ -18189,9 +18189,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (ret < 0 && clean_access) {
         virErrorPtr orig_err = virSaveLastError();
         /* Revert access to read-only, if possible.  */
-        qemuDomainDiskChainElementPrepare(driver, vm, baseSource, true, false);
+        qemuDomainStorageSourceAccessAllow(driver, vm, baseSource, true, false);
         if (top_parent && top_parent != disk->src)
-            qemuDomainDiskChainElementPrepare(driver, vm, top_parent, true, false);
+            qemuDomainStorageSourceAccessAllow(driver, vm, top_parent, true, false);
 
         if (orig_err) {
             virSetError(orig_err);

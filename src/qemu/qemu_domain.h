@@ -770,14 +770,14 @@ int qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 
-void qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
-                                      virDomainObjPtr vm,
-                                      virStorageSourcePtr elem);
-int qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
-                                      virDomainObjPtr vm,
-                                      virStorageSourcePtr elem,
-                                      bool readonly,
-                                      bool newSource);
+void qemuDomainStorageSourceAccessRevoke(virQEMUDriverPtr driver,
+                                         virDomainObjPtr vm,
+                                         virStorageSourcePtr elem);
+int qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       virStorageSourcePtr elem,
+                                       bool readonly,
+                                       bool newSource);
 
 int qemuDomainCleanupAdd(virDomainObjPtr vm,
                          qemuDomainCleanupCallback cb);

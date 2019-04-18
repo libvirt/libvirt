@@ -9212,15 +9212,15 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
 
 
 /**
- * qemuDomainDiskChainElementRevoke:
+ * qemuDomainStorageSourceAccessRevoke:
  *
  * Revoke access to a single backing chain element. This restores the labels,
  * removes cgroup ACLs for devices and removes locks.
  */
 void
-qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 virStorageSourcePtr elem)
+qemuDomainStorageSourceAccessRevoke(virQEMUDriverPtr driver,
+                                    virDomainObjPtr vm,
+                                    virStorageSourcePtr elem)
 {
     if (qemuTeardownImageCgroup(vm, elem) < 0)
         VIR_WARN("Failed to teardown cgroup for disk path %s",
@@ -9238,7 +9238,7 @@ qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
 
 
 /**
- * qemuDomainDiskChainElementPrepare:
+ * qemuDomainStorageSourceAccessAllow:
  * @driver: qemu driver data
  * @vm: domain object
  * @elem: source structure to set access for
@@ -9253,11 +9253,11 @@ qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
  * backing chain) @newSource needs to be set to false.
  */
 int
-qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virStorageSourcePtr elem,
-                                  bool readonly,
-                                  bool newSource)
+qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   virStorageSourcePtr elem,
+                                   bool readonly,
+                                   bool newSource)
 {
     bool was_readonly = elem->readonly;
     virQEMUDriverConfigPtr cfg = NULL;
