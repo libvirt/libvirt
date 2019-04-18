@@ -100,7 +100,6 @@ static int
 testDomain(const void *opaque)
 {
     const struct testData *data = opaque;
-    virSecurityManagerPtr securityManager = NULL;
     virDomainObjPtr vm = NULL;
     int ret = -1;
 
@@ -124,7 +123,6 @@ testDomain(const void *opaque)
  cleanup:
     unsetenv(ENVVAR);
     virObjectUnref(vm);
-    virObjectUnref(securityManager);
     freePaths();
     return ret;
 }
