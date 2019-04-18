@@ -40,7 +40,7 @@ typedef virBuffer *virBufferPtr;
 struct _virBuffer {
     size_t size;
     size_t use;
-    unsigned int error; /* errno value, or -1 for usage error */
+    int error; /* errno value, or -1 for usage error */
     int indent;
     char *content;
 };
