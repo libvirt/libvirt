@@ -9212,6 +9212,74 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
 
 
 /**
+ * qemuDomainStorageSourceChainAccessPrepare:
+ * @driver: qemu driver struct
+ * @vm: domain object
+ * @src: Source to prepare
+ * @teardown: Teardown the access to @src instead of adding it to a vm
+ *
+ * Setup the locks, cgroups and security permissions on a disk source and its
+ * backing chain. If @teardown is true, then the labels and cgroups are removed
+ * instead.
+ *
+ * Returns 0 on success and -1 on error. Reports libvirt error.
+ */
+int
+qemuDomainStorageSourceChainAccessPrepare(virQEMUDriverPtr driver,
+                                          virDomainObjPtr vm,
+                                          virStorageSourcePtr src,
+                                          bool teardown)
+{
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    const char *srcstr = NULLSTR(src->path);
+    int ret = -1;
+    virErrorPtr orig_err = NULL;
+
+    /* just tear down the disk access */
+    if (teardown) {
+        virErrorPreserveLast(&orig_err);
+        ret = 0;
+        goto rollback_cgroup;
+    }
+
+    if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, src) < 0)
+        goto cleanup;
+
+    if (qemuDomainNamespaceSetupDisk(vm, src) < 0)
+        goto rollback_lock;
+
+    if (qemuSecuritySetImageLabel(driver, vm, src, true) < 0)
+        goto rollback_namespace;
+
+    if (qemuSetupImageChainCgroup(vm, src) < 0)
+        goto rollback_label;
+
+    ret = 0;
+    goto cleanup;
+
+ rollback_cgroup:
+    if (qemuTeardownImageChainCgroup(vm, src) < 0)
+        VIR_WARN("Unable to tear down cgroup access on %s", srcstr);
+ rollback_label:
+    if (qemuSecurityRestoreImageLabel(driver, vm, src, true) < 0)
+        VIR_WARN("Unable to restore security label on %s", srcstr);
+
+ rollback_namespace:
+    if (qemuDomainNamespaceTeardownDisk(vm, src) < 0)
+        VIR_WARN("Unable to remove /dev entry for %s", srcstr);
+
+ rollback_lock:
+    if (virDomainLockImageDetach(driver->lockManager, vm, src) < 0)
+        VIR_WARN("Unable to release lock on %s", srcstr);
+
+ cleanup:
+    virErrorRestore(&orig_err);
+
+    return ret;
+}
+
+
+/**
  * qemuDomainStorageSourceAccessRevoke:
  *
  * Revoke access to a single backing chain element. This restores the labels,
