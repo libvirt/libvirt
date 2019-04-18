@@ -9332,18 +9332,9 @@ qemuDomainStorageSourceAccessRevoke(virQEMUDriverPtr driver,
                                     virDomainObjPtr vm,
                                     virStorageSourcePtr elem)
 {
-    if (qemuTeardownImageCgroup(vm, elem) < 0)
-        VIR_WARN("Failed to teardown cgroup for disk path %s",
-                 NULLSTR(elem->path));
+    qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE;
 
-    if (qemuSecurityRestoreImageLabel(driver, vm, elem, false) < 0)
-        VIR_WARN("Unable to restore security label on %s", NULLSTR(elem->path));
-
-    if (qemuDomainNamespaceTeardownDisk(vm, elem) < 0)
-        VIR_WARN("Unable to remove /dev entry for %s", NULLSTR(elem->path));
-
-    if (virDomainLockImageDetach(driver->lockManager, vm, elem) < 0)
-        VIR_WARN("Unable to release lock on %s", NULLSTR(elem->path));
+    ignore_value(qemuDomainStorageSourceAccessModify(driver, vm, elem, flags));
 }
 
 
