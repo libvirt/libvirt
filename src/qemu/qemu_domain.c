@@ -9220,6 +9220,8 @@ typedef enum {
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY = 1 << 2,
     /* don't revoke permissions when modification has failed */
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE = 1 << 3,
+    /* VM already has access to the source and we are just modifying it */
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS = 1 << 4,
 } qemuDomainStorageSourceAccessFlags;
 
 
@@ -9272,10 +9274,13 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
 
     revoke_lockspace = true;
 
-    if (qemuDomainNamespaceSetupDisk(vm, src) < 0)
-        goto revoke;
+    /* When modifying access of existing @src namespace does not need update */
+    if (!(flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS)) {
+        if (qemuDomainNamespaceSetupDisk(vm, src) < 0)
+            goto revoke;
 
-    revoke_namespace = true;
+        revoke_namespace = true;
+    }
 
     if (qemuSecuritySetImageLabel(driver, vm, src, chain) < 0)
         goto revoke;
