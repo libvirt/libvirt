@@ -9212,7 +9212,7 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
 
 
 /**
- * qemuDomainStorageSourceChainAccessPrepare:
+ * qemuDomainStorageSourceAccessModify:
  * @driver: qemu driver struct
  * @vm: domain object
  * @src: Source to prepare
@@ -9225,10 +9225,10 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
  * Returns 0 on success and -1 on error. Reports libvirt error.
  */
 static int
-qemuDomainStorageSourceChainAccessPrepare(virQEMUDriverPtr driver,
-                                          virDomainObjPtr vm,
-                                          virStorageSourcePtr src,
-                                          bool teardown)
+qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
+                                    virDomainObjPtr vm,
+                                    virStorageSourcePtr src,
+                                    bool teardown)
 {
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     const char *srcstr = NULLSTR(src->path);
@@ -9284,7 +9284,7 @@ qemuDomainStorageSourceChainAccessAllow(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         virStorageSourcePtr src)
 {
-    return qemuDomainStorageSourceChainAccessPrepare(driver, vm, src, false);
+    return qemuDomainStorageSourceAccessModify(driver, vm, src, false);
 }
 
 
@@ -9293,7 +9293,7 @@ qemuDomainStorageSourceChainAccessRevoke(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          virStorageSourcePtr src)
 {
-    return qemuDomainStorageSourceChainAccessPrepare(driver, vm, src, true);
+    return qemuDomainStorageSourceAccessModify(driver, vm, src, true);
 }
 
 
