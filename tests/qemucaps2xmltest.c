@@ -100,7 +100,7 @@ testGetCaps(char *capsData, const testQemuData *data)
     virQEMUCapsPtr qemuCaps = NULL;
     virCapsPtr caps = NULL;
     virArch arch = virArchFromString(data->archName);
-    char *binary = NULL;
+    VIR_AUTOFREE(char *) binary = NULL;
 
     if (virAsprintf(&binary, "/usr/bin/qemu-system-%s", data->archName) < 0)
         goto error;
@@ -129,7 +129,6 @@ testGetCaps(char *capsData, const testQemuData *data)
  error:
     virObjectUnref(qemuCaps);
     virObjectUnref(caps);
-    VIR_FREE(binary);
     return NULL;
 }
 
