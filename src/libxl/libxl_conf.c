@@ -79,6 +79,7 @@ libxlDriverConfigDispose(void *obj)
     if (cfg->logger)
         libxlLoggerFree(cfg->logger);
 
+    VIR_FREE(cfg->configBaseDir);
     VIR_FREE(cfg->configDir);
     VIR_FREE(cfg->autostartDir);
     VIR_FREE(cfg->logDir);
