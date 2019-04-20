@@ -1861,6 +1861,7 @@ virVMXParseConfig(virVMXContext *ctx,
     VIR_FREE(sched_cpu_shares);
     VIR_FREE(guestOS);
     virCPUDefFree(cpu);
+    VIR_FREE(firmware);
 
     return def;
 }
