@@ -2336,6 +2336,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     char *macMapFile = NULL;
     int tapfd = -1;
     bool dnsmasqStarted = false;
+    bool devOnline = false;
 
     /* Check to see if any network IP collides with an existing route */
     if (networkCheckRouteCollision(def) < 0)
@@ -2430,6 +2431,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     if (virNetDevSetOnline(def->bridge, 1) < 0)
         goto err2;
 
+    devOnline = true;
+
     for (i = 0; i < def->nroutes; i++) {
         virSocketAddrPtr gateway = NULL;
 
@@ -2450,12 +2453,12 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     /* If forward.type != NONE, turn on global IP forwarding */
     if (def->forward.type != VIR_NETWORK_FORWARD_NONE) {
         if (v6present && !virNetDevIPCheckIPv6Forwarding())
-            goto err3; /* Precise error message already provided */
+            goto error; /* Precise error message already provided */
 
         if (networkEnableIPForwarding(v4present, v6present) < 0) {
             virReportSystemError(errno, "%s",
                                  _("failed to enable IP forwarding"));
-            goto err3;
+            goto error;
         }
     }
 
@@ -2463,7 +2466,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     /* start dnsmasq if there are any IP addresses (v4 or v6) */
     if ((v4present || v6present) &&
         networkStartDhcpDaemon(driver, obj) < 0)
-        goto err3;
+        goto error;
 
     dnsmasqStarted = true;
 
@@ -2505,10 +2508,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         virNetworkObjSetDnsmasqPid(obj, -1);
     }
 
- err3:
-    if (!save_err)
-        virErrorPreserveLast(&save_err);
-    ignore_value(virNetDevSetOnline(def->bridge, 0));
+    if (devOnline)
+        ignore_value(virNetDevSetOnline(def->bridge, 0));
 
  err2:
     if (!save_err)
