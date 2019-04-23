@@ -2337,6 +2337,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     int tapfd = -1;
     bool dnsmasqStarted = false;
     bool devOnline = false;
+    bool firewalRulesAdded = false;
 
     /* Check to see if any network IP collides with an existing route */
     if (networkCheckRouteCollision(def) < 0)
@@ -2413,6 +2414,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         networkAddFirewallRules(def) < 0)
         goto err1;
 
+    firewalRulesAdded = true;
+
     for (i = 0; (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i)); i++) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
             v4present = true;
@@ -2421,15 +2424,15 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
 
         /* Add the IP address/netmask to the bridge */
         if (networkAddAddrToBridge(obj, ipdef) < 0)
-            goto err2;
+            goto error;
     }
 
     if (networkStartHandleMACTableManagerMode(obj, macTapIfName) < 0)
-        goto err2;
+        goto error;
 
     /* Bring up the bridge interface */
     if (virNetDevSetOnline(def->bridge, 1) < 0)
-        goto err2;
+        goto error;
 
     devOnline = true;
 
@@ -2511,10 +2514,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     if (devOnline)
         ignore_value(virNetDevSetOnline(def->bridge, 0));
 
- err2:
-    if (!save_err)
-        virErrorPreserveLast(&save_err);
-    if (def->forward.type != VIR_NETWORK_FORWARD_OPEN)
+    if (firewalRulesAdded &&
+        def->forward.type != VIR_NETWORK_FORWARD_OPEN)
         networkRemoveFirewallRules(def);
 
  err1:
