@@ -2485,14 +2485,14 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     }
 
     if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
-        goto err5;
+        goto error;
 
     VIR_FREE(macTapIfName);
     VIR_FREE(macMapFile);
 
     return 0;
 
- err5:
+ error:
     virErrorPreserveLast(&save_err);
     if (def->bandwidth)
        virNetDevBandwidthClear(def->bridge);
