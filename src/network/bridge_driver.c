@@ -2493,6 +2493,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     return 0;
 
  err5:
+    virErrorPreserveLast(&save_err);
     if (def->bandwidth)
        virNetDevBandwidthClear(def->bridge);
 
