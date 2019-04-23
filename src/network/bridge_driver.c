@@ -2335,7 +2335,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     virMacMapPtr macmap;
     char *macMapFile = NULL;
     int tapfd = -1;
-    pid_t dnsmasqPid;
+    bool dnsmasqStarted = false;
 
     /* Check to see if any network IP collides with an existing route */
     if (networkCheckRouteCollision(def) < 0)
@@ -2465,22 +2465,24 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         networkStartDhcpDaemon(driver, obj) < 0)
         goto err3;
 
+    dnsmasqStarted = true;
+
     /* start radvd if there are any ipv6 addresses */
     if (v6present && networkStartRadvd(driver, obj) < 0)
-        goto err4;
+        goto error;
 
     /* dnsmasq does not wait for DAD to complete before daemonizing,
      * so we need to wait for it ourselves.
      */
     if (v6present && networkWaitDadFinish(obj) < 0)
-        goto err4;
+        goto error;
 
     /* DAD has finished, dnsmasq is now bound to the
      * bridge's IPv6 address, so we can set the dummy tun down.
      */
     if (tapfd >= 0) {
         if (virNetDevSetOnline(macTapIfName, false) < 0)
-            goto err4;
+            goto error;
         VIR_FORCE_CLOSE(tapfd);
     }
 
@@ -2497,12 +2499,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     if (def->bandwidth)
        virNetDevBandwidthClear(def->bridge);
 
- err4:
-    if (!save_err)
-        virErrorPreserveLast(&save_err);
-
-    dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
-    if (dnsmasqPid > 0) {
+    if (dnsmasqStarted) {
+        pid_t dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
         kill(dnsmasqPid, SIGTERM);
         virNetworkObjSetDnsmasqPid(obj, -1);
     }
