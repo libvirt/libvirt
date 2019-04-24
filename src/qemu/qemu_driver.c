@@ -19145,6 +19145,27 @@ qemuDomainGetCPUStats(virDomainPtr domain,
     return ret;
 }
 
+
+static int
+qemuDomainProbeQMPCurrentMachine(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 bool *wakeupSupported)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMonitorCurrentMachineInfo info = { 0 };
+    int rv;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rv = qemuMonitorGetCurrentMachineInfo(priv->mon, &info);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 ||
+        rv < 0)
+        return -1;
+
+    *wakeupSupported = info.wakeupSuspendSupport;
+    return 0;
+}
+
+
 static int
 qemuDomainPMSuspendForDuration(virDomainPtr dom,
                                unsigned int target,
@@ -19152,8 +19173,10 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
                                unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     qemuAgentPtr agent;
+    qemuDomainJob job = QEMU_JOB_NONE;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -19179,11 +19202,36 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     if (virDomainPMSuspendForDurationEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) < 0)
+    priv = vm->privateData;
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CURRENT_MACHINE))
+        job = QEMU_JOB_MODIFY;
+
+    if (qemuDomainObjBeginJobWithAgent(driver, vm, job, QEMU_AGENT_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
+
+    /*
+     * The case we want to handle here is when QEMU has the API (i.e.
+     * QEMU_CAPS_QUERY_CURRENT_MACHINE is set). Otherwise, do not interfere
+     * with the suspend process. This means that existing running domains,
+     * that don't know about this cap, will keep their old behavior of
+     * suspending 'in the dark'.
+     */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CURRENT_MACHINE)) {
+        bool wakeupSupported;
+
+        if (qemuDomainProbeQMPCurrentMachine(driver, vm, &wakeupSupported) < 0)
+            goto endjob;
+
+        if (!wakeupSupported) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("Domain does not have suspend support"));
+            goto endjob;
+        }
+    }
 
     if (vm->def->pm.s3 || vm->def->pm.s4) {
         if (vm->def->pm.s3 == VIR_TRISTATE_BOOL_NO &&
@@ -19210,7 +19258,10 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     qemuDomainObjExitAgent(vm, agent);
 
  endjob:
-    qemuDomainObjEndAgentJob(vm);
+    if (job)
+        qemuDomainObjEndJobWithAgent(driver, vm);
+    else
+        qemuDomainObjEndAgentJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
