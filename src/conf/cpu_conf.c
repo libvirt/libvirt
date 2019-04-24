@@ -894,6 +894,13 @@ virCPUDefIsEqual(virCPUDefPtr src,
         goto cleanup;
     }
 
+    if (src->check != dst->check) {
+        MISMATCH(_("Target CPU check %s does not match source %s"),
+                 virCPUCheckTypeToString(dst->check),
+                 virCPUCheckTypeToString(src->check));
+        goto cleanup;
+    }
+
     if (src->arch != dst->arch) {
         MISMATCH(_("Target CPU arch %s does not match source %s"),
                  virArchToString(dst->arch),
