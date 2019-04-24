@@ -163,6 +163,7 @@
   <flag name='scsi-disk.device_id'/>
   <flag name='virtio-pci-non-transitional'/>
   <flag name='overcommit'/>
+  <flag name='query-current-machine'/>
   <version>3001091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
