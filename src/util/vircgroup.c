@@ -1280,33 +1280,6 @@ virCgroupNewIgnoreError(void)
 
 
 /**
- * virCgroupFree:
- *
- * @group: The group structure to free
- */
-void
-virCgroupFree(virCgroupPtr *group)
-{
-    size_t i;
-
-    if (*group == NULL)
-        return;
-
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        VIR_FREE((*group)->legacy[i].mountPoint);
-        VIR_FREE((*group)->legacy[i].linkPoint);
-        VIR_FREE((*group)->legacy[i].placement);
-    }
-
-    VIR_FREE((*group)->unified.mountPoint);
-    VIR_FREE((*group)->unified.placement);
-
-    VIR_FREE((*group)->path);
-    VIR_FREE(*group);
-}
-
-
-/**
  * virCgroupHasController: query whether a cgroup controller is present
  *
  * @cgroup: The group structure to be queried, or NULL
@@ -2917,14 +2890,6 @@ virCgroupNewIgnoreError(void)
 }
 
 
-void
-virCgroupFree(virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-}
-
-
 bool
 virCgroupHasController(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
                        int controller ATTRIBUTE_UNUSED)
@@ -3563,6 +3528,33 @@ virCgroupControllerAvailable(int controller ATTRIBUTE_UNUSED)
     return false;
 }
 #endif /* !__linux__ */
+
+
+/**
+ * virCgroupFree:
+ *
+ * @group: The group structure to free
+ */
+void
+virCgroupFree(virCgroupPtr *group)
+{
+    size_t i;
+
+    if (*group == NULL)
+        return;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        VIR_FREE((*group)->legacy[i].mountPoint);
+        VIR_FREE((*group)->legacy[i].linkPoint);
+        VIR_FREE((*group)->legacy[i].placement);
+    }
+
+    VIR_FREE((*group)->unified.mountPoint);
+    VIR_FREE((*group)->unified.placement);
+
+    VIR_FREE((*group)->path);
+    VIR_FREE(*group);
+}
 
 
 int
