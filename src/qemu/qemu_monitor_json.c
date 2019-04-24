@@ -8459,3 +8459,53 @@ qemuMonitorJSONGetPRManagerInfo(qemuMonitorPtr mon,
     return ret;
 
 }
+
+
+static int
+qemuMonitorJSONExtractCurrentMachineInfo(virJSONValuePtr reply,
+                                         qemuMonitorCurrentMachineInfoPtr info)
+{
+    virJSONValuePtr data;
+
+    data = virJSONValueObjectGetObject(reply, "return");
+    if (!data)
+        goto malformed;
+
+    if (virJSONValueObjectGetBoolean(data, "wakeup-suspend-support",
+                                     &info->wakeupSuspendSupport) < 0)
+        goto malformed;
+
+    return 0;
+
+ malformed:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("malformed qemu-current-machine reply"));
+    return -1;
+}
+
+
+int
+qemuMonitorJSONGetCurrentMachineInfo(qemuMonitorPtr mon,
+                                     qemuMonitorCurrentMachineInfoPtr info)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-current-machine",
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+        goto cleanup;
+
+    ret = qemuMonitorJSONExtractCurrentMachineInfo(reply, info);
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
