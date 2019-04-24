@@ -2370,7 +2370,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
          */
         macTapIfName = networkBridgeDummyNicName(def->bridge);
         if (!macTapIfName)
-            goto err0;
+            goto error;
         /* Keep tun fd open and interface up to allow for IPv6 DAD to happen */
         if (virNetDevTapCreateInBridgePort(def->bridge,
                                            &macTapIfName, &def->mac,
@@ -2380,7 +2380,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
                                            VIR_NETDEV_TAP_CREATE_IFUP |
                                            VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
             VIR_FREE(macTapIfName);
-            goto err0;
+            goto error;
         }
     }
 
@@ -2526,9 +2526,6 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     virNetworkObjUnrefMacMap(obj);
     VIR_FREE(macMapFile);
 
- err0:
-    if (!save_err)
-        virErrorPreserveLast(&save_err);
     ignore_value(virNetDevBridgeDelete(def->bridge));
 
     virErrorRestore(&save_err);
