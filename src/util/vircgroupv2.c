@@ -30,6 +30,7 @@
 #include "vircgrouppriv.h"
 
 #include "viralloc.h"
+#include "virbpf.h"
 #include "vircgroup.h"
 #include "vircgroupbackend.h"
 #include "vircgroupv2.h"
@@ -1737,6 +1738,35 @@ virCgroupV2GetCpusetCpus(virCgroupPtr group,
 }
 
 
+static int
+virCgroupV2AllowDevice(virCgroupPtr group,
+                       char type,
+                       int major,
+                       int minor,
+                       int perms)
+{
+    uint64_t key = virCgroupV2DevicesGetKey(major, minor);
+    uint32_t val = virCgroupV2DevicesGetPerms(perms, type);
+    int rc;
+
+    if (virCgroupV2DevicesPrepareProg(group) < 0)
+        return -1;
+
+    rc = virBPFLookupElem(group->unified.devices.mapfd, &key, NULL);
+
+    if (virBPFUpdateElem(group->unified.devices.mapfd, &key, &val) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to update device in BPF cgroup map"));
+        return -1;
+    }
+
+    if (rc < 0)
+        group->unified.devices.count++;
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1785,6 +1815,8 @@ virCgroupBackend virCgroupV2Backend = {
     .setMemSwapHardLimit = virCgroupV2SetMemSwapHardLimit,
     .getMemSwapHardLimit = virCgroupV2GetMemSwapHardLimit,
     .getMemSwapUsage = virCgroupV2GetMemSwapUsage,
+
+    .allowDevice = virCgroupV2AllowDevice,
 
     .setCpuShares = virCgroupV2SetCpuShares,
     .getCpuShares = virCgroupV2GetCpuShares,
