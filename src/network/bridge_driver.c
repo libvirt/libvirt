@@ -2387,7 +2387,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
                                          def->bridge)) ||
         !(macmap = virMacMapNew(macMapFile)))
-        goto err1;
+        goto error;
 
     virNetworkObjSetMacMap(obj, macmap);
     macmap = NULL;
@@ -2398,21 +2398,21 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
      * expects milliseconds
      */
     if (virNetDevBridgeSetSTPDelay(def->bridge, def->delay * 1000) < 0)
-        goto err1;
+        goto error;
 
     if (virNetDevBridgeSetSTP(def->bridge, def->stp ? true : false) < 0)
-        goto err1;
+        goto error;
 
     /* Disable IPv6 on the bridge if there are no IPv6 addresses
      * defined, and set other IPv6 sysctl tunables appropriately.
      */
     if (networkSetIPv6Sysctls(obj) < 0)
-        goto err1;
+        goto error;
 
     /* Add "once per network" rules */
     if (def->forward.type != VIR_NETWORK_FORWARD_OPEN &&
         networkAddFirewallRules(def) < 0)
-        goto err1;
+        goto error;
 
     firewalRulesAdded = true;
 
@@ -2517,10 +2517,6 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     if (firewalRulesAdded &&
         def->forward.type != VIR_NETWORK_FORWARD_OPEN)
         networkRemoveFirewallRules(def);
-
- err1:
-    if (!save_err)
-        virErrorPreserveLast(&save_err);
 
     if (macTapIfName) {
         VIR_FORCE_CLOSE(tapfd);
