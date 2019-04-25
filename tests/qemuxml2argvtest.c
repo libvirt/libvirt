@@ -1649,6 +1649,7 @@ mymain(void)
     DO_TEST("cpu-fallback", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-nofallback", QEMU_CAPS_KVM);
     DO_TEST("cpu-strict1", QEMU_CAPS_KVM);
+    DO_TEST("cpu-no-removed-features", QEMU_CAPS_KVM);
     DO_TEST("cpu-numa1", NONE);
     DO_TEST("cpu-numa2", NONE);
     DO_TEST("cpu-numa-no-memory-element", NONE);
