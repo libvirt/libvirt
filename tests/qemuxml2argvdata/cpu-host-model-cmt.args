@@ -12,7 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off \
 -cpu Haswell,+vme,+ds,+acpi,+ss,+ht,+tm,+pbe,+dtes64,+monitor,+ds_cpl,+vmx,\
-+smx,+est,+tm2,+xtpr,+pdcm,+osxsave,+f16c,+rdrand,+pdpe1gb,+abm,+lahf_lm \
++smx,+est,+tm2,+xtpr,+pdcm,+f16c,+rdrand,+pdpe1gb,+abm,+lahf_lm \
 -m 214 \
 -realtime mlock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
