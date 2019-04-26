@@ -683,7 +683,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         virBufferAsprintf(&buf, "<serial>%s</serial>\n", serial);
 
     if (alias)
-        virBufferAsprintf(&buf, "<alias name='%s'/>", alias);
+        virBufferAsprintf(&buf, "<alias name='%s'/>\n", alias);
 
     if (wwn)
         virBufferAsprintf(&buf, "<wwn>%s</wwn>\n", wwn);
