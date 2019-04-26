@@ -8652,9 +8652,9 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
                                          false) < 0)
             goto cleanup;
 
-        if ((ret = qemuDomainAttachDeviceConfig(vmdef, devConf, caps,
-                                                parse_flags,
-                                                driver->xmlopt)) < 0)
+        if (qemuDomainAttachDeviceConfig(vmdef, devConf, caps,
+                                         parse_flags,
+                                         driver->xmlopt) < 0)
             goto cleanup;
     }
 
@@ -8671,28 +8671,27 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
                                          true) < 0)
             goto cleanup;
 
-        if ((ret = qemuDomainAttachDeviceLive(vm, devLive, driver)) < 0)
+        if (qemuDomainAttachDeviceLive(vm, devLive, driver) < 0)
             goto cleanup;
         /*
          * update domain status forcibly because the domain status may be
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
-            ret = -1;
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto cleanup;
-        }
     }
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
-        if (!ret) {
-            virDomainObjAssignDef(vm, vmdef, false, NULL);
-            vmdef = NULL;
-        }
+        if (virDomainSaveConfig(cfg->configDir, driver->caps, vmdef) < 0)
+            goto cleanup;
+
+        virDomainObjAssignDef(vm, vmdef, false, NULL);
+        vmdef = NULL;
     }
 
+    ret = 0;
  cleanup:
     virDomainDefFree(vmdef);
     virDomainDeviceDefFree(devConf);
