@@ -8647,6 +8647,10 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
                                                 driver->xmlopt, parse_flags)))
             goto cleanup;
 
+        if (virDomainDeviceValidateAliasForHotplug(vm, devConf,
+                                                   VIR_DOMAIN_AFFECT_CONFIG) < 0)
+            goto cleanup;
+
         if (virDomainDefCompatibleDevice(vmdef, devConf, NULL,
                                          VIR_DOMAIN_DEVICE_ACTION_ATTACH,
                                          false) < 0)
