@@ -938,6 +938,10 @@ without causing host swapping (in KiB)
   last-update       - Timestamp of the last update of statistics (in seconds)
   disk_caches       - The amount of memory that can be reclaimed without
 additional I/O, typically disk caches (in KiB)
+  hugetlb_pgalloc   - The number of successful huge page allocations initiated
+from within the domain
+  hugetlb_pgfail    - The number of failed huge page allocations initiated from
+within the domain
 
 For QEMU/KVM with a memory balloon, setting the optional I<--period> to a
 value larger than 0 in seconds will allow the balloon driver to return

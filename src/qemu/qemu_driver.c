@@ -20248,6 +20248,8 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
         STORE_MEM_RECORD(LAST_UPDATE, "last-update")
         STORE_MEM_RECORD(USABLE, "usable")
         STORE_MEM_RECORD(DISK_CACHES, "disk_caches")
+        STORE_MEM_RECORD(HUGETLB_PGALLOC, "hugetlb_pgalloc")
+        STORE_MEM_RECORD(HUGETLB_PGFAIL, "hugetlb_pgfail")
     }
 
 #undef STORE_MEM_RECORD
