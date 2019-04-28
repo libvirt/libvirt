@@ -261,6 +261,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     VIR_DEBUG("Found %zu RADOS cluster monitors in the pool configuration",
               source->nhost);
 
+    /* combine host and port into portal */
     for (i = 0; i < source->nhost; i++) {
         if (source->hosts[i].name != NULL &&
             !source->hosts[i].port) {
@@ -268,7 +269,15 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                               source->hosts[i].name);
         } else if (source->hosts[i].name != NULL &&
             source->hosts[i].port) {
-            virBufferAsprintf(&mon_host, "%s:%d,",
+            const char *incFormat;
+            if (virSocketAddrNumericFamily(source->hosts[i].name) == AF_INET6) {
+                /* IPv6 address must be escaped in brackets on the cmd line */
+                incFormat = "[%s]:%d";
+            } else {
+                /* listenAddress is a hostname or IPv4 */
+                incFormat = "%s:%d";
+            }
+            virBufferAsprintf(&mon_host, incFormat,
                               source->hosts[i].name,
                               source->hosts[i].port);
         } else {

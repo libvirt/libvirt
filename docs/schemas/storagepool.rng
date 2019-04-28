@@ -305,7 +305,10 @@
     <oneOrMore>
       <element name='host'>
         <attribute name='name'>
-          <text/>
+          <choice>
+            <ref name="dnsName"/>
+            <ref name="ipAddr"/>
+          </choice>
         </attribute>
         <optional>
           <attribute name='port'>
