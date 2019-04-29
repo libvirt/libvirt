@@ -18,7 +18,7 @@ readonly=on \
 -drive file=/var/lib/libvirt/qemu/nvram/guest_VARS.fd,if=pflash,format=raw,\
 unit=1 \
 -m 4096 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
 -uuid 33844184-97c0-4cc0-aa7d-206f5803530b \
 -no-user-config \

@@ -1,0 +1,310 @@
+<qemuCaps>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <flag name='kvm'/>
+  <flag name='hda-duplex'/>
+  <flag name='virtio-tx-alg'/>
+  <flag name='virtio-blk-pci.ioeventfd'/>
+  <flag name='virtio-blk-pci.event_idx'/>
+  <flag name='virtio-net-pci.event_idx'/>
+  <flag name='piix3-usb-uhci'/>
+  <flag name='piix4-usb-uhci'/>
+  <flag name='usb-ehci'/>
+  <flag name='ich9-usb-ehci1'/>
+  <flag name='vt82c686b-usb-uhci'/>
+  <flag name='pci-ohci'/>
+  <flag name='usb-hub'/>
+  <flag name='ich9-ahci'/>
+  <flag name='no-acpi'/>
+  <flag name='virtio-blk-pci.scsi'/>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='hda-micro'/>
+  <flag name='dump-guest-memory'/>
+  <flag name='nec-usb-xhci'/>
+  <flag name='lsi'/>
+  <flag name='virtio-scsi-pci'/>
+  <flag name='blockio'/>
+  <flag name='ide-drive.wwn'/>
+  <flag name='scsi-disk.wwn'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='reboot-timeout'/>
+  <flag name='vnc'/>
+  <flag name='VGA'/>
+  <flag name='cirrus-vga'/>
+  <flag name='vmware-svga'/>
+  <flag name='device-video-primary'/>
+  <flag name='usb-serial'/>
+  <flag name='nbd-server'/>
+  <flag name='virtio-rng'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='megasas'/>
+  <flag name='pci-bridge'/>
+  <flag name='vfio-pci'/>
+  <flag name='mem-merge'/>
+  <flag name='drive-discard'/>
+  <flag name='dmi-to-pci-bridge'/>
+  <flag name='usb-storage'/>
+  <flag name='usb-storage.removable'/>
+  <flag name='virtio-mmio'/>
+  <flag name='ich9-intel-hda'/>
+  <flag name='boot-strict'/>
+  <flag name='usb-kbd'/>
+  <flag name='msg-timestamp'/>
+  <flag name='active-commit'/>
+  <flag name='change-backing-file'/>
+  <flag name='memory-backend-ram'/>
+  <flag name='numa'/>
+  <flag name='memory-backend-file'/>
+  <flag name='usb-audio'/>
+  <flag name='splash-timeout'/>
+  <flag name='iothread'/>
+  <flag name='migrate-rdma'/>
+  <flag name='drive-iotune-max'/>
+  <flag name='VGA.vgamem_mb'/>
+  <flag name='vmware-svga.vgamem_mb'/>
+  <flag name='machine-vmport-opt'/>
+  <flag name='aes-key-wrap'/>
+  <flag name='dea-key-wrap'/>
+  <flag name='pci-serial'/>
+  <flag name='aarch64-off'/>
+  <flag name='vhost-user-multiqueue'/>
+  <flag name='migration-event'/>
+  <flag name='gpex-pcihost'/>
+  <flag name='ioh3420'/>
+  <flag name='x3130-upstream'/>
+  <flag name='xio3130-downstream'/>
+  <flag name='rtl8139'/>
+  <flag name='e1000'/>
+  <flag name='virtio-net'/>
+  <flag name='gic-version'/>
+  <flag name='incoming-defer'/>
+  <flag name='virtio-gpu'/>
+  <flag name='virtio-keyboard'/>
+  <flag name='virtio-mouse'/>
+  <flag name='virtio-tablet'/>
+  <flag name='virtio-input-host'/>
+  <flag name='chardev-file-append'/>
+  <flag name='vserport-change-event'/>
+  <flag name='virtio-balloon-pci.deflate-on-oom'/>
+  <flag name='mptsas1068'/>
+  <flag name='chardev-logfile'/>
+  <flag name='debug-threads'/>
+  <flag name='secret'/>
+  <flag name='nec-usb-xhci-ports'/>
+  <flag name='virtio-scsi-pci.iothread'/>
+  <flag name='name-guest'/>
+  <flag name='drive-detect-zeroes'/>
+  <flag name='tls-creds-x509'/>
+  <flag name='smm'/>
+  <flag name='virtio-pci-disable-legacy'/>
+  <flag name='query-hotpluggable-cpus'/>
+  <flag name='virtio-net.rx_queue_size'/>
+  <flag name='drive-iotune-max-length'/>
+  <flag name='ivshmem-plain'/>
+  <flag name='ivshmem-doorbell'/>
+  <flag name='query-qmp-schema'/>
+  <flag name='gluster.debug_level'/>
+  <flag name='vhost-scsi'/>
+  <flag name='drive-iotune-group'/>
+  <flag name='virtio-net.host_mtu'/>
+  <flag name='pcie-root-port'/>
+  <flag name='query-cpu-definitions'/>
+  <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
+  <flag name='qemu-xhci'/>
+  <flag name='kernel-irqchip'/>
+  <flag name='kernel-irqchip.split'/>
+  <flag name='virtio.iommu_platform'/>
+  <flag name='virtio.ats'/>
+  <flag name='loadparm'/>
+  <flag name='vnc-multi-servers'/>
+  <flag name='virtio-net.tx_queue_size'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='virtio-gpu.max_outputs'/>
+  <flag name='vxhs'/>
+  <flag name='virtio-blk.num-queues'/>
+  <flag name='vmcoreinfo'/>
+  <flag name='numa.dist'/>
+  <flag name='disk-share-rw'/>
+  <flag name='iscsi.password-secret'/>
+  <flag name='pl011'/>
+  <flag name='dump-completed'/>
+  <flag name='qcow2-luks'/>
+  <flag name='pcie-pci-bridge'/>
+  <flag name='seccomp-blacklist'/>
+  <flag name='query-cpus-fast'/>
+  <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
+  <flag name='pr-manager-helper'/>
+  <flag name='qom-list-properties'/>
+  <flag name='memory-backend-file.discard-data'/>
+  <flag name='sdl-gl'/>
+  <flag name='screendump_device'/>
+  <flag name='hda-output'/>
+  <flag name='blockdev-del'/>
+  <flag name='vhost-vsock'/>
+  <flag name='chardev-fd-pass'/>
+  <flag name='usb-storage.werror'/>
+  <flag name='egl-headless'/>
+  <flag name='vfio-pci.display'/>
+  <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='iothread.poll-max-ns'/>
+  <flag name='egl-headless.rendernode'/>
+  <flag name='memory-backend-file.align'/>
+  <flag name='memory-backend-file.pmem'/>
+  <flag name='scsi-disk.device_id'/>
+  <flag name='virtio-pci-non-transitional'/>
+  <flag name='overcommit'/>
+  <flag name='query-current-machine'/>
+  <version>4000000</version>
+  <kvmVersion>0</kvmVersion>
+  <microcodeVersion>61700758</microcodeVersion>
+  <package>v4.0.0</package>
+  <arch>aarch64</arch>
+  <cpu type='kvm' name='pxa262'/>
+  <cpu type='kvm' name='pxa270-a0'/>
+  <cpu type='kvm' name='arm1136'/>
+  <cpu type='kvm' name='cortex-a15'/>
+  <cpu type='kvm' name='pxa260'/>
+  <cpu type='kvm' name='arm1136-r2'/>
+  <cpu type='kvm' name='pxa261'/>
+  <cpu type='kvm' name='pxa255'/>
+  <cpu type='kvm' name='cortex-a72'/>
+  <cpu type='kvm' name='cortex-m33'/>
+  <cpu type='kvm' name='arm926'/>
+  <cpu type='kvm' name='cortex-r5f'/>
+  <cpu type='kvm' name='arm11mpcore'/>
+  <cpu type='kvm' name='pxa250'/>
+  <cpu type='kvm' name='ti925t'/>
+  <cpu type='kvm' name='cortex-a57'/>
+  <cpu type='kvm' name='sa1110'/>
+  <cpu type='kvm' name='host'/>
+  <cpu type='kvm' name='arm1176'/>
+  <cpu type='kvm' name='cortex-a53'/>
+  <cpu type='kvm' name='sa1100'/>
+  <cpu type='kvm' name='pxa270-c5'/>
+  <cpu type='kvm' name='cortex-a9'/>
+  <cpu type='kvm' name='cortex-a8'/>
+  <cpu type='kvm' name='cortex-a7'/>
+  <cpu type='kvm' name='pxa270-c0'/>
+  <cpu type='kvm' name='arm1026'/>
+  <cpu type='kvm' name='pxa270-b1'/>
+  <cpu type='kvm' name='cortex-m3'/>
+  <cpu type='kvm' name='max'/>
+  <cpu type='kvm' name='cortex-m4'/>
+  <cpu type='kvm' name='pxa270-b0'/>
+  <cpu type='kvm' name='arm946'/>
+  <cpu type='kvm' name='cortex-m0'/>
+  <cpu type='kvm' name='cortex-r5'/>
+  <cpu type='kvm' name='pxa270-a1'/>
+  <cpu type='kvm' name='pxa270'/>
+  <cpu type='tcg' name='pxa262'/>
+  <cpu type='tcg' name='pxa270-a0'/>
+  <cpu type='tcg' name='arm1136'/>
+  <cpu type='tcg' name='cortex-a15'/>
+  <cpu type='tcg' name='pxa260'/>
+  <cpu type='tcg' name='arm1136-r2'/>
+  <cpu type='tcg' name='pxa261'/>
+  <cpu type='tcg' name='pxa255'/>
+  <cpu type='tcg' name='cortex-a72'/>
+  <cpu type='tcg' name='cortex-m33'/>
+  <cpu type='tcg' name='arm926'/>
+  <cpu type='tcg' name='cortex-r5f'/>
+  <cpu type='tcg' name='arm11mpcore'/>
+  <cpu type='tcg' name='pxa250'/>
+  <cpu type='tcg' name='ti925t'/>
+  <cpu type='tcg' name='cortex-a57'/>
+  <cpu type='tcg' name='sa1110'/>
+  <cpu type='tcg' name='host'/>
+  <cpu type='tcg' name='arm1176'/>
+  <cpu type='tcg' name='cortex-a53'/>
+  <cpu type='tcg' name='sa1100'/>
+  <cpu type='tcg' name='pxa270-c5'/>
+  <cpu type='tcg' name='cortex-a9'/>
+  <cpu type='tcg' name='cortex-a8'/>
+  <cpu type='tcg' name='cortex-a7'/>
+  <cpu type='tcg' name='pxa270-c0'/>
+  <cpu type='tcg' name='arm1026'/>
+  <cpu type='tcg' name='pxa270-b1'/>
+  <cpu type='tcg' name='cortex-m3'/>
+  <cpu type='tcg' name='max'/>
+  <cpu type='tcg' name='cortex-m4'/>
+  <cpu type='tcg' name='pxa270-b0'/>
+  <cpu type='tcg' name='arm946'/>
+  <cpu type='tcg' name='cortex-m0'/>
+  <cpu type='tcg' name='cortex-r5'/>
+  <cpu type='tcg' name='pxa270-a1'/>
+  <cpu type='tcg' name='pxa270'/>
+  <machine name='integratorcp' maxCpus='1'/>
+  <machine name='nuri' maxCpus='2'/>
+  <machine name='mps2-an511' maxCpus='1'/>
+  <machine name='verdex' maxCpus='1'/>
+  <machine name='mps2-an505' maxCpus='1'/>
+  <machine name='virt-3.0' maxCpus='512'/>
+  <machine name='ast2500-evb' maxCpus='1'/>
+  <machine name='smdkc210' maxCpus='2'/>
+  <machine name='collie' maxCpus='1'/>
+  <machine name='xlnx-versal-virt' maxCpus='2'/>
+  <machine name='imx25-pdk' maxCpus='1'/>
+  <machine name='spitz' maxCpus='1'/>
+  <machine name='musca-b1' maxCpus='2'/>
+  <machine name='realview-pbx-a9' maxCpus='4'/>
+  <machine name='realview-eb' maxCpus='1'/>
+  <machine name='realview-pb-a8' maxCpus='1'/>
+  <machine name='versatilepb' maxCpus='1'/>
+  <machine name='emcraft-sf2' maxCpus='1'/>
+  <machine name='virt-2.9' maxCpus='255'/>
+  <machine name='musicpal' maxCpus='1'/>
+  <machine name='z2' maxCpus='1'/>
+  <machine name='akita' maxCpus='1'/>
+  <machine name='virt-2.7' maxCpus='255'/>
+  <machine name='kzm' maxCpus='1'/>
+  <machine name='virt-2.8' maxCpus='255'/>
+  <machine name='realview-eb-mpcore' maxCpus='4'/>
+  <machine name='musca-a' maxCpus='2'/>
+  <machine name='mcimx7d-sabre' maxCpus='2'/>
+  <machine name='sx1' maxCpus='1'/>
+  <machine name='sx1-v1' maxCpus='1'/>
+  <machine name='virt-2.6' maxCpus='255'/>
+  <machine name='cubieboard' maxCpus='1'/>
+  <machine name='virt-4.0' alias='virt' maxCpus='512'/>
+  <machine name='highbank' maxCpus='4'/>
+  <machine name='raspi2' maxCpus='4'/>
+  <machine name='raspi3' maxCpus='4'/>
+  <machine name='netduino2' maxCpus='1'/>
+  <machine name='terrier' maxCpus='1'/>
+  <machine name='n810' maxCpus='1'/>
+  <machine name='mainstone' maxCpus='1'/>
+  <machine name='palmetto-bmc' maxCpus='1'/>
+  <machine name='sabrelite' maxCpus='4'/>
+  <machine name='midway' maxCpus='4'/>
+  <machine name='romulus-bmc' maxCpus='1'/>
+  <machine name='cheetah' maxCpus='1'/>
+  <machine name='tosa' maxCpus='1'/>
+  <machine name='borzoi' maxCpus='1'/>
+  <machine name='versatileab' maxCpus='1'/>
+  <machine name='lm3s6965evb' maxCpus='1'/>
+  <machine name='n800' maxCpus='1'/>
+  <machine name='virt-2.10' maxCpus='255'/>
+  <machine name='virt-2.11' maxCpus='255'/>
+  <machine name='connex' maxCpus='1'/>
+  <machine name='virt-2.12' maxCpus='255'/>
+  <machine name='microbit' maxCpus='1'/>
+  <machine name='witherspoon-bmc' maxCpus='1'/>
+  <machine name='xilinx-zynq-a9' maxCpus='1'/>
+  <machine name='mps2-an385' maxCpus='1'/>
+  <machine name='vexpress-a9' maxCpus='4'/>
+  <machine name='mps2-an521' maxCpus='2'/>
+  <machine name='mcimx6ul-evk' maxCpus='1'/>
+  <machine name='vexpress-a15' maxCpus='4'/>
+  <machine name='xlnx-zcu102' maxCpus='6'/>
+  <machine name='virt-3.1' maxCpus='512'/>
+  <machine name='canon-a1100' maxCpus='1'/>
+  <machine name='lm3s811evb' maxCpus='1'/>
+  <gic version='3' kernel='yes' emulated='yes'/>
+  <gic version='2' kernel='no' emulated='yes'/>
+</qemuCaps>
