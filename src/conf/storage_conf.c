@@ -666,7 +666,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         }
         if (virStrToLong_uip(ver, NULL, 0, &source->protocolVer) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("storage pool protocol ver '%s' is malformaed"),
+                           _("storage pool protocol ver '%s' is malformed"),
                            ver);
             goto cleanup;
         }
