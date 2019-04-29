@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
-      "minor": 1,
-      "major": 3
+      "micro": 0,
+      "minor": 0,
+      "major": 4
     },
-    "package": "v4.0.0-rc1-33-ga04d91c701"
+    "package": "v4.0.0"
   },
   "id": "libvirt-2"
 }
@@ -10395,7 +10395,7 @@
           "type": "310"
         },
         {
-          "name": "last_mode",
+          "name": "last-mode",
           "type": "310"
         },
         {

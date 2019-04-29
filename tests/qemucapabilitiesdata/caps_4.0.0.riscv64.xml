@@ -164,10 +164,10 @@
   <flag name='virtio-pci-non-transitional'/>
   <flag name='overcommit'/>
   <flag name='query-current-machine'/>
-  <version>3001091</version>
+  <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
-  <package>v4.0.0-rc1-33-ga04d91c701</package>
+  <package>v4.0.0</package>
   <arch>riscv64</arch>
   <machine name='spike_v1.10' maxCpus='1' default='yes'/>
   <machine name='virt' maxCpus='8'/>
