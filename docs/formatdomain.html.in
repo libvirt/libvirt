@@ -128,7 +128,7 @@
 
 <pre>
 ...
-&lt;os firmware='uefi'&gt;
+&lt;os firmware='efi'&gt;
   &lt;type&gt;hvm&lt;/type&gt;
   &lt;loader readonly='yes' secure='no' type='rom'&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
   &lt;nvram template='/usr/share/OVMF/OVMF_VARS.fd'&gt;/var/lib/libvirt/nvram/guest_VARS.fd&lt;/nvram&gt;
