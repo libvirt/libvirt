@@ -1,12 +1,10 @@
-# NB we don't use socket activation. When libvirtd starts it will
-# spawn any virtual machines registered for autostart. We want this
-# to occur on every boot, regardless of whether any client connects
-# to a socket. Thus socket activation doesn't have any benefit
-
 [Unit]
 Description=Virtualization daemon
 Requires=virtlogd.socket
 Requires=virtlockd.socket
+Requires=libvirtd.socket
+Requires=libvirtd-ro.socket
+Requires=libvirtd-admin.socket
 Wants=systemd-machined.service
 Before=libvirt-guests.service
 After=network.target
@@ -42,3 +40,5 @@ TasksMax=32768
 WantedBy=multi-user.target
 Also=virtlockd.socket
 Also=virtlogd.socket
+Also=libvirtd.socket
+Also=libvirtd-ro.socket

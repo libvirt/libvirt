@@ -1,0 +1,13 @@
+[Unit]
+Description=Libvirt local read-only socket
+Before=libvirtd.service
+BindsTo=libvirtd.socket
+After=libvirtd.socket
+
+[Socket]
+ListenStream=@localstatedir@/run/libvirt/libvirt-sock-ro
+Service=libvirtd.service
+SocketMode=0666
+
+[Install]
+WantedBy=sockets.target

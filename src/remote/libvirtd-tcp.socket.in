@@ -1,0 +1,12 @@
+[Unit]
+Description=Libvirt non-TLS IP socket
+Before=libvirtd.service
+BindsTo=libvirtd.socket
+After=libvirtd.socket
+
+[Socket]
+ListenStream=16509
+Service=libvirtd.service
+
+[Install]
+WantedBy=sockets.target

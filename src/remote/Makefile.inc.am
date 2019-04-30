@@ -51,6 +51,11 @@ MANINFILES += libvirtd.8.in
 
 SYSTEMD_UNIT_FILES_IN += \
 	remote/libvirtd.service.in \
+	remote/libvirtd.socket.in \
+	remote/libvirtd-ro.socket.in \
+	remote/libvirtd-admin.socket.in \
+	remote/libvirtd-tcp.socket.in \
+	remote/libvirtd-tls.socket.in \
 	remote/virt-guest-shutdown.target.in \
 	$(NULL)
 
@@ -264,6 +269,36 @@ libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
 	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
 	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+libvirtd.socket: remote/libvirtd.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+libvirtd-ro.socket: remote/libvirtd-ro.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+libvirtd-admin.socket: remote/libvirtd-admin.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+libvirtd-tcp.socket: remote/libvirtd-tcp.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+libvirtd-tls.socket: remote/libvirtd-tls.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
 

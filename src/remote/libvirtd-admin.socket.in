@@ -1,0 +1,13 @@
+[Unit]
+Description=Libvirt admin socket
+Before=libvirtd.service
+BindsTo=libvirtd.socket
+After=libvirtd.socket
+
+[Socket]
+ListenStream=@localstatedir@/run/libvirt/libvirt-admin-sock
+Service=libvirtd.service
+SocketMode=0600
+
+[Install]
+WantedBy=sockets.target
