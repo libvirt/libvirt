@@ -713,7 +713,7 @@ int virNetDevBridgeGetSTPDelay(const char *brname,
                                int *delayms)
 {
     int ret = -1;
-    unsigned long val;
+    unsigned long val = 0;
 
     ret = virNetDevBridgeGet(brname, "forward_delay", &val);
     *delayms = JIFFIES_TO_MS(val);
