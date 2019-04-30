@@ -4,6 +4,7 @@ Before=libvirtd.service
 
 [Socket]
 ListenStream=@localstatedir@/run/libvirt/virtlogd-sock
+SocketMode=0600
 
 [Install]
 WantedBy=sockets.target
