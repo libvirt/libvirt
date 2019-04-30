@@ -8997,17 +8997,19 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         if (qemuSecuritySetTapFDLabel(driver->securityManager,
                                       def, tapfd[i]) < 0)
             goto cleanup;
-        virCommandPassFD(cmd, tapfd[i],
-                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         if (virAsprintf(&tapfdName[i], "%d", tapfd[i]) < 0)
             goto cleanup;
+        virCommandPassFD(cmd, tapfd[i],
+                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+        tapfd[i] = -1;
     }
 
     for (i = 0; i < vhostfdSize; i++) {
-        virCommandPassFD(cmd, vhostfd[i],
-                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         if (virAsprintf(&vhostfdName[i], "%d", vhostfd[i]) < 0)
             goto cleanup;
+        virCommandPassFD(cmd, vhostfd[i],
+                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+        vhostfd[i] = -1;
     }
 
     if (chardev)
@@ -9054,14 +9056,14 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         virSetError(saved_err);
         virFreeError(saved_err);
     }
-    for (i = 0; vhostfd && i < vhostfdSize && vhostfd[i] >= 0; i++) {
+    for (i = 0; vhostfd && i < vhostfdSize; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(vhostfd[i]);
         if (vhostfdName)
             VIR_FREE(vhostfdName[i]);
     }
     VIR_FREE(vhostfdName);
-    for (i = 0; tapfd && i < tapfdSize && tapfd[i] >= 0; i++) {
+    for (i = 0; tapfd && i < tapfdSize; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(tapfd[i]);
         if (tapfdName)

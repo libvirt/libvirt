@@ -1024,6 +1024,7 @@ static int test24(const void *unused ATTRIBUTE_UNUSED)
     virCommandDaemonize(cmd);
     virCommandPassFD(cmd, newfd2, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     virCommandPassFD(cmd, newfd3, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+    newfd2 = newfd3 = -1;
     virCommandPassListenFDs(cmd);
 
     if (virCommandRun(cmd, NULL) < 0) {
@@ -1053,7 +1054,6 @@ static int test24(const void *unused ATTRIBUTE_UNUSED)
     VIR_FREE(prefix);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(newfd1);
-    /* coverity[double_close] */
     VIR_FORCE_CLOSE(newfd2);
     VIR_FORCE_CLOSE(newfd3);
     return ret;

@@ -187,6 +187,7 @@ virPolkitAgentCreate(void)
     virCommandSetOutputFD(agent->cmd, &outfd);
     virCommandSetErrorFD(agent->cmd, &errfd);
     virCommandPassFD(agent->cmd, pipe_fd[1], VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+    pipe_fd[1] = -1;
     if (virCommandRunAsync(agent->cmd, NULL) < 0)
         goto error;
 
