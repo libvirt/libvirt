@@ -66,6 +66,28 @@ remoteAdmClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
                    void *opaque)
 {
     struct daemonAdmClientPrivate *priv;
+    uid_t clientuid;
+    gid_t clientgid;
+    pid_t clientpid;
+    unsigned long long timestamp;
+
+    if (virNetServerClientGetUNIXIdentity(client,
+                                          &clientuid,
+                                          &clientgid,
+                                          &clientpid,
+                                          &timestamp) < 0)
+        return NULL;
+
+    VIR_DEBUG("New client pid %lld uid %lld",
+              (long long)clientpid,
+              (long long)clientuid);
+
+    if (geteuid() != clientuid) {
+        virReportRestrictedError(_("Disallowing client %lld with uid %lld"),
+                                 (long long)clientpid,
+                                 (long long)clientuid);
+        return NULL;
+    }
 
     if (VIR_ALLOC(priv) < 0)
         return NULL;
