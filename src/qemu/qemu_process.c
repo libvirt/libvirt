@@ -7302,15 +7302,12 @@ void qemuProcessStop(virQEMUDriverPtr driver,
             }
             break;
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
 #ifdef VIR_NETDEV_TAP_REQUIRE_MANUAL_CLEANUP
             if (!(vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))
                 ignore_value(virNetDevTapDelete(net->ifname, net->backend.tap));
 #endif
             break;
-        case VIR_DOMAIN_NET_TYPE_NETWORK:
-            VIR_WARN("Unexpectedly found type=network for actual NIC type");
-            break;
-
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         case VIR_DOMAIN_NET_TYPE_SERVER:

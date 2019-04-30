@@ -1353,10 +1353,25 @@ libxlMakeNic(virDomainDefPtr def,
             }
             break;
         case VIR_DOMAIN_NET_TYPE_NETWORK:
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unexpectedly found type=network for actual NIC type"));
-            goto cleanup;
+        {
+            if (!(conn = virConnectOpen("xen:///system")))
+                goto cleanup;
 
+            if (!(network =
+                  virNetworkLookupByName(conn, l_nic->data.network.name))) {
+                goto cleanup;
+            }
+
+            if (l_nic->guestIP.nips > 0) {
+                x_nic->ip = xenMakeIPList(&l_nic->guestIP);
+                if (!x_nic->ip)
+                    goto cleanup;
+            }
+
+            if (!(x_nic->bridge = virNetworkGetBridgeName(network)))
+                goto cleanup;
+            break;
+        }
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_SERVER:

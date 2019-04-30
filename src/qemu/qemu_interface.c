@@ -58,6 +58,7 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
         if (virDomainNetGetActualBridgeMACTableManager(net)
             == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
             /* libvirt is managing the FDB of the bridge this device
@@ -109,11 +110,6 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
             goto cleanup;
 
         break;
-
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unexpectedly found type=network for actual NIC type"));
-        goto cleanup;
 
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -168,6 +164,7 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
         if (virDomainNetGetActualBridgeMACTableManager(net)
             == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
             /* remove the FDB entries that were added during
@@ -200,11 +197,6 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
             goto cleanup;
         break;
     }
-
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unexpectedly found type=network for actual NIC type"));
-        goto cleanup;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_USER:
