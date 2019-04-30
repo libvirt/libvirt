@@ -370,7 +370,7 @@
       <interface type='network'>
         <mac address='52:54:00:36:bd:3b'/>
         <source network='default'/>
-        <actual type='bridge'>
+        <actual type='network'>
           <source bridge='virbr0'/>
         </actual>
         <target dev='vnet0'/>

@@ -4567,7 +4567,7 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
         syncNicRxFilterDeviceOptions(def->ifname, guestFilter, hostFilter);
     }
 
-    if (virDomainNetGetActualType(def) == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+    if (virDomainNetGetActualType(def) == VIR_DOMAIN_NET_TYPE_NETWORK) {
         const char *brname = virDomainNetGetActualBridgeName(def);
 
         /* For libivrt network connections, set the following TUN/TAP network

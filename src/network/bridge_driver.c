@@ -4489,7 +4489,11 @@ networkAllocateActualDevice(virNetworkPtr net,
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
     case VIR_NETWORK_FORWARD_OPEN:
-        iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+        /* for these forward types, the actual net type really *is*
+         * NETWORK; we just keep the info from the portgroup in
+         * iface->data.network.actual
+         */
+        iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
         /* we also store the bridge device and macTableManager settings
          * in iface->data.network.actual->data.bridge for later use
@@ -5433,8 +5437,9 @@ networkBandwidthGenericChecks(virDomainNetDefPtr iface,
     virNetDevBandwidthPtr ifaceBand;
     unsigned long long old_floor, new_floor;
 
-    if (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_BRIDGE ||
-        iface->data.network.actual->data.bridge.brname == NULL) {
+    if (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_NETWORK &&
+        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_BRIDGE ||
+         iface->data.network.actual->data.bridge.brname == NULL)) {
         /* This is not an interface that's plugged into a network.
          * We don't care. Thus from our POV bandwidth change is allowed. */
         return false;

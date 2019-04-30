@@ -5128,19 +5128,6 @@ virDomainNetDefPostParse(virDomainNetDefPtr net)
         return -1;
     }
 
-    /* Older libvirtd uses actualType==network, but we now
-     * just use actualType==bridge, as nothing needs to
-     * distinguish the two cases, and this simplifies virt
-     * drive code */
-    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        net->data.network.actual != NULL  &&
-        net->data.network.actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        char mac[VIR_MAC_STRING_BUFLEN];
-        virMacAddrFormat(&net->mac, mac);
-        VIR_DEBUG("Updating NIC %s actual type to bridge", mac);
-        net->data.network.actual->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-    }
-
     return 0;
 }
 
@@ -11281,21 +11268,11 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     }
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
-    if (bandwidth_node) {
-        /* type == NETWORK is legacy config, converted to BRIDGE
-         * in post-parse function, but this code runs before
-         * post-parse logic, so we must account for configs still
-         * using legacy type == NETWORK
-         */
-        bool allowFloor =
-            (actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) ||
-            (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-             actual->data.bridge.brname != NULL);
-        if (virNetDevBandwidthParse(&actual->bandwidth,
-                                    bandwidth_node,
-                                    allowFloor) < 0)
-            goto error;
-    }
+    if (bandwidth_node &&
+        virNetDevBandwidthParse(&actual->bandwidth,
+                                bandwidth_node,
+                                actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) < 0)
+        goto error;
 
     vlanNode = virXPathNode("./vlan", ctxt);
     if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &actual->vlan) < 0)
