@@ -48,6 +48,18 @@
         </description>
       </change>
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          vbox: Drop support for VirtualBox 4.x releases
+        </summary>
+        <description>
+          Support for all the 4.x releases was ended by
+          VirtualBox maintainers in December 2015. Therefore,
+          libvirt support for these releases is dropped.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
       <change>
         <summary>
@@ -73,6 +85,15 @@
           Firmware Secure Boot support is also advertised.
         </description>
       </change>
+      <change>
+        <summary>
+          Drop YAJL 1 support
+        </summary>
+        <description>
+          YAJL 2 is widely adopted and maintaining side by side
+          support for two versions is unnecessary.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -83,6 +104,35 @@
           Failed new gnutls context allocations in virNetTLSContextNew
           function results in double free and segfault. Occasional memory
           leaks may also occur.
+        </description>
+      </change>
+      <change>
+        <summary>
+          virsh: various completers fixes
+        </summary>
+        <description>
+          There were some possible crashers, memory leaks, etc.
+          which are now fixed.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Make hugepages work with memfd backend
+        </summary>
+        <description>
+          Due to a bug in command line generation libvirt did not
+          honor hugepages setting with memfd backend.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Enforce ACL write permission for getting guest time &amp; hostname
+        </summary>
+        <description>
+          Getting the guest time and hostname both require use of
+          guest agent commands. These must not be allowed for
+          read-only users, so the permissions check must validate
+          "write" permission not "read".
         </description>
       </change>
     </section>
