@@ -5825,7 +5825,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                                                                qemuCaps,
                                                                vhostfdName))) {
                     VIR_FREE(vhostfdName);
-                    VIR_FORCE_CLOSE(vhostfd);
                     return -1;
                 }
                 virCommandAddArg(cmd, devstr);
