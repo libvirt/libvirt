@@ -6,7 +6,7 @@
 
     <ul>
       <li><a href="#hypervisor">Hypervisor drivers</a></li>
-      <li><a href="#storage">Storage drivers</a></li>
+      <li><a href="storage.html">Storage drivers</a></li>
       <li><a href="drvnodedev.html">Node device driver</a></li>
     </ul>
 
@@ -39,19 +39,5 @@
       <li><strong><a href="drvbhyve.html">Bhyve</a></strong> - The BSD Hypervisor</li>
     </ul>
 
-    <h2><a id="storage">Storage drivers</a></h2>
-
-    <ul>
-      <li><strong><a href="storage.html#StorageBackendDir">Directory backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendFS">Local filesystem backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendNetFS">Network filesystem backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendLogical">Logical Volume Manager (LVM) backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendDisk">Disk backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendISCSI">iSCSI backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendSCSI">SCSI backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendMultipath">Multipath backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendRBD">RBD (RADOS Block Device) backend</a></strong></li>
-      <li><strong><a href="storage.html#StorageBackendSheepdog">Sheepdog backend</a></strong></li>
-    </ul>
   </body>
 </html>
