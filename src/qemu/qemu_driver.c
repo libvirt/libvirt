@@ -1094,17 +1094,13 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
                                         virConfPtr conf ATTRIBUTE_UNUSED,
                                         unsigned int flags)
 {
-    virQEMUDriverConfigPtr cfg = NULL;
-    virDrvOpenStatus ret = VIR_DRV_OPEN_ERROR;
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (qemu_driver == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("qemu state driver is not active"));
-        goto cleanup;
+        return VIR_DRV_OPEN_ERROR;
     }
-
-    cfg = virQEMUDriverGetConfig(qemu_driver);
 
     if (virQEMUDriverIsPrivileged(qemu_driver)) {
         if (STRNEQ(conn->uri->path, "/system") &&
@@ -1112,26 +1108,23 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected QEMU URI path '%s', try qemu:///system"),
                            conn->uri->path);
-            goto cleanup;
+            return VIR_DRV_OPEN_ERROR;
         }
     } else {
         if (STRNEQ(conn->uri->path, "/session")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected QEMU URI path '%s', try qemu:///session"),
                            conn->uri->path);
-            goto cleanup;
+            return VIR_DRV_OPEN_ERROR;
         }
     }
 
     if (virConnectOpenEnsureACL(conn) < 0)
-        goto cleanup;
+        return VIR_DRV_OPEN_ERROR;
 
     conn->privateData = qemu_driver;
 
-    ret = VIR_DRV_OPEN_SUCCESS;
- cleanup:
-    virObjectUnref(cfg);
-    return ret;
+    return VIR_DRV_OPEN_SUCCESS;
 }
 
 static int qemuConnectClose(virConnectPtr conn)
