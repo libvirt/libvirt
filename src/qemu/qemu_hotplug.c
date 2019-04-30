@@ -1383,6 +1383,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     bool netdevPlugged = false;
     char *netdev_name;
     virConnectPtr conn = NULL;
+    virErrorPtr save_err = NULL;
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
@@ -1678,6 +1679,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     if (!ret) {
         vm->def->nets[vm->def->nnets++] = net;
     } else {
+        virErrorPreserveLast(&save_err);
         if (releaseaddr)
             qemuDomainReleaseDeviceAddress(vm, &net->info);
 
@@ -1706,6 +1708,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
         }
+        virErrorRestore(&save_err);
     }
 
     VIR_FREE(nicstr);
@@ -3756,6 +3759,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     int ret = -1;
     int changeidx = -1;
     virConnectPtr conn = NULL;
+    virErrorPtr save_err = NULL;
 
     if ((changeidx = virDomainNetFindIdx(vm->def, newdev)) < 0)
         goto cleanup;
@@ -4173,6 +4177,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
+    virErrorPreserveLast(&save_err);
     /* When we get here, we will be in one of these two states:
      *
      * 1) newdev has been moved into the domain's list of nets and
@@ -4194,6 +4199,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     if (newdev && newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn)
         virDomainNetReleaseActualDevice(conn, vm->def, newdev);
     virObjectUnref(conn);
+    virErrorRestore(&save_err);
 
     return ret;
 }

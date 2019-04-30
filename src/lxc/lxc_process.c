@@ -550,6 +550,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
     virDomainNetDefPtr net;
     virDomainNetType type;
     virConnectPtr netconn = NULL;
+    virErrorPtr save_err = NULL;
 
     if (VIR_ALLOC_N(*veths, def->nnets + 1) < 0)
         return -1;
@@ -642,6 +643,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
 
  cleanup:
     if (ret < 0) {
+        virErrorPreserveLast(&save_err);
         for (i = 0; i < def->nnets; i++) {
             virDomainNetDefPtr iface = def->nets[i];
             virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(iface);
@@ -652,6 +654,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
             if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK && netconn)
                 virDomainNetReleaseActualDevice(netconn, def, iface);
         }
+        virErrorRestore(&save_err);
     }
     virObjectUnref(netconn);
     return ret;

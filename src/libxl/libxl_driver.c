@@ -3380,6 +3380,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     int ret = -1;
     char mac[VIR_MAC_STRING_BUFLEN];
     virConnectPtr conn = NULL;
+    virErrorPtr save_err = NULL;
 
     libxl_device_nic_init(&nic);
 
@@ -3440,6 +3441,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     ret = 0;
 
  cleanup:
+    virErrorPreserveLast(&save_err);
     libxl_device_nic_dispose(&nic);
     if (!ret) {
         vm->def->nets[vm->def->nnets++] = net;
@@ -3450,6 +3452,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     }
     virObjectUnref(conn);
     virObjectUnref(cfg);
+    virErrorRestore(&save_err);
     return ret;
 }
 
@@ -3838,6 +3841,7 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
     libxl_device_nic nic;
     char mac[VIR_MAC_STRING_BUFLEN];
     int ret = -1;
+    virErrorPtr save_err = NULL;
 
     libxl_device_nic_init(&nic);
 
@@ -3868,6 +3872,7 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
     ret = 0;
 
  cleanup:
+    virErrorPreserveLast(&save_err);
     libxl_device_nic_dispose(&nic);
     if (!ret) {
         if (detach->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -3882,6 +3887,7 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
         virDomainNetRemove(vm->def, detachidx);
     }
     virObjectUnref(cfg);
+    virErrorRestore(&save_err);
     return ret;
 }
 

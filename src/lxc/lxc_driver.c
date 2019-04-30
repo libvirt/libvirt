@@ -4337,6 +4337,7 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
     virDomainNetType actualType;
     virDomainNetDefPtr detach = NULL;
     virNetDevVPortProfilePtr vport = NULL;
+    virErrorPtr save_err = NULL;
 
     if ((detachidx = virDomainNetFindIdx(vm->def, dev->data.net)) < 0)
         goto cleanup;
@@ -4396,6 +4397,7 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
     ret = 0;
  cleanup:
     if (!ret) {
+        virErrorPreserveLast(&save_err);
         if (detach->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             virConnectPtr conn = virGetConnectNetwork();
             if (conn) {
@@ -4407,6 +4409,7 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
         }
         virDomainNetRemove(vm->def, detachidx);
         virDomainNetDefFree(detach);
+        virErrorRestore(&save_err);
     }
     return ret;
 }
