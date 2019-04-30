@@ -16243,6 +16243,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     qemuDomainObjPrivatePtr priv;
     int rc;
     virDomainDefPtr config = NULL;
+    virDomainDefPtr inactiveConfig = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     bool was_stopped = false;
@@ -16457,7 +16458,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
             }
             if (config) {
-                virDomainObjAssignDef(vm, config, false, NULL);
+                virDomainObjAssignDef(vm, config, false, &inactiveConfig);
                 virCPUDefFree(priv->origCPU);
                 VIR_STEAL_PTR(priv->origCPU, origCPU);
             }
@@ -16466,7 +16467,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         load:
             was_stopped = true;
             if (config)
-                virDomainObjAssignDef(vm, config, false, NULL);
+                virDomainObjAssignDef(vm, config, false, &inactiveConfig);
 
             /* No cookie means libvirt which saved the domain was too old to
              * mess up the CPU definitions.
@@ -16525,6 +16526,9 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                                  detail);
             }
         }
+        if (inactiveConfig)
+            VIR_STEAL_PTR(vm->newDef, inactiveConfig);
+
         break;
 
     case VIR_DOMAIN_SNAPSHOT_SHUTDOWN:
@@ -16552,8 +16556,11 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             qemuProcessEndJob(driver, vm);
             goto cleanup;
         }
-        if (config)
-            virDomainObjAssignDef(vm, config, false, NULL);
+        if (config) {
+            virDomainObjAssignDef(vm, config, false, &inactiveConfig);
+            if (inactiveConfig)
+                VIR_STEAL_PTR(vm->newDef, inactiveConfig);
+        }
 
         if (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
