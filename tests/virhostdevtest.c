@@ -126,37 +126,6 @@ myInit(void)
     return -1;
 }
 
-# if HAVE_LINUX_KVM_H
-#  include <linux/kvm.h>
-static bool
-virHostdevHostSupportsPassthroughKVM(void)
-{
-    int kvmfd = -1;
-    bool ret = false;
-
-    if ((kvmfd = open("/dev/kvm", O_RDONLY)) < 0)
-        goto cleanup;
-
-#  ifdef KVM_CAP_IOMMU
-    if ((ioctl(kvmfd, KVM_CHECK_EXTENSION, KVM_CAP_IOMMU)) <= 0)
-        goto cleanup;
-
-    ret = true;
-#  endif
-
- cleanup:
-    VIR_FORCE_CLOSE(kvmfd);
-
-    return ret;
-}
-# else
-static bool
-virHostdevHostSupportsPassthroughKVM(void)
-{
-    return false;
-}
-# endif
-
 static int
 testVirHostdevPreparePCIHostdevs_unmanaged(void)
 {
@@ -483,12 +452,10 @@ testVirHostdevRoundtripUnmanaged(const void *opaque ATTRIBUTE_UNUSED)
 
     if (testVirHostdevDetachPCINodeDevice() < 0)
         goto out;
-    if (virHostdevHostSupportsPassthroughKVM()) {
-        if (testVirHostdevPreparePCIHostdevs_unmanaged() < 0)
-            goto out;
-        if (testVirHostdevReAttachPCIHostdevs_unmanaged() < 0)
-            goto out;
-    }
+    if (testVirHostdevPreparePCIHostdevs_unmanaged() < 0)
+        goto out;
+    if (testVirHostdevReAttachPCIHostdevs_unmanaged() < 0)
+        goto out;
     if (testVirHostdevReAttachPCINodeDevice() < 0)
         goto out;
 
@@ -512,12 +479,10 @@ testVirHostdevRoundtripManaged(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
 
-    if (virHostdevHostSupportsPassthroughKVM()) {
-        if (testVirHostdevPreparePCIHostdevs_managed(false) < 0)
-            goto out;
-        if (testVirHostdevReAttachPCIHostdevs_managed(false) < 0)
-            goto out;
-    }
+    if (testVirHostdevPreparePCIHostdevs_managed(false) < 0)
+        goto out;
+    if (testVirHostdevReAttachPCIHostdevs_managed(false) < 0)
+        goto out;
 
     ret = 0;
 
@@ -544,12 +509,10 @@ testVirHostdevRoundtripMixed(const void *opaque ATTRIBUTE_UNUSED)
 
     if (testVirHostdevDetachPCINodeDevice() < 0)
         goto out;
-    if (virHostdevHostSupportsPassthroughKVM()) {
-        if (testVirHostdevPreparePCIHostdevs_managed(true) < 0)
-            goto out;
-        if (testVirHostdevReAttachPCIHostdevs_managed(true) < 0)
-            goto out;
-    }
+    if (testVirHostdevPreparePCIHostdevs_managed(true) < 0)
+        goto out;
+    if (testVirHostdevReAttachPCIHostdevs_managed(true) < 0)
+        goto out;
     if (testVirHostdevReAttachPCINodeDevice() < 0)
         goto out;
 
