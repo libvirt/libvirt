@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 file=/tmp/lib/domain--1-guest/master-key.aes \
 -machine s390-ccw,accel=tcg,usb=off,dump-guest-core=off \
 -m 1024 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
 -display none \

@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \

@@ -1,0 +1,2894 @@
+<qemuCaps>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <flag name='kvm'/>
+  <flag name='virtio-tx-alg'/>
+  <flag name='virtio-blk-pci.ioeventfd'/>
+  <flag name='virtio-blk-pci.event_idx'/>
+  <flag name='virtio-net-pci.event_idx'/>
+  <flag name='usb-redir'/>
+  <flag name='virtio-blk-pci.scsi'/>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='dump-guest-memory'/>
+  <flag name='virtio-scsi-pci'/>
+  <flag name='blockio'/>
+  <flag name='usb-redir.filter'/>
+  <flag name='scsi-disk.wwn'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='reboot-timeout'/>
+  <flag name='vnc'/>
+  <flag name='device-video-primary'/>
+  <flag name='s390-sclp'/>
+  <flag name='nbd-server'/>
+  <flag name='virtio-rng'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='virtio-ccw'/>
+  <flag name='pci-bridge'/>
+  <flag name='vfio-pci'/>
+  <flag name='mem-merge'/>
+  <flag name='drive-discard'/>
+  <flag name='boot-strict'/>
+  <flag name='msg-timestamp'/>
+  <flag name='active-commit'/>
+  <flag name='change-backing-file'/>
+  <flag name='memory-backend-ram'/>
+  <flag name='numa'/>
+  <flag name='memory-backend-file'/>
+  <flag name='splash-timeout'/>
+  <flag name='iothread'/>
+  <flag name='migrate-rdma'/>
+  <flag name='drive-iotune-max'/>
+  <flag name='machine-vmport-opt'/>
+  <flag name='aes-key-wrap'/>
+  <flag name='dea-key-wrap'/>
+  <flag name='vhost-user-multiqueue'/>
+  <flag name='migration-event'/>
+  <flag name='virtio-net'/>
+  <flag name='gic-version'/>
+  <flag name='incoming-defer'/>
+  <flag name='virtio-gpu'/>
+  <flag name='virtio-gpu.virgl'/>
+  <flag name='virtio-keyboard'/>
+  <flag name='virtio-mouse'/>
+  <flag name='virtio-tablet'/>
+  <flag name='virtio-input-host'/>
+  <flag name='chardev-file-append'/>
+  <flag name='vserport-change-event'/>
+  <flag name='virtio-balloon-pci.deflate-on-oom'/>
+  <flag name='chardev-logfile'/>
+  <flag name='debug-threads'/>
+  <flag name='secret'/>
+  <flag name='virtio-scsi-pci.iothread'/>
+  <flag name='name-guest'/>
+  <flag name='drive-detect-zeroes'/>
+  <flag name='tls-creds-x509'/>
+  <flag name='smm'/>
+  <flag name='virtio-pci-disable-legacy'/>
+  <flag name='query-hotpluggable-cpus'/>
+  <flag name='virtio-net.rx_queue_size'/>
+  <flag name='drive-iotune-max-length'/>
+  <flag name='query-qmp-schema'/>
+  <flag name='gluster.debug_level'/>
+  <flag name='vhost-scsi'/>
+  <flag name='drive-iotune-group'/>
+  <flag name='query-cpu-model-expansion'/>
+  <flag name='virtio-net.host_mtu'/>
+  <flag name='query-cpu-definitions'/>
+  <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
+  <flag name='kernel-irqchip'/>
+  <flag name='kernel-irqchip.split'/>
+  <flag name='virtio.iommu_platform'/>
+  <flag name='virtio.ats'/>
+  <flag name='loadparm'/>
+  <flag name='vnc-multi-servers'/>
+  <flag name='virtio-net.tx_queue_size'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='virtio-gpu.max_outputs'/>
+  <flag name='vxhs'/>
+  <flag name='virtio-blk.num-queues'/>
+  <flag name='sclplmconsole'/>
+  <flag name='numa.dist'/>
+  <flag name='disk-share-rw'/>
+  <flag name='iscsi.password-secret'/>
+  <flag name='dump-completed'/>
+  <flag name='virtio-gpu-ccw'/>
+  <flag name='virtio-keyboard-ccw'/>
+  <flag name='virtio-mouse-ccw'/>
+  <flag name='virtio-tablet-ccw'/>
+  <flag name='qcow2-luks'/>
+  <flag name='seccomp-blacklist'/>
+  <flag name='query-cpus-fast'/>
+  <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
+  <flag name='pr-manager-helper'/>
+  <flag name='qom-list-properties'/>
+  <flag name='memory-backend-file.discard-data'/>
+  <flag name='virtual-css-bridge'/>
+  <flag name='virtual-css-bridge.cssid-unrestricted'/>
+  <flag name='vfio-ccw'/>
+  <flag name='sdl-gl'/>
+  <flag name='screendump_device'/>
+  <flag name='blockdev-del'/>
+  <flag name='vhost-vsock'/>
+  <flag name='chardev-fd-pass'/>
+  <flag name='egl-headless'/>
+  <flag name='vfio-pci.display'/>
+  <flag name='vfio-ap'/>
+  <flag name='zpci'/>
+  <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='iothread.poll-max-ns'/>
+  <flag name='egl-headless.rendernode'/>
+  <flag name='memory-backend-file.align'/>
+  <flag name='memory-backend-file.pmem'/>
+  <flag name='scsi-disk.device_id'/>
+  <flag name='virtio-pci-non-transitional'/>
+  <flag name='overcommit'/>
+  <flag name='query-current-machine'/>
+  <version>4000000</version>
+  <kvmVersion>0</kvmVersion>
+  <microcodeVersion>39100758</microcodeVersion>
+  <package>v4.0.0</package>
+  <arch>s390x</arch>
+  <hostCPU type='kvm' model='z14.2-base' migratability='no'>
+    <property name='aen' type='boolean' value='true'/>
+    <property name='cmmnt' type='boolean' value='true'/>
+    <property name='aefsi' type='boolean' value='true'/>
+    <property name='mepoch' type='boolean' value='true'/>
+    <property name='msa8' type='boolean' value='true'/>
+    <property name='msa7' type='boolean' value='true'/>
+    <property name='msa6' type='boolean' value='true'/>
+    <property name='msa5' type='boolean' value='true'/>
+    <property name='msa4' type='boolean' value='true'/>
+    <property name='msa3' type='boolean' value='true'/>
+    <property name='msa2' type='boolean' value='true'/>
+    <property name='msa1' type='boolean' value='true'/>
+    <property name='sthyi' type='boolean' value='true'/>
+    <property name='edat' type='boolean' value='true'/>
+    <property name='ri' type='boolean' value='true'/>
+    <property name='edat2' type='boolean' value='true'/>
+    <property name='vx' type='boolean' value='true'/>
+    <property name='ipter' type='boolean' value='true'/>
+    <property name='mepochptff' type='boolean' value='true'/>
+    <property name='ap' type='boolean' value='true'/>
+    <property name='vxeh' type='boolean' value='true'/>
+    <property name='vxpd' type='boolean' value='true'/>
+    <property name='esop' type='boolean' value='true'/>
+    <property name='apft' type='boolean' value='true'/>
+    <property name='iep' type='boolean' value='true'/>
+    <property name='apqci' type='boolean' value='true'/>
+    <property name='cte' type='boolean' value='true'/>
+    <property name='bpb' type='boolean' value='true'/>
+    <property name='gs' type='boolean' value='true'/>
+    <property name='ppa15' type='boolean' value='true'/>
+    <property name='zpci' type='boolean' value='true'/>
+    <property name='sea_esop2' type='boolean' value='true'/>
+    <property name='te' type='boolean' value='true'/>
+    <property name='cmm' type='boolean' value='true'/>
+  </hostCPU>
+  <hostCPU type='tcg' model='zEC12.2-base' migratability='no'>
+    <property name='dateh2' type='boolean' value='false'/>
+    <property name='aen' type='boolean' value='true'/>
+    <property name='kmac-tdea-192' type='boolean' value='false'/>
+    <property name='kmc-tdea-192' type='boolean' value='false'/>
+    <property name='parseh' type='boolean' value='false'/>
+    <property name='csske' type='boolean' value='false'/>
+    <property name='hfpm' type='boolean' value='false'/>
+    <property name='hfpue' type='boolean' value='false'/>
+    <property name='dfp' type='boolean' value='false'/>
+    <property name='km-dea' type='boolean' value='false'/>
+    <property name='emon' type='boolean' value='false'/>
+    <property name='kimd-sha-1' type='boolean' value='false'/>
+    <property name='cmpsceh' type='boolean' value='false'/>
+    <property name='dfpzc' type='boolean' value='false'/>
+    <property name='dfphp' type='boolean' value='false'/>
+    <property name='kmc-dea' type='boolean' value='false'/>
+    <property name='klmd-sha-1' type='boolean' value='false'/>
+    <property name='asnlxr' type='boolean' value='false'/>
+    <property name='km-tdea-192' type='boolean' value='false'/>
+    <property name='km-tdea-128' type='boolean' value='false'/>
+    <property name='kmac-dea' type='boolean' value='false'/>
+    <property name='stfle53' type='boolean' value='true'/>
+    <property name='kmc-tdea-128' type='boolean' value='false'/>
+    <property name='ais' type='boolean' value='true'/>
+    <property name='kmac-tdea-128' type='boolean' value='false'/>
+    <property name='zpci' type='boolean' value='true'/>
+    <property name='nonqks' type='boolean' value='false'/>
+    <property name='pfpo' type='boolean' value='false'/>
+    <property name='msa4-base' type='boolean' value='true'/>
+    <property name='msa3-base' type='boolean' value='true'/>
+    <property name='msa5-base' type='boolean' value='true'/>
+    <property name='tods' type='boolean' value='false'/>
+  </hostCPU>
+  <cpu type='kvm' name='z14.2' usable='yes'/>
+  <cpu type='kvm' name='z890.2' usable='yes'/>
+  <cpu type='kvm' name='z990.4' usable='yes'/>
+  <cpu type='kvm' name='z14ZR1' usable='yes'/>
+  <cpu type='kvm' name='z10BC.2' usable='yes'/>
+  <cpu type='kvm' name='z196.2' usable='yes'/>
+  <cpu type='kvm' name='z14' usable='yes'/>
+  <cpu type='kvm' name='z9BC-base' usable='yes'/>
+  <cpu type='kvm' name='zEC12-base' usable='yes'/>
+  <cpu type='kvm' name='z196-base' usable='yes'/>
+  <cpu type='kvm' name='z13-base' usable='yes'/>
+  <cpu type='kvm' name='z990.3' usable='yes'/>
+  <cpu type='kvm' name='host' usable='yes'/>
+  <cpu type='kvm' name='z9EC' usable='yes'/>
+  <cpu type='kvm' name='zBC12' usable='yes'/>
+  <cpu type='kvm' name='z9EC.3' usable='yes'/>
+  <cpu type='kvm' name='z196.2-base' usable='yes'/>
+  <cpu type='kvm' name='qemu' usable='no'>
+    <blocker name='ais'/>
+  </cpu>
+  <cpu type='kvm' name='zEC12.2-base' usable='yes'/>
+  <cpu type='kvm' name='z800-base' usable='yes'/>
+  <cpu type='kvm' name='z9EC.2' usable='yes'/>
+  <cpu type='kvm' name='z900.2-base' usable='yes'/>
+  <cpu type='kvm' name='z14ZR1-base' usable='yes'/>
+  <cpu type='kvm' name='z900.3' usable='yes'/>
+  <cpu type='kvm' name='z890' usable='yes'/>
+  <cpu type='kvm' name='z890-base' usable='yes'/>
+  <cpu type='kvm' name='z990.4-base' usable='yes'/>
+  <cpu type='kvm' name='z10BC.2-base' usable='yes'/>
+  <cpu type='kvm' name='z900.2' usable='yes'/>
+  <cpu type='kvm' name='z9BC.2-base' usable='yes'/>
+  <cpu type='kvm' name='z800' usable='yes'/>
+  <cpu type='kvm' name='z114' usable='yes'/>
+  <cpu type='kvm' name='z13' usable='yes'/>
+  <cpu type='kvm' name='z990' usable='yes'/>
+  <cpu type='kvm' name='z13s-base' usable='yes'/>
+  <cpu type='kvm' name='z990.2' usable='yes'/>
+  <cpu type='kvm' name='z14.2-base' usable='yes'/>
+  <cpu type='kvm' name='z14-base' usable='yes'/>
+  <cpu type='kvm' name='z890.2-base' usable='yes'/>
+  <cpu type='kvm' name='z196' usable='yes'/>
+  <cpu type='kvm' name='z10EC' usable='yes'/>
+  <cpu type='kvm' name='z13s' usable='yes'/>
+  <cpu type='kvm' name='z900' usable='yes'/>
+  <cpu type='kvm' name='z10EC.3' usable='yes'/>
+  <cpu type='kvm' name='z10EC.2-base' usable='yes'/>
+  <cpu type='kvm' name='z114-base' usable='yes'/>
+  <cpu type='kvm' name='z990.2-base' usable='yes'/>
+  <cpu type='kvm' name='z9EC.2-base' usable='yes'/>
+  <cpu type='kvm' name='z890.3' usable='yes'/>
+  <cpu type='kvm' name='z900.3-base' usable='yes'/>
+  <cpu type='kvm' name='z9BC.2' usable='yes'/>
+  <cpu type='kvm' name='z10BC' usable='yes'/>
+  <cpu type='kvm' name='z990.5' usable='yes'/>
+  <cpu type='kvm' name='zEC12.2' usable='yes'/>
+  <cpu type='kvm' name='z10EC-base' usable='yes'/>
+  <cpu type='kvm' name='z9EC-base' usable='yes'/>
+  <cpu type='kvm' name='z9EC.3-base' usable='yes'/>
+  <cpu type='kvm' name='zEC12' usable='yes'/>
+  <cpu type='kvm' name='z990.5-base' usable='yes'/>
+  <cpu type='kvm' name='z10BC-base' usable='yes'/>
+  <cpu type='kvm' name='max' usable='yes'/>
+  <cpu type='kvm' name='z900-base' usable='yes'/>
+  <cpu type='kvm' name='z13.2' usable='yes'/>
+  <cpu type='kvm' name='zBC12-base' usable='yes'/>
+  <cpu type='kvm' name='z13.2-base' usable='yes'/>
+  <cpu type='kvm' name='z890.3-base' usable='yes'/>
+  <cpu type='kvm' name='z990-base' usable='yes'/>
+  <cpu type='kvm' name='z10EC.2' usable='yes'/>
+  <cpu type='kvm' name='z9BC' usable='yes'/>
+  <cpu type='kvm' name='z10EC.3-base' usable='yes'/>
+  <cpu type='kvm' name='z990.3-base' usable='yes'/>
+  <cpu type='tcg' name='z14.2' usable='no'>
+    <blocker name='ppno-sha-512-drng'/>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='mepoch'/>
+    <blocker name='vxeh'/>
+    <blocker name='vxpd'/>
+    <blocker name='gs'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='iep'/>
+    <blocker name='vx'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='tsi'/>
+    <blocker name='sema'/>
+    <blocker name='minste2'/>
+    <blocker name='eec'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='opc'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='mepochptff'/>
+    <blocker name='msa8'/>
+    <blocker name='msa7'/>
+    <blocker name='msa6'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890.2' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z990.4' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z14ZR1' usable='no'>
+    <blocker name='ppno-sha-512-drng'/>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='mepoch'/>
+    <blocker name='vxeh'/>
+    <blocker name='vxpd'/>
+    <blocker name='gs'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='iep'/>
+    <blocker name='vx'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='tsi'/>
+    <blocker name='sema'/>
+    <blocker name='minste2'/>
+    <blocker name='eec'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='opc'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='mepochptff'/>
+    <blocker name='msa8'/>
+    <blocker name='msa7'/>
+    <blocker name='msa6'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10BC.2' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z196.2' usable='no'>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z14' usable='no'>
+    <blocker name='ppno-sha-512-drng'/>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='mepoch'/>
+    <blocker name='vxeh'/>
+    <blocker name='vxpd'/>
+    <blocker name='gs'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='iep'/>
+    <blocker name='vx'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='tsi'/>
+    <blocker name='sema'/>
+    <blocker name='minste2'/>
+    <blocker name='eec'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='opc'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='mepochptff'/>
+    <blocker name='msa8'/>
+    <blocker name='msa7'/>
+    <blocker name='msa6'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9BC-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='zEC12-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z196-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z13-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.3' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='host' usable='yes'/>
+  <cpu type='tcg' name='z9EC' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='zBC12' usable='no'>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC.3' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z196.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='qemu' usable='yes'/>
+  <cpu type='tcg' name='zEC12.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z800-base' usable='yes'/>
+  <cpu type='tcg' name='z9EC.2' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z900.2-base' usable='yes'/>
+  <cpu type='tcg' name='z14ZR1-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='tsi'/>
+    <blocker name='sema'/>
+    <blocker name='minste2'/>
+    <blocker name='eec'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='opc'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z900.3' usable='yes'/>
+  <cpu type='tcg' name='z890' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z890-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z990.4-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z10BC.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z900.2' usable='yes'/>
+  <cpu type='tcg' name='z9BC.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z800' usable='yes'/>
+  <cpu type='tcg' name='z114' usable='no'>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z13' usable='no'>
+    <blocker name='ppno-sha-512-drng'/>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='vx'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z13s-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.2' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z14.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='tsi'/>
+    <blocker name='sema'/>
+    <blocker name='minste2'/>
+    <blocker name='eec'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='opc'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z14-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='tsi'/>
+    <blocker name='sema'/>
+    <blocker name='minste2'/>
+    <blocker name='eec'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='opc'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z196' usable='no'>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z13s' usable='no'>
+    <blocker name='ppno-sha-512-drng'/>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='vx'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z900' usable='yes'/>
+  <cpu type='tcg' name='z10EC.3' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z114-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z990.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z890.3' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z900.3-base' usable='yes'/>
+  <cpu type='tcg' name='z9BC.2' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z10BC' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z990.5' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='zEC12.2' usable='no'>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC.3-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='zEC12' usable='no'>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z990.5-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z10BC-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='max' usable='yes'/>
+  <cpu type='tcg' name='z900-base' usable='yes'/>
+  <cpu type='tcg' name='z13.2' usable='no'>
+    <blocker name='ppno-sha-512-drng'/>
+    <blocker name='pcc-xts-eaes-256'/>
+    <blocker name='pcc-xts-eaes-128'/>
+    <blocker name='pcc-xts-aes-256'/>
+    <blocker name='pcc-xts-aes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-eaes-192'/>
+    <blocker name='pcc-cmac-eaes-128'/>
+    <blocker name='pcc-cmac-eaes-256'/>
+    <blocker name='pcc-cmac-aes-192'/>
+    <blocker name='pcc-cmac-aes-128'/>
+    <blocker name='pcc-cmac-etdea-192'/>
+    <blocker name='pcc-cmac-etdea-128'/>
+    <blocker name='pcc-cmac-edea'/>
+    <blocker name='pcc-cmac-tdea-192'/>
+    <blocker name='pcc-cmac-tdea-128'/>
+    <blocker name='pcc-cmac-dea'/>
+    <blocker name='kmo-eaes-256'/>
+    <blocker name='kmo-eaes-192'/>
+    <blocker name='kmo-eaes-128'/>
+    <blocker name='kmo-aes-256'/>
+    <blocker name='kmo-aes-192'/>
+    <blocker name='kmo-aes-128'/>
+    <blocker name='kmo-etdea-192'/>
+    <blocker name='kmo-etdea-128'/>
+    <blocker name='kmo-edea'/>
+    <blocker name='kmo-tdea-192'/>
+    <blocker name='kmo-tdea-128'/>
+    <blocker name='kmo-dea'/>
+    <blocker name='kmf-eaes-256'/>
+    <blocker name='kmf-eaes-192'/>
+    <blocker name='kmf-eaes-128'/>
+    <blocker name='kmf-aes-256'/>
+    <blocker name='kmf-aes-192'/>
+    <blocker name='kmf-aes-128'/>
+    <blocker name='kmf-etdea-192'/>
+    <blocker name='kmf-etdea-128'/>
+    <blocker name='kmf-edea'/>
+    <blocker name='kmf-tdea-192'/>
+    <blocker name='kmf-tdea-128'/>
+    <blocker name='kmf-dea'/>
+    <blocker name='kmctr-eaes-256'/>
+    <blocker name='kmctr-eaes-192'/>
+    <blocker name='kmctr-eaes-128'/>
+    <blocker name='kmctr-aes-256'/>
+    <blocker name='kmctr-aes-192'/>
+    <blocker name='kmctr-aes-128'/>
+    <blocker name='kmctr-etdea-192'/>
+    <blocker name='kmctr-etdea-128'/>
+    <blocker name='kmctr-edea'/>
+    <blocker name='kmctr-tdea-192'/>
+    <blocker name='kmctr-tdea-128'/>
+    <blocker name='kmctr-dea'/>
+    <blocker name='pckmo-aes-256'/>
+    <blocker name='pckmo-aes-192'/>
+    <blocker name='pckmo-aes-128'/>
+    <blocker name='pckmo-etdea-192'/>
+    <blocker name='pckmo-etdea-128'/>
+    <blocker name='pckmo-edea'/>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-ghash'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-xts-eaes-256'/>
+    <blocker name='km-xts-eaes-128'/>
+    <blocker name='km-xts-aes-256'/>
+    <blocker name='km-xts-aes-128'/>
+    <blocker name='km-eaes-256'/>
+    <blocker name='km-eaes-192'/>
+    <blocker name='km-eaes-128'/>
+    <blocker name='km-etdea-192'/>
+    <blocker name='km-etdea-128'/>
+    <blocker name='km-edea'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-eaes-256'/>
+    <blocker name='kmc-eaes-192'/>
+    <blocker name='kmc-eaes-128'/>
+    <blocker name='kmc-etdea-192'/>
+    <blocker name='kmc-etdea-128'/>
+    <blocker name='kmc-edea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-eaes-256'/>
+    <blocker name='kmac-eaes-192'/>
+    <blocker name='kmac-eaes-128'/>
+    <blocker name='kmac-aes-256'/>
+    <blocker name='kmac-aes-192'/>
+    <blocker name='kmac-aes-128'/>
+    <blocker name='kmac-etdea-192'/>
+    <blocker name='kmac-etdea-128'/>
+    <blocker name='kmac-edea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='vx'/>
+    <blocker name='bpb'/>
+    <blocker name='ppa15'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ri'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='zBC12-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z13.2-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='emon'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890.3-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z990-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC.2' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z9BC' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC.3-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='asnlxr'/>
+    <blocker name='tods'/>
+  </cpu>
+  <cpu type='tcg' name='z990.3-base' usable='no'>
+    <blocker name='klmd-sha-1'/>
+    <blocker name='kimd-sha-1'/>
+    <blocker name='km-tdea-192'/>
+    <blocker name='km-tdea-128'/>
+    <blocker name='km-dea'/>
+    <blocker name='kmc-tdea-192'/>
+    <blocker name='kmc-tdea-128'/>
+    <blocker name='kmc-dea'/>
+    <blocker name='kmac-tdea-192'/>
+    <blocker name='kmac-tdea-128'/>
+    <blocker name='kmac-dea'/>
+    <blocker name='hfpm'/>
+  </cpu>
+  <machine name='s390-ccw-virtio-4.0' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes'/>
+  <machine name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-3.1' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-3.0' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.12' hotplugCpus='yes' maxCpus='248'/>
+</qemuCaps>
