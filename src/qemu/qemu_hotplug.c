@@ -1465,8 +1465,6 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     virDomainDeviceInfoPtr info = hostdev->info;
     int ret;
     char *devstr = NULL;
-    int configfd = -1;
-    char *configfd_name = NULL;
     bool releaseaddr = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
@@ -1547,13 +1545,6 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
         goto error;
     releaseaddr = true;
-    if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-        configfd = qemuOpenPCIConfig(hostdev);
-        if (configfd >= 0) {
-            if (virAsprintf(&configfd_name, "fd-%s", info->alias) < 0)
-                goto error;
-        }
-    }
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1561,8 +1552,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (!(devstr = qemuBuildPCIHostdevDevStr(vm->def, hostdev, 0,
-                                             configfd_name, priv->qemuCaps)))
+    if (!(devstr = qemuBuildPCIHostdevDevStr(vm->def, hostdev, 0, priv->qemuCaps)))
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -1570,10 +1560,8 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     if ((ret = qemuDomainAttachExtensionDevice(priv->mon, hostdev->info)) < 0)
         goto exit_monitor;
 
-    if ((ret = qemuMonitorAddDeviceWithFd(priv->mon, devstr,
-                                          configfd, configfd_name)) < 0) {
+    if ((ret = qemuMonitorAddDevice(priv->mon, devstr)) < 0)
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, hostdev->info));
-    }
 
  exit_monitor:
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
@@ -1586,8 +1574,6 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
 
     VIR_FREE(devstr);
-    VIR_FREE(configfd_name);
-    VIR_FORCE_CLOSE(configfd);
 
     return 0;
 
@@ -1607,8 +1593,6 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     qemuHostdevReAttachPCIDevices(driver, vm->def->name, &hostdev, 1);
 
     VIR_FREE(devstr);
-    VIR_FREE(configfd_name);
-    VIR_FORCE_CLOSE(configfd);
 
  cleanup:
     return -1;

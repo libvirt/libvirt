@@ -148,7 +148,6 @@ char *qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
 char *qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                                 virDomainHostdevDefPtr dev,
                                 unsigned int bootIndex,
-                                const char *configfd,
                                 virQEMUCapsPtr qemuCaps);
 
 char *qemuBuildRNGDevStr(const virDomainDef *def,

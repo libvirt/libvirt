@@ -133,44 +133,11 @@ qemuHostdevHostSupportsPassthroughVFIO(void)
 }
 
 
-#if HAVE_LINUX_KVM_H
-# include <linux/kvm.h>
-bool
-qemuHostdevHostSupportsPassthroughLegacy(void)
-{
-    int kvmfd = -1;
-    bool ret = false;
-
-    if ((kvmfd = open("/dev/kvm", O_RDONLY)) < 0)
-        goto cleanup;
-
-# ifdef KVM_CAP_IOMMU
-    if ((ioctl(kvmfd, KVM_CHECK_EXTENSION, KVM_CAP_IOMMU)) <= 0)
-        goto cleanup;
-
-    ret = true;
-# endif
-
- cleanup:
-    VIR_FORCE_CLOSE(kvmfd);
-
-    return ret;
-}
-#else
-bool
-qemuHostdevHostSupportsPassthroughLegacy(void)
-{
-    return false;
-}
-#endif
-
-
 static bool
 qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
                                          size_t nhostdevs,
                                          virQEMUCapsPtr qemuCaps)
 {
-    bool supportsPassthroughKVM = qemuHostdevHostSupportsPassthroughLegacy();
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
     size_t i;
 
@@ -189,8 +156,6 @@ qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
             if (supportsPassthroughVFIO &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
                 *backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
-            } else if (supportsPassthroughKVM) {
-                *backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("host doesn't support passthrough of "
@@ -209,12 +174,9 @@ qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
             break;
 
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
-            if (!supportsPassthroughKVM) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("host doesn't support legacy PCI passthrough"));
-                return false;
-            }
-
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("host doesn't support legacy PCI passthrough"));
+            return false;
             break;
 
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:

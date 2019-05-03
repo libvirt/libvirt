@@ -4904,7 +4904,6 @@ char *
 qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDefPtr dev,
                           unsigned int bootIndex, /* used iff dev->info->bootIndex == 0 */
-                          const char *configfd,
                           virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -4913,16 +4912,11 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
 
     /* caller has to assign proper passthrough backend type */
     switch ((virDomainHostdevSubsysPCIBackendType)backend) {
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
-        virBufferAddLit(&buf, "pci-assign");
-        if (configfd && *configfd)
-            virBufferAsprintf(&buf, ",configfd=%s", configfd);
-        break;
-
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
         virBufferAddLit(&buf, "vfio-pci");
         break;
 
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
@@ -5676,7 +5670,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 }
             }
 
-            char *configfd_name = NULL;
             unsigned int bootIndex = hostdev->info->bootIndex;
 
             /* bootNet will be non-0 if boot order was set and no other
@@ -5686,27 +5679,12 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 bootIndex = *bootHostdevNet;
                 *bootHostdevNet = 0;
             }
-            if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                int configfd = qemuOpenPCIConfig(hostdev);
-
-                if (configfd >= 0) {
-                    if (virAsprintf(&configfd_name, "%d", configfd) < 0) {
-                        VIR_FORCE_CLOSE(configfd);
-                        return -1;
-                    }
-
-                    virCommandPassFD(cmd, configfd,
-                                     VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-                }
-            }
 
             if (qemuCommandAddExtDevice(cmd, hostdev->info) < 0)
                 return -1;
 
             virCommandAddArg(cmd, "-device");
-            devstr = qemuBuildPCIHostdevDevStr(def, hostdev, bootIndex,
-                                               configfd_name, qemuCaps);
-            VIR_FREE(configfd_name);
+            devstr = qemuBuildPCIHostdevDevStr(def, hostdev, bootIndex, qemuCaps);
             if (!devstr)
                 return -1;
             virCommandAddArg(cmd, devstr);

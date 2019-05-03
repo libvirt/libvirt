@@ -111,8 +111,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
                                   cfg->nfirmwares) < 0)
         goto cleanup;
 
-    /* The function above tries to query host's KVM & VFIO capabilities by
-     * calling qemuHostdevHostSupportsPassthroughLegacy() and
+    /* The function above tries to query host's VFIO capabilities by calling
      * qemuHostdevHostSupportsPassthroughVFIO() which, however, can't be
      * successfully mocked as they are not exposed as internal APIs. Therefore,
      * instead of mocking set the expected values here by hand. */

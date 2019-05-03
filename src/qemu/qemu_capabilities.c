@@ -5338,7 +5338,6 @@ static int
 virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                                        virDomainCapsDeviceHostdevPtr hostdev)
 {
-    bool supportsPassthroughKVM = qemuHostdevHostSupportsPassthroughLegacy();
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
 
     hostdev->supported = VIR_TRISTATE_BOOL_YES;
@@ -5374,11 +5373,6 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                                  VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
     }
 
-    if (supportsPassthroughKVM) {
-        VIR_DOMAIN_CAPS_ENUM_SET(hostdev->pciBackend,
-                                 VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
-                                 VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM);
-    }
     return 0;
 }
 
