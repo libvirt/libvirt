@@ -534,7 +534,7 @@ testQEMUSchemaGetLatest(void)
     virJSONValuePtr schema = NULL;
 
     if (!(capsLatestFile = testQemuGetLatestCapsForArch("x86_64", "replies"))) {
-        VIR_TEST_VERBOSE("failed to find latest caps replies\n");
+        VIR_TEST_VERBOSE("failed to find latest caps replies");
         return NULL;
     }
 
@@ -546,7 +546,7 @@ testQEMUSchemaGetLatest(void)
     if (!(schemaReply = strstr(capsLatest, "\"execute\": \"query-qmp-schema\"")) ||
         !(schemaReply = strstr(schemaReply, "\n\n")) ||
         !(end = strstr(schemaReply + 2, "\n\n"))) {
-        VIR_TEST_VERBOSE("failed to find reply to 'query-qmp-schema' in '%s'\n",
+        VIR_TEST_VERBOSE("failed to find reply to 'query-qmp-schema' in '%s'",
                          capsLatestFile);
         goto cleanup;
     }
@@ -555,13 +555,13 @@ testQEMUSchemaGetLatest(void)
     *end = '\0';
 
     if (!(reply = virJSONValueFromString(schemaReply))) {
-        VIR_TEST_VERBOSE("failed to parse 'query-qmp-schema' reply from '%s'\n",
+        VIR_TEST_VERBOSE("failed to parse 'query-qmp-schema' reply from '%s'",
                          capsLatestFile);
         goto cleanup;
     }
 
     if (!(schema = virJSONValueObjectStealArray(reply, "return"))) {
-        VIR_TEST_VERBOSE("missing qapi schema data in reply in '%s'\n",
+        VIR_TEST_VERBOSE("missing qapi schema data in reply in '%s'",
                          capsLatestFile);
         goto cleanup;
     }

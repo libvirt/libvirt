@@ -215,7 +215,7 @@ cpuTestCompare(const void *arg)
         virResetLastError();
 
     if (data->result != result) {
-        VIR_TEST_VERBOSE("\nExpected result %s, got %s\n",
+        VIR_TEST_VERBOSE("\nExpected result %s, got %s",
                     cpuTestCompResStr(data->result),
                     cpuTestCompResStr(result));
         /* Pad to line up with test name ... in virTestRun */
@@ -290,7 +290,7 @@ cpuTestGuestCPU(const void *arg)
         virResetLastError();
         ret = 0;
     } else {
-        VIR_TEST_VERBOSE("\nExpected result %d, got %d\n",
+        VIR_TEST_VERBOSE("\nExpected result %d, got %d",
                          data->result, ret);
         /* Pad to line up with test name ... in virTestRun */
         VIR_TEST_VERBOSE("%74s", "... ");
@@ -357,7 +357,7 @@ cpuTestBaseline(const void *arg)
         cmp = virCPUCompare(cpus[i]->arch, cpus[i], baseline, false);
         if (cmp != VIR_CPU_COMPARE_SUPERSET &&
             cmp != VIR_CPU_COMPARE_IDENTICAL) {
-            VIR_TEST_VERBOSE("\nbaseline CPU is incompatible with CPU %zu\n",
+            VIR_TEST_VERBOSE("\nbaseline CPU is incompatible with CPU %zu",
                              i);
             VIR_TEST_VERBOSE("%74s", "... ");
             ret = -1;
@@ -438,7 +438,7 @@ cpuTestHasFeature(const void *arg)
         virResetLastError();
 
     if (data->result != result) {
-        VIR_TEST_VERBOSE("\nExpected result %s, got %s\n",
+        VIR_TEST_VERBOSE("\nExpected result %s, got %s",
             cpuTestBoolWithErrorStr(data->result),
             cpuTestBoolWithErrorStr(result));
         /* Pad to line up with test name ... in virTestRun */
@@ -712,7 +712,7 @@ cpuTestUpdateLiveCompare(virArch arch,
         return -1;
 
     if (STRNEQ(actual->model, expected->model)) {
-        VIR_TEST_VERBOSE("Actual CPU model '%s', expected '%s'\n",
+        VIR_TEST_VERBOSE("Actual CPU model '%s', expected '%s'",
                          actual->model, expected->model);
         return -1;
     }
@@ -765,7 +765,7 @@ cpuTestUpdateLiveCompare(virArch arch,
              featExp->policy == VIR_CPU_FEATURE_REQUIRE) ||
             (cmp > 0 &&
              featExp->policy == VIR_CPU_FEATURE_REQUIRE)) {
-            VIR_TEST_VERBOSE("Actual CPU lacks feature '%s'\n",
+            VIR_TEST_VERBOSE("Actual CPU lacks feature '%s'",
                              featExp->name);
             ret = -1;
             continue;
@@ -778,7 +778,7 @@ cpuTestUpdateLiveCompare(virArch arch,
              featAct->policy == VIR_CPU_FEATURE_REQUIRE) ||
             (cmp > 0 &&
              featExp->policy == VIR_CPU_FEATURE_DISABLE)) {
-            VIR_TEST_VERBOSE("Actual CPU has extra feature '%s'\n",
+            VIR_TEST_VERBOSE("Actual CPU has extra feature '%s'",
                              cmp <= 0 ? featAct->name : featExp->name);
             ret = -1;
         }

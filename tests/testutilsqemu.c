@@ -851,7 +851,7 @@ testQemuGetLatestCapsForArch(const char *arch,
         goto cleanup;
 
     if (!maxname) {
-        VIR_TEST_VERBOSE("failed to find capabilities for '%s' in '%s'\n",
+        VIR_TEST_VERBOSE("failed to find capabilities for '%s' in '%s'",
                          arch, TEST_QEMU_CAPS_PATH);
         goto cleanup;
     }
@@ -882,7 +882,7 @@ testQemuGetLatestCaps(void)
     if (!(capslatest = virHashCreate(4, virHashValueFree)))
         goto error;
 
-    VIR_TEST_VERBOSE("\n");
+    VIR_TEST_VERBOSE("");
 
     for (i = 0; i < ARRAY_CARDINALITY(archs); ++i) {
         char *cap = testQemuGetLatestCapsForArch(archs[i], "xml");
@@ -890,10 +890,11 @@ testQemuGetLatestCaps(void)
         if (!cap || virHashAddEntry(capslatest, archs[i], cap) < 0)
             goto error;
 
-        VIR_TEST_VERBOSE("latest caps for %s: %s\n", archs[i], cap);
+        VIR_TEST_VERBOSE("latest caps for %s: %s", archs[i], cap);
     }
 
-    VIR_TEST_VERBOSE("\n");
+    VIR_TEST_VERBOSE("");
+
     return capslatest;
 
  error:

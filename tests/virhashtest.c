@@ -41,7 +41,7 @@ testHashInit(int size)
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids); i++) {
         if (!virHashLookup(hash, uuids[i])) {
-            VIR_TEST_VERBOSE("\nentry \"%s\" could not be found\n", uuids[i]);
+            VIR_TEST_VERBOSE("\nentry \"%s\" could not be found", uuids[i]);
             virHashFree(hash);
             return NULL;
         }
@@ -69,7 +69,7 @@ testHashCheckCount(virHashTablePtr hash, size_t count)
     size_t iter_count = 0;
 
     if (virHashSize(hash) != count) {
-        VIR_TEST_VERBOSE("\nhash contains %zd instead of %zu elements\n",
+        VIR_TEST_VERBOSE("\nhash contains %zd instead of %zu elements",
                          virHashSize(hash), count);
         return -1;
     }
@@ -77,7 +77,7 @@ testHashCheckCount(virHashTablePtr hash, size_t count)
     virHashForEach(hash, testHashCheckForEachCount, &iter_count);
     if (count != iter_count) {
         VIR_TEST_VERBOSE("\nhash claims to have %zu elements but iteration"
-                         "finds %zu\n", count, iter_count);
+                         "finds %zu", count, iter_count);
         return -1;
     }
 
@@ -125,7 +125,7 @@ testHashUpdate(const void *data ATTRIBUTE_UNUSED)
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids_subset); i++) {
         if (virHashUpdateEntry(hash, uuids_subset[i], (void *) 1) < 0) {
-            VIR_TEST_VERBOSE("\nentry \"%s\" could not be updated\n",
+            VIR_TEST_VERBOSE("\nentry \"%s\" could not be updated",
                     uuids_subset[i]);
             goto cleanup;
         }
@@ -133,7 +133,7 @@ testHashUpdate(const void *data ATTRIBUTE_UNUSED)
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids_new); i++) {
         if (virHashUpdateEntry(hash, uuids_new[i], (void *) 1) < 0) {
-            VIR_TEST_VERBOSE("\nnew entry \"%s\" could not be updated\n",
+            VIR_TEST_VERBOSE("\nnew entry \"%s\" could not be updated",
                     uuids_new[i]);
             goto cleanup;
         }
@@ -163,7 +163,7 @@ testHashRemove(const void *data ATTRIBUTE_UNUSED)
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids_subset); i++) {
         if (virHashRemoveEntry(hash, uuids_subset[i]) < 0) {
-            VIR_TEST_VERBOSE("\nentry \"%s\" could not be removed\n",
+            VIR_TEST_VERBOSE("\nentry \"%s\" could not be removed",
                     uuids_subset[i]);
             goto cleanup;
         }
@@ -257,7 +257,7 @@ testHashSteal(const void *data ATTRIBUTE_UNUSED)
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids_subset); i++) {
         if (!virHashSteal(hash, uuids_subset[i])) {
-            VIR_TEST_VERBOSE("\nentry \"%s\" could not be stolen\n",
+            VIR_TEST_VERBOSE("\nentry \"%s\" could not be stolen",
                     uuids_subset[i]);
             goto cleanup;
         }
@@ -316,7 +316,7 @@ testHashRemoveSet(const void *data ATTRIBUTE_UNUSED)
 
     if (count != rcount) {
         VIR_TEST_VERBOSE("\nvirHashRemoveSet didn't remove expected number of"
-                  " entries, %d != %u\n",
+                  " entries, %d != %u",
                   rcount, count);
         goto cleanup;
     }
@@ -355,7 +355,7 @@ testHashSearch(const void *data ATTRIBUTE_UNUSED)
     entry = virHashSearch(hash, testHashSearchIter, NULL, NULL);
 
     if (!entry || STRNEQ(uuids_subset[testSearchIndex], entry)) {
-        VIR_TEST_VERBOSE("\nvirHashSearch didn't find entry '%s'\n",
+        VIR_TEST_VERBOSE("\nvirHashSearch didn't find entry '%s'",
                   uuids_subset[testSearchIndex]);
         goto cleanup;
     }

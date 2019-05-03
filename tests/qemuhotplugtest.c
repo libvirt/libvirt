@@ -131,7 +131,7 @@ testQemuHotplugAttach(virDomainObjPtr vm,
         ret = qemuDomainAttachWatchdog(&driver, vm, dev->data.watchdog);
         break;
     default:
-        VIR_TEST_VERBOSE("device type '%s' cannot be attached\n",
+        VIR_TEST_VERBOSE("device type '%s' cannot be attached",
                 virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -154,7 +154,7 @@ testQemuHotplugDetach(virDomainObjPtr vm,
         ret = qemuDomainDetachDeviceLive(vm, dev, &driver, async);
         break;
     default:
-        VIR_TEST_VERBOSE("device type '%s' cannot be detached\n",
+        VIR_TEST_VERBOSE("device type '%s' cannot be detached",
                 virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -178,7 +178,7 @@ testQemuHotplugUpdate(virDomainObjPtr vm,
         ret = qemuDomainChangeGraphics(&driver, vm, dev->data.graphics);
         break;
     default:
-        VIR_TEST_VERBOSE("device type '%s' cannot be updated\n",
+        VIR_TEST_VERBOSE("device type '%s' cannot be updated",
                 virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -203,7 +203,7 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
 
     if (STREQ(expected, actual)) {
         if (fail)
-            VIR_TEST_VERBOSE("domain XML should not match the expected result\n");
+            VIR_TEST_VERBOSE("domain XML should not match the expected result");
         ret = 0;
     } else {
         if (!fail)
@@ -262,7 +262,7 @@ testQemuHotplug(const void *data)
     if (test->vm) {
         vm = test->vm;
         if (!vm->def) {
-            VIR_TEST_VERBOSE("test skipped due to failure of dependent test\n");
+            VIR_TEST_VERBOSE("test skipped due to failure of dependent test");
             goto cleanup;
         }
     } else {

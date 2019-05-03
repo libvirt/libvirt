@@ -31,11 +31,11 @@ virErrorTestMsgFormatInfoOne(const char *msg)
 
     for (next = (char *)msg; (next = strchr(next, '%')); next++) {
         if (next[1] != 's') {
-            VIR_TEST_VERBOSE("\nerror message '%s' contains disallowed printf modifiers\n", msg);
+            VIR_TEST_VERBOSE("\nerror message '%s' contains disallowed printf modifiers", msg);
             ret = -1;
         } else {
             if (found) {
-                VIR_TEST_VERBOSE("\nerror message '%s' contains multiple %%s modifiers\n", msg);
+                VIR_TEST_VERBOSE("\nerror message '%s' contains multiple %%s modifiers", msg);
                 ret = -1;
             } else {
                 found = true;
@@ -44,7 +44,7 @@ virErrorTestMsgFormatInfoOne(const char *msg)
     }
 
     if (!found) {
-        VIR_TEST_VERBOSE("\nerror message '%s' does not contain any %%s modifiers\n", msg);
+        VIR_TEST_VERBOSE("\nerror message '%s' does not contain any %%s modifiers", msg);
         ret = -1;
     }
 
@@ -65,17 +65,17 @@ virErrorTestMsgs(const void *opaque ATTRIBUTE_UNUSED)
         err_info = virErrorMsg(i, "");
 
         if (!err_noinfo) {
-            VIR_TEST_VERBOSE("\nmissing string without info for error id %zu\n", i);
+            VIR_TEST_VERBOSE("\nmissing string without info for error id %zu", i);
             ret = -1;
         }
 
         if (!err_info) {
-            VIR_TEST_VERBOSE("\nmissing string with info for error id %zu\n", i);
+            VIR_TEST_VERBOSE("\nmissing string with info for error id %zu", i);
             ret = -1;
         }
 
         if (err_noinfo && strchr(err_noinfo, '%')) {
-            VIR_TEST_VERBOSE("\nerror message id %zu contains formatting characters: '%s'\n",
+            VIR_TEST_VERBOSE("\nerror message id %zu contains formatting characters: '%s'",
                              i, err_noinfo);
             ret = -1;
         }

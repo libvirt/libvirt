@@ -1643,7 +1643,7 @@ static void
 testQemuMonitorJSONGetBlockInfoPrint(const struct qemuDomainDiskInfo *d)
 {
     VIR_TEST_VERBOSE("removable: %d, tray: %d, tray_open: %d, empty: %d, "
-                     "io_status: %d, nodename: '%s'\n",
+                     "io_status: %d, nodename: '%s'",
                      d->removable, d->tray, d->tray_open, d->empty,
                      d->io_status, NULLSTR(d->nodename));
 }
@@ -2905,7 +2905,7 @@ testQAPISchemaValidate(const void *opaque)
 
     if ((testQEMUSchemaValidate(json, schemaroot, data->schema, &debug) == 0) != data->success) {
         if (!data->success)
-            VIR_TEST_VERBOSE("\nschema validation should have failed\n");
+            VIR_TEST_VERBOSE("\nschema validation should have failed");
     } else {
         ret = 0;
     }
@@ -3026,7 +3026,7 @@ mymain(void)
     virEventRegisterDefaultImpl();
 
     if (!(qapiData.schema = testQEMUSchemaLoad())) {
-        VIR_TEST_VERBOSE("failed to load qapi schema\n");
+        VIR_TEST_VERBOSE("failed to load qapi schema");
         ret = -1;
         goto cleanup;
     }
@@ -3267,7 +3267,7 @@ mymain(void)
 
     if (!(metaschema = testQEMUSchemaGetLatest()) ||
         !(metaschemastr = virJSONValueToString(metaschema, false))) {
-        VIR_TEST_VERBOSE("failed to load latest qapi schema\n");
+        VIR_TEST_VERBOSE("failed to load latest qapi schema");
         ret = -1;
         goto cleanup;
     }

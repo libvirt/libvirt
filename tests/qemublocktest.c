@@ -212,7 +212,7 @@ testQemuDiskXMLToProps(const void *opaque)
 
     if (qemuCheckDiskConfig(disk, data->qemuCaps) < 0 ||
         qemuDomainDeviceDefValidateDisk(disk, data->qemuCaps) < 0) {
-        VIR_TEST_VERBOSE("invalid configuration for disk\n");
+        VIR_TEST_VERBOSE("invalid configuration for disk");
         goto cleanup;
     }
 
@@ -230,11 +230,11 @@ testQemuDiskXMLToProps(const void *opaque)
             !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, false, true, true)) ||
             !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false, false, true))) {
             if (!data->fail) {
-                VIR_TEST_VERBOSE("failed to generate qemu blockdev props\n");
+                VIR_TEST_VERBOSE("failed to generate qemu blockdev props");
                 goto cleanup;
             }
         } else if (data->fail) {
-            VIR_TEST_VERBOSE("qemu blockdev props should have failed\n");
+            VIR_TEST_VERBOSE("qemu blockdev props should have failed");
             goto cleanup;
         }
 
@@ -532,7 +532,7 @@ mymain(void)
     if (!(capslatest_x86_64 = testQemuGetLatestCapsForArch("x86_64", "xml")))
         return EXIT_FAILURE;
 
-    VIR_TEST_VERBOSE("\nlatest caps x86_64: %s\n", capslatest_x86_64);
+    VIR_TEST_VERBOSE("\nlatest caps x86_64: %s", capslatest_x86_64);
 
     if (!(caps_x86_64 = qemuTestParseCapabilitiesArch(virArchFromString("x86_64"),
                                                       capslatest_x86_64)))
@@ -642,7 +642,7 @@ mymain(void)
                                  diskxmljsondata.schema,
                                  &diskxmljsondata.schemaroot) < 0 ||
         !diskxmljsondata.schemaroot) {
-        VIR_TEST_VERBOSE("failed to find schema entry for blockdev-add\n");
+        VIR_TEST_VERBOSE("failed to find schema entry for blockdev-add");
         ret = -1;
         goto cleanup;
     }
