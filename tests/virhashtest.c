@@ -47,9 +47,6 @@ testHashInit(int size)
         }
     }
 
-    if (size && size != virHashTableSize(hash))
-        VIR_TEST_DEBUG("\n");
-
     return hash;
 }
 
