@@ -42,7 +42,7 @@ testJSONFromFile(const void *data)
             VIR_TEST_VERBOSE("Failed to parse %s\n", info->doc);
             return -1;
         } else {
-            VIR_TEST_DEBUG("As expected, failed to parse %s\n", info->doc);
+            VIR_TEST_DEBUG("As expected, failed to parse %s", info->doc);
             return 0;
         }
     } else {
@@ -77,7 +77,7 @@ testJSONFromString(const void *data)
             VIR_TEST_VERBOSE("Failed to parse %s\n", info->doc);
             return -1;
         } else {
-            VIR_TEST_DEBUG("As expected, failed to parse %s\n", info->doc);
+            VIR_TEST_DEBUG("As expected, failed to parse %s", info->doc);
             return 0;
         }
     } else {
@@ -87,7 +87,7 @@ testJSONFromString(const void *data)
         }
     }
 
-    VIR_TEST_DEBUG("Parsed %s\n", info->doc);
+    VIR_TEST_DEBUG("Parsed %s", info->doc);
 
     if (!(formatted = virJSONValueToString(json, false))) {
         VIR_TEST_VERBOSE("Failed to format json data\n");

@@ -64,7 +64,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
                                       VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL))) {
-        VIR_TEST_DEBUG("\nfailed to parse '%s'\n", data->infile);
+        VIR_TEST_DEBUG("\nfailed to parse '%s'", data->infile);
         goto cleanup;
     }
 
@@ -74,7 +74,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
                                       VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
                                       VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST))) {
-        VIR_TEST_DEBUG("\nfailed to format back '%s'\n", data->infile);
+        VIR_TEST_DEBUG("\nfailed to format back '%s'", data->infile);
         goto cleanup;
     }
 

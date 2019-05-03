@@ -87,10 +87,10 @@ unsigned int virTestGetVerbose(void);
 unsigned int virTestGetExpensive(void);
 unsigned int virTestGetRegenerate(void);
 
-#define VIR_TEST_DEBUG(...) \
+#define VIR_TEST_DEBUG(fmt, ...) \
     do { \
         if (virTestGetDebug()) \
-            fprintf(stderr, __VA_ARGS__); \
+            fprintf(stderr, fmt "\n", ## __VA_ARGS__); \
     } while (0)
 
 #define VIR_TEST_VERBOSE(...) \

@@ -38,13 +38,13 @@ testCompareXMLToArgvFiles(bool shouldFail,
     case VIR_STORAGE_POOL_FS:
     case VIR_STORAGE_POOL_NETFS:
         if (!(pool = virStoragePoolObjNew())) {
-            VIR_TEST_DEBUG("pool type '%s' alloc pool obj fails\n", defTypeStr);
+            VIR_TEST_DEBUG("pool type '%s' alloc pool obj fails", defTypeStr);
             goto cleanup;
         }
         virStoragePoolObjSetDef(pool, def);
 
         if (!(src = virStorageBackendFileSystemGetPoolSource(pool))) {
-            VIR_TEST_DEBUG("pool type '%s' has no pool source\n", defTypeStr);
+            VIR_TEST_DEBUG("pool type '%s' has no pool source", defTypeStr);
             def = NULL;
             goto cleanup;
         }
@@ -70,12 +70,12 @@ testCompareXMLToArgvFiles(bool shouldFail,
     case VIR_STORAGE_POOL_VSTORAGE:
     case VIR_STORAGE_POOL_LAST:
     default:
-        VIR_TEST_DEBUG("pool type '%s' has no xml2argv test\n", defTypeStr);
+        VIR_TEST_DEBUG("pool type '%s' has no xml2argv test", defTypeStr);
         goto cleanup;
     };
 
     if (!(actualCmdline = virCommandToString(cmd, false))) {
-        VIR_TEST_DEBUG("pool type '%s' failed to get commandline\n", defTypeStr);
+        VIR_TEST_DEBUG("pool type '%s' failed to get commandline", defTypeStr);
         goto cleanup;
     }
 

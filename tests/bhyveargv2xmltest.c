@@ -41,13 +41,13 @@ testCompareXMLToArgvFiles(const char *xmlfile,
                                               driver.xmlopt))) {
         if ((flags & FLAG_EXPECT_FAILURE) && !virTestOOMActive()) {
                 VIR_TEST_DEBUG("Got expected failure from "
-                               "bhyveParseCommandLineString.\n");
+                               "bhyveParseCommandLineString.");
         } else {
             goto fail;
         }
     } else if ((flags & FLAG_EXPECT_FAILURE) && !virTestOOMActive()) {
         VIR_TEST_DEBUG("Did not get expected failure from "
-                       "bhyveParseCommandLineString.\n");
+                       "bhyveParseCommandLineString.");
         goto fail;
     }
 
@@ -61,7 +61,7 @@ testCompareXMLToArgvFiles(const char *xmlfile,
                             log);
             } else {
                 VIR_TEST_DEBUG("bhyveParseCommandLineString "
-                        "should have logged a warning\n");
+                        "should have logged a warning");
                 goto fail;
             }
         } else { /* didn't expect a warning */

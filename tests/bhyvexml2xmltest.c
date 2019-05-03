@@ -44,7 +44,7 @@ testCompareXMLToXMLHelper(const void *data)
 
     if ((ret != 0) && (info->flags & FLAG_EXPECT_FAILURE)) {
         ret = 0;
-        VIR_TEST_DEBUG("Got expected error: %s\n",
+        VIR_TEST_DEBUG("Got expected error: %s",
                        virGetLastErrorMessage());
         virResetLastError();
     }

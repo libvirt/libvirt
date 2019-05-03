@@ -338,13 +338,13 @@ static int testExecRestart(const void *opaque)
  cleanup:
     if (ret < 0) {
         if (!data->pass) {
-            VIR_TEST_DEBUG("Got expected error: %s\n",
+            VIR_TEST_DEBUG("Got expected error: %s",
                            virGetLastErrorMessage());
             virResetLastError();
             ret = 0;
         }
     } else if (!data->pass) {
-            VIR_TEST_DEBUG("Test should have failed\n");
+            VIR_TEST_DEBUG("Test should have failed");
             ret = -1;
     }
     VIR_FREE(infile);

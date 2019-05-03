@@ -329,7 +329,7 @@ mymain(void)
     char *fakerootdir;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
-        VIR_TEST_DEBUG("Out of memory\n");
+        VIR_TEST_DEBUG("Out of memory");
         abort();
     }
 

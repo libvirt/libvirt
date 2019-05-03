@@ -36,7 +36,7 @@ testLogMatch(const void *opaque)
 
     bool got = virLogProbablyLogMessage(data->str);
     if (got != data->pass) {
-        VIR_TEST_DEBUG("Expected '%d' but got '%d' for '%s'\n",
+        VIR_TEST_DEBUG("Expected '%d' but got '%d' for '%s'",
                        data->pass, got, data->str);
         return -1;
     }
@@ -54,7 +54,7 @@ testLogParseOutputs(const void *opaque)
     noutputs = virLogParseOutputs(data->str, &outputs);
     if (noutputs < 0) {
         if (!data->pass) {
-            VIR_TEST_DEBUG("Got expected error: %s\n",
+            VIR_TEST_DEBUG("Got expected error: %s",
                            virGetLastErrorMessage());
             virResetLastError();
             ret = 0;
@@ -62,10 +62,10 @@ testLogParseOutputs(const void *opaque)
         }
     } else if (noutputs != data->count) {
             VIR_TEST_DEBUG("Expected number of parsed outputs is %d, "
-                           "but got %d\n", data->count, noutputs);
+                           "but got %d", data->count, noutputs);
             goto cleanup;
     } else if (!data->pass) {
-        VIR_TEST_DEBUG("Test should have failed\n");
+        VIR_TEST_DEBUG("Test should have failed");
         goto cleanup;
     }
 
@@ -86,7 +86,7 @@ testLogParseFilters(const void *opaque)
     nfilters = virLogParseFilters(data->str, &filters);
     if (nfilters < 0) {
         if (!data->pass) {
-            VIR_TEST_DEBUG("Got expected error: %s\n",
+            VIR_TEST_DEBUG("Got expected error: %s",
                            virGetLastErrorMessage());
             virResetLastError();
             ret = 0;
@@ -94,10 +94,10 @@ testLogParseFilters(const void *opaque)
         }
     } else if (nfilters != data->count) {
         VIR_TEST_DEBUG("Expected number of parsed outputs is %d, "
-                       "but got %d\n", data->count, nfilters);
+                       "but got %d", data->count, nfilters);
         goto cleanup;
     } else if (!data->pass) {
-        VIR_TEST_DEBUG("Test should have failed\n");
+        VIR_TEST_DEBUG("Test should have failed");
         goto cleanup;
     }
 

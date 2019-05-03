@@ -56,7 +56,7 @@ test_virResctrlGetUnused(const void *opaque)
             ret = 0;
         goto cleanup;
     } else if (data->fail) {
-        VIR_TEST_DEBUG("Error expected but there wasn't any.\n");
+        VIR_TEST_DEBUG("Error expected but there wasn't any.");
         ret = -1;
         goto cleanup;
     }

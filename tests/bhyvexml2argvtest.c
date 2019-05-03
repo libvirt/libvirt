@@ -41,7 +41,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
             ret = 0;
         } else if (flags & FLAG_EXPECT_FAILURE) {
             ret = 0;
-            VIR_TEST_DEBUG("Got expected error: %s\n",
+            VIR_TEST_DEBUG("Got expected error: %s",
                     virGetLastErrorMessage());
             virResetLastError();
         }
@@ -61,7 +61,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if ((cmd == NULL) || (ldcmd == NULL)) {
         if (flags & FLAG_EXPECT_FAILURE) {
             ret = 0;
-            VIR_TEST_DEBUG("Got expected error: %s\n",
+            VIR_TEST_DEBUG("Got expected error: %s",
                     virGetLastErrorMessage());
             virResetLastError();
         }

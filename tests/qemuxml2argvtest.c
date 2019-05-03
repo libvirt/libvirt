@@ -549,7 +549,7 @@ testCompareXMLToArgv(const void *data)
  ok:
     if (ret == 0 && flags & FLAG_EXPECT_FAILURE) {
         ret = -1;
-        VIR_TEST_DEBUG("Error expected but there wasn't any.\n");
+        VIR_TEST_DEBUG("Error expected but there wasn't any.");
         goto cleanup;
     }
     if (!virTestOOMActive()) {

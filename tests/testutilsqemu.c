@@ -837,7 +837,7 @@ testQemuGetLatestCapsForArch(const char *arch,
             continue;
 
         if (virParseVersionString(tmp, &ver, false) < 0) {
-            VIR_TEST_DEBUG("skipping caps file '%s'\n", ent->d_name);
+            VIR_TEST_DEBUG("skipping caps file '%s'", ent->d_name);
             continue;
         }
 

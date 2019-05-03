@@ -1028,7 +1028,7 @@ mymain(void)
                 char *log; \
                 if ((log = virTestLogContentAndReset()) && \
                      strlen(log) > 0) \
-                    VIR_TEST_DEBUG("\n%s\n", log); \
+                    VIR_TEST_DEBUG("\n%s", log); \
                 VIR_FREE(log); \
             } \
             ret = -1; \

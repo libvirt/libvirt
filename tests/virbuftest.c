@@ -354,7 +354,7 @@ testBufAddStr(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
-        VIR_TEST_DEBUG("testBufAddStr(): Strings don't match:\n");
+        VIR_TEST_DEBUG("testBufAddStr(): Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
         goto cleanup;
     }
@@ -387,7 +387,7 @@ testBufEscapeStr(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
-        VIR_TEST_DEBUG("testBufEscapeStr(): Strings don't match:\n");
+        VIR_TEST_DEBUG("testBufEscapeStr(): Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
         goto cleanup;
     }
@@ -416,7 +416,7 @@ testBufEscapeRegex(const void *opaque)
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
-        VIR_TEST_DEBUG("testBufEscapeRegex: Strings don't match:\n");
+        VIR_TEST_DEBUG("testBufEscapeRegex: Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
         goto cleanup;
     }
@@ -445,7 +445,7 @@ testBufSetIndent(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (STRNEQ(actual, "           test\n  test2\n")) {
-        VIR_TEST_DEBUG("testBufSetIndent: expected indent not set\n");
+        VIR_TEST_DEBUG("testBufSetIndent: expected indent not set");
         goto cleanup;
     }
 
