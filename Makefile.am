@@ -83,7 +83,7 @@ srpm: clean
 
 check-local: all tests
 
-check-access:
+check-access: all
 	@($(MAKE) $(AM_MAKEFLAGS) -C tests check-access)
 
 MAINTAINERCLEANFILES = .git-module-status
