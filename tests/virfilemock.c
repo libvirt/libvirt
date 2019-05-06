@@ -177,6 +177,9 @@ statfs(const char *path, struct statfs *buf)
 char *
 canonicalize_file_name(const char *path)
 {
+
+    init_syms();
+
     if (getenv("LIBVIRT_MTAB")) {
         const char *p;
         char *ret;
