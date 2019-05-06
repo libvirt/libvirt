@@ -190,7 +190,11 @@ int access(const char *path, int mode)
 }
 
 
-#define VIR_MOCK_STAT_HOOK CHECK_PATH(path)
+#define VIR_MOCK_STAT_HOOK \
+    do { \
+        init_syms(); \
+        checkPath(path, "stat"); \
+    } while (0)
 
 #include "virmockstathelpers.c"
 
