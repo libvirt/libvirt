@@ -3,7 +3,7 @@
 # This spec file assumes you are building on a Fedora version
 # that's still supported by the vendor. It may work on other distros
 # or versions, but no effort will be made to ensure that going forward.
-%define min_fedora 28
+%define min_fedora 29
 
 %if 0%{?fedora} && 0%{?fedora} >= %{min_fedora}
     %define supported_platform 1
