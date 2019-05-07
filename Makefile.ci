@@ -17,7 +17,7 @@ CI_GIT_ROOT = $(shell git rev-parse --show-toplevel)
 CI_HOST_SRCDIR = $(CI_SCRATCHDIR)/src
 
 # The directory holding the source inside the
-# container. ie where we told Docker to expose
+# container, i.e. where we want to expose
 # the $(CI_HOST_SRCDIR) directory from the host
 CI_CONT_SRCDIR = /src
 
@@ -46,14 +46,13 @@ CI_CONFIGURE_ARGS =
 # cloning them
 CI_SUBMODULES = $(shell git submodule | awk '{ print $$2 }')
 
-# Location of the Docker images we're going to pull
+# Location of the container images we're going to pull
 # Can be useful to overridde to use a locally built
 # image instead
 CI_IMAGE_PREFIX = quay.io/libvirt/buildenv-
 
-# Docker defaults to pulling the ':latest' tag but
-# if the Docker repo above uses different conventions
-# this can override it
+# The default tag is ':latest' but if the container
+# repo above uses different conventions this can override it
 CI_IMAGE_TAG = :master
 
 # We delete the virtual root after completion, set
@@ -71,15 +70,23 @@ CI_REUSE = 0
 CI_UID = $(shell id -u)
 CI_GID = $(shell id -g)
 
-# Docker doesn't require the IDs you run as to exist in
+CI_ENGINE = auto
+# Container engine we are going to use, can be overridden per make
+# invocation, if it is not we try podman and then default to docker.
+ifeq ($(CI_ENGINE),auto)
+	override CI_ENGINE = $(shell podman version >/dev/null 2>&1 && echo podman || echo docker)
+endif
+
+# IDs you run as do not need to exist in
 # the container's /etc/passwd & /etc/group files, but
-# if they do not, then libvirt's  'make check' will fail
+# if they do not, then libvirt's 'make check' will fail
 # many tests.
-#
+
 # We do not directly mount /etc/{passwd,group} as Docker
 # is liable to mess with SELinux labelling which will
-# then prevent the host accessing them. Copying them
-# first is safer.
+# then prevent the host accessing them. And podman cannot
+# relabel the files due to it running rootless. So
+# copying them first is safer and error-prone.
 CI_PWDB_MOUNTS = \
 	--volume $(CI_SCRATCHDIR)/group:/etc/group:ro,z \
 	--volume $(CI_SCRATCHDIR)/passwd:/etc/passwd:ro,z \
@@ -89,6 +96,46 @@ CI_PWDB_MOUNTS = \
 # for nofiles - as much as 1048576. This makes
 # libvirt very slow at exec'ing programs.
 CI_ULIMIT_FILES = 1024
+
+ifeq ($(CI_ENGINE),podman)
+	# Podman cannot reuse host namespace when running non-root containers.  Until
+	# support for --keep-uid is added we can just create another mapping that will
+	# do that for us.  Beware, that in {uid,git}map=container_id:host_id:range,
+	# the host_id does actually refer to the uid in the first mapping where 0
+	# (root) is mapped to the current user and rest is offset.
+
+	# In order to set up this mapping, we need to keep all the user IDs to prevent
+	# possible errors as some images might expect UIDs up to 90000 (looking at you
+	# fedora), so we don't want the overflowuid to be used for them.  For mapping
+	# all the other users properly ther eneeds to be some math done.  Don't worry,
+	# it's just addition and subtraction.
+
+	# 65536 ought to be enough (tm), but for really rare cases the maximums might
+	# need to be higher, but that only happens when your /etc/sub{u,g}id allow
+	# users to have more IDs.  Unless --keep-uid is supported, let's do this in a
+	# way that should work for everyone.
+	CI_MAX_UID = $(shell sed -n "s/^$USER:[^:]\+://p" /etc/subuid)
+	CI_MAX_GID = $(shell sed -n "s/^$USER:[^:]\+://p" /etc/subgid)
+	ifeq ($(CI_MAX_UID),)
+		CI_MAX_UID = 65536
+	endif
+	ifeq ($(CI_MAX_GID),)
+		CI_MAX_GID = 65536
+	endif
+	CI_UID_OTHER = $(shell echo $$(($(CI_UID)+1)))
+	CI_GID_OTHER = $(shell echo $$(($(CI_GID)+1)))
+	CI_UID_OTHER_RANGE = $(shell echo $$(($(CI_MAX_UID)-$(CI_UID))))
+	CI_GID_OTHER_RANGE = $(shell echo $$(($(CI_MAX_GID)-$(CI_GID))))
+
+	CI_PODMAN_ARGS = \
+		--uidmap 0:1:$(CI_UID) \
+		--uidmap $(CI_UID):0:1 \
+		--uidmap $(CI_UID_OTHER):$(CI_UID_OTHER):$(CI_UID_OTHER_RANGE) \
+		--gidmap 0:1:$(CI_GID) \
+		--gidmap $(CI_GID):0:1 \
+		--gidmap $(CI_GID_OTHER):$(CI_GID_OTHER):$(CI_GID_OTHER_RANGE) \
+		$(NULL)
+endif
 
 # Args to use when cloning a git repo.
 #  -c  stop it complaining about checking out a random hash
@@ -100,7 +147,7 @@ CI_GIT_ARGS = \
 	--local  \
 	$(NULL)
 
-# Args to use when running the Docker env
+# Args to use when running the container
 #   --rm      stop inactive containers getting left behind
 #   --user    we execute as the same user & group account
 #             as dev so that file ownership matches host
@@ -110,22 +157,23 @@ CI_GIT_ARGS = \
 #   --ulimit  lower files limit for performance reasons
 #   --interactive
 #   --tty     Ensure we have ability to Ctrl-C the build
-CI_DOCKER_ARGS = \
+CI_ENGINE_ARGS = \
 	--rm \
 	--user $(CI_UID):$(CI_GID) \
 	--interactive \
 	--tty \
+	$(CI_PODMAN_ARGS) \
 	$(CI_PWDB_MOUNTS) \
 	--volume $(CI_HOST_SRCDIR):$(CI_CONT_SRCDIR):z \
 	--workdir $(CI_CONT_SRCDIR) \
 	--ulimit nofile=$(CI_ULIMIT_FILES):$(CI_ULIMIT_FILES) \
 	$(NULL)
 
-ci-check-docker:
-	@echo -n "Checking if Docker is available and running..." && \
-	docker version 1>/dev/null && echo "yes"
+ci-check-engine:
+	@echo -n "Checking if $(CI_ENGINE) is available..." && \
+	$(CI_ENGINE) version 1>/dev/null && echo "yes"
 
-ci-prepare-tree: ci-check-docker
+ci-prepare-tree: ci-check-engine
 	@test "$(CI_REUSE)" != "1" && rm -rf $(CI_SCRATCHDIR) || :
 	@if ! test -d $(CI_SCRATCHDIR) ; then \
 		mkdir -p $(CI_SCRATCHDIR); \
@@ -150,7 +198,7 @@ ci-prepare-tree: ci-check-docker
 # gl_public_submodule_commit= to disable gnulib's submodule check
 # which breaks due to way we clone the submodules
 ci-build@%: ci-prepare-tree
-	docker run $(CI_DOCKER_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
+	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
 		/bin/bash -c '\
 		mkdir -p $(CI_CONT_BUILDDIR) || exit 1 ; \
 		cd $(CI_CONT_BUILDDIR) ; \
@@ -179,11 +227,11 @@ ci-check@%:
 	$(MAKE) -f $(CI_MAKEFILE) ci-build@$* CI_MAKE_ARGS="check"
 
 ci-shell@%: ci-prepare-tree
-	docker run $(CI_DOCKER_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) /bin/bash
+	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) /bin/bash
 	@test "$(CI_CLEAN)" = "1" && rm -rf $(CI_SCRATCHDIR) || :
 
 ci-help:
-	@echo "Build libvirt inside Docker containers used for CI"
+	@echo "Build libvirt inside containers used for CI"
 	@echo
 	@echo "Available targets:"
 	@echo
@@ -215,6 +263,7 @@ ci-help:
 	@echo
 	@echo "Available make variables:"
 	@echo
-	@echo "    CI_CLEAN=0 - do not delete '$(CI_SCRATCHDIR)' after completion"
-	@echo "    CI_REUSE=1 - re-use existing '$(CI_SCRATCHDIR)' content"
+	@echo "    CI_CLEAN=0     - do not delete '$(CI_SCRATCHDIR)' after completion"
+	@echo "    CI_REUSE=1     - re-use existing '$(CI_SCRATCHDIR)' content"
+	@echo "    CI_ENGINE=auto - container engine to use (podman, docker)"
 	@echo
