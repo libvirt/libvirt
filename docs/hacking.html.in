@@ -1284,6 +1284,34 @@
       does for snprintf.
     </p>
 
+    <h2><a id="errors">Error message format</a></h2>
+
+    <p>
+      Error messages visible to the user should be short and descriptive.  All
+      error messages are translated using gettext and thus must be wrapped in
+      <code>_()</code> macro.  To simplify the translation work, the error message
+      must not be concatenated from various parts.  To simplify searching for
+      the error message in the code the strings should not be broken even
+      if they result into a line longer than 80 columns and any formatting
+      modifier should be enclosed by quotes or other obvious separator.
+      If a string used with <code>%s</code> can be NULL the NULLSTR macro must
+      be used.
+    </p>
+
+<pre>
+  GOOD: virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to connect to remote host '%s'"), hostname)
+
+  BAD: virReportError(VIR_ERR_INTERNAL_ERROR,
+                      _("Failed to %s to remote host '%s'"),
+                      "connect", hostname);
+
+  BAD: virReportError(VIR_ERR_INTERNAL_ERROR,
+                      _("Failed to connect "
+                      "to remote host '%s'),
+                      hostname);
+</pre>
+
     <h2><a id="goto">Use of goto</a></h2>
 
     <p>
