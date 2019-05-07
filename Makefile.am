@@ -35,6 +35,7 @@ EXTRA_DIST = \
   libvirt-qemu.pc.in \
   libvirt-lxc.pc.in \
   libvirt-admin.pc.in \
+  Makefile.ci \
   Makefile.nonreentrant \
   autogen.sh \
   cfg.mk \
@@ -107,4 +108,5 @@ gen-AUTHORS:
 	  rm -f all.list maint.list contrib.list; \
 	fi
 
-include Makefile.ci
+ci-%:
+	$(MAKE) -f Makefile.ci $@
