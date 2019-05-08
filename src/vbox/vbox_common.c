@@ -6220,7 +6220,8 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
         goto cleanup;
 
-    if (VIR_ALLOC(def) < 0 || !(def->parent.dom = virDomainDefNew()))
+    if (!(def = virDomainSnapshotDefNew()) ||
+        !(def->parent.dom = virDomainDefNew()))
         goto cleanup;
     defdom = def->parent.dom;
     if (VIR_STRDUP(def->parent.name, snapshot->name) < 0)

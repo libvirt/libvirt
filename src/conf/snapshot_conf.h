@@ -114,6 +114,7 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseNode(xmlDocPtr xml,
                                                       virDomainXMLOptionPtr xmlopt,
                                                       bool *current,
                                                       unsigned int flags);
+virDomainSnapshotDefPtr virDomainSnapshotDefNew(void);
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
 char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  virDomainSnapshotDefPtr def,

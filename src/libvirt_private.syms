@@ -894,6 +894,7 @@ virDomainSnapshotAlignDisks;
 virDomainSnapshotDefFormat;
 virDomainSnapshotDefFree;
 virDomainSnapshotDefIsExternal;
+virDomainSnapshotDefNew;
 virDomainSnapshotDefParseString;
 virDomainSnapshotFormatConvertXMLFlags;
 virDomainSnapshotIsExternal;
