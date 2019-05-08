@@ -6195,14 +6195,14 @@ testDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
 
-    if (!snap->def->parent) {
+    if (!snap->def->parent_name) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("snapshot '%s' does not have a parent"),
                        snap->def->name);
         goto cleanup;
     }
 
-    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
+    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent_name);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -6421,7 +6421,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     }
 
     if (!redefine) {
-        if (VIR_STRDUP(snap->def->parent,
+        if (VIR_STRDUP(snap->def->parent_name,
                        virDomainSnapshotGetCurrentName(vm->snapshots)) < 0)
             goto cleanup;
 
@@ -6442,7 +6442,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
             if (update_current)
                 virDomainSnapshotSetCurrent(vm->snapshots, snap);
             other = virDomainSnapshotFindByName(vm->snapshots,
-                                                snap->def->parent);
+                                                snap->def->parent_name);
             virDomainMomentSetParent(snap, other);
         }
         virDomainObjEndAPI(&vm);
@@ -6491,10 +6491,10 @@ testDomainSnapshotReparentChildren(void *payload,
     if (rep->err < 0)
         return 0;
 
-    VIR_FREE(snap->def->parent);
+    VIR_FREE(snap->def->parent_name);
 
     if (rep->parent->def &&
-        VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
+        VIR_STRDUP(snap->def->parent_name, rep->parent->def->name) < 0) {
         rep->err = -1;
         return 0;
     }
@@ -6549,12 +6549,12 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     } else {
         virDomainMomentDropParent(snap);
         if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {
-            if (snap->def->parent) {
+            if (snap->def->parent_name) {
                 parentsnap = virDomainSnapshotFindByName(vm->snapshots,
-                                                         snap->def->parent);
+                                                         snap->def->parent_name);
                 if (!parentsnap)
                     VIR_WARN("missing parent snapshot matching name '%s'",
-                             snap->def->parent);
+                             snap->def->parent_name);
             }
             virDomainSnapshotSetCurrent(vm->snapshots, parentsnap);
         }

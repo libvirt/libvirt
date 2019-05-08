@@ -31,7 +31,7 @@ struct _virDomainMomentDef {
     /* Common portion of public XML.  */
     char *name;
     char *description;
-    char *parent;
+    char *parent_name;
     long long creationTime; /* in seconds */
 
     virDomainDefPtr dom;

@@ -38,7 +38,7 @@ void virDomainMomentDefClear(virDomainMomentDefPtr def)
 {
     VIR_FREE(def->name);
     VIR_FREE(def->description);
-    VIR_FREE(def->parent);
+    VIR_FREE(def->parent_name);
     virDomainDefFree(def->dom);
 }
 

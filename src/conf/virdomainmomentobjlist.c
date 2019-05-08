@@ -464,7 +464,7 @@ virDomainMomentForEach(virDomainMomentObjListPtr moments,
 
 
 /* Struct and callback function used as a hash table callback; each call
- * inspects the pre-existing moment->def->parent field, and adjusts
+ * inspects the pre-existing moment->def->parent_name field, and adjusts
  * the moment->parent field as well as the parent's child fields to
  * wire up the hierarchical relations for the given moment.  The error
  * indicator gets set if a parent is missing or a requested parent would
@@ -483,7 +483,7 @@ virDomainMomentSetRelations(void *payload,
     virDomainMomentObjPtr tmp;
     virDomainMomentObjPtr parent;
 
-    parent = virDomainMomentFindByName(curr->moments, obj->def->parent);
+    parent = virDomainMomentFindByName(curr->moments, obj->def->parent_name);
     if (!parent) {
         curr->err = -1;
         parent = &curr->moments->metaroot;

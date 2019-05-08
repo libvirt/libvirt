@@ -4191,7 +4191,7 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     def.common.name = snapshot->name;
     def.common.description = snapshotTree->description;
-    def.common.parent = snapshotTreeParent ? snapshotTreeParent->name : NULL;
+    def.common.parent_name = snapshotTreeParent ? snapshotTreeParent->name : NULL;
 
     if (esxVI_DateTime_ConvertToCalendarTime(snapshotTree->createTime,
                                              &def.common.creationTime) < 0) {

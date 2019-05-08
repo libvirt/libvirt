@@ -15752,7 +15752,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     current = virDomainSnapshotGetCurrent(vm->snapshots);
     if (current) {
         if (!redefine &&
-            VIR_STRDUP(snap->def->parent, current->def->name) < 0)
+            VIR_STRDUP(snap->def->parent_name, current->def->name) < 0)
                 goto endjob;
         if (update_current) {
             virDomainSnapshotSetCurrent(vm->snapshots, NULL);
@@ -15820,7 +15820,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             virDomainSnapshotObjListRemove(vm->snapshots, snap);
         } else {
             other = virDomainSnapshotFindByName(vm->snapshots,
-                                                snap->def->parent);
+                                                snap->def->parent_name);
             virDomainMomentSetParent(snap, other);
         }
     } else if (snap) {
@@ -16080,14 +16080,14 @@ qemuDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
 
-    if (!snap->def->parent) {
+    if (!snap->def->parent_name) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("snapshot '%s' does not have a parent"),
                        snap->def->name);
         goto cleanup;
     }
 
-    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
+    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent_name);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -16668,10 +16668,10 @@ qemuDomainMomentReparentChildren(void *payload,
     if (rep->err < 0)
         return 0;
 
-    VIR_FREE(moment->def->parent);
+    VIR_FREE(moment->def->parent_name);
 
     if (rep->parent->def &&
-        VIR_STRDUP(moment->def->parent, rep->parent->def->name) < 0) {
+        VIR_STRDUP(moment->def->parent_name, rep->parent->def->name) < 0) {
         rep->err = -1;
         return 0;
     }

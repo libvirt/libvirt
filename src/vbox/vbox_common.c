@@ -5061,7 +5061,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
 
         VIR_FREE(tmp);
     }
-    if (virVBoxSnapshotConfAddSnapshotToXmlMachine(newSnapshotPtr, snapshotMachineDesc, def->common.parent) < 0) {
+    if (virVBoxSnapshotConfAddSnapshotToXmlMachine(newSnapshotPtr, snapshotMachineDesc, def->common.parent_name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to add the snapshot to the machine description"));
         goto cleanup;
@@ -6305,7 +6305,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         }
         VBOX_UTF16_TO_UTF8(str16, &str8);
         VBOX_UTF16_FREE(str16);
-        if (VIR_STRDUP(def->common.parent, str8) < 0) {
+        if (VIR_STRDUP(def->common.parent_name, str8) < 0) {
             VBOX_UTF8_FREE(str8);
             goto cleanup;
         }
@@ -6999,7 +6999,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
          * disks. The first thing to do is to manipulate VirtualBox API to create
          * differential read-write disks if the parent snapshot is not null.
          */
-        if (def->common.parent != NULL) {
+        if (def->common.parent_name != NULL) {
             for (it = 0; it < def->common.dom->ndisks; it++) {
                 virVBoxSnapshotConfHardDiskPtr readOnly = NULL;
                 IMedium *medium = NULL;
@@ -7058,7 +7058,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 VBOX_UTF8_TO_UTF16("VDI", &formatUtf16);
 
                 if (virAsprintf(&newLocationUtf8, "%sfakedisk-%s-%d.vdi",
-                                machineLocationPath, def->common.parent, it) < 0)
+                                machineLocationPath, def->common.parent_name, it) < 0)
                     goto cleanup;
                 VBOX_UTF8_TO_UTF16(newLocationUtf8, &newLocation);
                 rc = gVBoxAPI.UIVirtualBox.CreateHardDisk(data->vboxObj,
@@ -7209,7 +7209,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
         }
     }
     /*If the parent snapshot is not NULL, we remove the-read only disks from the media registry*/
-    if (def->common.parent != NULL) {
+    if (def->common.parent_name != NULL) {
         for (it = 0; it < def->common.dom->ndisks; it++) {
             const char *uuidRO =
                 virVBoxSnapshotConfHardDiskUuidByLocation(snapshotMachineDesc,
@@ -7289,8 +7289,8 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
 
     if (isCurrent) {
         VIR_FREE(snapshotMachineDesc->currentSnapshot);
-        if (def->common.parent != NULL) {
-            virVBoxSnapshotConfSnapshotPtr snap = virVBoxSnapshotConfSnapshotByName(snapshotMachineDesc->snapshot, def->common.parent);
+        if (def->common.parent_name != NULL) {
+            virVBoxSnapshotConfSnapshotPtr snap = virVBoxSnapshotConfSnapshotByName(snapshotMachineDesc->snapshot, def->common.parent_name);
             if (!snap) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Unable to get the snapshot to remove"));

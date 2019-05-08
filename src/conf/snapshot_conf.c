@@ -227,7 +227,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
 
-        def->common.parent = virXPathString("string(./parent/name)", ctxt);
+        def->common.parent_name = virXPathString("string(./parent/name)", ctxt);
 
         state = virXPathString("string(./state)", ctxt);
         if (state == NULL) {
@@ -809,10 +809,11 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
         virBufferAsprintf(buf, "<state>%s</state>\n",
                           virDomainSnapshotStateTypeToString(def->state));
 
-    if (def->common.parent) {
+    if (def->common.parent_name) {
         virBufferAddLit(buf, "<parent>\n");
         virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<name>%s</name>\n", def->common.parent);
+        virBufferEscapeString(buf, "<name>%s</name>\n",
+                              def->common.parent_name);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</parent>\n");
     }
@@ -932,30 +933,31 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     bool check_if_stolen;
 
     /* Prevent circular chains */
-    if (def->common.parent) {
-        if (STREQ(def->common.name, def->common.parent)) {
+    if (def->common.parent_name) {
+        if (STREQ(def->common.name, def->common.parent_name)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("cannot set snapshot %s as its own parent"),
                            def->common.name);
             return -1;
         }
-        other = virDomainSnapshotFindByName(vm->snapshots, def->common.parent);
+        other = virDomainSnapshotFindByName(vm->snapshots,
+                                            def->common.parent_name);
         if (!other) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("parent %s for snapshot %s not found"),
-                           def->common.parent, def->common.name);
+                           def->common.parent_name, def->common.name);
             return -1;
         }
         otherdef = virDomainSnapshotObjGetDef(other);
-        while (otherdef->common.parent) {
-            if (STREQ(otherdef->common.parent, def->common.name)) {
+        while (otherdef->common.parent_name) {
+            if (STREQ(otherdef->common.parent_name, def->common.name)) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("parent %s would create cycle to %s"),
                                otherdef->common.name, def->common.name);
                 return -1;
             }
             other = virDomainSnapshotFindByName(vm->snapshots,
-                                                otherdef->common.parent);
+                                                otherdef->common.parent_name);
             if (!other) {
                 VIR_WARN("snapshots are inconsistent for %s",
                          vm->def->name);

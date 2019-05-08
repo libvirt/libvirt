@@ -8606,19 +8606,19 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
 
     if (snap == virDomainSnapshotGetCurrent(vm->snapshots)) {
         virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-        if (update_parent && snap->def->parent) {
+        if (update_parent && snap->def->parent_name) {
             parentsnap = virDomainSnapshotFindByName(vm->snapshots,
-                                                     snap->def->parent);
+                                                     snap->def->parent_name);
             if (!parentsnap) {
                 VIR_WARN("missing parent snapshot matching name '%s'",
-                         snap->def->parent);
+                         snap->def->parent_name);
             } else {
                 virDomainSnapshotSetCurrent(vm->snapshots, parentsnap);
                 if (qemuDomainSnapshotWriteMetadata(vm, parentsnap, driver->caps,
                                                     driver->xmlopt,
                                                     cfg->snapshotDir) < 0) {
                     VIR_WARN("failed to set parent snapshot '%s' as current",
-                             snap->def->parent);
+                             snap->def->parent_name);
                     virDomainSnapshotSetCurrent(vm->snapshots, NULL);
                 }
             }

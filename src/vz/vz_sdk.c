@@ -4703,7 +4703,7 @@ prlsdkParseSnapshotTree(const char *treexml)
             goto cleanup;
         }
 
-        def->common.parent = virXPathString("string(../@guid)", ctxt);
+        def->common.parent_name = virXPathString("string(../@guid)", ctxt);
 
         xmlstr = virXPathString("string(./DateTime)", ctxt);
         if (!xmlstr) {
