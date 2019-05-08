@@ -4696,14 +4696,14 @@ prlsdkParseSnapshotTree(const char *treexml)
 
         ctxt->node = nodes[i];
 
-        def->common.name = virXPathString("string(./@guid)", ctxt);
-        if (!def->common.name) {
+        def->parent.name = virXPathString("string(./@guid)", ctxt);
+        if (!def->parent.name) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing 'guid' attribute"));
             goto cleanup;
         }
 
-        def->common.parent_name = virXPathString("string(../@guid)", ctxt);
+        def->parent.parent_name = virXPathString("string(../@guid)", ctxt);
 
         xmlstr = virXPathString("string(./DateTime)", ctxt);
         if (!xmlstr) {
@@ -4711,11 +4711,11 @@ prlsdkParseSnapshotTree(const char *treexml)
                            _("missing 'DateTime' element"));
             goto cleanup;
         }
-        if ((def->common.creationTime = prlsdkParseDateTime(xmlstr)) < 0)
+        if ((def->parent.creationTime = prlsdkParseDateTime(xmlstr)) < 0)
             goto cleanup;
         VIR_FREE(xmlstr);
 
-        def->common.description = virXPathString("string(./Description)", ctxt);
+        def->parent.description = virXPathString("string(./Description)", ctxt);
 
         def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
         xmlstr = virXPathString("string(./@state)", ctxt);

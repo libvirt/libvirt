@@ -14446,7 +14446,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
      * create them correctly.  */
     for (i = 0; i < snapdef->ndisks && !reuse; i++) {
         snapdisk = &(snapdef->disks[i]);
-        defdisk = snapdef->common.dom->disks[snapdisk->idx];
+        defdisk = snapdef->parent.dom->disks[snapdisk->idx];
         if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             continue;
 
@@ -15621,19 +15621,19 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     /* reject snapshot names containing slashes or starting with dot as
      * snapshot definitions are saved in files named by the snapshot name */
     if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        if (strchr(def->common.name, '/')) {
+        if (strchr(def->parent.name, '/')) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("invalid snapshot name '%s': "
                              "name can't contain '/'"),
-                           def->common.name);
+                           def->parent.name);
             goto cleanup;
         }
 
-        if (def->common.name[0] == '.') {
+        if (def->parent.name[0] == '.') {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("invalid snapshot name '%s': "
                              "name can't start with '.'"),
-                           def->common.name);
+                           def->parent.name);
             goto cleanup;
         }
     }
@@ -15704,7 +15704,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
          * conversion in and back out of xml.  */
         if (!(xml = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU,
                                             true, true)) ||
-            !(def->common.dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
+            !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
                                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;

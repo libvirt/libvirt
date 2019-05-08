@@ -4118,7 +4118,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
            priv->parsedUri->autoAnswer) < 0 ||
         esxVI_LookupRootSnapshotTreeList(priv->primary, domain->uuid,
                                          &rootSnapshotList) < 0 ||
-        esxVI_GetSnapshotTreeByName(rootSnapshotList, def->common.name,
+        esxVI_GetSnapshotTreeByName(rootSnapshotList, def->parent.name,
                                     &snapshotTree, NULL,
                                     esxVI_Occurrence_OptionalItem) < 0) {
         goto cleanup;
@@ -4126,12 +4126,12 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
 
     if (snapshotTree) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Snapshot '%s' already exists"), def->common.name);
+                       _("Snapshot '%s' already exists"), def->parent.name);
         goto cleanup;
     }
 
     if (esxVI_CreateSnapshot_Task(priv->primary, virtualMachine->obj,
-                                  def->common.name, def->common.description,
+                                  def->parent.name, def->parent.description,
                                   diskOnly ? esxVI_Boolean_False : esxVI_Boolean_True,
                                   quiesce ? esxVI_Boolean_True : esxVI_Boolean_False,
                                   &task) < 0 ||
@@ -4148,7 +4148,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
         goto cleanup;
     }
 
-    snapshot = virGetDomainSnapshot(domain, def->common.name);
+    snapshot = virGetDomainSnapshot(domain, def->parent.name);
 
  cleanup:
     virDomainSnapshotDefFree(def);
@@ -4189,12 +4189,12 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    def.common.name = snapshot->name;
-    def.common.description = snapshotTree->description;
-    def.common.parent_name = snapshotTreeParent ? snapshotTreeParent->name : NULL;
+    def.parent.name = snapshot->name;
+    def.parent.description = snapshotTree->description;
+    def.parent.parent_name = snapshotTreeParent ? snapshotTreeParent->name : NULL;
 
     if (esxVI_DateTime_ConvertToCalendarTime(snapshotTree->createTime,
-                                             &def.common.creationTime) < 0) {
+                                             &def.parent.creationTime) < 0) {
         goto cleanup;
     }
 

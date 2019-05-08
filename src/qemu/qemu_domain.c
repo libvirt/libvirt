@@ -8467,7 +8467,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, def->common.name) < 0)
+    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, def->parent.name) < 0)
         goto cleanup;
 
     ret = virXMLSaveFile(snapFile, NULL, "snapshot-edit", newxml);

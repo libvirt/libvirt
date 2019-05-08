@@ -44,7 +44,7 @@ virDomainMomentObjPtr
 virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
                            virDomainSnapshotDefPtr def)
 {
-    return virDomainMomentAssignDef(snapshots->base, &def->common);
+    return virDomainMomentAssignDef(snapshots->base, &def->parent);
 }
 
 

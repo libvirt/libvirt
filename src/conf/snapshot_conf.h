@@ -74,7 +74,7 @@ struct _virDomainSnapshotDiskDef {
 
 /* Stores the complete snapshot metadata */
 struct _virDomainSnapshotDef {
-    virDomainMomentDef common;
+    virDomainMomentDef parent;
 
     /* Additional public XML.  */
     int state; /* virDomainSnapshotState */

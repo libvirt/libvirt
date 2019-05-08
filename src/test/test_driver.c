@@ -6403,7 +6403,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
                                           &update_current, flags) < 0)
             goto cleanup;
     } else {
-        if (!(def->common.dom = virDomainDefCopy(vm->def,
+        if (!(def->parent.dom = virDomainDefCopy(vm->def,
                                                  privconn->caps,
                                                  privconn->xmlopt,
                                                  NULL,
