@@ -30,11 +30,6 @@ AC_DEFUN([LIBVIRT_CHECK_UDEV],[
   fi
 
   if test "$with_udev" = "yes" ; then
-     PKG_CHECK_EXISTS([libudev >= 218], [with_udev_logging=no], [with_udev_logging=yes])
-     if test "$with_udev_logging" = "yes" ; then
-        AC_DEFINE_UNQUOTED([HAVE_UDEV_LOGGING], 1, [whether libudev logging can be used])
-     fi
-
     old_CFLAGS="$CFLAGS"
     old_LIBS="$LIBS"
     CFLAGS="$CFLAGS $UDEV_CFLAGS"
