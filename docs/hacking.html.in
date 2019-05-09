@@ -826,6 +826,28 @@
   }
 </pre>
 
+    <h2><a id="conditions">Conditional expressions</a></h2>
+      <p>For readability reasons new code should avoid shortening comparisons
+        to 0 for numeric types. Boolean and pointer comparisions may be
+        shortened. All long forms are okay:
+      </p>
+<pre>
+   virFooPtr foos = NULL;
+   size nfoos = 0;
+   bool hasFoos = false;
+
+GOOD:
+    if (!foos)
+    if (!hasFoos)
+    if (nfoos == 0)
+    if (foos == NULL)
+    if (hasFoos == true)
+
+BAD:
+    if (!nfoos)
+    if (nfoos)
+</pre>
+
     <h2><a id="preprocessor">Preprocessor</a></h2>
 
     <p>Macros defined with an ALL_CAPS name should generally be
