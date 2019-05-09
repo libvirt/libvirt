@@ -1,1 +1,141 @@
-<sysinfo type='smbios'/>
+<sysinfo type='smbios'>
+  <bios>
+    <entry name='vendor'>GIGABYTE</entry>
+    <entry name='version'>T49</entry>
+    <entry name='date'>02/02/2018</entry>
+    <entry name='release'>5.11</entry>
+  </bios>
+  <system>
+    <entry name='manufacturer'>GIGABYTE</entry>
+    <entry name='product'>R120-T34-00</entry>
+    <entry name='version'>0100</entry>
+    <entry name='serial'>01234567890ABC</entry>
+    <entry name='uuid'>01234567-89AB-CDEF-0123-4567890ABCDE</entry>
+    <entry name='sku'>01234567890123456789AB</entry>
+    <entry name='family'>Server</entry>
+  </system>
+  <baseBoard>
+    <entry name='manufacturer'>GIGABYTE</entry>
+    <entry name='product'>MT30-GS2-00</entry>
+    <entry name='version'>01234567</entry>
+    <entry name='serial'>01234567890</entry>
+    <entry name='asset'>01234567890123456789AB</entry>
+    <entry name='location'>Default string</entry>
+  </baseBoard>
+  <chassis>
+    <entry name='manufacturer'>GIGABYTE</entry>
+    <entry name='version'>01234567</entry>
+    <entry name='serial'>01234567890123456789AB</entry>
+    <entry name='asset'>01234567890123456789AB</entry>
+    <entry name='sku'>SYS_CHASSIS_SKU_NUMBER_1</entry>
+  </chassis>
+  <processor>
+    <entry name='socket_destination'>Socket</entry>
+    <entry name='type'>Central Processor</entry>
+    <entry name='family'>ARM</entry>
+    <entry name='manufacturer'>CN8880-1800BG2601-CP-Y-G</entry>
+    <entry name='signature'>Implementor 0x43, Variant 0x1, Architecture 15, Part 0x0a1, Revision 1</entry>
+    <entry name='version'>2.1</entry>
+    <entry name='external_clock'>156 MHz</entry>
+    <entry name='max_speed'>1800 MHz</entry>
+    <entry name='status'>Populated, Enabled</entry>
+    <entry name='serial_number'>CPU Serial#</entry>
+    <entry name='part_number'>CN88xx</entry>
+  </processor>
+  <memory_device>
+    <entry name='size'>16384 MB</entry>
+    <entry name='form_factor'>DIMM</entry>
+    <entry name='locator'>DIMM_P0_A0</entry>
+    <entry name='bank_locator'>P0_Node0_Channel0_Dimm0</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Registered (Buffered)</entry>
+    <entry name='speed'>2400 MT/s</entry>
+    <entry name='manufacturer'>Samsung</entry>
+    <entry name='serial_number'>01234567</entry>
+    <entry name='part_number'>M393A2K40BB1-CRC</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>16 GB</entry>
+    <entry name='form_factor'>Unknown</entry>
+    <entry name='locator'>DIMM_P0_A1</entry>
+    <entry name='bank_locator'>P0_Node0_Channel0_Dimm1</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Unknown</entry>
+    <entry name='speed'>Unknown</entry>
+    <entry name='manufacturer'>NO DIMM</entry>
+    <entry name='serial_number'>NO DIMM</entry>
+    <entry name='part_number'>NO DIMM</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>16384 MB</entry>
+    <entry name='form_factor'>DIMM</entry>
+    <entry name='locator'>DIMM_P0_B0</entry>
+    <entry name='bank_locator'>P0_Node0_Channel1_Dimm0</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Registered (Buffered)</entry>
+    <entry name='speed'>2400 MT/s</entry>
+    <entry name='manufacturer'>Samsung</entry>
+    <entry name='serial_number'>3405E86E</entry>
+    <entry name='part_number'>M393A2K40BB1-CRC</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>16 GB</entry>
+    <entry name='form_factor'>Unknown</entry>
+    <entry name='locator'>DIMM_P0_B1</entry>
+    <entry name='bank_locator'>P0_Node0_Channel1_Dimm1</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Unknown</entry>
+    <entry name='speed'>Unknown</entry>
+    <entry name='manufacturer'>NO DIMM</entry>
+    <entry name='serial_number'>NO DIMM</entry>
+    <entry name='part_number'>NO DIMM</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>16384 MB</entry>
+    <entry name='form_factor'>DIMM</entry>
+    <entry name='locator'>DIMM_P0_C0</entry>
+    <entry name='bank_locator'>P0_Node0_Channel2_Dimm0</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Registered (Buffered)</entry>
+    <entry name='speed'>2400 MT/s</entry>
+    <entry name='manufacturer'>Samsung</entry>
+    <entry name='serial_number'>01234567</entry>
+    <entry name='part_number'>M393A2K40BB1-CRC</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>16 GB</entry>
+    <entry name='form_factor'>Unknown</entry>
+    <entry name='locator'>DIMM_P0_C1</entry>
+    <entry name='bank_locator'>P0_Node0_Channel2_Dimm1</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Unknown</entry>
+    <entry name='speed'>Unknown</entry>
+    <entry name='manufacturer'>NO DIMM</entry>
+    <entry name='serial_number'>NO DIMM</entry>
+    <entry name='part_number'>NO DIMM</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>16384 MB</entry>
+    <entry name='form_factor'>DIMM</entry>
+    <entry name='locator'>DIMM_P0_D0</entry>
+    <entry name='bank_locator'>P0_Node0_Channel3_Dimm0</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Registered (Buffered)</entry>
+    <entry name='speed'>2400 MT/s</entry>
+    <entry name='manufacturer'>Samsung</entry>
+    <entry name='serial_number'>01234567</entry>
+    <entry name='part_number'>M393A2K40BB1-CRC</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>16 GB</entry>
+    <entry name='form_factor'>Unknown</entry>
+    <entry name='locator'>DIMM_P0_D1</entry>
+    <entry name='bank_locator'>P0_Node0_Channel3_Dimm1</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Unknown</entry>
+    <entry name='speed'>Unknown</entry>
+    <entry name='manufacturer'>NO DIMM</entry>
+    <entry name='serial_number'>NO DIMM</entry>
+    <entry name='part_number'>NO DIMM</entry>
+  </memory_device>
+</sysinfo>
