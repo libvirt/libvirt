@@ -847,6 +847,17 @@ BAD:
     if (!nfoos)
     if (nfoos)
 </pre>
+      <p>New code should avoid the ternary operator as much as possible.
+        Specifically it must never span more than one line or nest:
+      </p>
+<pre>
+BAD:
+    char *foo = baz ?
+                virDoSomethingReallyComplex(driver, vm, something, baz->foo) :
+                NULL;
+
+    char *foo = bar ? bar->baz ? bar->baz->foo : "nobaz" : "nobar";
+</pre>
 
     <h2><a id="preprocessor">Preprocessor</a></h2>
 
