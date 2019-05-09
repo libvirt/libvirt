@@ -4081,7 +4081,6 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
                            unsigned int flags)
 {
     esxPrivate *priv = domain->conn->privateData;
-    virDomainSnapshotDefPtr def = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotList = NULL;
     esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
@@ -4091,6 +4090,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     virDomainSnapshotPtr snapshot = NULL;
     bool diskOnly = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) != 0;
     bool quiesce = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) != 0;
+    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
 
     /* ESX supports disk-only and quiesced snapshots; libvirt tracks no
      * snapshot metadata so supporting that flag is trivial.  */
@@ -4151,7 +4151,6 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     snapshot = virGetDomainSnapshot(domain, def->parent.name);
 
  cleanup:
-    virDomainSnapshotDefFree(def);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
     esxVI_ManagedObjectReference_Free(&task);

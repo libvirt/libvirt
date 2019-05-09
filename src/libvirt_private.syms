@@ -892,7 +892,6 @@ virSecretEventValueChangedNew;
 # conf/snapshot_conf.h
 virDomainSnapshotAlignDisks;
 virDomainSnapshotDefFormat;
-virDomainSnapshotDefFree;
 virDomainSnapshotDefIsExternal;
 virDomainSnapshotDefNew;
 virDomainSnapshotDefParseString;

@@ -208,8 +208,7 @@ virDomainMomentObjFree(virDomainMomentObjPtr moment)
 
     VIR_DEBUG("obj=%p", moment);
 
-    /* FIXME: Make this polymorphic by inheriting from virObject */
-    virDomainSnapshotDefFree(virDomainSnapshotObjGetDef(moment));
+    virObjectUnref(moment->def);
     VIR_FREE(moment);
 }
 

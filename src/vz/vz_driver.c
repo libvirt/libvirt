@@ -2576,7 +2576,6 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
                           const char *xmlDesc,
                           unsigned int flags)
 {
-    virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     virDomainObjPtr dom;
     vzConnPtr privconn = domain->conn->privateData;
@@ -2585,6 +2584,7 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotObjListPtr snapshots = NULL;
     virDomainMomentObjPtr current;
     bool job = false;
+    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -2636,7 +2636,6 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virDomainSnapshotDefFree(def);
     if (job)
         vzDomainObjEndJob(dom);
     virDomainObjEndAPI(&dom);

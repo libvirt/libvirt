@@ -5476,7 +5476,6 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
                             unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
-    virDomainSnapshotDefPtr def = NULL;
     vboxIID domiid;
     IMachine *machine = NULL;
     IConsole *console = NULL;
@@ -5488,6 +5487,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     nsresult rc;
     resultCodeUnion result;
     virDomainSnapshotPtr ret = NULL;
+    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
 
     if (!data->vboxObj)
         return ret;
@@ -5587,7 +5587,6 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     gVBoxAPI.UISession.Close(data->vboxSession);
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&domiid);
-    virDomainSnapshotDefFree(def);
     return ret;
 }
 
@@ -6200,7 +6199,6 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     ISnapshot *snap = NULL;
     ISnapshot *parent = NULL;
     nsresult rc;
-    virDomainSnapshotDefPtr def = NULL;
     PRUnichar *str16;
     char *str8;
     PRInt64 timestamp;
@@ -6208,6 +6206,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *ret = NULL;
     virDomainDefPtr defdom;
+    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
 
     if (!data->vboxObj)
         return ret;
@@ -6330,7 +6329,6 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     ret = virDomainSnapshotDefFormat(uuidstr, def, data->caps, data->xmlopt, 0);
 
  cleanup:
-    virDomainSnapshotDefFree(def);
     VBOX_RELEASE(parent);
     VBOX_RELEASE(snap);
     VBOX_RELEASE(machine);

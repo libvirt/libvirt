@@ -133,7 +133,6 @@ useless_free_options = \
   --name=virDomainNetDefFree \
   --name=virDomainObjFree \
   --name=virDomainSmartcardDefFree \
-  --name=virDomainSnapshotDefFree \
   --name=virDomainSnapshotObjFree \
   --name=virDomainSoundDefFree \
   --name=virDomainVideoDefFree \
@@ -211,7 +210,6 @@ useless_free_options = \
 # y virDomainInputDefFree
 # y virDomainNetDefFree
 # y virDomainObjFree
-# y virDomainSnapshotDefFree
 # n virDomainSnapshotFree (returns int)
 # n virDomainSnapshotFreeName (returns int)
 # y virDomainSnapshotObjFree

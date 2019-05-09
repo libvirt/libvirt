@@ -50,6 +50,20 @@
 
 VIR_LOG_INIT("conf.snapshot_conf");
 
+static virClassPtr virDomainSnapshotDefClass;
+static void virDomainSnapshotDefDispose(void *obj);
+
+static int
+virDomainSnapshotOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(virDomainSnapshotDef, virClassForDomainMomentDef()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virDomainSnapshot);
+
 VIR_ENUM_IMPL(virDomainSnapshotLocation,
               VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
               "default",
@@ -81,29 +95,30 @@ virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDefPtr disk)
     disk->src = NULL;
 }
 
+/* Allocate a new virDomainSnapshotDef; free with virObjectUnref() */
 virDomainSnapshotDefPtr
 virDomainSnapshotDefNew(void)
 {
     virDomainSnapshotDefPtr def;
 
-    ignore_value(VIR_ALLOC(def));
+    if (virDomainSnapshotInitialize() < 0)
+        return NULL;
+
+    def = virObjectNew(virDomainSnapshotDefClass);
     return def;
 }
 
-void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
+static void
+virDomainSnapshotDefDispose(void *obj)
 {
+    virDomainSnapshotDefPtr def = obj;
     size_t i;
 
-    if (!def)
-        return;
-
-    virDomainMomentDefClear(&def->parent);
     VIR_FREE(def->file);
     for (i = 0; i < def->ndisks; i++)
         virDomainSnapshotDiskDefClear(&def->disks[i]);
     VIR_FREE(def->disks);
     virObjectUnref(def->cookie);
-    VIR_FREE(def);
 }
 
 static int
@@ -373,7 +388,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     VIR_FREE(nodes);
     VIR_FREE(memorySnapshot);
     VIR_FREE(memoryFile);
-    virDomainSnapshotDefFree(def);
+    virObjectUnref(def);
 
     return ret;
 }
@@ -995,7 +1010,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
         /* Drop and rebuild the parent relationship, but keep all
          * child relations by reusing snap. */
         virDomainMomentDropParent(other);
-        virDomainSnapshotDefFree(otherdef);
+        virObjectUnref(otherdef);
         other->def = &(*defptr)->parent;
         *defptr = NULL;
         *snap = other;

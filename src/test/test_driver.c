@@ -848,7 +848,7 @@ testParseDomainSnapshots(testDriverPtr privconn,
             goto error;
 
         if (!(snap = virDomainSnapshotAssignDef(domobj->snapshots, def))) {
-            virDomainSnapshotDefFree(def);
+            virObjectUnref(def);
             goto error;
         }
 
@@ -6348,13 +6348,13 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
 {
     testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
-    virDomainSnapshotDefPtr def = NULL;
     virDomainMomentObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     virObjectEventPtr event = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
+    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
 
     /*
      * DISK_ONLY: Not implemented yet
@@ -6448,7 +6448,6 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
         virDomainObjEndAPI(&vm);
     }
     virObjectEventStateQueue(privconn->eventState, event);
-    virDomainSnapshotDefFree(def);
     return snapshot;
 }
 

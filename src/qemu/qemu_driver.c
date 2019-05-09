@@ -481,7 +481,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
 
         snap = virDomainSnapshotAssignDef(vm->snapshots, def);
         if (snap == NULL) {
-            virDomainSnapshotDefFree(def);
+            virObjectUnref(def);
         } else if (cur) {
             if (current)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -15552,7 +15552,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     char *xml = NULL;
     virDomainMomentObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
-    virDomainSnapshotDefPtr def = NULL;
     virDomainMomentObjPtr current = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
@@ -15564,6 +15563,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainSnapshotState state;
+    VIR_AUTOFREE(virDomainSnapshotDefPtr) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
@@ -15831,7 +15831,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virDomainSnapshotDefFree(def);
     VIR_FREE(xml);
     virObjectUnref(caps);
     virObjectUnref(cfg);

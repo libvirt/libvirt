@@ -34,8 +34,34 @@
 
 VIR_LOG_INIT("conf.moment_conf");
 
-void virDomainMomentDefClear(virDomainMomentDefPtr def)
+static virClassPtr virDomainMomentDefClass;
+static void virDomainMomentDefDispose(void *obj);
+
+static int
+virDomainMomentOnceInit(void)
 {
+    if (!VIR_CLASS_NEW(virDomainMomentDef, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virDomainMoment);
+
+virClassPtr
+virClassForDomainMomentDef(void)
+{
+    if (virDomainMomentInitialize() < 0)
+        return NULL;
+
+    return virDomainMomentDefClass;
+}
+
+static void
+virDomainMomentDefDispose(void *obj)
+{
+    virDomainMomentDefPtr def = obj;
+
     VIR_FREE(def->name);
     VIR_FREE(def->description);
     VIR_FREE(def->parent_name);
