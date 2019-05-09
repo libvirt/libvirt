@@ -844,8 +844,12 @@ virSysinfoParseX86BaseBoard(const char *base,
             nboards--;
     }
 
-    /* This is safe, as we can be only shrinking the memory */
-    ignore_value(VIR_REALLOC_N(boards, nboards));
+    if (nboards == 0) {
+        VIR_FREE(boards);
+    } else {
+        /* This is safe, as we can be only shrinking the memory */
+        ignore_value(VIR_REALLOC_N(boards, nboards));
+    }
 
     *baseBoard = boards;
     *nbaseBoard = nboards;
