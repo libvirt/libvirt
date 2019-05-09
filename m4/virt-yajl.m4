@@ -24,7 +24,17 @@ AC_DEFUN([LIBVIRT_ARG_YAJL],[
 AC_DEFUN([LIBVIRT_CHECK_YAJL],[
   dnl YAJL JSON library http://lloyd.github.com/yajl/
 
-  LIBVIRT_CHECK_PKG([YAJL], [yajl], [2.0.3])
+  PKG_CHECK_EXISTS([readline], [use_pkgconfig=1], [use_pkgconfig=0])
+
+  if test $use_pkgconfig = 1; then
+    dnl 2.0.3 was the version where the pkg-config file was first added
+    LIBVIRT_CHECK_PKG([YAJL], [yajl], [2.0.3])
+  else
+    dnl SLES 12 and openSUSE Leap 42.3 still use 2.0.1
+    dnl TODO: delete this in July 2020
+    LIBVIRT_CHECK_LIB([YAJL], [yajl],
+                      [yajl_tree_parse], [yajl/yajl_common.h])
+  fi
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_YAJL],[
