@@ -1139,7 +1139,7 @@ virSysinfoParseX86Memory(const char *base, virSysinfoDefPtr ret)
 }
 
 virSysinfoDefPtr
-virSysinfoReadX86(void)
+virSysinfoReadDMI(void)
 {
     char *path;
     virSysinfoDefPtr ret = NULL;
@@ -1220,7 +1220,7 @@ virSysinfoRead(void)
     (defined(__x86_64__) || \
      defined(__i386__) || \
      defined(__amd64__))
-    return virSysinfoReadX86();
+    return virSysinfoReadDMI();
 #else /* WIN32 || not supported arch */
     /*
      * this can probably be extracted from Windows using API or registry

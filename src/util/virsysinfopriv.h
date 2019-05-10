@@ -39,6 +39,6 @@ virSysinfoDefPtr
 virSysinfoReadS390(void);
 
 virSysinfoDefPtr
-virSysinfoReadX86(void);
+virSysinfoReadDMI(void);
 
 #endif /* LIBVIRT_VIRSYSINFOPRIV_H */

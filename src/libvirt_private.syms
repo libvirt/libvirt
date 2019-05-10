@@ -3070,9 +3070,9 @@ virSysinfoSystemDefFree;
 
 # util/virsysinfopriv.h
 virSysinfoReadARM;
+virSysinfoReadDMI;
 virSysinfoReadPPC;
 virSysinfoReadS390;
-virSysinfoReadX86;
 
 
 # util/virsystemd.h
