@@ -2659,8 +2659,8 @@ static int
 virResctrlMonitorStatsSorter(const void *a,
                              const void *b)
 {
-    return ((virResctrlMonitorStatsPtr)a)->id
-        - ((virResctrlMonitorStatsPtr)b)->id;
+    return (*(virResctrlMonitorStatsPtr *)a)->id
+        - (*(virResctrlMonitorStatsPtr *)b)->id;
 }
 
 
@@ -2758,7 +2758,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
 
     /* Sort in id's ascending order */
     if (*nstats)
-        qsort(*stats, *nstats, sizeof(*stat), virResctrlMonitorStatsSorter);
+        qsort(*stats, *nstats, sizeof(**stats), virResctrlMonitorStatsSorter);
 
     ret = 0;
  cleanup:
