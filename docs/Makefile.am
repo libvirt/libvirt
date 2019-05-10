@@ -52,7 +52,11 @@ devhelphtml = \
   devhelp/libvirt.devhelp \
   devhelp/index.html \
   devhelp/general.html \
-  devhelp/libvirt-virterror.html
+  $(devhelphtml_generated)
+
+devhelphtml_generated = \
+	$(addprefix devhelp/libvirt-,$(addsuffix .html,$(modules))) \
+	$(NULL)
 
 css = \
   generic.css \
