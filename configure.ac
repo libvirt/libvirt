@@ -414,19 +414,6 @@ dnl
 
 LIBVIRT_CHECK_EXTERNAL_PROGRAMS
 
-
-dnl Specific dir for HTML output ?
-LIBVIRT_ARG_WITH([HTML_DIR], [path to base html directory],
-                 ['$(datadir)/doc'])
-LIBVIRT_ARG_WITH([HTML_SUBDIR], [directory used under html-dir],
-                 ['$(PACKAGE)-$(VERSION)/html'])
-if test "x$with_html_subdir" != "x" ; then
-  HTML_DIR="$with_html_dir/$with_html_subdir"
-else
-  HTML_DIR="$with_html_dir"
-fi
-AC_SUBST([HTML_DIR])
-
 dnl if --prefix is /usr, don't use /usr/var for localstatedir
 dnl or /usr/etc for sysconfdir
 dnl as this makes a lot of things break in testing situations
