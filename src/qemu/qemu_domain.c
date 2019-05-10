@@ -8664,7 +8664,8 @@ qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
     virQEMUMomentRemove rem = {
         .driver = driver,
         .vm = vm,
-        .metadata_only = true
+        .metadata_only = true,
+        .momentDiscard = qemuDomainSnapshotDiscard,
     };
 
     virDomainSnapshotForEach(vm->snapshots, qemuDomainMomentDiscardAll, &rem);
