@@ -84,6 +84,17 @@ INSTALL_DATA_LOCAL += install-nwfilter-local
 UNINSTALL_LOCAL += uninstall-nwfilter-local
 endif WITH_NWFILTER
 
+examplesdir = $(docdir)/examples
+
 install-data-local: $(INSTALL_DATA_LOCAL)
+	$(mkinstalldirs) $(DESTDIR)$(examplesdir)
+	for p in $(noinst_PROGRAMS); do \
+		d=$$(dirname $$p); \
+		$(mkinstalldirs) $(DESTDIR)$(examplesdir)/$$d; \
+		$(INSTALL_DATA) $(srcdir)/$${p}.c $(DESTDIR)$(examplesdir)/$$d/; \
+	done
 
 uninstall-local: $(UNINSTALL_LOCAL)
+	for p in $(noinst_PROGRAMS); do \
+		rm -f $(DESTDIR)$(examplesdir)/$${p}.c; \
+	done

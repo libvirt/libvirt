@@ -1232,8 +1232,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
 %make_install %{?_smp_mflags} SYSTEMD_UNIT_DIR=%{_unitdir} V=1
 
-make %{?_smp_mflags} -C examples distclean V=1
-
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.la
@@ -1510,16 +1508,6 @@ exit 0
 %doc %{_datadir}/gtk-doc/html/libvirt/*.html
 %doc %{_datadir}/gtk-doc/html/libvirt/*.png
 %doc %{_datadir}/gtk-doc/html/libvirt/*.css
-%doc examples/hellolibvirt
-%doc examples/object-events
-%doc examples/dominfo
-%doc examples/domsuspend
-%doc examples/dommigrate
-%doc examples/openauth
-%doc examples/xml
-%doc examples/rename
-%doc examples/systemtap
-%doc examples/admin
 
 
 %files daemon
