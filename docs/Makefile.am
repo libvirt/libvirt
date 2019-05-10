@@ -18,24 +18,29 @@
 
 DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 
+modules = \
+	libvirt-common \
+	libvirt-domain \
+	libvirt-domain-snapshot \
+	libvirt-event \
+	libvirt-host \
+	libvirt-interface \
+	libvirt-network \
+	libvirt-nodedev \
+	libvirt-nwfilter \
+	libvirt-secret \
+	libvirt-storage \
+	libvirt-stream \
+	virterror \
+	$(NULL)
+
 apihtml = \
   html/index.html \
   $(apihtml_generated)
 
 apihtml_generated = \
-  html/libvirt-libvirt-common.html \
-  html/libvirt-libvirt-domain.html \
-  html/libvirt-libvirt-domain-snapshot.html \
-  html/libvirt-libvirt-event.html \
-  html/libvirt-libvirt-host.html \
-  html/libvirt-libvirt-interface.html \
-  html/libvirt-libvirt-network.html \
-  html/libvirt-libvirt-nodedev.html \
-  html/libvirt-libvirt-nwfilter.html \
-  html/libvirt-libvirt-secret.html \
-  html/libvirt-libvirt-storage.html \
-  html/libvirt-libvirt-stream.html \
-  html/libvirt-virterror.html
+	$(addprefix html/libvirt-,$(addsuffix .html,$(modules))) \
+	$(NULL)
 
 apipng = \
   html/left.png \
