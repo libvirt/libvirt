@@ -3046,6 +3046,43 @@ static int testDomainSetAutostart(virDomainPtr domain,
     return 0;
 }
 
+static int testDomainGetDiskErrors(virDomainPtr dom,
+                                   virDomainDiskErrorPtr errors,
+                                   unsigned int maxerrors,
+                                   unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    size_t i;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    if (errors) {
+        for (i = 0; i < MIN(vm->def->ndisks, maxerrors); i++) {
+            if (VIR_STRDUP(errors[i].disk, vm->def->disks[i]->dst) < 0)
+                goto cleanup;
+            errors[i].error = i % VIR_DOMAIN_DISK_ERROR_LAST;
+        }
+        ret = i;
+    } else {
+        ret = vm->def->ndisks;
+    }
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    if (ret < 0) {
+        for (i = 0; i < MIN(vm->def->ndisks, maxerrors); i++)
+            VIR_FREE(errors[i].disk);
+    }
+    return ret;
+}
+
 static char *testDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
                                         int *nparams)
 {
@@ -6832,6 +6869,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainUndefineFlags = testDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = testDomainGetAutostart, /* 0.3.2 */
     .domainSetAutostart = testDomainSetAutostart, /* 0.3.2 */
+    .domainGetDiskErrors = testDomainGetDiskErrors, /* 5.4.0 */
     .domainGetSchedulerType = testDomainGetSchedulerType, /* 0.3.2 */
     .domainGetSchedulerParameters = testDomainGetSchedulerParameters, /* 0.3.2 */
     .domainGetSchedulerParametersFlags = testDomainGetSchedulerParametersFlags, /* 0.9.2 */
