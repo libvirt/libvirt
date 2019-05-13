@@ -1229,6 +1229,8 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
+    for (i = 0; i < count; i++)
+        VIR_FREE(disks[i].disk);
     VIR_FREE(disks);
     virshDomainFree(dom);
     return ret;
