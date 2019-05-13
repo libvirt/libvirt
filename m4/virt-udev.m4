@@ -18,12 +18,12 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_UDEV],[
-  LIBVIRT_ARG_WITH_FEATURE([UDEV], [libudev], [check], [145])
+  LIBVIRT_ARG_WITH_FEATURE([UDEV], [libudev], [check], [219])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_UDEV],[
   AC_REQUIRE([LIBVIRT_CHECK_PCIACCESS])
-  LIBVIRT_CHECK_PKG([UDEV], [libudev], [145])
+  LIBVIRT_CHECK_PKG([UDEV], [libudev], [219])
 
   if test "$with_udev" = "yes" && test "$with_pciaccess" != "yes" ; then
     AC_MSG_ERROR([You must install the pciaccess module to build with udev])
