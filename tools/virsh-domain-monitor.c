@@ -1919,6 +1919,10 @@ static const vshCmdOptDef opts_list[] = {
      .type = VSH_OT_BOOL,
      .help = N_("list domain names only")
     },
+    {.name = "id",
+     .type = VSH_OT_BOOL,
+     .help = N_("list domain IDs only")
+    },
     {.name = "table",
      .type = VSH_OT_BOOL,
      .help = N_("list table (default)")
@@ -1945,6 +1949,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     bool optTable = vshCommandOptBool(cmd, "table");
     bool optUUID = vshCommandOptBool(cmd, "uuid");
     bool optName = vshCommandOptBool(cmd, "name");
+    bool optID = vshCommandOptBool(cmd, "id");
     size_t i;
     char *title;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -1988,8 +1993,9 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
 
     VSH_EXCLUSIVE_OPTIONS("table", "name");
     VSH_EXCLUSIVE_OPTIONS("table", "uuid");
+    VSH_EXCLUSIVE_OPTIONS("table", "id");
 
-    if (!optUUID && !optName)
+    if (!optUUID && !optName && !optID)
         optTable = true;
 
     if (!(list = virshDomainListCollect(ctl, flags)))
@@ -2007,6 +2013,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (i = 0; i < list->ndomains; i++) {
+        const char *sep = "";
+
         dom = list->domains[i];
         id = virDomainGetID(dom);
         if (id != (unsigned int) -1)
@@ -2044,20 +2052,28 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                     goto cleanup;
             }
 
-        } else if (optUUID && optName) {
-            if (virDomainGetUUIDString(dom, uuid) < 0) {
-                vshError(ctl, "%s", _("Failed to get domain's UUID"));
-                goto cleanup;
+        } else {
+            if (optUUID) {
+                if (virDomainGetUUIDString(dom, uuid) < 0) {
+                    vshError(ctl, "%s", _("Failed to get domain's UUID"));
+                    goto cleanup;
+                }
+                vshPrint(ctl, "%s", uuid);
+                sep = " ";
             }
-            vshPrint(ctl, "%-36s %-30s\n", uuid, virDomainGetName(dom));
-        } else if (optUUID) {
-            if (virDomainGetUUIDString(dom, uuid) < 0) {
-                vshError(ctl, "%s", _("Failed to get domain's UUID"));
-                goto cleanup;
+            if (optID) {
+                /* If we are asked to print IDs only then do that
+                 * only for live domains. */
+                if (id == (unsigned int) -1 && !optUUID && !optName)
+                    continue;
+                vshPrint(ctl, "%s%s", sep, id_buf);
+                sep = " ";
             }
-            vshPrint(ctl, "%s\n", uuid);
-        } else if (optName) {
-            vshPrint(ctl, "%s\n", virDomainGetName(dom));
+            if (optName) {
+                vshPrint(ctl, "%s%s", sep, virDomainGetName(dom));
+                sep = " ";
+            }
+            vshPrint(ctl, "\n");
         }
     }
 
