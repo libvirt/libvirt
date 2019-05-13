@@ -28,16 +28,6 @@ AC_DEFUN([LIBVIRT_CHECK_UDEV],[
   if test "$with_udev" = "yes" && test "$with_pciaccess" != "yes" ; then
     AC_MSG_ERROR([You must install the pciaccess module to build with udev])
   fi
-
-  if test "$with_udev" = "yes" ; then
-    old_CFLAGS="$CFLAGS"
-    old_LIBS="$LIBS"
-    CFLAGS="$CFLAGS $UDEV_CFLAGS"
-    LIBS="$CFLAGS $UDEV_LIBS"
-    AC_CHECK_FUNCS([udev_monitor_set_receive_buffer_size])
-    CFLAGS="$old_CFLAGS"
-    LIBS="$old_LIBS"
-  fi
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_UDEV],[
