@@ -17583,7 +17583,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     bool need_unlink = false;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     const char *format = NULL;
-    virErrorPtr monitor_error = NULL;
     bool reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
     qemuBlockJobDataPtr job = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) mirror = mirrorsrc;
@@ -17747,7 +17746,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
     if (ret < 0) {
-        monitor_error = virSaveLastError();
         qemuDomainStorageSourceAccessRevoke(driver, vm, mirror);
         goto endjob;
     }
@@ -17768,10 +17766,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         VIR_WARN("%s", _("unable to remove just-created copy target"));
     virStorageFileDeinit(mirror);
     qemuDomainObjEndJob(driver, vm);
-    if (monitor_error) {
-        virSetError(monitor_error);
-        virFreeError(monitor_error);
-    }
     qemuBlockJobStartupFinalize(job);
 
     return ret;
