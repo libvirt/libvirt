@@ -54,6 +54,7 @@ struct testSetStruct {
             goto cleanup; \
  \
         rc = virNetDevBandwidthParse(&(var), \
+                                     NULL, \
                                      ctxt->node, \
                                      true); \
         xmlFreeDoc(doc); \

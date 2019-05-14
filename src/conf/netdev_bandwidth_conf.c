@@ -99,6 +99,7 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
 /**
  * virNetDevBandwidthParse:
  * @bandwidth: parsed bandwidth
+ * @class_id: parsed class ID
  * @node: XML node
  * @allowFloor: whether "floor" setting is supported
  *
@@ -110,6 +111,7 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
  */
 int
 virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
+                        unsigned int *class_id,
                         xmlNodePtr node,
                         bool allowFloor)
 {
@@ -117,6 +119,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     virNetDevBandwidthPtr def = NULL;
     xmlNodePtr cur;
     xmlNodePtr in = NULL, out = NULL;
+    char *class_id_prop = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return ret;
@@ -125,6 +128,22 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("invalid argument supplied"));
         goto cleanup;
+    }
+
+    class_id_prop = virXMLPropString(node, "classID");
+    if (class_id_prop) {
+        if (!class_id) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("classID attribute not supported on <bandwidth> "
+                             "in this usage context"));
+            goto cleanup;
+        }
+        if (virStrToLong_ui(class_id_prop, NULL, 10, class_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to parse class id '%s'"),
+                           class_id_prop);
+            goto cleanup;
+        }
     }
 
     cur = node->children;
@@ -194,6 +213,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     ret = 0;
 
  cleanup:
+    VIR_FREE(class_id_prop);
     virNetDevBandwidthFree(def);
     return ret;
 }
@@ -231,6 +251,7 @@ virNetDevBandwidthRateFormat(virNetDevBandwidthRatePtr def,
 /**
  * virNetDevBandwidthFormat:
  * @def: Data source
+ * @class_id: the class ID to format, 0 to skip
  * @buf: Buffer to print to
  *
  * Formats bandwidth and prepend each line with @indent.
@@ -239,7 +260,9 @@ virNetDevBandwidthRateFormat(virNetDevBandwidthRatePtr def,
  * Returns 0 on success, else -1.
  */
 int
-virNetDevBandwidthFormat(virNetDevBandwidthPtr def, virBufferPtr buf)
+virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
+                         unsigned int class_id,
+                         virBufferPtr buf)
 {
     int ret = -1;
 
@@ -251,7 +274,10 @@ virNetDevBandwidthFormat(virNetDevBandwidthPtr def, virBufferPtr buf)
         goto cleanup;
     }
 
-    virBufferAddLit(buf, "<bandwidth>\n");
+    virBufferAddLit(buf, "<bandwidth");
+    if (class_id)
+        virBufferAsprintf(buf, " classID='%u'", class_id);
+    virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
     if (virNetDevBandwidthRateFormat(def->in, buf, "inbound") < 0 ||
         virNetDevBandwidthRateFormat(def->out, buf, "outbound") < 0)

@@ -25,10 +25,12 @@
 #include "domain_conf.h"
 
 int virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
+                            unsigned int *class_id,
                             xmlNodePtr node,
                             bool allowFloor)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
+                             unsigned int class_id,
                              virBufferPtr buf);
 
 void virDomainClearNetBandwidth(virDomainObjPtr vm)
