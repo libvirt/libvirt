@@ -619,6 +619,9 @@ virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr obj,
 void
 virStoragePoolObjClearVols(virStoragePoolObjPtr obj)
 {
+    if (!obj->volumes)
+        return;
+
     virHashRemoveAll(obj->volumes->objsKey);
     virHashRemoveAll(obj->volumes->objsName);
     virHashRemoveAll(obj->volumes->objsPath);
