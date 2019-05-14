@@ -629,7 +629,9 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         goto error;
     }
 
-    services = virJSONValueNewArray();
+    if (!(services = virJSONValueNewArray()))
+        goto error;
+
     if (virJSONValueObjectAppend(object, "services", services) < 0) {
         virJSONValueFree(services);
         goto error;
@@ -646,7 +648,9 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         }
     }
 
-    clients = virJSONValueNewArray();
+    if (!(clients = virJSONValueNewArray()))
+        goto error;
+
     if (virJSONValueObjectAppend(object, "clients", clients) < 0) {
         virJSONValueFree(clients);
         goto error;
