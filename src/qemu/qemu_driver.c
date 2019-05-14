@@ -17572,7 +17572,7 @@ static int
 qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                           virConnectPtr conn,
                           const char *path,
-                          virStorageSourcePtr mirror,
+                          virStorageSourcePtr mirrorsrc,
                           unsigned long long bandwidth,
                           unsigned int granularity,
                           unsigned long long buf_size,
@@ -17581,15 +17581,16 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 {
     virQEMUDriverPtr driver = conn->privateData;
     qemuDomainObjPrivatePtr priv;
-    char *device = NULL;
+    VIR_AUTOFREE(char *) device = NULL;
     virDomainDiskDefPtr disk = NULL;
     int ret = -1;
     bool need_unlink = false;
-    virQEMUDriverConfigPtr cfg = NULL;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     const char *format = NULL;
     virErrorPtr monitor_error = NULL;
     bool reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
     qemuBlockJobDataPtr job = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) mirror = mirrorsrc;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
@@ -17597,12 +17598,11 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                   VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB, -1);
 
     priv = vm->privateData;
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (virStorageSourceIsRelative(mirror)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("absolute path must be used as block copy target"));
-        goto cleanup;
+        return -1;
     }
 
     if (bandwidth > LLONG_MAX) {
@@ -17610,11 +17610,11 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                        _("bandwidth must be less than "
                          "'%llu' bytes/s (%llu MiB/s)"),
                        LLONG_MAX, LLONG_MAX >> 20);
-        goto cleanup;
+        return -1;
     }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
@@ -17760,8 +17760,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     qemuBlockJobStarted(job);
     need_unlink = false;
     virStorageFileDeinit(mirror);
-    disk->mirror = mirror;
-    mirror = NULL;
+    VIR_STEAL_PTR(disk->mirror, mirror);
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
@@ -17779,10 +17778,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
     qemuBlockJobStartupFinalize(job);
 
- cleanup:
-    VIR_FREE(device);
-    virObjectUnref(cfg);
-    virObjectUnref(mirror);
     return ret;
 }
 
