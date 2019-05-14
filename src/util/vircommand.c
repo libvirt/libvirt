@@ -1034,6 +1034,9 @@ virCommandPassFDGetFDIndex(virCommandPtr cmd, int fd)
 {
     size_t i = 0;
 
+    if (!cmd || cmd->has_error)
+        return -1;
+
     while (i < cmd->npassfd) {
         if (cmd->passfd[i].fd == fd)
             return i;
