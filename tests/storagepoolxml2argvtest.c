@@ -39,7 +39,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
     case VIR_STORAGE_POOL_NETFS:
         if (!(pool = virStoragePoolObjNew())) {
             VIR_TEST_DEBUG("pool type '%s' alloc pool obj fails\n", defTypeStr);
-            virStoragePoolDefFree(def);
             goto cleanup;
         }
         virStoragePoolObjSetDef(pool, def);
