@@ -21,7 +21,6 @@
   <feature name='tsc_adjust'/>
   <feature name='clflushopt'/>
   <feature name='md-clear'/>
-  <feature name='stibp'/>
   <feature name='ssbd'/>
   <feature name='xsaves'/>
   <feature name='pdpe1gb'/>
