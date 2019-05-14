@@ -17778,9 +17778,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         /* note that we don't really know whether a part of the backing chain
          * is shared so rolling this back is not as easy. Thus we do it only
          * if there's a backing chain */
-        if (qemuDomainNamespaceSetupDisk(vm, mirror) < 0 ||
-            qemuSetupImageChainCgroup(vm, mirror) < 0 ||
-            qemuSecuritySetImageLabel(driver, vm, mirror, true) < 0)
+        if (qemuDomainStorageSourceChainAccessAllow(driver, vm, mirror) < 0)
             goto endjob;
     } else {
         if (qemuDomainStorageSourceAccessAllow(driver, vm, mirror, false, true) < 0)
