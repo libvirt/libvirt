@@ -15213,10 +15213,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
     /* set correct security, cgroup and locking options on the new image */
-    if (qemuDomainStorageSourceAccessAllow(driver, vm, dd->src, false, true) < 0) {
-        qemuDomainStorageSourceAccessRevoke(driver, vm, dd->src);
+    if (qemuDomainStorageSourceAccessAllow(driver, vm, dd->src, false, true) < 0)
         goto cleanup;
-    }
 
     dd->prepared = true;
 
@@ -17725,10 +17723,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
             qemuSecuritySetImageLabel(driver, vm, mirror, true) < 0)
             goto endjob;
     } else {
-        if (qemuDomainStorageSourceAccessAllow(driver, vm, mirror, false, true) < 0) {
-            qemuDomainStorageSourceAccessRevoke(driver, vm, mirror);
+        if (qemuDomainStorageSourceAccessAllow(driver, vm, mirror, false, true) < 0)
             goto endjob;
-        }
     }
 
     if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_COPY, device)))
