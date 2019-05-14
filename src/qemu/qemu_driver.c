@@ -15563,7 +15563,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainSnapshotState state;
-    VIR_AUTOFREE(virDomainSnapshotDefPtr) def = NULL;
+    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
