@@ -3277,7 +3277,7 @@ static int testDomainGetDiskErrors(virDomainPtr dom,
         for (i = 0; i < MIN(vm->def->ndisks, maxerrors); i++) {
             if (VIR_STRDUP(errors[i].disk, vm->def->disks[i]->dst) < 0)
                 goto cleanup;
-            errors[i].error = i % VIR_DOMAIN_DISK_ERROR_LAST;
+            errors[i].error = (i % (VIR_DOMAIN_DISK_ERROR_LAST - 1)) + 1;
         }
         ret = i;
     } else {
