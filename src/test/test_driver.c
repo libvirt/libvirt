@@ -3268,7 +3268,7 @@ static int testDomainGetDiskErrors(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     if (!(vm = testDomObjFromDomain(dom)))
-        goto cleanup;
+        return -1;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
@@ -3285,11 +3285,11 @@ static int testDomainGetDiskErrors(virDomainPtr dom,
     }
 
  cleanup:
-    virDomainObjEndAPI(&vm);
     if (ret < 0) {
         for (i = 0; i < MIN(vm->def->ndisks, maxerrors); i++)
             VIR_FREE(errors[i].disk);
     }
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
