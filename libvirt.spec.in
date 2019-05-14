@@ -720,9 +720,6 @@ parted and more.
 Summary: QEMU driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
-# There really is a hard cross-driver dependency here
-Requires: libvirt-daemon-driver-network = %{version}-%{release}
-Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
 Requires: /usr/bin/qemu-img
 # For image compression
 Requires: gzip
