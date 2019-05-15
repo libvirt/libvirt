@@ -17136,13 +17136,13 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
                           unsigned int flags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *device = NULL;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOFREE(char *) device = NULL;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
     unsigned int baseIndex = 0;
-    char *basePath = NULL;
-    char *backingPath = NULL;
+    VIR_AUTOFREE(char *) basePath = NULL;
+    VIR_AUTOFREE(char *) backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
     int ret = -1;
@@ -17235,10 +17235,6 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
 
  cleanup:
     qemuBlockJobStartupFinalize(job);
-    virObjectUnref(cfg);
-    VIR_FREE(basePath);
-    VIR_FREE(backingPath);
-    VIR_FREE(device);
     virDomainObjEndAPI(&vm);
     return ret;
 }
