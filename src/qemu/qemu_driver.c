@@ -17442,20 +17442,6 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
         goto endjob;
     }
 
-    /* Snoop block copy operations, so future cancel operations can
-     * avoid checking if pivot is safe.  Save the change to XML, but
-     * we can ignore failure because it is only an optimization.  We
-     * hold the vm lock, so modifying the in-memory representation is
-     * safe, even if we are a query rather than a modify job. */
-    if (disk->mirror &&
-        rawInfo.ready != 0 &&
-        info->cur == info->end && !disk->mirrorState) {
-        virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-        ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));
-        virObjectUnref(cfg);
-    }
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
