@@ -17560,6 +17560,63 @@ qemuDomainBlockCopyValidateMirror(virStorageSourcePtr mirror,
 }
 
 
+/**
+ * qemuDomainBlockCopyCommonValidateUserMirrorBackingStore:
+ * @mirror: target of the block copy
+ * @flags: block copy API flags
+ * @blockdev: true if blockdev is used for the VM
+ *
+ * Validates whether backingStore of @mirror makes sense according to @flags.
+ * This makes sure that:
+ * 1) mirror has a terminator if it isn't supposed to have backing chain
+ * 2) if shallow copy is requested there is a chain or prepopulated image
+ * 3) user specified chain is present only when blockdev is used
+ * 4) if deep copy is requested, there's no chain
+ */
+static int
+qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(virStorageSourcePtr mirror,
+                                                        unsigned int flags,
+                                                        bool blockdev)
+{
+    /* note that if original disk does not have backing chain, shallow is cleared */
+    bool shallow = flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
+    bool reuse = flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT;
+
+    if (!mirror->backingStore) {
+        /* deep copy won't need backing store so we can terminate it */
+        if (!shallow &&
+            !(mirror->backingStore = virStorageSourceNew()))
+            return -1;
+
+        return 0;
+    }
+
+    /* validate user provided backing store */
+    if (virStorageSourceHasBacking(mirror)) {
+        if (!blockdev) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("backingStore of mirror target is not supported by this qemu"));
+            return -1;
+        }
+
+        if (!shallow) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("backingStore of mirror without VIR_DOMAIN_BLOCK_COPY_SHALLOW doesn't make sense"));
+            return -1;
+        }
+    } else {
+        /* shallow copy without reuse requires some kind of backing data */
+        if (!reuse && shallow) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("VIR_DOMAIN_BLOCK_COPY_SHALLOW implies backing chain for mirror"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /* bandwidth in bytes/s.  Caller must lock vm beforehand, and not
  * access mirror afterwards.  */
 static int
@@ -17574,7 +17631,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                           bool keepParentLabel)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    qemuDomainObjPrivatePtr priv;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_AUTOFREE(char *) device = NULL;
     virDomainDiskDefPtr disk = NULL;
     int ret = -1;
@@ -17584,13 +17641,12 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     bool reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
     qemuBlockJobDataPtr job = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) mirror = mirrorsrc;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
                   VIR_DOMAIN_BLOCK_COPY_REUSE_EXT |
                   VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB, -1);
-
-    priv = vm->privateData;
 
     if (virStorageSourceIsRelative(mirror)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -17639,6 +17695,10 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     /* clear the _SHALLOW flag if there is only one layer */
     if (!virStorageSourceHasBacking(disk->src))
         flags &= ~VIR_DOMAIN_BLOCK_COPY_SHALLOW;
+
+    if (qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(mirror, flags,
+                                                                blockdev) < 0)
+        goto endjob;
 
     /* unless the user provides a pre-created file, shallow copy into a raw
      * file is not possible */
@@ -17705,11 +17765,11 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                                          keepParentLabel) < 0)
         goto endjob;
 
-    /* If reusing an external image that includes a backing file, the pivot may
-     * result in qemu needing to open the entire backing chain, so we need to
-     * label the full backing chain of the mirror instead of just the top image */
+    /* If reusing an external image that includes a backing file but the user
+     * did not enumerate the chain in the XML we need to detect the chain */
     if (flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT &&
         mirror->format >= VIR_STORAGE_FILE_BACKING &&
+        mirror->backingStore == NULL &&
         qemuDomainDetermineDiskChain(driver, vm, disk, mirror, true) < 0)
         goto endjob;
 
