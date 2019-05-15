@@ -7819,8 +7819,6 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
     if (!(job = qemuBlockJobDiskNew(vm, disk, jobtype, jobname)))
         return -1;
 
-    qemuBlockJobStarted(job);
-
     if (disk->mirror) {
         if (info->ready == 1 ||
             (info->ready == -1 && info->end == info->cur)) {
@@ -7848,6 +7846,8 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
                 goto cleanup;
         }
     }
+
+    qemuBlockJobStarted(job, vm);
 
  cleanup:
     qemuBlockJobStartupFinalize(vm, job);

@@ -2748,7 +2748,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     job->errmsg = virXPathString("string(./errmsg)", ctxt);
     job->invalidData = invalidData;
 
-    if (qemuBlockJobRegister(job, vm, disk) < 0)
+    if (qemuBlockJobRegister(job, vm, disk, false) < 0)
         return -1;
 
     return 0;

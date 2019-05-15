@@ -87,7 +87,8 @@ struct _qemuBlockJobData {
 int
 qemuBlockJobRegister(qemuBlockJobDataPtr job,
                      virDomainObjPtr vm,
-                     virDomainDiskDefPtr disk)
+                     virDomainDiskDefPtr disk,
+                     bool savestatus)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 qemuBlockJobDataPtr
@@ -107,8 +108,9 @@ qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1);
 
 void
-qemuBlockJobStarted(qemuBlockJobDataPtr job)
-    ATTRIBUTE_NONNULL(1);
+qemuBlockJobStarted(qemuBlockJobDataPtr job,
+                    virDomainObjPtr vm)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 bool
 qemuBlockJobIsRunning(qemuBlockJobDataPtr job)

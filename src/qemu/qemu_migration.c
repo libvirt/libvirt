@@ -946,7 +946,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
         goto cleanup;
 
     diskPriv->migrating = true;
-    qemuBlockJobStarted(job);
+    qemuBlockJobStarted(job, vm);
 
     ret = 0;
 

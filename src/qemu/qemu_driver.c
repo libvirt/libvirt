@@ -4704,7 +4704,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     if (!(job = qemuBlockJobDiskGetJob(disk))) {
         if (!(job = qemuBlockJobDiskNew(vm, disk, type, diskAlias)))
             goto endjob;
-        qemuBlockJobStarted(job);
+        job->state = QEMU_BLOCKJOB_STATE_RUNNING;
     }
 
     job->newstate = status;
@@ -17100,7 +17100,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     if (ret < 0)
         goto endjob;
 
-    qemuBlockJobStarted(job);
+    qemuBlockJobStarted(job, vm);
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -17676,11 +17676,11 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
 
     /* Update vm in place to match changes.  */
-    qemuBlockJobStarted(job);
     need_unlink = false;
     virStorageFileDeinit(mirror);
     VIR_STEAL_PTR(disk->mirror, mirror);
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
+    qemuBlockJobStarted(job, vm);
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -18066,11 +18066,11 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
     }
 
-    qemuBlockJobStarted(job);
     if (mirror) {
         VIR_STEAL_PTR(disk->mirror, mirror);
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
     }
+    qemuBlockJobStarted(job, vm);
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after block job",
