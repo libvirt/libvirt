@@ -17773,17 +17773,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         qemuDomainDetermineDiskChain(driver, vm, disk, mirror, true) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT &&
-        virStorageSourceHasBacking(mirror)) {
-        /* note that we don't really know whether a part of the backing chain
-         * is shared so rolling this back is not as easy. Thus we do it only
-         * if there's a backing chain */
-        if (qemuDomainStorageSourceChainAccessAllow(driver, vm, mirror) < 0)
-            goto endjob;
-    } else {
-        if (qemuDomainStorageSourceAccessAllow(driver, vm, mirror, false, true) < 0)
-            goto endjob;
-    }
+    if (qemuDomainStorageSourceChainAccessAllow(driver, vm, mirror) < 0)
+        goto endjob;
 
     if (!(job = qemuBlockJobDiskNew(disk, QEMU_BLOCKJOB_TYPE_COPY, device)))
         goto endjob;
@@ -17800,7 +17791,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
     if (ret < 0) {
-        qemuDomainStorageSourceAccessRevoke(driver, vm, mirror);
+        qemuDomainStorageSourceChainAccessRevoke(driver, vm, mirror);
         goto endjob;
     }
 
