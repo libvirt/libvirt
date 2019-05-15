@@ -17961,10 +17961,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    virQEMUDriverConfigPtr cfg = NULL;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm = NULL;
-    char *device = NULL;
+    VIR_AUTOFREE(char *) device = NULL;
     int ret = -1;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr topSource;
@@ -17973,9 +17973,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
     unsigned int baseIndex = 0;
     virStorageSourcePtr top_parent = NULL;
     bool clean_access = false;
-    char *topPath = NULL;
-    char *basePath = NULL;
-    char *backingPath = NULL;
+    VIR_AUTOFREE(char *) topPath = NULL;
+    VIR_AUTOFREE(char *) basePath = NULL;
+    VIR_AUTOFREE(char *) backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
     qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
@@ -18174,11 +18174,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    VIR_FREE(topPath);
-    VIR_FREE(basePath);
-    VIR_FREE(backingPath);
-    VIR_FREE(device);
-    virObjectUnref(cfg);
     virDomainObjEndAPI(&vm);
     return ret;
 }
