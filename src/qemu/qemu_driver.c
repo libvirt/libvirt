@@ -17012,7 +17012,6 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
                           unsigned int flags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOFREE(char *) device = NULL;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
@@ -17101,10 +17100,6 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         goto endjob;
 
     qemuBlockJobStarted(job, vm);
-
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-        VIR_WARN("Unable to save status on vm %s after state change",
-                 vm->def->name);
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
@@ -17682,10 +17677,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
     qemuBlockJobStarted(job, vm);
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-        VIR_WARN("Unable to save status on vm %s after state change",
-                 vm->def->name);
-
  endjob:
     if (need_unlink && virStorageFileUnlink(mirror) < 0)
         VIR_WARN("%s", _("unable to remove just-created copy target"));
@@ -17880,7 +17871,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm = NULL;
     VIR_AUTOFREE(char *) device = NULL;
@@ -17909,7 +17899,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
     priv = vm->privateData;
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainBlockCommitEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -18071,10 +18060,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
     }
     qemuBlockJobStarted(job, vm);
-
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-        VIR_WARN("Unable to save status on vm %s after block job",
-                 vm->def->name);
 
  endjob:
     if (ret < 0 && clean_access) {

@@ -378,7 +378,6 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
                                qemuBlockJobDataPtr job,
                                int asyncJob)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     virDomainDiskDefPtr disk = job->disk;
 
     VIR_DEBUG("disk=%s, mirrorState=%s, type=%d, state=%d, newstate=%d",
@@ -405,6 +404,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
 
     case VIR_DOMAIN_BLOCK_JOB_READY:
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
+        qemuDomainSaveStatus(vm);
         break;
 
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
@@ -422,9 +422,6 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
     case VIR_DOMAIN_BLOCK_JOB_LAST:
         break;
     }
-
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-        VIR_WARN("Unable to save status on vm %s after block job", vm->def->name);
 }
 
 
