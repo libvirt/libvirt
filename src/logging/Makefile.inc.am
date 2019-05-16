@@ -80,9 +80,7 @@ virtlogd_LDFLAGS = \
 		$(NULL)
 virtlogd_LDADD = \
 		libvirt_driver_admin.la \
-		libvirt-net-rpc-server.la \
-		libvirt-net-rpc.la \
-		libvirt_util.la \
+		libvirt.la \
 		../gnulib/lib/libgnu.la \
 		$(CYGWIN_EXTRA_LIBADD) \
 		$(NULL)

@@ -145,10 +145,8 @@ virtlockd_LDFLAGS = \
 	$(NO_UNDEFINED_LDFLAGS) \
 	$(NULL)
 virtlockd_LDADD = \
+	libvirt.la \
 	libvirt_driver_admin.la \
-	libvirt-net-rpc-server.la \
-	libvirt-net-rpc.la \
-	libvirt_util.la \
 	../gnulib/lib/libgnu.la \
 	$(CYGWIN_EXTRA_LIBADD) \
 	$(NULL)

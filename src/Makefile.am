@@ -851,7 +851,7 @@ libvirt_iohelper_LDFLAGS = \
 		$(PIE_LDFLAGS) \
 		$(NULL)
 libvirt_iohelper_LDADD = \
-		libvirt_util.la \
+		libvirt.la \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 libvirt_iohelper_LDADD += libvirt_probes.lo

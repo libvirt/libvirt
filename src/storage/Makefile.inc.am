@@ -378,7 +378,7 @@ libvirt_parthelper_LDFLAGS = \
 	$(NULL)
 libvirt_parthelper_LDADD = \
 	$(LIBPARTED_LIBS) \
-	libvirt_util.la \
+	libvirt.la \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
 if WITH_DTRACE_PROBES
