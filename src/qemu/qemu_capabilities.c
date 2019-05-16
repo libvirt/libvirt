@@ -1391,12 +1391,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] 
     { "hugetlb", QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSPAPRMachine[] = {
-    { "cap-hpt-max-page-size", QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE },
-    { "cap-htm", QEMU_CAPS_MACHINE_PSERIES_CAP_HTM },
-    { "cap-nested-hv", QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV },
-};
-
 static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
     { "memory-backend-file", virQEMUCapsObjectPropsMemoryBackendFile,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsMemoryBackendFile),
@@ -1404,8 +1398,17 @@ static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
     { "memory-backend-memfd", virQEMUCapsObjectPropsMemoryBackendMemfd,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsMemoryBackendMemfd),
       QEMU_CAPS_OBJECT_MEMORY_MEMFD },
-    { "spapr-machine", virQEMUCapsObjectPropsSPAPRMachine,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsSPAPRMachine),
+};
+
+static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsSPAPR[] = {
+    { "cap-hpt-max-page-size", QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE },
+    { "cap-htm", QEMU_CAPS_MACHINE_PSERIES_CAP_HTM },
+    { "cap-nested-hv", QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV },
+};
+
+static virQEMUCapsObjectTypeProps virQEMUCapsMachineProps[] = {
+    { "spapr-machine", virQEMUCapsMachinePropsSPAPR,
+      ARRAY_CARDINALITY(virQEMUCapsMachinePropsSPAPR),
       -1 },
 };
 
@@ -2338,6 +2341,36 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         qemuMonitorMachineInfoFree(machines[i]);
     VIR_FREE(machines);
     return ret;
+}
+
+
+static int
+virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
+                                qemuMonitorPtr mon)
+{
+    char **values;
+    int nvalues;
+    size_t i;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QOM_LIST_PROPERTIES))
+        return 0;
+
+    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsMachineProps); i++) {
+        virQEMUCapsObjectTypeProps props = virQEMUCapsMachineProps[i];
+        const char *type = props.type;
+
+        if ((nvalues = qemuMonitorGetObjectProps(mon, type, &values)) < 0)
+            return -1;
+
+        virQEMUCapsProcessStringFlags(qemuCaps,
+                                      props.nprops,
+                                      props.props,
+                                      nvalues, values);
+
+        virStringListFreeCount(values, nvalues);
+    }
+
+    return 0;
 }
 
 
@@ -4354,6 +4387,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPDevices(qemuCaps, mon) < 0)
+        return -1;
+    if (virQEMUCapsProbeQMPMachineProps(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, mon) < 0)
         return -1;
