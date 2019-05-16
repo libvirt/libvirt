@@ -1407,7 +1407,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsSPAPR[] = {
 };
 
 static virQEMUCapsObjectTypeProps virQEMUCapsMachineProps[] = {
-    { "spapr-machine", virQEMUCapsMachinePropsSPAPR,
+    { "spapr", virQEMUCapsMachinePropsSPAPR,
       ARRAY_CARDINALITY(virQEMUCapsMachinePropsSPAPR),
       -1 },
 };
@@ -2357,7 +2357,12 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
 
     for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsMachineProps); i++) {
         virQEMUCapsObjectTypeProps props = virQEMUCapsMachineProps[i];
-        const char *type = props.type;
+        VIR_AUTOFREE(char *) type = NULL;
+
+        /* The QOM type for machine types is the machine type name
+         * followed by the -machine suffix */
+        if (virAsprintf(&type, "%s-machine", props.type) < 0)
+            return -1;
 
         if ((nvalues = qemuMonitorGetObjectProps(mon, type, &values)) < 0)
             return -1;
