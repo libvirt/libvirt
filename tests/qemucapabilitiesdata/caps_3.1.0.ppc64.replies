@@ -5541,161 +5541,8 @@
 }
 
 {
-  "execute": "qom-list-properties",
-  "arguments": {
-    "typename": "spapr-machine"
-  },
-  "id": "libvirt-32"
-}
-
-{
-  "return": [
-    {
-      "name": "type",
-      "type": "string"
-    },
-    {
-      "name": "graphics",
-      "description": "Set on/off to enable/disable graphics emulation",
-      "type": "bool"
-    },
-    {
-      "name": "phandle-start",
-      "description": "The first phandle ID we may generate dynamically",
-      "type": "int"
-    },
-    {
-      "name": "dump-guest-core",
-      "description": "Include guest memory in  a core dump",
-      "type": "bool"
-    },
-    {
-      "name": "kernel-irqchip",
-      "description": "Configure KVM in-kernel irqchip",
-      "type": "on|off|split"
-    },
-    {
-      "name": "accel",
-      "description": "Accelerator list",
-      "type": "string"
-    },
-    {
-      "name": "append",
-      "description": "Linux kernel command line",
-      "type": "string"
-    },
-    {
-      "name": "dumpdtb",
-      "description": "Dump current dtb to a file and quit",
-      "type": "string"
-    },
-    {
-      "name": "memory-encryption",
-      "description": "Set memory encryption object to use",
-      "type": "string"
-    },
-    {
-      "name": "igd-passthru",
-      "description": "Set on/off to enable/disable igd passthrou",
-      "type": "bool"
-    },
-    {
-      "name": "dt-compatible",
-      "description": "Overrides the \"compatible\" property of the dt root node",
-      "type": "string"
-    },
-    {
-      "name": "kernel",
-      "description": "Linux kernel image file",
-      "type": "string"
-    },
-    {
-      "name": "usb",
-      "description": "Set on/off to enable/disable usb",
-      "type": "bool"
-    },
-    {
-      "name": "suppress-vmdesc",
-      "description": "Set on to disable self-describing migration",
-      "type": "bool"
-    },
-    {
-      "name": "dtb",
-      "description": "Linux kernel device tree file",
-      "type": "string"
-    },
-    {
-      "name": "firmware",
-      "description": "Firmware image",
-      "type": "string"
-    },
-    {
-      "name": "mem-merge",
-      "description": "Enable/disable memory merge support",
-      "type": "bool"
-    },
-    {
-      "name": "initrd",
-      "description": "Linux initial ramdisk file",
-      "type": "string"
-    },
-    {
-      "name": "enforce-config-section",
-      "description": "Set on to enforce configuration section migration",
-      "type": "bool"
-    },
-    {
-      "name": "kvm-shadow-mem",
-      "description": "KVM shadow MMU size",
-      "type": "int"
-    },
-    {
-      "name": "cap-hpt-max-page-size",
-      "description": "Maximum page size for Hash Page Table guests",
-      "type": "int"
-    },
-    {
-      "name": "cap-dfp",
-      "description": "Allow Decimal Floating Point (DFP)",
-      "type": "bool"
-    },
-    {
-      "name": "cap-cfpc",
-      "description": "Cache Flush on Privilege Change (broken, workaround, fixed)",
-      "type": "string"
-    },
-    {
-      "name": "cap-ibs",
-      "description": "Indirect Branch Speculation (broken, fixed-ibs, fixed-ccd)",
-      "type": "string"
-    },
-    {
-      "name": "cap-sbbc",
-      "description": "Speculation Barrier Bounds Checking (broken, workaround, fixed)",
-      "type": "string"
-    },
-    {
-      "name": "cap-vsx",
-      "description": "Allow Vector Scalar Extensions (VSX)",
-      "type": "bool"
-    },
-    {
-      "name": "cap-htm",
-      "description": "Allow Hardware Transactional Memory (HTM)",
-      "type": "bool"
-    },
-    {
-      "name": "cap-nested-hv",
-      "description": "Allow Nested KVM-HV",
-      "type": "bool"
-    }
-  ],
-  "id": "libvirt-32"
-}
-
-{
   "execute": "query-machines",
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
@@ -5841,6 +5688,159 @@
       "hotpluggable-cpus": false,
       "name": "40p",
       "cpu-max": 1
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "spapr-machine"
+  },
+  "id": "libvirt-33"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "graphics",
+      "description": "Set on/off to enable/disable graphics emulation",
+      "type": "bool"
+    },
+    {
+      "name": "phandle-start",
+      "description": "The first phandle ID we may generate dynamically",
+      "type": "int"
+    },
+    {
+      "name": "dump-guest-core",
+      "description": "Include guest memory in  a core dump",
+      "type": "bool"
+    },
+    {
+      "name": "kernel-irqchip",
+      "description": "Configure KVM in-kernel irqchip",
+      "type": "on|off|split"
+    },
+    {
+      "name": "accel",
+      "description": "Accelerator list",
+      "type": "string"
+    },
+    {
+      "name": "append",
+      "description": "Linux kernel command line",
+      "type": "string"
+    },
+    {
+      "name": "dumpdtb",
+      "description": "Dump current dtb to a file and quit",
+      "type": "string"
+    },
+    {
+      "name": "memory-encryption",
+      "description": "Set memory encryption object to use",
+      "type": "string"
+    },
+    {
+      "name": "igd-passthru",
+      "description": "Set on/off to enable/disable igd passthrou",
+      "type": "bool"
+    },
+    {
+      "name": "dt-compatible",
+      "description": "Overrides the \"compatible\" property of the dt root node",
+      "type": "string"
+    },
+    {
+      "name": "kernel",
+      "description": "Linux kernel image file",
+      "type": "string"
+    },
+    {
+      "name": "usb",
+      "description": "Set on/off to enable/disable usb",
+      "type": "bool"
+    },
+    {
+      "name": "suppress-vmdesc",
+      "description": "Set on to disable self-describing migration",
+      "type": "bool"
+    },
+    {
+      "name": "dtb",
+      "description": "Linux kernel device tree file",
+      "type": "string"
+    },
+    {
+      "name": "firmware",
+      "description": "Firmware image",
+      "type": "string"
+    },
+    {
+      "name": "mem-merge",
+      "description": "Enable/disable memory merge support",
+      "type": "bool"
+    },
+    {
+      "name": "initrd",
+      "description": "Linux initial ramdisk file",
+      "type": "string"
+    },
+    {
+      "name": "enforce-config-section",
+      "description": "Set on to enforce configuration section migration",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-shadow-mem",
+      "description": "KVM shadow MMU size",
+      "type": "int"
+    },
+    {
+      "name": "cap-hpt-max-page-size",
+      "description": "Maximum page size for Hash Page Table guests",
+      "type": "int"
+    },
+    {
+      "name": "cap-dfp",
+      "description": "Allow Decimal Floating Point (DFP)",
+      "type": "bool"
+    },
+    {
+      "name": "cap-cfpc",
+      "description": "Cache Flush on Privilege Change (broken, workaround, fixed)",
+      "type": "string"
+    },
+    {
+      "name": "cap-ibs",
+      "description": "Indirect Branch Speculation (broken, fixed-ibs, fixed-ccd)",
+      "type": "string"
+    },
+    {
+      "name": "cap-sbbc",
+      "description": "Speculation Barrier Bounds Checking (broken, workaround, fixed)",
+      "type": "string"
+    },
+    {
+      "name": "cap-vsx",
+      "description": "Allow Vector Scalar Extensions (VSX)",
+      "type": "bool"
+    },
+    {
+      "name": "cap-htm",
+      "description": "Allow Hardware Transactional Memory (HTM)",
+      "type": "bool"
+    },
+    {
+      "name": "cap-nested-hv",
+      "description": "Allow Nested KVM-HV",
+      "type": "bool"
     }
   ],
   "id": "libvirt-33"

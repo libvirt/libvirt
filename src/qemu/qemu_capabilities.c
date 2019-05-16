@@ -4388,9 +4388,9 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         return -1;
     if (virQEMUCapsProbeQMPDevices(qemuCaps, mon) < 0)
         return -1;
-    if (virQEMUCapsProbeQMPMachineProps(qemuCaps, mon) < 0)
-        return -1;
     if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, mon) < 0)
+        return -1;
+    if (virQEMUCapsProbeQMPMachineProps(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon, false) < 0)
         return -1;

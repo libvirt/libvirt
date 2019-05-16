@@ -5466,11 +5466,159 @@
 }
 
 {
+  "execute": "query-machines",
+  "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "hotpluggable-cpus": false,
+      "name": "ref405ep",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "sam460ex",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "virtex-ml507",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "powernv",
+      "cpu-max": 2048
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "ppce500",
+      "cpu-max": 32
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "mpc8544ds",
+      "cpu-max": 15
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pseries-2.12-sxxm",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "bamboo",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "g3beige",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pseries-3.0",
+      "is-default": true,
+      "cpu-max": 1024,
+      "alias": "pseries"
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pseries-2.10",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "prep",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pseries-2.11",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pseries-2.12",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pseries-2.9",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "mac99",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "pseries-2.6",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pseries-2.7",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pseries-2.8",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "pseries-2.4",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "pseries-2.5",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "pseries-2.2",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "taihu",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "pseries-2.3",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "pseries-2.1",
+      "cpu-max": 1024
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "40p",
+      "cpu-max": 1
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "spapr-machine"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -5639,154 +5787,6 @@
       "name": "cap-vsx",
       "description": "Allow Vector Scalar Extensions (VSX)",
       "type": "bool"
-    }
-  ],
-  "id": "libvirt-32"
-}
-
-{
-  "execute": "query-machines",
-  "id": "libvirt-33"
-}
-
-{
-  "return": [
-    {
-      "hotpluggable-cpus": false,
-      "name": "ref405ep",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "sam460ex",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "none",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "virtex-ml507",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "powernv",
-      "cpu-max": 2048
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "ppce500",
-      "cpu-max": 32
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "mpc8544ds",
-      "cpu-max": 15
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "pseries-2.12-sxxm",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "bamboo",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "g3beige",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "pseries-3.0",
-      "is-default": true,
-      "cpu-max": 1024,
-      "alias": "pseries"
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "pseries-2.10",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "prep",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "pseries-2.11",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "pseries-2.12",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "pseries-2.9",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "mac99",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "pseries-2.6",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "pseries-2.7",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "pseries-2.8",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "pseries-2.4",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "pseries-2.5",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "pseries-2.2",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "taihu",
-      "cpu-max": 1
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "pseries-2.3",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "pseries-2.1",
-      "cpu-max": 1024
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "40p",
-      "cpu-max": 1
     }
   ],
   "id": "libvirt-33"

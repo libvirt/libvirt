@@ -4038,24 +4038,8 @@
 }
 
 {
-  "execute": "qom-list-properties",
-  "arguments": {
-    "typename": "spapr-machine"
-  },
-  "id": "libvirt-33"
-}
-
-{
-  "id": "libvirt-33",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Class 'spapr-machine' not found"
-  }
-}
-
-{
   "execute": "query-machines",
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -4092,7 +4076,23 @@
       "cpu-max": 1
     }
   ],
+  "id": "libvirt-33"
+}
+
+{
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "spapr-machine"
+  },
   "id": "libvirt-34"
+}
+
+{
+  "id": "libvirt-34",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Class 'spapr-machine' not found"
+  }
 }
 
 {
