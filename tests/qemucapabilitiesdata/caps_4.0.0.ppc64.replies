@@ -6079,7 +6079,7 @@
 {
   "execute": "qom-list-properties",
   "arguments": {
-    "typename": "spapr-machine"
+    "typename": "pseries-4.0-machine"
   },
   "id": "libvirt-34"
 }

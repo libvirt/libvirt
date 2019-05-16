@@ -3970,7 +3970,7 @@
 {
   "execute": "qom-list-properties",
   "arguments": {
-    "typename": "spapr-machine"
+    "typename": "pseries-machine"
   },
   "id": "libvirt-33"
 }
@@ -3979,7 +3979,7 @@
   "id": "libvirt-33",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Class 'spapr-machine' not found"
+    "desc": "Class 'pseries-machine' not found"
   }
 }
 

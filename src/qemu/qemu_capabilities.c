@@ -1400,15 +1400,15 @@ static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       QEMU_CAPS_OBJECT_MEMORY_MEMFD },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsSPAPR[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsPSeries[] = {
     { "cap-hpt-max-page-size", QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE },
     { "cap-htm", QEMU_CAPS_MACHINE_PSERIES_CAP_HTM },
     { "cap-nested-hv", QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV },
 };
 
 static virQEMUCapsObjectTypeProps virQEMUCapsMachineProps[] = {
-    { "spapr", virQEMUCapsMachinePropsSPAPR,
-      ARRAY_CARDINALITY(virQEMUCapsMachinePropsSPAPR),
+    { "pseries", virQEMUCapsMachinePropsPSeries,
+      ARRAY_CARDINALITY(virQEMUCapsMachinePropsPSeries),
       -1 },
 };
 
@@ -2357,11 +2357,12 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
 
     for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsMachineProps); i++) {
         virQEMUCapsObjectTypeProps props = virQEMUCapsMachineProps[i];
+        const char *canon = virQEMUCapsGetCanonicalMachine(qemuCaps, props.type);
         VIR_AUTOFREE(char *) type = NULL;
 
         /* The QOM type for machine types is the machine type name
          * followed by the -machine suffix */
-        if (virAsprintf(&type, "%s-machine", props.type) < 0)
+        if (virAsprintf(&type, "%s-machine", canon) < 0)
             return -1;
 
         if ((nvalues = qemuMonitorGetObjectProps(mon, type, &values)) < 0)

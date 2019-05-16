@@ -5696,7 +5696,7 @@
 {
   "execute": "qom-list-properties",
   "arguments": {
-    "typename": "spapr-machine"
+    "typename": "pseries-3.1-machine"
   },
   "id": "libvirt-33"
 }

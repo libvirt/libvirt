@@ -5531,7 +5531,7 @@
 {
   "execute": "qom-list-properties",
   "arguments": {
-    "typename": "spapr-machine"
+    "typename": "pseries-2.12-machine"
   },
   "id": "libvirt-33"
 }
