@@ -6234,6 +6234,50 @@
       "name": "cap-nested-hv",
       "description": "Allow Nested KVM-HV",
       "type": "bool"
+    },
+    {
+      "name": "vfio-no-msix-emulation",
+      "type": "bool"
+    },
+    {
+      "name": "ic-mode",
+      "description": "Specifies the interrupt controller mode (xics, xive, dual)",
+      "type": "string"
+    },
+    {
+      "name": "kvm-type",
+      "description": "Specifies the KVM virtualization mode (HV, PR)",
+      "type": "string"
+    },
+    {
+      "name": "host-model",
+      "description": "Host model to advertise in guest device tree",
+      "type": "string"
+    },
+    {
+      "name": "max-cpu-compat",
+      "description": "Maximum permitted CPU compatibility mode. Valid values are power6, power7, power7+, power8, power9.",
+      "type": "string"
+    },
+    {
+      "name": "modern-hotplug-events",
+      "description": "Use dedicated hotplug event mechanism in place of standard EPOW events when possible (required for memory hot-unplug support)",
+      "type": "bool"
+    },
+    {
+      "name": "vsmt",
+      "description": "Virtual SMT: KVM behaves as if this were the host's SMT mode",
+      "type": "uint32"
+    },
+    {
+      "name": "host-serial",
+      "description": "Host serial number to advertise in guest device tree",
+      "type": "string"
+    },
+    {
+      "name": "resize-hpt",
+      "description": "Resizing of the Hash Page Table (enabled, disabled, required)",
+      "type": "string"
     }
   ],
   "id": "libvirt-34"
