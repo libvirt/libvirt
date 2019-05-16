@@ -1698,35 +1698,19 @@
 }
 
 {
-  "execute": "qom-list-properties",
-  "arguments": {
-    "typename": "pseries-machine"
-  },
-  "id": "libvirt-28"
-}
-
-{
-  "id": "libvirt-28",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Class 'pseries-machine' not found"
-  }
-}
-
-{
   "execute": "query-tpm-models",
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-28"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
@@ -1734,12 +1718,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-29"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
@@ -2864,12 +2848,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-30"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
@@ -2939,12 +2923,12 @@
       "capability": "late-block-activate"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-31"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }
 
 {
@@ -14619,5 +14603,5 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-32"
 }

@@ -2360,6 +2360,9 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
         const char *canon = virQEMUCapsGetCanonicalMachine(qemuCaps, props.type);
         VIR_AUTOFREE(char *) type = NULL;
 
+        if (!virQEMUCapsIsMachineSupported(qemuCaps, canon))
+            continue;
+
         /* The QOM type for machine types is the machine type name
          * followed by the -machine suffix */
         if (virAsprintf(&type, "%s-machine", canon) < 0)

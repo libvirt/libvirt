@@ -5107,24 +5107,8 @@
 }
 
 {
-  "execute": "qom-list-properties",
-  "arguments": {
-    "typename": "pseries-machine"
-  },
-  "id": "libvirt-38"
-}
-
-{
-  "id": "libvirt-38",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Class 'pseries-machine' not found"
-  }
-}
-
-{
   "execute": "query-cpu-definitions",
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
@@ -5561,12 +5545,12 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
@@ -5574,12 +5558,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-41"
+  "id": "libvirt-40"
 }
 
 {
@@ -5587,12 +5571,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-42"
+  "id": "libvirt-41"
 }
 
 {
@@ -6891,12 +6875,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-43"
+  "id": "libvirt-42"
 }
 
 {
@@ -6966,12 +6950,12 @@
       "capability": "late-block-activate"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-44"
+  "id": "libvirt-43"
 }
 
 {
@@ -18851,7 +18835,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-43"
 }
 
 {
@@ -18862,7 +18846,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-44"
 }
 
 {
@@ -19055,7 +19039,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-44"
 }
 
 {
@@ -19250,7 +19234,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-45"
 }
 
 {
@@ -19513,7 +19497,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-45"
 }
 
 {
@@ -19527,7 +19511,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-46"
 }
 
 {
@@ -19720,7 +19704,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-46"
 }
 
 {
@@ -19915,7 +19899,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-47"
 }
 
 {
@@ -20178,16 +20162,16 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-47"
 }
 
 {
   "execute": "query-sev-capabilities",
-  "id": "libvirt-49"
+  "id": "libvirt-48"
 }
 
 {
-  "id": "libvirt-49",
+  "id": "libvirt-48",
   "error": {
     "class": "GenericError",
     "desc": "SEV feature is not available"

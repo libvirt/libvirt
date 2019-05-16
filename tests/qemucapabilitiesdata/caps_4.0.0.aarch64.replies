@@ -6211,24 +6211,8 @@
 }
 
 {
-  "execute": "qom-list-properties",
-  "arguments": {
-    "typename": "pseries-machine"
-  },
-  "id": "libvirt-33"
-}
-
-{
-  "id": "libvirt-33",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Class 'pseries-machine' not found"
-  }
-}
-
-{
   "execute": "query-cpu-definitions",
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -6419,34 +6403,34 @@
       "static": false
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
@@ -7594,12 +7578,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
@@ -7673,12 +7657,12 @@
       "capability": "x-ignore-shared"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
@@ -19765,12 +19749,12 @@
       ]
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
@@ -19786,7 +19770,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
