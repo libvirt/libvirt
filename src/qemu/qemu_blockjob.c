@@ -363,7 +363,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after block job", vm->def->name);
 
-    if (job->newstate == VIR_DOMAIN_BLOCK_JOB_COMPLETED && vm->newDef) {
+    if (job->state == VIR_DOMAIN_BLOCK_JOB_COMPLETED && vm->newDef) {
         if (virDomainSaveConfig(cfg->configDir, driver->caps, vm->newDef) < 0)
             VIR_WARN("Unable to update persistent definition on vm %s "
                      "after block job", vm->def->name);
